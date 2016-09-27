@@ -54,14 +54,14 @@
 namespace Givaro
 {
 	template<>
-	//	NTL::GF2E& Givaro::ZRing<NTL::GF2E>::init (NTL::GF2E &x, const Integer &y) const
+        //	NTL::GF2E& Givaro::ZRing<NTL::GF2E>::init (NTL::GF2E &x, const Integer &y) const
 	NTL::GF2E& Caster(NTL::GF2E &x, const Integer &y)
 	{
 		x=NTL::to_GF2E(static_cast<int64_t>(y));
 		return x;
 	}
 	template<>
-	//	NTL::GF2E& Givaro::ZRing<NTL::GF2E>::init (NTL::GF2E &x, const double &y) const
+        //	NTL::GF2E& Givaro::ZRing<NTL::GF2E>::init (NTL::GF2E &x, const double &y) const
 	NTL::GF2E& Caster(NTL::GF2E &x, const double &y)
 	{
 		x=NTL::to_GF2E(static_cast<long>(y));
@@ -70,7 +70,7 @@ namespace Givaro
 
 
 	template<>
-	//	Integer& Givaro::ZRing<NTL::GF2E>::convert (Integer& x, const NTL::GF2E &y) const	{
+        //	Integer& Givaro::ZRing<NTL::GF2E>::convert (Integer& x, const NTL::GF2E &y) const	{
 	Integer& Caster(Integer& x, const NTL::GF2E &y)
 	{
 		NTL::GF2X poly = rep(y);
@@ -92,33 +92,33 @@ namespace Givaro
 // Namespace in which all LinBox library code resides
 namespace LinBox
 {
-	/// \ingroup field
+        /// \ingroup field
 
-	class NTL_GF2E_Initialiser {
-	public :
-		NTL_GF2E_Initialiser( const Integer & p, size_t k = 1) {
-			linbox_check(p == 2);
+class NTL_GF2E_Initialiser {
+public :
+    NTL_GF2E_Initialiser( const Integer & p, size_t k = 1) {
+        linbox_check(p == 2);
 			// if(p != 2) throw PreconditionFailed(LB_FILE_LOC,"modulus must be 2");
-			NTL::GF2X irredPoly = NTL::BuildSparseIrred_GF2X((long) k);
-			NTL::GF2E::init(irredPoly);
+        NTL::GF2X irredPoly = NTL::BuildSparseIrred_GF2X((long) k);
+        NTL::GF2E::init(irredPoly);
 
-		}
+    }
 
 		// template <class ElementInt>
 		// NTL_GF2E_Initialiser(const ElementInt& d) {
-			// NTL::ZZ_p::init (NTL::to_ZZ(d));
+        // NTL::ZZ_p::init (NTL::to_ZZ(d));
 		// }
 
 		// NTL_GF2E_Initialiser (const NTL::ZZ& d) {
-			// NTL::ZZ_p::init(d);
+        // NTL::ZZ_p::init(d);
 		// }
 
-	};
+};
 
 
-	/*
-	 * Define a parameterized class to easily handle Givaro::ZRing<NTL::GF2E> field
-	 */
+        /*
+         * Define a parameterized class to easily handle Givaro::ZRing<NTL::GF2E> field
+         */
 
 	class NTL_GF2E :  public NTL_GF2E_Initialiser, public Givaro::UnparametricOperations<NTL::GF2E> {
 	public:
@@ -129,58 +129,64 @@ namespace LinBox
 		const Element zero,one,mOne ;
 
 		NTL_GF2E (const integer &p, const int32_t &k) :
-			NTL_GF2E_Initialiser(p,k),Father_t ()
+                NTL_GF2E_Initialiser(p,k),Father_t ()
 			,zero( NTL::to_GF2E(0)),one( NTL::to_GF2E(1)),mOne(-one)
-		{ }
+            { }
 
 		bool isZero (const Element& a) const
-		{
-			return NTL::IsZero(a);
-		}
+            {
+                return NTL::IsZero(a);
+            }
 
 
 		bool isOne (const Element& a) const
-		{
-			return NTL::IsOne(a);
-		}
+            {
+                return NTL::IsOne(a);
+            }
+
+		bool isUnit (const Element& a) const
+            {
+                return (deg(rep(a))==0 &&
+                        NTL::IsOne(ConstTerm(rep(a))));
+            }
 
 		bool isMOne (const Element& x) const
-		{
-			Element y ; neg(y,x);
-			return isOne(y);
-		}
+            {
+                Element y ; neg(y,x);
+                return isOne(y);
+            }
 
 		integer& characteristic (integer &c) const
-		{
-			return c = 2;
-		}
+            {
+                return c = 2;
+            }
 
 		integer& cardinality(integer& c) const
-		{
-			c=1;
-			c<<= static_cast<int64_t>(Element::degree());
-			return c;
-		}
+            {
+                c=1;
+                c<<= static_cast<int64_t>(Element::degree());
+                return c;
+            }
 
 		Element& inv(Element& x, const Element& y) const
-		{
-			x=NTL::to_GF2E(1)/y;
-			return x;
-		}
+            {
+                x=NTL::to_GF2E(1)/y;
+                return x;
+            }
 
 		Element& invin(Element& x) const
-		{
-			x=NTL::to_GF2E(1)/x;
-			return x;
-		}
+            {
+                x=NTL::to_GF2E(1)/x;
+                return x;
+            }
 
 		std::istream& read(std::istream& is, Element& x) const
-		{
-			long tmp= 0;
-			is>>tmp;
-			x=NTL::to_GF2E(tmp);
-			return is;
-		}
+            {
+                long tmp= 0;
+                is>>tmp;
+                x=NTL::to_GF2E(tmp);
+                return is;
+            }
 	}; // end o class NTL_GF2E
 
 	template <class Ring>
@@ -199,32 +205,32 @@ namespace LinBox
 	public:
 		typedef NTL::GF2E Element;
 		UnparametricRandIter<NTL::GF2E>(const NTL_GF2E & F,
-						const size_t& size = 0,
-						const size_t& seed = 0
-					       ) :
-			_size(size), _seed(seed)
-		{
-			if(_seed == 0)
-				NTL::SetSeed(NTL::to_ZZ(time(0)));
-			else
-				NTL::SetSeed(NTL::to_ZZ(_seed));
-		}
+                                        const size_t& size = 0,
+                                        const size_t& seed = 0
+                                        ) :
+                _size(size), _seed(seed)
+            {
+                if(_seed == 0)
+                    NTL::SetSeed(NTL::to_ZZ(time(0)));
+                else
+                    NTL::SetSeed(NTL::to_ZZ(_seed));
+            }
 
 		UnparametricRandIter<NTL::GF2E>(const UnparametricRandIter<NTL::GF2E>& R) :
-			_size(R._size), _seed(R._seed)
+                _size(R._size), _seed(R._seed)
 
-		{
-			if(_seed == 0)
-				NTL::SetSeed(NTL::to_ZZ(time(0)));
-			else
-				NTL::SetSeed(NTL::to_ZZ(_seed));
-		}
+            {
+                if(_seed == 0)
+                    NTL::SetSeed(NTL::to_ZZ(time(0)));
+                else
+                    NTL::SetSeed(NTL::to_ZZ(_seed));
+            }
 
 		Element& random (Element& x) const
-		{
-			NTL::random(x);
-			return x;
-		}
+            {
+                NTL::random(x);
+                return x;
+            }
 
 	protected:
 		size_t _size;
@@ -237,11 +243,11 @@ namespace LinBox
 #endif //__LINBOX_ntl_gf2e_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
 

@@ -166,6 +166,15 @@ namespace LinBox
 			return isOne(y);
 		}
 
+	bool isUnit (const Element& x) const
+        {
+            if (deg(rep(x))==0) {
+                NTL::ZZ_p u(rep(x)[0]);
+                NTL::ZZ d;
+                return !NTL::InvModStatus(d,rep(u),NTL::ZZ_p::modulus());
+            } else
+                return false;
+        }
 
 	integer& characteristic (integer &c) const
 	{

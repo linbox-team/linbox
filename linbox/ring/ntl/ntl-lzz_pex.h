@@ -60,21 +60,21 @@ namespace LinBox
 			NTL::zz_pE::init(irredPoly);
 		}
 
-		// template <class ElementInt>
-		// NTL_zz_pEX_Initialiser(const ElementInt& d) {
+            // template <class ElementInt>
+            // NTL_zz_pEX_Initialiser(const ElementInt& d) {
 			// NTL::ZZ_p::init (NTL::to_ZZ(d));
-		// }
+            // }
 
 		NTL_zz_pEX_Initialiser () { }
 
 	};
 
-	/** Ring (in fact, a unique factorization domain) of polynomial with
-	 * coefficients in class NTL_zz_p (integers mod a wordsize prime).
-	 * All the same functions as any other ring, with the addition of:
-	 * Coeff (type), CoeffField (type), getCoeffField, setCoeff, getCoeff,
-	 * leadCoeff, deg
-	 */
+        /** Ring (in fact, a unique factorization domain) of polynomial with
+         * coefficients in class NTL_zz_p (integers mod a wordsize prime).
+         * All the same functions as any other ring, with the addition of:
+         * Coeff (type), CoeffField (type), getCoeffField, setCoeff, getCoeff,
+         * leadCoeff, deg
+         */
 	class NTL_zz_pEX :  public NTL_zz_pEX_Initialiser, public Givaro::UnparametricOperations<NTL::zz_pEX> {
 	public:
 		typedef NTL::zz_pEX Element ;
@@ -84,298 +84,305 @@ namespace LinBox
 
 		typedef NTL_zz_pE CoeffField;
 		typedef NTL::zz_pE Coeff;
-		// typedef NTL::zz_pEX Element;
+            // typedef NTL::zz_pEX Element;
 
 		const Element zero,one,mOne ;
 
 
-		/** Standard LinBox field constructor.  The paramters here
-		 * (prime, exponent) are only used to initialize the coefficient field.
-		 */
+            /** Standard LinBox field constructor.  The paramters here
+             * (prime, exponent) are only used to initialize the coefficient field.
+             */
 		NTL_zz_pEX( const integer& p, int32_t e = 1 ) :
-			// Givaro::ZRing<NTL::zz_pEX>(p, e), _CField(p,e)
-			NTL_zz_pEX_Initialiser(p,e),Father_t ()
+                    // Givaro::ZRing<NTL::zz_pEX>(p, e), _CField(p,e)
+                NTL_zz_pEX_Initialiser(p,e),Father_t ()
 			, zero( NTL::to_zz_pEX(0)),one( NTL::to_zz_pEX(1)),mOne(-one)
 			, _CField(p,e)
-		{}
+            {}
 
-		/** Constructor from a coefficient field */
+            /** Constructor from a coefficient field */
 		NTL_zz_pEX( CoeffField cf ) :
-			NTL_zz_pEX_Initialiser(cf.cardinality()),Father_t ()
+                NTL_zz_pEX_Initialiser(cf.cardinality()),Father_t ()
 			,zero( NTL::to_zz_pEX(0)),one( NTL::to_zz_pEX(1)),mOne(-one)
 			,_CField(cf)
-		{}
+            {}
 
 		Element& init( Element& p) const
-		{	return init(p, 0); }
+            {	return init(p, 0); }
 
 		Element& init( Element& p, integer n ) const
-		{
-			p = 0;
-			integer base;
-			Coeff a;
-			_CField.cardinality(base);
-			for (int i = 0; n > 0; n /= base, ++i)
-			{
-			    _CField.init(a, n%base);
-				NTL::SetCoeff( p, i, a );
-			}
-			return p;
-		}
+            {
+                p = 0;
+                integer base;
+                Coeff a;
+                _CField.cardinality(base);
+                for (int i = 0; n > 0; n /= base, ++i)
+                {
+                    _CField.init(a, n%base);
+                    NTL::SetCoeff( p, i, a );
+                }
+                return p;
+            }
 
 		integer& convert( integer& n, Element& p ) const
-		{
-			integer base;
-			integer d;
-			_CField.cardinality(base);
-			n = 0;
-			for (int i = (int)deg(p); i >= 0; --i)
-			{
-				n *= base;
-				n += _CField.convert(d, NTL::coeff(p, i));
-			}
-			return n;
-		}
+            {
+                integer base;
+                integer d;
+                _CField.cardinality(base);
+                n = 0;
+                for (int i = (int)deg(p); i >= 0; --i)
+                {
+                    n *= base;
+                    n += _CField.convert(d, NTL::coeff(p, i));
+                }
+                return n;
+            }
 
 #if 0
-		/** Initialize p to the constant y (p = y*x^0) */
+            /** Initialize p to the constant y (p = y*x^0) */
 		template <class ANY>
 		Element& init( Element& p, const ANY& y = 0) const
-		{
-			Coeff temp;
-			_CField.init( temp, y );
-			return p = temp;
-		}
+            {
+                Coeff temp;
+                _CField.init( temp, y );
+                return p = temp;
+            }
 #endif
 
-		/** Initialize p to the constant y (p = y*x^0) */
+            /** Initialize p to the constant y (p = y*x^0) */
 		Element& init( Element& p, const Coeff& y ) const
-		{
-			return p = y;
-		}
+            {
+                return p = y;
+            }
 
-		/** Initialize p from a vector of coefficients.
-		 * The vector should be ordered the same way NTL does it: the front
-		 * of the vector corresponds to the trailing coefficients, and the back
-		 * of the vector corresponds to the leading coefficients.  That is,
-		 * v[i] = coefficient of x^i.
-		 */
+            /** Initialize p from a vector of coefficients.
+             * The vector should be ordered the same way NTL does it: the front
+             * of the vector corresponds to the trailing coefficients, and the back
+             * of the vector corresponds to the leading coefficients.  That is,
+             * v[i] = coefficient of x^i.
+             */
 		template <class ANY>
 		Element& init( Element& p, const std::vector<ANY>& v ) const
-		{
-			p = 0;
-			Coeff temp;
-			for( long i = 0; i < (long)v.size(); ++i ) {
-				_CField.init( temp, v[ (size_t) i ] );
-				if( !_CField.isZero(temp) )
-					NTL::SetCoeff( p, i, temp );
-			}
-			return p;
-		}
+            {
+                p = 0;
+                Coeff temp;
+                for( long i = 0; i < (long)v.size(); ++i ) {
+                    _CField.init( temp, v[ (size_t) i ] );
+                    if( !_CField.isZero(temp) )
+                        NTL::SetCoeff( p, i, temp );
+                }
+                return p;
+            }
 		template <class ANY>
 		Element& init( Element& p, const BlasVector<ANY>& v ) const
-		{
-			p = 0;
-			Coeff temp;
-			for( long i = 0; i < (long)v.size(); ++i ) {
-				_CField.init( temp, v[ (size_t) i ] );
-				if( !_CField.isZero(temp) )
-					NTL::SetCoeff( p, i, temp );
-			}
-			return p;
-		}
+            {
+                p = 0;
+                Coeff temp;
+                for( long i = 0; i < (long)v.size(); ++i ) {
+                    _CField.init( temp, v[ (size_t) i ] );
+                    if( !_CField.isZero(temp) )
+                        NTL::SetCoeff( p, i, temp );
+                }
+                return p;
+            }
 
 
-		/** Initialize p from a vector of coefficients.
-		 * The vector should be ordered the same way NTL does it: the front
-		 * of the vector corresponds to the trailing coefficients, and the back
-		 * of the vector corresponds to the leading coefficients.  That is,
-		 * v[i] = coefficient of x^i.
-		 */
+            /** Initialize p from a vector of coefficients.
+             * The vector should be ordered the same way NTL does it: the front
+             * of the vector corresponds to the trailing coefficients, and the back
+             * of the vector corresponds to the leading coefficients.  That is,
+             * v[i] = coefficient of x^i.
+             */
 		Element& init( Element& p, const std::vector<Coeff>& v ) const
-		{
-			p = 0;
-			for( long i = 0; i < (long)v.size(); ++i )
-				NTL::SetCoeff( p, i, v[ (size_t) i ] );
-			return p;
-		}
+            {
+                p = 0;
+                for( long i = 0; i < (long)v.size(); ++i )
+                    NTL::SetCoeff( p, i, v[ (size_t) i ] );
+                return p;
+            }
 
-		/** Convert p to a vector of coefficients.
-		 * The vector will be ordered the same way NTL does it: the front
-		 * of the vector corresponds to the trailing coefficients, and the back
-		 * of the vector corresponds to the leading coefficients.  That is,
-		 * v[i] = coefficient of x^i.
-		 */
+            /** Convert p to a vector of coefficients.
+             * The vector will be ordered the same way NTL does it: the front
+             * of the vector corresponds to the trailing coefficients, and the back
+             * of the vector corresponds to the leading coefficients.  That is,
+             * v[i] = coefficient of x^i.
+             */
 		template< class ANY >
 		std::vector<ANY>& convert( std::vector<ANY>& v, const Element& p ) const
-		{
-			v.clear();
-			ANY temp;
-			for( long i = 0; i <= (long)this->deg(p); ++i ) {
-				_CField.convert( temp, NTL::coeff( p, i ) );
-				v.push_back( temp );
-			}
-			return v;
-		}
+            {
+                v.clear();
+                ANY temp;
+                for( long i = 0; i <= (long)this->deg(p); ++i ) {
+                    _CField.convert( temp, NTL::coeff( p, i ) );
+                    v.push_back( temp );
+                }
+                return v;
+            }
 
-		/** Convert p to a vector of coefficients.
-		 * The vector will be ordered the same way NTL does it: the front
-		 * of the vector corresponds to the trailing coefficients, and the back
-		 * of the vector corresponds to the leading coefficients.  That is,
-		 * v[i] = coefficient of x^i.
-		 */
+            /** Convert p to a vector of coefficients.
+             * The vector will be ordered the same way NTL does it: the front
+             * of the vector corresponds to the trailing coefficients, and the back
+             * of the vector corresponds to the leading coefficients.  That is,
+             * v[i] = coefficient of x^i.
+             */
 		std::vector<Coeff>& convert( std::vector<Coeff>& v, const Element& p ) const
-		{
-			v.clear();
-			for( long i = 0; i <= (long)this->deg(p); ++i )
-				v.push_back( NTL::coeff(p,i) );
-			return v;
-		}
+            {
+                v.clear();
+                for( long i = 0; i <= (long)this->deg(p); ++i )
+                    v.push_back( NTL::coeff(p,i) );
+                return v;
+            }
 
-		/** Test if an element equals zero */
+            /** Test if an element equals zero */
 		bool isZero( const Element& x ) const
-		{
-			return ( (this->deg(x) == 0) &&
-				 ( _CField.isZero( NTL::ConstTerm(x) ) ) );
-		}
+            {
+                return ( (this->deg(x) == 0) &&
+                         ( _CField.isZero( NTL::ConstTerm(x) ) ) );
+            }
 
-		/** Test if an element equals one */
+            /** Test if an element equals one */
 		bool isOne( const Element& x ) const
-		{
-			return ( (this->deg(x) == 0) &&
-				 ( _CField.isOne( NTL::ConstTerm(x) ) ) );
-		}
+            {
+                return ( (this->deg(x) == 0) &&
+                         ( _CField.isOne( NTL::ConstTerm(x) ) ) );
+            }
 
-	bool isMOne (const Element& x) const
-		{
-			return ( (this->deg(x) == 0) &&
-				 ( _CField.isMOne( NTL::ConstTerm(x) ) ) );
+            /** Test if an element is invertible */
+		bool isUnit( const Element& x ) const
+            {
+                return ( (this->deg(x) == 0) &&
+                         ( _CField.isUnit( NTL::ConstTerm(x) ) ) );
+            }
 
-		}
+        bool isMOne (const Element& x) const
+            {
+                return ( (this->deg(x) == 0) &&
+                         ( _CField.isMOne( NTL::ConstTerm(x) ) ) );
 
-		/** The LinBox field for coefficients */
+            }
+
+            /** The LinBox field for coefficients */
 		const CoeffField& getCoeffField() const
-		{ return _CField; }
+            { return _CField; }
 
-		/** Get the degree of a polynomial
-		 * Unlike NTL, deg(0)=0.
-		 */
+            /** Get the degree of a polynomial
+             * Unlike NTL, deg(0)=0.
+             */
 		size_t deg( const Element& p ) const
-		{
-			long temp = NTL::deg(p);
-			if( temp == -1 ) return 0;
-			else return static_cast<size_t>(temp);
-		}
+            {
+                long temp = NTL::deg(p);
+                if( temp == -1 ) return 0;
+                else return static_cast<size_t>(temp);
+            }
 
-		/** r will be set to the reverse of p. */
+            /** r will be set to the reverse of p. */
 		Element& rev( Element& r, const Element& p ) {
 			NTL::reverse(r,p);
 			return r;
 		}
 
-		/** r is itself reversed. */
+            /** r is itself reversed. */
 		Element& revin( Element& r ) {
 			return r = NTL::reverse(r);
 		}
 
-		/** Get the leading coefficient of this polynomial. */
+            /** Get the leading coefficient of this polynomial. */
 		Coeff& leadCoeff( Coeff& c, const Element& p ) const
-		{
-			c = NTL::LeadCoeff(p);
-			return c;
-		}
+            {
+                c = NTL::LeadCoeff(p);
+                return c;
+            }
 
-		/** Get the coefficient of x^i in a given polynomial */
+            /** Get the coefficient of x^i in a given polynomial */
 		Coeff& getCoeff( Coeff& c, const Element& p, size_t i ) const
-		{
-			c = NTL::coeff( p, (long)i );
-			return c;
-		}
+            {
+                c = NTL::coeff( p, (long)i );
+                return c;
+            }
 
-		/** Set the coefficient of x^i in a given polynomial */
+            /** Set the coefficient of x^i in a given polynomial */
 		Element& setCoeff( Element& p, size_t i, const Coeff& c ) const
-		{
-			NTL::SetCoeff(p,(long)i,c);
-			return p;
-		}
+            {
+                NTL::SetCoeff(p,(long)i,c);
+                return p;
+            }
 
-		/** Get the quotient of two polynomials */
+            /** Get the quotient of two polynomials */
 		Element& quo( Element& res, const Element& a, const Element& b ) const
-		{
-			NTL::div(res,a,b);
-			return res;
-		}
+            {
+                NTL::div(res,a,b);
+                return res;
+            }
 
-		/** a = quotient of a, b */
+            /** a = quotient of a, b */
 		Element& quoin( Element& a, const Element& b ) const
-		{
-			return a /= b;
-		}
+            {
+                return a /= b;
+            }
 
-		/** Get the remainder under polynomial division */
+            /** Get the remainder under polynomial division */
 		Element& rem( Element& res, const Element& a, const Element& b ) const
-		{
-			NTL::rem(res,a,b);
-			return res;
-		}
+            {
+                NTL::rem(res,a,b);
+                return res;
+            }
 
-		/** a = remainder of a,b */
+            /** a = remainder of a,b */
 		Element& remin( Element& a, const Element& b ) const
-		{
-			return a %= b;
-		}
+            {
+                return a %= b;
+            }
 
-		/** Get the quotient and remainder under polynomial division */
+            /** Get the quotient and remainder under polynomial division */
 		void quorem( Element& q, Element& r,
-			     const Element& a, const Element& b ) const
-		{
-			NTL::DivRem(q,r,a,b);
-		}
+                     const Element& a, const Element& b ) const
+            {
+                NTL::DivRem(q,r,a,b);
+            }
 
 		Element& inv( Element& y, const Element& x ) const
-		{
-			// Element one(0, 1);
-			return quo(y,one,x);
-		}
+            {
+                    // Element one(0, 1);
+                return quo(y,one,x);
+            }
 
 		Element& invin( Element& y ) const
-		{
-			Element x = y;
-			return inv(y, x);
-		}
+            {
+                Element x = y;
+                return inv(y, x);
+            }
 
-		/** Get characteristic of the field - same as characteristic of
-		 * coefficient field. */
+            /** Get characteristic of the field - same as characteristic of
+             * coefficient field. */
 		integer& characteristic( integer& c ) const
-		{ return _CField.characteristic(c); }
+            { return _CField.characteristic(c); }
 
-		/** Get the cardinality of the field.  Since the cardinality is
-		 * infinite, by convention we return -1.
-		 */
+            /** Get the cardinality of the field.  Since the cardinality is
+             * infinite, by convention we return -1.
+             */
 		integer& cardinality( integer& c ) const
-		{ return c = static_cast<integer>(-1); }
+            { return c = static_cast<integer>(-1); }
 
 		static inline integer maxCardinality()
-		{ return NTL_zz_p::maxCardinality(); }
-		/** Write a description of the field */
-		// Oustide of class definition so write(ostream&,const Element&) from
-		// Givaro::ZRing still works.
+            { return NTL_zz_p::maxCardinality(); }
+            /** Write a description of the field */
+            // Oustide of class definition so write(ostream&,const Element&) from
+            // Givaro::ZRing still works.
 
 		std::ostream& write( std::ostream& os ) const
-		{
-			return os << "Polynomial ring using NTL::zz_pEX";
-		}
+            {
+                return os << "Polynomial ring using NTL::zz_pEX";
+            }
 		std::ostream& write( std::ostream& os, const Element& x) const
-		{	return Father_t::write(os, x); }
+            {	return Father_t::write(os, x); }
 
-		/** Conversion to scalar types doesn't make sense and should not be
-		 * used.  Use getCoeff or leadCoeff to get the scalar values of
-		 * specific coefficients, and then convert them using coeffField()
-		 * if needed.
-		 */
+            /** Conversion to scalar types doesn't make sense and should not be
+             * used.  Use getCoeff or leadCoeff to get the scalar values of
+             * specific coefficients, and then convert them using coeffField()
+             * if needed.
+             */
 		template< class ANY >
 		ANY& convert( ANY& x, const Element& y ) const
-		{ return x; }
+            { return x; }
 
 	protected:
 		CoeffField _CField;
@@ -397,34 +404,34 @@ namespace LinBox
 	public:
 		typedef NTL::zz_pEX Element;
 		UnparametricRandIter<NTL::zz_pEX>(const NTL_zz_pEX & F ,
-						 const size_t& size = 0,
-						 const size_t& seed = 0
-						) :
+                                          const size_t& size = 0,
+                                          const size_t& seed = 0
+                                          ) :
                 _size(size), _seed(seed), _ring(F)
-		{
-			if(_seed == 0)
-				NTL::SetSeed(NTL::to_ZZ(time(0)));
-			else
-				NTL::SetSeed(NTL::to_ZZ(_seed));
-		}
+            {
+                if(_seed == 0)
+                    NTL::SetSeed(NTL::to_ZZ(time(0)));
+                else
+                    NTL::SetSeed(NTL::to_ZZ(_seed));
+            }
 
         const NTL_zz_pEX& ring() const { return _ring; }
 
 		UnparametricRandIter<NTL::zz_pEX>(const UnparametricRandIter<NTL::zz_pEX>& R) :
                 _size(R._size), _seed(R._seed), _ring(R._ring)
 
-		{
-			if(_seed == 0)
-				NTL::SetSeed(NTL::to_ZZ(time(0)));
-			else
-				NTL::SetSeed(NTL::to_ZZ(_seed));
-		}
+            {
+                if(_seed == 0)
+                    NTL::SetSeed(NTL::to_ZZ(time(0)));
+                else
+                    NTL::SetSeed(NTL::to_ZZ(_seed));
+            }
 
 		Element& random (Element& x) const
-		{
-			NTL::random(x, 1);
-			return x;
-		}
+            {
+                NTL::random(x, 1);
+                return x;
+            }
 
 	protected:
 		size_t _size;
@@ -437,11 +444,11 @@ namespace LinBox
 #endif // __LINBOX_field_ntl_lzz_pEX_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
 

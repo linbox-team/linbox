@@ -413,6 +413,23 @@ namespace LinBox
 			return isOne(y);
 		}
 
+            /** Unit test.
+             * Test if field element is invertible.
+             * This function assumes the field element has already been
+             * constructed and initialized.
+             * In this specialization, NTL's InvModStatus function is called.
+             * inline long InvModStatus(ZZ& x, const ZZ& a, const ZZ& n)
+             * // if gcd(a,n) = 1, then ReturnValue = 0, x = a^{-1} mod n
+             * // otherwise, ReturnValue = 1, x = gcd(a, n)
+             * @return boolean true if invertible, false if not.
+             * @param  x field element.
+             */
+		bool isUnit(const Element& x) const
+            {
+                NTL::ZZ d;
+                return !NTL::InvModStatus(d,rep(x),NTL::ZZ_p::modulus());
+            }
+
 		/** Inplace Multiplicative Inverse.
 		 * x = 1 / x
 		 * This function assumes both field elements have already been

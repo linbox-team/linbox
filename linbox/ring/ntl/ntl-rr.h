@@ -209,6 +209,17 @@ namespace LinBox
 			return isOne(y);
 		}
 
+		/** invertibility.
+		 * Test if field element is invertible.
+		 * This function assumes the field element has already been
+		 * constructed and initialized.
+		 * @return boolean true if invertible, false if not.
+		 * @param  x field element.
+		 */
+		bool isUnit(const Element& x) const
+		{
+			return !isZero(x);
+		}
 
 		/** Inplace Multiplicative Inverse.
 		 * x = 1 / x

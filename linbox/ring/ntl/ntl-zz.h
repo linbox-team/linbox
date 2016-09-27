@@ -235,7 +235,6 @@ namespace LinBox
 
 		}
 
-
 		// arithmetic
 
 		/** @brief
@@ -437,10 +436,9 @@ namespace LinBox
 		/** @brief
 		 *  Test if x is a unit.
 		 */
-		inline bool isUnit (const Element& x) const
+		bool isUnit(const Element& x) const
 		{
-
-			return (NTL::IsOne (x) || NTL::IsOne (-x));
+			return isOne(x) || isMOne(x);
 		}
 
 		/** @brief

@@ -242,7 +242,13 @@ namespace LinBox
 				 ( _CField.isOne( NTL::ConstTerm(x) ) ) );
 		}
 
-	bool isMOne (const Element& x) const
+		bool isUnit( const Element& x ) const
+		{
+			return ( (this->deg(x) == 0) &&
+				 ( _CField.isUnit( NTL::ConstTerm(x) ) ) );
+		}
+
+        bool isMOne (const Element& x) const
 		{
 			return ( (this->deg(x) == 0) &&
 				 ( _CField.isMOne( NTL::ConstTerm(x) ) ) );

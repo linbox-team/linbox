@@ -178,6 +178,10 @@ bool testRing (Ring &F, const char *title, bool fieldp = true, bool runInitConve
 		part_pass = reportError( "isOne (0) is true", pass);
 	if ( not F.isOne (one) or not F.isOne(F.one) ) 
 		part_pass = reportError( "isOne (1) is false", pass);
+	if ( not F.isUnit(one) or not F.isUnit(F.one) ) 
+		part_pass = reportError( "isUnit (1) is false", pass);
+	if ( F.isUnit(zero) or F.isUnit(F.zero) ) 
+		part_pass = reportError( "isUnit (0) is true", pass);
 	if ( !F.areEqual(F.mOne,mOne)) {
 		part_pass = reportError( "isMOne (-One) is false", pass);
 	}

@@ -55,13 +55,13 @@
 namespace Givaro
 {
 
-	/** Initialization of field element from an integer.
-	 * This Uses NTL's <code>to_zz_p</code> function.
-	 *
-	 * @return reference to field element.
-	 * @param x field element to contain output (reference returned).
-	 * @param y Integer.
-	 */
+        /** Initialization of field element from an integer.
+         * This Uses NTL's <code>to_zz_p</code> function.
+         *
+         * @return reference to field element.
+         * @param x field element to contain output (reference returned).
+         * @param y Integer.
+         */
 	template <>
 	NTL::zz_p& Caster(NTL::zz_p& x, const Integer& y)
 	{
@@ -73,18 +73,18 @@ namespace Givaro
 		return x = NTL::to_zz_p(long(y)%NTL::zz_p::modulus());
 	}
 
-	/** Conversion of field element to an Integer.
-	 * This function assumes the output field element x has already been
-	 * constructed, but that it is not already initialized.
-	 * For now, this is done by converting the element type to a C++
-	 * long and then to the Integer type through the use of static cast and
-	 * NTL's to_long function.
-	 * This, of course, assumes such static casts are possible.
-	 * This function should be changed in the future to avoid using long.
-	 * @return reference to Integer.
-	 * @param x reference to Integer to contain output (reference returned).
-	 * @param y constant reference to field element.
-	 */
+        /** Conversion of field element to an Integer.
+         * This function assumes the output field element x has already been
+         * constructed, but that it is not already initialized.
+         * For now, this is done by converting the element type to a C++
+         * long and then to the Integer type through the use of static cast and
+         * NTL's to_long function.
+         * This, of course, assumes such static casts are possible.
+         * This function should be changed in the future to avoid using long.
+         * @return reference to Integer.
+         * @param x reference to Integer to contain output (reference returned).
+         * @param y constant reference to field element.
+         */
  	template <>
 	Integer& Caster(Integer& x, const NTL::zz_p& y)
 	{
@@ -101,7 +101,7 @@ namespace LinBox
 		NTL_zz_p_Initialiser( const Integer & q, size_t e = 1) {
 			linbox_check(e == 1);
 			if ( q > 0 )
-				// NTL::zz_p::init(NTL::to_ZZ((std::string(q)).data())); // it's an error if q not prime, e not 1
+                    // NTL::zz_p::init(NTL::to_ZZ((std::string(q)).data())); // it's an error if q not prime, e not 1
 				NTL::zz_p::init(int64_t(q)); // it's an error if q not prime, e not 1
 		}
 
@@ -114,18 +114,18 @@ namespace LinBox
 
 	};
 
-	/**
-	 * \brief long ints modulo a positive integer.
-	 *
-	 * While NTL allows any int to serve as the modulus, only prime
-	 * moduli yield fields.  The primality of the modulus will not be checked, so
-	 * it is the programmer's responsibility to supply a prime modulus if a field is
-	 * wanted.
-	 * These specializations allow the \ref Givaro::ZRing template class to be
-	 * used to wrap NTL's <code>zz_p</code> class as a LinBox field.
-	 * Uses nice trick for mod p via floating point.
-	 \ingroup field
-	 */
+        /**
+         * \brief long ints modulo a positive integer.
+         *
+         * While NTL allows any int to serve as the modulus, only prime
+         * moduli yield fields.  The primality of the modulus will not be checked, so
+         * it is the programmer's responsibility to supply a prime modulus if a field is
+         * wanted.
+         * These specializations allow the \ref Givaro::ZRing template class to be
+         * used to wrap NTL's <code>zz_p</code> class as a LinBox field.
+         * Uses nice trick for mod p via floating point.
+         \ingroup field
+        */
 	struct NTL_zz_p: public NTL_zz_p_Initialiser, public Givaro::UnparametricOperations<NTL::zz_p> {
 		typedef NTL::zz_p Element ;
 		typedef Givaro::UnparametricOperations<Element> Father_t ;
@@ -134,178 +134,195 @@ namespace LinBox
 		const Element zero,one,mOne ;
 
 
-		//public Givaro::ZRing<Element> {
+            //public Givaro::ZRing<Element> {
 		NTL_zz_p(integer p, size_t e = 1) :
-			NTL_zz_p_Initialiser(p,e),Father_t ()
+                NTL_zz_p_Initialiser(p,e),Father_t ()
 			,zero( NTL::to_zz_p(0)),one( NTL::to_zz_p(1)),mOne(-one)
-		{}
+            {}
 
 		NTL_zz_p() :
-			NTL_zz_p_Initialiser(2,1), Father_t()
+                NTL_zz_p_Initialiser(2,1), Father_t()
 			,zero( NTL::to_zz_p(0)),one( NTL::to_zz_p(1)),mOne(-one)
-		{}
+            {}
 
 		Element& init(Element& x, const double& y) const
-		{
-			double z = fmod(y,(double)Element::modulus());
-			if (z > 0) z += 0.5;
-			else z -= 0.5;
-			return x = NTL::to_zz_p(static_cast<long>(z)); //rounds towards 0
-		}
+            {
+                double z = fmod(y,(double)Element::modulus());
+                if (z > 0) z += 0.5;
+                else z -= 0.5;
+                return x = NTL::to_zz_p(static_cast<long>(z)); //rounds towards 0
+            }
 
 		Element &init (Element &x, const integer &y=0) const
-		{
-			NTL::ZZ tmp= NTL::to_ZZ(std::string(y).data());
-			return x = NTL::to_zz_p(tmp);
-		}
+            {
+                NTL::ZZ tmp= NTL::to_ZZ(std::string(y).data());
+                return x = NTL::to_zz_p(tmp);
+            }
 
 /*
-		template <class ANY>
-		Element& init(Element& x, const ANY& y) const
-		{
-			return x = NTL::to_zz_p((long)(y));
-		}
+  template <class ANY>
+  Element& init(Element& x, const ANY& y) const
+  {
+  return x = NTL::to_zz_p((long)(y));
+  }
 */
 
 		Element& init(Element& x, const NTL::zz_p & y) const
-		{
-			return x = y ;
-		}
+            {
+                return x = y ;
+            }
 
 		template <class ANY>
 		ANY& convert(ANY& x, const Element& y) const
-		{
-			return Givaro::Caster(x,y);
-		}
+            {
+                return Givaro::Caster(x,y);
+            }
 
 		static inline integer maxCardinality()
-		{
-			return integer( int64_t(NTL_SP_BOUND) );
-		}
+            {
+                return integer( int64_t(NTL_SP_BOUND) );
+            }
 
 		Element& pow( Element& res, const Element& x, long exp ) const
-		{
-			NTL::power( res, x, exp );
-			return res;
-		}
+            {
+                NTL::power( res, x, exp );
+                return res;
+            }
 
 		Element& powin( Element& x, long exp ) const
-		{
-			return x = NTL::power(x,exp);
-		}
-		/** Cardinality.
-		 * Return integer representing cardinality of the field.
-		 * Returns the modulus of the field, which should be prime.
-		 * @return integer representing cardinality of the field
-		 */
+            {
+                return x = NTL::power(x,exp);
+            }
+            /** Cardinality.
+             * Return integer representing cardinality of the field.
+             * Returns the modulus of the field, which should be prime.
+             * @return integer representing cardinality of the field
+             */
 
 		integer& cardinality(integer& c) const
-		{
-			return characteristic(c);
-		}
+            {
+                return characteristic(c);
+            }
 
 		integer cardinality() const
-		{
-			return characteristic();
-		}
+            {
+                return characteristic();
+            }
 
-		/** Characteristic.
-		 * Return integer representing characteristic of the field.
-		 * Returns the modulus of the field, which should be prime.
-		 * @return integer representing characteristic of the field.
-		 */
+            /** Characteristic.
+             * Return integer representing characteristic of the field.
+             * Returns the modulus of the field, which should be prime.
+             * @return integer representing characteristic of the field.
+             */
 
 		integer& characteristic(integer& c) const
-		{
-			return c = static_cast<int64_t>(Element::modulus());
-		}
+            {
+                return c = static_cast<int64_t>(Element::modulus());
+            }
 
 		integer characteristic() const
-		{
-			return static_cast<int64_t>(Element::modulus());
-		}
+            {
+                return static_cast<int64_t>(Element::modulus());
+            }
 
-		/** Multiplicative Inverse.
-		 * x = 1 / y
-		 * This function assumes both field elements have already been
-		 * constructed and initialized.
-		 * @return reference to x.
-		 * @param  x field element (reference returned).
-		 * @param  y field element.
-		 */
+            /** Multiplicative Inverse.
+             * x = 1 / y
+             * This function assumes both field elements have already been
+             * constructed and initialized.
+             * @return reference to x.
+             * @param  x field element (reference returned).
+             * @param  y field element.
+             */
 		Element&
 		inv(Element& x, const Element& y) const
-		{
-			return x = NTL::inv(y);
-		}
+            {
+                return x = NTL::inv(y);
+            }
 
-		/** Zero equality.
-		 * Test if field element is equal to zero.
-		 * This function assumes the field element has already been
-		 * constructed and initialized.
-		 * In this specialization, NTL's IsZero function is called.
-		 * @return boolean true if equals zero, false if not.
-		 * @param  x field element.
-		 */
+            /** Zero equality.
+             * Test if field element is equal to zero.
+             * This function assumes the field element has already been
+             * constructed and initialized.
+             * In this specialization, NTL's IsZero function is called.
+             * @return boolean true if equals zero, false if not.
+             * @param  x field element.
+             */
 		bool isZero(const Element& x) const
-		{
-			return static_cast<bool>(NTL::IsZero(x));
-		}
+            {
+                return static_cast<bool>(NTL::IsZero(x));
+            }
 
-		/** One equality.
-		 * Test if field element is equal to one.
-		 * This function assumes the field element has already been
-		 * constructed and initialized.
-		 * In this specialization, NTL's IsOne function is called.
-		 * @return boolean true if equals one, false if not.
-		 * @param  x field element.
-		 */
+            /** One equality.
+             * Test if field element is equal to one.
+             * This function assumes the field element has already been
+             * constructed and initialized.
+             * In this specialization, NTL's IsOne function is called.
+             * @return boolean true if equals one, false if not.
+             * @param  x field element.
+             */
 		bool isOne(const Element& x) const
-		{
-			return static_cast<bool>(NTL::IsOne(x));
-		}
+            {
+                return static_cast<bool>(NTL::IsOne(x));
+            }
 
-		/** MOne equality.
-		 * Test if field element is equal to one.
-		 * This function assumes the field element has already been
-		 * constructed and initialized.
-		 * In this specialization, NTL's IsMOne function is called.
-		 * @return boolean true if equals one, false if not.
-		 * @param  x field element.
-		 */
+            /** Unit test.
+             * Test if field element is invertible.
+             * This function assumes the field element has already been
+             * constructed and initialized.
+             * In this specialization, NTL's InvModStatus function is called.
+             * inline long InvModStatus(ZZ& x, const ZZ& a, const ZZ& n)
+             * // if gcd(a,n) = 1, then ReturnValue = 0, x = a^{-1} mod n
+             * // otherwise, ReturnValue = 1, x = gcd(a, n)
+             * @return boolean true if invertible, false if not.
+             * @param  x field element.
+             */
+		bool isUnit(const Element& x) const
+            {
+                long d;
+                return !NTL::InvModStatus(d,rep(x),NTL::zz_p::modulus());
+            }
+
+            /** MOne equality.
+             * Test if field element is equal to one.
+             * This function assumes the field element has already been
+             * constructed and initialized.
+             * In this specialization, NTL's IsMOne function is called.
+             * @return boolean true if equals one, false if not.
+             * @param  x field element.
+             */
 		bool isMOne(const Element& x) const
-		{
-			Element y = x ; negin(y);
-			return isOne(y);
-		}
+            {
+                Element y = x ; negin(y);
+                return isOne(y);
+            }
 
 
-		/** Inplace Multiplicative Inverse.
-		 * x = 1 / x
-		 * This function assumes both field elements have already been
-		 * constructed and initialized.
-		 * @return reference to x.
-		 * @param  x field element (reference returned).
-		 */
+            /** Inplace Multiplicative Inverse.
+             * x = 1 / x
+             * This function assumes both field elements have already been
+             * constructed and initialized.
+             * @return reference to x.
+             * @param  x field element (reference returned).
+             */
 		Element& invin(Element& x) const
-		{
-			return x = NTL::inv(x);
-		}
+            {
+                return x = NTL::inv(x);
+            }
 
-		/** Print field.
-		 * @return output stream to which field is written.
-		 * @param  os  output stream to which field is written.
-		 */
+            /** Print field.
+             * @return output stream to which field is written.
+             * @param  os  output stream to which field is written.
+             */
 		std::ostream& write(std::ostream& os) const
-		{
-			return os << "unparameterized field Element with p = "
-			<< Element::modulus();
-		}
+            {
+                return os << "unparameterized field Element with p = "
+                          << Element::modulus();
+            }
 		std::ostream& write(std::ostream& os, const std::string& ) const
-		{
-			return os << "unparameterized field Element with p = "
-			<< Element::modulus();
-		}
+            {
+                return os << "unparameterized field Element with p = "
+                          << Element::modulus();
+            }
 
 		std::ostream &write (std::ostream &os, const Element &x) const { return Givaro::UnparametricOperations<Element>::write(os,x); }
 	};
@@ -321,43 +338,43 @@ namespace LinBox
 	template<>
 	class UnparametricRandIter<NTL::zz_p> {
 	public:
-		/// Constructor for random field element generator
+            /// Constructor for random field element generator
 
 		UnparametricRandIter<NTL::zz_p> (const NTL_zz_p & F,
-						 const integer& size=0,
-						 const integer& seed=0) :
+                                         const integer& size=0,
+                                         const integer& seed=0) :
                 _size(size), _seed(seed), _ring(F)
-		{
-			if (_seed == integer(0)) _seed = int64_t(time(NULL));
+            {
+                if (_seed == integer(0)) _seed = int64_t(time(NULL));
 
-			integer cardinality;
-			F.cardinality(cardinality);
-			if (_size > cardinality)
-				_size = 0;
+                integer cardinality;
+                F.cardinality(cardinality);
+                if (_size > cardinality)
+                    _size = 0;
 
 #ifdef TRACE
-			std::cout << "created random generator with size " << _size
-			<< " and seed " << _seed << std::endl;
+                std::cout << "created random generator with size " << _size
+                          << " and seed " << _seed << std::endl;
 #endif // TRACE
 
-			// Seed random number generator
-			std::stringstream s;
-			NTL::ZZ x;
-			s << _seed;
-			s >> x;
-			NTL::SetSeed(x);//NTL::to_ZZ(static_cast<long>(_seed)));
-		}
+                    // Seed random number generator
+                std::stringstream s;
+                NTL::ZZ x;
+                s << _seed;
+                s >> x;
+                NTL::SetSeed(x);//NTL::to_ZZ(static_cast<long>(_seed)));
+            }
 
-		/// Random field element creator.
+            /// Random field element creator.
 		NTL::zz_p& random(NTL::zz_p& x) const
-		{
-			if (_size == 0) {
-				return x = NTL::random_zz_p();
-			}
-			else {
-				return x = NTL::to_zz_p(NTL::RandomBnd(static_cast<int64_t>(_size)));
-			}
-		}
+            {
+                if (_size == 0) {
+                    return x = NTL::random_zz_p();
+                }
+                else {
+                    return x = NTL::to_zz_p(NTL::RandomBnd(static_cast<int64_t>(_size)));
+                }
+            }
         const NTL_zz_p& ring() const { return _ring; }
 	protected :
 		integer _size,_seed ;
@@ -369,11 +386,11 @@ namespace LinBox
 #endif // __LINBOX_field_ntl_lzz_p_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
 
