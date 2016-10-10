@@ -295,7 +295,7 @@ namespace LinBox {
 #endif
 
 #ifdef __CHECK_PMBASIS
-                                std::cout<<"PMBASIS: order "<<order<<check_orderbasis(field(),sigma,serie,order,((_idx/order)+1)&1,shift)<<std::endl;
+                                std::cerr<<"PMBASIS: order "<<order<<check_orderbasis(field(),sigma,serie,order,((_idx/order)+1)&1,shift)<<std::endl;
 #endif
 #ifdef PROFILE_PMBASIS
                                 chrono.stop();
@@ -816,7 +816,7 @@ namespace LinBox {
 
 #ifdef __CHECK_PMBASIS
                                 if(order >= __CHECK_PMBASIS_THRESHOLD){
-                                        std::cout<<"PMBASIS: order "<<order<<check_orderbasis(field(),*sigma_ptr,*serie_ptr,order,((_idx/order)+1)&1,shift)<<std::endl;                                        
+                                        std::cerr<<"PMBASIS: order "<<order<<check_orderbasis(field(),*sigma_ptr,*serie_ptr,order,((_idx/order)+1)&1,shift)<<std::endl;                                        
                                 }
                                 delete serie_ptr;
 #endif
