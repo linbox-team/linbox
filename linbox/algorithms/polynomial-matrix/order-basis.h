@@ -96,8 +96,11 @@ namespace LinBox {
                         std::cout<<"error at degree="<<i<<std::endl;
                         T[i].write(std::cout, Tag::FileFormat::Plain);
                         std::cout<<"***"<<std::endl;
+#ifdef __DEBUG_ORDERBASIS
+                     
                         std::cout<<serie<<std::endl;
                         std::cout<<sigma<<std::endl;
+#endif
                         exit(1);
                 }
 	
