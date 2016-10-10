@@ -101,7 +101,9 @@ namespace LinBox {
                         std::cout<<serie<<std::endl;
                         std::cout<<sigma<<std::endl;
 #endif
-                        exit(1);
+#ifndef __DUMP_ORDERBASIS
+                        std::terminate();
+#endif
                 }
 	
 	
