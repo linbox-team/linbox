@@ -38,7 +38,6 @@ tests/test-solve-nonsingular
 INSTALL
 _configs.sed
 aclocal.m4
-autogen.status
 autom4te.cache/
 build-aux/
 config.h
