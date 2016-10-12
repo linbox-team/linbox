@@ -19,7 +19,7 @@
 # ========LICENCE========
 #/
 
-AC_PREREQ([2.61])
+AC_PREREQ([2.68])
 
 AC_INIT([LinBox], [1.4.2],[linbox-use@googlegroups.com],[linbox],
 		[http://www.linalg.org/])
@@ -159,7 +159,7 @@ AC_HEADER_STDC
 AC_PROG_LIBTOOL
 
 # newer libtool...
-LT_PREREQ([2.2])
+LT_PREREQ([2.4.2])
 LT_INIT
 
 
