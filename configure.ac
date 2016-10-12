@@ -26,7 +26,7 @@ AC_INIT([LinBox], [1.4.2],[linbox-use@googlegroups.com],[linbox],
 
 AC_CONFIG_MACRO_DIR([macros])
 AC_CONFIG_AUX_DIR([build-aux])
-AM_INIT_AUTOMAKE([1.8 no-dependencies -Wall -Wno-portability foreign])
+AM_INIT_AUTOMAKE([1.8 -Wall -Wno-portability foreign])
 AC_CONFIG_HEADERS([config.h])
 AX_PREFIX_CONFIG_H(linbox/config.h, __LINBOX)
 AC_PATH_PROG(RM, rm, $FALSE)
@@ -34,8 +34,7 @@ RM="$RM -f"
 
 
 AM_MAINTAINER_MODE
-AM_DEP_TRACK
-AM_OUTPUT_DEPENDENCY_COMMANDS
+AM_PROG_AR
 
 AM_ACLOCAL_INCLUDE(macros)
 
