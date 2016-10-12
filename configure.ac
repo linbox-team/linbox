@@ -29,9 +29,6 @@ AC_CONFIG_AUX_DIR([build-aux])
 AM_INIT_AUTOMAKE([1.10 -Wall -Wno-portability foreign])
 AC_CONFIG_HEADERS([config.h])
 AX_PREFIX_CONFIG_H(linbox/config.h, __LINBOX)
-AC_PATH_PROG(RM, rm, $FALSE)
-RM="$RM -f"
-
 
 AM_MAINTAINER_MODE
 AM_PROG_AR
