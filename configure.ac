@@ -30,7 +30,6 @@ AM_INIT_AUTOMAKE([1.10 -Wall -Wno-portability foreign])
 AC_CONFIG_HEADERS([config.h])
 AX_PREFIX_CONFIG_H(linbox/config.h, __LINBOX)
 
-AM_MAINTAINER_MODE
 AM_PROG_AR
 
 AM_ACLOCAL_INCLUDE(macros)
