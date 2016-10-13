@@ -32,7 +32,8 @@
 #include "linbox/util/error.h"
 #include "linbox/util/debug.h"
 #include "linbox/util/timer.h"
-
+#include <linbox/randiter/random-fftprime.h>
+#include <linbox/randiter/random-prime.h>
 #include "linbox/integer.h"
 #include <givaro/zring.h>
 #include "linbox/ring/modular.h"

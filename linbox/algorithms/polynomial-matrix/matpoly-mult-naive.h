@@ -30,6 +30,7 @@
 #include "linbox/util/error.h"
 #include "linbox/util/debug.h"
 #include "linbox/matrix/matrix-domain.h"
+#include "linbox/matrix/polynomial-matrix.h"
 #include <algorithm>
 namespace LinBox
 {

@@ -27,6 +27,7 @@
 
 #include "linbox/algorithms/polynomial-matrix/matpoly-add-domain.h"
 #include "linbox/algorithms/polynomial-matrix/matpoly-mult-naive.h"
+#include "linbox/matrix/polynomial-matrix.h"
 #include <algorithm>
 
 #ifndef KARA_DEG_THRESHOLD 
@@ -72,7 +73,7 @@ namespace LinBox
                         typename PMatrix::plain t(*_field,c.rowdim(),c.coldim(),std::max(a.size(),b.size()));
 #ifdef KARA_TIMING
                         _timeMul=_timeAdd=0.;
-                        Timer chrono;
+                        Givaro::Timer chrono;
                         chrono.start();
 #endif
                         Karatsuba_mul(c,a,b,t);
@@ -107,7 +108,7 @@ namespace LinBox
                         //     if n is odd, 5(n-1)/2 extra storage is needed
 #ifdef KARA_TIMING
                         _timeMul=_timeAdd=0.;
-                        Timer chrono;
+                         Givaro::Timer chrono;
                         chrono.start();
 #endif
                         typename PMatrix::plain a2(field(),a.rowdim(), a.coldim(), c.size());
@@ -127,9 +128,10 @@ namespace LinBox
                 void Karatsuba_mul(PMatrix1 &C, const PMatrix2 &A, const PMatrix3& B, PMatrix4 &TMP) {
 
                         //cout<<A.size()<<"x"<<B.size()<<"->"<<C.size()<<" ("<<TMP.size()<<")"<<endl;
-                        Timer chrono;
+
                         if ((A.size() <=KARA_DEG_THRESHOLD) || (B.size()<=KARA_DEG_THRESHOLD)) {
 #ifdef KARA_TIMING
+                                Givaro::Timer chrono;
                                 chrono.start();
 #endif
                                 _NMD.mul(C,A,B);
@@ -225,9 +227,10 @@ namespace LinBox
                 void Karatsuba_midproduct(PMatrix1 &C, const PMatrix2 &A, const PMatrix3& B, PMatrix1 &TMP) {
 
                         //cout<<A.size()<<"x"<<B.size()<<"->"<<C.size()<<" ("<<TMP.size()<<")\n";
-                        Timer chrono;
+
                         if ((A.size() <=KARA_DEG_THRESHOLD) || (B.size()<=KARA_DEG_THRESHOLD)) {
 #ifdef KARA_TIMING
+                                Givaro::Timer chrono;
                                 chrono.start();
 #endif
                                 //cout<<"-------------------------------------------------"<<endl;
