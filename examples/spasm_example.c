@@ -6,7 +6,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
-
+#include <iostream>
 
 #ifdef USE_OPENMP
 #include <omp.h>
@@ -1564,6 +1564,12 @@ spasm *spasm_schur(spasm * A, const int *p, const int *qinv, const int npiv) {
 		}
 	}
 	/* finalize S */
+
+	/*special case: S empty*/
+	if(snz == 0){
+	  fprintf(stderr, "Empty Schur\n");
+	  return NULL;
+	}
 	fprintf(stderr, "\n");
 	Sp[S->n] = snz;
 	spasm_csr_realloc(S, -1);
@@ -1711,9 +1717,9 @@ int spasm_schur_rank(spasm * A, const int *p, const int *qinv, const int npiv) {
 				spasm_eliminate_sparse_pivots(A, npiv, p, x);
 				for (int j = 0; j < Sm; j++)
 					y[j] = x[q[j]];
-				int new = spasm_dense_LU_process(U, y);
-				r += new;
-				final_bad += 1 - new;
+				int newr = spasm_dense_LU_process(U, y);
+				r += newr;
+				final_bad += 1 - newr;
 				k++;
 				fprintf(stderr, "\rSchur : %d [%.1fs] -- current rank = %d / final", k, spasm_wtime() - it_start, r);
 				fflush(stderr);
@@ -2201,6 +2207,7 @@ int main(int argc, char **argv) {
 		fprintf(stderr, "%.1f s\n", spasm_wtime() - start_time);
 	}
 	A = spasm_compress(T);
+    
 	spasm_triplet_free(T);
 	n = A->n;
 	m = A->m;
@@ -2228,6 +2235,15 @@ int main(int argc, char **argv) {
 		/* compute schur complement, update matrix */
 		B = spasm_schur(A, p, qinv, npiv);
 		spasm_csr_free(A);
+
+		//special case : empty schur.
+		if(B==NULL){
+		  end_time = spasm_wtime();
+		  fprintf(stderr, "done in %.3f s rank = %d\n", end_time - start_time, rank);
+		  free(p);
+		  free(qinv);
+		  return 0;
+		}
 		A = B;
 		rank += npiv;
 		n = A->n;
