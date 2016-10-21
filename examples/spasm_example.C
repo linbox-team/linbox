@@ -12,6 +12,14 @@
 #include <omp.h>
 #endif
 
+
+#include <givaro/modular.h>
+typedef Givaro::Modular<int32_t> Field;
+
+#include <linbox/matrix/sparse-matrix.h>
+typedef LinBox::SparseMatrix<Field, LinBox::SparseMatrixFormat::CSR > SparseCSR;
+ 
+
 /* --- primary SpaSM routines and data structures --- */
 
 typedef int spasm_GFp;
