@@ -106,8 +106,6 @@ namespace LinBox {
 	 */
 	template<class _Field>
 	class SparseMatrix<_Field, SparseMatrixFormat::CSR > {
-	private :
-		typedef std::vector<index_t> svector_t ;
 	public :
 		typedef _Field                             Field ; //!< Field
 		typedef typename _Field::Element         Element ; //!< Element
@@ -115,7 +113,8 @@ namespace LinBox {
 		typedef SparseMatrixFormat::CSR          Storage ; //!< Matrix Storage Format
 		typedef SparseMatrix<_Field,Storage>      Self_t ; //!< Self type
 		typedef typename Vector<Field>::SparseSeq    Row ; //!< @warning this is not the row type. Just used for streams.
-		// typedef Vector<_Field,VectorStorage::Sparse> Rep ;
+		typedef std::vector<index_t> svector_t ;		   //!< index vector type
+		typedef std::vector<Element> row_t ;		       //!< Element vector type
 
 		/*! Constructors.
 		 * @todo convert from other matrix.
@@ -976,7 +975,7 @@ namespace LinBox {
 			_start = new_start ;
 		}
 
-		svector_t  getStart( ) const
+		const svector_t&  getStart( ) const
 		{
 			return _start ;
 		}
@@ -1015,7 +1014,12 @@ namespace LinBox {
 			_colid = new_colid ;
 		}
 
-		svector_t  getColid( ) const
+		const svector_t&  getColid( ) const
+		{
+			return _colid ;
+		}
+
+		svector_t&  refColid( )
 		{
 			return _colid ;
 		}
@@ -1037,7 +1041,12 @@ namespace LinBox {
 			_data = new_data ;
 		}
 
-		std::vector<Element>  getData( ) const
+		const std::vector<Element>&  getData( ) const
+		{
+			return _data ;
+		}
+
+		std::vector<Element>&  refData( )
 		{
 			return _data ;
 		}
