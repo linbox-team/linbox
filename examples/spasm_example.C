@@ -1571,6 +1571,13 @@ spasm *spasm_schur(spasm * A, const int *p, const int *qinv, const int npiv) {
 			fflush(stderr);
 		}
 	}
+
+        /*special case: S empty*/
+    if(snz == 0){
+        fprintf(stderr, "Empty Schur\n");
+        return NULL;
+    }
+
 	/* finalize S */
 	fprintf(stderr, "\n");
 	Sp[S->n] = snz;
@@ -2237,6 +2244,17 @@ int main(int argc, char **argv) {
 		/* compute schur complement, update matrix */
 		B = spasm_schur(A, p, qinv, npiv);
 		spasm_csr_free(A);
+
+            //special case : empty schur.
+        if(B==NULL){
+            end_time = spasm_wtime();
+            fprintf(stderr, "done in %.3f s rank = %d\n", end_time - start_time, rank);
+            free(p);
+            free(qinv);
+            return 0;
+        }
+        
+
 		A = B;
 		rank += npiv;
 		n = A->n;
