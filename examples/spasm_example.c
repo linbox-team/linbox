@@ -4,7 +4,7 @@
 #include <getopt.h>
 #include <sys/time.h>
 #include <stdbool.h>
-#include <stdint.h>
+#include <cstdint>
 #include <stdlib.h>
 #include <iostream>
 
@@ -12,19 +12,27 @@
 #include <omp.h>
 #endif
 
+
+#include <givaro/modular.h>
+typedef Givaro::Modular<int32_t> Field;
+
+#include <linbox/matrix/sparse-matrix.h>
+typedef LinBox::SparseMatrix<Field, LinBox::SparseMatrixFormat::CSR > spasm;
+ 
+
 /* --- primary SpaSM routines and data structures --- */
 
 typedef int spasm_GFp;
 
-typedef struct {                /* matrix in compressed-sparse row format */
-  int nzmax;                    /* maximum number of entries */
-  int n;                        /* number of rows */
-  int m;                        /* number of columns */
-  int *p;                       /* row pointers (size n+1) */
-  int *j;                       /* column indices, size nzmax */
-  spasm_GFp *x;                 /* numerical values, size nzmax (optional) */
-  int prime;
-}      spasm;
+// typedef struct {                /* matrix in compressed-sparse row format */
+//   int nzmax;                    /* maximum number of entries */
+//   int n;                        /* number of rows */
+//   int m;                        /* number of columns */
+//   int *p;                       /* row pointers (size n+1) */
+//   int *j;                       /* column indices, size nzmax */
+//   spasm_GFp *x;                 /* numerical values, size nzmax (optional) */
+//   int prime;
+// }      spasm;
 
 typedef struct {                /* matrix in triplet form */
   int nzmax;                    /* maximum number of entries */
@@ -73,16 +81,29 @@ static inline int spasm_min(int a, int b) {
   return (a < b) ? a : b;
 }
 
+static inline void spasm_lbswap(spasm *A, int i, int j) {
+  int x = A->getColid(i);
+  A->setColid(i, A->getColid(j));
+  A->setColid(j, x);
+  if(A->getData().size() > 0){
+    x = A->getData(i);
+    A->setData(i, A->getData(j));
+    A->setData(j, x);
+  }
+}
+
 static inline void spasm_swap(int *a, int i, int j) {
   int x = a[i];
   a[i] = a[j];
   a[j] = x;
 }
 
-static inline int spasm_row_weight(const spasm * A, int i) {
-  int *Ap;
-  Ap = A->p;
-  return Ap[i + 1] - Ap[i];
+//static inline int spasm_row_weight(const spasm * A, int i) {
+static inline int spasm_row_weight(spasm * A, int i) {
+//   int *Ap;
+//   Ap = A->p;
+//   return Ap[i + 1] - Ap[i];
+    return A->rowLength(i);
 }
 
 double spasm_wtime() {
@@ -96,7 +117,8 @@ double spasm_wtime() {
 int spasm_nnz(const spasm * A) {
 	assert(A != NULL);
 
-	return A->p[A->n];
+	return A->getStart(A->rowdim());
+//     return A->p[A->n];
 }
 
 /* return a string representing n in 4 bytes */
@@ -124,50 +146,51 @@ void spasm_human_format(int64_t n, char *target) {
 }
 
 void *spasm_malloc(size_t size) {
-	void *x = malloc(size);
-	if (x == NULL) {
-		perror("malloc failed");
-		exit(1);
-	}
+  void *x = std::malloc(size);
+  if (x == NULL) {
+    perror("malloc failed");
+    exit(1);
+  }
 	
-	return x;
+  return x;
 }
 
 void *spasm_calloc(size_t count, size_t size) {
-	void *x = calloc(count, size);
-	if (x == NULL) {
-		perror("calloc failed");
-		exit(1);
-	}
-	return x;
+  void *x = std::calloc(count, size);
+  if (x == NULL) {
+    perror("calloc failed");
+    exit(1);
+  }
+  return x;
 }
 
 void *spasm_realloc(void *ptr, size_t size) {
-	void *x = realloc(ptr, size);
-	if (ptr != NULL && x == NULL && size != 0) {
-		perror("realloc failed");
-		exit(1);
-	}
-	return x;
+  void *x = std::realloc(ptr, size);
+  if (ptr != NULL && x == NULL && size != 0) {
+    perror("realloc failed");
+    exit(1);
+  }
+  return x;
 }
 
 
 /* allocate a sparse matrix (compressed-row form) */
 spasm *spasm_csr_alloc(int n, int m, int nzmax, int prime, int with_values) {
-	spasm *A;
-
 	if (prime > 46337) {
 		prime = 46337;
 		fprintf(stderr, "WARNING: modulus has been set to 46337.\n");
 	}
-	A = spasm_malloc(sizeof(spasm));	/* allocate the cs struct */
-	A->m = m;		/* define dimensions and nzmax */
-	A->n = n;
-	A->nzmax = nzmax;
-	A->prime = prime;
-	A->p = spasm_malloc((n + 1) * sizeof(int));
-	A->j = spasm_malloc(nzmax * sizeof(int));
-	A->x = (with_values ? spasm_malloc(nzmax * sizeof(spasm_GFp)) : NULL);
+    Field Fp(prime);
+	spasm *A = new spasm(Fp,n,m,nzmax);
+
+// 	A = spasm_malloc(sizeof(spasm));	/* allocate the cs struct */
+// 	A->m = m;		/* define dimensions and nzmax */
+// 	A->n = n;
+// 	A->nzmax = nzmax;
+// 	A->prime = prime;
+// 	A->p = spasm_malloc((n + 1) * sizeof(int));
+// 	A->j = spasm_malloc(nzmax * sizeof(int));
+// 	A->x = (with_values ? spasm_malloc(nzmax * sizeof(spasm_GFp)) : NULL);
 	return A;
 
 }
@@ -177,15 +200,15 @@ spasm *spasm_csr_alloc(int n, int m, int nzmax, int prime, int with_values) {
 spasm_triplet *spasm_triplet_alloc(int n, int m, int nzmax, int prime, int with_values) {
 	spasm_triplet *A;
 
-	A = spasm_malloc(sizeof(spasm_triplet));
+	A = (spasm_triplet*)spasm_malloc(sizeof(spasm_triplet));
 	A->m = m;
 	A->n = n;
 	A->nzmax = nzmax;
 	A->prime = prime;
 	A->nz = 0;
-	A->i = spasm_malloc(nzmax * sizeof(int));
-	A->j = spasm_malloc(nzmax * sizeof(int));
-	A->x = (with_values ? spasm_malloc(nzmax * sizeof(spasm_GFp)) : NULL);
+	A->i = (int*)spasm_malloc(nzmax * sizeof(int));
+	A->j = (int*)spasm_malloc(nzmax * sizeof(int));
+	A->x = (spasm_GFp*)(with_values ? spasm_malloc(nzmax * sizeof(spasm_GFp)) : NULL);
 	return A;
 }
 
@@ -201,11 +224,16 @@ void spasm_csr_realloc(spasm * A, int nzmax) {
 	if (nzmax < 0) {
 		nzmax = spasm_nnz(A);
 	}
-	A->j = spasm_realloc(A->j, nzmax * sizeof(int));
-	if (A->x != NULL) {
-		A->x = spasm_realloc(A->x, nzmax * sizeof(spasm_GFp));
-	}
-	A->nzmax = nzmax;
+//     A->refColid().resize(nzmax);
+//     A->refData().resize(nzmax);
+//     A->setSize( static_cast<size_t>(nzmax) );
+    A->resize(nzmax);
+
+// 	A->j = spasm_realloc(A->j, nzmax * sizeof(int));
+// 	if (A->x != NULL) {
+// 		A->x = spasm_realloc(A->x, nzmax * sizeof(spasm_GFp));
+// 	}
+// 	A->nzmax = nzmax;
 }
 
 
@@ -219,10 +247,10 @@ void spasm_triplet_realloc(spasm_triplet * A, int nzmax) {
 	if (nzmax < 0) {
 		nzmax = A->nz;
 	}
-	A->i = spasm_realloc(A->i, nzmax * sizeof(int));
-	A->j = spasm_realloc(A->j, nzmax * sizeof(int));
+	A->i = (int*)spasm_realloc(A->i, nzmax * sizeof(int));
+	A->j = (int*)spasm_realloc(A->j, nzmax * sizeof(int));
 	if (A->x != NULL) {
-		A->x = spasm_realloc(A->x, nzmax * sizeof(spasm_GFp));
+	  A->x = (int*)spasm_realloc(A->x, nzmax * sizeof(spasm_GFp));
 	}
 	A->nzmax = nzmax;
 }
@@ -233,10 +261,11 @@ void spasm_csr_free(spasm * A) {
 	if (A == NULL) {
 		return;
 	}
-	free(A->p);
-	free(A->j);
-	free(A->x);		/* trick : free does nothing on NULL pointer */
-	free(A);
+// 	free(A->p);
+// 	free(A->j);
+// 	free(A->x);		/* trick : free does nothing on NULL pointer */
+// 	free(A);
+    delete A;
 }
 
 void spasm_triplet_free(spasm_triplet * A) {
@@ -247,22 +276,36 @@ void spasm_triplet_free(spasm_triplet * A) {
 	free(A);
 }
 
-void spasm_csr_resize(spasm * A, int n, int m) {
-	int i, *Ap;
-	assert(A != NULL);
-
-	A->m = m;
-	/* in case of a column shrink, check that no entries are left outside */
-	A->p = spasm_realloc(A->p, (n + 1) * sizeof(int));
-
-	if (A->n < n) {
-		Ap = A->p;
-		for (i = A->n; i < n + 1; i++) {
-			Ap[i] = Ap[A->n];
-		}
+void spasm_csr_lbresize(spasm * A, int n, int m, int nzmax) {
+  int i;
+	if (nzmax < 0) {
+		nzmax = spasm_nnz(A);
 	}
-	A->n = n;
+    size_t oldn = A->rowdim();
+    A->resize(n,m,nzmax);
+    if (oldn < n) {
+		for (i = oldn; i < n + 1; i++) {
+			A->setStart(i, A->getStart(oldn));
+		}
+    }
 }
+
+// void spasm_csr_resize(spasm * A, int n, int m) {
+// 	int i, *Ap;
+// 	assert(A != NULL);
+
+// 	A->m = m;
+// 	/* in case of a column shrink, check that no entries are left outside */
+// 	A->p = spasm_realloc(A->p, (n + 1) * sizeof(int));
+
+// 	if (A->n < n) {
+// 		Ap = A->p;
+// 		for (i = A->n; i < n + 1; i++) {
+// 			Ap[i] = Ap[A->n];
+// 		}
+// 	}
+// 	A->n = n;
+// }
 
 void spasm_vector_zero(spasm_GFp * x, int n) {
 	int i;
@@ -330,8 +373,8 @@ void spasm_triplet_transpose(spasm_triplet * T) {
 
 /* C = compressed-row form of a triplet matrix T */
 spasm *spasm_compress(const spasm_triplet * T) {
-	int m, n, nz, sum, p, k, *Cp, *Cj, *w, *Ti, *Tj;
-	spasm_GFp *Cx, *Tx;
+	int m, n, nz, sum, p, k, *w, *Ti, *Tj;
+	spasm_GFp *Tx;
 	spasm *C;
 	double start;
 
@@ -350,10 +393,10 @@ spasm *spasm_compress(const spasm_triplet * T) {
 	C = spasm_csr_alloc(n, m, nz, T->prime, Tx != NULL);
 
 	/* get workspace */
-	w = spasm_calloc(n, sizeof(int));
-	Cp = C->p;
-	Cj = C->j;
-	Cx = C->x;
+	w = (int*)spasm_calloc(n, sizeof(int));
+// 	Cp = C->p;
+// 	Cj = C->j;
+// 	Cx = C->x;
 
 	/* compute row counts */
 	for (k = 0; k < nz; k++) {
@@ -363,24 +406,32 @@ spasm *spasm_compress(const spasm_triplet * T) {
 	/* compute row pointers (in both Cp and w) */
 	sum = 0;
 	for (k = 0; k < n; k++) {
-		Cp[k] = sum;
+		C->setStart(k,sum);
+// 		Cp[k] = sum;
 		sum += w[k];
-		w[k] = Cp[k];
+// 		w[k] = Cp[k];
+		w[k] = C->getStart(k);
 	}
-	Cp[n] = sum;
+// 	Cp[n] = sum;
+    C->setStart(n,sum);
 
 	/* dispatch entries */
 	for (k = 0; k < nz; k++) {
 		p = w[Ti[k]]++;	/* A(i,j) is the p-th entry in C */
-		Cj[p] = Tj[k];
-		if (Cx != NULL) {
-			Cx[p] = Tx[k];
-		}
+// 		Cj[p] = Tj[k];
+		C->setColid(p,Tj[k]);
+// 		if (Cx != NULL) {
+// 			Cx[p] = Tx[k];
+// 		}
+        if (C->getData().size() > 0) {
+            C->setData(p,Tx[k]);
+        }
 	}
 
 	/* success; free w and return C */
 	char mem[16];
-	int size = sizeof(int) * (n + nz) + sizeof(spasm_GFp) * ((Cx != NULL) ? nz : 0);
+// 	int size = sizeof(int) * (n + nz) + sizeof(spasm_GFp) * ((Cx != NULL) ? nz : 0);
+	int size = sizeof(int) * (n + nz) + sizeof(spasm_GFp) * ((C->getData().size() > 0 ) ? nz : 0);
 	spasm_human_format(size, mem);
 	fprintf(stderr, "Mem usage = %sbyte [%.2fs]\n", mem, spasm_wtime() - start);
 	free(w);
@@ -430,86 +481,6 @@ spasm_triplet *spasm_load_sms(FILE * f, int prime) {
 	return T;
 }
 
-/*
- * save a matrix in SMS format. TODO : change name to spasm_csr_save
- */
-void spasm_save_csr(FILE * f, const spasm * A) {
-	int i, n, m, p, prime;
-	int *Aj, *Ap;
-	spasm_GFp *Ax, x;
-
-	assert(f != NULL);
-	assert(A != NULL);
-
-	Aj = A->j;
-	Ap = A->p;
-	Ax = A->x;
-	n = A->n;
-	m = A->m;
-	prime = A->prime;
-
-	fprintf(f, "%d %d M\n", n, m);
-	for (i = 0; i < n; i++) {
-		for (p = Ap[i]; p < Ap[i + 1]; p++) {
-			x = (Ax != NULL) ? Ax[p] : 1;
-			x = (x > prime / 2) ? x - prime : x;
-			fprintf(f, "%d %d %d\n", i + 1, Aj[p] + 1, x);
-		}
-	}
-
-	fprintf(f, "0 0 0\n");
-}
-
-/*
- * x <-- P.b (or, equivalently, x <-- b.(P^{-1}), for dense vectors x and b;
- * p=NULL denotes identity.
- * 
- * This means that x[k] <--- b[ p[k] ]
- */
-void spasm_pvec(const int *p, const spasm_GFp * b, spasm_GFp * x, int n) {
-	int k;
-	assert(x != NULL);
-	assert(b != NULL);
-
-	for (k = 0; k < n; k++) {
-		x[k] = b[(p != SPASM_IDENTITY_PERMUTATION) ? p[k] : k];
-	}
-}
-
-/*
- * x <--- (P^{-1}).b (or x <--- b.P), for dense vectors x and b; p=NULL
- * denotes identity.
- * 
- * This means that x[ p[k] ] <--- b[ k ]
- * 
- * The function is given p, not p^{-1}.
- */
-void spasm_ipvec(const int *p, const spasm_GFp * b, spasm_GFp * x, int n) {
-	int k;
-	assert(x != NULL);
-	assert(b != NULL);
-
-	for (k = 0; k < n; k++) {
-		x[(p != SPASM_IDENTITY_PERMUTATION) ? p[k] : k] = b[k];
-	}
-}
-
-/* compute the inverse permutation */
-int *spasm_pinv(int const *p, int n) {
-	int k, *pinv;
-	/* p = NULL denotes identity */
-	if (p == NULL) {
-		return NULL;
-	}
-	/* allocate result */
-	pinv = spasm_malloc(n * sizeof(int));
-	/* invert the permutation */
-	for (k = 0; k < n; k++) {
-		pinv[p[k]] = k;
-	}
-	return pinv;
-}
-
 
 /*
  * C = P.A.Q^-1 where P and Q^-1 are permutations of 0..n-1 and 0..m-1
@@ -517,69 +488,67 @@ int *spasm_pinv(int const *p, int n) {
  * 
  */
 spasm *spasm_permute(const spasm * A, const int *p, const int *qinv, int values) {
-	int t, j, i, nz, m, n, *Ap, *Aj, *Cp, *Cj;
-	spasm_GFp *Cx, *Ax;
+// 	int t, j, i, nz, m, n, *Ap, *Aj, *Cp, *Cj;
+// 	spasm_GFp *Cx, *Ax;
+	int t, j, i, nz, m, n ;
 	spasm *C;
 
 	/* check inputs */
 	assert(A != NULL);
 
-	n = A->n;
-	m = A->m;
-	Ap = A->p;
-	Aj = A->j;
-	Ax = A->x;
+// 	n = A->n;
+// 	m = A->m;
+// 	Ap = A->p;
+// 	Aj = A->j;
+// 	Ax = A->x;
+	n = A->rowdim();
+	m = A->coldim();
 
 	/* alloc result */
-	C = spasm_csr_alloc(n, m, A->nzmax, A->prime, values && (Ax != NULL));
-	Cp = C->p;
-	Cj = C->j;
-	Cx = C->x;
-	nz = 0;
+// 	C = spasm_csr_alloc(n, m, A->nzmax, A->prime, values && (Ax != NULL));
+// 	Cp = C->p;
+// 	Cj = C->j;
+// 	Cx = C->x;
+	C = spasm_csr_alloc(n, m, A->size(), A->field().characteristic(), values && (A->getData().size()>0));
+    nz = 0;
 
+// 	for (i = 0; i < n; i++) {
+// 		/* row i of C is row p[i] of A (denoted by j) */
+// 		Cp[i] = nz;
+// 		j = (p != NULL) ? p[i] : i;
+// 		for (t = Ap[j]; t < Ap[j + 1]; t++) {
+// 			/* col j of A is col qinv[j] of C */
+// 			Cj[nz] = (qinv != NULL) ? qinv[Aj[t]] : Aj[t];
+// 			if (Cx != NULL) {
+// 				Cx[nz] = Ax[t];
+// 			}
+// 			nz++;
+// 		}
+// 	}
+// 	/* finalize the last row of C */
+// 	Cp[n] = nz;
 	for (i = 0; i < n; i++) {
 		/* row i of C is row p[i] of A (denoted by j) */
-		Cp[i] = nz;
+		C->setStart(i,nz);
 		j = (p != NULL) ? p[i] : i;
-		for (t = Ap[j]; t < Ap[j + 1]; t++) {
+		for (t = A->getStart(j); t < A->getEnd(j); t++) {
 			/* col j of A is col qinv[j] of C */
-			Cj[nz] = (qinv != NULL) ? qinv[Aj[t]] : Aj[t];
-			if (Cx != NULL) {
-				Cx[nz] = Ax[t];
+            C->setColid(nz, (qinv != NULL) ? qinv[A->getColid(t)] : A->getColid(t));
+			if (C->getData().size()>0) {
+                C->setData(nz, A->getData(t));
 			}
 			nz++;
 		}
 	}
 	/* finalize the last row of C */
-	Cp[n] = nz;
+    C->setStart(n,nz);
+// 	Cp[n] = nz;
 	return C;
 }
 
-int *spasm_random_permutation(int n) {
-	int i, *p;
-
-	p = spasm_malloc(n * sizeof(int));
-	for (i = 0; i < n; i++) {
-		p[i] = i;
-	}
-	for (i = n - 1; i > 0; i--) {
-		spasm_swap(p, i, rand() % i);
-	}
-
-	return p;
-}
-
-/* in-place permute x[a:b] using p. Destroys p */
-void spasm_range_pvec(int *x, int a, int b, int *p) {
-	int i;
-
-	for (i = 0; i < b - a; i++) {
-		p[i] = x[a + p[i]];
-	}
-	for (i = 0; i < b - a; i++) {
-		x[a + i] = p[i];
-	}
-}
+/* 
+   spasm_GFp x; F.inv(x,a);
+*/
 
 spasm_GFp spasm_GFp_inverse(spasm_GFp a, int prime) {
 	int b0 = prime, t, q;
@@ -596,6 +565,10 @@ spasm_GFp spasm_GFp_inverse(spasm_GFp a, int prime) {
 	return x1;
 }
 
+
+
+
+
 /*
  * x = x + beta * A[j], where x is a dense vector and A[j] is sparse
  * 
@@ -603,19 +576,49 @@ spasm_GFp spasm_GFp_inverse(spasm_GFp a, int prime) {
  * 
  * This is where all the heavy lifting should take place.
  */
-void spasm_scatter(const int *Aj, const spasm_GFp * Ax, int from, int to, spasm_GFp beta, spasm_GFp * x, int prime) {
+// void spasm_scatter(const int *Aj, const spasm_GFp * Ax, int from, int to, spasm_GFp beta, spasm_GFp * x, int prime) {
+// 	int j, p;
+
+// 	for (p = from; p < to; p++) {
+// 		j = Aj[p];
+// 		/* axpy-inplace */
+// 		x[j] = (x[j] + ((beta * Ax[p]))) % prime /* ultra-naive */ ;
+// 	}
+
+// }
+void spasm_scatter(const spasm::svector_t& Aj, const spasm::row_t& Ax, int from, int to, spasm_GFp beta, spasm_GFp * x, int prime) {
 	int j, p;
 
 	for (p = from; p < to; p++) {
 		j = Aj[p];
 		/* axpy-inplace */
 		x[j] = (x[j] + ((beta * Ax[p]))) % prime /* ultra-naive */ ;
+		
 	}
 
 }
 
+void spasm_lbscatter(const spasm::svector_t& Aj, const spasm::row_t& Ax, int from, int to, spasm_GFp beta, spasm_GFp * x, const Field F) {
+	int j, p;
+
+	for (p = from; p < to; p++) {
+		j = Aj[p];
+		/* axpy-inplace */
+		//x[j] = (x[j] + ((beta * Ax[p]))) % prime /* ultra-naive */ ;
+		F.axpyin(x[j], beta, Ax[p]);
+	}
+
+}
+
+		/* axpy-inplace */
+/* A->field().axpyin(x[j], beta, Ax[p]); */ 
+
+
+
+
 int spasm_dfs(int j, const spasm * A, int top, int *xj, int *pstack, int *marks, const int *qinv) {
-	int px, p2, inew, head, *Ap, *Aj;
+// 	int px, p2, inew, head, *Ap, *Aj;
+	int px, p2, inew, head;
 
 	/* check inputs */
 	assert(A != NULL);
@@ -623,8 +626,8 @@ int spasm_dfs(int j, const spasm * A, int top, int *xj, int *pstack, int *marks,
 	assert(pstack != NULL);
 	assert(marks != NULL);
 
-	Ap = A->p;
-	Aj = A->j;
+// 	Ap = A->p;
+// 	Aj = A->j;
 	/*
 	 * initialize the recursion stack (rows waiting to be traversed). The
 	 * stack is held at the begining of xj, and has head elements.
@@ -647,14 +650,18 @@ int spasm_dfs(int j, const spasm * A, int top, int *xj, int *pstack, int *marks,
 		if (!marks[j]) {
 			/* mark node i as seen and initialize pstack. This is done only once. */
 			marks[j] = 1;
-			pstack[head] = (inew < 0) ? 0 : Ap[inew];
+// 			pstack[head] = (inew < 0) ? 0 : Ap[inew];
+			pstack[head] = (inew < 0) ? 0 : A->getStart(inew);
 		}
 		/* index of last entry of row inew */
-		p2 = (inew < 0) ? 0 : Ap[inew + 1];
+// 		p2 = (inew < 0) ? 0 : Ap[inew + 1];
+		p2 = (inew < 0) ? 0 : A->getStart(inew + 1);
+
 
 		/* examine all yet-unseen entries of row i */
 		for (px = pstack[head]; px < p2; px++) {
-			j = Aj[px];
+// 			j = Aj[px];
+			j = A->getColid(px);
 			if (marks[j])
 				continue;
 			/*
@@ -706,15 +713,16 @@ int spasm_dfs(int j, const spasm * A, int top, int *xj, int *pstack, int *marks,
  * xj [l...3l-1] used as workspace
  */
 int spasm_reach(const spasm * A, const spasm * B, int k, int l, int *xj, const int *qinv) {
-	int  top, *Bp, *Bj, *pstack, *marks;
+// 	int  top, *Bp, *Bj, *pstack, *marks;
+	int  top, *pstack, *marks;
 
 	/* check inputs */
 	assert(A != NULL);
 	assert(B != NULL);
 	assert(xj != NULL);
 
-	Bp = B->p;
-	Bj = B->j;
+// 	Bp = B->p;
+// 	Bj = B->j;
 	top = l;
 	pstack = xj + l;
 	marks = pstack + l;
@@ -725,9 +733,12 @@ int spasm_reach(const spasm * A, const spasm * B, int k, int l, int *xj, const i
 	 * not, start a DFS from j and add to the pattern all columns
 	 * reachable from j.
 	 */
-	for (int px = Bp[k]; px < Bp[k + 1]; px++)
-		if (!marks[Bj[px]])
-			top = spasm_dfs(Bj[px], A, top, xj, pstack, marks, qinv);
+// 	for (int px = Bp[k]; px < Bp[k + 1]; px++)
+// 		if (!marks[Bj[px]])
+// 			top = spasm_dfs(Bj[px], A, top, xj, pstack, marks, qinv);
+	for (int px = B->getStart(k); px < B->getEnd(k); px++)
+		if (!marks[B->getColid(px)])
+			top = spasm_dfs(B->getColid(px), A, top, xj, pstack, marks, qinv);
 
 	/* unmark all marked nodes. */
 	/*
@@ -746,140 +757,26 @@ int spasm_reach(const spasm * A, const spasm * B, int k, int l, int *xj, const i
  */
 void spasm_gaxpy(const spasm * A, const spasm_GFp * x, spasm_GFp * y) {
 	int i, n, prime;
-	int *Ap, *Aj, *Ax;
+// 	int *Ap, *Aj, *Ax;
 
 	/* check inputs */
 	assert(x != NULL);
 	assert(y != NULL);
 	assert(A != NULL);
 
-	n = A->n;
-	Ap = A->p;
-	Aj = A->j;
-	Ax = A->x;
-	prime = A->prime;
+// 	n = A->n;
+// 	Ap = A->p;
+// 	Aj = A->j;
+// 	Ax = A->x;
+// 	prime = A->prime;
+	n = A->rowdim();
+	//prime = A->field().characteristic();
 
 	for (i = 0; i < n; i++) {
-		spasm_scatter(Aj, Ax, Ap[i], Ap[i + 1], x[i], y, prime);
+// 		spasm_scatter(Aj, Ax, Ap[i], Ap[i + 1], x[i], y, prime);
+	  spasm_lbscatter(A->getColid(), A->getData(), A->getStart(i), A->getEnd(i), x[i], y, A->field());
 	}
 }
-
-
-/*
- * Solving triangular systems, dense RHS
- */
-
-
-/*
- * dense backwards substitution solver. Solve x . L = b where x and b are
- * dense.
- * 
- * b is undefined on output
- * 
- * L is assumed to be lower-triangular, with non-zero diagonal.
- * 
- * The diagonal entry is the **last** of each row. More precisely, L[j,j] is Lx[
- * Lp[j+1] - 1 ]
- * 
- * p[j] == i indicates if the "diagonal" entry on column j is on row i
- * 
- */
-void spasm_dense_back_solve(const spasm * L, spasm_GFp * b, spasm_GFp * x, const int *p) {
-	int i, j, n, m, *Lp, *Lj, prime;
-	spasm_GFp *Lx;
-
-	/* check inputs */
-	assert(b != NULL);
-	assert(x != NULL);
-	assert(L != NULL);
-
-	n = L->n;
-	m = L->m;
-	Lp = L->p;
-	Lj = L->j;
-	Lx = L->x;
-	prime = L->prime;
-
-	for (i = 0; i < n; i++) {
-		x[i] = 0;
-	}
-
-	for (j = m - 1; j >= 0; j--) {
-		i = (p != SPASM_IDENTITY_PERMUTATION) ? p[j] : j;
-
-		/* pivot on the j-th column is on the i-th row */
-		const spasm_GFp diagonal_entry = Lx[Lp[i + 1] - 1];
-		//assert(diagonal_entry == 1);
-
-		/* axpy - inplace */
-		x[i] = (b[j] * spasm_GFp_inverse(diagonal_entry, prime)) % prime;
-		spasm_scatter(Lj, Lx, Lp[i], Lp[i + 1] - 1, prime - x[i], b, prime);
-	}
-}
-
-/*
- * dense forwards substitution solver. Solve x . U = b where x and b are
- * dense.
- * 
- * b is undefined on output
- * 
- * U is upper-triangular
- * 
- * Assumption : the diagonal entry is always present, is always != 0.
- * 
- * The diagonal entry is the first one of each row. More precisely, U[i,i] is
- * Ux[ Up[i] ]
- * 
- * if q != SPASM_IDENTITY_PERMUTATION, then q[i] indicates the column on which
- * the i-th row pivot is.
- * 
- * returns SPASM_SUCCESS or SPASM_NO_SOLUTION
- */
-int spasm_dense_forward_solve(const spasm * U, spasm_GFp * b, spasm_GFp * x, const int *q) {
-	int i, j, n, m, *Up, *Uj, prime;
-	spasm_GFp *Ux;
-
-	/* check inputs */
-	assert(b != NULL);
-	assert(x != NULL);
-	assert(U != NULL);
-
-	n = U->n;
-	m = U->m;
-	assert(n <= m);
-
-	Up = U->p;
-	Uj = U->j;
-	Ux = U->x;
-	prime = U->prime;
-
-	for (i = 0; i < n; i++) {
-		x[i] = 0;
-	}
-
-	for (i = 0; i < n; i++) {
-		j = (q != SPASM_IDENTITY_PERMUTATION) ? q[i] : i;
-		if (b[j] != 0) {
-			/* check diagonal entry */
-			const spasm_GFp diagonal_entry = Ux[Up[i]];
-			assert(diagonal_entry == 1);
-
-			/* axpy - inplace */
-			x[i] = b[j];
-			spasm_scatter(Uj, Ux, Up[i] + 1, Up[i + 1], prime - x[i], b, prime);
-			b[j] = 0;
-		}
-	}
-
-	for (i = 0; i < m; i++) {
-		if (b[i] != 0) {
-			return SPASM_NO_SOLUTION;
-		}
-	}
-
-	return SPASM_SUCCESS;
-}
-
 
 
 /*************** Triangular solving with sparse RHS
@@ -895,19 +792,21 @@ int spasm_dense_forward_solve(const spasm * U, spasm_GFp * b, spasm_GFp * x, con
  *
  */
 int spasm_sparse_forward_solve(const spasm * U, const spasm * B, int k, int *xj, spasm_GFp * x, const int *qinv) {
-	int top, m, prime, *Up, *Uj, *Bp, *Bj;
-	spasm_GFp *Ux, *Bx;
+// 	int top, m, prime, *Up, *Uj, *Bp, *Bj;
+// 	spasm_GFp *Ux, *Bx;
+  int top, m, prime = U->field().characteristic();
 
-	m = U->m;
-	Up = U->p;
-	Uj = U->j;
-	Ux = U->x;
-	prime = U->prime;
+// 	m = U->m;
+// 	Up = U->p;
+// 	Uj = U->j;
+// 	Ux = U->x;
+// 	prime = U->prime;
 
-	Bp = B->p;
-	Bj = B->j;
-	Bx = B->x;
-
+// 	Bp = B->p;
+// 	Bj = B->j;
+// 	Bx = B->x;
+	m = U->coldim();
+	//prime = U->field().characteristic();
 
 	/* xj[top : n] = Reach(U, B[k]) */
 	top = spasm_reach(U, B, k, m, xj, qinv);
@@ -918,8 +817,10 @@ int spasm_sparse_forward_solve(const spasm * U, const spasm * B, int k, int *xj,
 		x[xj[px]] = 0;
 
 	/* scatter B[k] into x */
-	for (int px = Bp[k]; px < Bp[k + 1]; px++)
-		x[Bj[px]] = Bx[px];
+// 	for (int px = Bp[k]; px < Bp[k + 1]; px++)
+// 		x[Bj[px]] = Bx[px];
+	for (int px = B->getStart(k); px < B->getEnd(k); px++)
+		x[B->getColid(px)] = B->getData(px);
 
 
 	/* iterate over the (precomputed) pattern of x (= the solution) */
@@ -936,87 +837,11 @@ int spasm_sparse_forward_solve(const spasm * U, const spasm * B, int k, int *xj,
 		 * the pivot entry on row i is 1, so we just have to multiply
 		 * by -x[j]
 		 */
-		assert(Ux[Up[i]] == 1);
-		spasm_scatter(Uj, Ux, Up[i] + 1, Up[i + 1], prime - x[j], x, prime);
+// 		assert(Ux[Up[i]] == 1);
+// 		spasm_scatter(Uj, Ux, Up[i] + 1, Up[i + 1], prime - x[j], x, prime);
+		assert(U->getData(U->getStart(i)) == 1);
+		spasm_lbscatter(U->getColid(), U->getData(), U->getStart(i) + 1, U->getEnd(i), prime - x[j], x, U->field());
 	}
-
-	return top;
-}
-
-
-
-/*************** Triangular solving with sparse RHS
- *
- * solve x * L = B[k], where L is (permuted) lower triangular.
- *
- * x has size m (number of columns of L).
- *
- * when this function returns, the solution is scattered in x, and its pattern
- * is given in xi[top : n].
- *
- * top is the return value.
- *
- */
-int spasm_sparse_backward_solve(const spasm * L, const spasm * B, int k, int *xi, spasm_GFp * x, const int *pinv, int r_bound) {
-	int i, I, p, px, top, n, m, prime, *Lp, *Lj, *Bp, *Bj, tmp;
-	spasm_GFp *Lx, *Bx;
-
-	assert(L != NULL);
-	assert(B != NULL);
-	assert(xi != NULL);
-	assert(x != NULL);
-
-	n = L->n;
-	m = L->m;
-	Lp = L->p;
-	Lj = L->j;
-	Lx = L->x;
-	prime = L->prime;
-
-	Bp = B->p;
-	Bj = B->j;
-	Bx = B->x;
-
-	/* xi[top : m] = Reach( L, B[k] ) */
-	top = spasm_reach(L, B, k, n, xi, pinv);
-
-	/* clear x */
-	for (p = top; p < n; p++) {
-		x[xi[p]] = 0;
-	}
-
-	/* scatter B[k] into x */
-	for (p = Bp[k]; p < Bp[k + 1]; p++) {
-		x[Bj[p]] = Bx[p];
-	}
-
-	/* iterate over the (precomputed) pattern of x (= the solution) */
-
-	for (px = top; px < n; px++) {
-		/* x[i] is nonzero */
-		i = xi[px];
-
-		/* i maps to row I of L */
-		I = (pinv == SPASM_IDENTITY_PERMUTATION) ? i : pinv[i];
-
-		if (i >= m) {
-			/* column I is part of an implicit identity matrix */
-			spasm_scatter(Lj, Lx, Lp[I], Lp[I + 1], prime - x[i], x, prime);
-		} else if (i >= r_bound) {
-			/* get L[i,i] */
-			const spasm_GFp diagonal_entry = Lx[Lp[I + 1] - 1];
-			assert(diagonal_entry != 0);
-			/* axpy-in-place */
-			x[i] = (x[I] * spasm_GFp_inverse(diagonal_entry, prime)) % prime;
-			spasm_scatter(Lj, Lx, Lp[I], Lp[I + 1] - 1, prime - x[i], x, prime);
-		}
-		xi[px] = I;
-		tmp = x[i];
-		x[i] = 0;
-		x[xi[px]] = tmp;
-
-	}
-
 
 	return top;
 }
@@ -1024,22 +849,27 @@ int spasm_sparse_backward_solve(const spasm * L, const spasm * B, int k, int *xi
 
 /* eliminate everything in the (dense) vector x using the pivots found in A */
 void spasm_eliminate_sparse_pivots(const spasm * A, const int npiv, const int *p, spasm_GFp * x) {
-	int i, inew, j, prime, *Aj, *Ap;
-	spasm_GFp *Ax;
+// 	int i, inew, j, prime, *Aj, *Ap;
+// 	spasm_GFp *Ax;
+  int i, inew, j, prime = A->field().characteristic();
 
-	Aj = A->j;
-	Ap = A->p;
-	Ax = A->x;
-	prime = A->prime;
+
+// 	Aj = A->j;
+// 	Ap = A->p;
+// 	Ax = A->x;
+// 	prime = A->prime;
+	//prime = A->field().characteristic();
 
 	for (i = 0; i < npiv; i++) {
 		inew = (p != NULL) ? p[i] : i;
-		j = Aj[Ap[inew]];
+// 		j = Aj[Ap[inew]];
+		j = A->getColid(A->getStart(inew));
 
 		if (x[j] == 0) {
 			continue;
 		}
-		spasm_scatter(Aj, Ax, Ap[inew], Ap[inew + 1], prime - x[j], x, prime);
+// 		spasm_scatter(Aj, Ax, Ap[inew], Ap[inew + 1], prime - x[j], x, prime);
+		spasm_lbscatter(A->getColid(), A->getData(), A->getStart(inew), A->getEnd(inew), prime - x[j], x, A->field());
 	}
 }
 
@@ -1047,9 +877,10 @@ void spasm_eliminate_sparse_pivots(const spasm * A, const int npiv, const int *p
 
 /* make pivotal rows of A unitary */
 void spasm_make_pivots_unitary(spasm * A, const int *p, const int npiv) {
-	int prime = A->prime;
-	int *Ap = A->p;
-	spasm_GFp *Ax = A->x;
+// 	int prime = A->prime;
+  //int prime = A->field().characteristic();
+// 	int *Ap = A->p;
+// 	spasm_GFp *Ax = A->x;
 
 #pragma omp parallel for
 	for (int i = 0; i < npiv; i++) {
@@ -1057,13 +888,19 @@ void spasm_make_pivots_unitary(spasm * A, const int *p, const int npiv) {
 		spasm_GFp diag, alpha;
 
 		inew = p[i];
-		diag = Ax[Ap[inew]];
+// 		diag = Ax[Ap[inew]];
+		diag = A->getData(A->getStart(inew));
 		if (diag == 1)
 			continue;
 
-		alpha = spasm_GFp_inverse(diag, prime);
-		for (int px = Ap[inew]; px < Ap[inew + 1]; px++)
-			Ax[px] = (alpha * Ax[px]) % prime;
+		//alpha = spasm_GFp_inverse(diag, prime);
+		A->field().inv(alpha,diag);
+// 		for (int px = Ap[inew]; px < Ap[inew + 1]; px++)
+// 			Ax[px] = (alpha * Ax[px]) % prime;
+		for (int px = A->getStart(inew); px < A->getEnd(inew); px++)
+		  //A->setData(px,(alpha * A->getData(px)) % prime);
+		  
+		  A->setData(px,A->field().mul(alpha, alpha, A->getData(px)));
 	}
 }
 
@@ -1074,18 +911,22 @@ void spasm_make_pivots_unitary(spasm * A, const int *p, const int npiv) {
  *   This means that with proba >= 1-1/p, all pivots have been found.
  */
 int spasm_early_abort(const spasm * A, const int *p, int k, const spasm * U, int nu) {
-	int *Aj, *Ap;
+// 	int *Aj, *Ap;
 	int i, j, inew, n, m, ok;
-	spasm_GFp prime, *y, *Ax;
+// 	spasm_GFp prime, *y, *Ax;
+	spasm_GFp *y;
 
-	n = A->n;
-	m = A->m;
-	prime = A->prime;
-	Aj = A->j;
-	Ap = A->p;
-	Ax = A->x;
+// 	n = A->n;
+// 	m = A->m;
+// 	prime = A->prime;
+// 	Aj = A->j;
+// 	Ap = A->p;
+// 	Ax = A->x;
+	n = A->rowdim();
+	m = A->coldim();
+	//prime = A->field().characteristic();
 
-	y = spasm_malloc(m * sizeof(spasm_GFp));
+	y = (spasm_GFp*)spasm_malloc(m * sizeof(spasm_GFp));
 
 	/*
 	 * build a random (dense) linear combinations of the row of A, store
@@ -1096,7 +937,8 @@ int spasm_early_abort(const spasm * A, const int *p, int k, const spasm * U, int
 	}
 	for (i = k; i < n; i++) {
 		inew = (p != NULL) ? p[i] : i;
-		spasm_scatter(Aj, Ax, Ap[inew], Ap[inew + 1], rand() % prime, y, prime);
+// 		spasm_scatter(Aj, Ax, Ap[inew], Ap[inew + 1], rand() % prime, y, prime);
+		spasm_lbscatter(A->getColid(), A->getData(), A->getStart(inew), A->getEnd(inew), rand() % A->field().characteristic(), y, A->field());
 	}
 
 	spasm_eliminate_sparse_pivots(U, nu, SPASM_IDENTITY_PERMUTATION, y);
@@ -1130,8 +972,11 @@ L*U == row_permutation*A
 spasm_lu *spasm_LU(const spasm * A, const int *row_permutation, int keep_L) {
 	spasm *L, *U;
 	spasm_lu *N;
-	spasm_GFp *Lx, *Ux, *x;
-	int *Lp, *Lj, *Up, *Uj, *p, *qinv, *xj;
+	//spasm_GFp *Lx, *Ux, *x;
+	spasm_GFp *x;
+	
+	//int *Lp, *Lj, *Up, *Uj, *p, *qinv, *xj;
+	int *p, *qinv, *xj;
 	int n, m, r, jpiv, i, inew, j, top, px, lnz, unz, old_unz, prime,
 	    defficiency, verbose_step;
 	int rows_since_last_pivot, early_abort_done;
@@ -1140,33 +985,39 @@ spasm_lu *spasm_LU(const spasm * A, const int *row_permutation, int keep_L) {
 	/* check inputs */
 	assert(A != NULL);
 
-	n = A->n;
-	m = A->m;
+	n = A->rowdim();
+	m = A->coldim();
+	//n = A->n;
+	//m = A->m;
 	r = spasm_min(n, m);
-	prime = A->prime;
+	prime = A->field().characteristic();
+	//prime = A->prime;
 	defficiency = 0;
 	verbose_step = spasm_max(1, n / 1000);
 
 	/* educated guess of the size of L,U */
-	lnz = 4 * spasm_nnz(A) + n;
-	unz = 4 * spasm_nnz(A) + n;
+	lnz = 4 * A->size() + n;
+	unz = 4 * A->size() + n;
+
+	//lnz = 4 * spasm_nnz(A) + n;
+	//unz = 4 * spasm_nnz(A) + n;
 
 	/* get GFp workspace */
-	x = spasm_malloc(m * sizeof(spasm_GFp));
+	x = (spasm_GFp*)spasm_malloc(m * sizeof(spasm_GFp));
 
 	/* get int workspace */
-	xj = spasm_malloc(3 * m * sizeof(int));
+	xj = (spasm_GFp*)spasm_malloc(3 * m * sizeof(int));
 	spasm_vector_zero(xj, 3 * m);
 
 	/* allocate result */
-	N = spasm_malloc(sizeof(spasm_lu));
+	N = (spasm_lu*)spasm_malloc(sizeof(spasm_lu));
 	N->L = L = (keep_L) ? spasm_csr_alloc(n, r, lnz, prime, true) : NULL;
 	N->U = U = spasm_csr_alloc(r, m, unz, prime, true);
-	N->qinv = qinv = spasm_malloc(m * sizeof(int));
-	N->p = p = spasm_malloc(n * sizeof(int));
+	N->qinv = qinv = (int*)spasm_malloc(m * sizeof(int));
+	N->p = p = (int*)spasm_malloc(n * sizeof(int));
 
-	Lp = (keep_L) ? L->p : NULL;
-	Up = U->p;
+	//Lp = (keep_L) ? L->p : NULL;
+	//Up = U->p;
 
 	for (i = 0; i < m; i++) {
 		/* clear workspace */
@@ -1182,7 +1033,7 @@ spasm_lu *spasm_LU(const spasm * A, const int *row_permutation, int keep_L) {
 
 	/* no rows of U yet */
 	for (i = 0; i <= r; i++) {
-		Up[i] = 0;
+	  U->setStart(i, 0);
 	}
 	old_unz = lnz = unz = 0;
 
@@ -1212,22 +1063,33 @@ spasm_lu *spasm_LU(const spasm * A, const int *row_permutation, int keep_L) {
 		 * --- Triangular solve: x * U = A[i]
 		 * ----------------------------------------
 		 */
+		// if (keep_L) {
+		// 	Lp[i] = lnz;	/* L[i] starts here */
+		// }
 		if (keep_L) {
-			Lp[i] = lnz;	/* L[i] starts here */
+		  L->setStart(i,lnz);	/* L[i] starts here */
 		}
-		Up[i - defficiency] = unz;	/* U[i] starts here */
+		
+		//Up[i - defficiency] = unz;	/* U[i] starts here */
+		U->setStart(i - defficiency, unz);	/* U[i] starts here */
 
 		/* not enough room in L/U ? realloc twice the size */
-		if (keep_L && lnz + m > L->nzmax) {
-			spasm_csr_realloc(L, 2 * L->nzmax + m);
+		// if (keep_L && lnz + m > L->nzmax) {
+		// 	spasm_csr_realloc(L, 2 * L->nzmax + m);
+		// }
+		// if (unz + m > U->nzmax) {
+		// 	spasm_csr_realloc(U, 2 * U->nzmax + m);
+		// }
+		if (keep_L && lnz + m > L->size()) {
+		  spasm_csr_realloc(L, 2 * L->size() + m);
 		}
-		if (unz + m > U->nzmax) {
-			spasm_csr_realloc(U, 2 * U->nzmax + m);
+		if (unz + m > U->size()) {
+		  spasm_csr_realloc(U, 2 * U->size() + m);
 		}
-		Lj = (keep_L) ? L->j : NULL;
-		Lx = (keep_L) ? L->x : NULL;
-		Uj = U->j;
-		Ux = U->x;
+		//Lj = (keep_L) ? L->j : NULL;
+		//Lx = (keep_L) ? L->x : NULL;
+		//Uj = U->j;
+		//Ux = U->x;
 
 		inew = (row_permutation != NULL) ? row_permutation[i] : i;
 		top = spasm_sparse_forward_solve(U, A, inew, xj, x, qinv);
@@ -1262,9 +1124,11 @@ spasm_lu *spasm_LU(const spasm * A, const int *row_permutation, int keep_L) {
 			} else if (keep_L) {
 				/* column j is pivotal */
 				/* x[j] is the entry L[i, qinv[j] ] */
-				Lj[lnz] = qinv[j];
-				Lx[lnz] = x[j];
-				lnz++;
+			  // Lj[lnz] = qinv[j];
+			  // Lx[lnz] = x[j];
+			  L->setColid(lnz, qinv[j]);
+			  L->setData(lnz, x[j]);
+			  lnz++;
 			}
 		}
 
@@ -1274,27 +1138,37 @@ spasm_lu *spasm_LU(const spasm * A, const int *row_permutation, int keep_L) {
 
 			/* L[i,i] <--- x[jpiv]. Last entry of the row ! */
 			if (keep_L) {
-				Lj[lnz] = i - defficiency;
-				Lx[lnz] = x[jpiv];
-				lnz++;
+			  // Lj[lnz] = i - defficiency;
+			  // Lx[lnz] = x[jpiv];
+			  L->setColid(lnz, i - defficiency);
+			  L->setColid(lnz, x[jpiv]);
+			  lnz++;
 			}
 			qinv[jpiv] = i - defficiency;
 			p[i - defficiency] = i;
 
 			/* pivot must be the first entry in U[i] */
-			Uj[unz] = jpiv;
-			Ux[unz] = 1;
+			//Uj[unz] = jpiv;
+			//Ux[unz] = 1;
+			U->setColid(unz, jpiv);
+			U->setData(unz, 1);
 			unz++;
 
 			/* send remaining non-pivot coefficients into U */
-			spasm_GFp beta = spasm_GFp_inverse(x[jpiv], prime);
+			//spasm_GFp beta = spasm_GFp_inverse(x[jpiv], prime);
+			spasm_GFp beta;
+			U->field().inv(beta, x[jpiv]);
 			for (px = top; px < m; px++) {
 				j = xj[px];
 
 				if (qinv[j] < 0) {
-					Uj[unz] = j;
-					Ux[unz] = (x[j] * beta) % prime;
-					unz++;
+				  // Uj[unz] = j;
+				  // Ux[unz] = (x[j] * beta) % prime;
+				  U->setColid(unz, j);
+				  //U->setData(unz, (x[j] * beta) % prime);
+				  U->field().mul(beta, beta, x[j]);
+				  U->setData(unz, beta);
+				  unz++;
 				}
 			}
 
@@ -1321,14 +1195,19 @@ spasm_lu *spasm_LU(const spasm * A, const int *row_permutation, int keep_L) {
 	fprintf(stderr, "\n");
 
 	/* remove extra space from L and U */
-	Up[i - defficiency] = unz;
-	spasm_csr_resize(U, i - defficiency, m);
-	spasm_csr_realloc(U, -1);
+	//Up[i - defficiency] = unz;
+	U->setStart(i-defficiency,unz);
+// 	spasm_csr_resize(U, i - defficiency, m);
+// 	spasm_csr_realloc(U, -1);
+    spasm_csr_lbresize(U,i - defficiency, m, -1);
 
 	if (keep_L) {
-		Lp[n] = lnz;
-		spasm_csr_resize(L, n, n - defficiency);
-		spasm_csr_realloc(L, -1);
+	  //Lp[n] = lnz;
+	  L->setStart(n, lnz);
+// 		spasm_csr_resize(L, n, n - defficiency);
+// 		spasm_csr_realloc(L, -1);
+	  spasm_csr_lbresize(L, n, n - defficiency, -1);
+	  
 	}
 	free(x);
 	free(xj);
@@ -1346,67 +1225,16 @@ void spasm_free_LU(spasm_lu * X) {
 }
 
 
-/*
- * /!\ the ``row_permutation'' argument is NOT embedded in P. This means that
- * : a) L is ***really*** lower-(triangular/trapezoidal) b) PLUQ =
- * row_permutation*A
- * 
- * TODO : change this.
- */
-spasm_lu *spasm_PLUQ(const spasm * A, const int *row_permutation, int keep_L) {
-	int m, i, j, r, px, k;
-	int *Up, *Uj, *qinv;
-	spasm *U, *L, *LL;
-	spasm_lu *N;
-
-	m = A->m;
-	N = spasm_LU(A, row_permutation, keep_L);
-	L = N->L;
-	U = N->U;
-	r = U->n;
-	Up = U->p;
-	Uj = U->j;
-	qinv = N->qinv;
-
-	k = 1;
-	for (j = 0; j < m; j++) {
-		if (qinv[j] == -1) {
-			qinv[j] = m - k;
-			k++;
-		}
-	}
-
-	/*
-	 * permute the columns of U in place. U becomes really
-	 * upper-trapezoidal.
-	 */
-	for (i = 0; i < r; i++) {
-		for (px = Up[i]; px < Up[i + 1]; px++) {
-			Uj[px] = qinv[Uj[px]];
-		}
-	}
-
-	if (keep_L) {
-		/*
-		 * permute the rows of L (not in place). L becomes really
-		 * lower-trapezoidal.
-		 */
-		LL = spasm_permute(L, N->p, SPASM_IDENTITY_PERMUTATION, SPASM_WITH_NUMERICAL_VALUES);
-		N->L = LL;
-		spasm_csr_free(L);
-	}
-	return N;
-}
 
 spasm_dense_lu *spasm_dense_LU_alloc(int m, int prime) {
 	spasm_dense_lu *R;
 
-	R = spasm_malloc(sizeof(spasm_dense_lu));
+	R = (spasm_dense_lu*)spasm_malloc(sizeof(spasm_dense_lu));
 	R->m = m;
 	R->n = 0;
 	R->prime = prime;
-	R->x = spasm_malloc(m * sizeof(spasm_GFp *));
-	R->p = spasm_malloc(m * sizeof(int));
+	R->x = (spasm_GFp**)spasm_malloc(m * sizeof(spasm_GFp *));
+	R->p = (int*)spasm_malloc(m * sizeof(int));
 	return R;
 }
 
@@ -1425,15 +1253,15 @@ int spasm_dense_LU_grow(spasm_dense_lu * A, const spasm_GFp * y, int k, int proc
 #pragma omp critical(dense_LU)
 	{
 #pragma omp atomic read
-		n = A->n;
-		status = (n == processed);
-		if (status) {
-			m = A->m;
-			A->p[n] = k;
-			Ax = A->x;
-			Ax[n] = spasm_malloc(m * sizeof(spasm_GFp));
-			for (int j = 0; j < m; j++) {
-				Ax[n][j] = y[j];
+	  n = A->n;
+	  status = (n == processed);
+	  if (status) {
+	    m = A->m;
+	    A->p[n] = k;
+	    Ax = A->x;
+	    Ax[n] = (spasm_GFp*)spasm_malloc(m * sizeof(spasm_GFp));
+	    for (int j = 0; j < m; j++) {
+	      Ax[n][j] = y[j];
 			}
 #pragma omp atomic update
 			A->n++;
@@ -1476,6 +1304,7 @@ int spasm_dense_LU_process(spasm_dense_lu * A, spasm_GFp * y) {
 
 		/* make pivot unitary */
 		beta = spasm_GFp_inverse(y[k], prime);
+		
 		for (int j = 0; j < m; j++)
 			y[j] = (y[j] * beta) % prime;
 
@@ -1492,13 +1321,17 @@ int spasm_dense_LU_process(spasm_dense_lu * A, spasm_GFp * y) {
  */
 spasm *spasm_schur(spasm * A, const int *p, const int *qinv, const int npiv) {
 	spasm *S;
-	int k, *Sp, *Sj, Sn, Sm, m, n, snz, *xj, top, *q, verbose_step;
-	spasm_GFp *Sx, *x;
+	//int k, *Sp, *Sj, Sn, Sm, m, n, snz, *xj, top, *q, verbose_step;
+	int k, Sn, Sm, m, n, snz, *xj, top, *q, verbose_step;
+	//spasm_GFp *Sx, *x;
+	spasm_GFp *x;
 
 	/* check inputs */
 	assert(A != NULL);
-	n = A->n;
-	m = A->m;
+	//n = A->n;
+	//m = A->m;
+	n = A->rowdim();
+	m = A->rowdim();
 	assert(n >= npiv);
 	assert(m >= npiv);
 
@@ -1506,22 +1339,22 @@ spasm *spasm_schur(spasm * A, const int *p, const int *qinv, const int npiv) {
 	Sn = n - npiv;
 	Sm = m - npiv;
 	snz = 4 * (Sn + Sm);	/* educated guess */
-	S = spasm_csr_alloc(Sn, Sm, snz, A->prime, SPASM_WITH_NUMERICAL_VALUES);
+	S = spasm_csr_alloc(Sn, Sm, snz, A->field().characteristic(), SPASM_WITH_NUMERICAL_VALUES);
 
-	x = spasm_malloc(m * sizeof(spasm_GFp));
-	xj = spasm_malloc(3 * m * sizeof(int));
+	x = (spasm_GFp*)spasm_malloc(m * sizeof(spasm_GFp));
+	xj = (int*)spasm_malloc(3 * m * sizeof(int));
 	spasm_vector_zero(xj, 3 * m);
 
 	verbose_step = spasm_max(1, n / 1000);
-	Sp = S->p;
-	Sj = S->j;
-	Sx = S->x;
+	//Sp = S->p;
+	//Sj = S->j;
+	//Sx = S->x;
 
 	/*
 	 * q sends the non-pivotal columns of A to the columns of S. It is
 	 * not the inverse of qinv...
 	 */
-	q = spasm_malloc(m * sizeof(int));
+	q = (int*)spasm_malloc(m * sizeof(int));
 	k = 0;
 	for (int j = 0; j < m; j++)
 		q[j] = (qinv[j] < 0) ? k++ : -1;
@@ -1537,24 +1370,30 @@ spasm *spasm_schur(spasm * A, const int *p, const int *qinv, const int npiv) {
 		top = spasm_sparse_forward_solve(A, A, inew, xj, x, qinv);
 
 		/* not enough room in S ? realloc twice the size */
-		if (snz + Sm > S->nzmax) {
-			spasm_csr_realloc(S, 2 * S->nzmax + Sm);
-			Sj = S->j;
-			Sx = S->x;
+		//if (snz + Sm > S->nzmax) {
+		//spasm_csr_realloc(S, 2 * S->nzmax + Sm);
+			//Sj = S->j;
+			//Sx = S->x;
+		//	}
+		if (snz + Sm < S->size()) {
+		  spasm_csr_realloc(S, 2 * S->size() + Sm);
 		}
-		Sp[Sn] = snz;	/* S[i] starts here */
+		//Sp[Sn] = snz;	/* S[i] starts here */
+		S->setStart(Sn, snz);	/* S[i] starts here */
 		for (int px = top; px < m; px++) {
-			int j = xj[px];
-
-			if (x[j] == 0)
-				continue;
-
-			/* save non-zero, non-pivot coefficients in S */
-			if (q[j] >= 0) {
-				Sj[snz] = q[j];
-				Sx[snz] = x[j];
-				snz++;
-			}
+		  int j = xj[px];
+		  
+		  if (x[j] == 0)
+		    continue;
+		  
+		  /* save non-zero, non-pivot coefficients in S */
+		  if (q[j] >= 0) {
+		    //Sj[snz] = q[j];
+		    //Sx[snz] = x[j];
+		    S->setColid(snz, q[j]);
+		    S->setData(snz, x[j]);
+		    snz++;
+		  }
 		}
 		Sn++;
 
@@ -1563,15 +1402,17 @@ spasm *spasm_schur(spasm * A, const int *p, const int *qinv, const int npiv) {
 			fflush(stderr);
 		}
 	}
-	/* finalize S */
 
-	/*special case: S empty*/
-	if(snz == 0){
-	  fprintf(stderr, "Empty Schur\n");
-	  return NULL;
-	}
+        /*special case: S empty*/
+    if(snz == 0){
+        fprintf(stderr, "Empty Schur\n");
+        return NULL;
+    }
+
+	/* finalize S */
 	fprintf(stderr, "\n");
-	Sp[S->n] = snz;
+	//Sp[S->n] = snz;
+	S->setStart(n, S->rowdim());
 	spasm_csr_realloc(S, -1);
 
 	/* free extra workspace */
@@ -1592,12 +1433,14 @@ double spasm_schur_probe_density(spasm * A, const int *p, const int *qinv, const
 	spasm_GFp *x;
 
 	/* check inputs */
-	m = A->m;
-	n = A->n;
-
+	//m = A->m;
+	//n = A->n;
+	m = A->coldim();
+	n = A->rowdim();
+	
 	/* Get Workspace */
-	x = spasm_malloc(m * sizeof(spasm_GFp));
-	xj = spasm_malloc(3 * m * sizeof(int));
+	x = (spasm_GFp*)spasm_malloc(m * sizeof(spasm_GFp));
+	xj = (int*)spasm_malloc(3 * m * sizeof(int));
 	spasm_vector_zero(xj, 3 * m);
 
 	nnz = 0;
@@ -1625,20 +1468,22 @@ double spasm_schur_probe_density(spasm * A, const int *p, const int *qinv, const
  */
 int spasm_schur_rank(spasm * A, const int *p, const int *qinv, const int npiv) {
 	int Sm, m, n, k, r, prime, step, threads, searched, prev_r;
-	int *q, *Ap, *Aj;
+	//int *q, *Ap, *Aj;
+	int *q;
 	double start;
-	spasm_GFp *Ax;
+	//spasm_GFp *Ax;
 
-	n = A->n;
-	m = A->m;
-	Ap = A->p;
-	Aj = A->j;
-	Ax = A->x;
-	prime = A->prime;
+	n = A->rowdim();
+	m = A->coldim();
+	//Ap = A->p;
+	//Aj = A->j;
+	//Ax = A->x;
+	//prime = A->prime;
+	prime = A->field().characteristic();
 
 	/* Get Workspace */
 	Sm = m - npiv;
-	q = spasm_malloc(Sm * sizeof(int));
+	q = (int*)spasm_malloc(Sm * sizeof(int));
 
 	/* q sends columns of S to non-pivotal columns of A */
 	k = 0;
@@ -1646,7 +1491,7 @@ int spasm_schur_rank(spasm * A, const int *p, const int *qinv, const int npiv) {
 		if (qinv[j] < 0)
 			q[k++] = j;
 
-	spasm_dense_lu *U = spasm_dense_LU_alloc(Sm, A->prime);
+	spasm_dense_lu *U = spasm_dense_LU_alloc(Sm, prime);
 
 	/* ---- compute Schur complement ----- */
 	fprintf(stderr, "rank of dense schur complement...\n");
@@ -1664,8 +1509,8 @@ int spasm_schur_rank(spasm * A, const int *p, const int *qinv, const int npiv) {
 
 #pragma omp parallel
 	{
-		spasm_GFp *x = spasm_malloc(m * sizeof(spasm_GFp));
-		spasm_GFp *y = spasm_malloc(Sm * sizeof(spasm_GFp));
+	  spasm_GFp *x = (spasm_GFp*)spasm_malloc(m * sizeof(spasm_GFp));
+	  spasm_GFp *y = (spasm_GFp*)spasm_malloc(Sm * sizeof(spasm_GFp));
 		int gain;
 
 		while (step <= (1 << 16)) {	/* <--- tweak-me */
@@ -1676,7 +1521,8 @@ int spasm_schur_rank(spasm * A, const int *p, const int *qinv, const int npiv) {
 			spasm_vector_zero(x, m);
 			for (int i = 0; i < step; i++) {
 				int inew = p[npiv + (rand() % (n - npiv))];
-				spasm_scatter(Aj, Ax, Ap[inew], Ap[inew + 1], 1 + (rand() % (prime - 1)), x, prime);
+				//spasm_scatter(Aj, Ax, Ap[inew], Ap[inew + 1], 1 + (rand() % (prime - 1)), x, prime);
+				spasm_lbscatter(A->getColid(), A->getData(), A->getStart(inew), A->getEnd(inew), (rand() %(prime -1)), y, A->field());	
 			}
 			spasm_eliminate_sparse_pivots(A, npiv, p, x);
 			for (int j = 0; j < Sm; j++)	/* gather into y */
@@ -1712,7 +1558,8 @@ int spasm_schur_rank(spasm * A, const int *p, const int *qinv, const int npiv) {
 				double it_start = spasm_wtime();
 				for (int i = npiv; i < n; i++) {
 					int inew = p[i];
-					spasm_scatter(Aj, Ax, Ap[inew], Ap[inew + 1], rand() % prime, x, prime);
+					//spasm_scatter(Aj, Ax, Ap[inew], Ap[inew + 1], rand() % prime, x, prime);
+					spasm_lbscatter(A->getColid(), A->getData(), A->getStart(inew), A->getEnd(inew), rand()%prime, y, A->field());
 				}
 				spasm_eliminate_sparse_pivots(A, npiv, p, x);
 				for (int j = 0; j < Sm; j++)
@@ -1737,25 +1584,31 @@ int spasm_schur_rank(spasm * A, const int *p, const int *qinv, const int npiv) {
 
 
 int spasm_is_row_pivotal(const spasm * A, const int *qinv, const int i) {
-	int *Ap, *Aj;
+  //int *Ap, *Aj;
 
-	Ap = A->p;
-	Aj = A->j;
-	return (qinv[Aj[Ap[i]]] == i);
+  //Ap = A->p;
+  //Aj = A->j;
+  //return (qinv[Aj[Ap[i]]] == i);
+  return (qinv[A->getColid(A->getStart(i))] == i);
 }
 
 /* make pivot the first entry of the row */
 void spasm_prepare_pivot(spasm * A, const int i, const int px) {
-	int *Ap, *Aj;
-	spasm_GFp *Ax;
+  //int *Ap, *Aj;
+  //spasm_GFp *Ax;
 
-	Ap = A->p;
-	Aj = A->j;
-	Ax = A->x;
+  //Ap = A->p;
+  //Aj = A->j;
+  //Ax = A->x;
 
-	spasm_swap(Aj, Ap[i], px);
-	if (Ax != NULL)
-		spasm_swap(Ax, Ap[i], px);
+  //spasm_swap(Aj, Ap[i], px);
+  //if (Ax != NULL)
+  //spasm_swap(Ax, Ap[i], px);
+  //std::cout << "i : " << i << " j : " << A->getStart(px) << std::endl;
+  
+  spasm_lbswap(A, A->getStart(i), px);
+  
+  
 }
 
 
@@ -1768,40 +1621,53 @@ void spasm_prepare_pivot(spasm * A, const int i, const int px) {
  * @param p can be arbitrary.
  * @return number of pivots found. */
 int spasm_find_FL_pivots(spasm * A, int *p, int *qinv) {
-	int n, m, idx_j, *Aj, *Ap, npiv;
-	double start;
+  //int n, m, idx_j, *Aj, *Ap, npiv;
+  int n, m, idx_j, npiv, px, i;
+  double start;
 
-	n = A->n;
-	m = A->m;
-	Ap = A->p;
-	Aj = A->j;
-	start = spasm_wtime();
+  //n = A->n;
+  //m = A->m;
+  //Ap = A->p;
+  //Aj = A->j;
 
-	for (int i = 0; i < n; i++) {
-		int j = -1;
-		for (int px = Ap[i]; px < Ap[i + 1]; px++)
-			if (j == -1 || Aj[px] < j) {
-				j = Aj[px];
-				idx_j = px;
-			}
-		if (j == -1)	/* Skip empty rows */
-			continue;
+  n = A->rowdim();
+  m = A->coldim();
+  
+  start = spasm_wtime();
 
-		/* check if it is a sparser pivot */
-		if (qinv[j] == -1 || spasm_row_weight(A, i) < spasm_row_weight(A, qinv[j])) {
-			qinv[j] = i;
-			spasm_prepare_pivot(A, i, idx_j);
-		}
-	}
+  
+  for (i = 0; i < n; i++) {
+    int j = -1;
+    // for (int px = Ap[i]; px < Ap[i + 1]; px++)
+    //   if (j == -1 || Aj[px] < j) {
+    // 	j = Aj[px];
+    // 	idx_j = px;
+    //   }
+    for (px = A->getStart(i); px < A->getEnd(i); px++)
+      if (j == -1 || A->getColid(px) < j) {
+	j = A->getColid(px);
+	idx_j = px;
+      }
 
-	/* build p */
-	npiv = 0;
-	for (int j = 0; j < m; j++)
-		if (qinv[j] != -1)
-			p[npiv++] = qinv[j];
+    if (j == -1)	/* Skip empty rows */
+      continue;
 
-	fprintf(stderr, "[pivots] Faugère-Lachartre: %d pivots found [%.1fs]\n", npiv, spasm_wtime() - start);
-	return npiv;
+    
+    /* check if it is a sparser pivot */
+    if (qinv[j] == -1 || spasm_row_weight(A, i) < spasm_row_weight(A, qinv[j])) {
+    qinv[j] = i;
+    spasm_prepare_pivot(A, i, idx_j);
+    }
+  }
+  
+  /* build p */
+  npiv = 0;
+  for (int j = 0; j < m; j++)
+    if (qinv[j] != -1)
+      p[npiv++] = qinv[j];
+  
+  fprintf(stderr, "[pivots] Faugère-Lachartre: %d pivots found [%.1fs]\n", npiv, spasm_wtime() - start);
+  return npiv;
 }
 
 
@@ -1814,55 +1680,82 @@ int spasm_find_FL_pivots(spasm * A, int *p, int *qinv) {
  * 
  */
 int spasm_find_FL_column_pivots(spasm * A, int *p, int *qinv, int npiv_fl) {
-	int n, m, *Aj, *Ap, npiv, *w;
-	double start;
+  //int n, m, *Aj, *Ap, npiv, *w;
+  int n, m, npiv, *w;
+  double start;
 
-	n = A->n;
-	m = A->m;
-	Ap = A->p;
-	Aj = A->j;
-	npiv = npiv_fl;
-	w = spasm_malloc(m * sizeof(int));
-	spasm_vector_set(w, 0, m, 1);
-
-	start = spasm_wtime();
-
-	/* mark columns on previous pivot rows as obstructed */
-	for (int i = 0; i < npiv; i++) {
-		int inew = p[i];
-		for (int px = Ap[inew]; px < Ap[inew + 1]; px++)
-			w[Aj[px]] = 0;
-	}
-
-	/* find new pivots */
-	for (int i = 0; i < n; i++) {
-		if (spasm_is_row_pivotal(A, qinv, i))
-			continue;
-
-		/* does A[i,:] have an entry on an unobstructed column? */
-		for (int px = Ap[i]; px < Ap[i + 1]; px++) {
-			int j = Aj[px];
-			if (w[j] == 0)
-				continue;	/* this column is closed,
-						 * skip this entry */
-
+  //n = A->n;
+  //m = A->m;
+  //Ap = A->p;
+  //Aj = A->j;
+  n = A->rowdim();
+  m = A->coldim();
+  npiv = npiv_fl;
+  w = (int*)spasm_malloc(m * sizeof(int));
+  spasm_vector_set(w, 0, m, 1);
+  
+  start = spasm_wtime();
+  
+  /* mark columns on previous pivot rows as obstructed */
+  for (int i = 0; i < npiv; i++) {
+    int inew = p[i];
+    // for (int px = Ap[inew]; px < Ap[inew + 1]; px++)
+    //   w[Aj[px]] = 0;
+    for (int px = A->getStart(inew); px < A->getEnd(inew); px++)
+      w[A->getColid(px)] = 0;
+  }
+  
+  /* find new pivots */
+  for (int i = 0; i < n; i++) {
+    if (spasm_is_row_pivotal(A, qinv, i))
+      continue;
+    
+    /* does A[i,:] have an entry on an unobstructed column? */
+    // for (int px = Ap[i]; px < Ap[i + 1]; px++) {
+    //   int j = Aj[px];
+    //   if (w[j] == 0)
+    // 	continue;	/* this column is closed,
+    // 			 * skip this entry */
+      
+    // 			/* new pivot found! */
+    //   if (qinv[j] == -1) {
+    // 	p[npiv++] = i;
+    // 	qinv[j] = i;
+    // 	spasm_prepare_pivot(A, i, px);
+    // 	/*
+    // 	 * mark the columns occuring on this row as
+    // 	 * unavailable
+    // 	 */
+    // 	for (int px = Ap[i]; px < Ap[i + 1]; px++)
+    // 	  w[Aj[px]] = 0;
+	
+    // 	break;
+    //   }
+    // }
+    for (int px = A->getStart(i); px < A->getEnd(i); px++) {
+      int j = A->getColid(px);
+      if (w[j] == 0)
+	continue;	/* this column is closed,
+			 * skip this entry */
+      
 			/* new pivot found! */
-			if (qinv[j] == -1) {
-				p[npiv++] = i;
-				qinv[j] = i;
-				spasm_prepare_pivot(A, i, px);
-				/*
-				 * mark the columns occuring on this row as
-				 * unavailable
-				 */
-				for (int px = Ap[i]; px < Ap[i + 1]; px++)
-					w[Aj[px]] = 0;
+      if (qinv[j] == -1) {
+	p[npiv++] = i;
+	qinv[j] = i;
+	spasm_prepare_pivot(A, i, px);
+	/*
+	 * mark the columns occuring on this row as
+	 * unavailable
+	 */
+	for (int px = A->getStart(i); px < A->getEnd(i); px++)
+	  w[A->getColid(px)] = 0;
+	
+	break;
+      }
+    }
 
-				break;
-			}
-		}
-	}
-	free(w);
+  }
+  free(w);
 
 	fprintf(stderr, "[pivots] ``Faugère-Lachartre on columns'': %d pivots found [%.1fs]\n", npiv - npiv_fl, spasm_wtime() - start);
 	return npiv;
@@ -1871,17 +1764,24 @@ int spasm_find_FL_column_pivots(spasm * A, int *p, int *qinv, int npiv_fl) {
 
 
 int find_survivor(spasm * A, int i, int *w) {
-	int *Ap = A->p;
-	int *Aj = A->j;
+  //int *Ap = A->p;
+  //int *Aj = A->j;
 
-	for (int px = Ap[i]; px < Ap[i + 1]; px++) {
-		int j = Aj[px];
-		if (w[j] == 1) {/* potential pivot found */
-			spasm_prepare_pivot(A, i, px);
-			return j;
-		}
-	}
-	return -1;
+	// for (int px = Ap[i]; px < Ap[i + 1]; px++) {
+	// 	int j = Aj[px];
+	// 	if (w[j] == 1) {/* potential pivot found */
+	// 		spasm_prepare_pivot(A, i, px);
+	// 		return j;
+	// 	}
+	// }
+  for (int px = A->getStart(i); px < A->getEnd(i); px++) {
+    int j = A->getColid(px);
+    if (w[j] == 1) {/* potential pivot found */
+      spasm_prepare_pivot(A, i, px);
+      return j;
+    }
+  }
+  return -1;
 }
 
 /*
@@ -1894,7 +1794,7 @@ void BFS_enqueue(int *w, int *queue, int *surviving, int *tail, int j) {
 	w[j] = -1;
 }
 
-void BFS_enqueue_row(int *w, int *queue, int *surviving, int *tail, const int *Ap, const int *Aj, int i) {
+void BFS_enqueue_row(int *w, int *queue, int *surviving, int *tail, const spasm::svector_t& Ap, const spasm::svector_t& Aj, int i) {
 	for (int px = Ap[i]; px < Ap[i + 1]; px++) {
 		/* this is the critical section */
 		int j = Aj[px];
@@ -1904,32 +1804,36 @@ void BFS_enqueue_row(int *w, int *queue, int *surviving, int *tail, const int *A
 }
 
 int spasm_find_cycle_free_pivots(spasm * A, int *p, int *qinv, int npiv_start) {
-	int n, m, *Aj, *Ap, processed, v, npiv, retries;
-	double start;
+  //int n, m, *Aj, *Ap, processed, v, npiv, retries;
+  int n, m, processed, v, npiv, retries;
+  double start;
 
-	n = A->n;
-	m = A->m;
-	Ap = A->p;
-	Aj = A->j;
-	v = spasm_max(1, spasm_min(1000, n / 100));
-	processed = 0;
-	retries = 0;
-	npiv = npiv_start;
-	start = spasm_wtime();
-
+  //n = A->n;
+  //m = A->m;
+  //Ap = A->p;
+  //Aj = A->j;
+  n = A->rowdim();
+  m = A->coldim();
+  
+  v = spasm_max(1, spasm_min(1000, n / 100));
+  processed = 0;
+  retries = 0;
+  npiv = npiv_start;
+  start = spasm_wtime();
+  
 #pragma omp parallel
-	{
-		int *w = spasm_malloc(m * sizeof(int));
-		int *queue = spasm_malloc(2 * m * sizeof(int));
-		int head, tail, npiv_local, surviving, tid;
-
-		/* workspace initialization */
-		tid = 0;
-		spasm_vector_set(w, 0, m, 0);
-
+  {
+    int *w = (int*)spasm_malloc(m * sizeof(int));
+    int *queue = (int*)spasm_malloc(2 * m * sizeof(int));
+    int head, tail, npiv_local, surviving, tid;
+    
+    /* workspace initialization */
+    tid = 0;
+    spasm_vector_set(w, 0, m, 0);
+    
 #ifdef USE_OPENMP
-		tid = omp_get_thread_num();
-		if (tid == 0)
+    tid = omp_get_thread_num();
+    if (tid == 0)
 			fprintf(stderr, "[pivots] Greedy pivot search starting on %d threads\n", omp_get_num_threads());
 #endif
 
@@ -1971,90 +1875,106 @@ int spasm_find_cycle_free_pivots(spasm * A, int *p, int *qinv, int npiv_start) {
 			head = 0;
 			tail = 0;
 			surviving = 0;
-			for (int px = Ap[i]; px < Ap[i + 1]; px++) {
-				int j = Aj[px];
-				if (qinv[j] < 0) {
-					w[j] = 1;
-					surviving++;
-				} else {
-					BFS_enqueue(w, queue, &surviving, &tail, j);
-				}
+			// for (int px = Ap[i]; px < Ap[i + 1]; px++) {
+			// 	int j = Aj[px];
+			// 	if (qinv[j] < 0) {
+			// 		w[j] = 1;
+			// 		surviving++;
+			// 	} else {
+			// 		BFS_enqueue(w, queue, &surviving, &tail, j);
+			// 	}
+			// }
+			for (int px = A->getStart(i); px < A->getEnd(i); px++) {
+			  int j = A->getColid(px);
+			  if (qinv[j] < 0) {
+			    w[j] = 1;
+			    surviving++;
+			  } else {
+			    BFS_enqueue(w, queue, &surviving, &tail, j);
+			  }
 			}
-
+			
+			
 			/* BFS. This is where most of the time is spent */
-	BFS:
+		BFS:
 			while (head < tail && surviving > 0) {
-				int j = queue[head++];
-				int I = qinv[j];
-				if (I == -1)
-					continue;	/* j is not pivotal:
-							 * nothing to do */
-				BFS_enqueue_row(w, queue, &surviving, &tail, Ap, Aj, I);
+			  int j = queue[head++];
+			  int I = qinv[j];
+			  if (I == -1)
+			    continue;	/* j is not pivotal:
+					 * nothing to do */
+			  //BFS_enqueue_row(w, queue, &surviving, &tail, Ap, Aj, I);
+			  BFS_enqueue_row(w, queue, &surviving, &tail, A->getStart(), A->getColid(), I);
 			}
-
+			
 			/* scan w for surviving entries */
 			if (surviving > 0) {
-				int j = find_survivor(A, i, w);
-				int npiv_target = -1;
-
-				/*
-				 * si aucun nouveau pivot n'est arrivé,
-				 * ajouter
-				 */
+			  int j = find_survivor(A, i, w);
+			  int npiv_target = -1;
+			  
+			  /*
+			   * si aucun nouveau pivot n'est arrivé,
+			   * ajouter
+			   */
 #pragma omp critical
-				{
-					if (npiv == npiv_local) {
-						qinv[j] = i;
-						p[npiv] = i;
+			  {
+			    if (npiv == npiv_local) {
+			      qinv[j] = i;
+			      p[npiv] = i;
 #pragma omp atomic update
-						npiv++;
-					} else {
+			      npiv++;
+			    } else {
 #pragma omp atomic read
-						npiv_target = npiv;
-						retries++;
-					}
-				}
-
-				if (npiv_target < 0)
-					goto cleanup;
-
-				/*
-				 * si on a découvert de nouveaux pivots
-				 * aiter... les traiter !
-				 */
-				for (; npiv_local < npiv_target; npiv_local++) {
-					int I = p[npiv_local];
-					int j = Aj[Ap[I]];
-					if (w[j] == 0)	/* the new pivot plays
-							 * no role here */
-						continue;
-
-					if (w[j] == 1) {
-						/*
-						 * a survivors becomes
-						 * pivotal with this pivot
-						 */
-						BFS_enqueue(w, queue, &surviving, &tail, j);
-					} else {
-						/* the new pivot has been hit */
-						BFS_enqueue_row(w, queue, &surviving, &tail, Ap, Aj, I);
-					}
-				}
-				goto BFS;
+			      npiv_target = npiv;
+			      retries++;
+			    }
+			  }
+			  
+			  if (npiv_target < 0)
+			    goto cleanup;
+			  
+			  /*
+			   * si on a découvert de nouveaux pivots
+			   * aiter... les traiter !
+			   */
+			  for (; npiv_local < npiv_target; npiv_local++) {
+			    int I = p[npiv_local];
+			    //int j = Aj[Ap[I]];
+			    int j = A->getColid(A->getStart(I));
+			    if (w[j] == 0)	/* the new pivot plays
+						 * no role here */
+			      continue;
+			    
+			    if (w[j] == 1) {
+			      /*
+			       * a survivors becomes
+			       * pivotal with this pivot
+			       */
+			      BFS_enqueue(w, queue, &surviving, &tail, j);
+			    } else {
+			      /* the new pivot has been hit */
+			      BFS_enqueue_row(w, queue, &surviving, &tail, A->getStart(), A->getColid(), I);
+			    }
+			  }
+			  goto BFS;
 			}
 			/* reset w back to zero */
-	cleanup:
-			for (int px = Ap[i]; px < Ap[i + 1]; px++)
-				w[Aj[px]] = 0;
-			for (int px = 0; px < tail; px++)
-				w[queue[px]] = 0;
+		cleanup:
+			// for (int px = Ap[i]; px < Ap[i + 1]; px++)
+			//   w[Aj[px]] = 0;
+			// for (int px = 0; px < tail; px++)
+			//   w[queue[px]] = 0;
+			for (int px = A->getStart(i); px < A->getEnd(i); px++)
+			  w[A->getColid(px)] = 0;
+		        for (int px = 0; px < tail; px++)
+			  w[queue[px]] = 0;
 		}		/* end for */
 		free(w);
 		free(queue);
-	}			/* end of omp parallel */
+  }			/* end of omp parallel */
 
-	fprintf(stderr, "\r[pivots] greedy alternating cycle-free search: %d pivots found [%.1fs]\n", npiv - npiv_start, spasm_wtime() - start);
-	return npiv;
+  fprintf(stderr, "\r[pivots] greedy alternating cycle-free search: %d pivots found [%.1fs]\n", npiv - npiv_start, spasm_wtime() - start);
+  return npiv;
 }
 
 /*
@@ -2064,50 +1984,52 @@ int spasm_find_cycle_free_pivots(spasm * A, int *p, int *qinv, int npiv_start) {
  * both p and qinv must be preallocated
  */
 int spasm_find_pivots(spasm * A, int *p, int *qinv) {
-	int n, m, k, npiv, top;
+  int n, m, k, npiv, top;
 
-	n = A->n;
-	m = A->m;
+  //n = A->n;
+  //m = A->m;
+  n = A->rowdim();
+  m = A->coldim();
 
-	spasm_vector_set(qinv, 0, m, -1);
-	npiv = spasm_find_FL_pivots(A, p, qinv);
-	npiv = spasm_find_FL_column_pivots(A, p, qinv, npiv);
-	npiv = spasm_find_cycle_free_pivots(A, p, qinv, npiv);
+  spasm_vector_set(qinv, 0, m, -1);
+  npiv = spasm_find_FL_pivots(A, p, qinv);
+  npiv = spasm_find_FL_column_pivots(A, p, qinv, npiv);
+  //npiv = spasm_find_cycle_free_pivots(A, p, qinv, npiv);
 
 	/*
 	 * build row permutation. Pivotal rows go first in topological order,
 	 * then non-pivotal, non-zero rows, then zero rows
 	 */
-	int *xj = spasm_malloc(m * sizeof(int));
-	int *marks = spasm_malloc(m * sizeof(int));
-	int *pstack = spasm_malloc(n * sizeof(int));
+  int *xj = (int*)spasm_malloc(m * sizeof(int));
+  int *marks = (int*)spasm_malloc(m * sizeof(int));
+  int *pstack = (int*)spasm_malloc(n * sizeof(int));
 
-	/* topological sort */
-	spasm_vector_set(marks, 0, m, 0);
-	top = m;
-	for (int j = 0; j < m; j++)
-		if (qinv[j] != -1 && !marks[j])
-			top = spasm_dfs(j, A, top, xj, pstack, marks, qinv);
-	k = 0;
-	for (int j = top; j < m; j++) {
-		int i = qinv[xj[j]];
-		if (i != -1)
-			p[k++] = i;
-	}
-
-	for (int i = 0; i < n; i++)
-		if (spasm_row_weight(A, i) > 0 && !spasm_is_row_pivotal(A, qinv, i))
-			p[k++] = i;
-
-	for (int i = 0; i < n; i++)
-		if (spasm_row_weight(A, i) == 0)
-			p[k++] = i;
-
-	free(xj);
-	free(pstack);
-	free(marks);
-	fprintf(stderr, "\r[pivots] %d pivots found\n", npiv);
-	return npiv;
+  /* topological sort */
+  spasm_vector_set(marks, 0, m, 0);
+  top = m;
+  for (int j = 0; j < m; j++)
+    if (qinv[j] != -1 && !marks[j])
+      top = spasm_dfs(j, A, top, xj, pstack, marks, qinv);
+  k = 0;
+  for (int j = top; j < m; j++) {
+    int i = qinv[xj[j]];
+    if (i != -1)
+      p[k++] = i;
+  }
+  
+  for (int i = 0; i < n; i++)
+    if (spasm_row_weight(A, i) > 0 && !spasm_is_row_pivotal(A, qinv, i))
+      p[k++] = i;
+  
+  for (int i = 0; i < n; i++)
+    if (spasm_row_weight(A, i) == 0)
+      p[k++] = i;
+  
+  free(xj);
+  free(pstack);
+  free(marks);
+  fprintf(stderr, "\r[pivots] %d pivots found\n", npiv);
+  return npiv;
 }
 
 /*
@@ -2115,26 +2037,29 @@ int spasm_find_pivots(spasm * A, int *p, int *qinv) {
  * and form an upper-triangular principal submatrix. qinv is modified.
  */
 spasm *spasm_permute_pivots(const spasm * A, const int *p, int *qinv, int npiv) {
-	int k, m, *Ap, *Aj;
+  //int k, m, *Ap, *Aj;
+  int k, m;
 
-	m = A->m;
-	Ap = A->p;
-	Aj = A->j;
-
-	/* pivotal columns first */
-	k = 0;
-	for (int i = 0; i < npiv; i++) {
-		int j = Aj[Ap[p[i]]];	/* the pivot is the first entry of
-					 * each row */
-		qinv[j] = k++;
-	}
-
-	/* put remaining non-pivotal columns afterwards, in any order */
-	for (int j = 0; j < m; j++)
-		if (qinv[j] == -1)
-			qinv[j] = k++;
-
-	return spasm_permute(A, p, qinv, SPASM_WITH_NUMERICAL_VALUES);
+  //m = A->m;
+  //Ap = A->p;
+  //Aj = A->j;
+  m = A->coldim();
+  
+  /* pivotal columns first */
+  k = 0;
+  for (int i = 0; i < npiv; i++) {
+    //int j = Aj[Ap[p[i]]];   /*the pivot is the first entry of*/
+				 /* each row */
+    int j = A->getColid(A->getStart(p[i]));     
+    qinv[j] = k++;
+  }
+  
+  /* put remaining non-pivotal columns afterwards, in any order */
+  for (int j = 0; j < m; j++)
+    if (qinv[j] == -1)
+      qinv[j] = k++;
+  
+  return spasm_permute(A, p, qinv, SPASM_WITH_NUMERICAL_VALUES);
 }
 
 
@@ -2209,17 +2134,20 @@ int main(int argc, char **argv) {
 	A = spasm_compress(T);
     
 	spasm_triplet_free(T);
-	n = A->n;
-	m = A->m;
+	n = A->rowdim();
+	m = A->coldim();
 	spasm_human_format(spasm_nnz(A), nnz);
 	fprintf(stderr, "start. A is %d x %d (%s nnz)\n", n, m, nnz);
 
-	p = spasm_malloc(n * sizeof(int));
-	qinv = spasm_malloc(m * sizeof(int));
+	p = (int*)spasm_malloc(n * sizeof(int));
+	qinv = (int*)spasm_malloc(m * sizeof(int));
 
 	start_time = spasm_wtime();
 	rank = 0;
 	npiv = spasm_find_pivots(A, p, qinv);
+	exit(1); // Debug end here
+
+	
 	spasm_make_pivots_unitary(A, p, npiv);
 	density = spasm_schur_probe_density(A, p, qinv, npiv, 100);
 
@@ -2236,18 +2164,22 @@ int main(int argc, char **argv) {
 		B = spasm_schur(A, p, qinv, npiv);
 		spasm_csr_free(A);
 
-		//special case : empty schur.
-		if(B==NULL){
-		  end_time = spasm_wtime();
-		  fprintf(stderr, "done in %.3f s rank = %d\n", end_time - start_time, rank);
-		  free(p);
-		  free(qinv);
-		  return 0;
-		}
+            //special case : empty schur.
+        if(B==NULL){
+            end_time = spasm_wtime();
+            fprintf(stderr, "done in %.3f s rank = %d\n", end_time - start_time, rank);
+            free(p);
+            free(qinv);
+            return 0;
+        }
+        
+
 		A = B;
 		rank += npiv;
-		n = A->n;
-		m = A->m;
+		//n = A->n;
+		//m = A->m;
+		n = A->rowdim();
+		m = A->coldim();
 
 		npiv = spasm_find_pivots(A, p, qinv);
 		spasm_make_pivots_unitary(A, p, npiv);
@@ -2259,7 +2191,8 @@ int main(int argc, char **argv) {
 	/* sparse schur complement : GPLU */
 	if (gplu_final || (!dense_final && density < sparsity_threshold)) {
 		spasm_lu *LU = spasm_LU(A, p, SPASM_DISCARD_L);
-		rank += LU->U->n;
+		//rank += LU->U->n;
+		rank += LU->U->rowdim();
 		spasm_free_LU(LU);
 	} else {
 		/* dense schur complement */
