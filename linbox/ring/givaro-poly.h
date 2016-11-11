@@ -308,6 +308,12 @@ namespace LinBox
 			return _pd.gcd(g,a,b);
 		}
 		
+		Element& gcdin(Element &a, const Element &b) const {
+			Element g;
+			_pd.gcd(g,a,b);
+			return _pd.assign(a,g);
+		}
+		
 		// g = gcd(a,b)
 		Element& gcd(Element &g, Element &s, Element &t, const Element &a, const Element &b) const {
 			return _pd.gcd(g,s,t,a,b);

@@ -26,6 +26,8 @@ SUBDIRS=ntl modular
 BASIC_HDRS =            \
     ring-interface.h    \
     givaro-poly.h       \
+    givaro-poly-quotient.h \
+    givaro-poly-quotient-ring.h \
     givaro-polynomial.h \
     modular.h           \
     local-pir-modular.h \
