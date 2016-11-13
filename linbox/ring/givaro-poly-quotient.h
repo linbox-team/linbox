@@ -164,17 +164,28 @@ namespace LinBox
 		//}
 		
 		Element &normalize(Element &z, const Element &x) const {
-			return _pd.gcd(z, x, _f);
+			_pd.gcd(z, x, _f);
+			if (_pd.degree(z).value() == _pd.degree(_f).value()) {
+				_pd.assign(z, zero);
+			}
+			
+			return z;
 		}
 
 		Element &normalizeIn(Element &x) const {
-			return _pd.gcdin(x, _f);
+			_pd.gcdin(x, _f);
+			
+			if (_pd.degree(x).value() == _pd.degree(_f).value()) {
+				return _pd.assign(x, zero);
+			}
+			
+			return x;
 		}
 		
 		bool areAssociates(const Element &x, const Element &y) const {
 			Element a, b;
-			_pd.gcd(a, x, _f);
-			_pd.gcd(b, y, _f);
+			_pd.normalize(a, x, _f);
+			_pd.normalize(b, y, _f);
 			return _pd.degree(a).value() == _pd.degree(b).value();
 		}
 
@@ -211,6 +222,18 @@ namespace LinBox
 		//	return _pd.div(x, y, z);
 		//}
 
+		Element &divin(Element &x, const Element &y) const {
+			Element g;
+			this->normalize(g, y);
+			
+			Element r;
+			_pd.div(r, y, g);
+			Givaro::QuotientDom<Domain>::invin(r);
+			
+			_pd.divin(x, g);
+			return _pd.mulin(x, r);
+		}
+
 		Element &neg(Element &x, const Element &y) const {
 			return _pd.neg(x, y);
 		}
@@ -240,10 +263,6 @@ namespace LinBox
 		//	return _pd.mulin(x, y);
 		//}
 
-		//Element &divin(Element &x, const Element &y) const {
-		//	return _pd.divin(x, y);
-		//}
-
 		//Element &negin(Element &x) const {
 		//	return _pd.negin(x);
 		//}
@@ -263,9 +282,9 @@ namespace LinBox
 
 		bool isDivisor(const Element &x, const Element &y) const {
 			Element a, b;
-			_pd.gcd(a, x, _f);
-			_pd.gcd(b, y, _f);
-			return _pd.degree(a).value() >= _pd.degree(b).value();
+			size_t dega = _pd.degree(_pd.normalize(a, x, _f)).value();
+			size_t degb = _pd.degree(_pd.normalize(b, y, _f)).value();
+			return degb != 0 && dega >= degb;
 		}
 		
 		// a = q b + r
@@ -289,18 +308,18 @@ namespace LinBox
 		//	return _pd.gcdin(x, _f);
 		//}
 		
-		//bool isUnit(const Element& x) const {
-		//	Element tmp;
-		//	return _pd.degree(_pd.gcd(tmp, x, _f)).value() == 0;
-		//}
+		bool isUnit(const Element& x) const {
+			Element tmp;
+			return _pd.degree(_pd.gcd(tmp, x, _f)).value() == 0;
+		}
 
 		// g = gcd(a,b)
 		Element& gcd(Element &g, const Element &a, const Element &b) const {
 			Element ga, gb;
-			_pd.gcd(ga,a,_f);
-			_pd.gcd(gb,b,_f);
+			size_t da = _pd.degree(this->normalize(ga, a)).value();
+			size_t db = _pd.degree(this->normalize(gb, b)).value();
 			
-			if (_pd.degree(ga).value() <= _pd.degree(gb).value()) {
+			if (da != 0 && da <= db) {
 				return _pd.assign(g, ga);
 			} else {
 				return _pd.assign(g, gb);
@@ -308,15 +327,7 @@ namespace LinBox
 		}
 		
 		Element& gcdin(Element &a, const Element &b) const {
-			Element ga, gb;
-			_pd.gcd(ga,a,_f);
-			_pd.gcd(gb,b,_f);
-			
-			if (_pd.degree(ga).value() <= _pd.degree(gb).value()) {
-				return _pd.assign(a, ga);
-			} else {
-				return _pd.assign(a, gb);
-			}
+			return this->gcd(a, a, b);
 		}
 		
 		// g = gcd(a,b)
