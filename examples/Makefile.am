@@ -77,6 +77,7 @@ smithvalence_SOURCES   = smithvalence.C
 sparseelimdet_SOURCES  = sparseelimdet.C
 sparseelimrank_SOURCES = sparseelimrank.C
 polysmith_SOURCES      = poly-smith.C
+smithformlocal_SOURCES = smith-form-local.C
 #bench_fft_SOURCES       = bench-fft.C
 #bench_matpoly_mult_SOURCES = bench-matpoly-mult.C
 LINBOX=@prefix@
