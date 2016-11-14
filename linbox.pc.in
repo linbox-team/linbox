@@ -1,7 +1,7 @@
 /------------------ linbox.pc ------------------------
 prefix=@prefix@
 exec_prefix=@prefix@
-libdir=@prefix@/lib
+libdir=@libdir@
 includedir=@prefix@/include
 
 Name: linbox
