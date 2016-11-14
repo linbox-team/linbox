@@ -218,9 +218,17 @@ namespace LinBox
 		//	return _pd.mul(x, y, z);
 		//}
 
-		//Element &div(Element &x, const Element &y, const Element &z) const {
-		//	return _pd.div(x, y, z);
-		//}
+		Element &div(Element &x, const Element &y, const Element &z) const {
+			Element g;
+			this->normalize(g, z);
+			
+			Element r;
+			_pd.div(r, z, g);
+			this->invin(r);
+			
+			_pd.div(x, y, g);
+			return _pd.mulin(x, r);
+		}
 
 		Element &divin(Element &x, const Element &y) const {
 			Element g;
@@ -228,7 +236,7 @@ namespace LinBox
 			
 			Element r;
 			_pd.div(r, y, g);
-			Givaro::QuotientDom<Domain>::invin(r);
+			this->invin(r);
 			
 			_pd.divin(x, g);
 			return _pd.mulin(x, r);
@@ -251,21 +259,21 @@ namespace LinBox
 		//	return _pd.axpy(r,a,x,y);
 		//}
 
-		//Element &addin(Element &x, const Element &y) const {
-		//	return _pd.addin(x, y);
-		//}
+		Element &addin(Element &x, const Element &y) const {
+			return _pd.addin(x, y);
+		}
 
-		//Element &subin(Element &x, const Element &y) const {
-		//	return _pd.subin(x, y);
-		//}
+		Element &subin(Element &x, const Element &y) const {
+			return _pd.subin(x, y);
+		}
 
 		//Element &mulin(Element &x, const Element &y) const {
 		//	return _pd.mulin(x, y);
 		//}
 
-		//Element &negin(Element &x) const {
-		//	return _pd.negin(x);
-		//}
+		Element &negin(Element &x) const {
+			return _pd.negin(x);
+		}
 
 		//Element &invin(Element &x) const {
 		//	Element tmp;
