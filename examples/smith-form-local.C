@@ -5,8 +5,7 @@
 #include <vector>
 #include <list>
 
-using namespace std;
-
+#include <linbox/util/timer.h>
 
 #include <linbox/ring/modular.h>
 #include <linbox/matrix/sparse-matrix.h>
@@ -41,6 +40,8 @@ typedef IliopoulosDomain<PolyRing> IliopoulosDom;
 typedef SmithFormLocal<QuotRing> LocalDom;
 typedef DenseVector<PolyRing> FactorVector;
 
+#define VERBOSE 0
+
 void local(Mat &M, PolyElement &f, QuotRing &R) {
 	size_t n = M.coldim();
 	QMat A(R, n, n);
@@ -55,13 +56,20 @@ void local(Mat &M, PolyElement &f, QuotRing &R) {
 	cout << "Starting Local" << endl;
 	LocalDom sfl;
 	list<PolyElement> l;
-	sfl(l, A, R);
 	
+	Timer timer;
+	timer.start();
+	sfl(l, A, R);
+	timer.stop();
+	cout << "Local Time: " << timer << endl;
+	
+#if VERBOSE
 	list<PolyElement>::const_iterator iterator;
 	for (iterator = l.begin(); iterator != l.end(); ++iterator) {
 		R.write(cout, *iterator) << endl;
 	}
 	cout << endl;
+#endif
 }
 
 void ilio(Mat &M, PolyElement &f, MatDom &MD, PolyRing &R) {
@@ -73,17 +81,30 @@ void ilio(Mat &M, PolyElement &f, MatDom &MD, PolyRing &R) {
 	
 	FactorVector l;
 	l.resize(n);
-	sfi.smithForm(l, A, f);
 	
+	Timer timer;
+	timer.start();
+	sfi.smithForm(l, A, f);
+	timer.stop();
+	cout << "Iliopolous Time: " << timer << endl;
+	
+#if VERBOSE
 	for (size_t i = 0; i < l.size(); i++) {
 		R.write(cout, l[i]) << endl;
 	}
 	cout << endl;
+#endif
 }
 
-void generateM(Mat &M, MatDom &MD, PolyRing &R, PolyElement &f, PolyElement &g) {
-	size_t n = 3;
-	
+void generateM(
+	Mat &M,
+	MatDom &MD,
+	PolyRing &R,
+	PolyElement &f,
+	PolyElement &g,
+	size_t n,
+	size_t e
+) {
 	integer max;
 	R.convert(max, f);
 	max *= 10;
@@ -115,16 +136,26 @@ void generateM(Mat &M, MatDom &MD, PolyRing &R, PolyElement &f, PolyElement &g) 
 	}
 	
 	Mat D(R, n, n);
-	D.setEntry(0, 0, R.one);
-	D.setEntry(1, 1, g);
-	PolyElement tmp;
-	R.mul(tmp, g, g);
-	R.mulin(tmp, g);
-	D.setEntry(2, 2, tmp);
+	for (size_t i = 0; i < n; i++) {
+		size_t ei = rand() % e;
+		PolyElement di;
+		R.assign(di, R.one);
+		
+		for (size_t j = 0; j < ei; j++) {
+			R.mulin(di, g);
+		}
+		
+		D.setEntry(i, i, di);
+#if VERBOSE
+		R.write(cout << i << ", " << i << ": ", di) << endl;
+#endif
+	}
 	
 	MD.mul(M, L, D);
 	MD.mulin(M, T);
 	
+#if VERBOSE
+	cout << endl;
 	for (size_t i = 0; i < n; i++) {
 		for (size_t j = 0; j < n; j++) {
 			PolyElement e;
@@ -132,11 +163,24 @@ void generateM(Mat &M, MatDom &MD, PolyRing &R, PolyElement &f, PolyElement &g) 
 			R.write(cout << i << ", " << j << ": ", e) << endl;
 		}
 	}
+#endif
 }
 
 int main(int argc, char* argv[]) {
 	size_t p = 3;
-	size_t n = 4;
+	size_t n = 50;
+	size_t e = 6;
+	int gn = 13;
+
+	static Argument args[] = {
+		{ 'p', "-p P", "Set the field GF(p)", TYPE_INT, &p},
+		{ 'n', "-n N", "Set the matrix dimensions", TYPE_INT, &n},
+		{ 'e', "-e E", "Set the max exponent", TYPE_INT, &e},
+		{ 'g', "-g G", "Set irreducible such that f(p) = G", TYPE_INT, &gn},
+		END_OF_ARGUMENTS
+	};
+	
+	parseArguments(argc, argv, args);
 	
 	Field F(p);
 	PolyDom PD(F, "x");
@@ -145,16 +189,19 @@ int main(int argc, char* argv[]) {
 	MatDom MD(R);
 	
 	PolyElement g, f;
-	R.init(g, 13);
-	R.write(cout, g) << endl;
-	R.mul(f, g, g);
-	R.mulin(f, f);
-	R.write(cout, f) << endl;
+	R.init(g, gn);
+	R.write(cout << "irred: ", g) << endl;
+	
+	R.assign(f, R.one);
+	for (size_t i = 0; i < e; i++) {
+		R.mulin(f, g);
+	}
+	R.write(cout << "quotient: ", f) << endl;
 	
 	QuotRing QR(PD, f);
 	
 	Mat M(R, n, n);
-	generateM(M, MD, R, f, g);
+	generateM(M, MD, R, f, g, n, e);
 	
 	cout << endl;
 	
