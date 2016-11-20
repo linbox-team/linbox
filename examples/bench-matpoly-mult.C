@@ -417,6 +417,28 @@ void profile_matpol_mulkara(const Field& fld,  RandIter& Gen, size_t n, size_t d
 }
 
 
+template<typename Field, typename RandIter>
+void profile_matpol_mul(const Field& fld,  RandIter& Gen, size_t n, size_t d) {
+	typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field> MatrixP;
+	size_t k=1;
+	size_t d1=59061,d2=84462;
+	MatrixP A(fld,n,n,d1),B(fld,n,k,d2),C(fld,n,k,d1+d2-1);
+	// Generate random matrix of polynomial
+	for (size_t i=0;i<n*n;i++){
+		randomVect(Gen,A(i));
+	}
+	for (size_t i=0;i<n*k;i++)
+		randomVect(Gen,B(i));
+	
+	typedef PolynomialMatrixDomain<Field>    PolMatDom;
+	PolMatDom  PMD(fld);
+	Timer chrono;
+	chrono.start();
+	PMD.mul(C,A,B);
+	cout<<"Polynomial MAtrix Multiplication : "<<chrono.userElapsedTime()<<" s"<<endl;
+}
+
+
 template<typename Field>
 void runTest(const Field& F, size_t n, long b, long d, long seed, std::string test){
 	
@@ -436,6 +458,8 @@ void runTest(const Field& F, size_t n, long b, long d, long seed, std::string te
 	}
 	if (test == "kara")
 		profile_matpol_mulkara(F,G,n,d);
+	if (test == "mul")
+		profile_matpol_mul(F,G,n,d);
 }
 
 int main(int argc, char** argv){
