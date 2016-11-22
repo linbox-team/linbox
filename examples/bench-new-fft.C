@@ -263,12 +263,14 @@ int main(int argc, char** argv){
 	//	}
 	uint64_t bits = 0; //atoi(argv[1]);
 	long seed=((argc>2)?atoi(argv[2]):time(NULL));
-	size_t l2n = 12;
+	size_t l2n = 20;
 	size_t k = l2n;
 	RandomFFTPrime Rd;
 	uint32_t p;
 
+
 	//Modular<double,double>
+	
 	bits = 22;
 	Rd = RandomFFTPrime (1<<bits,seed);
 	p = (double)Rd.randomPrime(l2n);
@@ -276,13 +278,13 @@ int main(int argc, char** argv){
 	cout<<"prime : "<<p<<endl;
 	cout<<endl;
 
-	Givaro::Modular<double,double> Fd(p);
-//	cout << "Test Modular<double,double>: " << ((check_DIF(Fd,k,seed))?"OK":"KO!!!!") << endl;
-
+	Givaro::Modular<double> Fd(p);
+	cout << "Test Modular<double,double>: " << ((check_DIF(Fd,k,seed))?"OK":"KO!!!!") << endl;
+	/*
 #ifdef __FFLASFFPACK_HAVE_INT128
 	//Modular<int64_t,uint128_t>
 	bits = 59;
-	Rd = RandomFFTPrime (1ul<<bits,seed);
+	Rd = RandomFFTPrime (uint64_t(1)<<bits,seed);
 	p = (uint64_t)Rd.randomPrime(l2n);
 
 	cout<<"prime : "<<p<<endl;
@@ -291,31 +293,28 @@ int main(int argc, char** argv){
 	Givaro::Modular<uint64_t,uint128_t> Fi64(p);
 	cout << "Test Modular<int64_t,uint128_t> : " << ((check_DIF(Fi64,k,seed))?"OK":"KO!!!!") << endl;
 #endif
-
+	*/
 	//Modular<uint32_t,uint64_t>
-	bits = 28;
+	bits = 27;
 	Rd = RandomFFTPrime (1<<bits,seed);
 	p = (uint32_t)Rd.randomPrime(l2n);
 
-	cout<<"prime : "<<p<<endl;
-	cout<<endl;
-
 	Givaro::Modular<uint32_t,uint64_t> Fi32(p);
+	Fi32.write(cout)<<endl;
 	cout << "Test Modular<uint32_t,uint64_t>: " << ((check_DIF(Fi32,k,seed))?"OK":"KO!!!!") << endl;
 
 //	bench_DIF(Fi32,k,seed);
 
 
 	//Modular<uint16_t,uint32_t>
-	bits = 12;
-	k = l2n = 8;
+	bits = 11;
+	k = l2n = 7;
 	Rd = RandomFFTPrime (1<<bits,seed);
 	p = (uint16_t)Rd.randomPrime(l2n);
-
-	cout<<"prime : "<<p<<endl;
-	cout<<endl;
+	
 
 	Givaro::Modular<uint16_t,uint32_t> Fi16(p);
+	Fi16.write(cout)<<endl;
 	cout << "Test Modular<uint16_t,uint32_t> : " << ((check_DIF(Fi16,k,seed))?"OK":"KO!!!!") << endl;
 
 

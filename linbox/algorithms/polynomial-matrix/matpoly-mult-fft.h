@@ -83,7 +83,39 @@ Givaro::Timer mychrono[3];
 
 namespace LinBox
 {
-// generic handler for multiplication using FFT
+  template<typename MatrixP_F>
+    void check_mul (MatrixP_F &c, const MatrixP_F &a, const MatrixP_F &b,size_t deg) {
+    typename MatrixP_F::Matrix C1(c.field(),c.rowdim(),c.coldim()),C2(c.field(),c.rowdim(),c.coldim());
+    typename MatrixP_F::Matrix A1(c.field(),a.rowdim(),a.coldim());
+    typename MatrixP_F::Matrix B1(c.field(),b.rowdim(),b.coldim());
+    BlasMatrixDomain< typename MatrixP_F::Field>  BMD(c.field());
+    for (size_t k=0;k<deg;k++)
+      for(size_t i=0;i<c.rowdim()*c.coldim();i++)
+	c.field().addin(C1.getWritePointer()[i],c.get(i,k));	
+    for (size_t k=0;k<a.size();k++)
+      for(size_t i=0;i<a.rowdim()*a.coldim();i++)
+	c.field().addin(A1.getWritePointer()[i],a.get(i,k));	
+    for (size_t k=0;k<b.size();k++)
+      for(size_t i=0;i<b.rowdim()*b.coldim();i++)
+	c.field().addin(B1.getWritePointer()[i],b.get(i,k));	
+    
+    BMD.mul(C2,A1,B1);
+    bool correct=BMD.areEqual(C1,C2);
+    std::cerr<<"Checking polynomial matrix mul "
+	     <<a.rowdim()<<"x"<<a.coldim()<<"["<<a.size()<<"]"
+	     <<b.rowdim()<<"x"<<b.coldim()<<"["<<b.size()<<"]"
+	     <<" ... "<<(correct?"done":"error")<<std::endl;
+    if (!correct){
+      std::cerr<<"error with field : ";
+      c.field().write(std::cerr);
+      std::cerr<<std::endl;
+      /* std::cerr<<"A:="<<a<<";"<<std::endl; */
+      /* std::cerr<<"B:="<<b<<";"<<std::endl; */
+      /* std::cerr<<"C:="<<c<<";"<<std::endl; */
+    }
+  }
+  
+  // generic handler for multiplication using FFT
   template <class Field>
     class PolynomialMatrixFFTMulDomain {
   public:

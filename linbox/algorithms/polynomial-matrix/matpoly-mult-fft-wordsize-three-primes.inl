@@ -48,6 +48,7 @@ namespace LinBox {
 		typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain,Field> PMatrix;
 		//typedef Givaro::Modular<double>                ModField;
 		typedef Field ModField;
+	       		
 	private:
 		const Field              *_field;  // Read only
 		uint64_t                      _p;
@@ -110,7 +111,7 @@ namespace LinBox {
 			if ((_p-1) % pts == 0){
 				PolynomialMatrixFFTPrimeMulDomain<ModField> fftprime_domain (field());
 				fftprime_domain.mul_fft(lpts,c,a,b);
-				return;
+                		return;
 			}			
 			//std::cout<<"a:="<<a<<std::endl;
 			//std::cout<<"b:="<<b<<std::endl;			
@@ -141,8 +142,15 @@ namespace LinBox {
 				PolynomialMatrixFFTPrimeMulDomain<ModField> fftdomain (f[l]);
 				MatrixP ai(f[l],m,k,pts);
 				MatrixP bi(f[l],k,n,pts);
-				FFLAS::fassign(f[l],m*k*pts,a.getPointer(),1,ai.getWritePointer(),1);
-				FFLAS::fassign(f[l],k*n*pts,b.getPointer(),1,bi.getWritePointer(),1);
+				if (basis[l]> _p) {
+					FFLAS::fassign(f[l],m*k*pts,a.getPointer(),1,ai.getWritePointer(),1);
+					FFLAS::fassign(f[l],k*n*pts,b.getPointer(),1,bi.getWritePointer(),1);
+				}
+				else {
+					FFLAS::finit(f[l],m*k*pts,a.getPointer(),1,ai.getWritePointer(),1);
+					FFLAS::finit(f[l],k*n*pts,b.getPointer(),1,bi.getWritePointer(),1);
+				
+				}
 				c_i[l] = new MatrixP(f[l], m, n, pts);
 				fftdomain.mul_fft(lpts, *c_i[l], ai, bi);				
 				//std::cout<<"pi:="<<(uint64_t)basis[l]<<std::endl;
@@ -169,30 +177,7 @@ namespace LinBox {
 			for (size_t i=1;i<num_primes;i++)
 				delete c_i[i];
 
-
-#ifdef CHECK_MATPOL_MUL
-                        typename MatrixP::Matrix C1(field(),c.rowdim(),c.coldim()),C2(field(),c.rowdim(),c.coldim());
-                        typename MatrixP::Matrix A1(field(),a.rowdim(),a.coldim());
-                        typename MatrixP::Matrix B1(field(),b.rowdim(),b.coldim());
-                        BlasMatrixDomain<Field>  BMD(field());
-                        MatrixDomain<Field>  MD(field());
-                        for (size_t k=0;k<c.size();k++)
-                                for(size_t i=0;i<c.rowdim()*c.coldim();i++)
-                                        field().addin(C1.getWritePointer()[i],c.get(i,k));	
-                        for (size_t k=0;k<a.size();k++)
-                                for(size_t i=0;i<a.rowdim()*a.coldim();i++)
-                                        field().addin(A1.getWritePointer()[i],a.get(i,k));	
-                        for (size_t k=0;k<b.size();k++)
-                                for(size_t i=0;i<b.rowdim()*b.coldim();i++)
-                                        field().addin(B1.getWritePointer()[i],b.get(i,k));	
-                        BMD.mul(C2,A1,B1);
-
-                        std::cerr<<"Checking polynomial matrix mul (3 prime -CRT)  "
-                                 <<a.rowdim()<<"x"<<a.coldim()<<"["<<a.size()<<"]"
-                                 <<b.rowdim()<<"x"<<b.coldim()<<"["<<b.size()<<"]"
-                                 <<" ... "<<(BMD.areEqual(C1,C2)?"done":"error")<<std::endl;
-#endif
-
+			
 		}
 
 		// compute  c= (a*b x^(-n0-1)) mod x^n1

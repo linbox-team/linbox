@@ -68,7 +68,6 @@ namespace LinBox{
 
   public:
 
-    
 
     inline const IntField & field() const { return *_field; }
 
@@ -191,8 +190,17 @@ namespace LinBox{
 		 PolynomialMatrixThreePrimesFFTMulDomain<ModField> fftdomain (f);
 		 integer bound=integer(RNS._basis[l]-1)*integer(RNS._basis[l]-1)
 		   *integer((uint64_t) k)*integer((uint64_t)std::min(a.size(),b.size()));
-		 
+#ifdef CHECK_MATPOL_MUL
+		 MatrixP_F copy_a_i(f, m, k, pts),copy_b_i(f, k, n, pts);
+		 copy_a_i.copy(a_i);
+		 copy_b_i.copy(b_i);
+#endif		 
 		 fftdomain.mul_fft(lpts, *c_i[l], a_i, b_i, bound);
+#ifdef CHECK_MATPOL_MUL
+		 std::cerr<<"(3 primes CRT) - ";
+		 check_mul(*c_i[l], copy_a_i, copy_b_i,s);
+#endif
+
 	       }      
       FFT_PROFILING(2,"FFTprime mult+copying");
       DEL_MEM(8*(n_ta+n_tb)*num_primes);
@@ -231,8 +239,17 @@ namespace LinBox{
 	    PolynomialMatrixThreePrimesFFTMulDomain<ModField> fftdomain (f);
 	    integer bound=integer(smallRNS._basis[l]-1)*integer(smallRNS._basis[l]-1)
 	      *integer((int64_t)k)*integer((uint64_t)std::min(a.size(),b.size()));
-	    
-	    fftdomain.mul_fft(lpts, *c_i[loop+l], a_i, b_i, bound);		    
+
+#ifdef CHECK_MATPOL_MUL
+		 MatrixP_F copy_a_i(f, m, k, pts),copy_b_i(f, k, n, pts);
+		 copy_a_i.copy(a_i);
+		 copy_b_i.copy(b_i);
+#endif		 
+		 fftdomain.mul_fft(lpts, *c_i[loop+l], a_i, b_i, bound);
+#ifdef CHECK_MATPOL_MUL
+		 std::cerr<<"(3 prime -CRT) - ";
+		 check_mul(*c_i[loop+l], copy_a_i, copy_b_i,s);
+#endif	    
 	  }      
 	FFT_PROFILING(2,"FFTprime mult+copying");
       } // end of loop for memory saving

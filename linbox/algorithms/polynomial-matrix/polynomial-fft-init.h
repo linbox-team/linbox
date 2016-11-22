@@ -250,7 +250,7 @@ namespace LinBox {
 			_pl = fld->characteristic();
 			_p  = fld->characteristic();
 
-			linbox_check(_pl <= (field()->maxCardinality() >> 3)); // 8*p <= field()->maxCardinality() for Harvey's butterflies
+			linbox_check(_pl <= (field().maxCardinality() >> 3)); // 8*p <= field()->maxCardinality() for Harvey's butterflies
 			_dpl = (_pl << 1);
 			//_pinv = 1 / (double) _pl;
 
@@ -270,14 +270,14 @@ namespace LinBox {
 			if (w == 0){   // find a pseudo 2^lpts-th primitive root of unity
 				//_I = (1L << (_logp << 1)) / _pl;
 				Element _gen = find_gen (_m, _val2p);
-				_w = Givaro::powmod(_gen, 1UL<<(_val2p-ln), _pl);
+				_w = Givaro::powmod(_gen, uint64_t(1)<<(_val2p-ln), _pl);
 			}
 			else {
 				_w = w;
 			}
 
 			// compute w^(-1) mod p = w^(2^lpts - 1)
-			_invw = Givaro::powmod(_w, (1UL<<ln) - 1, _pl);
+			_invw = Givaro::powmod(_w, (uint64_t(1)<<ln) - 1, _pl);
 
 			chrono.clear();
 			chrono.start();
