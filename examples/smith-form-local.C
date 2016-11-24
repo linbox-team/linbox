@@ -28,7 +28,7 @@ using namespace std;
 typedef Givaro::Modular<double> Field;
 typedef typename Field::Element Element;
 typedef Givaro::Poly1Dom<Field,Givaro::Dense> PolyDom;
-typedef GivaroPoly<PolyDom> PolyRing;
+typedef GivaroPoly<Field> PolyRing;
 typedef GivaroPolyQuotient<PolyDom> QuotRing;
 typedef GivaroPolyRandIter<PolyRing> PolyRandIter;
 typedef typename PolyRing::Element PolyElement;
@@ -153,7 +153,7 @@ void generateM(
 	MD.mul(M, L, D);
 	MD.mulin(M, T);
 	
-	if (VERBOSE) {
+	if (VERBOSE > 1) {
 		cout << endl;
 		for (size_t i = 0; i < n; i++) {
 			for (size_t j = 0; j < n; j++) {
@@ -183,8 +183,7 @@ int main(int argc, char* argv[]) {
 	parseArguments(argc, argv, args);
 	
 	Field F(p);
-	PolyDom PD(F, "x");
-	PolyRing R(PD);
+	PolyRing R(F, "x");
 	PolyRandIter PRI(R, 0, 10);
 	MatDom MD(R);
 	
@@ -198,7 +197,7 @@ int main(int argc, char* argv[]) {
 	}
 	R.write(cout << "quotient: ", f) << endl;
 	
-	QuotRing QR(PD, f);
+	QuotRing QR(R, f);
 	
 	Mat M(R, n, n);
 	generateM(M, MD, R, f, g, n, e);

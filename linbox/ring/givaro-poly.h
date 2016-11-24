@@ -37,13 +37,13 @@ namespace LinBox
 	template<class Field>
 	class GivaroPolyRandIter;
 
-	template<class Domain>
-	class GivaroPoly {
-		Domain _pd;
+	template<class Domain, class StorageTag=Givaro::Dense>
+	class GivaroPoly : public Givaro::Poly1Dom<Domain, StorageTag> {
+		Givaro::Poly1Dom<Domain, StorageTag> _pd;
 	public:
-		typedef Domain Domain_t;
-		typedef typename Domain::Element Element;
-		typedef typename Domain::Type_t Scalar_t;
+		typedef Givaro::Poly1Dom<Domain, StorageTag> Domain_t;
+		typedef typename Domain_t::Element Element;
+		typedef typename Domain_t::Type_t Scalar_t;
 
 		typedef GivaroPolyRandIter<GivaroPoly<Domain> > RandIter;
 
@@ -51,14 +51,25 @@ namespace LinBox
 
 		GivaroPoly(){}
 
-		GivaroPoly(const Domain &pd) : _pd(pd) {
+		GivaroPoly(
+			const Domain &d,
+			const Givaro::Indeter& X = Givaro::Indeter()
+		) : 
+			Givaro::Poly1Dom<Domain, StorageTag>(d, X),
+			_pd(d, X)
+		{
 			_pd.assign(zero, _pd.zero);
 			_pd.assign(one, _pd.one);
 			_pd.assign(mOne, _pd.mOne);
 		}
 
-		GivaroPoly(const GivaroPoly &P)
-			: _pd(P._pd), zero(P.zero), one(P.one), mOne(P.mOne) {}
+		GivaroPoly(const GivaroPoly &P) : 
+			Givaro::Poly1Dom<Domain, StorageTag>(P), 
+			_pd(P._pd),
+			zero(P.zero),
+			one(P.one),
+			mOne(P.mOne)
+		{}
 
 		GivaroPoly &operator=(const GivaroPoly &F) {
 			return *this;
@@ -130,21 +141,21 @@ namespace LinBox
 			return x;
 		}
 
-		Element &assign(Element &x, const Element &y) const {
-			return _pd.assign(x, y);
-		}
+		//Element &assign(Element &x, const Element &y) const {
+		//	return _pd.assign(x, y);
+		//}
 
 		integer &cardinality(integer &c) const {
 			return c = -1;
 		}
 
-		integer &characteristic(integer &c) const {
-			return c = _pd.characteristic(c);
-		}
+		//integer &characteristic(integer &c) const {
+		//	return c = _pd.characteristic(c);
+		//}
 
-		bool areEqual(const Element &x, const Element &y) const {
-			return _pd.areEqual(x, y);
-		}
+		//bool areEqual(const Element &x, const Element &y) const {
+		//	return _pd.areEqual(x, y);
+		//}
 		
 		Element &normalize(Element &z, const Element &x) const {
 			Scalar_t a;
@@ -174,17 +185,17 @@ namespace LinBox
 			return _pd.areEqual(x, z);
 		}
 
-		bool isZero(const Element &x) const {
-			return _pd.isZero(x);
-		}
+		//bool isZero(const Element &x) const {
+		//	return _pd.isZero(x);
+		//}
 
-		bool isOne(const Element &x) const {
-			return _pd.isOne(x);
-		}
+		//bool isOne(const Element &x) const {
+		//	return _pd.isOne(x);
+		//}
 
-		bool isMOne(const Element &x) const {
-			return _pd.isMOne(x);
-		}
+		//bool isMOne(const Element &x) const {
+		//	return _pd.isMOne(x);
+		//}
 
 		std::ostream &write(std::ostream &os) const {
 			return os << "polynomials";
@@ -203,25 +214,25 @@ namespace LinBox
 			return is;
 		}
 
-		Element &add(Element &x, const Element &y, const Element &z) const {
-			return _pd.add(x, y, z);
-		}
+		//Element &add(Element &x, const Element &y, const Element &z) const {
+		//	return _pd.add(x, y, z);
+		//}
 
-		Element &sub(Element &x, const Element &y, const Element &z) const {
-			return _pd.sub(x, y, z);
-		}
+		//Element &sub(Element &x, const Element &y, const Element &z) const {
+		//	return _pd.sub(x, y, z);
+		//}
 
-		Element &mul(Element &x, const Element &y, const Element &z) const {
-			return _pd.mul(x, y, z);
-		}
+		//Element &mul(Element &x, const Element &y, const Element &z) const {
+		//	return _pd.mul(x, y, z);
+		//}
 
-		Element &div(Element &x, const Element &y, const Element &z) const {
-			return _pd.div(x, y, z);
-		}
+		//Element &div(Element &x, const Element &y, const Element &z) const {
+		//	return _pd.div(x, y, z);
+		//}
 
-		Element &neg(Element &x, const Element &y) const {
-			return _pd.neg(x, y);
-		}
+		//Element &neg(Element &x, const Element &y) const {
+		//	return _pd.neg(x, y);
+		//}
 
 		Element &inv(Element &x, const Element &y) const {
 			if (_pd.degree(y) == 0 && !_pd.isZero(y)) {
@@ -233,29 +244,29 @@ namespace LinBox
 			return _pd.assign(x,zero);
 		}
 
-		Element &axpy(Element &r, const Element &a, const Element &x, const Element &y) const {
-			return _pd.axpy(r,a,x,y);
-		}
+		//Element &axpy(Element &r, const Element &a, const Element &x, const Element &y) const {
+		//	return _pd.axpy(r,a,x,y);
+		//}
 
-		Element &addin(Element &x, const Element &y) const {
-			return _pd.addin(x, y);
-		}
+		//Element &addin(Element &x, const Element &y) const {
+		//	return _pd.addin(x, y);
+		//}
 
-		Element &subin(Element &x, const Element &y) const {
-			return _pd.subin(x, y);
-		}
+		//Element &subin(Element &x, const Element &y) const {
+		//	return _pd.subin(x, y);
+		//}
 
-		Element &mulin(Element &x, const Element &y) const {
-			return _pd.mulin(x, y);
-		}
+		//Element &mulin(Element &x, const Element &y) const {
+		//	return _pd.mulin(x, y);
+		//}
 
-		Element &divin(Element &x, const Element &y) const {
-			return _pd.divin(x, y);
-		}
+		//Element &divin(Element &x, const Element &y) const {
+		//	return _pd.divin(x, y);
+		//}
 
-		Element &negin(Element &x) const {
-			return _pd.negin(x);
-		}
+		//Element &negin(Element &x) const {
+		//	return _pd.negin(x);
+		//}
 
 		Element &invin(Element &x) const {
 			Element tmp;
@@ -264,9 +275,9 @@ namespace LinBox
 			return x;
 		}
 
-		Element &axpyin(Element &r, const Element &a, const Element &x) const {
-			return _pd.axpyin(r, a, x);
-		}
+		//Element &axpyin(Element &r, const Element &a, const Element &x) const {
+		//	return _pd.axpyin(r, a, x);
+		//}
 
 		// PIR Functions
 
@@ -304,9 +315,9 @@ namespace LinBox
 		}
 
 		// g = gcd(a,b)
-		Element& gcd(Element &g, const Element &a, const Element &b) const {
-			return _pd.gcd(g,a,b);
-		}
+		//Element& gcd(Element &g, const Element &a, const Element &b) const {
+		//	return _pd.gcd(g,a,b);
+		//}
 		
 		Element& gcdin(Element &a, const Element &b) const {
 			Element g;
@@ -315,9 +326,9 @@ namespace LinBox
 		}
 		
 		// g = gcd(a,b)
-		Element& gcd(Element &g, Element &s, Element &t, const Element &a, const Element &b) const {
-			return _pd.gcd(g,s,t,a,b);
-		}
+		//Element& gcd(Element &g, Element &s, Element &t, const Element &a, const Element &b) const {
+		//	return _pd.gcd(g,s,t,a,b);
+		//}
 
 		// g = gcd(a,b) = a*s + b*t
 		Element &xgcd(Element &g, Element &s, Element &t, const Element &a, const Element &b) const {
