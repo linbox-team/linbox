@@ -162,31 +162,30 @@ namespace LinBox
 		//bool areEqual(const Element &x, const Element &y) const {
 		//	return _pd.areEqual(x, y);
 		//}
-		
-		Element &normalize(Element &z, const Element &x) const {
-			_pd.gcd(z, x, _f);
-			if (_pd.degree(z).value() == _pd.degree(_f).value()) {
-				_pd.assign(z, zero);
-			}
-			
-			return z;
-		}
 
 		Element &normalizeIn(Element &x) const {
-			_pd.gcdin(x, _f);
+			_pd.gcd(x, x, _f);
 			
 			if (_pd.degree(x).value() == _pd.degree(_f).value()) {
 				return _pd.assign(x, zero);
 			}
 			
+			Scalar_t a;
+			_pd.leadcoef(a, x);
+			_pd.divin(x, a);
 			return x;
+		}
+		
+		Element &normalize(Element &z, const Element &x) const {
+			_pd.assign(z, x);
+			return this->normalizeIn(z);
 		}
 		
 		bool areAssociates(const Element &x, const Element &y) const {
 			Element a, b;
-			_pd.normalize(a, x, _f);
-			_pd.normalize(b, y, _f);
-			return _pd.degree(a).value() == _pd.degree(b).value();
+			this->normalize(a, x, _f);
+			this->normalize(b, y, _f);
+			return _pd.areEqual(a, b);
 		}
 
 		//std::ostream &write(std::ostream &os) const {
@@ -218,28 +217,17 @@ namespace LinBox
 		//	return _pd.mul(x, y, z);
 		//}
 
-		Element &div(Element &x, const Element &y, const Element &z) const {
-			Element g;
-			this->normalize(g, z);
-			
-			Element r;
-			_pd.div(r, z, g);
-			this->invin(r);
-			
-			_pd.div(x, y, g);
-			return _pd.mulin(x, r);
-		}
-
 		Element &divin(Element &x, const Element &y) const {
-			Element g;
-			this->normalize(g, y);
-			
-			Element r;
-			_pd.div(r, y, g);
-			this->invin(r);
+			Element g, s, t;
+			_pd.gcd(g, s, t, y, _f);
 			
 			_pd.divin(x, g);
-			return _pd.mulin(x, r);
+			return _pd.mulin(x, s);
+		}
+
+		Element &div(Element &x, const Element &y, const Element &z) const {
+			_pd.assign(x, y);
+			return this->divin(x, z);
 		}
 
 		Element &neg(Element &x, const Element &y) const {
@@ -290,9 +278,10 @@ namespace LinBox
 
 		bool isDivisor(const Element &x, const Element &y) const {
 			Element a, b;
-			size_t dega = _pd.degree(_pd.normalize(a, x, _f)).value();
-			size_t degb = _pd.degree(_pd.normalize(b, y, _f)).value();
-			return degb != 0 && dega >= degb;
+			_pd.normalize(a, x, _f);
+			_pd.normalize(b, y, _f);
+			_pd.modin(a, b);
+			return _pd.areEqual(a, this->zero);
 		}
 		
 		// a = q b + r
@@ -318,24 +307,19 @@ namespace LinBox
 		
 		bool isUnit(const Element& x) const {
 			Element tmp;
-			return _pd.degree(_pd.gcd(tmp, x, _f)).value() == 0;
-		}
-
-		// g = gcd(a,b)
-		Element& gcd(Element &g, const Element &a, const Element &b) const {
-			Element ga, gb;
-			size_t da = _pd.degree(this->normalize(ga, a)).value();
-			size_t db = _pd.degree(this->normalize(gb, b)).value();
-			
-			if (da != 0 && da <= db) {
-				return _pd.assign(g, ga);
-			} else {
-				return _pd.assign(g, gb);
-			}
+			return this->areEqual(this->normalize(tmp, x), this->one);
 		}
 		
 		Element& gcdin(Element &a, const Element &b) const {
-			return this->gcd(a, a, b);
+			Element ga, gb;
+			this->normalize(ga, a);
+			this->normalize(gb, b);
+			return _pd.gcd(a, ga, gb);
+		}
+		
+		Element& gcd(Element &g, const Element &a, const Element &b) const {
+			_pd.assign(g, a);
+			return this->gcdin(g, b);
 		}
 		
 		// g = gcd(a,b)

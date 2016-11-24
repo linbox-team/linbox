@@ -40,7 +40,7 @@ typedef IliopoulosDomain<PolyRing> IliopoulosDom;
 typedef SmithFormLocal<QuotRing> LocalDom;
 typedef DenseVector<PolyRing> FactorVector;
 
-#define VERBOSE 0
+int VERBOSE = 0;
 
 void local(Mat &M, PolyElement &f, QuotRing &R) {
 	size_t n = M.coldim();
@@ -53,7 +53,6 @@ void local(Mat &M, PolyElement &f, QuotRing &R) {
 		}
 	}
 	
-	cout << "Starting Local" << endl;
 	LocalDom sfl;
 	list<PolyElement> l;
 	
@@ -63,13 +62,13 @@ void local(Mat &M, PolyElement &f, QuotRing &R) {
 	timer.stop();
 	cout << "Local Time: " << timer << endl;
 	
-#if VERBOSE
-	list<PolyElement>::const_iterator iterator;
-	for (iterator = l.begin(); iterator != l.end(); ++iterator) {
-		R.write(cout, *iterator) << endl;
+	if (VERBOSE) {
+		list<PolyElement>::const_iterator iterator;
+		for (iterator = l.begin(); iterator != l.end(); ++iterator) {
+			R.write(cout, *iterator) << endl;
+		}
+		cout << endl;
 	}
-	cout << endl;
-#endif
 }
 
 void ilio(Mat &M, PolyElement &f, MatDom &MD, PolyRing &R) {
@@ -88,12 +87,12 @@ void ilio(Mat &M, PolyElement &f, MatDom &MD, PolyRing &R) {
 	timer.stop();
 	cout << "Iliopolous Time: " << timer << endl;
 	
-#if VERBOSE
-	for (size_t i = 0; i < l.size(); i++) {
-		R.write(cout, l[i]) << endl;
+	if (VERBOSE) {
+		for (size_t i = 0; i < l.size(); i++) {
+			R.write(cout, l[i]) << endl;
+		}
+		cout << endl;
 	}
-	cout << endl;
-#endif
 }
 
 void generateM(
@@ -146,24 +145,24 @@ void generateM(
 		}
 		
 		D.setEntry(i, i, di);
-#if VERBOSE
-		R.write(cout << i << ", " << i << ": ", di) << endl;
-#endif
+		if (VERBOSE > 1) {
+			R.write(cout << i << ", " << i << ": ", di) << endl;
+		}
 	}
 	
 	MD.mul(M, L, D);
 	MD.mulin(M, T);
 	
-#if VERBOSE
-	cout << endl;
-	for (size_t i = 0; i < n; i++) {
-		for (size_t j = 0; j < n; j++) {
-			PolyElement e;
-			M.getEntry(e, i, j);
-			R.write(cout << i << ", " << j << ": ", e) << endl;
+	if (VERBOSE) {
+		cout << endl;
+		for (size_t i = 0; i < n; i++) {
+			for (size_t j = 0; j < n; j++) {
+				PolyElement e;
+				M.getEntry(e, i, j);
+				R.write(cout << i << ", " << j << ": ", e) << endl;
+			}
 		}
 	}
-#endif
 }
 
 int main(int argc, char* argv[]) {
@@ -177,6 +176,7 @@ int main(int argc, char* argv[]) {
 		{ 'n', "-n N", "Set the matrix dimensions", TYPE_INT, &n},
 		{ 'e', "-e E", "Set the max exponent", TYPE_INT, &e},
 		{ 'g', "-g G", "Set irreducible such that f(p) = G", TYPE_INT, &gn},
+		{ 'v', "-v V", "Set verbosity", TYPE_INT, &VERBOSE},
 		END_OF_ARGUMENTS
 	};
 	
