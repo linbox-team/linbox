@@ -89,10 +89,10 @@ LINBOX_BIN=@bindir@
 
 %:%.C
 #	$(LTCXXCOMPILE) -c -o $@.$(OBJEXT) $<
-	$(AM_V_CXX)$(CXXCOMPILE) -c -o $@.$(OBJEXT) $<
+	$(AM_V_CXX)$(CXXCOMPILE) $(OPTFLAGS) -c -o $@.$(OBJEXT) $<
 	$(AM_V_CXXLD)$(CXXLINK) $@.$(OBJEXT) $(LDADD)
 
 %:%.cpp
 #	$(LTCXXCOMPILE) -c -o $@.$(OBJEXT) $<
-	$(AM_V_CXX)$(CXXCOMPILE) -c -o $@.$(OBJEXT) $<
+	$(AM_V_CXX)$(CXXCOMPILE) -$(OPTFLAGS) c -o $@.$(OBJEXT) $<
 	$(AM_V_CXXLD)$(CXXLINK) $@.$(OBJEXT) $(LDADD)
