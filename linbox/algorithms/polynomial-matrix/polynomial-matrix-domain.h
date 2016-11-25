@@ -38,8 +38,7 @@
 
         
 namespace LinBox
-{
-
+{     
 	template <class Field>
 	class PolynomialMatrixMulDomain {
 	public:
@@ -70,52 +69,8 @@ namespace LinBox
                                         //std::cout<<"PolMul Naive"<<std::endl;
 					_naive.mul(c,a,b);
                                 }
-#ifdef CHECK_MATPOL_MUL
-                        typename PMatrix1::Matrix C1(field(),c.rowdim(),c.coldim()),C2(field(),c.rowdim(),c.coldim());
-                        typename PMatrix2::Matrix A1(field(),a.rowdim(),a.coldim());
-                        typename PMatrix3::Matrix B1(field(),b.rowdim(),b.coldim());
-                        BlasMatrixDomain<Field>  BMD(field());
-                        MatrixDomain<Field>  MD(field());
-                        for (size_t k=0;k<c.size();k++)
-                                for(size_t i=0;i<c.rowdim()*c.coldim();i++)
-                                        field().addin(C1.getWritePointer()[i],c.get(i,k));	
-                        for (size_t k=0;k<a.size();k++)
-                                for(size_t i=0;i<a.rowdim()*a.coldim();i++)
-                                        field().addin(A1.getWritePointer()[i],a.get(i,k));	
-                        for (size_t k=0;k<b.size();k++)
-                                for(size_t i=0;i<b.rowdim()*b.coldim();i++)
-                                        field().addin(B1.getWritePointer()[i],b.get(i,k));	
-
-
-                        BMD.mul(C2,A1,B1);
-
-                        std::cerr<<"Checking polynomial matrix mul "
-                                 <<a.rowdim()<<"x"<<a.coldim()<<"["<<a.size()<<"]"
-                                 <<b.rowdim()<<"x"<<b.coldim()<<"["<<b.size()<<"]"
-                                 <<" ... "<<(BMD.areEqual(C1,C2)?"done":"error")<<std::endl;
-                        if (!BMD.areEqual(C1,C2)){
-                                // std::cout<<"A:=";
-                                // a.write(std::cout);
-                                // std::cout<<";\n";
-                                // std::cout<<"B:=";
-                                // b.write(std::cout);
-                                // std::cout<<";\n";
-                                // std::cout<<"C:=";
-                                // c.write(std::cout);
-                                // std::cout<<";\n";
-                                // std::cout<<"A1:=";
-                                // A1.write(std::cout,true);
-                                // std::cout<<";\n";
-                                // std::cout<<"B1:=";
-                                // B1.write(std::cout,true);
-                                // std::cout<<";\n";
-                                // std::cout<<"C1:=";
-                                // C1.write(std::cout,true);
-                                // std::cout<<";\n";
-                                // std::cout<<"C2:=";
-                                // C2.write(std::cout,true);
-                                // std::cout<<";\n";
-                        }
+#ifdef CHECK_MATPOL_MUL                       
+                        check_mul(c,a,b,c.size());
 #endif
 
                 }

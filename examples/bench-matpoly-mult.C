@@ -422,6 +422,7 @@ void profile_matpol_mul(const Field& fld,  RandIter& Gen, size_t n, size_t d) {
 	typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field> MatrixP;
 	size_t k=1;
 	size_t d1=59061,d2=84462;
+	if (d) d1=d2=d;
 	MatrixP A(fld,n,n,d1),B(fld,n,k,d2),C(fld,n,k,d1+d2-1);
 	// Generate random matrix of polynomial
 	for (size_t i=0;i<n*n;i++){
@@ -441,7 +442,6 @@ void profile_matpol_mul(const Field& fld,  RandIter& Gen, size_t n, size_t d) {
 
 template<typename Field>
 void runTest(const Field& F, size_t n, long b, long d, long seed, std::string test){
-	
 	typename Field::RandIter G(F,b,seed);
 	//typename Field::RandIter G(F,seed);	
 	if (test == "check"|| test == "all")
@@ -461,12 +461,14 @@ void runTest(const Field& F, size_t n, long b, long d, long seed, std::string te
 	if (test == "mul")
 		profile_matpol_mul(F,G,n,d);
 }
+}
 
 int main(int argc, char** argv){
 	static size_t  n = 32; // matrix dimension
 	static long    b = 20; // entries bitsize
 	static uint64_t d = 32;  // matrix degree
 	static bool    z = false; // computer over  Z[x]
+	static bool    fourier = false; // computer over  Fp[x] with p a fourier prime
 	static long    seed = time(NULL);
 	static std::string  test ="all";
 
@@ -477,6 +479,7 @@ int main(int argc, char** argv){
 		{ 'z', "-z y", "Perform the computation over Z[x]", TYPE_BOOL, &z},
 		{ 's', "-s s", "Set the random seed to a specific value", TYPE_INT, &seed},
 		{ 't', "-t t", "Choose the targeted test {all,check,bench,fft,kara,longfft}", TYPE_STR, &test},
+		{ 'f', "-f f", "Choose a fourier prime when b<26 ", TYPE_BOOL, &fourier},
 		END_OF_ARGUMENTS
 	};
 	parseArguments (argc, argv, args);
@@ -507,16 +510,28 @@ int main(int argc, char** argv){
 #ifdef FFT_PROFILER 
 			FFT_PROF_LEVEL=1; 
 #endif
-			RandomFFTPrime Rd(1<<b,seed);
-			integer p = Rd.randomPrime(integer(d).bitsize()+1);
-			//Givaro::Modular<int32_t> F((int32_t)p);
-			Givaro::Modular<double> F((int32_t)p);
-			cout<<"Computation over Fp[x] with p=  "<<p<<" (FFT prime)"<<endl;
-			cout<<"++++++++++++++++++++++++++++++++++++"<<endl;
-			runTest (F,n,b,d,seed,test);
+			if (fourier){
+				RandomFFTPrime Rd(1<<b,seed);
+				integer p = Rd.randomPrime(integer(d).bitsize()+1);
+				//Givaro::Modular<int32_t> F((int32_t)p);
+				Givaro::Modular<double> F((int32_t)p);
+				cout<<"Computation over Fp[x] with p=  "<<p<<" (FFT prime)"<<endl;
+				cout<<"++++++++++++++++++++++++++++++++++++"<<endl;
+				runTest (F,n,b,d,seed,test);
+			} else {
+				RandomPrimeIter Rd(b,seed);
+				//uint64_t dd=integer(d).bitsize()+1;
+				integer p;
+				Rd.random(p);
+				//Givaro::Modular<int32_t> F((int32_t)p);
+				Givaro::Modular<double> F((int32_t)p);
+				cout<<"Computation over Fp[x] with p=  "<<p<<" (normal prime)"<<endl;
+				cout<<"++++++++++++++++++++++++++++++++++++"<<endl;
+				runTest (F,n,b,d,seed,test);
+			}
 		}
 	}
-	return 0;
+	return 0; 
 } 
  
 

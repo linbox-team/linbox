@@ -70,7 +70,8 @@ namespace LinBox
                     R.gcdin(g, *q);
                     
                     if ( R.isUnit(g) ) {
-                        R.divin(g, g); break;
+                        //R.divin(g, g); break;
+			R.assign(g, R.one); break;
                     }
                 }
 

@@ -232,8 +232,8 @@ namespace LinBox
 		integer & random (integer & a) const
 		{
 			integer::random(a,_bits);
-
 			_IPD.nextprimein(a);
+
 			while (a.bitsize()>_bits)
 				_IPD.prevprimein(a);
 

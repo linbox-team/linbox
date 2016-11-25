@@ -101,6 +101,14 @@ namespace LinBox {
 			size_t n = b.coldim();
 			size_t pts=c.size();
 			//std::cout<<"mul : 2^"<<lpts<<std::endl;
+
+#ifdef CHECK_MATPOL_MUL
+			MatrixP a_copy(field(),a.rowdim(),a.coldim(),pts);
+			MatrixP b_copy(field(),b.rowdim(),b.coldim(),pts);
+			a_copy.copy(a);
+			b_copy.copy(b);		       
+#endif
+
 #ifdef FFT_PROFILER
 			Timer totalTime;
 			totalTime.start();
@@ -193,6 +201,11 @@ namespace LinBox {
 #ifdef FFT_PROFILER
 			totalTime.stop();
 			//std::cout<<"FFT(1): total time : "<<totalTime<<std::endl;
+#endif
+
+#ifdef CHECK_MATPOL_MUL
+			std::cerr<<"(Fourier prime) - ";
+			check_mul(c,a_copy,b_copy,c.size());
 #endif
 		}
 

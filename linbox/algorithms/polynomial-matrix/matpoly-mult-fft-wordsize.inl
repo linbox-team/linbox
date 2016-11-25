@@ -56,13 +56,14 @@ namespace LinBox {
 
                 template<typename Matrix1, typename Matrix2, typename Matrix3>
                 void mul (Matrix1 &c, const Matrix2 &a, const Matrix3 &b, size_t max_rowdeg=0) {
+
 			size_t deg  = (max_rowdeg?max_rowdeg:a.size()+b.size()-2); //size_t deg  = a.size()+b.size()-1;
 			c.resize(deg+1);
 			size_t lpts = 0;
 			size_t pts  = 1; while (pts <= deg) { pts= pts<<1; ++lpts; }
-                        if ( _p< 536870912ULL  &&  ((_p-1) % pts)==0){
+                        if ( _p< 536870912ULL  &&  ((_p-1) % pts)==0){				
 				PolynomialMatrixFFTPrimeMulDomain<Field> MulDom(field());
-                                MulDom.mul(c,a,b, max_rowdeg);
+				MulDom.mul(c,a,b, max_rowdeg);
                         }
                         else {
 				if (_p< 536870912ULL){
