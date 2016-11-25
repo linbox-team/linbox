@@ -119,7 +119,6 @@ namespace LinBox {
 			size_t m = a.rowdim();
 			size_t k = a.coldim();
 			size_t n = b.coldim();
-			
 			uint64_t prime_max=maxFFTPrimeValue(k,pts); // CAREFUL: only for Modular<double>;
 			RandomFFTPrime RdFFT(prime_max);
 			std::vector<integer> bas;
@@ -268,8 +267,15 @@ namespace LinBox {
 				PolynomialMatrixFFTPrimeMulDomain<ModField> fftdomain (f[l]);
 				MatrixP ai(f[l],m,k,pts);
 				MatrixP bi(f[l],k,n,pts);
-				FFLAS::fassign(f[l],m*k*pts,a.getPointer(),1,ai.getWritePointer(),1);
-				FFLAS::fassign(f[l],k*n*pts,b.getPointer(),1,bi.getWritePointer(),1);
+				if (basis[l]> _p) {
+					FFLAS::fassign(f[l],m*k*pts,a.getPointer(),1,ai.getWritePointer(),1);
+					FFLAS::fassign(f[l],k*n*pts,b.getPointer(),1,bi.getWritePointer(),1);
+				}
+				else {
+					FFLAS::finit(f[l],m*k*pts,a.getPointer(),1,ai.getWritePointer(),1);
+					FFLAS::finit(f[l],k*n*pts,b.getPointer(),1,bi.getWritePointer(),1);
+				
+				}			       
 				c_i[l] = new MatrixP(f[l], m, n, pts);
 				fftdomain.midproduct_fft(lpts, *c_i[l], ai, bi,smallLeft);				
 				//std::cout<<"pi:="<<(uint64_t)basis[l]<<std::endl;

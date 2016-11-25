@@ -84,20 +84,17 @@ Givaro::Timer mychrono[3];
 namespace LinBox
 {
   template<typename MatrixP_F>
-    void check_mul (MatrixP_F &c, const MatrixP_F &a, const MatrixP_F &b,size_t deg) {
+    bool check_mul (MatrixP_F &c, const MatrixP_F &a, const MatrixP_F &b,size_t deg) {
     typename MatrixP_F::Matrix C1(c.field(),c.rowdim(),c.coldim()),C2(c.field(),c.rowdim(),c.coldim());
     typename MatrixP_F::Matrix A1(c.field(),a.rowdim(),a.coldim());
     typename MatrixP_F::Matrix B1(c.field(),b.rowdim(),b.coldim());
     BlasMatrixDomain< typename MatrixP_F::Field>  BMD(c.field());
     for (size_t k=0;k<deg;k++)
-      for(size_t i=0;i<c.rowdim()*c.coldim();i++)
-	c.field().addin(C1.getWritePointer()[i],c.get(i,k));	
+      BMD.addin(C1,c[k]);
     for (size_t k=0;k<a.size();k++)
-      for(size_t i=0;i<a.rowdim()*a.coldim();i++)
-	c.field().addin(A1.getWritePointer()[i],a.get(i,k));	
+      BMD.addin(A1,a[k]);
     for (size_t k=0;k<b.size();k++)
-      for(size_t i=0;i<b.rowdim()*b.coldim();i++)
-	c.field().addin(B1.getWritePointer()[i],b.get(i,k));	
+      BMD.addin(B1,b[k]);
     
     BMD.mul(C2,A1,B1);
     bool correct=BMD.areEqual(C1,C2);
@@ -113,7 +110,85 @@ namespace LinBox
       /* std::cerr<<"B:="<<b<<";"<<std::endl; */
       /* std::cerr<<"C:="<<c<<";"<<std::endl; */
     }
+    return correct;
   }
+  
+
+
+  template<typename MatrixP_F>
+    bool check_midproduct (MatrixP_F &c, const MatrixP_F &a, const MatrixP_F &b, bool smallLeft=true, size_t n0=0,size_t n1=0, size_t deg=0) {
+    typename MatrixP_F::Matrix C1(c.field(),c.rowdim(),c.coldim()),C2(c.field(),c.rowdim(),c.coldim());
+    typename MatrixP_F::Matrix A1(c.field(),a.rowdim(),a.coldim());
+    typename MatrixP_F::Matrix B1(c.field(),b.rowdim(),b.coldim());
+    BlasMatrixDomain< typename MatrixP_F::Field>  BMD(c.field());
+
+    if (deg==0) deg=c.size();
+    if (n0 == 0) n0=deg-1;
+    if (n1 == 0) n1=2*deg;
+
+
+    //std::cerr<<"n0="<<n0<<std::endl;
+    //std::cerr<<"n1="<<n1<<std::endl;
+    
+    for (size_t k=0;k<deg;k++)
+      BMD.addin(C1,c[k]);
+    
+    if (smallLeft){
+
+      size_t k=std::min(n0,a.size()-1);
+      size_t j=n0-k;
+      for (;k<size_t(-1);k--){
+	//std::cout<<"+a["<<k<<"]"<<std::endl;
+	BMD.addin(A1,a[k]);
+	//std::cout<<"*b["<<j<<"]"<<std::endl;
+	BMD.axpyin(C2,A1,b[j]);
+	j++;
+      }
+      for (k=a.size()-1;k<size_t(-1) && j < b.size();k--){
+	//std::cout<<"-a["<<k<<"]"<<std::endl;
+
+	//BMD.subin(A1,a[k]); NOT SUPPORTED BY Modular<ruint>
+	for (size_t i=0;i<a.rowdim();i++)
+	  for (size_t j=0;j<a.coldim();j++)
+	    (a.field()).subin(A1.refEntry(i,j), a.get(i,j,k));
+
+	
+	//std::cout<<"*b["<<j<<"]"<<std::endl;
+	BMD.axpyin(C2,A1,b[j]);
+	j++;
+      }
+    }
+    else {
+      std::cerr<<"Checking polynomial matrix midp  with smallLeft=false is not yet implemented...aborting";
+      std::terminate();
+      
+    }
+    
+    bool correct=BMD.areEqual(C1,C2);
+    std::cerr<<"Checking polynomial matrix midp "
+	     <<a.rowdim()<<"x"<<a.coldim()<<"["<<a.size()<<"]"
+	     <<b.rowdim()<<"x"<<b.coldim()<<"["<<b.size()<<"]"
+	     <<" ... "<<(correct?"done":"error")<<std::endl;
+    if (!correct){
+      std::cerr<<"error with field : ";
+      c.field().write(std::cerr);
+      std::cerr<<std::endl;
+      if (c.size()*c.rowdim() < 20) {
+	std::cerr<<"A:="<<a<<";"<<std::endl;
+	std::cerr<<"B:="<<b<<";"<<std::endl;
+	std::cerr<<"C:="<<c<<";"<<std::endl;
+	std::cerr<<"C1:=";C1.write(std::cerr,Tag::FileFormat::Maple)<<std::endl;
+	std::cerr<<"C2:=";C2.write(std::cerr,Tag::FileFormat::Maple)<<std::endl;
+      }
+    }
+    return correct;
+  }
+    
+    
+
+
+
+
   
   // generic handler for multiplication using FFT
   template <class Field>
@@ -155,7 +230,7 @@ namespace LinBox
     //std::cout<<"maxFFTPrime: pts -> "<<pts<<std::endl;
     //std::cout<<"maxFFTPrime: replacing "<<k<<" -> "<<k/c<<std::endl;
 	  
-    if (c>=k){
+    if (c>=k && c!=1){
       std::cout<<"MatPoly FFT (maxPrimeValue): impossible to find enough FFT Prime\n";
       std::terminate();
     }

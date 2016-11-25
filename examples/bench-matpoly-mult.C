@@ -442,7 +442,6 @@ void profile_matpol_mul(const Field& fld,  RandIter& Gen, size_t n, size_t d) {
 
 template<typename Field>
 void runTest(const Field& F, size_t n, long b, long d, long seed, std::string test){
-	
 	typename Field::RandIter G(F,b,seed);
 	//typename Field::RandIter G(F,seed);	
 	if (test == "check"|| test == "all")
@@ -461,6 +460,7 @@ void runTest(const Field& F, size_t n, long b, long d, long seed, std::string te
 		profile_matpol_mulkara(F,G,n,d);
 	if (test == "mul")
 		profile_matpol_mul(F,G,n,d);
+}
 }
 
 int main(int argc, char** argv){

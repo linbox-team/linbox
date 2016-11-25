@@ -118,6 +118,7 @@ FULLCHECK_TESTS =               \
 	test-ispossemidef			\
 	test-la-block-lanczos		\
 	test-last-invariant-factor  \
+	test-matpoly-mult			\
 	test-matrix-domain			\
 	test-matrix-stream			\
 	test-mg-block-lanczos    	\
@@ -276,6 +277,7 @@ test_isposdef_SOURCES =                 test-isposdef.C
 test_ispossemidef_SOURCES =             test-ispossemidef.C
 test_la_block_lanczos_SOURCES =         test-la-block-lanczos.C
 test_last_invariant_factor_SOURCES =    test-last-invariant-factor.C
+test_matpoly_mult_SOURCES=		test-matpoly-mult.C
 test_matrix_domain_SOURCES =            test-matrix-domain.C test-common.h
 test_matrix_stream_SOURCES =            test-matrix-stream.C
 test_mg_block_lanczos_SOURCES =         test-mg-block-lanczos.C
