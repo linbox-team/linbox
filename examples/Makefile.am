@@ -42,7 +42,7 @@ LDADD += $(top_builddir)/linbox/liblinbox.la
 
 #  SUBDIRS=fields solver data blackbox
 
-EXAMPLES=rank det minpoly valence solve dot-product echelon sparseelimdet sparseelimrank checksolve doubledet smithvalence charpoly polysmith #bench-fft bench-matpoly-mult
+EXAMPLES=rank det minpoly valence solve dot-product echelon sparseelimdet sparseelimrank checksolve doubledet smithvalence charpoly polysmith blassolve solverat sparsesolverat #bench-fft bench-matpoly-mult
 # EXAMPLES+=nulp yabla 
 GIVARONTL_EXAMPLES=smith graph-charpoly
 if LINBOX_HAVE_NTL
@@ -77,8 +77,13 @@ smithvalence_SOURCES   = smithvalence.C
 sparseelimdet_SOURCES  = sparseelimdet.C
 sparseelimrank_SOURCES = sparseelimrank.C
 polysmith_SOURCES      = poly-smith.C
+solverat_SOURCES       = solverat.C
+sparsesolverat_SOURCES = sparsesolverat.C
+blassolve_SOURCES      = blassolve.C
+
 #bench_fft_SOURCES       = bench-fft.C
 #bench_matpoly_mult_SOURCES = bench-matpoly-mult.C
+
 LINBOX=@prefix@
 
 LINBOX_BIN=@bindir@
