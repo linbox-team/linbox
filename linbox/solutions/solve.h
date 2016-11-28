@@ -821,16 +821,10 @@ namespace LinBox
 		typename Rebind<Vector, Field>::other& operator()(typename Rebind<Vector, Field>::other& x, const Field& F) const
 		{
 			typedef typename Blackbox::template rebind<Field>::other FBlackbox;
-			FBlackbox Ap(F, A.rowdim(), A.coldim());
-			MatrixHom::map(Ap, A);
+			FBlackbox Ap(A, F);
 
 			typedef typename Rebind<Vector, Field>::other FVector;
-			Hom<typename Blackbox::Field, Field> hom(A.field(), F);
-			FVector Bp(F,B.size());
-			typename Vector::const_iterator Bit = B.begin();
-			typename FVector::iterator      Bpit = Bp.begin();
-			for( ; Bit != B.end(); ++Bit, ++Bpit)
-				hom.image (*Bpit, *Bit);
+			FVector Bp(F, B);
 
 			VectorWrapper::ensureDim (x, A.coldim());
 			return solve( x, Ap, Bp, M);
@@ -1037,17 +1031,18 @@ namespace LinBox
 		commentator().start ("Rational CRA Solve", "Rsolve");
 		size_t bits = (size_t)(26 -(int)ceil(log((double)A.rowdim())*0.7213475205));
 		RandomPrimeIterator genprime( (unsigned) bits);
-		RationalRemainder2< VarPrecEarlyMultipCRA< Givaro::Modular<double> > > rra(3UL);//using default RR method
+		RationalRemainder< EarlyMultipRatCRA< Givaro::Modular<double> > > rra(3UL);
 		IntegerModularSolve<BB,Vector,MethodTraits > iteration(A, b, m);
-		integer den;
+		Integer den;
 		Givaro::ZRing<Integer> Z ;
 		BlasVector<Givaro::ZRing<Integer>> num(Z,A.coldim());
 		rra(num, den, iteration, genprime);
-		typename RatVector::iterator it_x= x.begin();
-		typename BlasVector<Givaro::ZRing<Integer>>::const_iterator it_num= num.begin();
-		for (; it_x != x.end(); ++it_x, ++it_num){
-			integer g = gcd( *it_num, den);
-			*it_x = typename RatVector::value_type(*it_num/g, den/g);
+
+		auto&& it_x= x.begin();
+		for (auto it_num:num){
+			integer g = gcd( it_num, den);
+			*it_x = typename RatVector::value_type(it_num/g, den/g);
+            ++it_x;
 		}
 		commentator().stop ("done", NULL, "Rsolve");
 		return x;
@@ -1063,17 +1058,18 @@ namespace LinBox
 		commentator().start ("Rational CRA Solve", "Rsolve");
 		size_t bits = (size_t)(26 -(int)ceil(log((double)A.rowdim())*0.7213475205));
 		RandomPrimeIterator genprime((unsigned) bits);
-		RationalRemainder2< VarPrecEarlyMultipCRA< Givaro::Modular<double> > > rra(3UL);//using default RR method
+		RationalRemainder< EarlyMultipRatCRA< Givaro::Modular<double> > > rra(3UL);
 		IntegerModularSolve<BB,RatVector,MethodTraits > iteration(A, b, m);
-		integer den;
+		Integer den;
 		Givaro::ZRing<Integer> Z;
 		BlasVector<Givaro::ZRing<Integer>> num(Z,A.coldim());
 		rra(num, den, iteration, genprime);
-		typename RatVector::iterator it_x= x.begin();
-		typename BlasVector<Givaro::ZRing<Integer>>::const_iterator it_num= num.begin();
-		for (; it_x != x.end(); ++it_x, ++it_num){
-			integer g = gcd( *it_num, den);
-			*it_x = typename RatVector::value_type(*it_num/g, den/g);
+
+		auto&& it_x= x.begin();
+		for (auto it_num:num){
+			integer g = gcd( it_num, den);
+			*it_x = typename RatVector::value_type(it_num/g, den/g);
+            ++it_x;
 		}
 		commentator().stop ("done", NULL, "Rsolve");
 		return x;
