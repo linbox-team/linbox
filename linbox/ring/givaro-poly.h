@@ -289,7 +289,7 @@ namespace LinBox
 		
 		// a = q b + r
 		Element &quo(Element &q, const Element &a, const Element &b) const {
-			return div(q,a,b);
+			return _pd.div(q,a,b);
 		}
 		
 		Element &rem(Element &r, const Element &a, const Element &b) const {
@@ -352,8 +352,8 @@ namespace LinBox
 		{
 			xgcd(g,s,t,a,b);
 
-			div(u,a,g);
-			div(v,b,g);
+			_pd.div(u,a,g);
+			_pd.div(v,b,g);
 
 			return g;
 		}

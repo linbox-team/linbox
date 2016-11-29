@@ -120,7 +120,7 @@ int main(int argc, char **argv)
 	t1.start();
 	SFD.solve(S1, M);
 	t1.stop();
-	normalize(PD, S1);
+	normalize(F, S1);
 	printVector(F, S1);
 	
 	// Kannan-Bachem w/ Chou-Collins Improvement Domain 
@@ -131,7 +131,7 @@ int main(int argc, char **argv)
 	t2.start();
 	SFKB.solve(S2, M);
 	t2.stop();
-	normalize(PD, S2);
+	normalize(F, S2);
 	printVector(F, S2);
 	
 	cout << "SFD: " << n << " " << p << " " << d << " " << t1.usertime() << endl;
