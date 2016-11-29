@@ -38,6 +38,7 @@
 #include <givaro/zring.h>
 #include "linbox/ring/modular.h"
 #include "givaro/givtimer.h"
+#include <sstream>
 
 #ifdef FFT_PROFILER
 #include <iostream>
@@ -123,41 +124,103 @@ namespace LinBox
     BlasMatrixDomain< typename MatrixP_F::Field>  BMD(c.field());
 
     if (deg==0) deg=c.size();
-    if (n0 == 0) n0=deg-1;
-    if (n1 == 0) n1=2*deg;
+    if (n0 == 0) n0=deg;
+    if (n1 == 0) n1=2*deg-1;
 
-
-    //std::cerr<<"n0="<<n0<<std::endl;
-    //std::cerr<<"n1="<<n1<<std::endl;
+    std::ostringstream myerror;
+    myerror<<"A size: "<<a.size()<<std::endl;
+    myerror<<"B size: "<<b.size()<<std::endl;
+    myerror<<"deg"<<deg<<std::endl;
+    myerror<<"n0="<<n0<<std::endl;
+    myerror<<"n1="<<n1<<std::endl;
     
     for (size_t k=0;k<deg;k++)
       BMD.addin(C1,c[k]);
     
+    /* if (smallLeft){ */
+    /*   size_t t=0; */
+    /*   size_t k=std::min(n0-1,a.size()-1); */
+    /*   size_t j=n0-1-k; */
+    /*   for (;k<size_t(-1) && t<deg ;k--,t++){ */
+    /* 	myerror<<"+a["<<k<<"]"<<std::endl; */
+    /* 	BMD.addin(A1,a[k]); */
+    /* 	myerror<<"*b["<<j<<"]"<<std::endl; */
+    /* 	BMD.axpyin(C2,A1,b[j]); */
+    /* 	j++; */
+    /*   } */
+    /*   for (;k<size_t(-1) ;k--){ */
+    /* 	myerror<<"+a["<<k<<"]"<<std::endl; */
+    /* 	BMD.addin(A1,a[k]); */
+    /*   } */
+      
+    /*   for (k=a.size()-1;k<size_t(-1) && j < b.size();k--){ */
+    /* 	myerror<<"-a["<<k<<"]"<<std::endl; */
+
+    /* 	//BMD.subin(A1,a[k]); NOT SUPPORTED BY Modular<ruint> */
+    /* 	for (size_t i=0;i<a.rowdim();i++) for (size_t j=0;j<a.coldim();j++) (a.field()).subin(A1.refEntry(i,j), a.get(i,j,k)); */
+					    
+    /* 	myerror<<"*b["<<j<<"]"<<std::endl; */
+    /* 	BMD.axpyin(C2,A1,b[j]); */
+    /* 	j++; */
+    /*   } */
+    /* } */
+
     if (smallLeft){
-
-      size_t k=std::min(n0,a.size()-1);
-      size_t j=n0-k;
-      for (;k<size_t(-1);k--){
-	//std::cout<<"+a["<<k<<"]"<<std::endl;
+      size_t k=std::min(n0-1,a.size()-1);
+      size_t j=n0-1-k;
+      size_t t=0;
+      for (;k<size_t(-1) && j<b.size() && t<deg;k--,j++,t++){
+	myerror<<"+a["<<k<<"]"<<std::endl;
 	BMD.addin(A1,a[k]);
-	//std::cout<<"*b["<<j<<"]"<<std::endl;
+	myerror<<"*b["<<j<<"]"<<std::endl;
 	BMD.axpyin(C2,A1,b[j]);
-	j++;
       }
-      for (k=a.size()-1;k<size_t(-1) && j < b.size();k--){
-	//std::cout<<"-a["<<k<<"]"<<std::endl;
-
-	//BMD.subin(A1,a[k]); NOT SUPPORTED BY Modular<ruint>
-	for (size_t i=0;i<a.rowdim();i++)
-	  for (size_t j=0;j<a.coldim();j++)
-	    (a.field()).subin(A1.refEntry(i,j), a.get(i,j,k));
-
+      
+      for(;t<deg;t++,j++){
+	myerror<<"*b["<<j<<"]"<<std::endl;
+	BMD.axpyin(C2,A1,b[j]);		
+      }
 	
-	//std::cout<<"*b["<<j<<"]"<<std::endl;
-	BMD.axpyin(C2,A1,b[j]);
-	j++;
+      /* for (;j>=lastj ;j--){ */
+      /* 	myerror<<"*b["<<j<<"]"<<std::endl; */
+      /* 	BMD.axpyin(C2,A1,b[j]); */
+      /* } */
+
+
+      myerror<<"-------------\n";
+      size_t lastj=j;
+      size_t lastk=k;
+      j=std::min(n1-1,b.size()-1);
+      k=n1-1-j;
+      t=0;
+      myerror<<"lastj="<<lastj<<std::endl;
+      myerror<<"lastk="<<lastk<<std::endl;
+      myerror<<"j="<<j<<std::endl;
+      myerror<<"k="<<k<<std::endl;
+      A1.zero();
+
+      while(j>=lastj && n0==n1){
+	BMD.axpyin(C2,a[k++],b[j--]);
       }
+      
+      
+      for (;j>=lastj && k<a.size() && t<deg;k++,j--,t++){
+	myerror<<"+a["<<k<<"]"<<std::endl;
+	BMD.addin(A1,a[k]);
+	myerror<<"*b["<<j<<"]"<<std::endl;
+	BMD.axpyin(C2,A1,b[j]);
+      }
+      
+      if (lastk>0 && lastk < size_t(-1) && lastj <= j){
+	A1.zero();
+	for(size_t t=0;t<deg;t++)
+	  BMD.addin(A1,a[lastk+t]);
+	BMD.axpyin(C2,A1,b[lastj]);
+      }
+
+      
     }
+
     else {
       std::cerr<<"Checking polynomial matrix midp  with smallLeft=false is not yet implemented...aborting";
       std::terminate();
@@ -165,21 +228,24 @@ namespace LinBox
     }
     
     bool correct=BMD.areEqual(C1,C2);
-    std::cerr<<"Checking polynomial matrix midp "
+    std::cerr<<"Checking polynomial matrix "<<(n0==0&&n1==0?"midp ":"midp_gen ")
 	     <<a.rowdim()<<"x"<<a.coldim()<<"["<<a.size()<<"]"
 	     <<b.rowdim()<<"x"<<b.coldim()<<"["<<b.size()<<"]"
 	     <<" ... "<<(correct?"done":"error")<<std::endl;
     if (!correct){
-      std::cerr<<"error with field : ";
-      c.field().write(std::cerr);
-      std::cerr<<std::endl;
-      if (c.size()*c.rowdim() < 20) {
-	std::cerr<<"A:="<<a<<";"<<std::endl;
-	std::cerr<<"B:="<<b<<";"<<std::endl;
-	std::cerr<<"C:="<<c<<";"<<std::endl;
-	std::cerr<<"C1:=";C1.write(std::cerr,Tag::FileFormat::Maple)<<std::endl;
-	std::cerr<<"C2:=";C2.write(std::cerr,Tag::FileFormat::Maple)<<std::endl;
+      myerror<<"error with field : ";
+      c.field().write(myerror);
+      myerror<<std::endl;
+      if (c.size()*c.rowdim() < 120) {
+	myerror<<"A:="<<a<<";"<<std::endl;
+	myerror<<"B:="<<b<<";"<<std::endl;
+	myerror<<"C:="<<c<<";"<<std::endl;
+	myerror<<"C1:=";C1.write(myerror,Tag::FileFormat::Maple)<<std::endl;
+	myerror<<"C2:=";C2.write(myerror,Tag::FileFormat::Maple)<<std::endl;
+
       }
+      std::cerr<<myerror.str()<<std::endl;
+      //std::terminate();
     }
     return correct;
   }
@@ -247,7 +313,7 @@ namespace LinBox
       integer MM=1;
       for(std::vector<integer>::size_type i=0;i<bas.size();i++){
 	MM*=bas[i];
-	//std::cout<<bas[i]<<std::endl;
+ 	//std::cout<<bas[i]<<std::endl;
       }
 	    
       // compute max bitsize for prime allowing three prime fft
