@@ -87,6 +87,10 @@ namespace LinBox
 					_kara.midproduct(c,a,b);
 				else
 					_naive.midproduct(c,a,b);
+#ifdef CHECK_MATPOL_MIDP                       
+                        check_midproduct(c,a,b);
+#endif
+
 		}
 
 		template< class PMatrix1,class PMatrix2,class PMatrix3>
@@ -96,7 +100,11 @@ namespace LinBox
 				_naive.midproduct(c,a,b,smallLeft,n0,n1);
 			else
 				_fft.midproduct(c,a,b,smallLeft,n0,n1);
+#ifdef CHECK_MATPOL_MIDP                       
+                        check_midproduct(c,a,b,smallLeft,n0,n1);
+#endif               
 		}
+
 	};
 
 	template<class Field>

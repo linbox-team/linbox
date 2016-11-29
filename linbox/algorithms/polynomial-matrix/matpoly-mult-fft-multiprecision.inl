@@ -438,7 +438,7 @@ namespace LinBox{
       size_t k = a.coldim();
       size_t n = b.coldim();
       size_t hdeg = (n0==0?c.size():n0);
-      size_t deg  = (n1==0?2*hdeg:n1);
+      size_t deg  = (n1==0?2*hdeg-1:n1);
       linbox_check(c.size()>=deg-hdeg);
       
       if (smallLeft){
