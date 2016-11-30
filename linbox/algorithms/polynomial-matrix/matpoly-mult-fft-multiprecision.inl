@@ -521,7 +521,9 @@ namespace LinBox{
 	FFT_PROFILE_GET(2,tCopy);
 	//PolynomialMatrixFFTPrimeMulDomain<ModField> fftdomain (f);
 	PolynomialMatrixThreePrimesFFTMulDomain<ModField> fftdomain (f);       
-	fftdomain.midproduct_fft(lpts, *(c_i[l]), a_i, b_i, smallLeft);
+	integer bound2=integer(RNS._basis[l]-1)*integer(RNS._basis[l]-1)
+	  *integer((uint64_t)a.coldim())*integer((uint64_t)std::min(a.size(),b.size()));
+	fftdomain.midproduct_fft(lpts, *(c_i[l]), a_i, b_i, bound2, smallLeft);
 				
 	FFT_PROFILE_GET(2,tMul);
       }

@@ -182,15 +182,15 @@ bool launchTest(const Field& F, size_t n, long b, long d, long seed){
 	//std::cerr<<"Polynomial matrix (polfirst) testing over ";F.write(std::cerr)<<std::endl;
 	//ok&=check_matpol_mul<MatrixP> (F,G,n,d);
 	//ok&=check_matpol_midp<MatrixP> (F,G,n,d);
-	//ok&=check_matpol_midpgen<MatrixP> (F,G,n,d);
+	ok&=check_matpol_midpgen<MatrixP> (F,G,n,d); 
 
 	//typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain,Field> PMatrix;
 	// std::cerr<<"Polynomial matrix (matfirst) testing:\n";F.write(std::cerr)<<std::endl;
 	// check_matpol_mul<PMatrix> (F,G,n,d);
 	// check_matpol_midp<PMatrix> (F,G,n,d);
 
-	std::cerr<<"Debugging midpgen for DLP over ";F.write(std::cerr)<<std::endl;
-	debug_midpgen_dlp<MatrixP>(F,G);
+	//std::cerr<<"Debugging midpgen for DLP over ";F.write(std::cerr)<<std::endl;
+	//debug_midpgen_dlp<MatrixP>(F,G);
 	return ok;
 }
 
@@ -221,23 +221,23 @@ bool runTest(uint64_t n, uint64_t d, long seed){
 	}
 	
 	// // multi-precision prime
-	// {
-	// 	size_t bits=114;
-	// 	RandomPrimeIter Rd(bits,seed);
-	// 	integer p= Rd.random();
+	{
+		size_t bits=114;
+		RandomPrimeIter Rd(bits,seed);
+		integer p= Rd.random();
 
-	// 	Givaro::Modular<integer> F1(p);			
-	// 	ok&=launchTest (F1,n,bits,d,seed);
-	// 	Givaro::Modular<RecInt::ruint128,RecInt::ruint256> F2(p);
-	// 	ok&=launchTest (F2,n,bits,d,seed);
+		Givaro::Modular<integer> F1(p);			
+		ok&=launchTest (F1,n,bits,d,seed);
+		Givaro::Modular<RecInt::ruint128,RecInt::ruint256> F2(p);
+		ok&=launchTest (F2,n,bits,d,seed);
 	
-	// }
+	}
 	// // over the integer
-	// {
-	// 	Givaro::ZRing<integer> F;
-	// 	ok&=launchTest (F,n,128,d,seed);
+	{
+		Givaro::ZRing<integer> F;
+		ok&=launchTest (F,n,128,d,seed);
 
-	// }	
+	}	
 	return ok;
 }
 
