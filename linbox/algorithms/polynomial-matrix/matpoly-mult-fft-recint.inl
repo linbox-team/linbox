@@ -284,7 +284,7 @@ namespace LinBox{
 	DEL_MEM(8*n_tc*num_primes);
 	delete[] t_c_mod;
 #else
-	size_t s_small= s/MEMFACTOR + 1;
+	size_t s_small= s/MEMFACTOR; 
 	size_t s_last = s- s_small*(MEMFACTOR-1);
 	size_t n_tc_small= m*n*s_small;
 	size_t n_tc_last = m*n*s_last;
@@ -345,15 +345,15 @@ namespace LinBox{
       size_t k = a.coldim();
       size_t n = b.coldim();
       size_t hdeg = (n0==0?c.size():n0);
-      size_t deg  = (n1==0?2*hdeg:n1);
+      size_t deg  = (n1==0?2*hdeg-1:n1);
       linbox_check(c.size()>=deg-hdeg);
-      
+
       if (smallLeft){
-	linbox_check(b.size()<hdeg+deg);
+      	linbox_check(b.size()<hdeg+deg);
       }
       else
-	linbox_check(a.size()<hdeg+deg);
-
+      	linbox_check(a.size()<hdeg+deg);
+      
       //linbox_check(2*c.size()-1 == b.size());
       //size_t deg= b.size()+1;
       //size_t hdeg= deg/2;
@@ -419,7 +419,10 @@ namespace LinBox{
 	FFT_PROFILE_GET(2,tCopy);
 	
 	PolynomialMatrixThreePrimesFFTMulDomain<ModField> fftdomain (f);       
-
+	integer bound2=integer(RNS._basis[l]-1)*integer(RNS._basis[l]-1)
+	  *integer((uint64_t)a.coldim())*integer((uint64_t)std::min(a.size(),b.size()));
+	
+ 
 #ifdef CHECK_MATPOL_MIDP
 	MatrixP_F copy_a_i(f, m, k, a.size()),copy_b_i(f, k, n, b.size());
 		 //copy_a_i.copy(a_i);
@@ -431,7 +434,7 @@ namespace LinBox{
 	  for (size_t j=0;j<b.size();j++)
 	    copy_b_i.ref(i,j)=t_b_mod[l*n_tb+j+i*b.size()];	
 #endif		 
-		 fftdomain.midproduct_fft(lpts, *(c_i[l]), a_i, b_i, smallLeft);
+	fftdomain.midproduct_fft(lpts, *(c_i[l]), a_i, b_i, bound2, smallLeft);
 #ifdef CHECK_MATPOL_MIDP
 		 std::cerr<<"(3 prime -CRT) - ";
 		 check_midproduct(*c_i[l], copy_a_i, copy_b_i,smallLeft,n0,n1,c.size());
@@ -468,6 +471,10 @@ namespace LinBox{
 	    MatrixP_F b_i (f, k, n, pts);	
 	    c_i[loop+l] = new MatrixP_F(f, m, n, pts);
 
+
+	    integer bound2=integer(smallRNS._basis[l]-1)*integer(smallRNS._basis[l]-1)
+	      *integer((uint64_t)a.coldim())*integer((uint64_t)std::min(a.size(),b.size()));
+
 	    // copy reduced data
 	    for (size_t i=0;i<m*k;i++)
 	      for (size_t j=0;j<a.size();j++)
@@ -484,22 +491,22 @@ namespace LinBox{
 	    FFT_PROFILE_GET(2,tCopy);
 
 	    PolynomialMatrixThreePrimesFFTMulDomain<ModField> fftdomain (f);
-
+	    
 #ifdef CHECK_MATPOL_MIDP
-		 MatrixP_F copy_a_i(f, m, k, a.size()),copy_b_i(f, k, n, b.size());
-		 //copy_a_i.copy(a_i);
-		 //copy_b_i.copy(b_i);
-		   for (size_t i=0;i<m*k;i++)
-		     for (size_t j=0;j<a.size();j++)
-		       copy_a_i.ref(i,j)=t_a_mod[l*n_ta+j+i*a.size()];
-		   for (size_t i=0;i<k*n;i++)
-		     for (size_t j=0;j<b.size();j++)
-		       copy_b_i.ref(i,j)=t_b_mod[l*n_tb+j+i*b.size()];	  		 
+	   MatrixP_F copy_a_i(f, m, k, a.size()),copy_b_i(f, k, n, b.size());
+	   //copy_a_i.copy(a_i);
+	   //copy_b_i.copy(b_i);
+	   for (size_t i=0;i<m*k;i++)
+	     for (size_t j=0;j<a.size();j++)
+	       copy_a_i.ref(i,j)=t_a_mod[l*n_ta+j+i*a.size()];
+	   for (size_t i=0;i<k*n;i++)
+	     for (size_t j=0;j<b.size();j++)
+	       copy_b_i.ref(i,j)=t_b_mod[l*n_tb+j+i*b.size()];	    
 #endif		 
-		 fftdomain.midproduct_fft(lpts, *(c_i[loop+l]), a_i, b_i, smallLeft);	    
+	   fftdomain.midproduct_fft(lpts, *(c_i[loop+l]), a_i, b_i,bound2, smallLeft);	    
 #ifdef CHECK_MATPOL_MIDP
 		 std::cerr<<"(3 prime -CRT) - ";
-		 check_midproduct(*c_i[l], copy_a_i, copy_b_i,smallLeft,n0,n1,c.size());
+		 check_midproduct(*c_i[loop+l], copy_a_i, copy_b_i,smallLeft,n0,n1,c.size());
 #endif	    	    
 	    FFT_PROFILE_GET(2,tMul);
 
@@ -546,7 +553,7 @@ namespace LinBox{
 	DEL_MEM(8*n_tc*num_primes);
 	delete[] t_c_mod;
 #else
-	size_t s_small= s/MEMFACTOR + 1;
+	size_t s_small= s/MEMFACTOR;
 	size_t s_last = s- s_small*(MEMFACTOR-1);
 	size_t n_tc_small= m*n*s_small;
 	size_t n_tc_last = m*n*s_last;

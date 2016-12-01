@@ -24,8 +24,10 @@
 #  -DLinBoxSrcOnly
 DEFCPPFLAGS  = @DEFAULT_CFLAGS@   -DDISABLE_COMMENTATOR
 AM_CPPFLAGS = -I$(top_srcdir)/linbox $(DEFCPPFLAGS) $(DEPS_CFLAGS)
+AM_CPPFLAGS += $(OPTFLAGS) 
 LDADD = $(DEPS_LIBS) $(LDFLAGS)
 LDADD += $(top_builddir)/linbox/liblinbox.la
+LDADD += $(OPTLIBES)
 #  AM_LDFLAGS=-static
 
 #AM_LDFLAGS=-L@libdir@ -llinbox
@@ -42,7 +44,7 @@ LDADD += $(top_builddir)/linbox/liblinbox.la
 
 #  SUBDIRS=fields solver data blackbox
 
-EXAMPLES=rank det minpoly valence solve dot-product echelon sparseelimdet sparseelimrank checksolve doubledet smithvalence charpoly polysmith #bench-fft bench-matpoly-mult
+EXAMPLES=rank det minpoly valence solve dot-product echelon sparseelimdet sparseelimrank checksolve doubledet smithvalence charpoly blassolve solverat sparsesolverat #polysmith bench-fft bench-matpoly-mult
 # EXAMPLES+=nulp yabla 
 GIVARONTL_EXAMPLES=smith graph-charpoly
 if LINBOX_HAVE_NTL
@@ -76,24 +78,27 @@ echelon_SOURCES        = echelon.C
 smithvalence_SOURCES   = smithvalence.C
 sparseelimdet_SOURCES  = sparseelimdet.C
 sparseelimrank_SOURCES = sparseelimrank.C
-polysmith_SOURCES      = poly-smith.C
-smithformlocal_SOURCES = smith-form-local.C
+solverat_SOURCES       = solverat.C
+sparsesolverat_SOURCES = sparsesolverat.C
+blassolve_SOURCES      = blassolve.C
+#smithformlocal_SOURCES = smith-form-local.C
+#polysmith_SOURCES      = poly-smith.C
 #bench_fft_SOURCES       = bench-fft.C
 #bench_matpoly_mult_SOURCES = bench-matpoly-mult.C
+
 LINBOX=@prefix@
 
 LINBOX_BIN=@bindir@
 
 
 # for compilation of new examples
-#new_examp_comp = $(CXX) -I@includedir@ $(CXXFLAGS) $(AM_CPPFLAGS) $(OPTFLAGS) ${INCLUDES}  $< -o $@ -L@libdir@ -llinbox $(AM_LDFLAGS) $(LDADD) $(LIBS)
+define comp_new_examp
+	$(AM_V_CXX)$(CXXCOMPILE) -c -o $@.$(OBJEXT) $<
+	$(AM_V_CXXLD)$(CXXLINK) $@.$(OBJEXT) $(LDADD)
+endef	
 
 %:%.C
-#	$(LTCXXCOMPILE) -c -o $@.$(OBJEXT) $<
-	$(AM_V_CXX)$(CXXCOMPILE) -c -o $@.$(OBJEXT) $<
-	$(AM_V_CXXLD)$(CXXLINK) $@.$(OBJEXT) $(LDADD)
+	$(comp_new_examp)
 
 %:%.cpp
-#	$(LTCXXCOMPILE) -c -o $@.$(OBJEXT) $<
-	$(AM_V_CXX)$(CXXCOMPILE) -c -o $@.$(OBJEXT) $<
-	$(AM_V_CXXLD)$(CXXLINK) $@.$(OBJEXT) $(LDADD)
+	$(comp_new_examp)
