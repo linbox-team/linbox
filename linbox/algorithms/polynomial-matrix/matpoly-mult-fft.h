@@ -170,14 +170,14 @@ namespace LinBox
       size_t j=n0-1-k;
       size_t t=0;
       for (;k<size_t(-1) && j<b.size() && t<deg;k--,j++,t++){
-	myerror<<"+a["<<k<<"]"<<std::endl;
+	//myerror<<"+a["<<k<<"]"<<std::endl;
 	BMD.addin(A1,a[k]);
-	myerror<<"*b["<<j<<"]"<<std::endl;
+	//myerror<<"*b["<<j<<"]"<<std::endl;
 	BMD.axpyin(C2,A1,b[j]);
       }
       
       for(;t<deg;t++,j++){
-	myerror<<"*b["<<j<<"]"<<std::endl;
+	//myerror<<"*b["<<j<<"]"<<std::endl;
 	BMD.axpyin(C2,A1,b[j]);		
       }
 	
@@ -187,16 +187,16 @@ namespace LinBox
       /* } */
 
 
-      myerror<<"-------------\n";
+      //myerror<<"-------------\n";
       size_t lastj=j;
       size_t lastk=k;
       j=std::min(n1-1,b.size()-1);
       k=n1-1-j;
       t=0;
-      myerror<<"lastj="<<lastj<<std::endl;
-      myerror<<"lastk="<<lastk<<std::endl;
-      myerror<<"j="<<j<<std::endl;
-      myerror<<"k="<<k<<std::endl;
+      //myerror<<"lastj="<<lastj<<std::endl;
+      //myerror<<"lastk="<<lastk<<std::endl;
+      //myerror<<"j="<<j<<std::endl;
+      //myerror<<"k="<<k<<std::endl;
       A1.zero();
 
       while(j>=lastj && n0==n1){
@@ -205,9 +205,9 @@ namespace LinBox
       
       
       for (;j>=lastj && k<a.size() && t<deg;k++,j--,t++){
-	myerror<<"+a["<<k<<"]"<<std::endl;
+	//myerror<<"+a["<<k<<"]"<<std::endl;
 	BMD.addin(A1,a[k]);
-	myerror<<"*b["<<j<<"]"<<std::endl;
+	//myerror<<"*b["<<j<<"]"<<std::endl;
 	BMD.axpyin(C2,A1,b[j]);
       }
       
