@@ -10,11 +10,11 @@ See doc/mainpage.doxy for more info.
 ## Quick Install
 
 Download [linbox-auto-install.sh](linbox-auto-install.sh) and run it!
-For instance, on a machine with an installation of GMP and OpenBLAS in the standard search paths:
-{{{
-./linbox-auto-install.sh --stable=yes --make-flags="-j 3" --with-blas-libs="-lopenblas"
-}}}
 
+For instance, on a machine with an installation of GMP and OpenBLAS in the standard search paths:
+```
+./linbox-auto-install.sh --stable=yes --make-flags="-j 3" --with-blas-libs="-lopenblas"
+```
 This script will install Givaro, fflas-ffpack and then LinBox.
 
 ## Installation
