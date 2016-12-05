@@ -58,7 +58,6 @@ SAGE=""
 SAGE_VAR="false"
 DRIV=""
 DRIV_VAR="false"
-
 MAKEOPT= 
 MAKE_VAR=""
 
@@ -362,10 +361,10 @@ echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
 if [ ! \( -x autogen.sh -o -x configure \) ] ; then
 
 ### Extract LinBox sources ###
-    echo -en "${BEG}fetching LinBox..."| tee -a ../auto-install.log
+    echo -en "${BEG}fetching LinBox..."| tee -a auto-install.log
     if [ "$STABLE_VAR" = "true" ]; then
 	if [ -f linbox-$STABLE_FFLAS.tar.gz ] ; then
-	    echo -ne " already there!\n"| tee -a ../auto-install.log
+	    echo -ne " already there!\n"| tee -a auto-install.log
 	    echo -ne "${BEG}fetching md5sum" ;
 	    [ -f fflas-ffpack-$STABLE_FFLAS.tar.gz.md5sum ] && rm fflas-ffpack-${STABLE_FFLAS}.tar.gz.md5sum ;
 	    wget --no-check-certificate https://forge.imag.fr/frs/download.php/${LNB_MD5}/linbox-${STABLE_LB}.tar.gz.md5sum >/dev/null 2>&1 || die
@@ -384,14 +383,14 @@ if [ ! \( -x autogen.sh -o -x configure \) ] ; then
 	fi
     else
 	OK=0 ;
-	git clone https://github.com/linbox-team/linbox.git 2>&1 >/dev/null && OK=1 
+	git clone --depth 1 https://github.com/linbox-team/linbox.git 2>&1 >/dev/null && OK=1
 	[ "$OK" = "1" ] &&  cool  || die
 	cd linbox &&  cool   || die 
     fi
     
     OK=0
     if [ "$STABLE_VAR" = "true" ]; then
-	echo -en "${BEG}extracting LinBox..."| tee -a ../auto-install.log
+	echo -en "${BEG}extracting LinBox..."| tee -a auto-install.log
 	decompress linbox-$STABLE_LB.tar.gz  && OK=1
 	[ "$OK" = "1" ] &&  cool   || die 
 	cd linbox-$STABLE_LB &&  cool   || die 
@@ -448,7 +447,7 @@ if [ "$STABLE_VAR" = "true" ]; then
     fi
 else
     OK=0 ;
-    git clone https://github.com/linbox-team/givaro.git 2>&1 >/dev/null && OK=1 
+    git clone --depth 1 https://github.com/linbox-team/givaro.git 2>&1 >/dev/null && OK=1
     [ "$OK" = "1" ] &&  cool  || die 
 fi
 
@@ -476,7 +475,7 @@ if [ "$STABLE_VAR" = "true" ]; then
     fi
 else
     OK=0 ;
-    git clone https://github.com/linbox-team/fflas-ffpack.git 2>&1 >/dev/null && OK=1 
+    git clone --depth=1 https://github.com/linbox-team/fflas-ffpack.git 2>&1 >/dev/null && OK=1
     [ "$OK" = "1" ] &&  cool  || die
 fi
 
