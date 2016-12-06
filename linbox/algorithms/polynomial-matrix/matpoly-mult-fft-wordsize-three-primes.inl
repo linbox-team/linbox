@@ -226,6 +226,7 @@ namespace LinBox {
 				     const integer& bound, bool smallLeft=true) {
 			size_t pts=c.size();			
 			if ((_p-1) % pts == 0){
+				//std::cerr<<"3-prime FFT midp switching to FFTPrime  "<<std::endl;
 				PolynomialMatrixFFTPrimeMulDomain<ModField> fftprime_domain (field());
 				fftprime_domain.midproduct_fft(lpts,c,a,b,smallLeft);
 				return;
@@ -264,6 +265,7 @@ namespace LinBox {
 				f[l]=ModField(basis[l]);
 	    
 			for (size_t l=0;l<num_primes;l++){
+				//std::cerr<<"3-prime FFT midp over "; f[l].write(std::cerr)<<std::endl;
 				PolynomialMatrixFFTPrimeMulDomain<ModField> fftdomain (f[l]);
 				MatrixP ai(f[l],m,k,pts);
 				MatrixP bi(f[l],k,n,pts);

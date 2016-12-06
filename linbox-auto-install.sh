@@ -20,10 +20,6 @@
 STABLE_LB=1.4.2
 STABLE_FFLAS=2.2.2
 STABLE_GIVARO=4.0.2
-#### MD5 checks files provided by forge.imag.fr under download number XXX
-GIV_MD5=804
-FFL_MD5=805
-LNB_MD5=806
 #############################
 
 function decompress {
@@ -58,7 +54,6 @@ SAGE=""
 SAGE_VAR="false"
 DRIV=""
 DRIV_VAR="false"
-
 MAKEOPT= 
 MAKE_VAR=""
 
@@ -362,39 +357,39 @@ echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
 if [ ! \( -x autogen.sh -o -x configure \) ] ; then
 
 ### Extract LinBox sources ###
-    echo -en "${BEG}fetching LinBox..."| tee -a ../auto-install.log
+    echo -en "${BEG}fetching LinBox..."| tee -a auto-install.log
     if [ "$STABLE_VAR" = "true" ]; then
-	if [ -f linbox-$STABLE_FFLAS.tar.gz ] ; then
-	    echo -ne " already there!\n"| tee -a ../auto-install.log
+	if [ -f linbox-${STABLE_LB}.tar.gz ] ; then
+	    echo -ne " already there!\n"| tee -a auto-install.log
 	    echo -ne "${BEG}fetching md5sum" ;
-	    [ -f fflas-ffpack-$STABLE_FFLAS.tar.gz.md5sum ] && rm fflas-ffpack-${STABLE_FFLAS}.tar.gz.md5sum ;
-	    wget --no-check-certificate https://forge.imag.fr/frs/download.php/${LNB_MD5}/linbox-${STABLE_LB}.tar.gz.md5sum >/dev/null 2>&1 || die
-	    [ -f linbox-$STABLE_LB.tar.gz.md5sum ] || die
+	    [ -f fflas-ffpack-${STABLE_FFLAS}.tar.gz.md5sum ] && rm fflas-ffpack-${STABLE_FFLAS}.tar.gz.md5sum ;
+	    wget --no-check-certificate https://github.com/linbox-team/linbox/releases/download/v${STABLE_LB}/linbox-${STABLE_LB}.tar.gz.md5sum >/dev/null 2>&1 || die
+	    [ -f linbox-${STABLE_LB}.tar.gz.md5sum ] || die
 	    cool
 	    echo -ne "${BEG}"
-	    md5sum -c linbox-$STABLE_LB.tar.gz.md5sum || die
+	    md5sum -c linbox-${STABLE_LB}.tar.gz.md5sum || die
 	else
 	    wget https://github.com/linbox-team/linbox/releases/download/v${STABLE_LB}/linbox-${STABLE_LB}.tar.gz >/dev/null 2>&1 || die
-	    [ -f linbox-$STABLE_LB.tar.gz ] &&  cool || die
+	    [ -f linbox-${STABLE_LB}.tar.gz ] &&  cool || die
 	    echo -ne "${BEG}fetching md5sum" ; 
-	    wget --no-check-certificate https://forge.imag.fr/frs/download.php/${LNB_MD5}/linbox-${STABLE_LB}.tar.gz.md5sum >/dev/null 2>&1 || die
+	    wget --no-check-certificate https://github.com/linbox-team/linbox/releases/download/v${STABLE_LB}/linbox-${STABLE_LB}.tar.gz.md5sum >/dev/null 2>&1 || die
 	    cool
 	    echo -ne "${BEG}"
-	    md5sum -c linbox-$STABLE_LB.tar.gz.md5sum || die
+	    md5sum -c linbox-${STABLE_LB}.tar.gz.md5sum || die
 	fi
     else
 	OK=0 ;
-	git clone https://github.com/linbox-team/linbox.git 2>&1 >/dev/null && OK=1 
+	git clone --depth 1 https://github.com/linbox-team/linbox.git 2>&1 >/dev/null && OK=1
 	[ "$OK" = "1" ] &&  cool  || die
 	cd linbox &&  cool   || die 
     fi
     
     OK=0
     if [ "$STABLE_VAR" = "true" ]; then
-	echo -en "${BEG}extracting LinBox..."| tee -a ../auto-install.log
-	decompress linbox-$STABLE_LB.tar.gz  && OK=1
+	echo -en "${BEG}extracting LinBox..."| tee -a auto-install.log
+	decompress linbox-${STABLE_LB}.tar.gz  && OK=1
 	[ "$OK" = "1" ] &&  cool   || die 
-	cd linbox-$STABLE_LB &&  cool   || die 
+	cd linbox-${STABLE_LB} &&  cool   || die 
     fi
 fi
 
@@ -428,27 +423,27 @@ cd build ;
 
 echo -en "${BEG}fetching Givaro..."| tee -a ../auto-install.log
 if [ "$STABLE_VAR" = "true" ]; then
-    if [ -f givaro-$STABLE_GIVARO.tar.gz ] ; then
+    if [ -f givaro-${STABLE_GIVARO}.tar.gz ] ; then
 	echo -ne " already there!\n"
 	echo -ne "${BEG}fetching md5sum" ; 
-	[ -f givaro-$STABLE_GIVARO.tar.gz.md5sum ] && rm givaro-${STABLE_GIVARO}.tar.gz.md5sum ;
-	wget --no-check-certificate https://forge.imag.fr/frs/download.php/$GIV_MD5/givaro-$STABLE_GIVARO.tar.gz.md5sum >/dev/null 2>&1 || die
-	[ -f givaro-$STABLE_GIVARO.tar.gz.md5sum ] || die
+	[ -f givaro-${STABLE_GIVARO}.tar.gz.md5sum ] && rm givaro-${STABLE_GIVARO}.tar.gz.md5sum ;
+	wget --no-check-certificate https://github.com/linbox-team/givaro/releases/download/v${STABLE_GIVARO}/givaro-${STABLE_GIVARO}.tar.gz.md5sum >/dev/null 2>&1 || die
+	[ -f givaro-${STABLE_GIVARO}.tar.gz.md5sum ] || die
 	cool
 	echo -ne "${BEG}"
-	md5sum -c givaro-$STABLE_GIVARO.tar.gz.md5sum || die
+	md5sum -c givaro-${STABLE_GIVARO}.tar.gz.md5sum || die
     else
 	wget --no-check-certificate https://github.com/linbox-team/givaro/releases/download/v${STABLE_GIVARO}/givaro-${STABLE_GIVARO}.tar.gz >/dev/null 2>&1 || die
-	[ -f givaro-$STABLE_GIVARO.tar.gz ] &&  cool || die
+	[ -f givaro-${STABLE_GIVARO}.tar.gz ] &&  cool || die
 	echo -ne "${BEG}fetching md5sum" ; 
-	wget --no-check-certificate https://forge.imag.fr/frs/download.php/$GIV_MD5/givaro-$STABLE_GIVARO.tar.gz.md5sum >/dev/null 2>&1 || die
+	wget --no-check-certificate https://github.com/linbox-team/givaro/releases/download/v${STABLE_GIVARO}/givaro-${STABLE_GIVARO}.tar.gz.md5sum >/dev/null 2>&1 || die
 	cool
 	echo -ne "${BEG}"
-	md5sum -c givaro-$STABLE_GIVARO.tar.gz.md5sum || die
+	md5sum -c givaro-${STABLE_GIVARO}.tar.gz.md5sum || die
     fi
 else
     OK=0 ;
-    git clone https://github.com/linbox-team/givaro.git 2>&1 >/dev/null && OK=1 
+    git clone --depth 1 https://github.com/linbox-team/givaro.git 2>&1 >/dev/null && OK=1
     [ "$OK" = "1" ] &&  cool  || die 
 fi
 
@@ -456,27 +451,27 @@ fi
 
 echo -en "${BEG}fetching Fflas-Ffpack..."| tee -a ../auto-install.log
 if [ "$STABLE_VAR" = "true" ]; then
-    if [ -f fflas-ffpack-$STABLE_FFLAS.tar.gz ] ; then
+    if [ -f fflas-ffpack-${STABLE_FFLAS}.tar.gz ] ; then
 	echo -ne " already there!\n"
 	echo -ne "${BEG}fetching md5sum" ; 
-	[ -f fflas-ffpack-$STABLE_FFLAS.tar.gz.md5sum ] && rm fflas-ffpack-${STABLE_FFLAS}.tar.gz.md5sum ;
-	wget --no-check-certificate https://forge.imag.fr/frs/download.php/$FFL_MD5/fflas-ffpack-$STABLE_FFLAS.tar.gz.md5sum >/dev/null 2>&1 || die
-	[ -f fflas-ffpack-$STABLE_FFLAS.tar.gz.md5sum ] &&  cool || die
+	[ -f fflas-ffpack-${STABLE_FFLAS}.tar.gz.md5sum ] && rm fflas-ffpack-${STABLE_FFLAS}.tar.gz.md5sum ;
+	wget --no-check-certificate https://github.com/linbox-team/fflas-ffpack/releases/download/v${STABLE_FFLAS}/fflas-ffpack-${STABLE_FFLAS}.tar.gz.md5sum >/dev/null 2>&1 || die
+	[ -f fflas-ffpack-${STABLE_FFLAS}.tar.gz.md5sum ] &&  cool || die
 	cool
 	echo -ne "${BEG}"
-	md5sum -c fflas-ffpack-$STABLE_FFLAS.tar.gz.md5sum || die
+	md5sum -c fflas-ffpack-${STABLE_FFLAS}.tar.gz.md5sum || die
     else
 	wget --no-check-certificate https://github.com/linbox-team/fflas-ffpack/releases/download/v${STABLE_FFLAS}/fflas-ffpack-${STABLE_FFLAS}.tar.gz >/dev/null 2>&1 || die
-	[ -f fflas-ffpack-$STABLE_FFLAS.tar.gz ] &&  cool || die
+	[ -f fflas-ffpack-${STABLE_FFLAS}.tar.gz ] &&  cool || die
 	echo -ne "${BEG}fetching md5sum" ; 
-	wget --no-check-certificate https://forge.imag.fr/frs/download.php/$FFL_MD5/fflas-ffpack-$STABLE_FFLAS.tar.gz.md5sum >/dev/null 2>&1 || die
+	wget --no-check-certificate https://github.com/linbox-team/fflas-ffpack/releases/download/v${STABLE_FFLAS}/fflas-ffpack-${STABLE_FFLAS}.tar.gz.md5sum >/dev/null 2>&1 || die
 	cool
 	echo -ne "${BEG}"
-	md5sum -c fflas-ffpack-$STABLE_FFLAS.tar.gz.md5sum || die
+	md5sum -c fflas-ffpack-${STABLE_FFLAS}.tar.gz.md5sum || die
     fi
 else
     OK=0 ;
-    git clone https://github.com/linbox-team/fflas-ffpack.git 2>&1 >/dev/null && OK=1 
+    git clone --depth=1 https://github.com/linbox-team/fflas-ffpack.git 2>&1 >/dev/null && OK=1
     [ "$OK" = "1" ] &&  cool  || die
 fi
 
@@ -490,7 +485,7 @@ fi
 OK=0
 if [ "$STABLE_VAR" = "true" ]; then
     echo -en "${BEG}extracting Givaro..."| tee -a ../auto-install.log
-    decompress givaro-$STABLE_GIVARO.tar.gz  && OK=1
+    decompress givaro-${STABLE_GIVARO}.tar.gz  && OK=1
     [ "$OK" = "1" ] &&  cool   || die 
 fi
 
@@ -499,7 +494,7 @@ fi
 OK=0
 if [ "$STABLE_VAR" = "true" ]; then
     echo -en "${BEG}extracting Fflas-Ffpack..."| tee -a ../auto-install.log
-    decompress fflas-ffpack-$STABLE_FFLAS.tar.gz  && OK=1
+    decompress fflas-ffpack-${STABLE_FFLAS}.tar.gz  && OK=1
     [ "$OK" = "1" ] &&  cool   || die
 fi
 
@@ -509,7 +504,7 @@ fi
 ####################
 
 if [ "$STABLE_VAR" = "true" ]; then
-    cd givaro-$STABLE_GIVARO || die
+    cd givaro-${STABLE_GIVARO} || die
 else
     cd givaro/ || die
 fi
@@ -567,7 +562,7 @@ cool| tee -a ../auto-install.log
 ##########################
 
 if [ "$STABLE_VAR" = "true" ]; then
-    cd fflas-ffpack-$STABLE_FFLAS/ || die
+    cd fflas-ffpack-${STABLE_FFLAS}/ || die
 else
     cd fflas-ffpack/ || die
 fi
