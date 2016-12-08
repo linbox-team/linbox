@@ -151,7 +151,7 @@ namespace LinBox {
 				
 				}
 				c_i[l] = new MatrixP(f[l], m, n, pts);
-				fftdomain.mul_fft(lpts, *c_i[l], ai, bi);				
+ 				fftdomain.mul_fft(lpts, *c_i[l], ai, bi);				
 				//std::cout<<"pi:="<<(uint64_t)basis[l]<<std::endl;
 				//std::cout<<"ci:="<<*c_i[l]<<std::endl;
 			}
@@ -173,7 +173,7 @@ namespace LinBox {
 
 			//std::cout<<"c:="<<c<<std::endl;
 			
-			for (size_t i=1;i<num_primes;i++)
+			for (size_t i=0;i<num_primes;i++)
 				delete c_i[i];
 
 			
@@ -255,7 +255,7 @@ namespace LinBox {
 				throw LinboxError("LinBox ERROR: not enough FFT Prime\n");
 			}
 			size_t num_primes = bas.size();
-
+ 
 			std::vector<double> basis(num_primes);
 			std::copy(bas.begin(),bas.end(),basis.begin());
 	    
@@ -301,7 +301,7 @@ namespace LinBox {
 
 			//std::cout<<"c:="<<c<<std::endl;
 			
-			for (size_t i=1;i<num_primes;i++)
+			for (size_t i=0;i<num_primes;i++)
 				delete c_i[i];
 		
 		}

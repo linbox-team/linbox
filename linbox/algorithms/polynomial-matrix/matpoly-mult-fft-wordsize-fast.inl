@@ -204,7 +204,7 @@ namespace LinBox {
 #endif
 
 #ifdef CHECK_MATPOL_MUL
-			std::cerr<<"(Fourier prime) - ";
+			std::cerr<<"(Fourier prime) - "<<_p<<" - ";
 			check_mul(c,a_copy,b_copy,c.size());
 #endif
 		}
