@@ -421,11 +421,12 @@ template<typename Field, typename RandIter>
 void profile_matpol_mul(const Field& fld,  RandIter& Gen, size_t n, size_t d) {
 	typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field> MatrixP;
 	size_t k=1;
+	size_t m=48;
 	size_t d1=236113,d2=337846;
 	if (d) d1=d2=d;
-	MatrixP A(fld,n,n,d1),B(fld,n,k,d2),C(fld,n,k,d1+d2-1);
+	MatrixP A(fld,m,n,d1),B(fld,n,k,d2),C(fld,m,k,d1+d2-1);
 	// Generate random matrix of polynomial
-	for (size_t i=0;i<n*n;i++){
+	for (size_t i=0;i<m*n;i++){
 		randomVect(Gen,A(i));
 	}
 	for (size_t i=0;i<n*k;i++)

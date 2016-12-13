@@ -85,7 +85,7 @@ Givaro::Timer mychrono[3];
 namespace LinBox
 {
   template<typename MatrixP_F>
-    bool check_mul (MatrixP_F &c, const MatrixP_F &a, const MatrixP_F &b,size_t deg) {
+    bool check_mul (const MatrixP_F &c, const MatrixP_F &a, const MatrixP_F &b,size_t deg) {
     typename MatrixP_F::Matrix C1(c.field(),c.rowdim(),c.coldim()),C2(c.field(),c.rowdim(),c.coldim());
     typename MatrixP_F::Matrix A1(c.field(),a.rowdim(),a.coldim());
     typename MatrixP_F::Matrix B1(c.field(),b.rowdim(),b.coldim());
@@ -117,7 +117,7 @@ namespace LinBox
 
 
   template<typename MatrixP_F>
-    bool check_midproduct (MatrixP_F &c, const MatrixP_F &a, const MatrixP_F &b, bool smallLeft=true, size_t n0=0,size_t n1=0, size_t deg=0) {
+    bool check_midproduct (const MatrixP_F &c, const MatrixP_F &a, const MatrixP_F &b, bool smallLeft=true, size_t n0=0,size_t n1=0, size_t deg=0) {
     typename MatrixP_F::Matrix C1(c.field(),c.rowdim(),c.coldim()),C2(c.field(),c.rowdim(),c.coldim());
     typename MatrixP_F::Matrix A1(c.field(),a.rowdim(),a.coldim());
     typename MatrixP_F::Matrix B1(c.field(),b.rowdim(),b.coldim());
