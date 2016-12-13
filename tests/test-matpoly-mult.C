@@ -157,11 +157,11 @@ bool debug_midpgen_dlp(const Field& fld,  RandIter& Gen) {
 	size_t d0,d1;
 	size_t n0,n1;
 
-	n0=84463;
-	n1=168923;
+	n0=22;
+	n1=42;
 	
 		
-	MatrixP A(fld,48,48,59061),B(fld,48,32,84461),C(fld,48,32,168923);
+	MatrixP A(fld,48,48,22),B(fld,48,32,21),C(fld,48,32,42);
 
 	// Generate random matrix of polynomial
 	randomMatPol(Gen,A);
@@ -180,9 +180,9 @@ bool launchTest(const Field& F, size_t n, long b, long d, long seed){
 	typename Field::RandIter G(F,b,seed);
 	typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field> MatrixP;
 	std::cerr<<"Polynomial matrix (polfirst) testing over ";F.write(std::cerr)<<std::endl;
-	//ok&=check_matpol_mul<MatrixP> (F,G,n,d);
-	//ok&=check_matpol_midp<MatrixP> (F,G,n,d);
-	//ok&=check_matpol_midpgen<MatrixP> (F,G,n,d); 
+	ok&=check_matpol_mul<MatrixP> (F,G,n,d);
+	ok&=check_matpol_midp<MatrixP> (F,G,n,d);
+	ok&=check_matpol_midpgen<MatrixP> (F,G,n,d); 
 
 	//typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain,Field> PMatrix;
 	// std::cerr<<"Polynomial matrix (matfirst) testing:\n";F.write(std::cerr)<<std::endl;
@@ -211,6 +211,7 @@ bool runTest(uint64_t n, uint64_t d, long seed){
 	}
 	*/
 	// normal prime < 2^(53--log(n))/2
+	/*
 	{
 		size_t bits= (53-integer(n).bitsize())/2;;
 		RandomPrimeIter Rd(bits,seed);
@@ -220,7 +221,7 @@ bool runTest(uint64_t n, uint64_t d, long seed){
 		Givaro::Modular<double> F((int32_t)p);
 		ok&=launchTest (F,n,bits,d,seed);
 	}
-	
+	*/
 	// multi-precision prime
 	 {
 	 	size_t bits=114;

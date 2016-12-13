@@ -284,8 +284,11 @@ namespace LinBox {
 				MatrixP ai(f[l],m,k,pts);
 				MatrixP bi(f[l],k,n,pts);
 				if (basis[l]> _p) {
-					FFLAS::fassign(f[l],m*k*pts,a.getPointer(),1,ai.getWritePointer(),1);
-					FFLAS::fassign(f[l],k*n*pts,b.getPointer(),1,bi.getWritePointer(),1);
+					//FFLAS::fassign(f[l],m*k*pts,a.getPointer(),1,ai.getWritePointer(),1);
+					//FFLAS::fassign(f[l],k*n*pts,b.getPointer(),1,bi.getWritePointer(),1);
+					// fassign is buggy (size < 2^31) with double
+					std::copy(a.getPointer(),a.getPointer()+m*k*pts,ai.getWritePointer());
+					std::copy(b.getPointer(),b.getPointer()+k*n*pts,bi.getWritePointer());				
 				}
 				else {
 					FFLAS::finit(f[l],m*k*pts,a.getPointer(),1,ai.getWritePointer(),1);
