@@ -6,6 +6,7 @@
 **/*.la
 **/*.lo
 **/.libs
+**/.deps/
 
 tests/test-blas-matrix
 tests/test-charpoly
@@ -35,10 +36,14 @@ tests/test-rational-reconstruction-base
 tests/test-smith-form-kannan-bachem
 tests/test-solve-nonsingular
 
+tests/.tmp-tests
+tests/checker
+tests/checker.dSYM/
+tests/temp2
+
 INSTALL
 _configs.sed
 aclocal.m4
-autogen.status
 autom4te.cache/
 build-aux/
 config.h

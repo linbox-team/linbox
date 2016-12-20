@@ -44,7 +44,7 @@
 #include <vector>
 
 #ifdef __LINBOX_HAVE_FPLLL
-#include <fplll/dpe.h>
+#include <fplll/fplll.h>
 #else
 #error "you need fplll here"
 #endif
