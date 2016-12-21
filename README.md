@@ -7,12 +7,21 @@
 The Linbox library provides functionality for exact linear algebra.
 See doc/mainpage.doxy for more info.
 
+## Quick Install
+
+Download [linbox-auto-install.sh](linbox-auto-install.sh) and run it!
+
+For instance, on a machine with an installation of GMP and OpenBLAS in the standard search paths:
+```
+./linbox-auto-install.sh --stable=yes --make-flags="-j 3" --with-blas-libs="-lopenblas"
+```
+This script will install Givaro, fflas-ffpack and then LinBox.
+
 ## Installation
 
-See doc/install-dev.html for installation from the git lastest version.
-See doc/install-dist.html for installation from a release tarball.
-See INSTALL for generic installation information.
+In brief: ```./configure <options> && make && make install```
 
+See INSTALL for generic installation information.
 
 ## Availability
 
@@ -20,11 +29,13 @@ From github.com/linbox-team
 
 
 # Requirements
-
-- GMP
+- fflas-ffpack
+and by transitivity:
 - any BLAS (Fortran or C): e.g. ATLAS, OpenBLAS, ...
 - Givaro
-- fflas-ffpack
+- GMP
+
+
 
 # Optional Dependencies 
 - NTL, 

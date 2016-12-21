@@ -19,28 +19,20 @@
 # ========LICENCE========
 #/
 
-AC_PREREQ([2.61])
+AC_PREREQ([2.68])
 
 AC_INIT([LinBox], [1.4.2],[linbox-use@googlegroups.com],[linbox],
 		[http://www.linalg.org/])
 
 AC_CONFIG_MACRO_DIR([macros])
 AC_CONFIG_AUX_DIR([build-aux])
-AM_INIT_AUTOMAKE([1.8 gnu no-dependencies -Wall -Wno-portability foreign])
+AM_INIT_AUTOMAKE([1.10 -Wall -Wno-portability foreign])
 AC_CONFIG_HEADERS([config.h])
 AX_PREFIX_CONFIG_H(linbox/config.h, __LINBOX)
-AC_PATH_PROG(RM, rm, $FALSE)
-RM="$RM -f"
 
-
-AM_MAINTAINER_MODE
-AM_DEP_TRACK
-AM_OUTPUT_DEPENDENCY_COMMANDS
+AM_PROG_AR
 
 AM_ACLOCAL_INCLUDE(macros)
-
-# work around to fix the backward compatibility issue of automake 1.10 with 1.9 (pb with MKDIR_P)
-AC_SUBST([MKDIR_P])
 
 AC_LANG([C++])
 
@@ -163,7 +155,7 @@ AC_HEADER_STDC
 AC_PROG_LIBTOOL
 
 # newer libtool...
-LT_PREREQ([2.2])
+LT_PREREQ([2.4.2])
 LT_INIT
 
 

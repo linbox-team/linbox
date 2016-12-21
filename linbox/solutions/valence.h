@@ -96,7 +96,6 @@ namespace LinBox
 }
 
 #include <givaro/modular.h>
-#include <typeinfo>
 
 #include "linbox/ring/modular.h"
 #include "linbox/algorithms/cra-domain.h"
@@ -121,17 +120,17 @@ namespace LinBox
 		typename Field::Element& operator()(typename Field::Element& v, const Field& F) const
 		{
 			commentator().start ("Givaro::Modular Valence", "Mvalence");
-			std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-			F.write(report) << std::endl;
+// 			std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+// 			F.write(report) << std::endl;
 			typedef typename Blackbox::template rebind<Field>::other FBlackbox;
-			report << typeid(A).name() << ", A is: " << A.rowdim() << 'x' << A.coldim() << std::endl;
+// 			report << typeid(A).name() << ", A is: " << A.rowdim() << 'x' << A.coldim() << std::endl;
 
 			FBlackbox Ap(A, F);
 
-			report << typeid(Ap).name() << ", Ap is: " << Ap.rowdim() << 'x' << Ap.coldim() << std::endl;
+// 			report << typeid(Ap).name() << ", Ap is: " << Ap.rowdim() << 'x' << Ap.coldim() << std::endl;
 
 			valence( v, Ap, M);
-			F.write( F.write(report << "one valence: ", v) << " mod " ) << std::endl;;
+// 			F.write( F.write(report << "one valence: ", v) << " mod " ) << std::endl;;
 			commentator().stop ("done", NULL, "Mvalence");
 			return v;
 		}

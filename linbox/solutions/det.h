@@ -1,6 +1,6 @@
 /* linbox/solutions/det.h
  * Copyright (C) 2001, 2002 LinBox
- * Time-stamp: <04 Oct 11 16:42:52 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <06 Dec 16 13:03:05 Jean-Guillaume.Dumas@imag.fr>
  *
  *
  * ========LICENCE========
@@ -531,7 +531,7 @@ namespace LinBox
 #include "linbox/algorithms/cra-early-single.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/matrix-hom.h"
-#include <typeinfo>
+
 namespace LinBox
 {
 

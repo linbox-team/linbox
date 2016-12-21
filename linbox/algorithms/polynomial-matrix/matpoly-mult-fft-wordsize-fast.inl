@@ -101,6 +101,14 @@ namespace LinBox {
 			size_t n = b.coldim();
 			size_t pts=c.size();
 			//std::cout<<"mul : 2^"<<lpts<<std::endl;
+
+#ifdef CHECK_MATPOL_MUL
+			MatrixP a_copy(field(),a.rowdim(),a.coldim(),pts);
+			MatrixP b_copy(field(),b.rowdim(),b.coldim(),pts);
+			a_copy.copy(a);
+			b_copy.copy(b);		       
+#endif
+
 #ifdef FFT_PROFILER
 			Timer totalTime;
 			totalTime.start();
@@ -194,16 +202,21 @@ namespace LinBox {
 			totalTime.stop();
 			//std::cout<<"FFT(1): total time : "<<totalTime<<std::endl;
 #endif
+
+#ifdef CHECK_MATPOL_MUL
+			std::cerr<<"(Fourier prime) - "<<_p<<" - ";
+			check_mul(c,a_copy,b_copy,c.size());
+#endif
 		}
 
 		// compute  c= (a*b x^(-n0-1)) mod x^n1
-		// by defaut: n0=c.size() and n1=2*c.size();
+		// by defaut: n0=c.size() and n1=2*c.size()-1;
 		template<typename Matrix1, typename Matrix2, typename Matrix3>
 		void midproduct (Matrix1 &c, const Matrix2 &a, const Matrix3 &b,
 				 bool smallLeft=true, size_t n0=0,size_t n1=0) {
 			linbox_check(a.coldim()==b.rowdim());
 			size_t hdeg = (n0==0?c.size():n0);
-			size_t deg  = (n1==0?2*hdeg:n1);
+			size_t deg  = (n1==0?2*hdeg-1:n1);
 			linbox_check(c.size()>=deg-hdeg);
 			if (smallLeft){
 				linbox_check(b.size()<hdeg+deg);

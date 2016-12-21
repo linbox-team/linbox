@@ -324,6 +324,11 @@ namespace LinBox
 namespace LinBox
 {
 #ifdef __LINBOX_HAVE_FPLLL
+
+#if FPLLL_MAJOR_VERSION < 5
+#define lll_reduction lllReduction
+#endif
+
 	//! @bug we suppose Ring and mpz_t understand eachother...
 	template<class Ring, bool withU>
 	void
@@ -339,31 +344,26 @@ namespace LinBox
 		for (size_t i = 0 ; i < H.rowdim() ; ++i) {
 			for (size_t j = 0 ; j < H.coldim() ; ++j) {
                                 fplll::Z_NR<ZT> x = H.getEntry(i,j);
-                                B.Set((int)i,(int)j,x);
+                                B(i,j) = x;
 			}
 		}
 		// LLL()
 		switch (meth.getMeth()) {
 		case (latticeMethod::latticeFPLLL::P) :
 			{
-				fplll::proved<ZT,double> lllMethod(&B,meth.getPrecision(),
-							      meth.getEta(),meth.getDelta());
-				lllMethod.LLL();
+				lll_reduction(B, meth.getDelta(), meth.getEta(), fplll::LM_PROVED, fplll::FT_DOUBLE, meth.getPrecision());
 			}
 			break;
 		case (latticeMethod::latticeFPLLL::W) :
 			{
-				fplll::wrapper lllMethod(&B,meth.getPrecision(),
-						    meth.getEta(),meth.getDelta());
-				lllMethod.LLL();
+                                // precision is *ignored*
+				lll_reduction(B, meth.getDelta(), meth.getEta(), fplll::LM_WRAPPER);
 			}
 			break;
 		case (latticeMethod::latticeFPLLL::H) :
 			{
-				fplll::heuristic<ZT,double> lllMethod(&B,meth.getPrecision(),
-								 meth.getEta(),meth.getDelta(),
-								 meth.getSiegel());
-				lllMethod.LLL();
+                                int flags = meth.getSiegel() ? fplll::LLL_SIEGEL : fplll::LLL_DEFAULT;
+				lll_reduction(B, meth.getDelta(), meth.getEta(), fplll::LM_HEURISTIC, fplll::FT_DOUBLE, meth.getPrecision(), flags);
 			}
 			break;
 		}
@@ -373,7 +373,7 @@ namespace LinBox
 		// Convert back H
 		for (size_t i = 0 ; i < H.rowdim() ; ++i) {
 			for (size_t j = 0 ; j < H.coldim() ; ++j) {
-				H.setEntry(i,j, B.Get(i,j) );
+				H.setEntry(i,j, B(i,j) );
 			}
 		}
 

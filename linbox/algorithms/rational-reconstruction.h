@@ -1764,13 +1764,13 @@ namespace LinBox
 				for (size_t i=1;i< k+1;++i){
 					Lattice.setEntry(i,i, mod );
 					_r.convert(tmp, real_approximation[bad_num_index+i-1]);
-					Lattice.setEntry(0,i,fplll::Z_NR<mpz_t>(tmp.get_mpz()));
+					Lattice.setEntry(0,i,tmp);
 				}
 
 
 				// ratio to check the validity of the denominator compare to the entries in the reduced lattice
 				integer ratio;
-				ratio=100L;
+				ratio=100;
 
 				// reduce the lattice using LLL algorithm
 				Timer chrono;
@@ -2091,7 +2091,7 @@ namespace LinBox
 
 				// ratio to check the validity of the denominator compare to the entries in the reduced lattice
 				integer ratio;
-				ratio=100L;
+				ratio=100;
 
 				// reduce the lattice using LLL algorithm
 				Timer chrono;

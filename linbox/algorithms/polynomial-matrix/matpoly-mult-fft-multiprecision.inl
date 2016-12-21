@@ -438,7 +438,7 @@ namespace LinBox{
       size_t k = a.coldim();
       size_t n = b.coldim();
       size_t hdeg = (n0==0?c.size():n0);
-      size_t deg  = (n1==0?2*hdeg:n1);
+      size_t deg  = (n1==0?2*hdeg-1:n1);
       linbox_check(c.size()>=deg-hdeg);
       
       if (smallLeft){
@@ -521,7 +521,9 @@ namespace LinBox{
 	FFT_PROFILE_GET(2,tCopy);
 	//PolynomialMatrixFFTPrimeMulDomain<ModField> fftdomain (f);
 	PolynomialMatrixThreePrimesFFTMulDomain<ModField> fftdomain (f);       
-	fftdomain.midproduct_fft(lpts, *(c_i[l]), a_i, b_i, smallLeft);
+	integer bound2=integer(RNS._basis[l]-1)*integer(RNS._basis[l]-1)
+	  *integer((uint64_t)a.coldim())*integer((uint64_t)std::min(a.size(),b.size()));
+	fftdomain.midproduct_fft(lpts, *(c_i[l]), a_i, b_i, bound2, smallLeft);
 				
 	FFT_PROFILE_GET(2,tMul);
       }

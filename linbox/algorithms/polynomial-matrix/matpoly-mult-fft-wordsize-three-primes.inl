@@ -48,6 +48,7 @@ namespace LinBox {
 		typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain,Field> PMatrix;
 		//typedef Givaro::Modular<double>                ModField;
 		typedef Field ModField;
+	       		
 	private:
 		const Field              *_field;  // Read only
 		uint64_t                      _p;
@@ -110,7 +111,7 @@ namespace LinBox {
 			if ((_p-1) % pts == 0){
 				PolynomialMatrixFFTPrimeMulDomain<ModField> fftprime_domain (field());
 				fftprime_domain.mul_fft(lpts,c,a,b);
-				return;
+                		return;
 			}			
 			//std::cout<<"a:="<<a<<std::endl;
 			//std::cout<<"b:="<<b<<std::endl;			
@@ -118,7 +119,6 @@ namespace LinBox {
 			size_t m = a.rowdim();
 			size_t k = a.coldim();
 			size_t n = b.coldim();
-			
 			uint64_t prime_max=maxFFTPrimeValue(k,pts); // CAREFUL: only for Modular<double>;
 			RandomFFTPrime RdFFT(prime_max);
 			std::vector<integer> bas;
@@ -141,43 +141,66 @@ namespace LinBox {
 				PolynomialMatrixFFTPrimeMulDomain<ModField> fftdomain (f[l]);
 				MatrixP ai(f[l],m,k,pts);
 				MatrixP bi(f[l],k,n,pts);
-				FFLAS::fassign(f[l],m*k*pts,a.getPointer(),1,ai.getWritePointer(),1);
-				FFLAS::fassign(f[l],k*n*pts,b.getPointer(),1,bi.getWritePointer(),1);
+				if (basis[l]> _p) {
+					//FFLAS::fassign(f[l],m*k*pts,a.getPointer(),1,ai.getWritePointer(),1);
+					//FFLAS::fassign(f[l],k*n*pts,b.getPointer(),1,bi.getWritePointer(),1);
+					// fassign is buggy (size < 2^31) with double
+					std::copy(a.getPointer(),a.getPointer()+m*k*pts,ai.getWritePointer());
+					std::copy(b.getPointer(),b.getPointer()+k*n*pts,bi.getWritePointer());
+				}
+				else {
+					FFLAS::finit(f[l],m*k*pts,a.getPointer(),1,ai.getWritePointer(),1);
+					FFLAS::finit(f[l],k*n*pts,b.getPointer(),1,bi.getWritePointer(),1);
+				
+				}
 				c_i[l] = new MatrixP(f[l], m, n, pts);
-				fftdomain.mul_fft(lpts, *c_i[l], ai, bi);				
+ 				fftdomain.mul_fft(lpts, *c_i[l], ai, bi);				
 				//std::cout<<"pi:="<<(uint64_t)basis[l]<<std::endl;
 				//std::cout<<"ci:="<<*c_i[l]<<std::endl;
 			}
-	    
+
 			// reconstruct the result with MRS
-			typename Field::Element alpha;
+			typename Field::Element alpha,tmp;
 			typename Field::Element beta=field().one;
-			FFLAS::freduce(field(),m*n*c.size(),c_i[0]->getPointer(),1,c.getWritePointer(),1);
+			FFLAS::freduce(field(),m*n*pts,c_i[0]->getPointer(),1,c.getWritePointer(),1);
+			//for(size_t k=0;k<m*n*pts;k++) field().reduce(c.getWritePointer()[k],c_i[0]->getPointer()[k]);
+
 			for (size_t i=1;i<num_primes;i++){
 				for(size_t j=0;j<i;j++){
 					f[i].init(alpha,basis[j]);
 					f[i].invin(alpha);
 					FFLAS::fsubin (f[i],m*n*pts,c_i[j]->getPointer(),1,c_i[i]->getWritePointer(),1);
+					//for(size_t k=0;k<m*n*pts;k++) {f[i].init(tmp,c_i[j]->getPointer()[k]); f[i].subin(c_i[i]->getWritePointer()[k], tmp); }
 					FFLAS::fscalin(f[i],m*n*pts,alpha,c_i[i]->getWritePointer(),1);
+					//for(size_t k=0;k<m*n*pts;k++) f[i].mulin(c_i[i]->getWritePointer()[k], alpha);					
 				}
-				field().mulin(beta,basis[i-1]);
+				field().init(tmp,basis[i-1]);
+				field().mulin(beta,tmp);
+				//field().mulin(beta,basis[i-1]);
 				FFLAS::faxpy(field(),m*n*pts,beta,c_i[i]->getPointer(),1,c.getWritePointer(),1);
+				//for(size_t k=0;k<m*n*pts;k++) field().axpyin(c.getWritePointer()[k], c_i[i]->getPointer()[k],beta);
 			}
-
-			//std::cout<<"c:="<<c<<std::endl;
 			
-			for (size_t i=1;i<num_primes;i++)
+			//std::cout<<"c:="<<c<<std::endl;
+			//#ifdef CHECK_MATPOL_MUL
+			//std::cerr<<"(3 - prime CRT ) - "<<_p<<" - ";
+			//check_mul(c,a,b,c.size());
+			//#endif
+
+			for (size_t i=0;i<num_primes;i++)
 				delete c_i[i];
+		
+			
 		}
 
 		// compute  c= (a*b x^(-n0-1)) mod x^n1
-		// by defaut: n0=c.size() and n1=2*c.size();
+		// by defaut: n0=c.size() and n1=2*c.size()-1;
 		template<typename Matrix1, typename Matrix2, typename Matrix3>
 		void midproduct (Matrix1 &c, const Matrix2 &a, const Matrix3 &b,
 				 bool smallLeft=true, size_t n0=0,size_t n1=0) {
 			linbox_check(a.coldim()==b.rowdim());
 			size_t hdeg = (n0==0?c.size():n0);
-			size_t deg  = (n1==0?2*hdeg:n1);
+			size_t deg  = (n1==0?2*hdeg-1:n1);
 			linbox_check(c.size()>=deg-hdeg);
 			if (smallLeft){
 				linbox_check(b.size()<hdeg+deg);
@@ -217,6 +240,7 @@ namespace LinBox {
 				     const integer& bound, bool smallLeft=true) {
 			size_t pts=c.size();			
 			if ((_p-1) % pts == 0){
+				//std::cerr<<"3-prime FFT midp switching to FFTPrime  "<<std::endl;
 				PolynomialMatrixFFTPrimeMulDomain<ModField> fftprime_domain (field());
 				fftprime_domain.midproduct_fft(lpts,c,a,b,smallLeft);
 				return;
@@ -245,7 +269,7 @@ namespace LinBox {
 				throw LinboxError("LinBox ERROR: not enough FFT Prime\n");
 			}
 			size_t num_primes = bas.size();
-
+ 
 			std::vector<double> basis(num_primes);
 			std::copy(bas.begin(),bas.end(),basis.begin());
 	    
@@ -255,11 +279,22 @@ namespace LinBox {
 				f[l]=ModField(basis[l]);
 	    
 			for (size_t l=0;l<num_primes;l++){
+				//std::cerr<<"3-prime FFT midp over "; f[l].write(std::cerr)<<std::endl;
 				PolynomialMatrixFFTPrimeMulDomain<ModField> fftdomain (f[l]);
 				MatrixP ai(f[l],m,k,pts);
 				MatrixP bi(f[l],k,n,pts);
-				FFLAS::fassign(f[l],m*k*pts,a.getPointer(),1,ai.getWritePointer(),1);
-				FFLAS::fassign(f[l],k*n*pts,b.getPointer(),1,bi.getWritePointer(),1);
+				if (basis[l]> _p) {
+					//FFLAS::fassign(f[l],m*k*pts,a.getPointer(),1,ai.getWritePointer(),1);
+					//FFLAS::fassign(f[l],k*n*pts,b.getPointer(),1,bi.getWritePointer(),1);
+					// fassign is buggy (size < 2^31) with double
+					std::copy(a.getPointer(),a.getPointer()+m*k*pts,ai.getWritePointer());
+					std::copy(b.getPointer(),b.getPointer()+k*n*pts,bi.getWritePointer());				
+				}
+				else {
+					FFLAS::finit(f[l],m*k*pts,a.getPointer(),1,ai.getWritePointer(),1);
+					FFLAS::finit(f[l],k*n*pts,b.getPointer(),1,bi.getWritePointer(),1);
+				
+				}			       
 				c_i[l] = new MatrixP(f[l], m, n, pts);
 				fftdomain.midproduct_fft(lpts, *c_i[l], ai, bi,smallLeft);				
 				//std::cout<<"pi:="<<(uint64_t)basis[l]<<std::endl;
@@ -267,7 +302,7 @@ namespace LinBox {
 			}
 	    
 			// reconstruct the result with MRS
-			typename Field::Element alpha;
+			typename Field::Element alpha,tmp;
 			typename Field::Element beta=field().one;
 			FFLAS::freduce(field(),m*n*pts,c_i[0]->getPointer(),1,c.getWritePointer(),1);
 			for (size_t i=1;i<num_primes;i++){
@@ -277,13 +312,15 @@ namespace LinBox {
 					FFLAS::fsubin (f[i],m*n*pts,c_i[j]->getPointer(),1,c_i[i]->getWritePointer(),1);
 					FFLAS::fscalin(f[i],m*n*pts,alpha,c_i[i]->getWritePointer(),1);
 				}
-				field().mulin(beta,basis[i-1]);
+ 				field().init(tmp,basis[i-1]);
+				field().mulin(beta,tmp);
+				//field().mulin(beta,basis[i-1]);
 				FFLAS::faxpy(field(),m*n*pts,beta,c_i[i]->getPointer(),1,c.getWritePointer(),1);
 			}
 
 			//std::cout<<"c:="<<c<<std::endl;
 			
-			for (size_t i=1;i<num_primes;i++)
+			for (size_t i=0;i<num_primes;i++)
 				delete c_i[i];
 		
 		}

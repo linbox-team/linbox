@@ -45,6 +45,7 @@
 #define MBASIS_THRESHOLD (1<<MBASIS_THRESHOLD_LOG)
 
 
+
 namespace LinBox {
 
 
@@ -236,10 +237,10 @@ namespace LinBox {
                                 chrono.start();
 #endif
                                 size_t ord1,ord2,d1,d2;
-                                //ord1 = order>>1;
-                                //ord2 = order-ord1; // ord1+ord2=order
-                                ord2 = order>>1;
-                                ord1 = order-ord2; // ord1+ord2=order
+                                ord1 = order>>1;
+                                ord2 = order-ord1; // ord1+ord2=order
+                                //ord2 = order>>1;
+                                //ord1 = order-ord2; // ord1+ord2=order
                                 size_t m,n,k;
                                 m=sigma.rowdim();
                                 n=sigma.coldim();

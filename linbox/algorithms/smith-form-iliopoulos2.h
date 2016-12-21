@@ -456,8 +456,10 @@ public:
 		
 		smithFormIn(B, d);
 		
-		for (int i = 0; i < n; i++) {
+		for (size_t i = 0; i < n; i++) {
 			B.getEntry(diag[i], i, i);
+			_F.gcdin(diag[i], d);
+			_F.modin(diag[i], d);
 			_F.normalizeIn(diag[i]);
 		}
 	}
