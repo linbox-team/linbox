@@ -66,9 +66,9 @@ Givaro::Timer mychrono[3];
 #endif
 #define FFT_PROFILE(lvl,msg,x)						\
   if ((lvl)>=FFT_PROF_LEVEL) {						\
-			      std::cout<<"FFT: ";			\
-			      std::cout.width(FFT_PROF_MSG_SIZE);std::cout<<std::left<<msg<<" : "; \
-			      std::cout.precision(6);std::cout<<x<<" s"<<std::endl; \
+    std::cout<<"FFT: ";							\
+    std::cout.width(FFT_PROF_MSG_SIZE);std::cout<<std::left<<msg<<" : "; \
+    std::cout.precision(6);std::cout<<x<<" s"<<std::endl;		\
   }
 #else
 #define FFT_PROFILE_START(lvl)
@@ -84,18 +84,65 @@ Givaro::Timer mychrono[3];
 
 namespace LinBox
 {
-  template<typename MatrixP_F>
-    bool check_mul (const MatrixP_F &c, const MatrixP_F &a, const MatrixP_F &b,size_t deg) {
-    typename MatrixP_F::Matrix C1(c.field(),c.rowdim(),c.coldim()),C2(c.field(),c.rowdim(),c.coldim());
-    typename MatrixP_F::Matrix A1(c.field(),a.rowdim(),a.coldim());
-    typename MatrixP_F::Matrix B1(c.field(),b.rowdim(),b.coldim());
-    BlasMatrixDomain< typename MatrixP_F::Field>  BMD(c.field());
+  template<typename Field>
+    bool check_mul (const PolynomialMatrix<PMType::matfirst,PMStorage::plain,Field> &c,
+		    const PolynomialMatrix<PMType::matfirst,PMStorage::plain,Field> &a,
+		    const PolynomialMatrix<PMType::matfirst,PMStorage::plain,Field> &b,size_t deg) {
+
+    typedef typename PolynomialMatrix<PMType::matfirst,PMStorage::plain,Field>::Matrix Matrix;
+    Matrix C1(c.field(),c.rowdim(),c.coldim()),C2(c.field(),c.rowdim(),c.coldim());
+    Matrix A1(c.field(),a.rowdim(),a.coldim());
+    Matrix B1(c.field(),b.rowdim(),b.coldim());
+    BlasMatrixDomain< typename Matrix::Field>  BMD(c.field());
     for (size_t k=0;k<deg;k++)
       BMD.addin(C1,c[k]);
     for (size_t k=0;k<a.size();k++)
       BMD.addin(A1,a[k]);
     for (size_t k=0;k<b.size();k++)
       BMD.addin(B1,b[k]);
+    
+    BMD.mul(C2,A1,B1);
+    bool correct=BMD.areEqual(C1,C2);
+    std::cerr<<"Checking polynomial matrix mul "
+	     <<a.rowdim()<<"x"<<a.coldim()<<"["<<a.size()<<"]"
+	     <<b.rowdim()<<"x"<<b.coldim()<<"["<<b.size()<<"]"
+	     <<" ... "<<(correct?"done":"error")<<std::endl;
+    if (!correct){
+      std::cerr<<"error with field : ";
+      c.field().write(std::cerr);
+      std::cerr<<std::endl;
+      /* std::cerr<<"A:="<<a<<";"<<std::endl; */
+      /* std::cerr<<"B:="<<b<<";"<<std::endl; */
+      /* std::cerr<<"C:="<<c<<";"<<std::endl; */
+    }
+    return correct;
+  }
+ 
+  template<typename Field>
+    bool check_mul (const PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field> &c,
+		    const PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field> &a,
+		    const PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field> &b,size_t deg) {
+
+    typedef typename PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field>::Matrix Matrix;
+    Matrix C1(c.field(),c.rowdim(),c.coldim()),C2(c.field(),c.rowdim(),c.coldim());
+    Matrix A1(c.field(),a.rowdim(),a.coldim());
+    Matrix B1(c.field(),b.rowdim(),b.coldim());
+    BlasMatrixDomain< typename Matrix::Field>  BMD(c.field());
+
+    // C1 = c(1)
+    for (size_t i=0;i<c.rowdim()*c.coldim();i++)
+      for (size_t k=0;k<deg;k++)
+	c.field().addin(C1.getWritePointer()[i], c.get(i,k));
+
+    // A1=a(1)
+    for (size_t i=0;i<a.rowdim()*a.coldim();i++)
+      for (size_t k=0;k<a.size();k++)
+	a.field().addin(A1.getWritePointer()[i], a.get(i,k));
+
+    // B1=b(1)
+    for (size_t i=0;i<b.rowdim()*b.coldim();i++)
+      for (size_t k=0;k<b.size();k++)
+	b.field().addin(B1.getWritePointer()[i], b.get(i,k));
     
     BMD.mul(C2,A1,B1);
     bool correct=BMD.areEqual(C1,C2);
@@ -137,33 +184,6 @@ namespace LinBox
     for (size_t k=0;k<deg;k++)
       BMD.addin(C1,c[k]);
     
-    /* if (smallLeft){ */
-    /*   size_t t=0; */
-    /*   size_t k=std::min(n0-1,a.size()-1); */
-    /*   size_t j=n0-1-k; */
-    /*   for (;k<size_t(-1) && t<deg ;k--,t++){ */
-    /* 	myerror<<"+a["<<k<<"]"<<std::endl; */
-    /* 	BMD.addin(A1,a[k]); */
-    /* 	myerror<<"*b["<<j<<"]"<<std::endl; */
-    /* 	BMD.axpyin(C2,A1,b[j]); */
-    /* 	j++; */
-    /*   } */
-    /*   for (;k<size_t(-1) ;k--){ */
-    /* 	myerror<<"+a["<<k<<"]"<<std::endl; */
-    /* 	BMD.addin(A1,a[k]); */
-    /*   } */
-      
-    /*   for (k=a.size()-1;k<size_t(-1) && j < b.size();k--){ */
-    /* 	myerror<<"-a["<<k<<"]"<<std::endl; */
-
-    /* 	//BMD.subin(A1,a[k]); NOT SUPPORTED BY Modular<ruint> */
-    /* 	for (size_t i=0;i<a.rowdim();i++) for (size_t j=0;j<a.coldim();j++) (a.field()).subin(A1.refEntry(i,j), a.get(i,j,k)); */
-					    
-    /* 	myerror<<"*b["<<j<<"]"<<std::endl; */
-    /* 	BMD.axpyin(C2,A1,b[j]); */
-    /* 	j++; */
-    /*   } */
-    /* } */
 
     if (smallLeft){
       size_t k=std::min(n0-1,a.size()-1);
