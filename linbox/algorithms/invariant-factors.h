@@ -47,8 +47,7 @@ public:
 	typedef MatrixDomain<Field> Domain;
 	typedef typename Domain::OwnMatrix Block;
 	typedef typename Field::RandIter RandIter;
-	typedef Givaro::Poly1Dom<Field,Givaro::Dense> PolyDom;
-	typedef GivaroPoly<PolyDom> PolyRing;
+	typedef GivaroPoly<Field,Givaro::Dense> PolyRing;
 	typedef typename PolyRing::Element PolyElement;
 	typedef MatrixDomain<PolyRing> PolyMatDom;
 	typedef typename PolyMatDom::OwnMatrix PolyBlock;
@@ -63,7 +62,6 @@ protected:
 	Field _F;
 	RandIter _RI;
 	RandomMatrix _RDM;
-	PolyDom _PD;
 	PolyRing _R;
 	PolyMatDom _PMD;
 	SmithKbDomain _SFKB;
@@ -76,7 +74,6 @@ public:
 		_F(F),
 		_RI(F),
 		_RDM(F, _RI),
-		_PD(R.domain()),
 		_R(R),
 		_PMD(R),
 		_SFKB(_PMD),
@@ -110,13 +107,13 @@ public:
 	{
 		PolyElement temp;
 		size_t d = gen.size();
-		_PD.init(temp, d-1);
+		_R.domain().init(temp, Givaro::Degree(d-1));
 		
 		size_t b = MM.rowdim();
 		for (uint32_t i = 0; i < b; i++) {
 			for (uint32_t j = 0; j < b; j++) {
 				for (uint32_t k = 0; k < d; k++) {
-					_PD.setEntry(temp, gen[k].getEntry(i,j), k);
+					_R.domain().setEntry(temp, gen[k].getEntry(i,j), Givaro::Degree(k));
 				}
 				MM.setEntry(i,j,temp);
 			}

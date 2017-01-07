@@ -16,6 +16,7 @@
 #include <linbox/ring/local2_32.h>
 #include <linbox/ring/pir-modular-int32.h>
 #include <linbox/ring/givaro-poly.h>
+#include <linbox/ring/givaro-poly-local.h>
 #include <linbox/ring/givaro-poly-quotient.h>
 #include <linbox/randiter/givaro-poly.h>
 #include <linbox/algorithms/smith-form-local.h>
@@ -36,6 +37,11 @@ typedef MatrixDomain<PolyRing> MatDom;
 typedef typename MatDom::OwnMatrix Mat;
 typedef MatrixDomain<QuotRing> QuotMatDom;
 typedef typename QuotMatDom::OwnMatrix QMat;
+
+typedef GivaroPolyLocal<PolyDom> LocalRing;
+typedef MatrixDomain<LocalRing> LocalMatDom;
+typedef LocalMatDom::OwnMatrix LMat;
+
 typedef IliopoulosDomain<PolyRing> IliopoulosDom;
 typedef SmithFormLocal<QuotRing> LocalDom;
 typedef DenseVector<PolyRing> FactorVector;
@@ -64,6 +70,39 @@ void local(Mat &M, PolyElement &f, QuotRing &R) {
 	
 	if (VERBOSE) {
 		list<PolyElement>::const_iterator iterator;
+		for (iterator = l.begin(); iterator != l.end(); ++iterator) {
+			R.write(cout, *iterator) << endl;
+		}
+		cout << endl;
+	}
+}
+
+void local2(Mat &M, LocalRing &R) {
+	size_t n = M.coldim();
+	LMat A(R, n, n);
+	for (size_t i = 0; i < n; i++) {
+		for (size_t j = 0; j < n; j++) {
+			PolyElement tmp;
+			M.getEntry(tmp, i, j);
+			
+			LocalRing::Element ltmp;
+			R.init(ltmp, tmp);
+			
+			A.setEntry(i, j, ltmp);
+		}
+	}
+	
+	SmithFormLocal<LocalRing> sfl;
+	list<LocalRing::Element> l;
+	
+	Timer timer;
+	timer.start();
+	sfl(l, A, R);
+	timer.stop();
+	cout << "Local2 Time: " << timer << endl;
+	
+	if (VERBOSE) {
+		list<LocalRing::Element>::const_iterator iterator;
 		for (iterator = l.begin(); iterator != l.end(); ++iterator) {
 			R.write(cout, *iterator) << endl;
 		}
@@ -191,13 +230,11 @@ int main(int argc, char* argv[]) {
 	R.init(g, gn);
 	R.write(cout << "irred: ", g) << endl;
 	
-	R.assign(f, R.one);
-	for (size_t i = 0; i < e; i++) {
-		R.mulin(f, g);
-	}
+	R.pow(f, g, e);
 	R.write(cout << "quotient: ", f) << endl;
 	
 	QuotRing QR(R, f);
+	LocalRing LR(R, g, e);
 	
 	Mat M(R, n, n);
 	generateM(M, MD, R, f, g, n, e);
@@ -206,5 +243,7 @@ int main(int argc, char* argv[]) {
 	
 	ilio(M, f, MD, R);
 	
-	local(M, f, QR);
+	//local(M, f, QR);
+	
+	local2(M, LR);
 }
