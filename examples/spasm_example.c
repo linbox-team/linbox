@@ -1605,6 +1605,10 @@ int spasm_schur_rank(spasm * A, const int *p, const int *qinv, const int npiv) {
 int spasm_is_row_pivotal(const spasm * A, const int *qinv, const int i) {
   //int *Ap, *Aj;
 
+  if(A->getStart(i) == A->getEnd(i)){ // empty row
+    return 0;
+  }
+
   //Ap = A->p;
   //Aj = A->j;
   //return (qinv[Aj[Ap[i]]] == i);
@@ -1714,20 +1718,28 @@ int spasm_find_FL_column_pivots(spasm * A, int *p, int *qinv, int npiv_fl) {
   spasm_vector_set(w, 0, m, 1);
   
   start = spasm_wtime();
-  
+
   /* mark columns on previous pivot rows as obstructed */
   for (int i = 0; i < npiv; i++) {
     int inew = p[i];
     // for (int px = Ap[inew]; px < Ap[inew + 1]; px++)
     //   w[Aj[px]] = 0;
-    for (int px = A->getStart(inew); px < A->getEnd(inew); px++)
+
+    
+    for (int px = A->getStart(inew); px < A->getEnd(inew); px++){
+     
       w[A->getColid(px)] = 0;
+    }
+    
   }
+
   
   /* find new pivots */
   for (int i = 0; i < n; i++) {
-    if (spasm_is_row_pivotal(A, qinv, i))
+    
+    if (spasm_is_row_pivotal(A, qinv, i)){
       continue;
+    }
     
     /* does A[i,:] have an entry on an unobstructed column? */
     // for (int px = Ap[i]; px < Ap[i + 1]; px++) {
@@ -1735,7 +1747,7 @@ int spasm_find_FL_column_pivots(spasm * A, int *p, int *qinv, int npiv_fl) {
     //   if (w[j] == 0)
     // 	continue;	/* this column is closed,
     // 			 * skip this entry */
-      
+    
     // 			/* new pivot found! */
     //   if (qinv[j] == -1) {
     // 	p[npiv++] = i;
@@ -1747,12 +1759,15 @@ int spasm_find_FL_column_pivots(spasm * A, int *p, int *qinv, int npiv_fl) {
     // 	 */
     // 	for (int px = Ap[i]; px < Ap[i + 1]; px++)
     // 	  w[Aj[px]] = 0;
-	
+    
     // 	break;
     //   }
     // }
+    
+    
     for (int px = A->getStart(i); px < A->getEnd(i); px++) {
       int j = A->getColid(px);
+      
       if (w[j] == 0)
 	continue;	/* this column is closed,
 			 * skip this entry */
@@ -1766,16 +1781,16 @@ int spasm_find_FL_column_pivots(spasm * A, int *p, int *qinv, int npiv_fl) {
 	 * mark the columns occuring on this row as
 	 * unavailable
 	 */
-	for (int px = A->getStart(i); px < A->getEnd(i); px++)
-	  w[A->getColid(px)] = 0;
+	for (int px = A->getStart(i); px < A->getEnd(i); px++){
+	  int j = A->getColid(px);
+	  w[j] = 0;
+	}
 	
 	break;
       }
     }
-
   }
   free(w);
-
 	fprintf(stderr, "[pivots] ``Faugère-Lachartre on columns'': %d pivots found [%.1fs]\n", npiv - npiv_fl, spasm_wtime() - start);
 	return npiv;
 }
@@ -2164,10 +2179,11 @@ int main(int argc, char **argv) {
 	rank = 0;
 	npiv = spasm_find_pivots(A, p, qinv);
 	spasm_make_pivots_unitary(A, p, npiv);
-	exit(1); // Debug end here
-	
+
 	density = spasm_schur_probe_density(A, p, qinv, npiv, 100);
 
+	exit(1); // Debug end here	
+	
 	for (int i = 0; i < n_times; i++) {
 		int64_t nnz = (density * (n - npiv)) * (m - npiv);
 		char tmp[6];
