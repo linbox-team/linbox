@@ -43,7 +43,6 @@ typedef typename Field::Element Element;
 typedef SparseMatrix<Field, SparseMatrixFormat::CSR> SparseMat;
 
 typedef InvariantFactors<Field,SparseMat> FactorDomain;
-typedef typename FactorDomain::PolyDom PolyDom;
 typedef typename FactorDomain::PolyRing PolyRing;
 typedef DenseVector<PolyRing> FactorVector;
 
@@ -78,8 +77,7 @@ int main(int argc, char** argv)
 
 	std::cout << "Finished reading, dimension " << M.rowdim() << "x" << M.coldim() << ", nnz " << M.size() << std::endl;
 
-	PolyDom PD(F,"x");
-	PolyRing R(PD);
+	PolyRing R(F,"x");
 	FactorVector List1(R), List2(R), factorList(R);
 	FactorDomain CIF(F, R);
 
@@ -118,7 +116,7 @@ int main(int argc, char** argv)
 #endif
 	std::cout << "Finished computing factors" << std::endl;
 		for (size_t i = 0; i<factorList.size(); i++) 
-			std::cout << PD.degree(factorList[i]) << ", ";
+			std::cout << R.degree(factorList[i]) << ", ";
 		std::cout << std::endl;
 
 	if (oFname.size() > 0) 

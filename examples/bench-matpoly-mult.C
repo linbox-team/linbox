@@ -420,8 +420,8 @@ void profile_matpol_mulkara(const Field& fld,  RandIter& Gen, size_t n, size_t d
 template<typename Field, typename RandIter>
 void profile_matpol_mul(const Field& fld,  RandIter& Gen, size_t n, size_t d) {
 	typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field> MatrixP;
-	size_t k=1;
-	size_t m=48;
+	size_t k=n;
+	size_t m=n;
 	size_t d1=236113,d2=337846;
 	if (d) d1=d2=d;
 	MatrixP A(fld,m,n,d1),B(fld,n,k,d2),C(fld,m,k,d1+d2-1);

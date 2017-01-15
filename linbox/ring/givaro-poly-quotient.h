@@ -62,7 +62,7 @@ namespace LinBox
 
 		GivaroPolyQuotient(const GivaroPolyQuotient &P)
 			: Givaro::QuotientDom<Domain>(P._pd, P._f), _pd(P._pd), 
-			zero(P.zero), one(P.one), mOne(P.mOne), _f(_pd._f) {}
+			zero(P.zero), one(P.one), mOne(P.mOne), _f(P._f) {}
 
 		GivaroPolyQuotient &operator=(const GivaroPolyQuotient &F) {
 			return *this;
@@ -218,16 +218,20 @@ namespace LinBox
 		//}
 
 		Element &divin(Element &x, const Element &y) const {
-			Element g, s, t;
-			_pd.gcd(g, s, t, y, _f);
+			Element g, s, t, yg;
+			_pd.gcd(g, y, _f);
 			
+			_pd.div(yg, y, g);
 			_pd.divin(x, g);
-			return _pd.mulin(x, s);
+			
+			_pd.gcd(g, s, t, yg, _f);
+			_pd.mulin(x, s);
+			return _pd.modin(x, _f);
 		}
 
 		Element &div(Element &x, const Element &y, const Element &z) const {
 			_pd.assign(x, y);
-			return this->divin(x, z);
+			return divin(x, z);
 		}
 
 		Element &neg(Element &x, const Element &y) const {
@@ -277,11 +281,15 @@ namespace LinBox
 		// PIR Functions
 
 		bool isDivisor(const Element &x, const Element &y) const {
+			if(_pd.isZero(y)) {
+				return false;
+			}
+			
 			Element a, b;
-			_pd.normalize(a, x, _f);
-			_pd.normalize(b, y, _f);
+			normalize(a, x);
+			normalize(b, y);
 			_pd.modin(a, b);
-			return _pd.areEqual(a, this->zero);
+			return _pd.areEqual(a, zero);
 		}
 		
 		// a = q b + r
@@ -312,14 +320,14 @@ namespace LinBox
 		
 		Element& gcdin(Element &a, const Element &b) const {
 			Element ga, gb;
-			this->normalize(ga, a);
-			this->normalize(gb, b);
+			normalize(ga, a);
+			normalize(gb, b);
 			return _pd.gcd(a, ga, gb);
 		}
 		
 		Element& gcd(Element &g, const Element &a, const Element &b) const {
 			_pd.assign(g, a);
-			return this->gcdin(g, b);
+			return gcdin(g, b);
 		}
 		
 		// g = gcd(a,b)

@@ -198,7 +198,7 @@ bool launchTest(const Field& F, size_t n, long b, long d, long seed){
 bool runTest(uint64_t n, uint64_t d, long seed){
 
 	bool ok=true;
-	/*	
+
 	// fourier prime < 2^(53--log(n))/2
 	{
 		size_t bits= (53-integer(n).bitsize())/2;
@@ -209,9 +209,7 @@ bool runTest(uint64_t n, uint64_t d, long seed){
 		ok&=launchTest (F,n,bits,d,seed);
 		
 	}
-	*/
 	// normal prime < 2^(53--log(n))/2
-	/*
 	{
 		size_t bits= (53-integer(n).bitsize())/2;;
 		RandomPrimeIter Rd(bits,seed);
@@ -221,7 +219,7 @@ bool runTest(uint64_t n, uint64_t d, long seed){
 		Givaro::Modular<double> F((int32_t)p);
 		ok&=launchTest (F,n,bits,d,seed);
 	}
-	*/
+
 	// multi-precision prime
 	 {
 	 	size_t bits=114;
@@ -235,10 +233,10 @@ bool runTest(uint64_t n, uint64_t d, long seed){
 	
 	 }
 	 // over the integer
-	// {
-	// 	Givaro::ZRing<integer> F;
-	// 	ok&=launchTest (F,n,128,d,seed);
-	 //}	
+	{
+		Givaro::ZRing<integer> F;
+		ok&=launchTest (F,n,128,d,seed);
+	 }	
 	return ok;
 }
 
