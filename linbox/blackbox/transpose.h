@@ -39,10 +39,6 @@ namespace LinBox
 	class TransposeOwner;
 }
 
-
-
-
-// Namespace in which all LinBox library code resides
 namespace LinBox
 {
 

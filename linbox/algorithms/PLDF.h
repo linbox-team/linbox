@@ -17,7 +17,7 @@ namespace LinBox
 	P is assumed to be I initially.
     */
 	template<class Field>
-	size_t PLD(MatrixPermutation<uint32_t> & P, DenseSubmatrix<Field> & S)
+	size_t PLD(MatrixPermutation<uint32_t> & P, DenseSubmatrix<Field> & S)// typename Field::Element & p)
 	/* In each step, for 1x1 or 2x2 A, 
 	(A,B^T|B,C) -> (I,0|X,I)(A,0|0,C-XAX^T)(I,X^T|0,I), 
 	where X = BA^{-1} replaces B and C-XAX^T replaces C.
@@ -28,44 +28,47 @@ namespace LinBox
 		size_t n = S.rowdim(); 
 		while (k < n-1) 
 		{
-			cerr << "k is " << k << ", S in is " << endl;
-			S.write(cerr, Tag::FileFormat::Plain);
+			typedef DenseMatrix<Field> MotherMatrix;
+			typedef DenseSubmatrix<Field> Block;
+		//cerr << "k is " << k << ", S in is " << endl;
+		//S.write(cerr, Tag::FileFormat::Plain);
 			size_t r = PLDswaps(P,S,k);
-			cerr << "r is " << r << endl;
+		//cerr << "r is " << r << endl;
 			if (r < 1 or r > 2) break;
-			DenseSubmatrix<Field> A(S,k,k,r,r);
-		cerr << "A original " << endl;
-			A.write(cerr, Tag::FileFormat::Plain);
-			DenseSubmatrix<Field> X(S,k+r,k,n-k-r,r);
-		cerr << "X as B " << endl;
-			X.write(cerr, Tag::FileFormat::Plain);
-			DenseMatrix<Field> Xcopy(S,k+r,k,n-k-r,r);
-			DenseSubmatrix<Field> Xcopysub(Xcopy,0,0,n-k-r,r);
-			DenseSubmatrix<Field> BT(S,k,k+r,r,n-k-r);
-			DenseMatrix<Field> BTcopy(S,k,k+r,r,n-k-r);
-			DenseSubmatrix<Field> BTcopysub(BTcopy,0,0,r,n-k-r);
-			DenseSubmatrix<Field> C(S,k+r,k+r,n-k-r,n-k-r);
+			Block A(S,k,k,r,r);
+			Block B(S,k+r,k,n-k-r,r);
+			Block BT(S,k,k+r,r,n-k-r);
+			Block C(S,k+r,k+r,n-k-r,n-k-r);
+		//cerr << "A original " << endl;
+		//A.write(cerr, Tag::FileFormat::Plain);
+		//cerr << "X as B " << endl;
+		//X.write(cerr, Tag::FileFormat::Plain);
+			MotherMatrix Bcopybase(S,k+r,k,n-k-r,r);
+			Block Bcopy(Bcopybase,0,0,n-k-r,r);
 
 			FC.invin(A);
-		cerr << "A inverted " << endl;
-			A.write(cerr, Tag::FileFormat::Plain);
-			FC.mul(Xcopysub,X,A); // X = BA^{-1}
-		cerr << "Xcopysub " << endl;
-			Xcopy.write(cerr, Tag::FileFormat::Plain);
+		//cerr << "A inverted " << endl;
+		//A.write(cerr, Tag::FileFormat::Plain);
+			FC.mul(Bcopy,B,A); // X = BA^{-1}
+		//cerr << "Xcopysub " << endl;
+		//Xcopy.write(cerr, Tag::FileFormat::Plain);
 			
-			X.copy(Xcopy); 
-		cerr << "X" << endl;
-			X.write(cerr, Tag::FileFormat::Plain);
+			B.copy(Bcopy); 
+		//cerr << "B" << endl;
+		//B.write(cerr, Tag::FileFormat::Plain);
 			
-			FC.maxpyin(C,X,BT); // C <- C - (BA^{-1})B^T
+			FC.maxpyin(C,B,BT); // C <- C - (BA^{-1})B^T
 			// restore BT to X^T = A^{-1}B^T
-			FC.mul(BTcopysub,A,BT); 
+			// [would prefer simply FC.mul(BT,A,BT)]
+			MotherMatrix BTcopybase(S,k,k+r,r,n-k-r);
+			Block BTcopy(BTcopybase,0,0,r,n-k-r);
+			FC.mul(BTcopy,A,BT); 
 			BT.copy(BTcopy); 
 			// restore A
 			FC.invin(A); 
 			k += r;
-			cerr << "k became " << k << ", S out is " << endl;
-			S.write(cerr, Tag::FileFormat::Plain);
+		//cerr << "k became " << k << ", S out is " << endl;
+		//S.write(cerr, Tag::FileFormat::Plain);
 		}
 		typename Field::Element x; S.field().init(x);
 		if (k == n-1 and not S.field().isZero(S.getEntry(x,k,k)))

@@ -40,7 +40,7 @@
 #include "linbox/blackbox/diagonal.h"
 //#include "linbox/matrix/permutation-matrix.h"
 #include "linbox/blackbox/permutation.h"
-#include "linbox/blackbox/triangular-fibb.h"
+//#include "linbox/blackbox/triangular-fibb.h"
 
 using namespace LinBox;
 
@@ -60,7 +60,8 @@ bool testFibb(FIBB<Field>& A, string title, const typename Field::Element& dt, i
 	commentator().start(title.c_str(), "fibb");
 	ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 	bool pass = true, trial;
-	typedef DenseMatrix<Field> Matrix;
+	using MotherMatrix = typename FIBB<Field>::MotherMatrix;
+	using Matrix = typename FIBB<Field>::Matrix;
 	const Field& F(A.field());
 	BlasMatrixDomain<Field> MD(F);
 	size_t m = A.rowdim();
@@ -93,7 +94,8 @@ bool testFibb(FIBB<Field>& A, string title, const typename Field::Element& dt, i
 #if 1
 	// Solve consistent  
 	size_t b = (n/2 > 5) ? 5 : n/2;
-	Matrix B(F,m,b), X(F, n, b), Y(F, m, b), Z(F, n, b);
+	MotherMatrix Bb(F,m,b), Xb(F, n, b), Yb(F, m, b), Zb(F, n, b);
+	Matrix B(Bb), X(Xb), Y(Yb), Z(Zb);
 	X.random();
 	A.applyRight(B, X); // B: B = AX
 	if (not F.isZero(dt)) { // check for zero apply
@@ -122,13 +124,15 @@ bool testFibb(FIBB<Field>& A, string title, const typename Field::Element& dt, i
 	if (not trial) report << "problem in NSR Right" << std::endl;
 	if (trial) report << " no problem in NSR Right" << std::endl;
 	// NSB
-	Matrix N(F);
+	MotherMatrix N(F);
 	A.nullspaceBasisRight(N);
 	trial = N.rowdim() == n and N.coldim() == n-r; // proper num of cols.
 	if (n != r)
 	{	trial = trial and n-r == MD.rank(N); // indep cols.
-		Matrix Nim(F, N.rowdim(), N.coldim()); 
-		A.applyRight(Nim, N);
+		MotherMatrix Nimb(F, N.rowdim(), N.coldim()); 
+		Matrix Nim(Nimb);
+		Matrix Ns(N);
+		A.applyRight(Nim, Ns);
 		trial = trial and MD.isZero(Nim); // in nullsp.
 		if (n < 8) Nim.write(report << "Nim " << std::endl, Tag::FileFormat::Plain) << std::endl;
 	}
@@ -144,7 +148,8 @@ bool testFibb(FIBB<Field>& A, string title, const typename Field::Element& dt, i
 {
 	// Solve consistent
 	size_t b = (n/2 > 6) ? 6 : n/2;
-	Matrix B(F,b,n), X(F, b, m), Y(F, b, n), Z(F, b, m);
+	MotherMatrix Bb(F,b,n), Xb(F,b,m), Yb(F,b,n), Zb(F,b,m);
+	Matrix B(Bb), X(Xb), Y(Yb), Z(Zb);
 	X.random();
 	A.applyLeft(B, X); // B: B = XA
 #if 1
@@ -180,14 +185,16 @@ bool testFibb(FIBB<Field>& A, string title, const typename Field::Element& dt, i
 	if (not trial) report << "problem in NSR Left" << std::endl;
 	if (trial) report << " no problem in NSR Left" << std::endl;
 	// NSB
-	Matrix N(F);
+	MotherMatrix N(F);
 	A.nullspaceBasisLeft(N);
 	trial = (N.rowdim() == m-r and N.coldim() == m); // proper num of rows.
 	// todo: this rank should work on empty matrix, but doesn't
 	if (m != r)
 	{	trial = (trial and m-r == MD.rank(N)); // indep cols.
-		Matrix Nim(F, N.rowdim(), N.coldim()); 
-		A.applyLeft(Nim, N);
+		MotherMatrix Nimb(F, N.rowdim(), N.coldim()); 
+		Matrix Nim(Nimb);
+		Matrix Ns(N);
+		A.applyLeft(Nim, Ns);
 		trial = trial and MD.isZero(Nim); // in nullsp.
 		if (n < 8) Nim.write(report<< "Nim " << std::endl, Tag::FileFormat::Plain);
 	}
@@ -259,10 +266,11 @@ int main (int argc, char **argv)
 	pass = pass and testFibb(Pr6, "Pr6 zero product", F.zero, 0); // zero product
 
 	report << "Done with diag and permutation products" << std::endl;
-#if 1
-	typedef DenseMatrix<Field> Matrix;
-	typedef TriangularBlasMatrix<Field> TriangularMatrix;
-	Matrix M(F, n, n); 
+#if 0
+	//typedef DenseMatrix<Field> Matrix;
+	//typedef TriangularBlasMatrix<Field> TriangularMatrix;
+	FIBB<Field>::MotherMatrix MM(F, n, n); 
+	FIBB<Field>::Matrix M(MM);
 	//M.random();
 	for (size_t i = 0; i < n; ++i)
 	for (size_t j = 0; j < n; ++j)
@@ -275,19 +283,19 @@ int main (int argc, char **argv)
 	r = BMD.rank(SM);
 	report << "underlying rank " << r << std::endl;
 	*/
-	TriangularMatrix U(M, Tag::Shape::Upper, Tag::Diag::NonUnit); 
-	TriangularMatrix L(M, Tag::Shape::Lower, Tag::Diag::Unit); 
+	TriangularFIBB<Field> UU(M, Tag::Shape::Upper, Tag::Diag::NonUnit); 
+	TriangularFIBB<Field> LL(M, Tag::Shape::Lower, Tag::Diag::Unit); 
 	report << "Upper " << (int)Tag::Shape::Upper << ", Lower " << (int)Tag::Shape::Lower << std::endl;
 	report << "Unit " << (int)Tag::Diag::Unit << ", NonUnit " << (int)Tag::Diag::NonUnit << std::endl;
-	TriangularFIBB<Field> UU(U);
-	TriangularFIBB<Field> LL(L);
+	//TriangularFIBB<Field> UU(U);
+	//TriangularFIBB<Field> LL(L);
 	FIBBProduct<Field> Pr7(LL, UU); // nonsing product
 	FIBBProduct<Field> Pr8(P1, LL, UU, P2); // nonsing product
 	FIBBProduct<Field> Pr9(LL, P1, UU, P2); // nonsing product
 
-	report << "Triangular, " << (int)U.getDiag() << " " << (int)U.getUpLo() << std::endl;
+	report << "Triangular, " << (int)UU.getDiag() << " " << (int)UU.getUpLo() << std::endl;
 	pass = pass and testFibb(UU, "UU nonU", F.one, n); // Upper NonUnit
-	report << "Triangular, " << (int)L.getDiag() << " " << (int)L.getUpLo() << std::endl;
+	report << "Triangular, " << (int)LL.getDiag() << " " << (int)LL.getUpLo() << std::endl;
 	pass = pass and testFibb(LL, "LL unit", F.one, n); // Lower Unit
 	report << "LU pattern nonsing" << std::endl;
 	pass = pass and testFibb(Pr7, "Pr7 LU", F.one, n); // LU pattern nonsing

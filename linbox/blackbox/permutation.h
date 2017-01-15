@@ -42,19 +42,21 @@ namespace LinBox
 
 	  \ingroup blackbox
 	 */
-	template<class _Field, class _Matrix=DenseMatrix<_Field>>
+	template<class _Field>
 	class Permutation : public  FIBB<_Field>
 	{ 
 	public:
-		typedef _Field					Field;
+		typedef typename FIBB<_Field>::Field Field;
 		typedef typename Field::Element	Element;
+		typedef typename FIBB<_Field>::Matrix Matrix;
+		typedef typename FIBB<_Field>::MotherMatrix MotherMatrix;
 		typedef Permutation<Field>		Self_t;
 		typedef LightContainer<long>	Storage;
-		typedef _Matrix					Matrix;
 	protected:
-		Storage _indices; // Vector of indices
-		bool alloc; //
 		const Field* _field;
+		Storage _indices; // Vector of indices
+		bool _transposed;
+		bool alloc; //
 	public:
 
 		/** Constructor from a vector of indices.
@@ -64,70 +66,74 @@ namespace LinBox
 		 * Permutation P has 1 in the P_{i, _indices[i]} positions.
 		 */
 		Permutation (Storage & indices, const Field& F = Field()) :
-			_field(&F), _indices (indices)
+			_field(&F), _indices (indices), _transposed(false)
 		{}
 
 		Self_t& init(size_t* P, size_t n) 
 		{	_indices.resize(n); 
 			for (size_t i = 0; i < n; ++i) 
-				_indices[i] = P[i]; 
+				_indices[i] = P[i];  
+			_transposed = false;
 			return *this;
 		}
 
 		Permutation (size_t* P, size_t n, const Field& F = Field()) 
-		: _field(&F) 
+		: _field(&F)
 		{ init(P, n); }
 
 		/** \brief n x n permutation matrix, initially the identity.
 		 * @param n The dimension of the matrix 
 		 * @param F field or ring
 		 */
-		Permutation (int n, const Field& F = Field()) :
-			_field(&F)
+		Permutation (int n, const Field& F = Field()) 
+		: _field(&F)
 		{
 			identity(n);
 		}
 
-		Permutation (const Field& F = Field(), size_t n=0, size_t m = 0) :
-			_field(&F)
+		Permutation (const Field& F = Field(), size_t n=0, size_t m = 0, bool transpose = false) :
+			_field(&F), _transposed(transpose)
 		{
-			identity((int)n);
+			identity(n);
 		}
 
+		/* Copy constructor.
+		 * Creates new black box objects in dynamic memory.
+		 * @param M constant reference to compose black box matrix
+		 */
+		Permutation (const Permutation<_Field> &Mat) :
+			_field(Mat._field),_indices (Mat._indices)
+		{ std::cout << "got in perm copy cstor" << std::endl;}
 
-		//!@bug should be size_t
-		void identity(int n)
+		// Destructor
+		~Permutation (void) {}
+
+		void identity(size_t n)
 		{
-			this->_indices.resize ((size_t)n);
+			this->_indices.resize (n);
 			for (typename Storage::value_type i=0; i < n; ++i)
 				_indices[(size_t)i] = i;
+			_transposed = false;
 		}
 
 		//void random(size_t n)
 		void random()
 		{
 			size_t n = rowdim();
-			identity((int)n);
+			identity(n);
 			MersenneTwister r((unsigned int)time(NULL));
 			// Knuth construction
 			for (size_t i = 0; i < n-1; ++i) {
 				size_t j = i + r.randomInt()%(n-i);
 				std::swap(_indices[(size_t)i], _indices[(size_t)j]);
 			}
+			_transposed = false;
 		}
 
+		void transpose() { _transposed = not _transposed; }
 
-		/* Copy constructor.
-		 * Creates new black box objects in dynamic memory.
-		 * @param M constant reference to compose black box matrix
-		 */
-		Permutation (const Permutation &Mat) :
-			_field(Mat._field),_indices (Mat._indices)
-		{}
-
-		// Destructor
-		~Permutation (void) {}
-
+		// _transposed is not yet handled in apply, applyTranspose.
+		
 		/** Application of BlackBox permutation matrix.
 		  \f$y \leftarrow Px\f$.
 		 * Requires one vector conforming to the \ref LinBox
@@ -179,29 +185,36 @@ namespace LinBox
 			return y;
 		}
 #if 1
-		Matrix& applyRight(Matrix& Y, const Matrix& X) const
-		{
+		// Y = PX <=> P^T Y = X (since P^T = P^{-1}),  
+		// thus P.applyRight = PT.solveRight.
+		Matrix& applyRight(Matrix& Y, const Matrix& X, bool transposing = false) const
+		{   if (transposing xor _transposed) return SolveRight(Y,X,not transposing);
 			Element x; field().init(x);
-			for (size_t i = 0; i < Y.rowdim(); ++i){
-				size_t k = _indices[i];
+			for (size_t i = 0; i < Y.rowdim(); ++i)
+			{	size_t k = _indices[i];
 				for (size_t j = 0; j < Y.coldim(); ++j)
 					Y.setEntry(i,j, X.getEntry(x, k, j));
 			}
-		/* desired form
+		/* 
 			for (size_t i = 0; i < rowdim(); ++i)
 			{
-				Matrix Yrow(Y, i, 0, 1, Y.coldim());
-				Matrix Xrow(X, _indices[i], 0, 1, X.coldim());
-				Yrow.copy(Xrow); // right kind of copy?
+				size_t j = _indices[i];
+				if (i != j) 
+				{	Matrix Yrow(Y, i, 0, 1, Y.coldim());
+					Matrix Xrow(X, j, 0, 1, X.coldim());
+					Yrow.copy(Xrow); // right kind of copy?
+				}
 			}
-		*/
 			return Y; 
+		*/
 		}
-		Matrix& applyLeft(Matrix& Y, const Matrix& X) const
-		{
+
+		// Y = XP, aka Y: X = YP^T
+		Matrix& applyLeft(Matrix& Y, const Matrix& X, bool transposing=false) const
+		{   if (transposing xor _transposed) return SolveLeft(Y,X,not transposing);
 			Element x; field().init(x);
-			for (size_t i = 0; i < Y.coldim(); ++i){
-				size_t k = _indices[i];
+			for (size_t i = 0; i < Y.coldim(); ++i)
+			{	size_t k = _indices[i];
 				for (size_t j = 0; j < Y.rowdim(); ++j)
 					Y.setEntry(j,k, X.getEntry(x, j, i));
 			}
@@ -217,7 +230,7 @@ namespace LinBox
 		}
 		/* FIBB functions */
 
-		BBType bbTag() const { return permutation; }
+		BBType bbTag() const { return PermutationTag; }
 
 		size_t& rank(size_t& r) const 
 		{ return r = rowdim(); }
@@ -234,10 +247,12 @@ namespace LinBox
 			return d = b&1 ? field().mOne : field().one; 
 		}
 		
-		Matrix& solveRight(Matrix& Y, const Matrix& X) const
-		{	Element x; field().init(x);
-			for (size_t i = 0; i < Y.rowdim(); ++i){
-				size_t k = _indices[i];
+		// Y: X = PY, aka Y = P^T X
+		Matrix& solveRight(Matrix& Y, const Matrix& X, bool transposing=false) const
+		{   if (transposing xor _transposed) return applyRight(Y,X,not transposing);
+			Element x; field().init(x);
+			for (size_t i = 0; i < Y.rowdim(); ++i)
+			{	size_t k = _indices[i];
 				for (size_t j = 0; j < Y.coldim(); ++j)
 					Y.setEntry(k,j, X.getEntry(x, i, j));
 			}
@@ -251,10 +266,12 @@ namespace LinBox
 		*/
 			return Y; 
 		}
-		Matrix& solveLeft(Matrix& Y, const Matrix& X) const
-		{	Element x; field().init(x);
-			for (size_t i = 0; i < Y.coldim(); ++i){
-				size_t k = _indices[i];
+		// Y: X = YP, aka Y = X P^T
+		Matrix& solveLeft(Matrix& Y, const Matrix& X, bool transposing=false) const
+		{   if (transposing xor _transposed) return applyLeft(Y,X,not transposing);
+		 	Element x; field().init(x);
+			for (size_t i = 0; i < Y.coldim(); ++i)
+			{	size_t k = _indices[i];
 				for (size_t j = 0; j < Y.rowdim(); ++j)
 					Y.setEntry(j,i, X.getEntry(x, j, k));
 			}
@@ -272,9 +289,9 @@ namespace LinBox
 		{	N.zero(); return N; }
 		Matrix& nullspaceRandomLeft(Matrix& N) const 
 		{	N.zero(); return N; }
-		Matrix& nullspaceBasisRight(Matrix& N) const
+		MotherMatrix& nullspaceBasisRight(MotherMatrix& N) const
 		{	N.resize(rowdim(), 0); return N; }
-		Matrix& nullspaceBasisLeft(Matrix& N) const
+		MotherMatrix& nullspaceBasisLeft(MotherMatrix& N) const
 		{	N.resize(0, coldim()); return N; }
 		/* end FIBB section */
 #endif
@@ -289,46 +306,48 @@ namespace LinBox
 
 
 
-		/* Retreive row dimensions of BlackBox matrix.
-		 * This may be needed for applying preconditioners.
-		 * Required by abstract base class.
-		 * @return integer number of rows of black box matrix.
-		 */
-		/// rowdim
+		/// row dimension
 		size_t rowdim (void) const
-		{
-			return _indices.size ();
-		}
+		{	return _indices.size (); }
 
-		/* Retreive column dimensions of BlackBox matrix.
-		 * Required by abstract base class.
-		 * @return integer number of columns of black box matrix.
-		 */
-		/// coldim
+		/// column dimension
 		size_t coldim (void) const
-		{
-			return _indices.size ();
-		}
+		{	return _indices.size (); }
 
-		/**
-		 * this <-- transposition(i,j)*this
-		 * indices (i = 0, j = 1): 
-		 * 0 2 1 * 1 0 2 = 1 2 0
+		/// this <-- transposition(i,j)*this
+		void swaprows (size_t i, size_t j)
+		{
+		/*
+		 * Example: cycle (2,0,1) has _indices = [1,2,0], 
+		 * representing matrix (0 1 0 | 0 0 1 | 1 0 0).
+		 *
+		 * swaprows(1,2) on matrix with _indices = [1 0 2] 
+		 * does (1,2)(0,1) = (1,2,0)
+		 * _indices (corresponding):
+		 * [0 2 1] * [1 0 2] = [1 2 0]
 		 * matrices (corresponding):
 		 * 1 0 0   0 1 0   0 1 0
 		 * 0 0 1 * 1 0 0 = 0 0 1
 		 * 0 1 0   0 0 1   1 0 0
 		 */
-		void permute (size_t i, size_t j)
-		{
 			linbox_check (/*  i >= 0 &&*/ i < _indices.size ());
 			linbox_check (/*  j >= 0 &&*/ j < _indices.size ());
 			std::swap (_indices[i], _indices[j]);
 		}
 
-        size_t operator[](size_t i) const {
-            return _indices[i];
-        }        
+		/// this <-- this*transposition(i,j)
+		void swapcols (size_t i, size_t j)
+		{
+			for(size_t k = 0; k < coldim(); ++k)
+				if (_indices[k] == i) {_indices[k] = j; break;}
+			for(size_t k = 0; k < coldim(); ++k)
+				if (_indices[k] == j) {_indices[k] = i; break;}
+		}
+
+		/// Deprecated.  Use swaprows.
+		void permute (size_t i, size_t j) {	swaprows(i,j); }
+
+        size_t operator[](size_t i) const { return _indices[i]; }        
 
 		const Field& field() const { return *_field; }
 
@@ -338,39 +357,36 @@ namespace LinBox
 
 		//!@bug needs a MM version
 		std::ostream &write(std::ostream &os) const
-		{ return write(os, Tag::FileFormat::Plain); }
+		{ std::cout << "writing perm" << std::endl;
+			return write(os, Tag::FileFormat::Plain); }
 
 		std::ostream &write(std::ostream &os, LINBOX_enum(Tag::FileFormat) format) const
 		{
 
 			// Avoid unneeded overhead in the case that this
 			// printing is disabled
-			if (not os)
-				return os;
+			if (not os) return os;
 
-			switch (format) {
-			case Tag::FileFormat::Maple:
+			switch (format) 
+			{	case Tag::FileFormat::Maple:
 				{
 					os << '[';
 					bool firstrow=true;
 					long nmu = (long)_indices.size()-1;
-					for (typename Storage::const_iterator it=_indices.begin(); it!=_indices.end(); ++it) {
-						if (firstrow) {
-							os << '[';
-							firstrow =false;
-						}
-						else
-							os << ", [";
+					for (typename Storage::const_iterator it=_indices.begin(); it!=_indices.end(); ++it) 
+					{
+						if (firstrow) { os << '['; firstrow =false; }
+						else os << ", [";
 
 						long i=0;
-						for( ; i< *it ; ++i) {
-							field().write(os, field().zero);
+						for( ; i< *it ; ++i) 
+						{	field().write(os, field().zero);
 							if (i < nmu) os << ',';
 						}
 						field().write(os, field().one);
 						if (i < nmu) os << ',';
-						for(++i ; i< static_cast<long>(_indices.size()) ; ++i) {
-							field().write(os, field().zero);
+						for(++i ; i< static_cast<long>(_indices.size()) ; ++i) 
+						{	field().write(os, field().zero);
 							if (i < nmu) os << ',';
 						}
 						os << ']';
@@ -379,7 +395,7 @@ namespace LinBox
 					os << ']';
 					break;
 				}
-			case Tag::FileFormat::Pretty:
+				case Tag::FileFormat::Pretty:
 				{
 					for (typename Storage::const_iterator it=_indices.begin(); it!=_indices.end(); ++it) {
 						os << "  [";
@@ -397,34 +413,28 @@ namespace LinBox
 					}
 					break;
 				}
-
-			default:
-				os << '{';
-				for (typename Storage::const_iterator it=_indices.begin(); it!=_indices.end(); ++it)
-					os << *it << ' ';
-				os << '}';
-				break;
-
-
-			}
-
-
-
+				default:
+				{	os << '{';
+					for (typename Storage::const_iterator it=_indices.begin(); it!=_indices.end(); ++it)
+						os << *it << ' ';
+					os << '}';
+					break;
+				}
 			return os;
+			}
 		}
 
 		//!@bug there is no read here. (needed by test-blackbox.h)
 		std::istream &read(std::istream &is, LINBOX_enum(Tag::FileFormat) format)
-		{
-            switch (format) {
-                case Tag::FileFormat::Plain:
+		{	switch (format) 
+			{	case Tag::FileFormat::Plain:
                 {
                     char t;
                     is >> t;
                     Storage::value_type val;
                     _indices.resize(0);
-                    while( t != '}') {
-                        is >> val;
+                    while( t != '}') 
+					{	is >> val;
                         _indices.push_back(val);                        
                         is >> t; 
                         if (t!='}') is.putback (t);

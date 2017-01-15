@@ -23,8 +23,10 @@ struct FIBB : public BB<Ring>
 {
 	using Field = Ring;
 	using Element = typename Ring::Element;
-	using ResizableMatrix = DenseMatrix<Field>;
-	using Matrix = DenseMatrix<Field>;
+	using MotherMatrix = DenseMatrix<Ring>;
+	using Matrix = typename BB<Ring>::Matrix;
+	using BB<Ring>::applyLeft;
+	using BB<Ring>::applyRight;
 
 //	virtual const Field& field() const = 0;
 
@@ -53,10 +55,10 @@ struct FIBB : public BB<Ring>
 	virtual Matrix& solveLeft(Matrix& Y, const Matrix& X) const 
 	= 0;
 
-	/// N: AN = 0, each col random.
+	/// N: Each col random subject only to AN = 0..
 	virtual Matrix& nullspaceRandomRight(Matrix& N) const 
 	= 0;
-	/// N: NA = 0, each row random.
+	/// N: Each row random subject only to NA = 0..
 	virtual Matrix& nullspaceRandomLeft(Matrix& N) const 
 	= 0;
 	// this generic is virtual so that it may be specialized for performance
@@ -68,21 +70,24 @@ struct FIBB : public BB<Ring>
 		B is resized and filled so that:
 		(1) AB = 0, (2) Ax = 0 => exists y: x = By, and (3) B has full rank.
 	*/
-	virtual ResizableMatrix& nullspaceBasisRight(ResizableMatrix& B) const 
+	virtual MotherMatrix& nullspaceBasisRight(MotherMatrix& B) const 
 	= 0;
 	/// BA= 0 and xA = 0 => exists y: x = yB and B full rank.
-	virtual ResizableMatrix& nullspaceBasisLeft(ResizableMatrix& B) const 
+	virtual MotherMatrix& nullspaceBasisLeft(MotherMatrix& B) const 
 	= 0;
 }; // class FIBB
 
-/// N: AN = 0, each col random.
+/** N: AN = 0, each col random.
+  This is a tool Fibb classes can use unless a specialized method is desired.
+*/
 template<class Field>
-DenseMatrix<Field>& genericNullspaceRandomRight(DenseMatrix<Field>& N, const FIBB<Field>& A)
-//DenseMatrix<Field, std::vector<typename Field::Element> >& genericNullspaceRandomRight(DenseMatrix<Field, std::vector<typename Field::Element> >& N, const FIBB<Field>& A)
-{	typedef DenseMatrix<Field> ResizableMatrix;
-	typedef DenseMatrix<Field> Matrix;
-	ResizableMatrix Xb(A.field(), N.rowdim(), N.coldim());
-	ResizableMatrix Yb(A.field(), A.rowdim(), N.coldim());
+typename FIBB<Field>::Matrix& genericNullspaceRandomRight(
+		typename FIBB<Field>::Matrix& N, 
+		const FIBB<Field>& A)
+{	typedef typename FIBB<Field>::Matrix Matrix;
+ 	typedef typename FIBB<Field>::MotherMatrix MotherMatrix;
+	MotherMatrix Xb(A.field(), N.rowdim(), N.coldim());
+	MotherMatrix Yb(A.field(), A.rowdim(), N.coldim());
 	Matrix X(Xb); X.random();
 	Matrix Y(Yb); 
 	A.applyRight(Y, X); // Y = AX
@@ -91,14 +96,17 @@ DenseMatrix<Field>& genericNullspaceRandomRight(DenseMatrix<Field>& N, const FIB
 	return MD.subin(N, X);
 }
 
-/// N: NA = 0, each row random.
+/** N: AN = 0, each row random.
+  This is a tool Fibb classes can use unless a specialized method is desired.
+*/
 template<class Field>
-DenseMatrix<Field>& genericNullspaceRandomLeft(DenseMatrix<Field>& N, const FIBB<Field>& A)
-//DenseMatrix<Field, std::vector<typename Field::Element> >& genericNullspaceRandomLeft(DenseMatrix<Field, std::vector<typename Field::Element> >& N, const FIBB<Field>& A)
-{	typedef DenseMatrix<Field> ResizableMatrix;
-	typedef DenseMatrix<Field> Matrix;
-	ResizableMatrix Xb(A.field(), N.rowdim(), N.coldim());
-	ResizableMatrix Yb(A.field(), N.rowdim(), A.coldim());
+typename FIBB<Field>::Matrix& genericNullspaceRandomLeft(
+		typename FIBB<Field>::Matrix& N, 
+		const FIBB<Field>& A)
+{	typedef DenseMatrix<Field> MotherMatrix;
+	typedef DenseSubmatrix<Field> Matrix;
+	MotherMatrix Xb(A.field(), N.rowdim(), N.coldim());
+	MotherMatrix Yb(A.field(), N.rowdim(), A.coldim());
 	Matrix X(Xb); X.random();
 	Matrix Y(Yb); 
 	A.applyLeft(Y, X); // Y = XA

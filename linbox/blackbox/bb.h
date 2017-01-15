@@ -13,7 +13,7 @@
  * Algorithms may take BB<Field> parameters and be separately compiled.
  *
  * Non-template functions of BB are pure virtual.  Code bloat is avoided.
- * Template functions may be called by select on the BBType tag.  This 
+ * Template functions may be called by selection on the BBType tag.  This 
  * introduces some code bloat.
  */
 #include <iostream>
@@ -22,16 +22,14 @@
 #include "linbox/matrix/matrix-domain.h"
 namespace LinBox {
 
-// for now, only the FIBB tags.
-enum BBType {diagonal, permutation, triangular, product, lqup, pluq, other};
+// BBType names are class name followed by "Tag".
+enum BBType {DiagonalTag, PermutationTag, TriangularFIBBTag, FIBBProductTag, LQUPTag, PLUQTag, SymmetricBlockDiagonalTag, TransposeBBTag, otherTag};
 
 template <class Ring>
 struct BB 
 {
 	typedef Ring Field;
-	typedef DenseMatrix<Field> ResizableMatrix;
-	//typedef DenseMatrix<Field, std::vector<typename Ring::Element> > ResizableMatrix;
-	typedef DenseMatrix<Field> Matrix;
+	typedef DenseSubmatrix<Field> Matrix;
 
 	virtual ~BB(){}
 
@@ -51,6 +49,7 @@ struct BB
 	= 0;
 	virtual Matrix& applyRight(Matrix& Y, const Matrix& X) const
 	= 0;
+
 	template<class OutVector, class InVector>
 	OutVector& apply(OutVector& y, const InVector& x) const
 	{ switch (bbTag()) 

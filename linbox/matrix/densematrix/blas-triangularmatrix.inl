@@ -130,6 +130,32 @@ namespace LinBox
 		return _diag;
 	}
 
+	template < class _Field, class _Rep >
+	std::ostream & TriangularBlasMatrix< _Field, _Rep >::write(std::ostream& os) const
+	{
+		typename _Field::Element x; field().init(x);
+		for (size_t i = 0; i < rowdim(); ++i) {
+			os << "[ ";
+			//below
+			for (size_t j = 0; j < i; ++j) 
+				if (_uplo == Tag::UpLo::Lower) 
+					field().write(os, getEntry(x,i,j)) << " ";
+				else os << "0 ";
+			//diag 
+			if (_diag == Tag::Diag::Unit) os << "1 " ;
+			else  field().write(os, getEntry(x,i,i)) << " ";
+			//above
+			for (size_t j = i+1; j < coldim(); ++j) 
+				if (_uplo == Tag::UpLo::Upper) 
+					field().write(os, getEntry(x,i,j)) << " ";
+				else os << "0 ";
+
+			os << "]" << std::endl;
+		}
+
+		return os;
+	}
+
 }
 
 #endif // __LINBOX_blas_triangularmatrix_INL

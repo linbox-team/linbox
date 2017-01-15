@@ -1,22 +1,6 @@
 /* linbox/blackbox/triangular-fibb.h
  * bds
- * ========LICENCE========
- * This file is part of the library LinBox.
- *
- * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the  GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * ========LICENCE========
+ * This file is part of the LinBox library. See COPYING for license info.
  */
 
 #ifndef __LINBOX_triangular_fibb_H
@@ -44,20 +28,32 @@ namespace LinBox
 	{
 		typedef Field_			Field;
 	protected:
-		typedef TriangularBlasMatrix<Field> Rep_t;
-		Rep_t * rep_;
+		typedef BlasSubmatrix<BlasMatrix<Field> > Rep_t;
+		const Rep_t * rep_;
+	//template <class _Field, class _Storage >
+	//class TriangularBlasMatrix: public BlasMatrix<_Field,_Storage> { 
+		LINBOX_enum (Tag::Shape) _uplo; //!< upper or lower triangular 
+		LINBOX_enum (Tag::Diag)  _diag; //!< unit or non unit diagonal
 		const Field* field_;
 	public:
 		typedef TriangularFIBB<Field>	Self_t;
 		typedef typename Field::Element	Element;
-		typedef DenseMatrix<Field> Matrix;
+		typedef typename FIBB<Field>::Matrix Matrix;
+		typedef typename FIBB<Field>::MotherMatrix MotherMatrix;
 
-		Self_t& init(Rep_t& T) const
-		{ rep_ = &T; field_ = &(T.field()); return *this; }
+		//Self_t& init(Rep_t& M) const
+		//{ rep_ = &M; field_ = &(M.field()); return *this; }
 
 		TriangularFIBB(const Field& F): field_(&F) {}
 		/// Constructor from a TriangularBlasMatrix
-		TriangularFIBB(Rep_t& T): rep_(&T), field_(&T.field()) {}
+		//TriangularFIBB(Rep_t& T): rep_(&T), field_(&T.field()) {}
+
+	    //TriangularBlasMatrix< _Field, _Rep >::TriangularBlasMatrix 
+		TriangularFIBB( const BlasSubmatrix<BlasMatrix<Field> >& A, 
+						LINBOX_enum (Tag::Shape) x, 
+						LINBOX_enum (Tag::Diag) y) 
+		: rep_(&A), _uplo(x), _diag(y)
+	    {}
 
 		void random() { rep_->random(); }
 		/*
@@ -96,9 +92,9 @@ namespace LinBox
 			B.copy(A);
 			FFLAS::ftrmm<Field> (field(), 
 				side,
-				FFLAS::FFLAS_UPLO(rep_->getUpLo()), //const FFLAS_UPLO Uplo,
+				FFLAS::FFLAS_UPLO(_uplo), //const FFLAS_UPLO Uplo,
 		    	FFLAS::FflasNoTrans, //const FFLAS_TRANSPOSE TransA,
-				FFLAS::FFLAS_DIAG(rep_->getDiag()), //const FFLAS_DIAG Diag,
+				FFLAS::FFLAS_DIAG(_diag), //const FFLAS_DIAG Diag,
 				B.rowdim(), //const size_t M, 
 				B.coldim(), //const size_t N,
 				field().one, //const typename Field::Element alpha,
@@ -151,12 +147,12 @@ namespace LinBox
 #endif
 		/* FIBB functions */
 
-		BBType bbTag() const { return triangular; }
+		BBType bbTag() const { return TriangularFIBBTag; }
 
 		size_t& rank(size_t& r) const 
 		{	size_t m = rowdim(), n = coldim();
 			size_t k = m < n ? m : n;
-			if (rep_->getDiag() == Tag::Diag::Unit) {
+			if (_diag == Tag::Diag::Unit) {
 				r = k;
 			} else {
 				// assume trapezoid for now, later fix to allow echelon 
@@ -172,7 +168,7 @@ namespace LinBox
 		{	size_t m = rowdim(), n = coldim();
 			if (m != n) {
 				field().assign(d,field().zero);
-			} else if (rep_->getDiag() == Tag::Diag::Unit) {
+			} else if (_diag == Tag::Diag::Unit) {
 				field().assign(d,field().one);
 			} else {
 				Element x;
@@ -193,9 +189,9 @@ namespace LinBox
 		{
 			B.copy(A);
 			FFLAS::ftrsm<Field> (field(), FFLAS::FFLAS_SIDE(side),
-				FFLAS::FFLAS_UPLO(rep_->getUpLo()), //const FFLAS_UPLO Uplo,
+				FFLAS::FFLAS_UPLO(_uplo), //const FFLAS_UPLO Uplo,
 		    	FFLAS::FflasNoTrans, //const FFLAS_TRANSPOSE TransA,
-				FFLAS::FFLAS_DIAG(rep_->getDiag()), //const FFLAS_DIAG Diag,
+				FFLAS::FFLAS_DIAG(_diag), //const FFLAS_DIAG Diag,
 				B.rowdim(), //const size_t M, 
 				B.coldim(), //const size_t N,
 				field().one, //const typename Field::Element alpha,
@@ -247,9 +243,9 @@ namespace LinBox
 		{	N.zero(); return N; }
 		Matrix& nullspaceRandomLeft(Matrix& N) const 
 		{	N.zero(); return N; }
-		BlasMatrix<Field>& nullspaceBasisRight(BlasMatrix<Field>& N) const
+		MotherMatrix& nullspaceBasisRight(MotherMatrix& N) const
 		{	N.resize(rowdim(), 0); return N; }
-		BlasMatrix<Field>& nullspaceBasisLeft(BlasMatrix<Field>& N) const
+		MotherMatrix& nullspaceBasisLeft(MotherMatrix& N) const
 		{	N.resize(0, coldim()); return N; }
 		/* end FIBB section */
 
@@ -289,9 +285,13 @@ namespace LinBox
 
 		//!@bug needs a MM version
 		std::ostream &write(std::ostream &os) const
-		{ return rep_->write(os, Tag::FileFormat::Plain); }
+		{	TriangularBlasMatrix<Field> L(*rep_, _uplo, _diag);
+			os << "writing triangle" << std::endl;
+			//return L.write(os, Tag::FileFormat::Plain); }
+			return L.write(os); }
 
 		std::ostream &write(std::ostream &os, LINBOX_enum(Tag::FileFormat) format) const
+			//fixme
 		{ return rep_->write(os, format); }
 
 		//!@bug there is no read here. (needed by test-blackbox.h)
@@ -304,6 +304,11 @@ namespace LinBox
 			throw NotImplementedYet();
 			return is ;
 		}
+        /// get the shape of the matrix (upper or lower)
+        LINBOX_enum (Tag::Shape) getUpLo() const { return _uplo; }
+
+        /// Is the diagonal implicitly unit ?
+        LINBOX_enum (Tag::Diag) getDiag() const { return _diag; }
 
 }; // template <Vector> class TriangularFIBB
 

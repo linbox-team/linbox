@@ -818,7 +818,8 @@ namespace LinBox
                 typedef BlasVector<Field,Rep>        vectorType;    //!< blas matrix type
 
 
-	protected:
+	public:
+	//protected:
 		_Matrix &_Mat;       //!< Parent BlasMatrix (ie encapsulated raw std::vector)
 		size_t _row;                   //!< row dimension of Submatrix
 		size_t _col;                   //!< col dimension of Submatrix
@@ -899,7 +900,6 @@ namespace LinBox
 		 */
 		BlasSubmatrix (constSelf_t &SM);
 		BlasSubmatrix (Self_t &SM);
-
 
 		/*  Members  */
 
@@ -1161,6 +1161,10 @@ namespace LinBox
 		typedef BlasMatrix<Field,Rep>           Father_t;
 		typedef TriangularBlasMatrix<Field,Rep> Self_t;
 
+		using Father_t::field;
+		using Father_t::rowdim;
+		using Father_t::coldim;
+		using Father_t::getEntry;
 
 		/*! Constructor for a new \c TriangularBlasMatrix.
 		 * @param F
@@ -1212,6 +1216,8 @@ namespace LinBox
 
 		/// Is the diagonal implicitly unit ?
 		LINBOX_enum (Tag::Diag) getDiag() const ;
+
+		std::ostream &write (std::ostream &os) const ;
 
 	}; // end of class TriangularBlasMatrix
 
