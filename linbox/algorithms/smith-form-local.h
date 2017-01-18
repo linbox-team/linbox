@@ -60,11 +60,7 @@ namespace LinBox
         template<class Matrix>
         std::list<Elt>& smithStep(std::list<Elt>& L, Elt& d, Matrix& A, const LocalPID& R)
         {
-        	std::cout << "step 1" << std::endl;
-        	
             if ( A.rowdim() == 0 || A.coldim() == 0 ) return L;
-
-        	std::cout << "step 2" << std::endl;
         	
             Elt g; R.assign(g, R.zero);
             typename Matrix::RowIterator p;
@@ -81,66 +77,49 @@ namespace LinBox
 
                 if ( R.isUnit(g) ) break;
             }
-            
-        	std::cout << "step 3" << std::endl;
 
             if ( R.isZero(g) ) {
                 L.insert(L.end(), (A.rowdim() < A.coldim()) ? A.rowdim() : A.coldim(), g);
                 return L;
             }
-            
-        	std::cout << "step 4" << std::endl;
 
             if ( p != A.rowEnd() ) {
-            	std::cout << "step 4a" << std::endl;
-        	
+            	
                 // g is a unit and,
                 // because this is a local ring, value at which this first happened
                 // also is a unit.
-                
-                std::cout << "step 4a-1" << std::endl;
                 if ( p != A.rowBegin() )
                     swap_ranges(A.rowBegin()->begin(), A.rowBegin()->end(), p->begin());
                 
-                std::cout << "step 4a-2" << std::endl;
                 if ( q != p->begin() )
                     swap_ranges(A.colBegin()->begin(), A.colBegin()->end(),
                             (A.colBegin() +(int) (q - p->begin()))->begin());
 
                 // eliminate step - crude and for dense only - fix later
                 // Want to use a block method or "left looking" elimination.
-                std::cout << "step 4a-3" << std::endl;
                 Elt f; R.inv(f, *(A.rowBegin()->begin() ) );
                 R.negin(f);
                 
-                std::cout << "step 4a-4" << std::endl;
                 // normalize first row to -1, ...
                 for ( q = A.rowBegin()->begin() /*+ 1*/; q != A.rowBegin()->end(); ++q)
                     R.mulin(*q, f);
                 
                 //
                 // eliminate in subsequent rows
-                std::cout << "step 4a-5" << std::endl;
-                
                 size_t i = 0, j = 0;
                 for (p = A.rowBegin() + 1; p != A.rowEnd(); ++p) {
                 	i++;
                     for (q = p->begin() + 1, r = A.rowBegin()->begin() + 1, f = *(p -> begin()); q != p->end(); ++q, ++r) {
                     	j++;
                     	
-                    	std::cout << i << "," << j << std::endl;
                         R.axpyin( *q, f, *r );
                     }
                 }
 
-                std::cout << "step 4a-6" << std::endl;
                 BlasMatrix<LocalPID> Ap(A, 1, 1, A.rowdim() - 1, A.coldim() - 1);
                 L.push_back(d);
-                
-                std::cout << "step 4a-7" << std::endl;
                 return smithStep(L, d, Ap, R);
             } else {
-            	std::cout << "step 4b" << std::endl;
                 typename Matrix::Iterator p_it;
                 for (p_it = A.Begin(); p_it != A.End(); ++p_it) {
                     R.divin(*p_it, g);
