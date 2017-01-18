@@ -30,6 +30,7 @@ using namespace std;
 //#include <linbox/matrix/symmetric-cspacked.h>
 
 #include <linbox/blackbox/fibb-product.h>
+#include <linbox/blackbox/transpose-bb.h>
 #include <linbox/ring/modular.h>
 #include <linbox/matrix/matrix-domain.h>
 
@@ -61,10 +62,10 @@ bool testCholesky(Symmetric & S, const typename Ring::Element & p)
   	MotherMatrix ZZ(R, S.rowdim(), 1); Matrix Z(ZZ);
 	BlasMatrixDomain<Ring> MD(R);
 	MD.mul(Y,S,X), 
-	//Y.write(cout << "Y is " << endl) << endl;
+	Y.write(cout << "Y is " << endl) << endl;
 	F.applyRight(Z,X); // want MD.mul(Z,F,X)
 
-	//Z.write(cout << "Z is " << endl) << endl;
+	Z.write(cout << "Z is " << endl) << endl;
 	bool pass = MD.areEqual(Y,Z);
   cout << "equality check is " << pass << endl;
   if (not pass and S.rowdim() <= 20) 

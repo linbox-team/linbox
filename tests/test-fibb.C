@@ -38,6 +38,7 @@
 #include "linbox/blackbox/fibb.h"
 #include "linbox/blackbox/fibb-product.h"
 #include "linbox/blackbox/diagonal.h"
+#include "linbox/blackbox/transpose-bb.h"
 //#include "linbox/matrix/permutation-matrix.h"
 #include "linbox/blackbox/permutation.h"
 //#include "linbox/blackbox/triangular-fibb.h"
@@ -111,7 +112,15 @@ bool testFibb(FIBB<Field>& A, string title, const typename Field::Element& dt, i
 	A.solveRight(Z, B); // Z: AZ = B = AX
 	A.applyRight(Y, Z); // Y: Y = AZ = B
 	trial = MD.areEqual(Y, B);
+	//*
+	X.write(report << "X" << std::endl) << std::endl;
+	B.write(report << "B" << std::endl) << std::endl;
+	Y.write(report << "Y" << std::endl) << std::endl;
+	Z.write(report << "Z" << std::endl) << std::endl;
+	report << "Y,B " << trial << std::endl;
+	//*/
 	if (m == n and m == r) trial = trial and MD.areEqual(Z,X); // nonsing case
+	report << "Z,Y " << trial << std::endl;
 	pass = pass and trial;
 	if (not trial) report << "problem in solve Right" << std::endl;
 	if (trial) report << " no problem in solve Right" << std::endl;
@@ -140,6 +149,9 @@ bool testFibb(FIBB<Field>& A, string title, const typename Field::Element& dt, i
 	pass = pass and trial;
 	if (not trial) report << "problem in NSB Right " << m << " " << n << " " << r << " " << N.rowdim() << " " << N.coldim() << std::endl;
 	if (trial) report << " no problem in NSB Right" << std::endl;
+	report <<"N dim " << N.coldim() << std::endl;
+	Xb.write(report << "Xb" << std::endl) << std::endl;
+	Bb.write(report << "Bb" << std::endl) << std::endl;
 #endif
 } // right side 
 	report << " done with right side" << std::endl;
@@ -233,8 +245,8 @@ int main (int argc, char **argv)
 	Field F (q);
 	//MatrixDomain<Field> MD(F);
 
-	Diagonal<Field> D1(F, n); // random nonsing
-	Diagonal<Field> D2(F, n); 
+	Diagonal<Field> D1(F, n, true); // random nonsing 
+	Diagonal<Field> D2(F, n);  
 	for (size_t i = 0; i < n/2; ++i) D2.setEntry(i,i,F.zero); // rank half
 	Diagonal<Field> D3(F, n); 
 	for (size_t i = 0; i < n; ++i) D3.setEntry(i,i,F.zero); // zero matrix
@@ -256,6 +268,9 @@ int main (int argc, char **argv)
 
 	pass = pass and testFibb(P1, "P1 ident", F.one, n); // ident
 	pass = pass and testFibb(P2, "P2 random perm", F.zero, n); // random perm
+
+	TransposeFIBB<Field> P2T(P2);
+	//pass = pass and testFibb(P2T, "P2T transpose of random", F.zero, n); // ident
 
 	FIBBProduct<Field> Pr4(P1, D1, P2); // nonsing product
 	FIBBProduct<Field> Pr5(P1, D2, P2); // sing product

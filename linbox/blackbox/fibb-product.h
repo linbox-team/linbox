@@ -127,10 +127,10 @@ template<class Field> typename FIBBProduct<Field>::Matrix& FIBBProduct<Field>::
 applyRight(typename FIBBProduct<Field>::Matrix& Y, const typename FIBBProduct<Field>::Matrix& X) const
 {	if (n_==0) return Y;
 	if (n_==1) return head().applyRight(Y,X);
+	std::cerr << "applyR in fibbprod of size " << n_ << std::endl;
 	const FIBB<Field>& A = head();
 	FIBBProduct<Field> B; tail(B);
-	MotherMatrix X1b(field(), B.rowdim(), X.coldim());
-	Matrix X1(X1b);
+	MotherMatrix X1b(field(), B.rowdim(), X.coldim()); Matrix X1(X1b);
 	B.applyRight(X1, X);
 	A.applyRight(Y, X1);
 	return Y;

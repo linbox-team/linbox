@@ -187,8 +187,10 @@ namespace LinBox
 #if 1
 		// Y = PX <=> P^T Y = X (since P^T = P^{-1}),  
 		// thus P.applyRight = PT.solveRight.
-		Matrix& applyRight(Matrix& Y, const Matrix& X, bool transposing = false) const
-		{   if (transposing xor _transposed) return SolveRight(Y,X,not transposing);
+		Matrix& applyRight(Matrix& Y, const Matrix& X) const
+		{ return applyRight(Y,X,false); }
+		Matrix& applyRight(Matrix& Y, const Matrix& X, bool transposing) const
+		{   if (transposing xor _transposed) return solveRight(Y,X,not transposing);
 			Element x; field().init(x);
 			for (size_t i = 0; i < Y.rowdim(); ++i)
 			{	size_t k = _indices[i];
@@ -205,13 +207,15 @@ namespace LinBox
 					Yrow.copy(Xrow); // right kind of copy?
 				}
 			}
-			return Y; 
 		*/
+			return Y; 
 		}
 
 		// Y = XP, aka Y: X = YP^T
+		Matrix& applyLeft(Matrix& Y, const Matrix& X) const
+		{ return applyLeft(Y,X,false); }
 		Matrix& applyLeft(Matrix& Y, const Matrix& X, bool transposing=false) const
-		{   if (transposing xor _transposed) return SolveLeft(Y,X,not transposing);
+		{   if (transposing xor _transposed) return solveLeft(Y,X,not transposing);
 			Element x; field().init(x);
 			for (size_t i = 0; i < Y.coldim(); ++i)
 			{	size_t k = _indices[i];
@@ -248,6 +252,8 @@ namespace LinBox
 		}
 		
 		// Y: X = PY, aka Y = P^T X
+		Matrix& solveRight(Matrix& Y, const Matrix& X) const
+		{ return solveRight(Y,X,false); }
 		Matrix& solveRight(Matrix& Y, const Matrix& X, bool transposing=false) const
 		{   if (transposing xor _transposed) return applyRight(Y,X,not transposing);
 			Element x; field().init(x);
@@ -267,6 +273,8 @@ namespace LinBox
 			return Y; 
 		}
 		// Y: X = YP, aka Y = X P^T
+		Matrix& solveLeft(Matrix& Y, const Matrix& X) const
+		{ return solveLeft(Y,X,false); }
 		Matrix& solveLeft(Matrix& Y, const Matrix& X, bool transposing=false) const
 		{   if (transposing xor _transposed) return applyLeft(Y,X,not transposing);
 		 	Element x; field().init(x);
@@ -420,8 +428,8 @@ namespace LinBox
 					os << '}';
 					break;
 				}
-			return os;
 			}
+			return os;
 		}
 
 		//!@bug there is no read here. (needed by test-blackbox.h)

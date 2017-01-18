@@ -125,7 +125,9 @@ namespace LinBox
 		// Construct n by n identity matrix.
 		Diagonal(const Field &F, const size_t n);
 
-		// Construct random nonsingular or n by n diagonal matrix.
+		/* Construct random nxn diagonal, 
+		 * possibly singular if nonsing is false.
+		 */
 		Diagonal(const Field &F, const size_t n, bool nonsing);
 
 		Diagonal(const Field &F, const size_t n, typename Field::RandIter& iter);
@@ -152,7 +154,7 @@ namespace LinBox
 				getEntry(d,i,i);
 				for (size_t j = 0; j < X.rowdim(); ++j) 
 				{
-					field().axpy(z,d,X.getEntry(x,i,j),Y.getEntry(y,i,j));
+					field().mul(z,d,X.getEntry(x,i,j));
 					Y.setEntry(i,j,z);
 				}
 			}

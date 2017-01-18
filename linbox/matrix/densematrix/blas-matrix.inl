@@ -397,6 +397,7 @@ namespace LinBox
 	template < class _Field, class _Rep >
 	BlasMatrix< _Field, _Rep >::~BlasMatrix ()
 	{
+		std::cerr<< "in ~BlasM, dim is " << rowdim() << " " << coldim() << std::endl;
                 // if (_ptr)
 		// free(_ptr);
 	}
