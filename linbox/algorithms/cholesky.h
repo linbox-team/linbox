@@ -11,13 +11,16 @@
 
 namespace LinBox
 {
-	/* Factor symmetric S as PLNDL^TP^T where 
-	   F has 6 factors, P,L,SNF,D,L^T,P^T
+	/* Factor symmetric S as PLDL^TP^T where 
+	   F has 5 factors, P,L,D,L^T,P^T
 	P is a permutation, 
 	L is unit lower triangular, and 
-	SNF is diagonal powers of p, the Smith normal form of S.
 	D is diagonal of 1x1 and 2x2 blocks.  
 	Rank of D is returned. L and D (most of it) are stored in S.
+	Smith Normal form is easily obtained from D.
+	 
+	The algorithm is randomized with O(n^3) field ops in the worst case 
+	and O(M(n)) field ops in the expected case.
     */
 	template<class SymmetricMatrix>
 	size_t cholesky(FIBBProduct<typename SymmetricMatrix::Field> &F, 
@@ -39,7 +42,7 @@ namespace LinBox
 			const typename Ring::Element & p)
 	;
 #endif
-// implementations
+// implementation
 	template<class SymmetricMatrix>
 	size_t cholesky(FIBBProduct<typename SymmetricMatrix::Field> &F, 
 			SymmetricMatrix & S,
@@ -50,6 +53,7 @@ namespace LinBox
 		const Ring & R = S.field();
 
 		Permutation<Ring> * Pp = new Permutation<Ring>(R, n);
+		Permutation<Ring> & P= *Pp;
 
 		TriangularFIBB<SymmetricMatrix> * Lp 
 			= new TriangularFIBB<SymmetricMatrix>(S,Tag::UpLo::Lower, Tag::Diag::Unit);
@@ -62,12 +66,19 @@ namespace LinBox
 		TransposeFIBB<Ring> * LTp = new TransposeFIBB<Ring>(*Lp);
 		TransposeFIBB<Ring> * PTp = new TransposeFIBB<Ring>(*Pp);
 
-		F.incorporate(Pp, Lp, SNFp, Dp, LTp, PTp);
 
-		return choleskyBlock(*P,*L,*SNF,*D,S,p);
+		BlasMatrixDomain<Ring> MA(S.field());
+		MA.mulinLeft(S,P);
+		MA.mulinRight(*PTp,S);
+
+		size_t k = choleskyBlock(*Pp,*Lp,*Dp,S,p);
+		if (k == 0) k = choleskyIncr(*Pp,*Lp,*Dp,S,p);
+
+		F.incorporate(Pp, Lp, Dp, LTp, PTp);
+		return k;
 	}// cholesky
 
-	/* returns the rank: rank(D) = rank(S) = rank(SNF).
+	/* returns the rank: rank(D) = rank(S).
 	   (rank is immediate in D.)
 	*/
 	template<class SymmetricMatrix>
@@ -79,19 +90,22 @@ namespace LinBox
 		SymmetricMatrix & 								S,
 		const typename SymmetricMatrix::Field::Element & p)
 	{
-		if (n < SymmetricMatrix::choleskyThreshold())
-			return choleskyIncr(*P,*L,*SNF,*D,S,p);
-
 		typedef typename SymmetricMatrix::Field Ring;
+		typedef typename SymmetricMatrix::OffDiag Block;
+		typedef typename SymmetricMatrix::Triangular Triangular;
+		typedef Permutation<Ring> Perm;
 		const Ring & R = S.field();
 		size_t n = S.rowdim(); // = also S.coldim()
+		if (n < SymmetricMatrix::choleskyThreshold())
+			return choleskyIncr(*P,*L,*SNF,*D,S,p);
+		//else
 		size_t m = n/2;
 		SymmetricMatrix A1(S,0,0,m,m);
-		Permutation P1(P,0,0,m,m);
+		Perm P1(P,0,0,m,m);
 		Triangular L1(L,0,0,m,m);
-		SNF SNF1(SNF,0,0,m,m);
 		SBD D1(D,0,0,m,m);
-		size_t k = choleskyBlock(P1,L1,SNF1,D1,A1,p);
+		size_t k = choleskyBlock(P1,L1,D1,A1,R.zero);
+		if (k == 0 return choleskyIncr(P,L,D,A,p);
 		Block X(L,k,0,m-k,k);
 		Block Y(S,m,0,n-m,k);
 		Block B(S,m,k,n-m, m-k);
@@ -103,12 +117,23 @@ namespace LinBox
 		MA.maxpyin(BT,Y1T,XT); // B -= Y1 X^T
 //		C becomes C - YDY^T
 		MA.maxpyin(C,Y1,Y^T); // C -= Y1 X^T
-		A2(S,k,k,n-k,n-k);
-		P2(P,k,k,n-k,n-k);
-		L2(L,k,k,n-k,n-k);
-		SNF2(SNF,k,k,n-k,n-k);
-		D2(D,k,k,n-k,n-k);
-		k2 = choleskyBlock(P2,L2,SNF2,D2,A2,p);
+
+		SymmetricMatrix A2(S,k,k,n-k,n-k);
+		Perm P2(P,k,k,n-k,n-k);
+		Triangular L2(L,k,k,n-k,n-k);
+		SBD D2(D,k,k,n-k,n-k);
+
+		k2 = choleskyBlock(P2,L2,D2,A2,p);
+		Block W(L,k,0,n-k,k);
+		TransposedFIBB<Ring> P2T(P2);
+		P2T.applyRight(W,W);
+		MA.mulinRight(P2T,W);
+		Perm P2full(R,n), I(R,k);
+		I.identity();
+		Perm::dirsum(P2full,I,P2);
+		DirectSum<Ring> P2full(I,P2);
+		Perm::mul(P,P,P2full);
+		return k+k2;
 
 	} // choleskyBlock
 
@@ -116,7 +141,6 @@ namespace LinBox
 	size_t choleskyIncr(
 		Permutation<typename SymmetricMatrix::Field> &	P, 
 		TriangularFIBB<SymmetricMatrix> & 				L,
-		LocalSNF<typename SymmetricMatrix::Field> &		SNF,
 		SymmetricBlockDiagonal<SymmetricMatrix> & 		D,
 		SymmetricMatrix & 								S,
 		const typename SymmetricMatrix::Field::Element & p)
@@ -124,10 +148,6 @@ namespace LinBox
 		typedef typename SymmetricMatrix::Field Ring;
 		const Ring & R = S.field();
 
-	/* In each step, for 1x1 or 2x2 invertible A, 
-	(A,B^T|B,C) -> (I,0|X,I)(A,0|0,C-XAX^T)(I,X^T|0,I), 
-	where X = BA^{-1} replaces B and C-XAX^T replaces C.
-	*/
 		BlasMatrixDomain<Ring> MA(R);
 		size_t k = 0; 
 		size_t n = S.rowdim(); // = S.coldim() as well
@@ -142,57 +162,66 @@ namespace LinBox
 		//cerr << "after swaps, r is " << r << endl;
 		//P.write(cerr)<<endl;
 		//S.write(cerr, Tag::FileFormat::Plain) << endl;
-		  if (r < 1 or r > 2) 
-		  {
-			SNF.push_back(k);
-			if (r == 0 or R.isZero(p)) 
-			  break; 
-			else // r == 3 and p is real
-			  for(size_t i = k; i < n; ++i)
-			    for(size_t j = k; j < n; ++j)
-			  	  R.divin(S.refEntry(i,j), p);
-		  } else { // r is 1 or 2.
+			if (r == 0) // zero matrix 
+				break; 
+			if (r == 3) // no units 
+		 	{
+				if (R.isZero(p)) 
+					break
+				else // r == 3 and p is real
+				  // want a scalar div for this
+				{
+				//	SymmetricMatrix S1(S,k,k,n-k,n-k);
+				//	scalardivin(S1, p);
+				  for(size_t i = k; i < n; ++i)
+				    for(size_t j = k; j < n; ++j)
+				  	  R.divin(S.refEntry(i,j), p);
+				}
+		  	} else { // r is 1 or 2.
 			if (r == 2) 
 				D.twoBlockIndex.push_back(k); // values later
+	/* In each step, for 1x1 or 2x2 invertible A, 
+	(A,B^T|B,C) -> (I,0|X,I)(A,0|0,C-XAX^T)(I,X^T|0,I), 
+	where X = BA^{-1} replaces B and C-XAX^T replaces C.
+	Note: C - XAX^T = C - BA^{-1}B^T = C - BX^T = C - XB^T
+	*/
 			SymmetricMatrix A(S,k,k,r,r);
-			//Block A(S,k,k,r,r);
 			Block B(S,k+r,k,n-k-r,r);
-			Block BT(S,k,k+r,r,n-k-r);
 			SymmetricMatrix C(S,k+r,k+r,n-k-r,n-k-r);
-			//Block C(S,k+r,k+r,n-k-r,n-k-r);
 		//cerr << "A original " << endl;
 		//A.write(cerr, Tag::FileFormat::Plain);
 		//cerr << "X as B " << endl;
 		//X.write(cerr, Tag::FileFormat::Plain);
-			MotherMatrix Bcopybase(S,k+r,k,n-k-r,r);
-			Block Bcopy(Bcopybase,0,0,n-k-r,r);
+			MotherMatrix xbase(S,k+r,k,n-k-r,r);
+			Block X(Xbase,0,0,n-k-r,r);
 
 			MA.invin(A);
 		//cerr << "A inverted " << endl;
 		//A.write(cerr, Tag::FileFormat::Plain);
-			MA.mul(Bcopy,B,A); // X = BA^{-1}
+			MA.mul(X,B,A); // X = BA^{-1}
+			MA.invin(A); // restore
 		//cerr << "Xcopysub " << endl;
 		//Xcopy.write(cerr, Tag::FileFormat::Plain);
+			Transpose<Block> XT(X);
 			
-			B.copy(Bcopy); 
+			if (full) 
+			{	Block BT(S,k,k+r,r,n-k-r);
 		//cerr << "B" << endl;
 		//B.write(cerr, Tag::FileFormat::Plain);
-			
-			MA.maxpyin(C,B,BT); // C <- C - (BA^{-1})B^T
+				MA.maxpyin(C,X,BT); // C <- C - (BA^{-1})B^T
+				BT.copy(XT); //deep copy
+			} else {
+				MA.maxpyin(C,B,XT); // C <- C - B(A^{-1}B^T)
+			}
+			B.copy(X); //deep copy
+
 			// restore BT to X^T = A^{-1}B^T
-			// [would prefer simply MA.mul(BT,A,BT)]
-			MotherMatrix BTcopybase(S,k,k+r,r,n-k-r);
-			Block BTcopy(BTcopybase,0,0,r,n-k-r);
-			MA.mul(BTcopy,A,BT); 
-			BT.copy(BTcopy); 
-			// restore A
-			MA.invin(A); 
 			k += r;
 		//cerr << "k became " << k << ", S out is " << endl;
 		//S.write(cerr, Tag::FileFormat::Plain);
 		  } // r is 1 or 2
 		} // while k < n
-		// fixme: fix offdiags
+		//fix offdiags
 		for (size_t c = 0; c < D.twoBlockIndex.size(); ++c)
 		{
 			size_t k = D.twoBlockIndex[c];
