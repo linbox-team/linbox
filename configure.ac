@@ -156,7 +156,20 @@ AC_PROG_LIBTOOL
 
 # newer libtool...
 LT_PREREQ([2.4.2])
-LT_INIT
+LT_INIT([win32-dll])
+
+
+# needed for building interfaces as shared libs on Windows
+AC_CANONICAL_HOST
+case "${host_os}" in
+    cygwin*|mingw*)
+        LINBOX_LDFLAGS=-no-undefined
+        ;;
+    *)
+        LINBOX_LDFLAGS=""
+        ;;
+esac
+AC_SUBST([LINBOX_LDFLAGS])
 
 
 echo "-----------------------------------------------"

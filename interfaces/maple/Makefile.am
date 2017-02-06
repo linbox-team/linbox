@@ -30,7 +30,7 @@ lib_LTLIBRARIES=liblbmaple.la
 
 liblbmaple_la_SOURCES= lb-maple.C
 
-liblbmaple_la_LDFLAGS=  $(NTL_LIBS) $(MAPLE_LIBS) $(top_srcdir)/interfaces/driver/liblbdriver.la -Wl,-zmuldefs $(LDFLAGS)
+liblbmaple_la_LDFLAGS=  $(NTL_LIBS) $(MAPLE_LIBS) $(top_srcdir)/interfaces/driver/liblbdriver.la -Wl,-zmuldefs $(LDFLAGS) $(LINBOX_LDFLAGS)
 
 pkginclude_HEADERS =lb-maple.h lb-maple-utilities.h
 
