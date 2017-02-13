@@ -46,7 +46,7 @@ liblbdriver_la_SOURCES= lb-element.C 	\
 # \
 			#  lb-solve.C
 
-liblbdriver_la_LDFLAGS=  $(NTL_LIBS) $(LDFLAGS) $(top_srcdir)/linbox/liblinbox.la -Wl,-zmuldefs
+liblbdriver_la_LDFLAGS=  $(NTL_LIBS) $(LDFLAGS) $(LINBOX_LDFLAGS) $(top_srcdir)/linbox/liblinbox.la -Wl,-zmuldefs
 
 
 
