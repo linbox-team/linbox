@@ -212,7 +212,7 @@ LB_DRIVER
 echo "-----------------------------------------------"
 
 # Now getting GMP and Givaro from FFLAS-FFPACK - AB 2014-12-10
-PKG_CHECK_MODULES([FFLAS_FFPACK], [fflas-ffpack])
+PKG_CHECK_MODULES([FFLAS_FFPACK], [fflas-ffpack >= 2.3.0])
 
 dnl LB_CHECK_FFLAS_FFPACK(,,[
 dnl echo ''
