@@ -2039,7 +2039,7 @@ namespace LinBox
 		typedef typename Matrix::constSubMatrixType constSubMatrixType ;
 		constSubMatrixType A_v(A);
 
-		FFPACK::MinPoly<Field, Polynomial>(  F, P, n, A_v.getPointer(), A_v.getStride(), X, n, Perm);
+		FFPACK::MatVecMinPoly<Field, Polynomial>(  F, P, n, A_v.getPointer(), A_v.getStride(), X, n, Perm);
 
 		commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "minpoly with " << P.size() << " coefficients" << std::endl;
 
