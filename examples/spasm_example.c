@@ -767,7 +767,7 @@ int spasm_reach(const spasm * A, const spasm * B, int k, int l, int *xj, const i
  * (dense vector) * (sparse) Matrix y <--- y + x*A
  */
 void spasm_gaxpy(const spasm * A, const spasm_GFp * x, spasm_GFp * y) {
-	int i, n, prime;
+	int i, n;
 // 	int *Ap, *Aj, *Ax;
 
 	/* check inputs */
@@ -1339,7 +1339,8 @@ int spasm_dense_LU_process(spasm_dense_lu * A, spasm_GFp * y) {
 spasm *spasm_schur(spasm * A, const int *p, const int *qinv, const int npiv) {
   //spasm *S;
 	//int k, *Sp, *Sj, Sn, Sm, m, n, snz, *xj, top, *q, verbose_step;
-	int k, Sn, Sm, m, n, snz, *xj, top, *q, verbose_step;
+         size_t k, Sn, Sm, m, n, snz;
+	 int *xj, top, *q, verbose_step;
 	//spasm_GFp *Sx, *x;
 	spasm_GFp *x;
 	Field Fp = A->field();
@@ -1349,9 +1350,12 @@ spasm *spasm_schur(spasm * A, const int *p, const int *qinv, const int npiv) {
 	//n = A->n;
 	//m = A->m;
 	n = A->rowdim();
-	m = A->rowdim();
+	m = A->coldim();
+
 	assert(n >= npiv);
 	assert(m >= npiv);
+
+	
 
 	/* Get Workspace */
 	Sn = n - npiv;
@@ -1361,7 +1365,7 @@ spasm *spasm_schur(spasm * A, const int *p, const int *qinv, const int npiv) {
 	spasm *S = new spasm(Fp, Sn, Sm, snz);
 
 	x = (spasm_GFp*)spasm_malloc(m * sizeof(spasm_GFp));
-	xj = (int*)spasm_malloc(3 * m * sizeof(int));
+	xj = (int*)spasm_malloc(3 * m * sizeof(size_t));
 	spasm_vector_zero(xj, 3 * m);
 
 	verbose_step = spasm_max(1, n / 1000);
@@ -1369,17 +1373,26 @@ spasm *spasm_schur(spasm * A, const int *p, const int *qinv, const int npiv) {
 	//Sj = S->j;
 	//Sx = S->x;
 
+	
+
 	/*
 	 * q sends the non-pivotal columns of A to the columns of S. It is
 	 * not the inverse of qinv...
 	 */
+	
+       	
 	q = (int*)spasm_malloc(m * sizeof(int));
 	k = 0;
-	for (int j = 0; j < m; j++)
+	for (size_t j = 0; j < m; j++){
+	  
 		q[j] = (qinv[j] < 0) ? k++ : -1;
+		
+	}
 
 	snz = 0;		/* non-zero in S */
 	Sn = 0;			/* rows in S */
+
+	
 
 	fprintf(stderr, "Starting Schur complement computation...\n");
 	for (int i = npiv; i < n; i++) {
@@ -1394,11 +1407,17 @@ spasm *spasm_schur(spasm * A, const int *p, const int *qinv, const int npiv) {
 			//Sj = S->j;
 			//Sx = S->x;
 		//	}
-		if (snz + Sm < S->size()) {
+
+		
+		if (snz + Sm > S->size()) {
 		  spasm_csr_realloc(S, 2 * S->size() + Sm);
+		  printf("\n %zu + %zu vs %zu\n", snz, Sm, S->size());
 		}
 		//Sp[Sn] = snz;	/* S[i] starts here */
+		
 		S->setStart(Sn, snz);	/* S[i] starts here */
+
+		
 		for (int px = top; px < m; px++) {
 		  int j = xj[px];
 		  
@@ -1409,19 +1428,33 @@ spasm *spasm_schur(spasm * A, const int *p, const int *qinv, const int npiv) {
 		  if (q[j] >= 0) {
 		    //Sj[snz] = q[j];
 		    //Sx[snz] = x[j];
+
 		    S->setColid(snz, q[j]);
 		    S->setData(snz, x[j]);
 		    snz++;
+		    
 		  }
+		  
+		  
+		  
 		}
+		
 		Sn++;
+		
 
 		if ((i % verbose_step) == 0) {
-			fprintf(stderr, "\rSchur : %d / %d [S=%d * %d, %d NNZ] -- current density= (%.3f)", i, n, Sn, Sm, snz, 1.0 * snz / (1.0 * Sm * Sn));
+			fprintf(stderr, "\rSchur : %d / %zu [S=%zu * %zu, %zu NNZ] -- current density= (%.3f)", i, n, Sn, Sm, snz, 1.0 * snz / (1.0 * Sm * Sn));
 			fflush(stderr);
 		}
 	}
+	
 
+	//for(int i = 0; i< Sn; i++){
+	// for(int px = 120; px < 150; px++){
+	//     printf("%d: S[i, %zu] = %d\n", px, S->getColid(px), S->getData(px));
+	//   }
+	  //}
+	
         /*special case: S empty*/
     if(snz == 0){
         fprintf(stderr, "Empty Schur\n");
@@ -1933,11 +1966,14 @@ int spasm_find_cycle_free_pivots(spasm * A, int *p, int *qinv, int npiv_start) {
 		BFS:
 			while (head < tail && surviving > 0) {
 			  int j = queue[head++];
+			  
 			  int I = qinv[j];
+			  
 			  if (I == -1)
 			    continue;	/* j is not pivotal:
 					 * nothing to do */
 			  //BFS_enqueue_row(w, queue, &surviving, &tail, Ap, Aj, I);
+
 			  BFS_enqueue_row(w, queue, &surviving, &tail, A->getStart(), A->getColid(), I);
 			}
 			
@@ -2008,6 +2044,9 @@ int spasm_find_cycle_free_pivots(spasm * A, int *p, int *qinv, int npiv_start) {
   }			/* end of omp parallel */
 
   fprintf(stderr, "\r[pivots] greedy alternating cycle-free search: %d pivots found [%.1fs]\n", npiv - npiv_start, spasm_wtime() - start);
+
+  //printf("npiv : %d\n", npiv);
+  //printf("p[0] = %d\n", p[0]);
   return npiv;
 }
 
@@ -2180,9 +2219,7 @@ int main(int argc, char **argv) {
 	npiv = spasm_find_pivots(A, p, qinv);
 	spasm_make_pivots_unitary(A, p, npiv);
 
-	density = spasm_schur_probe_density(A, p, qinv, npiv, 100);
-
-	exit(1); // Debug end here	
+	density = spasm_schur_probe_density(A, p, qinv, npiv, 100);	
 	
 	for (int i = 0; i < n_times; i++) {
 		int64_t nnz = (density * (n - npiv)) * (m - npiv);
@@ -2194,17 +2231,20 @@ int main(int argc, char **argv) {
 			break;
 
 		/* compute schur complement, update matrix */
+		
 		B = spasm_schur(A, p, qinv, npiv);
 		spasm_csr_free(A);
+		
+		
 
-            //special case : empty schur.
-        if(B==NULL){
-            end_time = spasm_wtime();
-            fprintf(stderr, "done in %.3f s rank = %d\n", end_time - start_time, rank);
-            free(p);
-            free(qinv);
-            return 0;
-        }
+		//special case : empty schur.
+		if(B==NULL){
+		  end_time = spasm_wtime();
+		  fprintf(stderr, "done in %.3f s rank = %d\n", end_time - start_time, rank);
+		  free(p);
+		  free(qinv);
+		  return 0;
+		}
         
 
 		A = B;
@@ -2215,10 +2255,13 @@ int main(int argc, char **argv) {
 		m = A->coldim();
 
 		npiv = spasm_find_pivots(A, p, qinv);
+		break;
+		
 		spasm_make_pivots_unitary(A, p, npiv);
 		density = spasm_schur_probe_density(A, p, qinv, npiv, 100);
 	}
 
+	exit(1); // Debug end here
 	/* ---- final step ---------- */
 
 	/* sparse schur complement : GPLU */
