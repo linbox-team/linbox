@@ -135,10 +135,27 @@ help() {
     echo " --help, -h, -?        : print help and exit."
 }
 
+
+
 ############
 #  parser  # 
 ############
 
+# Recover command line, with double-quotes
+CMDLINE=""
+for arg in "$@"
+  do
+  WHO="`echo $arg | cut -d'=' -f1`"
+  WHAT="`echo $arg | cut -s -d'=' -f2`"
+  if test "x$WHAT" = "x"; then
+      CMDLINE="$CMDLINE $WHO"
+  else
+      CMDLINE="$CMDLINE $WHO=\"$WHAT\""
+  fi
+done
+echo  "$0 $CMDLINE" | tee -a auto-install.log
+
+# Parse command line
 for i in "$@" ; do
     case "$i" in
 		# switches
@@ -386,34 +403,34 @@ if [ ! \( -x autogen.sh -o -x configure \) ] ; then
     if [ "$STABLE_VAR" = "true" ]; then
 	if [ -f linbox-${STABLE_LB}.tar.gz ] ; then
 	    echo -ne " already there!\n"| tee -a auto-install.log
-	    echo -ne "${BEG}fetching md5sum" ;
+	    echo -ne "${BEG}fetching md5sum" | tee -a auto-install.log;
 	    [ -f fflas-ffpack-${STABLE_FFLAS}.tar.gz.md5sum ] && rm fflas-ffpack-${STABLE_FFLAS}.tar.gz.md5sum ;
 	    wget --no-check-certificate https://github.com/linbox-team/linbox/releases/download/v${STABLE_LB}/linbox-${STABLE_LB}.tar.gz.md5sum >/dev/null 2>&1 || die
 	    [ -f linbox-${STABLE_LB}.tar.gz.md5sum ] || die
-	    cool
+	    cool| tee -a auto-install.log
 	    echo -ne "${BEG}"
 	    md5sum -c linbox-${STABLE_LB}.tar.gz.md5sum || die
 	else
 	    wget https://github.com/linbox-team/linbox/releases/download/v${STABLE_LB}/linbox-${STABLE_LB}.tar.gz >/dev/null 2>&1 || die
 	    [ -f linbox-${STABLE_LB}.tar.gz ] &&  cool || die
-	    echo -ne "${BEG}fetching md5sum" ; 
+	    echo -ne "${BEG}fetching md5sum" | tee -a auto-install.log; 
 	    wget --no-check-certificate https://github.com/linbox-team/linbox/releases/download/v${STABLE_LB}/linbox-${STABLE_LB}.tar.gz.md5sum >/dev/null 2>&1 || die
-	    cool
+	    cool| tee -a auto-install.log
 	    echo -ne "${BEG}"
 	    md5sum -c linbox-${STABLE_LB}.tar.gz.md5sum || die
 	fi
 	OK=0
-	echo -en "${BEG}extracting LinBox..."| tee -a auto-install.log
+	echo -en "${BEG}extracting LinBox..."
 	decompress linbox-${STABLE_LB}.tar.gz  && OK=1
-	[ "$OK" = "1" ] &&  cool   || die 
+	[ "$OK" = "1" ] &&  cool | tee -a auto-install.log  || die 
 	cd linbox-${STABLE_LB} &&  cool   || die 
     else
 	OK=0 ;
 	git clone --depth 1 https://github.com/linbox-team/linbox.git 2>&1 >/dev/null && OK=1
-	[ "$OK" = "1" ] &&  cool  || die
+	[ "$OK" = "1" ] &&  cool | tee -a auto-install.log || die
 	cd linbox &&  cool   || die 
     fi
-    mv ../auto-install.log . && cool || die
+    mv ../auto-install.log . || die
 fi
 
 ######################
@@ -434,7 +451,7 @@ else
 	# echo -n "creating empty build directory..."
     mkdir build
 fi
-cool
+cool| tee -a auto-install.log
 
 ####################
 #  fetch sources  #
@@ -452,7 +469,7 @@ if [ "$STABLE_VAR" = "true" ]; then
 	[ -f givaro-${STABLE_GIVARO}.tar.gz.md5sum ] && rm givaro-${STABLE_GIVARO}.tar.gz.md5sum ;
 	wget --no-check-certificate https://github.com/linbox-team/givaro/releases/download/v${STABLE_GIVARO}/givaro-${STABLE_GIVARO}.tar.gz.md5sum >/dev/null 2>&1 || die
 	[ -f givaro-${STABLE_GIVARO}.tar.gz.md5sum ] || die
-	cool
+	cool| tee -a ../auto-install.log
 	echo -ne "${BEG}"
 	md5sum -c givaro-${STABLE_GIVARO}.tar.gz.md5sum || die
     else
@@ -460,14 +477,14 @@ if [ "$STABLE_VAR" = "true" ]; then
 	[ -f givaro-${STABLE_GIVARO}.tar.gz ] &&  cool || die
 	echo -ne "${BEG}fetching md5sum" ; 
 	wget --no-check-certificate https://github.com/linbox-team/givaro/releases/download/v${STABLE_GIVARO}/givaro-${STABLE_GIVARO}.tar.gz.md5sum >/dev/null 2>&1 || die
-	cool
+	cool| tee -a ../auto-install.log
 	echo -ne "${BEG}"
 	md5sum -c givaro-${STABLE_GIVARO}.tar.gz.md5sum || die
     fi
 else
     OK=0 ;
     git clone --depth 1 https://github.com/linbox-team/givaro.git 2>&1 >/dev/null && OK=1
-    [ "$OK" = "1" ] &&  cool  || die 
+    [ "$OK" = "1" ] &&  cool | tee -a ../auto-install.log || die 
 fi
 
 ### Fflas-ffpack ###
@@ -495,7 +512,7 @@ if [ "$STABLE_VAR" = "true" ]; then
 else
     OK=0 ;
     git clone --depth=1 https://github.com/linbox-team/fflas-ffpack.git 2>&1 >/dev/null && OK=1
-    [ "$OK" = "1" ] &&  cool  || die
+    [ "$OK" = "1" ] &&  cool | tee -a ../auto-install.log || die
 fi
 
 
@@ -512,7 +529,7 @@ if [ "$OPENBLAS_VAR" = "true" ]; then
     else
 	OK=0 ;
 	git clone --depth=1 https://github.com/xianyi/OpenBLAS.git 2>&1 >/dev/null && OK=1
-	[ "$OK" = "1" ] &&  cool  || die
+	[ "$OK" = "1" ] &&  cool | tee -a ../auto-install.log || die
     fi
 fi
 
@@ -526,7 +543,7 @@ OK=0
 if [ "$STABLE_VAR" = "true" ]; then
     echo -en "${BEG}extracting Givaro..."| tee -a ../auto-install.log
     decompress givaro-${STABLE_GIVARO}.tar.gz  && OK=1
-    [ "$OK" = "1" ] &&  cool   || die 
+    [ "$OK" = "1" ] &&  cool | tee -a ../auto-install.log  || die 
 fi
 
 ### Fflas-ffpack ###
@@ -535,7 +552,7 @@ OK=0
 if [ "$STABLE_VAR" = "true" ]; then
     echo -en "${BEG}extracting Fflas-Ffpack..."| tee -a ../auto-install.log
     decompress fflas-ffpack-${STABLE_FFLAS}.tar.gz  && OK=1
-    [ "$OK" = "1" ] &&  cool   || die
+    [ "$OK" = "1" ] &&  cool  | tee -a ../auto-install.log || die
 fi
 
 ### OpenBlas ###
@@ -545,7 +562,7 @@ if [ "$OPENBLAS_VAR" = "true" ]; then
     if [ "$STABLE_VAR" = "true" ]; then
 	echo -en "${BEG}extracting OpenBlas..."| tee -a ../auto-install.log
 	decompress v${STABLE_OPENBLAS}.tar.gz  && OK=1
-	[ "$OK" = "1" ] &&  cool   || die
+	[ "$OK" = "1" ] &&  cool | tee -a ../auto-install.log  || die
     fi
 fi
 
