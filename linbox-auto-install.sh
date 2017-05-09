@@ -11,6 +11,7 @@
 # TODO : manage icc/gcc
 # TODO : add gmp in givaro and use auto-install in givaro
 # TODO : use an optionnal message in die function.
+# TODO : put openblas and use auto-install in fflas-ffpack
 # TODO : rpath instead of LD_LIBRARY_PATH ?
 
 #############################
@@ -20,6 +21,7 @@
 STABLE_LB=1.4.2
 STABLE_FFLAS=2.2.2
 STABLE_GIVARO=4.0.2
+STABLE_OPENBLAS=0.2.19
 #############################
 
 function decompress {
@@ -43,7 +45,7 @@ PREFIX_LOC="/tmp"
 PREFIX_VAR=""
 PREFIX="--prefix=$PREFIX_LOC"
 BLAS=""
-BLAS_VAR=""
+BLAS_VAR="false"
 NTL="--with-ntl"
 NTL_VAR=""
 EXTRA=""
@@ -54,6 +56,8 @@ SAGE=""
 SAGE_VAR="false"
 DRIV=""
 DRIV_VAR="false"
+OPENBLAS=""
+OPENBLAS_VAR="false"
 MAKEOPT= 
 MAKE_VAR=""
 
@@ -111,6 +115,8 @@ help() {
     echo " >> for the next switches, nothing, Y, y, yes or 1 after \"=\"   <<"
     echo " >> means enabled. Anything else or omission means disabled    <<"
     echo
+    echo " --enable-openblas     : fetch openblas."
+    echo "                         Default : disabled (use local blas)."
     echo " --enable-debug        : build in debugging mode."
     echo "                         Default : disabled."
     echo " --enable-check        : run make check."
@@ -129,10 +135,27 @@ help() {
     echo " --help, -h, -?        : print help and exit."
 }
 
+
+
 ############
 #  parser  # 
 ############
 
+# Recover command line, with double-quotes
+CMDLINE=""
+for arg in "$@"
+  do
+  WHO="`echo $arg | cut -d'=' -f1`"
+  WHAT="`echo $arg | cut -s -d'=' -f2`"
+  if test "x$WHAT" = "x"; then
+      CMDLINE="$CMDLINE $WHO"
+  else
+      CMDLINE="$CMDLINE $WHO=\"$WHAT\""
+  fi
+done
+echo  "$0 $CMDLINE" | tee -a auto-install.log
+
+# Parse command line
 for i in "$@" ; do
     case "$i" in
 		# switches
@@ -163,6 +186,11 @@ for i in "$@" ; do
 	OPTIM="$i";
 	OPTIM_VAR="true";
 	;;
+	"--enable-openblas")
+	if [ "x$OPENBLAS_VAR" = "xfalse" ]  ; then  echo "enable-openblas or not ?" ;        help ; exit -1 ; fi
+	OPENBLAS="$i";
+	OPENBLAS_VAR="true";
+	;;
 	"--disable-debug")
 	if [ "x$DEBUG_VAR" = "xtrue" ]  ; then  echo "enable-debug or not ?" ;        help ; exit -1 ; fi
 	DEBUG_VAR="false";
@@ -176,8 +204,12 @@ for i in "$@" ; do
 	WARNINGS_VAR="false";
 	;;
 	"--disable-optimization")
-	if	[ "x$OPTIM_VAR" = "xtrue" ] ; then   echo "enable-optimization or not ?"; help ; exit -1; fi
+	if [ "x$OPTIM_VAR" = "xtrue" ] ; then   echo "enable-optimization or not ?"; help ; exit -1; fi
 	OPTIM_VAR="false";
+	;;
+	"--disable-openblas")
+	if [ "x$OPENBLAS_VAR" = "xtrue" ]  ; then  echo "enable-openblas or not ?" ;        help ; exit -1 ; fi
+	OPENBLAS_VAR="false";
 	;;
 	"--with-ntl")
 	if	[ "x$NTL_VAR" = "xfalse" ] ; then   echo "with-ntl or not ?";            help ; exit -1; fi
@@ -281,6 +313,16 @@ for i in "$@" ; do
 		OPTIM_VAR="false" ;
 	    fi
 	    ;;
+	    "--enable-openblas")
+	    [[ "$QUOI" =~ y|yes|Y|1 ]] && OK=1 || OK=0
+	    if		[ "x$OPENBLAS_VAR" = "xtrue"  -a "OK" = "0" ] ; then  echo "openblas or not openblas ?" ;      help ; exit -1; fi
+	    if		[ "x$OPENBLAS_VAR" = "xfalse" -a "OK" = "1" ] ; then  echo "openblas or not openblas ?" ;      help ; exit -1; fi
+	    if	[[ "x$OK" = "x1" ]] ; then  
+		OPENBLAS=$QUI ; OPENBLAS_VAR="true" ;
+	    else
+		OPENBLAS_VAR="false" ;
+	    fi
+	    ;;
 	    "--enable-warnings")
 	    [[ "$QUOI" =~ y|yes|Y|1|full ]] && OK=1 || OK=0
 	    if [ "x$WARNING_VAR" = "xtrue"  -a "OK" = "0"  ] ; then  echo "warning or not warning ?" ;      help ; exit -1; fi
@@ -314,12 +356,12 @@ for i in "$@" ; do
 	    ;;
 	    "--enable-sage")
 	    [[ "$QUOI" =~ y|yes|Y|1 ]] && OK=1 || OK=0
-	    if		[ "x$OPTIM_VAR" = "xtrue"  -a "OK" = "0"  ] ; then  echo "sage or not sage ?" ;      help ; exit -1; fi
-	    if		[ "x$OPTIM_VAR" = "xfalse" -a "OK" = "1"  ] ; then  echo "sage or not sage ?" ;      help ; exit -1; fi
+	    if		[ "x$SAGE_VAR" = "xtrue"  -a "OK" = "0"  ] ; then  echo "sage or not sage ?" ;      help ; exit -1; fi
+	    if		[ "x$SAGE_VAR" = "xfalse" -a "OK" = "1"  ] ; then  echo "sage or not sage ?" ;      help ; exit -1; fi
 	    if		[[ "x$OK" = "x1" ]] ; then 
-		OPTIM=$QUI ; OPTIM_VAR="true" 
+		SAGE=$QUI ; SAGE_VAR="true" 
 	    else
-		OPTIM_VAR="false" 
+		SAGE_VAR="false" 
 	    fi
 	    ;;
 	    "--enable-drivers")
@@ -361,36 +403,34 @@ if [ ! \( -x autogen.sh -o -x configure \) ] ; then
     if [ "$STABLE_VAR" = "true" ]; then
 	if [ -f linbox-${STABLE_LB}.tar.gz ] ; then
 	    echo -ne " already there!\n"| tee -a auto-install.log
-	    echo -ne "${BEG}fetching md5sum" ;
+	    echo -ne "${BEG}fetching md5sum" | tee -a auto-install.log;
 	    [ -f fflas-ffpack-${STABLE_FFLAS}.tar.gz.md5sum ] && rm fflas-ffpack-${STABLE_FFLAS}.tar.gz.md5sum ;
 	    wget --no-check-certificate https://github.com/linbox-team/linbox/releases/download/v${STABLE_LB}/linbox-${STABLE_LB}.tar.gz.md5sum >/dev/null 2>&1 || die
 	    [ -f linbox-${STABLE_LB}.tar.gz.md5sum ] || die
-	    cool
+	    cool| tee -a auto-install.log
 	    echo -ne "${BEG}"
 	    md5sum -c linbox-${STABLE_LB}.tar.gz.md5sum || die
 	else
 	    wget https://github.com/linbox-team/linbox/releases/download/v${STABLE_LB}/linbox-${STABLE_LB}.tar.gz >/dev/null 2>&1 || die
 	    [ -f linbox-${STABLE_LB}.tar.gz ] &&  cool || die
-	    echo -ne "${BEG}fetching md5sum" ; 
+	    echo -ne "${BEG}fetching md5sum" | tee -a auto-install.log; 
 	    wget --no-check-certificate https://github.com/linbox-team/linbox/releases/download/v${STABLE_LB}/linbox-${STABLE_LB}.tar.gz.md5sum >/dev/null 2>&1 || die
-	    cool
+	    cool| tee -a auto-install.log
 	    echo -ne "${BEG}"
 	    md5sum -c linbox-${STABLE_LB}.tar.gz.md5sum || die
 	fi
+	OK=0
+	echo -en "${BEG}extracting LinBox..."
+	decompress linbox-${STABLE_LB}.tar.gz  && OK=1
+	[ "$OK" = "1" ] &&  cool | tee -a auto-install.log  || die 
+	cd linbox-${STABLE_LB} &&  cool   || die 
     else
 	OK=0 ;
 	git clone --depth 1 https://github.com/linbox-team/linbox.git 2>&1 >/dev/null && OK=1
-	[ "$OK" = "1" ] &&  cool  || die
+	[ "$OK" = "1" ] &&  cool | tee -a auto-install.log || die
 	cd linbox &&  cool   || die 
     fi
-    
-    OK=0
-    if [ "$STABLE_VAR" = "true" ]; then
-	echo -en "${BEG}extracting LinBox..."| tee -a auto-install.log
-	decompress linbox-${STABLE_LB}.tar.gz  && OK=1
-	[ "$OK" = "1" ] &&  cool   || die 
-	cd linbox-${STABLE_LB} &&  cool   || die 
-    fi
+    mv ../auto-install.log . || die
 fi
 
 ######################
@@ -398,7 +438,7 @@ fi
 ######################
 
 #first tee creates a new log.
-echo -en "${BEG}Preparing build directory..."| tee  auto-install.log
+echo -en "${BEG}Preparing build directory..."| tee -a auto-install.log
 if [ -e build ] ; then
     if [ ! -d build ] ; then
 	rm -rf build ;
@@ -411,7 +451,7 @@ else
 	# echo -n "creating empty build directory..."
     mkdir build
 fi
-cool
+cool| tee -a auto-install.log
 
 ####################
 #  fetch sources  #
@@ -429,7 +469,7 @@ if [ "$STABLE_VAR" = "true" ]; then
 	[ -f givaro-${STABLE_GIVARO}.tar.gz.md5sum ] && rm givaro-${STABLE_GIVARO}.tar.gz.md5sum ;
 	wget --no-check-certificate https://github.com/linbox-team/givaro/releases/download/v${STABLE_GIVARO}/givaro-${STABLE_GIVARO}.tar.gz.md5sum >/dev/null 2>&1 || die
 	[ -f givaro-${STABLE_GIVARO}.tar.gz.md5sum ] || die
-	cool
+	cool| tee -a ../auto-install.log
 	echo -ne "${BEG}"
 	md5sum -c givaro-${STABLE_GIVARO}.tar.gz.md5sum || die
     else
@@ -437,14 +477,14 @@ if [ "$STABLE_VAR" = "true" ]; then
 	[ -f givaro-${STABLE_GIVARO}.tar.gz ] &&  cool || die
 	echo -ne "${BEG}fetching md5sum" ; 
 	wget --no-check-certificate https://github.com/linbox-team/givaro/releases/download/v${STABLE_GIVARO}/givaro-${STABLE_GIVARO}.tar.gz.md5sum >/dev/null 2>&1 || die
-	cool
+	cool| tee -a ../auto-install.log
 	echo -ne "${BEG}"
 	md5sum -c givaro-${STABLE_GIVARO}.tar.gz.md5sum || die
     fi
 else
     OK=0 ;
     git clone --depth 1 https://github.com/linbox-team/givaro.git 2>&1 >/dev/null && OK=1
-    [ "$OK" = "1" ] &&  cool  || die 
+    [ "$OK" = "1" ] &&  cool | tee -a ../auto-install.log || die 
 fi
 
 ### Fflas-ffpack ###
@@ -472,9 +512,26 @@ if [ "$STABLE_VAR" = "true" ]; then
 else
     OK=0 ;
     git clone --depth=1 https://github.com/linbox-team/fflas-ffpack.git 2>&1 >/dev/null && OK=1
-    [ "$OK" = "1" ] &&  cool  || die
+    [ "$OK" = "1" ] &&  cool | tee -a ../auto-install.log || die
 fi
 
+
+### OpenBlas ###
+if [ "$OPENBLAS_VAR" = "true" ]; then
+    echo -en "${BEG}fetching OpenBlas..."| tee -a ../auto-install.log
+    if [ "$STABLE_VAR" = "true" ]; then
+	if [ -f v${STABLE_OPENBLAS}.tar.gz ] ; then
+	    echo -ne " already there!\n"
+	else
+	    wget --no-check-certificate http://github.com/xianyi/OpenBLAS/archive/v${STABLE_OPENBLAS}.tar.gz >/dev/null 2>&1 || die
+	    [ -f v${STABLE_OPENBLAS}.tar.gz ] &&  cool || die
+	fi
+    else
+	OK=0 ;
+	git clone --depth=1 https://github.com/xianyi/OpenBLAS.git 2>&1 >/dev/null && OK=1
+	[ "$OK" = "1" ] &&  cool | tee -a ../auto-install.log || die
+    fi
+fi
 
 #####################
 #  extract sources  #
@@ -486,7 +543,7 @@ OK=0
 if [ "$STABLE_VAR" = "true" ]; then
     echo -en "${BEG}extracting Givaro..."| tee -a ../auto-install.log
     decompress givaro-${STABLE_GIVARO}.tar.gz  && OK=1
-    [ "$OK" = "1" ] &&  cool   || die 
+    [ "$OK" = "1" ] &&  cool | tee -a ../auto-install.log  || die 
 fi
 
 ### Fflas-ffpack ###
@@ -495,9 +552,19 @@ OK=0
 if [ "$STABLE_VAR" = "true" ]; then
     echo -en "${BEG}extracting Fflas-Ffpack..."| tee -a ../auto-install.log
     decompress fflas-ffpack-${STABLE_FFLAS}.tar.gz  && OK=1
-    [ "$OK" = "1" ] &&  cool   || die
+    [ "$OK" = "1" ] &&  cool  | tee -a ../auto-install.log || die
 fi
 
+### OpenBlas ###
+
+if [ "$OPENBLAS_VAR" = "true" ]; then
+    OK=0
+    if [ "$STABLE_VAR" = "true" ]; then
+	echo -en "${BEG}extracting OpenBlas..."| tee -a ../auto-install.log
+	decompress v${STABLE_OPENBLAS}.tar.gz  && OK=1
+	[ "$OK" = "1" ] &&  cool | tee -a ../auto-install.log  || die
+    fi
+fi
 
 ####################
 #  install Givaro  #
@@ -556,6 +623,52 @@ ${MAKEPROG} install | tee -a ../../auto-install.log|| die
 cd ..
 
 cool| tee -a ../auto-install.log
+
+######################
+#  install OpenBlas  #
+######################
+
+if [ "$OPENBLAS_VAR" = "true" ]; then
+
+    if [ "$STABLE_VAR" = "true" ]; then
+	cd OpenBLAS-${STABLE_OPENBLAS} || die
+    else
+	cd OpenBLAS/ || die
+    fi
+    
+    if [ -f Makefile ] ; then
+	echo -e "${BEG}cleaning OpenBLAS..."| tee -a ../../auto-install.log
+	${MAKEPROG} clean | tee -a ../../auto-install.log|| die
+	${MAKEPROG} distclean | tee -a ../../auto-install.log|| die 
+	# ${MAKEPROG} unistall || die
+	cool
+    fi
+    
+    OPENBLAS_FLAGS="USE_THREADS=0 USE_THREAD=0 CC=gcc FC=gfortran PREFIX=$PREFIX_LOC"
+    
+    echo -e "${BEG}building OpenBLAS..."| tee -a ../../auto-install.log
+    echo "${MAKEPROG} ${OPENBLAS_FLAGS} CXXFLAGS+=\"$EXTRA\" LDFLAGS+=\"-Wl,-rpath,$PREFIX_LOC\""| tee -a ../../auto-install.log
+    
+    if [ -n "$EXTRA" ] ; then
+	${MAKEPROG} ${OPENBLAS_FLAGS} "CXXFLAGS+=\"$EXTRA\" LDFLAGS+=\"-Wl,-rpath,$PREFIX_LOC\"" | tee -a ../../auto-install.log|| die
+    else
+	${MAKEPROG} ${OPENBLAS_FLAGS} | tee -a ../../auto-install.log|| die
+    fi
+    
+    echo -e "${BEG}installing OpenBLAS..."| tee -a ../../auto-install.log
+    ${MAKEPROG} ${OPENBLAS_FLAGS} install | tee -a ../../auto-install.log|| die
+    
+#return in build
+    cd ..
+    
+    cool| tee -a ../auto-install.log
+
+    if [ "$BLAS_VAR" = "false" ]; then
+	BLAS="--with-blas-libs="\""-L${PREFIX_LOC}/lib -lopenblas -lpthread -lgfortran"\"
+	BLAS_VAR=true
+    fi
+fi
+
 
 ##########################
 #  install fflas-ffpack  #
