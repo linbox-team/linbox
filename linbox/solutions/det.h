@@ -236,9 +236,9 @@ namespace LinBox
 				}
 
 				Diagonal<Field> D (diag);
-				Compose<Blackbox,Diagonal<Field> > B0 (&A, &D);
+				Compose<Blackbox,Diagonal<Field> > B_0 (&A, &D);
 				typedef Compose<Diagonal<Field>,Compose<Blackbox,Diagonal<Field> > > Blackbox1;
-				Blackbox1 B(&D, &B0);
+				Blackbox1 B(&D, &B_0);
 
 				BlackboxContainerSymmetric<Field, Blackbox1> TF (&B, F, iter);
 
