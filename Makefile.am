@@ -69,7 +69,7 @@ tests/perfpublisher:
 bin_SCRIPTS=linbox-config
 
 bundled:
-	sh auto-install.sh
+	sh linbox-auto-install.sh
 
 uninstall-hook:
 	(test -d "$(includedir)/linbox" && rmdir  "$(bindir)" \
@@ -106,7 +106,7 @@ git:
 	git commit -a; git pull; git push
 
 
-VERSION=1.4.2
+VERSION=1.4.3alpha1
 
-EXTRA_DIST=auto-install.sh
+EXTRA_DIST=linbox-auto-install.sh
 #incremente-versions
