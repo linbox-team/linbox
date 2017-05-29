@@ -84,9 +84,7 @@ static bool testIdentityCharpoly (Dom &Z, size_t n, bool symmetrizing=false)
 	typedef ScalarMatrix<Dom> Blackbox;
 // 	typedef GivPolynomialRing<Dom, Givaro::Dense> PolDom;
 //  typedef BlasVector<Dom,GivPolynomialRing<Dom, Givaro::Dense> > PolDom;
-// 	typedef typename PolDom::Element Polynomial;
-	typedef BlasVector <Dom> Vector;
-	typedef Vector Polynomial;
+ 	typedef typename Givaro::Poly1Dom<Dom>::Element Polynomial;
 
 	LinBox::commentator().start ("Testing identity Charpoly", "testIdentityCharpoly");
 
@@ -96,7 +94,7 @@ static bool testIdentityCharpoly (Dom &Z, size_t n, bool symmetrizing=false)
 
 	Blackbox A (Z, n, n, Z.one);
 
-	Polynomial phi(Z);
+	Polynomial phi;
 
 	charpoly (phi, A);
 
@@ -141,10 +139,9 @@ static bool testIdentityCharpoly (Dom &Z, size_t n, bool symmetrizing=false)
 template <class Field>
 static bool testNilpotentCharpoly (Field &F, size_t n)
 {
-	typedef BlasVector <Field> Vector;
 // 	typedef GivPolynomialRing<Field, Givaro::Dense> PolDom;
 // 	typedef typename PolDom::Element Polynomial;
-	typedef Vector Polynomial;
+	typedef typename Givaro::Poly1Dom<Field>::Element Polynomial;
 	typedef std::pair <std::vector <size_t>, std::vector <typename Field::Element> > Row;
 	typedef SparseMatrix<Field, typename VectorTraits<Row>::SparseFormat> Blackbox;
 
@@ -166,7 +163,7 @@ static bool testNilpotentCharpoly (Field &F, size_t n)
 
 
 
-	Polynomial phi(A.field());
+	Polynomial phi;
 
 	charpoly (phi, A);
 
@@ -197,8 +194,8 @@ static bool testSageBug(){
         for (uint32_t i=0; i<4; ++i)
                 for (uint32_t j=0; j<4; ++j)
                         A.setEntry(i,j, Givaro::Integer(i*4+j+1));
-        typedef BlasVector <Givaro::ZRing<Givaro::Integer> > Polynomial;
-        Polynomial phi(Z);
+        typedef Givaro::Poly1Dom<Givaro::ZRing<Givaro::Integer> >::Element Polynomial;
+        Polynomial phi;
         charpoly(phi,A);
         if (Z.areEqual(phi[0],0) &&
             Z.areEqual(phi[1],0) &&
@@ -230,8 +227,7 @@ bool testRandomCharpoly (Field                 &F,
 			VectorStream<Vector> &v_stream)
 {
 //     typedef GivPolynomialRing<Field, Givaro::Dense> PolDom;
-//     typedef typename PolDom::Element Polynomial;
-	typedef BlasVector<Field> Polynomial;
+        typedef typename Givaro::Poly1Dom<Field>::Element Polynomial;
 	typedef SparseMatrix<Field> Blackbox;
 
 	LinBox::commentator().start ("Testing sparse random charpoly", "testRandomCharpoly", 1);
@@ -250,7 +246,7 @@ bool testRandomCharpoly (Field                 &F,
 	report << "Matrix:" << endl;
 	A.write (report, Tag::FileFormat::Pretty);
 
-    Polynomial phi(F);
+        Polynomial phi;
 
 	charpoly (phi, A);
 

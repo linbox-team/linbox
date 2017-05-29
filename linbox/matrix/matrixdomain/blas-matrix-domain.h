@@ -308,17 +308,17 @@ namespace LinBox
 	 * Class handling the characteristic polynomial  of a Matrix.
 	 * \p ContPol is either:
 	 */
-	template< class Field, class ContPol, class Matrix>
+	template< class Field, class Matrix, class PolRing>
 	class BlasMatrixDomainCharpoly {
 	public:
-		ContPol&  operator() (const Field &F, ContPol& P, const Matrix& A) const;
+		typename PolRing::Element&  operator() (const Field &F, typename PolRing::Element& P, const Matrix& A) const;
 	};
 
-	template< class Field, class Matrix, class _Vrep>
-	class BlasMatrixDomainCharpoly<Field,BlasVector<Field,_Vrep>,Matrix> {
-	public:
-		BlasVector<Field,_Vrep>&  operator() (const Field &F, BlasVector<Field,_Vrep>& P, const Matrix& A) const;
-	};
+	// template< class Field, class Matrix, class _Vrep>
+	// class BlasMatrixDomainCharpoly<Field,BlasVector<Field,_Vrep>,Matrix> {
+	// public:
+	// 	BlasVector<Field,_Vrep>&  operator() (const Field &F, BlasVector<Field,_Vrep>& P, const Matrix& A) const;
+	// };
 
 	/**
 	 *  Interface for all functionnalities provided
@@ -734,41 +734,21 @@ namespace LinBox
 		}
 
 		//! characteristic polynomial computation.
-		template <class Polynomial,  class Matrix >
-		Polynomial& charpoly( Polynomial& P, const Matrix& A ) const
+		template <class PolRing,  class Matrix >
+		typename PolRing::Element& charpoly (typename PolRing::Element& P, const Matrix& A ) const
 		{
-
-			typedef typename Polynomial::Rep PolyRep ;
 			commentator().start ("Givaro::Modular Dense Charpoly ", "MDCharpoly");
-			std::list<PolyRep> P_list;
-			P_list.clear();
-			BlasMatrixDomainCharpoly<Field, std::list<PolyRep>, Matrix >()(field(),P_list,A);
-
-
-			PolyRep tmp(A.rowdim()+1);
-			PolyRep Pt ;
-			typename std::list<PolyRep>::iterator it = P_list.begin();
-			Pt = *(it++);
-			while( it!=P_list.end() ){
-				// Waiting for an implementation of a domain of polynomials
-				mulpoly( tmp, Pt, *it);
-				Pt = tmp;
-				//	delete &(*it);
-				++it;
-			}
-			commentator().stop ("done", NULL, "MDCharpoly");
-
-			P=Pt;
-
+			BlasMatrixDomainCharpoly<Field, Matrix, PolRing >()(field(),P,A);
+                        commentator().stop ("done", NULL, "MDCharpoly");
 			return P;
 		}
 
 		//! characteristic polynomial computation.
-		template <class Polynomial, class Matrix >
-		std::list<Polynomial>& charpoly( std::list<Polynomial>& P, const Matrix& A ) const
-		{
-			return BlasMatrixDomainCharpoly<Field, std::list<Polynomial>, Matrix >()(field(),P,A);
-		}
+		// template <class Polynomial, class Matrix >
+		// std::list<Polynomial>& charpoly( std::list<Polynomial>& P, const Matrix& A ) const
+		// {
+		// 	return BlasMatrixDomainCharpoly<Field, std::list<Polynomial>, Matrix >()(field(),P,A);
+		// }
 
 		//private:
 		//! @todo Temporary: waiting for an implementation of a domain of polynomial
