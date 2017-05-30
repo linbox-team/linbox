@@ -77,7 +77,7 @@ while test $# -gt 0; do
 	;;
 
     --cxxflags)
-       	echo -n " -I${includedir} @CXXFLAGS@"
+       	echo -n " -I${includedir} @FFLAS_FFPACK_CFLAGS@ @NTL_CFLAGS@ @SACLIB_CFLAGS@ @CXXFLAGS@"
 	;;
 
     --libs)
