@@ -600,6 +600,7 @@ spasm_GFp spasm_GFp_inverse(spasm_GFp a, int prime) {
 void spasm_scatter(const spasm::svector_t& Aj, const spasm::row_t& Ax, int from, int to, spasm_GFp beta, spasm_GFp * x, int prime) {
 	int j, p;
 
+	
 	for (p = from; p < to; p++) {
 		j = Aj[p];
 		/* axpy-inplace */
@@ -609,14 +610,22 @@ void spasm_scatter(const spasm::svector_t& Aj, const spasm::row_t& Ax, int from,
 
 }
 
+/*
+ * x = x + beta * A[j], where x is a dense vector and A[j] is sparse
+ * 
+ */
 void spasm_lbscatter(const spasm::svector_t& Aj, const spasm::row_t& Ax, int from, int to, spasm_GFp beta, spasm_GFp * x, const Field F) {
 	int j, p;
 
 	for (p = from; p < to; p++) {
-		j = Aj[p];
+	  j = Aj[p];
 		/* axpy-inplace */
 		//x[j] = (x[j] + ((beta * Ax[p]))) % prime /* ultra-naive */ ;
-		F.axpyin(x[j], beta, Ax[p]);
+	  
+		
+	  F.axpyin(x[j], beta, Ax[p]);
+
+	  
 	}
 
 }
@@ -865,11 +874,13 @@ void spasm_eliminate_sparse_pivots(const spasm * A, const int npiv, const int *p
   int i, inew, j, prime = A->field().characteristic();
 
 
+
 // 	Aj = A->j;
 // 	Ap = A->p;
 // 	Ax = A->x;
 // 	prime = A->prime;
 	//prime = A->field().characteristic();
+
 
 	for (i = 0; i < npiv; i++) {
 		inew = (p != NULL) ? p[i] : i;
@@ -879,8 +890,14 @@ void spasm_eliminate_sparse_pivots(const spasm * A, const int npiv, const int *p
 		if (x[j] == 0) {
 			continue;
 		}
-// 		spasm_scatter(Aj, Ax, Ap[inew], Ap[inew + 1], prime - x[j], x, prime);
+
+		
+// 		spasm_scatter(Aj ,Ax, Ap[inew], Ap[inew + 1], prime - x[j], x, prime);
 		spasm_lbscatter(A->getColid(), A->getData(), A->getStart(inew), A->getEnd(inew), prime - x[j], x, A->field());
+
+		
+
+	
 	}
 }
 
@@ -893,6 +910,9 @@ void spasm_make_pivots_unitary(spasm * A, const int *p, const int npiv) {
 // 	int *Ap = A->p;
 // 	spasm_GFp *Ax = A->x;
 
+
+
+ 
 #pragma omp parallel for
 	for (int i = 0; i < npiv; i++) {
 		int inew;
@@ -908,11 +928,14 @@ void spasm_make_pivots_unitary(spasm * A, const int *p, const int npiv) {
 		A->field().inv(alpha,diag);
 // 		for (int px = Ap[inew]; px < Ap[inew + 1]; px++)
 // 			Ax[px] = (alpha * Ax[px]) % prime;
-		for (int px = A->getStart(inew); px < A->getEnd(inew); px++)
+		for (int px = A->getStart(inew); px < A->getEnd(inew); px++){
 		  //A->setData(px,(alpha * A->getData(px)) % prime);
 		  
-		  A->setData(px,A->field().mul(alpha, alpha, A->getData(px)));
+		  A->setData(px,A->field().mul(diag, alpha, A->getData(px)));
+		
+		}
 	}
+
 }
 
 
@@ -1532,7 +1555,7 @@ int spasm_schur_rank(spasm * A, const int *p, const int *qinv, const int npiv) {
 	//Ax = A->x;
 	//prime = A->prime;
 	prime = A->field().characteristic();
-
+	
 	/* Get Workspace */
 	Sm = m - npiv;
 	q = (int*)spasm_malloc(Sm * sizeof(int));
@@ -1563,7 +1586,8 @@ int spasm_schur_rank(spasm * A, const int *p, const int *qinv, const int npiv) {
 	{
 	  spasm_GFp *x = (spasm_GFp*)spasm_malloc(m * sizeof(spasm_GFp));
 	  spasm_GFp *y = (spasm_GFp*)spasm_malloc(Sm * sizeof(spasm_GFp));
-		int gain;
+	  int gain;
+
 
 		while (step <= (1 << 16)) {	/* <--- tweak-me */
 			double it_start = spasm_wtime();
@@ -1573,14 +1597,21 @@ int spasm_schur_rank(spasm * A, const int *p, const int *qinv, const int npiv) {
 			spasm_vector_zero(x, m);
 			for (int i = 0; i < step; i++) {
 				int inew = p[npiv + (rand() % (n - npiv))];
+
+				
 				//spasm_scatter(Aj, Ax, Ap[inew], Ap[inew + 1], 1 + (rand() % (prime - 1)), x, prime);
-				spasm_lbscatter(A->getColid(), A->getData(), A->getStart(inew), A->getEnd(inew), (rand() %(prime -1)), y, A->field());	
+				
+				spasm_lbscatter(A->getColid(), A->getData(), A->getStart(inew), A->getEnd(inew), 1 + (rand() %(prime -1)), x, A->field());	
 			}
+			
 			spasm_eliminate_sparse_pivots(A, npiv, p, x);
+
 			for (int j = 0; j < Sm; j++)	/* gather into y */
 				y[j] = x[q[j]];
 
+			
 #pragma omp atomic update
+			
 			r += spasm_dense_LU_process(U, y);
 
 			/* this is a barrier */
@@ -1604,14 +1635,14 @@ int spasm_schur_rank(spasm * A, const int *p, const int *qinv, const int npiv) {
 		{
 			int final_bad = 0;
 			k = 0;
-			fprintf(stderr, "\n");
+			fprintf(stderr, "\n"); //fixed until there.
 
 			while (final_bad < 3) {
 				double it_start = spasm_wtime();
 				for (int i = npiv; i < n; i++) {
 					int inew = p[i];
 					//spasm_scatter(Aj, Ax, Ap[inew], Ap[inew + 1], rand() % prime, x, prime);
-					spasm_lbscatter(A->getColid(), A->getData(), A->getStart(inew), A->getEnd(inew), rand()%prime, y, A->field());
+					spasm_lbscatter(A->getColid(), A->getData(), A->getStart(inew), A->getEnd(inew), rand()%prime, x, A->field());
 				}
 				spasm_eliminate_sparse_pivots(A, npiv, p, x);
 				for (int j = 0; j < Sm; j++)
@@ -2205,6 +2236,8 @@ int main(int argc, char **argv) {
 		fprintf(stderr, "%.1f s\n", spasm_wtime() - start_time);
 	}
 	A = spasm_compress(T, prime);
+
+	
 	spasm_triplet_free(T);
 	n = A->rowdim();
 	m = A->coldim();
@@ -2219,7 +2252,9 @@ int main(int argc, char **argv) {
 	npiv = spasm_find_pivots(A, p, qinv);
 	spasm_make_pivots_unitary(A, p, npiv);
 
+
 	density = spasm_schur_probe_density(A, p, qinv, npiv, 100);	
+
 	
 	for (int i = 0; i < n_times; i++) {
 		int64_t nnz = (density * (n - npiv)) * (m - npiv);
@@ -2234,7 +2269,6 @@ int main(int argc, char **argv) {
 		
 		B = spasm_schur(A, p, qinv, npiv);
 		spasm_csr_free(A);
-		
 		
 
 		//special case : empty schur.
@@ -2261,7 +2295,8 @@ int main(int argc, char **argv) {
 		density = spasm_schur_probe_density(A, p, qinv, npiv, 100);
 	}
 
-	exit(1); // Debug end here
+
+	//exit(1); // Debug end here
 	/* ---- final step ---------- */
 
 	/* sparse schur complement : GPLU */
