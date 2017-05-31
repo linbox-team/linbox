@@ -1359,14 +1359,14 @@ int spasm_dense_LU_process(spasm_dense_lu * A, spasm_GFp * y) {
  * on the lines. This returns a sparse representation of S. The pivots must
  * be unitary.
  */
-spasm *spasm_schur(spasm * A, const int *p, const int *qinv, const int npiv) {
+spasm *spasm_schur(spasm * A, const int *p, const int *qinv, const int npiv, const Field Fp) {
   //spasm *S;
 	//int k, *Sp, *Sj, Sn, Sm, m, n, snz, *xj, top, *q, verbose_step;
          size_t k, Sn, Sm, m, n, snz;
 	 int *xj, top, *q, verbose_step;
 	//spasm_GFp *Sx, *x;
 	spasm_GFp *x;
-	Field Fp = A->field();
+	//int Fp = A->field().characteristic();
 
 	/* check inputs */
 	assert(A != NULL);
@@ -1434,7 +1434,6 @@ spasm *spasm_schur(spasm * A, const int *p, const int *qinv, const int npiv) {
 		
 		if (snz + Sm > S->size()) {
 		  spasm_csr_realloc(S, 2 * S->size() + Sm);
-		  printf("\n %zu + %zu vs %zu\n", snz, Sm, S->size());
 		}
 		//Sp[Sn] = snz;	/* S[i] starts here */
 		
@@ -1487,7 +1486,7 @@ spasm *spasm_schur(spasm * A, const int *p, const int *qinv, const int npiv) {
 	/* finalize S */
 	fprintf(stderr, "\n");
 	//Sp[S->n] = snz;
-	S->setStart(n, S->rowdim());
+	S->setStart(Sn, S->rowdim());
 	spasm_csr_realloc(S, -1);
 
 	/* free extra workspace */
@@ -2253,7 +2252,7 @@ int main(int argc, char **argv) {
 	spasm_make_pivots_unitary(A, p, npiv);
 
 
-	density = spasm_schur_probe_density(A, p, qinv, npiv, 100);	
+	density = spasm_schur_probe_density(A, p, qinv, npiv, 100);
 
 	
 	for (int i = 0; i < n_times; i++) {
@@ -2267,8 +2266,9 @@ int main(int argc, char **argv) {
 
 		/* compute schur complement, update matrix */
 		
-		B = spasm_schur(A, p, qinv, npiv);
+		B = spasm_schur(A, p, qinv, npiv, prime);
 		spasm_csr_free(A);
+		
 		
 
 		//special case : empty schur.
@@ -2282,21 +2282,21 @@ int main(int argc, char **argv) {
         
 
 		A = B;
+		
 		rank += npiv;
 		//n = A->n;
 		//m = A->m;
 		n = A->rowdim();
 		m = A->coldim();
 
+
+
 		npiv = spasm_find_pivots(A, p, qinv);
-		break;
-		
 		spasm_make_pivots_unitary(A, p, npiv);
+		exit(0); //debug
 		density = spasm_schur_probe_density(A, p, qinv, npiv, 100);
 	}
 
-
-	//exit(1); // Debug end here
 	/* ---- final step ---------- */
 
 	/* sparse schur complement : GPLU */
