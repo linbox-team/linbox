@@ -196,11 +196,11 @@ Element* linbox_modn_dense_charpoly (Element modulus, Element *& cp, size_t n, E
 {
 
 	Givaro::Modular<Element> F(modulus);
-        typedef typename Givaro::Poly1Dom<Givaro::Modular<Element> > PolRing;
 	// FIXME: check the memory management: better to allocate mp in sage
-	typename PolRing::Element P;
+        Givaro::Poly1FactorDom<Givaro::Modular<Element> > PolDom(F);
+        typename Givaro::Poly1FactorDom<Givaro::Modular<Element> >::Element P;
 
-	FFPACK::CharPoly<Givaro::Modular<Element>, PolRing> (F, P, n, matrix, n);
+	FFPACK::CharPoly (PolDom, P, n, matrix, n);
 
 	return cp = &P[0];
 
@@ -427,7 +427,7 @@ void linbox_integer_dense_charpoly(mpz_t* &mp, size_t& degree, size_t n, mpz_t**
 	DenseMatrix<IntegerRing> A(ZZ, n, n);
         get_matrix(A, matrix);
 
-	IntPolRing::Element m_A;
+        DensePolynomial<IntegerRing> m_A(ZZ);
 	charpoly(m_A, A);
 
 	mp = new mpz_t[m_A.size()];
@@ -445,7 +445,7 @@ void linbox_integer_dense_minpoly(mpz_t* &mp, size_t& degree, size_t n, mpz_t** 
 	DenseMatrix<IntegerRing> A(ZZ, n, n);
         get_matrix(A, matrix);
 
-	IntPolRing::Element m_A;
+	DensePolynomial<IntegerRing> m_A(ZZ);
 	minpoly(m_A, A);
 
 	mp = new mpz_t[m_A.size()];

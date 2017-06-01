@@ -45,7 +45,7 @@
 #include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/solutions/charpoly.h"
 #include "linbox/util/commentator.h"
-#include "linbox/ring/givaro-polynomial.h"
+#include "linbox/ring/polynomial-ring.h"
 #include "linbox/vector/stream.h"
 
 #include "test-common.h"
@@ -84,7 +84,7 @@ static bool testIdentityCharpoly (Dom &Z, size_t n, bool symmetrizing=false)
 	typedef ScalarMatrix<Dom> Blackbox;
 // 	typedef GivPolynomialRing<Dom, Givaro::Dense> PolDom;
 //  typedef BlasVector<Dom,GivPolynomialRing<Dom, Givaro::Dense> > PolDom;
- 	typedef typename Givaro::Poly1Dom<Dom>::Element Polynomial;
+        typedef DensePolynomial<Dom> Polynomial;
 
 	LinBox::commentator().start ("Testing identity Charpoly", "testIdentityCharpoly");
 
@@ -94,7 +94,7 @@ static bool testIdentityCharpoly (Dom &Z, size_t n, bool symmetrizing=false)
 
 	Blackbox A (Z, n, n, Z.one);
 
-	Polynomial phi;
+	Polynomial phi(Z);
 
 	charpoly (phi, A);
 
@@ -141,7 +141,7 @@ static bool testNilpotentCharpoly (Field &F, size_t n)
 {
 // 	typedef GivPolynomialRing<Field, Givaro::Dense> PolDom;
 // 	typedef typename PolDom::Element Polynomial;
-	typedef typename Givaro::Poly1Dom<Field>::Element Polynomial;
+	typedef DensePolynomial<Field> Polynomial;
 	typedef std::pair <std::vector <size_t>, std::vector <typename Field::Element> > Row;
 	typedef SparseMatrix<Field, typename VectorTraits<Row>::SparseFormat> Blackbox;
 
@@ -161,9 +161,7 @@ static bool testNilpotentCharpoly (Field &F, size_t n)
 	who << "Matrix:" << endl;
 	A.write (who, Tag::FileFormat::Pretty);
 
-
-
-	Polynomial phi;
+        Polynomial phi(F);
 
 	charpoly (phi, A);
 
@@ -194,8 +192,8 @@ static bool testSageBug(){
         for (uint32_t i=0; i<4; ++i)
                 for (uint32_t j=0; j<4; ++j)
                         A.setEntry(i,j, Givaro::Integer(i*4+j+1));
-        typedef Givaro::Poly1Dom<Givaro::ZRing<Givaro::Integer> >::Element Polynomial;
-        Polynomial phi;
+        typedef DensePolynomial<Givaro::ZRing<Givaro::Integer> > Polynomial;
+        Polynomial phi(Z);
         charpoly(phi,A);
         if (Z.areEqual(phi[0],0) &&
             Z.areEqual(phi[1],0) &&
@@ -227,7 +225,7 @@ bool testRandomCharpoly (Field                 &F,
 			VectorStream<Vector> &v_stream)
 {
 //     typedef GivPolynomialRing<Field, Givaro::Dense> PolDom;
-        typedef typename Givaro::Poly1Dom<Field>::Element Polynomial;
+        typedef DensePolynomial<Field> Polynomial;
 	typedef SparseMatrix<Field> Blackbox;
 
 	LinBox::commentator().start ("Testing sparse random charpoly", "testRandomCharpoly", 1);
@@ -246,7 +244,7 @@ bool testRandomCharpoly (Field                 &F,
 	report << "Matrix:" << endl;
 	A.write (report, Tag::FileFormat::Pretty);
 
-        Polynomial phi;
+        Polynomial phi(F);
 
 	charpoly (phi, A);
 

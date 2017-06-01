@@ -145,26 +145,11 @@ namespace LinBox
 	 * @param tag
 	 * @param M
 	 */
-	// template < class PolRing, class Blackbox >
-	// BlasVector<typename Blackbox::Field,typename PolRing::Element >&
-	// charpoly (BlasVector<typename Blackbox::Field,typename PolRing::Element > & P,
-	// 	  const Blackbox                                   & A,
-	// 	  const RingCategories::ModularTag                 & tag,
-	// 	  const Method::BlasElimination                    & M)
-	// {
-	// 	if (A.coldim() != A.rowdim())
-	// 		throw LinboxError("LinBox ERROR: matrix must be square for characteristic polynomial computation\n");
-
-	// 	BlasMatrix< typename Blackbox::Field >     BBB (A);
-	// 	BlasMatrixDomain< typename Blackbox::Field > BMD (BBB.field());
-	// 	BMD.charpoly<PolRing, Matix> (P, static_cast<BlasMatrix<typename Blackbox::Field> >(BBB));
-	// 	return P  ;
-	// }
 	template <class Blackbox, class Polynomial >
-	Polynomial& charpoly (Polynomial                       & P,
-                              const Blackbox                   & A,
-                              const RingCategories::ModularTag & tag,
-                              const Method::BlasElimination    & M)
+    Polynomial& charpoly (Polynomial                       & P,
+                          const Blackbox                   & A,
+                          const RingCategories::ModularTag & tag,
+                          const Method::BlasElimination    & M)
 	{
 		if (A.coldim() != A.rowdim())
 			throw LinboxError("LinBox ERROR: matrix must be square for characteristic polynomial computation\n");
@@ -174,8 +159,6 @@ namespace LinBox
                     //BlasVector<typename Blackbox::Field,Polynomial> P2(A.field(),P);
 		BMD.charpoly (P, BBB);
 		return P;//= P2.getRep() ;
-
-
 	}
 
 
@@ -428,7 +411,6 @@ namespace LinBox
 		typename Blackbox::ConstIterator it_end = A.End();
 		integer max = 1,min=0;
 		while( it != it_end ){
-			//      cerr<<"it="<<(*it)<<endl;
 			if (max < (*it))
 				max = *it;
 			if ( min > (*it))
@@ -444,8 +426,8 @@ namespace LinBox
 		ChineseRemainder< FullMultipCRA<Givaro::Modular<double> > > cra(hadamarcp);
 #endif
 		ChineseRemainder< EarlyMultipCRA<Givaro::Modular<double> > > cra(3UL);
-	IntegerModularCharpoly<Blackbox,Method::BlasElimination> iteration(A, M);
-		cra(P, iteration, genprime);
+        IntegerModularCharpoly<Blackbox,Method::BlasElimination> iteration(A, M);
+		cra (P, iteration, genprime);
 		commentator().stop ("done", NULL, "IbbCharpoly");
 		return P;
 	}
@@ -475,8 +457,6 @@ namespace LinBox
 		if (A.coldim() != A.rowdim())
 			throw LinboxError("LinBox ERROR: matrix must be square for characteristic polynomial computation\n");
 
-// 		typename Givaro::Poly1Dom<typename Blackbox::Field>::Element Pg;
-// 		return P = BBcharpoly::blackboxcharpoly (Pg, A, tag, M);
 		return BBcharpoly::blackboxcharpoly (P, A, tag, M);
 	}
 

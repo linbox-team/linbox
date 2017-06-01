@@ -308,10 +308,10 @@ namespace LinBox
 	 * Class handling the characteristic polynomial  of a Matrix.
 	 * \p ContPol is either:
 	 */
-	template< class Field, class Matrix, class PolRing>
+	template< class Field, class Polynomial, class Matrix>
 	class BlasMatrixDomainCharpoly {
 	public:
-		typename PolRing::Element&  operator() (const Field &F, typename PolRing::Element& P, const Matrix& A) const;
+		Polynomial& operator() (const Field &F, Polynomial& P, const Matrix& A) const;
 	};
 
 	// template< class Field, class Matrix, class _Vrep>
@@ -734,21 +734,14 @@ namespace LinBox
 		}
 
 		//! characteristic polynomial computation.
-		template <class PolRing,  class Matrix >
-		typename PolRing::Element& charpoly (typename PolRing::Element& P, const Matrix& A ) const
+		template <class Polynomial, class Matrix >
+		Polynomial& charpoly (Polynomial& P, const Matrix& A ) const
 		{
 			commentator().start ("Givaro::Modular Dense Charpoly ", "MDCharpoly");
-			BlasMatrixDomainCharpoly<Field, Matrix, PolRing >()(field(),P,A);
+			BlasMatrixDomainCharpoly<Field, Polynomial, Matrix>()(field(),P,A);
                         commentator().stop ("done", NULL, "MDCharpoly");
 			return P;
 		}
-
-		//! characteristic polynomial computation.
-		// template <class Polynomial, class Matrix >
-		// std::list<Polynomial>& charpoly( std::list<Polynomial>& P, const Matrix& A ) const
-		// {
-		// 	return BlasMatrixDomainCharpoly<Field, std::list<Polynomial>, Matrix >()(field(),P,A);
-		// }
 
 		//private:
 		//! @todo Temporary: waiting for an implementation of a domain of polynomial
