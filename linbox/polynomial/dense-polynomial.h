@@ -63,21 +63,21 @@ namespace LinBox {
             return *this = P;
         }
 
-        const Domain_t& getField () {return _field;};
+        const Field& field () const {return _field;};
 
         template<typename _Tp1>
         struct rebind {
             typedef DensePolynomial<_Tp1> other;
 
-            void operator() (other & P2,
-                             const Self_t& P1,
-                             const _Tp1& F)
-                {
-                    typename Self_t::const_iterator it1 = P1.begin();
-                    typename other::iterator it2 = P2.begin();
-                    for (; it1 != P1.end(); ++it1, ++it2)
-                        F.init (*it2, *it1);
-                }
+            void operator() (other & P2, const Self_t& P1) {
+                typedef typename Self_t::const_iterator ConstSelfIterator ;
+                typedef typename other::iterator OtherIterator ;
+                OtherIterator    P2_i = P2.begin();
+                ConstSelfIterator P1_i = P1.begin();
+                Hom<Field, _Tp1> hom (P1.field(), P2.field()) ;
+                for ( ; P1_i != P1.end(); ++P1_i, ++P2_i)
+                    hom.image (*P2_i, *P1_i);
+			}
         };
 
     protected:

@@ -291,7 +291,7 @@ namespace LinBox
                                 _P_data(F)
 		{
 			typename _BBt::template rebind<Field>()(_A_data, *(Mat.getBlackbox()));
-			typename _Polt::template rebind<Field>()(_P_data, *(Mat.getPolynomial()), F);
+			typename _Polt::template rebind<Field>()(_P_data, *(Mat.getPolynomial()));
 		}
 
 		template<typename _BBt, typename _Polt, typename Field>
