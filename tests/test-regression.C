@@ -114,12 +114,71 @@ bool testSolveSparseSage(){
 bool testSolveSparseSage(){return true;}
 #endif
 
+/**
+ * Testing regresssion for issue 56 https://github.com/linbox-team/linbox/issues/56
+ * reported by Vincent Delecroix
+ */
+bool testFlatDixonSolver (const Specifier& m){
+        // creating LinBox matrices and vectors
+    Givaro::ZRing<Integer> ZZ;
+    typedef DenseVector<Givaro::ZRing<Integer> > DenseVector;
+
+    SparseMatrix<Givaro::ZRing<Integer> > M (ZZ,1,2);
+    Givaro::ZRing<Integer>::Element D; // denominator of the solution
+    DenseVector A(ZZ, M.coldim()); // numerator of the solution
+    DenseVector B(ZZ, M.rowdim()); // Right handside of the system
+
+    M.setEntry(0,0,1);
+    M.setEntry(0,1,1);
+    ZZ.assign(B[0],1);
+
+        // solving via Sparse Elimination
+    solve (A, D, M, B, m);
+
+    if (!ZZ.areEqual(A[0],ZZ.one) || !ZZ.areEqual(A[1],ZZ.zero) || !ZZ.areEqual(D,ZZ.one)) {
+        std::cerr<<"Fail solving a flat system over QQ with a SparseMatrix"<<std::endl;
+        return false;
+    }
+
+    return true;
+}
+bool testTallDixonSolver (const Specifier& m){
+        // creating LinBox matrices and vectors
+    Givaro::ZRing<Integer> ZZ;
+    typedef DenseVector<Givaro::ZRing<Integer> > DenseVector;
+
+    SparseMatrix<Givaro::ZRing<Integer> > M (ZZ,2,1);
+    Givaro::ZRing<Integer>::Element D; // denominator of the solution
+    DenseVector A(ZZ, M.coldim()); // numerator of the solution
+    DenseVector B(ZZ, M.rowdim()); // Right handside of the system
+
+    M.setEntry(0,0,1);
+    M.setEntry(1,0,1);
+    ZZ.assign(B[0],1);
+    ZZ.assign(B[1],1);
+
+        // solving via Sparse Elimination
+    solve (A, D, M, B, m);
+
+    if (!ZZ.areEqual(A[0],ZZ.one) || !ZZ.areEqual(D,ZZ.one)) {
+        std::cerr<<"Fail solving a tall system over QQ with a SparseMatrix"<<std::endl;
+        return false;
+    }
+
+    return true;
+
+}
+
 int main (int argc, char **argv)
 {
     bool pass = true;
 
-    if (!testSolveSparse  ()) pass = false;
-    if (!testSolveSparseSage  ()) pass = false;
+    pass &= testSolveSparse  ();
+    pass &= testSolveSparseSage ();
+    pass &= testFlatDixonSolver (Method::SparseElimination());
+    pass &= testFlatDixonSolver (Method::Wiedemann());
+    pass &= testTallDixonSolver (Method::SparseElimination());
+    pass &= testTallDixonSolver (Method::Wiedemann());
 
     return pass ? 0 : -1;
 }
