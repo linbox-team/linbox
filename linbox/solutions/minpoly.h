@@ -243,18 +243,13 @@ namespace LinBox
 		// 0.7213475205 is an upper approximation of 1/(2log(2))
 		RandomPrimeIterator genprime((uint32_t) (26-(int)ceil(log((double)A.rowdim())*0.7213475205)));
 		IntegerModularMinpoly<Blackbox,MyMethod> iteration(A, M);
-		std::vector<integer> PP; // use of integer due to non genericity of cra. PG 2005-08-04
 #ifdef __LINBOX_HAVE_MPI
 		MPIChineseRemainder< EarlyMultipCRA<Givaro::Modular<double> > > cra(3UL, c);
-		cra(PP, iteration, genprime);
+		cra(P, iteration, genprime);
 #else
 		ChineseRemainder< EarlyMultipCRA<Givaro::Modular<double> > > cra(3UL);
-		cra(PP, iteration, genprime);
+		cra(P, iteration, genprime);
 #endif
-		size_t i =0;
-		P.resize(PP.size());
-		for (typename Polynomial::iterator it= P.begin(); it != P.end(); ++it, ++i)
-			A.field().init(*it, PP[i]);
 
 #ifdef __LINBOX_HAVE_MPI
 		if(c || c->rank() == 0)

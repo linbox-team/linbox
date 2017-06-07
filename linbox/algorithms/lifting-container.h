@@ -437,7 +437,7 @@ namespace LinBox
 
 #ifdef DEBUG_LC
 				std::cout<<"\n residu "<<_position<<": ";
-				for (size_t i=0;i<digit.size();++i)
+				for (size_t i=0;i<_res.size();++i)
 					std::cout<<_res[i]<<",";
 				std::cout<<"\n digit "<<_position<<": ";
 				for (size_t i=0;i<digit.size();++i)
@@ -447,7 +447,7 @@ namespace LinBox
 				/*  prepare for updating residu */
 
 				// compute v2 = _matA * digit
-				IVector v2 (_lc.ring(),_lc._matA.coldim());
+				IVector v2 (_lc.ring(),_lc._matA.rowdim());
 				_lc._MAD.applyV(v2,digit, _res);
 
 #ifdef DEBUG_LC
