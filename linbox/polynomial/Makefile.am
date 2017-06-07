@@ -1,7 +1,7 @@
-# Copyright (c) 2010 the LinBox group
+# Copyright (c) 2017 the LinBox group
+# This file is part of LinBox
 # ========LICENCE========
 # This file is part of the library LinBox.
-#
 # LinBox is free software: you can redistribute it and/or modify
 # it under the terms of the  GNU Lesser General Public
 # License as published by the Free Software Foundation; either
@@ -16,42 +16,12 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 # ========LICENCE========
+#/
 
+pkgincludesubdir=$(pkgincludedir)/polynomial
 
+EXTRA_DIST=				\
+	polynomial.doxy
 
-pkgincludesubdir=$(pkgincludedir)/ring
-
-SUBDIRS=ntl modular
-
-BASIC_HDRS =            \
-    ring-interface.h    \
-    givaro-poly.h       \
-    givaro-poly-quotient.h \
-    polynomial-ring.h \
-    modular.h           \
-    local-pir-modular.h \
-    pir-modular-int32.h \
-    local2_32.h         \
-    abstract.h          \
-    archetype.h         \
-    envelope.h          \
-    poweroftwomodular.h
-
-NTL_HDRS =              \
-    ntl.h               \
-    pid-ntl-zz_p.h     \
-    pir-ntl-zz_p.h
-
-if LINBOX_HAVE_NTL
-USE_NTL_HDRS = $(NTL_HDRS)
-endif
-
-pkgincludesub_HEADERS =     \
-    $(BASIC_HDRS)           \
-    $(USE_NTL_HDRS)
-
-EXTRA_DIST =            \
-    $(NTL_HDRS)         \
-    ring.doxy           \
-    polynomial.doxy		\
-    ntl.doxy
+pkgincludesub_HEADERS=			\
+	dense-polynomial.h
