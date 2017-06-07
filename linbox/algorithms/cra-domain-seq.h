@@ -37,7 +37,6 @@
 #include <utility>
 #include <stdlib.h>
 #include "linbox/util/commentator.h"
-
 //$define _LB_CRATIMING
 
 namespace LinBox
@@ -188,7 +187,8 @@ namespace LinBox
 				Domain D(*primeiter);
 				commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
 				++primeiter;
-				typename CRATemporaryVectorTrait<Function, Domain>::Type_t r(D);
+                                typename Iterator::template rebind<Domain>::other r(D);
+                                    //typename CRATemporaryVectorTrait<Function, Domain>::Type_t r(D);
 				Builder_.initialize( D, Iteration(r, D) );
 			}
 			int coprime =0, nbprimes=0;
@@ -208,7 +208,8 @@ namespace LinBox
                                 Domain D(*primeiter);
 				commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
                                 ++primeiter; ++nbprimes;
-				typename CRATemporaryVectorTrait<Function, Domain>::Type_t r(D);
+                                typename Iterator::template rebind<Domain>::other r(D);
+                                    //typename CRATemporaryVectorTrait<Function, Domain>::Type_t r(D);
 				Builder_.progress( D, Iteration(r, D) );
 			}
 			commentator().stop ("done", NULL, "mmcravit");
