@@ -21,7 +21,7 @@
 
 AC_PREREQ([2.68])
 
-AC_INIT([LinBox], [1.4.3],[linbox-use@googlegroups.com],[linbox],
+AC_INIT([LinBox], [1.5.0],[linbox-use@googlegroups.com],[linbox],
 		[http://www.linalg.org/])
 
 AC_CONFIG_MACRO_DIR([macros])
@@ -314,6 +314,7 @@ linbox/solutions/Makefile
 linbox/util/Makefile
 linbox/util/formats/Makefile
 linbox/vector/Makefile
+linbox/polynomial/Makefile
 tests/Makefile
 tests/data/Makefile
 tests/matrix/Makefile

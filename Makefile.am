@@ -98,6 +98,7 @@ uninstall-hook:
 		"$(includedir)/linbox/util/formats" \
 		"$(includedir)/linbox/util" \
 		"$(includedir)/linbox/vector" \
+		"$(includedir)/linbox/polynomial" \
 		"$(includedir)/linbox" \
 		"$(datarootdir)/" \
 		"$(includedir)" ) || true
@@ -106,7 +107,7 @@ git:
 	git commit -a; git pull; git push
 
 
-VERSION=1.4.3alpha1
+VERSION=1.5.0rc0
 
 EXTRA_DIST=linbox-auto-install.sh
 #incremente-versions
