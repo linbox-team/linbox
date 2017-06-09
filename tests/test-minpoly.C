@@ -180,9 +180,6 @@ static bool testNilpotentMinpoly (Field &F, size_t n, const Meth& M)
 	minpoly (phi, A, M);
 
 	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-        A.write (report, Tag::FileFormat::Maple);
-	report << "Minimal polynomial is: ";
-	printPolynomial (F, report, phi);
 
 	for (i = 0; i < n - 1; i++)
 		if (!F.isZero (phi[i]))
@@ -342,6 +339,7 @@ static bool testGramMinpoly (Field &F, size_t m, const Meth& M)
 			ret = false;
 		}
 		commentator().stop (MSG_STATUS (ret), (const char *) 0, "testGramMinpoly");
+
 		return ret;
 }
 
@@ -352,7 +350,12 @@ bool run_with_field(integer q, int e, size_t b, size_t n, int iter, int numVecto
 
 	while (ok && nbiter)
 	{
-		Field* F = FFPACK::chooseField<Field>(q, b); // F, characteristic q of b bits
+		Field* F;
+                integer card=q;
+                do{
+                        F = FFPACK::chooseField<Field>(q, b); // F, characteristic q of b bits
+                        card = F->cardinality();
+                }while (card < 2*n*n && card != -1); // ensures high probability of succes of the probabilistic algorithm
 		typename Field::RandIter G(*F, 0, seed); //random generator over F
 		typename Field::NonZeroRandIter NzG(G); //non-zero random generator over F
 
@@ -407,7 +410,7 @@ int main (int argc, char **argv)
 	commentator().setMaxDepth (-1);
 	bool pass = true;
 
-	integer q = 131071; 
+	integer q = -1;
 	size_t b = 0;
         int e = 1; // exponent for non prime fields
 	size_t n = 70;
@@ -438,7 +441,7 @@ int main (int argc, char **argv)
 
         pass &= run_with_field<Givaro::Modular<double> >(q,e,b,n,iterations,numVectors,k,seed);
         pass &= run_with_field<Givaro::Modular<int32_t> >(q,e,b,n,iterations,numVectors,k,seed);
-        pass &= run_with_field<Givaro::Modular<integer> >(q,e,b,n,iterations,numVectors,k,seed);
+        pass &= run_with_field<Givaro::Modular<Givaro::Integer> >(q,e,b?b:128,n/3+1,iterations,numVectors,k,seed);
             //pass &= run_with_field<Givaro::GFqDom<int64_t> >(q,e,b,n,iterations,numVectors,k,seed);
         pass &= run_with_field<Givaro::ZRing<integer> >(q,e,b,n,iterations,numVectors,k,seed);
 
