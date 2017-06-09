@@ -355,8 +355,8 @@ bool run_with_field(integer q, int e, size_t b, size_t n, int iter, int numVecto
                 do{
                         F = FFPACK::chooseField<Field>(q, b); // F, characteristic q of b bits
                         card = F->cardinality();
-                }while (card < 2*n*n && card != -1); // ensures high probability of succes of the probabilistic algorithm
-		typename Field::RandIter G(*F, 0, seed); //random generator over F
+                }while (card < 2*n*n && card != 0); // ensures high probability of succes of the probabilistic algorithm
+		typename Field::RandIter G(*F, b, seed); //random generator over F
 		typename Field::NonZeroRandIter NzG(G); //non-zero random generator over F
 
 		if(F == nullptr)
@@ -377,8 +377,8 @@ bool run_with_field(integer q, int e, size_t b, size_t n, int iter, int numVecto
                 ok &= testIdentityMinpoly  (*F, n, Method::Elimination());
                 ok &= testIdentityMinpoly  (*F, n, Method::Blackbox());
                 ok &= testNilpotentMinpoly (*F, n, Method::Hybrid());
-                ok &= testNilpotentMinpoly (*F, n, Method::Elimination());
-                ok &= testNilpotentMinpoly (*F, n, Method::Blackbox());
+                 ok &= testNilpotentMinpoly (*F, n, Method::Elimination());
+                 ok &= testNilpotentMinpoly (*F, n, Method::Blackbox());
                 typedef typename SparseMatrix<Field>::Row SparseVector;
 //                typedef vector<typename Field::Element> DenseVector;
                 typedef BlasVector<Field> DenseVector;
@@ -387,10 +387,11 @@ bool run_with_field(integer q, int e, size_t b, size_t n, int iter, int numVecto
                 ok &= testRandomMinpoly    (*F, n, zA_stream, zv_stream, Method::Hybrid());
                 ok &= testRandomMinpoly    (*F, n, zA_stream, zv_stream, Method::Elimination());
                 ok &= testRandomMinpoly    (*F, n, zA_stream, zv_stream, Method::Blackbox());
-                ok &= testGramMinpoly      (*F, n, Method::Hybrid());
-                ok &= testGramMinpoly      (*F, n, Method::Elimination());
-                ok &= testGramMinpoly      (*F, n, Method::Blackbox());
-
+                if (card>0){
+                        ok &= testGramMinpoly      (*F, n, Method::Hybrid());
+                        ok &= testGramMinpoly      (*F, n, Method::Elimination());
+                        ok &= testGramMinpoly      (*F, n, Method::Blackbox());
+                }
 		if(!ok)
 			cout<<"FAILED"<<endl;
 		else
@@ -411,7 +412,7 @@ int main (int argc, char **argv)
 	bool pass = true;
 
 	integer q = -1;
-	size_t b = 0;
+	size_t b = 0; // set to a non zero value to force the bitsize of q
         int e = 1; // exponent for non prime fields
 	size_t n = 70;
 	int iterations = 3;
@@ -443,7 +444,7 @@ int main (int argc, char **argv)
         pass &= run_with_field<Givaro::Modular<int32_t> >(q,e,b,n,iterations,numVectors,k,seed);
         pass &= run_with_field<Givaro::Modular<Givaro::Integer> >(q,e,b?b:128,n/3+1,iterations,numVectors,k,seed);
             //pass &= run_with_field<Givaro::GFqDom<int64_t> >(q,e,b,n,iterations,numVectors,k,seed);
-        pass &= run_with_field<Givaro::ZRing<integer> >(q,e,b,n,iterations,numVectors,k,seed);
+        pass &= run_with_field<Givaro::ZRing<Givaro::Integer> >(0,e,b?b:128,n/3+1,iterations,numVectors,k,seed);
 
         return !pass;
 }
