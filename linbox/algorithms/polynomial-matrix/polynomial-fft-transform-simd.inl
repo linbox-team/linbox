@@ -254,7 +254,7 @@ namespace LinBox {
 																  const uint32_t* alpha,
 																  const uint32_t* alphap,
 																  const _vect128_t& P, const _vect128_t& P2) {
-		_vect128_t V1,V2,V3,V4,W,Wp,T1,T2;
+		_vect128_t V1,V2,V3,V4,W,Wp,T1;
 		// V1=[A B C D], V2=[E F G H]
 		V1 = Simd128<uint32_t>::load(ABCD);
 		V2 = Simd128<uint32_t>::load(EFGH);
