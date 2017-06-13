@@ -55,9 +55,9 @@ namespace LinBox
 		typedef BlasMatrix<Field>               Block;
 
 	protected:
-		Context_     _BMD;
+		Context_                    _BMD;
 		VectorDomain<Field>         _VDF;
-		const RandIter                   _rand;
+		const RandIter             _rand;
 
 	public:
 		const Field & field() const { return _BMD.field(); }
@@ -79,19 +79,24 @@ namespace LinBox
 			m = A.rowdim();
 			n = A.coldim();
 
-			uint32_t p,q;
+			size_t p,q;
                         // CP : converting to GMP int to get the bitsize is unsane ! Should be replaced by a tablelookup
 			integer tmp;
-			tmp = uint32_t(m);
-			p = tmp.bitsize()-1;
-			//p=sqrt(tmp);
-			tmp = uint32_t(n);
-			q = tmp.bitsize()-1;
-			//q=sqrt(tmp);
+			// tmp = uint32_t(m);
+			// p = tmp.bitsize()-1;
+			// tmp = uint32_t(n);
+			// q = tmp.bitsize()-1;
+                        field().cardinality(tmp);
+                        if (tmp < 100) {
+                                q=std::min(m,32UL);;
+                        }
+                        else {
+                                q=std::min(m,8UL);
+                        };
+                        p=std::min(n,q);
+                        
 			//std::cout<<"row block: "<<p<<std::endl;
 			//std::cout<<"col block: "<<q<<std::endl;
-
-
 			Block U(field(),p,m), UA(field(),p-1,m), V(field(),n,q);
 
 			for (size_t i=0;i<n;++i)
@@ -118,10 +123,10 @@ namespace LinBox
 			std::vector<size_t> degree;
 			MBD.left_minpoly_rec(minpoly,degree);
 			//MBD.printTimer();
-
-                        //cout<<"minpoly is: \n";
-                        //write_maple(field(),minpoly);
-                        //cout<<endl;
+                        
+                        // std::cout<<"minpoly is: \n";
+                        // write_maple(field(),minpoly);
+                        // std::cout<<std::endl;
 
 			size_t idx=0;
 			if ( field().isZero(minpoly[0].getEntry(0,0))) {
@@ -129,11 +134,14 @@ namespace LinBox
 				size_t i=1;
 				while (i<p && field().isZero(minpoly[0].getEntry(i,0)))
 					++i;
-				if (i == p)
-					throw LinboxError(" block minpoly: matrix seems to be singular - abort");
+				if (i == p){
+                                        std::cerr<<"BW: matrix is singular \n";
+                                        throw LinboxError(" block minpoly: matrix seems to be singular - abort");
+                                }
 				else
 					idx=i	;
 			}
+
 
 			typename Blackbox::Field F = A.field();
 
@@ -145,22 +153,20 @@ namespace LinBox
 				 * the first element in this row is non zero.
 				 * we use y and UA as projection (UA= U.A)
 				 */
-				size_t deg = degree[(size_t)idx];
+                                size_t deg = degree[(size_t)idx];
 				std::vector<Vector> combi(p,Vector(F,deg+1));
 				for (size_t i=0;i<p;++i)
 					for (size_t k=0;k<deg+1;++k)
 						combi[(size_t)i][k]=minpoly[k].getEntry(idx,i);
-
-				Vector lhs(F,n);
+                                Vector lhs(F,n);
 				A.applyTranspose(lhs,y);
 				_VDF.mulin(lhs,combi[0][deg]);
-				Vector lhsbis(lhs);
+                                Vector lhsbis(lhs);
 				for (int i = (int)deg-1 ; i > 0;--i) {
 					_VDF.axpy (lhs, combi[0][(size_t)i], y, lhsbis);
 					A.applyTranspose (lhsbis, lhs);
 				}
-
-				Vector accu (lhs);
+                                Vector accu (lhs);
 				for (size_t k=1;k<p;++k){
 					Vector row(F,m);
 					for (size_t j=0;j<m;++j)
@@ -174,12 +180,11 @@ namespace LinBox
 					}
 					_VDF.addin(accu,lhs);
 				}
-				Element scaling;
+                                Element scaling;
 				field().init(scaling);
 				field().neg(scaling,combi[0][0]);
 				field().invin(scaling);
-				_VDF.mul(x,accu,scaling);
-
+				_VDF.mul(x,accu,scaling);                                
 			}
 			else {
 				/*

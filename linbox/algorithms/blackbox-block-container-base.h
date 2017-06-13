@@ -120,7 +120,7 @@ public:
 		// Sequence constructor from a blackbox and a field
 		// cs set the size of the sequence
 		BlackboxBlockContainerBase (const Blackbox *BD, const Field &F, size_t m, size_t n, size_t seed=(size_t)time(NULL)) :
-			_field(&F)  , _BB(BD), _size(BD->rowdim()/m + BD->coldim()/n +2)
+			_field(&F)  , _BB(BD), _size(BD->rowdim()/m + BD->coldim()/n +10)
 			, _nn(BD->rowdim()),  _m(m), _n(n)
 			,casenumber(0)
 			,_blockU(F,_m,_nn),_blockV(F,_nn,_n),_value(field(),m,n), _seed(seed)

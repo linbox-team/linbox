@@ -101,12 +101,14 @@ int main (int argc, char **argv)
 		{ 'b', "-b N", "Set the blocking size", TYPE_INT, &blocking },
 		END_OF_ARGUMENTS
 	};
-
+        commentator().setMaxDepth(-1);
+        commentator().setMaxDetailLevel(-1);
+        
 	parseArguments (argc, argv, args);
 
 	typedef Givaro::Modular<double> Field;
 	//typedef Givaro::Modular<uint32_t> Field;
-	typedef BlasVector<Field> Vector;
+	typedef BlasVector<Field> Vector;  
 
 	Field F ( (uint32_t) q); Field::RandIter gen(F);
 	MatrixDomain<Field> MD(F);
@@ -139,14 +141,14 @@ int main (int argc, char **argv)
 	commentator().stop("Ident, CoppersmithSolver");
 */
 
-	commentator().start("Diag, CoppersmithSolver", "D-Coppersmith");
-	pass = pass and testBlockSolver(RCS, D, "Diagonal, Matrix Berlekamp Massey");
-	commentator().stop("Diag, CoppersmithSolver");
+	// commentator().start("Diag, CoppersmithSolver", "D-Coppersmith");
+	// pass = pass and testBlockSolver(RCS, D, "Diagonal, Matrix Berlekamp Massey");
+	// commentator().stop("Diag, CoppersmithSolver");
 
-	commentator().start("Companion, CoppersmithSolver", "C-Coppersmith");
-	pass = pass and testBlockSolver(RCS, S, "Companion, Matrix Berlekamp Massey");
-	commentator().stop("Companion, CoppersmithSolver");
-
+	// commentator().start("Companion, CoppersmithSolver", "C-Coppersmith");
+	// pass = pass and testBlockSolver(RCS, S, "Companion, Matrix Berlekamp Massey");
+	// commentator().stop("Companion, CoppersmithSolver");
+        
 #if 1
 // LBWS is Giorgi's block method, SigmaBasis based.
 
@@ -168,15 +170,15 @@ int main (int argc, char **argv)
 
 	commentator().start("Diag, BlockWiedemannSolver", "D-Sigma Basis");
 	pass = pass and testBlockSolver(LBWS, D, "Diagonal, Sigma Basis");
-	commentator().stop("Diag, BlockWiedemannSolver");
+        commentator().stop(MSG_STATUS (pass), (const char *) 0,"Diagonal, Sigma Basis");
 
 	commentator().start("Companion, BlockWiedemannSolver", "C-Sigma Basis");
 	pass = pass and testBlockSolver(LBWS, S, "Companion, Sigma Basis");
-	commentator().stop("Companion, BlockWiedemannSolver");
+        commentator().stop(MSG_STATUS (pass), (const char *) 0,"Companion, Sigma Basis");
 #endif
-
-	commentator().stop("block wiedemann test suite");
-    //std::cout << (pass ? "passed" : "FAILED" ) << std::endl;
+        
+        commentator().stop(MSG_STATUS (pass), (const char *) 0,"block wiedemann test suite");
+        //std::cout << (pass ? "passed" : "FAILED" ) << std::endl;
 
 	return pass ? 0 : -1;
 }
