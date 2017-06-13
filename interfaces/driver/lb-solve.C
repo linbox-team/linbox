@@ -28,6 +28,7 @@
 #include "linbox/solutions/solve.h"
 
 #include <lb-solve.h>
+#include <lb-domain-function.h>
 #include <lb-blackbox-function.h>
 #include <lb-vector-function.h>
 #include <lb-blackbox.h>

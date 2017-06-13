@@ -26,7 +26,7 @@
 #define __LINBOX_lb_domain_data_H
 
 
-#include "linbox/linbox-config.h"
+//#include "linbox/linbox-config.h"
 #include "linbox/integer.h"
 #include "linbox/field/field-traits.h"
 
@@ -70,7 +70,7 @@ public:
 			std::string mes("LinBox ERROR: you are trying to construct a non defined domain << ");
 			mes+= std::string(name);
 			mes+= std::string(" >>\n");
-			mes+= std::string(LinBox::integer(_callback.size()));
+			mes+= std::string(LinBox::integer((uint64_t)_callback.size()));
 			throw lb_runtime_error(mes.c_str());// throw an exception
 		}
 	}

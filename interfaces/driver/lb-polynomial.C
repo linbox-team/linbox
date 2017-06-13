@@ -34,9 +34,7 @@
 /***********************************************
  * Polynomial are handled through dense vector *
  ***********************************************/
-
-// nothing to do at this stage
-
+extern VectorTable vector_hashtable;
 
 /*************************************************************
  * API to write a polynomial over the standard output stream *

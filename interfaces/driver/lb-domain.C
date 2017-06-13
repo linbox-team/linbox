@@ -26,7 +26,9 @@
 #define __LINBOX_lb_domain_C
 
 #include <lb-domain.h>
+#include <lb-domain-data.h>
 #include <lb-domain-function.h>
+#include <lb-domain-type.h>
 
 
 /****************************
@@ -125,9 +127,8 @@ void writeDomainInfo(const DomainKey &key, std::ostream& os){
 	os<<"[LinBox Domain (type = "<<key.Type()<<", charact = "<<key.Characteristic()<<")]\n";
 }
 
-
-
 #endif // end of file
+#include "lb-domain-function.inl"
 
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:

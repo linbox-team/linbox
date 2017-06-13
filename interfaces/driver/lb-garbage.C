@@ -28,11 +28,15 @@
 #include <lb-garbage.h>
 #include <lb-domain-function.h>
 #include <lb-element-data.h>
-#include <lb-blackbox-function.h>
+#include <lb-blackbox-function.h> 
 #include <lb-vector-function.h>
 
 #define __LINBOX_NO_GC_EXCEPTION
 
+extern DomainTable domain_hashtable;
+extern EltTable element_hashtable;
+extern BlackboxTable blackbox_hashtable;
+extern VectorTable vector_hashtable;
 
 /***************************************
  * API to delete a domain from ist key *

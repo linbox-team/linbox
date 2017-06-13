@@ -28,6 +28,8 @@
 
 #include <lb-element.h>
 #include <lb-element-data.h>
+#include <linbox/field/field-traits.h>
+
 
 /********************************
  * Allocate all global variable *

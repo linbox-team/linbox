@@ -28,7 +28,9 @@
 #include "linbox/linbox-config.h"
 
 #include <lb-blackbox.h>
+#include <lb-blackbox-data.h>
 #include <lb-blackbox-function.h>
+#include <lb-blackbox-type.h>
 
 #include <lb-domain-collection.h>
 
@@ -226,9 +228,8 @@ void writeBlackboxInfo(const BlackboxKey &k, std::ostream& os){
 
 	os<<it->second->info();
 }
-
-
 #endif
+#include "lb-blackbox-function.inl"
 
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:

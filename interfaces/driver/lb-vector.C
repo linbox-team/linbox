@@ -28,7 +28,9 @@
 #include "linbox/linbox-config.h"
 
 #include <lb-vector.h>
+#include <lb-vector-data.h>
 #include <lb-vector-function.h>
+#include <lb-vector-type.h>
 
 #include <lb-domain-collection.h>
 
@@ -368,6 +370,7 @@ void  SerializeVector (SerialVector &s, const VectorKey &key) {
 
 
 #endif
+#include "lb-vector-function.inl"
 
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:

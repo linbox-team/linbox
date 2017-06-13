@@ -26,8 +26,8 @@
 #define __LINBOX_lb_vector_function_H
 
 
-#include <lb-vector-abstract.h>
-#include <lb-vector-functor.h>
+#include <lb-vector-collection.h>
+//#include <lb-vector-functor.h>
 
 
 /*********************************************************
@@ -38,34 +38,19 @@ class VectorFunction {
 public:
 	// call a functor over a vector from the hashtable, result is given through 1st parameter
 	template<class Functor, class Result>
-	static void call(Result &res, const std::pair<const VectorKey, VectorAbstract*> &vector, const Functor &functor){
-		ApplyVectorFunctor<Functor, Result> Ap(res, functor);
-		(vector.second)->Accept(Ap);
-	}
+	static void call(Result &res, const std::pair<const VectorKey, VectorAbstract*> &vector, const Functor &functor);
 
 	// call a functor over a vector from the hashtable, no result
 	template<class Functor>
-	static void call(const std::pair<const VectorKey, VectorAbstract*> &v, const Functor &f){
-		void *dumbresult;
-		call(dumbresult,v,f);
-	}
+	static void call(const std::pair<const VectorKey, VectorAbstract*> &v, const Functor &f);
 
 	// call a functor over a vector from its key, result is given through 1st parameter
 	template<class Functor, class Result>
-	static void call(Result &res, const VectorKey &key, const Functor &functor){
-		VectorTable::const_iterator it = vector_hashtable.find(key);
-		if (it != vector_hashtable.end())
-			VectorFunction::call(res, *it, functor);
-		else
-			throw lb_runtime_error("LinBox ERROR: use of a non allocated vector\n");// throw an exception
-	}
+	static void call(Result &res, const VectorKey &key, const Functor &functor);
 
 	// call a functor over a vector from its key, no result
 	template<class Functor>
-	static void call(const VectorKey &k, const Functor &f) {
-		void *dumbresult;
-		call(dumbresult,k,f);
-	}
+	static void call(const VectorKey &k, const Functor &f);
 };
 
 #endif

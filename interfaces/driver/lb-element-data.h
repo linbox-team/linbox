@@ -23,10 +23,10 @@
  */
 
 
-#ifndef __LINBOX_lb_element_data_H
+#ifndef __LINBOX_lb_element_data_H 
 #define __LINBOX_lb_element_data_H
 
-#include <lb-domain-data.h>
+//#include <lb-domain-data.h>
 
 #include <lb-element-collection.h>
 #include <lb-element-abstract.h>
@@ -70,14 +70,7 @@ public:
 	}
 };
 
-EltAbstract* constructElt(const DomainKey &key){
-	EltAbstract *e;
-	CreateEltFunctor Fct(key);
-	DomainFunction::call(e, key, Fct);
-	return e;
-}
-
-
+EltAbstract* constructElt(const DomainKey &key);
 
 
 #endif

@@ -28,8 +28,8 @@
 
 #include <fstream>
 #include <iostream>
-#include <lb-driver.h>
-#include <lb-maple-utilities.h>
+#include "lb-driver.h"
+#include "lb-maple-utilities.h"
 #include "linbox/util/timer.h"
 
 extern "C"{
