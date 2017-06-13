@@ -41,12 +41,14 @@
 #include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/blackbox/sum.h"
 #include "linbox/ring/modular.h"
+#include "linbox/ring/polynomial-ring.h"
 #include "linbox/field/field-traits.h"
 #include "linbox/solutions/det.h"
 #include "linbox/solutions/rank.h"
 #include "linbox/solutions/minpoly.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/matrix-hom.h"
+#include "linbox/polynomial/dense-polynomial.h"
 #include "linbox/blackbox/polynomial.h"
 
 #include <vector>
@@ -156,9 +158,9 @@ namespace LinBox
 			typename BlackBox::Field intRing = A.field();
 			typedef Givaro::Modular<uint32_t> Field;
 			typedef typename BlackBox::template rebind<Field>::other FieldBlackBox;
-			typedef Givaro::Poly1FactorDom<typename BlackBox::Field, Givaro::Dense> IntPolyDom;
+			typedef PolynomialRing<typename BlackBox::Field, Givaro::Dense> IntPolyDom;
 			typedef typename IntPolyDom::Element IntPoly;
-			typedef Givaro::Poly1FactorDom<Field,Givaro::Dense>::Element FieldPoly;
+			typedef typename PolynomialRing<Field,Givaro::Dense>::Element FieldPoly;
 			// Set of factors-multiplicities sorted by degree
 			typedef FactorMult<FieldPoly,IntPoly> FM;
 			typedef std::multimap<unsigned long,FM*> FactPoly;
@@ -258,7 +260,7 @@ namespace LinBox
 		{
 			commentator().start ("Givaro::Modular BlackBox Charpoly ", "MbbCharpoly");
 			typedef typename BlackBox::Field Field;
-			typedef Givaro::Poly1FactorDom<Field, Givaro::Dense> PolyDom;
+			typedef PolynomialRing<Field, Givaro::Dense> PolyDom;
 			typedef typename PolyDom::Element FieldPoly;
 			// Set of factors-multiplicities sorted by degree
 			typedef std::multimap<unsigned long,FactorMult<FieldPoly>* > FactPoly;
@@ -272,7 +274,7 @@ namespace LinBox
 			const size_t n = A.coldim();
 
 			/* Computation of the minimal polynomial */
-			Polynomial minPoly;
+			Polynomial minPoly(F);
 			minpoly (minPoly, A, M);
 			//std::cerr<<"Minpoly = "<<minPoly;
 			if (minPoly.size() == n+1){
@@ -287,7 +289,7 @@ namespace LinBox
 				std::vector<FieldPoly> factors;
 				std::vector<uint64_t> exp;
 
-				PD.factor (factors, exp, FieldPoly(minPoly.getRep().begin(),minPoly.getRep().end()));
+				PD.factor (factors, exp, minPoly);
 				size_t factnum = factors.size();
 
 				/* Building the structure of factors */
@@ -328,7 +330,7 @@ namespace LinBox
 				findMultiplicities ( A, factCharPoly, leadingBlocks, goal, M);
 
 				// Building the product
-				FieldPoly tmpP;
+				FieldPoly tmpP(F);
 				F.assign(charPoly[0], F.one);
 				for (FactPolyIterator it_f = factCharPoly.begin(); it_f != factCharPoly.end(); ++it_f){
 					PD.pow (tmpP, *it_f->second->fieldP,(long) it_f->second->multiplicity);
@@ -341,7 +343,7 @@ namespace LinBox
 
 			commentator().stop ("done", NULL, "MbbCharpoly");
 
-			return P = Polynomial(A.field(), typename Polynomial::Rep(charPoly.begin(),charPoly.end()));
+			return P = charPoly;
 		}
 
 
@@ -372,7 +374,7 @@ namespace LinBox
 		{
 			typedef std::multimap<unsigned long, FactorMult<FieldPoly,IntPoly>* > FactPoly;
 			typedef typename BlackBox::Field Field;
-			typedef Givaro::Poly1FactorDom<Field, Givaro::Dense> PolyDom;
+			typedef PolynomialRing<Field, Givaro::Dense> PolyDom;
 			typename FactPoly::iterator itf = factCharPoly.begin();
 			typename std::multimap<FactorMult<FieldPoly,IntPoly>*,bool>::iterator lead_it;
 			Field F = A.field();

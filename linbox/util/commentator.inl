@@ -46,6 +46,7 @@
 #include "linbox/util/commentator.h"
 #include "linbox/util/debug.h"
 
+#include "givaro/givpower.h"
 
 namespace LinBox
 {
@@ -54,16 +55,14 @@ namespace LinBox
 	// -----------------------------------------------------
 	double nroot (double a, long r, double precision)
 	{
-		long rm = r - 1 ;
-		double c1 = double (rm) / double (r), c2 = a / double (r);
+		const long rm = r - 1 ;
+		const double c1 = double (rm) / double (r), c2 = a / double (r);
 		double g = 1, pgr = 1, err = a - 1;
 
 		while (err > precision) {
 			g = g * c1 + c2 / pgr;
 			pgr = pow (g, (double) rm);
-			err = a - pgr * g;
-			if (err < 0)
-				err = -err;
+			err = a - pgr * g; if (err < 0) err = -err;
 		}
 
 		return g;
@@ -78,7 +77,7 @@ namespace LinBox
 			l = (long) floor (g);
 			if (g-double (l) > 0.1)
 				++l;
-			if (pow ((double) l, (double) r) == a)
+			if (Givaro::power (l, r) == a)
 				return r;
 			++r;
 		}

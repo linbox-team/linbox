@@ -30,6 +30,7 @@
 #include "linbox/field/field-traits.h"
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/matrix/matrix-domain.h"
+//#include "linbox/ring/givaro-polynomial-ring.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/bbcharpoly.h"
 // Namespace in which all LinBox library code resides
@@ -39,11 +40,11 @@ namespace LinBox
 
 	// for specialization with respect to the DomainCategory
 	template< class Blackbox, class Polynomial, class MyMethod, class DomainCategory>
-	Polynomial &charpoly ( Polynomial            &P,
-			       const Blackbox        &A,
-			       const DomainCategory  &tag,
-			       const MyMethod        &M);
-
+	Polynomial& charpoly ( Polynomial            &P,
+                               const Blackbox        &A,
+                               const DomainCategory  &tag,
+                               const MyMethod        &M);
+        
 
 	/*	//error handler for rational domain
 		template <class Blackbox, class Polynomial>
@@ -69,28 +70,28 @@ namespace LinBox
 	  \return a reference to P.
 	  */
 	template <class Blackbox, class Polynomial, class MyMethod>
-	Polynomial &charpoly (Polynomial         & P,
-			      const Blackbox     & A,
-			      const MyMethod     & M){
-		return charpoly( P, A, typename FieldTraits<typename Blackbox::Field>::categoryTag(), M);
+	Polynomial& charpoly (Polynomial         & P,
+                              const Blackbox     & A,
+                              const MyMethod     & M){
+		return charpoly ( P, A, typename FieldTraits<typename Blackbox::Field>::categoryTag(), M);
 	}
 
 
 	/// \brief ...using default method
 	template<class Blackbox, class Polynomial>
-	Polynomial &charpoly (Polynomial        & P,
-			      const Blackbox    & A)
+	Polynomial& charpoly (Polynomial        & P,
+                              const Blackbox    & A)
 	{
 		return charpoly (P, A, Method::Hybrid());
 	}
 
 	// The charpoly with Hybrid Method
 	//! @bug not Hybrid at all
-	template<class Polynomial, class Blackbox>
-	Polynomial &charpoly (Polynomial            &P,
-			      const Blackbox                   & A,
-			      const RingCategories::ModularTag & tag,
-			      const Method::Hybrid             & M)
+	template <class Blackbox, class Polynomial>
+	Polynomial& charpoly (Polynomial                       & P,
+                              const Blackbox                   & A,
+                              const RingCategories::ModularTag & tag,
+                              const Method::Hybrid             & M)
 	{
 		// not yet a hybrid
 		//return charpoly(P, A, tag, Method::Blackbox(M));
@@ -99,8 +100,8 @@ namespace LinBox
 
 	// The charpoly with Hybrid Method
 	//! @bug not Hybrid at all
-	template<class Polynomial, class Domain>
-	Polynomial &charpoly (Polynomial            &P,
+	template <class Domain, class Polynomial>
+	Polynomial& charpoly (Polynomial                       & P,
 			      const SparseMatrix<Domain>       & A,
 			      const RingCategories::ModularTag & tag,
 			      const Method::Hybrid             & M)
@@ -113,8 +114,8 @@ namespace LinBox
 
 	// The charpoly with Hybrid Method
 	//! @bug not Hybrid at all
-	template<class Polynomial, class Domain>
-	Polynomial &charpoly (Polynomial            &P,
+	template<class Domain, class Polynomial>
+	Polynomial& charpoly (Polynomial                       & P,
 			      const BlasMatrix<Domain>         & A,
 			      const RingCategories::ModularTag & tag,
 			      const Method::Hybrid             & M)
@@ -124,11 +125,11 @@ namespace LinBox
 	}
 
 	// The charpoly with Elimination Method
-	template<class Polynomial, class Blackbox>
-	Polynomial & charpoly (Polynomial                       & P,
-			       const Blackbox                   & A,
-			       const RingCategories::ModularTag & tag,
-			       const Method::Elimination        & M)
+	template<class Blackbox, class Polynomial>
+        Polynomial& charpoly (Polynomial                       & P,
+                              const Blackbox                   & A,
+                              const RingCategories::ModularTag & tag,
+                              const Method::Elimination        & M)
 	{
 		return charpoly(P, A, tag, Method::BlasElimination(M));
 	}
@@ -144,38 +145,20 @@ namespace LinBox
 	 * @param tag
 	 * @param M
 	 */
-	template < class Polynomial, class Blackbox >
-	BlasVector<typename Blackbox::Field,Polynomial >&
-	charpoly (BlasVector<typename Blackbox::Field,Polynomial > & P,
-		  const Blackbox                                   & A,
-		  const RingCategories::ModularTag                 & tag,
-		  const Method::BlasElimination                    & M)
+	template <class Blackbox, class Polynomial >
+    Polynomial& charpoly (Polynomial                       & P,
+                          const Blackbox                   & A,
+                          const RingCategories::ModularTag & tag,
+                          const Method::BlasElimination    & M)
 	{
 		if (A.coldim() != A.rowdim())
 			throw LinboxError("LinBox ERROR: matrix must be square for characteristic polynomial computation\n");
 
 		BlasMatrix< typename Blackbox::Field >     BBB (A);
 		BlasMatrixDomain< typename Blackbox::Field > BMD (BBB.field());
-		BMD.charpoly (P, static_cast<BlasMatrix<typename Blackbox::Field> >(BBB));
-		return P  ;
-	}
-	template < class Polynomial, class Blackbox >
-	Polynomial& charpoly (Polynomial                       & P,
-			      const Blackbox                   & A,
-			      const RingCategories::ModularTag & tag,
-			      const Method::BlasElimination    & M)
-	{
-
-		if (A.coldim() != A.rowdim())
-			throw LinboxError("LinBox ERROR: matrix must be square for characteristic polynomial computation\n");
-
-		BlasMatrix< typename Blackbox::Field >     BBB (A);
-		BlasMatrixDomain< typename Blackbox::Field > BMD (BBB.field());
-		BlasVector<typename Blackbox::Field,Polynomial> P2(A.field(),P);
-		BMD.charpoly (P2, static_cast<BlasMatrix<typename Blackbox::Field> >(BBB));
-		return P = P2.getRep() ;
-
-
+                    //BlasVector<typename Blackbox::Field,Polynomial> P2(A.field(),P);
+		BMD.charpoly (P, BBB);
+		return P;//= P2.getRep() ;
 	}
 
 
@@ -198,21 +181,21 @@ namespace LinBox
 			A(b), M(n)
 		{}
 
-		template<typename Polynomial, typename Field>
+		template<typename Field, class Polynomial>
 		Polynomial& operator()(Polynomial& P, const Field& F) const
 		{
 			typedef typename Blackbox::template rebind<Field>::other FBlackbox;
 			FBlackbox Ap(A, F);
 
-                        return charpoly( P, Ap, typename FieldTraits<Field>::categoryTag(), M);
-                        // std::cerr << "Charpoly(A) mod "<<F.characteristic()<<" = "<<P;
-			// 			integer p;
-			// 			F.characteristic(p);
-			//			std::cerr<<"Charpoly(A) mod "<<p<<" = "<<P;
+                        return charpoly (P, Ap, typename FieldTraits<Field>::categoryTag(), M);
+                        std::cerr << "Charpoly(A) mod "<<F.characteristic()<<" = "<<P;
+			 			integer p;
+			 			F.characteristic(p);
+						std::cerr<<"Charpoly(A) mod "<<p<<" = "<<P;
 		}
 	};
 
-	template < class Blackbox,  class Polynomial >
+	template <class Blackbox, class Polynomial>
 	Polynomial& charpoly (Polynomial                       & P,
 			      const Blackbox                   & A,
 			      const RingCategories::IntegerTag & tag,
@@ -240,7 +223,7 @@ namespace LinBox
 
 	// The charpoly with Hybrid Method
 	template<class Blackbox, class Polynomial>
-	Polynomial &charpoly (Polynomial                        &P,
+	Polynomial& charpoly (Polynomial                        &P,
 			      const Blackbox                    &A,
 			      const RingCategories::IntegerTag  &tag,
 			      const Method::Hybrid              &M)
@@ -252,8 +235,8 @@ namespace LinBox
 	}
 #endif
 
-	template < class IntRing, class Polynomial >
-	Polynomial& charpoly (Polynomial                       & P,
+	template < class IntRing, class Polynomial>
+                   Polynomial& charpoly (Polynomial                       & P,
 			      const BlasMatrix<IntRing>         & A,
 			      const RingCategories::IntegerTag & tag,
 			      const Method::Hybrid             & M)
@@ -289,7 +272,7 @@ namespace LinBox
 	 */
 
 
-	template < class Polynomial, class Blackbox >
+	template <class Blackbox, class Polynomial>
 	Polynomial& charpoly (Polynomial                       & P,
 			      const Blackbox                   & A,
 			      const RingCategories::IntegerTag & tag,
@@ -298,6 +281,7 @@ namespace LinBox
 		if (A.coldim() != A.rowdim())
 			throw LinboxError("LinBox ERROR: matrix must be square for characteristic polynomial computation\n");
 		typename Givaro::Poly1Dom<typename Blackbox::Field, Givaro::Dense>::Element Pg;
+                std::cerr<<"CIA"<<std::endl;
 		return P = cia (Pg, A, M);
 	}
 
@@ -309,7 +293,7 @@ namespace LinBox
 	 * @param P Polynomial where to store the result
 	 * @param A \ref Black-Box representing the matrix
 	 */
-	template < class Polynomial, class Blackbox/*, class Categorytag*/ >
+	template <class Blackbox, class Polynomial/*, class Categorytag*/ >
 	Polynomial& charpoly (Polynomial                       & P,
 			      const Blackbox                   & A,
 			      const RingCategories::IntegerTag & tag,
@@ -361,7 +345,7 @@ namespace LinBox
 			charpoly( P, *Ap, typename FieldTraits<Field>::categoryTag(), M);
 			integer p;
 			F.characteristic(p);
-			//std::cerr<<"Charpoly(A) mod "<<p<<" = "<<P;
+                            //std::cerr<<"Charpoly(A) mod "<<p<<" = "<<P;
 
 			delete Ap;
 			return P;
@@ -369,7 +353,7 @@ namespace LinBox
 	};
 #endif
 
-	template < class Polynomial,class Blackbox >
+	template <class Blackbox, class Polynomial>
 	Polynomial& charpoly (Polynomial                       & P,
 			      const Blackbox                   & A,
 			      const RingCategories::IntegerTag & tag,
@@ -409,7 +393,7 @@ namespace LinBox
 	}
 
 
-	template < class Polynomial,class Blackbox >
+	template <class Blackbox, class Polynomial>
 	Polynomial& charpoly (Polynomial                       & P,
 			      const Blackbox                   & A,
 			      const RingCategories::IntegerTag & tag,
@@ -420,13 +404,13 @@ namespace LinBox
 
 		commentator().start ("Integer Dense Charpoly : No NTL installation -> chinese remaindering", "IbbCharpoly");
 
-		RandomPrimeIterator genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205));
+//		RandomPrimeIterator genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205));
+		RandomPrimeIterator genprime( 23);
 #if 0
 		typename Blackbox::ConstIterator it = A.Begin();
 		typename Blackbox::ConstIterator it_end = A.End();
 		integer max = 1,min=0;
 		while( it != it_end ){
-			//      cerr<<"it="<<(*it)<<endl;
 			if (max < (*it))
 				max = *it;
 			if ( min > (*it))
@@ -442,8 +426,8 @@ namespace LinBox
 		ChineseRemainder< FullMultipCRA<Givaro::Modular<double> > > cra(hadamarcp);
 #endif
 		ChineseRemainder< EarlyMultipCRA<Givaro::Modular<double> > > cra(3UL);
-		IntegerModularCharpoly<Blackbox,Method::BlasElimination> iteration(A, M);
-		cra(P, iteration, genprime);
+        IntegerModularCharpoly<Blackbox,Method::BlasElimination> iteration(A, M);
+		cra (P, iteration, genprime);
 		commentator().stop ("done", NULL, "IbbCharpoly");
 		return P;
 	}
@@ -464,7 +448,7 @@ namespace LinBox
 	 * @param tag
 	 * @param M
 	 */
-	template < class Polynomial, class Blackbox/*, class Categorytag*/ >
+	template <class Blackbox, class Polynomial/*, class Categorytag*/ >
 	Polynomial& charpoly (Polynomial                       & P,
 			      const Blackbox                   & A,
 			      const RingCategories::ModularTag & tag,
@@ -473,8 +457,6 @@ namespace LinBox
 		if (A.coldim() != A.rowdim())
 			throw LinboxError("LinBox ERROR: matrix must be square for characteristic polynomial computation\n");
 
-// 		typename Givaro::Poly1Dom<typename Blackbox::Field>::Element Pg;
-// 		return P = BBcharpoly::blackboxcharpoly (Pg, A, tag, M);
 		return BBcharpoly::blackboxcharpoly (P, A, tag, M);
 	}
 
@@ -508,8 +490,8 @@ namespace LinBox
 
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
