@@ -40,9 +40,9 @@
 #include "linbox/ring/modular.h"
 #include "givaro/givtimer.h"
 #include <sstream>
+#include <iostream>
 
 #ifdef FFT_PROFILER
-#include <iostream>
 #ifndef FFT_PROF_LEVEL
 int  FFT_PROF_LEVEL=1;
 #endif
@@ -104,7 +104,7 @@ namespace LinBox
     
     BMD.mul(C2,A1,B1);
     bool correct=BMD.areEqual(C1,C2);
-	ostream& report = LinBox::commentator().report();
+    std::ostream& report = LinBox::commentator().report();
     report<<"Checking polynomial matrix mul "
 	     <<a.rowdim()<<"x"<<a.coldim()<<"["<<a.size()<<"]"
 	     <<b.rowdim()<<"x"<<b.coldim()<<"["<<b.size()<<"]"
@@ -148,7 +148,7 @@ namespace LinBox
     
     BMD.mul(C2,A1,B1);
     bool correct=BMD.areEqual(C1,C2);
-	ostream& report = LinBox::commentator().report();
+    std::ostream& report = LinBox::commentator().report();
     report<<"Checking polynomial matrix mul "
 	     <<a.rowdim()<<"x"<<a.coldim()<<"["<<a.size()<<"]"
 	     <<b.rowdim()<<"x"<<b.coldim()<<"["<<b.size()<<"]"
@@ -173,7 +173,7 @@ namespace LinBox
     typename MatrixP_F::Matrix B1(c.field(),b.rowdim(),b.coldim());
     BlasMatrixDomain< typename MatrixP_F::Field>  BMD(c.field());
 
-	ostream& report = LinBox::commentator().report();
+    std::ostream& report = LinBox::commentator().report();
     if (deg==0) deg=c.size();
     if (n0 == 0) n0=deg;
     if (n1 == 0) n1=2*deg-1;
