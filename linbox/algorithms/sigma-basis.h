@@ -74,7 +74,7 @@ namespace LinBox
 		BlasMatrixDomain<Field>         _BMD;
 		MatrixDomain<Field>              _MD;
 		std::vector<Coefficient>     &_Serie;
-		PolynomialMatrixDomain1<Field > PM_domain;
+		PolynomialMatrixDomain<Field > PM_domain;
 
 #ifdef _BM_TIMING
 		mutable Timer ttMBasis              , tMBasis,

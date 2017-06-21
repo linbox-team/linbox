@@ -131,7 +131,7 @@ int rat_sol(IVector& numx, Int& denx, FVector& xs_int, FVector& xs_frac, IVector
 		if (q < threshold) {
 			HIT++;
 			// update numx and denx
-			denx <<= shift;
+			denx <<= (uint64_t)shift; // PG : shift is not defined !!!!
 			update_num (numx, xs_int);
 
 			if(_VDF.isZero(r))
