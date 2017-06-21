@@ -60,7 +60,7 @@ namespace LinBox
 	class ClassicMulDomain;
 
 	template <class Field>
-	class PolynomialMatrixDomain1 {
+	class PolynomialMatrixDomain {
 	protected:
 		KaratsubaMulDomain<Field>     _kara;
 		FFTMulDomain<Field>            _fft;
@@ -69,7 +69,7 @@ namespace LinBox
 	public:
 		Timer multime;
 
-		PolynomialMatrixDomain1 ( const Field &F) :
+		PolynomialMatrixDomain ( const Field &F) :
 			_kara(F), _fft(F), _classic(F)
 		{multime.clear();}
 
