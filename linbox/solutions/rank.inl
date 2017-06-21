@@ -142,9 +142,9 @@ namespace LinBox
 
 
 			typedef Compose<Compose<Diagonal<Field>,Blackbox >, Diagonal<Field> > BlackBox1;
-			Diagonal<Field> D0 (d1);
-			Compose<Diagonal<Field>,Blackbox > B0 (&D0, &A);
-			BlackBox1 B (&B0, &D0);
+			Diagonal<Field> D_0 (d1);
+			Compose<Diagonal<Field>,Blackbox > B_0 (&D_0, &A);
+			BlackBox1 B (&B_0, &D_0);
 
 			BlackboxContainerSymmetric<Field, BlackBox1> TF (&B, F, iter);
 			MasseyDomain<Field, BlackboxContainerSymmetric<Field, BlackBox1> > WD (&TF, M.earlyTermThreshold ());

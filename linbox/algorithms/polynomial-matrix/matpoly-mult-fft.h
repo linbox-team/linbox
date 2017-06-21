@@ -32,6 +32,7 @@
 #include "linbox/util/error.h"
 #include "linbox/util/debug.h"
 #include "linbox/util/timer.h"
+#include "linbox/util/commentator.h"
 #include <linbox/randiter/random-fftprime.h>
 #include <linbox/randiter/random-prime.h>
 #include "linbox/integer.h"
@@ -39,9 +40,9 @@
 #include "linbox/ring/modular.h"
 #include "givaro/givtimer.h"
 #include <sstream>
+#include <iostream>
 
 #ifdef FFT_PROFILER
-#include <iostream>
 #ifndef FFT_PROF_LEVEL
 int  FFT_PROF_LEVEL=1;
 #endif
@@ -103,14 +104,15 @@ namespace LinBox
     
     BMD.mul(C2,A1,B1);
     bool correct=BMD.areEqual(C1,C2);
-    std::cerr<<"Checking polynomial matrix mul "
+    std::ostream& report = LinBox::commentator().report();
+    report<<"Checking polynomial matrix mul "
 	     <<a.rowdim()<<"x"<<a.coldim()<<"["<<a.size()<<"]"
 	     <<b.rowdim()<<"x"<<b.coldim()<<"["<<b.size()<<"]"
 	     <<" ... "<<(correct?"done":"error")<<std::endl;
     if (!correct){
-      std::cerr<<"error with field : ";
-      c.field().write(std::cerr);
-      std::cerr<<std::endl;
+      report<<"error with field : ";
+      c.field().write(report);
+      report<<std::endl;
       /* std::cerr<<"A:="<<a<<";"<<std::endl; */
       /* std::cerr<<"B:="<<b<<";"<<std::endl; */
       /* std::cerr<<"C:="<<c<<";"<<std::endl; */
@@ -146,14 +148,15 @@ namespace LinBox
     
     BMD.mul(C2,A1,B1);
     bool correct=BMD.areEqual(C1,C2);
-    std::cerr<<"Checking polynomial matrix mul "
+    std::ostream& report = LinBox::commentator().report();
+    report<<"Checking polynomial matrix mul "
 	     <<a.rowdim()<<"x"<<a.coldim()<<"["<<a.size()<<"]"
 	     <<b.rowdim()<<"x"<<b.coldim()<<"["<<b.size()<<"]"
 	     <<" ... "<<(correct?"done":"error")<<std::endl;
     if (!correct){
-      std::cerr<<"error with field : ";
-      c.field().write(std::cerr);
-      std::cerr<<std::endl;
+      report<<"error with field : ";
+      c.field().write(report);
+      report<<std::endl;
       /* std::cerr<<"A:="<<a<<";"<<std::endl; */
       /* std::cerr<<"B:="<<b<<";"<<std::endl; */
       /* std::cerr<<"C:="<<c<<";"<<std::endl; */
@@ -170,6 +173,7 @@ namespace LinBox
     typename MatrixP_F::Matrix B1(c.field(),b.rowdim(),b.coldim());
     BlasMatrixDomain< typename MatrixP_F::Field>  BMD(c.field());
 
+    std::ostream& report = LinBox::commentator().report();
     if (deg==0) deg=c.size();
     if (n0 == 0) n0=deg;
     if (n1 == 0) n1=2*deg-1;
@@ -242,13 +246,13 @@ namespace LinBox
     }
 
     else {
-      std::cerr<<"Checking polynomial matrix midp  with smallLeft=false is not yet implemented...aborting";
+      report<<"Checking polynomial matrix midp  with smallLeft=false is not yet implemented...aborting";
       std::terminate();
       
     }
     
     bool correct=BMD.areEqual(C1,C2);
-    std::cerr<<"Checking polynomial matrix "<<(n0==0&&n1==0?"midp ":"midp_gen ")
+    report<<"Checking polynomial matrix "<<(n0==0&&n1==0?"midp ":"midp_gen ")
 	     <<a.rowdim()<<"x"<<a.coldim()<<"["<<a.size()<<"]"
 	     <<b.rowdim()<<"x"<<b.coldim()<<"["<<b.size()<<"]"
 	     <<" ... "<<(correct?"done":"error")<<std::endl;
@@ -264,7 +268,7 @@ namespace LinBox
 	myerror<<"C2:=";C2.write(myerror,Tag::FileFormat::Maple)<<std::endl;
 
       }
-      std::cerr<<myerror.str()<<std::endl;
+      report<<myerror.str()<<std::endl;
       //std::terminate();
     }
     return correct;

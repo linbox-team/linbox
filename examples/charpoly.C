@@ -38,7 +38,7 @@
 using namespace std;
 
 #include <linbox/solutions/charpoly.h>
-#include <givaro/givpoly1.h>
+#include <linbox/ring/polynomial-ring.h>
 using namespace LinBox;
 
 template <class Field, class Polynomial>
@@ -115,11 +115,10 @@ int main (int argc, char **argv)
 		IntDom ZZ;
 		DenseMatrix<IntDom > A (ZZ);
 		A.read (input);
-		typedef Givaro::Poly1FactorDom<IntDom> IntPolRing;
-		DenseVector<IntDom> c_A(ZZ);
+                DensePolynomial<IntDom> c_A(ZZ);
 
 		Timer tim; tim.clear();tim.start();
-		charpoly (c_A, A, Method::Blackbox());
+		charpoly (c_A, A);
 		tim.stop();
 
 		cout << "Characteristic Polynomial is ";
@@ -131,11 +130,11 @@ int main (int argc, char **argv)
 		cin >> tmp;
 		if (tmp == 'y' || tmp == 'Y') {
 			commentator().start("Integer Polynomial factorization by NTL", "NTLfac");
-			vector<IntPolRing::Element> intFactors;
+			vector<DensePolynomial<IntDom> > intFactors;
 			vector<uint64_t> exp;
-			IntPolRing IPD(ZZ);
+			PolynomialRing<IntDom> IPD(ZZ);
 			tim.start();
-			IPD.factor (intFactors, exp, IntPolRing::Element(c_A.getRep().begin(),c_A.getRep().end()));
+			IPD.factor (intFactors, exp, c_A);
 			tim.stop();
 			commentator().stop("done", NULL, "NTLfac");
 			printFactorization(cout << intFactors.size() << " integer polynomial factors:" << endl, ZZ, intFactors, exp) << endl;
@@ -152,8 +151,7 @@ int main (int argc, char **argv)
 		DenseMatrix<Field> B (F);
 		B.read (input);
 		cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
-// 		Givaro::Poly1Dom<Field, Givaro::Dense>::Element c_B;
-        DenseVector<Field> c_B(F);
+                DensePolynomial<Field> c_B(F);
 		Timer tim; tim.clear();tim.start();
 		charpoly (c_B, B);
 		tim.stop();

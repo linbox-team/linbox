@@ -30,9 +30,10 @@
 
 //#define __CHECK_SIGMA_BASIS
 
-#include "linbox/algorithms/sigma-basis.h"
+
+#include "linbox/matrix/polynomial-matrix.h"
+#include "linbox/algorithms/polynomial-matrix/order-basis.h"
 #include "linbox/blackbox/block-hankel.h"
-//#include "linbox/blackbox/block-toeplitz.h"
 #include "linbox/blackbox/compose.h"
 #include "linbox/vector/vector-domain.h"
 
@@ -50,6 +51,8 @@ namespace LinBox
 		typedef _Field                    Field;
 		typedef typename Field::Element Element;
 		typedef BlasMatrix<Field> Coefficient;
+                typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain, Field> PMatrix;
+                
 	private:
 		const Field           *_field;
 		VectorDomain<Field>    _VD;
@@ -84,44 +87,31 @@ namespace LinBox
 			// compute right and left matrix Pade Approximant of P of order deg+2 and deg
 
 
-#ifndef PADEMATRIX
-			// construct the matrix polynomial serie  [ P(x)^T  I ]^T and [ P^T(x) I ]
-			Coefficient Zero1(F,2*block,block);
-			Coefficient ZeroT(F,block,2*block);
-
-			std::vector<Coefficient> RightPowerSerie(deg+2,Zero1), LeftPowerSerie(deg+2,ZeroT);
-			std::vector<Coefficient> LPS(deg+2,Zero1), RPS(deg+2,ZeroT);
-
-			//free memory
-			Zero1.resize(0,0);
-			ZeroT.resize(0,0);
-
+			// construct the matrix power series
+                        // LeftPowerSerie = [ P(x)^T  I ]^T
+                        // RighPowerSerie = [ P(x)   I ]^T --> this should be transposed but we use left order basis instaed of right one
+			
+                        PMatrix LeftPowerSerie (field(),2*block,block,deg+2);
+                        PMatrix RightPowerSerie(field(),block,2*block,deg+2);                        
 			for (size_t i=0;i< deg+2; ++i){
-				// LeftPowerSerie[i]  = Coefficient(2*block, block); LPS[i]= Coefficient(2*block, block);
-				// RightPowerSerie[i] = Coefficient(block, 2*block); RPS[i]= Coefficient(block, 2*block);
 				if (i <deg) {
 					for (size_t j=0;j<block;++j)
 						for (size_t k=0;k<block;++k){
-							LeftPowerSerie[i]. setEntry(j,k, P[i].getEntry(j,k));
-							LPS[i].            setEntry(j,k, P[i].getEntry(j,k));
-							RightPowerSerie[i].setEntry(j,k, P[i].getEntry(j,k));
-							RPS[i].            setEntry(j,k, P[i].getEntry(j,k));
-						}
+				                        field().assign(LeftPowerSerie.ref(j,k,i),  P[i].getEntry(j,k));				
+							field().assign(RightPowerSerie.ref(k,j,i), P[i].getEntry(j,k));
+                                                }
 				}
 			}
 			for (size_t j=0;j<block;++j){
-				LeftPowerSerie[0]. setEntry(block+j, j , one);
-				LPS[0].            setEntry(block+j, j , one);
-				RightPowerSerie[0].setEntry(j, block+j , one);
-				RPS[0].            setEntry(j, block+j , one);
+                                field().assign(LeftPowerSerie.ref (block+j, j ,0), one);
+                                field().assign(RightPowerSerie.ref(block+j, j, 0), one);
 			}
-
-			//write_maple("Sx",LeftPowerSerie);
-
-			SigmaBasis<Field> SBL(F, LeftPowerSerie);
-			SigmaBasis<Field> SBR(F, RightPowerSerie);
-
-			std::vector<Coefficient > LP1, RP1, LP2, RP2;
+                        
+			OrderBasis<Field> OB(F);
+                        
+                        PMatrix LP1(field(),2*block,2*block,deg), RP1(field(),2*block,2*block,deg);
+                        PMatrix LP2(field(),2*block,2*block,deg+2), RP2(field(),2*block,2*block,deg+2);
+                        
 			size_t two_n= block<<1;
 			std::vector<size_t> dlp1(two_n,0), drp1(two_n,0), dlp2(two_n,0), drp2(two_n,0);
 
@@ -131,54 +121,22 @@ namespace LinBox
 				dlp2[i]=1;
 				drp2[i]=1;
 			}
-
-
+                        
 			// Compute the sigma basis
 			//Timer chrono;
 			//chrono.start();
-			SBL.multi_left_basis  (LP1, deg-1, dlp1, LP2, deg+1, dlp2);
-			SBR.multi_right_basis (RP1, deg-1, drp1, RP2, deg+1, drp2);
-			//chrono.stop();
-			//std::cout<<"SigmaBasis Computation : "<<chrono<<"\n";
-			//SBL.printTimer();
+                        OB.PM_Basis(LP1, LeftPowerSerie, deg-1, dlp1);
+                        OB.PM_Basis(LP2, LeftPowerSerie, deg+1, dlp2); // MUST BE OPTIMIZED -> modify power serie thanks to LP1 and compute small basis
+                        OB.PM_Basis(RP1, RightPowerSerie, deg-1, dlp1);
+                        OB.PM_Basis(RP2, RightPowerSerie, deg+1, dlp2); // MUST BE OPTIMIZED -> modify power serie thanks to RP1 and compute small basis
 
-			//SBL.left_basis  (LP1, deg-1, dlp1);
-			//SBR.right_basis (RP1, deg-1, drp1);
-			//SBL.left_basis  (LP2, deg+1, dlp2);
-			//SBR.right_basis (RP2, deg+1, drp2);
-
+                        
 			std::vector<BlasMatrix<Field> > SLP1, SLP2, SRP1, SRP2;
-
 			extractLeftSigma  (SLP1, LP1, dlp1, block);
 			extractLeftSigma  (SLP2, LP2, dlp2, block);
-
-			extractRightSigma (SRP1, RP1, drp1, block);
-			extractRightSigma (SRP2, RP2, drp2, block);
-
-#else
-			size_t two_n= block<<1;
-			std::vector<size_t> dlp(two_n,0), drp(two_n,0);
-			for (size_t i=block;i<two_n;++i){
-				dlp[i]=1;
-				drp[i]=1;
-			}
-
-			Coefficient ZeroSerie(field(),block, block);
-			std::vector<Coefficient> Serie(deg+2, ZeroSerie);
-			for (size_t i=0;i<deg;++i)
-				for (size_t j=0;j<block;++j)
-					for (size_t k=0;k<block;++k)
-						Serie[i].setEntry(j,k, P[i].getEntry(j,k));
-
-			SigmaBasis<Field> SBL(F, Serie);
-			SigmaBasis<Field> SBR(F, Serie);
-
-			std::vector<BlasMatrix<Field> > SLP1, SLP2, SRP1, SRP2;
-			SBL.multi_left_PadeMatrix  (SLP1, deg-1, SLP2, deg+1, dlp);
-			SBR.multi_right_PadeMatrix (SRP1, deg-1, SRP2, deg+1, drp);
-
-#endif
-
+			extractTransposedRightSigma (SRP1, RP1, drp1, block);
+			extractTransposedRightSigma (SRP2, RP2, drp2, block);
+                        
 
 			BlasMatrix<Field> Res(field(),block,block), Inv(field(),block, block);
 
@@ -318,20 +276,12 @@ namespace LinBox
 
 	protected:
 
-		void extractLeftSigma(std::vector<BlasMatrix<Field> >              &S,
-				      std::vector<BlasMatrix<Field> >      &SigmaBase,
+		void extractLeftSigma(std::vector<BlasMatrix<Field> >                &S,
+				      PMatrix                                &SigmaBase,
 				      std::vector<size_t>                       &defect,
 				      size_t                                      block) const
 		{
-#if 0
-			std::cout<<"Pade Approximant:\n defect= ";
-			for (size_t i=0;i<defect.size();++i)
-				std::cout<<defect[i]<<",";
-			std::cout<<"\n";
-			for (size_t i=0;i<SigmaBase.size();++i)
-				SigmaBase[i].write(std::cout,field());
-#endif
-
+                        
 			// take the block rows which have lowest defect
 			// compute permutation such that first block rows have lowest defect
 			std::vector<size_t> Perm(2*block);
@@ -351,19 +301,6 @@ namespace LinBox
 			for (size_t i=0;i<SigmaBase.size();++i)
 				_BMD.mulin_right(BPerm,SigmaBase[i]);
 
-#if 0
-			// take the  row of SigmaBase s.t. SigmaBase[0] is invertible
-			std::vector<size_t> notnull(block);
-			size_t idx=0;
-			for (size_t i=0; i<2*block;++i){
-				for (size_t j=0;j<2*block;++j)
-					if (!field().isZero(SigmaBase[0].getEntry(i,j))){
-						notnull[idx]=i;
-						++idx;
-						break;
-					}
-			}
-#endif
 			size_t max=defect[0];
 			for (size_t i=0;i<block;++i)
 				if (defect[i] > max)
@@ -377,27 +314,17 @@ namespace LinBox
 			// extract the sigma base
 			for (size_t k=0;k<S.size();++k){
 				for(size_t i=0;i<block;++i)
-					for (size_t j=0;j<block;++j)
-						//S[k].setEntry(i,j, SigmaBase[k].getEntry(notnull[i],j));
+					for (size_t j=0;j<block;++j)			
 						S[k].setEntry(i,j, SigmaBase[k].getEntry(i,j));
 			}
 		}
 
 
-		void extractRightSigma(std::vector<BlasMatrix<Field> >            &S,
-				       std::vector<BlasMatrix<Field> >    &SigmaBase,
-				       std::vector<size_t>                     &defect,
-				       size_t                                    block) const
+		void extractTransposedRightSigma(std::vector<BlasMatrix<Field> >            &S,
+                                                 std::vector<BlasMatrix<Field> >    &SigmaBase,
+                                                 std::vector<size_t>                     &defect,
+                                                 size_t                                    block) const
 		{
-#if 0
-			std::cout<<"Pade Approximant:\n defect= ";
-			for (size_t i=0;i<defect.size();++i)
-				std::cout<<defect[i]<<",";
-			std::cout<<"\n";
-
-			for (size_t i=0;i<SigmaBase.size();++i)
-				SigmaBase[i].write(std::cout,field());
-#endif
 
 			// take the m rows which have lowest defect
 			// compute permutation such that first block rows have lowest defect
@@ -417,20 +344,6 @@ namespace LinBox
 			// Apply BPerm to the Sigma Base
 			for (size_t i=0;i<SigmaBase.size();++i)
 				_BMD.mulin_right(BPerm,SigmaBase[i]);
-
-			/*
-			// take the  row of SigmaBase s.t. SigmaBase[0] is invertible
-			std::vector<size_t> notnull(block);
-			size_t idx=0;
-			for (size_t i=0; i<2*block;++i){
-			for (size_t j=0;j<2*block;++j)
-			if (!field().isZero(SigmaBase[0].getEntry(i,j))){
-			notnull[idx]=i;
-			++idx;
-			break;
-			}
-			}
-			*/
 
 			size_t max=defect[0];
 			for (size_t i=0;i<block;++i)
@@ -500,7 +413,6 @@ namespace LinBox
 
 }// end of namespace LinBox
 
-#undef PADEMATRIX
 
 #endif //__LINBOX_block_hankel_inverse_H
 

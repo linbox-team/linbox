@@ -98,8 +98,9 @@ namespace LinBox
 			FullMultipCRA<Domain>::initialize(D, e);
 		}
 
-		template<template <class> class Alloc, template<class, class> class Vect>
-		void initialize (const Domain& D, const Vect<DomainElement, Alloc<DomainElement> >& e)
+		template<class Vect>
+                //		template<template <class> class Alloc, template<class, class> class Vect>
+		void initialize (const Domain& D, const Vect& e)
 		{
 			// Random coefficients for a linear combination
 			// of the elements to be reconstructed
@@ -113,8 +114,8 @@ namespace LinBox
 			// - do not compute twice the product of moduli
 			// - reconstruct one element of e until Early Termination,
 			//   then only, try a random linear combination.
-			EarlySingleCRA<Domain>::initialize(D,dot(z, D, e, randv) );
-			FullMultipCRA<Domain>::initialize(D, e);
+			EarlySingleCRA<Domain>::initialize (D, dot(z, D, e, randv));
+			FullMultipCRA<Domain>::initialize (D, e);
 		}
 
 		template<class OKDomain>
@@ -147,8 +148,9 @@ namespace LinBox
 		}
 
 #if 1
-		template<template <class> class Alloc, template<class, class> class Vect>
-		void progress (const Domain& D, const Vect<DomainElement, Alloc<DomainElement> >& e)
+		template<class Vect>
+                //		template<template <class> class Alloc, template<class, class> class Vect>
+		void progress (const Domain& D, const Vect& e)
 		{
 			// DomainElement z;
 			/*!@todo Could be much faster
@@ -156,10 +158,9 @@ namespace LinBox
 			  - reconstruct one element of e until Early Termination,
 			  then only, try a random linear combination.
 			*/
-			// EarlySingleCRA<Domain>::progress(D, dot(z, D, e, randv));
-			// FullMultipCRA<Domain>::progress(D, e);
-			BlasVector<Domain> d(D,e);
-			this->progress(D,d);
+                        DomainElement z;
+                        EarlySingleCRA<Domain>::progress(D, dot(z, D, e, randv));
+                        FullMultipCRA<Domain>::progress(D, e);
 		}
 #endif
 
@@ -177,8 +178,9 @@ namespace LinBox
 		}
 
 		//! Result
-		template<template <class> class Alloc, template<class, class> class Vect>
-		Vect<Integer, Alloc<Integer> >& result(Vect<Integer, Alloc<Integer> >& d)
+//		template<template <class> class Alloc, template<class, class> class Vect>
+		template<class Vect>
+                Vect& result(Vect& d)
 		{
 			return FullMultipCRA<Domain>::result(d);
 		}
@@ -241,11 +243,11 @@ namespace LinBox
 
 		/*! @bug why a dot product here ?
 		 */
-		template <template<class T> class Vect1, class Vect2>
-		Integer& dot (Integer& z, const Integer& D, const Vect1<Integer>& v1, const Vect2& v2)
+		template <class Vect1, class Vect2>
+		Integer& dot (Integer& z, const Integer& D, const Vect1& v1, const Vect2& v2)
 		{
 			z = 0;
-			typename Vect1<Integer>::const_iterator v1_p;
+			typename Vect1::const_iterator v1_p;
 			typename Vect2::const_iterator v2_p;
 			for (v1_p  = v1. begin(), v2_p = v2. begin(); v1_p != v1. end(); ++ v1_p, ++ v2_p) {
 				z = (z + (*v1_p)*(*v2_p))%D;
@@ -255,14 +257,14 @@ namespace LinBox
 
 		/*! @bug why a dot product here ?
 		 */
-		template <template <class> class Alloc, template<class, class> class Vect1, class Vect2>
+		template <class Vect1, class Vect2>
 		DomainElement& dot (DomainElement& z, const Domain& D,
-				    const Vect1<DomainElement, Alloc<DomainElement> >& v1,
+				    const Vect1& v1,
 				    const Vect2& v2)
 		{
 
 			D.assign(z,D.zero); DomainElement tmp;
-			typename Vect1<DomainElement, Alloc<DomainElement> >::const_iterator v1_p;
+			typename Vect1::const_iterator v1_p;
 			typename Vect2::const_iterator v2_p;
 			for (v1_p  = v1. begin(), v2_p = v2. begin();
 			     v1_p != v1. end();

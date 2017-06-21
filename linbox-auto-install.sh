@@ -385,10 +385,10 @@ for i in "$@" ; do
 done
 
 MAKEPROG="make ${MAKEOPT}"
-export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$PREFIX_LOC/lib/pkgconfig
-echo "PKG_CONFIG_PATH=$PKG_CONFIG_PATH"
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$PREFIX_LOC/lib
-echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
+export PKG_CONFIG_PATH=${PKG_CONFIG_PATH}:${PREFIX_LOC}/lib/pkgconfig
+echo "PKG_CONFIG_PATH=$PKG_CONFIG_PATH"| tee -a auto-install.log
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:$PREFIX_LOC/lib
+echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"| tee -a auto-install.log
 
 
 

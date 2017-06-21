@@ -641,8 +641,7 @@ namespace LinBox
 		// if singularity unknown and matrix is square, we try nonsingular solver
 		switch ( m.singular() ) {
 		case Specifier::SINGULARITY_UNKNOWN:
-			switch (A.rowdim() == A.coldim() ?
-				status=rsolve.solveNonsingular(x, d, A, b,(int)m.maxTries()) : SS_SINGULAR) {
+			switch (status=rsolve.solveNonsingular(x, d, A, b,(int)m.maxTries())) {
 			case SS_OK:
 				m.singular(Specifier::NONSINGULAR);
 				break;

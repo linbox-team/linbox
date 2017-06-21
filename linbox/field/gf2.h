@@ -41,11 +41,7 @@
 #include "linbox/field/field-traits.h"
 // #include "linbox/vector/vector-domain.h"
 
-#if !defined(__PATHCC__) && !(defined(__APPLE__) && defined(__clang__))
-#define stdBitReference std::_Bit_reference
-#else
 #define stdBitReference std::vector<bool>::reference
-#endif
 
 // Namespace in which all LinBox code resides
 namespace LinBox
@@ -1015,25 +1011,7 @@ namespace LinBox
 // Specialization of homomorphism for basefield
 #include "linbox/randiter/gf2.h"
 
-#if __cplusplus >= 201103L
-#if defined( __APPLE__) && defined(__clang__)
-#include <__bit_reference>
-#else
-#include <bits/stl_bvector.h>
-#endif /* __clang__ */
-#else
-// #include <bits/stl_bvector.h>
-{
-	//! @todo JGD 05.11.2009 : it should be in bits/stl_bvector.h  ...
-	inline void swap(stdBitReference __x, stdBitReference __y)
-	{
-		bool __tmp = __x;
-		__x = __y;
-		__y = __tmp;
-	}
-}
-#endif
-
+#include <vector>
 
 #include "linbox/field/gf2.inl"
 
