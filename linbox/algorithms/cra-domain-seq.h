@@ -1,7 +1,7 @@
 /* linbox/algorithms/cra-domain-seq.h
  * Copyright (C) 1999-2010 The LinBox group
  *
- * Time-stamp: <29 Jun 15 18:59:17 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <22 Jun 17 17:40:26 Jean-Guillaume.Dumas@imag.fr>
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -187,7 +187,7 @@ namespace LinBox
 				Domain D(*primeiter);
 				commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
 				++primeiter;
-                                typename Iterator::template rebind<Domain>::other r(D);
+                typename Iterator::template rebind<Domain>::other r(D);
                                     //typename CRATemporaryVectorTrait<Function, Domain>::Type_t r(D);
 				Builder_.initialize( D, Iteration(r, D) );
 			}
@@ -339,9 +339,9 @@ namespace LinBox
 
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 

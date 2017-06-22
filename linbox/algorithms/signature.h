@@ -1,7 +1,6 @@
 /* Copyright (C)  LinBox
  * Written by Zhendong Wan
- *
- *
+ *			  Jean-Guillaume Dumas
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -32,6 +31,7 @@
 #include "linbox/randiter/random-prime.h"
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/matrix/matrix-domain.h"
+#include "linbox/polynomial/dense-polynomial.h"
 #include "linbox/solutions/minpoly.h"
 
 namespace LinBox
@@ -56,15 +56,13 @@ namespace LinBox
 			if (P. size () < n)
 				return false;
 
-			// typedef typename Matrix::Field::Element Int;
-			// std::vector<Int> D(n);
-			BlasVector<typename Matrix::Field> D(M.field(),n);
+			DenseVector<typename Matrix::Field> D(M.field(),n);
 			semiD(D, M);
 
-			//std::cout << "All principal minors are: [";
+			//std::clog << "All principal minors are: [";
 			//for (int i = 0; i < n; ++ i)
-			//	std::cout << D[(size_t)i] << ", ";
-			//std::cout << "]\n";
+			//	std::clog << D[(size_t)i] << ", ";
+			//std::clog << "]\n";
 
 			if (allPos(D)) return true;
 			else return false;
@@ -75,9 +73,8 @@ namespace LinBox
 		static bool isPosDef (const Matrix& M, const Minpoly_Method& meth)
 		{
 
-			typedef typename Matrix::Field::Element Int;
-			typedef std::vector<Int> Poly;
-			Poly p;
+			typedef DensePolynomial<typename Matrix::Field> Poly;
+			Poly p(M.field());
 			minpoly (p, M);
 			typename Poly::reverse_iterator p_p;
 			typename Matrix::Field R = M. field();
@@ -112,7 +109,7 @@ namespace LinBox
 
 			typename Matrix::Field R = M. field();
 
-			//std::cout << "Begin semiD:\n";
+			//std::clog << "Begin semiD:\n";
 			if(P. size() == n)
 				semiD(D, M);
 			else {
@@ -127,7 +124,7 @@ namespace LinBox
 				semiD (D, PM);
 			}
 
-			//std::cout << "End semiD:\n";
+			//std::clog << "End semiD:\n";
 
 			if (allPos(D)) return true;
 			else return false;
@@ -137,8 +134,7 @@ namespace LinBox
 		static bool isPosSemiDef (const Matrix& M, const Minpoly_Method& meth)
 		{
 
-			typedef typename Matrix::Field::Element Int;
-			typedef std::vector<Int> Poly;
+			typedef DensePolynomial<typename Matrix::Field> Poly;
 			Poly p;
 			minpoly (p, M);
 			typename Poly::reverse_iterator p_p;
@@ -154,7 +150,7 @@ namespace LinBox
 			else return false;
 		}
 
-	private:
+	protected:
 
 		template <class Vector>
 		static bool allPos (const Vector& v)
@@ -189,8 +185,10 @@ namespace LinBox
 		static Vector& semiD (Vector& out, const Matrix& M)
 		{
 
-			//std::cout << "Debug begin with input matrix:\n";
-			//M. write (std::cout);
+#ifdef _LB_DEBUG
+			std::clog << "Debug begin with input matrix:\n";
+			M. write (std::clog);
+#endif
 			typedef typename Matrix::Field Ring;
 			typedef typename Ring::Element Integer_t;
 			typedef Givaro::Modular<double> Field;
@@ -205,7 +203,6 @@ namespace LinBox
 
 			Element* FA = new Element[n*n];
 			size_t* P= new size_t[n], *PQ = new size_t[n];
-			size_t* P_p, * PQ_p;
 
 			Element* p; Element tmp;
 			EarlyMultipCRA< Field > cra(3UL);
@@ -214,7 +211,7 @@ namespace LinBox
 			// std::vector<Element> v(n);
 			typedef Givaro::ZRing<Element> NoField;
 			NoField unF ;
-			BlasVector<NoField> v(unF,n);
+			DenseVector<NoField> v(unF,n);
 			size_t j = 0;
 			Field K2;
 			bool faithful = true;
@@ -227,52 +224,48 @@ namespace LinBox
 				Field K1(*primeg);
 				K2 = K1;
 
-				//clog << "Computing blackbox matrix mod " << prime;
+#ifdef _LB_DEBUG
+				std::clog << "Computing blackbox matrix mod " << *primeg;
+#endif
 				for (p = FA, raw_p = M. Begin(); p != FA + (n*n); ++ p, ++ raw_p)
 					K1. init (*p, *raw_p);
 
-				//clog << "\rComputing lup mod " << prime << ". ";
-				FFPACK::LUdivine(K1, FFLAS::FflasNonUnit, FFLAS::FflasNoTrans, n, n, FA, n, P, PQ);//, FFPACK::FfpackLQUP);
+				faithful = FFPACK::fsytrf(K1, FFLAS::FflasUpper, n, FA, n);
 
-				faithful = true;
-				for ( j = 0, P_p = P, PQ_p = PQ; j < n; ++ j, ++ P_p, ++ PQ_p)
-					if ((*P_p != j) || (*PQ_p != j))  {
-						faithful = false;
-						break;
-					}
+#ifdef _LB_DEBUG
+				if (!faithful) {
+					std::clog << "Not a faithful prime\n";
+				}
+#endif
 
 			} while(! faithful);
 			K2. assign(tmp, K2.one);
 
-			// typename std::vector<Element>::iterator vp;
-			typename BlasVector<NoField>::iterator vp;
+			typename DenseVector<NoField>::iterator vp;
 			for (j = 0, vp = v.begin(); vp != v.end(); ++j, ++vp) {
 				K2.mulin(tmp, *(FA + (j * n + j)));
 				K2.assign(*vp, tmp);
 			}
-			// BlasVector<Field> v2(K2,v);//!@bug should not do it like that...
 			cra. initialize(K2, v );
 
 			while (! cra.terminated() ){
 				// get a prime.
 				++primeg; while(cra.noncoprime(*primeg)) ++primeg;
 				Field K3(*primeg);
-				//clog << "Computing blackbox matrix mod " << prime;
+#ifdef _LB_DEBUG
+				std::clog << "Computing blackbox matrix mod " << *primeg;
+#endif
 				for (p = FA, raw_p = M. Begin(); p != FA + (n*n); ++ p, ++ raw_p)
 					K3. init (*p, *raw_p);
 
-				//clog << "\rComputing lup mod " << prime << ". ";
-				FFPACK::LUdivine(K3, FFLAS::FflasNonUnit, FFLAS::FflasNoTrans, n, n, FA, n, P, PQ);//, FFPACK::FfpackLQUP);
-
-				faithful = true;
-				for ( j = 0, P_p = P, PQ_p = PQ; j < n; ++ j, ++ P_p, ++ PQ_p)
-					if ((*P_p != j) || (*PQ_p != j))  {
-						faithful = false;
-						break;
-					}
-
+#ifdef _LB_DEBUG
+				std::clog << "\rComputing lup mod " << *primeg << ". ";
+#endif
+				faithful = FFPACK::fsytrf(K3, FFLAS::FflasUpper, n, FA, n);
 				if (!faithful) {
-					//std::cout << "Not a faithful prime\n";
+#ifdef _LB_DEBUG
+					std::clog << "Not a faithful prime\n";
+#endif
 					continue;
 				}
 
@@ -282,20 +275,19 @@ namespace LinBox
 					K3.mulin(tmp, *(FA + (j * n + j)));
 					K3.assign(*vp, tmp);
 				}
-#if 0
-				std::cout << "Faithful image:[";
-				for (int l = 0; l < v. size(); ++ l)
-					std::cout << v[l] << ", ";
-				std::cout << "]\n";
+#ifdef _LB_DEBUG
+				std::clog << "Faithful image:[";
+				for (size_t l = 0; l < v. size(); ++ l)
+					std::clog << v[l] << ", ";
+				std::clog << "]\n";
 #endif
-				// BlasVector<Field> v3(K3,v); //!@bug should not be doing that...
 				cra. progress(K3, v);
 			}
 
 			delete[] FA;
 			delete[] P;
 			delete[] PQ;
-			//std::cout << "Compute the final answer.\n";
+			//std::clog << "Compute the final answer.\n";
 			cra.result(out);
 			return out;
 		}
@@ -310,11 +302,11 @@ namespace LinBox
 			typedef Givaro::Modular<int32_t> Field;
 			// typedef Givaro::Modular<double> Field;
 			typedef Field::Element Element;
-			typedef BlasMatrix<Field> FMatrix;
+			typedef DenseMatrix<Field> FMatrix;
 			RandomPrimeIterator primeg; primeg.template setBitsField<Field>();
 			Field F (*primeg);
 			FMatrix FM(F, IM.rowdim(), IM.coldim());
-			//std::cout << "Random prime " << p << "\n";
+			//std::clog << "Random prime " << p << "\n";
 
 			MatrixHom::map (FM, IM);
 			VectorDomain<Field> VD(F);
@@ -330,9 +322,9 @@ namespace LinBox
 			for (i = 0; i < n; ++ i)
 				P[(size_t)i] = i;
 
-			//M. write(std::cout);
+			//M. write(std::clog);
 			for (i = 0; i < n; ++ i) {
-				//std::cout << "i= " << i << "\n";
+				//std::clog << "i= " << i << "\n";
 				int j;
 				//find a pivot
 				for (j = i; j < n; ++ j) {
@@ -347,15 +339,15 @@ namespace LinBox
 					VD. swap (*(M. colBegin() + j), *(M. colBegin() + i));
 					VD. swap (*(M. rowBegin() + j), *(M. rowBegin() + i));
 				}
-				//std::cout << "Pivot= " << j << '\n';
-				//M. write(std::cout);
+				//std::clog << "Pivot= " << j << '\n';
+				//M. write(std::clog);
 
 				P[(size_t)i] = j;
 				Element tmp;
 				F. inv (tmp, M[(size_t)i][(size_t)i]);
 				F. negin(tmp);
 				VD. mulin(*(M. rowBegin() + i), tmp);
-				//M. write(std::cout);
+				//M. write(std::clog);
 
 				for (j = i + 1; j < n; ++ j) {
 					F. assign (tmp,  M[(size_t)j][(size_t)i]);
@@ -364,7 +356,7 @@ namespace LinBox
 				}
 
 				//not necessary
-				//M. write(std::cout);
+				//M. write(std::clog);
 				for (j = i + 1; j < n; ++ j)
 					F. assign (M[(size_t)i][(size_t)j], F.zero);
 			}
@@ -381,10 +373,10 @@ namespace LinBox
 
 			v. resize ((size_t)i);
 
-			//std::cout << "Pseud-rank: " << i << "\n[";
+			//std::clog << "Pseud-rank: " << i << "\n[";
 			//for (i_p = v. begin(); i_p != v. end(); ++ i_p)
-			//	std::cout << *i_p << ", ";
-			//std::cout << "]\n";
+			//	std::clog << *i_p << ", ";
+			//std::clog << "]\n";
 
 			return v;
 		}

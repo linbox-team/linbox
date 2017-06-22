@@ -81,6 +81,8 @@ BASIC_TESTS =					\
 	test-cra					\
 	test-blas-matrix			\
 	test-charpoly			\
+	test-isposdef				\
+	test-ispossemidef			\
 	test-regression
 
 # All other tests.  
@@ -114,8 +116,6 @@ FULLCHECK_TESTS =               \
 	test-hom					\
 	test-image-field			\
 	test-inverse				\
-	test-isposdef				\
-	test-ispossemidef			\
 	test-la-block-lanczos		\
 	test-last-invariant-factor  \
 	test-matpoly-mult			\
