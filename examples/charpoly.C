@@ -121,11 +121,11 @@ int main (int argc, char **argv)
 		charpoly (c_A, A);
 		tim.stop();
 
-		cout << "Characteristic Polynomial is ";
-		printPolynomial (cout, ZZ, c_A) << endl;
+		clog << "Characteristic Polynomial is ";
+		printPolynomial (clog, ZZ, c_A) << endl;
 		cout << tim << endl;
 
-		cout << "Do you want a factorization (y/n) ? ";
+		clog << "Do you want a factorization (y/n) ? ";
 		char tmp;
 		cin >> tmp;
 		if (tmp == 'y' || tmp == 'Y') {
@@ -137,7 +137,7 @@ int main (int argc, char **argv)
 			IPD.factor (intFactors, exp, c_A);
 			tim.stop();
 			commentator().stop("done", NULL, "NTLfac");
-			printFactorization(cout << intFactors.size() << " integer polynomial factors:" << endl, ZZ, intFactors, exp) << endl;
+			printFactorization(clog << intFactors.size() << " integer polynomial factors:" << endl, ZZ, intFactors, exp) << endl;
 
 			cout << tim << endl;
 
@@ -150,14 +150,14 @@ int main (int argc, char **argv)
 		Field F(q);
 		DenseMatrix<Field> B (F);
 		B.read (input);
-		cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
+		clog << "B is " << B.rowdim() << " by " << B.coldim() << endl;
         DensePolynomial<Field> c_B(F);
 		Timer tim; tim.clear();tim.start();
 		charpoly (c_B, B);
 		tim.stop();
 
-		cout << "Characteristic Polynomial is ";
-		printPolynomial (cout, F, c_B) << endl;
+		clog << "Characteristic Polynomial is ";
+		printPolynomial (clog, F, c_B) << endl;
 		cout << tim << endl;
 	}
 
