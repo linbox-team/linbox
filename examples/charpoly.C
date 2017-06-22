@@ -23,9 +23,9 @@
 
 /** \file examples/charpoly.C
  * @example  examples/charpoly.C
-  \brief Characteristic polynomial of matrix over Z or Zp.
-  \ingroup examples
-  */
+ \brief Characteristic polynomial of matrix over Z or Zp.
+ \ingroup examples
+*/
 #include <linbox/linbox-config.h>
 
 #include <iostream>
@@ -115,7 +115,7 @@ int main (int argc, char **argv)
 		IntDom ZZ;
 		DenseMatrix<IntDom > A (ZZ);
 		A.read (input);
-                DensePolynomial<IntDom> c_A(ZZ);
+        DensePolynomial<IntDom> c_A(ZZ);
 
 		Timer tim; tim.clear();tim.start();
 		charpoly (c_A, A);
@@ -151,7 +151,7 @@ int main (int argc, char **argv)
 		DenseMatrix<Field> B (F);
 		B.read (input);
 		cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
-                DensePolynomial<Field> c_B(F);
+        DensePolynomial<Field> c_B(F);
 		Timer tim; tim.clear();tim.start();
 		charpoly (c_B, B);
 		tim.stop();
@@ -166,8 +166,8 @@ int main (int argc, char **argv)
 
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
