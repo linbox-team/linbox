@@ -289,6 +289,10 @@ namespace LinBox
                 delete[] PQ;
                     //std::clog << "Compute the final answer.\n";
                 cra.result(out);
+
+#ifdef _LB_CRATIMING
+                cra.reportTimes(std::clog);
+#endif
                 return out;
             }
 

@@ -389,6 +389,9 @@ namespace LinBox
 		IntegerModularCharpoly<Blackbox,Method::Blackbox> iteration(A, M);
 		cra.operator() (P, iteration, genprime);
 		commentator().stop ("done", NULL, "IbbCharpoly");
+#ifdef _LB_CRATIMING
+        cra.reportTimes(std::clog);
+#endif
 		return P;
 	}
 
@@ -429,6 +432,9 @@ namespace LinBox
         IntegerModularCharpoly<Blackbox,Method::BlasElimination> iteration(A, M);
 		cra (P, iteration, genprime);
 		commentator().stop ("done", NULL, "IbbCharpoly");
+#ifdef _LB_CRATIMING
+        cra.reportTimes(std::clog);
+#endif
 		return P;
 	}
 

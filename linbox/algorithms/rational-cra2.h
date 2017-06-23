@@ -25,15 +25,12 @@
 
 #ifndef __LINBOX_rational2_cra_H
 #define __LINBOX_rational2_cra_H
-#define CRATIMING
 
 
 #include "givaro/zring.h"
 #include "linbox/vector/blas-vector.h"
 #include "linbox/algorithms/rational-reconstruction-base.h"
 #include "linbox/algorithms/classic-rational-reconstruction.h"
-
-//#define RCRATIMING
 
 namespace LinBox
 {
@@ -594,7 +591,7 @@ namespace LinBox
 		}
 
 
-#ifdef CRATIMING
+#ifdef _LB_CRATIMING
 		std::ostream& reportTimes(std::ostream& os)
 		{
 			//Builder_.reportTimes(os);
@@ -603,7 +600,7 @@ namespace LinBox
 #endif
 	};
 
-#ifdef RCRATIMING
+#ifdef _LB_RCRATIMING
 
 	class RCRATimer {
 	public:
@@ -633,9 +630,6 @@ namespace LinBox
 #endif
 
 }
-
-#undef RCRATIMING
-#undef CRATIMING
 
 #endif // __LINBOX_rational2_cra_H
 

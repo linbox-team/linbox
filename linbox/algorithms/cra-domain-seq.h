@@ -1,7 +1,7 @@
 /* linbox/algorithms/cra-domain-seq.h
  * Copyright (C) 1999-2010 The LinBox group
  *
- * Time-stamp: <22 Jun 17 17:57:32 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <23 Jun 17 10:50:10 Jean-Guillaume.Dumas@imag.fr>
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -37,7 +37,6 @@
 #include <utility>
 #include <stdlib.h>
 #include "linbox/util/commentator.h"
-//$define _LB_CRATIMING
 
 namespace LinBox
 {
@@ -332,8 +331,6 @@ namespace LinBox
 #endif
 
 }
-
-#undef _LB_CRATIMING
 
 #endif //__LINBOX_sequential_cra_H
 

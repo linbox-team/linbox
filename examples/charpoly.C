@@ -1,3 +1,4 @@
+#define _LB_CRATIMING 1
 /*
  * examples/charpoly.C
  *
