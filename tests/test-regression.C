@@ -142,6 +142,34 @@ bool testFlatDixonSolver (const Specifier& m){
 
     return true;
 }
+
+
+bool testFlatDixonSolver2 (const Specifier& m){
+        // creating LinBox matrices and vectors
+    Givaro::ZRing<Integer> ZZ;
+    typedef DenseVector<Givaro::ZRing<Integer> > DenseVector;
+
+    SparseMatrix<Givaro::ZRing<Integer> > M (ZZ,1,2);
+    Givaro::ZRing<Integer>::Element D; // denominator of the solution
+    DenseVector A(ZZ, M.coldim()); // numerator of the solution
+    DenseVector B(ZZ, M.rowdim()); // Right handside of the system
+
+    M.setEntry(0,0,1);
+    M.setEntry(0,1,0);
+    ZZ.assign(B[0],1);
+
+        // solving via Sparse Elimination
+    solve (A, D, M, B, m);
+
+    if (!ZZ.areEqual(A[0],ZZ.one) || !ZZ.areEqual(D,ZZ.one)) {
+        std::cerr<<"A = "<<A<<" D = "<<D<<std::endl;
+        std::cerr<<"Fail solving a flat system over QQ with a SparseMatrix"<<std::endl;
+        return false;
+    }
+
+    return true;
+}
+
 bool testTallDixonSolver (const Specifier& m){
         // creating LinBox matrices and vectors
     Givaro::ZRing<Integer> ZZ;
@@ -169,6 +197,52 @@ bool testTallDixonSolver (const Specifier& m){
 
 }
 
+bool testSingularDixonSolver (const Specifier& m){
+        // creating LinBox matrices and vectors
+    Givaro::ZRing<Integer> ZZ;
+    typedef DenseVector<Givaro::ZRing<Integer> > DenseVector;
+
+    SparseMatrix<Givaro::ZRing<Integer> > M (ZZ,2,2);
+    Givaro::ZRing<Integer>::Element D; // denominator of the solution
+    DenseVector A(ZZ, M.coldim()); // numerator of the solution
+    DenseVector B(ZZ, M.rowdim()); // Right handside of the system
+
+    M.setEntry(0,0,-2);
+    ZZ.assign(B[0],-4);
+
+        // solving via Sparse Elimination
+    solve (A, D, M, B, m);
+
+    if (!ZZ.areEqual(A[0],Integer(2)) || !ZZ.areEqual(D,ZZ.one)) {
+        std::cerr<<"A = "<<A<<" D = "<<D<<std::endl;
+        std::cerr<<"Fail solving a singular system over QQ with a SparseMatrix"<<std::endl;
+        return false;
+    }
+    return true;
+}
+bool testZeroDixonSolver (const Specifier& m){
+        // creating LinBox matrices and vectors
+    Givaro::ZRing<Integer> ZZ;
+    typedef DenseVector<Givaro::ZRing<Integer> > DenseVector;
+
+    SparseMatrix<Givaro::ZRing<Integer> > M (ZZ,1,1);
+    Givaro::ZRing<Integer>::Element D; // denominator of the solution
+    DenseVector A(ZZ, M.coldim()); // numerator of the solution
+    DenseVector B(ZZ, M.rowdim()); // Right handside of the system
+
+    M.setEntry(0,0,0);
+    ZZ.assign(B[0],0);
+
+        // solving via Sparse Elimination
+    solve (A, D, M, B, m);
+
+    if (!ZZ.areEqual(A[0],ZZ.zero) || !ZZ.areEqual(D,ZZ.one)) {
+        std::cerr<<"A = "<<A<<" D = "<<D<<std::endl;
+        std::cerr<<"Fail solving a zero over QQ with a SparseMatrix"<<std::endl;
+        return false;
+    }
+    return true;
+}
 int main (int argc, char **argv)
 {
     bool pass = true;
@@ -176,9 +250,13 @@ int main (int argc, char **argv)
     pass &= testSolveSparse  ();
     pass &= testSolveSparseSage ();
     pass &= testFlatDixonSolver (Method::SparseElimination());
+    pass &= testFlatDixonSolver2 (Method::SparseElimination());
     pass &= testFlatDixonSolver (Method::Wiedemann());
+    pass &= testFlatDixonSolver2 (Method::Wiedemann());
     pass &= testTallDixonSolver (Method::SparseElimination());
     pass &= testTallDixonSolver (Method::Wiedemann());
+    pass &= testSingularDixonSolver (Method::SparseElimination());
+    pass &= testZeroDixonSolver (Method::SparseElimination());
 
     return pass ? 0 : -1;
 }
