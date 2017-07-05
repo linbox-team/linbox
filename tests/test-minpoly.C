@@ -320,7 +320,7 @@ static bool testGramMinpoly (Field &F, size_t m, const Meth& M)
 	printPolynomial<Field, Polynomial> (F, report, phi);
 
 	bool ret;
-	if (n == 2)
+	if (n == 2) {
 		if ( phi.size() == 3 && F.areEqual(phi[0], F.mOne) && F.isZero(phi[1]) && F.isOne(phi[2]))
 			ret = true;
 		else
@@ -330,7 +330,7 @@ static bool testGramMinpoly (Field &F, size_t m, const Meth& M)
 			printPolynomial<Field, Polynomial> (F, report, phi);
 			ret = false;
 		}
-	else
+	} else {
 		if (phi.size() == 3 && F.isZero(phi[0]) && F.isOne(phi[1]) && F.isOne(phi[2]))
 			ret = true;
 		else
@@ -340,8 +340,9 @@ static bool testGramMinpoly (Field &F, size_t m, const Meth& M)
 			printPolynomial<Field, Polynomial> (F, report, phi);
 			ret = false;
 		}
-		commentator().stop (MSG_STATUS (ret), (const char *) 0, "testGramMinpoly");
-		return ret;
+	}
+	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testGramMinpoly");
+	return ret;
 }
 
 int main (int argc, char **argv)
