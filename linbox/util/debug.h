@@ -329,7 +329,7 @@ namespace LinBox
 #include "linbox/util/debug.C"
 #endif
 
-#include <fflas-ffpack/utils/print-utils.h>
+#include <givaro/givprint.h>
 
 #endif // __LINBOX_util_debug_H
 
