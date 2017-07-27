@@ -17,7 +17,7 @@ For instance, on a machine with an installation of GMP and OpenBLAS in the stand
 ```
 This script will install stable versions of Givaro, fflas-ffpack and then LinBox.
 
-Here is another example fetchng and installing the latest versions of Givaro, OpenBLAS, fflas-ffpack and then LinBox.
+Here is another example fetching and installing the latest versions of Givaro, OpenBLAS, fflas-ffpack and then LinBox.
 ```
 ./linbox-auto-install.sh --enable-openblas=yes
 ```
