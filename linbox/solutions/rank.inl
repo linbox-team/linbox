@@ -412,19 +412,14 @@ namespace LinBox
 	}
 
 	// Change of representation to be able to call the sparse elimination
-	template <class Blackbox>
+	template <class Blackbox, class DomainCategory>
 	inline unsigned long &rank (unsigned long                       &r,
 				    const Blackbox                      &A,
-				    const RingCategories::ModularTag    &tag,
+				    const DomainCategory		&tag,
 				    const Method::SparseElimination     &M)
 	{
-		typedef typename Blackbox::Field Field;
-		//! @bug choose (benchmark) best representation for Sparse Elimination
-		typedef SparseMatrix<Field, __LINBOX_rank_sparse_elimination_format > SparseBB;
-		// typedef Blackbox SparseBB;
-		SparseBB SpA(A.field(), A.rowdim(), A.coldim() );
-		MatrixHom::map(SpA, A);
-		return rankin(r, SpA, tag, M);
+                typename GaussDomain<typename Blackbox::Field>::Matrix copyA(A);
+		return rankin(r, copyA, tag, M);
 	}
 
 	// M may be <code>Method::BlasElimination()</code>.
@@ -615,9 +610,7 @@ namespace LinBox { /*  rankin */
 				      const RingCategories::ModularTag   &tag,
 				      const Method::SparseElimination    &M)
 	{
-		typedef typename Matrix::Field Field;
-		const Field F = A.field();
-		GaussDomain<Field> GD (F);
+		GaussDomain<typename Matrix::Field> GD (A.field());
 		GD.rankin( r, A, M.strategy ());
 		return r;
 	}

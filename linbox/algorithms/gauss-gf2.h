@@ -2,7 +2,7 @@
  * Copyright (C) 2009 The LinBox group
  * Written by JG Dumas
  *
- * Time-stamp: <27 Jul 17 10:04:46 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <28 Jul 17 13:15:36 Jean-Guillaume.Dumas@imag.fr>
  *
  * 
  * ========LICENCE========
@@ -50,11 +50,11 @@ namespace LinBox
 	template <>
 	class GaussDomain<GF2> {
 	public:
-		typedef GF2 Field;
-		typedef Field::Element Element;
+		using Field=GF2;
+		using Element=Field::Element;
 
 		// Preferred Matrix type
-		typedef ZeroOne<GF2> Matrix;
+		using Matrix=ZeroOne<GF2>;
 
 	public:
 
