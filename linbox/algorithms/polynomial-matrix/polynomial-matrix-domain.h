@@ -56,24 +56,20 @@ namespace LinBox
 		void mul(PMatrix1 &c, const PMatrix2 &a, const PMatrix3 &b, size_t max_rowdeg=0)
 		{
 			size_t d = a.size()+b.size();
-                        if (d > FFT_DEG_THRESHOLD){
-                                //std::cout<<"PolMul FFT"<<std::endl;
+			if (d > FFT_DEG_THRESHOLD){
+				//std::cout<<"PolMul FFT"<<std::endl;
 				_fft.mul(c,a,b,max_rowdeg);
-                        }
-			else
-				if ( d > KARA_DEG_THRESHOLD){
-                                        //std::cout<<"PolMul Kara"<<std::endl;
-					_kara.mul(c,a,b);
-                                }
-				else {
-                                        //std::cout<<"PolMul Naive"<<std::endl;
-					_naive.mul(c,a,b);
-                                }
-#ifdef CHECK_MATPOL_MUL                       
-                        check_mul(c,a,b,c.size());
-#endif
-
-                }
+			} else if ( d > KARA_DEG_THRESHOLD){
+				//std::cout<<"PolMul Kara"<<std::endl;
+				_kara.mul(c,a,b);
+			} else {
+				//std::cout<<"PolMul Naive"<<std::endl;
+				_naive.mul(c,a,b);
+			}
+//#ifdef CHECK_MATPOL_MUL                       
+			check_mul(c,a,b,c.size());
+//#endif
+		}
                
                 
 		template< class PMatrix1,class PMatrix2,class PMatrix3>

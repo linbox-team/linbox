@@ -109,10 +109,11 @@ namespace LinBox
 			return x;
 		}
 		
-		Element &init(Element &x, const std::vector<integer> &y) const {
+		template<typename Vector>
+		Element &init(Element &x, const Vector &y) const {
 			_pd.init(x, Givaro::Degree(0), 0);
 			
-			for (int i = 0; i < y.size(); i++)
+			for (size_t i = 0; i < y.size(); i++)
 			{
 				Element xi;
 				_pd.init(xi, Givaro::Degree(i), y[i]);
