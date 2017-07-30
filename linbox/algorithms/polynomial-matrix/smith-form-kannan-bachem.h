@@ -194,8 +194,9 @@ namespace LinBox
 			PMatrix Z(_F, M.coldim(), M.rowdim(), 1);
 			_PMD.mul(Z, L, M);
 			
-			M.setsize(Z.real_degree() + 1);
-			M.copy(Z, 0, Z.real_degree());
+			size_t d = Z.real_degree();
+			M.setsize(d + 1);
+			M.copy(Z, 0, d);
 		}
 		
 		template<typename PMatrix>
@@ -245,8 +246,9 @@ namespace LinBox
 			PMatrix Z(_F, M.coldim(), M.rowdim(), 1);
 			_PMD.mul(Z, M, R);
 			
-			M.setsize(Z.real_degree() + 1);
-			M.copy(Z, 0, Z.real_degree());
+			size_t d = Z.real_degree();
+			M.setsize(d + 1);
+			M.copy(Z, 0, d);
 		}
 		
 		template<typename PMatrix>
