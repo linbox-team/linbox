@@ -172,6 +172,23 @@ namespace LinBox
 			writePolynomialToMatrix(L, otherRow, otherRow, u);
 		}
 		
+		int64_t degree(Polynomial p) {
+			return _PD.degree(p).value();
+		}
+		
+		size_t max(Polynomial a, Polynomial b, Polynomial c, Polynomial d) {
+			int64_t ad, bd, cd, dd;
+			ad = degree(a);
+			bd = degree(b);
+			cd = degree(c);
+			dd = degree(d);
+			
+			int64_t r = ad < bd ? bd : ad;
+			r = r < cd ? cd : r;
+			r = r < dd ? dd : r;
+			return r < 0 ? 0 : (size_t) r;
+		}
+		
 		// use row pivotRow to eliminate row otherRow in the pivotRow-th column
 		template<typename PMatrix>
 		void eliminateCol(PMatrix &M, size_t pivotRow, size_t otherRow) {
@@ -187,7 +204,8 @@ namespace LinBox
 			
 			Polynomial s, t, u, v;
 			dxgcd(s, t, u, v, pivot, other);
-						
+			
+			size_t size = max(s,t,u,v) + 1;
 			PMatrix L(_F, M.rowdim(), M.rowdim(), size);
 			makeLeftElim(L, pivotRow, otherRow, s, t, u, v);
 			
@@ -240,6 +258,7 @@ namespace LinBox
 			Polynomial s, t, u, v;
 			dxgcd(s, t, u, v, pivot, other);
 			
+			size_t size = max(s,t,u,v) + 1;
 			PMatrix R(_F, M.coldim(), M.coldim(), size);
 			makeRightElim(R, pivotCol, otherCol, s, t, u, v);
 			
