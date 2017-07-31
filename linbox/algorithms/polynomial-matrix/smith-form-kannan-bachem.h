@@ -276,20 +276,6 @@ namespace LinBox
 				eliminateRow(M, pivotCol, otherCol);
 			}
 		}
-		
-		// Makes the bottom right n-by-n into a lower triangular hermite matrix.
-		template<typename PMatrix>
-		void hermite(PMatrix &M, size_t n) {
-			size_t dim = M.rowdim() < M.coldim() ? M.rowdim() : M.coldim();
-			
-			for (size_t pivot = n; pivot < dim; pivot++) {
-				if (!findPivot(M, pivot)) {
-					break;
-				}
-				
-				eliminateRow(M, pivot);
-			}
-		}
 
 		// True if pivot row/col is zero for all indexes greater other than pivot
 		template<typename PMatrix>
@@ -315,13 +301,124 @@ namespace LinBox
 			return true;
 		}
 		
+		template<typename PMatrix>
+		void fixDiagonal(PMatrix &M) {
+			size_t dim = M.rowdim() < M.coldim() ? M.rowdim() : M.coldim();
+			
+			bool done;
+			do {
+				done = true;
+				for (size_t i = 0; i < dim - 1; i++) {
+					Polynomial other;
+					_PD.init(other, M(i + 1, i + 1));
+					
+					if (_PD.isZero(other)) {
+						continue;
+					}
+					
+					Polynomial pivot;
+					_PD.init(pivot, M(i, i));
+					
+					Polynomial g;
+					_PD.gcd(g, pivot, other);
+					
+					if (_PD.areAssociates(g, pivot)) {
+						continue;
+					}
+					
+					writePolynomialToMatrix(M, i, i, g);
+					done = false;
+				}
+			} while (!done);
+		}
+		
+		template<typename PMatrix>
+		void makeReduce(PMatrix &L, size_t row, size_t col, Polynomial quo) {
+			size_t dim = L.rowdim() < L.coldim() ? L.rowdim() : L.coldim();
+			
+			for (size_t i = 0; i < dim; i++) {
+				_F.assign(L.ref(i, i, 0), _F.one);
+			}
+			
+			Polynomial nquo;
+			_PD.neg(nquo, quo);
+			writePolynomialToMatrix(L, row, col, nquo);
+		}
+		
+		/* 
+		 * Given a upper triangular matrix, reduces the off diagonal elements to be of degree less than
+		 * the element on the diagonal below it, i.e., M[1,3] = M[1,3] - (M[1,3] / M[3,3]) * M[3,3]
+		 * 
+		 * Uses Chou/Collins ordering:
+		 * * 4 5 6
+		 * 0 * 2 3
+		 * 0 0 * 1
+		 * 0 0 0 *    
+		 */
+		template<typename PMatrix>
+		void reduceOffDiagonal(PMatrix &M) {
+			size_t dim = M.rowdim() < M.coldim() ? M.rowdim() : M.coldim();
+			
+			for (size_t row = dim-1; 0 < row; row--) {
+				for (size_t col = row+1; col < M.coldim(); col++) {
+					Polynomial pivot, other;
+					_PD.init(pivot, M(col, col));
+					_PD.init(other, M(row, col));
+					
+					if (degree(other) < degree(pivot)) {
+						continue;
+					}
+					
+					Polynomial q;
+					_PD.quo(q, other, pivot);
+					
+					PMatrix L(_F, M.rowdim(), M.rowdim(), degree(q) + 1);
+					makeReduce(L, row, col, q);
+					
+					PMatrix Z(_F, M.rowdim(), M.coldim(), 1);
+					_PMD.mul(Z, L, M);
+					
+					size_t d = Z.real_degree();
+					M.setsize(d + 1);
+					M.copy(Z, 0, d);
+				}
+			}
+		}
+		
+		// Makes the bottom right n-by-n into a hermite matrix.
+		template<typename PMatrix>
+		void hermite(PMatrix &M, size_t n) {
+			size_t dim = M.rowdim() < M.coldim() ? M.rowdim() : M.coldim();
+			
+			for (size_t pivot = n; pivot < dim; pivot++) {
+				if (!findPivot(M, pivot)) {
+					break;
+				}
+				
+				eliminateCol(M, pivot);
+			}
+			
+			reduceOffDiagonal(M);
+		}
+		
 	public:
 		
 		template<typename PMatrix>
 		void solve(PMatrix &M) {
-			eliminateCol(M, 0);
+			size_t dim = M.rowdim() < M.coldim() ? M.rowdim() : M.coldim();
 			
-			hermite(M, 0);
+			for (size_t pivot = 0; pivot < dim; pivot++) {
+				if (!findPivot(M, pivot)) {
+					break;
+				}
+				
+				while (!isDiagonalized(M, pivot)) {
+					eliminateRow(M, pivot);
+					hermite(M, pivot);
+				}
+			}
+			
+			fixDiagonal(M);
 		}
 		
 		template<typename PMatrix>
@@ -330,188 +427,17 @@ namespace LinBox
 			
 			for (size_t pivot = 0; pivot < dim; pivot++) {
 				if(!findPivot(M, pivot)) {
-					return;
+					break;
 				}
 				
-				while(true) {
-					if (isDiagonalized(M, pivot)) {
-						break;
-					}
-					
+				while (!isDiagonalized(M, pivot)) {
 					eliminateCol(M, pivot);
 					eliminateRow(M, pivot);
 				}
 			}
+			
+			fixDiagonal(M);
 		}
-		
-		
-/*
-		void reduceOffDiagonal(Rep &A, int s, int e) const
-		{
-			for (int i = s; i <= e; i++)
-			{
-				Element nii,ii;
-				A.getEntry(ii, i, i);
-				field().normalize(nii,ii);
-
-				Element tmp;
-				field().div(tmp, nii, ii);
-
-				if (field().isOne(tmp))
-					continue;
-
-				// A[i] = A[i,i] * n
-				// where n = normalized(A[i,i]) / A[i,i]
-				A.setEntry(i, i, nii);
-				for (size_t j = i+1; j < A.coldim(); j++)
-				{
-					Element ij;
-					A.getEntry(ij, i, j);
-					field().mulin(ij, tmp);
-					A.setEntry(i, j, ij);
-				}
-			}
-
-			// Ording of reduction here is an improvement to Kannan/Bachem
-			// Introduced by Chou/Collins '82
-			// Reduce from bottom to top and left to right
-			// * 4 5 6
-			// 0 * 2 3
-			// 0 0 * 1
-			// 0 0 0 *
-			for (int i = e-1; i >= s; i--)
-			{
-				for (int j = i+1; j <= e; j++)
-				{
-					Element jj, ij, tmp;
-
-					A.getEntry(ij, i, j);
-					if (field().isZero(ij))
-						continue;
-
-					A.getEntry(jj, j, j);
-					field().quo(tmp, ij, jj);
-
-					// A[i] = A[i] - quo(A[i,j], A[j,j]) * A[j]
-					for (size_t k = j; k < A.coldim(); k++)
-					{
-						Element ik, jk;
-
-						A.getEntry(ik, i, k);
-						A.getEntry(jk, j, k);
-
-						field().mulin(jk, tmp);
-						field().subin(ik, jk);
-
-						A.setEntry(i, k, ik);
-					}
-				}
-			}
-		}
-
-		// Puts the lower-right n-by-n minor of A into Hermite Normal Form
-		void hermite(Rep &A, int n) const
-		{
-			int dim = (int)A.rowdim();
-
-			for (int i = n; i < dim; i++)
-			{
-				for (int j = n; j < i; j++)
-					eliminateCol(A, j, i);
-
-				if (!findPivot(A, i))
-					return;
-
-				reduceOffDiagonal(A, n, i);
-			}
-		}
-
-		bool isRowDiagonalized(const Rep &A, int n) const
-		{
-			for (size_t i = n+1; i < A.coldim(); i++)
-			{
-				Element ni;
-				A.getEntry(ni, n, i);
-				if (!field().isZero(ni))
-					return false;
-			}
-			return true;
-		}
-
-		bool pivotDividesRemaining(Rep &A, int n) const
-		{
-			Element nn;
-			A.getEntry(nn, n, n);
-
-			for (size_t i = n+1; i < A.rowdim(); i++)
-			{
-				for (size_t j = i; j < A.coldim(); j++)
-				{
-					Element ij, g;
-					A.getEntry(ij, i, j);
-
-					if (field().isZero(ij))
-						continue;
-
-					field().gcd(g, nn, ij);
-
-					if (!field().areAssociates(g, nn))
-					{
-						// Add row i to row n
-						for (size_t k = i; k < A.coldim(); k++)
-						{
-							Element ik;
-							A.getEntry(ik, i, k);
-							A.setEntry(n, k, ik);
-						}
-						return false;
-					}
-				}
-			}
-
-			return true;
-		}
-
-	public:
-		template<class Vector>
-		Vector &solve(Vector &S, const Rep &A) const
-		{
-			size_t dim = A.rowdim();
-			linbox_check(A.coldim() == dim && S.size() >= dim);
-
-			Rep B(A);
-
-			for (size_t i = 0; i < dim;)
-			{
-				if (!findPivot(B, i))
-					break;
-
-				for (size_t j = i+1; j < dim; j++)
-					eliminateRow(B, i, j);
-
-				hermite(B, i);
-
-				if (!isRowDiagonalized(B, i))
-					continue;
-
-				if (!pivotDividesRemaining(B, i))
-					continue;
-
-				i++;
-				
-				//std::cout << i << "/" << dim << std::endl;
-			}
-
-			for (size_t i = 0; i < dim; i++)
-			{
-				Element ii;
-				B.getEntry(ii, i, i);
-				S.setEntry(i, ii);
-			}
-
-			return S;
-		}
-	*/
 	};
 }
 

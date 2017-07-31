@@ -97,7 +97,7 @@ int main(int argc, char** argv)
 	
 	M.write(std::cout) << std::endl;
 	
-	PKB.solveTextbook(M);
+	PKB.solve(M);
 	
 	M.write(std::cout) << std::endl;
 	
