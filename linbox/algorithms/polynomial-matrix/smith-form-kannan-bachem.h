@@ -86,7 +86,7 @@ namespace LinBox
 		}
 		
 		template<typename Vector>
-		bool isZero(Vector &P) const {
+		bool isZero(const Vector &P) const {
 			size_t d = P.size();
 			
 			for (size_t k = 0; k < d; k++) {
@@ -142,11 +142,14 @@ namespace LinBox
 		
 		// Ensures that if a=b then s=u=v=1 and t=0 to avoid an infinite loop
 		void dxgcd(Polynomial &s, Polynomial &t, Polynomial &u, Polynomial &v, const Polynomial &a, const Polynomial &b) const {
-			if (_PD.areEqual(a,b)) {
+			if (_PD.isDivisor(b, a)) {
+				Polynomial quo;
+				_PD.quo(quo, b, a);
+				
 				_PD.assign(s, _PD.one);
 				_PD.assign(t, _PD.zero);
 				_PD.assign(u, _PD.one);
-				_PD.assign(v, _PD.one);
+				_PD.assign(v, quo);
 				return;
 			}
 

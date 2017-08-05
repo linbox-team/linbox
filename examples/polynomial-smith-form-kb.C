@@ -32,16 +32,12 @@ typedef typename Field::RandIter RandIter;
 typedef RandomDenseMatrix<RandIter, Field> RandomMatrix;
 
 // Polynomial with matrix coefficients
-typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain,Field> MatrixP;
+typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain,Field> PMatrix;
 
 // Matrix with polynomial coefficients
-typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field> PMatrix;
+//typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field> PMatrix;
 
-typedef MatrixP::Matrix Matrix;
-typedef MatrixDomain<Field> MatDomain;
-
-int main(int argc, char** argv)
-{
+int main(int argc, char** argv) {
 	size_t p = 7;
 	Field F(p);
 	RandIter RI(F);
@@ -82,19 +78,13 @@ int main(int argc, char** argv)
 		}
 	}
 	
-	/*
-	A.write(std::cout) << std::endl;
-	L.write(std::cout) << std::endl;
-	R.write(std::cout) << std::endl;
-	std::cout << "--------------------------------" << std::endl;
-	//*/
-	
 	PMatrix M(F, 3, 3, 1);
 	PMatrix AR(F, 3, 3, 1);
 	
 	PMD.mul(AR, A, R);
 	PMD.mul(M, L, AR);
-	
+
+	M.setsize(M.real_degree() + 1);
 	M.write(std::cout) << std::endl;
 	
 	PKB.solve(M);

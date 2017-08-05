@@ -317,7 +317,7 @@ namespace LinBox{
                                 b= ((int) ceil (log ((double) _size) / M_LN10));
                                 wid*=10*(b*(b-1)/2.);
                         }
-			std::cout<<"Matrix([" <<std::endl;
+			os <<"Matrix([" <<std::endl;
                         for (size_t i = 0; i< _row;++i) {
                                 os << "  [ ";
                                 for (size_t j = 0;j<_col;++j){
@@ -335,7 +335,7 @@ namespace LinBox{
                                 }
 				os << (i<_row-1?"],":"]" )<< std::endl;
                         }
-			std::cout<<"]);";
+			os <<"]);";
 		
                 	return os;
                 }
@@ -560,7 +560,7 @@ namespace LinBox{
 
 			b= ((int) ceil (log ((double) (deg_max-deg_min+1)) / M_LN10));
 			wid*=10*(b*(b-1)/2.);
-			std::cout<<"Matrix([";
+			os <<"Matrix([" << std::endl;
 			for (size_t i = 0; i< _row;++i) {
                                 os << "  [ ";
                                 for (size_t j = 0;j<_col;++j){
@@ -578,7 +578,7 @@ namespace LinBox{
                                 }
                                 os << (i<_row-1?"],":"]" )<< std::endl;
                         }
-			std::cout<<"]);";
+			os << "]);";
 			return os;
                 }
 
