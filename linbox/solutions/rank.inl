@@ -418,7 +418,9 @@ namespace LinBox
 				    const DomainCategory		&tag,
 				    const Method::SparseElimination     &M)
 	{
-                typename GaussDomain<typename Blackbox::Field>::Matrix copyA(A);
+//         typename GaussDomain<typename Blackbox::Field>::Matrix copyA(A);
+        typename GaussDomain<typename Blackbox::Field>::Matrix copyA(A.field(),A.rowdim(), A.coldim());
+        MatrixHom::map(copyA, A);
 		return rankin(r, copyA, tag, M);
 	}
 

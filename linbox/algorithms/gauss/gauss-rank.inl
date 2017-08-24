@@ -1,7 +1,7 @@
 /* linbox/algorithms/gauss-rank.inl
  * Copyright (C) 2009 The LinBox group
  *
- * Time-stamp: <15 Jun 10 17:20:20 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <24 Aug 17 18:20:18 Jean-Guillaume.Dumas@imag.fr>
  *
  * 
  * ========LICENCE========
@@ -31,9 +31,9 @@
 namespace LinBox
 {
 	template <class _Field>
-	template <class Matrix> unsigned long&
+	template <class _Matrix> unsigned long&
 	GaussDomain<_Field>::rankin(unsigned long &Rank,
-				    Matrix        &A,
+				    _Matrix        &A,
 				    unsigned long  Ni,
 				    unsigned long  Nj,
 				    SparseEliminationTraits::PivotStrategy   reord)  const
@@ -47,9 +47,9 @@ namespace LinBox
 
 
 	template <class _Field>
-	template <class Matrix> unsigned long&
+	template <class _Matrix> unsigned long&
 	GaussDomain<_Field>::rankin(unsigned long &Rank,
-				    Matrix        &A,
+				    _Matrix        &A,
 				    SparseEliminationTraits::PivotStrategy   reord)  const
 	{
 		return rankin(Rank, A,  A.rowdim (), A.coldim (), reord);
@@ -58,23 +58,23 @@ namespace LinBox
 
 
 	template <class _Field>
-	template <class Matrix> unsigned long&
+	template <class _Matrix> unsigned long&
 	GaussDomain<_Field>::rank(unsigned long &rk,
-				  const Matrix        &A,
+				  const _Matrix        &A,
 				  SparseEliminationTraits::PivotStrategy   reord)  const
 	{
 		return rank(rk, A,  A.rowdim (), A.coldim (), reord);
 	}
 
 	template <class _Field>
-	template <class Matrix> unsigned long&
+	template <class _Matrix> unsigned long&
 	GaussDomain<_Field>::rank(unsigned long &Rank,
-				  const Matrix        &A,
+				  const _Matrix        &A,
 				  unsigned long  Ni,
 				  unsigned long  Nj,
 				  SparseEliminationTraits::PivotStrategy   reord)  const
 	{
-		Matrix CopyA(Ni);
+		_Matrix CopyA(Ni);
 		for(unsigned long i = 0; i < Ni; ++i)
 			CopyA[i] = A[i];
 		return rankin(Rank, CopyA, Ni, Nj, reord);

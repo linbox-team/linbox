@@ -2,7 +2,7 @@
  * Copyright (C) LinBox 2008
  *
  * Written by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
- * Time-stamp: <21 Jun 10 14:43:11 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <24 Aug 17 18:22:23 Jean-Guillaume.Dumas@imag.fr>
  *
  *
  * ========LICENCE========
@@ -41,8 +41,8 @@ namespace LinBox
 
 	// U is supposed full Rank upper triangular
 	template <class _Field>
-	template <class Matrix, class Perm, class Block> inline Block&
-	GaussDomain<_Field>::nullspacebasis(Block& x, unsigned long Rank, const Matrix& U, const Perm& P)  const
+	template <class _Matrix, class Perm, class Block> inline Block&
+	GaussDomain<_Field>::nullspacebasis(Block& x, unsigned long Rank, const _Matrix& U, const Perm& P)  const
 	{
 		if (Rank == 0) {
 			for(size_t i=0; i<U.coldim(); ++i)
@@ -52,14 +52,14 @@ namespace LinBox
 			unsigned long nullity = U.coldim()-Rank;
 			if (nullity != 0) {
 				// compute U2T s.t. U = [ U1 | -U2T^T ]
-				Matrix U2T(field(),nullity,Rank);
+				_Matrix U2T(field(),nullity,Rank);
 
-				for(typename Matrix::ConstIndexedIterator uit=U.IndexedBegin();
+				for(typename _Matrix::ConstIndexedIterator uit=U.IndexedBegin();
 				    uit != U.IndexedEnd(); ++uit) {
 					if (uit.colIndex() >= Rank)
 						U2T.setEntry(uit.colIndex()-Rank,uit.rowIndex(),uit.value());
 				}
-				for(typename Matrix::Iterator u2it=U2T.Begin();
+				for(typename _Matrix::Iterator u2it=U2T.Begin();
 				    u2it != U2T.End(); ++u2it)
 					field().negin(*u2it);
 
@@ -85,18 +85,18 @@ namespace LinBox
 		return x;
 	}
 
-	template <class Matrix>
-	inline bool nextnonzero(size_t& k, size_t Ni, const Matrix& A)
+	template <class _Matrix>
+	inline bool nextnonzero(size_t& k, size_t Ni, const _Matrix& A)
 	{
 		for(++k; k<Ni; ++k)
 			if (A[k].size() > 0) return true;
 		return false;
 	}
 
-	// Matrix A is upper triangularized
+	// _Matrix A is upper triangularized
 	template <class _Field>
-	template <class Matrix, class Block> inline Block&
-	GaussDomain<_Field>::nullspacebasisin(Block& x, Matrix& A)  const
+	template <class _Matrix, class Block> inline Block&
+	GaussDomain<_Field>::nullspacebasisin(Block& x, _Matrix& A)  const
 	{
 		typename Field::Element Det;
 		unsigned long Rank;
@@ -129,10 +129,10 @@ namespace LinBox
 	}
 
 	template <class _Field>
-	template <class Matrix, class Block> inline Block&
-	GaussDomain<_Field>::nullspacebasis(Block& x, const Matrix& A)  const
+	template <class _Matrix, class Block> inline Block&
+	GaussDomain<_Field>::nullspacebasis(Block& x, const _Matrix& A)  const
 	{
-		SparseMatrix<Field, SparseMatrixFormat::SparseSeq> A1 (A);
+		Matrix A1 (A); // Must copy, then best to copy to preferred
 		return this->nullspacebasisin(x, A1);
 	}
 
