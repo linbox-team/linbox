@@ -243,6 +243,15 @@ namespace LinBox
 			typename IMatrix::template rebind<typename FMatrix::Field>()( Ap, A);
         }
 
+		template <class Field, class Field2, class Vect>
+		void map (SparseMatrix<Field, Vect> &Ap, 
+                  const SparseMatrix<Field, Vect> & A)
+		{
+            typedef SparseMatrix<Field, Vect> FMatrix;
+            typedef SparseMatrix<Field2,Vect> IMatrix;
+			typename IMatrix::template rebind<typename FMatrix::Field>()( Ap, A);
+        }
+
 
 		// construct a sparse matrix over finite field, such that Ap = A mod p, where F = Ring / <p>
 		template <class Field, class Vect, class IMatrix>
