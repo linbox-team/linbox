@@ -398,7 +398,7 @@ namespace LinBox
 			std::vector<Polynomial> tmp;
 			size_t size = max(tmp = {s,t,u,v}) + 1;
 			PMatrix R(_F, M.coldim(), M.coldim(), size);
-			makeLeftElim1(R, p, p+1, s, t, u, v);
+			makeRightElim1(R, p, p+1, s, t, u, v);
 			
 			PMatrix Z(_F, M.rowdim(), M.coldim(), 1);
 			_PMD.mul(Z, M, R);
@@ -461,15 +461,12 @@ namespace LinBox
 			// Construct elimination matrix
 			Polynomial pivot;
 			_PD.init(pivot, M(p, p));
-			_PD.write(std::cout << "M(" << p << ", "<<  p << "):", pivot) << std::endl;
 			
 			std::vector<Polynomial> qs;
 			for (size_t i = p+1; i < M.coldim(); i++) {
 				Polynomial other;
 				_PD.init(other, M(p, i));
-				
-				_PD.write(std::cout << "M(" << p << ", "<<  i << "):", other) << std::endl;
-				
+								
 				Polynomial q;
 				_PD.quo(q, other, pivot);
 				_PD.negin(q);
@@ -484,13 +481,8 @@ namespace LinBox
 			}
 			
 			for (size_t i = 0; i < qs.size(); i++) {
-				_PD.write(std::cout << "qs[" << i << "]:", qs[i]) << std::endl;
 				writePolynomialToMatrix(R, p, p + i + 1, qs[i]);
 			}
-			
-			R.write(std::cout << "R:" << std::endl) << std::endl;
-			
-			M.write(std::cout << "before R:" << std::endl) << std::endl;
 			
 			PMatrix Z(_F, M.rowdim(), M.coldim(), 1);
 			_PMD.mul(Z, M, R);
@@ -498,8 +490,6 @@ namespace LinBox
 			size_t degree = Z.real_degree();
 			M.setsize(degree + 1);
 			M.copy(Z, 0, degree);
-			
-			M.write(std::cout << "after R:" << std::endl) << std::endl;
 			
 			reduceMatrix(M, d);
 		}
@@ -556,9 +546,21 @@ namespace LinBox
 			return degree(g) == 0;
 		}
 		
+		void fixDiagonal(std::vector<Polynomial> &v) {
+			for (size_t i = 0; i < v.size() - 1; i++) {
+				Polynomial h;
+				_PD.assign(h, v[i]);
+				
+				_PD.gcd(v[i], v[i+1], h);
+				
+				_PD.mulin(v[i+1], h);
+				_PD.divin(v[i+1], v[i]);
+			}
+		}
+		
 	public:
 		template<typename PMatrix>
-		void solve(PMatrix &M, Polynomial &d) {
+		void solve(std::vector<Polynomial> &v, PMatrix &M, Polynomial &d) {
 			size_t dim = M.rowdim() < M.coldim() ? M.rowdim() : M.coldim();
 			
 			for (size_t p = 0; p < dim - 1; p++) {
@@ -568,6 +570,7 @@ namespace LinBox
 				
 				while (!isDiagonalized(M, p)) {
 					eliminateCol(M, p, d);
+					
 					if (isUnit(M, p, d)) {
 						zeroRow(M, p);
 					} else {
@@ -576,13 +579,15 @@ namespace LinBox
 				}
 			}
 			
+			v.resize(dim);
 			for (size_t i = 0; i < dim; i++) {
-				Polynomial e, g;
+				Polynomial e;
 				_PD.init(e, M(i, i));
-				_PD.gcd(g, e, d);
+				normalize(v[i], e, d);
 				
-				_PD.write(std::cout << i << ": ", g) << std::endl;
 			}
+			
+			fixDiagonal(v);
 		}
 	};
 }
