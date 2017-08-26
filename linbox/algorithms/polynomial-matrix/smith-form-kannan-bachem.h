@@ -131,6 +131,8 @@ namespace LinBox
 					typename PolyRing::Scalar_t e;
 					_PD.getEntry(e, Givaro::Degree(k), p);
 					_F.assign(M.ref(r, c, k), e);
+				} else {
+					_F.assign(M.ref(r, c, k), _F.zero);
 				}
 			}
 		}

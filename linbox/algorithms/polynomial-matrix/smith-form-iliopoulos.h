@@ -70,6 +70,8 @@ namespace LinBox
 					typename PolyRing::Scalar_t e;
 					_PD.getEntry(e, Givaro::Degree(k), p);
 					_F.assign(M.ref(r, c, k), e);
+				} else {
+					_F.assign(M.ref(r, c, k), _F.zero);
 				}
 			}
 		}
@@ -90,6 +92,33 @@ namespace LinBox
 
 			Polynomial g;
 			_PD.dxgcd(g,s,t,u,v,a,b);
+		}
+		
+		void xgcd(Polynomial &g, std::vector<Polynomial> &ts, const std::vector<Polynomial> &as, const Polynomial &d) {
+			ts.resize(as.size());
+			_PD.assign(ts[0], _F.one);
+			_PD.assign(g, as[0]);
+			
+			for (size_t i = 1; i < as.size(); i++) {
+				Polynomial r, t1, t2;
+				_PD.gcd(r, t1, t2, g, as[i]);
+				
+				for (size_t j = 0; j < i; j++) {
+					_PD.mulin(ts[j], t1);
+				}
+				
+				_PD.assign(ts[i], t2);
+				_PD.assign(g, r);
+			}
+			
+			Polynomial r, t1, t2;
+			_PD.gcd(r, t1, t2, g, d);
+			
+			for (size_t i = 0; i < ts.size(); i++) {
+				_PD.mulin(ts[i], t1);
+			}
+			
+			_PD.assign(g, r);
 		}
 		
 		template<typename PMatrix>
@@ -139,81 +168,421 @@ namespace LinBox
 			}
 		}
 		
-		// return index of element that divides all other nonzero elements in list
-		// or index of zero element if no divisors are found.
-		size_t findDivisorOrZero(const std::vector<Polynomial> &lst, const Polynomial &d) const {
-			Polynomial divisor;
-			size_t divisor_idx = NOT_FOUND;
-			size_t zero_idx = NOT_FOUND;
-			
-			for (size_t i = 0; i < lst.size(); i++) {
-				Polynomial tmp;
-				normalize(tmp, lst[i], d);
-				bool isZero = _PD.isZero(tmp);
-				
-				if (isZero) {
-					zero_idx = zero_idx != NOT_FOUND ? zero_idx : i;
-					continue;
+		template<typename PMatrix>
+		void reduceMatrix(PMatrix &M, const Polynomial &d) const {
+			for (size_t r = 0; r < M.rowdim(); r++) {
+				for (size_t c = 0; c < M.coldim(); c++) {
+					Polynomial a, b;
+					_PD.init(a, M(r, c));
+					_PD.rem(b, a, d);
+					writePolynomialToMatrix(M, r, c, b);
 				}
-				
-				if (_PD.isUnit(tmp)) {
-					return i;
-				}
-				
-				if (divisor_idx == NOT_FOUND && !isZero) {
-					_PD.assign(divisor, tmp);
-					divisor_idx = i;
-					continue;
-				}
-				
-				if (_PD.isDivisor(tmp, divisor)) {
-					continue;
-				}
-				
-				if (_PD.isDivisor(divisor, tmp)) {
-					_PD.assign(divisor, tmp);
-					divisor_idx = i;
-					continue;
-				}
-				
-				for (size_t j = i+1; j < lst.size(); j++) {
-					Polynomial tmp2;
-					normalize(tmp2, lst[j], d);
-					if (_PD.isZero(tmp2)) {
-						return j;
-					}
-				}
-				return NOT_FOUND;
 			}
-			return divisor_idx;
+			
+			M.setsize(M.real_degree() + 1);
 		}
 		
-		void eliminateCol(PMatrix &M, size_t p, Polynomial &d) {
-			std::vector<Polynomial> lst;
+		int64_t degree(const Polynomial &p) const {
+			return _PD.degree(p).value();
+		}
+		
+		size_t max(const std::vector<Polynomial> &ps) const {
+			int64_t d = 0;
+			
+			for (size_t i = 0; i < ps.size(); i++) {
+				int64_t tmp = degree(ps[i]);
+				
+				d = d < tmp ? tmp : d;
+			}
+			
+			return d < 0 ? 0 : (size_t) d;
+		}
+		
+		// Column Elimination Methods
+		
+		template<typename PMatrix>
+		size_t findColPivotOrZero(PMatrix &M, size_t p) {
+			size_t zeroIdx = NOT_FOUND;
+			
 			for (size_t i = p; i < M.rowdim(); i++) {
 				Polynomial tmp;
-				lst.push_back(_PD.init(tmp, M(i, p)));
+				_PD.init(tmp, M(i, p));
+				
+				if (_PD.isZero(tmp)) {
+					zeroIdx = i;
+				} else if (degree(tmp) == 0) {
+					return i;
+				}
 			}
-			size_t p_row = p + findDivisorOrZero(lst, d);
 			
-			if (p_row == NOT_FOUND) {
-				zeroOutPivotRow(M, p, d);
-			} else if (p_row != p) {
-				swapRows(M, p, p_row);
+			return zeroIdx;
+		}
+		
+		template<typename PMatrix>
+		void makeLeftElim1(PMatrix &L, size_t pivotRow, size_t otherRow, const Polynomial &s, const Polynomial &t,
+			const Polynomial &u, const Polynomial &v) const {
+			
+			size_t dim = L.rowdim();
+			for (size_t i = 0; i < dim; i++) {
+				_F.assign(L.ref(i, i, 0), _F.one);
 			}
+			
+			writePolynomialToMatrix(L, pivotRow, pivotRow, s);
+			writePolynomialToMatrix(L, pivotRow, otherRow, t);
+			
+			Polynomial nv;
+			_PD.neg(nv, v);
+			writePolynomialToMatrix(L, otherRow, pivotRow, nv);
+			writePolynomialToMatrix(L, otherRow, otherRow, u);
+		}
+		
+		template<typename PMatrix>
+		void zeroPivotCol(PMatrix &M, size_t p) {
+			Polynomial pivot;
+			Polynomial other;
+			
+			_PD.init(pivot, M(p, p));
+			_PD.init(other, M(p+1, p));
+			
+			Polynomial s, t, u, v;
+			dxgcd(s, t, u, v, pivot, other);
+			
+			std::vector<Polynomial> tmp;
+			size_t size = max(tmp = {s,t,u,v}) + 1;
+			PMatrix L(_F, M.rowdim(), M.rowdim(), size);
+			makeLeftElim1(L, p, p+1, s, t, u, v);
+			
+			PMatrix Z(_F, M.coldim(), M.rowdim(), 1);
+			_PMD.mul(Z, L, M);
+			
+			size_t d = Z.real_degree();
+			M.setsize(d + 1);
+			M.copy(Z, 0, d);
+		}
+		
+		template<typename PMatrix>
+		void makeColPivot(PMatrix &M, size_t p, Polynomial &d) {
+			std::vector<Polynomial> elms;
+			for (size_t i = p+1; i < M.rowdim(); i++) {
+				Polynomial tmp;
+				_PD.init(tmp, M(i, p));
+				elms.push_back(tmp);
+			}
+			
+			Polynomial g;
+			std::vector<Polynomial> ts;
+			xgcd(g, ts, elms, d);
+			
+			size_t size = max(ts) + 1;
+			PMatrix L(_F, M.rowdim(), M.rowdim(), size);
+			
+			size_t dim = L.rowdim();
+			for (size_t i = 0; i < dim; i++) {
+				_F.assign(L.ref(i, i, 0), _F.one);
+			}
+			
+			for (size_t i = 0; i < ts.size(); i++) {
+				writePolynomialToMatrix(L, p, p + i + 1, ts[i]);
+			}
+			
+			PMatrix Z(_F, M.rowdim(), M.coldim(), 1);
+			_PMD.mul(Z, L, M);
+			
+			size_t degree = Z.real_degree();
+			degree = ((int64_t) degree) < this->degree(g) ? this->degree(g) : degree;
+			M.setsize(degree + 1);
+			M.copy(Z, 0, degree);
+			
+			writePolynomialToMatrix(M, p, p, g);
+		}
+		
+		template<typename PMatrix>
+		void eliminateCol(PMatrix &M, size_t p, Polynomial &d) {
+			size_t zeroOrUnit = findColPivotOrZero(M, p);
+			
+			if (zeroOrUnit == NOT_FOUND) {
+				zeroPivotCol(M, p);
+			} else if (zeroOrUnit != p) {
+				swapRows(M, p, zeroOrUnit);
+			}
+			
+			if (isZero(M(p, p))) {
+				makeColPivot(M, p, d);
+			}
+			
+			// Construct elimination matrix
+			Polynomial pivot;
+			_PD.init(pivot, M(p, p));
+			
+			std::vector<Polynomial> qs;
+			for (size_t i = p+1; i < M.rowdim(); i++) {
+				Polynomial other;
+				_PD.init(other, M(i, p));
+				
+				Polynomial q;
+				_PD.quo(q, other, pivot);
+				_PD.negin(q);
+				
+				qs.push_back(q);
+			}
+			
+			size_t size = max(qs) + 1;
+			PMatrix L(_F, M.rowdim(), M.rowdim(), size);
+			for (size_t i = 0; i < L.rowdim(); i++) {
+				_F.assign(L.ref(i, i, 0), _F.one);
+			}
+			
+			for (size_t i = 0; i < qs.size(); i++) {
+				writePolynomialToMatrix(L, p + i + 1, p, qs[i]);
+			}
+			
+			PMatrix Z(_F, M.rowdim(), M.coldim(), 1);
+			_PMD.mul(Z, L, M);
+			
+			size_t degree = Z.real_degree();
+			M.setsize(degree + 1);
+			M.copy(Z, 0, degree);
+			
+			reduceMatrix(M, d);
+		}
+		
+		// Row Elimination Methods
+		
+		template<typename PMatrix>
+		size_t findRowPivotOrZero(PMatrix &M, size_t p) {
+			size_t zeroIdx = NOT_FOUND;
+			
+			for (size_t i = p; i < M.coldim(); i++) {
+				Polynomial tmp;
+				_PD.init(tmp, M(p, i));
+				
+				if (_PD.isZero(tmp)) {
+					zeroIdx = i;
+				} else if (degree(tmp) == 0) {
+					return i;
+				}
+			}
+			
+			return zeroIdx;
+		}
+		
+		template<typename PMatrix>
+		void makeRightElim1(PMatrix &L, size_t pivotRow, size_t otherRow, const Polynomial &s, const Polynomial &t,
+			const Polynomial &u, const Polynomial &v) const {
+			
+			size_t dim = L.rowdim();
+			for (size_t i = 0; i < dim; i++) {
+				_F.assign(L.ref(i, i, 0), _F.one);
+			}
+			
+			writePolynomialToMatrix(L, pivotRow, pivotRow, s);
+			writePolynomialToMatrix(L, otherRow, pivotRow, t);
+			
+			Polynomial nv;
+			_PD.neg(nv, v);
+			writePolynomialToMatrix(L, pivotRow, otherRow, nv);
+			writePolynomialToMatrix(L, otherRow, otherRow, u);
+		}
+		
+		template<typename PMatrix>
+		void zeroPivotRow(PMatrix &M, size_t p) {
+			Polynomial pivot;
+			Polynomial other;
+			
+			_PD.init(pivot, M(p, p));
+			_PD.init(other, M(p, p+1));
+			
+			Polynomial s, t, u, v;
+			dxgcd(s, t, u, v, pivot, other);
+			
+			std::vector<Polynomial> tmp;
+			size_t size = max(tmp = {s,t,u,v}) + 1;
+			PMatrix R(_F, M.coldim(), M.coldim(), size);
+			makeLeftElim1(R, p, p+1, s, t, u, v);
+			
+			PMatrix Z(_F, M.rowdim(), M.coldim(), 1);
+			_PMD.mul(Z, M, R);
+			
+			size_t d = Z.real_degree();
+			M.setsize(d + 1);
+			M.copy(Z, 0, d);
+		}
+		
+		template<typename PMatrix>
+		void makeRowPivot(PMatrix &M, size_t p, Polynomial &d) {
+			std::vector<Polynomial> elms;
+			for (size_t i = p+1; i < M.coldim(); i++) {
+				Polynomial tmp;
+				_PD.init(tmp, M(p, i));
+				elms.push_back(tmp);
+			}
+			
+			Polynomial g;
+			std::vector<Polynomial> ts;
+			xgcd(g, ts, elms, d);
+			
+			size_t size = max(ts) + 1;
+			PMatrix R(_F, M.coldim(), M.coldim(), size);
+			
+			size_t dim = R.rowdim();
+			for (size_t i = 0; i < dim; i++) {
+				_F.assign(R.ref(i, i, 0), _F.one);
+			}
+			
+			for (size_t i = 0; i < ts.size(); i++) {
+				writePolynomialToMatrix(R, p + i + 1, p, ts[i]);
+			}
+			
+			PMatrix Z(_F, M.rowdim(), M.coldim(), 1);
+			_PMD.mul(Z, M, R);
+			
+			size_t degree = Z.real_degree();
+			degree = ((int64_t) degree) < this->degree(g) ? this->degree(g) : degree;
+			M.setsize(degree + 1);
+			M.copy(Z, 0, degree);
+			
+			writePolynomialToMatrix(M, p, p, g);
+		}
+		
+		template<typename PMatrix>
+		void eliminateRow(PMatrix &M, size_t p, Polynomial &d) {
+			size_t zeroOrUnit = findRowPivotOrZero(M, p);
+			
+			if (zeroOrUnit == NOT_FOUND) {
+				zeroPivotRow(M, p);
+			} else if (zeroOrUnit != p) {
+				swapCols(M, p, zeroOrUnit);
+			}
+			
+			if (isZero(M(p, p))) {
+				makeRowPivot(M, p, d);
+			}
+			
+			// Construct elimination matrix
+			Polynomial pivot;
+			_PD.init(pivot, M(p, p));
+			_PD.write(std::cout << "M(" << p << ", "<<  p << "):", pivot) << std::endl;
+			
+			std::vector<Polynomial> qs;
+			for (size_t i = p+1; i < M.coldim(); i++) {
+				Polynomial other;
+				_PD.init(other, M(p, i));
+				
+				_PD.write(std::cout << "M(" << p << ", "<<  i << "):", other) << std::endl;
+				
+				Polynomial q;
+				_PD.quo(q, other, pivot);
+				_PD.negin(q);
+				
+				qs.push_back(q);
+			}
+			
+			size_t size = max(qs) + 1;
+			PMatrix R(_F, M.coldim(), M.coldim(), size);
+			for (size_t i = 0; i < R.rowdim(); i++) {
+				_F.assign(R.ref(i, i, 0), _F.one);
+			}
+			
+			for (size_t i = 0; i < qs.size(); i++) {
+				_PD.write(std::cout << "qs[" << i << "]:", qs[i]) << std::endl;
+				writePolynomialToMatrix(R, p, p + i + 1, qs[i]);
+			}
+			
+			R.write(std::cout << "R:" << std::endl) << std::endl;
+			
+			M.write(std::cout << "before R:" << std::endl) << std::endl;
+			
+			PMatrix Z(_F, M.rowdim(), M.coldim(), 1);
+			_PMD.mul(Z, M, R);
+			
+			size_t degree = Z.real_degree();
+			M.setsize(degree + 1);
+			M.copy(Z, 0, degree);
+			
+			M.write(std::cout << "after R:" << std::endl) << std::endl;
+			
+			reduceMatrix(M, d);
+		}
+		
+		template<typename PMatrix>
+		void zeroRow(PMatrix &M, size_t p) {
+			for (size_t i = p+1; i < M.coldim(); i++) {
+				writePolynomialToMatrix(M, p, i, _PD.zero);
+			}
+		}
+		
+		// Move nonzero column to pivot
+		
+		template<typename PMatrix>
+		bool findNonZeroCol(PMatrix &M, size_t p) {
+			for (size_t c = p; c < M.coldim(); c++) {
+				for (size_t r = p; r < M.rowdim(); r++) {
+					if (!isZero(M(r, c))) {
+						if (c != p) {
+							swapCols(M, p, c);
+						}
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+		
+		template<typename PMatrix>
+		bool isDiagonalized(PMatrix &M, size_t p) {
+			for (size_t r = p+1; r < M.rowdim(); r++) {
+				if (!isZero(M(r, p))) {
+					return false;
+				}
+			}
+			
+			for (size_t c = p+1; c < M.coldim(); c++) {
+				if (!isZero(M(p, c))) {
+					return false;
+				}
+			}
+			
+			return true;
+		}
+		
+		template<typename PMatrix>
+		bool isUnit(PMatrix &M, size_t p, Polynomial &d) {
+			Polynomial pivot;
+			_PD.init(pivot, M(p, p));
+			
+			Polynomial g;
+			_PD.gcd(g, pivot, d);
+			
+			return degree(g) == 0;
 		}
 		
 	public:
 		template<typename PMatrix>
-		void solve(PMatrix &M, Polynomial &d) const {
+		void solve(PMatrix &M, Polynomial &d) {
 			size_t dim = M.rowdim() < M.coldim() ? M.rowdim() : M.coldim();
 			
-			std::vector<Polynomial> lst;
-			for (size_t i = 0; i < M.rowdim(); i++) {
-				Polynomial tmp;
-				lst.push_back(_PD.init(tmp, M(i, 0)));
+			for (size_t p = 0; p < dim - 1; p++) {
+				if (!findNonZeroCol(M, p)) {
+					break;
+				}
+				
+				while (!isDiagonalized(M, p)) {
+					eliminateCol(M, p, d);
+					if (isUnit(M, p, d)) {
+						zeroRow(M, p);
+					} else {
+						eliminateRow(M, p, d);
+					}
+				}
 			}
-			std::cout << "Idx: " << findDivisorOrZero(lst, d) << std::endl;
+			
+			for (size_t i = 0; i < dim; i++) {
+				Polynomial e, g;
+				_PD.init(e, M(i, i));
+				_PD.gcd(g, e, d);
+				
+				_PD.write(std::cout << i << ": ", g) << std::endl;
+			}
 		}
 	};
 }
