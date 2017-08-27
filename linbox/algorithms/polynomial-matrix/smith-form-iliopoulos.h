@@ -536,7 +536,7 @@ namespace LinBox
 		}
 		
 		template<typename PMatrix>
-		bool isUnit(PMatrix &M, size_t p, Polynomial &d) {
+		bool isUnit(PMatrix &M, size_t p, Polynomial &d) const {
 			Polynomial pivot;
 			_PD.init(pivot, M(p, p));
 			
@@ -546,7 +546,7 @@ namespace LinBox
 			return degree(g) == 0;
 		}
 		
-		void fixDiagonal(std::vector<Polynomial> &v) {
+		void fixDiagonal(std::vector<Polynomial> &v) const {
 			for (size_t i = 0; i < v.size() - 1; i++) {
 				Polynomial h;
 				_PD.assign(h, v[i]);
@@ -560,7 +560,7 @@ namespace LinBox
 		
 	public:
 		template<typename PMatrix>
-		void solve(std::vector<Polynomial> &v, PMatrix &M, Polynomial &d) {
+		void solve(std::vector<Polynomial> &v, PMatrix &M, const Polynomial &d) {
 			size_t dim = M.rowdim() < M.coldim() ? M.rowdim() : M.coldim();
 			
 			for (size_t p = 0; p < dim - 1; p++) {
@@ -584,7 +584,6 @@ namespace LinBox
 				Polynomial e;
 				_PD.init(e, M(i, i));
 				normalize(v[i], e, d);
-				
 			}
 			
 			fixDiagonal(v);

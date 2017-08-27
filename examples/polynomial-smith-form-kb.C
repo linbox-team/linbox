@@ -40,9 +40,12 @@ typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain,Field> PMatrix;
 int main(int argc, char** argv) {
 	size_t p = 7;
 	Field F(p);
+	GivaroPoly<Field> PD(F, "x");
 	RandIter RI(F);
 	PolynomialMatrixMulDomain<Field> PMD(F);
 	PolynomialSmithFormKannanBachemDomain<Field> PKB(F);
+	
+	typedef typename PolynomialSmithFormKannanBachemDomain<Field>::Polynomial Polynomial;
 	
 	PMatrix A(F, 3, 3, 3);
 	Field::Element tmp;
@@ -87,9 +90,12 @@ int main(int argc, char** argv) {
 	M.setsize(M.real_degree() + 1);
 	M.write(std::cout) << std::endl;
 	
-	PKB.solve(M);
+	std::vector<Polynomial> result;
+	PKB.solve(result, M);
 	
-	M.write(std::cout) << std::endl;
+	for (size_t i = 0; i < result.size(); i++) {
+		PD.write(std::cout << "i: ", result[i]) << std::endl;
+	}
 	
 	return 0;
 }

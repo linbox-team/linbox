@@ -60,7 +60,7 @@ namespace LinBox
 	private:
 		
 		template<typename PMatrix>
-		void swapRows(PMatrix& A, size_t a, size_t b) const {
+		void swapRows(PMatrix& A, size_t a, size_t b) {
 			Element tmp;
 			
 			for (size_t j = 0; j < A.coldim(); j++) {
@@ -73,7 +73,7 @@ namespace LinBox
 		}
 		
 		template<typename PMatrix>
-		void swapCols(PMatrix& A, size_t a, size_t b) const {
+		void swapCols(PMatrix& A, size_t a, size_t b) {
 			Element tmp;
 			
 			for (size_t i = 0; i < A.coldim(); i++) {
@@ -86,7 +86,7 @@ namespace LinBox
 		}
 		
 		template<typename Vector>
-		bool isZero(const Vector &P) const {
+		bool isZero(const Vector &P) {
 			size_t d = P.size();
 			
 			for (size_t k = 0; k < d; k++) {
@@ -99,7 +99,7 @@ namespace LinBox
 		}
 		
 		template<typename PMatrix>
-		bool findPivot(PMatrix &M, size_t p) const {
+		bool findPivot(PMatrix &M, size_t p) {
 			size_t r = M.rowdim();
 			size_t c = M.coldim();
 			
@@ -123,7 +123,7 @@ namespace LinBox
 		}
 		
 		template<typename PMatrix>
-		void writePolynomialToMatrix(PMatrix &M, size_t r, size_t c, const Polynomial &p) const {
+		void writePolynomialToMatrix(PMatrix &M, size_t r, size_t c, const Polynomial &p) {
 			Givaro::Degree d = _PD.degree(p).value();
 			
 			for (size_t k = 0; k <= M.degree(); k++) {
@@ -139,7 +139,7 @@ namespace LinBox
 		
 		// Ensures that if a=b then s=u=v=1 and t=0 to avoid an infinite loop
 		void dxgcd(Polynomial &s, Polynomial &t, Polynomial &u, Polynomial &v, const Polynomial &a,
-			const Polynomial &b) const {
+			const Polynomial &b) {
 			if (_PD.isDivisor(b, a)) {
 				Polynomial quo;
 				_PD.quo(quo, b, a);
@@ -157,7 +157,7 @@ namespace LinBox
 		
 		template<typename PMatrix>
 		void makeLeftElim(PMatrix &L, size_t pivotRow, size_t otherRow, const Polynomial &s, const Polynomial &t,
-			const Polynomial &u, const Polynomial &v) const {
+			const Polynomial &u, const Polynomial &v) {
 			
 			size_t dim = L.rowdim();
 			for (size_t i = 0; i < dim; i++) {
@@ -173,11 +173,11 @@ namespace LinBox
 			writePolynomialToMatrix(L, otherRow, otherRow, u);
 		}
 		
-		int64_t degree(const Polynomial &p) const {
+		int64_t degree(const Polynomial &p) {
 			return _PD.degree(p).value();
 		}
 		
-		size_t max(const Polynomial &a, const Polynomial &b, const Polynomial &c, const Polynomial &d) const {
+		size_t max(const Polynomial &a, const Polynomial &b, const Polynomial &c, const Polynomial &d) {
 			int64_t ad, bd, cd, dd;
 			ad = degree(a);
 			bd = degree(b);
@@ -192,7 +192,7 @@ namespace LinBox
 		
 		// use row pivotRow to eliminate row otherRow in the pivotRow-th column
 		template<typename PMatrix>
-		void eliminateCol(PMatrix &M, size_t pivotRow, size_t otherRow) const {
+		void eliminateCol(PMatrix &M, size_t pivotRow, size_t otherRow) {
 			Polynomial other;
 			_PD.init(other, M(otherRow, pivotRow));
 			
@@ -219,7 +219,7 @@ namespace LinBox
 		}
 		
 		template<typename PMatrix>
-		void eliminateCol(PMatrix &M, size_t pivotRow) const {
+		void eliminateCol(PMatrix &M, size_t pivotRow) {
 			for (size_t otherRow = pivotRow + 1; otherRow < M.rowdim(); otherRow++) {
 				eliminateCol(M, pivotRow, otherRow);
 			}
@@ -227,7 +227,7 @@ namespace LinBox
 		
 		template<typename PMatrix>
 		void makeRightElim(PMatrix &R, size_t pivotCol, size_t otherCol, const Polynomial &s, const Polynomial &t,
-			const Polynomial &u, const Polynomial &v) const {
+			const Polynomial &u, const Polynomial &v) {
 			
 			size_t dim = R.rowdim();
 			for (size_t i = 0; i < dim; i++) {
@@ -245,7 +245,7 @@ namespace LinBox
 		
 		// use col pivotCol to eliminate col otherCol in the pivotCol-th row
 		template<typename PMatrix>
-		void eliminateRow(PMatrix &M, size_t pivotCol, size_t otherCol) const {
+		void eliminateRow(PMatrix &M, size_t pivotCol, size_t otherCol) {
 			Polynomial other;
 			_PD.init(other, M(pivotCol, otherCol));
 			
@@ -272,7 +272,7 @@ namespace LinBox
 		}
 		
 		template<typename PMatrix>
-		void eliminateRow(PMatrix &M, size_t pivotCol) const {
+		void eliminateRow(PMatrix &M, size_t pivotCol) {
 			for (size_t otherCol = pivotCol + 1; otherCol < M.coldim(); otherCol++) {
 				eliminateRow(M, pivotCol, otherCol);
 			}
@@ -280,7 +280,7 @@ namespace LinBox
 
 		// True if pivot row/col is zero for all indexes greater other than pivot
 		template<typename PMatrix>
-		bool isDiagonalized(const PMatrix &M, size_t pivot) const {
+		bool isDiagonalized(const PMatrix &M, size_t pivot) {
 			for (size_t i = pivot + 1; i < M.coldim(); i++) {
 				Polynomial elm;
 				_PD.init(elm, M(pivot, i));
@@ -303,38 +303,7 @@ namespace LinBox
 		}
 		
 		template<typename PMatrix>
-		void fixDiagonal(PMatrix &M) const {
-			size_t dim = M.rowdim() < M.coldim() ? M.rowdim() : M.coldim();
-			
-			bool done;
-			do {
-				done = true;
-				for (size_t i = 0; i < dim - 1; i++) {
-					Polynomial other;
-					_PD.init(other, M(i + 1, i + 1));
-					
-					if (_PD.isZero(other)) {
-						continue;
-					}
-					
-					Polynomial pivot;
-					_PD.init(pivot, M(i, i));
-					
-					Polynomial g;
-					_PD.gcd(g, pivot, other);
-					
-					if (_PD.areAssociates(g, pivot)) {
-						continue;
-					}
-					
-					writePolynomialToMatrix(M, i, i, g);
-					done = false;
-				}
-			} while (!done);
-		}
-		
-		template<typename PMatrix>
-		void makeReduce(PMatrix &L, size_t row, size_t col, const Polynomial &quo) const {
+		void makeReduce(PMatrix &L, size_t row, size_t col, const Polynomial &quo) {
 			size_t dim = L.rowdim() < L.coldim() ? L.rowdim() : L.coldim();
 			
 			for (size_t i = 0; i < dim; i++) {
@@ -357,7 +326,7 @@ namespace LinBox
 		 * 0 0 0 *    
 		 */
 		template<typename PMatrix>
-		void reduceOffDiagonal(PMatrix &M) const {
+		void reduceOffDiagonal(PMatrix &M) {
 			size_t dim = M.rowdim() < M.coldim() ? M.rowdim() : M.coldim();
 			
 			for (size_t row = dim-1; 0 < row; row--) {
@@ -388,7 +357,7 @@ namespace LinBox
 		
 		// Makes the bottom right n-by-n into a hermite matrix.
 		template<typename PMatrix>
-		void hermite(PMatrix &M, size_t n) const {
+		void hermite(PMatrix &M, size_t n) {
 			size_t dim = M.rowdim() < M.coldim() ? M.rowdim() : M.coldim();
 			
 			for (size_t pivot = n; pivot < dim; pivot++) {
@@ -402,10 +371,22 @@ namespace LinBox
 			reduceOffDiagonal(M);
 		}
 		
+		void fixDiagonal(std::vector<Polynomial> &v) {
+			for (size_t i = 0; i < v.size() - 1; i++) {
+				Polynomial h;
+				_PD.assign(h, v[i]);
+				
+				_PD.gcd(v[i], v[i+1], h);
+				
+				_PD.mulin(v[i+1], h);
+				_PD.divin(v[i+1], v[i]);
+			}
+		}
+		
 	public:
 		
 		template<typename PMatrix>
-		void solve(PMatrix &M) const {
+		void solve(std::vector<Polynomial> &v, PMatrix &M) {
 			size_t dim = M.rowdim() < M.coldim() ? M.rowdim() : M.coldim();
 			
 			for (size_t pivot = 0; pivot < dim; pivot++) {
@@ -419,11 +400,16 @@ namespace LinBox
 				}
 			}
 			
-			fixDiagonal(M);
+			v.resize(dim);
+			for (size_t i = 0; i < dim; i++) {
+				_PD.init(v[i], M(i, i));
+			}
+			
+			fixDiagonal(v);
 		}
 		
 		template<typename PMatrix>
-		void solveTextbook(PMatrix &M) const {
+		void solveTextbook(std::vector<Polynomial> &v, PMatrix &M) {
 			size_t dim = M.rowdim() < M.coldim() ? M.rowdim() : M.coldim();
 			
 			for (size_t pivot = 0; pivot < dim; pivot++) {
@@ -437,7 +423,12 @@ namespace LinBox
 				}
 			}
 			
-			fixDiagonal(M);
+			v.resize(dim);
+			for (size_t i = 0; i < dim; i++) {
+				_PD.init(v[i], M(i, i));
+			}
+			
+			fixDiagonal(v);
 		}
 	};
 }
