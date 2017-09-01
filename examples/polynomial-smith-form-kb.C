@@ -94,7 +94,7 @@ int main(int argc, char** argv) {
 	PKB.solve(result, M);
 	
 	for (size_t i = 0; i < result.size(); i++) {
-		PD.write(std::cout << "i: ", result[i]) << std::endl;
+		PD.write(std::cout << i << ": ", result[i]) << std::endl;
 	}
 	
 	return 0;

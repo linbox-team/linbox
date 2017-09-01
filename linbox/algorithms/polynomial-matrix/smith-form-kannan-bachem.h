@@ -277,6 +277,13 @@ namespace LinBox
 				eliminateRow(M, pivotCol, otherCol);
 			}
 		}
+		
+		template<typename PMatrix>
+		void zeroRow(PMatrix &M, size_t pivot) {
+			for (size_t col = pivot + 1; col < M.coldim(); col++) {
+				writePolynomialToMatrix(M, pivot, col, _PD.zero);
+			}
+		}
 
 		// True if pivot row/col is zero for all indexes greater other than pivot
 		template<typename PMatrix>
@@ -419,7 +426,15 @@ namespace LinBox
 				
 				while (!isDiagonalized(M, pivot)) {
 					eliminateCol(M, pivot);
-					eliminateRow(M, pivot);
+					
+					Polynomial tmp;
+					_PD.init(tmp, M(pivot, pivot));
+					
+					if (_PD.isUnit(tmp)) {
+						zeroRow(M, pivot);
+					} else {
+						eliminateRow(M, pivot);
+					}
 				}
 			}
 			
