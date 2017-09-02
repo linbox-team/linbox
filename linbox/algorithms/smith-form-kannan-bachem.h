@@ -346,7 +346,7 @@ namespace LinBox
 			Element tmp;
 			L.push_back(A.getEntry(tmp, 0, 0));
 			SubMatrix B(A, 1, 1, A.rowdim() - 1, A.coldim() - 1);
-			solveTextBookHelper(L, B);
+			halfSolve(L, B);
 		}
 	};
 }
