@@ -25,332 +25,328 @@
  */
 
 #include <iostream>
-#include "linbox/matrix/dense-matrix.h"
+#include "linbox/ring/givaro-poly.h"
+#include "linbox/matrix/densematrix/blas-matrix.h"
+#include "linbox/matrix/matrixdomain/matrix-domain.h"
 
 #ifndef __LINBOX_smith_form_kannan_bachem_domain_H
 #define __LINBOX_smith_form_kannan_bachem_domain_H
 
 namespace LinBox
 {
-	template<class MatrixDomain>
+	template<class Field>
 	class SmithFormKannanBachemDomain
 	{
 	public:
-		typedef typename MatrixDomain::Field Field;
 		typedef typename Field::Element Element;
-		typedef BlasMatrix<Field> Rep;
+		
+		typedef MatrixDomain<Field> MatrixDom;
+		
+		typedef typename MatrixDom::OwnMatrix OwnMatrix;
+		typedef typename MatrixDom::Matrix SubMatrix;
 
 	private:
-		MatrixDomain _MD;
-		const Field &field() const { return _MD.field(); }
+		Field _F;
+		MatrixDom _MD;
 
 	public:
-		SmithFormKannanBachemDomain(const MatrixDomain &MD) : _MD(MD) {}
-		SmithFormKannanBachemDomain(const SmithFormKannanBachemDomain &D) : _MD(D._MD) {}
+		SmithFormKannanBachemDomain(const Field &F) : _F(F), _MD(_F) {}
+		SmithFormKannanBachemDomain(const SmithFormKannanBachemDomain &D) : _F(D._F), _MD(D._MD) {}
 
 	private:
-		void swapRows(Rep &A, int a, int b) const
-		{
-			for (size_t i = 0; i < A.coldim(); i++)
-			{
-				Element tmp1, tmp2;
-
-				A.getEntry(tmp1, a, i);
-				A.getEntry(tmp2, b, i);
-
-				A.setEntry(a, i, tmp2);
-				A.setEntry(b, i, tmp1);
-			}
+		template<typename Matrix>
+		void swapRows(Matrix &M, size_t r1, size_t r2) const {
+			SubMatrix row1(M, r1, 0, 1, M.coldim());
+			SubMatrix row2(M, r2, 0, 1, M.coldim());
+			
+			row1.swap(row2);
 		}
-
-		void swapCols(Rep &A, int a, int b) const
-		{
-			for (size_t i = 0; i < A.rowdim(); i++)
-			{
-				Element tmp1, tmp2;
-
-				A.getEntry(tmp1, i, a);
-				A.getEntry(tmp2, i, b);
-
-				A.setEntry(i, a, tmp2);
-				A.setEntry(i, b, tmp1);
-			}
+		
+		template<typename Matrix>
+		void swapCols(Matrix &M, size_t c1, size_t c2) const {
+			SubMatrix col1(M, 0, c1, M.rowdim(), 1);
+			SubMatrix col2(M, 0, c2, M.rowdim(), 1);
+			
+			col1.swap(col2);
 		}
-
-		// Ensures that if a=b then s=u=v=1 and t=0 to avoid an infinite loop
-		void dxgcd(Element &s, Element &t, Element &u, Element &v, const Element &a, const Element &b) const
-		{
-			if (field().areEqual(a,b))
-			{
-				field().assign(s, field().one);
-				field().assign(t, field().zero);
-				field().assign(u, field().one);
-				field().assign(v, field().one);
+		
+		void dxgcd(Element &s, Element &t, Element &u, Element &v, const Element &a, const Element &b) const {
+			if (_F.isDivisor(b, a)) {
+				_F.assign(s, _F.one);
+				_F.assign(t, _F.zero);
+				_F.assign(u, _F.one);
+				_F.quo(v, b, a);
 				return;
 			}
-
+			
 			Element g;
-			field().dxgcd(g,s,t,u,v,a,b);
+			_F.dxgcd(g, s, t, u, v, a, b);
 		}
-
-		bool findPivot(Rep &A, size_t n) const
-		{
-			for (size_t i = n; i < A.rowdim(); i++)
-			{
-				for (size_t j = n; j < A.coldim(); j++)
-				{
+		
+		template<class Matrix>
+		bool findPivot(Matrix &A) {
+			for (size_t i = 0; i < A.rowdim(); i++) {
+				for (size_t j = 0; j < A.coldim(); j++) {
 					Element tmp;
 					A.getEntry(tmp, i, j);
-
-					if (!field().isZero(tmp))
-					{
-						if (i != n)
-							swapRows(A, n, i);
-
-						if (j != n)
-							swapCols(A, n, j);
-
+					
+					if (!_F.isZero(tmp)) {
+						if (i > 0) {
+							swapRows(A, 0, i);
+						}
+						
+						if (j > 0) {
+							swapCols(A, 0, j);
+						}
+						
 						return true;
 					}
 				}
 			}
-
+			
 			return false;
 		}
-
-		void eliminateCol(Rep &A, int p, int o) const
-		{
-			Element pp, op;
-
-			A.getEntry(op, o, p);
-
-			if (field().isZero(op))
+		
+		template<class Matrix>
+		void eliminateRow1(Matrix &A, size_t idx) {
+			Element pivot, other;
+			
+			A.getEntry(other, 0, idx);
+			
+			if (_F.isZero(other)) {
 				return;
-
-			A.getEntry(pp, p, p);
-
-			Element s,t,u,v;
-			dxgcd(s,t,u,v,pp,op);
-
-			for (size_t i = p; i < A.coldim(); i++)
-			{
-				Element pi,oi;
-
-				A.getEntry(pi, p, i);
-				A.getEntry(oi, o, i);
-
-				Element tmp1, tmp2;
-				field().mul(tmp1, s, pi);
-				field().mul(tmp2, t, oi);
-				field().addin(tmp1, tmp2);
-				A.setEntry(p, i, tmp1);
-
-				field().mul(tmp1, pi, v);
-				field().mul(tmp2, oi, u);
-				field().subin(tmp2, tmp1);
-				A.setEntry(o, i, tmp2);
+			}
+			
+			A.getEntry(pivot, 0, 0);
+			
+			Element s, t, u, v;
+			dxgcd(s,t,u,v,pivot,other);
+			_F.negin(v);
+			
+			SubMatrix pivotCol(A, 0, 0, A.rowdim(), 1);
+			SubMatrix otherCol(A, 0, idx, A.rowdim(), 1);
+			
+			OwnMatrix pivotCopy(pivotCol);
+			
+			_MD.mulin(pivotCol, s);
+			_MD.saxpyin(pivotCol, t, otherCol);
+			
+			_MD.mulin(otherCol, u);
+			_MD.saxpyin(otherCol, v, pivotCopy);
+		}
+		
+		template<class Matrix>
+		void eliminateRow(Matrix &A) {
+			for (size_t i = 1; i < A.coldim(); i++) {
+				eliminateRow1(A, i);
 			}
 		}
-
-		void eliminateRow(Rep &A, int p, int o) const
-		{
-			Element pp, po;
-
-			A.getEntry(po, p, o);
-
-			if (field().isZero(po))
+		
+		template<class Matrix>
+		void zeroRow(Matrix &A) {
+			for (size_t i = 1; i < A.coldim(); i++) {
+				A.setEntry(0, i, _F.zero);
+			}
+		}
+		
+		template<class Matrix>
+		void eliminateCol1(Matrix &A, size_t idx) {
+			Element pivot, other;
+			
+			A.getEntry(other, idx, 0);
+			
+			if (_F.isZero(other)) {
 				return;
-
-			A.getEntry(pp, p, p);
-
-			Element s,t,u,v;
-			dxgcd(s,t,u,v,pp,po);
-
-			for (size_t i = p; i < A.rowdim(); i++)
-			{
-				Element ip, io;
-
-				A.getEntry(ip, i, p);
-				A.getEntry(io, i, o);
-
-				Element tmp1, tmp2;
-
-				field().mul(tmp1, ip, s);
-				field().mul(tmp2, io, t);
-				field().addin(tmp1, tmp2);
-				A.setEntry(i, p, tmp1);
-
-				field().mul(tmp1, ip, v);
-				field().mul(tmp2, io, u);
-				field().subin(tmp2, tmp1);
-				A.setEntry(i, o, tmp2);
+			}
+			
+			A.getEntry(pivot, 0, 0);
+			
+			Element s, t, u, v;
+			dxgcd(s,t,u,v,pivot,other);
+			_F.negin(v);
+			
+			SubMatrix pivotRow(A, 0, 0, 1, A.coldim());
+			SubMatrix otherRow(A, idx, 0, 1, A.coldim());
+			
+			OwnMatrix pivotCopy(pivotRow);
+			
+			_MD.mulin(pivotRow, s);
+			_MD.saxpyin(pivotRow, t, otherRow);
+			
+			_MD.mulin(otherRow, u);
+			_MD.saxpyin(otherRow, v, pivotCopy);
+		}
+		
+		template<class Matrix>
+		void eliminateCol(Matrix &A) {
+			for (size_t i = 1; i < A.rowdim(); i++) {
+				eliminateCol1(A, i);
 			}
 		}
-
-		void reduceOffDiagonal(Rep &A, int s, int e) const
-		{
-			for (int i = s; i <= e; i++)
-			{
-				Element nii,ii;
-				A.getEntry(ii, i, i);
-				field().normalize(nii,ii);
-
-				Element tmp;
-				field().div(tmp, nii, ii);
-
-				if (field().isOne(tmp))
-					continue;
-
-				// A[i] = A[i,i] * n
-				// where n = normalized(A[i,i]) / A[i,i]
-				A.setEntry(i, i, nii);
-				for (size_t j = i+1; j < A.coldim(); j++)
-				{
-					Element ij;
-					A.getEntry(ij, i, j);
-					field().mulin(ij, tmp);
-					A.setEntry(i, j, ij);
-				}
-			}
-
-			// Ording of reduction here is an improvement to Kannan/Bachem
-			// Introduced by Chou/Collins '82
-			// Reduce from bottom to top and left to right
-			// * 4 5 6
-			// 0 * 2 3
-			// 0 0 * 1
-			// 0 0 0 *
-			for (int i = e-1; i >= s; i--)
-			{
-				for (int j = i+1; j <= e; j++)
-				{
-					Element jj, ij, tmp;
-
-					A.getEntry(ij, i, j);
-					if (field().isZero(ij))
-						continue;
-
-					A.getEntry(jj, j, j);
-					field().quo(tmp, ij, jj);
-
-					// A[i] = A[i] - quo(A[i,j], A[j,j]) * A[j]
-					for (size_t k = j; k < A.coldim(); k++)
-					{
-						Element ik, jk;
-
-						A.getEntry(ik, i, k);
-						A.getEntry(jk, j, k);
-
-						field().mulin(jk, tmp);
-						field().subin(ik, jk);
-
-						A.setEntry(i, k, ik);
-					}
-				}
-			}
-		}
-
-		// Puts the lower-right n-by-n minor of A into Hermite Normal Form
-		void hermite(Rep &A, int n) const
-		{
-			int dim = (int)A.rowdim();
-
-			for (int i = n; i < dim; i++)
-			{
-				for (int j = n; j < i; j++)
-					eliminateCol(A, j, i);
-
-				if (!findPivot(A, i))
-					return;
-
-				reduceOffDiagonal(A, n, i);
-			}
-		}
-
-		bool isRowDiagonalized(const Rep &A, int n) const
-		{
-			for (size_t i = n+1; i < A.coldim(); i++)
-			{
-				Element ni;
-				A.getEntry(ni, n, i);
-				if (!field().isZero(ni))
+		
+		template<class Matrix>
+		bool isDiagonalized(Matrix &A) {
+			Element tmp;
+			for (size_t i = 1; i < A.rowdim(); i++) {
+				if (!_F.isZero(A.getEntry(tmp, i, 0))) {
 					return false;
-			}
-			return true;
-		}
-
-		bool pivotDividesRemaining(Rep &A, int n) const
-		{
-			Element nn;
-			A.getEntry(nn, n, n);
-
-			for (size_t i = n+1; i < A.rowdim(); i++)
-			{
-				for (size_t j = i; j < A.coldim(); j++)
-				{
-					Element ij, g;
-					A.getEntry(ij, i, j);
-
-					if (field().isZero(ij))
-						continue;
-
-					field().gcd(g, nn, ij);
-
-					if (!field().areAssociates(g, nn))
-					{
-						// Add row i to row n
-						for (size_t k = i; k < A.coldim(); k++)
-						{
-							Element ik;
-							A.getEntry(ik, i, k);
-							A.setEntry(n, k, ik);
-						}
-						return false;
-					}
 				}
 			}
-
+			
+			for (size_t i = 1; i < A.coldim(); i++) {
+				if (!_F.isZero(A.getEntry(tmp, 0, i))) {
+					return false;
+				}
+			}
+			
 			return true;
+		}
+		
+		void fixDiagonal(std::vector<Element> &v) {
+			for (size_t i = 0; i < v.size() - 1; i++) {
+				if (_F.isZero(v[i+1])) {
+					return;
+				}
+				
+				Element h;
+				_F.assign(h, v[i]);
+				
+				_F.gcd(v[i], v[i+1], h);
+				
+				_F.mulin(v[i+1], h);
+				_F.divin(v[i+1], v[i]);
+			}
+		}
+		
+		template<class Matrix>
+		void reduceOffDiagonal(Matrix &A) {
+			size_t dim = A.rowdim() < A.coldim() ? A.rowdim() : A.coldim();
+			
+			for (size_t i = 1; i < dim; i++) {
+				Element pivot, other;
+				A.getEntry(pivot, i, i);
+				A.getEntry(other, 0, i);
+				
+				if (_F.degree(other) < _F.degree(pivot)) {
+					continue;
+				}
+				
+				Element q;
+				_F.quo(q, other, pivot);
+				_F.negin(q);
+				
+				SubMatrix pivotRow(A, 0, i, 1, A.coldim() - 1);
+				SubMatrix otherRow(A, i, i, 1, A.coldim() - 1);
+				
+				_MD.saxpyin(pivotRow, q, otherRow);
+			}
+		}
+		
+		template<class Matrix>
+		void hermite(Matrix &A) {
+			if (A.rowdim() == 0 || A.coldim() == 0) {
+				return;
+			}
+			
+			if (!findPivot(A)) {
+				return;
+			}
+			
+			eliminateCol(A);
+			SubMatrix B(A, 1, 1, A.rowdim() - 1, A.coldim() - 1);
+			hermite(B);
+			reduceOffDiagonal(A);
+		}
+		
+		template<class Matrix>
+		void solveHelper(std::vector<Element> &L, Matrix &A) {
+			if (A.rowdim() == 0 || A.coldim() == 0) {
+				return;
+			}
+			
+			if (!findPivot(A)) {
+				size_t dim = A.rowdim() < A.coldim() ? A.rowdim() : A.coldim();
+				for (size_t i = 0; i < dim; i++) {
+					L.push_back(_F.zero);
+				}
+				return;
+			}
+			
+			while (!isDiagonalized(A)) {
+				eliminateRow(A);
+				hermite(A);
+			}
+			
+			Element tmp;
+			L.push_back(A.getEntry(tmp, 0, 0));
+			SubMatrix B(A, 1, 1, A.rowdim() - 1, A.coldim() - 1);
+			solveHelper(L, B);
+		}
+		
+		template<class Matrix>
+		void solveTextBookHelper(std::vector<Element> &L, Matrix &A) {
+			if (A.rowdim() == 0 || A.coldim() == 0) {
+				return;
+			}
+			
+			if (!findPivot(A)) {
+				size_t dim = A.rowdim() < A.coldim() ? A.rowdim() : A.coldim();
+				for (size_t i = 0; i < dim; i++) {
+					L.push_back(_F.zero);
+				}
+				return;
+			}
+			
+			while (!isDiagonalized(A)) {
+				eliminateCol(A);
+				
+				Element pivot;
+				if (_F.isUnit(A.getEntry(pivot, 0, 0))) {
+					break;
+				} else {
+					eliminateRow(A);
+				}
+			}
+			
+			Element tmp;
+			L.push_back(A.getEntry(tmp, 0, 0));
+			SubMatrix B(A, 1, 1, A.rowdim() - 1, A.coldim() - 1);
+			solveTextBookHelper(L, B);
 		}
 
 	public:
-		template<class Vector>
-		Vector &solve(Vector &S, const Rep &A) const
-		{
-			size_t dim = A.rowdim();
-			linbox_check(A.coldim() == dim && S.size() >= dim);
-
-			Rep B(A);
-
-			for (size_t i = 0; i < dim;)
-			{
-				if (!findPivot(B, i))
-					break;
-
-				for (size_t j = i+1; j < dim; j++)
-					eliminateRow(B, i, j);
-
-				hermite(B, i);
-
-				if (!isRowDiagonalized(B, i))
-					continue;
-
-				if (!pivotDividesRemaining(B, i))
-					continue;
-
-				i++;
-				
-				//std::cout << i << "/" << dim << std::endl;
+		template<class Matrix>
+		void solve(std::vector<Element> &L, Matrix &A) {
+			solveHelper(L, A);
+			fixDiagonal(L);
+		}
+		
+		template<class Matrix>
+		void solveTextBook(std::vector<Element> &L, Matrix &A) {
+			solveTextBookHelper(L, A);
+			fixDiagonal(L);
+		}
+		
+		template<class Matrix>
+		void halfSolve(std::vector<Element> &L, Matrix &A) {
+			if (A.rowdim() == 0 || A.coldim() == 0) {
+				return;
 			}
-
-			for (size_t i = 0; i < dim; i++)
-			{
-				Element ii;
-				B.getEntry(ii, i, i);
-				S.setEntry(i, ii);
+			
+			if (!findPivot(A)) {
+				size_t dim = A.rowdim() < A.coldim() ? A.rowdim() : A.coldim();
+				for (size_t i = 0; i < dim; i++) {
+					L.push_back(_F.zero);
+				}
+				return;
 			}
-
-			return S;
+			
+			eliminateCol(A);
+			
+			Element tmp;
+			L.push_back(A.getEntry(tmp, 0, 0));
+			SubMatrix B(A, 1, 1, A.rowdim() - 1, A.coldim() - 1);
+			solveTextBookHelper(L, B);
 		}
 	};
 }
