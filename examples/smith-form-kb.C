@@ -54,6 +54,18 @@ void solve(PolyRing PD, SmithDom &SKB, Matrix &A) {
 	}
 }
 
+void solveAdaptive(PolyRing PD, SmithDom &SKB, Matrix &A) {
+	typename MatDom::OwnMatrix ACopy(A);
+	
+	std::vector<Polynomial> lst;
+	SKB.solveAdaptive(lst, ACopy);
+	
+	std::cout << "Solve Adaptive:" << std::endl;
+	for (size_t i = 0; i < lst.size(); i++) {
+		PD.write(std::cout << i << ": ", lst[i]) << std::endl;
+	}
+}
+
 void halfSolve(PolyRing PD, SmithDom &SKB, Matrix &A) {
 	typename MatDom::OwnMatrix ACopy(A);
 	
@@ -105,7 +117,7 @@ int main(int argc, char** argv) {
 	A.setEntry(1, 1, PD.one);
 	A.setEntry(2, 2, f);
 	
-	srand (time(NULL));
+	srand(time(NULL));
 	
 	Matrix L(PD, 3, 3);
 	makeTriangularMatrix(PD, L, true, p);
@@ -124,6 +136,7 @@ int main(int argc, char** argv) {
 	solveTextBook(PD, SKB, A);
 	solve(PD, SKB, A);
 	halfSolve(PD, SKB, A);
+	solveAdaptive(PD, SKB, A);
 	
 	return 0;
 }

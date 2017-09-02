@@ -54,6 +54,7 @@ namespace LinBox
 		SmithFormKannanBachemDomain(const SmithFormKannanBachemDomain &D) : _F(D._F), _MD(D._MD) {}
 
 	private:
+		
 		template<typename Matrix>
 		void swapRows(Matrix &M, size_t r1, size_t r2) const {
 			SubMatrix row1(M, r1, 0, 1, M.coldim());
@@ -215,7 +216,11 @@ namespace LinBox
 				
 				_F.mulin(v[i+1], h);
 				_F.divin(v[i+1], v[i]);
+				
+				_F.normalizeIn(v[i]);
 			}
+			
+			_F.normalizeIn(v[v.size() - 1]);
 		}
 		
 		template<class Matrix>
@@ -313,6 +318,224 @@ namespace LinBox
 			SubMatrix B(A, 1, 1, A.rowdim() - 1, A.coldim() - 1);
 			solveTextBookHelper(L, B);
 		}
+		
+		// Iliopoulos Specific Methods
+		
+		template<class Matrix>
+		bool findZeroCol(Matrix &A) {
+			for (size_t i = 1; i < A.coldim(); i++) {
+				Element tmp;
+				if (_F.isZero(A.getEntry(tmp, 0, i))) {
+					swapCols(A, 0, i);
+					return true;
+				}
+			}
+			
+			return false;
+		}
+		
+		template<class Matrix>
+		bool findZeroRow(Matrix &A) {
+			for (size_t i = 1; i < A.rowdim(); i++) {
+				Element tmp;
+				if (_F.isZero(A.getEntry(tmp, i, 0))) {
+					swapRows(A, 0, i);
+					return true;
+				}
+			}
+			
+			return false;
+		}
+		
+		void xgcd(Element &g, std::vector<Element> &ts, const std::vector<Element> &as, const Element &d) {
+			ts.resize(as.size());
+			_F.assign(ts[0], _F.one);
+			_F.assign(g, as[0]);
+			
+			for (size_t i = 1; i < as.size(); i++) {
+				Element r, t1, t2;
+				_F.gcd(r, t1, t2, g, as[i]);
+				
+				for (size_t j = 0; j < i; j++) {
+					_F.mulin(ts[j], t1);
+				}
+				
+				_F.assign(ts[i], t2);
+				_F.assign(g, r);
+			}
+			
+			Element r, t1, t2;
+			_F.gcd(r, t1, t2, g, d);
+			
+			for (size_t i = 0; i < ts.size(); i++) {
+				_F.mulin(ts[i], t1);
+			}
+			
+			_F.assign(g, r);
+		}
+		
+		template<class Matrix>
+		void reduceMatrix(Matrix &A, const Element &d) {
+			for (size_t i = 0; i < A.rowdim(); i++) {
+				for (size_t j = 0; j < A.coldim(); j++) {
+					Element tmp;
+					A.getEntry(tmp, i, j);
+					_F.modin(tmp, d);
+					A.setEntry(i, j, tmp);
+				}
+			}
+		}
+		
+		template<class Matrix>
+		void makePivotCol(Matrix &A, const Element &d) {
+			std::vector<Element> elms;
+			for (size_t i = 1; i < A.coldim(); i++) {
+				Element tmp;
+				elms.push_back(A.getEntry(tmp, 0, i));
+			}
+			
+			Element g;
+			std::vector<Element> ts;
+			xgcd(g, ts, elms, d);
+			
+			SubMatrix pivotCol(A, 0, 0, A.rowdim(), 1);
+			for (size_t i = 1; i < A.coldim(); i++) {
+				if (_F.isZero(ts[i - 1])) {
+					continue;
+				}
+				
+				SubMatrix otherCol(A, 0, i, A.rowdim(), 1);
+				
+				_MD.saxpyin(pivotCol, ts[i - 1], otherCol);
+			}
+			
+			A.setEntry(0, 0, g);
+		}
+		
+		template<class Matrix>
+		void eliminateRow(Matrix &A, const Element &d) {
+			if (A.coldim() == 2) {
+				eliminateRow1(A, 1);
+				reduceMatrix(A, d);
+				return;
+			}
+			
+			if (!findZeroCol(A)) {
+				swapCols(A, 0, 1);
+				eliminateRow1(A, 1);
+				swapCols(A, 0, 1);
+			}
+			
+			makePivotCol(A, d);
+			
+			Element pivot;
+			SubMatrix pivotCol(A, 0, 0, A.rowdim(), 1);
+			pivotCol.getEntry(pivot, 0, 0);
+			for (size_t i = 1; i < A.coldim(); i++) {
+				Element other;
+				SubMatrix otherCol(A, 0, i, A.rowdim(), 1);
+				otherCol.getEntry(other, 0, 0);
+				
+				Element q;
+				_F.quo(q, other, pivot);
+				_F.negin(q);
+				
+				_MD.saxpyin(otherCol, q, pivotCol);
+			}
+			
+			reduceMatrix(A, d);
+		}
+		
+		template<class Matrix>
+		void makePivotRow(Matrix &A, const Element &d) {
+			std::vector<Element> elms;
+			for (size_t i = 1; i < A.rowdim(); i++) {
+				Element tmp;
+				elms.push_back(A.getEntry(tmp, i, 0));
+			}
+			
+			Element g;
+			std::vector<Element> ts;
+			xgcd(g, ts, elms, d);
+			
+			SubMatrix pivotRow(A, 0, 0, 1, A.coldim());
+			for (size_t i = 1; i < A.rowdim(); i++) {
+				if (_F.isZero(ts[i - 1])) {
+					continue;
+				}
+				
+				SubMatrix otherRow(A, i, 0, 1, A.coldim());
+				
+				_MD.saxpyin(pivotRow, ts[i - 1], otherRow);
+			}
+			
+			A.setEntry(0, 0, g);
+		}
+		
+		template<class Matrix>
+		void eliminateCol(Matrix &A, const Element &d) {
+			if (A.rowdim() == 2) {
+				eliminateCol1(A, 1);
+				reduceMatrix(A, d);
+				return;
+			}
+			
+			if (!findZeroRow(A)) {
+				swapRows(A, 0, 1);
+				eliminateRow1(A, 1);
+				swapRows(A, 0, 1);
+			}
+			
+			makePivotRow(A, d);
+			
+			Element pivot;
+			SubMatrix pivotRow(A, 0, 0, 1, A.coldim());
+			pivotRow.getEntry(pivot, 0, 0);
+			for (size_t i = 1; i < A.rowdim(); i++) {
+				Element other;
+				SubMatrix otherRow(A, i, 0, 1, A.coldim());
+				otherRow.getEntry(other, 0, 0);
+				
+				Element q;
+				_F.quo(q, other, pivot);
+				_F.negin(q);
+				
+				_MD.saxpyin(otherRow, q, pivotRow);
+			}
+			
+			reduceMatrix(A, d);
+		}
+		
+		template<class Matrix>
+		void solveIliopoulosHelper(std::vector<Element> &L, Matrix &A, const Element &d) {			
+			if (A.rowdim() == 0 || A.coldim() == 0) {
+				return;
+			}
+			
+			if (!findPivot(A)) {
+				size_t dim = A.rowdim() < A.coldim() ? A.rowdim() : A.coldim();
+				for (size_t i = 0; i < dim; i++) {
+					L.push_back(_F.zero);
+				}
+				return;
+			}
+			
+			while (!isDiagonalized(A)) {
+				eliminateCol(A, d);
+				
+				Element pivot;
+				if (_F.isUnit(A.getEntry(pivot, 0, 0))) {
+					break;
+				} else {
+					eliminateRow(A, d);
+				}
+			}
+			
+			Element tmp;
+			L.push_back(A.getEntry(tmp, 0, 0));
+			SubMatrix B(A, 1, 1, A.rowdim() - 1, A.coldim() - 1);
+			solveIliopoulosHelper(L, B, d);
+		}
 
 	public:
 		template<class Matrix>
@@ -347,6 +570,29 @@ namespace LinBox
 			L.push_back(A.getEntry(tmp, 0, 0));
 			SubMatrix B(A, 1, 1, A.rowdim() - 1, A.coldim() - 1);
 			halfSolve(L, B);
+		}
+		
+		template<class Matrix>
+		void solveIliopoulos(std::vector<Element> &L, Matrix &A, const Element &d) {
+			solveIliopoulosHelper(L, A, d);
+			fixDiagonal(L);
+		}
+		
+		template<class Matrix>
+		void solveAdaptive(std::vector<Element> &L, Matrix &A) {
+			std::vector<Element> ds;
+			halfSolve(ds, A);
+			
+			Element d;
+			_F.assign(d, ds[0]);
+			for (size_t i = 1; i < ds.size(); i++) {
+				_F.mulin(d, ds[i]);
+			}
+			
+			eliminateRow(A, d);
+			
+			solveIliopoulosHelper(L, A, d);
+			fixDiagonal(L);
 		}
 	};
 }
