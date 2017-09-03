@@ -56,6 +56,19 @@ namespace LinBox
 	private:
 		
 		template<typename Matrix>
+		void printMatrix(const Matrix &A) const {
+			std::cout << "[" << std::endl;
+			for (size_t i = 0; i < A.rowdim(); i++) {
+				std::cout << "\t[";
+				for (size_t j = 0; j < A.coldim(); j++) {
+					_F.write(std::cout, A.getEntry(i, j)) << ", ";
+				}
+				std::cout << "]" << std::endl;
+			}
+			std::cout << "]" << std::endl;
+		}
+		
+		template<typename Matrix>
 		void swapRows(Matrix &M, size_t r1, size_t r2) const {
 			SubMatrix row1(M, r1, 0, 1, M.coldim());
 			SubMatrix row2(M, r2, 0, 1, M.coldim());
@@ -88,20 +101,19 @@ namespace LinBox
 		bool findPivot(Matrix &A) {
 			for (size_t i = 0; i < A.rowdim(); i++) {
 				for (size_t j = 0; j < A.coldim(); j++) {
-					Element tmp;
-					A.getEntry(tmp, i, j);
-					
-					if (!_F.isZero(tmp)) {
-						if (i > 0) {
-							swapRows(A, 0, i);
-						}
-						
-						if (j > 0) {
-							swapCols(A, 0, j);
-						}
-						
-						return true;
+					if (_F.isZero(A.getEntry(i, j))) {
+						continue;
 					}
+					
+					if (i > 0) {
+						swapRows(A, 0, i);
+					}
+					
+					if (j > 0) {
+						swapCols(A, 0, j);
+					}
+					
+					return true;
 				}
 			}
 			
@@ -187,15 +199,14 @@ namespace LinBox
 		
 		template<class Matrix>
 		bool isDiagonalized(Matrix &A) {
-			Element tmp;
 			for (size_t i = 1; i < A.rowdim(); i++) {
-				if (!_F.isZero(A.getEntry(tmp, i, 0))) {
+				if (!_F.isZero(A.getEntry(i, 0))) {
 					return false;
 				}
 			}
 			
 			for (size_t i = 1; i < A.coldim(); i++) {
-				if (!_F.isZero(A.getEntry(tmp, 0, i))) {
+				if (!_F.isZero(A.getEntry(0, i))) {
 					return false;
 				}
 			}
@@ -216,11 +227,7 @@ namespace LinBox
 				
 				_F.mulin(v[i+1], h);
 				_F.divin(v[i+1], v[i]);
-				
-				_F.normalizeIn(v[i]);
 			}
-			
-			_F.normalizeIn(v[v.size() - 1]);
 		}
 		
 		template<class Matrix>
@@ -232,16 +239,21 @@ namespace LinBox
 				A.getEntry(pivot, i, i);
 				A.getEntry(other, 0, i);
 				
-				if (_F.degree(other) < _F.degree(pivot)) {
+				if (_F.isZero(other)) {
 					continue;
 				}
 				
 				Element q;
 				_F.quo(q, other, pivot);
+				
+				if (_F.isZero(q)) {
+					continue;
+				}
+				
 				_F.negin(q);
 				
-				SubMatrix pivotRow(A, 0, i, 1, A.coldim() - 1);
-				SubMatrix otherRow(A, i, i, 1, A.coldim() - 1);
+				SubMatrix pivotRow(A, i, i, 1, A.coldim() - i);
+				SubMatrix otherRow(A, 0, i, 1, A.coldim() - i);
 				
 				_MD.saxpyin(pivotRow, q, otherRow);
 			}
@@ -268,7 +280,7 @@ namespace LinBox
 			if (A.rowdim() == 0 || A.coldim() == 0) {
 				return;
 			}
-			
+						
 			if (!findPivot(A)) {
 				size_t dim = A.rowdim() < A.coldim() ? A.rowdim() : A.coldim();
 				for (size_t i = 0; i < dim; i++) {
@@ -276,14 +288,13 @@ namespace LinBox
 				}
 				return;
 			}
-			
+						
 			while (!isDiagonalized(A)) {
 				eliminateRow(A);
 				hermite(A);
 			}
 			
-			Element tmp;
-			L.push_back(A.getEntry(tmp, 0, 0));
+			L.push_back(A.getEntry(0, 0));
 			SubMatrix B(A, 1, 1, A.rowdim() - 1, A.coldim() - 1);
 			solveHelper(L, B);
 		}
@@ -305,16 +316,14 @@ namespace LinBox
 			while (!isDiagonalized(A)) {
 				eliminateCol(A);
 				
-				Element pivot;
-				if (_F.isUnit(A.getEntry(pivot, 0, 0))) {
+				if (_F.isUnit(A.getEntry(0, 0))) {
 					break;
-				} else {
-					eliminateRow(A);
 				}
+				
+				eliminateRow(A);
 			}
 			
-			Element tmp;
-			L.push_back(A.getEntry(tmp, 0, 0));
+			L.push_back(A.getEntry(0, 0));
 			SubMatrix B(A, 1, 1, A.rowdim() - 1, A.coldim() - 1);
 			solveTextBookHelper(L, B);
 		}
@@ -324,8 +333,7 @@ namespace LinBox
 		template<class Matrix>
 		bool findZeroCol(Matrix &A) {
 			for (size_t i = 1; i < A.coldim(); i++) {
-				Element tmp;
-				if (_F.isZero(A.getEntry(tmp, 0, i))) {
+				if (_F.isZero(A.getEntry(0, i))) {
 					swapCols(A, 0, i);
 					return true;
 				}
@@ -337,8 +345,7 @@ namespace LinBox
 		template<class Matrix>
 		bool findZeroRow(Matrix &A) {
 			for (size_t i = 1; i < A.rowdim(); i++) {
-				Element tmp;
-				if (_F.isZero(A.getEntry(tmp, i, 0))) {
+				if (_F.isZero(A.getEntry(i, 0))) {
 					swapRows(A, 0, i);
 					return true;
 				}
@@ -390,8 +397,7 @@ namespace LinBox
 		void makePivotCol(Matrix &A, const Element &d) {
 			std::vector<Element> elms;
 			for (size_t i = 1; i < A.coldim(); i++) {
-				Element tmp;
-				elms.push_back(A.getEntry(tmp, 0, i));
+				elms.push_back(A.getEntry(0, i));
 			}
 			
 			Element g;
@@ -450,8 +456,7 @@ namespace LinBox
 		void makePivotRow(Matrix &A, const Element &d) {
 			std::vector<Element> elms;
 			for (size_t i = 1; i < A.rowdim(); i++) {
-				Element tmp;
-				elms.push_back(A.getEntry(tmp, i, 0));
+				elms.push_back(A.getEntry(i, 0));
 			}
 			
 			Element g;
@@ -523,16 +528,14 @@ namespace LinBox
 			while (!isDiagonalized(A)) {
 				eliminateCol(A, d);
 				
-				Element pivot;
-				if (_F.isUnit(A.getEntry(pivot, 0, 0))) {
+				if (_F.isUnit(A.getEntry(0, 0))) {
 					break;
-				} else {
-					eliminateRow(A, d);
 				}
+				
+				eliminateRow(A, d);
 			}
 			
-			Element tmp;
-			L.push_back(A.getEntry(tmp, 0, 0));
+			L.push_back(A.getEntry(0, 0));
 			SubMatrix B(A, 1, 1, A.rowdim() - 1, A.coldim() - 1);
 			solveIliopoulosHelper(L, B, d);
 		}
@@ -566,8 +569,7 @@ namespace LinBox
 			
 			eliminateCol(A);
 			
-			Element tmp;
-			L.push_back(A.getEntry(tmp, 0, 0));
+			L.push_back(A.getEntry(0, 0));
 			SubMatrix B(A, 1, 1, A.rowdim() - 1, A.coldim() - 1);
 			halfSolve(L, B);
 		}
