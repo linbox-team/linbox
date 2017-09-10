@@ -9,6 +9,12 @@
 #include "linbox/algorithms/polynomial-matrix/polynomial-matrix-domain.h"
 #include "linbox/algorithms/polynomial-matrix/order-basis.h"
 
+// Smith Form Stuff
+#include "linbox/ring/givaro-poly.h"
+#include "linbox/matrix/densematrix/blas-matrix.h"
+#include "linbox/matrix/matrixdomain/matrix-domain.h"
+#include "linbox/algorithms/smith-form-kannan-bachem.h"
+
 //#define LINBOX_USES_OMP 1
 #include "linbox/ring/modular.h"
 #include "linbox/matrix/sparse-matrix.h"
@@ -40,15 +46,71 @@ typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field> PMatrix;
 typedef MatrixP::Matrix Matrix;
 typedef MatrixDomain<Field> MatDomain;
 
+typedef GivaroPoly<Field> PolyDom;
+typedef typename PolyDom::Element Polynomial;
+typedef MatrixDomain<PolyDom> PolyMatDom;
+typedef typename PolyMatDom::OwnMatrix GPMatrix;
+typedef SmithFormKannanBachemDomain<PolyDom> SmithDom;
+
+void printMatrix(Field F, const Matrix &A) {
+	std::cout << "[" << std::endl;
+	for (size_t i = 0; i < A.rowdim(); i++) {
+		std::cout << "\t[";
+		for (size_t j = 0; j < A.coldim(); j++) {
+			F.write(std::cout, A.getEntry(i, j));
+			if (j < A.coldim() - 1) {
+				std::cout << ", ";
+			}
+		}
+		std::cout << "]" << std::endl;
+	}
+	std::cout << "]" << std::endl;
+}
+
+void printGPMatrix(PolyDom PD, const GPMatrix &A) {
+	std::cout << "[" << std::endl;
+	for (size_t i = 0; i < A.rowdim(); i++) {
+		std::cout << "\t[";
+		for (size_t j = 0; j < A.coldim(); j++) {
+			PD.write(std::cout, A.getEntry(i, j));
+			if (j < A.coldim() - 1) {
+				std::cout << ", ";
+			}
+		}
+		std::cout << "]" << std::endl;
+	}
+	std::cout << "]" << std::endl;
+}
+
+template<class PMatrix>
+void convertToBlasMatrix(const PolyDom &PD, GPMatrix &G, const PMatrix &M) {
+	M.write(std::cout) << std::endl;
+	
+	for (size_t i = 0; i < M.rowdim(); i++) {
+		for (size_t j = 0; j < M.coldim(); j++) {
+			Polynomial tmp;
+			PD.init(tmp, M(i, j));
+			G.setEntry(i, j, tmp);
+		}
+	}
+}
+
+template<class PMatrix>
+void writeToPolyMat(const Field F, PMatrix &PM, const Matrix &M, size_t k) {
+	for (size_t i = 0; i < PM.rowdim(); i++) {
+		for (size_t j = 0; j < PM.coldim(); j++) {
+			F.assign(PM.ref(i, j, k), M.getEntry(i, j));
+		}
+	}
+}
+
 int main(int argc, char** argv)
 {
-	int earlyTerm = 10;
-	int p = 97, b = 3;
+	size_t p = 97, b = 3;
 	std::string mFname,oFname;
 
 	static Argument args[] = {
 		{ 'p', "-p P", "Set the field GF(p)", TYPE_INT, &p},
-		{ 't', "-t T", "Early term threshold", TYPE_INT, &earlyTerm},
 		{ 'b', "-b B", "Blocking factor", TYPE_INT, &b},
 		{ 'm', "-m M", "Name of file for matrix M", TYPE_STR, &mFname},
 		{ 'o', "-o O", "Name of file for output", TYPE_STR, &oFname},
@@ -58,6 +120,9 @@ int main(int argc, char** argv)
 	parseArguments(argc,argv,args);
 
 	Field F(p);
+	PolyDom PD(F, "x");
+	PolyMatDom PMD(PD);
+	
 	SparseMat M(F);
 
 	{
@@ -69,8 +134,10 @@ int main(int argc, char** argv)
 
 	std::cout << "Finished reading" << std::endl;
 
-	int n = M.coldim();
-	MatrixP Series(F, b, b, 2*n);
+	size_t n = M.coldim();
+	size_t d = 2*n;
+	
+	MatrixP Series(F, b, b, d);
 	
 	Matrix U(F, b, n);
 	Matrix V(F, n, b);
@@ -81,28 +148,54 @@ int main(int argc, char** argv)
 	RDM.random(V);
 	
 	MatDomain MD(F);
-	for (int i = 0; i < 2*n; i++) {
-		Matrix tmp(F, n, b);
-		MD.copy(tmp, V);
-		for (int j = 0; j < i; j++) {
-			Matrix tmp2(F, n, b);
-			MD.copy(tmp2, tmp);
-			MD.mul(tmp, M, tmp2);
-		}
+	Matrix tmp(F, n, b);
+	MD.copy(tmp, V);
+	
+	Matrix UMiV(F, b, b);
+	MD.mul(UMiV, U, tmp);
+	writeToPolyMat(F, Series, UMiV, 0);
+	
+	for (size_t i = 1; i < d; i++) {
+		Matrix tmp2(tmp);
+		MD.mul(tmp, M, tmp2);
 		
-		MD.mul(Series[i], U, tmp);
-		MD.write(std::cout, Series[i]) << std::endl;
+		MD.mul(UMiV, U, tmp);
+		printMatrix(F, UMiV);
+		
+		writeToPolyMat(F, Series, UMiV, i);
+		//MD.write(std::cout, Series[i]) << std::endl;
+		Series.write(std::cout) << std::endl;
 	}
-	Series.write(std::cout) << std::endl;
+	// Series.write(std::cout) << std::endl;
+	
+	GPMatrix gpSeries(PD, b, b);
+	convertToBlasMatrix(PD, gpSeries, Series);
+	std::cout << "Series Matrix: " << std::endl;
+	printGPMatrix(PD, gpSeries);
+	
+	std::cout << std::endl << "d: " << d << std::endl;
 	
 	OrderBasis<Field> SB(F);
 	
-	MatrixP Sigma(F, n, n, (2*n)+1);
-	std::vector<size_t> shift(n,0);
+	MatrixP Sigma(F, b, b, d+1);
+	std::vector<size_t> shift(b,0);
 	
-	SB.M_Basis(Sigma, Series, 2*n, shift);
+	SB.PM_Basis(Sigma, Series, d, shift);
 	
-	Sigma.write(std::cout) << std::endl;
+	// Sigma.write(std::cout) << std::endl;
+	
+	GPMatrix A(PD, b, b);
+	convertToBlasMatrix(PD, A, Sigma);
+	printGPMatrix(PD, A);
+	
+	SmithDom SFD(PD);
+	
+	std::vector<Polynomial> lst;
+	SFD.solveAdaptive(lst, A);
+	
+	for (size_t i = 0; i < b; i++) {
+		std::cout << lst[i] << std::endl;
+	}
 	
 	return 0;
 }

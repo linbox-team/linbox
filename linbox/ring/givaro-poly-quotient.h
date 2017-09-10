@@ -46,13 +46,13 @@ namespace LinBox
 		typedef typename Domain::Element Element;
 		typedef typename Domain::Type_t Scalar_t;
 
-		typedef GivaroPolyRandIter<GivaroPoly<Domain> > RandIter;
+		typedef GivaroPolyRandIter<Domain> RandIter;
 
 		Element zero, one, mOne, _f;
 
 		GivaroPolyQuotient(){}
 
-		GivaroPolyQuotient(const Domain &pd, Element f) : 
+		GivaroPolyQuotient(const Domain &pd, const Element &f) : 
 			Givaro::QuotientDom<Domain>(pd, f), _pd(pd) {
 			_pd.assign(zero, _pd.zero);
 			_pd.assign(one, _pd.one);
@@ -77,7 +77,7 @@ namespace LinBox
 		}
 
 		Element &init(Element &x) const {
-			_pd.init(x, Givaro::Degree(0), 0);
+			_pd.init(x);
 			return x;
 		}
 
