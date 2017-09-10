@@ -23,6 +23,8 @@
  * ========LICENCE========
  *.
  */
+ 
+/// TODO: This class is not functional
 
 #include <iostream>
 
@@ -135,7 +137,7 @@ namespace LinBox
 		}
 
 		Element &assign(Element &x, const Element &y) const {
-			return _pd.assign(x, y);
+			return _pd.modin(_pd.assign(x, y), _f);
 		}
 
 		integer &cardinality(integer &c) const {
@@ -283,6 +285,10 @@ namespace LinBox
 		bool isDivisor(const Element &x, const Element &y) const {
 			if(_pd.isZero(y)) {
 				return false;
+			}
+			
+			if (_pd.isUnit(y)) {
+				return true;
 			}
 			
 			Element a, b;
