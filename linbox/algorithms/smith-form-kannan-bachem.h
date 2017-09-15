@@ -305,7 +305,6 @@ namespace LinBox
 			}
 			
 			if (!findPivot(A)) {
-				std::cout << "No Pivot Found" << std::endl;
 				size_t dim = A.rowdim() < A.coldim() ? A.rowdim() : A.coldim();
 				for (size_t i = 0; i < dim; i++) {
 					L.push_back(_F.zero);
@@ -379,12 +378,6 @@ namespace LinBox
 		template<class Matrix>
 		void solveTextBook(std::vector<Element> &L, Matrix &A) {
 			solveTextBookHelper(L, A);
-			
-			std::cout << "Before Fixing Diag" << std::endl;
-			for (size_t i = 0; i < L.size(); i++) {
-				_F.write(std::cout << i << ": ", L[i]) << std::endl;
-			}
-			
 			fixDiagonal(L);
 		}
 		
