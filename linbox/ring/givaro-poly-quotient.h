@@ -166,7 +166,7 @@ namespace LinBox
 		//}
 
 		Element &normalizeIn(Element &x) const {
-			_pd.gcd(x, x, _f);
+			_pd.gcdin(x, _f);
 			
 			if (_pd.degree(x).value() == _pd.degree(_f).value()) {
 				return _pd.assign(x, zero);

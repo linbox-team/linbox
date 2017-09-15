@@ -148,7 +148,6 @@ pkgincludesub_HEADERS =            \
 	rns.h                              \
 	rns.inl                            \
 	invariant-factors.h                \
-	smith-form-iliopoulos2.h           \
 	$(USE_OCL_HDRS)
 
 #  iml.h                              \

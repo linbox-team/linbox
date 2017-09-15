@@ -220,13 +220,12 @@ namespace LinBox
 					return;
 				}
 				
-				Element h;
-				_F.assign(h, v[i]);
+				Element g, q;
+				_F.gcd(g, v[i], v[i+1]);
+				_F.quo(q, v[i], g);
 				
-				_F.gcd(v[i], v[i+1], h);
-				
-				_F.mulin(v[i+1], h);
-				_F.divin(v[i+1], v[i]);
+				_F.assign(v[i], g);
+				_F.mulin(v[i+1], q);
 			}
 		}
 		
@@ -306,6 +305,7 @@ namespace LinBox
 			}
 			
 			if (!findPivot(A)) {
+				std::cout << "No Pivot Found" << std::endl;
 				size_t dim = A.rowdim() < A.coldim() ? A.rowdim() : A.coldim();
 				for (size_t i = 0; i < dim; i++) {
 					L.push_back(_F.zero);
@@ -379,6 +379,12 @@ namespace LinBox
 		template<class Matrix>
 		void solveTextBook(std::vector<Element> &L, Matrix &A) {
 			solveTextBookHelper(L, A);
+			
+			std::cout << "Before Fixing Diag" << std::endl;
+			for (size_t i = 0; i < L.size(); i++) {
+				_F.write(std::cout << i << ": ", L[i]) << std::endl;
+			}
+			
 			fixDiagonal(L);
 		}
 		
