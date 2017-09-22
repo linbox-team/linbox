@@ -12,6 +12,7 @@
 #include "linbox/matrix/matrixdomain/matrix-domain.h"
 #include "linbox/algorithms/smith-form-kannan-bachem.h"
 #include "linbox/algorithms/smith-form-local.h"
+#include "linbox/algorithms/poly-dixon.h"
 
 //#define LINBOX_USES_OMP 1
 #include "linbox/matrix/sparse-matrix.h"
@@ -40,6 +41,7 @@ typedef BlasMatrix<QuotRing> QuotMatrix;
 
 typedef SmithFormKannanBachemDomain<PolyRing> SmithDom;
 typedef SmithFormKannanBachemDomain<QuotRing> QSmithDom;
+typedef PolyDixonDomain<PolyRing> DixonDom;
 
 Polynomial makeLump(PolyRing &PD, size_t p, size_t d) {
 	std::vector<integer> coefs;

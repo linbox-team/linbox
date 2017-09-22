@@ -1,6 +1,6 @@
 
 /* tests/__LINBOX_smith_form_kannan_bachem.h
- * Copyright (C) 2014 Gavin Harrison,
+ * Copyright (C) 2017 Gavin Harrison,
  *
  * Written by Gavin Harrison <gmh33@drexel.edu>,
  *
