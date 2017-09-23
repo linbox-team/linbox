@@ -13,6 +13,8 @@
 #include "linbox/algorithms/smith-form-kannan-bachem.h"
 #include "linbox/algorithms/smith-form-local.h"
 #include "linbox/algorithms/poly-dixon.h"
+#include "linbox/matrix/factorized-matrix.h"
+#include "linbox/algorithms/invert-tb.h"
 
 //#define LINBOX_USES_OMP 1
 #include "linbox/matrix/sparse-matrix.h"
@@ -124,6 +126,38 @@ void solveQuotTextBook(const PolyRing &PD, const Matrix &A, const Polynomial &de
 	}
 }
 
+void factorizeMatrix(const PolyRing &PD, const Matrix &A) {
+	std::vector<integer> v;
+	//v = {1, 1};
+	v = {1, 4, 0, 1};
+	Polynomial f;
+	PD.init(f, v);
+	PD.write(std::cout << "f: ", f) << std::endl;
+	
+	QuotRing QD(PD, f);
+	Util util(QD);
+	
+	QuotMatrix QA(QD, A.rowdim(), A.coldim());
+	convertToQuotient(QD, QA, A);
+	
+	util.printMatrix(QA);
+	
+	InvertTextbookDomain<QuotRing> ID(QD);
+	
+	QuotMatrix Ainv(QD, A.rowdim(), A.coldim());
+	
+	ID.invert(Ainv, QA);
+	
+	util.printMatrix(Ainv);
+	
+	QuotMatrix C(QD, A.rowdim(), A.coldim());
+	
+	MatrixDomain<QuotRing> QMD(QD);
+	QMD.mul(C, QA, Ainv);
+	
+	util.printMatrix(C);
+}
+
 void solveLocal(const PolyRing &PD, const Matrix &A, const Polynomial &det) {
 	QuotRing QD(PD, det);
 	SmithFormLocal<QuotRing> SFD;
@@ -231,6 +265,8 @@ int main(int argc, char** argv)
 	if (runLocal) {
 		solveLocal(PD, A, det);
 	}
+	
+	factorizeMatrix(PD, A);
 	
 	return pass ? 0 : -1;
 }

@@ -47,6 +47,8 @@ namespace LinBox
 		typedef Domain Domain_t;
 		typedef typename Domain::Element Element;
 		typedef typename Domain::Type_t Scalar_t;
+		typedef Element* Element_ptr;
+		typedef const Element* ConstElement_ptr;
 
 		typedef GivaroPolyRandIter<Domain> RandIter;
 

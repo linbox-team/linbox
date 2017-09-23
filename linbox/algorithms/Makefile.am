@@ -149,6 +149,7 @@ pkgincludesub_HEADERS =            \
 	rns.inl                            \
 	invariant-factors.h                \
 	poly-dixon.h                       \
+	invert-tb.h                        \
 	$(USE_OCL_HDRS)
 
 #  iml.h                              \
