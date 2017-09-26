@@ -31,7 +31,7 @@ echo $PATH
 # Add specific locations (if needed)
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH":/usr/local/lib:"$LOCAL_DIR/$CXX/lib":"$LOCAL_DIR/$CXX/withSSE/lib"
 echo "LD_LIBRARY_PATH = $LD_LIBRARY_PATH"
-export PKG_CONFIG_PATH="${PKG_CONFIG_PATH} $LOCAL_DIR/$CXX/withSSE/lib/pkgconfig $LOCAL_DIR/$CXX/lib/pkgconfig""
+export PKG_CONFIG_PATH="${PKG_CONFIG_PATH} $LOCAL_DIR/$CXX/withSSE/lib/pkgconfig $LOCAL_DIR/$CXX/lib/pkgconfig"
 echo "PKG_CONFIG_PATH = $PKG_CONFIG_PATH"
 
 # Where to install linbox binaries
