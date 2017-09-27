@@ -1,7 +1,7 @@
 /* linbox/algorithms/gauss-det.inl
  * Copyright (C) 2009 The LinBox group
  *
-// Time-stamp: <15 Jun 10 17:20:08 Jean-Guillaume.Dumas@imag.fr>
+// Time-stamp: <24 Aug 17 18:19:58 Jean-Guillaume.Dumas@imag.fr>
  *
  * 
  * ========LICENCE========
@@ -31,9 +31,9 @@
 namespace LinBox
 {
 	template <class _Field>
-	template <class Matrix> inline typename GaussDomain<_Field>::Element&
+	template <class _Matrix> inline typename GaussDomain<_Field>::Element&
 	GaussDomain<_Field>::detin(Element        &determinant,
-				   Matrix        &A,
+				   _Matrix        &A,
 				   unsigned long  Ni,
 				   unsigned long  Nj,
 				   SparseEliminationTraits::PivotStrategy   reord)  const
@@ -48,9 +48,9 @@ namespace LinBox
 
 
 	template <class _Field>
-	template <class Matrix> inline typename GaussDomain<_Field>::Element&
+	template <class _Matrix> inline typename GaussDomain<_Field>::Element&
 	GaussDomain<_Field>::detin(Element &determinant,
-				   Matrix  &A,
+				   _Matrix  &A,
 				   SparseEliminationTraits::PivotStrategy   reord)  const
 	{
 		return detin(determinant, A,  A.rowdim (), A.coldim (), reord);
@@ -59,23 +59,23 @@ namespace LinBox
 
 
 	template <class _Field>
-	template <class Matrix> inline typename GaussDomain<_Field>::Element&
+	template <class _Matrix> inline typename GaussDomain<_Field>::Element&
 	GaussDomain<_Field>::det(Element        &determinant,
-				 const Matrix   &A,
+				 const _Matrix   &A,
 				 SparseEliminationTraits::PivotStrategy   reord)  const
 	{
 		return det(determinant, A,  A.rowdim (), A.coldim (), reord);
 	}
 
 	template <class _Field>
-	template <class Matrix> inline typename GaussDomain<_Field>::Element&
+	template <class _Matrix> inline typename GaussDomain<_Field>::Element&
 	GaussDomain<_Field>::det(Element       &determinant,
-				 const Matrix  &A,
+				 const _Matrix  &A,
 				 unsigned long  Ni,
 				 unsigned long  Nj,
 				 SparseEliminationTraits::PivotStrategy   reord)  const
 	{
-		Matrix CopyA(Ni);
+		_Matrix CopyA(Ni);
 		for(unsigned long i = 0; i < Ni; ++i)
 			CopyA[i] = A[i];
 		return detin(determinant, CopyA, Ni, Nj, reord);

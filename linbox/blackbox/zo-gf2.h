@@ -1,7 +1,7 @@
 /* linbox/blackbox/zo-gf2.h
  * Copyright (C) 2009,2010 The LinBox group
  *
- * Time-stamp: <23 Jun 10 16:02:02 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <24 Aug 17 19:52:30 Jean-Guillaume.Dumas@imag.fr>
  *
  * 
  * ========LICENCE========
@@ -124,26 +124,11 @@ namespace LinBox
 		const Field& field() const { return *_field; }
 
 		template<typename _Tp1>
-		struct rebind {
-			typedef ZeroOne<_Tp1> other;
-			void operator() (other & Ap,
-					 const Self_t& A,
-					 const _Tp1& F)
-			{
-				// ZeroOne does not store any Field element
-			}
-		};
+		struct rebind;
 
 
 		template<typename _Tp1>
-		ZeroOne(ZeroOne<_Tp1>& A, const GF2 F2) :
-			Father_t(A.rowdim()), _rowdim(A.rowdim()), _coldim(A.coldim()), _nnz(0)
-		{
-			for(typename ZeroOne<_Tp1>::IndexIterator it = A.indexBegin();
-			    it != A.indexEnd(); ++it,++_nnz) {
-				this->operator[]( it->first ).push_back( it->second );
-			}
-		}
+		ZeroOne(const ZeroOne<_Tp1>& A, const GF2 F2);
 
 		size_t nnz() const { return _nnz; }
 		bool isRowSorted() const { return true; }
@@ -158,15 +143,20 @@ namespace LinBox
 		const Iterator Begin() const;
 		const Iterator End() const;
 
-		/** IndexIterator - Iterates through the i and j of the current element
+		/** IndexedIterator - Iterates through the i and j of the current element
 		 * and when accessed returns an STL pair containing the coordinates
 		 */
-		class IndexIterator;
-		IndexIterator indexBegin();
-		const IndexIterator indexBegin() const;
-		IndexIterator indexEnd();
-		const IndexIterator indexEnd() const;
+		class IndexedIterator;
+		IndexedIterator indexBegin();
+		const IndexedIterator indexBegin() const;
+		IndexedIterator indexEnd();
+		const IndexedIterator indexEnd() const;
 
+    protected:
+        // Merge A with self
+        // Warning: respective supports must be disjoint
+        template<typename _Tp1>
+        void augment(const ZeroOne<_Tp1>&);
 
 	private:
 		size_t _rowdim, _coldim, _nnz;
