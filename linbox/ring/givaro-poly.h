@@ -122,6 +122,10 @@ namespace LinBox
 			
 			return x;
 		}
+		
+		Element &init(Element &x, const Givaro::Degree &d, const integer &coeff) const {
+			return _pd.init(x, d, coeff);
+		}
 
 		integer &convert(integer &x, const Element &y) const {
 			x = 0;

@@ -1,4 +1,3 @@
-
 /* tests/__LINBOX_smith_form_kannan_bachem.h
  * Copyright (C) 2017 Gavin Harrison,
  *

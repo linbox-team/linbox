@@ -56,16 +56,6 @@ Polynomial makeLump(PolyRing &PD, size_t p, size_t d) {
 	return tmp;
 }
 
-void convertToQuotient(QuotRing &QD, QuotMatrix &Q, const Matrix &M) {
-	for (size_t i = 0; i < Q.rowdim(); i++) {
-		for (size_t j = 0; j < Q.coldim(); j++) {
-			Polynomial tmp;
-			QD.assign(tmp, M.getEntry(i, j));
-			Q.setEntry(i, j, tmp);
-		}
-	}
-}
-
 void solveTextBook(const PolyRing &PD, const Matrix &A) {
 	SmithDom SFD(PD);
 	
@@ -112,8 +102,7 @@ void solveQuotTextBook(const PolyRing &PD, const Matrix &A, const Polynomial &de
 	QSmithDom QSFD(QD);
 	Util util(PD);
 	
-	QuotMatrix QA(QD, A.rowdim(), A.coldim());
-	convertToQuotient(QD, QA, A);
+	QuotMatrix QA(A, QD);
 	
 	// util.printMatrix(QA);
 	
@@ -128,8 +117,8 @@ void solveQuotTextBook(const PolyRing &PD, const Matrix &A, const Polynomial &de
 
 void factorizeMatrix(const PolyRing &PD, const Matrix &A) {
 	std::vector<integer> v;
-	//v = {1, 1};
-	v = {1, 4, 0, 1};
+	v = {1, 1};
+	//v = {1, 4, 0, 1};
 	Polynomial f;
 	PD.init(f, v);
 	PD.write(std::cout << "f: ", f) << std::endl;
@@ -137,8 +126,7 @@ void factorizeMatrix(const PolyRing &PD, const Matrix &A) {
 	QuotRing QD(PD, f);
 	Util util(QD);
 	
-	QuotMatrix QA(QD, A.rowdim(), A.coldim());
-	convertToQuotient(QD, QA, A);
+	QuotMatrix QA(A, QD);
 	
 	util.printMatrix(QA);
 	
@@ -163,8 +151,7 @@ void solveLocal(const PolyRing &PD, const Matrix &A, const Polynomial &det) {
 	SmithFormLocal<QuotRing> SFD;
 	Util util(PD);
 	
-	QuotMatrix QA(QD, A.rowdim(), A.coldim());
-	convertToQuotient(QD, QA, A);
+	QuotMatrix QA(A, QD);
 	
 	// util.printMatrix(QA);
 	
@@ -266,6 +253,7 @@ int main(int argc, char** argv)
 		solveLocal(PD, A, det);
 	}
 	
+	// Compute inverse of matrix
 	factorizeMatrix(PD, A);
 	
 	return pass ? 0 : -1;

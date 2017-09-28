@@ -86,9 +86,9 @@ namespace LinBox
 		}
 
 		Element &init(Element &x, const integer &y) const {
-			_pd.init(x, Givaro::Degree(0), 0);
+			_pd.assign(x, _pd.zero);
 
-			integer q = subdomain().cardinality();
+			integer q = _pd.characteristic();
 
 			integer i = 0;
 			integer tmp = y;
@@ -96,7 +96,9 @@ namespace LinBox
 			while (tmp != 0)
 			{
 				Element xi;
-				_pd.init(xi, Givaro::Degree(int64_t(i)), tmp % q);
+				const Givaro::Degree d(i);
+				const integer coeff = tmp % q;
+				_pd.init(xi, d, coeff);
 				_pd.addin(x, xi);
 
 				i++;
