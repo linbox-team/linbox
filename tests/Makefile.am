@@ -351,6 +351,9 @@ test_zero_one_SOURCES =                 test-zero-one.C
 # Perfpublisher script interaction - AB 2014/12/11
 perfpublisher:
 	+./perfpublisher.sh "$(PERFPUBLISHERFILE)" "$(TESTS)" "$(CXX)"
+	mv $(PERFPUBLISHERFILE) ..
+	make clean
+	mv ../$(PERFPUBLISHERFILE) .
 
 # for compilation of non-enumerated programs
 %:%.C
