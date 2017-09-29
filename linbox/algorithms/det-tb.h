@@ -78,26 +78,16 @@ namespace LinBox {
 					values.push_back(i);
 				}
 				
-				//std::cout << std::endl << std::endl;
-				//std::cout << "values: " << values << std::endl;
-				
 				p.resize(0);
 				for (size_t i = 0; i < len - 1; i++) {
 					size_t j = k % values.size();
-					
-					//std::cout << "k: " << k << std::endl;
 					k = k / values.size();
-					//std::cout << "k': " << k << std::endl;
 					
 					auto it = values.begin();
 					std::advance(it, j);
 					
 					p.push_back(*it);
-					
 					values.erase(it);
-					
-					//std::cout << "values': " << values << std::endl;
-					//std::cout << "p': " << p << std::endl;
 				}
 				
 				p.push_back(*values.begin());
@@ -115,7 +105,6 @@ namespace LinBox {
 			template<class Matrix>
 			void solve(Element &det, const Matrix &M) {
 				size_t max = factorial(M.rowdim());
-				std::cout << "max: " << max << std::endl;
 				
 				_F.assign(det, _F.zero);
 				for (size_t i = 0; i < max; i++) {
