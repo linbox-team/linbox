@@ -21,6 +21,7 @@ SOURCE_DIRECTORY=$( cd "$( dirname "$0" )" && pwd )
 #=============================#
 # Change only these variables #
 #=============================#
+ARCH=`pwd | awk -F/ '{print $(NF-4)}'`
 CXX=`pwd | awk -F/ '{print $(NF-2)}'`
 NTL=`pwd | awk -F/ '{print $NF}'`
 JENKINS_DIR=${SOURCE_DIRECTORY%%/workspace/*}
