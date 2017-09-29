@@ -51,7 +51,7 @@ doc/linbox-dev-html/pages.html:
 	(cd doc; ${MAKE} docs_dev)
 
 examples:
-	(cd examples; ${MAKE} examples; export SED="${SED}" ./test.sh)
+	(cd examples; ${MAKE} examples; SED="${SED}" ./test.sh)
 
 benchmarks:
 	(cd benchmarks; ${MAKE} benchmarks)
