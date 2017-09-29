@@ -89,4 +89,4 @@ namespace LinBox {
 	};
 }
 
-#endif // __LINBOX_smith_form_kannan_bachem_domain_H
+#endif // __LINBOX_poly_dixon_domain_H

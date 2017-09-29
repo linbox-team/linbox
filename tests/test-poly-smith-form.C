@@ -15,6 +15,7 @@
 #include "linbox/algorithms/poly-dixon.h"
 #include "linbox/matrix/factorized-matrix.h"
 #include "linbox/algorithms/invert-tb.h"
+#include "linbox/algorithms/det-tb.h"
 
 //#define LINBOX_USES_OMP 1
 #include "linbox/matrix/sparse-matrix.h"
@@ -115,6 +116,24 @@ void solveQuotTextBook(const PolyRing &PD, const Matrix &A, const Polynomial &de
 	}
 }
 
+void solveLocal(const PolyRing &PD, const Matrix &A, const Polynomial &det) {
+	QuotRing QD(PD, det);
+	SmithFormLocal<QuotRing> SFD;
+	Util util(PD);
+	
+	QuotMatrix QA(A, QD);
+	
+	// util.printMatrix(QA);
+	
+	std::list<Polynomial> result;
+	SFD(result, QA, QD);
+	
+	std::cout << "Local Result:" << std::endl;
+	for (std::list<Polynomial>::const_iterator iterator = result.begin(), end = result.end(); iterator != end; ++iterator) {
+		PD.write(std::cout, *iterator) << std::endl;
+	}
+}
+
 void factorizeMatrix(const PolyRing &PD, const Matrix &A) {
 	std::vector<integer> v;
 	v = {1, 1};
@@ -146,22 +165,12 @@ void factorizeMatrix(const PolyRing &PD, const Matrix &A) {
 	util.printMatrix(C);
 }
 
-void solveLocal(const PolyRing &PD, const Matrix &A, const Polynomial &det) {
-	QuotRing QD(PD, det);
-	SmithFormLocal<QuotRing> SFD;
-	Util util(PD);
+void solveDet(const PolyRing &PD, const Matrix &A) {
+	DetTextbookDomain<PolyRing> DD(PD);
+	Polynomial det;
+	DD.solve(det, A);
 	
-	QuotMatrix QA(A, QD);
-	
-	// util.printMatrix(QA);
-	
-	std::list<Polynomial> result;
-	SFD(result, QA, QD);
-	
-	std::cout << "Local Result:" << std::endl;
-	for (std::list<Polynomial>::const_iterator iterator = result.begin(), end = result.end(); iterator != end; ++iterator) {
-		PD.write(std::cout, *iterator) << std::endl;
-	}
+	PD.write(std::cout << "det: ", det) << std::endl;
 }
 
 int main(int argc, char** argv)
@@ -255,6 +264,7 @@ int main(int argc, char** argv)
 	
 	// Compute inverse of matrix
 	factorizeMatrix(PD, A);
+	solveDet(PD, A);
 	
 	return pass ? 0 : -1;
 }
