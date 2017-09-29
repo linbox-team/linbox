@@ -59,12 +59,11 @@ if [ "$CXX" == "icpc" ]; then
 	source /usr/local/bin/compilervars.sh intel64
      fi
 fi
-
-# Particular case for Fedora23: g++=g++-5.3
-#vm_name=`uname -n | cut -d"-" -f1`
-#if [[ "$vm_name" == "fedora" && "$CXX" == "g++-5.3" ]]; then
-#   CXX="g++"
-#fi
+# Particular case for Fedora: g++-6 <- g++
+if [[ "$ARCH" == "linbox-fedora-amd64" &&  "$CXX" == "g++-6" ]]; then
+    CXX="g++"
+    CC=gcc
+fi
 
 #==================================#
 # Automated installation and tests #
