@@ -48,7 +48,1035 @@ namespace LinBox {
 			DetTextbookDomain(const DetTextbookDomain &D) : _F(D._F), _MD(D._MD) {}
 			
 		private:
-			int sgn(std::vector<size_t> p) {
+			template<class Matrix>
+			void solve_2by2(Element &det, const Matrix &M) const {
+				_F.mul(det, M.getEntry(0, 0), M.getEntry(1, 1));
+				
+				Element tmp;
+				_F.mul(tmp, M.getEntry(0, 1), M.getEntry(1, 0));
+				_F.subin(det, tmp);
+			}
+			
+			template<class Matrix>
+			void solve_3by3(Element &det, const Matrix &M) const {
+				_F.mul(det, M.getEntry(0, 0), M.getEntry(1, 1));
+				_F.mulin(det, M.getEntry(2, 2));
+				
+				Element tmp;
+				_F.mul(tmp, M.getEntry(0, 1), M.getEntry(1, 2));
+				_F.mulin(tmp, M.getEntry(2, 0));
+				_F.addin(det, tmp);
+				
+				_F.mul(tmp, M.getEntry(0, 2), M.getEntry(1, 0));
+				_F.mulin(tmp, M.getEntry(2, 1));
+				_F.addin(det, tmp);
+				
+				_F.mul(tmp, M.getEntry(0, 0), M.getEntry(1, 2));
+				_F.mulin(tmp, M.getEntry(2, 1));
+				_F.subin(det, tmp);
+				
+				_F.mul(tmp, M.getEntry(0, 1), M.getEntry(1, 0));
+				_F.mulin(tmp, M.getEntry(2, 2));
+				_F.subin(det, tmp);
+				
+				_F.mul(tmp, M.getEntry(0, 2), M.getEntry(1, 1));
+				_F.mulin(tmp, M.getEntry(2, 0));
+				_F.subin(det, tmp);
+			}
+			
+			template<class Matrix>
+			void solve_4by4(Element &det, const Matrix &M) const {
+				Element tmp;
+				
+				// +m[1, 1]*m[2, 2]*m[3, 3]*m[4, 4]
+				_F.mul(det, M.getEntry(0, 0), M.getEntry(1, 1));
+				_F.mulin(det, M.getEntry(2, 2));
+				_F.mulin(det, M.getEntry(3, 3));
+				
+				// -m[1, 1]*m[2, 2]*m[3, 4]*m[4, 3]
+				_F.mul(tmp, M.getEntry(0, 0), M.getEntry(1, 1));
+				_F.mulin(tmp, M.getEntry(2, 3));
+				_F.mulin(tmp, M.getEntry(3, 2));
+				_F.subin(det, tmp);
+				
+				// -m[1, 1]*m[2, 3]*m[3, 2]*m[4, 4]
+				_F.mul(tmp, M.getEntry(0, 0), M.getEntry(1, 2));
+				_F.mulin(tmp, M.getEntry(2, 1));
+				_F.mulin(tmp, M.getEntry(3, 3));
+				_F.subin(det, tmp);
+				
+				// +m[1, 1]*m[2, 3]*m[3, 4]*m[4, 2]
+				_F.mul(tmp, M.getEntry(0, 0), M.getEntry(1, 2));
+				_F.mulin(tmp, M.getEntry(2, 3));
+				_F.mulin(tmp, M.getEntry(3, 1));
+				_F.addin(det, tmp);
+				
+				// +m[1, 1]*m[2, 4]*m[3, 2]*m[4, 3]
+				_F.mul(tmp, M.getEntry(0, 0), M.getEntry(1, 3));
+				_F.mulin(tmp, M.getEntry(2, 1));
+				_F.mulin(tmp, M.getEntry(3, 2));
+				_F.addin(det, tmp);
+				
+				// -m[1, 1]*m[2, 4]*m[3, 3]*m[4, 2]
+				_F.mul(tmp, M.getEntry(0, 0), M.getEntry(1, 3));
+				_F.mulin(tmp, M.getEntry(2, 2));
+				_F.mulin(tmp, M.getEntry(3, 1));
+				_F.subin(det, tmp);
+				
+				// -m[1, 2]*m[2, 1]*m[3, 3]*m[4, 4]
+				_F.mul(tmp, M.getEntry(0, 1), M.getEntry(1, 0));
+				_F.mulin(tmp, M.getEntry(2, 2));
+				_F.mulin(tmp, M.getEntry(3, 3));
+				_F.subin(det, tmp);
+				
+				// +m[1, 2]*m[2, 1]*m[3, 4]*m[4, 3]
+				_F.mul(tmp, M.getEntry(0, 1), M.getEntry(1, 0));
+				_F.mulin(tmp, M.getEntry(2, 3));
+				_F.mulin(tmp, M.getEntry(3, 2));
+				_F.addin(det, tmp);
+				
+				// +m[1, 2]*m[2, 3]*m[3, 1]*m[4, 4]
+				_F.mul(tmp, M.getEntry(0, 1), M.getEntry(1, 2));
+				_F.mulin(tmp, M.getEntry(2, 0));
+				_F.mulin(tmp, M.getEntry(3, 3));
+				_F.addin(det, tmp);
+				
+				// -m[1, 2]*m[2, 3]*m[3, 4]*m[4, 1]
+				_F.mul(tmp, M.getEntry(0, 1), M.getEntry(1, 2));
+				_F.mulin(tmp, M.getEntry(2, 3));
+				_F.mulin(tmp, M.getEntry(3, 0));
+				_F.subin(det, tmp);
+				
+				// -m[1, 2]*m[2, 4]*m[3, 1]*m[4, 3]
+				_F.mul(tmp, M.getEntry(0, 1), M.getEntry(1, 3));
+				_F.mulin(tmp, M.getEntry(2, 0));
+				_F.mulin(tmp, M.getEntry(3, 2));
+				_F.subin(det, tmp);
+				
+				// +m[1, 2]*m[2, 4]*m[3, 3]*m[4, 1]
+				_F.mul(tmp, M.getEntry(0, 1), M.getEntry(1, 3));
+				_F.mulin(tmp, M.getEntry(2, 2));
+				_F.mulin(tmp, M.getEntry(3, 0));
+				_F.addin(det, tmp);
+				
+				// +m[1, 3]*m[2, 1]*m[3, 2]*m[4, 4]
+				_F.mul(tmp, M.getEntry(0, 2), M.getEntry(1, 0));
+				_F.mulin(tmp, M.getEntry(2, 1));
+				_F.mulin(tmp, M.getEntry(3, 3));
+				_F.addin(det, tmp);
+				
+				// -m[1, 3]*m[2, 1]*m[3, 4]*m[4, 2]
+				_F.mul(tmp, M.getEntry(0, 2), M.getEntry(1, 0));
+				_F.mulin(tmp, M.getEntry(2, 3));
+				_F.mulin(tmp, M.getEntry(3, 1));
+				_F.subin(det, tmp);
+				
+				// -m[1, 3]*m[2, 2]*m[3, 1]*m[4, 4]
+				_F.mul(tmp, M.getEntry(0, 2), M.getEntry(1, 1));
+				_F.mulin(tmp, M.getEntry(2, 0));
+				_F.mulin(tmp, M.getEntry(3, 3));
+				_F.subin(det, tmp);
+				
+				// +m[1, 3]*m[2, 2]*m[3, 4]*m[4, 1]
+				_F.mul(tmp, M.getEntry(0, 2), M.getEntry(1, 1));
+				_F.mulin(tmp, M.getEntry(2, 3));
+				_F.mulin(tmp, M.getEntry(3, 0));
+				_F.addin(det, tmp);
+				
+				// +m[1, 3]*m[2, 4]*m[3, 1]*m[4, 2]
+				_F.mul(tmp, M.getEntry(0, 2), M.getEntry(1, 3));
+				_F.mulin(tmp, M.getEntry(2, 0));
+				_F.mulin(tmp, M.getEntry(3, 1));
+				_F.addin(det, tmp);
+				
+				// -m[1, 3]*m[2, 4]*m[3, 2]*m[4, 1]
+				_F.mul(tmp, M.getEntry(0, 2), M.getEntry(1, 3));
+				_F.mulin(tmp, M.getEntry(2, 1));
+				_F.mulin(tmp, M.getEntry(3, 0));
+				_F.subin(det, tmp);
+				
+				// -m[1, 4]*m[2, 1]*m[3, 2]*m[4, 3]
+				_F.mul(tmp, M.getEntry(0, 3), M.getEntry(1, 0));
+				_F.mulin(tmp, M.getEntry(2, 1));
+				_F.mulin(tmp, M.getEntry(3, 2));
+				_F.subin(det, tmp);
+				
+				// +m[1, 4]*m[2, 1]*m[3, 3]*m[4, 2]
+				_F.mul(tmp, M.getEntry(0, 3), M.getEntry(1, 0));
+				_F.mulin(tmp, M.getEntry(2, 2));
+				_F.mulin(tmp, M.getEntry(3, 1));
+				_F.addin(det, tmp);
+				
+				// +m[1, 4]*m[2, 2]*m[3, 1]*m[4, 3]
+				_F.mul(tmp, M.getEntry(0, 3), M.getEntry(1, 1));
+				_F.mulin(tmp, M.getEntry(2, 0));
+				_F.mulin(tmp, M.getEntry(3, 2));
+				_F.addin(det, tmp);
+				
+				// -m[1, 4]*m[2, 2]*m[3, 3]*m[4, 1]
+				_F.mul(tmp, M.getEntry(0, 3), M.getEntry(1, 1));
+				_F.mulin(tmp, M.getEntry(2, 2));
+				_F.mulin(tmp, M.getEntry(3, 0));
+				_F.subin(det, tmp);
+				
+				// -m[1, 4]*m[2, 3]*m[3, 1]*m[4, 2]
+				_F.mul(tmp, M.getEntry(0, 3), M.getEntry(1, 2));
+				_F.mulin(tmp, M.getEntry(2, 0));
+				_F.mulin(tmp, M.getEntry(3, 1));
+				_F.subin(det, tmp);
+				
+				// +m[1, 4]*m[2, 3]*m[3, 2]*m[4, 1]
+				_F.mul(tmp, M.getEntry(0, 3), M.getEntry(1, 2));
+				_F.mulin(tmp, M.getEntry(2, 1));
+				_F.mulin(tmp, M.getEntry(3, 0));
+				_F.addin(det, tmp);
+			}
+			
+			template<class Matrix>
+			void solve_5by5(Element &det, const Matrix &M) const {
+				Element tmp;
+				
+				// +m[1, 1]*m[2, 2]*m[3, 3]*m[4, 4]*m[5, 5]
+				_F.mul(det, M.getEntry(0, 0), M.getEntry(1, 1));
+				_F.mulin(det, M.getEntry(2, 2));
+				_F.mulin(det, M.getEntry(3, 3));
+				_F.mulin(det, M.getEntry(4, 4));
+				
+				// -m[1, 1]*m[2, 2]*m[3, 3]*m[4, 5]*m[5, 4]
+				_F.mul(tmp, M.getEntry(0, 0), M.getEntry(1, 1));
+				_F.mulin(tmp, M.getEntry(2, 2));
+				_F.mulin(tmp, M.getEntry(3, 4));
+				_F.mulin(tmp, M.getEntry(4, 3));
+				_F.subin(det, tmp);
+				
+				// -m[1, 1]*m[2, 2]*m[3, 4]*m[4, 3]*m[5, 5]
+				_F.mul(tmp, M.getEntry(0, 0), M.getEntry(1, 1));
+				_F.mulin(tmp, M.getEntry(2, 3));
+				_F.mulin(tmp, M.getEntry(3, 2));
+				_F.mulin(tmp, M.getEntry(4, 4));
+				_F.subin(det, tmp);
+				
+				// +m[1, 1]*m[2, 2]*m[3, 4]*m[4, 5]*m[5, 3]
+				_F.mul(tmp, M.getEntry(0, 0), M.getEntry(1, 1));
+				_F.mulin(tmp, M.getEntry(2, 3));
+				_F.mulin(tmp, M.getEntry(3, 4));
+				_F.mulin(tmp, M.getEntry(4, 2));
+				_F.addin(det, tmp);
+				
+				// +m[1, 1]*m[2, 2]*m[3, 5]*m[4, 3]*m[5, 4]
+				_F.mul(tmp, M.getEntry(0, 0), M.getEntry(1, 1));
+				_F.mulin(tmp, M.getEntry(2, 4));
+				_F.mulin(tmp, M.getEntry(3, 2));
+				_F.mulin(tmp, M.getEntry(4, 3));
+				_F.addin(det, tmp);
+				
+				// -m[1, 1]*m[2, 2]*m[3, 5]*m[4, 4]*m[5, 3]
+				_F.mul(tmp, M.getEntry(0, 0), M.getEntry(1, 1));
+				_F.mulin(tmp, M.getEntry(2, 4));
+				_F.mulin(tmp, M.getEntry(3, 3));
+				_F.mulin(tmp, M.getEntry(4, 2));
+				_F.subin(det, tmp);
+				
+				// -m[1, 1]*m[2, 3]*m[3, 2]*m[4, 4]*m[5, 5]
+				_F.mul(tmp, M.getEntry(0, 0), M.getEntry(1, 2));
+				_F.mulin(tmp, M.getEntry(2, 1));
+				_F.mulin(tmp, M.getEntry(3, 3));
+				_F.mulin(tmp, M.getEntry(4, 4));
+				_F.subin(det, tmp);
+				
+				// +m[1, 1]*m[2, 3]*m[3, 2]*m[4, 5]*m[5, 4]
+				_F.mul(tmp, M.getEntry(0, 0), M.getEntry(1, 2));
+				_F.mulin(tmp, M.getEntry(2, 1));
+				_F.mulin(tmp, M.getEntry(3, 4));
+				_F.mulin(tmp, M.getEntry(4, 3));
+				_F.addin(det, tmp);
+				
+				// +m[1, 1]*m[2, 3]*m[3, 4]*m[4, 2]*m[5, 5]
+				_F.mul(tmp, M.getEntry(0, 0), M.getEntry(1, 2));
+				_F.mulin(tmp, M.getEntry(2, 3));
+				_F.mulin(tmp, M.getEntry(3, 1));
+				_F.mulin(tmp, M.getEntry(4, 4));
+				_F.addin(det, tmp);
+				
+				// -m[1, 1]*m[2, 3]*m[3, 4]*m[4, 5]*m[5, 2]
+				_F.mul(tmp, M.getEntry(0, 0), M.getEntry(1, 2));
+				_F.mulin(tmp, M.getEntry(2, 3));
+				_F.mulin(tmp, M.getEntry(3, 4));
+				_F.mulin(tmp, M.getEntry(4, 1));
+				_F.subin(det, tmp);
+				
+				// -m[1, 1]*m[2, 3]*m[3, 5]*m[4, 2]*m[5, 4]
+				_F.mul(tmp, M.getEntry(0, 0), M.getEntry(1, 2));
+				_F.mulin(tmp, M.getEntry(2, 4));
+				_F.mulin(tmp, M.getEntry(3, 1));
+				_F.mulin(tmp, M.getEntry(4, 3));
+				_F.subin(det, tmp);
+				
+				// +m[1, 1]*m[2, 3]*m[3, 5]*m[4, 4]*m[5, 2]
+				_F.mul(tmp, M.getEntry(0, 0), M.getEntry(1, 2));
+				_F.mulin(tmp, M.getEntry(2, 4));
+				_F.mulin(tmp, M.getEntry(3, 3));
+				_F.mulin(tmp, M.getEntry(4, 1));
+				_F.addin(det, tmp);
+				
+				// +m[1, 1]*m[2, 4]*m[3, 2]*m[4, 3]*m[5, 5]
+				_F.mul(tmp, M.getEntry(0, 0), M.getEntry(1, 3));
+				_F.mulin(tmp, M.getEntry(2, 1));
+				_F.mulin(tmp, M.getEntry(3, 2));
+				_F.mulin(tmp, M.getEntry(4, 4));
+				_F.addin(det, tmp);
+				
+				// -m[1, 1]*m[2, 4]*m[3, 2]*m[4, 5]*m[5, 3]
+				_F.mul(tmp, M.getEntry(0, 0), M.getEntry(1, 3));
+				_F.mulin(tmp, M.getEntry(2, 1));
+				_F.mulin(tmp, M.getEntry(3, 4));
+				_F.mulin(tmp, M.getEntry(4, 2));
+				_F.subin(det, tmp);
+				
+				// -m[1, 1]*m[2, 4]*m[3, 3]*m[4, 2]*m[5, 5]
+				_F.mul(tmp, M.getEntry(0, 0), M.getEntry(1, 3));
+				_F.mulin(tmp, M.getEntry(2, 2));
+				_F.mulin(tmp, M.getEntry(3, 1));
+				_F.mulin(tmp, M.getEntry(4, 4));
+				_F.subin(det, tmp);
+				
+				// +m[1, 1]*m[2, 4]*m[3, 3]*m[4, 5]*m[5, 2]
+				_F.mul(tmp, M.getEntry(0, 0), M.getEntry(1, 3));
+				_F.mulin(tmp, M.getEntry(2, 2));
+				_F.mulin(tmp, M.getEntry(3, 4));
+				_F.mulin(tmp, M.getEntry(4, 1));
+				_F.addin(det, tmp);
+				
+				// +m[1, 1]*m[2, 4]*m[3, 5]*m[4, 2]*m[5, 3]
+				_F.mul(tmp, M.getEntry(0, 0), M.getEntry(1, 3));
+				_F.mulin(tmp, M.getEntry(2, 4));
+				_F.mulin(tmp, M.getEntry(3, 1));
+				_F.mulin(tmp, M.getEntry(4, 2));
+				_F.addin(det, tmp);
+				
+				// -m[1, 1]*m[2, 4]*m[3, 5]*m[4, 3]*m[5, 2]
+				_F.mul(tmp, M.getEntry(0, 0), M.getEntry(1, 3));
+				_F.mulin(tmp, M.getEntry(2, 4));
+				_F.mulin(tmp, M.getEntry(3, 2));
+				_F.mulin(tmp, M.getEntry(4, 1));
+				_F.subin(det, tmp);
+				
+				// -m[1, 1]*m[2, 5]*m[3, 2]*m[4, 3]*m[5, 4]
+				_F.mul(tmp, M.getEntry(0, 0), M.getEntry(1, 4));
+				_F.mulin(tmp, M.getEntry(2, 1));
+				_F.mulin(tmp, M.getEntry(3, 2));
+				_F.mulin(tmp, M.getEntry(4, 3));
+				_F.subin(det, tmp);
+				
+				// +m[1, 1]*m[2, 5]*m[3, 2]*m[4, 4]*m[5, 3]
+				_F.mul(tmp, M.getEntry(0, 0), M.getEntry(1, 4));
+				_F.mulin(tmp, M.getEntry(2, 1));
+				_F.mulin(tmp, M.getEntry(3, 3));
+				_F.mulin(tmp, M.getEntry(4, 2));
+				_F.addin(det, tmp);
+				
+				// +m[1, 1]*m[2, 5]*m[3, 3]*m[4, 2]*m[5, 4]
+				_F.mul(tmp, M.getEntry(0, 0), M.getEntry(1, 4));
+				_F.mulin(tmp, M.getEntry(2, 2));
+				_F.mulin(tmp, M.getEntry(3, 1));
+				_F.mulin(tmp, M.getEntry(4, 3));
+				_F.addin(det, tmp);
+				
+				// -m[1, 1]*m[2, 5]*m[3, 3]*m[4, 4]*m[5, 2]
+				_F.mul(tmp, M.getEntry(0, 0), M.getEntry(1, 4));
+				_F.mulin(tmp, M.getEntry(2, 2));
+				_F.mulin(tmp, M.getEntry(3, 3));
+				_F.mulin(tmp, M.getEntry(4, 1));
+				_F.subin(det, tmp);
+				
+				// -m[1, 1]*m[2, 5]*m[3, 4]*m[4, 2]*m[5, 3]
+				_F.mul(tmp, M.getEntry(0, 0), M.getEntry(1, 4));
+				_F.mulin(tmp, M.getEntry(2, 3));
+				_F.mulin(tmp, M.getEntry(3, 1));
+				_F.mulin(tmp, M.getEntry(4, 2));
+				_F.subin(det, tmp);
+				
+				// +m[1, 1]*m[2, 5]*m[3, 4]*m[4, 3]*m[5, 2]
+				_F.mul(tmp, M.getEntry(0, 0), M.getEntry(1, 4));
+				_F.mulin(tmp, M.getEntry(2, 3));
+				_F.mulin(tmp, M.getEntry(3, 2));
+				_F.mulin(tmp, M.getEntry(4, 1));
+				_F.addin(det, tmp);
+				
+				// -m[1, 2]*m[2, 1]*m[3, 3]*m[4, 4]*m[5, 5]
+				_F.mul(tmp, M.getEntry(0, 1), M.getEntry(1, 0));
+				_F.mulin(tmp, M.getEntry(2, 2));
+				_F.mulin(tmp, M.getEntry(3, 3));
+				_F.mulin(tmp, M.getEntry(4, 4));
+				_F.subin(det, tmp);
+				
+				// +m[1, 2]*m[2, 1]*m[3, 3]*m[4, 5]*m[5, 4]
+				_F.mul(tmp, M.getEntry(0, 1), M.getEntry(1, 0));
+				_F.mulin(tmp, M.getEntry(2, 2));
+				_F.mulin(tmp, M.getEntry(3, 4));
+				_F.mulin(tmp, M.getEntry(4, 3));
+				_F.addin(det, tmp);
+				
+				// +m[1, 2]*m[2, 1]*m[3, 4]*m[4, 3]*m[5, 5]
+				_F.mul(tmp, M.getEntry(0, 1), M.getEntry(1, 0));
+				_F.mulin(tmp, M.getEntry(2, 3));
+				_F.mulin(tmp, M.getEntry(3, 2));
+				_F.mulin(tmp, M.getEntry(4, 4));
+				_F.addin(det, tmp);
+				
+				// -m[1, 2]*m[2, 1]*m[3, 4]*m[4, 5]*m[5, 3]
+				_F.mul(tmp, M.getEntry(0, 1), M.getEntry(1, 0));
+				_F.mulin(tmp, M.getEntry(2, 3));
+				_F.mulin(tmp, M.getEntry(3, 4));
+				_F.mulin(tmp, M.getEntry(4, 2));
+				_F.subin(det, tmp);
+				
+				// -m[1, 2]*m[2, 1]*m[3, 5]*m[4, 3]*m[5, 4]
+				_F.mul(tmp, M.getEntry(0, 1), M.getEntry(1, 0));
+				_F.mulin(tmp, M.getEntry(2, 4));
+				_F.mulin(tmp, M.getEntry(3, 2));
+				_F.mulin(tmp, M.getEntry(4, 3));
+				_F.subin(det, tmp);
+				
+				// +m[1, 2]*m[2, 1]*m[3, 5]*m[4, 4]*m[5, 3]
+				_F.mul(tmp, M.getEntry(0, 1), M.getEntry(1, 0));
+				_F.mulin(tmp, M.getEntry(2, 4));
+				_F.mulin(tmp, M.getEntry(3, 3));
+				_F.mulin(tmp, M.getEntry(4, 2));
+				_F.addin(det, tmp);
+				
+				// +m[1, 2]*m[2, 3]*m[3, 1]*m[4, 4]*m[5, 5]
+				_F.mul(tmp, M.getEntry(0, 1), M.getEntry(1, 2));
+				_F.mulin(tmp, M.getEntry(2, 0));
+				_F.mulin(tmp, M.getEntry(3, 3));
+				_F.mulin(tmp, M.getEntry(4, 4));
+				_F.addin(det, tmp);
+				
+				// -m[1, 2]*m[2, 3]*m[3, 1]*m[4, 5]*m[5, 4]
+				_F.mul(tmp, M.getEntry(0, 1), M.getEntry(1, 2));
+				_F.mulin(tmp, M.getEntry(2, 0));
+				_F.mulin(tmp, M.getEntry(3, 4));
+				_F.mulin(tmp, M.getEntry(4, 3));
+				_F.subin(det, tmp);
+				
+				// -m[1, 2]*m[2, 3]*m[3, 4]*m[4, 1]*m[5, 5]
+				_F.mul(tmp, M.getEntry(0, 1), M.getEntry(1, 2));
+				_F.mulin(tmp, M.getEntry(2, 3));
+				_F.mulin(tmp, M.getEntry(3, 0));
+				_F.mulin(tmp, M.getEntry(4, 4));
+				_F.subin(det, tmp);
+				
+				// +m[1, 2]*m[2, 3]*m[3, 4]*m[4, 5]*m[5, 1]
+				_F.mul(tmp, M.getEntry(0, 1), M.getEntry(1, 2));
+				_F.mulin(tmp, M.getEntry(2, 3));
+				_F.mulin(tmp, M.getEntry(3, 4));
+				_F.mulin(tmp, M.getEntry(4, 0));
+				_F.addin(det, tmp);
+				
+				// +m[1, 2]*m[2, 3]*m[3, 5]*m[4, 1]*m[5, 4]
+				_F.mul(tmp, M.getEntry(0, 1), M.getEntry(1, 2));
+				_F.mulin(tmp, M.getEntry(2, 4));
+				_F.mulin(tmp, M.getEntry(3, 0));
+				_F.mulin(tmp, M.getEntry(4, 3));
+				_F.addin(det, tmp);
+				
+				// -m[1, 2]*m[2, 3]*m[3, 5]*m[4, 4]*m[5, 1]
+				_F.mul(tmp, M.getEntry(0, 1), M.getEntry(1, 2));
+				_F.mulin(tmp, M.getEntry(2, 4));
+				_F.mulin(tmp, M.getEntry(3, 3));
+				_F.mulin(tmp, M.getEntry(4, 0));
+				_F.subin(det, tmp);
+				
+				// -m[1, 2]*m[2, 4]*m[3, 1]*m[4, 3]*m[5, 5]
+				_F.mul(tmp, M.getEntry(0, 1), M.getEntry(1, 3));
+				_F.mulin(tmp, M.getEntry(2, 0));
+				_F.mulin(tmp, M.getEntry(3, 2));
+				_F.mulin(tmp, M.getEntry(4, 4));
+				_F.subin(det, tmp);
+				
+				// +m[1, 2]*m[2, 4]*m[3, 1]*m[4, 5]*m[5, 3]
+				_F.mul(tmp, M.getEntry(0, 1), M.getEntry(1, 3));
+				_F.mulin(tmp, M.getEntry(2, 0));
+				_F.mulin(tmp, M.getEntry(3, 4));
+				_F.mulin(tmp, M.getEntry(4, 2));
+				_F.addin(det, tmp);
+				
+				// +m[1, 2]*m[2, 4]*m[3, 3]*m[4, 1]*m[5, 5]
+				_F.mul(tmp, M.getEntry(0, 1), M.getEntry(1, 3));
+				_F.mulin(tmp, M.getEntry(2, 2));
+				_F.mulin(tmp, M.getEntry(3, 0));
+				_F.mulin(tmp, M.getEntry(4, 4));
+				_F.addin(det, tmp);
+				
+				// -m[1, 2]*m[2, 4]*m[3, 3]*m[4, 5]*m[5, 1]
+				_F.mul(tmp, M.getEntry(0, 1), M.getEntry(1, 3));
+				_F.mulin(tmp, M.getEntry(2, 2));
+				_F.mulin(tmp, M.getEntry(3, 4));
+				_F.mulin(tmp, M.getEntry(4, 0));
+				_F.subin(det, tmp);
+				
+				// -m[1, 2]*m[2, 4]*m[3, 5]*m[4, 1]*m[5, 3]
+				_F.mul(tmp, M.getEntry(0, 1), M.getEntry(1, 3));
+				_F.mulin(tmp, M.getEntry(2, 4));
+				_F.mulin(tmp, M.getEntry(3, 0));
+				_F.mulin(tmp, M.getEntry(4, 2));
+				_F.subin(det, tmp);
+				
+				// +m[1, 2]*m[2, 4]*m[3, 5]*m[4, 3]*m[5, 1]
+				_F.mul(tmp, M.getEntry(0, 1), M.getEntry(1, 3));
+				_F.mulin(tmp, M.getEntry(2, 4));
+				_F.mulin(tmp, M.getEntry(3, 2));
+				_F.mulin(tmp, M.getEntry(4, 0));
+				_F.addin(det, tmp);
+				
+				// +m[1, 2]*m[2, 5]*m[3, 1]*m[4, 3]*m[5, 4]
+				_F.mul(tmp, M.getEntry(0, 1), M.getEntry(1, 4));
+				_F.mulin(tmp, M.getEntry(2, 0));
+				_F.mulin(tmp, M.getEntry(3, 2));
+				_F.mulin(tmp, M.getEntry(4, 3));
+				_F.addin(det, tmp);
+				
+				// -m[1, 2]*m[2, 5]*m[3, 1]*m[4, 4]*m[5, 3]
+				_F.mul(tmp, M.getEntry(0, 1), M.getEntry(1, 4));
+				_F.mulin(tmp, M.getEntry(2, 0));
+				_F.mulin(tmp, M.getEntry(3, 3));
+				_F.mulin(tmp, M.getEntry(4, 2));
+				_F.subin(det, tmp);
+				
+				// -m[1, 2]*m[2, 5]*m[3, 3]*m[4, 1]*m[5, 4]
+				_F.mul(tmp, M.getEntry(0, 1), M.getEntry(1, 4));
+				_F.mulin(tmp, M.getEntry(2, 2));
+				_F.mulin(tmp, M.getEntry(3, 0));
+				_F.mulin(tmp, M.getEntry(4, 3));
+				_F.subin(det, tmp);
+				
+				// +m[1, 2]*m[2, 5]*m[3, 3]*m[4, 4]*m[5, 1]
+				_F.mul(tmp, M.getEntry(0, 1), M.getEntry(1, 4));
+				_F.mulin(tmp, M.getEntry(2, 2));
+				_F.mulin(tmp, M.getEntry(3, 3));
+				_F.mulin(tmp, M.getEntry(4, 0));
+				_F.addin(det, tmp);
+				
+				// +m[1, 2]*m[2, 5]*m[3, 4]*m[4, 1]*m[5, 3]
+				_F.mul(tmp, M.getEntry(0, 1), M.getEntry(1, 4));
+				_F.mulin(tmp, M.getEntry(2, 3));
+				_F.mulin(tmp, M.getEntry(3, 0));
+				_F.mulin(tmp, M.getEntry(4, 2));
+				_F.addin(det, tmp);
+				
+				// -m[1, 2]*m[2, 5]*m[3, 4]*m[4, 3]*m[5, 1]
+				_F.mul(tmp, M.getEntry(0, 1), M.getEntry(1, 4));
+				_F.mulin(tmp, M.getEntry(2, 3));
+				_F.mulin(tmp, M.getEntry(3, 2));
+				_F.mulin(tmp, M.getEntry(4, 0));
+				_F.subin(det, tmp);
+				
+				// +m[1, 3]*m[2, 1]*m[3, 2]*m[4, 4]*m[5, 5]
+				_F.mul(tmp, M.getEntry(0, 2), M.getEntry(1, 0));
+				_F.mulin(tmp, M.getEntry(2, 1));
+				_F.mulin(tmp, M.getEntry(3, 3));
+				_F.mulin(tmp, M.getEntry(4, 4));
+				_F.addin(det, tmp);
+				
+				// -m[1, 3]*m[2, 1]*m[3, 2]*m[4, 5]*m[5, 4]
+				_F.mul(tmp, M.getEntry(0, 2), M.getEntry(1, 0));
+				_F.mulin(tmp, M.getEntry(2, 1));
+				_F.mulin(tmp, M.getEntry(3, 4));
+				_F.mulin(tmp, M.getEntry(4, 3));
+				_F.subin(det, tmp);
+				
+				// -m[1, 3]*m[2, 1]*m[3, 4]*m[4, 2]*m[5, 5]
+				_F.mul(tmp, M.getEntry(0, 2), M.getEntry(1, 0));
+				_F.mulin(tmp, M.getEntry(2, 3));
+				_F.mulin(tmp, M.getEntry(3, 1));
+				_F.mulin(tmp, M.getEntry(4, 4));
+				_F.subin(det, tmp);
+				
+				// +m[1, 3]*m[2, 1]*m[3, 4]*m[4, 5]*m[5, 2]
+				_F.mul(tmp, M.getEntry(0, 2), M.getEntry(1, 0));
+				_F.mulin(tmp, M.getEntry(2, 3));
+				_F.mulin(tmp, M.getEntry(3, 4));
+				_F.mulin(tmp, M.getEntry(4, 1));
+				_F.addin(det, tmp);
+				
+				// +m[1, 3]*m[2, 1]*m[3, 5]*m[4, 2]*m[5, 4]
+				_F.mul(tmp, M.getEntry(0, 2), M.getEntry(1, 0));
+				_F.mulin(tmp, M.getEntry(2, 4));
+				_F.mulin(tmp, M.getEntry(3, 1));
+				_F.mulin(tmp, M.getEntry(4, 3));
+				_F.addin(det, tmp);
+				
+				// -m[1, 3]*m[2, 1]*m[3, 5]*m[4, 4]*m[5, 2]
+				_F.mul(tmp, M.getEntry(0, 2), M.getEntry(1, 0));
+				_F.mulin(tmp, M.getEntry(2, 4));
+				_F.mulin(tmp, M.getEntry(3, 3));
+				_F.mulin(tmp, M.getEntry(4, 1));
+				_F.subin(det, tmp);
+				
+				// -m[1, 3]*m[2, 2]*m[3, 1]*m[4, 4]*m[5, 5]
+				_F.mul(tmp, M.getEntry(0, 2), M.getEntry(1, 1));
+				_F.mulin(tmp, M.getEntry(2, 0));
+				_F.mulin(tmp, M.getEntry(3, 3));
+				_F.mulin(tmp, M.getEntry(4, 4));
+				_F.subin(det, tmp);
+				
+				// +m[1, 3]*m[2, 2]*m[3, 1]*m[4, 5]*m[5, 4]
+				_F.mul(tmp, M.getEntry(0, 2), M.getEntry(1, 1));
+				_F.mulin(tmp, M.getEntry(2, 0));
+				_F.mulin(tmp, M.getEntry(3, 4));
+				_F.mulin(tmp, M.getEntry(4, 3));
+				_F.addin(det, tmp);
+				
+				// +m[1, 3]*m[2, 2]*m[3, 4]*m[4, 1]*m[5, 5]
+				_F.mul(tmp, M.getEntry(0, 2), M.getEntry(1, 1));
+				_F.mulin(tmp, M.getEntry(2, 3));
+				_F.mulin(tmp, M.getEntry(3, 0));
+				_F.mulin(tmp, M.getEntry(4, 4));
+				_F.addin(det, tmp);
+				
+				// -m[1, 3]*m[2, 2]*m[3, 4]*m[4, 5]*m[5, 1]
+				_F.mul(tmp, M.getEntry(0, 2), M.getEntry(1, 1));
+				_F.mulin(tmp, M.getEntry(2, 3));
+				_F.mulin(tmp, M.getEntry(3, 4));
+				_F.mulin(tmp, M.getEntry(4, 0));
+				_F.subin(det, tmp);
+				
+				// -m[1, 3]*m[2, 2]*m[3, 5]*m[4, 1]*m[5, 4]
+				_F.mul(tmp, M.getEntry(0, 2), M.getEntry(1, 1));
+				_F.mulin(tmp, M.getEntry(2, 4));
+				_F.mulin(tmp, M.getEntry(3, 0));
+				_F.mulin(tmp, M.getEntry(4, 3));
+				_F.subin(det, tmp);
+				
+				// +m[1, 3]*m[2, 2]*m[3, 5]*m[4, 4]*m[5, 1]
+				_F.mul(tmp, M.getEntry(0, 2), M.getEntry(1, 1));
+				_F.mulin(tmp, M.getEntry(2, 4));
+				_F.mulin(tmp, M.getEntry(3, 3));
+				_F.mulin(tmp, M.getEntry(4, 0));
+				_F.addin(det, tmp);
+				
+				// +m[1, 3]*m[2, 4]*m[3, 1]*m[4, 2]*m[5, 5]
+				_F.mul(tmp, M.getEntry(0, 2), M.getEntry(1, 3));
+				_F.mulin(tmp, M.getEntry(2, 0));
+				_F.mulin(tmp, M.getEntry(3, 1));
+				_F.mulin(tmp, M.getEntry(4, 4));
+				_F.addin(det, tmp);
+				
+				// -m[1, 3]*m[2, 4]*m[3, 1]*m[4, 5]*m[5, 2]
+				_F.mul(tmp, M.getEntry(0, 2), M.getEntry(1, 3));
+				_F.mulin(tmp, M.getEntry(2, 0));
+				_F.mulin(tmp, M.getEntry(3, 4));
+				_F.mulin(tmp, M.getEntry(4, 1));
+				_F.subin(det, tmp);
+				
+				// -m[1, 3]*m[2, 4]*m[3, 2]*m[4, 1]*m[5, 5]
+				_F.mul(tmp, M.getEntry(0, 2), M.getEntry(1, 3));
+				_F.mulin(tmp, M.getEntry(2, 1));
+				_F.mulin(tmp, M.getEntry(3, 0));
+				_F.mulin(tmp, M.getEntry(4, 4));
+				_F.subin(det, tmp);
+				
+				// +m[1, 3]*m[2, 4]*m[3, 2]*m[4, 5]*m[5, 1]
+				_F.mul(tmp, M.getEntry(0, 2), M.getEntry(1, 3));
+				_F.mulin(tmp, M.getEntry(2, 1));
+				_F.mulin(tmp, M.getEntry(3, 4));
+				_F.mulin(tmp, M.getEntry(4, 0));
+				_F.addin(det, tmp);
+				
+				// +m[1, 3]*m[2, 4]*m[3, 5]*m[4, 1]*m[5, 2]
+				_F.mul(tmp, M.getEntry(0, 2), M.getEntry(1, 3));
+				_F.mulin(tmp, M.getEntry(2, 4));
+				_F.mulin(tmp, M.getEntry(3, 0));
+				_F.mulin(tmp, M.getEntry(4, 1));
+				_F.addin(det, tmp);
+				
+				// -m[1, 3]*m[2, 4]*m[3, 5]*m[4, 2]*m[5, 1]
+				_F.mul(tmp, M.getEntry(0, 2), M.getEntry(1, 3));
+				_F.mulin(tmp, M.getEntry(2, 4));
+				_F.mulin(tmp, M.getEntry(3, 1));
+				_F.mulin(tmp, M.getEntry(4, 0));
+				_F.subin(det, tmp);
+				
+				// -m[1, 3]*m[2, 5]*m[3, 1]*m[4, 2]*m[5, 4]
+				_F.mul(tmp, M.getEntry(0, 2), M.getEntry(1, 4));
+				_F.mulin(tmp, M.getEntry(2, 0));
+				_F.mulin(tmp, M.getEntry(3, 1));
+				_F.mulin(tmp, M.getEntry(4, 3));
+				_F.subin(det, tmp);
+				
+				// +m[1, 3]*m[2, 5]*m[3, 1]*m[4, 4]*m[5, 2]
+				_F.mul(tmp, M.getEntry(0, 2), M.getEntry(1, 4));
+				_F.mulin(tmp, M.getEntry(2, 0));
+				_F.mulin(tmp, M.getEntry(3, 3));
+				_F.mulin(tmp, M.getEntry(4, 1));
+				_F.addin(det, tmp);
+				
+				// +m[1, 3]*m[2, 5]*m[3, 2]*m[4, 1]*m[5, 4]
+				_F.mul(tmp, M.getEntry(0, 2), M.getEntry(1, 4));
+				_F.mulin(tmp, M.getEntry(2, 1));
+				_F.mulin(tmp, M.getEntry(3, 0));
+				_F.mulin(tmp, M.getEntry(4, 3));
+				_F.addin(det, tmp);
+				
+				// -m[1, 3]*m[2, 5]*m[3, 2]*m[4, 4]*m[5, 1]
+				_F.mul(tmp, M.getEntry(0, 2), M.getEntry(1, 4));
+				_F.mulin(tmp, M.getEntry(2, 1));
+				_F.mulin(tmp, M.getEntry(3, 3));
+				_F.mulin(tmp, M.getEntry(4, 0));
+				_F.subin(det, tmp);
+				
+				// -m[1, 3]*m[2, 5]*m[3, 4]*m[4, 1]*m[5, 2]
+				_F.mul(tmp, M.getEntry(0, 2), M.getEntry(1, 4));
+				_F.mulin(tmp, M.getEntry(2, 3));
+				_F.mulin(tmp, M.getEntry(3, 0));
+				_F.mulin(tmp, M.getEntry(4, 1));
+				_F.subin(det, tmp);
+				
+				// +m[1, 3]*m[2, 5]*m[3, 4]*m[4, 2]*m[5, 1]
+				_F.mul(tmp, M.getEntry(0, 2), M.getEntry(1, 4));
+				_F.mulin(tmp, M.getEntry(2, 3));
+				_F.mulin(tmp, M.getEntry(3, 1));
+				_F.mulin(tmp, M.getEntry(4, 0));
+				_F.addin(det, tmp);
+				
+				// -m[1, 4]*m[2, 1]*m[3, 2]*m[4, 3]*m[5, 5]
+				_F.mul(tmp, M.getEntry(0, 3), M.getEntry(1, 0));
+				_F.mulin(tmp, M.getEntry(2, 1));
+				_F.mulin(tmp, M.getEntry(3, 2));
+				_F.mulin(tmp, M.getEntry(4, 4));
+				_F.subin(det, tmp);
+				
+				// +m[1, 4]*m[2, 1]*m[3, 2]*m[4, 5]*m[5, 3]
+				_F.mul(tmp, M.getEntry(0, 3), M.getEntry(1, 0));
+				_F.mulin(tmp, M.getEntry(2, 1));
+				_F.mulin(tmp, M.getEntry(3, 4));
+				_F.mulin(tmp, M.getEntry(4, 2));
+				_F.addin(det, tmp);
+				
+				// +m[1, 4]*m[2, 1]*m[3, 3]*m[4, 2]*m[5, 5]
+				_F.mul(tmp, M.getEntry(0, 3), M.getEntry(1, 0));
+				_F.mulin(tmp, M.getEntry(2, 2));
+				_F.mulin(tmp, M.getEntry(3, 1));
+				_F.mulin(tmp, M.getEntry(4, 4));
+				_F.addin(det, tmp);
+				
+				// -m[1, 4]*m[2, 1]*m[3, 3]*m[4, 5]*m[5, 2]
+				_F.mul(tmp, M.getEntry(0, 3), M.getEntry(1, 0));
+				_F.mulin(tmp, M.getEntry(2, 2));
+				_F.mulin(tmp, M.getEntry(3, 4));
+				_F.mulin(tmp, M.getEntry(4, 1));
+				_F.subin(det, tmp);
+				
+				// -m[1, 4]*m[2, 1]*m[3, 5]*m[4, 2]*m[5, 3]
+				_F.mul(tmp, M.getEntry(0, 3), M.getEntry(1, 0));
+				_F.mulin(tmp, M.getEntry(2, 4));
+				_F.mulin(tmp, M.getEntry(3, 1));
+				_F.mulin(tmp, M.getEntry(4, 2));
+				_F.subin(det, tmp);
+				
+				// +m[1, 4]*m[2, 1]*m[3, 5]*m[4, 3]*m[5, 2]
+				_F.mul(tmp, M.getEntry(0, 3), M.getEntry(1, 0));
+				_F.mulin(tmp, M.getEntry(2, 4));
+				_F.mulin(tmp, M.getEntry(3, 2));
+				_F.mulin(tmp, M.getEntry(4, 1));
+				_F.addin(det, tmp);
+				
+				// +m[1, 4]*m[2, 2]*m[3, 1]*m[4, 3]*m[5, 5]
+				_F.mul(tmp, M.getEntry(0, 3), M.getEntry(1, 1));
+				_F.mulin(tmp, M.getEntry(2, 0));
+				_F.mulin(tmp, M.getEntry(3, 2));
+				_F.mulin(tmp, M.getEntry(4, 4));
+				_F.addin(det, tmp);
+				
+				// -m[1, 4]*m[2, 2]*m[3, 1]*m[4, 5]*m[5, 3]
+				_F.mul(tmp, M.getEntry(0, 3), M.getEntry(1, 1));
+				_F.mulin(tmp, M.getEntry(2, 0));
+				_F.mulin(tmp, M.getEntry(3, 4));
+				_F.mulin(tmp, M.getEntry(4, 2));
+				_F.subin(det, tmp);
+				
+				// -m[1, 4]*m[2, 2]*m[3, 3]*m[4, 1]*m[5, 5]
+				_F.mul(tmp, M.getEntry(0, 3), M.getEntry(1, 1));
+				_F.mulin(tmp, M.getEntry(2, 2));
+				_F.mulin(tmp, M.getEntry(3, 0));
+				_F.mulin(tmp, M.getEntry(4, 4));
+				_F.subin(det, tmp);
+				
+				// +m[1, 4]*m[2, 2]*m[3, 3]*m[4, 5]*m[5, 1]
+				_F.mul(tmp, M.getEntry(0, 3), M.getEntry(1, 1));
+				_F.mulin(tmp, M.getEntry(2, 2));
+				_F.mulin(tmp, M.getEntry(3, 4));
+				_F.mulin(tmp, M.getEntry(4, 0));
+				_F.addin(det, tmp);
+				
+				// +m[1, 4]*m[2, 2]*m[3, 5]*m[4, 1]*m[5, 3]
+				_F.mul(tmp, M.getEntry(0, 3), M.getEntry(1, 1));
+				_F.mulin(tmp, M.getEntry(2, 4));
+				_F.mulin(tmp, M.getEntry(3, 0));
+				_F.mulin(tmp, M.getEntry(4, 2));
+				_F.addin(det, tmp);
+				
+				// -m[1, 4]*m[2, 2]*m[3, 5]*m[4, 3]*m[5, 1]
+				_F.mul(tmp, M.getEntry(0, 3), M.getEntry(1, 1));
+				_F.mulin(tmp, M.getEntry(2, 4));
+				_F.mulin(tmp, M.getEntry(3, 2));
+				_F.mulin(tmp, M.getEntry(4, 0));
+				_F.subin(det, tmp);
+				
+				// -m[1, 4]*m[2, 3]*m[3, 1]*m[4, 2]*m[5, 5]
+				_F.mul(tmp, M.getEntry(0, 3), M.getEntry(1, 2));
+				_F.mulin(tmp, M.getEntry(2, 0));
+				_F.mulin(tmp, M.getEntry(3, 1));
+				_F.mulin(tmp, M.getEntry(4, 4));
+				_F.subin(det, tmp);
+				
+				// +m[1, 4]*m[2, 3]*m[3, 1]*m[4, 5]*m[5, 2]
+				_F.mul(tmp, M.getEntry(0, 3), M.getEntry(1, 2));
+				_F.mulin(tmp, M.getEntry(2, 0));
+				_F.mulin(tmp, M.getEntry(3, 4));
+				_F.mulin(tmp, M.getEntry(4, 1));
+				_F.addin(det, tmp);
+				
+				// +m[1, 4]*m[2, 3]*m[3, 2]*m[4, 1]*m[5, 5]
+				_F.mul(tmp, M.getEntry(0, 3), M.getEntry(1, 2));
+				_F.mulin(tmp, M.getEntry(2, 1));
+				_F.mulin(tmp, M.getEntry(3, 0));
+				_F.mulin(tmp, M.getEntry(4, 4));
+				_F.addin(det, tmp);
+				
+				// -m[1, 4]*m[2, 3]*m[3, 2]*m[4, 5]*m[5, 1]
+				_F.mul(tmp, M.getEntry(0, 3), M.getEntry(1, 2));
+				_F.mulin(tmp, M.getEntry(2, 1));
+				_F.mulin(tmp, M.getEntry(3, 4));
+				_F.mulin(tmp, M.getEntry(4, 0));
+				_F.subin(det, tmp);
+				
+				// -m[1, 4]*m[2, 3]*m[3, 5]*m[4, 1]*m[5, 2]
+				_F.mul(tmp, M.getEntry(0, 3), M.getEntry(1, 2));
+				_F.mulin(tmp, M.getEntry(2, 4));
+				_F.mulin(tmp, M.getEntry(3, 0));
+				_F.mulin(tmp, M.getEntry(4, 1));
+				_F.subin(det, tmp);
+				
+				// +m[1, 4]*m[2, 3]*m[3, 5]*m[4, 2]*m[5, 1]
+				_F.mul(tmp, M.getEntry(0, 3), M.getEntry(1, 2));
+				_F.mulin(tmp, M.getEntry(2, 4));
+				_F.mulin(tmp, M.getEntry(3, 1));
+				_F.mulin(tmp, M.getEntry(4, 0));
+				_F.addin(det, tmp);
+				
+				// +m[1, 4]*m[2, 5]*m[3, 1]*m[4, 2]*m[5, 3]
+				_F.mul(tmp, M.getEntry(0, 3), M.getEntry(1, 4));
+				_F.mulin(tmp, M.getEntry(2, 0));
+				_F.mulin(tmp, M.getEntry(3, 1));
+				_F.mulin(tmp, M.getEntry(4, 2));
+				_F.addin(det, tmp);
+				
+				// -m[1, 4]*m[2, 5]*m[3, 1]*m[4, 3]*m[5, 2]
+				_F.mul(tmp, M.getEntry(0, 3), M.getEntry(1, 4));
+				_F.mulin(tmp, M.getEntry(2, 0));
+				_F.mulin(tmp, M.getEntry(3, 2));
+				_F.mulin(tmp, M.getEntry(4, 1));
+				_F.subin(det, tmp);
+				
+				// -m[1, 4]*m[2, 5]*m[3, 2]*m[4, 1]*m[5, 3]
+				_F.mul(tmp, M.getEntry(0, 3), M.getEntry(1, 4));
+				_F.mulin(tmp, M.getEntry(2, 1));
+				_F.mulin(tmp, M.getEntry(3, 0));
+				_F.mulin(tmp, M.getEntry(4, 2));
+				_F.subin(det, tmp);
+				
+				// +m[1, 4]*m[2, 5]*m[3, 2]*m[4, 3]*m[5, 1]
+				_F.mul(tmp, M.getEntry(0, 3), M.getEntry(1, 4));
+				_F.mulin(tmp, M.getEntry(2, 1));
+				_F.mulin(tmp, M.getEntry(3, 2));
+				_F.mulin(tmp, M.getEntry(4, 0));
+				_F.addin(det, tmp);
+				
+				// +m[1, 4]*m[2, 5]*m[3, 3]*m[4, 1]*m[5, 2]
+				_F.mul(tmp, M.getEntry(0, 3), M.getEntry(1, 4));
+				_F.mulin(tmp, M.getEntry(2, 2));
+				_F.mulin(tmp, M.getEntry(3, 0));
+				_F.mulin(tmp, M.getEntry(4, 1));
+				_F.addin(det, tmp);
+				
+				// -m[1, 4]*m[2, 5]*m[3, 3]*m[4, 2]*m[5, 1]
+				_F.mul(tmp, M.getEntry(0, 3), M.getEntry(1, 4));
+				_F.mulin(tmp, M.getEntry(2, 2));
+				_F.mulin(tmp, M.getEntry(3, 1));
+				_F.mulin(tmp, M.getEntry(4, 0));
+				_F.subin(det, tmp);
+				
+				// +m[1, 5]*m[2, 1]*m[3, 2]*m[4, 3]*m[5, 4]
+				_F.mul(tmp, M.getEntry(0, 4), M.getEntry(1, 0));
+				_F.mulin(tmp, M.getEntry(2, 1));
+				_F.mulin(tmp, M.getEntry(3, 2));
+				_F.mulin(tmp, M.getEntry(4, 3));
+				_F.addin(det, tmp);
+				
+				// -m[1, 5]*m[2, 1]*m[3, 2]*m[4, 4]*m[5, 3]
+				_F.mul(tmp, M.getEntry(0, 4), M.getEntry(1, 0));
+				_F.mulin(tmp, M.getEntry(2, 1));
+				_F.mulin(tmp, M.getEntry(3, 3));
+				_F.mulin(tmp, M.getEntry(4, 2));
+				_F.subin(det, tmp);
+				
+				// -m[1, 5]*m[2, 1]*m[3, 3]*m[4, 2]*m[5, 4]
+				_F.mul(tmp, M.getEntry(0, 4), M.getEntry(1, 0));
+				_F.mulin(tmp, M.getEntry(2, 2));
+				_F.mulin(tmp, M.getEntry(3, 1));
+				_F.mulin(tmp, M.getEntry(4, 3));
+				_F.subin(det, tmp);
+				
+				// +m[1, 5]*m[2, 1]*m[3, 3]*m[4, 4]*m[5, 2]
+				_F.mul(tmp, M.getEntry(0, 4), M.getEntry(1, 0));
+				_F.mulin(tmp, M.getEntry(2, 2));
+				_F.mulin(tmp, M.getEntry(3, 3));
+				_F.mulin(tmp, M.getEntry(4, 1));
+				_F.addin(det, tmp);
+				
+				// +m[1, 5]*m[2, 1]*m[3, 4]*m[4, 2]*m[5, 3]
+				_F.mul(tmp, M.getEntry(0, 4), M.getEntry(1, 0));
+				_F.mulin(tmp, M.getEntry(2, 3));
+				_F.mulin(tmp, M.getEntry(3, 1));
+				_F.mulin(tmp, M.getEntry(4, 2));
+				_F.addin(det, tmp);
+				
+				// -m[1, 5]*m[2, 1]*m[3, 4]*m[4, 3]*m[5, 2]
+				_F.mul(tmp, M.getEntry(0, 4), M.getEntry(1, 0));
+				_F.mulin(tmp, M.getEntry(2, 3));
+				_F.mulin(tmp, M.getEntry(3, 2));
+				_F.mulin(tmp, M.getEntry(4, 1));
+				_F.subin(det, tmp);
+				
+				// -m[1, 5]*m[2, 2]*m[3, 1]*m[4, 3]*m[5, 4]
+				_F.mul(tmp, M.getEntry(0, 4), M.getEntry(1, 1));
+				_F.mulin(tmp, M.getEntry(2, 0));
+				_F.mulin(tmp, M.getEntry(3, 2));
+				_F.mulin(tmp, M.getEntry(4, 3));
+				_F.subin(det, tmp);
+				
+				// +m[1, 5]*m[2, 2]*m[3, 1]*m[4, 4]*m[5, 3]
+				_F.mul(tmp, M.getEntry(0, 4), M.getEntry(1, 1));
+				_F.mulin(tmp, M.getEntry(2, 0));
+				_F.mulin(tmp, M.getEntry(3, 3));
+				_F.mulin(tmp, M.getEntry(4, 2));
+				_F.addin(det, tmp);
+				
+				// +m[1, 5]*m[2, 2]*m[3, 3]*m[4, 1]*m[5, 4]
+				_F.mul(tmp, M.getEntry(0, 4), M.getEntry(1, 1));
+				_F.mulin(tmp, M.getEntry(2, 2));
+				_F.mulin(tmp, M.getEntry(3, 0));
+				_F.mulin(tmp, M.getEntry(4, 3));
+				_F.addin(det, tmp);
+				
+				// -m[1, 5]*m[2, 2]*m[3, 3]*m[4, 4]*m[5, 1]
+				_F.mul(tmp, M.getEntry(0, 4), M.getEntry(1, 1));
+				_F.mulin(tmp, M.getEntry(2, 2));
+				_F.mulin(tmp, M.getEntry(3, 3));
+				_F.mulin(tmp, M.getEntry(4, 0));
+				_F.subin(det, tmp);
+				
+				// -m[1, 5]*m[2, 2]*m[3, 4]*m[4, 1]*m[5, 3]
+				_F.mul(tmp, M.getEntry(0, 4), M.getEntry(1, 1));
+				_F.mulin(tmp, M.getEntry(2, 3));
+				_F.mulin(tmp, M.getEntry(3, 0));
+				_F.mulin(tmp, M.getEntry(4, 2));
+				_F.subin(det, tmp);
+				
+				// +m[1, 5]*m[2, 2]*m[3, 4]*m[4, 3]*m[5, 1]
+				_F.mul(tmp, M.getEntry(0, 4), M.getEntry(1, 1));
+				_F.mulin(tmp, M.getEntry(2, 3));
+				_F.mulin(tmp, M.getEntry(3, 2));
+				_F.mulin(tmp, M.getEntry(4, 0));
+				_F.addin(det, tmp);
+				
+				// +m[1, 5]*m[2, 3]*m[3, 1]*m[4, 2]*m[5, 4]
+				_F.mul(tmp, M.getEntry(0, 4), M.getEntry(1, 2));
+				_F.mulin(tmp, M.getEntry(2, 0));
+				_F.mulin(tmp, M.getEntry(3, 1));
+				_F.mulin(tmp, M.getEntry(4, 3));
+				_F.addin(det, tmp);
+				
+				// -m[1, 5]*m[2, 3]*m[3, 1]*m[4, 4]*m[5, 2]
+				_F.mul(tmp, M.getEntry(0, 4), M.getEntry(1, 2));
+				_F.mulin(tmp, M.getEntry(2, 0));
+				_F.mulin(tmp, M.getEntry(3, 3));
+				_F.mulin(tmp, M.getEntry(4, 1));
+				_F.subin(det, tmp);
+				
+				// -m[1, 5]*m[2, 3]*m[3, 2]*m[4, 1]*m[5, 4]
+				_F.mul(tmp, M.getEntry(0, 4), M.getEntry(1, 2));
+				_F.mulin(tmp, M.getEntry(2, 1));
+				_F.mulin(tmp, M.getEntry(3, 0));
+				_F.mulin(tmp, M.getEntry(4, 3));
+				_F.subin(det, tmp);
+				
+				// +m[1, 5]*m[2, 3]*m[3, 2]*m[4, 4]*m[5, 1]
+				_F.mul(tmp, M.getEntry(0, 4), M.getEntry(1, 2));
+				_F.mulin(tmp, M.getEntry(2, 1));
+				_F.mulin(tmp, M.getEntry(3, 3));
+				_F.mulin(tmp, M.getEntry(4, 0));
+				_F.addin(det, tmp);
+				
+				// +m[1, 5]*m[2, 3]*m[3, 4]*m[4, 1]*m[5, 2]
+				_F.mul(tmp, M.getEntry(0, 4), M.getEntry(1, 2));
+				_F.mulin(tmp, M.getEntry(2, 3));
+				_F.mulin(tmp, M.getEntry(3, 0));
+				_F.mulin(tmp, M.getEntry(4, 1));
+				_F.addin(det, tmp);
+				
+				// -m[1, 5]*m[2, 3]*m[3, 4]*m[4, 2]*m[5, 1]
+				_F.mul(tmp, M.getEntry(0, 4), M.getEntry(1, 2));
+				_F.mulin(tmp, M.getEntry(2, 3));
+				_F.mulin(tmp, M.getEntry(3, 1));
+				_F.mulin(tmp, M.getEntry(4, 0));
+				_F.subin(det, tmp);
+				
+				// -m[1, 5]*m[2, 4]*m[3, 1]*m[4, 2]*m[5, 3]
+				_F.mul(tmp, M.getEntry(0, 4), M.getEntry(1, 3));
+				_F.mulin(tmp, M.getEntry(2, 0));
+				_F.mulin(tmp, M.getEntry(3, 1));
+				_F.mulin(tmp, M.getEntry(4, 2));
+				_F.subin(det, tmp);
+				
+				// +m[1, 5]*m[2, 4]*m[3, 1]*m[4, 3]*m[5, 2]
+				_F.mul(tmp, M.getEntry(0, 4), M.getEntry(1, 3));
+				_F.mulin(tmp, M.getEntry(2, 0));
+				_F.mulin(tmp, M.getEntry(3, 2));
+				_F.mulin(tmp, M.getEntry(4, 1));
+				_F.addin(det, tmp);
+				
+				// +m[1, 5]*m[2, 4]*m[3, 2]*m[4, 1]*m[5, 3]
+				_F.mul(tmp, M.getEntry(0, 4), M.getEntry(1, 3));
+				_F.mulin(tmp, M.getEntry(2, 1));
+				_F.mulin(tmp, M.getEntry(3, 0));
+				_F.mulin(tmp, M.getEntry(4, 2));
+				_F.addin(det, tmp);
+				
+				// -m[1, 5]*m[2, 4]*m[3, 2]*m[4, 3]*m[5, 1]
+				_F.mul(tmp, M.getEntry(0, 4), M.getEntry(1, 3));
+				_F.mulin(tmp, M.getEntry(2, 1));
+				_F.mulin(tmp, M.getEntry(3, 2));
+				_F.mulin(tmp, M.getEntry(4, 0));
+				_F.subin(det, tmp);
+				
+				// -m[1, 5]*m[2, 4]*m[3, 3]*m[4, 1]*m[5, 2]
+				_F.mul(tmp, M.getEntry(0, 4), M.getEntry(1, 3));
+				_F.mulin(tmp, M.getEntry(2, 2));
+				_F.mulin(tmp, M.getEntry(3, 0));
+				_F.mulin(tmp, M.getEntry(4, 1));
+				_F.subin(det, tmp);
+				
+				// +m[1, 5]*m[2, 4]*m[3, 3]*m[4, 2]*m[5, 1]
+				_F.mul(tmp, M.getEntry(0, 4), M.getEntry(1, 3));
+				_F.mulin(tmp, M.getEntry(2, 2));
+				_F.mulin(tmp, M.getEntry(3, 1));
+				_F.mulin(tmp, M.getEntry(4, 0));
+				_F.addin(det, tmp);
+			}
+			
+			int sgn(const std::vector<size_t> &p) const {
 				std::vector<bool> visited(p.size(), false);
 				int sgn = 1;
 				
@@ -72,7 +1100,7 @@ namespace LinBox {
 				return sgn;
 			}
 			
-			void perm(std::vector<size_t> &p, size_t len, size_t k) {
+			void perm(std::vector<size_t> &p, size_t len, size_t k) const {
 				std::list<size_t> values;
 				for (size_t i = 0; i < len; i++) {
 					values.push_back(i);
@@ -93,7 +1121,7 @@ namespace LinBox {
 				p.push_back(*values.begin());
 			}
 			
-			size_t factorial(size_t n) {
+			size_t factorial(size_t n) const {
 				size_t rv = 1;
 				for (size_t i = n; i > 1; i--) {
 					rv *= i;
@@ -102,8 +1130,9 @@ namespace LinBox {
 			}
 			
 		public:
+			
 			template<class Matrix>
-			void solve(Element &det, const Matrix &M) {
+			void solve_general(Element &det, const Matrix &M) const {
 				size_t max = factorial(M.rowdim());
 				
 				_F.assign(det, _F.zero);
@@ -122,6 +1151,25 @@ namespace LinBox {
 					}
 					
 					_F.addin(det, tmp);
+				}
+			}
+			
+			template<class Matrix>
+			void solve(Element &det, const Matrix &M) const {
+				if (M.rowdim() != M.coldim()) {
+					return;
+				}
+				
+				if (M.rowdim() == 2) {
+					solve_2by2(det, M);
+				} else if (M.rowdim() == 3) {
+					solve_3by3(det, M);
+				} else if (M.rowdim() == 4) {
+					solve_4by4(det, M);
+				} else if (M.rowdim() == 5) {
+					solve_5by5(det, M);
+				} else {
+					solve_general(det, M);
 				}
 			}
 	};
