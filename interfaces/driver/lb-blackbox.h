@@ -25,8 +25,8 @@
 #ifndef __LINBOX_lb_blackbox_H
 #define __LINBOX_lb_blackbox_H
 
-#include <lb-domain-collection.h>
-#include <lb-blackbox-collection.h>
+#include "lb-domain-collection.h"
+#include "lb-blackbox-collection.h"
 
 /***************************
  * Initializer of Blackbox *

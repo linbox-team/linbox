@@ -25,8 +25,8 @@
 #ifndef __LINBOX_lb_det_H
 #define __LINBOX_lb_det_H
 
-#include <lb-element-collection.h>
-#include <lb-blackbox-collection.h>
+#include "lb-element-collection.h"
+#include "lb-blackbox-collection.h"
 
 
 /*******************************************************

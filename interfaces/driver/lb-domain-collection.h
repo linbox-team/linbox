@@ -28,7 +28,7 @@
 #include "linbox/integer.h"
 
 #include <map>
-#include <lb-domain-abstract.h>
+#include "lb-domain-abstract.h"
 
 
 /*************************

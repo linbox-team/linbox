@@ -26,7 +26,7 @@
 #define __LINBOX_lb_blackbox_function_H
 
 
-#include <lb-blackbox-collection.h>
+#include "lb-blackbox-collection.h"
 //#include <lb-blackbox-functor.h>
 
 

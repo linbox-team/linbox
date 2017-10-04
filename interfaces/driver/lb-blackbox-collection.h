@@ -26,7 +26,7 @@
 #define __LINBOX_lb_blackbox_collection_H
 
 #include <map>
-#include <lb-blackbox-abstract.h>
+#include "lb-blackbox-abstract.h"
 
 
 /**************************

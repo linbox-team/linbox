@@ -28,10 +28,10 @@
 #include "linbox/linbox-config.h"
 #include "linbox/solutions/det.h"
 
-#include <lb-det.h>
-#include <lb-blackbox-function.h>
-#include <lb-element.h>
-#include <lb-element-data.h>
+#include "lb-det.h"
+#include "lb-blackbox-function.h"
+#include "lb-element.h"
+#include "lb-element-data.h"
 
 extern BlackboxTable blackbox_hashtable;
 extern DomainTable   domain_hashtable;

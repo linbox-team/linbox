@@ -28,9 +28,9 @@
 
 //#include <lb-domain-data.h>
 
-#include <lb-element-collection.h>
-#include <lb-element-abstract.h>
-#include <lb-domain-function.h>
+#include "lb-element-collection.h"
+#include "lb-element-abstract.h"
+#include "lb-domain-function.h"
 
 extern EltTable element_hashtable;
 

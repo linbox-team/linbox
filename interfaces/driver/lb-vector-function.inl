@@ -24,9 +24,9 @@
 
 
 
-#include <lb-vector-function.h>
-#include <lb-vector-abstract.h>
-#include <lb-vector-functor.h>
+#include "lb-vector-function.h"
+#include "lb-vector-abstract.h"
+#include "lb-vector-functor.h"
 
 
 /*********************************************************

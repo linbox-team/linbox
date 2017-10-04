@@ -28,9 +28,9 @@
 
 #include "linbox/solutions/minpoly.h"
 
-#include <lb-minpoly.h>
-#include <lb-blackbox-function.h>
-#include <lb-vector.h>
+#include "lb-minpoly.h"
+#include "lb-blackbox-function.h"
+#include "lb-vector.h"
 
 extern BlackboxTable blackbox_hashtable;
 extern VectorTable   vector_hashtable;

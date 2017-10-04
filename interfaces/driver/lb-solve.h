@@ -25,8 +25,8 @@
 #ifndef __LINBOX_lb_solve_H
 #define __LINBOX_lb_solve_H
 
-#include <lb-blackbox-collection.h>
-#include <lb-vector-collection.h>
+#include "lb-blackbox-collection.h"
+#include "lb-vector-collection.h"
 
 
 /***********************************************************

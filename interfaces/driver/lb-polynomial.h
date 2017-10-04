@@ -25,7 +25,7 @@
 #ifndef __LINBOX_lb_polynomial_H
 #define __LINBOX_lb_polynomial_H
 
-#include <lb-vector-collection.h>
+#include "lb-vector-collection.h"
 
 /***********************************************
  * Polynomial are handled through dense vector *

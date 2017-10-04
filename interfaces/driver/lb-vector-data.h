@@ -30,10 +30,10 @@
 #include <map>
 #include <utility>
 
-#include <lb-utilities.h>
-#include <lb-vector-collection.h>
-#include <lb-vector-abstract.h>
-#include <lb-domain-function.h>
+#include "lb-utilities.h"
+#include "lb-vector-collection.h"
+#include "lb-vector-abstract.h"
+#include "lb-domain-function.h"
 
 extern VectorTable vector_hashtable;
 

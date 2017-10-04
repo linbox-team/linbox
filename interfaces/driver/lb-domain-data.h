@@ -33,9 +33,9 @@
 #include <map>
 #include <utility>
 
-#include <lb-utilities.h>
-#include <lb-domain-collection.h>
-#include <lb-domain-abstract.h>
+#include "lb-utilities.h"
+#include "lb-domain-collection.h"
+#include "lb-domain-abstract.h"
 
 #include <fstream>
 

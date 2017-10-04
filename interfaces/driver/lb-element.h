@@ -27,8 +27,8 @@
 #define __LINBOX_lb_element_H
 
 
-#include <lb-domain-collection.h>
-#include <lb-element-collection.h>
+#include "lb-domain-collection.h"
+#include "lb-element-collection.h"
 
 
 /*******************************************

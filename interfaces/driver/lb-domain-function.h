@@ -26,7 +26,7 @@
 #define __LINBOX_lb_domain_function_H
 
 
-#include <lb-domain-collection.h>
+#include "lb-domain-collection.h"
 //#include <lb-domain-functor.h>
 
 /*********************************************************

@@ -25,9 +25,9 @@
 #ifndef __LINBOX_lb_vector_functor_H
 #define __LINBOX_lb_vector_functor_H
 
-#include <lb-utilities.h>
-#include <lb-vector-data.h>
-#include <lb-vector-type.h>
+#include "lb-utilities.h"
+#include "lb-vector-data.h"
+#include "lb-vector-type.h"
 
 
 

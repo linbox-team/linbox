@@ -28,8 +28,8 @@
 
 #include "linbox/solutions/rank.h"
 
-#include <lb-rank.h>
-#include <lb-blackbox-function.h>
+#include "lb-rank.h"
+#include "lb-blackbox-function.h"
 
 
 extern BlackboxTable blackbox_hashtable;

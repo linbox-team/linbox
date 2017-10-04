@@ -26,7 +26,7 @@
 #define __LINBOX_lb_vector_collection_H
 
 #include <map>
-#include <lb-vector-abstract.h>
+#include "lb-vector-abstract.h"
 
 
 /*************************

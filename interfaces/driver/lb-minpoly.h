@@ -25,8 +25,8 @@
 #ifndef __LINBOX_lb_minpoly_H
 #define __LINBOX_lb_minpoly_H
 
-#include <lb-vector-collection.h>
-#include <lb-blackbox-collection.h>
+#include "lb-vector-collection.h"
+#include "lb-blackbox-collection.h"
 
 /*************************************************************
  * API for minimal polynomial computation                    *

@@ -25,10 +25,10 @@
 #ifndef __LINBOX_lb_domain_C
 #define __LINBOX_lb_domain_C
 
-#include <lb-domain.h>
-#include <lb-domain-data.h>
-#include <lb-domain-function.h>
-#include <lb-domain-type.h>
+#include "lb-domain.h"
+#include "lb-domain-data.h"
+#include "lb-domain-function.h"
+#include "lb-domain-type.h"
 
 
 /****************************

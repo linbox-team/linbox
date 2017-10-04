@@ -25,7 +25,7 @@
 #ifndef __LINBOX_lb_domain_abstract_H
 #define __LINBOX_lb_domain_abstract_H
 
-#include <lb-utilities.h>
+#include "lb-utilities.h"
 
 
 /******************************

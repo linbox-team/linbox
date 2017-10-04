@@ -40,7 +40,7 @@ liblbdriver_la_SOURCES= lb-element.C 	\
 			lb-polynomial.C \
 			lb-garbage.C \
 			lb-solutions.C
-#			lb-det.C	
+#			lb-det.C	\
 #			lb-rank.C       
 # lb-minpoly.C    \
 # lb-charpoly.C   \

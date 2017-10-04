@@ -27,12 +27,11 @@
 
 #include "linbox/linbox-config.h"
 
-#include <lb-blackbox.h>
-#include <lb-blackbox-data.h>
-#include <lb-blackbox-function.h>
-#include <lb-blackbox-type.h>
-
-#include <lb-domain-collection.h>
+#include "lb-blackbox.h"
+#include "lb-blackbox-data.h"
+#include "lb-blackbox-function.h"
+#include "lb-blackbox-type.h"
+#include "lb-domain-collection.h"
 
 //#include "linbox/matrix/matrix-category.h"
 

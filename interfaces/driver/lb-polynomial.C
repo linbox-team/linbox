@@ -25,11 +25,11 @@
 #ifndef __LINBOX_lb_polynomial_C
 #define __LINBOX_lb_polynomial_C
 
-#include <lb-domain-collection.h>
-#include <lb-domain-function.h>
-#include <lb-vector-collection.h>
-#include <lb-vector-function.h>
-#include <lb-polynomial.h>
+#include "lb-domain-collection.h"
+#include "lb-domain-function.h"
+#include "lb-vector-collection.h"
+#include "lb-vector-function.h"
+#include "lb-polynomial.h"
 
 /***********************************************
  * Polynomial are handled through dense vector *

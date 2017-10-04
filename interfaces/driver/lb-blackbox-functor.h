@@ -25,9 +25,9 @@
 #ifndef __LINBOX_lb_blackbox_functor_H
 #define __LINBOX_lb_blackbox_functor_H
 
-#include <lb-utilities.h>
-#include <lb-blackbox-data.h>
-#include <lb-blackbox-type.h>
+#include "lb-utilities.h"
+#include "lb-blackbox-data.h"
+#include "lb-blackbox-type.h"
 
 
 /*************************************************************************

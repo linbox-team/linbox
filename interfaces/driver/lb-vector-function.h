@@ -26,7 +26,7 @@
 #define __LINBOX_lb_vector_function_H
 
 
-#include <lb-vector-collection.h>
+#include "lb-vector-collection.h"
 //#include <lb-vector-functor.h>
 
 

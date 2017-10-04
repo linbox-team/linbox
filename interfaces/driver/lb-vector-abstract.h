@@ -25,8 +25,8 @@
 #ifndef __LINBOX_lb_vector_abstract_H
 #define __LINBOX_lb_vector_abstract_H
 
-#include <lb-utilities.h>
-#include <lb-domain-collection.h>
+#include "lb-utilities.h"
+#include "lb-domain-collection.h"
 
 
 /*******************************

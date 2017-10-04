@@ -32,11 +32,11 @@
 
 
 
-#include <lb-utilities.h>
-#include <lb-blackbox-collection.h>
-#include <lb-blackbox-abstract.h>
-#include <lb-domain-function.h>
-#include <lb-garbage.h>
+#include "lb-utilities.h"
+#include "lb-blackbox-collection.h"
+#include "lb-blackbox-abstract.h"
+#include "lb-domain-function.h"
+#include "lb-garbage.h"
 
 
 extern BlackboxTable blackbox_hashtable;

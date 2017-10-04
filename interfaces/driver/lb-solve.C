@@ -27,14 +27,14 @@
 
 #include "linbox/solutions/solve.h"
 
-#include <lb-solve.h>
-#include <lb-domain-function.h>
-#include <lb-blackbox-function.h>
-#include <lb-vector-function.h>
-#include <lb-blackbox.h>
-#include <lb-vector.h>
-#include <lb-domain.h>
-#include <lb-garbage.h>
+#include "lb-solve.h"
+#include "lb-domain-function.h"
+#include "lb-blackbox-function.h"
+#include "lb-vector-function.h"
+#include "lb-blackbox.h"
+#include "lb-vector.h"
+#include "lb-domain.h"
+#include "lb-garbage.h"
 
 
 extern BlackboxTable blackbox_hashtable;

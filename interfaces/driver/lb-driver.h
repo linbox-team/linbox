@@ -25,20 +25,20 @@
 #ifndef __LINBOX_lb_driver_H
 #define __LINBOX_lb_driver_H
 
-#include <lb-domain.h>
-#include <lb-element.h>
-#include <lb-vector.h>
-#include <lb-blackbox.h>
-#include <lb-polynomial.h>
-#include <lb-garbage.h>
+#include "lb-domain.h"
+#include "lb-element.h"
+#include "lb-vector.h"
+#include "lb-blackbox.h"
+#include "lb-polynomial.h"
+#include "lb-garbage.h"
 
-#include <lb-utilities.h>
+#include "lb-utilities.h"
 
-#include <lb-det.h>
-#include <lb-rank.h> //problem with givaro-extension (UTT type is not always consistent) disabled in the code
-#include <lb-minpoly.h>
-#include <lb-charpoly.h>
-#include <lb-solve.h>
+#include "lb-det.h"
+#include "lb-rank.h" //problem with givaro-extension (UTT type is not always consistent) disabled in the code
+#include "lb-minpoly.h"
+#include "lb-charpoly.h"
+#include "lb-solve.h"
 
 // overload PreconditionFailed to be a real exception
 std::ostringstream PrecondStream;

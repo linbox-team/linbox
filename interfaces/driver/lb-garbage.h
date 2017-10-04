@@ -26,10 +26,10 @@
 #define __LINBOX_lb_garbage_H
 
 
-#include <lb-domain-collection.h>
-#include <lb-blackbox-collection.h>
-#include <lb-vector-collection.h>
-#include <lb-element-collection.h>
+#include "lb-domain-collection.h"
+#include "lb-blackbox-collection.h"
+#include "lb-vector-collection.h"
+#include "lb-element-collection.h"
 
 /***************************************
  * API to delete a domain from ist key *

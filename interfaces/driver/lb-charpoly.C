@@ -30,9 +30,9 @@
 #include "linbox/ring/givaro-polynomial.h"
 
 
-#include <lb-charpoly.h>
-#include <lb-blackbox-function.h>
-#include <lb-vector.h>
+#include "lb-charpoly.h"
+#include "lb-blackbox-function.h"
+#include "lb-vector.h"
 
 
 extern BlackboxTable blackbox_hashtable;

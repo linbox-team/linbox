@@ -26,7 +26,7 @@
 #define __LINBOX_lb_rank_H
 
 
-#include <lb-blackbox-collection.h>
+#include "lb-blackbox-collection.h"
 
 
 /**********************************************************

@@ -26,7 +26,7 @@
 #define __LINBOX_lb_collection_H
 
 #include <map>
-#include <lb-element-abstract.h>
+#include "lb-element-abstract.h"
 
 
 /**************************

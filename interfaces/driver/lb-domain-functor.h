@@ -25,9 +25,9 @@
 #ifndef __LINBOX_lb_domain_functor_H
 #define __LINBOX_lb_domain_functor_H
 
-#include <lb-utilities.h>
-#include <lb-domain-data.h>
-#include <lb-domain-type.h>
+#include "lb-utilities.h"
+#include "lb-domain-data.h"
+#include "lb-domain-type.h"
 
 /*************************************************************************
  * Base class for apply functor over a domain (used for code generation) *
