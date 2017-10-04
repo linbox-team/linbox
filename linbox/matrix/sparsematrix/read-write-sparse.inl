@@ -412,7 +412,7 @@ namespace LinBox {
 								   )
 	{
 		size_t i_idx=0, j_idx=0;
-		Element e;
+		Element e; A.field().init(e);
 
 		A.firstTriple();
 

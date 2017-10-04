@@ -113,8 +113,8 @@ namespace LinBox
 			return;
 		}
 
-		template< template<class, class> class Vect, template <class> class Alloc>
-		void initialize (const Domain& D, const Vect<DomainElement, Alloc<DomainElement> >& e)
+		template<class Vect>
+		void initialize (const Domain& D, const Vect& e)
 		{
 			RadixSizes_.resize(1);
 			RadixPrimeProd_.resize(1);
@@ -138,8 +138,8 @@ namespace LinBox
 		//! progress
 		/* Used in the case where D is a big Integer and Domain cannot be constructed */
 		// template<template<class T> class Vect>
-		template< template<class, class> class Vect, template <class> class Alloc>
-		void progress (const Integer& D, const Vect<Integer, Alloc<Integer> >& e)
+		template<class Vect>
+		void progress (const Integer& D, const Vect& e)
 		{
 			std::vector< double >::iterator  _dsz_it = RadixSizes_.begin();
 			std::vector< LazyProduct >::iterator _mod_it = RadixPrimeProd_.begin();
@@ -149,7 +149,7 @@ namespace LinBox
 			LazyProduct mi;
 			double di;
 			if (*_occ_it) {
-				typename Vect<Integer,Alloc<Integer> >::const_iterator  e_it = e.begin();
+				typename Vect::const_iterator  e_it = e.begin();
 				BlasVector<Givaro::ZRing<Integer> >::iterator       ri_it = ri.begin();
 				BlasVector<Givaro::ZRing<Integer> >::const_iterator t0_it = _tab_it->begin();
 				Integer invprod; precomputeInvProd(invprod, D, _mod_it->operator()());
@@ -167,7 +167,7 @@ namespace LinBox
 				Integer tmp = D;
 				_mod_it->initialize(tmp);
 				*_dsz_it = Givaro::naturallog(tmp);
-				typename Vect<Integer, Alloc<Integer> >::const_iterator e_it = e.begin();
+				typename Vect::const_iterator e_it = e.begin();
 				_tab_it->resize(e.size());
 				BlasVector<Givaro::ZRing<Integer> >::iterator t0_it= _tab_it->begin();
 				for( ; e_it != e.end(); ++e_it, ++ t0_it)
@@ -263,8 +263,8 @@ namespace LinBox
 			RadixOccupancy_.push_back ( true );
 		}
 
-		template< template<class, class> class Vect, template <class> class Alloc>
-		void progress (const Domain& D, const Vect<DomainElement, Alloc<DomainElement> >& e)
+		template<class Vect>
+		void progress (const Domain& D, const Vect& e)
 		{
 			// Radix shelves
 			std::vector< double >::iterator  _dsz_it = RadixSizes_.begin();
@@ -278,7 +278,7 @@ namespace LinBox
 				// If lower shelf is occupied
 				// Combine it with the new residue
 				// The for loop will try to put the resulting combination on the upper shelf
-				typename Vect<DomainElement, Alloc<DomainElement> >::const_iterator  e_it = e.begin();
+				typename Vect::const_iterator  e_it = e.begin();
 				BlasVector<Givaro::ZRing<Integer> >::iterator       ri_it = ri.begin();
 				BlasVector<Givaro::ZRing<Integer> >::const_iterator t0_it = _tab_it->begin();
 				DomainElement invP0; precomputeInvP0(invP0, D, _mod_it->operator()() );
@@ -300,7 +300,7 @@ namespace LinBox
 				_mod_it->initialize(tmp);
 				*_dsz_it = ltp;
 				totalsize += ltp;
-				typename Vect<DomainElement, Alloc<DomainElement> >::const_iterator e_it = e.begin();
+				typename Vect::const_iterator e_it = e.begin();
 				_tab_it->resize(e.size());
 				BlasVector<Givaro::ZRing<Integer> >::iterator t0_it= _tab_it->begin();
 				for( ; e_it != e.end(); ++e_it, ++ t0_it)
@@ -444,8 +444,8 @@ namespace LinBox
 
 
 		//! result
-		template<template<class, class> class Vect, template <class> class Alloc>
-		Vect<Integer, Alloc<Integer> >& result (Vect<Integer, Alloc<Integer> > &d)
+		template<class Vect>
+		Vect& result (Vect &d)
 		{
 			d.resize( (RadixResidues_.front()).size() );
 			std::vector< LazyProduct >::iterator          _mod_it = RadixPrimeProd_.begin();

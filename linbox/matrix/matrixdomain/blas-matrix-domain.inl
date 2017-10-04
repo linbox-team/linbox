@@ -2025,7 +2025,7 @@ namespace LinBox
 
 	template< class Field, class Polynomial, class Matrix>
 	Polynomial&
-	BlasMatrixDomainMinpoly< Field, Polynomial, Matrix >::operator() (const Field &F, Polynomial& P, const Matrix& A) const
+	BlasMatrixDomainMinpoly<Field,Polynomial,Matrix>::operator() (const Field &F, Polynomial& P, const Matrix& A) const
 	{
 		commentator().start ("Givaro::Modular Dense Minpoly ", "MDMinpoly");
 
@@ -2035,47 +2035,26 @@ namespace LinBox
 		constSubMatrixType A_v(A);
 
 		FFPACK::MinPoly<Field, Polynomial>(  F, P, n, A_v.getPointer(), A_v.getStride());
-
 		commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "minpoly with " << P.size() << " coefficients" << std::endl;
 
 		commentator().stop ("done", NULL, "MDMinpoly");
 		return P;
 	}
 
-	template< class Field,  class ContPol, class Matrix >
-	ContPol&
-	BlasMatrixDomainCharpoly<Field, ContPol, Matrix>::operator() ( const Field    &F,
-								       ContPol        &P,
-								       const Matrix   &A) const
+	template<class Field, class Polynomial, class Matrix>
+	Polynomial &
+	BlasMatrixDomainCharpoly<Field,Polynomial,Matrix>::operator() ( const Field    &F,
+                                                                        Polynomial     &P,
+                                                                        const Matrix   &A) const
 	{
-
 		size_t n = A.coldim();
 		P.clear();
 		linbox_check( n == A.rowdim());
 		typedef typename Matrix::constSubMatrixType constSubMatrixType ;
 		constSubMatrixType A_v(A);
 
-		FFPACK::CharPoly( F, P, n, A_v.getPointer(), A_v.getStride());
-
-		return P;
-	}
-
-	template< class Field,  class Matrix, class _Vrep >
-	BlasVector<Field, _Vrep> &
-	BlasMatrixDomainCharpoly<Field, BlasVector<Field, _Vrep>, Matrix>::operator() ( const Field    &F,
-											BlasVector<Field, _Vrep> &P,
-											const Matrix   &A) const
-	{
-
-		size_t n = A.coldim();
-		P.clear();
-		linbox_check( n == A.rowdim());
-		typedef typename Matrix::constSubMatrixType constSubMatrixType ;
-		constSubMatrixType A_v(A);
-
-		linbox_check(P.stride() == 1);
-		FFPACK::CharPoly( F, P.getWritePointer(), n, A_v.getPointer(), A_v.getStride());
-
+        typename Polynomial::Domain_t PolDom(F);
+        FFPACK::CharPoly (PolDom, P, n, A_v.getPointer(), A_v.getStride(),FFPACK::FfpackLUK);
 		return P;
 	}
 

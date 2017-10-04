@@ -21,7 +21,7 @@
 
 AC_PREREQ([2.68])
 
-AC_INIT([LinBox], [1.4.2],[linbox-use@googlegroups.com],[linbox],
+AC_INIT([LinBox], [1.5.0],[linbox-use@googlegroups.com],[linbox],
 		[http://www.linalg.org/])
 
 AC_CONFIG_MACRO_DIR([macros])
@@ -65,7 +65,12 @@ STDFLAG=${CXXFLAGS}
 CXXFLAGS=""
 
 # We need a C++11 compiler now - AB 2014-12-12
-AX_CXX_COMPILE_STDCXX_11([],[mandatory])
+# clang-3.8 does not support __float128 without explicitly passing it -std=c++11
+if test "x${CCNAM}" = "xclang38" ; then
+   AX_CXX_COMPILE_STDCXX_11([noext],[mandatory])
+else
+   AX_CXX_COMPILE_STDCXX_11([ext],[mandatory])
+fi
 
 AC_SUBST([DEFAULT_CFLAGS])
 AC_SUBST([DEBUG_CFLAGS])
@@ -153,6 +158,7 @@ TESTS_CFLAGS="${TESTS_CFLAGS} ${WARN_CFLAGS} ${DEBUG_CFLAGS}"
 
 AC_HEADER_STDC
 AC_PROG_LIBTOOL
+AC_PROG_SED
 
 # newer libtool...
 LT_PREREQ([2.4.2])
@@ -314,6 +320,7 @@ linbox/solutions/Makefile
 linbox/util/Makefile
 linbox/util/formats/Makefile
 linbox/vector/Makefile
+linbox/polynomial/Makefile
 tests/Makefile
 tests/data/Makefile
 tests/matrix/Makefile

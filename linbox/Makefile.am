@@ -25,7 +25,7 @@ LDADD = $(DEPS_LIBS) $(LDFLAGS)
 #AM_CPPFLAGS = -I@includedir@ -I$(top_srcdir)/linbox -I$(top_srcdir) $(DEFCPPFLAGS) $(OPTFLAGS) $(FFLAS_FFPACK_CFLAGS) $(NTL_CFLAGS) $(MPFR_CFLAGS) $(FPLLL_CFLAGS) $(IML_CFLAGS) $(FLINT_CFLAGS) $(PARFLAGS)
 #LDADD = $(FFLAS_FFPACK_LIBS) $(NTL_LIBS) $(MPFR_LIBS) $(FPLLL_LIBS) $(IML_LIBS) $(FLINT_LIBS) $(OCL_LIBS)
 
-SUBDIRS=util element field randiter vector matrix blackbox algorithms solutions ring
+SUBDIRS=util element field randiter vector matrix blackbox algorithms solutions ring polynomial
 
 
 BASIC_HDRS =          \

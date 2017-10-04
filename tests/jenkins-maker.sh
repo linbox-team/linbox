@@ -21,6 +21,7 @@ SOURCE_DIRECTORY=$( cd "$( dirname "$0" )" && pwd )
 #=============================#
 # Change only these variables #
 #=============================#
+ARCH=`pwd | awk -F/ '{print $(NF-4)}'`
 CXX=`pwd | awk -F/ '{print $(NF-2)}'`
 NTL=`pwd | awk -F/ '{print $NF}'`
 JENKINS_DIR=${SOURCE_DIRECTORY%%/workspace/*}
@@ -31,7 +32,7 @@ echo $PATH
 # Add specific locations (if needed)
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH":/usr/local/lib:"$LOCAL_DIR/$CXX/lib":"$LOCAL_DIR/$CXX/withSSE/lib"
 echo "LD_LIBRARY_PATH = $LD_LIBRARY_PATH"
-export PKG_CONFIG_PATH=${PKG_CONFIG_PATH}:"$LOCAL_DIR/$CXX/withSSE/lib/pkgconfig"
+export PKG_CONFIG_PATH="$LOCAL_DIR/$CXX/withSSE/lib/pkgconfig"
 echo "PKG_CONFIG_PATH = $PKG_CONFIG_PATH"
 
 # Where to install linbox binaries
@@ -59,12 +60,11 @@ if [ "$CXX" == "icpc" ]; then
 	source /usr/local/bin/compilervars.sh intel64
      fi
 fi
-
-# Particular case for Fedora23: g++=g++-5.3
-#vm_name=`uname -n | cut -d"-" -f1`
-#if [[ "$vm_name" == "fedora" && "$CXX" == "g++-5.3" ]]; then
-#   CXX="g++"
-#fi
+# Particular case for Fedora: g++-6 <- g++
+if [[ "$ARCH" == "linbox-fedora-amd64" &&  "$CXX" == "g++-6" ]]; then
+    CXX="g++"
+    CC=gcc
+fi
 
 #==================================#
 # Automated installation and tests #

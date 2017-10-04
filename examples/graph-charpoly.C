@@ -68,7 +68,7 @@ void printPolynomial(const Field& F, const Polynomial& P)
 
 
 typedef ZeroOne<Givaro::ZRing<Integer> > Matrix;
-typedef GivPolynomialRing<Givaro::ZRing<Integer>, Givaro::Dense> IntPolRing;
+typedef PolynomialRing<Givaro::ZRing<Integer> > IntPolRing;
 
 int main (int argc, char **argv)
 {
@@ -93,7 +93,7 @@ int main (int argc, char **argv)
 	A.read (input);
 	commentator().report(1, BRIEF_REPORT)<< "A is " << A.rowdim() << " by " << A.coldim() << endl;
 
-	IntPolRing::Element c_A;
+	IntPolRing::Element c_A(ZZ);
 
 	charpoly (c_A, A, Method::Blackbox(Method::Wiedemann( Specifier::SYMMETRIC)));
 
