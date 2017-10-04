@@ -31,6 +31,8 @@
  * @test no doc.
  */
 
+// to print out the number of try for BW with sigma basis code
+#define _BW_LASVEGAS_COUNT
 
 #include "linbox/linbox-config.h"
 #include <iostream>
@@ -66,7 +68,7 @@ bool testBlockSolver(Solver & S, Blackbox & M, string desc){
 	bool pass = true;
 	size_t n = M.coldim();
 	Vector b(M.field(),n), x(M.field(),n), y(M.field(),n);
-    typename Field::RandIter gen(M.field());
+        typename Field::RandIter gen(M.field());
 	RandomDenseStream<Field> s (M.field(), gen, n, 1);
 	s.next (b);
 	VectorDomain<Field> VD (M.field());
@@ -93,16 +95,19 @@ int main (int argc, char **argv)
 //	static size_t N = 16;
 	static size_t q = 65521U;
 	static size_t blocking = 0;
+        static size_t seed = time(NULL);
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to n.", TYPE_INT,     &n },
 //		{ 'N', "-N N", "Set blocking factor to N.", TYPE_INT,     &N },
 		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INT, &q },
 		{ 'b', "-b N", "Set the blocking size", TYPE_INT, &blocking },
+                { 's', "-s N", "Set the seed for randomness", TYPE_INT, &seed },
 		END_OF_ARGUMENTS
 	};
+        
         commentator().setMaxDepth(-1);
-        commentator().setMaxDetailLevel(-1);
+        commentator().setMaxDetailLevel(-1); 
         
 	parseArguments (argc, argv, args);
 
@@ -110,13 +115,16 @@ int main (int argc, char **argv)
 	//typedef Givaro::Modular<uint32_t> Field;
 	typedef BlasVector<Field> Vector;  
 
-	Field F ( (uint32_t) q); Field::RandIter gen(F);
+	Field F ( (uint32_t) q);
+        Field::RandIter G(F, 0, seed); //random generator over F
+        Field::NonZeroRandIter NzG(G); //non-zero random generator over F 
+
 	MatrixDomain<Field> MD(F);
 
 	commentator().start("block wiedemann test suite", "block-wiedemann");
 	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
-	RandomDenseStream<Field> s(F, gen, n, 2);
+        RandomDenseStream<Field, Vector, Field::NonZeroRandIter> s (F, NzG, n, 2);
 	Vector d(F,n);
 	s.next (d);
 	for (size_t i = 0; i < d.size(); ++i) 
@@ -128,7 +136,7 @@ int main (int argc, char **argv)
 	Diagonal <Field> D (d); // random nonsingular diagonal
 
 	SparseMatrix<Field, SparseMatrixFormat::TPL> S (F, n, n);
-	for (size_t i = 1; i < n; ++i) S.setEntry(i, i-1, F.one); // subdiag
+	for (size_t i = 1; i < n; ++i) S.setEntry(i, i-1, F.one); // subdiag 
 	for (size_t i = 0; i < n; ++i) S.setEntry(i, n-1, d[i]); // last col
 	S.finalize(); // companion matrix of d
 
@@ -160,7 +168,7 @@ int main (int argc, char **argv)
 	typedef BlasMatrixDomain<Field> Context;
 #endif
 	Context BMD(F);
-	BlockWiedemannSolver<Context> LBWS(BMD);
+	BlockWiedemannSolver<Context> LBWS(BMD,blocking,blocking+1);
 
 /*
 	commentator().start("Ident, BlockWiedemannSolver", "I-Sigma Basis");

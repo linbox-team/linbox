@@ -48,12 +48,12 @@
 // #define  __CHECK_RESULT
 // #define __DEBUG_MAPLE
 // #define __CHECK_LOOP
-// #define __PRINT_MINPOLY
 // #define __CHECK_DISCREPANCY
 // #define __CHECK_TRANSFORMATION
-// #define __CHECK_SIGMA_RESULT
-// #define __PRINT_SEQUENCE
-// #define __PRINT_SIGMABASE
+//  #define __CHECK_SIGMA_RESULT
+//  #define __PRINT_SEQUENCE
+//  #define __PRINT_SIGMABASE
+// #define __PRINT_MINPOLY
 
 //#define _BM_TIMING
 #define DEFAULT_BLOCK_EARLY_TERM_THRESHOLD 10
