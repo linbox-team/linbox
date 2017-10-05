@@ -34,6 +34,8 @@
 #define __LINBOX_polynomial_H
 
 
+#include "givaro/givpoly1dense.h"
+#include "linbox/field/hom.h"
 namespace LinBox {
     
     template <class BaseRing, class Storage_Tag>
