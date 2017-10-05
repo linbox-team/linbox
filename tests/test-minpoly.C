@@ -362,6 +362,7 @@ bool run_with_field(integer q, int e, size_t b, size_t n, int iter, int numVecto
 		if(F == nullptr)
 			return true; //if F is null, nothing to test, just pass
 
+		/*
 		ostringstream oss;
 		F->write(oss);
 		cout.fill('.');
@@ -369,6 +370,7 @@ bool run_with_field(integer q, int e, size_t b, size_t n, int iter, int numVecto
 		cout.width(40);
 		cout<<oss.str();
 		cout<<" ... ";
+		*/
 
 		ok &= testZeroMinpoly  	   (*F, n, Method::Hybrid());
 		ok &= testZeroMinpoly  	   (*F, n, Method::Elimination());
@@ -392,10 +394,12 @@ bool run_with_field(integer q, int e, size_t b, size_t n, int iter, int numVecto
                         ok &= testGramMinpoly      (*F, n, Method::Elimination());
                         ok &= testGramMinpoly      (*F, n, Method::Blackbox());
                 }
+		/*
 		if(!ok)
 			cout<<"FAILED"<<endl;
 		else
 			cout<<"PASS"<<endl;
+		*/
 
 		delete F;
 		nbiter--;
