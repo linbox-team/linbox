@@ -32,6 +32,7 @@
 // This file contains something to fool libtool into building the library
 // correctly
 
+#pragma GCC diagnostic ignored "-Wunused-variable"
 static int dummy;
 
 void foobar(){}
