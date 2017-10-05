@@ -1,5 +1,5 @@
 #include "lb-element-data.h"
-#include "lb-domain-function.inl"
+#include "lb-domain-function.h" 
 
 EltAbstract* constructElt(const DomainKey &key){
 	EltAbstract *e;

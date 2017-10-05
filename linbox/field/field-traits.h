@@ -27,6 +27,7 @@
 #include <givaro/givinteger.h>
 #include <givaro/givrational.h>
 #include <givaro/zring.h>
+#include <givaro/modular.h>
 
 // Namespace in which all LinBox library code resides
 namespace LinBox {
@@ -76,6 +77,7 @@ namespace LinBox {
         struct ClassifyRing<Givaro::IntegerDom> {
                 typedef RingCategories::IntegerTag categoryTag;
         };
+  
 
 
 	/*! FieldTrait.
