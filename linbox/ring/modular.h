@@ -64,66 +64,10 @@
 #include "linbox/util/write-mm.h"
 #include "linbox/vector/vector-traits.h"
 #include "linbox/linbox-config.h"
-#include "linbox/field/field-traits.h"
+#include "linbox/ring/modular-traits.h"
 
 
 // Namespace in which all LinBox code resides
-namespace LinBox
-{ /* Givaro::Modular Base */
-
-	using Givaro::Caster;
-
-	template <class Ring>
-	struct ClassifyRing;
-
-	template <class Element, class Compute>
-	struct ClassifyRing<Givaro::Modular<Element,Compute> const>
-	{
-		typedef RingCategories::ModularTag categoryTag;
-	};
-
-	template <class Element, class Compute>
-	struct ClassifyRing<Givaro::Modular<Element,Compute>>
-	{
-		typedef RingCategories::ModularTag categoryTag;
-	};
-
-        template<class Element>
-        struct ClassifyRing<Givaro::ModularBalanced<Element> > {
-                typedef RingCategories::ModularTag categoryTag;
-        };
-
-        template<typename XXX>
-        struct ClassifyRing<Givaro::GFqDom<XXX>> {
-                typedef RingCategories::ModularTag categoryTag;
-        };
-
-
-
-
-
-/*
-	template <>
-	inline std::ostream& Givaro::ModularBase<Integer>::write (std::ostream &os) const
-	{
-		return os << "GMP integers mod " << _modulus;
-	}
-*/
-
-	// template <>
-	// inline integer& Givaro::Modular<integer>::init (integer& x, const double& y) const
-	// {
-	// 	integer tmp = (integer)y % _modulus;
-	// 	if (tmp<0) tmp += _modulus;
-	// 	return x = tmp;
-	// }
-
-
-
-
-
-} // namespace LinBox
-
 
 #include "linbox/vector/vector-domain.h"
 

@@ -29,6 +29,7 @@
 //#include "linbox/linbox-config.h"
 #include "linbox/integer.h"
 #include "linbox/field/field-traits.h"
+#include "linbox/ring/modular-traits.h"
 
 #include <map>
 #include <utility>

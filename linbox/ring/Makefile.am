@@ -29,6 +29,7 @@ BASIC_HDRS =            \
     givaro-poly-quotient.h \
     polynomial-ring.h \
     modular.h           \
+    modular-traits.h    \
     local-pir-modular.h \
     pir-modular-int32.h \
     local2_32.h         \
