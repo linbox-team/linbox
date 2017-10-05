@@ -329,6 +329,8 @@ namespace LinBox
 #include "linbox/util/debug.C"
 #endif
 
+#include <givaro/givprint.h>
+
 #endif // __LINBOX_util_debug_H
 
 

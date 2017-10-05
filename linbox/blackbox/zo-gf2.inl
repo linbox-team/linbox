@@ -274,18 +274,19 @@ namespace LinBox
 		return Iterator(_nnz, field().one );
 	}
 
-	/*! IndexIterator.
+	/*! IndexedIterator.
 	 * @ingroup iterators
 	 * Iterates through the i and j of the current element
 	 * and when accessed returns an STL pair containing the coordinates
 	 */
-	class ZeroOne<GF2>::IndexIterator {
+	class ZeroOne<GF2>::IndexedIterator {
+        using Self_t=ZeroOne<GF2>::IndexedIterator;
 	public:
 		typedef std::pair<size_t, size_t> value_type;
 
-		IndexIterator() {}
+		IndexedIterator() {}
 
-		IndexIterator(size_t rowidx,
+		IndexedIterator(size_t rowidx,
 				 LightContainer<LightContainer<size_t> >::const_iterator rowbeg,
 				 LightContainer<LightContainer<size_t> >::const_iterator rowend,
 				 size_t colidx,
@@ -309,11 +310,11 @@ namespace LinBox
 
 		}
 
-		IndexIterator(const IndexIterator &In) :
+		IndexedIterator(const Self_t &In) :
 			_rowbeg(In._rowbeg), _rowend(In._rowend), _colbeg(In._colbeg), _row(In._row), _col(In._col)
 		{}
 
-		const IndexIterator &operator=(const IndexIterator &rhs)
+		const Self_t &operator=(const Self_t &rhs)
 		{
 			_rowbeg = rhs._rowbeg;
 			_rowend = rhs._rowend;
@@ -323,17 +324,17 @@ namespace LinBox
 			return *this;
 		}
 
-		bool operator==(const IndexIterator &rhs)
+		bool operator==(const Self_t &rhs) const
 		{
 			return _rowbeg == rhs._rowbeg && _colbeg == rhs._colbeg;
 		}
 
-		bool operator!=(const IndexIterator &rhs)
+		bool operator!=(const Self_t &rhs) const
 		{
 			return _rowbeg != rhs._rowbeg || _colbeg != rhs._colbeg;
 		}
 
-		const IndexIterator& operator++() {
+		const Self_t& operator++() {
 
 
 
@@ -349,9 +350,9 @@ namespace LinBox
 			return *this;
 		}
 
-		const IndexIterator operator++(int)
+		const Self_t operator++(int)
 		{
-			IndexIterator tmp = *this;
+			Self_t tmp = *this;
 			this->operator++();
 			return tmp;
 		}
@@ -371,28 +372,57 @@ namespace LinBox
 		size_t _row, _col;
 	};
 
-	inline ZeroOne<GF2>::IndexIterator ZeroOne<GF2>::indexBegin()
+	inline ZeroOne<GF2>::IndexedIterator ZeroOne<GF2>::indexBegin()
 	{
-		return IndexIterator(0, this->begin(), this->end(), 0, this->front().begin() );
+		return ZeroOne<GF2>::IndexedIterator(0, this->begin(), this->end(), this->front().front(), this->front().begin() );
 	}
 
-	inline const ZeroOne<GF2>::IndexIterator ZeroOne<GF2>::indexBegin() const
+	inline const ZeroOne<GF2>::IndexedIterator ZeroOne<GF2>::indexBegin() const
 	{
-		return IndexIterator(0, this->begin(), this->end(), 0, this->front().begin() );
+		return ZeroOne<GF2>::IndexedIterator(0, this->begin(), this->end(), this->front().front(), this->front().begin() );
 	}
 
-	inline ZeroOne<GF2>::IndexIterator ZeroOne<GF2>::indexEnd()
+	inline ZeroOne<GF2>::IndexedIterator ZeroOne<GF2>::indexEnd()
 	{
-		return IndexIterator(_rowdim, this->end(), this->end(), this->back().size(),this->back().end() );
+		return ZeroOne<GF2>::IndexedIterator(_rowdim, this->end(), this->end(), this->back().size(),this->back().end() );
 	}
 
-	inline const ZeroOne<GF2>::IndexIterator ZeroOne<GF2>::indexEnd() const
+	inline const ZeroOne<GF2>::IndexedIterator ZeroOne<GF2>::indexEnd() const
 	{
-		return IndexIterator(_rowdim, this->end(), this->end(), this->back().size(),this->back().end() );
+		return ZeroOne<GF2>::IndexedIterator(_rowdim, this->end(), this->end(), this->back().size(),this->back().end() );
 	}
 
 
+        // Merge A with self
+        // Warning: respective supports must be disjoint
+    template<typename _Tp1>
+    void ZeroOne<GF2>::augment(const ZeroOne<_Tp1>& A) {
+        for(auto it = A.indexBegin();
+            it != A.indexEnd(); ++it,++_nnz) {
+            this->operator[]( (*it).first ).push_back( (*it).second );
+        }
+    }
 
+    template<typename _Tp1>
+    ZeroOne<GF2>::ZeroOne(const ZeroOne<_Tp1>& A, const GF2 F2) :
+			Father_t(A.rowdim()), _rowdim(A.rowdim()), _coldim(A.coldim()), _nnz(0)
+    {
+        this->augment(A);
+    }
+    
+    template<>
+    struct ZeroOne<GF2>::rebind<GF2> {
+        typedef ZeroOne<GF2> other;
+        inline void operator() (other & Ap,
+                                const Self_t& A,
+                                const GF2& F) {
+                // Merge A with Ap
+            Ap.augment(A);
+        }
+        inline void operator() (other & Ap, const Self_t& A) {
+            this->operator()(Ap,A,Ap.field());
+        }
+    };
 
 
 } // end of namespace LinBox
@@ -407,11 +437,11 @@ namespace LinBox
 
 #endif //__LINBOX_zo_gf2_INL
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
 

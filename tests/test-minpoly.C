@@ -52,12 +52,13 @@
 #include "givaro/gfq.h"
 #include "linbox/matrix/sparse-matrix.h"
 #include "linbox/blackbox/scalar-matrix.h"
+#include "linbox/polynomial/dense-polynomial.h"
 #include "linbox/util/commentator.h"
 #include "linbox/solutions/minpoly.h"
 #include "linbox/vector/stream.h"
 
 #include "linbox/vector/blas-vector.h"
-
+#include "fflas-ffpack/utils/test-utils.h"
 #include "test-common.h"
 
 using namespace LinBox;
@@ -174,14 +175,11 @@ static bool testNilpotentMinpoly (Field &F, size_t n, const Meth& M)
 	stream.next (v);
 	Blackbox A (F, stream); // first subdiagonal is 1's.
 
-	Polynomial phi(F,n+1);
+	Polynomial phi(F);
 
 	minpoly (phi, A, M);
 
 	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-        A.write (report, Tag::FileFormat::Maple);
-	report << "Minimal polynomial is: ";
-	printPolynomial (F, report, phi);
 
 	for (i = 0; i < n - 1; i++)
 		if (!F.isZero (phi[i]))
@@ -222,7 +220,7 @@ bool testRandomMinpoly (Field                 &F,
 			VectStream &v_stream,
                         const Meth& M)
 {
-	typedef BlasVector<Field> Polynomial;
+	typedef DensePolynomial<Field> Polynomial;
 	typedef SparseMatrix<Field> Blackbox;
         typedef typename VectStream::Vector Vector;
 
@@ -345,6 +343,67 @@ static bool testGramMinpoly (Field &F, size_t m, const Meth& M)
 	return ret;
 }
 
+template <class Field>
+bool run_with_field(integer q, int e, size_t b, size_t n, int iter, int numVectors, int k, uint64_t seed){
+	bool ok = true;
+	int nbiter = iter;
+
+	while (ok && nbiter)
+	{
+		Field* F;
+                integer card=q;
+                do{
+                        F = FFPACK::chooseField<Field>(q, b); // F, characteristic q of b bits
+                        card = F->cardinality();
+                }while (card < 2*n*n && card != 0); // ensures high probability of succes of the probabilistic algorithm
+		typename Field::RandIter G(*F, b, seed); //random generator over F
+		typename Field::NonZeroRandIter NzG(G); //non-zero random generator over F
+
+		if(F == nullptr)
+			return true; //if F is null, nothing to test, just pass
+
+		ostringstream oss;
+		F->write(oss);
+		cout.fill('.');
+		cout<<"Checking ";
+		cout.width(40);
+		cout<<oss.str();
+		cout<<" ... ";
+
+		ok &= testZeroMinpoly  	   (*F, n, Method::Hybrid());
+		ok &= testZeroMinpoly  	   (*F, n, Method::Elimination());
+		ok &= testZeroMinpoly  	   (*F, n, Method::Blackbox());
+                ok &= testIdentityMinpoly  (*F, n, Method::Hybrid());
+                ok &= testIdentityMinpoly  (*F, n, Method::Elimination());
+                ok &= testIdentityMinpoly  (*F, n, Method::Blackbox());
+                ok &= testNilpotentMinpoly (*F, n, Method::Hybrid());
+                 ok &= testNilpotentMinpoly (*F, n, Method::Elimination());
+                 ok &= testNilpotentMinpoly (*F, n, Method::Blackbox());
+                typedef typename SparseMatrix<Field>::Row SparseVector;
+//                typedef vector<typename Field::Element> DenseVector;
+                typedef BlasVector<Field> DenseVector;
+                RandomDenseStream<Field, DenseVector, typename Field::NonZeroRandIter> zv_stream (*F, NzG, n, numVectors);
+                RandomSparseStream<Field, SparseVector, typename Field::NonZeroRandIter > zA_stream (*F, NzG, (double) k / (double) n, n, n);
+                ok &= testRandomMinpoly    (*F, n, zA_stream, zv_stream, Method::Hybrid());
+                ok &= testRandomMinpoly    (*F, n, zA_stream, zv_stream, Method::Elimination());
+                ok &= testRandomMinpoly    (*F, n, zA_stream, zv_stream, Method::Blackbox());
+                if (card>0){
+                        ok &= testGramMinpoly      (*F, n, Method::Hybrid());
+                        ok &= testGramMinpoly      (*F, n, Method::Elimination());
+                        ok &= testGramMinpoly      (*F, n, Method::Blackbox());
+                }
+		if(!ok)
+			cout<<"FAILED"<<endl;
+		else
+			cout<<"PASS"<<endl;
+
+		delete F;
+		nbiter--;
+	}
+
+	return ok;
+}
+
 int main (int argc, char **argv)
 {
 	commentator().setMaxDetailLevel (-1);
@@ -352,21 +411,24 @@ int main (int argc, char **argv)
 	commentator().setMaxDepth (-1);
 	bool pass = true;
 
-	static size_t n = 10;
-	//static integer q = 65521U;
-	static integer q = 1000003; // ok for both Givaro::Modular<int> and Givaro::Modular<double>
-	static int e = 1; // exponent for field characteristic
-	static int iterations = 1;
-	static int numVectors = 1;
-	static int k = 3;
+	integer q = -1;
+	size_t b = 0; // set to a non zero value to force the bitsize of q
+        int e = 1; // exponent for non prime fields
+	size_t n = 70;
+	int iterations = 3;
+	int numVectors = 1;
+	int k = 3;
+        uint64_t seed = time(NULL);
 
 	static Argument args[] = {
-		{ 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT,     &n },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q^E) [1].", TYPE_INTEGER, &q },
+                { 'q', "-q Q", "Operate over the \"field\" GF(Q^E) [1].", TYPE_INTEGER, &q },
+                { 'b', "-b B", "Set the bitsize of the field characteristic.", TYPE_INT, &b },
 		{ 'e', "-e E", "Operate over the \"field\" GF(Q^E) [1].", TYPE_INT, &e },
+		{ 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT,     &n },
 		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
 		{ 'v', "-v V", "Use V test vectors for the random minpoly tests.", TYPE_INT,     &numVectors },
 		{ 'k', "-k K", "K nonzero Elements per row in sparse random apply test.", TYPE_INT,     &k },
+		{ 's', "-s seed", "set seed for the random generator.", TYPE_INT, &seed },
 		END_OF_ARGUMENTS
 	};
 
@@ -376,141 +438,19 @@ int main (int argc, char **argv)
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-	// /////////////// finite field part //////////////////
-	Method::Blackbox MB;
-	//if (e == 1)
-	{
-		//typedef Givaro::Modular<uint32_t> Field;
-		//typedef Givaro::Modular<int> Field;
-		typedef Givaro::Modular<double> Field;
-		Field F (q);
-		srand ((unsigned)time (NULL));
+    pass &= run_with_field<Givaro::Modular<double> >(q,e,b,n,iterations,numVectors,k,seed);
+    pass &= run_with_field<Givaro::Modular<int32_t> >(q,e,b,n,iterations,numVectors,k,seed);
+    pass &= run_with_field<Givaro::Modular<Givaro::Integer> >(q,e,b?b:128,n/3+1,iterations,numVectors,k,seed);
+        //pass &= run_with_field<Givaro::GFqDom<int64_t> >(q,e,b,n,iterations,numVectors,k,seed);
+    pass &= run_with_field<Givaro::ZRing<Givaro::Integer> >(0,e,b?b:128,n/3+1,iterations,numVectors,k,seed);
 
-		commentator().start("Blackbox prime field minpoly test suite", "Wminpoly");
-
-		if (!testZeroMinpoly  	  (F, n, MB)) pass = false;
-		if (!testIdentityMinpoly  (F, n, MB)) pass = false;
-		if (!testNilpotentMinpoly (F, n, MB)) pass = false;
-		//if (!testRandomMinpoly    (F, n)) pass = false;
-		if (!testGramMinpoly      (F, n, MB)) pass = false;
-		//need other tests...
-
-		commentator().stop("Blackbox prime field minpoly test suite");
-	}
-	//else
-	{	q = 3; e = 10;
-
-		typedef Givaro::GFqDom<int64_t> Field;
-		Field F (q, e);
-		srand ((unsigned)time (NULL));
-
-		commentator().start("Blackbox gfq field minpoly test suite", "Wminpoly");
-		F.write(report);
-
-		if (!testZeroMinpoly  	  (F, n, MB)) pass = false;
-		if (!testIdentityMinpoly  (F, n, MB)) pass = false;
-		if (!testNilpotentMinpoly (F, n, MB)) pass = false;
-		//if (!testRandomMinpoly    (F, n)) pass = false;
-		if (!testGramMinpoly      (F, n, MB)) pass = false;
-		//need other tests...
-
-		commentator().stop("Blackbox gfq minpoly test suite");
-	}
-
-#if 0
-// this test can only work if Extension of Extension is compiling. -bds
-
-	{	q = 3; e = 2;
-		typedef Givaro::Modular<int32_t> GroundField;
-		typedef Givaro::Extension<GroundField> Field;
-		GroundField K(q);
-		Field F (K, e);
-		srand ((unsigned)time (NULL));
-		MB.certificate(false);
-
-		commentator().start("Blackbox givaro extension field minpoly test suite", "Wminpoly");
-		F.write(report);
-
-		if (!testZeroMinpoly  	  (F, n, MB)) pass = false;
-		if (!testIdentityMinpoly  (F, n, MB)) pass = false;
-		if (!testNilpotentMinpoly (F, n, MB)) pass = false;
-		//if (!testRandomMinpoly    (F, n)) pass = false;
-		if (!testGramMinpoly      (F, n, MB)) pass = false;
-		//need other tests...
-
-		commentator().stop("Blackbox givaro extension field minpoly test suite");
-	}
-#endif
-
-#if 1
-
-	Givaro::Modular<uint32_t> F (q);
-
-
-	commentator().start("Hybrid prime field minpoly test suite", "Hminpoly");
-	if (!testIdentityMinpoly  (F, n, Method::Hybrid())) pass = false;
-	if (!testNilpotentMinpoly (F, n, Method::Hybrid())) pass = false;
-	commentator().stop("Hybrid prime field minpoly test suite");
-#elif 0
-	commentator().start("Blackbox prime field minpoly test suite", "Bminpoly");
-	if (!testIdentityMinpoly  (F, n, false,  Method::Blackbox())) pass = false;
-	if (!testNilpotentMinpoly (F, n, Method::Blackbox())) pass = false;
-	commentator().stop("Blackbox prime field minpoly test suite");
-
-	commentator().start("Elimination prime field minpoly test suite", "Eminpoly");
-	if (!testIdentityMinpoly  (F, n, false,  Method::Elimination())) pass = false;
-	if (!testNilpotentMinpoly (F, n, Method::Elimination())) pass = false;
-	commentator().stop("Elimination prime field minpoly test suite");
-
-	// /////////////// integer part //////////////////
-	typedef vector<Givaro::ZRing<Integer>::Element> ZDenseVector;
-	typedef SparseMatrix<Givaro::ZRing<Integer> >::Row ZSparseVector;
-	//typedef pair<vector<size_t>, vector<Field::Element> > SparseVector;
-	Givaro::ZRing<Integer> Z;
-	srand ((unsigned)time (NULL));
-
-	commentator().getMessageClass (TIMING_MEASURE).setMaxDepth (10);
-	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
-	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
-
-	commentator().start("Blackbox integer minpoly test suite", "WIminpoly");
-
-	RandomDenseStream<Givaro::ZRing<Integer>, ZDenseVector, NonzeroRandIter<Givaro::ZRing<Integer> > >
-	zv_stream (Z, NonzeroRandIter<Givaro::ZRing<Integer> > (Z, Givaro::ZRing<Integer>::RandIter (Z)), n, numVectors);
-	RandomSparseStream<Givaro::ZRing<Integer>, ZSparseVector, NonzeroRandIter<Givaro::ZRing<Integer> > >
-	zA_stream (Z, NonzeroRandIter<Givaro::ZRing<Integer> > (Z, Givaro::ZRing<Integer>::RandIter (Z)), (double) k / (double) n, n, n);
-
-	if (!testIdentityMinpoly  (Z, n, MB)) pass = false;
-	if (!testNilpotentMinpoly (Z, n, MB)) pass = false;
-
-	if (!testRandomMinpoly    (Z, iterations, zA_stream, zv_stream)) pass = false;
-
-	commentator().stop("Blackbox integer minpoly test suite");
-
-	commentator().start("Hybrid integer minpoly test suite", "HIminpoly");
-	if (!testIdentityMinpoly  (Z, n, Method::Hybrid())) pass = false;
-	if (!testNilpotentMinpoly (Z, n, Method::Hybrid())) pass = false;
-	commentator().stop("Hybrid integer minpoly test suite");
-
-	commentator().start("Blackbox integer minpoly test suite", "BIminpoly");
-	if (!testIdentityMinpoly  (Z, n, Method::Blackbox())) pass = false;
-	if (!testNilpotentMinpoly (Z, n, Method::Blackbox())) pass = false;
-	commentator().stop("Blackbox integer minpoly test suite");
-
-	commentator().start("Elimination integer minpoly test suite", "EIminpoly");
-	if (!testIdentityMinpoly  (Z, n, Method::Elimination())) pass = false;
-	if (!testNilpotentMinpoly (Z, n, Method::Elimination())) pass = false;
-	commentator().stop("Elimination integer minpoly test suite");
-
-#endif
-	return pass ? 0 : -1;
+    return !pass;
 }
 
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

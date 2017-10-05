@@ -22,7 +22,6 @@
  */
 
 #include <iostream>
-#include <omp.h>
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/solutions/solve.h"
 #include "linbox/util/matrix-stream.h"

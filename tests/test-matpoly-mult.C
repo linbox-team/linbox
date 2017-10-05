@@ -179,7 +179,8 @@ bool launchTest(const Field& F, size_t n, long b, long d, long seed){
 	bool ok=true;
 	typename Field::RandIter G(F,b,seed);
 	typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field> MatrixP;
-	std::cerr<<"Polynomial matrix (polfirst) testing over ";F.write(std::cerr)<<std::endl;
+	ostream& report = LinBox::commentator().report();
+	report<<"Polynomial matrix (polfirst) testing over ";F.write(report)<<std::endl;
 	ok&=check_matpol_mul<MatrixP> (F,G,n,d);
 	ok&=check_matpol_midp<MatrixP> (F,G,n,d);
 	ok&=check_matpol_midpgen<MatrixP> (F,G,n,d); 
@@ -189,7 +190,7 @@ bool launchTest(const Field& F, size_t n, long b, long d, long seed){
 	// check_matpol_mul<PMatrix> (F,G,n,d);
 	// check_matpol_midp<PMatrix> (F,G,n,d);
 
-	std::cerr<<"Debugging midpgen for DLP over ";F.write(std::cerr)<<std::endl;
+	report<<"Debugging midpgen for DLP over ";F.write(report)<<std::endl;
 	debug_midpgen_dlp<MatrixP>(F,G);
 	return ok;
 }

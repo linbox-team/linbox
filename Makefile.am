@@ -51,7 +51,7 @@ doc/linbox-dev-html/pages.html:
 	(cd doc; ${MAKE} docs_dev)
 
 examples:
-	(${MAKE} install; cd examples; ${MAKE} examples; ./test.sh)
+	(cd examples; ${MAKE} examples; SED="${SED}" ./test.sh)
 
 benchmarks:
 	(cd benchmarks; ${MAKE} benchmarks)
@@ -98,6 +98,7 @@ uninstall-hook:
 		"$(includedir)/linbox/util/formats" \
 		"$(includedir)/linbox/util" \
 		"$(includedir)/linbox/vector" \
+		"$(includedir)/linbox/polynomial" \
 		"$(includedir)/linbox" \
 		"$(datarootdir)/" \
 		"$(includedir)" ) || true
@@ -106,7 +107,7 @@ git:
 	git commit -a; git pull; git push
 
 
-VERSION=1.4.3alpha1
+VERSION=1.5.0rc0
 
 EXTRA_DIST=linbox-auto-install.sh
 #incremente-versions

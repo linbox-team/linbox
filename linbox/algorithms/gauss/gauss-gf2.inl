@@ -1,7 +1,7 @@
 /* linbox/algorithms/gauss-gf2.inl
  * Copyright (C) 2009 The LinBox group
  *
- * Time-stamp: <15 Jun 10 16:20:16 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <27 Jul 17 10:04:10 Jean-Guillaume.Dumas@imag.fr>
  *
  *
  * ========LICENCE========
@@ -406,8 +406,8 @@ namespace LinBox
 
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s

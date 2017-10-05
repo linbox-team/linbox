@@ -2,7 +2,7 @@
  * Copyright (C) LinBox 2008
  *
  * Written by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
- * Time-stamp: <09 Jul 13 14:09:52 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <24 Aug 17 18:24:12 Jean-Guillaume.Dumas@imag.fr>
  *
  *
  * ========LICENCE========
@@ -37,8 +37,8 @@ namespace LinBox
 
 
 	template <class _Field>
-	template <class Matrix, class Perm, class Vector1, class Vector2> inline Vector1&
-	GaussDomain<_Field>::solve(Vector1& x, Vector1& w, unsigned long Rank, const Perm& Q, const Matrix& L, const Matrix& U, const Perm& P, const Vector2& b)  const
+	template <class _Matrix, class Perm, class Vector1, class Vector2> inline Vector1&
+	GaussDomain<_Field>::solve(Vector1& x, Vector1& w, unsigned long Rank, const Perm& Q, const _Matrix& L, const _Matrix& U, const Perm& P, const Vector2& b)  const
 	{
             // Q L U P x = b
 		Vector2 y(U.field(),U.rowdim()), v(U.field(),U.rowdim());
@@ -57,13 +57,13 @@ namespace LinBox
 	}
 
 	template <class _Field>
-	template <class Matrix, class Vector1, class Vector2> inline Vector1&
-	GaussDomain<_Field>::solvein(Vector1& x, Matrix& A, const Vector2& b)  const
+	template <class _Matrix, class Vector1, class Vector2> inline Vector1&
+	GaussDomain<_Field>::solvein(Vector1& x, _Matrix& A, const Vector2& b)  const
 	{
 
 		typename Field::Element Det;
 		unsigned long Rank;
-		Matrix L(field(), A.rowdim(), A.rowdim());
+		_Matrix L(field(), A.rowdim(), A.rowdim());
 		Permutation<Field> Q((int)A.rowdim(),field());
 		Permutation<Field> P((int)A.coldim(),field());
 
@@ -72,11 +72,11 @@ namespace LinBox
 		// Sets solution values to 0 for coldim()-Rank columns
 		// Therefore, prune unnecessary elements
 		// in those last columns of U
-		for(typename Matrix::RowIterator row=A.rowBegin();
+		for(typename _Matrix::RowIterator row=A.rowBegin();
 		    row != A.rowEnd(); ++row) {
 			if (row->size()) {
 				size_t ns=0;
-				for(typename Matrix::Row::iterator it = row->begin();
+				for(typename _Matrix::Row::iterator it = row->begin();
 				    it != row->end(); ++it, ++ns) {
 					if (it->first >= Rank) {
 						row->resize(ns);
@@ -95,12 +95,12 @@ namespace LinBox
 	}
 
 	template <class _Field>
-	template <class Matrix, class Vector1, class Vector2, class Random> inline Vector1&
-	GaussDomain<_Field>::solvein(Vector1& x, Matrix& A, const Vector2& b, Random& generator)  const
+	template <class _Matrix, class Vector1, class Vector2, class Random> inline Vector1&
+	GaussDomain<_Field>::solvein(Vector1& x, _Matrix& A, const Vector2& b, Random& generator)  const
 	{
 		typename Field::Element Det;
 		unsigned long Rank;
-		Matrix L(field(), A.rowdim(), A.rowdim());
+		_Matrix L(field(), A.rowdim(), A.rowdim());
 		Permutation<Field> Q((int)A.rowdim(),field());
 		Permutation<Field> P((int)A.coldim(),field());
 

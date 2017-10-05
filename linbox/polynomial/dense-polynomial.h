@@ -63,6 +63,15 @@ namespace LinBox {
             return *this = P;
         }
 
+        template <class _OtherPoly >
+        DensePolynomial (const _OtherPoly& P, const Field& F) :
+                Domain_t::Element(P.size()),
+            _field(F) 
+            {
+                typename _OtherPoly::template rebind<Field>()(*this,P);
+            }
+
+
         const Field& field () const {return _field;};
 
         template<typename _Tp1>

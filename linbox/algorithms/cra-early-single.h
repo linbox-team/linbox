@@ -61,9 +61,10 @@ namespace LinBox
 
 		const unsigned int    EARLY_TERM_THRESHOLD;
 
-#ifdef CRATIMING
+#ifdef _LB_CRATIMING
 		mutable Timer tInit, tIteration, tImaging, tIRecon, tOther;
 		mutable CRATimer totalTime;
+        mutable size_t IterCounter_;
 #endif
 
 	public:
@@ -73,8 +74,11 @@ namespace LinBox
 			nextM_(1U),
 			occurency_(0U),
 			EARLY_TERM_THRESHOLD((unsigned)EARLY-1)
+#ifdef _LB_CRATIMING
+            , IterCounter_(0)
+#endif
 		{
-#ifdef CRATIMING
+#ifdef _LB_CRATIMING
 			clearTimers();
 			totalTime.clear();
 #endif
@@ -92,15 +96,16 @@ namespace LinBox
 
 		virtual void initialize (const Integer& D, const Integer& e)
 		{
-#ifdef CRATIMING
+#ifdef _LB_CRATIMING
 			tInit.clear();
 			tInit.start();
+            IterCounter_=1;
 #endif
 			primeProd_ = D;
 			nextM_ = 1U;
 			residue_ = e;
 			occurency_ = 1;
-#ifdef CRATIMING
+#ifdef _LB_CRATIMING
 			tInit.stop();
 			totalTime.ttInit += tInit;
 #endif
@@ -108,15 +113,16 @@ namespace LinBox
 
 		virtual void initialize (const Domain& D, const DomainElement& e)
 		{
-#ifdef CRATIMING
+#ifdef _LB_CRATIMING
 			tInit.clear();
 			tInit.start();
+            IterCounter_=1;
 #endif
 			D.characteristic( primeProd_ );
 			nextM_ = 1U;
 			D.convert( residue_, e);
 			occurency_ = 1;
-#ifdef CRATIMING
+#ifdef _LB_CRATIMING
 			tInit.stop();
 			totalTime.ttInit += tInit;
 #endif
@@ -137,12 +143,12 @@ namespace LinBox
 		virtual Integer& getModulus(Integer& m)
 		{
 
-#ifdef CRATIMING
+#ifdef _LB_CRATIMING
 			tOther.clear();
 			tOther.start();
 #endif
 			m = primeProd_ * nextM_;
-#ifdef CRATIMING
+#ifdef _LB_CRATIMING
 			tOther.stop();
 			totalTime.ttOther += tOther;
 #endif
@@ -158,9 +164,10 @@ namespace LinBox
 		{
 			// Precondition : initialize has been called once before
 			// linbox_check(occurency_ > 0);
-#ifdef CRATIMING
+#ifdef _LB_CRATIMING
 			tIRecon.clear();
 			tIRecon.start();
+            ++IterCounter_;
 #endif
 			primeProd_ *= nextM_;
 			nextM_ =D;
@@ -185,7 +192,7 @@ namespace LinBox
 				u0 *= primeProd_;          // res <-- (u1-u0)( m0^{-1} mod m1 ) m0       and res <= (m0m1-m0)
 				residue_ += u0;   // res <-- u0 + (u1-u0)( m0^{-1} mod m1 ) m0  and res <  m0m1
 			}
-#ifdef CRATIMING
+#ifdef _LB_CRATIMING
 			tIRecon.stop();
 			totalTime.ttIRecon += tIRecon;
 #endif
@@ -195,9 +202,10 @@ namespace LinBox
 		{
 			// Precondition : initialize has been called once before
 			// linbox_check(occurency_ > 0);
-#ifdef CRATIMING
+#ifdef _LB_CRATIMING
 			tIRecon.clear();
 			tIRecon.start();
+            ++IterCounter_;
 #endif
 			primeProd_ *= nextM_;
 			D.characteristic( nextM_ );
@@ -231,7 +239,7 @@ namespace LinBox
 				residue_ += res;	// <-- u0 + (e-u0)( m0^{-1} mod nextM_ ) m0
 				// and res <  m0.nextM_
 			}
-#ifdef CRATIMING
+#ifdef _LB_CRATIMING
 			tIRecon.stop();
 			totalTime.ttIRecon += tIRecon;
 #endif
@@ -246,7 +254,7 @@ namespace LinBox
 
 		virtual ~EarlySingleCRA() {}
 
-#ifdef CRATIMING
+#ifdef _LB_CRATIMING
 		void clearTimers() const
 		{
 			tInit.clear();
@@ -270,16 +278,17 @@ namespace LinBox
 
 		virtual inline std::ostream& printCRATime(const CRATimer& timer, const char* title, std::ostream& os) const
 		{
-			printTime(timer.ttInit, "Init", os, title);
+			printTime(timer.ttInit, " Init: ", os, title);
 			//printTime(timer.ttImaging, "Imaging", os, title);
 			//printTime(timer.ttIteration, "Iteration", os, title);
-			printTime(timer.ttIRecon, "Integer reconstruction", os, title);
-			printTime(timer.ttOther, "Other", os, title);
+			printTime(timer.ttIRecon, " Integer reconstruction: ", os, title);
+			printTime(timer.ttOther, " Other: ", os, title);
 			return os;
 		}
 
 		virtual std::ostream& reportTimes(std::ostream& os) const
 		{
+            os <<  "CRA Iterations:" << IterCounter_ << "\n";
 			printCRATime(totalTime, "CRA Time", os);
 			return os;
 		}
