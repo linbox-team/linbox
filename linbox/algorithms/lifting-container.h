@@ -74,7 +74,6 @@ namespace LinBox
 		//size_t m, n, col=0;
 		//n=A.coldim();
 		//m=A.rowdim();
-		R.assign(H_col_sqr, R.one);
 
 		typename ItMatrix::ConstRowIterator row= A.rowBegin();
 		std::vector<Integer_t> tmp(A.coldim(), R.zero);
@@ -84,9 +83,15 @@ namespace LinBox
 				R.axpyin(tmp[i], *elm, *elm);
 		}
 
-		for (size_t i=0;i<A.coldim();++i)
-			R.mulin(H_col_sqr,tmp[i]);
-		short_col_sqr= *(std::min_element(tmp.begin(),tmp.end()));
+		R.assign(H_col_sqr, R.one);
+		R.assign (short_col_sqr, tmp[0]);
+		for (size_t i=0;i<A.coldim();++i) {
+			if (!R.isZero(tmp[i])){
+				R.mulin(H_col_sqr,tmp[i]);
+				if(short_col_sqr> tmp[i]) short_col_sqr=tmp[i];
+			}
+		}
+		// short_col_sqr= *(std::min_element(tmp.begin(),tmp.end()));
 
 		/* at this point RowIterator is better than ColIterator
 		   typename ItMatrix::ConstColIterator colIter;
@@ -122,7 +127,6 @@ namespace LinBox
 		SpecialBound(R, H_col_sqr, short_col_sqr, A);
 	}
 
-
 	template <class Ring>
 	void BoundBlackbox(const Ring& R, typename Ring::Element& H_col_sqr,
 			   typename Ring::Element& short_col_sqr,
@@ -131,17 +135,17 @@ namespace LinBox
 		typedef typename Ring::Element Integer_t;
 
 		std::vector<Integer_t> tmp(A.coldim(), R.zero);
-                for(auto indices = A.IndexedBegin(); indices != A.IndexedEnd() ; ++indices )
-                        R.axpyin(tmp[indices.colIndex()], indices.value(), indices.value());
-                R.assign (H_col_sqr, R.one);
-                R.assign (short_col_sqr, tmp[0]);
-                for (size_t i=0;i<A.coldim();++i)
-                            // Generalization of the Hadamard's bound: product of the norm of all non-zero columns
-                        if (!R.isZero(tmp[i])){
-                                R.mulin (H_col_sqr,tmp[i]);
-                                if (short_col_sqr > tmp[i]) short_col_sqr = tmp[i];
-                        }
-                                    //short_col_sqr= *(std::min_element(tmp.begin(),tmp.end()));
+		for(auto indices = A.IndexedBegin(); indices != A.IndexedEnd() ; ++indices )
+			R.axpyin(tmp[indices.colIndex()], indices.value(), indices.value());
+		R.assign (H_col_sqr, R.one);
+		R.assign (short_col_sqr, tmp[0]);
+		for (size_t i=0;i<A.coldim();++i)
+			// Generalization of the Hadamard's bound: product of the norm of all non-zero columns
+			if (!R.isZero(tmp[i])){
+				R.mulin (H_col_sqr,tmp[i]);
+				if (short_col_sqr > tmp[i]) short_col_sqr = tmp[i];
+			}
+		//short_col_sqr= *(std::min_element(tmp.begin(),tmp.end()));
 	}
 
 	template < class Ring, class Blackbox>
@@ -162,8 +166,8 @@ namespace LinBox
 		for (size_t i=0;i<n;++i){
 			e[i]=R.one;
 			A.apply(tmp,e);
-                        std::cerr<<"apply number "<<i<<std::endl;
-                        sqsum=R.zero;
+            sqsum=R.zero;
+//             std::cerr<<"apply number "<<i<<std::endl;
 			for (iter=tmp.begin();iter!=tmp.end();++iter){
 				sqsum += (*iter)*(*iter);
 			}
@@ -1545,4 +1549,4 @@ namespace LinBox
 // indent-tabs-mode: nil
 // c-basic-offset: 4
 // End:
-
+// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

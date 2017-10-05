@@ -251,12 +251,17 @@ int main (int argc, char **argv)
     pass &= testSolveSparseSage ();
     pass &= testFlatDixonSolver (Method::SparseElimination());
     pass &= testFlatDixonSolver2 (Method::SparseElimination());
+    pass &= testTallDixonSolver (Method::SparseElimination());
+    pass &= testFlatDixonSolver (Method::BlasElimination());
+    pass &= testFlatDixonSolver2 (Method::BlasElimination());
+    pass &= testTallDixonSolver (Method::BlasElimination());
     pass &= testFlatDixonSolver (Method::Wiedemann());
     pass &= testFlatDixonSolver2 (Method::Wiedemann());
-    pass &= testTallDixonSolver (Method::SparseElimination());
     pass &= testTallDixonSolver (Method::Wiedemann());
     pass &= testSingularDixonSolver (Method::SparseElimination());
     pass &= testZeroDixonSolver (Method::SparseElimination());
+    pass &= testSingularDixonSolver (Method::BlasElimination());
+    pass &= testZeroDixonSolver (Method::BlasElimination());
 
     return pass ? 0 : -1;
 }
