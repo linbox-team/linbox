@@ -353,7 +353,7 @@ bool run_with_field(integer q, int e, size_t b, size_t n, int iter, int numVecto
 		Field* F;
                 integer card=q;
                 do{
-                        F = FFPACK::chooseField<Field>(q, b); // F, characteristic q of b bits
+                        F = FFPACK::chooseField<Field>(q, b, ++seed); // F, characteristic q of b bits
                         card = F->cardinality();
                 }while (card < 2*n*n && card != 0); // ensures high probability of succes of the probabilistic algorithm
 		typename Field::RandIter G(*F, b, seed); //random generator over F
