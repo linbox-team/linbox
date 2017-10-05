@@ -164,18 +164,20 @@ Element* linbox_modn_dense_minpoly (Element modulus, Element ** mp, size_t* degr
 				    size_t n, Element *matrix)
 {
 	typedef  Givaro::Modular<Element> Field;
-	typedef  std::vector<Element> Polynomial;
+	typedef  Givaro::Poly1Dom<Givaro::Modular<Element> >  PolRing;
+        typedef typename PolRing::Element Polynomial;
 
 	Givaro::Modular<Element> F(modulus);
+        PolRing PR(F);
 	// Warning: super sketchy memory alloc here!!!!
-	std::vector<Element> *minP=new std::vector<Element>(n);
+	Polynomial minP;
 
 	// FIXME: check the memory management: better to allocate mp in sage
 	// FFPACK::MinPoly<Field,Polynomial> (F, *minP, n, matrix, n, X, n, P);
-	FFPACK::MinPoly<Field,Polynomial> (F, *minP, n, matrix, n);
-	*degree=minP->size()-1;
+	FFPACK::MinPoly<Field,Polynomial> (F, minP, n, matrix, n);
+	*degree = PR.degree(minP).value();
 
-	*mp = &(*minP)[0];
+	*mp = &(minP[0]);
 	return *mp;
 }
 
@@ -189,47 +191,18 @@ EXTERN float* linbox_modn_dense_minpoly_float (float modulus, float ** mp, size_
 }
 
 
-template<class Polynomial, class Field>
-Polynomial & mulpoly(const Field& F, Polynomial &res, const Polynomial & P1, const Polynomial & P2)
-{
-	size_t i,j;
-	// Warning: assumes that res is allocated to the size of the product
-	//res.resize(P1.size()+P2.size()-1);
-	for (i=0;i<res.size();++i)
-		F.assign(res[i], 0.0);
-	for ( i=0;i<P1.size();++i)
-		for ( j=0;j<P2.size();++j)
-			F.axpyin(res[i+j],P1[i],P2[j]);
-	return res;
-
-}
-
 template<class Element>
 Element* linbox_modn_dense_charpoly (Element modulus, Element *& cp, size_t n, Element *matrix)
 {
 
 	Givaro::Modular<Element> F(modulus);
-
 	// FIXME: check the memory management: better to allocate mp in sage
-	std::list<std::vector<Element> > P_list;
+        Givaro::Poly1FactorDom<Givaro::Modular<Element> > PolDom(F);
+        typename Givaro::Poly1FactorDom<Givaro::Modular<Element> >::Element P;
 
+	FFPACK::CharPoly (PolDom, P, n, matrix, n);
 
-	FFPACK::CharPoly (F, P_list, n, matrix, n);
-
-	std::vector<Element>* tmp = new std::vector<Element> (n+1);
-	std::vector<Element> P;
-
-
-	typename std::list<std::vector<Element> >::const_iterator it;
-	it = P_list.begin();
-	P = *(it++);
-	while( it!=P_list.end() ){
-		::mulpoly (F,*tmp, P, *it);
-		P = *tmp;
-		//	delete &(*it);
-		++it;
-	}
-	return cp = &(*tmp)[0];
+	return cp = &P[0];
 
 }
 
@@ -454,7 +427,7 @@ void linbox_integer_dense_charpoly(mpz_t* &mp, size_t& degree, size_t n, mpz_t**
 	DenseMatrix<IntegerRing> A(ZZ, n, n);
         get_matrix(A, matrix);
 
-	IntPolRing::Element m_A;
+        DensePolynomial<IntegerRing> m_A(ZZ);
 	charpoly(m_A, A);
 
 	mp = new mpz_t[m_A.size()];
@@ -472,7 +445,7 @@ void linbox_integer_dense_minpoly(mpz_t* &mp, size_t& degree, size_t n, mpz_t** 
 	DenseMatrix<IntegerRing> A(ZZ, n, n);
         get_matrix(A, matrix);
 
-	IntPolRing::Element m_A;
+	DensePolynomial<IntegerRing> m_A(ZZ);
 	minpoly(m_A, A);
 
 	mp = new mpz_t[m_A.size()];

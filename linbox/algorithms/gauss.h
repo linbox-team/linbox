@@ -71,6 +71,9 @@ namespace LinBox
 		typedef _Field Field;
 		typedef typename Field::Element Element;
 
+		// Preferred Matrix type
+		using Matrix=SparseMatrix<Field, SparseMatrixFormat::SparseSeq>;
+
 	private:
 		const Field         *_field;
 
@@ -96,28 +99,28 @@ namespace LinBox
 		/** @name rank
 		  Callers of the different rank routines\\
 		  -/ The "in" suffix indicates in place computation\\
-		  -/ Without Ni, Nj, the Matrix parameter must be a vector of sparse
+		  -/ Without Ni, Nj, the _Matrix parameter must be a vector of sparse
 		  row vectors, NOT storing any zero.\\
 		  -/ Calls @link rankinLinearPivoting@endlink (by default) or @link rankinNoReordering@endlink
 		  */
 		//@{
 		///
-		template <class Matrix> unsigned long& rankin(unsigned long &rank,
-							      Matrix        &A,
+		template <class _Matrix> unsigned long& rankin(unsigned long &rank,
+							      _Matrix        &A,
 							      SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const;
 		///
-		template <class Matrix> unsigned long& rankin(unsigned long &rank,
-		Matrix        &A,
+		template <class _Matrix> unsigned long& rankin(unsigned long &rank,
+		_Matrix        &A,
 		unsigned long  Ni,
 		unsigned long  Nj,
 		SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const;
 		///
-		template <class Matrix> unsigned long& rank(unsigned long &rank,
-		const Matrix        &A,
+		template <class _Matrix> unsigned long& rank(unsigned long &rank,
+		const _Matrix        &A,
 		SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const;
 		///
-		template <class Matrix> unsigned long& rank(unsigned long &rank,
-		const Matrix        &A,
+		template <class _Matrix> unsigned long& rank(unsigned long &rank,
+		const _Matrix        &A,
 		unsigned long  Ni,
 		unsigned long  Nj,
 		SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const;
@@ -126,28 +129,28 @@ namespace LinBox
 		/** @name det
 		  Callers of the different determinant routines\\
 		  -/ The "in" suffix indicates in place computation\\
-		  -/ Without Ni, Nj, the Matrix parameter must be a vector of sparse
+		  -/ Without Ni, Nj, the _Matrix parameter must be a vector of sparse
 		  row vectors, NOT storing any zero.\\
 		  -/ Calls @link LinearPivoting@endlink (by default) or @link NoReordering@endlink
 		  */
 		//@{
 		///
-		template <class Matrix> Element& detin(Element &determinant,
-		Matrix        &A,
+		template <class _Matrix> Element& detin(Element &determinant,
+		_Matrix        &A,
 		SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const;
 		///
-		template <class Matrix> Element& detin(Element &determinant,
-		Matrix        &A,
+		template <class _Matrix> Element& detin(Element &determinant,
+		_Matrix        &A,
 		unsigned long  Ni,
 		unsigned long  Nj,
 		SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const;
 		///
-		template <class Matrix> Element& det(Element &determinant,
-		const Matrix        &A,
+		template <class _Matrix> Element& det(Element &determinant,
+		const _Matrix        &A,
 		SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const;
 		///
-		template <class Matrix> Element& det(Element &determinant,
-		const Matrix        &A,
+		template <class _Matrix> Element& det(Element &determinant,
+		const _Matrix        &A,
 		unsigned long  Ni,
 		unsigned long  Nj,
 		SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const;
@@ -162,7 +165,7 @@ namespace LinBox
 		 * \pre Using : SparseFindPivot(..., density) for sparsest column, and
 		 * eliminate (..., density)
 		 *
-		 * The Matrix parameter must meet the LinBox sparse matrix interface.
+		 * The _Matrix parameter must meet the LinBox sparse matrix interface.
 		 * [check details].
 		 * The computedet indicates whether the algorithm must compute the determionant as it goes
 		 *
@@ -171,70 +174,70 @@ namespace LinBox
 		 * <i>Computing the rank of sparse matrices over finite fields</i>.
 		 * In Ganzha et~al. CASC'2002, pages 47--62.
 		 */
-		template <class Matrix, class Perm>
+		template <class _Matrix, class Perm>
 		unsigned long& QLUPin(unsigned long &rank,
 				      Element& determinant,
 				      Perm          &Q,
-				      Matrix	    &L,
-				      Matrix        &U,
+				      _Matrix	    &L,
+				      _Matrix        &U,
 				      Perm	    &P,
 				      unsigned long Ni,
 				      unsigned long Nj) const;
 
-		template <class Matrix, class Perm>
+		template <class _Matrix, class Perm>
 		unsigned long& DenseQLUPin(unsigned long &rank,
 				      Element& determinant,
 				      std::deque<std::pair<size_t,size_t> > &invQ,
-				      Matrix	    &L,
-				      Matrix        &U,
+				      _Matrix	    &L,
+				      _Matrix        &U,
 				      Perm	    &P,
 				      unsigned long Ni,
 				      unsigned long Nj) const;
 
-		template <class Matrix, class Perm, class Vector1, class Vector2>
-		Vector1& solve(Vector1& x, Vector1& w, unsigned long rank, const Perm& Q, const Matrix& L, const Matrix& U, const Perm& P, const Vector2& b)  const;
+		template <class _Matrix, class Perm, class Vector1, class Vector2>
+		Vector1& solve(Vector1& x, Vector1& w, unsigned long rank, const Perm& Q, const _Matrix& L, const _Matrix& U, const Perm& P, const Vector2& b)  const;
 
 
-		template <class Matrix, class Vector1, class Vector2>
+		template <class _Matrix, class Vector1, class Vector2>
 		Vector1& solvein(Vector1	&x,
-				 Matrix         &A,
+				 _Matrix         &A,
 				 const Vector2	&b)  const;
 
-		template <class Matrix, class Vector1, class Vector2, class Random>
+		template <class _Matrix, class Vector1, class Vector2, class Random>
 		Vector1& solvein(Vector1	&x,
-				 Matrix         &A,
+				 _Matrix         &A,
 				 const Vector2	&b, Random& generator)  const;
 
 
-		template <class Matrix, class Perm, class Block>
+		template <class _Matrix, class Perm, class Block>
 		Block& nullspacebasis(Block& x,
 				      unsigned long rank,
-				      const Matrix& U,
+				      const _Matrix& U,
 				      const Perm& P)  const ;
 
-		template <class Matrix, class Block>
-		Block& nullspacebasisin(Block& x, Matrix& A)  const;
+		template <class _Matrix, class Block>
+		Block& nullspacebasisin(Block& x, _Matrix& A)  const;
 
-		template <class Matrix, class Block>
-		Block& nullspacebasis(Block& x, const Matrix& A)  const;
+		template <class _Matrix, class Block>
+		Block& nullspacebasis(Block& x, const _Matrix& A)  const;
 
 
 		// Sparsest method
 		//   erases elements while computing rank/det.
-		template <class Matrix>
+		template <class _Matrix>
 		unsigned long& InPlaceLinearPivoting(unsigned long &rank,
 						     Element& determinant,
-						     Matrix        &A,
+						     _Matrix        &A,
 						     unsigned long Ni,
 						     unsigned long Nj) const;
 
 		// Same as the latter but keeps trace
 		//   of column permutations
 		//   of remaining elements in the matrix
-		template <class Matrix,class Perm>
+		template <class _Matrix,class Perm>
 		unsigned long& InPlaceLinearPivoting(unsigned long &rank,
 						     Element& determinant,
-						     Matrix        &A,
+						     _Matrix        &A,
 						     Perm          &P,
 						     unsigned long Ni,
 						     unsigned long Nj) const;
@@ -251,23 +254,23 @@ WARNING : NOT IN PLACE, THERE IS A COPY.
 Without reordering (Pivot is first non-zero in row)
 
 */
-		template <class Matrix>
-		unsigned long& NoReordering (unsigned long &rank, Element& determinant, Matrix &LigneA, unsigned long Ni, unsigned long Nj) const;
+		template <class _Matrix>
+		unsigned long& NoReordering (unsigned long &rank, Element& determinant, _Matrix &LigneA, unsigned long Ni, unsigned long Nj) const;
 
 		/** \brief Dense in place LU factorization without reordering
 
 Using : FindPivot and LU
 */
-		template <class Matrix>
-		unsigned long &LUin (unsigned long &rank, Matrix &A) const;
+		template <class _Matrix>
+		unsigned long &LUin (unsigned long &rank, _Matrix &A) const;
 
 
 		/** \brief Dense in place Gaussian elimination without reordering
 
 Using : FindPivot and LU
 */
-		template <class Matrix>
-		unsigned long &upperin (unsigned long &rank, Matrix &A) const;
+		template <class _Matrix>
+		unsigned long &upperin (unsigned long &rank, _Matrix &A) const;
 
 
 
@@ -357,25 +360,25 @@ Using : FindPivot and LU
 		template <class Vector>
 		void FindPivot (Vector &lignepivot, unsigned long &k, long &indpermut) const;
 
-		template <class Matrix, class Perm>
+		template <class _Matrix, class Perm>
 		unsigned long& SparseContinuation(unsigned long &rank,
 				      Element& determinant,
 				      std::deque<std::pair<size_t,size_t> > &invQ,
-				      Matrix	    &L,
-				      Matrix        &U,
+				      _Matrix	&L,
+				      _Matrix	&U,
 				      Perm	    &P,
 				      unsigned long Ni,
 				      unsigned long Nj) const;
 
         
-		template <class Matrix, class Perm, bool hasFFLAS>
+		template <class _Matrix, class Perm, bool hasFFLAS>
         struct Continuation {
             unsigned long& operator()(
                 unsigned long &rank,
                 Element& determinant,
                 std::deque<std::pair<size_t,size_t> > &invQ,
-                Matrix	    &L,
-                Matrix        &U,
+                _Matrix	    &L,
+                _Matrix		&U,
                 Perm	    &P,
                 unsigned long Ni,
                 unsigned long Nj, bool) const;

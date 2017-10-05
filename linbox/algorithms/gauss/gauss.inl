@@ -2,7 +2,7 @@
  * Copyright (C) 1999 Jean-Guillaume Dumas
  *
  * Written by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
- * Time-stamp: <18 Jun 15 14:42:01 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <24 Aug 17 18:25:58 Jean-Guillaume.Dumas@imag.fr>
  *
  *
  * ========LICENCE========
@@ -57,12 +57,12 @@
 namespace LinBox
 {
     template <class _Field>
-    template <class Matrix, class Perm> inline unsigned long&
+    template <class _Matrix, class Perm> inline unsigned long&
     GaussDomain<_Field>::QLUPin (unsigned long &Rank,
                      Element       &determinant,
                      Perm          &Q,
-                     Matrix        &LigneL,
-                     Matrix        &LigneA,
+                     _Matrix        &LigneL,
+                     _Matrix        &LigneA,
                      Perm          &P,
                      unsigned long Ni,
                      unsigned long Nj) const
@@ -74,7 +74,7 @@ namespace LinBox
         linbox_check( LigneL.coldim() == LigneA.rowdim() );
         linbox_check( LigneA.coldim() == P.rowdim() );
 
-        typedef typename Matrix::Row        Vector;
+        typedef typename _Matrix::Row        Vector;
         typedef typename Vector::value_type E;
 
         // Requirements : LigneA is an array of sparse rows
@@ -95,7 +95,7 @@ namespace LinBox
         std::vector<size_t> col_density (Nj);
 
 
-        for(typename Matrix::RowIterator LigneL_it = LigneL.rowBegin() ;
+        for(typename _Matrix::RowIterator LigneL_it = LigneL.rowBegin() ;
             LigneL_it != LigneL.rowEnd(); ++LigneL_it)
             LigneL_it->reserve(16);
 
@@ -124,7 +124,7 @@ namespace LinBox
         
         // Elimination steps with reordering
 
-        typename Matrix::RowIterator LigneA_k = LigneA.rowBegin(), LigneA_p;
+        typename _Matrix::RowIterator LigneA_k = LigneA.rowBegin(), LigneA_p;
         for (long k = 0; k < last; ++k, ++LigneA_k) {
             
 #ifdef __LINBOX_SpD_MAXSPARSITY__
@@ -232,7 +232,7 @@ namespace LinBox
 //             E one((unsigned)last,field().one);
 //             LigneL[(size_t)last].push_back(one);
 //         }
-        Continuation<Matrix,Perm,
+        Continuation<_Matrix,Perm,
             std::is_base_of<Givaro::FiniteRingInterface<Element>,_Field>::value>
             ()(*this, Rank,determinant,invQ,LigneL,LigneA,P,Ni,Nj,degeneratedense);
 
@@ -283,17 +283,17 @@ namespace LinBox
 
 
     template <class _Field>
-    template <class Matrix, class Perm> inline unsigned long&
+    template <class _Matrix, class Perm> inline unsigned long&
     GaussDomain<_Field>::SparseContinuation (unsigned long &Rank,
                      Element       &determinant,
                      std::deque<std::pair<size_t,size_t> > &invQ,
-                     Matrix        &LigneL,
-                     Matrix        &LigneA,
+                     _Matrix        &LigneL,
+                     _Matrix        &LigneA,
                      Perm          &P,
                      unsigned long Ni,
                      unsigned long Nj) const
     {
-        typedef typename Matrix::Row        Vector;
+        typedef typename _Matrix::Row        Vector;
         typedef typename Vector::value_type E;
 
         const long last = Ni-1;
@@ -314,15 +314,15 @@ namespace LinBox
     
 
     template <class _Field>
-    template<class Matrix, class Perm> 
-    struct GaussDomain<_Field>::Continuation<Matrix,Perm,false> {
+    template<class _Matrix, class Perm> 
+    struct GaussDomain<_Field>::Continuation<_Matrix,Perm,false> {
         unsigned long& operator()(
             const GaussDomain<_Field>& GD,
             unsigned long &Rank, 
             typename GaussDomain<_Field>::Element       &determinant,
             std::deque<std::pair<size_t,size_t> > &invQ,
-            Matrix        &LigneL,
-            Matrix        &LigneA,
+            _Matrix        &LigneL,
+            _Matrix        &LigneA,
             Perm          &P,
             unsigned long Ni,
             unsigned long Nj,
@@ -333,15 +333,15 @@ namespace LinBox
     };
     
     template <class _Field>
-    template <class Matrix, class Perm> 
-    struct GaussDomain<_Field>::Continuation<Matrix,Perm,true> {
+    template <class _Matrix, class Perm> 
+    struct GaussDomain<_Field>::Continuation<_Matrix,Perm,true> {
         unsigned long& operator()(
             const GaussDomain<_Field>& GD,
             unsigned long &Rank,
             typename GaussDomain<_Field>::Element       &determinant,
             std::deque<std::pair<size_t,size_t> > &invQ,
-            Matrix        &LigneL,
-            Matrix        &LigneA,
+            _Matrix        &LigneL,
+            _Matrix        &LigneA,
             Perm          &P,
             unsigned long Ni,
             unsigned long Nj,
@@ -361,12 +361,12 @@ namespace LinBox
 
 
     template <class _Field>
-    template <class Matrix, class Perm> inline unsigned long&
+    template <class _Matrix, class Perm> inline unsigned long&
     GaussDomain<_Field>::DenseQLUPin (unsigned long &Rank,
                      Element       &determinant,
                      std::deque<std::pair<size_t,size_t> > &dinvQ,
-                     Matrix        &dLigneL,
-                     Matrix        &dLigneA,
+                     _Matrix        &dLigneL,
+                     _Matrix        &dLigneA,
                      Perm          &dP,
                      unsigned long Ni,
                      unsigned long Nj) const
@@ -377,8 +377,8 @@ namespace LinBox
         linbox_check( dLigneA.coldim() == dP.rowdim() );
 
 //         std::deque<std::pair<size_t,size_t> > dinvQ(invQ);
-//         Matrix dLigneL(LigneL, this->field());
-//         Matrix dLigneA(LigneA, this->field());
+//         _Matrix dLigneL(LigneL, this->field());
+//         _Matrix dLigneA(LigneA, this->field());
 //         Perm dP(P);
         
 //         { Perm dQ(Ni);
@@ -486,14 +486,14 @@ namespace LinBox
     
 
     template <class _Field>
-    template <class Matrix> inline unsigned long&
+    template <class _Matrix> inline unsigned long&
     GaussDomain<_Field>::InPlaceLinearPivoting (unsigned long &Rank,
                             Element        &determinant,
-                            Matrix         &LigneA,
+                            _Matrix         &LigneA,
                             unsigned long   Ni,
                             unsigned long   Nj) const
     {
-        typedef typename Matrix::Row        Vector;
+        typedef typename _Matrix::Row        Vector;
 
         // Requirements : LigneA is an array of sparse rows
         // In place (LigneA is modified)
@@ -627,15 +627,15 @@ namespace LinBox
 
 
     template <class _Field>
-    template <class Matrix, class Perm> inline unsigned long&
+    template <class _Matrix, class Perm> inline unsigned long&
     GaussDomain<_Field>::InPlaceLinearPivoting (unsigned long &Rank,
                             Element        &determinant,
-                            Matrix         &LigneA,
+                            _Matrix         &LigneA,
                             Perm           &P,
                             unsigned long   Ni,
                             unsigned long   Nj) const
     {
-        typedef typename Matrix::Row        Vector;
+        typedef typename _Matrix::Row        Vector;
 
         // Requirements : LigneA is an array of sparse rows
         // In place (LigneA is modified)
@@ -779,10 +779,10 @@ namespace LinBox
     }
 
     template <class _Field>
-    template <class Matrix> inline unsigned long&
+    template <class _Matrix> inline unsigned long&
     GaussDomain<_Field>::NoReordering (unsigned long &res,
                        Element       &determinant,
-                       Matrix        &LigneA,
+                       _Matrix        &LigneA,
                        unsigned long  Ni,
                        unsigned long  Nj) const
     {
@@ -796,9 +796,9 @@ namespace LinBox
         commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
         << "Gaussian elimination on " << Ni << " x " << Nj << " matrix" << std::endl;
 
-        typedef typename Matrix::Row          Vector;
+        typedef typename _Matrix::Row          Vector;
         // typedef typename Vector::value_type   E;
-        // typedef typename Matrix::Element      Elem;
+        // typedef typename _Matrix::Element      Elem;
 
 #ifdef __LINBOX_COUNT__
         long long nbelem = 0;
@@ -915,8 +915,8 @@ namespace LinBox
 
 
     template <class _Field>
-    template <class Matrix> inline unsigned long &
-    GaussDomain<_Field>::upperin (unsigned long &res, Matrix &A) const
+    template <class _Matrix> inline unsigned long &
+    GaussDomain<_Field>::upperin (unsigned long &res, _Matrix &A) const
     {
         // Requirements : A is an array of rows
         // In place (A is modified)
@@ -938,8 +938,8 @@ namespace LinBox
     }
 
     template <class _Field>
-    template <class Matrix> inline unsigned long &
-    GaussDomain<_Field>::LUin (unsigned long &res, Matrix &A) const
+    template <class _Matrix> inline unsigned long &
+    GaussDomain<_Field>::LUin (unsigned long &res, _Matrix &A) const
     {
         // Requirements : A is an array of rows
         // In place (A is modified)

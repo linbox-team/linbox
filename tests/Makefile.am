@@ -81,6 +81,8 @@ BASIC_TESTS =					\
 	test-cra					\
 	test-blas-matrix			\
 	test-charpoly			\
+	test-isposdef				\
+	test-ispossemidef			\
 	test-regression
 
 # All other tests.  
@@ -114,8 +116,6 @@ FULLCHECK_TESTS =               \
 	test-hom					\
 	test-image-field			\
 	test-inverse				\
-	test-isposdef				\
-	test-ispossemidef			\
 	test-la-block-lanczos		\
 	test-last-invariant-factor  \
 	test-matpoly-mult			\
@@ -351,6 +351,9 @@ test_zero_one_SOURCES =                 test-zero-one.C
 # Perfpublisher script interaction - AB 2014/12/11
 perfpublisher:
 	+./perfpublisher.sh "$(PERFPUBLISHERFILE)" "$(TESTS)" "$(CXX)"
+	mv $(PERFPUBLISHERFILE) ..
+	make clean
+	mv ../$(PERFPUBLISHERFILE) .
 
 # for compilation of non-enumerated programs
 %:%.C

@@ -2,7 +2,7 @@
  * Copyright (C) 2009 The LinBox group
  * Written by JG Dumas
  *
- * Time-stamp: <23 Mar 12 17:28:19 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <28 Jul 17 13:15:36 Jean-Guillaume.Dumas@imag.fr>
  *
  * 
  * ========LICENCE========
@@ -50,11 +50,11 @@ namespace LinBox
 	template <>
 	class GaussDomain<GF2> {
 	public:
-		typedef GF2 Field;
-		typedef Field::Element Element;
+		using Field=GF2;
+		using Element=Field::Element;
 
 		// Preferred Matrix type
-		typedef ZeroOne<GF2> Matrix;
+		using Matrix=ZeroOne<GF2>;
 
 	public:
 
@@ -240,16 +240,17 @@ namespace LinBox
 #include "linbox/algorithms/gauss/gauss-pivot-gf2.inl"
 #include "linbox/algorithms/gauss/gauss-elim-gf2.inl"
 #include "linbox/algorithms/gauss/gauss-rank-gf2.inl"
+#include "linbox/algorithms/gauss/gauss-det-gf2.inl"
 #include "linbox/algorithms/gauss/gauss-solve-gf2.inl"
 
 #endif // __LINBOX_gauss_gf2_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
 
