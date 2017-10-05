@@ -91,10 +91,10 @@ int main (int argc, char **argv)
 {
 	bool pass = true;
 
-	static size_t n = 9;
+	static size_t n = 9; // blocking + 1 <= n/2 is required.
 //	static size_t N = 16;
 	static size_t q = 65521U;
-	static size_t blocking = 0;
+	static size_t blocking = 1; // if blocking is 0, default blocksize 8 is used. 
         static size_t seed = time(NULL);
 
 	static Argument args[] = {
