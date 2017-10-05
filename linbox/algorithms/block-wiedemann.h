@@ -90,8 +90,8 @@ namespace LinBox
 			m = A.rowdim();
 			n = A.coldim();
                         Vector z(field(),y.size());
-
-                        if (_left_blockdim >=m/2 || _right_blockdim >=n/2)
+                        
+                        if (_left_blockdim >m/2 || _right_blockdim >n/2) 
                                 std::cerr<<"BlockWiedemannSolver (Warning) : block size too large, number of tries might be large"<<std::endl;
                         
 			//std::cout<<"row block: "<<_left_blockdim<<std::endl;
