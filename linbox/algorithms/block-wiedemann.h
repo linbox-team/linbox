@@ -57,7 +57,7 @@ namespace LinBox
 	protected:
 		Context_                    _BMD;
 		VectorDomain<Field>         _VDF;
-		const RandIter             _rand;
+                RandIter                   _rand;
                 size_t                 _left_blockdim;
                 size_t                 _right_blockdim;
 
@@ -69,11 +69,17 @@ namespace LinBox
 
 		BlockWiedemannSolver (const Context_ &C, size_t lblock=BW_BLOCK_DEFAULT, size_t rblock=BW_BLOCK_DEFAULT) :
 			_BMD(C.field()), _VDF(C.field()), _rand(const_cast<Field&>(C.field())), _left_blockdim(lblock), _right_blockdim(rblock)
-		{}
+		{
+                        if (_left_blockdim ==0) _left_blockdim=BW_BLOCK_DEFAULT;
+                        if (_right_blockdim ==0) _right_blockdim=BW_BLOCK_DEFAULT;
+                }
 
 		BlockWiedemannSolver (const Field &F, RandIter &rand, size_t lblock=BW_BLOCK_DEFAULT, size_t rblock=BW_BLOCK_DEFAULT) :
 			_BMD(F), _VDF(F), _rand(rand) , _left_blockdim(lblock), _right_blockdim(rblock)
-		{}
+		{
+                        if (_left_blockdim ==0) _left_blockdim=BW_BLOCK_DEFAULT;
+                        if (_right_blockdim ==0) _right_blockdim=BW_BLOCK_DEFAULT;
+                }
 
 		template <class Blackbox>
 		Vector &solveNonSingular (Vector &x, const Blackbox &B, const Vector &y) const
@@ -85,6 +91,9 @@ namespace LinBox
 			n = A.coldim();
                         Vector z(field(),y.size());
 
+                        if (_left_blockdim >=m/2 || _right_blockdim >=n/2)
+                                std::cerr<<"BlockWiedemannSolver (Warning) : block size too large, number of tries might be large"<<std::endl;
+                        
 			//std::cout<<"row block: "<<_left_blockdim<<std::endl;
 			//std::cout<<"col block: "<<_right_blockdim<<std::endl;
 
