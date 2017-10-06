@@ -61,6 +61,8 @@ namespace LinBox
 	 *   short_col(A) is min_j  sqrt(sum_i a_ij^2)     ('shortest column')
 	 *
 	 * @note H_col is not actually a norm! but it is what we need for lifting bound computation
+         * @ note: in the presence of zero columns (happening with underdetermined system)
+         * the norm of the zero vector is excluded from the norm.
 	 */
 	template <class Ring, class ItMatrix>
 	void SpecialBound(const Ring& R, typename Ring::Element& H_col_sqr,
@@ -72,7 +74,6 @@ namespace LinBox
 		//size_t m, n, col=0;
 		//n=A.coldim();
 		//m=A.rowdim();
-		R.assign(H_col_sqr, R.one);
 
 		typename ItMatrix::ConstRowIterator row= A.rowBegin();
 		std::vector<Integer_t> tmp(A.coldim(), R.zero);
@@ -82,9 +83,15 @@ namespace LinBox
 				R.axpyin(tmp[i], *elm, *elm);
 		}
 
-		for (size_t i=0;i<A.coldim();++i)
-			R.mulin(H_col_sqr,tmp[i]);
-		short_col_sqr= *(std::min_element(tmp.begin(),tmp.end()));
+		R.assign(H_col_sqr, R.one);
+		R.assign (short_col_sqr, tmp[0]);
+		for (size_t i=0;i<A.coldim();++i) {
+			if (!R.isZero(tmp[i])){
+				R.mulin(H_col_sqr,tmp[i]);
+				if(short_col_sqr> tmp[i]) short_col_sqr=tmp[i];
+			}
+		}
+		// short_col_sqr= *(std::min_element(tmp.begin(),tmp.end()));
 
 		/* at this point RowIterator is better than ColIterator
 		   typename ItMatrix::ConstColIterator colIter;
@@ -120,6 +127,26 @@ namespace LinBox
 		SpecialBound(R, H_col_sqr, short_col_sqr, A);
 	}
 
+	template <class Ring>
+	void BoundBlackbox(const Ring& R, typename Ring::Element& H_col_sqr,
+			   typename Ring::Element& short_col_sqr,
+			   const SparseMatrix<Ring>& A)
+	{
+		typedef typename Ring::Element Integer_t;
+
+		std::vector<Integer_t> tmp(A.coldim(), R.zero);
+		for(auto indices = A.IndexedBegin(); indices != A.IndexedEnd() ; ++indices )
+			R.axpyin(tmp[indices.colIndex()], indices.value(), indices.value());
+		R.assign (H_col_sqr, R.one);
+		R.assign (short_col_sqr, tmp[0]);
+		for (size_t i=0;i<A.coldim();++i)
+			// Generalization of the Hadamard's bound: product of the norm of all non-zero columns
+			if (!R.isZero(tmp[i])){
+				R.mulin (H_col_sqr,tmp[i]);
+				if (short_col_sqr > tmp[i]) short_col_sqr = tmp[i];
+			}
+		//short_col_sqr= *(std::min_element(tmp.begin(),tmp.end()));
+	}
 
 	template < class Ring, class Blackbox>
 	void BoundBlackbox (const Ring& R, typename Ring::Element& H_col_sqr,
@@ -139,7 +166,8 @@ namespace LinBox
 		for (size_t i=0;i<n;++i){
 			e[i]=R.one;
 			A.apply(tmp,e);
-			sqsum=R.zero;
+            sqsum=R.zero;
+//             std::cerr<<"apply number "<<i<<std::endl;
 			for (iter=tmp.begin();iter!=tmp.end();++iter){
 				sqsum += (*iter)*(*iter);
 			}
@@ -384,6 +412,7 @@ namespace LinBox
 			D = sqrt(had_sqi) + 1;
 			N = sqrt(had_sqi * normb_sqi / short_sqi) + 1;
 			L = N * D * 2;
+                            //std::cerr<<"had_sqi = "<<had_sqi<<" normb_sqi = "<<normb_sqi<<" short_sqi = "<<short_sqi<<" N = "<<N<<" D = "<<D<<std::endl;
 			_length = (size_t)logp(L,Prime) + 1;   // round up instead of down
 #ifdef DEBUG_LC
 			std::cout<<" norms computed, p = "<<_p<<"\n";
@@ -1494,8 +1523,7 @@ namespace LinBox
 			// solve the system mod p using L.Q.U.P Factorization
 			_GD.solve(_digit_p, w, _rank, QQ,LL,UU,PP, _res_p);
 
-
-			// promote new solution mod p to integers
+                        // promote new solution mod p to integers
 			{
 				typename FVector::const_iterator iter_p = _digit_p.begin();
 				typename IVector::iterator iter = digit.begin();
@@ -1517,8 +1545,8 @@ namespace LinBox
 
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-
+// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
