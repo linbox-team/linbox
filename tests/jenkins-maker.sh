@@ -84,4 +84,4 @@ make perfpublisher
 echo "|=== JENKINS AUTOMATED SCRIPT ===| make examples"
 make examples
 V="$?"; if test "x$V" != "x0"; then exit "$V"; fi
-
+(cd examples && make clean)
