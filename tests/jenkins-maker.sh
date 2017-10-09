@@ -37,7 +37,7 @@ echo "PKG_CONFIG_PATH = $PKG_CONFIG_PATH"
 
 # Where to install linbox binaries
 # Keep default for local installation.
-PREFIX_INSTALL="$LOCAL_DIR/$CXX"
+PREFIX_INSTALL="$LOCAL_DIR/$CXX/$NTL"
 
 # Job Linbox with Ntl option flag
 if [ "$NTL" == "withNTL" ]; then
