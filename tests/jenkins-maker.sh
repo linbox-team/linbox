@@ -41,7 +41,7 @@ PREFIX_INSTALL="$LOCAL_DIR/$CXX/$NTL"
 
 # Job Linbox with Ntl option flag
 if [ "$NTL" == "withNTL" ]; then
-  LINBOX_NTLFLAG="--with-ntl=$PREFIX_INSTALL"
+  LINBOX_NTLFLAG="--with-ntl=$LOCAL_DIR/$CXX"
 fi
 
 # /!\ Warning /!\ This could be an issue if you changed
