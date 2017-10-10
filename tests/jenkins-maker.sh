@@ -21,6 +21,7 @@ SOURCE_DIRECTORY=$( cd "$( dirname "$0" )" && pwd )
 #=============================#
 # Change only these variables #
 #=============================#
+ARCH=`pwd | awk -F/ '{print $(NF-4)}'`
 CXX=`pwd | awk -F/ '{print $(NF-2)}'`
 NTL=`pwd | awk -F/ '{print $NF}'`
 JENKINS_DIR=${SOURCE_DIRECTORY%%/workspace/*}
@@ -36,11 +37,11 @@ echo "PKG_CONFIG_PATH = $PKG_CONFIG_PATH"
 
 # Where to install linbox binaries
 # Keep default for local installation.
-PREFIX_INSTALL="$LOCAL_DIR/$CXX"
+PREFIX_INSTALL="$LOCAL_DIR/$CXX/$NTL"
 
 # Job Linbox with Ntl option flag
 if [ "$NTL" == "withNTL" ]; then
-  LINBOX_NTLFLAG="--with-ntl=$PREFIX_INSTALL"
+  LINBOX_NTLFLAG="--with-ntl=$LOCAL_DIR/$CXX"
 fi
 
 # /!\ Warning /!\ This could be an issue if you changed
@@ -59,12 +60,11 @@ if [ "$CXX" == "icpc" ]; then
 	source /usr/local/bin/compilervars.sh intel64
      fi
 fi
-
-# Particular case for Fedora23: g++=g++-5.3
-#vm_name=`uname -n | cut -d"-" -f1`
-#if [[ "$vm_name" == "fedora" && "$CXX" == "g++-5.3" ]]; then
-#   CXX="g++"
-#fi
+# Particular case for Fedora: g++-6 <- g++
+if [[ "$ARCH" == "linbox-fedora-amd64" &&  "$CXX" == "g++-6" ]]; then
+    CXX="g++"
+    CC=gcc
+fi
 
 #==================================#
 # Automated installation and tests #
@@ -84,4 +84,4 @@ make perfpublisher
 echo "|=== JENKINS AUTOMATED SCRIPT ===| make examples"
 make examples
 V="$?"; if test "x$V" != "x0"; then exit "$V"; fi
-
+(cd examples && make clean)

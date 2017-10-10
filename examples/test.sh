@@ -2,10 +2,10 @@
 
 # written by Brice Boyer (briceboyer) <boyer.brice@gmail.com>
 # part of LinBox, see COPYING
-SED="sed"
-case "`uname`" in
-  Darwin*) SED="gsed" ;;
-esac
+# SED="sed"
+# case "`uname`" in
+#   Darwin*) SED="gsed" ;;
+# esac
 
 set -o nounset                              # Treat unset variables as an error
 

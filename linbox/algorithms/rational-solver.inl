@@ -59,7 +59,7 @@
 #include "linbox/util/timer.h"
 // #endif
 
-//#define DEBUG_DIXON
+#define DEBUG_DIXON
 //#define DEBUG_INC
 //#define SKIP_NONSINGULAR
 
@@ -565,7 +565,6 @@ namespace LinBox
 								   int maxP,
 								   const SolverLevel level ) const
 	{
-
 		SolverReturnStatus status;
 		int maxPrimes=maxP;
 		while (maxPrimes > 0)
@@ -619,7 +618,7 @@ namespace LinBox
 									     int maxPrimes) const
 	{
 
-		// std::cout<<"DIXON\n\n\n\n";
+            //std::cout<<"DIXON\n\n\n\n";
 #ifdef DEBUG_DIXON
 		std::cout << "entering nonsingular solver\n";
 #endif
@@ -1380,7 +1379,6 @@ namespace LinBox
 		linbox_check(A.rowdim() == A.coldim());
 		linbox_check(A.rowdim() % blocksize == 0);
 
-
 		// reduce the matrix mod p
 		Field F(_prime);
 		typedef typename IMatrix::template rebind<Field>::other FMatrix;
@@ -1472,7 +1470,7 @@ namespace LinBox
 												     int maxPrimes) const
 	{
 
-		linbox_check(A.rowdim() == A.coldim());
+            //linbox_check(A.rowdim() == A.coldim());
 
 		typedef typename Field::Element Element_t;
 
@@ -1516,7 +1514,6 @@ namespace LinBox
 			commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT) << "Pruned : " << (origNNZ-newNNZ) << " unnecessary elements in upper triangle" << std::endl;
 		}
 
-
 		typedef SparseLULiftingContainer<Ring,Field,IMatrix,FMatrix> LiftingContainer;
 		LiftingContainer lc(_ring, F, A, L, Q, Ap, P, rank, b, _prime);
 		RationalReconstruction<LiftingContainer > re(lc);
@@ -1537,8 +1534,8 @@ namespace LinBox
 
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

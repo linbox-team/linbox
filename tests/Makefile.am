@@ -103,6 +103,7 @@ FULLCHECK_TESTS =               \
 	test-direct-sum				\
 	test-dyadic-to-rational  	\
 	test-echelon-form			\
+	test-polynomial-ring		\
 	test-ffpack					\
 	test-fibb					\
 	test-ftrmm					\
@@ -349,10 +350,14 @@ test_triplesbb_SOURCES =                test-triplesbb.C
 test_tutorial_SOURCES =                 test-tutorial.C
 test_vector_domain_SOURCES =            test-vector-domain.C test-vector-domain.h
 test_zero_one_SOURCES =                 test-zero-one.C
+test_polynomial_ring_SOURCES =          test-polynomial-ring.C
 
 # Perfpublisher script interaction - AB 2014/12/11
 perfpublisher:
 	+./perfpublisher.sh "$(PERFPUBLISHERFILE)" "$(TESTS)" "$(CXX)"
+	mv $(PERFPUBLISHERFILE) ..
+	make clean
+	mv ../$(PERFPUBLISHERFILE) .
 
 # for compilation of non-enumerated programs
 %:%.C
