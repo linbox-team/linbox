@@ -4,8 +4,11 @@
 #include <vector>
 #include <list>
 
+#include "givaro/givtimer.h"
+
 // Polynomial Matrix / Order Basis
 #include "linbox/ring/modular.h"
+#include "linbox/ring/polynomial-ring.h"
 #include "linbox/ring/givaro-poly.h"
 #include "linbox/ring/givaro-poly-quotient.h"
 #include "linbox/matrix/densematrix/blas-matrix.h"
@@ -30,6 +33,7 @@ using namespace LinBox;
 typedef Givaro::Modular<double> Field;
 
 typedef GivaroPoly<Field> PolyRing;
+// typedef PolynomialRing<Field> PolyRing;
 typedef GivaroPolyQuotient<PolyRing> QuotRing;
 
 typedef typename Field::Element Element;
@@ -168,8 +172,15 @@ void factorizeMatrix(const PolyRing &PD, const Matrix &A) {
 void solveDet(const PolyRing &PD, const Matrix &A) {
 	DetTextbookDomain<PolyRing> DD(PD);
 	Polynomial det;
-	DD.solve(det, A);
 	
+	Givaro::Timer TW;
+	
+	TW.clear();
+	TW.start();
+	DD.solve(det, A);
+	TW.stop();
+	double kb_time = TW.usertime() + TW.systime();
+	std::cout << "solve time: " << kb_time << std::endl;
 	PD.write(std::cout << "det: ", det) << std::endl;
 }
 
@@ -214,10 +225,10 @@ int main(int argc, char** argv)
 		
 		size_t nbumps;
 		file >> nbumps;
-		std::cout << "bumps: " << nbumps << std::endl;
+		// std::cout << "bumps: " << nbumps << std::endl;
 		
 		for (size_t i = 0; i < nbumps; i++) {
-			std::cout << "before i: " << i << std::endl;
+			// std::cout << "before i: " << i << std::endl;
 			
 			size_t idx;
 			file >> idx;
@@ -227,32 +238,33 @@ int main(int argc, char** argv)
 			PD.read(file, bump);
 			bumps.push_back(bump);
 			
-			std::cout << "after i: " << i << std::endl;
+			// std::cout << "after i: " << i << std::endl;
 		}
 		
 		file.close();
 	}
 	
-	std::cout << "before making diag" << std::endl;
+	// std::cout << "before making diag" << std::endl;
 	
 	std::vector<Polynomial> diag;
 	util.makeDiag(diag, bump_idx, bumps, n);
 	
-	std::cout << "done making diag" << std::endl;
+	// std::cout << "done making diag" << std::endl;
 	
 	Polynomial det;
 	PD.init(det, PD.one);
 	for (size_t i = 0; i < diag.size(); i++) {
-		PD.write(std::cout, diag[i]) << std::endl;
+		// PD.write(std::cout, diag[i]) << std::endl;
 		PD.mulin(det, diag[i]);
 	}
 	
 	Matrix A(PD, n, n);
 	util.makeExample(A, diag, lumps);
 	
-	util.printMatrix(A);
-	PD.write(std::cout << "det: ", det) << std::endl << std::endl;
+	// util.printMatrix(A);
+	// PD.write(std::cout << "det: ", det) << std::endl << std::endl;
 	
+	/*
 	solveTextBook(PD, A);
 	solveKannanBachem(PD, A);
 	solveIliopoulos(PD, A, det);
@@ -264,6 +276,8 @@ int main(int argc, char** argv)
 	
 	// Compute inverse of matrix
 	factorizeMatrix(PD, A);
+	*/
+	
 	solveDet(PD, A);
 	
 	return pass ? 0 : -1;
