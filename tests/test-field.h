@@ -27,14 +27,16 @@
  */
 
 /*
-// top level test that doesn't use field_subtests.
+// Namespace field_subtests is a collection of tests of field/ring functions and their properties.
+
+// These top level tests don't use the field_subtests.
 bool testRing
 bool testField
 
-// top level test that uses subtest testRandomIteratorStep.
+// This top level test uses field_subtest::testRandomIteratorStep.
 bool testRandomIterator
 
-// top level runBasicRingTests calls these field_subtests.
+// The top level runBasicRingTests calls these field_subtests.
 bool testFieldNegation
 bool testFieldDistributivity
 bool testFieldAssociativity
@@ -44,11 +46,11 @@ bool testRingArithmeticConsistency
 bool testAxpyConsistency
 bool testRanditerBasic
 
-// top level runPIRTests calls these field_subtests after runBasicRingTests.
+// The top level runPIRTests calls these field_subtests after runBasicRingTests.
 bool testFieldCommutativity
 ...
 
-// top level runFieldTests calls these field_subtests after runBasicRingTests.
+// The top level runFieldTests calls these field_subtests after runBasicRingTests.
 bool testFieldInversion
 bool testFieldCommutativity
 bool testInvDivConsistency
@@ -1236,7 +1238,10 @@ namespace field_subtests {
 
 /* Convenience function to run all of the basic ring tests */
 template <class Ring>
-bool runBasicRingTests (const Ring &F, const char *desc, unsigned int iterations, bool runCharacteristicTest = true, bool runInitConvertIdentity=true)
+bool runBasicRingTests (const Ring &F, const char *desc, 
+		unsigned int iterations = 1, 
+		bool runCharacteristicTest = true, 
+		bool runInitConvertIdentity=true)
 {
 	bool pass = true;
 	ostringstream str;
@@ -1277,7 +1282,55 @@ bool runBasicRingTests (const Ring &F, const char *desc, unsigned int iterations
 	commentator().stop (MSG_STATUS (pass), (const char *) 0, "runBasicRingTests");
 	delete[] st;
 	return pass;
-}
+} // runBasicRingTests
+
+/* Convenience function to run the tests appropriate to a principal ideal ring such as Z, Z_n, F[x], F[x]/<f> (any n or f, not necessarily prime). */
+template <class Ring>
+bool runPIRTests (const Ring &F, const char *desc, 
+		unsigned int iterations = 1, 
+		bool runCharacteristicTest = true, 
+		bool runInitConvertIdentity=true)
+{
+	ostringstream str;
+
+	str << "\t--Testing " << desc << " ring" << ends;
+	char * st = new char[str.str().size()];
+	strcpy (st, str.str().c_str());
+
+	commentator().start (st, "runPIRTests", runCharacteristicTest ? 11 : 10);
+
+	bool pass =  runBasicRingTests(F, desc, iterations, runCharacteristicTest, runInitConvertIdentity) ;
+	if (!testField                     (F, string(str.str()).c_str(),true,runInitConvertIdentity))           pass = false;
+	commentator().progress ();
+	if (!field_subtests::testFieldNegation             (F, desc, iterations))                    pass = false;
+	commentator().progress ();
+	if (!field_subtests::testFieldDistributivity       (F, desc, iterations))                    pass = false;
+	commentator().progress ();
+	if (!field_subtests::testFieldAssociativity        (F, desc, iterations))                    pass = false;
+	commentator().progress ();
+
+	if (runCharacteristicTest) {
+		if (!field_subtests::testFieldCharacteristic (F, desc, iterations))                  pass = false;
+		commentator().progress ();
+	}
+	LinBox::integer card;
+
+	if (F.cardinality(card) != 2) { // otherwise it is not very interesting to find a element not zero and not one !
+		if (!field_subtests::testGeometricSummation        (F, desc, iterations, 100))               pass = false;
+		commentator().progress ();
+	}
+
+	if (!field_subtests::testRingArithmeticConsistency (F, desc, iterations))                    pass = false;
+	commentator().progress ();
+	if (!field_subtests::testAxpyConsistency           (F, desc, iterations))                    pass = false;
+	commentator().progress ();
+	if (!field_subtests::testRanditerBasic             (F, desc, iterations))                    pass = false;
+	commentator().progress ();
+
+	commentator().stop (MSG_STATUS (pass), (const char *) 0, "runBasicRingTests");
+	delete[] st;
+	return pass;
+} // runPIRTests
 
 namespace field_subtests {
 	/* Random number test
@@ -1408,8 +1461,11 @@ namespace field_subtests {
 }// namespace field_subtests
 
 template <class Field>
-bool runFieldTests (const Field &F, const char *desc, unsigned int iterations, size_t n, bool runCharacteristicTest = true, bool runInitConvertIdentity=true)
-	// n is not used.
+bool runFieldTests (const Field &F, const char *desc, 
+		unsigned int iterations = 1, 
+		size_t n = 0, // n is not actually used.
+		bool runCharacteristicTest = true, 
+		bool runInitConvertIdentity=true)
 {
 	ostringstream str;
 
