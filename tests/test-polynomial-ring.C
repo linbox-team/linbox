@@ -82,7 +82,7 @@ int main (int argc, char **argv)
 		pass = false;
 	commentator().progress ();
 	
-	if ( not runBasicRingTests(Poly, "Poly1Dom<Modular<float>>"))
+	if ( not runPIRTests(Poly, "Poly1Dom<Modular<float>>"))
 		pass = false;
 	commentator().progress ();
 	
@@ -90,7 +90,7 @@ int main (int argc, char **argv)
 		pass = false;
 	commentator().progress ();
 	
-	if ( not runBasicRingTests(PolyFac, "Poly1FactorDom<Modular<float>>"))
+	if ( not runPIRTests(PolyFac, "Poly1FactorDom<Modular<float>>"))
 		pass = false;
 	commentator().progress ();
 	

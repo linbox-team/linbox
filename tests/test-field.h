@@ -1286,50 +1286,45 @@ bool runBasicRingTests (const Ring &F, const char *desc,
 
 /* Convenience function to run the tests appropriate to a principal ideal ring such as Z, Z_n, F[x], F[x]/<f> (any n or f, not necessarily prime). */
 template <class Ring>
-bool runPIRTests (const Ring &F, const char *desc, 
+bool runPIRTests (const Ring &R, const char *desc, 
 		unsigned int iterations = 1, 
 		bool runCharacteristicTest = true, 
 		bool runInitConvertIdentity=true)
 {
 	ostringstream str;
 
-	str << "\t--Testing " << desc << " ring" << ends;
+	str << "\t--Testing " << desc << " field" << ends;
 	char * st = new char[str.str().size()];
 	strcpy (st, str.str().c_str());
+	commentator().start (st, "runPIRTests");
+	bool ret =  runBasicRingTests(R, desc, iterations, runCharacteristicTest, runInitConvertIdentity) ;
+	// test gcd, gcd with s,t, and lcm
+	typename Ring::Element a, b, g1, g2, d, s, t, h;
+	R.init(a); R.init(b); R.init(g1); R.init(g2); 
+	R.init(d); R.init(s); R.init(t); R.init(h); 
+	typename Ring::RandIter r (R,4);
+	r.random(a); r.random(b);
+	//R.write(std::cout << "a ", a) << std::endl;
+	//R.write(std::cout << "b ", b) << std::endl;
+	R.gcd(g1,s,t,a,b);
+	R.mul(d,s,a); R.axpyin(d,t,b);
+	if (not R.areEqual(g1,d))
+		reportError("extended gcd: g != sa + tb", ret);
+	R.gcd(g2,a,b);
+	/* specs needed on this
+	if (not R.areEqual(g1, g2))
+		reportError("extended/nonextended gcd inconsistent", ret);
+	if (not ret) {std::cout << "long/short" << std::endl; 
+		R.write(std::cout << "g1 ", g1) << std::endl;
+		R.write(std::cout << "g2 ", g2) << std::endl;
+		exit(-1); }
+		*/
+	R.lcm(h,a,b);
+	if (not R.areEqual(R.mulin(g2,h), R.mulin(a,b)))
+		reportError("gcd(g,a,b)*lcm(h,a,b) != a*b", ret);
 
-	commentator().start (st, "runPIRTests", runCharacteristicTest ? 11 : 10);
-
-	bool pass =  runBasicRingTests(F, desc, iterations, runCharacteristicTest, runInitConvertIdentity) ;
-	if (!testField                     (F, string(str.str()).c_str(),true,runInitConvertIdentity))           pass = false;
-	commentator().progress ();
-	if (!field_subtests::testFieldNegation             (F, desc, iterations))                    pass = false;
-	commentator().progress ();
-	if (!field_subtests::testFieldDistributivity       (F, desc, iterations))                    pass = false;
-	commentator().progress ();
-	if (!field_subtests::testFieldAssociativity        (F, desc, iterations))                    pass = false;
-	commentator().progress ();
-
-	if (runCharacteristicTest) {
-		if (!field_subtests::testFieldCharacteristic (F, desc, iterations))                  pass = false;
-		commentator().progress ();
-	}
-	LinBox::integer card;
-
-	if (F.cardinality(card) != 2) { // otherwise it is not very interesting to find a element not zero and not one !
-		if (!field_subtests::testGeometricSummation        (F, desc, iterations, 100))               pass = false;
-		commentator().progress ();
-	}
-
-	if (!field_subtests::testRingArithmeticConsistency (F, desc, iterations))                    pass = false;
-	commentator().progress ();
-	if (!field_subtests::testAxpyConsistency           (F, desc, iterations))                    pass = false;
-	commentator().progress ();
-	if (!field_subtests::testRanditerBasic             (F, desc, iterations))                    pass = false;
-	commentator().progress ();
-
-	commentator().stop (MSG_STATUS (pass), (const char *) 0, "runBasicRingTests");
 	delete[] st;
-	return pass;
+	return ret;
 } // runPIRTests
 
 namespace field_subtests {
