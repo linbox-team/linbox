@@ -38,7 +38,8 @@
 #include <iostream>
 
 
-#include "linbox/ring/polynomial-ring.h"
+//#include "linbox/ring/polynomial-ring.h"
+#include <givaro/givpoly1factor.h>
 #include "linbox/ring/modular.h"
 
 #include "test-field.h"
@@ -62,10 +63,14 @@ int main (int argc, char **argv)
 	bool pass = true;
 
 	typedef Givaro::Modular<float> BaseDom;
-	typedef PolynomialRing<BaseDom> PolyDom;
+	typedef Givaro::Poly1Dom<BaseDom, Givaro::Dense> PolyDom;
+	typedef Givaro::Poly1FactorDom<BaseDom, Givaro::Dense> PolyFactorDom;
+    // PolynomialRing has some ring members missing, eg., init, one, mOne, zero.
+	//typedef PolynomialRing<BaseDom> PolyDom;
 	
 	BaseDom Fp(p);
 	PolyDom Poly(Fp);
+	PolyFactorDom PolyFac(Fp);
 
 	// Make sure some more detailed messages get printed
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
@@ -73,7 +78,19 @@ int main (int argc, char **argv)
 
 	commentator().start ("Testing GivaroPoly", "main", 10);
 	
-	if ( not testRing (Poly, "PolynomialRing<Modular<float>>"))
+	if ( not testRing (Poly, "Poly1Dom<Modular<float>>"))
+		pass = false;
+	commentator().progress ();
+	
+	if ( not runBasicRingTests(Poly, "Poly1Dom<Modular<float>>"))
+		pass = false;
+	commentator().progress ();
+	
+	if ( not testRing (PolyFac, "Poly1FactorDom<Modular<float>>"))
+		pass = false;
+	commentator().progress ();
+	
+	if ( not runBasicRingTests(PolyFac, "Poly1FactorDom<Modular<float>>"))
 		pass = false;
 	commentator().progress ();
 	
