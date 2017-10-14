@@ -346,6 +346,28 @@ namespace LinBox
 			return inv(y, x);
 		}
 
+		/** Get the greatest commonn divisor of two polynomials */
+		Element& gcd( Element& res, const Element& a, const Element& b ) const
+		{
+			NTL::GCD(res,a,b);
+			return res;
+		}
+
+		Element& gcd( Element& res, Element& s, Element& t, const Element& a, const Element& b ) const
+		{
+			NTL::XGCD(res,s,t,a,b);
+			return res;
+		}
+
+		/** Get the least common multiple of two polynomials */
+		Element& lcm( Element& res, const Element& a, const Element& b ) const
+		{
+			Element tmp; 
+			gcd(tmp,a,b);
+			div(res, a, tmp);
+			return mulin(res, b);
+		}
+
 		/** Get characteristic of the field - same as characteristic of
 		 * coefficient field. */
 		integer& characteristic( integer& c ) const

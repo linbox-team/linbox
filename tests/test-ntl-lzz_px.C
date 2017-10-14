@@ -67,6 +67,7 @@ int main (int argc, char **argv)
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
 
 	if (!runBasicRingTests (R, "NTL_zz_pX", (unsigned int)iterations, false)) pass = false;
+	if (!runPIRTests (R, "NTL_zz_pX", (unsigned int)iterations, false)) pass = false;
 	// needs PID tests as well...
 
 #if 0
