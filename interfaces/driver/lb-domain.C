@@ -41,6 +41,47 @@ DomainTable domain_hashtable;
 // global variable for the factory
 Domain_Factory linbox_domain;
 
+
+
+
+
+/*******************************************
+ * Update the Factory with all domain type *
+ *******************************************/
+//extern Domain_Factory linbox_domain;
+
+void UpdateDomain(){
+	linbox_domain.add("linbox_field_dbl"      , constructDomain<Givaro::Modular<double> >);
+	//linbox_domain.add("linbox_field_rational" , constructDomain<LinBox::GMPRationalField>);
+	linbox_domain.add("linbox_ring_integer"   , constructDomain<Givaro::ZRing<Givaro::Integer> >);
+#ifndef __LINBOX_MINIMIZE_DOMAIN
+	linbox_domain.add("linbox_field_32"       , constructDomain<Givaro::Modular<int32_t> >);
+	linbox_domain.add("linbox_field_64"       , constructDomain<Givaro::Modular<int64_t> >);
+	linbox_domain.add("linbox_field_mp"       , constructDomain<Givaro::Modular<Givaro::Integer> >);
+#endif
+#ifdef __LINBOX_HAVE_NTL
+        //linbox_domain.add("ntl_field_ZZ_p"      , constructDomain<LinBox::NTL_ZZ_p>);
+#ifndef __LINBOX_MINIMIZE_DOMAIN
+	//linbox_domain.add("ntl_field_zz_p"      , constructDomain<LinBox::NTL_zz_p >);
+	//linbox_domain.add("ntl_ring_integer"    , constructDomain<LinBox::NTL_ZZ>);
+#endif
+#endif
+}
+
+
+/****************************
+ * Default type for Domains *
+ ****************************/
+
+// definition of the default type for prime field
+#define default_prime_field  "linbox_field_dbl"
+
+// definition of the default type for rational field
+#define default_rational_field "linbox_field_rational"
+
+// definition of the default type for integer ring
+#define default_integer_ring "linbox_ring_integer"
+
 // global variable for current prime field type
 const char* current_prime_field  = default_prime_field;
 
@@ -49,6 +90,7 @@ const char* current_rational_field  = default_rational_field;
 
 // global variable for current integer ring type
 const char* current_integer_ring = default_integer_ring;
+
 
 
 
@@ -128,7 +170,7 @@ void writeDomainInfo(const DomainKey &key, std::ostream& os){
 }
 
 #endif // end of file
-#include "lb-domain-function.inl"
+
 
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:

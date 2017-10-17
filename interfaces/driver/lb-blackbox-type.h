@@ -40,27 +40,6 @@ typedef BL1 BlackboxList;
 
 
 
-/*********************************************
- * Update the Factory with all blackbox type *
- *********************************************/
-extern Blackbox_Factory linbox_blackbox;
-
-void UpdateBlackbox() {
-	// linbox_blackbox.add("linbox_sparse",
-	// Blackbox_Factory::CallBackMap::value_type::second_type(
-	// constructBlackbox_from_size<LinBox::SparseMatrix>, constructBlackbox_from_stream<LinBox::SparseMatrix> ));
-	linbox_blackbox.add("linbox_dense",
-			    Blackbox_Factory::CallBackMap::value_type::second_type( constructBlackbox_from_size<LinBox::DenseMatrix >,
-										    constructBlackbox_from_stream<LinBox::DenseMatrix > ));
-}
-
-
-/*****************************
- * Default type for blackbox *
- *****************************/
-
-// definition of the default type blackbox
-#define default_blackbox  "linbox_dense"
 
 #endif
 

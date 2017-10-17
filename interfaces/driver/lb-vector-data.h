@@ -25,14 +25,16 @@
 #ifndef __LINBOX_lb_vector_data_H
 #define __LINBOX_lb_vector_data_H
 
-#include <vector>
+
 #include "linbox/field/hom.h"
+#include <vector>
 #include <map>
 #include <utility>
 
 #include "lb-utilities.h"
 #include "lb-vector-collection.h"
 #include "lb-vector-abstract.h"
+
 #include "lb-domain-function.h"
 
 extern VectorTable vector_hashtable;

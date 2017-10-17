@@ -25,7 +25,7 @@
 #ifndef __LINBOX_lb_blackbox_data_H
 #define __LINBOX_lb_blackbox_data_H
 
-#include "linbox/matrix/sparse-matrix.h"
+
 #include "linbox/util/matrix-stream.h"
 #include <map>
 #include <utility>
@@ -36,7 +36,7 @@
 #include "lb-blackbox-collection.h"
 #include "lb-blackbox-abstract.h"
 #include "lb-domain-function.h"
-#include "lb-garbage.h"
+//#include "lb-garbage.h"
 
 
 extern BlackboxTable blackbox_hashtable;
@@ -278,19 +278,6 @@ BlackboxAbstract* constructBlackbox_from_stream (const DomainKey &k, std::istrea
 	return bbe;
 }
 
-
-/************************************************************
- * Function to add an abstract blackbox in linbox hashtable *
- ************************************************************/
-const BlackboxKey& addBlackbox(BlackboxAbstract * v){
-
-	std::pair<BlackboxTable::const_iterator, bool> status;
-	status = blackbox_hashtable.insert(std::pair<BlackboxKey, BlackboxAbstract*> (BlackboxKey(v), v));
-	if (status.second)
-		return status.first->first;
-	else
-		throw lb_runtime_error("LinBox ERROR: blackbox creation failed \n");// throw an exception
-}
 
 
 

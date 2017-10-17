@@ -22,10 +22,10 @@
  * ========LICENCE========
  */
 
-#include "lb-domain-function.h"
+#include "lb-domain-collection.h"
 #include "lb-domain-abstract.h"
 #include "lb-domain-functor.h"
-
+ 
 
 /*********************************************************
  * API to launch a generic function over a linbox domain *

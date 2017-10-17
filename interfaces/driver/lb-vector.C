@@ -26,13 +26,13 @@
 #define __LINBOX_lb_vector_C
 
 #include "linbox/linbox-config.h"
-
+#include <lb-domain-collection.h>
 #include <lb-vector.h>
 #include <lb-vector-data.h>
 #include <lb-vector-function.h>
 #include <lb-vector-type.h>
 
-#include <lb-domain-collection.h>
+
 
 
 /*\**************************
@@ -44,6 +44,23 @@ VectorTable vector_hashtable;
 
 // global variable for the factory
 Vector_Factory linbox_vector;
+
+
+/*******************************************
+ * Update the Factory with all vector type *
+ *******************************************/
+void UpdateVector() {
+	linbox_vector.add("linbox_dense", Vector_Factory::CallBackMap::value_type::second_type( constructVector_from_size<std::vector>,
+												constructVector_from_stream<std::vector> ));
+}
+
+
+/***************************
+ * Default type for vector *
+ ***************************/
+
+// definition of the default type vector
+#define default_vector  "linbox_dense"
 
 // global variable for current vector type
 const char* current_vector  = default_vector;

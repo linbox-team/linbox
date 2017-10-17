@@ -34,8 +34,8 @@ extern "C" {
 #include "mpltable.h"
 }
 
-//#define __LB_PRINT_GC
-#define __LINBOX_GC
+#define __LB_PRINT_GC
+//#define __LINBOX_GC
 
 
 
@@ -458,9 +458,9 @@ extern "C" {
 	void GMPMapleToLinBox(LinBox::integer& x, MKernelVector kv, ALGEB p){
 #ifdef  __LINBOX_MAPLE_GMP_ACCESS
 		mpz_ptr ptr = MapleToGMPInteger(kv, p);
-		//LB_GMP_SET();
+		LB_GMP_SET();
 		mpz_set(LinBox::SpyInteger::get_mpz(x), ptr);
-		//LB_GMP_RESTORE();
+		LB_GMP_RESTORE();
 
 #else
  		// convert integer to string in order to convert to gmp integer

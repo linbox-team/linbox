@@ -27,7 +27,8 @@
 
 
 #include "lb-domain-collection.h"
-//#include <lb-domain-functor.h>
+#include "lb-domain-abstract.h"
+
 
 /*********************************************************
  * API to launch a generic function over a linbox domain *
@@ -53,6 +54,7 @@ public:
 	static void call (const DomainKey &k, const Functor &f);
 };
 
+#include "lb-domain-function.inl"
 #endif
 
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s

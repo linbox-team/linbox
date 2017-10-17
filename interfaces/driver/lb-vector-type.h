@@ -38,25 +38,6 @@ typedef LinBoxTypelist < VectorEnvelope< std::vector > , LinBoxDumbType> VL1;
 typedef VL1 VectorList;
 
 
-/*******************************************
- * Update the Factory with all vector type *
- *******************************************/
-extern Vector_Factory linbox_vector;
-
-void UpdateVector() {
-	linbox_vector.add("linbox_dense", Vector_Factory::CallBackMap::value_type::second_type( constructVector_from_size<std::vector>,
-												constructVector_from_stream<std::vector> ));
-}
-
-
-
-/***************************
- * Default type for vector *
- ***************************/
-
-// definition of the default type vector
-#define default_vector  "linbox_dense"
-
 
 
 #endif

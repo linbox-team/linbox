@@ -81,42 +81,6 @@ typedef LinBoxTL::Append< linbox_domain_list, ntl_domain_list>::Result DomainLis
 
 
 
-/*******************************************
- * Update the Factory with all domain type *
- *******************************************/
-extern Domain_Factory linbox_domain;
-
-void UpdateDomain(){
-	linbox_domain.add("linbox_field_dbl"      , constructDomain<Givaro::Modular<double> >);
-	//linbox_domain.add("linbox_field_rational" , constructDomain<LinBox::GMPRationalField>);
-	linbox_domain.add("linbox_ring_integer"   , constructDomain<Givaro::ZRing<Givaro::Integer> >);
-#ifndef __LINBOX_MINIMIZE_DOMAIN
-	linbox_domain.add("linbox_field_32"       , constructDomain<Givaro::Modular<int32_t> >);
-	linbox_domain.add("linbox_field_64"       , constructDomain<Givaro::Modular<int64_t> >);
-	linbox_domain.add("linbox_field_mp"       , constructDomain<Givaro::Modular<Givaro::Integer> >);
-#endif
-#ifdef __LINBOX_HAVE_NTL
-        //linbox_domain.add("ntl_field_ZZ_p"      , constructDomain<LinBox::NTL_ZZ_p>);
-#ifndef __LINBOX_MINIMIZE_DOMAIN
-	//linbox_domain.add("ntl_field_zz_p"      , constructDomain<LinBox::NTL_zz_p >);
-	//linbox_domain.add("ntl_ring_integer"    , constructDomain<LinBox::NTL_ZZ>);
-#endif
-#endif
-}
-
-
-/****************************
- * Default type for Domains *
- ****************************/
-
-// definition of the default type for prime field
-#define default_prime_field  "linbox_field_dbl"
-
-// definition of the default type for rational field
-#define default_rational_field "linbox_field_rational"
-
-// definition of the default type for integer ring
-#define default_integer_ring "linbox_ring_integer"
 
 
 

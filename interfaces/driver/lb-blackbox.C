@@ -45,8 +45,45 @@ BlackboxTable blackbox_hashtable;
 // global variable for the blackbox factory
 Blackbox_Factory linbox_blackbox;
 
+
+
+/*********************************************
+ * Update the Factory with all blackbox type *
+ *********************************************/
+void UpdateBlackbox() {
+	// linbox_blackbox.add("linbox_sparse",
+	// Blackbox_Factory::CallBackMap::value_type::second_type(
+	// constructBlackbox_from_size<LinBox::SparseMatrix>, constructBlackbox_from_stream<LinBox::SparseMatrix> ));
+	linbox_blackbox.add("linbox_dense",
+			    Blackbox_Factory::CallBackMap::value_type::second_type( constructBlackbox_from_size<LinBox::DenseMatrix >,
+										    constructBlackbox_from_stream<LinBox::DenseMatrix > ));
+}
+
+
+/*****************************
+ * Default type for blackbox *
+ *****************************/
+
+// definition of the default type blackbox
+#define default_blackbox  "linbox_dense"
+
 // global variable for current blackbox type
 const char* current_blackbox  = default_blackbox;
+
+
+/************************************************************
+ * Function to add an abstract blackbox in linbox hashtable *
+ ************************************************************/
+const BlackboxKey& addBlackbox(BlackboxAbstract * v){
+
+	std::pair<BlackboxTable::const_iterator, bool> status;
+	status = blackbox_hashtable.insert(std::pair<BlackboxKey, BlackboxAbstract*> (BlackboxKey(v), v));
+	if (status.second)
+		return status.first->first;
+	else
+		throw lb_runtime_error("LinBox ERROR: blackbox creation failed \n");// throw an exception
+}
+
 
 
 /*******************************************************

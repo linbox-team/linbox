@@ -347,11 +347,14 @@ extern "C" {
 				}
 
 				if ( IsMapleDomainKey(kv, argv[1]) && IsMapleInteger(kv, argv[2])) {
+                                        MaplePrintf(kv, "JE SUIS BIEN DANS lbCreateVector: argc=2 \n");
 					const DomainKey *k = &MapleToDomainKey(kv, argv[1]);
-					LB_GMP_SET();
+                                        MaplePrintf(kv, "domain key found \n");
+                                        LB_GMP_SET();
 					key = &createVector(*k, MapleToInteger32(kv, argv[2]));
 					LB_GMP_RESTORE();
-					return VectorKeyToMaple(kv, *key);
+                                        MaplePrintf(kv, "vector constructed \n");
+                                        return VectorKeyToMaple(kv, *key);
 				}
 			}
 			if (argc == 3){

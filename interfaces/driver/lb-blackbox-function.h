@@ -27,7 +27,9 @@
 
 
 #include "lb-blackbox-collection.h"
-//#include <lb-blackbox-functor.h>
+#include "lb-blackbox-abstract.h"
+#include "lb-blackbox-functor.h"
+
 
 
 /***********************************************************
