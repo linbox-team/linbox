@@ -287,7 +287,7 @@ int main(int argc, char** argv)
 	solveTextBook(PD, A);
 	solveKannanBachem(PD, A);
 	solveIliopoulos(PD, A, det);
-	solveDet(PD, A);
+	// solveDet(PD, A);
 	
 	std::cout << std::endl;
 	
@@ -299,7 +299,6 @@ int main(int argc, char** argv)
 	// Compute inverse of matrix
 	factorizeMatrix(PD, A);
 	*/
-	
 	
 	return pass ? 0 : -1;
 }
