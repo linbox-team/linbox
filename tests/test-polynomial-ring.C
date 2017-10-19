@@ -73,7 +73,7 @@ int main (int argc, char **argv)
 
 	commentator().start ("Testing GivaroPoly", "main", 10);
 	
-	if ( not testRing (Fp, "PolynomialRing<Modular<float>>"))
+	if ( not testRing (Poly, "PolynomialRing<Modular<float>>"))
 		pass = false;
 	commentator().progress ();
 	

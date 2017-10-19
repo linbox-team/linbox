@@ -37,11 +37,11 @@ echo "PKG_CONFIG_PATH = $PKG_CONFIG_PATH"
 
 # Where to install linbox binaries
 # Keep default for local installation.
-PREFIX_INSTALL="$LOCAL_DIR/$CXX"
+PREFIX_INSTALL="$LOCAL_DIR/$CXX/$NTL"
 
 # Job Linbox with Ntl option flag
 if [ "$NTL" == "withNTL" ]; then
-  LINBOX_NTLFLAG="--with-ntl=$PREFIX_INSTALL"
+  LINBOX_NTLFLAG="--with-ntl=$LOCAL_DIR/$CXX"
 fi
 
 # /!\ Warning /!\ This could be an issue if you changed
@@ -84,4 +84,4 @@ make perfpublisher
 echo "|=== JENKINS AUTOMATED SCRIPT ===| make examples"
 make examples
 V="$?"; if test "x$V" != "x0"; then exit "$V"; fi
-
+(cd examples && make clean)
