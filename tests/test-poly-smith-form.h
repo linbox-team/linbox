@@ -26,6 +26,7 @@ namespace LinBox
 		typedef typename Field::Element Element;
 		
 		typedef MatrixDomain<Field> MatDom;
+		typedef typename MatDom::Matrix SubMatrix;
 		
 		typedef BlasMatrix<Field> Matrix;
 		
@@ -68,13 +69,13 @@ namespace LinBox
 		}
 		
 		void makeExample(Matrix &A, const std::vector<Element> &diag, 
-			const std::vector<Element> &lumps) {
-		
+			const std::vector<Element> &lumps) 
+		{
 			A.zero();
 			for (size_t i = 0; i < diag.size(); i++) {
 				A.setEntry(i, i, diag[i]);
 			}
-			
+						
 			Matrix L(_F, A.coldim(), A.coldim());
 			for (size_t i = 0; i < A.coldim(); i++) {
 				L.setEntry(i, i, _F.one);
@@ -83,7 +84,7 @@ namespace LinBox
 					L.setEntry(i, j, lumps[rand() % lumps.size()]);
 				}
 			}
-			
+						
 			Matrix U(_F, A.rowdim(), A.rowdim());
 			for (size_t i = 0; i < A.rowdim(); i++) {
 				U.setEntry(i, i, _F.one);
@@ -92,9 +93,31 @@ namespace LinBox
 					U.setEntry(i, j, lumps[rand() % lumps.size()]);
 				}
 			}
-			
+						
 			_MD.mulin(A, L);
 			_MD.rightMulin(A, U);
+						
+			size_t row_perms = rand() % (2 * A.rowdim());
+			for (size_t i = 0; i < row_perms; i++) {
+				size_t idx1 = rand() % A.rowdim();
+				size_t idx2 = rand() % A.rowdim();
+				
+				SubMatrix row1(A, idx1, 0, 1, A.coldim());
+				SubMatrix row2(A, idx2, 0, 1, A.coldim());
+				
+				row1.swap(row2);
+			}
+						
+			size_t col_perms = rand() % (2 * A.coldim());
+			for (size_t i = 0; i < col_perms; i++) {
+				size_t idx1 = rand() % A.coldim();
+				size_t idx2 = rand() % A.coldim();
+				
+				SubMatrix col1(A, 0, idx1, A.rowdim(), 1);
+				SubMatrix col2(A, 0, idx2, A.rowdim(), 1);
+				
+				col1.swap(col2);
+			}
 		}
 	};
 }
