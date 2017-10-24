@@ -18,7 +18,7 @@
 # ========LICENCE========
 
 
-AM_CPPFLAGS= -I$(top_srcdir)/linbox $(DEPS_CFLAGS)
+AM_CPPFLAGS= -I$(top_srcdir) $(DEPS_CFLAGS)
 LDADD = $(DEPS_LIBS) $(LDFLAGS)
 
 pkgincludesubdir=$(pkgincludedir)/randiter
