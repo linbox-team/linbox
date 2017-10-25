@@ -333,6 +333,12 @@ namespace LinBox
 		{
 			NTL::DivRem(q,r,a,b);
 		}
+		
+		bool isDivisor(const Element &a, const Element &b) const {
+			Element tmp;
+			rem(tmp, a, b);
+			return isZero(tmp);
+		}
 
 		Element& inv( Element& y, const Element& x ) const
 		{
@@ -357,6 +363,15 @@ namespace LinBox
 		{
 			NTL::XGCD(res,s,t,a,b);
 			return res;
+		}
+		
+		Element &dxgcd(Element &g, Element &s, Element &t, Element &u, Element &v, const Element &a, const Element &b) const {
+			gcd(g,s,t,a,b);
+			
+			div(u,a,g);
+			div(v,b,g);
+			
+			return g;
 		}
 
 		/** Get the least common multiple of two polynomials */
@@ -389,8 +404,23 @@ namespace LinBox
 		{
 			return os << "Polynomial ring using NTL::zz_pX";
 		}
-		std::ostream& write( std::ostream& os, const Element& x) const
-		{	return Father_t::write(os, x); }
+		
+		std::ostream& write( std::ostream& os, const Element& x) const {
+			return Father_t::write(os, x);
+		}
+		
+		std::istream& read(std::istream& i, Element& p) const {
+			long deg;
+			i >> deg;
+			
+			std::vector<integer> coeffs(deg + 1);
+			for(; deg >= 0; --deg) {
+				i >> coeffs[deg];
+			}
+			
+			init(p, coeffs);
+			return i;
+		}
 
 		/** Conversion to scalar types doesn't make sense and should not be
 		 * used.  Use getCoeff or leadCoeff to get the scalar values of

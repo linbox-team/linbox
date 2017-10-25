@@ -89,7 +89,7 @@ namespace LinBox
 				_F.assign(s, _F.one);
 				_F.assign(t, _F.zero);
 				_F.assign(u, _F.one);
-				_F.quo(v, b, a);
+				_F.div(v, b, a);
 				return;
 			}
 			
@@ -222,7 +222,7 @@ namespace LinBox
 				
 				Element g, q;
 				_F.gcd(g, v[i], v[i+1]);
-				_F.quo(q, v[i], g);
+				_F.div(q, v[i], g);
 				
 				_F.assign(v[i], g);
 				_F.mulin(v[i+1], q);
@@ -243,7 +243,7 @@ namespace LinBox
 				}
 				
 				Element q;
-				_F.quo(q, other, pivot);
+				_F.div(q, other, pivot);
 				
 				if (_F.isZero(q)) {
 					continue;
