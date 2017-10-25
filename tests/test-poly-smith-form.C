@@ -151,7 +151,7 @@ void factorizeMatrix(const PolyRing &PD, const Matrix &A) {
 	
 	QuotMatrix QA(A, QD);
 	
-	util.printMatrix(QA);
+	//util.printMatrix(QA);
 	
 	InvertTextbookDomain<QuotRing> ID(QD);
 	
@@ -159,14 +159,14 @@ void factorizeMatrix(const PolyRing &PD, const Matrix &A) {
 	
 	ID.invert(Ainv, QA);
 	
-	util.printMatrix(Ainv);
+	//util.printMatrix(Ainv);
 	
 	QuotMatrix C(QD, A.rowdim(), A.coldim());
 	
 	MatrixDomain<QuotRing> QMD(QD);
 	QMD.mul(C, QA, Ainv);
 	
-	util.printMatrix(C);
+	//util.printMatrix(C);
 }
 
 void solveDet(const PolyRing &PD, const Matrix &A) {
