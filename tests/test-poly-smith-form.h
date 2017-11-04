@@ -42,9 +42,16 @@ namespace LinBox
 			for (size_t i = 0; i < A.rowdim(); i++) {
 				std::cout << "\t[";
 				for (size_t j = 0; j < A.coldim(); j++) {
-					_F.write(std::cout, A.getEntry(i, j)) << ", ";
+					_F.write(std::cout, A.getEntry(i, j));
+					if (j < A.coldim() - 1) {
+						std::cout << ", ";
+					}
 				}
-				std::cout << "]" << std::endl;
+				std::cout << "]";
+				if (i < A.rowdim() - 1) {
+					std::cout << ",";
+				}
+				std::cout << std::endl;
 			}
 			std::cout << "]" << std::endl;
 		}
@@ -117,6 +124,34 @@ namespace LinBox
 				SubMatrix col2(A, 0, idx2, A.rowdim(), 1);
 				
 				col1.swap(col2);
+			}
+			
+			size_t row_adds = 1 + (rand() % (2 * A.rowdim()));
+			for (size_t i = 0; i < row_adds; i++) {
+				for (size_t idx1 = 0; idx1 < A.rowdim(); idx1++) {
+					size_t idx2 = rand() % A.rowdim();
+					while (idx2 == idx1) {
+						idx2 = rand() % A.rowdim();
+					}
+										
+					SubMatrix row1(A, idx1, 0, 1, A.coldim());
+					SubMatrix row2(A, idx2, 0, 1, A.coldim());
+					_MD.addin(row1, row2);
+				}
+			}
+			
+			size_t col_adds = 1 + (rand() % (2 * A.coldim()));
+			for (size_t i = 0; i < col_adds; i++) {
+				for (size_t idx1 = 0; idx1 < A.coldim(); idx1++) {
+					size_t idx2 = rand() % A.coldim();
+					while (idx2 == idx1) {
+						idx2 = rand() % A.coldim();
+					}
+					
+					SubMatrix col1(A, 0, idx1, A.rowdim(), 1);
+					SubMatrix col2(A, 0, idx2, A.rowdim(), 1);
+					_MD.addin(col1, col2);
+				}
 			}
 		}
 	};

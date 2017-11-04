@@ -150,6 +150,7 @@ FULLCHECK_TESTS =               \
 	test-permutation			\
 	test-plain-domain			\
 	test-poly-det				\
+	test-poly-dixon				\
 	test-qlup					\
 	test-quad-matrix			\
 	test-randiter-nonzero		\
@@ -311,6 +312,7 @@ test_param_fuzzy_SOURCES =              test-param-fuzzy.C
 test_permutation_SOURCES =              test-permutation.C
 test_plain_domain_SOURCES =             test-plain-domain.C
 test_poly_det_SOURCES =                 test-poly-det.C
+test_poly_dixon_SOURCES =				test-poly-dixon.C
 test_qlup_SOURCES =                     test-qlup.C
 test_quad_matrix_SOURCES =              test-quad-matrix.C
 test_randiter_nonzero_SOURCES =         test-randiter-nonzero.C
