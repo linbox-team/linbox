@@ -416,10 +416,12 @@ namespace LinBox
 		
 		std::ostream& write( std::ostream& os, const Element& x) const {
 			// return Father_t::write(os, x);
-			bool first = true;
 			if (isZero(x)) {
 				os << "0";
+				return os;
 			}
+			
+			bool first = true;
 			for (size_t i = 0; i <= deg(x); i++) {
 				Coeff xi = NTL::coeff(x, i);
 				if (xi != 0) {
@@ -427,13 +429,13 @@ namespace LinBox
 						os << "+";
 					}
 					
-					if (xi != 1) {
+					if (xi == 1 && i > 0) {
+						os << "x";
+					} else {
 						os << xi;
 						if (i > 0) {
 							os << "*x";
 						}
-					} else {
-						os << "x";
 					}
 					
 					if (i > 1) {
