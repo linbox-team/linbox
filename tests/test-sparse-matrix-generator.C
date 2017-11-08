@@ -12,12 +12,13 @@
 #include "linbox/matrix/matrix-domain.h"
 
 #include "sparse-matrix-generator.h"
+#include "test-poly-smith-form.h"
 
 using namespace LinBox;
 
 typedef Givaro::Modular<double> Field;
 typedef typename Field::Element Element;
-typedef SparseMatrix<Field, SparseMatrixFormat::TPL> SparseMat;
+typedef SparseMatrix<Field, SparseMatrixFormat::COO> SparseMat;
 
 typedef NTL_zz_pX PolynomialRing;
 typedef typename PolynomialRing::Element Polynomial;
@@ -50,6 +51,14 @@ int main(int argc, char** argv)
 	for (size_t i = 0; i < fs.size(); i++) {
 		R.write(std::cout, fs[i]) << std::endl;
 	}
+	
+	SparseMat M(F, 3, 3);
+	
+	Gen.makeCompanion(M, fs[fs.size() - 1]);
+	
+	TestPolySmithFormUtil<Field> util(F);
+	
+	util.printMatrix(M);
 
 	return 0;
 }

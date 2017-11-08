@@ -22,15 +22,17 @@ namespace LinBox
 	public:
 		typedef typename Field::Element Element;
 		typedef typename PolynomialRing::Element Polynomial;
-		typedef MatrixDomain<Field> MatrixDom;
+		// typedef MatrixDomain<Field> MatrixDom;
 		
 	private:
 		Field _F;
 		PolynomialRing _R;
-		MatrixDom _MD;
+		// MatrixDom _MD;
 		
 	public:
-		SparseMatrixGenerator(const Field &F, const PolynomialRing &R): _F(F), _R(R), _MD(F) {}
+		SparseMatrixGenerator(const Field &F, const PolynomialRing &R): _F(F), _R(R)
+		// , _MD(F) 
+		{}
 		
 		/**
 		 * Reads a file of format:
@@ -39,15 +41,16 @@ namespace LinBox
 		 * <index of bump 2> <bump 2>
 		 * ...
 		 * <index of end of frobenius form> 0
+		 *
+		 * Note: first bump should be at index 0.
 		 */
-		void readFile(std::vector<Polynomial> &fs, const std::string filename) const {			
+		void readFile(std::vector<Polynomial> &fs, const std::string &filename) const {			
 			std::ifstream in(filename);
 			size_t nbumps;
 			in >> nbumps;
 			
 			Polynomial f;
 			_R.assign(f, _R.one);
-			_R.write(std::cout << "initial f: ", f) << std::endl;
 			
 			fs.resize(0);
 			
@@ -55,8 +58,6 @@ namespace LinBox
 				size_t idx;
 				in >> idx;
 				
-				std::cout << "index: " << idx << std::endl;
-				std::cout << "size: " << fs.size() << std::endl;
 				_R.write(std::cout << "f: ", f) << std::endl;
 				
 				while (fs.size() < idx) {
@@ -76,13 +77,49 @@ namespace LinBox
 			}
 		}
 		
+		template<class Matrix>
+		bool makeCompanion(Matrix &M, const Polynomial &f) const {
+			if (M.rowdim() != _R.deg(f) || M.coldim() != _R.deg(f)) {
+				return false;
+			}
+			
+			for (size_t i = 0; i < M.rowdim(); i++) {
+				for (size_t j = 0; j < M.coldim(); j++) {
+					M.setEntry(i, j, _F.zero);
+				}
+			}
+			
+			for (size_t i = 1; i < M.rowdim(); i++) {
+				M.setEntry(i, i-1, _F.one);
+			}
+			
+			Polynomial monic_f;
+			_R.monic(monic_f, f);
+			
+			_R.write(std::cout << "monic f: ", monic_f) << std::endl;
+			
+			std::vector<integer> coeffs;
+			_R.convert(coeffs, monic_f);
+			
+			for (size_t i = 0; i < coeffs.size() - 1; i++) {
+				Element tmp;
+				_F.init(tmp, coeffs[i]);
+				_F.negin(tmp);
+				
+				M.setEntry(i, M.coldim() - 1, tmp);
+			}
+			
+			return true;
+		}
+		
 		/**
 		 * Populates matrix with frobenius form with blocks corresponding to
 		 * F_k = C_{f_1 * f_2 * ... * f_k}
 		 * return: True if matrix successfully generated.
 		 */
+		 /*
 		template<class Matrix>
-		bool build(Matrix &M, std::vector<Polynomial> fs) {
+		bool build(Matrix &M, std::vector<Polynomial> &fs) const {
 			size_t min_dim = 0;
 			for (size_t i = 0; i < fs.size(); i++) {
 				for (size_t j = i; j < fs.size(); j++) {
@@ -106,6 +143,7 @@ namespace LinBox
 			
 			return true;
 		}
+		*/
 	};
 }
 

@@ -286,6 +286,11 @@ namespace LinBox
 			c = NTL::LeadCoeff(p);
 			return c;
 		}
+		
+		Element& monic(Element& r, const Element& p) const {
+			r = p / NTL::LeadCoeff(p);
+			return r;
+		}
 
 		/** Get the coefficient of x^i in a given polynomial */
 		Coeff& getCoeff( Coeff& c, const Element& p, size_t i ) const
