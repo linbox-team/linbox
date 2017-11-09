@@ -56,14 +56,15 @@ int tmain (int argc, char **argv)
     MatrixStream<Field> ms( F, input );
     SparseMatrix<Field, SparseMatrixFormat::SparseSeq > B (ms);
     cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
-    if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout) << endl;
+    if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout,Tag::FileFormat::Maple) << endl;
 
 		// using Sparse Elimination
     PowerGaussDomain< Field > PGD( F );
     std::vector<std::pair<size_t,Base> > local;
+    Permutation<Field> Q(B.coldim(),F);
 
     Givaro::Timer tq; tq.clear(); tq.start();
-    PGD(local, B, q, p);
+    PGD(local, B, Q, q, p, 5);
     tq.stop();
 
 
@@ -72,6 +73,10 @@ int tmain (int argc, char **argv)
         std::cout << ip->first << " " << ip->second << ", ";
     cout << ")" << endl;
 
+    if (B.rowdim() <= 20 && B.coldim() <= 20) {
+        B.write(cerr,Tag::FileFormat::Maple) << endl;
+        Q.write(cerr,Tag::FileFormat::Maple) << endl;
+    }
 
     std::cerr << tq << std::endl;
 

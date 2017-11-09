@@ -2,7 +2,7 @@
  * Copyright (C) LinBox 2008
  *
  * Written by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
- * Time-stamp: <24 Aug 17 18:24:12 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <09 Nov 17 09:29:51 Jean-Guillaume.Dumas@imag.fr>
  *
  *
  * ========LICENCE========
@@ -69,9 +69,9 @@ namespace LinBox
 
 		this->QLUPin(Rank, Det, Q, L, A, P, A.rowdim(), A.coldim() );
 
-		// Sets solution values to 0 for coldim()-Rank columns
-		// Therefore, prune unnecessary elements
-		// in those last columns of U
+            // Sets solution values to 0 for coldim()-Rank columns
+            // Therefore, prune unnecessary elements
+            // in those last columns of U
 		for(typename _Matrix::RowIterator row=A.rowBegin();
 		    row != A.rowEnd(); ++row) {
 			if (row->size()) {
@@ -106,7 +106,7 @@ namespace LinBox
 
 		this->QLUPin(Rank, Det, Q, L, A, P, A.rowdim(), A.coldim() );
 
-                Vector1 w(A.field(),A.coldim());
+        Vector1 w(A.field(),A.coldim());
 		for(typename Vector1::iterator it=w.begin()+(ptrdiff_t)Rank;it!=w.end();++it)
 			generator.random( *it );
 
@@ -121,9 +121,9 @@ namespace LinBox
 
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 

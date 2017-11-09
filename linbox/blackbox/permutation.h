@@ -53,8 +53,7 @@ namespace LinBox
 		typedef _Matrix					Matrix;
 	protected:
 		Storage _indices; // Vector of indices
-		bool alloc; //
-		const Field* _field;
+		const Field& _field;
 	public:
 
 		/** Constructor from a vector of indices.
@@ -64,7 +63,7 @@ namespace LinBox
 		 * Permutation P has 1 in the P_{i, _indices[i]} positions.
 		 */
 		Permutation (Storage & indices, const Field& F = Field()) :
-			_field(&F), _indices (indices)
+			_field(F), _indices (indices)
 		{}
 
 		Self_t& init(size_t* P, size_t n) 
@@ -75,7 +74,7 @@ namespace LinBox
 		}
 
 		Permutation (size_t* P, size_t n, const Field& F = Field()) 
-		: _field(&F) 
+		: _field(F) 
 		{ init(P, n); }
 
 		/** \brief n x n permutation matrix, initially the identity.
@@ -83,13 +82,13 @@ namespace LinBox
 		 * @param F field or ring
 		 */
 		Permutation (int n, const Field& F = Field()) :
-			_field(&F)
+			_field(F)
 		{
 			identity(n);
 		}
 
 		Permutation (const Field& F = Field(), size_t n=0, size_t m = 0) :
-			_field(&F)
+			_field(F)
 		{
 			identity((int)n);
 		}
@@ -330,7 +329,7 @@ namespace LinBox
             return _indices[i];
         }        
 
-		const Field& field() const { return *_field; }
+		const Field& field() const { return _field; }
 
 		//!@bug needs a read. (needed by test-blackbox.h)
 		std::istream &read(std::istream &os) 

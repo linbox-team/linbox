@@ -133,9 +133,10 @@ std::vector<size_t>& PRank(std::vector<size_t>& ranks, size_t& effective_exponen
 		LinBox::SparseMatrix<Ring,LinBox::SparseMatrixFormat::SparseSeq > A (ms);
 		input.close();
 		LinBox::PowerGaussDomain< Ring > PGD( F );
+        LinBox::Permutation<Ring> Q(A.coldim(),F);
 
 		LinBox::Timer tim; tim.clear(); tim.start();
-		PGD.prime_power_rankin( lq, lp, ranks, A, A.rowdim(), A.coldim(), std::vector<size_t>());
+		PGD.prime_power_rankin( lq, lp, ranks, A, Q, A.rowdim(), A.coldim(), std::vector<size_t>());
 		tim.stop();
 		F.write(std::cerr << "Ranks over ") << " are " ;
 		for(std::vector<size_t>::const_iterator rit=ranks.begin(); rit != ranks.end(); ++rit)
@@ -173,7 +174,7 @@ std::vector<size_t>& PRankPowerOfTwo(std::vector<size_t>& ranks, size_t& effecti
 	LinBox::Timer tim; tim.clear(); tim.start();
 	PGD.prime_power_rankin( effective_exponent, ranks, A, A.rowdim(), A.coldim(), std::vector<size_t>());
 	tim.stop();
-	std::cerr << "Ranks over 2^" << effective_exponent << " are " ;
+	F.write(std::cerr << "Ranks over ") << " modulo 2^" << effective_exponent << " are " ;
 	for(std::vector<size_t>::const_iterator rit=ranks.begin(); rit != ranks.end(); ++rit)
 		std::cerr << *rit << ' ';
 	std::cerr << ' ' << tim << std::endl;
@@ -190,9 +191,10 @@ std::vector<size_t>& PRankInteger(std::vector<size_t>& ranks, char * filename,Gi
 	LinBox::SparseMatrix<Ring,LinBox::SparseMatrixFormat::SparseSeq > A (ms);
 	input.close();
 	LinBox::PowerGaussDomain< Ring > PGD( F );
+    LinBox::Permutation<Ring> Q(A.coldim(),F);
 
 	LinBox::Timer tim; tim.clear(); tim.start();
-	PGD.prime_power_rankin( q, p, ranks, A, A.rowdim(), A.coldim(), std::vector<size_t>());
+	PGD.prime_power_rankin( q, p, ranks, A, Q, A.rowdim(), A.coldim(), std::vector<size_t>());
 	tim.stop();
 	F.write(std::cerr << "Ranks over ") << " are " ;
 	for(std::vector<size_t>::const_iterator rit=ranks.begin(); rit != ranks.end(); ++rit)
@@ -214,7 +216,7 @@ std::vector<size_t>& PRankIntegerPowerOfTwo(std::vector<size_t>& ranks, char * f
 	LinBox::Timer tim; tim.clear(); tim.start();
 	PGD.prime_power_rankin( e, ranks, A, A.rowdim(), A.coldim(), std::vector<size_t>());
 	tim.stop();
-	std::cerr << "Ranks over 2^" << e << " are " ;
+	ZZ.write(std::cerr << "Ranks over ") << " modulo 2^" << e << " are " ;
 	for(std::vector<size_t>::const_iterator rit=ranks.begin(); rit != ranks.end(); ++rit)
 		std::cerr << *rit << ' ';
 	std::cerr << ' ' << tim << std::endl;
