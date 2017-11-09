@@ -31,6 +31,7 @@
 #include "lb-domain-function.h"
 #include "lb-blackbox-function.h"
 #include "lb-vector-function.h"
+#include "lb-vector-function.inl"
 #include "lb-blackbox.h"
 #include "lb-vector.h"
 #include "lb-domain.h"
@@ -82,7 +83,7 @@ public:
 
 // specialization to launch LinBox solving using integer solving API (output is a GMPRational)
 template<class Element>
-class LaunchSolveFunctor<LinBox::GMPRationalElement, Element, Element, LinBox::RingCategories::IntegerTag >{
+class LaunchSolveFunctor< Givaro::Rational, Element, Element, LinBox::RingCategories::IntegerTag >{
 public:
 	template<class Result, class Blackbox, class Vector, class Method>
 	inline void  operator()(Result &s, Blackbox *B, Vector *v, const Method &m) const {
@@ -202,7 +203,7 @@ void lb_solve(const VectorKey &res, const BlackboxKey &Bkey, const VectorKey &Vk
  * API for solving linear systems                    *
  * vector solution  is returned through a vector key *
  *****************************************************/
-
+ 
 const VectorKey&  lb_solve(const BlackboxKey &Bkey, const VectorKey &Vkey) {
 
 	BlackboxTable::iterator it = blackbox_hashtable.find(Bkey);

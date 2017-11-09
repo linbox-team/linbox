@@ -48,10 +48,11 @@ public:
 
 	template<class Blackbox, class Result>
 	void operator() (Result &res, Blackbox *B) const {
-		typedef typename Blackbox::Field::Element Element;
-		std::vector<Element> * phi = static_cast<std::vector<Element>*>(res);
+		typedef typename Blackbox::Field Field;
+		//std::vector<Element> * phi = static_cast<std::vector<Element>*>(res);
+                LinBox::BlasVector<Field>* phi = static_cast<LinBox::BlasVector<Field>*>(res);
 		LinBox::minpoly(*phi, *B, meth);
-		res = phi;
+		res = phi;                
 	}
 };
 

@@ -938,7 +938,7 @@ namespace LinBox
 			return random() ;
 		}
 
-		template<typename _Tp1, class _Rep2 = Rep>
+		template<typename _Tp1, class _Rep2 = typename Vector<_Tp1>::Dense>
 		struct rebind ;
 
 		//////////////////

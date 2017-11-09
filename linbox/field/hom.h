@@ -60,8 +60,8 @@ namespace LinBox
 	 * // is the embedding of the prime field in the extension.
 	 */
 
-	template< class Source, class Target, class Enabled = void > // Enabled is just for std::enable_if 
-	class Hom {
+	template< class Source, class Target, class Enabled = void > // Enabled is just for std::enable_if
+        class Hom {
 	public:
 		typedef typename Source::Element SrcElt;
 		typedef typename Target::Element Elt;
@@ -100,7 +100,7 @@ namespace LinBox
 		const Target& target() { return _target;}
 
 	private:
-		integer tmp;
+		Integer tmp;
 		const Source& _source;
 		const Target& _target;
 	}; // end Hom
@@ -304,6 +304,64 @@ namespace LinBox
 		Elt tmp;
 		Source _source;
 		Target _target;
+	}; // end Hom
+
+        template <>
+	class Hom<Givaro::QField<Givaro::Rational>, Givaro::QField<Givaro::Rational> > {
+                
+	public:
+		typedef Givaro::QField<Givaro::Rational> Source;
+                typedef Givaro::QField<Givaro::Rational> Target;
+		typedef typename Source::Element SrcElt;
+		typedef typename Target::Element Elt;
+
+                	Hom(const Source& S, const Target& T) :
+			_source (S), _target (T)
+		{}
+		inline Elt& image(Elt& t, const SrcElt& s)
+        {   
+			return t=s;
+		}
+		inline SrcElt& preimage(SrcElt& s, const Elt& t)
+		{
+			return s=t;
+		}
+		const Source& source() { return _source;}
+		const Target& target() { return _target;}
+
+	protected:
+		const Source& _source;
+		const Target& _target;
+	}; // end Hom
+
+
+        template <>
+	class Hom<Givaro::QField<Givaro::Rational>, Givaro::ZRing<Integer> > {
+                
+	public:
+		typedef Givaro::QField<Givaro::Rational> Source;
+                typedef Givaro::ZRing<Integer> Target;
+		typedef typename Source::Element SrcElt;
+		typedef typename Target::Element Elt;
+
+                Hom(const Source& S, const Target& T) :
+			_source (S), _target (T)
+		{}
+
+		inline Elt& image(Elt& t, const SrcElt& s)
+                {   
+			return t;
+		}
+		inline SrcElt& preimage(SrcElt& s, const Elt& t)
+		{
+			return s;
+		}
+		const Source& source() { return _source;}
+		const Target& target() { return _target;}
+                
+	protected:
+		const Source& _source;
+		const Target& _target;
 	}; // end Hom
 
 
@@ -566,6 +624,9 @@ namespace LinBox
 		Source _source;
 		Target _target;
 	}; // end Hom
+
+
+
 }
 #endif
 

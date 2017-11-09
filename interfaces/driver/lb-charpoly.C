@@ -51,15 +51,15 @@ public:
 	template<class Blackbox, class Result>
 	void operator() (Result &res, Blackbox *B) const {
 		typedef typename Blackbox::Field Field;
-		typedef typename Field::Element Element;
-		
+		//typedef typename Field::Element Element;		
 		// use givpolynomial du to non genericity of charpoly over integer
 		//typename LinBox::GivPolynomialRing<Field, Givaro::Dense>::Element pol;
-                typename LinBox::DensePolynomial<Field> pol;
+                typename LinBox::DensePolynomial<Field> pol(B->field());
 		LinBox::charpoly(pol, *B, meth);
 
 		// convert back the result to std::vector
-		std::vector<Element> *phi = static_cast<std::vector<Element>*> (res);
+		//std::vector<Element> *phi = static_cast<std::vector<Element>*> (res);
+                LinBox::BlasVector<Field>* phi = static_cast< LinBox::BlasVector<Field>* > (res);
 		phi->resize(pol.size());
 		for (size_t i=0; i< pol.size(); ++i)
 			B->field().assign((*phi)[i], pol[i]);

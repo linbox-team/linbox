@@ -639,16 +639,16 @@ namespace LinBox { /* BlasVector */
                 return true;
         }
 
-
-	template<>
-	Integer BlasVector<Givaro::ZRing<Integer> >::magnitude() const
-	{
-		Integer max_elt(0);
-		for (size_t i = 0 ; i < size() ; ++i)
-			if (max_elt < Givaro::abs(_ptr[i]))
-				max_elt = Givaro::abs(_ptr[i]) ;
-		return max_elt ;
-	}
+        // PG: only defined for ZRing<Integer> -> this is  not generic (removed)
+	// template<>
+	// Integer BlasVector<Givaro::ZRing<Integer> >::magnitude() const
+	// {
+	// 	Integer max_elt(0);
+	// 	for (size_t i = 0 ; i < size() ; ++i)
+	// 		if (max_elt < Givaro::abs(_ptr[i]))
+	// 			max_elt = Givaro::abs(_ptr[i]) ;
+	// 	return max_elt ;
+	// }
 
 
 	template<class T>

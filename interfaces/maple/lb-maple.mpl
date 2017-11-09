@@ -4,7 +4,7 @@ LinBox:= module()
 	export lbDeterminant, lbRank, lbMinpoly, lbCharpoly, lbSolve, Dev:
 	option package, load=lbInit, unload=lbEnd: 
 	
-	lbpath:="/Users/giorgi/Work/Library/linbox/lib/liblbmaple.dylib";
+	lbpath:="/Users/giorgi/Work/Library/linbox-maple/lib/liblbmaple.dylib";
 
 	############################################################# 
 	# Function to initialize LinBox driver and LinBox interface #

@@ -112,7 +112,7 @@ void writePolynomial (const PolynomialKey &key, std::ostream &os){
 /**********************************
  * API to serialize a  polynomial *
  **********************************/
-template <class PElement, class DElement>
+template <class PElement, class DElement, class Category>
 class ToSerialPolynomial {
 public:
 	template<class Domain, class Polynomial>
@@ -121,8 +121,8 @@ public:
 	}
 };
 
-template<class Element>
-class ToSerialPolynomial<Element, Element>{
+template<class Element, class Category>
+class ToSerialPolynomial<Element, Element, Category>{
 public:
 	template<class Domain, class Polynomial>
 	inline void operator()(SerialPolynomial &s, Domain *D, Polynomial *poly){
@@ -135,7 +135,23 @@ public:
 	}
 };
 
+template<class Element>
+class ToSerialPolynomial<Element, Element, LinBox::RingCategories::RationalTag>{
+public:
+	template<class Domain, class Polynomial>
+	inline void operator()(SerialPolynomial &s, Domain *D, Polynomial *poly){
+		s.type = "rational";
+		s.list.resize(2*poly->size());
 
+		typename Polynomial::const_iterator    it_P= poly->begin();
+		std::vector<LinBox::integer>::iterator it_s= s.list.begin();
+		for (; it_P != poly->end(); ++it_P, ++it_s){
+			D->get_num(*it_s, *it_P);
+			++it_s;
+			D->get_den(*it_s, *it_P);
+		}
+	}
+};
 template<class Polynomial>
 class SerializePolynomialSpecFunctor{
 protected:
@@ -145,7 +161,7 @@ public:
 
 	template<class Domain>
 	void operator()(SerialPolynomial &s, Domain *D) const {
-		ToSerialPolynomial<typename Polynomial::value_type, typename Domain::Element>()(s, D, poly);
+		ToSerialPolynomial<typename Polynomial::value_type, typename Domain::Element, typename LinBox::FieldTraits<Domain>::categoryTag>()(s, D, poly);
 	}
 };
 
@@ -174,7 +190,7 @@ void  SerializePolynomial (SerialPolynomial &s, const PolynomialKey &key) {
 	VectorFunction::call(s, key, Fct);
 }
 
-
+#include "lb-vector-function.inl"
 #endif
 
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s

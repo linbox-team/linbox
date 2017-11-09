@@ -53,7 +53,8 @@ Domain_Factory linbox_domain;
 void UpdateDomain(){
 	linbox_domain.add("linbox_field_dbl"      , constructDomain<Givaro::Modular<double> >);
 	//linbox_domain.add("linbox_field_rational" , constructDomain<LinBox::GMPRationalField>);
-	linbox_domain.add("linbox_ring_integer"   , constructDomain<Givaro::ZRing<Givaro::Integer> >);
+        linbox_domain.add("linbox_field_rational" , constructDomain<Givaro::QField<Givaro::Rational> >);
+        linbox_domain.add("linbox_ring_integer"   , constructDomain<Givaro::ZRing<Givaro::Integer> >);
 #ifndef __LINBOX_MINIMIZE_DOMAIN
 	linbox_domain.add("linbox_field_32"       , constructDomain<Givaro::Modular<int32_t> >);
 	linbox_domain.add("linbox_field_64"       , constructDomain<Givaro::Modular<int64_t> >);

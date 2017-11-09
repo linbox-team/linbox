@@ -25,13 +25,15 @@
 #ifndef __LINBOX_lb_vector_type_H
 #define __LINBOX_lb_vector_type_H
 
+#include "linbox/vector/blas-vector.h"
 
 /**************************************
  * Define the list of all Vector Type *
  **************************************/
 
 // (NEED TO USE ENVELOPE TO DEFINE A CONCRETE TYPE)
-typedef LinBoxTypelist < VectorEnvelope< std::vector > , LinBoxDumbType> VL1;
+//typedef LinBoxTypelist < VectorEnvelope< std::vector > , LinBoxDumbType> VL1;
+typedef LinBoxTypelist < VectorEnvelope< LinBox::BlasVector > , LinBoxDumbType> VL1;
 
 
 // define the vector typelist

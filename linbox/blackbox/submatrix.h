@@ -418,18 +418,22 @@ namespace LinBox
 			return y;
 		}
 
-		template<typename _Tp1>
-		struct rebind {
-			typedef SubmatrixOwner<BlasMatrix<_Tp1>, VectorCategories::DenseVectorTag> other;
+                // PG: not needed it is already defined in Father_t
+                
+                //template<typename _Tp1>
+		// struct rebind {
+		// 	typedef SubmatrixOwner<BlasMatrix<_Tp1>, VectorCategories::DenseVectorTag> other;
 
-			void operator() (other & Ap, const Self_t& A) {
+		// 	void operator() (other & Ap, const Self_t& A) {
 
-				typename other::Father_t A1;
-				typename Father_t::template rebind<_Tp1> () ( A1, static_cast<Father_t>(A) );
-				Ap = other(A1, A.rowfirst(), A.colfirst(), A.rowdim(), A.coldim());
-			}
+		// 		typename other::Father_t A1;
+		// 		typename Father_t::template rebind<_Tp1> () ( A1, static_cast<Father_t>(A) );
+		// 		Ap = other(A1, A.rowfirst(), A.colfirst(), A.rowdim(), A.coldim());
+		// 	}
 
-		};
+		// };
+
+
 	};
 
 

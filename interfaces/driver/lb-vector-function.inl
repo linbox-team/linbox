@@ -23,7 +23,9 @@
  */
 
 
-
+#include "lb-vector-functor.h"
+#include "lb-vector-collection.h"
+#include "lb-vector-abstract.h"
 
 
 /*********************************************************

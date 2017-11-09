@@ -45,7 +45,7 @@ typedef std::map<VectorKey, VectorAbstract*, VectorKeyLessThan>   VectorTable;
 // definition of a serial vector
 struct SerialVector {
 	const char* type;
-	std::vector<LinBox::integer> list;
+    std::vector<LinBox::integer> list;
 };
 
 

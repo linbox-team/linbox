@@ -1214,7 +1214,7 @@ namespace LinBox
 		{
 			return _c_index;
 		}
-
+                
 		const value_type &value () const
 		{
 			return *(_begin + (ptrdiff_t)(_r_index * _dim + _c_index));

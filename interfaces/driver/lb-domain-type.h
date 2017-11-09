@@ -27,7 +27,8 @@
 
 
 #include "givaro/zring.h"
-//#include "linbox/field/gmp-rational.h"
+#include "linbox/field/gmp-rational.h"
+#include "givaro/givrational.h"
 #include "givaro/modular.h"
 
 #ifdef __LINBOX_HAVE_NTL
@@ -44,7 +45,8 @@
 typedef LinBoxTypelist < Givaro::Modular<double>          , LinBoxDumbType> DL1;
 typedef LinBoxTypelist < Givaro::ZRing<Givaro::Integer>   , DL1> DL2;
 //typedef LinBoxTypelist < LinBox::GMPRationalField         , DL2> DL3;
-typedef DL2 DL3;
+typedef LinBoxTypelist < Givaro::QField<Givaro::Rational> , DL2> DL3;
+//typedef DL2 DL3;
 typedef LinBoxTypelist < Givaro::Modular<int32_t>         , DL3> DL4;
 typedef LinBoxTypelist < Givaro::Modular<int64_t>         , DL4> DL5;
 typedef LinBoxTypelist < Givaro::Modular<Givaro::Integer> , DL5> DL6;

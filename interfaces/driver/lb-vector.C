@@ -50,8 +50,8 @@ Vector_Factory linbox_vector;
  * Update the Factory with all vector type *
  *******************************************/
 void UpdateVector() {
-	linbox_vector.add("linbox_dense", Vector_Factory::CallBackMap::value_type::second_type( constructVector_from_size<std::vector>,
-												constructVector_from_stream<std::vector> ));
+    linbox_vector.add("linbox_dense", Vector_Factory::CallBackMap::value_type::second_type( constructVector_from_size<LinBox::BlasVector>,
+                                                constructVector_from_stream<LinBox::BlasVector> ));
 }
 
 
@@ -385,9 +385,9 @@ void  SerializeVector (SerialVector &s, const VectorKey &key) {
 	VectorFunction::call(s, key, Fct);
 }
 
-
-#endif
 #include "lb-vector-function.inl"
+#endif
+
 
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:

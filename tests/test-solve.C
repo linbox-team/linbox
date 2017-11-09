@@ -777,7 +777,8 @@ int main (int argc, char **argv)
 		END_OF_ARGUMENTS
 	};
 
-	typedef Givaro::Modular<int64_t> Field;
+	//typedef Givaro::Modular<int64_t> Field;
+        typedef Givaro::Modular<double> Field;
 
 	parseArguments (argc, argv, args);
 	Field F (q); Field::RandIter gen(F);

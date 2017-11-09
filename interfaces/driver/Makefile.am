@@ -38,8 +38,8 @@ liblbdriver_la_SOURCES= lb-element.C 	\
 			lb-domain.C     \
 			lb-vector.C     \
 			lb-polynomial.C \
-			lb-garbage.C \
 			lb-solutions.C
+#			lb-garbage.C \
 #			lb-det.C	\
 #			lb-rank.C       
 # lb-minpoly.C    \
@@ -47,7 +47,7 @@ liblbdriver_la_SOURCES= lb-element.C 	\
 # lb-solve.C
 # lb-blackbox.C	
 
-liblbdriver_la_LDFLAGS=  $(NTL_LIBS) $(LDFLAGS) $(LINBOX_LDFLAGS) $(top_srcdir)/linbox/liblinbox.la #-Wl,-zmuldefs
+liblbdriver_la_LDFLAGS=  $(DEPS_LIBS) $(NTL_LIBS) $(LDFLAGS) $(LINBOX_LDFLAGS) $(top_srcdir)/linbox/liblinbox.la #-Wl,-zmuldefs
 
 
 

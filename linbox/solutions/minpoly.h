@@ -270,7 +270,8 @@ namespace LinBox
 		RationalRemainder2< VarPrecEarlyMultipCRA<Givaro::Modular<double> > > rra(3UL);
 		IntegerModularMinpoly<Blackbox,MyMethod> iteration(A, M);
 
-		std::vector<Integer> PP; // use of integer due to non genericity of cra. PG 2005-08-04
+		//std::vector<Integer> PP; // use of integer due to non genericity of cra. PG 2005-08-04
+                typename Polynomial::template rebind<Givaro::ZRing<Integer> >::other PP;
 		Integer den;
 		rra(PP,den, iteration, genprime);
 		size_t i =0;
