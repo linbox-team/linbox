@@ -111,33 +111,33 @@ int main (int argc, char **argv)
 		std::cout << "Suppose " << argv[3] << " is coprime with Smith form" << std::endl;
 	}
 
-	std::cout << "Integer rank: " << std::endl;
-
-	unsigned long coprimeR; LRank(coprimeR, argv[1], coprimeV);
-	smith.push_back(PairIntRk(coprimeV, coprimeR));
-        //         std::cerr << "Rank mod " << coprimeV << " is " << coprimeR << std::endl;
-
-	std::cout << "Some factors (50000 factoring loop bound): ";
+std::cout << "Some factors (50000 factoring loop bound): ";
 	FTD.set(Moduli, exponents, val_A, 50000);
 	std::vector<size_t>::const_iterator eit=exponents.begin();
 	for(std::vector<Givaro::Integer>::const_iterator mit=Moduli.begin();
 	    mit != Moduli.end(); ++mit,++eit)
 		std::cout << *mit << '^' << *eit << ' ';
 	std::cout << std::endl;
+    smith.resize(Moduli.size());
 
-	std::vector<Givaro::Integer> SmithDiagonal(coprimeR,Givaro::Integer(1));
-
+    unsigned long coprimeR; 
+ 
 	std::cout << "num procs: " << omp_get_num_procs() << std::endl;
 	std::cout << "max threads: " << omp_get_max_threads() << std::endl;
 
-    smith.resize(Moduli.size());
-
-#pragma omp parallel for shared(smith, Moduli)
-	for(size_t j=0; j<Moduli.size(); ++j) {
-		unsigned long r; LRank(r, argv[1], Moduli[j]);
-		std::cerr << "Rank mod " << Moduli[j] << " is " << r << " on thread: " << omp_get_thread_num() << std::endl;
-		smith[j] = PairIntRk( Moduli[j], r);
+#pragma omp parallel for shared(smith, Moduli) 
+	for(size_t j=0; j<(Moduli.size()+1); ++j) {
+        if (j >= Moduli.size()) {
+            LRank(coprimeR, argv[1], coprimeV);
+            std::cerr << "Integer Rank (mod " << coprimeV << ") is " << coprimeR << " on thread: " << omp_get_thread_num() << std::endl;
+        } else {            
+            unsigned long r; LRank(r, argv[1], Moduli[j]);
+            std::cerr << "Rank mod " << Moduli[j] << " is " << r << " on thread: " << omp_get_thread_num() << std::endl;
+            smith[j] = PairIntRk( Moduli[j], r);
+        }
 	}
+ 
+	std::vector<Givaro::Integer> SmithDiagonal(coprimeR,Givaro::Integer(1));
 
         /*
           for(std::vector<Givaro::Integer>::const_iterator mit=Moduli.begin();
@@ -149,63 +149,66 @@ int main (int argc, char **argv)
           SmithDiagonal[i] *= *mit;
           }
         */
-
-	eit=exponents.begin();
-	std::vector<PairIntRk>::const_iterator sit=smith.begin();
-	for(; sit != smith.end(); ++sit, ++eit) {
-		for(size_t i=sit->second; i < coprimeR; ++i)
-			SmithDiagonal[i] *= sit->first;
-
-        if (sit->second != coprimeR) {
+#pragma omp parallel for shared(SmithDiagonal, smith, exponents)
+	for(size_t j=0; j<Moduli.size(); ++j) {
+        
+        if (smith[j].second != coprimeR) {
             std::vector<size_t> ranks;
-            ranks.push_back(sit->second);
+            ranks.push_back(smith[j].second);
             size_t effexp;
-            if (*eit > 1) {
-                if (sit->first == 2)
-                    PRankPowerOfTwo(ranks, effexp, argv[1], *eit, coprimeR);
+            if (exponents[j] > 1) {
+                if (smith[j].first == 2)
+                    PRankPowerOfTwo(ranks, effexp, argv[1], exponents[j], coprimeR);
                 else
-                    PRank(ranks, effexp, argv[1], sit->first, *eit, coprimeR);
+                    PRank(ranks, effexp, argv[1], smith[j].first, exponents[j], coprimeR);
             }
             else {
-                if (sit->first == 2)
+                if (smith[j].first == 2)
                     PRankPowerOfTwo(ranks, effexp, argv[1], 2, coprimeR);
                 else
-                    PRank(ranks, effexp, argv[1], sit->first, 2, coprimeR);
+                    PRank(ranks, effexp, argv[1], smith[j].first, 2, coprimeR);
             }
             if (ranks.size() == 1) ranks.push_back(coprimeR);
 
-            if (effexp < *eit) {
+            if (effexp < exponents[j]) {
                 for(size_t expo = effexp<<1; ranks.back() < coprimeR; expo<<=1) {
-                    if (sit->first == 2)
+                    if (smith[j].first == 2)
                         PRankIntegerPowerOfTwo(ranks, argv[1], expo, coprimeR);
                     else
-                        PRankInteger(ranks, argv[1], sit->first, expo, coprimeR);
+                        PRankInteger(ranks, argv[1], smith[j].first, expo, coprimeR);
                 }
             } else {
 
-                for(size_t expo = (*eit)<<1; ranks.back() < coprimeR; expo<<=1) {
-                    if (sit->first == 2)
+                for(size_t expo = (exponents[j])<<1; ranks.back() < coprimeR; expo<<=1) {
+                    if (smith[j].first == 2)
                         PRankPowerOfTwo(ranks, effexp, argv[1], expo, coprimeR);
                     else
-                        PRank(ranks, effexp, argv[1], sit->first, expo, coprimeR);
+                        PRank(ranks, effexp, argv[1], smith[j].first, expo, coprimeR);
                     if (ranks.size() < expo) {
                         std::cerr << "It seems we need a larger prime power, it will take longer ..." << std::endl;
                             // break;
-                        if (sit->first == 2)
+                        if (smith[j].first == 2)
                             PRankIntegerPowerOfTwo(ranks, argv[1], expo, coprimeR);
                         else
-                            PRankInteger(ranks, argv[1], sit->first, expo, coprimeR);
+                            PRankInteger(ranks, argv[1], smith[j].first, expo, coprimeR);
                     }
                 }
             }
 
-            std::vector<size_t>::const_iterator rit=ranks.begin();
+#pragma omp critical
+            {   
+                for(size_t i=smith[j].second; i < coprimeR; ++i) {
+                    SmithDiagonal[i] *= smith[j].first;
+                }
+                
+                std::vector<size_t>::const_iterator rit=ranks.begin();
 // 			unsigned long modrank = *rit;
-            for(++rit; rit!= ranks.end(); ++rit) {
-                if ((*rit)>= coprimeR) break;
-                for(size_t i=(*rit); i < coprimeR; ++i)
-                    SmithDiagonal[i] *= sit->first;
+                for(++rit; rit!= ranks.end(); ++rit) {
+                    if ((*rit)>= coprimeR) break;
+                    for(size_t i=(*rit); i < coprimeR; ++i)
+                        SmithDiagonal[i] *= smith[j].first;
 // 				modrank = *rit;
+                }
             }
         }
 	}
