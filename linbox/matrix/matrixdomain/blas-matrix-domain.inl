@@ -31,7 +31,7 @@
 
 #ifndef __LINBOX_matrix_matrixdomain_blas_matrix_domain_INL
 #define __LINBOX_matrix_matrixdomain_blas_matrix_domain_INL
-
+#include "linbox/polynomial/dense-polynomial.h"
 namespace LinBox { namespace Protected {
 
 	/*
@@ -2041,23 +2041,41 @@ namespace LinBox
 		return P;
 	}
 
-	template<class Field, class Polynomial, class Matrix>
-	Polynomial &
-	BlasMatrixDomainCharpoly<Field,Polynomial,Matrix>::operator() ( const Field    &F,
+
+
+
+        template<class Field, class Polynomial, class Matrix>
+        Polynomial &
+        BlasMatrixDomainCharpoly<Field,Polynomial,Matrix>::operator() ( const Field    &F,
                                                                         Polynomial     &P,
                                                                         const Matrix   &A) const
-	{
-		size_t n = A.coldim();
-		P.clear();
-		linbox_check( n == A.rowdim());
-		typedef typename Matrix::constSubMatrixType constSubMatrixType ;
-		constSubMatrixType A_v(A);
+        {
+            DensePolynomial<Field> PP(F);
+            BlasMatrixDomainCharpoly<Field,LinBox::DensePolynomial<Field> ,Matrix>()(F,PP,A);
+            P.resize(PP.size());
+            for(size_t i=0;i<PP.size();i++)
+                F.assign(P[i],PP[i]);
+            return P;
+        }
 
-        typename Polynomial::Domain_t PolDom(F);
-        FFPACK::CharPoly (PolDom, P, n, A_v.getPointer(), A_v.getStride(),FFPACK::FfpackLUK);
-		return P;
-	}
+        template<class Field, class Matrix>
+        class BlasMatrixDomainCharpoly<Field, DensePolynomial<Field>, Matrix> {
+        public:
+            DensePolynomial<Field> & operator() ( const Field    &F,
+                                                  DensePolynomial<Field>     &P,
+                                                  const Matrix   &A) const
+            {
+                size_t n = A.coldim();
+                P.clear();
+                linbox_check( n == A.rowdim());
+                typedef typename Matrix::constSubMatrixType constSubMatrixType ;
+                constSubMatrixType A_v(A);
 
+                typename DensePolynomial<Field>::Domain_t PolDom(F);
+                FFPACK::CharPoly (PolDom, P, n, A_v.getPointer(), A_v.getStride(),FFPACK::FfpackLUK);
+                return P;
+            }
+        };
 
 } //end of namespace LinBox
 

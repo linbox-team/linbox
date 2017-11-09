@@ -3,5 +3,5 @@
 #include "lb-solve.C"
 #include "lb-det.C"
 #include "lb-minpoly.C"
-//#include "lb-charpoly.C"
+#include "lb-charpoly.C"
 #include "lb-garbage.C"

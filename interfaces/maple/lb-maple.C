@@ -88,7 +88,7 @@ extern "C" {
 	ALGEB lbCreateElement (MKernelVector kv, ALGEB *argv){
 		M_INT argc = MapleNumArgs(kv, (ALGEB) argv);
 		if (argc != 1){
-			MapleRaiseError(kv, "wrong number of arguments");
+			MapleRaiseError(kv, (char*) "wrong number of arguments");
 			return ToMapleNULL(kv);
 		}
 		const DomainKey *key = &MapleToDomainKey(kv, argv[1]);
@@ -132,7 +132,7 @@ extern "C" {
 				return DomainKeyToMaple(kv, *key);
 			}
 			if (argc > 2){
-				MapleRaiseError(kv, "wrong number of argument");
+				MapleRaiseError(kv, (char*) "wrong number of argument");
 				return ToMapleNULL(kv);
 			}
 		}
@@ -165,7 +165,7 @@ extern "C" {
 			if (setting.storage == RTABLE_SPARSE)
 				SparseMatrixToBuffer(kv, A, *buffer, m, n, setting);
 			else
-				MapleRaiseError(kv, "Matrix storage must be either dense or sparse");
+				MapleRaiseError(kv, (char*) "Matrix storage must be either dense or sparse");
 		//chrono.stop();
 
 		//std::ofstream FILE("MAPLE_FILE.TXT");
@@ -194,7 +194,7 @@ extern "C" {
 		M_INT argc = MapleNumArgs(kv, (ALGEB) argv);
 		const BlackboxKey *key;
 		if ((argc < 1) || (argc > 4)){
-			MapleRaiseError(kv, "wrong number of arguments");
+			MapleRaiseError(kv, (char*) "wrong number of arguments");
 			return ToMapleNULL(kv);
 		}
 		try {
@@ -250,7 +250,7 @@ extern "C" {
 					return BlackboxKeyToMaple(kv, *key);
 				}
 			}
-			MapleRaiseError(kv, "wrong types of arguments");
+			MapleRaiseError(kv, (char*) "wrong types of arguments");
 		}
 		catch ( lb_runtime_error &t )
 			{ lbRaiseError(kv, t); }
@@ -313,7 +313,7 @@ extern "C" {
 			}
 		}
 		    if ((setting.data_type == RTABLE_COMPLEX)|| (setting.data_type == RTABLE_CXDAG))
-			MapleRaiseError(kv, "data type format in the matrix is not yet recognized by LinBox ");
+			MapleRaiseError(kv, (char*) "data type format in the matrix is not yet recognized by LinBox ");
 
 		LB_GMP_SET();
 		const VectorKey *Vkey = &createVector(*Dkey, buffer);
@@ -327,7 +327,7 @@ extern "C" {
 		M_INT argc = MapleNumArgs(kv, (ALGEB) argv);
 		const VectorKey *key;
 		if ((argc < 1) || (argc > 4)){
-			MapleRaiseError(kv, "wrong number of arguments");
+			MapleRaiseError(kv, (char*) "wrong number of arguments");
 			return ToMapleNULL(kv);
 		}
 		try {
@@ -347,13 +347,10 @@ extern "C" {
 				}
 
 				if ( IsMapleDomainKey(kv, argv[1]) && IsMapleInteger(kv, argv[2])) {
-                                        MaplePrintf(kv, "JE SUIS BIEN DANS lbCreateVector: argc=2 \n");
 					const DomainKey *k = &MapleToDomainKey(kv, argv[1]);
-                                        MaplePrintf(kv, "domain key found \n");
                                         LB_GMP_SET();
 					key = &createVector(*k, MapleToInteger32(kv, argv[2]));
 					LB_GMP_RESTORE();
-                                        MaplePrintf(kv, "vector constructed \n");
                                         return VectorKeyToMaple(kv, *key);
 				}
 			}
@@ -366,7 +363,7 @@ extern "C" {
 					return VectorKeyToMaple(kv, *key);
 				}
 			}
-			MapleRaiseError(kv, "wrong types of arguments");
+			MapleRaiseError(kv, (char*) "wrong types of arguments");
 		}
 		catch ( lb_runtime_error &t )
 			{ lbRaiseError(kv, t); }
@@ -400,11 +397,11 @@ extern "C" {
 	ALGEB lbSetPrimeField (MKernelVector kv, ALGEB *argv){
 		M_INT argc = MapleNumArgs(kv, (ALGEB) argv);
 		if (argc != 1){
-			MapleRaiseError(kv, "wrong number of arguments");
+			MapleRaiseError(kv, (char*) "wrong number of arguments");
 			return ToMapleNULL(kv);
 		}
 		if (!IsMapleString(kv, argv[1])){
-			MapleRaiseError(kv, "String expected for 1st argument");
+			MapleRaiseError(kv, (char*) "String expected for 1st argument");
 			return ToMapleNULL(kv);
 		}
 		setPrimeField(MapleToString(kv, argv[1]));
@@ -417,11 +414,11 @@ extern "C" {
 	ALGEB lbSetRationalField (MKernelVector kv, ALGEB *argv){
 	M_INT argc = MapleNumArgs(kv, (ALGEB) argv);
 		if (argc != 1){
-			MapleRaiseError(kv, "wrong number of arguments");
+			MapleRaiseError(kv, (char*) "wrong number of arguments");
 			return ToMapleNULL(kv);
 		}
 		if (!IsMapleString(kv, argv[1])){
-			MapleRaiseError(kv, "String expected for 1s argument");
+			MapleRaiseError(kv, (char*) "String expected for 1s argument");
 			return ToMapleNULL(kv);
 		}
 		setRationalField(MapleToString(kv, argv[1]));
@@ -434,11 +431,11 @@ extern "C" {
 	ALGEB lbSetIntegerRing (MKernelVector kv, ALGEB *argv){
 	M_INT argc = MapleNumArgs(kv, (ALGEB) argv);
 		if (argc != 1){
-			MapleRaiseError(kv, "wrong number of arguments");
+			MapleRaiseError(kv, (char*) "wrong number of arguments");
 			return ToMapleNULL(kv);
 		}
 		if (!IsMapleString(kv, argv[1])){
-			MapleRaiseError(kv, "String expected for 1s argument");
+			MapleRaiseError(kv, (char*) "String expected for 1s argument");
 			return ToMapleNULL(kv);
 		}
 		setIntegerRing(MapleToString(kv, argv[1]));
@@ -527,11 +524,11 @@ extern "C" {
 	ALGEB lbSetBlackbox (MKernelVector kv, ALGEB *argv){
 		M_INT argc = MapleNumArgs(kv, (ALGEB) argv);
 		if (argc != 1){
-			MapleRaiseError(kv, "wrong number of parameter in lbSetBlackbox");
+			MapleRaiseError(kv, (char*) "wrong number of parameter in lbSetBlackbox");
 			return ToMapleNULL(kv);
 		}
 		if (!IsMapleString(kv, argv[1])){
-			MapleRaiseError(kv, "lbSetBlackbox expects a string as parameter");
+			MapleRaiseError(kv, (char*) "lbSetBlackbox expects a string as parameter");
 			return ToMapleNULL(kv);
 		}
 		setBlackbox(MapleToString(kv, argv[1]));
@@ -623,11 +620,11 @@ extern "C" {
 	ALGEB lbSetVector (MKernelVector kv, ALGEB *argv){
 		M_INT argc = MapleNumArgs(kv, (ALGEB) argv);
 		if (argc != 1){
-			MapleRaiseError(kv, "wrong number of arguments");
+			MapleRaiseError(kv, (char*) "wrong number of arguments");
 			return ToMapleNULL(kv);
 		}
 		if (!IsMapleString(kv, argv[1])){
-			MapleRaiseError(kv, "String expected as 1st argument");
+			MapleRaiseError(kv, (char*) "String expected as 1st argument");
 			return ToMapleNULL(kv);
 		}
 		setVector(MapleToString(kv, argv[1]));
@@ -829,11 +826,11 @@ extern "C" {
 					ALGEB n,d,f;
 					n = LinBoxToGMPMaple(kv, s.list.front());
 					d = LinBoxToGMPMaple(kv, s.list.back());
-					f = EvalMapleStatement(kv,"Fraction:");
+					f = EvalMapleStatement(kv,(char*)"Fraction:");
 					return EvalMapleProc(kv, f, 2, n, d);
 				}
 				else
-					MapleRaiseError(kv, "LinBox internal error (serializing element problem)");
+					MapleRaiseError(kv, (char*) "LinBox internal error (serializing element problem)");
 		}
 		catch (lb_runtime_error &t)
 			{lbRaiseError(kv, t);}
@@ -878,7 +875,7 @@ extern "C" {
 			}
 			if (strcmp(s.type, "rational")==0){
 				size_t n = (s.list.size());
-				if (n & 0x1) MapleRaiseError(kv, "LinBox internal error (serializing vector problem)");
+				if (n & 0x1) MapleRaiseError(kv, (char*) "LinBox internal error (serializing vector problem)");
 				n = n>>1;
 				RTableSettings setting;
 				M_INT bounds[2];bounds[0]=1;bounds[1]=n;
@@ -888,7 +885,7 @@ extern "C" {
 				setting.data_type=RTABLE_DAG;
 
 				ALGEB vector = RTableCreate(kv, &setting, NULL, bounds);
-				ALGEB f = EvalMapleStatement(kv,"Fraction:");
+				ALGEB f = EvalMapleStatement(kv,(char*)"Fraction:");
 				M_INT index[1];
 				RTableData tmp;
 				for (size_t i=1; i<n+1; ++i){
@@ -900,7 +897,7 @@ extern "C" {
 			}
 
 			else
-				MapleRaiseError(kv, "LinBox internal error (serializing vector problem)");
+				MapleRaiseError(kv, (char*) "LinBox internal error (serializing vector problem)");
 		}
 		catch (lb_runtime_error &t)
 			{lbRaiseError(kv, t);}
@@ -923,11 +920,11 @@ extern "C" {
 				listcoeff= MapleListAlloc(kv,n);
 				for (size_t i=0; i<n; ++i)
 					MapleListAssign(kv,listcoeff,i+1,LinBoxToGMPMaple(kv, s.list[i]));
-				f = EvalMapleStatement(kv,"proc(l, name) local i, p; p:=0; for  i from 1 to nops(l) do  p:=p+ l[i]*name^(i-1); end do; return p; end proc;");
+				f = EvalMapleStatement(kv,(char*)"proc(l, name) local i, p; p:=0; for  i from 1 to nops(l) do  p:=p+ l[i]*name^(i-1); end do; return p; end proc;");
 				return EvalMapleProc(kv, f, 2, listcoeff, argv[2]);
 			}
 			else
-				MapleRaiseError(kv, "LinBox internal error (serializing polynomial problem)");
+				MapleRaiseError(kv, (char*) "LinBox internal error (serializing polynomial problem)");
 		}
 		catch (lb_runtime_error &t)
 			{lbRaiseError(kv, t);}
@@ -948,7 +945,7 @@ extern "C" {
 	ALGEB lbCopy (MKernelVector kv, ALGEB *argv){
 		M_INT argc = MapleNumArgs(kv, (ALGEB) argv);
 		if (argc != 1){
-			MapleRaiseError(kv, "wrong number of arguments");
+			MapleRaiseError(kv, (char*) "wrong number of arguments");
 		}
 		if (IsMapleDomainKey(kv, argv[1]))
 			return lbCopyDomain(kv, argv);
@@ -957,7 +954,7 @@ extern "C" {
 		if (IsMapleVectorKey(kv, argv[1]))
 			return lbCopyVector(kv, argv);
 
-		MapleRaiseError(kv, "LinBox object (lbDomain, lbBlackbox, lbVector) expected for 1st argument");
+		MapleRaiseError(kv, (char*) "LinBox object (lbDomain, lbBlackbox, lbVector) expected for 1st argument");
 		return ToMapleNULL(kv);
 	}
 
@@ -967,10 +964,10 @@ extern "C" {
 	ALGEB lbWrite (MKernelVector kv, ALGEB *argv){
 		M_INT argc = MapleNumArgs(kv, (ALGEB) argv);
 		if (argc != 2){
-			MapleRaiseError(kv, "wrong number of arguments");
+			MapleRaiseError(kv, (char*) "wrong number of arguments");
 		}
 		if (!IsMapleString(kv, argv[2]))
-			MapleRaiseError(kv, "Filename expected for 2nd argument");
+			MapleRaiseError(kv, (char*) "Filename expected for 2nd argument");
 
 		if (IsMapleBlackboxKey(kv, argv[1]))
 			return lbWriteBlackbox(kv, argv);
@@ -979,7 +976,7 @@ extern "C" {
 		if (IsMaplePolynomialKey(kv, argv[1]))
 			return lbWritePolynomial(kv ,argv);
 
-		MapleRaiseError(kv, "LinBox object (lbBlackbox, lbVector, lbPolynomial) expected for 1st argument");
+		MapleRaiseError(kv, (char*) "LinBox object (lbBlackbox, lbVector, lbPolynomial) expected for 1st argument");
 		return ToMapleNULL(kv);
 	}
 
@@ -989,14 +986,14 @@ extern "C" {
 	ALGEB lbDimension (MKernelVector kv, ALGEB *argv){
 		M_INT argc = MapleNumArgs(kv, (ALGEB) argv);
 		if (argc != 1){
-			MapleRaiseError(kv, "wrong number of arguments");
+			MapleRaiseError(kv, (char*) "wrong number of arguments");
 		}
 		if (IsMapleBlackboxKey(kv, argv[1]))
 			return lbGetBlackboxDimension(kv, argv);
 		if (IsMapleVectorKey(kv, argv[1]))
 			return lbGetVectorDimension(kv, argv);
 
-		MapleRaiseError(kv, "LinBox object (lbBlackbox, lbVector) expected for 1st argument");
+		MapleRaiseError(kv, (char*) "LinBox object (lbBlackbox, lbVector) expected for 1st argument");
 		return ToMapleNULL(kv);
 	}
 
@@ -1006,17 +1003,17 @@ extern "C" {
 	ALGEB lbRebind (MKernelVector kv, ALGEB *argv){
 		M_INT argc = MapleNumArgs(kv, (ALGEB) argv);
 		if (argc != 2){
-			MapleRaiseError(kv, "wrong number of arguments");
+			MapleRaiseError(kv, (char*) "wrong number of arguments");
 		}
 		if (!IsMapleDomainKey(kv, argv[1]))
-			MapleRaiseError(kv, "LinBox object (lbDomain) expected for 1st argument");
+			MapleRaiseError(kv, (char*) "LinBox object (lbDomain) expected for 1st argument");
 
 		if (IsMapleBlackboxKey(kv, argv[2]))
 			return lbRebindBlackbox(kv, argv);
 		if (IsMapleVectorKey(kv, argv[2]))
 			return lbRebindVector(kv, argv);
 
-		MapleRaiseError(kv, "LinBox object (lbBlackbox, lbVector) expected for 1st argument");
+		MapleRaiseError(kv, (char*) "LinBox object (lbBlackbox, lbVector) expected for 1st argument");
 		return ToMapleNULL(kv);
 	}
 
@@ -1026,14 +1023,14 @@ extern "C" {
 	ALGEB lbRandom (MKernelVector kv, ALGEB *argv){
 		M_INT argc = MapleNumArgs(kv, (ALGEB) argv);
 		if (argc != 1){
-			MapleRaiseError(kv, "wrong number of arguments");
+			MapleRaiseError(kv, (char*) "wrong number of arguments");
 		}
 		if (IsMapleBlackboxKey(kv, argv[1]))
 			return lbSetBlackboxAtRandom(kv, argv);
 		if (IsMapleVectorKey(kv, argv[1]))
 			return lbSetVectorAtRandom(kv, argv);
 
-		MapleRaiseError(kv, "LinBox object (lbBlackbox, lbVector) expected for 1st argument");
+		MapleRaiseError(kv, (char*) "LinBox object (lbBlackbox, lbVector) expected for 1st argument");
 		return ToMapleNULL(kv);
 	}
 

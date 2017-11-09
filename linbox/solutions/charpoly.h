@@ -477,7 +477,8 @@ namespace LinBox
 		IntegerModularCharpoly<Blackbox,MyMethod> iteration(A, M);
 
 		Givaro::ZRing<Integer> Z;
-		BlasVector<Givaro::ZRing<Integer> > PP(Z); // use of integer due to non genericity of cra. PG 2005-08-04
+        BlasVector<Givaro::ZRing<Integer> > PP(Z); // use of integer due to non genericity of cra. PG 2005-08-04
+        //DensePolynomial<Givaro::ZRing<Integer> > PP(Z); // PG 11/09/2017 switch to DensePolynomial
 		Integer den;
 		rra(PP,den, iteration, genprime);
 		size_t i =0;

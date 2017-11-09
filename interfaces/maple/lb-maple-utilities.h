@@ -27,15 +27,15 @@
 #define __LINBOX_lb_maple_utilities_H
 
 #include "linbox/linbox-config.h"
-#include <lb-driver.h>
+#include "lb-driver.h"
 extern "C" {
 #include <gmp.h>
 #include <maplec.h>
 #include "mpltable.h"
 }
 
-#define __LB_PRINT_GC
-//#define __LINBOX_GC
+//#define __LB_PRINT_GC
+#define __LINBOX_GC
 
 
 
@@ -73,7 +73,7 @@ extern "C" {
 		size_t l=out.str().length();
 		char* msg = new char[l];
 		strncpy(msg, out.str().c_str(), l);
-		MapleRaiseError(kv, msg);
+		MapleRaiseError(kv, (char*) msg);
 		delete msg;
 	}
 
@@ -146,7 +146,7 @@ extern "C" {
 
 	const DomainKey& MapleToDomainKey (MKernelVector kv, ALGEB k){
 		if (!IsMapleDomainKey(kv,k))
-			MapleRaiseError(kv, "wrong type argument, must be a domain key");
+			MapleRaiseError(kv, (char*) "wrong type argument, must be a domain key");
 		const DomainKey * val = (const DomainKey*) MapleToPointer(kv, k);
 		return *val;
 	}
@@ -225,7 +225,7 @@ extern "C" {
 
 	const BlackboxKey& MapleToBlackboxKey (MKernelVector kv, ALGEB k){
 		if (!IsMapleBlackboxKey(kv,k))
-			MapleRaiseError(kv, "wrong type argument, must be a blackbox key");
+			MapleRaiseError(kv, (char*) "wrong type argument, must be a blackbox key");
 		const BlackboxKey * val = (const BlackboxKey*) MapleToPointer(kv, k);
 		return *val;
 	}
@@ -301,7 +301,7 @@ extern "C" {
 
 	const VectorKey& MapleToVectorKey (MKernelVector kv, ALGEB k){
 		if (!IsMapleVectorKey(kv,k))
-			MapleRaiseError(kv, "wrong type argument, must be a vector key");
+			MapleRaiseError(kv, (char*) "wrong type argument, must be a vector key");
 		const VectorKey * val = (const VectorKey*) MapleToPointer(kv, k);
 		return *val;
 	}
@@ -371,7 +371,7 @@ extern "C" {
 
 	const VectorKey& MapleToPolynomialKey (MKernelVector kv, ALGEB k){
 		if (!IsMaplePolynomialKey(kv,k))
-			MapleRaiseError(kv, "wrong type argument, must be a polynomial key");
+			MapleRaiseError(kv, (char*) "wrong type argument, must be a polynomial key");
 		const VectorKey * val = (const VectorKey*) MapleToPointer(kv, k);
 		return *val;
 	}
@@ -441,7 +441,7 @@ extern "C" {
 
 	const EltKey& MapleToElementKey (MKernelVector kv, ALGEB k){
 		if (!IsMapleElementKey(kv,k))
-			MapleRaiseError(kv, "wrong type argument, must be an Element key");
+			MapleRaiseError(kv, (char*) "wrong type argument, must be an Element key");
 		const EltKey * val = (const EltKey*) MapleToPointer(kv, k);
 		return *val;
 	}
@@ -458,9 +458,9 @@ extern "C" {
 	void GMPMapleToLinBox(LinBox::integer& x, MKernelVector kv, ALGEB p){
 #ifdef  __LINBOX_MAPLE_GMP_ACCESS
 		mpz_ptr ptr = MapleToGMPInteger(kv, p);
-		LB_GMP_SET();
+		//LB_GMP_SET();
 		mpz_set(LinBox::SpyInteger::get_mpz(x), ptr);
-		LB_GMP_RESTORE();
+		//LB_GMP_RESTORE();
 
 #else
  		// convert integer to string in order to convert to gmp integer
@@ -584,7 +584,7 @@ extern "C" {
 		}
 
 		if ((setting.data_type == RTABLE_COMPLEX)|| (setting.data_type == RTABLE_CXDAG))
-			MapleRaiseError(kv, "data type format in the matrix is not yet recognized by LinBox ");
+			MapleRaiseError(kv, (char*) "data type format in the matrix is not yet recognized by LinBox ");
 
 	}
 
@@ -650,7 +650,7 @@ extern "C" {
 				}
 			}
 			if ((setting.data_type == RTABLE_COMPLEX)|| (setting.data_type == RTABLE_CXDAG))
-				MapleRaiseError(kv, "data type format in the matrix is not yet recognized by LinBox ");
+				MapleRaiseError(kv, (char*) "data type format in the matrix is not yet recognized by LinBox ");
 		}
 		buffer<<" 0 0 0 \n";
 	}
