@@ -42,7 +42,6 @@ int main(int argc, char** argv)
 	PolynomialRing R(p);
 	SparseMatrixGenerator<Field, PolynomialRing> Gen(F, R);
 	
-	
 	std::vector<Polynomial> fs;
 	Gen.readFile(fs, bumpFile);
 	
@@ -52,12 +51,11 @@ int main(int argc, char** argv)
 		R.write(std::cout, fs[i]) << std::endl;
 	}
 	
-	SparseMat M(F, 3, 3);
+	SparseMat M(F, n, n);
 	
-	Gen.makeCompanion(M, fs[fs.size() - 1]);
+	Gen.build(M, fs);
 	
 	TestPolySmithFormUtil<Field> util(F);
-	
 	util.printMatrix(M);
 
 	return 0;

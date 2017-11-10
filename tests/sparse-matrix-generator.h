@@ -77,24 +77,15 @@ namespace LinBox
 		}
 		
 		template<class Matrix>
-		bool makeCompanion(Matrix &M, const Polynomial &f) const {
-			if (M.rowdim() != _R.deg(f) || M.coldim() != _R.deg(f)) {
-				return false;
-			}
+		bool makeCompanion(Matrix &M, const Polynomial &f, size_t offset) const {
+			size_t dim = _R.deg(f);
 			
-			for (size_t i = 0; i < M.rowdim(); i++) {
-				for (size_t j = 0; j < M.coldim(); j++) {
-					M.setEntry(i, j, _F.zero);
-				}
-			}
-			
-			for (size_t i = 1; i < M.rowdim(); i++) {
-				M.setEntry(i, i-1, _F.one);
+			for (size_t i = 1; i < dim; i++) {
+				M.setEntry(offset + i, offset + i - 1, _F.one);
 			}
 			
 			Polynomial monic_f;
 			_R.monic(monic_f, f);
-			
 			_R.write(std::cout << "monic f: ", monic_f) << std::endl;
 			
 			std::vector<integer> coeffs;
@@ -105,7 +96,7 @@ namespace LinBox
 				_F.init(tmp, coeffs[i]);
 				_F.negin(tmp);
 				
-				M.setEntry(i, M.coldim() - 1, tmp);
+				M.setEntry(offset + i, offset + dim - 1, tmp);
 			}
 			
 			return true;
@@ -117,7 +108,7 @@ namespace LinBox
 		 * return: True if matrix successfully generated.
 		 */
 		template<class Matrix>
-		bool build(Matrix &M, std::vector<Polynomial> &fs) const {
+		bool build(Matrix &M, const std::vector<Polynomial> &fs) const {
 			size_t min_dim = 0;
 			for (size_t i = 0; i < fs.size(); i++) {
 				min_dim += _R.deg(fs[i]);
@@ -128,14 +119,21 @@ namespace LinBox
 				return false;
 			}
 			
+			for (size_t i = 0; i < M.rowdim(); i++) {
+				for (size_t j = 0; j < M.coldim(); j++) {
+					M.setEntry(i, j, _F.zero);
+				}
+			}
+			
 			size_t offset = 0;
 			Polynomial f;
 			for (size_t i = 0; i < fs.size(); i++) {				
 				_R.assign(f, fs[i]);
 				size_t d = _R.deg(f);
 				
-				SubMatrix Cf(M, offset, offset, d, d);
-				makeCompanion(Cf, f);
+				makeCompanion(M, f, offset);
+				
+				offset += d;
 			}
 			
 			return true;
