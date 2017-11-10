@@ -14,8 +14,6 @@
 #include "sparse-matrix-generator.h"
 #include "test-poly-smith-form.h"
 
-#include "linbox/algorithm/smith-form-kannan-bachem.h"
-
 using namespace LinBox;
 
 typedef Givaro::Modular<double> Field;
