@@ -22,17 +22,16 @@ namespace LinBox
 	public:
 		typedef typename Field::Element Element;
 		typedef typename PolynomialRing::Element Polynomial;
-		// typedef MatrixDomain<Field> MatrixDom;
+		typedef MatrixDomain<Field> MatrixDom;
+		typedef typename MatrixDom::SubMatrix SubMatrix;
 		
 	private:
 		Field _F;
 		PolynomialRing _R;
-		// MatrixDom _MD;
+		MatrixDom _MD;
 		
 	public:
-		SparseMatrixGenerator(const Field &F, const PolynomialRing &R): _F(F), _R(R)
-		// , _MD(F) 
-		{}
+		SparseMatrixGenerator(const Field &F, const PolynomialRing &R): _F(F), _R(R), _MD(F) {}
 		
 		/**
 		 * Reads a file of format:
@@ -117,14 +116,11 @@ namespace LinBox
 		 * F_k = C_{f_1 * f_2 * ... * f_k}
 		 * return: True if matrix successfully generated.
 		 */
-		 /*
 		template<class Matrix>
 		bool build(Matrix &M, std::vector<Polynomial> &fs) const {
 			size_t min_dim = 0;
 			for (size_t i = 0; i < fs.size(); i++) {
-				for (size_t j = i; j < fs.size(); j++) {
-					min_dim += _R.deg(fs[j]);
-				}
+				min_dim += _R.deg(fs[j]);
 			}
 			
 			if (M.rowdim() < min_dim || M.coldim() < min_dim) {
@@ -134,16 +130,16 @@ namespace LinBox
 			
 			size_t offset = 0;
 			Polynomial f;
-			_R.assign(f, _R.one);
-			for (size_t i = 0; i < fs.size(); i++) {
-				_R.mulin(f, fs[i]);
+			for (size_t i = 0; i < fs.size(); i++) {				
+				_R.assign(f, fs[i]);
+				size_t d = _R.deg(f);
 				
-				
+				SubMatrix Cf(M, offset, offset, d, d);
+				makeCompanion(Cf, f);
 			}
 			
 			return true;
 		}
-		*/
 	};
 }
 
