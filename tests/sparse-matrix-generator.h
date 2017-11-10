@@ -23,7 +23,7 @@ namespace LinBox
 		typedef typename Field::Element Element;
 		typedef typename PolynomialRing::Element Polynomial;
 		typedef MatrixDomain<Field> MatrixDom;
-		typedef typename MatrixDom::SubMatrix SubMatrix;
+		typedef typename MatrixDom::Matrix SubMatrix;
 		
 	private:
 		Field _F;
@@ -120,7 +120,7 @@ namespace LinBox
 		bool build(Matrix &M, std::vector<Polynomial> &fs) const {
 			size_t min_dim = 0;
 			for (size_t i = 0; i < fs.size(); i++) {
-				min_dim += _R.deg(fs[j]);
+				min_dim += _R.deg(fs[i]);
 			}
 			
 			if (M.rowdim() < min_dim || M.coldim() < min_dim) {
