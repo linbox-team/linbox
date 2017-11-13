@@ -1636,12 +1636,14 @@ static bool testCharPoly (const Field& F, size_t n, int iterations)
 	typedef BlasMatrix<Field>                       Matrix;
 	typedef typename Field::RandIter                RandIter;
 	// typedef BlasVector<Field>                       Polynomial;
-	typedef vector<Element>                       Polynomial;
+	typedef typename Givaro::Poly1Dom<Field> PolRing;
+	typedef typename PolRing::Element Polynomial;
 	//Commentator mycommentator;
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 	mycommentator().start (pretty("Testing charpoly"),"testCharPoly",(unsigned int)iterations);
 	Element tmp ;
+	PolRing R(F);
 	RandIter G(F);
 	Givaro::GeneralRingNonZeroRandIter<Field> Gn(G);
 	bool ret = true;
@@ -1662,9 +1664,10 @@ static bool testCharPoly (const Field& F, size_t n, int iterations)
 				A.setEntry(i,j,F.zero);
 		}
 		P.clear();
+
 		BMD.charpoly( P, A );
 
-		typename list<Polynomial>::const_iterator P_it = P.begin();
+		auto P_it = P.begin();
 		while (P_it != P.end()){
 			if ( P_it->size() !=2 )
 				ret = false;
