@@ -1,4 +1,3 @@
-
 /*
  * examples/power_rank.C
  *
@@ -24,9 +23,9 @@
 
 /** \file examples/power_rank.C
  * @example  examples/power_rank.C
-  \brief Rank of sparse matrix over Z or Zp.
-  \ingroup examples
-  */
+ \brief Rank of sparse matrix over Z or Zp.
+ \ingroup examples
+*/
 #include <linbox/linbox-config.h>
 
 #include <iostream>
