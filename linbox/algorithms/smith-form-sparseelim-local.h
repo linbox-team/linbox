@@ -556,14 +556,13 @@ std::cerr << "------CP---- permuting cols " << indcol << " and " << indpermut <<
 			Container<size_t, Alloc<size_t> > ranks;
 			prime_power_rankin( FMOD, PRIME, ranks, A, Q, A.rowdim(), A.coldim(), std::vector<size_t>(), StaticParameters);
 			L.resize( 0 ) ;
-			size_t MOD = 1;
+			Modulo MOD = 1;
 			size_t num = 0;
 			for( typename Container<size_t, Alloc<size_t> >::const_iterator it = ranks.begin(); it != ranks.end(); ++it) {
-				size_t diff;
-				diff = *it-num;
+				size_t diff(*it-num);
 				if (diff > 0)
-					L.push_back( std::pair<size_t,Modulo>(*it-num,MOD) );
-				MOD *= (size_t)PRIME;
+					L.push_back( std::pair<size_t,Modulo>(diff,MOD) );
+				MOD *= PRIME;
 				num = *it;
 			}
 			return L;
