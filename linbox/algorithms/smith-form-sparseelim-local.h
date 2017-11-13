@@ -55,6 +55,7 @@ namespace LinBox
     };
 
     enum {
+            // Combine these in binary for use in StaticParameters
         PRIVILEGIATE_NO_COLUMN_PIVOTING	= 1,
         PRIVILEGIATE_REDUCING_FILLIN	= 2,
         PRESERVE_UPPER_MATRIX		= 4
