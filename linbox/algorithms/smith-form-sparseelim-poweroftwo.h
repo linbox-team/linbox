@@ -1,7 +1,7 @@
 /* algorithms/smith-form-sparseelim-poweroftwo.h
  * Copyright (C) LinBox
  * Written by JG Dumas
- * Time-stamp: <03 Jul 15 13:59:19 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <13 Nov 17 17:32:16 Jean-Guillaume.Dumas@imag.fr>
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
@@ -387,11 +387,14 @@ namespace LinBox
             // Rank calculators, defining row strategy
             // ------------------------------------------------------
 
-        template<class BB, class D, class Container, bool PrivilegiateNoColumnPivoting, bool PreserveUpperMatrix>
-        void gauss_rankin(size_t EXPONENTMAX, Container& ranks, BB& LigneA, const size_t Ni, const size_t Nj, const D& density_trait)
+        template<class BB, class D, class Container, class Perm, bool PrivilegiateNoColumnPivoting, bool PreserveUpperMatrix>
+        void gauss_rankin(size_t EXPONENTMAX, Container& ranks, BB& LigneA, Perm& Q, const size_t Ni, const size_t Nj, const D& density_trait)
             {
                 commentator().start ("Gaussian elimination with reordering modulo a prime power of 2",
                                      "PRGEPo2", Ni);
+
+                linbox_check( Q.coldim() == Q.rowdim() );
+                linbox_check( Q.coldim() == Nj );
 
                 ranks.resize(0);
 
@@ -503,14 +506,17 @@ ENSURE( TWOKMONE == (TWOK - 1U) );
                         LigneA[(size_t)k] = LigneA[(size_t)p];
                         LigneA[(size_t)p] = vtm;
                     }
+                    if (c != -1) {
+                        if (c != (long(indcol)-1L)) {
+                            Q.permute(long(indcol)-1L,c);
 #ifdef  LINBOX_pp_gauss_steps_OUT
-                    if (c != (long(indcol)-1L))
-                        std::cerr << "------------ permuting cols " << (indcol-1) << " and " << c << " ---" << std::endl;
+                            std::cerr << "------------ permuting cols " << (indcol-1) << " and " << c << " ---" << std::endl;
 #endif
-                    if (c != -1)
+                        }
                         for(unsigned long l=k + 1; l < Ni; ++l)
                             FaireElimination(EXPONENT, TWOK, TWOKMONE, LigneA[(size_t)l], LigneA[(size_t)k], (long)indcol, c, col_density);
-
+                    }
+                    
 #ifdef  LINBOX_pp_gauss_steps_OUT
                     std::cerr << "step[" << k << "], pivot: " << c << std::endl;
 #endif
@@ -551,28 +557,28 @@ ENSURE( TWOKMONE == (TWOK - 1U) );
 
             }
 
-        template<class BB, class D, class Container>
-        void prime_power_rankin (size_t EXPONENT, Container& ranks, BB& SLA, const size_t Ni, const size_t Nj, const D& density_trait, int StaticParameters=0) {
+        template<class BB, class D, class Container, class Perm>
+        void prime_power_rankin (size_t EXPONENT, Container& ranks, BB& SLA, Perm& Q, const size_t Ni, const size_t Nj, const D& density_trait, int StaticParameters=PRIVILEGIATE_NO_COLUMN_PIVOTING) {
             if (PRIVILEGIATE_NO_COLUMN_PIVOTING & StaticParameters) {
                 if (PRESERVE_UPPER_MATRIX & StaticParameters) {
-                    gauss_rankin<BB,D,Container,true,true>(EXPONENT,ranks, SLA, Ni, Nj, density_trait);
+                    gauss_rankin<BB,D,Container,Perm,true,true>(EXPONENT,ranks, SLA, Q, Ni, Nj, density_trait);
                 } else {
-                    gauss_rankin<BB,D,Container,true,false>(EXPONENT,ranks, SLA, Ni, Nj, density_trait);
+                    gauss_rankin<BB,D,Container,Perm,true,false>(EXPONENT,ranks, SLA, Q, Ni, Nj, density_trait);
                 }
             } else {
                 if (PRESERVE_UPPER_MATRIX & StaticParameters) {
-                    gauss_rankin<BB,D,Container,false,true>(EXPONENT,ranks, SLA, Ni, Nj, density_trait);
+                    gauss_rankin<BB,D,Container,Perm,false,true>(EXPONENT,ranks, SLA, Q, Ni, Nj, density_trait);
                 } else {
-                    gauss_rankin<BB,D,Container,false,false>(EXPONENT,ranks, SLA, Ni, Nj, density_trait);
+                    gauss_rankin<BB,D,Container,Perm,false,false>(EXPONENT,ranks, SLA, Q, Ni, Nj, density_trait);
                 }
             }
         }
 
 
-        template<class Matrix, template<class, class> class Container, template<class> class Alloc>
-        Container<std::pair<size_t,UInt_t>, Alloc<std::pair<size_t,UInt_t> > >& operator()(Container<std::pair<size_t,UInt_t>, Alloc<std::pair<size_t,UInt_t> > >& L, Matrix& A, size_t EXPONENT, int StaticParameters=0) {
+        template<class Matrix, class Perm, template<class, class> class Container, template<class> class Alloc>
+        Container<std::pair<size_t,UInt_t>, Alloc<std::pair<size_t,UInt_t> > >& operator()(Container<std::pair<size_t,UInt_t>, Alloc<std::pair<size_t,UInt_t> > >& L, Matrix& A, Perm& Q, size_t EXPONENT, int StaticParameters=PRIVILEGIATE_NO_COLUMN_PIVOTING) {
             Container<size_t, Alloc<size_t> > ranks;
-            prime_power_rankin( EXPONENT, ranks, A, A.rowdim(), A.coldim(), std::vector<size_t>(),StaticParameters);
+            prime_power_rankin( EXPONENT, ranks, A, Q, A.rowdim(), A.coldim(), std::vector<size_t>(),StaticParameters);
             L.resize( 0 ) ;
             UInt_t MOD(1);
             size_t num = 0;
