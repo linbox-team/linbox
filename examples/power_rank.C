@@ -60,7 +60,7 @@ int tmain (int argc, char **argv)
 		// using Sparse Elimination
     PowerGaussDomain< Field > PGD( F );
     std::vector<std::pair<size_t,Base> > local;
-    Permutation<Field> Q(B.coldim(),F);
+    Permutation<Field> Q(F,B.coldim());
 
     Givaro::Timer tq; tq.clear(); tq.start();
     PGD(local, B, Q, q, p);
@@ -69,7 +69,7 @@ int tmain (int argc, char **argv)
 
     F.write(std::cout << "Local Smith Form ") << " : " << std::endl << '(';
     for (auto ip = local.begin(); ip != local.end(); ++ip) 
-        std::cout << ip->first << " " << ip->second << ", ";
+        std::cout << '[' << ip->first << ',' << ip->second << "] ";
     cout << ")" << endl;
 
     if (B.rowdim() <= 20 && B.coldim() <= 20) {
