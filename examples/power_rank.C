@@ -63,7 +63,7 @@ int tmain (int argc, char **argv)
     Permutation<Field> Q(B.coldim(),F);
 
     Givaro::Timer tq; tq.clear(); tq.start();
-    PGD(local, B, Q, q, p, 5);
+    PGD(local, B, Q, q, p);
     tq.stop();
 
 
