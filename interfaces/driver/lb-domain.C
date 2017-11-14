@@ -52,13 +52,12 @@ Domain_Factory linbox_domain;
 
 void UpdateDomain(){
 	linbox_domain.add("linbox_field_dbl"      , constructDomain<Givaro::Modular<double> >);
-	//linbox_domain.add("linbox_field_rational" , constructDomain<LinBox::GMPRationalField>);
-        linbox_domain.add("linbox_field_rational" , constructDomain<Givaro::QField<Givaro::Rational> >);
         linbox_domain.add("linbox_ring_integer"   , constructDomain<Givaro::ZRing<Givaro::Integer> >);
+	linbox_domain.add("linbox_field_integer"       , constructDomain<Givaro::Modular<Givaro::Integer> >);
 #ifndef __LINBOX_MINIMIZE_DOMAIN
-	linbox_domain.add("linbox_field_32"       , constructDomain<Givaro::Modular<int32_t> >);
+        linbox_domain.add("linbox_field_rational" , constructDomain<Givaro::QField<Givaro::Rational> >);
 	linbox_domain.add("linbox_field_64"       , constructDomain<Givaro::Modular<int64_t> >);
-	linbox_domain.add("linbox_field_mp"       , constructDomain<Givaro::Modular<Givaro::Integer> >);
+
 #endif
 #ifdef __LINBOX_HAVE_NTL
         //linbox_domain.add("ntl_field_ZZ_p"      , constructDomain<LinBox::NTL_ZZ_p>);
@@ -74,8 +73,11 @@ void UpdateDomain(){
  * Default type for Domains *
  ****************************/
 
-// definition of the default type for prime field
+// definition of the default type for wordsize prime field
 #define default_prime_field  "linbox_field_dbl"
+
+// definition of the default type for multiprecision prime field
+#define default_mp_prime_field  "linbox_field_integer"
 
 // definition of the default type for rational field
 #define default_rational_field "linbox_field_rational"
@@ -85,6 +87,9 @@ void UpdateDomain(){
 
 // global variable for current prime field type
 const char* current_prime_field  = default_prime_field;
+
+// global variable for current prime field type
+const char* current_mp_prime_field  = default_mp_prime_field;
 
 // global variable for current rational field type
 const char* current_rational_field  = default_rational_field;
@@ -104,8 +109,12 @@ const DomainKey& createDomain( const LinBox::integer characteristic, const char 
 	if (name == NULL){
 		if (characteristic == 0)
 			type = current_integer_ring;
-		else
-			type = current_prime_field;
+		else {
+                        if ( characteristic < (LinBox::integer(1)<<24))
+                                type = current_prime_field;
+                        else
+                                type = current_mp_prime_field;
+                }
 	}
 
 	DomainKey key(characteristic, type);

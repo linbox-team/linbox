@@ -89,6 +89,10 @@ public:
 		return *this;
 	}
 
+        bool operator!= (const DomainKey &k) const{
+                return *pfirst != *(k.pfirst) && (strcmp(*psecond, *(k.psecond))!=0);
+        }
+
 	bool free() const {return ((*counter) == 0);}
 
 	void dispose() const { (*counter)--; }

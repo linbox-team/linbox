@@ -26,6 +26,8 @@
 #define __LINBOX_lb_blackbox_type_H
 
 #include "linbox/matrix/dense-matrix.h"
+#include "linbox/matrix/sparse-matrix.h"
+#include "linbox/matrix/polynomial-matrix.h"
 
 /****************************************
  * Define the list of all Blackbox Type *
@@ -33,10 +35,20 @@
 
 // (NEED TO USE ENVELOPE TO DEFINE A CONCRETE TYPE)
 typedef LinBoxTypelist < BlackboxEnvelope< LinBox::DenseMatrix > , LinBoxDumbType> BL1;
-//typedef LinBoxTypelist < BlackboxEnvelope< LinBox::SparseMatrix > , BL1> BL2;
+
+template<typename Field>
+using SparseMat=LinBox::SparseMatrix<Field,LinBox::SparseMatrixFormat::SparseSeq>; 
+typedef LinBoxTypelist < BlackboxEnvelope< SparseMat > , BL1> BL2;
+
+
+template<typename Field>
+using PolynomialMat=LinBox::PolynomialMatrix<LinBox::PMType::polfirst,LinBox::PMStorage::plain,Field>;
+typedef LinBoxTypelist < BlackboxEnvelope< PolynomialMat > , BL2> BL3;
+
+
 
 // define the blackbox typelist
-typedef BL1 BlackboxList;
+typedef BL2 BlackboxList;
 
 
 

@@ -39,6 +39,7 @@
 #include "lb-minpoly.h"
 #include "lb-charpoly.h"
 #include "lb-solve.h"
+#include "lb-mul.h"
 
 // overload PreconditionFailed to be a real exception
 std::ostringstream PrecondStream;

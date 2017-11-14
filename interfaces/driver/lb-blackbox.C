@@ -32,6 +32,8 @@
 #include "lb-blackbox-function.h"
 #include "lb-blackbox-type.h"
 #include "lb-domain-collection.h"
+#include <iostream>
+#include <string>
 
 //#include "linbox/matrix/matrix-category.h"
 
@@ -51,12 +53,15 @@ Blackbox_Factory linbox_blackbox;
  * Update the Factory with all blackbox type *
  *********************************************/
 void UpdateBlackbox() {
-	// linbox_blackbox.add("linbox_sparse",
-	// Blackbox_Factory::CallBackMap::value_type::second_type(
-	// constructBlackbox_from_size<LinBox::SparseMatrix>, constructBlackbox_from_stream<LinBox::SparseMatrix> ));
+	linbox_blackbox.add("linbox_sparse",
+                            Blackbox_Factory::CallBackMap::value_type::second_type(constructBlackbox_from_size<SparseMat>,
+                                                                                   constructBlackbox_from_stream<SparseMat> ));
 	linbox_blackbox.add("linbox_dense",
 			    Blackbox_Factory::CallBackMap::value_type::second_type( constructBlackbox_from_size<LinBox::DenseMatrix >,
 										    constructBlackbox_from_stream<LinBox::DenseMatrix > ));
+        // linbox_blackbox.add("linbox_dense_polynomial",
+	// 		    Blackbox_Factory::CallBackMap::value_type::second_type( constructBlackbox_from_size<PolynomialMat >,
+        //constructBlackbox_from_stream<PolynomialMat > ));
 }
 
 
@@ -229,17 +234,21 @@ void rebindBlackbox(const BlackboxKey &Vkey, const DomainKey &Dkey){
  *************************************************/
 class WriteBlackboxFunctor{
 	std::ostream &os;
+        std::string format;
 public:
-	WriteBlackboxFunctor(std::ostream &o) : os(o) {}
+	WriteBlackboxFunctor(std::ostream &o, std::string f) : os(o), format(f)  {}
 
 	template<class Blackbox>
 	void operator() (void*, Blackbox *B) const {
-		B->write(os);
+                if (format=="plain") {B->write(os,LinBox::Tag::FileFormat::Plain); return;}
+                if (format=="maple") {B->write(os,LinBox::Tag::FileFormat::Maple); return;}
+                if (format=="matrixmarket") {B->write(os,LinBox::Tag::FileFormat::MatrixMarket); return;}
+		B->write(os);                 
 	}
 };
 
-void writeBlackbox (const BlackboxKey &key,  std::ostream &os){
-	WriteBlackboxFunctor Fct(os);
+void writeBlackbox (const BlackboxKey &key,  std::ostream &os, std::string format){
+	WriteBlackboxFunctor Fct(os,format);
 	BlackboxFunction::call(key, Fct);
 }
 

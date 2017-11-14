@@ -184,7 +184,7 @@ public:
 	void * getPtr() const
 	{ return ptr;}
 
-	virtual const DomainKey& getDomainKey() const
+        const DomainKey& getDomainKey() const
 	{
 		return key;
 	}

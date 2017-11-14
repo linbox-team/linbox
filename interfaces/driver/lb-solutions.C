@@ -5,3 +5,4 @@
 #include "lb-minpoly.C"
 #include "lb-charpoly.C"
 #include "lb-garbage.C"
+#include "lb-mul.C"

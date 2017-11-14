@@ -28,6 +28,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <sstream>
 #include "lb-driver.h"
 #include "lb-maple-utilities.h"
 #include "linbox/util/timer.h"
@@ -744,7 +745,36 @@ extern "C" {
 		return ToMapleNULL(kv);
 	}
 
-
+	/************************************************
+	 * Interface to compute the product of matrices *
+	 ************************************************/
+	ALGEB lbMul (MKernelVector kv, ALGEB *argv){
+		M_INT argc = MapleNumArgs(kv, (ALGEB) argv);
+		try{
+			if (argc == 2){
+				LB_GMP_SET();
+				const BlackboxKey *A = &MapleToBlackboxKey(kv, argv[1]);
+                                const BlackboxKey *B = &MapleToBlackboxKey(kv, argv[2]);
+				const BlackboxKey *C = &lb_mul(*A,*B);
+				LB_GMP_RESTORE();
+                                return BlackboxKeyToMaple(kv, *C);
+			}
+			if (argc == 3){
+				LB_GMP_SET();
+				const BlackboxKey *C = &MapleToBlackboxKey(kv, argv[1]);
+				const BlackboxKey *A = &MapleToBlackboxKey(kv, argv[2]);
+                                const BlackboxKey *B = &MapleToBlackboxKey(kv, argv[3]);
+                                lb_mul(*C,*A,*B);
+				LB_GMP_RESTORE();
+                                return ToMapleNULL(kv);
+			}
+		}
+		catch (lb_runtime_error &t)
+			{ lbRaiseError(kv, t);}
+		return ToMapleNULL(kv);
+	}
+        
+        
 	/********************************************************************
 	 * Interface to compute the characteristic polynomial of a blackbox *
 	 ********************************************************************/
@@ -842,6 +872,15 @@ extern "C" {
 	 * API to convert a blackbox to its Maple equivalent *
 	 *****************************************************/
 	ALGEB lbConvertBlackbox (MKernelVector kv, ALGEB *argv){
+                try {
+			const BlackboxKey *k = &MapleToBlackboxKey(kv, argv[1]);
+                        std::ostringstream os;
+                        writeBlackbox(*k,os,"maple");
+                        ALGEB f = EvalMapleStatement(kv,(char*) os.str().c_str());
+                        return f;                        
+                }
+		catch (lb_runtime_error &t)
+			{lbRaiseError(kv, t);}
 		return ToMapleNULL(kv);
 	}
 

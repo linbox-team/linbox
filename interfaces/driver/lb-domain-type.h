@@ -44,12 +44,11 @@
 
 typedef LinBoxTypelist < Givaro::Modular<double>          , LinBoxDumbType> DL1;
 typedef LinBoxTypelist < Givaro::ZRing<Givaro::Integer>   , DL1> DL2;
-//typedef LinBoxTypelist < LinBox::GMPRationalField         , DL2> DL3;
-typedef LinBoxTypelist < Givaro::QField<Givaro::Rational> , DL2> DL3;
-//typedef DL2 DL3;
-typedef LinBoxTypelist < Givaro::Modular<int32_t>         , DL3> DL4;
+typedef LinBoxTypelist < Givaro::Modular<Givaro::Integer> , DL2> DL3;
+
+typedef LinBoxTypelist < Givaro::QField<Givaro::Rational> , DL3> DL4;
 typedef LinBoxTypelist < Givaro::Modular<int64_t>         , DL4> DL5;
-typedef LinBoxTypelist < Givaro::Modular<Givaro::Integer> , DL5> DL6;
+
 
 #ifdef __LINBOX_MINIMIZE_DOMAIN
 typedef DL3 linbox_domain_list;

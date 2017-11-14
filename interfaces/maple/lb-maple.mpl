@@ -1,7 +1,7 @@
 LinBox:= module()
-        description "Maple interface for LinBox library version 1.0 by Pascal Giorgi (LinBox project - www.linal.org)";
+        description "Maple interface for LinBox library version 1.1 by Pascal Giorgi (LinBox project - www.linal.org)";
 	local lbpath, lbInit, lbEnd, lbStart, lbStop:
-	export lbDeterminant, lbRank, lbMinpoly, lbCharpoly, lbSolve, Dev:
+	export lbDeterminant, lbRank, lbMinpoly, lbCharpoly, lbSolve, lbMul, Dev:
 	option package, load=lbInit, unload=lbEnd: 
 	
 	lbpath:="/Users/giorgi/Work/Library/linbox-maple/lib/liblbmaple.dylib";
@@ -13,7 +13,7 @@ LinBox:= module()
 	lbStop   := define_external('lbStop'  , MAPLE, LIB=lbpath);
 
 
-	lbInit := proc() printf("  LinBox/Maple Interface Package beta version 1.0 \n  by Pascal Giorgi (pascal.giorgi@univ-perp.fr)\n");			 
+	lbInit := proc() printf("  LinBox/Maple Interface Package beta version 1.1 \n  by Pascal Giorgi (pascal.giorgi@lirmm.fr)\n");			 
 			 lbStart();
 		  end proc;
 	lbEnd  := proc() end proc;#lbStop();end proc;  
@@ -32,7 +32,7 @@ LinBox:= module()
 		lbCopyBlackbox, lbBlackboxDimension, lbSetBlackboxAtRandom, lbRebindBlackbox, lbWriteBlackbox, lbSetBlackbox,
 		lbCopyVector, lbVectorDimension, lbSetVectorAtRandom, lbRebindVector, lbWriteVector, lbSetVector,
 		lbWritePolynomial,
-		lbDeterminant, lbRank, lbMinpoly, lbCharpoly, lbSolve,
+		lbDeterminant, lbRank, lbMinpoly, lbCharpoly, lbSolve, lbMul,
 		lbConvertElement, lbConvertBlackbox, lbConvertVector, lbConvertPolynomial,
 		lbCopy, lbWrite, lbDimension, lbRebind, lbRandom:       
 		option package, load=lbInit, unload=lbEnd:							
@@ -101,7 +101,7 @@ LinBox:= module()
 		lbMinpoly     := define_external('lbMinpoly'      , MAPLE, LIB=lbpath);
 		lbCharpoly    := define_external('lbCharpoly'     , MAPLE, LIB=lbpath);
 		lbSolve       := define_external('lbSolve'        , MAPLE, LIB=lbpath);	
-
+		lbMul         := define_external('lbMul'          , MAPLE, LIB=lbpath);	
 
 		##################################################
 		# Conversion from LinBox object to Maple Objects #
@@ -184,6 +184,37 @@ LinBox:= module()
 			      print("conversion time:",t);
 		      end if;
 		      return Dev:-lbRank(A);			      
+		end;
+
+
+		###########################################
+		# Matrix Multiplication of Maple Matrices #
+		###########################################		
+		lbMul := proc()
+		      local A,B,C,res,t;
+		      if (type(args[1], integer)) then	      	      
+		      	 if (type(args[2], Matrix) and type(args[3], Matrix)) then	      
+			    t := time();
+			    A:=Dev:-lbBlackbox(args[1], args[2]);
+    			    B:=Dev:-lbBlackbox(args[1], args[3]); 
+			    t:=time()-t;
+			 else
+			    error("invalid argument",args[2]," and ",args[3], " must be Matrices");
+			 end if;
+		      elif (type(args[1], Matrix)and type(args[2], Matrix)) then	      
+			   t := time();
+			   A := Dev:-lbBlackbox(args[1]);
+   			   B := Dev:-lbBlackbox(args[2]);
+			   t:=time()-t;			
+		      else
+      			    error("invalid argument",args[1]," and ",args[2], " must be Matrices");
+		      end if;		    
+		      	  C:=Dev:-lbMul(A,B);
+			  res:=Dev:-lbConvertBlackbox(C);
+			   if (printlevel>1) then
+			      print("conversion time:",t);
+		      end if;
+		      return res; 
 		end;
 
 		######################################################

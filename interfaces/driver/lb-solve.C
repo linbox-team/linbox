@@ -48,7 +48,7 @@ extern const char* current_rational_field;
  ****************************************************************/
 
 // generic version to handle different type compilation
-template<class ResultElement, class BlackboxElement, class VectorElement, class DomainCategory>
+template<class ResultField, class BlackboxField, class VectorField, class InDomainCategory, class OutDomainCategory>
 class LaunchSolveFunctor {
 public:
 	template<class Result, class Blackbox, class Vector, class Method>
@@ -58,8 +58,8 @@ public:
 };
 
 // specialization to launch LinBox solving using standard API
-template<class Element, class DomainCategory>
-class LaunchSolveFunctor<Element, Element, Element, DomainCategory>{
+template<class SameField, class SameDomainCategory>
+class LaunchSolveFunctor<SameField, SameField, SameField, SameDomainCategory, SameDomainCategory>{
 public:
 	template<class Result, class Blackbox, class Vector, class Method>
 	inline void  operator()(Result &s, Blackbox *B, Vector *v, const Method &m) const {
@@ -69,21 +69,21 @@ public:
 
 
 // specialization to launch LinBox solving using integer solving API (output is a GMPRational)
-template<class Element>
-class LaunchSolveFunctor<Element, Element, Element, LinBox::RingCategories::IntegerTag >{
+template<class SameField>
+class LaunchSolveFunctor<SameField, SameField, SameField, LinBox::RingCategories::IntegerTag, LinBox::RingCategories::IntegerTag >{
 public:
 	template<class Result, class Blackbox, class Vector, class Method>
 	inline void  operator()(Result &s, Blackbox *B, Vector *v, const Method &m) const {
 		//LinBox::solve(s, *B, *v, m);
 		//not yet handled
-		throw lb_runtime_error("LinBox ERROR: integer system solving with same vector type is not yet handled");
+		throw lb_runtime_error("LinBox ERROR: integer system solving with diophantine result is not yet handled");
 	}
 };
 
 
 // specialization to launch LinBox solving using integer solving API (output is a GMPRational)
-template<class Element>
-class LaunchSolveFunctor< Givaro::Rational, Element, Element, LinBox::RingCategories::IntegerTag >{
+template<class QField, class Field>
+class LaunchSolveFunctor< QField, Field, Field, LinBox::RingCategories::IntegerTag, LinBox::RingCategories::RationalTag >{
 public:
 	template<class Result, class Blackbox, class Vector, class Method>
 	inline void  operator()(Result &s, Blackbox *B, Vector *v, const Method &m) const {
@@ -117,11 +117,12 @@ public:
 
       	template<class Vector, class Result>
 	void operator() (Result &res, Vector *v) const {
-		typedef typename Blackbox::Field::Element BElement;
-		typedef typename Vector::value_type       VElement;
-		typedef typename Result::value_type       RElement;
-		typedef typename LinBox::FieldTraits<typename Blackbox::Field>::categoryTag categoryTag;
-		LaunchSolveFunctor<RElement, BElement, VElement, categoryTag>()(res, _BB, v, meth);
+		typedef typename Blackbox::Field  BField;
+		typedef typename Vector::Field    VField;
+		typedef typename Result::Field    RField;
+		typedef typename LinBox::FieldTraits<RField>::categoryTag OutcategoryTag;
+                typedef typename LinBox::FieldTraits<BField>::categoryTag IncategoryTag;
+		LaunchSolveFunctor<RField, BField, VField, IncategoryTag, OutcategoryTag>()(res, _BB, v, meth);
 	}
 };
 

@@ -24,7 +24,7 @@
 
 #ifndef __LINBOX_lb_blackbox_H
 #define __LINBOX_lb_blackbox_H
-
+#include <string>
 #include "lb-domain-collection.h"
 #include "lb-blackbox-collection.h"
 
@@ -62,8 +62,7 @@ BlackboxDimension getBlackboxDimension(const BlackboxKey &key);
 /*******************************************
  * API to write a blackbox over an ostream *
  *******************************************/
-void writeBlackbox (const BlackboxKey &key,  std::ostream &os);
-
+void writeBlackbox (const BlackboxKey &key,  std::ostream &os, std::string format=std::string("plain"));
 
 /*******************************************
  * API to set a blackbox with random value *
