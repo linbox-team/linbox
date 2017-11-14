@@ -190,13 +190,20 @@ namespace LinBox
 			}
 		}
 
+		Element &normalize(Element &z, const Element &x) const {
+            typename Element::Domain_t::Type_t a;
+            field().leadcoef(a, x);
+            field().div(z, x, a);
+            return z;
+		}
+
 		void reduceOffDiagonal(Rep &A, int s, int e) const
 		{
 			for (int i = s; i <= e; i++)
 			{
 				Element nii,ii;
 				A.getEntry(ii, i, i);
-				field().normalize(nii,ii);
+				normalize(nii,ii);
 
 				Element tmp;
 				field().div(tmp, nii, ii);
@@ -234,7 +241,7 @@ namespace LinBox
 						continue;
 
 					A.getEntry(jj, j, j);
-					field().quo(tmp, ij, jj);
+					field().div(tmp, ij, jj);
 
 					// A[i] = A[i] - quo(A[i,j], A[j,j]) * A[j]
 					for (size_t k = j; k < A.coldim(); k++)
@@ -282,6 +289,20 @@ namespace LinBox
 			return true;
 		}
 
+		bool areAssociates(const Element &x, const Element &y) const {
+			typename Element::Domain_t::Type_t a, b;
+			Element z;
+
+			field().leadcoef(a, x);
+			field().leadcoef(b, y);
+
+			field().subdomain().divin(a, b);
+
+			field().mul(z, y, a);
+
+			return field().areEqual(x, z);
+		}
+
 		bool pivotDividesRemaining(Rep &A, int n) const
 		{
 			Element nn;
@@ -299,7 +320,7 @@ namespace LinBox
 
 					field().gcd(g, nn, ij);
 
-					if (!field().areAssociates(g, nn))
+					if (!areAssociates(g, nn))
 					{
 						// Add row i to row n
 						for (size_t k = i; k < A.coldim(); k++)
