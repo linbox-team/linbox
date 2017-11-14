@@ -56,11 +56,20 @@ namespace LinBox {
 		typedef typename Givaro::Poly1FactorDom<BaseRing,StorageTag> Parent_t;
 		typedef DensePolynomial<BaseRing> Element;
 		typedef Element Polynomial;
+		typedef Element Rep;
 
         PolynomialRing (const BaseRing& R) : Parent_t(R) {}
         
         PolynomialRing (const BaseRing& R, const Givaro::Indeter& I) : Parent_t(R, I) {}
-        
+
+//                   // -- Init polynomial adds his base field
+        template<typename... Args>
+        Rep& init(Rep& p, Args... args) const {
+            Parent_t::init(static_cast<typename Parent_t::Element&>(p),args...);
+            p._field = &Parent_t::subdomain();
+            return p;
+        }
+
 		template<template<class,class> class Vector,template <class> class Alloc>
         Vector<Polynomial, Alloc<Polynomial> >&
         factor (Vector<Polynomial,Alloc<Polynomial> >& factors,
