@@ -54,7 +54,7 @@ namespace LinBox {
         typedef DensePolynomial<Field> Self_t;
         typedef Givaro::Poly1FactorDom<Field, Givaro::Dense> Domain_t;
 
-        DensePolynomial () : Domain_t::Element(), _field(0) {}
+        DensePolynomial () : Domain_t::Element(), _field(NULL) {}
         DensePolynomial (const Field& F) : _field (&F) {}
         DensePolynomial (const Field& F, const size_t s) : Domain_t::Element(s), _field (&F) {}
         DensePolynomial (const typename Domain_t::Element& P, const Field& F) :
