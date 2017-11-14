@@ -57,7 +57,11 @@ namespace LinBox {
 		typedef DensePolynomial<BaseRing> Element;
 		typedef Element Polynomial;
 		typedef Element Rep;
+        typedef typename BaseRing::Element Type_t;
+    protected:
+        typedef typename Parent_t::Element ParElem;
 
+    public:
             // -- Constants must be Element, so cannot be the inherited ones
         Rep zero;
         Rep one;
@@ -80,8 +84,13 @@ namespace LinBox {
                    // -- Init polynomial adds his base field
         template<typename... Args>
         Rep& init(Rep& p, Args... args) const {
-            Parent_t::init(static_cast<typename Parent_t::Element&>(p),args...);
+            Parent_t::init(static_cast<ParElem&>(p),args...);
             p._field = &Parent_t::subdomain();
+            return p;
+        }
+
+        Rep& assign(Rep& p, const ParElem& r) const {
+            Parent_t::assign(static_cast<ParElem&>(p),r);
             return p;
         }
 

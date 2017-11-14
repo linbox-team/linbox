@@ -62,10 +62,6 @@ namespace LinBox {
                 _field(&F)
             {}
 
-        DensePolynomial& operator=(const DensePolynomial & P)  {
-            return *this = P;
-        }
-
         template <class _OtherPoly >
         DensePolynomial (const _OtherPoly& P, const Field& F) :
                 Domain_t::Element(P.size()),
