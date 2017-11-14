@@ -90,7 +90,10 @@ namespace LinBox
 			}
 
 			Element g;
-			field().dxgcd(g,s,t,u,v,a,b);
+// 			field().dxgcd(g,s,t,u,v,a,b);
+            field().gcd(g,s,t,a,b);
+            field().div(u,a,g);
+            field().div(v,b,g);
 		}
 
 		bool findPivot(Rep &A, size_t n) const

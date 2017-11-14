@@ -62,9 +62,11 @@ int main (int argc, char **argv)
 
 	typedef Givaro::Modular<float> BaseDom;
 	typedef PolynomialRing<BaseDom> PolyDom;
+	typedef PolynomialRing<PolyDom> Bivariate;
 	
 	BaseDom Fp(p);
 	PolyDom Poly(Fp);
+	Bivariate PPo(Poly);
 
 	// Make sure some more detailed messages get printed
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
@@ -72,7 +74,7 @@ int main (int argc, char **argv)
 
 	commentator().start ("Testing LB Polynomial ring", "main", 10);
 	
-	if ( not testRing (Poly, "PolynomialRing<Modular<float>>"))
+	if ( not testRing (PPo, "PolynomialRing<PolynomialRing<Modular<float>>>"))
 		pass = false;
 	commentator().progress ();
 	

@@ -58,9 +58,24 @@ namespace LinBox {
 		typedef Element Polynomial;
 		typedef Element Rep;
 
-        PolynomialRing (const BaseRing& R) : Parent_t(R) {}
+            // -- Constants must be Element, so cannot be the inherited ones
+        Rep zero;
+        Rep one;
+        Rep mOne;
+
+        PolynomialRing (const BaseRing& R)
+                : Parent_t(R),
+                  zero(Parent_t::zero,R),
+                  one(Parent_t::one,R),
+                  mOne(Parent_t::mOne,R)
+            {}
         
-        PolynomialRing (const BaseRing& R, const Givaro::Indeter& I) : Parent_t(R, I) {}
+        PolynomialRing (const BaseRing& R, const Givaro::Indeter& I)
+                : Parent_t(R, I),
+                  zero(Parent_t::zero,R),
+                  one(Parent_t::one,R),
+                  mOne(Parent_t::mOne,R)
+            {}
 
                    // -- Init polynomial adds his base field
         template<typename... Args>
