@@ -92,7 +92,9 @@ namespace LinBox {
 			}
         };
 
-    private:
+    protected:
+	// DensePolynomials can be constructed with no Field
+	// Therefore PolynomialRing will set the Field pointer from the "init" member
         template <class BaseRing, class Storage_Tag> friend class PolynomialRing;
         const Field* _field;
     };
