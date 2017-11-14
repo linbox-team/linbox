@@ -62,7 +62,7 @@ namespace LinBox {
         
         PolynomialRing (const BaseRing& R, const Givaro::Indeter& I) : Parent_t(R, I) {}
 
-//                   // -- Init polynomial adds his base field
+                   // -- Init polynomial adds his base field
         template<typename... Args>
         Rep& init(Rep& p, Args... args) const {
             Parent_t::init(static_cast<typename Parent_t::Element&>(p),args...);
