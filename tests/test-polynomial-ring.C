@@ -1,8 +1,7 @@
-
 /* tests/test-givaropoly.C
- * Copyright (C) 2014 Gavin Harrison,
+ * Copyright (C) 2014 The LinBox group,
  *
- * Written by Gavin Harrison <gmh33@drexel.edu>,
+ * Written by Gavin Harrison <gmh33@drexel.edu>, Jean-Guillaume.Dumas@imag.fr
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -71,7 +70,7 @@ int main (int argc, char **argv)
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	commentator().start ("Testing GivaroPoly", "main", 10);
+	commentator().start ("Testing LB Polynomial ring", "main", 10);
 	
 	if ( not testRing (Poly, "PolynomialRing<Modular<float>>"))
 		pass = false;
