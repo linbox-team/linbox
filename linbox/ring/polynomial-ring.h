@@ -89,10 +89,56 @@ namespace LinBox {
             return p;
         }
 
-        Rep& assign(Rep& p, const ParElem& r) const {
-            Parent_t::assign(static_cast<ParElem&>(p),r);
-            return p;
-        }
+            //===========================================
+            // The following are needed since:
+            //   return type is not automatically casted
+            //   (contrary to arguments)
+        template<typename... Args>
+        Rep& assign(Rep& p, Args... args) const { Parent_t::assign(p,args...); return p; }
+        template<typename... Args>
+        Rep& mod(Rep& p, Args... args) const { Parent_t::mod(p,args...); return p; }
+        template<typename... Args>
+        Rep& modin(Rep& p, Args... args) const { Parent_t::modin(p,args...); return p; }
+        template<typename... Args>
+        Rep& neg(Rep& p, Args... args) const { Parent_t::neg(p,args...); return p; }
+        template<typename... Args>
+        Rep& negin(Rep& p, Args... args) const { Parent_t::negin(p,args...); return p; }
+        template<typename... Args>
+        Rep& add(Rep& p, Args... args) const { Parent_t::add(p,args...); return p; }
+        template<typename... Args>
+        Rep& addin(Rep& p, Args... args) const { Parent_t::addin(p,args...); return p; }
+        template<typename... Args>
+        Rep& sub(Rep& p, Args... args) const { Parent_t::sub(p,args...); return p; }
+        template<typename... Args>
+        Rep& subin(Rep& p, Args... args) const { Parent_t::subin(p,args...); return p; }
+        template<typename... Args>
+        Rep& mul(Rep& p, Args... args) const { Parent_t::mul(p,args...); return p; }
+        template<typename... Args>
+        Rep& mulin(Rep& p, Args... args) const { Parent_t::mulin(p,args...); return p; }
+        template<typename... Args>
+        Rep& axpy(Rep& p, Args... args) const { Parent_t::axpy(p,args...); return p; }
+        template<typename... Args>
+        Rep& axpyin(Rep& p, Args... args) const { Parent_t::axpyin(p,args...); return p; }
+        template<typename... Args>
+        Rep& axmy(Rep& p, Args... args) const { Parent_t::axmy(p,args...); return p; }
+        template<typename... Args>
+        Rep& axmyin(Rep& p, Args... args) const { Parent_t::axmyin(p,args...); return p; }
+         template<typename... Args>
+        Rep& maxpy(Rep& p, Args... args) const { Parent_t::maxpy(p,args...); return p; }
+        template<typename... Args>
+        Rep& maxpyin(Rep& p, Args... args) const { Parent_t::maxpyin(p,args...); return p; }
+        template<typename... Args>
+        Rep& invmod(Rep& p, Args... args) const { Parent_t::invmod(p,args...); return p; }
+        template<typename... Args>
+        Rep& invmodunit(Rep& p, Args... args) const { Parent_t::invmodunit(p,args...); return p; }
+        template<typename... Args>
+        Rep& gcd(Rep& p, Args... args) const { Parent_t::gcd(p,args...); return p; }
+        template<typename... Args>
+        Rep& lcm(Rep& p, Args... args) const { Parent_t::lcm(p,args...); return p; }
+        template<typename... Args>
+        Rep& ratrecon(Rep& p, Args... args) const { Parent_t::ratrecon(p,args...); return p; }
+           //===========================================
+
 
 		template<template<class,class> class Vector,template <class> class Alloc>
         Vector<Polynomial, Alloc<Polynomial> >&
