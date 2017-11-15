@@ -1,4 +1,3 @@
-
 /* tests/test-givaropoly.C
  * Copyright (C) 2014 Gavin Harrison,
  *
