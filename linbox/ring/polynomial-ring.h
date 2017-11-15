@@ -69,16 +69,16 @@ namespace LinBox {
 
         PolynomialRing (const BaseRing& R)
                 : Parent_t(R),
-                  zero(Parent_t::zero,R),
-                  one(Parent_t::one,R),
-                  mOne(Parent_t::mOne,R)
+                  zero(R,Parent_t::zero),
+                  one(R,Parent_t::one),
+                  mOne(R,Parent_t::mOne)
             {}
         
         PolynomialRing (const BaseRing& R, const Givaro::Indeter& I)
                 : Parent_t(R, I),
-                  zero(Parent_t::zero,R),
-                  one(Parent_t::one,R),
-                  mOne(Parent_t::mOne,R)
+                  zero(R,Parent_t::zero),
+                  one(R,Parent_t::one),
+                  mOne(R,Parent_t::mOne)
             {}
 
                    // -- Init polynomial adds his base field
@@ -104,7 +104,7 @@ namespace LinBox {
             this->CZfactor(giv_factors, exp, P); // Cantor-Zassenhaus factorization
             factors.clear();
             for (size_t i=0; i<giv_factors.size();i++){
-                factors.push_back(Element(giv_factors[i],this->_domain));
+                factors.emplace_back(this->_domain,giv_factors[i]);
             }
             return factors;
         }
