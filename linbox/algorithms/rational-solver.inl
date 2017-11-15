@@ -59,7 +59,7 @@
 #include "linbox/util/timer.h"
 // #endif
 
-#define DEBUG_DIXON
+//#define DEBUG_DIXON
 //#define DEBUG_INC
 //#define SKIP_NONSINGULAR
 
