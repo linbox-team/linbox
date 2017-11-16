@@ -18,7 +18,7 @@ using namespace LinBox;
 
 typedef Givaro::Modular<double> Field;
 typedef typename Field::Element Element;
-typedef SparseMatrix<Field, SparseMatrixFormat::TPL> SparseMat;
+typedef SparseMatrix<Field, SparseMatrixFormat::COO> SparseMat;
 
 typedef NTL_zz_pX PolynomialRing;
 typedef typename PolynomialRing::Element Polynomial;
