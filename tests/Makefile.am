@@ -40,7 +40,7 @@ AM_CPPFLAGS = -DLinBoxTestOnly $(TESTS_CFLAGS) $(DEBUG_CFLAGS)
 
 SUBDIRS = data matrix
 
-AM_CPPFLAGS+= -I$(top_srcdir)/linbox $(DEPS_CFLAGS)
+AM_CPPFLAGS+= -I$(top_srcdir) $(DEPS_CFLAGS)
 LDADD = $(DEPS_LIBS) $(LDFLAGS)
 AM_LDFLAGS = $(top_builddir)/linbox/liblinbox.la
 #  AM_LDFLAGS+=-static -Wl,-rpath -Wl,

@@ -1,8 +1,7 @@
-
 /* tests/test-givaropoly.C
- * Copyright (C) 2014 Gavin Harrison,
+ * Copyright (C) 2014 The LinBox group,
  *
- * Written by Gavin Harrison <gmh33@drexel.edu>,
+ * Written by Gavin Harrison <gmh33@drexel.edu>, Jean-Guillaume.Dumas@imag.fr
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -41,6 +40,7 @@
 //#include "linbox/ring/polynomial-ring.h"
 #include <givaro/givpoly1factor.h>
 #include "linbox/ring/modular.h"
+#include <givaro/givquotientdomain.h>
 
 #include "test-field.h"
 
@@ -63,46 +63,54 @@ int main (int argc, char **argv)
 	bool pass = true;
 
 	typedef Givaro::Modular<float> BaseDom;
-	typedef Givaro::Poly1Dom<BaseDom, Givaro::Dense> PolyDom;
-	typedef Givaro::Poly1FactorDom<BaseDom, Givaro::Dense> PolyFactorDom;
-    // PolynomialRing has some ring members missing, eg., init, one, mOne, zero.
-	//typedef PolynomialRing<BaseDom> PolyDom;
+
+	typedef PolynomialRing<BaseDom> PolyDom;
+	typedef PolynomialRing<PolyDom> Bivariate;
 	
-	BaseDom Fp(p);
-	PolyDom Poly(Fp);
-	PolyFactorDom PolyFac(Fp);
 
 	// Make sure some more detailed messages get printed
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	commentator().start ("Testing GivaroPoly", "main", 10);
+	commentator().start ("Testing LB Polynomial ring", "main", 10);
 	
-	if ( not testRing (Poly, "Poly1Dom<Modular<float>>"))
+	BaseDom Fp(p);
+	PolyDom Poly(Fp,"X");
+	if ( not testRing (Poly, "PolynomialRing<Modular<float>>"))
 		pass = false;
 	commentator().progress ();
 	
-	if ( not runPIRTests(Poly, "Poly1Dom<Modular<float>>"))
+	Bivariate PPo(Poly,"Y");
+	if ( not testRing (PPo, "PolynomialRing<PolynomialRing<Modular<float>>>"))
 		pass = false;
 	commentator().progress ();
 	
-	if ( not testRing (PolyFac, "Poly1FactorDom<Modular<float>>"))
+    PolyDom::Element Q;
+    Poly.init(Q, Givaro::Degree(2)); // X^2
+
+    typedef Givaro::QuotientDom<PolyDom> Quotient;
+    Quotient QD(Poly, Q);
+
+    if ( not testRing (QD, "QuotientDom<PolynomialRing<Modular<float>>>"))
 		pass = false;
 	commentator().progress ();
-	
-	if ( not runPIRTests(PolyFac, "Poly1FactorDom<Modular<float>>"))
+
+    Fp.init(Q[0], 1); // X^2+1
+    if (p==2) Fp.init(Q[1],1); // X^2+X+1
+
+    if ( not testField(QD, "Irreducible QuotientDom<PolynomialRing<Modular<float>>>"))
 		pass = false;
 	commentator().progress ();
-	
+
 	commentator().stop("PolynomialRing test suite");
 	return pass ? 0 : -1;
 }
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
 

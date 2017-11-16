@@ -2,7 +2,7 @@
  * Copyright (C) LinBox 2009
  *
  * Written by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
- * Time-stamp: <29 Oct 15 20:18:20 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <13 Nov 17 16:59:23 Jean-Guillaume.Dumas@imag.fr>
  *
  *
  * ========LICENCE========
@@ -65,8 +65,8 @@ namespace LinBox
 		unsigned long Rank;
 		const GF2 F2;
 		SparseSeqMatrix L(F2, A.rowdim(), A.rowdim());
-		Permutation<GF2> Q((int)A.rowdim(),F2);
-		Permutation<GF2> P((int)A.coldim(),F2);
+		Permutation<GF2> Q(F2,(int)A.rowdim());
+		Permutation<GF2> P(F2,(int)A.coldim());
 
 		this->QLUPin(Rank, Det, Q, L, A, P, A.rowdim(), A.coldim() );
 

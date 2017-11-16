@@ -101,7 +101,8 @@ typename Field::Element& expt (const Field &F, typename Field::Element &res, con
 		expt (F, res, a, n);
 		typename Field::Element tmp;
 		F.init(tmp);
-		F.assign(res, F.mul (tmp, res, res));
+		F.mul (tmp, res, res);
+                F.assign(res,tmp);
 	}
 
 	return res;

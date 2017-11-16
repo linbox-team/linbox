@@ -94,7 +94,14 @@ namespace LinBox
 			}
 			
 			Element g;
+<<<<<<< HEAD
 			_F.dxgcd(g, s, t, u, v, a, b);
+=======
+// 			field().dxgcd(g,s,t,u,v,a,b);
+            field().gcd(g,s,t,a,b);
+            field().div(u,a,g);
+            field().div(v,b,g);
+>>>>>>> master
 		}
 		
 		template<class Matrix>
@@ -189,6 +196,7 @@ namespace LinBox
 			_MD.mulin(otherRow, u);
 			_MD.saxpyin(otherRow, v, pivotCopy);
 		}
+<<<<<<< HEAD
 		
 		template<class Matrix>
 		void eliminateCol(Matrix &A) {
@@ -208,6 +216,75 @@ namespace LinBox
 			for (size_t i = 1; i < A.coldim(); i++) {
 				if (!_F.isZero(A.getEntry(0, i))) {
 					return false;
+=======
+
+		Element &normalize(Element &z, const Element &x) const {
+            typename Element::Domain_t::Type_t a;
+            field().leadcoef(a, x);
+            field().div(z, x, a);
+            return z;
+		}
+
+		void reduceOffDiagonal(Rep &A, int s, int e) const
+		{
+			for (int i = s; i <= e; i++)
+			{
+				Element nii,ii;
+				A.getEntry(ii, i, i);
+				normalize(nii,ii);
+
+				Element tmp;
+				field().div(tmp, nii, ii);
+
+				if (field().isOne(tmp))
+					continue;
+
+				// A[i] = A[i,i] * n
+				// where n = normalized(A[i,i]) / A[i,i]
+				A.setEntry(i, i, nii);
+				for (size_t j = i+1; j < A.coldim(); j++)
+				{
+					Element ij;
+					A.getEntry(ij, i, j);
+					field().mulin(ij, tmp);
+					A.setEntry(i, j, ij);
+				}
+			}
+
+			// Ording of reduction here is an improvement to Kannan/Bachem
+			// Introduced by Chou/Collins '82
+			// Reduce from bottom to top and left to right
+			// * 4 5 6
+			// 0 * 2 3
+			// 0 0 * 1
+			// 0 0 0 *
+			for (int i = e-1; i >= s; i--)
+			{
+				for (int j = i+1; j <= e; j++)
+				{
+					Element jj, ij, tmp;
+
+					A.getEntry(ij, i, j);
+					if (field().isZero(ij))
+						continue;
+
+					A.getEntry(jj, j, j);
+					field().div(tmp, ij, jj);
+
+					// A[i] = A[i] - quo(A[i,j], A[j,j]) * A[j]
+					for (size_t k = j; k < A.coldim(); k++)
+					{
+						Element ik, jk;
+
+						A.getEntry(ik, i, k);
+						A.getEntry(jk, j, k);
+
+						field().mulin(jk, tmp);
+						field().subin(ik, jk);
+
+						A.setEntry(i, k, ik);
+					}
+>>>>>>> master
 				}
 			}
 			
@@ -257,6 +334,7 @@ namespace LinBox
 				_MD.saxpyin(otherRow, q, pivotRow);
 			}
 		}
+<<<<<<< HEAD
 		
 		template<class Matrix>
 		void hermite(Matrix &A) {
@@ -284,6 +362,51 @@ namespace LinBox
 				size_t dim = A.rowdim() < A.coldim() ? A.rowdim() : A.coldim();
 				for (size_t i = 0; i < dim; i++) {
 					L.push_back(_F.zero);
+=======
+
+		bool areAssociates(const Element &x, const Element &y) const {
+			typename Element::Domain_t::Type_t a, b;
+			Element z;
+
+			field().leadcoef(a, x);
+			field().leadcoef(b, y);
+
+			field().subdomain().divin(a, b);
+
+			field().mul(z, y, a);
+
+			return field().areEqual(x, z);
+		}
+
+		bool pivotDividesRemaining(Rep &A, int n) const
+		{
+			Element nn;
+			A.getEntry(nn, n, n);
+
+			for (size_t i = n+1; i < A.rowdim(); i++)
+			{
+				for (size_t j = i; j < A.coldim(); j++)
+				{
+					Element ij, g;
+					A.getEntry(ij, i, j);
+
+					if (field().isZero(ij))
+						continue;
+
+					field().gcd(g, nn, ij);
+
+					if (!areAssociates(g, nn))
+					{
+						// Add row i to row n
+						for (size_t k = i; k < A.coldim(); k++)
+						{
+							Element ik;
+							A.getEntry(ik, i, k);
+							A.setEntry(n, k, ik);
+						}
+						return false;
+					}
+>>>>>>> master
 				}
 				return;
 			}

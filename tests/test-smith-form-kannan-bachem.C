@@ -10,8 +10,7 @@
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/matrix/matrix-domain.h"
 
-#include "givaro/givpoly1.h"
-#include "linbox/ring/givaro-poly.h"
+#include <linbox/ring/polynomial-ring.h>
 #include "linbox/algorithms/smith-form-kannan-bachem.h"
 
 using namespace std;
@@ -19,8 +18,8 @@ using namespace LinBox;
 
 int main(int argc, char **argv) {
 	typedef Givaro::Modular<double> Field;
-	typedef Givaro::Poly1Dom<Field,Givaro::Dense> PolyDom;
-	typedef GivaroPoly<PolyDom> PolyRing;
+	typedef PolynomialRing<Field> PolyDom;
+	typedef PolynomialRing<PolyDom> PolyRing;
 	typedef PolyRing::Element Element;
 	typedef DenseVector<PolyRing> PolyVector;
 	typedef MatrixDomain<PolyRing> PolyMatDom;

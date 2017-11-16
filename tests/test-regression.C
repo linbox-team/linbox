@@ -27,11 +27,11 @@
  * @ingroup tests
  * @brief tests former bugs to check that no regression made them show up again.
  */
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 #include "givaro/modular.h"
 #include "linbox/matrix/sparse-matrix.h"
 #include "linbox/vector/blas-vector.h"
-#include "solutions/solve.h"
+#include "linbox/solutions/solve.h"
 using namespace LinBox;
 
 bool testSolveSparse(){

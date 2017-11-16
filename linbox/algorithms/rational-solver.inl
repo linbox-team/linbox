@@ -59,7 +59,7 @@
 #include "linbox/util/timer.h"
 // #endif
 
-#define DEBUG_DIXON
+//#define DEBUG_DIXON
 //#define DEBUG_INC
 //#define SKIP_NONSINGULAR
 
@@ -1480,7 +1480,7 @@ namespace LinBox
 		FMatrix Ap(A, F);
 
 		// compute LQUP Factorization
-		Permutation<Field> P((int)A.coldim(),F),Q((int)A.rowdim(),F);
+		Permutation<Field> P(F,(int)A.coldim()),Q(F,(int)A.rowdim());
 		FMatrix L(F, A.rowdim(), A.rowdim());
 		unsigned long rank;
 		Element_t det;

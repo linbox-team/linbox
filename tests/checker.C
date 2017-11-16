@@ -29,8 +29,8 @@ The current convention is that (1) linbox' checker.C, runs the tests with no com
 #include <vector>
 //#include <iomanip>
 using namespace std;
-#include "linbox-config.h"
-//#include "linbox/linbox-config.h"
+//#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 //#include "fflas-ffpack/fflas-ffpack.h"
 
 // globals
