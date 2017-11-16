@@ -191,20 +191,9 @@ namespace LinBox
 				_F.addin(tmp, a);
 				
 				M.setEntry(row1, col, tmp);
-				
-				M.finalize();
-				
-				Element tmp2;
-				M.getEntry(tmp2, row1, col);
-				
-				_F.write(std::cout, tmp) << " = ";
-				_F.write(std::cout, a) << " + ";
-				_F.write(std::cout, b) << " * ";
-				_F.write(std::cout, z) << " = ";
-				_F.write(std::cout, tmp2) << std::endl;
-				
-				assert(_F.areEqual(tmp, tmp2));
 			}
+				
+			M.finalize();
 		}
 		
 		template<class Matrix>
@@ -219,20 +208,9 @@ namespace LinBox
 				_F.addin(tmp, a);
 				
 				M.setEntry(row, col1, tmp);
-				
-				M.finalize();
-				
-				Element tmp2;
-				M.getEntry(tmp2, row, col1);
-				
-				_F.write(std::cout, tmp) << " = ";
-				_F.write(std::cout, a) << " + ";
-				_F.write(std::cout, b) << " * ";
-				_F.write(std::cout, z) << " = ";
-				_F.write(std::cout, tmp2) << std::endl;
-				
-				assert(_F.areEqual(tmp, tmp2));
 			}
+			
+			M.finalize();
 		}
 		
 		/**
@@ -242,33 +220,20 @@ namespace LinBox
 		void fillIn(Matrix &M, double targetSparsity) {
 			size_t dim = M.rowdim();
 			
-			printMatrix(M);
-			
 			while (sparsity(M) < targetSparsity) {
 				Element z;
 				do {
 					_F.init(z, rand());
 				} while(_F.isZero(z));
-				_F.write(std::cout << "Scale Row: ", z) << std::endl;
 				
 				size_t a = nextInt(dim, -1);
 				size_t b = nextInt(dim, a);
 				
-				std::cout << "rows: " << a << ", " << b << std::endl;
-				
 				addRow(M, a, b, z);
-				printMatrix(M);
 				
 				_F.negin(z);
-				_F.write(std::cout << "Scale Col: ", z) << std::endl;
-				std::cout << "cols: " << b << ", " << a << std::endl;
 				addCol(M, b, a, z);
-				printMatrix(M);
-				std::cout << std::endl;
-				// return;
 			}
-			
-			printMatrix(M);
 		}
 	};
 }
