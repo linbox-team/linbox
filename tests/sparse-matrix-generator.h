@@ -32,26 +32,6 @@ namespace LinBox
 	public:
 		SparseMatrixGenerator(const Field &F, const PolynomialRing &R): _F(F), _R(R) {}
 		
-		template<class Matrix1>
-		void printMatrix(const Matrix1 &A) const {
-			std::cout << "matrix(K, " << A.rowdim() << ", " << A.coldim() << ", [" << std::endl;
-			for (size_t i = 0; i < A.rowdim(); i++) {
-				std::cout << "\t[";
-				for (size_t j = 0; j < A.coldim(); j++) {
-					_F.write(std::cout, A.getEntry(i, j));
-					if (j < A.coldim() - 1) {
-						std::cout << ", ";
-					}
-				}
-				std::cout << "]";
-				if (i < A.rowdim() - 1) {
-					std::cout << ",";
-				}
-				std::cout << std::endl;
-			}
-			std::cout << "])" << std::endl;
-		}
-		
 		/**
 		 * Reads a file of format:
 		 * <number of bumps>
