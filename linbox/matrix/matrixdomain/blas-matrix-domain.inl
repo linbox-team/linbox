@@ -2033,7 +2033,6 @@ namespace LinBox
 		linbox_check( n == A.rowdim());
 		typedef typename Matrix::constSubMatrixType constSubMatrixType ;
 		constSubMatrixType A_v(A);
-
 		FFPACK::MinPoly<Field, Polynomial>(  F, P, n, A_v.getPointer(), A_v.getStride());
 		commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "minpoly with " << P.size() << " coefficients" << std::endl;
 

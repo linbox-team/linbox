@@ -257,6 +257,15 @@ bool testZeroDimensionalCharpoly(){
     return PR.isOne(P);
 }
 
+bool testZeroDimensionalMinPoly(){
+    Givaro::ZRing<Integer> ZZ;
+    DenseMatrix<Givaro::ZRing<Integer> > A (ZZ,0,0);
+    DensePolynomial<Givaro::ZRing<Integer> > P (ZZ);
+    PolynomialRing<Givaro::ZRing<Integer> > PR (ZZ);
+    minpoly(P,A);
+    return PR.isOne(P);
+}
+
 int main (int argc, char **argv)
 {
     bool pass = true;
@@ -277,6 +286,7 @@ int main (int argc, char **argv)
     pass &= testSingularDixonSolver (Method::BlasElimination());
     pass &= testZeroDixonSolver (Method::BlasElimination());
     pass &= testZeroDimensionalCharpoly ();
+    pass &= testZeroDimensionalMinPoly ();
 
     return pass ? 0 : -1;
 }
