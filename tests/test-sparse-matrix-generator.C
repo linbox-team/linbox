@@ -18,7 +18,7 @@ using namespace LinBox;
 
 typedef Givaro::Modular<double> Field;
 typedef typename Field::Element Element;
-typedef SparseMatrix<Field, SparseMatrixFormat::COO> SparseMat;
+typedef SparseMatrix<Field, SparseMatrixFormat::ELL> SparseMat;
 
 typedef NTL_zz_pX PolynomialRing;
 typedef typename PolynomialRing::Element Polynomial;
@@ -37,6 +37,8 @@ int main(int argc, char** argv)
 	};
 
 	parseArguments(argc,argv,args);
+	
+	srand(time(NULL));
 
 	Field F(p);
 	PolynomialRing R(p);
@@ -56,6 +58,9 @@ int main(int argc, char** argv)
 	Gen.build(M, fs);
 	
 	TestPolySmithFormUtil<Field> util(F);
+	util.printMatrix(M);
+	
+	Gen.fillIn(M, 0.5);
 	util.printMatrix(M);
 
 	return 0;

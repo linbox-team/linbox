@@ -80,7 +80,7 @@ namespace LinBox {
 // #include "sparsematrix/sparse-dia-matrix.h"
 // #include "sparsematrix/sparse-hyb-matrix.h"
 
-// #include "sparsematrix/sparse-tpl-matrix.h"
+#include "sparsematrix/sparse-tpl-matrix.h"
 // #ifdef __LINBOX_USES_OPENMP
 #ifdef _OPENMP
 #include "sparsematrix/sparse-tpl-matrix-omp.h"

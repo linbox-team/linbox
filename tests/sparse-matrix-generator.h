@@ -28,20 +28,37 @@ namespace LinBox
 	private:
 		Field _F;
 		PolynomialRing _R;
-		MatrixDom _MD;
 		
 	public:
-		SparseMatrixGenerator(const Field &F, const PolynomialRing &R): _F(F), _R(R), _MD(F) {}
+		SparseMatrixGenerator(const Field &F, const PolynomialRing &R): _F(F), _R(R) {}
+		
+		template<class Matrix1>
+		void printMatrix(const Matrix1 &A) const {
+			std::cout << "matrix(K, " << A.rowdim() << ", " << A.coldim() << ", [" << std::endl;
+			for (size_t i = 0; i < A.rowdim(); i++) {
+				std::cout << "\t[";
+				for (size_t j = 0; j < A.coldim(); j++) {
+					_F.write(std::cout, A.getEntry(i, j));
+					if (j < A.coldim() - 1) {
+						std::cout << ", ";
+					}
+				}
+				std::cout << "]";
+				if (i < A.rowdim() - 1) {
+					std::cout << ",";
+				}
+				std::cout << std::endl;
+			}
+			std::cout << "])" << std::endl;
+		}
 		
 		/**
 		 * Reads a file of format:
 		 * <number of bumps>
-		 * <index of bump 1> <bump 1>
-		 * <index of bump 2> <bump 2>
+		 * <multiplicity 1> <bump 1>
+		 * <multiplicity 2> <bump 2>
 		 * ...
-		 * <index of end of frobenius form> 0
-		 *
-		 * Note: first bump should be at index 0.
+		 * <multiplicity n> <bump n>
 		 */
 		void readFile(std::vector<Polynomial> &fs, const std::string &filename) const {			
 			std::ifstream in(filename);
@@ -54,25 +71,18 @@ namespace LinBox
 			fs.resize(0);
 			
 			for (size_t i = 0; i < nbumps; i++) {
-				size_t idx;
-				in >> idx;
-				
-				_R.write(std::cout << "f: ", f) << std::endl;
-				
-				while (fs.size() < idx) {
-					Polynomial tmp;
-					_R.assign(tmp, f);
-					fs.push_back(tmp);
-				}
+				size_t multiplicity;
+				in >> multiplicity;
 				
 				Polynomial bump;
 				_R.read(in, bump);
+				_R.write(std::cout << "bump: ", bump) << std::endl;
 				
-				if (_R.isZero(bump)) {
-					return;
+				for (size_t j = 0; j < multiplicity; j++) {
+					Polynomial tmp;
+					_R.assign(tmp, bump);
+					fs.push_back(bump);
 				}
-				
-				_R.mulin(f, bump);
 			}
 		}
 		
@@ -137,6 +147,122 @@ namespace LinBox
 			}
 			
 			return true;
+		}
+		
+		template<class Matrix>
+		double sparsity(const Matrix &M) {
+			double nnz = 0;
+			
+			for (size_t i = 0; i < M.rowdim(); i++) {
+				for (size_t j = 0; j < M.coldim(); j++) {
+					if (_F.isZero(M.getEntry(i,j))) {
+						continue;
+					}
+					
+					nnz++;
+				}
+			}
+			
+			return nnz / (M.rowdim() * M.coldim());
+		}
+		
+		// Next in in [0, limit), not equal to except
+		size_t nextInt(size_t limit, size_t except) {
+			size_t rv = rand() % limit;
+			
+			while(rv == except) {
+				rv = rand() % limit;
+			}
+			
+			return rv;
+		}
+		
+		template<class Matrix>
+		void addRow(Matrix &M, size_t row1, size_t row2, Element &z) {
+			for (size_t col = 0; col < M.coldim(); col++) {
+				Element tmp, a, b;
+				
+				M.getEntry(a, row1, col);
+				M.getEntry(b, row2, col);
+				
+				_F.mul(tmp, b, z);
+				_F.addin(tmp, a);
+				
+				M.setEntry(row1, col, tmp);
+				
+				Element tmp2;
+				M.getEntry(tmp2, row1, col);
+				
+				_F.write(std::cout, tmp) << " = ";
+				_F.write(std::cout, a) << " + ";
+				_F.write(std::cout, b) << " * ";
+				_F.write(std::cout, z) << " = ";
+				_F.write(std::cout, tmp2) << std::endl;
+				
+				assert(_F.areEqual(tmp, tmp2));
+			}
+		}
+		
+		template<class Matrix>
+		void addCol(Matrix &M, size_t col1, size_t col2, Element &z) {
+			for (size_t row = 0; row < M.rowdim(); row++) {
+				Element tmp, a, b;
+				
+				M.getEntry(a, row, col1);
+				M.getEntry(b, row, col2);
+				
+				_F.mul(tmp, b, z);
+				_F.addin(tmp, a);
+				
+				M.setEntry(row, col1, tmp);
+				
+				Element tmp2;
+				M.getEntry(tmp2, row, col1);
+				
+				_F.write(std::cout, tmp) << " = ";
+				_F.write(std::cout, a) << " + ";
+				_F.write(std::cout, b) << " * ";
+				_F.write(std::cout, z) << " = ";
+				_F.write(std::cout, tmp2) << std::endl;
+				
+				assert(_F.areEqual(tmp, tmp2));
+			}
+		}
+		
+		/**
+		 *
+		 */
+		template<class Matrix>
+		void fillIn(Matrix &M, double targetSparsity) {
+			size_t dim = M.rowdim();
+			
+			printMatrix(M);
+			
+			while (sparsity(M) < targetSparsity) {
+				Element z;
+				do {
+					_F.init(z, rand());
+				} while(_F.isZero(z));
+				_F.write(std::cout << "Scale Row: ", z) << std::endl;
+				
+				size_t a = nextInt(dim, -1);
+				size_t b = nextInt(dim, a);
+				
+				std::cout << "rows: " << a << ", " << b << std::endl;
+				
+				addRow(M, a, b, z);
+				printMatrix(M);
+				
+				_F.negin(z);
+				_F.write(std::cout << "Scale Col: ", z) << std::endl;
+				std::cout << "cols: " << b << ", " << a << std::endl;
+				addCol(M, b, a, z);
+				printMatrix(M);
+				std::cout << std::endl;
+				// return;
+			}
+			
+			printMatrix(M);
 		}
 	};
 }

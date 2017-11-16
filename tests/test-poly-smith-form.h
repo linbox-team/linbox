@@ -37,7 +37,8 @@ namespace LinBox
 	public:
 		TestPolySmithFormUtil(const Field &F): _F(F), _MD(F) {}
 		
-		void printMatrix(const Matrix &A) const {
+		template<class Matrix1>
+		void printMatrix(const Matrix1 &A) const {
 			std::cout << "[" << std::endl;
 			for (size_t i = 0; i < A.rowdim(); i++) {
 				std::cout << "\t[";
