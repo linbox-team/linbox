@@ -146,6 +146,8 @@ namespace LinBox
 				offset += d;
 			}
 			
+			M.finalize();
+			
 			return true;
 		}
 		
@@ -190,6 +192,8 @@ namespace LinBox
 				
 				M.setEntry(row1, col, tmp);
 				
+				M.finalize();
+				
 				Element tmp2;
 				M.getEntry(tmp2, row1, col);
 				
@@ -215,6 +219,8 @@ namespace LinBox
 				_F.addin(tmp, a);
 				
 				M.setEntry(row, col1, tmp);
+				
+				M.finalize();
 				
 				Element tmp2;
 				M.getEntry(tmp2, row, col1);
