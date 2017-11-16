@@ -44,11 +44,7 @@ LDADD += $(OPTLIBES)
 
 #  SUBDIRS=fields solver data blackbox
 
-<<<<<<< HEAD
-EXAMPLES=rank det minpoly valence solve dot-product echelon sparseelimdet sparseelimrank checksolve doubledet smithvalence charpoly blassolve solverat sparsesolverat findinvariantfactorsorderbasis polysmithformkb #polysmith bench-fft bench-matpoly-mult
-=======
 EXAMPLES=rank det minpoly valence solve dot-product echelon sparseelimdet sparseelimrank checksolve doubledet smithvalence charpoly blassolve solverat sparsesolverat poweroftwo_ranks power_rank#polysmith bench-fft bench-matpoly-mult
->>>>>>> master
 # EXAMPLES+=nulp yabla 
 GIVARONTL_EXAMPLES=smith graph-charpoly
 if LINBOX_HAVE_NTL
@@ -85,7 +81,7 @@ sparseelimrank_SOURCES = sparseelimrank.C
 solverat_SOURCES       = solverat.C
 sparsesolverat_SOURCES = sparsesolverat.C
 blassolve_SOURCES      = blassolve.C
-polysmithformkb        = polynomial-smith-form-kb.C
+polysmithformkb_SOURCES        = polynomial-smith-form-kb.C
 power_rank_SOURCES     = power_rank.C
 poweroftwo_ranks_SOURCES=poweroftwo_ranks.C
 #smithformlocal_SOURCES = smith-form-local.C
