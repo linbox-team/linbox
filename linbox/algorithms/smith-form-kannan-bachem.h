@@ -25,7 +25,6 @@
  */
 
 #include <iostream>
-#include "linbox/ring/givaro-poly.h"
 #include "linbox/matrix/densematrix/blas-matrix.h"
 #include "linbox/matrix/matrixdomain/matrix-domain.h"
 
@@ -82,10 +81,9 @@ namespace LinBox
 			
 			Element g;
 
-// 			field().dxgcd(g,s,t,u,v,a,b);
-            field().gcd(g,s,t,a,b);
-            field().div(u,a,g);
-            field().div(v,b,g);
+            _F.gcd(g,s,t,a,b);
+            _F.div(u,a,g);
+            _F.div(v,b,g);
 		}
 		
 		template<class Matrix>

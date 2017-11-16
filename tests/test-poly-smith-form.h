@@ -3,7 +3,6 @@
 
 // Polynomial Matrix / Order Basis
 #include "linbox/ring/modular.h"
-#include "linbox/ring/givaro-poly.h"
 #include "linbox/matrix/densematrix/blas-matrix.h"
 #include "linbox/matrix/matrixdomain/matrix-domain.h"
 #include "linbox/algorithms/smith-form-kannan-bachem.h"
