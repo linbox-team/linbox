@@ -56,19 +56,6 @@ namespace LinBox
 	private:
 		
 		template<typename Matrix>
-		void printMatrix(const Matrix &A) const {
-			std::cout << "[" << std::endl;
-			for (size_t i = 0; i < A.rowdim(); i++) {
-				std::cout << "\t[";
-				for (size_t j = 0; j < A.coldim(); j++) {
-					_F.write(std::cout, A.getEntry(i, j)) << ", ";
-				}
-				std::cout << "]" << std::endl;
-			}
-			std::cout << "]" << std::endl;
-		}
-		
-		template<typename Matrix>
 		void swapRows(Matrix &M, size_t r1, size_t r2) const {
 			SubMatrix row1(M, r1, 0, 1, M.coldim());
 			SubMatrix row2(M, r2, 0, 1, M.coldim());
