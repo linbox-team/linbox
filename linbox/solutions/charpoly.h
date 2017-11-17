@@ -186,26 +186,25 @@ namespace LinBox
 		{
 			typedef typename Blackbox::template rebind<Field>::other FBlackbox;
 			FBlackbox Ap(A, F);
-
-                        return charpoly (P, Ap, typename FieldTraits<Field>::categoryTag(), M);
-                        std::cerr << "Charpoly(A) mod "<<F.characteristic()<<" = "<<P;
-			 			integer p;
-			 			F.characteristic(p);
-						std::cerr<<"Charpoly(A) mod "<<p<<" = "<<P;
+			return charpoly (P, Ap, typename FieldTraits<Field>::categoryTag(), M);
+			// std::cerr << "Charpoly(A) mod "<<F.characteristic()<<" = "<<P;
+			// integer p;
+			// F.characteristic(p);
+			// std::cerr<<"Charpoly(A) mod "<<p<<" = "<<P;
 		}
 	};
 
 	template <class Blackbox, class Polynomial>
 	Polynomial& charpoly (Polynomial                       & P,
-			      const Blackbox                   & A,
-			      const RingCategories::IntegerTag & tag,
-			      const Method::Hybrid	       & M)
+						  const Blackbox                   & A,
+						  const RingCategories::IntegerTag & tag,
+						  const Method::Hybrid	       & M)
 	{
 		commentator().start ("Integer Charpoly", "Icharpoly");
-                    // bb method broken, default to dense method
+		// bb method broken, default to dense method
 		if (1/* (A.rowdim() < 1000) && (A.coldim() <1000) */)
 			charpoly(P, A, tag, Method::BlasElimination(M) );
-                else
+		else
 			charpoly(P, A, tag, Method::Blackbox(M) );
 		commentator().stop ("done", NULL, "Icharpoly");
 		return P;

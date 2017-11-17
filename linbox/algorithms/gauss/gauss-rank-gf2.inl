@@ -1,7 +1,7 @@
 /* linbox/algorithms/gauss-rank-gf2.inl
  * Copyright (C) 2009 The LinBox group
  *
- * Time-stamp: <14 Jun 10 15:26:01 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <13 Nov 17 17:00:08 Jean-Guillaume.Dumas@imag.fr>
  *
  * 
  * ========LICENCE========
@@ -42,7 +42,7 @@ namespace LinBox
 	{
 		Element determinant;
 		const GF2 F2;
-		Permutation<GF2> P((int)A.coldim(),F2);
+		Permutation<GF2> P(F2,(int)A.coldim());
 
 		if (reord == SparseEliminationTraits::PIVOT_NONE)
 			return NoReordering(Rank, determinant, A,  Ni, Nj);

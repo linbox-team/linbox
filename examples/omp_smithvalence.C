@@ -125,17 +125,30 @@ std::cout << "Some factors (50000 factoring loop bound): ";
 	std::cout << "num procs: " << omp_get_num_procs() << std::endl;
 	std::cout << "max threads: " << omp_get_max_threads() << std::endl;
 
-#pragma omp parallel for shared(smith, Moduli) 
-	for(size_t j=0; j<(Moduli.size()+1); ++j) {
-        if (j >= Moduli.size()) {
+// #pragma omp parallel for shared(smith, Moduli) 
+// 	for(size_t j=0; j<(Moduli.size()+1); ++j) {
+//         if (j >= Moduli.size()) {
+//             LRank(coprimeR, argv[1], coprimeV);
+//             std::cerr << "Integer Rank (mod " << coprimeV << ") is " << coprimeR << " on thread: " << omp_get_thread_num() << std::endl;
+//         } else {            
+//             unsigned long r; LRank(r, argv[1], Moduli[j]);
+//             std::cerr << "Rank mod " << Moduli[j] << " is " << r << " on thread: " << omp_get_thread_num() << std::endl;
+//             smith[j] = PairIntRk( Moduli[j], r);
+//         }
+// 	}
+#pragma omp parallel 
+    {
+#pragma omp single
+        {
+            for(size_t j=0; j<Moduli.size(); ++j) {
+                smith[j].first = Moduli[j];
+#pragma omp task shared(smith,argv) firstprivate(j)
+                LRank(smith[j].second, argv[1], smith[j].first);
+            }
             LRank(coprimeR, argv[1], coprimeV);
-            std::cerr << "Integer Rank (mod " << coprimeV << ") is " << coprimeR << " on thread: " << omp_get_thread_num() << std::endl;
-        } else {            
-            unsigned long r; LRank(r, argv[1], Moduli[j]);
-            std::cerr << "Rank mod " << Moduli[j] << " is " << r << " on thread: " << omp_get_thread_num() << std::endl;
-            smith[j] = PairIntRk( Moduli[j], r);
         }
 	}
+
  
 	std::vector<Givaro::Integer> SmithDiagonal(coprimeR,Givaro::Integer(1));
 

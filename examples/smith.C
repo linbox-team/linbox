@@ -199,7 +199,7 @@ int main(int argc, char* argv[])
                 // using Sparse Elimination
 			LinBox::PowerGaussDomain< Field > PGD( F );
 			std::vector<std::pair<size_t,Field::Element> > local;
-            LinBox::Permutation<Field> Q(B.coldim(),F);
+            LinBox::Permutation<Field> Q(F,B.coldim());
 
 			PGD(local, B, Q, (int32_t)m, (int32_t)p);
 

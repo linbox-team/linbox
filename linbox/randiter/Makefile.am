@@ -39,8 +39,7 @@ BASIC_HDRS =            \
     random-prime.h      \
     gmp-random-prime.h  \
     random-fftprime.h   \
-    multimod-randomprime.h \
-    givaro-poly.h
+    multimod-randomprime.h
 
 NTL_HDRS = ntl-zz.h
 

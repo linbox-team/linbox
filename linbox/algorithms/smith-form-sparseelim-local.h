@@ -55,6 +55,7 @@ namespace LinBox
     };
 
     enum {
+            // Combine these in binary for use in StaticParameters
         PRIVILEGIATE_NO_COLUMN_PIVOTING	= 1,
         PRIVILEGIATE_REDUCING_FILLIN	= 2,
         PRESERVE_UPPER_MATRIX		= 4
@@ -532,7 +533,7 @@ std::cerr << "------CP---- permuting cols " << indcol << " and " << indpermut <<
 		}
 
 		template<class Modulo, class BB, class D, class Container, class Perm>
-		void prime_power_rankin (Modulo FMOD, Modulo PRIME, Container& ranks, BB& SLA, Perm& Q, const size_t Ni, const size_t Nj, const D& density_trait, int StaticParameters=0)
+		void prime_power_rankin (Modulo FMOD, Modulo PRIME, Container& ranks, BB& SLA, Perm& Q, const size_t Ni, const size_t Nj, const D& density_trait, int StaticParameters=PRIVILEGIATE_NO_COLUMN_PIVOTING)
 		{
             if (PRIVILEGIATE_NO_COLUMN_PIVOTING & StaticParameters) {
                 if (PRESERVE_UPPER_MATRIX & StaticParameters) {
@@ -551,19 +552,18 @@ std::cerr << "------CP---- permuting cols " << indcol << " and " << indpermut <<
 
 
 		template<class Modulo, class Matrix, class Perm, template<class, class> class Container, template<class> class Alloc>
-		Container<std::pair<size_t,Modulo>, Alloc<std::pair<size_t,Modulo> > >& operator()(Container<std::pair<size_t,Modulo>, Alloc<std::pair<size_t,Modulo> > >& L, Matrix& A, Perm& Q, Modulo FMOD, Modulo PRIME, int StaticParameters=0)
+		Container<std::pair<size_t,Modulo>, Alloc<std::pair<size_t,Modulo> > >& operator()(Container<std::pair<size_t,Modulo>, Alloc<std::pair<size_t,Modulo> > >& L, Matrix& A, Perm& Q, Modulo FMOD, Modulo PRIME, int StaticParameters=PRIVILEGIATE_NO_COLUMN_PIVOTING)
 		{
 			Container<size_t, Alloc<size_t> > ranks;
 			prime_power_rankin( FMOD, PRIME, ranks, A, Q, A.rowdim(), A.coldim(), std::vector<size_t>(), StaticParameters);
 			L.resize( 0 ) ;
-			size_t MOD = 1;
+			Modulo MOD = 1;
 			size_t num = 0;
 			for( typename Container<size_t, Alloc<size_t> >::const_iterator it = ranks.begin(); it != ranks.end(); ++it) {
-				size_t diff;
-				diff = *it-num;
+				size_t diff(*it-num);
 				if (diff > 0)
-					L.push_back( std::pair<size_t,Modulo>(*it-num,MOD) );
-				MOD *= (size_t)PRIME;
+					L.push_back( std::pair<size_t,Modulo>(diff,MOD) );
+				MOD *= PRIME;
 				num = *it;
 			}
 			return L;

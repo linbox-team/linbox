@@ -62,7 +62,7 @@ namespace LinBox
 		 * @param indices Vector of indices representing the permutation
 		 * Permutation P has 1 in the P_{i, _indices[i]} positions.
 		 */
-		Permutation (Storage & indices, const Field& F = Field()) :
+		Permutation (Storage & indices, const Field& F) :
 			_field(F), _indices (indices)
 		{}
 
@@ -73,25 +73,25 @@ namespace LinBox
 			return *this;
 		}
 
-		Permutation (size_t* P, size_t n, const Field& F = Field()) 
-		: _field(F) 
-		{ init(P, n); }
+		Permutation (size_t* P, size_t n, const Field& F)
+		: _field(F) {
+            init(P, n);
+        }
 
 		/** \brief n x n permutation matrix, initially the identity.
 		 * @param n The dimension of the matrix 
 		 * @param F field or ring
 		 */
-		Permutation (int n, const Field& F = Field()) :
-			_field(F)
+		Permutation (int n, const Field& F) : _field(F)
 		{
 			identity(n);
 		}
 
-		Permutation (const Field& F = Field(), size_t n=0, size_t m = 0) :
-			_field(F)
+		Permutation (const Field& F, size_t n=0, size_t m = 0) : _field(F)
 		{
 			identity((int)n);
 		}
+
 
 
 		//!@bug should be size_t
