@@ -224,8 +224,8 @@ namespace LinBox
 			     const MyMethod                     &M)
 	{
                 if (A.rowdim() == 0 || A.coldim() == 0){
-                        typename Polynomial::Domain_t PD(P.field());
-                        PD.assign(P,PD.one);
+                        P.resize(1);
+                        P.field().assign(P[0],P.field().one);
                         return P;
                 }
 #if 0
