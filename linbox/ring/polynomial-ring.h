@@ -184,8 +184,6 @@ namespace LinBox {
             return z;
 		}
 
-
-        
     };
 }
 
