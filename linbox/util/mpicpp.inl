@@ -66,7 +66,7 @@ namespace LinBox
 
 	// peer to peer communication
 	template < class Ptr >
-	void Communicator::send( Ptr b, Ptr e, int dest, int tag = 0)
+	void Communicator::send( Ptr b, Ptr e, int dest, int tag)
 	{
 		MPI_Send( &*b,
 			  (e - b)*sizeof(typename Ptr::value_type),
@@ -77,7 +77,7 @@ namespace LinBox
 	}
 
 	template < class Ptr >
-	void Communicator::ssend( Ptr b, Ptr e, int dest, int tag = 0)
+	void Communicator::ssend( Ptr b, Ptr e, int dest, int tag)
 	{	MPI_Ssend( &b[0],
 			   //(e - b)*sizeof(iterator_traits<Ptr>::value_type),
 			   (e-b)*sizeof(int *),
@@ -88,7 +88,7 @@ namespace LinBox
 	}
 
 	template < class Ptr >
-	void Communicator::recv( Ptr b, Ptr e, int dest, int tag = 0)
+	void Communicator::recv( Ptr b, Ptr e, int dest, int tag)
 	{
 		MPI_Recv( &b[0],
 			  (e - b)*sizeof(typename Ptr::value_type),
@@ -100,7 +100,7 @@ namespace LinBox
 	}
 
 	template < class X >
-	void Communicator::send( X *b, X *e, int dest, int tag = 0)
+	void Communicator::send( X *b, X *e, int dest, int tag)
 	{
 		MPI_Send( b,
 			  (e - b)*sizeof(X),
@@ -112,7 +112,7 @@ namespace LinBox
 
 
 	template < class X >
-	void Communicator::recv( X *b, X *e, int dest, int tag = 0)
+	void Communicator::recv( X *b, X *e, int dest, int tag)
 	{
 		MPI_Recv( b,
 			  (e - b)*sizeof(X),
