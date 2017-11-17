@@ -2,7 +2,7 @@
  *
  * Copyright (C) 2012 LinBox
  * Written by J-G Dumas
- * Time-stamp: <29 Mar 16 15:58:16 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <13 Nov 17 17:34:40 Jean-Guillaume.Dumas@imag.fr>
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
@@ -49,20 +49,28 @@ void runpoweroftworank(ifstream& input, const size_t exponent) {
 
     input.close();
     LinBox::PowerGaussDomainPowerOfTwo< Int_type > PGD;
+    LinBox::GF2 F2;
+    Permutation<GF2> Q(F2,A.coldim());
             
     cout << "B is " << A.rowdim() << " by " << A.coldim() << endl;
 //     R.write(std::cerr << "Last entry: ", A.getEntry(A.rowdim()-1,A.coldim()-1)) << std::endl;
+    if (A.rowdim() <= 20 && A.coldim() <= 20) A.write(cout,Tag::FileFormat::Maple) << endl;
 
     Givaro::Timer tim; 
     tim.clear(); tim.start();
-    PGD(local, A, exponent);
+    PGD(local, A, Q, exponent);
     tim.stop();
 
     R.write(std::cout << "Local Smith Form ") << " : " << std::endl << '(';
     for (auto  p = local.begin(); p != local.end(); ++p)
-        std::cout << '[' << p->second << ',' << p->first << "] ";
+        std::cout << '[' << p->first << ',' << p->second << "] ";
     cout << ')' << endl;
        
+    if (A.rowdim() <= 20 && A.coldim() <= 20) {
+        A.write(cerr,Tag::FileFormat::Maple) << endl;
+        Q.write(cerr,Tag::FileFormat::Maple) << endl;
+    }
+
     std::cerr << tim << std::endl;
 }
 

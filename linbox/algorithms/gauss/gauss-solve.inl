@@ -2,7 +2,7 @@
  * Copyright (C) LinBox 2008
  *
  * Written by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
- * Time-stamp: <09 Nov 17 09:29:51 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <13 Nov 17 17:00:53 Jean-Guillaume.Dumas@imag.fr>
  *
  *
  * ========LICENCE========
@@ -64,8 +64,8 @@ namespace LinBox
 		typename Field::Element Det;
 		unsigned long Rank;
 		_Matrix L(field(), A.rowdim(), A.rowdim());
-		Permutation<Field> Q((int)A.rowdim(),field());
-		Permutation<Field> P((int)A.coldim(),field());
+		Permutation<Field> Q(field(),(int)A.rowdim());
+		Permutation<Field> P(field(),(int)A.coldim());
 
 		this->QLUPin(Rank, Det, Q, L, A, P, A.rowdim(), A.coldim() );
 
@@ -101,8 +101,8 @@ namespace LinBox
 		typename Field::Element Det;
 		unsigned long Rank;
 		_Matrix L(field(), A.rowdim(), A.rowdim());
-		Permutation<Field> Q((int)A.rowdim(),field());
-		Permutation<Field> P((int)A.coldim(),field());
+		Permutation<Field> Q(field(),(int)A.rowdim());
+		Permutation<Field> P(field(),(int)A.coldim());
 
 		this->QLUPin(Rank, Det, Q, L, A, P, A.rowdim(), A.coldim() );
 
