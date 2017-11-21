@@ -1,3 +1,12 @@
+2017-11-17 v1.5.0
+	Improvements:
+	* improved build system (instruction set detection, C++11 and clang compatibility, ...)
+	* many bug fixes
+	* increased test-suite coverage
+
+	Changes in API:
+	* new PolynomialRing and DensePolynomial classes, and update interraction with Givaro and FFLAS
+
 2016-07-30 cpernet v1.4.2
 	* cleanup and new features on polynomial matrices
 	* many bug fixes ensuring support of gcc-4.8, 5.3, 6.1 clang-3.4 and

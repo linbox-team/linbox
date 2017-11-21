@@ -140,6 +140,7 @@ namespace LinBox {
            //===========================================
 
 
+            // Additional methods
 		template<template<class,class> class Vector,template <class> class Alloc>
         Vector<Polynomial, Alloc<Polynomial> >&
         factor (Vector<Polynomial,Alloc<Polynomial> >& factors,
@@ -154,6 +155,35 @@ namespace LinBox {
             }
             return factors;
         }
+
+		bool areAssociates(const Element &x, const Element &y) const {
+			Type_t a, b; Parent_t::subdomain().init(a); Parent_t::subdomain().init(b);
+			Element z; this->init(z);
+
+            Parent_t::leadcoef(a, x);
+			Parent_t::leadcoef(b, y);
+
+			Parent_t::subdomain().divin(a, b);
+
+			Parent_t::mul(z, y, a);
+
+			return Parent_t::areEqual(x, z);
+		}
+
+		Element &normalize(Element &z, const Element &x) const {
+            Type_t a; Parent_t::subdomain().init(a);
+            Parent_t::leadcoef(a, x);
+            Parent_t::div(z, x, a);
+            return z;
+		}
+
+		Element &normalizein(Element &z) const {
+            Type_t a; Parent_t::subdomain().init(a);
+            Parent_t::leadcoef(a, z);
+            Parent_t::divin(z, a);
+            return z;
+		}
+
     };
 }
 
