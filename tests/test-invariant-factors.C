@@ -142,6 +142,9 @@ int main(int argc, char** argv)
 	TW.start();
 	
 	SFD.solve(result, G);
+	// SFD.solveTextbook(result, G);
+	// SFD.solveAdaptive(result, G); // half tb then ilio w/ computed det
+	// SFD.solveIliopoulos(result, G, det);
 	
 	TW.stop();
 	double sf_time = TW.usertime();
