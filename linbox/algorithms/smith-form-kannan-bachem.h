@@ -408,8 +408,6 @@ namespace LinBox
 				_F.mulin(d, ds[i]);
 			}
 			
-			eliminateRow(A, d);
-			
 			solveIliopoulosHelper(L, A, d);
 			fixDiagonal(L);
 		}
