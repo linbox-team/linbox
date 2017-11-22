@@ -70,7 +70,7 @@ int main(int argc, char** argv)
 	SparseMatrixGenerator<Field, PolynomialRing> Gen(F, R);
 	TestPolySmithFormUtil<Field> util(F);
 	
-	// create sparse matrix from bumps and 
+	// create sparse matrix from bumps and compute determinant
 	SparseMat M(F, n, n);
 	Polynomial det;
 	Gen.generate(M, det, bumpFile, sparsity);
@@ -78,6 +78,7 @@ int main(int argc, char** argv)
 	
 	R.write(std::cout << "det: ", det) << std::endl;
 	
+	// Generate random left and right projectors
 	RandIter RI(F);
 	RandomMatrix RM(F, RI);
 	
@@ -87,8 +88,10 @@ int main(int argc, char** argv)
 	RM.random(U);
 	RM.random(V);
 	
+	// Construct block sequence to input to BM
 	Sequence seq(&M, F, U, V);
 	
+	// Compute minimal generating polynomial matrix
 	MasseyDom BMD(&seq);
 	
 	std::vector<Matrix> minpoly;
@@ -107,6 +110,7 @@ int main(int argc, char** argv)
 	TW.clear();
 	TW.start();
 	
+	// Convert to matrix with polynomial entries
 	PolyMatrix G(R, b, b);
 	for (size_t i = 0; i < b; i++) {
 		for (size_t j = 0; j < b; j++) {
@@ -130,6 +134,7 @@ int main(int argc, char** argv)
 	putil.printMatrix(G);
 	std::cout << std::endl;
 	
+	// Compute smith form of generator
 	SmithFormDom SFD(R);
 	std::vector<Polynomial> result;
 	
