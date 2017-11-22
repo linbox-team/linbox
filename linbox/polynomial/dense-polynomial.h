@@ -30,8 +30,8 @@
  *
  */
 
-#ifndef __LINBOX_polynomial_H
-#define __LINBOX_polynomial_H
+#ifndef __LINBOX_dense_polynomial_H
+#define __LINBOX_dense_polynomial_H
 
 
 #include "givaro/givpoly1dense.h"
@@ -63,9 +63,11 @@ namespace LinBox {
                 _field(&F)
             {}
 
+		/* ?? (inf recursion)
         DensePolynomial& operator=(const DensePolynomial & P)  {
             return *this = P;
         }
+		*/
 
         template <class _OtherPoly >
         DensePolynomial (const _OtherPoly& P, const Field& F) :
@@ -100,4 +102,4 @@ namespace LinBox {
 
 } // namespace LinBox
 
-#endif // __LINBOX_polynomial_H
+#endif // __LINBOX_dense_polynomial_H
