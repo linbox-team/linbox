@@ -269,6 +269,10 @@ bool testRing (Ring &F, const char *title, bool fieldp = true, bool runInitConve
 	if (!F.areEqual (a, f) || !F.areEqual (d, a))
 		part_pass = reportError( "Results of mul incorrect", pass);
 
+	F.mul(a, F.mOne, F.mOne);
+	if (!F.areEqual (a, F.one))
+		part_pass = reportError( "Results of (-1)^2 incorrect", pass);
+
 	F.axpy (a, two, three, two); F.write ( report << "Result of axpy 2*3 + 2: ", a) << endl;
 	F.assign (d, two);
 	F.axpyin (d, two, three); F.write ( report << "Result of axpy 2*3 + 2 (inplace): ", d) << endl;
