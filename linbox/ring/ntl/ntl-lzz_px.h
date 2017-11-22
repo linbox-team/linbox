@@ -286,6 +286,11 @@ namespace LinBox
 			c = NTL::LeadCoeff(p);
 			return c;
 		}
+		
+		Element& monic(Element& r, const Element& p) const {
+			r = p / NTL::LeadCoeff(p);
+			return r;
+		}
 
 		/** Get the coefficient of x^i in a given polynomial */
 		Coeff& getCoeff( Coeff& c, const Element& p, size_t i ) const
@@ -299,6 +304,11 @@ namespace LinBox
 		{
 			NTL::SetCoeff(p,(long)i,c);
 			return p;
+		}
+		
+		Element& pow(Element& x, const Element& a, long e) const {
+			NTL::power(x, a, e);
+			return x;
 		}
 
 		/** Get the quotient of two polynomials */
@@ -335,6 +345,10 @@ namespace LinBox
 		}
 		
 		bool isDivisor(const Element &a, const Element &b) const {
+			if (isZero(b)) {
+				return false;
+			}
+			
 			Element tmp;
 			rem(tmp, a, b);
 			return isZero(tmp);
@@ -406,7 +420,36 @@ namespace LinBox
 		}
 		
 		std::ostream& write( std::ostream& os, const Element& x) const {
-			return Father_t::write(os, x);
+			// return Father_t::write(os, x);
+			if (isZero(x)) {
+				os << "0";
+				return os;
+			}
+			
+			bool first = true;
+			for (size_t i = 0; i <= deg(x); i++) {
+				Coeff xi = NTL::coeff(x, i);
+				if (xi != 0) {
+					if (!first) {
+						os << "+";
+					}
+					
+					if (xi == 1 && i > 0) {
+						os << "x";
+					} else {
+						os << xi;
+						if (i > 0) {
+							os << "*x";
+						}
+					}
+					
+					if (i > 1) {
+						os << "^" << i;
+					}
+					first = false;
+				}
+			}
+			return os;
 		}
 		
 		std::istream& read(std::istream& i, Element& p) const {

@@ -739,7 +739,7 @@ namespace LinBox
 		{
 			commentator().start ("Givaro::Modular Dense Charpoly ", "MDCharpoly");
 			BlasMatrixDomainCharpoly<Field, Polynomial, Matrix>()(field(),P,A);
-                        commentator().stop ("done", NULL, "MDCharpoly");
+            commentator().stop ("done", NULL, "MDCharpoly");
 			return P;
 		}
 

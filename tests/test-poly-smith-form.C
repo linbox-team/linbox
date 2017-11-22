@@ -41,7 +41,6 @@ typedef MatrixDomain<PolyRing> MatDom;
 typedef BlasMatrix<PolyRing> Matrix;
 
 typedef SmithFormKannanBachemDomain<PolyRing> SmithDom;
-typedef PolyDixonDomain<PolyRing> DixonDom;
 
 //*
 typedef NTL_zz_pE QuotRing;
@@ -51,7 +50,7 @@ typedef SmithFormKannanBachemDomain<QuotRing> QSmithDom;
 typedef TestPolySmithFormUtil<QuotRing> QUtil;
 //*/
 
-Polynomial makeLump(PolyRing &PD, size_t p, size_t d) {
+Polynomial makeLump(const PolyRing &PD, size_t p, size_t d) {
 	std::vector<integer> coefs;
 	for (size_t i = 0; i <= d; i++) {
 		coefs.push_back(rand() % p);
@@ -60,6 +59,19 @@ Polynomial makeLump(PolyRing &PD, size_t p, size_t d) {
 	Polynomial tmp;
 	PD.init(tmp, coefs);
 	return tmp;
+}
+
+size_t deg(const PolyRing &PD, const Matrix &A) {
+	size_t d = 0;
+	
+	for (size_t i = 0; i < A.rowdim(); i++) {
+		for (size_t j = 0; j < A.coldim(); j++) {
+			size_t dij = PD.deg(A.getEntry(i, j));
+			d = dij < d ? d : dij;
+		}
+	}
+	
+	return d;
 }
 
 void solveTextBook(const PolyRing &PD, const Matrix &A) {
@@ -76,7 +88,7 @@ void solveTextBook(const PolyRing &PD, const Matrix &A) {
 	SFD.solveTextBook(result, B);
 	TW.stop();
 	double tb_time = TW.usertime() + TW.systime();
-	std::cout << " " << tb_time;
+	std::cout << " " << tb_time << std::flush;
 	
 	/*
 	std::cout << "Result Text Book:" << std::endl;
@@ -100,7 +112,7 @@ void solveKannanBachem(const PolyRing &PD, const Matrix &A) {
 	SFD.solve(result, B);
 	TW.stop();
 	double kb_time = TW.usertime() + TW.systime();
-	std::cout << " " << kb_time;
+	std::cout << " " << kb_time << std::flush;
 	
 	/*
 	std::cout << "Result Kannan-Bachem:" << std::endl;
@@ -123,7 +135,7 @@ void solveIliopoulos(const PolyRing &PD, const Matrix &A, const Polynomial &det)
 	SFD.solveIliopoulos(result, B, det);
 	TW.stop();
 	double ilio_time = TW.usertime() + TW.systime();
-	std::cout << " " << ilio_time;
+	std::cout << " " << ilio_time << std::flush;
 	
 	/*
 	std::cout << "Result Iliopoulos:" << std::endl;
@@ -144,10 +156,12 @@ void solveQuotTextBook(const QuotRing &QD, const Matrix &A) {
 	std::vector<QPolynomial> result;
 	QSFD.solveTextBook(result, QA);
 	
+	/*
 	std::cout << "Quot Text Book Result:" << std::endl;
 	for (size_t i = 0; i < result.size(); i++) {
 		QD.write(std::cout, result[i]) << std::endl;
 	}
+	//*/
 }
 
 void solveLocal(const QuotRing &QD, const Matrix &A) {
@@ -211,9 +225,99 @@ void solveDet(const PolyRing &PD, const Matrix &A) {
 	DD.solve(det, A);
 	TW.stop();
 	double kb_time = TW.usertime() + TW.systime();
-	std::cout << " " << kb_time;
+	std::cout << " " << kb_time << std::flush;
 	
 	//PD.write(std::cout << "det: ", det) << std::endl;
+}
+
+void solveDixon(const PolyRing &PD, size_t p, const Matrix &A) {
+	std::vector<integer> v = {1, 1}; // 1 + x
+	Polynomial f;
+	PD.init(f, v);
+	QuotRing QD(p, f);
+	
+	PolyDixonDomain<PolyRing, QuotRing> DD(PD, QD);
+	
+	size_t m = 0;
+	
+	Matrix y(PD, A.rowdim(), 1);
+	for (size_t i = 0; i < A.rowdim(); i++) {
+		y.setEntry(i, 0, makeLump(PD, p, deg(PD, A)));
+		m += PD.deg(y.getEntry(i, 0));
+		// PD.write(std::cout << "y[" << i << "] = ", y.getEntry(i, 0)) << std::endl;
+	}
+	
+	for (size_t i = 0; i < A.rowdim(); i++) {
+		size_t tmp = 0;
+		for (size_t j = 0; j < A.coldim(); j++) {
+			tmp += PD.deg(A.getEntry(i, j));
+		}
+		m = m < tmp ? tmp : m;
+	}
+	
+	m *= 2;
+	
+	Givaro::Timer TW;
+	
+	TW.clear();
+	TW.start();
+	Matrix x(PD, A.rowdim(), 1);
+	bool success = DD.solve(x, A, y, f, m);
+		
+	Polynomial fm;
+	PD.pow(fm, f, m);
+	
+	std::vector<Polynomial> numer(x.rowdim()), denom(x.rowdim());
+	for (size_t i = 0; i < x.rowdim(); i++) {
+		DD.rat_recon(numer[i], denom[i], x.getEntry(i, 0), fm);
+	}
+	TW.stop();
+	double dixon_time = TW.usertime() + TW.systime();
+	std::cout << " " << dixon_time << std::flush;
+		
+	if (!success) {
+		std::cout << "Dixon Failed" << std::endl;
+	} else {
+		Util util(PD);
+		
+		/*
+		std::cout << "x: " << std::endl;
+		util.printMatrix(x);
+		
+		Polynomial fm;
+		PD.pow(fm, f, m);
+		PD.write(std::cout << "f^m: ", fm) << std::endl;
+		std::cout << "deg(f^m) = " << PD.deg(fm) << std::endl;
+		
+		std::vector<Polynomial> numer, denom;
+		for (size_t i = 0; i < x.rowdim(); i++) {
+			Polynomial ni, di;
+			DD.rat_recon(ni, di, x.getEntry(i, 0), fm);
+			numer.push_back(ni);
+			denom.push_back(di);
+			
+			PD.write(std::cout, ni) << " / ";
+			PD.write(std::cout, di) << std::endl;
+		}
+		//*/
+		
+		/*/
+		std::cout << "y - Ax" << std::endl;
+		for (size_t i = 0; i < A.rowdim(); i++) {
+			Polynomial result;
+			PD.assign(result, PD.zero);
+			for (size_t j = 0; j < A.coldim(); j++) {
+				Polynomial tmp;
+				PD.mul(tmp, A.getEntry(i, j), numer[j]);
+				PD.divin(tmp, denom[j]);
+				PD.addin(result, tmp);
+			}
+			
+			PD.subin(result, y.getEntry(i, 0));
+			PD.write(std::cout, result) << std::endl;
+		}
+		//*/
+	}
 }
  
 int main(int argc, char** argv)
@@ -240,10 +344,14 @@ int main(int argc, char** argv)
 	};
 	parseArguments (argc, argv, args);
 	
+	/*
 	std::cout << "args:" << std::endl;
 	std::cout << "p: " << p << std::endl;
 	std::cout << "n: " << n << std::endl;
 	std::cout << "d: " << d << std::endl << std::endl;
+	//*/
+	
+	srand(seed);
 	
 	PolyRing PD(p);
 	Util util(PD);
@@ -287,26 +395,37 @@ int main(int argc, char** argv)
 	Matrix A(PD, n, n);
 	util.makeExample(A, diag, lumps);
 	
-	// util.printMatrix(A);
-	// PD.write(std::cout << "det: ", det) << std::endl << std::endl;
+	//util.printMatrix(A);
+	//PD.write(std::cout << "det: ", det) << std::endl << std::endl;
 	
-	std::cout << "start:" << std::endl;
+	// std::cout << "start:" << std::endl;
 	
-	std::cout << 2*d;
+	size_t min_degree = -1;
+	size_t max_degree = 0;
+	for (size_t i = 0; i < A.rowdim(); i++) {
+		for (size_t j = 0; j < A.coldim(); j++) {
+			size_t deg = PD.deg(A.getEntry(i,j));
+			min_degree = min_degree == (size_t) -1 || deg < min_degree ? deg : min_degree;
+			max_degree = max_degree < deg ? deg : max_degree;
+		}
+	}
+	
+	std::cout << n << " " << min_degree << " " << max_degree;
 	solveTextBook(PD, A);
 	solveKannanBachem(PD, A);
 	solveIliopoulos(PD, A, det);
 	// solveDet(PD, A);
 	
-	std::cout << std::endl;
+	QuotRing QD(p, det);
 	
+	/*
 	PD.write(std::cout << "det: ", det) << std::endl;
 	PD.write(std::cout << "in:  ", A.getEntry(1, 2)) << std::endl;
 	
-	QuotRing QD(p, det);
 	typename QuotRing::Element tmp;
 	QD.init(tmp, A.getEntry(1, 2));
 	QD.write(std::cout << "out: ", tmp) << std::endl;
+	*/
 	
 	solveQuotTextBook(QD, A);
 	if (runLocal) {
@@ -316,6 +435,10 @@ int main(int argc, char** argv)
 	// Compute inverse of matrix
 	factorizeMatrix(PD, A);
 	//*/
+	
+	solveDixon(PD, p, A);
+	
+	std::cout << std::endl;
 	
 	return pass ? 0 : -1;
 }

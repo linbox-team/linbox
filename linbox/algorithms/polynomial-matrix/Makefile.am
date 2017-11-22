@@ -37,5 +37,4 @@ pkgincludesub_HEADERS =         \
 	polynomial-fft-transform.inl	\
 	polynomial-matrix-domain.h	\
         simd.h		\
-	order-basis.h \
-	smith-form-kannan-bachem.h
+	order-basis.h 

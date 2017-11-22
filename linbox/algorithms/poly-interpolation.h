@@ -5,8 +5,6 @@
 
 #include <omp.h>
 
-#include <linbox/ring/givaro-poly.h>
-
 namespace LinBox {
 
 
@@ -14,7 +12,7 @@ namespace LinBox {
 template<class Field, class PolyDom>
 class PolyInterpolation {
 public:
-	typedef GivaroPoly<PolyDom> Ring;
+	//typedef GivaroPoly<PolyDom> Ring;
 	typedef typename Ring::Element RingElt;
 	typedef typename Field::Element FieldElt;
 	typedef std::vector<std::vector<RingElt> > ProductTree;

@@ -25,7 +25,6 @@
  */
 
 #include <iostream>
-#include "linbox/ring/givaro-poly.h"
 #include "linbox/matrix/densematrix/blas-matrix.h"
 #include "linbox/matrix/matrixdomain/matrix-domain.h"
 
@@ -56,19 +55,6 @@ namespace LinBox
 	private:
 		
 		template<typename Matrix>
-		void printMatrix(const Matrix &A) const {
-			std::cout << "[" << std::endl;
-			for (size_t i = 0; i < A.rowdim(); i++) {
-				std::cout << "\t[";
-				for (size_t j = 0; j < A.coldim(); j++) {
-					_F.write(std::cout, A.getEntry(i, j)) << ", ";
-				}
-				std::cout << "]" << std::endl;
-			}
-			std::cout << "]" << std::endl;
-		}
-		
-		template<typename Matrix>
 		void swapRows(Matrix &M, size_t r1, size_t r2) const {
 			SubMatrix row1(M, r1, 0, 1, M.coldim());
 			SubMatrix row2(M, r2, 0, 1, M.coldim());
@@ -94,7 +80,10 @@ namespace LinBox
 			}
 			
 			Element g;
-			_F.dxgcd(g, s, t, u, v, a, b);
+
+            _F.gcd(g,s,t,a,b);
+            _F.div(u,a,g);
+            _F.div(v,b,g);
 		}
 		
 		template<class Matrix>

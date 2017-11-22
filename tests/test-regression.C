@@ -27,11 +27,15 @@
  * @ingroup tests
  * @brief tests former bugs to check that no regression made them show up again.
  */
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 #include "givaro/modular.h"
 #include "linbox/matrix/sparse-matrix.h"
+#include "linbox/matrix/dense-matrix.h"
+#include "linbox/polynomial/dense-polynomial.h"
+#include "linbox/ring/polynomial-ring.h"
 #include "linbox/vector/blas-vector.h"
-#include "solutions/solve.h"
+#include "linbox/solutions/solve.h"
+#include "linbox/solutions/charpoly.h"
 using namespace LinBox;
 
 bool testSolveSparse(){
@@ -243,6 +247,25 @@ bool testZeroDixonSolver (const Specifier& m){
     }
     return true;
 }
+
+bool testZeroDimensionalCharpoly(){
+    Givaro::ZRing<Integer> ZZ;
+    DenseMatrix<Givaro::ZRing<Integer> > A (ZZ,0,0);
+    DensePolynomial<Givaro::ZRing<Integer> > P (ZZ);
+    PolynomialRing<Givaro::ZRing<Integer> > PR (ZZ);
+    charpoly(P,A);
+    return PR.isOne(P);
+}
+
+bool testZeroDimensionalMinPoly(){
+    Givaro::ZRing<Integer> ZZ;
+    DenseMatrix<Givaro::ZRing<Integer> > A (ZZ,0,0);
+    DensePolynomial<Givaro::ZRing<Integer> > P (ZZ);
+    PolynomialRing<Givaro::ZRing<Integer> > PR (ZZ);
+    minpoly(P,A);
+    return PR.isOne(P);
+}
+
 int main (int argc, char **argv)
 {
     bool pass = true;
@@ -262,6 +285,8 @@ int main (int argc, char **argv)
     pass &= testZeroDixonSolver (Method::SparseElimination());
     pass &= testSingularDixonSolver (Method::BlasElimination());
     pass &= testZeroDixonSolver (Method::BlasElimination());
+    pass &= testZeroDimensionalCharpoly ();
+    pass &= testZeroDimensionalMinPoly ();
 
     return pass ? 0 : -1;
 }
