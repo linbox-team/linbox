@@ -171,9 +171,8 @@ namespace LinBox
 				_F.addin(tmp, a);
 				
 				M.setEntry(row1, col, tmp);
+				M.finalize();
 			}
-				
-			M.finalize();
 		}
 		
 		template<class Matrix>
@@ -188,14 +187,11 @@ namespace LinBox
 				_F.addin(tmp, a);
 				
 				M.setEntry(row, col1, tmp);
+				M.finalize();
 			}
 			
-			M.finalize();
 		}
 		
-		/**
-		 *
-		 */
 		template<class Matrix>
 		void fillIn(Matrix &M, double targetSparsity) {
 			size_t dim = M.rowdim();
@@ -214,6 +210,29 @@ namespace LinBox
 				_F.negin(z);
 				addCol(M, b, a, z);
 			}
+		}
+		
+		template<class Matrix>
+		void generate(Matrix &M, Polynomial &det, const std::string &filename, double sparsity) {
+			std::vector<Polynomial> fs;
+			readFile(fs, filename);
+			
+			_R.assign(det, _R.one);
+			for (size_t i = 0; i < fs.size(); i++) {
+				_R.mulin(det, fs[i]);
+			}
+			if (_R.deg(det) < M.rowdim()) {
+				Polynomial x, xm;
+				std::vector<long> coeffs = {0, 1};
+				_R.init(x, coeffs);
+				_R.pow(xm, x, M.rowdim() - _R.deg(det));
+				
+				_R.mulin(det, xm);
+			}
+			
+			build(M, fs);
+			
+			fillIn(M, sparsity);
 		}
 	};
 }

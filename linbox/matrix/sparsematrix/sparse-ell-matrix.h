@@ -763,8 +763,8 @@ namespace LinBox
 
 		// y= Ax
 		// y[i] = sum(A(i,j) x(j)
-		template<class Vector>
-		Vector& apply(Vector &y, const Vector& x, const Element & a ) const
+		template<class outVector, class inVector>
+		outVector& apply(outVector &y, const inVector& x, const Element & a ) const
 		{
 			// linbox_check(consistent());
 			prepare(field(),y,a);
