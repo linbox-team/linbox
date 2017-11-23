@@ -23,7 +23,9 @@ AC_DEFUN([INSTR_SET],
         AC_ARG_ENABLE(fma,[AC_HELP_STRING([--disable-fma], [ disable FMA instruction set (enabled by default when available)])],[],[])
         AC_ARG_ENABLE(fma4,[AC_HELP_STRING([--disable-fma4], [ disable FMA4 instruction set (enabled by default when available)])],[],[])
 
-        AC_TRY_RUN([
+      BACKUP_CPPFLAGS=${CPPFLAGS}
+      CPPFLAGS=-I${srcdir}
+      AC_TRY_RUN([
                         #include "macros/CodeChunk/instrset_detect.cpp"
                         // increment by one to distinguish from compilation failure error code
                         int main(){return instrset_detect()+1;}
@@ -81,4 +83,6 @@ AC_DEFUN([INSTR_SET],
                                 SIMD_CFLAGS="${SIMD_CFLAGS} -mfma4"
                               ],[AS_ECHO("FMA4 disabled")])
                 ],[AS_ECHO("FMA4 disabled")])
+       CPPFLAGS=${BACKUP_CPPFLAGS}
+
 ])
