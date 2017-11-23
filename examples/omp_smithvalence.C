@@ -22,9 +22,9 @@
 
 /**\file examples/omp_smithvalence.C
  * @example  examples/omp_smithvalence.C
-  \brief Valence of sparse matrix over Z or Zp.
-  \ingroup examples
-  */
+ \brief Valence of sparse matrix over Z or Zp.
+ \ingroup examples
+*/
 #ifndef DISABLE_COMMENTATOR
 #define DISABLE_COMMENTATOR
 #endif
@@ -36,9 +36,9 @@ using namespace LinBox;
 
 int main (int argc, char **argv)
 {
-	//     commentator().setMaxDetailLevel (-1);
-	//     commentator().setMaxDepth (-1);
-	//     commentator().setReportStream (std::cerr);
+        //     commentator().setMaxDetailLevel (-1);
+        //     commentator().setMaxDepth (-1);
+        //     commentator().setReportStream (std::cerr);
 
 
 	if (argc < 2 || argc > 4) {
@@ -99,7 +99,7 @@ int main (int argc, char **argv)
 	std::vector< PairIntRk > smith;
 
 
-Givaro::Integer coprimeV=2;
+    Givaro::Integer coprimeV=2;
 	if (argc >= 4) {
 		coprimeV =Givaro::Integer(argv[3]);
 	}
@@ -111,103 +111,122 @@ Givaro::Integer coprimeV=2;
 		std::cout << "Suppose " << argv[3] << " is coprime with Smith form" << std::endl;
 	}
 
-	std::cout << "Integer rank: " << std::endl;
-
-	unsigned long coprimeR; LRank(coprimeR, argv[1], coprimeV);
-	smith.push_back(PairIntRk(coprimeV, coprimeR));
-	//         std::cerr << "Rank mod " << coprimeV << " is " << coprimeR << std::endl;
-
-	std::cout << "Some factors (50000 factoring loop bound): ";
+std::cout << "Some factors (50000 factoring loop bound): ";
 	FTD.set(Moduli, exponents, val_A, 50000);
 	std::vector<size_t>::const_iterator eit=exponents.begin();
 	for(std::vector<Givaro::Integer>::const_iterator mit=Moduli.begin();
 	    mit != Moduli.end(); ++mit,++eit)
 		std::cout << *mit << '^' << *eit << ' ';
 	std::cout << std::endl;
+    smith.resize(Moduli.size());
 
-	std::vector<Givaro::Integer> SmithDiagonal(coprimeR,Givaro::Integer(1));
-
+    unsigned long coprimeR; 
+ 
 	std::cout << "num procs: " << omp_get_num_procs() << std::endl;
 	std::cout << "max threads: " << omp_get_max_threads() << std::endl;
-#pragma omp parallel for shared(SmithDiagonal, Moduli, coprimeR)
-	for(size_t j=0; j<Moduli.size(); ++j) {
-		unsigned long r; LRank(r, argv[1], Moduli[j]);
-		std::cerr << "Rank mod " << Moduli[j] << " is " << r << " on thread: " << omp_get_thread_num() << std::endl;
-		smith.push_back(PairIntRk( Moduli[j], r));
-		for(size_t i=r; i < coprimeR; ++i)
-			SmithDiagonal[i] *= Moduli[j];
+
+// #pragma omp parallel for shared(smith, Moduli) 
+// 	for(size_t j=0; j<(Moduli.size()+1); ++j) {
+//         if (j >= Moduli.size()) {
+//             LRank(coprimeR, argv[1], coprimeV);
+//             std::cerr << "Integer Rank (mod " << coprimeV << ") is " << coprimeR << " on thread: " << omp_get_thread_num() << std::endl;
+//         } else {            
+//             unsigned long r; LRank(r, argv[1], Moduli[j]);
+//             std::cerr << "Rank mod " << Moduli[j] << " is " << r << " on thread: " << omp_get_thread_num() << std::endl;
+//             smith[j] = PairIntRk( Moduli[j], r);
+//         }
+// 	}
+#pragma omp parallel 
+    {
+#pragma omp single
+        {
+            for(size_t j=0; j<Moduli.size(); ++j) {
+                smith[j].first = Moduli[j];
+#pragma omp task shared(smith,argv) firstprivate(j)
+                LRank(smith[j].second, argv[1], smith[j].first);
+            }
+            LRank(coprimeR, argv[1], coprimeV);
+        }
 	}
 
+ 
+	std::vector<Givaro::Integer> SmithDiagonal(coprimeR,Givaro::Integer(1));
 
-	/*
-	   for(std::vector<Givaro::Integer>::const_iterator mit=Moduli.begin();
-	   mit != Moduli.end(); ++mit) {
-	   unsigned long r; LRank(r, argv[1], *mit);
-	   std::cerr << "Rank mod " << *mit << " is " << r << std::endl;
-	   smith.push_back(PairIntRk(*mit, r));
-	   for(size_t i=r; i < coprimeR; ++i)
-	   SmithDiagonal[i] *= *mit;
-	   }
-	   */
+        /*
+          for(std::vector<Givaro::Integer>::const_iterator mit=Moduli.begin();
+          mit != Moduli.end(); ++mit) {
+          unsigned long r; LRank(r, argv[1], *mit);
+          std::cerr << "Rank mod " << *mit << " is " << r << std::endl;
+          smith.push_back(PairIntRk(*mit, r));
+          for(size_t i=r; i < coprimeR; ++i)
+          SmithDiagonal[i] *= *mit;
+          }
+        */
+#pragma omp parallel for shared(SmithDiagonal, smith, exponents)
+	for(size_t j=0; j<Moduli.size(); ++j) {
+        
+        if (smith[j].second != coprimeR) {
+            std::vector<size_t> ranks;
+            ranks.push_back(smith[j].second);
+            size_t effexp;
+            if (exponents[j] > 1) {
+                if (smith[j].first == 2)
+                    PRankPowerOfTwo(ranks, effexp, argv[1], exponents[j], coprimeR);
+                else
+                    PRank(ranks, effexp, argv[1], smith[j].first, exponents[j], coprimeR);
+            }
+            else {
+                if (smith[j].first == 2)
+                    PRankPowerOfTwo(ranks, effexp, argv[1], 2, coprimeR);
+                else
+                    PRank(ranks, effexp, argv[1], smith[j].first, 2, coprimeR);
+            }
+            if (ranks.size() == 1) ranks.push_back(coprimeR);
 
-	eit=exponents.begin();
-	std::vector<PairIntRk>::const_iterator sit=smith.begin();
-	for( ++sit; sit != smith.end(); ++sit, ++eit) {
-            if (sit->second != coprimeR) {
-                std::vector<size_t> ranks;
-                ranks.push_back(sit->second);
-                size_t effexp;
-                if (*eit > 1) {
-                    if (sit->first == 2)
-                        PRankPowerOfTwo(ranks, effexp, argv[1], *eit, coprimeR);
+            if (effexp < exponents[j]) {
+                for(size_t expo = effexp<<1; ranks.back() < coprimeR; expo<<=1) {
+                    if (smith[j].first == 2)
+                        PRankIntegerPowerOfTwo(ranks, argv[1], expo, coprimeR);
                     else
-                        PRank(ranks, effexp, argv[1], sit->first, *eit, coprimeR);
+                        PRankInteger(ranks, argv[1], smith[j].first, expo, coprimeR);
                 }
-                else {
-			// if (sit->first == 2)
-			PRank(ranks, effexp, argv[1], sit->first, 2, coprimeR);
-			// else
-			// PRank(ranks, effexp, argv[1], sit->first, 2, coprimeR);
-		}
-                if (ranks.size() == 1) ranks.push_back(coprimeR);
+            } else {
 
-                if (effexp < *eit) {
-                    for(size_t expo = effexp<<1; ranks.back() < coprimeR; expo<<=1) {
-                        if (sit->first == 2)
+                for(size_t expo = (exponents[j])<<1; ranks.back() < coprimeR; expo<<=1) {
+                    if (smith[j].first == 2)
+                        PRankPowerOfTwo(ranks, effexp, argv[1], expo, coprimeR);
+                    else
+                        PRank(ranks, effexp, argv[1], smith[j].first, expo, coprimeR);
+                    if (ranks.size() < expo) {
+                        std::cerr << "It seems we need a larger prime power, it will take longer ..." << std::endl;
+                            // break;
+                        if (smith[j].first == 2)
                             PRankIntegerPowerOfTwo(ranks, argv[1], expo, coprimeR);
                         else
-                            PRankInteger(ranks, argv[1], sit->first, expo, coprimeR);
-                    }
-                } else {
-
-                    for(size_t expo = (*eit)<<1; ranks.back() < coprimeR; expo<<=1) {
-                        if (sit->first == 2)
-                            PRankPowerOfTwo(ranks, effexp, argv[1], expo, coprimeR);
-                        else
-                            PRank(ranks, effexp, argv[1], sit->first, expo, coprimeR);
-                        if (ranks.size() < expo) {
-                            std::cerr << "It seems we need a larger prime power, it will take longer ..." << std::endl;
-                                // break;
-                            if (sit->first == 2)
-                                PRankIntegerPowerOfTwo(ranks, argv[1], expo, coprimeR);
-                            else
-                                PRankInteger(ranks, argv[1], sit->first, expo, coprimeR);
-                        }
+                            PRankInteger(ranks, argv[1], smith[j].first, expo, coprimeR);
                     }
                 }
+            }
 
+#pragma omp critical
+            {   
+                for(size_t i=smith[j].second; i < coprimeR; ++i) {
+                    SmithDiagonal[i] *= smith[j].first;
+                }
+                
                 std::vector<size_t>::const_iterator rit=ranks.begin();
 // 			unsigned long modrank = *rit;
                 for(++rit; rit!= ranks.end(); ++rit) {
                     if ((*rit)>= coprimeR) break;
                     for(size_t i=(*rit); i < coprimeR; ++i)
-                        SmithDiagonal[i] *= sit->first;
+                        SmithDiagonal[i] *= smith[j].first;
 // 				modrank = *rit;
                 }
             }
+        }
 	}
 
-Givaro::Integer si=1;
+    Givaro::Integer si=1;
 	size_t num=0;
 	for( std::vector<Givaro::Integer>::const_iterator dit=SmithDiagonal.begin();
 	     dit != SmithDiagonal.end(); ++dit) {
@@ -226,11 +245,11 @@ Givaro::Integer si=1;
 	return 0;
 }
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
 

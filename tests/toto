@@ -1,0 +1,262 @@
+$$(0, 1, Internal description)Solve test suite
+$$(1, 1, Internal description)Testing identity solve (Wiedemann)
+$$(2, 1, Internal description)Iteration 0
+$$(3, 1, Internal description)Input vector:  [0, 3, 0, 1, 0, 0, 2, 0, 3, 2, 2, 4, 4, 1, 0, 3, 3, 2, 2, 4, 0, 2, 4, 0, 0, 3, 2, 4, 1, 4, 0, 2, 4, 0, 3, 1, 1, 3, 1, 2, 4, 3, 0, 2, 0, 4, 2, 2, 1, 0, 0, 1, 0, 4, 1, 1, 1, 0, 2, 3, 0, 1, 4, 4, 3, 2, 4, 2, 3, 3, 1, 4, 4, 3, 1, 3, 1, 2, 0, 4, 2, 2, 2, 1, 0, 1, 2, 3, 0, 0, 2, 3, 0, 2, 1, 2, 1, 4, 2, 3]
+$$(3, 1, Internal description)Solving linear system (Wiedemann)
+$$(4, 1, Internal description)Solving nonsingular system (Wiedemann)
+$$(5, 0, Internal warning)Word size extension : 9
+$$(5, 1, Internal description)Wiedemann Minimal polynomial
+$$(6, 1, Internal description)Massey
+$$(7, 1, Progress report)Progress: 0 out of 202 (0.000s elapsed)
+$$(7, 1, Progress report)Progress: 10 out of 202 (0.000s elapsed)
+$$(6, 1, Internal description)Finished activity (rea: 0.0001s, cpu: $$(5, 1, Internal description)Finished activity (rea: 0.0002s, cpu: $$(5, 3, Internal description)Minimal polynomial of degree 1
+Minimal polynomial coefficients: [4, 1]
+$$(5, 1, Internal description)Preparing polynomial for application
+$$(5, 1, Internal description)Finished activity (rea: 0.0000s, cpu: $$(5, 1, Internal description)Applying polynomial via Horner's rule
+$$(5, 1, Internal description)Finished activity (rea: 0.0000s, cpu: $$(5, 1, Internal description)Checking whether Ax=b
+$$(5, 1, Internal description)Finished activity (rea: 0.0000s, cpu: $$(4, 1, Internal description)Finished activity (rea: 0.4917s, cpu: $$(3, 1, Internal description)Finished activity (rea: 0.4917s, cpu: Output vector: [0, 3, 0, 1, 0, 0, 2, 0, 3, 2, 2, 4, 4, 1, 0, 3, 3, 2, 2, 4, 0, 2, 4, 0, 0, 3, 2, 4, 1, 4, 0, 2, 4, 0, 3, 1, 1, 3, 1, 2, 4, 3, 0, 2, 0, 4, 2, 2, 1, 0, 0, 1, 0, 4, 1, 1, 1, 0, 2, 3, 0, 1, 4, 4, 3, 2, 4, 2, 3, 3, 1, 4, 4, 3, 1, 3, 1, 2, 0, 4, 2, 2, 2, 1, 0, 1, 2, 3, 0, 0, 2, 3, 0, 2, 1, 2, 1, 4, 2, 3]
+$$(2, 1, Internal description)Finished activity (rea: 0.4917s, cpu: $$(2, 1, Progress report)Progress: 1 out of 1 (0.492s elapsed)
+$$(1, 1, Internal description)Finished activity (rea: 0.4918s, cpu: $$(1, 1, Internal description)Testing nonsingular solve (Wiedemann)
+$$(2, 1, Internal description)Iteration 0
+$$(3, 1, Internal description)Diagonal entries: [0, 2, 2, 2, 2, 1, 3, 2, 0, 1, 2, 3, 3, 0, 2, 1, 0, 2, 2, 4, 2, 4, 3, 0, 3, 4, 1, 3, 2, 4, 2, 1, 1, 4, 1, 0, 0, 4, 1, 4, 0, 1, 3, 3, 3, 3, 3, 2, 4, 1, 0, 0, 0, 0, 0, 0, 2, 0, 1, 2, 0, 0, 3, 1, 3, 0, 2, 3, 2, 2, 2, 2, 4, 1, 4, 0, 0, 1, 3, 2, 2, 2, 3, 1, 4, 0, 3, 4, 2, 0, 3, 0, 0, 4, 2, 3, 1, 2, 2, 0]
+Right-hand side:  [0, 3, 3, 4, 0, 0, 2, 0, 3, 1, 1, 0, 0, 2, 3, 3, 4, 4, 1, 4, 2, 1, 1, 2, 3, 3, 4, 0, 3, 2, 0, 0, 3, 4, 2, 0, 0, 3, 0, 4, 3, 2, 4, 2, 1, 2, 1, 1, 0, 3, 0, 4, 2, 1, 0, 3, 4, 3, 4, 0, 0, 0, 4, 2, 3, 3, 2, 4, 0, 1, 3, 2, 1, 4, 1, 1, 3, 4, 3, 3, 2, 2, 0, 0, 2, 4, 2, 3, 3, 0, 1, 1, 4, 4, 1, 1, 2, 1, 4, 1]
+$$(3, 1, Internal description)Solving linear system (Wiedemann)
+$$(4, 1, Internal description)Solving nonsingular system (Wiedemann)
+$$(5, 0, Internal warning)Word size extension : 9
+$$(5, 1, Internal description)Wiedemann Minimal polynomial
+$$(6, 1, Internal description)Massey
+$$(7, 1, Progress report)Progress: 0 out of 202 (0.000s elapsed)
+$$(7, 1, Progress report)Progress: 10 out of 202 (0.000s elapsed)
+$$(7, 1, Progress report)Progress: 20 out of 202 (0.000s elapsed)
+$$(6, 1, Internal description)Finished activity (rea: 0.0001s, cpu: $$(5, 1, Internal description)Finished activity (rea: 0.0002s, cpu: $$(5, 3, Internal description)Minimal polynomial of degree 5
+Minimal polynomial coefficients: [0, 4, 0, 0, 0, 1]
+$$(4, 1, Internal description)Finished activity (rea: 0.4455s, cpu: $$(4, 1, Internal description)System found to be singular. Reverting to nonsingular solver.
+$$(4, 1, Internal description)Blas Rank
+$$(4, 1, Internal description)Finished activity (rea: 0.0030s, cpu: $$(4, 1, Internal description)Rank of A = 75
+$$(4, 1, Internal description)Solving singular system (Wiedemann)
+$$(5, 1, Internal description)Constructing sparse preconditioner
+$$(5, 1, Internal description)Finished activity (rea: 0.0009s, cpu: $$(5, 1, Internal description)Solving singular system with generic rank profile (Wiedemann)
+$$(6, 1, Internal description)Preparing right hand side
+$$(6, 1, Internal description)Finished activity (rea: 0.0001s, cpu: $$(6, 1, Internal description)Solving nonsingular system (Wiedemann)
+$$(7, 0, Internal warning)Word size extension : 9
+$$(7, 1, Internal description)Wiedemann Minimal polynomial
+$$(8, 1, Internal description)Massey
+$$(9, 1, Progress report)Progress: 0 out of 152 (0.000s elapsed)
+$$(9, 1, Progress report)Progress: 7 out of 152 (0.002s elapsed)
+$$(9, 1, Progress report)Progress: 14 out of 152 (0.005s elapsed)
+$$(9, 1, Progress report)Progress: 21 out of 152 (0.007s elapsed)
+$$(9, 1, Progress report)Progress: 28 out of 152 (0.009s elapsed)
+$$(9, 1, Progress report)Progress: 35 out of 152 (0.011s elapsed)
+$$(9, 1, Progress report)Progress: 42 out of 152 (0.013s elapsed)
+$$(9, 1, Progress report)Progress: 49 out of 152 (0.015s elapsed)
+$$(9, 1, Progress report)Progress: 56 out of 152 (0.016s elapsed)
+$$(9, 1, Progress report)Progress: 63 out of 152 (0.019s elapsed)
+$$(9, 1, Progress report)Progress: 70 out of 152 (0.021s elapsed)
+$$(9, 1, Progress report)Progress: 77 out of 152 (0.023s elapsed)
+$$(9, 1, Progress report)Progress: 84 out of 152 (0.025s elapsed)
+$$(9, 1, Progress report)Progress: 91 out of 152 (0.027s elapsed)
+$$(9, 1, Progress report)Progress: 98 out of 152 (0.029s elapsed)
+$$(9, 1, Progress report)Progress: 105 out of 152 (0.031s elapsed)
+$$(9, 1, Progress report)Progress: 112 out of 152 (0.033s elapsed)
+$$(9, 1, Progress report)Progress: 119 out of 152 (0.035s elapsed)
+$$(9, 1, Progress report)Progress: 126 out of 152 (0.039s elapsed)
+$$(9, 1, Progress report)Progress: 133 out of 152 (0.042s elapsed)
+$$(9, 1, Progress report)Progress: 140 out of 152 (0.046s elapsed)
+$$(9, 1, Progress report)Progress: 147 out of 152 (0.049s elapsed)
+$$(8, 1, Internal description)Finished activity (rea: 0.0505s, cpu: $$(7, 1, Internal description)Finished activity (rea: 0.0506s, cpu: $$(7, 3, Internal description)Minimal polynomial of degree 75
+$$(7, 1, Internal description)Preparing polynomial for application
+$$(7, 1, Internal description)Finished activity (rea: 0.0000s, cpu: $$(7, 1, Internal description)Applying polynomial via Horner's rule
+$$(7, 1, Internal description)Finished activity (rea: 0.0071s, cpu: $$(7, 1, Internal description)Checking whether Ax=b
+$$(7, 1, Internal description)Finished activity (rea: 0.0001s, cpu: $$(6, 1, Internal description)Finished activity (rea: 0.5197s, cpu: $$(5, 1, Internal description)Finished activity (rea: 0.5199s, cpu: $$(5, 1, Internal description)Checking system solution
+$$(5, 1, Internal description)Finished activity (rea: 0.0000s, cpu: $$(5, 1, Internal description)Computed system solution is not correct. Attempting to find certificate of inconsistency.
+$$(5, 1, Internal description)Obtaining certificate of inconsistency (Wiedemann)
+$$(6, 1, Internal description)Finding a nullspace element (Wiedemann)
+$$(7, 1, Internal description)Constructing right hand side
+$$(7, 1, Internal description)Finished activity (rea: 0.0000s, cpu: $$(7, 1, Internal description)Solving nonsingular system (Wiedemann)
+$$(8, 1, Internal description)Wiedemann Minimal polynomial
+$$(9, 1, Internal description)Massey
+$$(10, 1, Progress report)Progress: 0 out of 202 (0.000s elapsed)
+$$(10, 1, Progress report)Progress: 10 out of 202 (0.000s elapsed)
+$$(10, 1, Progress report)Progress: 20 out of 202 (0.000s elapsed)
+$$(9, 1, Internal description)Finished activity (rea: 0.0001s, cpu: $$(8, 1, Internal description)Finished activity (rea: 0.0001s, cpu: $$(8, 3, Internal description)Minimal polynomial of degree 5
+Minimal polynomial coefficients: [0, 4, 0, 0, 0, 1]
+$$(7, 1, Internal description)Finished activity (rea: 0.0002s, cpu: $$(7, 1, Internal description)Leading principal minor was found to be singular.
+$$(6, 1, Internal description)Finished activity (rea: 0.0002s, cpu: $$(5, 1, Internal description)Finished activity (rea: 0.0002s, cpu: $$(4, 1, Internal description)Finished activity (rea: 0.5212s, cpu: $$(4, 1, Internal description)Blas Rank
+$$(4, 1, Internal description)Finished activity (rea: 0.0024s, cpu: $$(4, 1, Internal description)Rank of A = 75
+$$(4, 1, Internal description)Solving singular system (Wiedemann)
+$$(5, 1, Internal description)Constructing sparse preconditioner
+$$(5, 1, Internal description)Finished activity (rea: 0.0007s, cpu: $$(5, 1, Internal description)Solving singular system with generic rank profile (Wiedemann)
+$$(6, 1, Internal description)Preparing right hand side
+$$(6, 1, Internal description)Finished activity (rea: 0.0001s, cpu: $$(6, 1, Internal description)Solving nonsingular system (Wiedemann)
+$$(7, 0, Internal warning)Word size extension : 9
+$$(7, 1, Internal description)Wiedemann Minimal polynomial
+$$(8, 1, Internal description)Massey
+$$(9, 1, Progress report)Progress: 0 out of 152 (0.000s elapsed)
+$$(9, 1, Progress report)Progress: 7 out of 152 (0.003s elapsed)
+$$(9, 1, Progress report)Progress: 14 out of 152 (0.005s elapsed)
+$$(9, 1, Progress report)Progress: 21 out of 152 (0.007s elapsed)
+$$(9, 1, Progress report)Progress: 28 out of 152 (0.009s elapsed)
+$$(9, 1, Progress report)Progress: 35 out of 152 (0.011s elapsed)
+$$(9, 1, Progress report)Progress: 42 out of 152 (0.013s elapsed)
+$$(9, 1, Progress report)Progress: 49 out of 152 (0.015s elapsed)
+$$(9, 1, Progress report)Progress: 56 out of 152 (0.017s elapsed)
+$$(9, 1, Progress report)Progress: 63 out of 152 (0.019s elapsed)
+$$(9, 1, Progress report)Progress: 70 out of 152 (0.021s elapsed)
+$$(9, 1, Progress report)Progress: 77 out of 152 (0.023s elapsed)
+$$(9, 1, Progress report)Progress: 84 out of 152 (0.025s elapsed)
+$$(9, 1, Progress report)Progress: 91 out of 152 (0.027s elapsed)
+$$(9, 1, Progress report)Progress: 98 out of 152 (0.029s elapsed)
+$$(9, 1, Progress report)Progress: 105 out of 152 (0.031s elapsed)
+$$(9, 1, Progress report)Progress: 112 out of 152 (0.034s elapsed)
+$$(9, 1, Progress report)Progress: 119 out of 152 (0.036s elapsed)
+$$(9, 1, Progress report)Progress: 126 out of 152 (0.040s elapsed)
+$$(9, 1, Progress report)Progress: 133 out of 152 (0.044s elapsed)
+$$(9, 1, Progress report)Progress: 140 out of 152 (0.047s elapsed)
+$$(9, 1, Progress report)Progress: 147 out of 152 (0.050s elapsed)
+$$(8, 1, Internal description)Finished activity (rea: 0.0513s, cpu: $$(7, 1, Internal description)Finished activity (rea: 0.0513s, cpu: $$(7, 3, Internal description)Minimal polynomial of degree 75
+$$(6, 1, Internal description)Finished activity (rea: 0.5454s, cpu: $$(6, 1, Internal description)Leading principal minor was found to be singular.
+$$(5, 1, Internal description)Finished activity (rea: 0.5455s, cpu: $$(5, 1, Internal description)Preconditioned matrix did not have generic rank profile
+$$(4, 1, Internal description)Finished activity (rea: 0.5463s, cpu: $$(4, 1, Internal description)Solving singular system (Wiedemann)
+$$(5, 1, Internal description)Constructing sparse preconditioner
+$$(5, 1, Internal description)Finished activity (rea: 0.0009s, cpu: $$(5, 1, Internal description)Solving singular system with generic rank profile (Wiedemann)
+$$(6, 1, Internal description)Preparing right hand side
+$$(6, 1, Internal description)Finished activity (rea: 0.0001s, cpu: $$(6, 1, Internal description)Solving nonsingular system (Wiedemann)
+$$(7, 0, Internal warning)Word size extension : 9
+$$(7, 1, Internal description)Wiedemann Minimal polynomial
+$$(8, 1, Internal description)Massey
+$$(9, 1, Progress report)Progress: 0 out of 152 (0.000s elapsed)
+$$(9, 1, Progress report)Progress: 7 out of 152 (0.002s elapsed)
+$$(9, 1, Progress report)Progress: 14 out of 152 (0.005s elapsed)
+$$(9, 1, Progress report)Progress: 21 out of 152 (0.007s elapsed)
+$$(9, 1, Progress report)Progress: 28 out of 152 (0.009s elapsed)
+$$(9, 1, Progress report)Progress: 35 out of 152 (0.011s elapsed)
+$$(9, 1, Progress report)Progress: 42 out of 152 (0.013s elapsed)
+$$(9, 1, Progress report)Progress: 49 out of 152 (0.015s elapsed)
+$$(9, 1, Progress report)Progress: 56 out of 152 (0.016s elapsed)
+$$(9, 1, Progress report)Progress: 63 out of 152 (0.020s elapsed)
+$$(9, 1, Progress report)Progress: 70 out of 152 (0.022s elapsed)
+$$(9, 1, Progress report)Progress: 77 out of 152 (0.024s elapsed)
+$$(9, 1, Progress report)Progress: 84 out of 152 (0.026s elapsed)
+$$(9, 1, Progress report)Progress: 91 out of 152 (0.028s elapsed)
+$$(9, 1, Progress report)Progress: 98 out of 152 (0.031s elapsed)
+$$(9, 1, Progress report)Progress: 105 out of 152 (0.033s elapsed)
+$$(9, 1, Progress report)Progress: 112 out of 152 (0.035s elapsed)
+$$(9, 1, Progress report)Progress: 119 out of 152 (0.038s elapsed)
+$$(9, 1, Progress report)Progress: 126 out of 152 (0.042s elapsed)
+$$(9, 1, Progress report)Progress: 133 out of 152 (0.045s elapsed)
+$$(9, 1, Progress report)Progress: 140 out of 152 (0.048s elapsed)
+$$(9, 1, Progress report)Progress: 147 out of 152 (0.051s elapsed)
+$$(8, 1, Internal description)Finished activity (rea: 0.0526s, cpu: $$(7, 1, Internal description)Finished activity (rea: 0.0527s, cpu: $$(7, 3, Internal description)Minimal polynomial of degree 75
+$$(7, 1, Internal description)Preparing polynomial for application
+$$(7, 1, Internal description)Finished activity (rea: 0.0000s, cpu: $$(7, 1, Internal description)Applying polynomial via Horner's rule
+$$(7, 1, Internal description)Finished activity (rea: 0.0068s, cpu: $$(7, 1, Internal description)Checking whether Ax=b
+$$(7, 1, Internal description)Finished activity (rea: 0.0001s, cpu: $$(6, 1, Internal description)Finished activity (rea: 0.5417s, cpu: $$(5, 1, Internal description)Finished activity (rea: 0.5420s, cpu: $$(5, 1, Internal description)Checking system solution
+$$(5, 1, Internal description)Finished activity (rea: 0.0000s, cpu: $$(5, 1, Internal description)Computed system solution is not correct. Attempting to find certificate of inconsistency.
+$$(5, 1, Internal description)Obtaining certificate of inconsistency (Wiedemann)
+$$(6, 1, Internal description)Finding a nullspace element (Wiedemann)
+$$(7, 1, Internal description)Constructing right hand side
+$$(7, 1, Internal description)Finished activity (rea: 0.0000s, cpu: $$(7, 1, Internal description)Solving nonsingular system (Wiedemann)
+$$(8, 1, Internal description)Wiedemann Minimal polynomial
+$$(9, 1, Internal description)Massey
+$$(10, 1, Progress report)Progress: 0 out of 202 (0.000s elapsed)
+$$(10, 1, Progress report)Progress: 10 out of 202 (0.000s elapsed)
+$$(10, 1, Progress report)Progress: 20 out of 202 (0.000s elapsed)
+$$(9, 1, Internal description)Finished activity (rea: 0.0001s, cpu: $$(8, 1, Internal description)Finished activity (rea: 0.0001s, cpu: $$(8, 3, Internal description)Minimal polynomial of degree 3
+Minimal polynomial coefficients: [0, 2, 3, 1]
+$$(7, 1, Internal description)Finished activity (rea: 0.0002s, cpu: $$(7, 1, Internal description)Leading principal minor was found to be singular.
+$$(6, 1, Internal description)Finished activity (rea: 0.0002s, cpu: $$(5, 1, Internal description)Finished activity (rea: 0.0002s, cpu: $$(4, 1, Internal description)Finished activity (rea: 0.5432s, cpu: $$(4, 1, Internal description)Blas Rank
+$$(4, 1, Internal description)Finished activity (rea: 0.0023s, cpu: $$(4, 1, Internal description)Rank of A = 75
+$$(4, 1, Internal description)Solving singular system (Wiedemann)
+$$(5, 1, Internal description)Constructing sparse preconditioner
+$$(5, 1, Internal description)Finished activity (rea: 0.0007s, cpu: $$(5, 1, Internal description)Solving singular system with generic rank profile (Wiedemann)
+$$(6, 1, Internal description)Preparing right hand side
+$$(6, 1, Internal description)Finished activity (rea: 0.0001s, cpu: $$(6, 1, Internal description)Solving nonsingular system (Wiedemann)
+$$(7, 0, Internal warning)Word size extension : 9
+$$(7, 1, Internal description)Wiedemann Minimal polynomial
+$$(8, 1, Internal description)Massey
+$$(9, 1, Progress report)Progress: 0 out of 152 (0.000s elapsed)
+$$(9, 1, Progress report)Progress: 7 out of 152 (0.003s elapsed)
+$$(9, 1, Progress report)Progress: 14 out of 152 (0.005s elapsed)
+$$(9, 1, Progress report)Progress: 21 out of 152 (0.007s elapsed)
+$$(9, 1, Progress report)Progress: 28 out of 152 (0.009s elapsed)
+$$(9, 1, Progress report)Progress: 35 out of 152 (0.011s elapsed)
+$$(9, 1, Progress report)Progress: 42 out of 152 (0.013s elapsed)
+$$(9, 1, Progress report)Progress: 49 out of 152 (0.015s elapsed)
+$$(9, 1, Progress report)Progress: 56 out of 152 (0.017s elapsed)
+$$(9, 1, Progress report)Progress: 63 out of 152 (0.019s elapsed)
+$$(9, 1, Progress report)Progress: 70 out of 152 (0.021s elapsed)
+$$(9, 1, Progress report)Progress: 77 out of 152 (0.023s elapsed)
+$$(9, 1, Progress report)Progress: 84 out of 152 (0.026s elapsed)
+$$(9, 1, Progress report)Progress: 91 out of 152 (0.028s elapsed)
+$$(9, 1, Progress report)Progress: 98 out of 152 (0.030s elapsed)
+$$(9, 1, Progress report)Progress: 105 out of 152 (0.032s elapsed)
+$$(9, 1, Progress report)Progress: 112 out of 152 (0.034s elapsed)
+$$(9, 1, Progress report)Progress: 119 out of 152 (0.038s elapsed)
+$$(9, 1, Progress report)Progress: 126 out of 152 (0.041s elapsed)
+$$(9, 1, Progress report)Progress: 133 out of 152 (0.045s elapsed)
+$$(9, 1, Progress report)Progress: 140 out of 152 (0.048s elapsed)
+$$(9, 1, Progress report)Progress: 147 out of 152 (0.051s elapsed)
+$$(8, 1, Internal description)Finished activity (rea: 0.0523s, cpu: $$(7, 1, Internal description)Finished activity (rea: 0.0523s, cpu: $$(7, 3, Internal description)Minimal polynomial of degree 75
+$$(6, 1, Internal description)Finished activity (rea: 0.5314s, cpu: $$(6, 1, Internal description)Leading principal minor was found to be singular.
+$$(5, 1, Internal description)Finished activity (rea: 0.5315s, cpu: $$(5, 1, Internal description)Preconditioned matrix did not have generic rank profile
+$$(4, 1, Internal description)Finished activity (rea: 0.5323s, cpu: $$(4, 1, Internal description)Solving singular system (Wiedemann)
+$$(5, 1, Internal description)Constructing sparse preconditioner
+$$(5, 1, Internal description)Finished activity (rea: 0.0009s, cpu: $$(5, 1, Internal description)Solving singular system with generic rank profile (Wiedemann)
+$$(6, 1, Internal description)Preparing right hand side
+$$(6, 1, Internal description)Finished activity (rea: 0.0001s, cpu: $$(6, 1, Internal description)Solving nonsingular system (Wiedemann)
+$$(7, 0, Internal warning)Word size extension : 9
+$$(7, 1, Internal description)Wiedemann Minimal polynomial
+$$(8, 1, Internal description)Massey
+$$(9, 1, Progress report)Progress: 0 out of 152 (0.000s elapsed)
+$$(9, 1, Progress report)Progress: 7 out of 152 (0.003s elapsed)
+$$(9, 1, Progress report)Progress: 14 out of 152 (0.005s elapsed)
+$$(9, 1, Progress report)Progress: 21 out of 152 (0.007s elapsed)
+$$(9, 1, Progress report)Progress: 28 out of 152 (0.009s elapsed)
+$$(9, 1, Progress report)Progress: 35 out of 152 (0.011s elapsed)
+$$(9, 1, Progress report)Progress: 42 out of 152 (0.013s elapsed)
+$$(9, 1, Progress report)Progress: 49 out of 152 (0.015s elapsed)
+$$(9, 1, Progress report)Progress: 56 out of 152 (0.017s elapsed)
+$$(9, 1, Progress report)Progress: 63 out of 152 (0.019s elapsed)
+$$(9, 1, Progress report)Progress: 70 out of 152 (0.021s elapsed)
+$$(9, 1, Progress report)Progress: 77 out of 152 (0.024s elapsed)
+$$(9, 1, Progress report)Progress: 84 out of 152 (0.026s elapsed)
+$$(9, 1, Progress report)Progress: 91 out of 152 (0.028s elapsed)
+$$(9, 1, Progress report)Progress: 98 out of 152 (0.030s elapsed)
+$$(9, 1, Progress report)Progress: 105 out of 152 (0.032s elapsed)
+$$(9, 1, Progress report)Progress: 112 out of 152 (0.034s elapsed)
+$$(9, 1, Progress report)Progress: 119 out of 152 (0.038s elapsed)
+$$(9, 1, Progress report)Progress: 126 out of 152 (0.041s elapsed)
+$$(9, 1, Progress report)Progress: 133 out of 152 (0.045s elapsed)
+$$(9, 1, Progress report)Progress: 140 out of 152 (0.048s elapsed)
+$$(9, 1, Progress report)Progress: 147 out of 152 (0.051s elapsed)
+$$(8, 1, Internal description)Finished activity (rea: 0.0526s, cpu: $$(7, 1, Internal description)Finished activity (rea: 0.0526s, cpu: $$(7, 3, Internal description)Minimal polynomial of degree 75
+$$(7, 1, Internal description)Preparing polynomial for application
+$$(7, 1, Internal description)Finished activity (rea: 0.0000s, cpu: $$(7, 1, Internal description)Applying polynomial via Horner's rule
+$$(7, 1, Internal description)Finished activity (rea: 0.0069s, cpu: $$(7, 1, Internal description)Checking whether Ax=b
+$$(7, 1, Internal description)Finished activity (rea: 0.0001s, cpu: $$(6, 1, Internal description)Finished activity (rea: 0.5349s, cpu: $$(5, 1, Internal description)Finished activity (rea: 0.5351s, cpu: $$(5, 1, Internal description)Checking system solution
+$$(5, 1, Internal description)Finished activity (rea: 0.0000s, cpu: $$(5, 1, Internal description)Computed system solution is not correct. Attempting to find certificate of inconsistency.
+$$(5, 1, Internal description)Obtaining certificate of inconsistency (Wiedemann)
+$$(6, 1, Internal description)Finding a nullspace element (Wiedemann)
+$$(7, 1, Internal description)Constructing right hand side
+$$(7, 1, Internal description)Finished activity (rea: 0.0000s, cpu: $$(7, 1, Internal description)Solving nonsingular system (Wiedemann)
+$$(8, 1, Internal description)Wiedemann Minimal polynomial
+$$(9, 1, Internal description)Massey
+$$(10, 1, Progress report)Progress: 0 out of 202 (0.000s elapsed)
+$$(10, 1, Progress report)Progress: 10 out of 202 (0.000s elapsed)
+$$(10, 1, Progress report)Progress: 20 out of 202 (0.000s elapsed)
+$$(9, 1, Internal description)Finished activity (rea: 0.0001s, cpu: $$(8, 1, Internal description)Finished activity (rea: 0.0001s, cpu: $$(8, 3, Internal description)Minimal polynomial of degree 4
+Minimal polynomial coefficients: [4, 0, 0, 0, 1]
+$$(8, 1, Internal description)Preparing polynomial for application
+$$(8, 1, Internal description)Finished activity (rea: 0.0000s, cpu: $$(8, 1, Internal description)Applying polynomial via Horner's rule
+$$(8, 1, Internal description)Finished activity (rea: 0.0000s, cpu: $$(8, 1, Internal description)Checking whether Ax=b
+$$(8, 1, Internal description)Finished activity (rea: 0.0000s, cpu: $$(7, 1, Internal description)Finished activity (rea: 0.0002s, cpu: $$(6, 1, Internal description)Finished activity (rea: 0.0003s, cpu: $$(5, 1, Internal description)Finished activity (rea: 0.0003s, cpu: $$(4, 1, Internal description)Finished activity (rea: 0.5365s, cpu: $$(3, 1, Internal description)Finished activity (rea: 3.1329s, cpu: $$(3, 1, Internal error)ERROR: solve reported inconsistent system
+$$(2, 1, Internal description)Finished activity (rea: 3.1336s, cpu: $$(2, 1, Progress report)Progress: 1 out of 1 (3.134s elapsed)
+$$(1, 1, Internal description)Finished activity (rea: 3.1336s, cpu: $$(1, 1, Internal description)Testing identity solve (BlockWiedemann)
+$$(2, 1, Internal description)Iteration 0
+$$(3, 1, Internal description)Input vector:  [1, 1, 4, 0, 4, 1, 2, 4, 1, 2, 3, 3, 0, 2, 0, 1, 1, 1, 0, 2, 3, 0, 0, 0, 2, 3, 2, 4, 1, 0, 3, 3, 4, 3, 3, 4, 4, 0, 1, 3, 0, 0, 3, 1, 0, 2, 0, 0, 4, 3, 1, 2, 2, 1, 3, 2, 1, 2, 0, 4, 3, 3, 3, 1, 2, 2, 0, 0, 2, 1, 3, 4, 3, 4, 4, 4, 0, 1, 2, 0, 2, 1, 4, 3, 0, 4, 3, 3, 4, 1, 0, 0, 2, 3, 4, 1, 2, 1, 1, 4]
+Output vector: [1, 1, 4, 0, 4, 1, 2, 4, 1, 2, 3, 3, 0, 2, 0, 1, 1, 1, 0, 2, 3, 0, 0, 0, 2, 3, 2, 4, 1, 0, 3, 3, 4, 3, 3, 4, 4, 0, 1, 3, 0, 0, 3, 1, 0, 2, 0, 0, 4, 3, 1, 2, 2, 1, 3, 2, 1, 2, 0, 4, 3, 3, 3, 1, 2, 2, 0, 0, 2, 1, 3, 4, 3, 4, 4, 4, 0, 1, 2, 0, 2, 1, 4, 3, 0, 4, 3, 3, 4, 1, 0, 0, 2, 3, 4, 1, 2, 1, 1, 4]
+$$(2, 1, Internal description)Finished activity (rea: 0.0151s, cpu: $$(2, 1, Progress report)Progress: 1 out of 1 (0.015s elapsed)
+$$(1, 1, Internal description)Finished activity (rea: 0.0151s, cpu: $$(1, 1, Internal description)Testing nonsingular solve (BlockWiedemann)
+$$(2, 1, Internal description)Iteration 0
+$$(3, 1, Internal description)Diagonal entries: [1, 1, 4, 0, 1, 3, 3, 3, 2, 1, 0, 4, 0, 1, 0, 3, 4, 4, 3, 0, 2, 3, 2, 3, 0, 4, 1, 1, 1, 3, 1, 2, 2, 4, 2, 3, 1, 1, 1, 4, 1, 0, 2, 0, 4, 2, 0, 3, 2, 2, 2, 2, 2, 0, 2, 4, 2, 2, 4, 4, 1, 2, 0, 1, 1, 1, 4, 2, 1, 4, 2, 1, 0, 1, 2, 2, 0, 3, 0, 1, 1, 3, 3, 4, 1, 2, 0, 4, 4, 0, 2, 3, 0, 4, 2, 0, 3, 3, 3, 0]
+Right-hand side:  [0, 2, 4, 3, 2, 2, 1, 3, 4, 4, 1, 3, 4, 2, 1, 4, 2, 3, 2, 4, 4, 4, 4, 1, 0, 1, 2, 4, 0, 1, 3, 4, 0, 4, 0, 0, 2, 0, 0, 4, 0, 1, 3, 4, 1, 0, 3, 1, 3, 4, 4, 3, 0, 4, 4, 3, 0, 1, 1, 2, 1, 3, 1, 4, 3, 4, 0, 1, 4, 4, 2, 3, 4, 2, 3, 2, 4, 4, 3, 1, 0, 4, 0, 1, 0, 3, 3, 0, 0, 0, 0, 3, 1, 4, 1, 0, 4, 4, 2, 0]

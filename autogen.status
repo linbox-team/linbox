@@ -1,0 +1,1 @@
+./autogen.sh  --prefix="/Users/giorgi/Work/Library/linbox-maple" PKG_CONFIG_PATH="/Users/giorgi/Work/Library/fflas-ffpack" --with-all="/usr/local" --with-maple="/Library/Frameworks/Maple.framework/Versions/18"

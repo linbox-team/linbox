@@ -36,7 +36,6 @@
 #include <linbox/blackbox/zero-one.h>
 #include <givaro/zring.h>
 #include <linbox/solutions/charpoly.h>
-#include <linbox/ring/givaro-polynomial.h>
 #include <linbox/solutions/methods.h>
 
 using namespace std;

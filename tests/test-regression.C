@@ -27,11 +27,15 @@
  * @ingroup tests
  * @brief tests former bugs to check that no regression made them show up again.
  */
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 #include "givaro/modular.h"
 #include "linbox/matrix/sparse-matrix.h"
+#include "linbox/matrix/dense-matrix.h"
+#include "linbox/polynomial/dense-polynomial.h"
+#include "linbox/ring/polynomial-ring.h"
 #include "linbox/vector/blas-vector.h"
-#include "solutions/solve.h"
+#include "linbox/solutions/solve.h"
+#include "linbox/solutions/charpoly.h"
 using namespace LinBox;
 
 bool testSolveSparse(){
@@ -114,12 +118,175 @@ bool testSolveSparseSage(){
 bool testSolveSparseSage(){return true;}
 #endif
 
+/**
+ * Testing regresssion for issue 56 https://github.com/linbox-team/linbox/issues/56
+ * reported by Vincent Delecroix
+ */
+bool testFlatDixonSolver (const Specifier& m){
+        // creating LinBox matrices and vectors
+    Givaro::ZRing<Integer> ZZ;
+    typedef DenseVector<Givaro::ZRing<Integer> > DenseVector;
+
+    SparseMatrix<Givaro::ZRing<Integer> > M (ZZ,1,2);
+    Givaro::ZRing<Integer>::Element D; // denominator of the solution
+    DenseVector A(ZZ, M.coldim()); // numerator of the solution
+    DenseVector B(ZZ, M.rowdim()); // Right handside of the system
+
+    M.setEntry(0,0,1);
+    M.setEntry(0,1,1);
+    ZZ.assign(B[0],1);
+
+        // solving via Sparse Elimination
+    solve (A, D, M, B, m);
+
+    if (!ZZ.areEqual(A[0],ZZ.one) || !ZZ.areEqual(A[1],ZZ.zero) || !ZZ.areEqual(D,ZZ.one)) {
+        std::cerr<<"Fail solving a flat system over QQ with a SparseMatrix"<<std::endl;
+        return false;
+    }
+
+    return true;
+}
+
+
+bool testFlatDixonSolver2 (const Specifier& m){
+        // creating LinBox matrices and vectors
+    Givaro::ZRing<Integer> ZZ;
+    typedef DenseVector<Givaro::ZRing<Integer> > DenseVector;
+
+    SparseMatrix<Givaro::ZRing<Integer> > M (ZZ,1,2);
+    Givaro::ZRing<Integer>::Element D; // denominator of the solution
+    DenseVector A(ZZ, M.coldim()); // numerator of the solution
+    DenseVector B(ZZ, M.rowdim()); // Right handside of the system
+
+    M.setEntry(0,0,1);
+    M.setEntry(0,1,0);
+    ZZ.assign(B[0],1);
+
+        // solving via Sparse Elimination
+    solve (A, D, M, B, m);
+
+    if (!ZZ.areEqual(A[0],ZZ.one) || !ZZ.areEqual(D,ZZ.one)) {
+        std::cerr<<"A = "<<A<<" D = "<<D<<std::endl;
+        std::cerr<<"Fail solving a flat system over QQ with a SparseMatrix"<<std::endl;
+        return false;
+    }
+
+    return true;
+}
+
+bool testTallDixonSolver (const Specifier& m){
+        // creating LinBox matrices and vectors
+    Givaro::ZRing<Integer> ZZ;
+    typedef DenseVector<Givaro::ZRing<Integer> > DenseVector;
+
+    SparseMatrix<Givaro::ZRing<Integer> > M (ZZ,2,1);
+    Givaro::ZRing<Integer>::Element D; // denominator of the solution
+    DenseVector A(ZZ, M.coldim()); // numerator of the solution
+    DenseVector B(ZZ, M.rowdim()); // Right handside of the system
+
+    M.setEntry(0,0,1);
+    M.setEntry(1,0,1);
+    ZZ.assign(B[0],1);
+    ZZ.assign(B[1],1);
+
+        // solving via Sparse Elimination
+    solve (A, D, M, B, m);
+
+    if (!ZZ.areEqual(A[0],ZZ.one) || !ZZ.areEqual(D,ZZ.one)) {
+        std::cerr<<"Fail solving a tall system over QQ with a SparseMatrix"<<std::endl;
+        return false;
+    }
+
+    return true;
+
+}
+
+bool testSingularDixonSolver (const Specifier& m){
+        // creating LinBox matrices and vectors
+    Givaro::ZRing<Integer> ZZ;
+    typedef DenseVector<Givaro::ZRing<Integer> > DenseVector;
+
+    SparseMatrix<Givaro::ZRing<Integer> > M (ZZ,2,2);
+    Givaro::ZRing<Integer>::Element D; // denominator of the solution
+    DenseVector A(ZZ, M.coldim()); // numerator of the solution
+    DenseVector B(ZZ, M.rowdim()); // Right handside of the system
+
+    M.setEntry(0,0,-2);
+    ZZ.assign(B[0],-4);
+
+        // solving via Sparse Elimination
+    solve (A, D, M, B, m);
+
+    if (!ZZ.areEqual(A[0],Integer(2)) || !ZZ.areEqual(D,ZZ.one)) {
+        std::cerr<<"A = "<<A<<" D = "<<D<<std::endl;
+        std::cerr<<"Fail solving a singular system over QQ with a SparseMatrix"<<std::endl;
+        return false;
+    }
+    return true;
+}
+bool testZeroDixonSolver (const Specifier& m){
+        // creating LinBox matrices and vectors
+    Givaro::ZRing<Integer> ZZ;
+    typedef DenseVector<Givaro::ZRing<Integer> > DenseVector;
+
+    SparseMatrix<Givaro::ZRing<Integer> > M (ZZ,1,1);
+    Givaro::ZRing<Integer>::Element D; // denominator of the solution
+    DenseVector A(ZZ, M.coldim()); // numerator of the solution
+    DenseVector B(ZZ, M.rowdim()); // Right handside of the system
+
+    M.setEntry(0,0,0);
+    ZZ.assign(B[0],0);
+
+        // solving via Sparse Elimination
+    solve (A, D, M, B, m);
+
+    if (!ZZ.areEqual(A[0],ZZ.zero) || !ZZ.areEqual(D,ZZ.one)) {
+        std::cerr<<"A = "<<A<<" D = "<<D<<std::endl;
+        std::cerr<<"Fail solving a zero over QQ with a SparseMatrix"<<std::endl;
+        return false;
+    }
+    return true;
+}
+
+bool testZeroDimensionalCharpoly(){
+    Givaro::ZRing<Integer> ZZ;
+    DenseMatrix<Givaro::ZRing<Integer> > A (ZZ,0,0);
+    DensePolynomial<Givaro::ZRing<Integer> > P (ZZ);
+    PolynomialRing<Givaro::ZRing<Integer> > PR (ZZ);
+    charpoly(P,A);
+    return PR.isOne(P);
+}
+
+bool testZeroDimensionalMinPoly(){
+    Givaro::ZRing<Integer> ZZ;
+    DenseMatrix<Givaro::ZRing<Integer> > A (ZZ,0,0);
+    DensePolynomial<Givaro::ZRing<Integer> > P (ZZ);
+    PolynomialRing<Givaro::ZRing<Integer> > PR (ZZ);
+    minpoly(P,A);
+    return PR.isOne(P);
+}
+
 int main (int argc, char **argv)
 {
     bool pass = true;
 
-    if (!testSolveSparse  ()) pass = false;
-    if (!testSolveSparseSage  ()) pass = false;
+    pass &= testSolveSparse  ();
+    pass &= testSolveSparseSage ();
+    pass &= testFlatDixonSolver (Method::SparseElimination());
+    pass &= testFlatDixonSolver2 (Method::SparseElimination());
+    pass &= testTallDixonSolver (Method::SparseElimination());
+    pass &= testFlatDixonSolver (Method::BlasElimination());
+    pass &= testFlatDixonSolver2 (Method::BlasElimination());
+    pass &= testTallDixonSolver (Method::BlasElimination());
+    pass &= testFlatDixonSolver (Method::Wiedemann());
+    pass &= testFlatDixonSolver2 (Method::Wiedemann());
+    pass &= testTallDixonSolver (Method::Wiedemann());
+    pass &= testSingularDixonSolver (Method::SparseElimination());
+    pass &= testZeroDixonSolver (Method::SparseElimination());
+    pass &= testSingularDixonSolver (Method::BlasElimination());
+    pass &= testZeroDixonSolver (Method::BlasElimination());
+    pass &= testZeroDimensionalCharpoly ();
+    pass &= testZeroDimensionalMinPoly ();
 
     return pass ? 0 : -1;
 }

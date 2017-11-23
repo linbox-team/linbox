@@ -18,7 +18,7 @@
 # ========LICENCE========
 
 
-AM_CPPFLAGS= -I$(top_srcdir)/linbox $(DEPS_CFLAGS)
+AM_CPPFLAGS= -I$(top_srcdir) $(DEPS_CFLAGS)
 LDADD = $(DEPS_LIBS) $(LDFLAGS)
 
 pkgincludesubdir=$(pkgincludedir)/randiter
@@ -39,8 +39,7 @@ BASIC_HDRS =            \
     random-prime.h      \
     gmp-random-prime.h  \
     random-fftprime.h   \
-    multimod-randomprime.h \
-    givaro-poly.h
+    multimod-randomprime.h
 
 NTL_HDRS = ntl-zz.h
 
