@@ -338,6 +338,7 @@ interfaces/maple/Makefile
 interfaces/kaapi/Makefile
 interfaces/sage/Makefile
 macros/Makefile
+macros/CodeChunk/Makefile
 benchmarks/Makefile
 benchmarks/data/Makefile
 benchmarks/matrix/Makefile
