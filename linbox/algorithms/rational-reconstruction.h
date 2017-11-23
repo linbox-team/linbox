@@ -86,7 +86,7 @@ namespace Givaro
 
 namespace LinBox
 {
-	long NumBytes(const Integer & m)
+	inline long NumBytes(const Integer & m)
 	{
 		return ( (m.bitsize()+7 )/8) ;
 	}

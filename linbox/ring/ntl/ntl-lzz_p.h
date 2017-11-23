@@ -63,12 +63,12 @@ namespace Givaro
          * @param y Integer.
          */
 	template <>
-	NTL::zz_p& Caster(NTL::zz_p& x, const Integer& y)
+	inline NTL::zz_p& Caster(NTL::zz_p& x, const Integer& y)
 	{
 		return x = NTL::to_zz_p( static_cast<int64_t>(y)%NTL::zz_p::modulus() );
 	}
 	template <>
-	NTL::zz_p& Caster(NTL::zz_p& x, const double& y)
+	inline NTL::zz_p& Caster(NTL::zz_p& x, const double& y)
 	{
 		return x = NTL::to_zz_p(long(y)%NTL::zz_p::modulus());
 	}
@@ -86,7 +86,7 @@ namespace Givaro
          * @param y constant reference to field element.
          */
  	template <>
-	Integer& Caster(Integer& x, const NTL::zz_p& y)
+	inline Integer& Caster(Integer& x, const NTL::zz_p& y)
 	{
 		return x = int64_t(rep(y));
 	}

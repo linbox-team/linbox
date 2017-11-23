@@ -56,8 +56,8 @@ namespace LinBox{
 	template<size_t type, size_t storage, class Field>
 	class PolynomialMatrix;
 
-	template<typename Field> uint64_t element_storage(const Field& F)      { integer p;F.characteristic(p); return length(p);}
-	template<> uint64_t element_storage(const Givaro::Modular<Givaro::Integer> &F) { integer p;F.characteristic(p); return length(p)+sizeof(Givaro::Integer);}
+	template<typename Field> inline uint64_t element_storage(const Field& F)      { integer p;F.characteristic(p); return length(p);}
+	template<> inline uint64_t  element_storage(const Givaro::Modular<Givaro::Integer> &F) { integer p;F.characteristic(p); return length(p)+sizeof(Givaro::Integer);}
 	
 	// Class for Polynomial Matrix stored as a Matrix of Polynomials
 	template<class _Field>

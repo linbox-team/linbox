@@ -1,8 +1,0 @@
-#include "lb-blackbox.C"
-#include "lb-rank.C"
-#include "lb-solve.C"
-#include "lb-det.C"
-#include "lb-minpoly.C"
-#include "lb-charpoly.C"
-#include "lb-garbage.C"
-#include "lb-mul.C"

@@ -22,9 +22,6 @@
  * ========LICENCE========
  */
 
-#ifndef __LINBOX_lb_polynomial_C
-#define __LINBOX_lb_polynomial_C
-
 #include "lb-domain-collection.h"
 #include "lb-domain-function.h"
 #include "lb-vector-collection.h"
@@ -190,8 +187,7 @@ void  SerializePolynomial (SerialPolynomial &s, const PolynomialKey &key) {
 	VectorFunction::call(s, key, Fct);
 }
 
-#include "lb-vector-function.inl"
-#endif
+
 
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:

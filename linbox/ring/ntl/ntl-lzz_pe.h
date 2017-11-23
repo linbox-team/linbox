@@ -54,20 +54,20 @@
 namespace Givaro
 {
 	template<>
-	NTL::zz_pE& Caster(NTL::zz_pE &x, const Integer &y)
+	inline NTL::zz_pE& Caster(NTL::zz_pE &x, const Integer &y)
 	{
 		x=NTL::to_zz_pE(static_cast<int64_t>(y));
 		return x;
 	}
 	template<>
-	NTL::zz_pE& Caster(NTL::zz_pE &x, const double &y)
+	inline NTL::zz_pE& Caster(NTL::zz_pE &x, const double &y)
 	{
 		x=NTL::to_zz_pE(static_cast<long>(y));
 		return x;
 	}
 
 	template<>
-	Integer& Caster (Integer& x, const NTL::zz_pE &y) {
+	inline Integer& Caster (Integer& x, const NTL::zz_pE &y) {
 		NTL::zz_pX poly = rep(y);
 		Integer base = static_cast<int64_t>(NTL::zz_p::modulus());
 		long i = deg(poly)+1;

@@ -22,10 +22,6 @@
  * ========LICENCE========
  */
 
-#ifndef __LINBOX_lb_charpoly_C
-#define __LINBOX_lb_charpoly_C
-
-
 #include "linbox/solutions/charpoly.h"
 #include "linbox/ring/polynomial-ring.h"
 
@@ -98,7 +94,7 @@ const VectorKey& lb_charpoly(const BlackboxKey& key) {
 }
 
 
-#endif
+
 
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:

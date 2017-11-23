@@ -22,10 +22,6 @@
  * ========LICENCE========
  */
 
-
-#ifndef __LINBOX_lb_element_C
-#define __LINBOX_lb_element_C
-
 #include <lb-element.h>
 #include <lb-element-data.h>
 #include <linbox/field/field-traits.h>
@@ -129,7 +125,6 @@ void  SerializeElement (SerialElement &s, const EltKey &key) {
 	DomainFunction::call(s, it->second->getDomainKey(), Fct);
 }
 
-#endif
 
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:

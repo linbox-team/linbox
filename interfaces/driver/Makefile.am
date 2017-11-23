@@ -22,7 +22,8 @@ pkgincludesubdir=$(includedir)/interfaces/driver
 
 AM_CPPFLAGS=-I$(top_srcdir) -I. -I../../linbox
 
-AM_CXXFLAGS = -DDISABLE_COMMENTATOR $(DEPS_CFLAGS) $(DEFAULT_CFLAGS) -fPIC -DPIC #@DEFAULT_CFLAGS@
+AM_CXXFLAGS = @DEFAULT_CFLAGS@ -DDISABLE_COMMENTATOR $(DEPS_CFLAGS) -fPIC -DPIC
+
 
 #ifdef HAVE_NTL
 AM_CXXFLAGS +=$(NTL_CFLAGS)
@@ -38,16 +39,17 @@ liblbdriver_la_SOURCES= lb-element.C 	\
 			lb-domain.C     \
 			lb-vector.C     \
 			lb-polynomial.C \
-			lb-solutions.C
-#			lb-garbage.C \
-#			lb-det.C	\
-#			lb-rank.C       
-# lb-minpoly.C    \
-# lb-charpoly.C   \
-# lb-solve.C
-# lb-blackbox.C	
+			lb-blackbox.C	\
+			lb-garbage.C  	\
+			lb-rank.C	\
+	 		lb-solve.C	\
+			lb-det.C	\
+			lb-minpoly.C	\
+			lb-charpoly.C	\
+			lb-mul.C
 
-liblbdriver_la_LDFLAGS=  $(DEPS_LIBS) $(NTL_LIBS) $(LDFLAGS) $(LINBOX_LDFLAGS) $(top_srcdir)/linbox/liblinbox.la #-Wl,-zmuldefs
+
+liblbdriver_la_LDFLAGS=  $(DEPS_LIBS) $(NTL_LIBS) $(LDFLAGS) $(LINBOX_LDFLAGS) $(top_srcdir)/linbox/liblinbox.la --Wl,dead_strip #-Wl,-zmuldefs
 
 
 

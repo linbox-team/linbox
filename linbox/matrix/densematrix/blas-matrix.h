@@ -83,60 +83,60 @@ namespace LinBox
 		}
 
 		template<>
-		bool checkBlasApply(const Givaro::Modular<double> &, size_t)
+		inline bool checkBlasApply(const Givaro::Modular<double> &, size_t)
 		{
 			return true;
 		}
 
 		template<>
-		bool checkBlasApply(const Givaro::ModularBalanced<double> &, size_t)
+		inline bool checkBlasApply(const Givaro::ModularBalanced<double> &, size_t)
 		{
 			return true;
 		}
 
 		template<>
-		bool checkBlasApply(const Givaro::Modular<float> &, size_t)
+		inline bool checkBlasApply(const Givaro::Modular<float> &, size_t)
 		{
 			return true;
 		}
 
 		template<>
-		bool checkBlasApply(const Givaro::ModularBalanced<float> &, size_t)
+		inline bool checkBlasApply(const Givaro::ModularBalanced<float> &, size_t)
 		{
 			return true;
 		}
 
 		template<>
-		bool checkBlasApply(const Givaro::Modular<int64_t> &, size_t)
+		inline bool checkBlasApply(const Givaro::Modular<int64_t> &, size_t)
 		{
 			return true;
 		}
 
 		template<>
-		bool checkBlasApply(const Givaro::ModularBalanced<int64_t> &, size_t)
+		inline bool checkBlasApply(const Givaro::ModularBalanced<int64_t> &, size_t)
 		{
 			return true;
 		}
 
 		template<>
-		bool checkBlasApply(const Givaro::Modular<int32_t> &, size_t)
+		inline bool checkBlasApply(const Givaro::Modular<int32_t> &, size_t)
 		{
 			return true;
 		}
 
 		template<>
-		bool checkBlasApply(const Givaro::ModularBalanced<int32_t> &, size_t)
+		inline bool checkBlasApply(const Givaro::ModularBalanced<int32_t> &, size_t)
 		{
 			return true;
 		}
 		template<>
-		bool checkBlasApply(const Givaro::Modular<int16_t> &, size_t)
+		inline bool checkBlasApply(const Givaro::Modular<int16_t> &, size_t)
 		{
 			return true;
 		}
 
 		template<>
-		bool checkBlasApply(const Givaro::ModularBalanced<int16_t> &, size_t)
+		inline bool checkBlasApply(const Givaro::ModularBalanced<int16_t> &, size_t)
 		{
 			return true;
 		}
@@ -1225,7 +1225,7 @@ namespace LinBox
 	//! @todo b should be the random generator
 	template<>
 	template<>
-	void BlasMatrix<Givaro::ZRing<Integer>, Vector<Givaro::ZRing<Integer>>::Dense >::random<size_t>(const size_t & b)
+	inline void BlasMatrix<Givaro::ZRing<Integer>, Vector<Givaro::ZRing<Integer>>::Dense >::random<size_t>(const size_t & b)
 	{
 		// std::cout << "randomized " <<  b << std::endl;
         typedef Givaro::ZRing<Integer> ZZ_t;

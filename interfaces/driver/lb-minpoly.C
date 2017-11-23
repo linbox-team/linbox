@@ -22,10 +22,6 @@
  * ========LICENCE========
  */
 
-#ifndef __LINBOX_lb_minpoly_C
-#define __LINBOX_lb_minpoly_C
-
-
 #include "linbox/solutions/minpoly.h"
 
 #include "lb-minpoly.h"
@@ -88,8 +84,6 @@ const VectorKey& lb_minpoly(const BlackboxKey& key) {
 }
 
 
-
-#endif
 
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:

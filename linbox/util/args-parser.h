@@ -31,6 +31,31 @@
 #include <gmp++/gmp++.h>
 #include <fflas-ffpack/utils/args-parser.h>
 
+#include "linbox/util/commentator.h"
+namespace LinBox
+{
+        void parseArguments (int argc, char **argv, Argument *args, bool printDefaults = true) {
+        for (int i = 1; i < argc; ++i) {
+            if (argv[i][0] == '-') {
+                if (argv[i][1] == 0) {
+                    LinBox::commentator().setReportStream (std::cout);
+                    LinBox::commentator().setBriefReportStream (std::cout);
+                } else {
+                        // Skip the argument next to "-xxx"
+                        // except if next argument is a switch
+                    if ( ((i+1) < argc) &&
+                         (argv[i+1][0] != '-') ) {
+                        ++i;
+                    }
+                }
+            } else {
+                LinBox::commentator().setDefaultReportFile (argv[i]);
+                LinBox::commentator().setBriefReportStream(std::cout);
+            }
+        }
+        FFLAS::parseArguments(argc,argv,args,printDefaults);
+    }
+}
 #endif // __LINBOX_util_args_parser_H
 // Local Variables:
 // mode: C++

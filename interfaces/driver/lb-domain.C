@@ -22,8 +22,6 @@
  * ========LICENCE========
  */
 
-#ifndef __LINBOX_lb_domain_C
-#define __LINBOX_lb_domain_C
 
 #include "lb-domain.h"
 #include "lb-domain-data.h"
@@ -50,15 +48,14 @@ Domain_Factory linbox_domain;
  *******************************************/
 //extern Domain_Factory linbox_domain;
 
-void UpdateDomain(){
+void UpdateDomain(){ 
 	linbox_domain.add("linbox_field_dbl"      , constructDomain<Givaro::Modular<double> >);
         linbox_domain.add("linbox_ring_integer"   , constructDomain<Givaro::ZRing<Givaro::Integer> >);
-	linbox_domain.add("linbox_field_integer"       , constructDomain<Givaro::Modular<Givaro::Integer> >);
-#ifndef __LINBOX_MINIMIZE_DOMAIN
+	linbox_domain.add("linbox_field_integer"  , constructDomain<Givaro::Modular<Givaro::Integer> >);
         linbox_domain.add("linbox_field_rational" , constructDomain<Givaro::QField<Givaro::Rational> >);
+#ifndef __LINBOX_MINIMIZE_DOMAIN
 	linbox_domain.add("linbox_field_64"       , constructDomain<Givaro::Modular<int64_t> >);
-
-#endif
+#endif 
 #ifdef __LINBOX_HAVE_NTL
         //linbox_domain.add("ntl_field_ZZ_p"      , constructDomain<LinBox::NTL_ZZ_p>);
 #ifndef __LINBOX_MINIMIZE_DOMAIN
@@ -178,8 +175,6 @@ void setIntegerRing(const char* t){
 void writeDomainInfo(const DomainKey &key, std::ostream& os){
 	os<<"[LinBox Domain (type = "<<key.Type()<<", charact = "<<key.Characteristic()<<")]\n";
 }
-
-#endif // end of file
 
 
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s

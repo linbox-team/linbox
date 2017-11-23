@@ -22,9 +22,6 @@
  * ========LICENCE========
  */
 
-#ifndef __LINBOX_lb_vector_C
-#define __LINBOX_lb_vector_C
-
 #include "linbox/linbox-config.h"
 #include <lb-domain-collection.h>
 #include <lb-vector.h>
@@ -385,8 +382,7 @@ void  SerializeVector (SerialVector &s, const VectorKey &key) {
 	VectorFunction::call(s, key, Fct);
 }
 
-#include "lb-vector-function.inl"
-#endif
+
 
 
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s

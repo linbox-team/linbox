@@ -34,6 +34,7 @@
 #include <iostream>
 
 #include "linbox/util/commentator.h"
+#include "linbox/util/args-parser.h"
 #include "linbox/matrix/sparse-matrix.h"
 #include "linbox/solutions/is-positive-definite.h"
 

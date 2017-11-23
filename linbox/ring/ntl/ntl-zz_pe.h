@@ -51,7 +51,7 @@ namespace Givaro
 {
 
 	template<>
-	NTL::ZZ_pE& Caster(NTL::ZZ_pE &x, const Integer &y)
+	inline NTL::ZZ_pE& Caster(NTL::ZZ_pE &x, const Integer &y)
 	{
 		std::stringstream s;
 		s << y;
@@ -60,7 +60,7 @@ namespace Givaro
 		return x;
 	}
 	template<>
-	NTL::ZZ_pE& Caster(NTL::ZZ_pE &x, const double &y)
+	inline NTL::ZZ_pE& Caster(NTL::ZZ_pE &x, const double &y)
 	{
 		std::stringstream s;
 		s << y;
@@ -75,7 +75,7 @@ namespace Givaro
 	// a0 + a1*p + a2*p^2 + ...
 	//
 
-	Integer& Caster(Integer& c, const NTL::ZZ_pE& e)
+	inline Integer& Caster(Integer& c, const NTL::ZZ_pE& e)
 	{
 		NTL::ZZ_pX poly = rep(e);
 		Integer base, coef;

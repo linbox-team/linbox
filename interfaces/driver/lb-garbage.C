@@ -22,13 +22,10 @@
  * ========LICENCE========
  */
 
-#ifndef __LINBOX_lb_garbage_C
-#define __LINBOX_lb_garbage_C
-
 #include <lb-garbage.h>
 #include <lb-domain-function.h>
 #include <lb-element-data.h>
-#include <lb-blackbox-function.h> 
+#include <lb-blackbox-function.h>
 #include <lb-vector-function.h>
 
 #define __LINBOX_NO_GC_EXCEPTION
@@ -238,7 +235,6 @@ void LinBoxCollect(){
 }
 
 
-#endif
 
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:

@@ -68,7 +68,7 @@ namespace Givaro
 	 * @param y constant reference to field element.
 	 */
 	template <>
-	Integer& Caster(Integer& x, const NTL::ZZ_p& y)
+	inline Integer& Caster(Integer& x, const NTL::ZZ_p& y)
 	{
 		NTL::ZZ iy = y._ZZ_p__rep;
 
@@ -89,7 +89,7 @@ namespace Givaro
 
 	//dpritcha
 	template<>
-	double& Caster(double& x, const NTL::ZZ_p& y)
+	inline double& Caster(double& x, const NTL::ZZ_p& y)
 	{
 		x = NTL::to_double(NTL::rep(y));
 		return x;
@@ -106,27 +106,27 @@ namespace Givaro
 	 \ingroup field
 	 */
 	template <>
-	NTL::ZZ_p& Caster(NTL::ZZ_p& x, const Integer& y)
+	inline NTL::ZZ_p& Caster(NTL::ZZ_p& x, const Integer& y)
 	{
 		return x = NTL::to_ZZ_p( NTL::to_ZZ( (static_cast<const std::string>(y)).c_str() ) );
 	}
 	template <>
-	NTL::ZZ_p& Caster(NTL::ZZ_p& x, const double& y)
+	inline NTL::ZZ_p& Caster(NTL::ZZ_p& x, const double& y)
 	{
 		return x = NTL::to_ZZ_p( NTL::to_ZZ((long)(y) ) );
 	}
 	template <>
-	NTL::ZZ_p& Caster(NTL::ZZ_p& x, const int& y)
+	inline NTL::ZZ_p& Caster(NTL::ZZ_p& x, const int& y)
 	{
 		return x = NTL::to_ZZ_p( NTL::to_ZZ((long)(y) ) );
 	}
 	template <>
-	NTL::ZZ_p& Caster(NTL::ZZ_p& x, const unsigned long& y)
+	inline NTL::ZZ_p& Caster(NTL::ZZ_p& x, const unsigned long& y)
 	{
 		return x = NTL::to_ZZ_p( NTL::to_ZZ((long)(y) ) );
 	}
 	template <>
-	NTL::ZZ_p& Caster(NTL::ZZ_p& x, const unsigned int& y)
+	inline NTL::ZZ_p& Caster(NTL::ZZ_p& x, const unsigned int& y)
 	{
 		return x = NTL::to_ZZ_p( NTL::to_ZZ((long)(y) ) );
 	}

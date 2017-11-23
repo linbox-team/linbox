@@ -22,16 +22,12 @@
  * ========LICENCE========
  */
 
-#ifndef __LINBOX_lb_solve_C
-#define __LINBOX_lb_solve_C
-
 #include "linbox/solutions/solve.h"
 
 #include "lb-solve.h"
 #include "lb-domain-function.h"
 #include "lb-blackbox-function.h"
 #include "lb-vector-function.h"
-#include "lb-vector-function.inl"
 #include "lb-blackbox.h"
 #include "lb-vector.h"
 #include "lb-domain.h"
@@ -225,7 +221,6 @@ const VectorKey&  lb_solve(const BlackboxKey &Bkey, const VectorKey &Vkey) {
 
 
 
-#endif
 
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:

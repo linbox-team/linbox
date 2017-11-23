@@ -55,14 +55,14 @@ namespace Givaro
 {
 	template<>
         //	NTL::GF2E& Givaro::ZRing<NTL::GF2E>::init (NTL::GF2E &x, const Integer &y) const
-	NTL::GF2E& Caster(NTL::GF2E &x, const Integer &y)
+	inline NTL::GF2E& Caster(NTL::GF2E &x, const Integer &y)
 	{
 		x=NTL::to_GF2E(static_cast<int64_t>(y));
 		return x;
 	}
 	template<>
         //	NTL::GF2E& Givaro::ZRing<NTL::GF2E>::init (NTL::GF2E &x, const double &y) const
-	NTL::GF2E& Caster(NTL::GF2E &x, const double &y)
+	inline NTL::GF2E& Caster(NTL::GF2E &x, const double &y)
 	{
 		x=NTL::to_GF2E(static_cast<long>(y));
 		return x;
@@ -71,10 +71,10 @@ namespace Givaro
 
 	template<>
         //	Integer& Givaro::ZRing<NTL::GF2E>::convert (Integer& x, const NTL::GF2E &y) const	{
-	Integer& Caster(Integer& x, const NTL::GF2E &y)
+	inline Integer& Caster(Integer& x, const NTL::GF2E &y)
 	{
 		NTL::GF2X poly = rep(y);
-
+        
 		long i;
 		x = 0;
 		for(i = deg(poly); i >= 0; --i) {
