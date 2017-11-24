@@ -27,12 +27,14 @@ int main(int argc, char** argv)
 {
 	int p = 7;
 	int n = 10;
+	double sparsity = 0.5;
 	std::string bumpFile;
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Dimension of matrix", TYPE_INT, &n},
 		{ 'p', "-p P", "Set the field GF(p)", TYPE_INT, &p},
 		{ 'b', "-b B", "Name of file for bumps", TYPE_STR, &bumpFile},
+		{ 's', "-s S", "Target sparsity", TYPE_DOUBLE, &sparsity},
 		END_OF_ARGUMENTS
 	};
 
@@ -60,8 +62,10 @@ int main(int argc, char** argv)
 	TestPolySmithFormUtil<Field> util(F);
 	util.printMatrix(M);
 	
-	Gen.fillIn(M, 0.5);
+	Gen.fillIn(M, sparsity);
 	util.printMatrix(M);
+	
+	std::cout << "sparsity: " << Gen.sparsity(M) << std::endl;
 
 	return 0;
 }

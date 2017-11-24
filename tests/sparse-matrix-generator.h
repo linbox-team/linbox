@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include <vector>
+#include <set>
+#include <algorithm>
 
 // Matrix Domains
 #include "linbox/matrix/densematrix/blas-matrix.h"
@@ -195,14 +197,35 @@ namespace LinBox
 		void fillIn(Matrix &M, double targetSparsity) {
 			size_t dim = M.rowdim();
 			
+			std::set<size_t> nonzero;
+			for (size_t i = 0; i < dim; i++) {
+				for (size_t j = 0; j < dim; j++) {
+					if (!_F.isZero(M.getEntry(i, j))) {
+						nonzero.insert(i);
+						nonzero.insert(j);
+					}
+				}
+			}
+			
 			while (sparsity(M) < targetSparsity) {
 				Element z;
 				do {
 					_F.init(z, rand());
 				} while(_F.isZero(z));
 				
-				size_t a = nextInt(dim, -1);
+				size_t a = nextInt(nonzero.size(), -1);
+				auto it = nonzero.begin();
+				std::advance(it, a);
+				a = *it;
+				
 				size_t b = nextInt(dim, a);
+				nonzero.insert(b);
+				
+				if ((rand() % 2) == 0) {
+					size_t tmp = a;
+					a = b;
+					b = tmp;
+				}
 				
 				addRow(M, a, b, z);
 				

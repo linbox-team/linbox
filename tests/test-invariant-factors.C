@@ -26,7 +26,7 @@ using namespace LinBox;
 
 typedef Givaro::Modular<double> Field;
 typedef typename Field::Element Element;
-typedef SparseMatrix<Field, SparseMatrixFormat::ELL> SparseMat;
+typedef SparseMatrix<Field, SparseMatrixFormat::CSR> SparseMat;
 
 typedef Field::RandIter RandIter;
 typedef MatrixDomain<Field> MatrixDom;
@@ -150,10 +150,12 @@ int main(int argc, char** argv)
 	double sf_time = TW.usertime();
 	
 	for (size_t i = 0; i < result.size(); i++) {
-		R.write(std::cout, result[i]) << std::endl;
+		Polynomial f;
+		R.monic(f, result[i]);
+		R.write(std::cout, f) << std::endl;
 	}
 	
-	std::cout << bm_time << " " << cv_time <<" " << sf_time << std::endl;
+	std::cout << bm_time << " " << cv_time << " " << sf_time << std::endl;
 
 	return 0;
 }
