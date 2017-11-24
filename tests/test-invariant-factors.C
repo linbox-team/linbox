@@ -13,6 +13,8 @@
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/matrix/matrix-domain.h"
 
+#include "linbox/algorithms/block-coppersmith-domain.h"
+
 #include "linbox/matrix/random-matrix.h"
 #include "linbox/algorithms/blackbox-block-container.h"
 #include "linbox/algorithms/block-massey-domain.h"
@@ -34,6 +36,7 @@ typedef typename MatrixDom::OwnMatrix Matrix;
 typedef RandomDenseMatrix<RandIter, Field> RandomMatrix;
 typedef BlackboxBlockContainer<Field, SparseMat> Sequence;
 typedef BlockMasseyDomain<Field, Sequence> MasseyDom;
+typedef BlockCoppersmithDomain<MatrixDom, Sequence> CoppersmithDom;
 
 typedef NTL_zz_pX PolynomialRing;
 typedef typename PolynomialRing::Element Polynomial;
@@ -66,6 +69,7 @@ int main(int argc, char** argv)
 	srand(seed);
 
 	Field F(p);
+	MatrixDomain<Field> MD(F);
 	PolynomialRing R(p);
 	SparseMatrixGenerator<Field, PolynomialRing> Gen(F, R);
 	TestPolySmithFormUtil<Field> util(F);
@@ -93,6 +97,7 @@ int main(int argc, char** argv)
 	
 	// Compute minimal generating polynomial matrix
 	MasseyDom BMD(&seq);
+	CoppersmithDom BCD(MD, &seq, 10);
 	
 	std::vector<Matrix> minpoly;
 	std::vector<size_t> degree;
@@ -102,7 +107,8 @@ int main(int argc, char** argv)
 	TW.clear();
 	TW.start();
 	
-	BMD.left_minpoly_rec(minpoly, degree);
+	//BMD.left_minpoly_rec(minpoly, degree);
+	BCD.right_minpoly(minpoly);
 	
 	TW.stop();
 	double bm_time = TW.usertime();
