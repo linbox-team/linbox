@@ -86,7 +86,9 @@ namespace LinBox
 				_F.init(tmp, coeffs[i]);
 				_F.negin(tmp);
 				
-				M.setEntry(offset + i, offset + dim - 1, tmp);
+				if (!_F.isZero(tmp)) {
+					M.setEntry(offset + i, offset + dim - 1, tmp);
+				}
 			}
 			
 			return true;
@@ -107,12 +109,6 @@ namespace LinBox
 			if (M.rowdim() < min_dim || M.coldim() < min_dim) {
 				std::cout << "Matrix too small (min dim: " << min_dim << ")" << std::endl;
 				return false;
-			}
-			
-			for (size_t i = 0; i < M.rowdim(); i++) {
-				for (size_t j = 0; j < M.coldim(); j++) {
-					M.setEntry(i, j, _F.zero);
-				}
 			}
 			
 			size_t offset = 0;
@@ -170,8 +166,10 @@ namespace LinBox
 				_F.mul(tmp, b, z);
 				_F.addin(tmp, a);
 				
-				M.setEntry(row1, col, tmp);
-				M.finalize();
+				if (!_F.areEqual(a, tmp)) {
+					M.setEntry(row1, col, tmp);
+					M.finalize();
+				}
 			}
 		}
 		
@@ -186,10 +184,11 @@ namespace LinBox
 				_F.mul(tmp, b, z);
 				_F.addin(tmp, a);
 				
-				M.setEntry(row, col1, tmp);
-				M.finalize();
+				if (!_F.areEqual(a, tmp)) {
+					M.setEntry(row, col1, tmp);
+					M.finalize();
+				}
 			}
-			
 		}
 		
 		template<class Matrix>
