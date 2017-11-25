@@ -45,6 +45,14 @@ typedef MatrixDomain<PolynomialRing> PolyMatrixDom;
 typedef typename PolyMatrixDom::OwnMatrix PolyMatrix;
 typedef SmithFormKannanBachemDomain<PolynomialRing> SmithFormDom;
 
+void writeInvariantFactors(std::ostream &os, PolynomialRing &R, std::vector<Polynomial> &factors) {
+	for (size_t i = 0; i < factors.size(); i++) {
+		Polynomial f;
+		R.monic(f, factors[i]);
+		R.write(os, f) << std::endl;
+	}
+}
+
 int main(int argc, char** argv)
 {
 	size_t p = 7;
@@ -55,10 +63,12 @@ int main(int argc, char** argv)
 	
 	std::string bumpFile;
 	std::string matrixFile;
+	std::string outFile;
 
 	static Argument args[] = {
 		{ 'm', "-m M", "Name of file for bumps", TYPE_STR, &bumpFile},
 		{ 'f', "-f F", "Name of file for matrix", TYPE_STR, &matrixFile},
+		{ 'o', "-o O", "Name of output file for invariant factors", TYPE_STR, &outFile},
 		{ 'n', "-n N", "Dimension of matrix", TYPE_INT, &n},
 		{ 'p', "-p P", "Set the field GF(p)", TYPE_INT, &p},
 		{ 's', "-s S", "Target sparsity of matrix", TYPE_DOUBLE, &sparsity},
@@ -97,9 +107,7 @@ int main(int argc, char** argv)
 		n = M.rowdim();
 	}
 	
-	std::cout << "n: " << n << std::endl;
-	std::cout << "b: " << b << std::endl;
-	std::cout << "sparsity: " << Gen.sparsity(M) << std::endl;
+	std::cout << n << " " << b << " " << Gen.sparsity(M) << " " << std::flush;
 	
 	// Generate random left and right projectors
 	RandIter RI(F);
@@ -131,6 +139,7 @@ int main(int argc, char** argv)
 	
 	TW.stop();
 	double bm_time = TW.usertime();
+	std::cout << bm_time << " " << std::flush;
 	
 	TW.clear();
 	TW.start();
@@ -154,6 +163,7 @@ int main(int argc, char** argv)
 	
 	TW.stop();
 	double cv_time = TW.usertime();
+	std::cout << cv_time << " " << std::flush;
 	
 	TestPolySmithFormUtil<PolynomialRing> putil(R);
 	//putil.printMatrix(G);
@@ -173,15 +183,16 @@ int main(int argc, char** argv)
 	
 	TW.stop();
 	double sf_time = TW.usertime();
+	std::cout << sf_time << " " << std::endl;
 	
-	for (size_t i = 0; i < result.size(); i++) {
-		Polynomial f;
-		R.monic(f, result[i]);
-		R.write(std::cout, f) << std::endl;
+	if (outFile == "") {
+		writeInvariantFactors(std::cout, R, result);
+	} else {
+		std::ofstream out(outFile);
+		writeInvariantFactors(out, R, result);
+		out.close();
 	}
 	
-	std::cout << bm_time << " " << cv_time << " " << sf_time << std::endl;
-
 	return 0;
 }
 
