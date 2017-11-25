@@ -28,7 +28,7 @@ using namespace LinBox;
 
 typedef Givaro::Modular<double> Field;
 typedef typename Field::Element Element;
-typedef SparseMatrix<Field, SparseMatrixFormat::CSR> SparseMat;
+typedef SparseMatrix<Field, SparseMatrixFormat::TPL> SparseMat;
 
 typedef Field::RandIter RandIter;
 typedef MatrixDomain<Field> MatrixDom;
@@ -50,14 +50,17 @@ int main(int argc, char** argv)
 	size_t p = 7;
 	size_t n = 10;
 	size_t b = 5;
-	std::string bumpFile;
 	double sparsity = 0.05;
 	int seed = time(NULL);
+	
+	std::string bumpFile;
+	std::string matrixFile;
 
 	static Argument args[] = {
+		{ 'm', "-m M", "Name of file for bumps", TYPE_STR, &bumpFile},
+		{ 'f', "-f F", "Name of file for matrix", TYPE_STR, &matrixFile},
 		{ 'n', "-n N", "Dimension of matrix", TYPE_INT, &n},
 		{ 'p', "-p P", "Set the field GF(p)", TYPE_INT, &p},
-		{ 'm', "-m M", "Name of file for bumps", TYPE_STR, &bumpFile},
 		{ 's', "-s S", "Target sparsity of matrix", TYPE_DOUBLE, &sparsity},
 		{ 'r', "-r R", "Random seed", TYPE_INT, &seed},
 		{ 'b', "-b B", "Block size", TYPE_INT, &b},
@@ -74,13 +77,29 @@ int main(int argc, char** argv)
 	SparseMatrixGenerator<Field, PolynomialRing> Gen(F, R);
 	TestPolySmithFormUtil<Field> util(F);
 	
-	// create sparse matrix from bumps and compute determinant
-	SparseMat M(F, n, n);
+	SparseMat M(F);
 	Polynomial det;
-	Gen.generate(M, det, bumpFile, sparsity);
-	util.printMatrix(M);
 	
-	R.write(std::cout << "det: ", det) << std::endl;
+	if (matrixFile == "" && bumpFile == "") {
+		std::cout << "Must provide either matrix or bumps input" << std::endl;
+		return -1;
+	} else if (matrixFile == "") {
+		// create sparse matrix from bumps and compute determinant
+		M.resize(n, n);
+		Gen.generate(M, det, bumpFile, sparsity);
+	} else {
+		std::ifstream iF(matrixFile);
+		M.read(iF);
+		M.finalize();
+		iF.close();
+		
+		assert(M.rowdim() == M.coldim());
+		n = M.rowdim();
+	}
+	
+	std::cout << "n: " << n << std::endl;
+	std::cout << "b: " << b << std::endl;
+	std::cout << "sparsity: " << Gen.sparsity(M) << std::endl;
 	
 	// Generate random left and right projectors
 	RandIter RI(F);
@@ -137,8 +156,8 @@ int main(int argc, char** argv)
 	double cv_time = TW.usertime();
 	
 	TestPolySmithFormUtil<PolynomialRing> putil(R);
-	putil.printMatrix(G);
-	std::cout << std::endl;
+	//putil.printMatrix(G);
+	//std::cout << std::endl;
 	
 	// Compute smith form of generator
 	SmithFormDom SFD(R);
@@ -147,9 +166,9 @@ int main(int argc, char** argv)
 	TW.clear();
 	TW.start();
 	
-	SFD.solve(result, G);
+	// SFD.solve(result, G);
 	// SFD.solveTextbook(result, G);
-	// SFD.solveAdaptive(result, G); // half tb then ilio w/ computed det
+	SFD.solveAdaptive(result, G); // half tb then ilio w/ computed det
 	// SFD.solveIliopoulos(result, G, det);
 	
 	TW.stop();
