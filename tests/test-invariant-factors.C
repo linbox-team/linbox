@@ -64,6 +64,7 @@ int main(int argc, char** argv)
 	std::string bumpFile;
 	std::string matrixFile;
 	std::string outFile;
+	std::string algo = "hyb";
 
 	static Argument args[] = {
 		{ 'm', "-m M", "Name of file for bumps", TYPE_STR, &bumpFile},
@@ -74,6 +75,7 @@ int main(int argc, char** argv)
 		{ 's', "-s S", "Target sparsity of matrix", TYPE_DOUBLE, &sparsity},
 		{ 'r', "-r R", "Random seed", TYPE_INT, &seed},
 		{ 'b', "-b B", "Block size", TYPE_INT, &b},
+		{ 'a', "-a A", "Smith form algorithm to use", TYPE_STR, &algo},
 		END_OF_ARGUMENTS
 	};
 
@@ -176,9 +178,13 @@ int main(int argc, char** argv)
 	TW.clear();
 	TW.start();
 	
-	// SFD.solve(result, G);
-	// SFD.solveTextbook(result, G);
-	SFD.solveAdaptive(result, G); // half tb then ilio w/ computed det
+	if (algo == "kb") {
+		SFD.solve(result, G);
+	} else if (algo == "tb") {
+		SFD.solveTextBook(result, G);
+	} else if (algo == "hyb") {
+		SFD.solveAdaptive(result, G); // half tb then ilio w/ computed det
+	}
 	// SFD.solveIliopoulos(result, G, det);
 	
 	TW.stop();
