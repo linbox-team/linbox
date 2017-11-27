@@ -21,7 +21,7 @@
 
 AC_PREREQ([2.68])
 
-AC_INIT([LinBox], [1.5.1],[linbox-use@googlegroups.com],[linbox],
+AC_INIT([LinBox], [1.5.2],[linbox-use@googlegroups.com],[linbox],
 		[http://www.linalg.org/])
 
 AC_CONFIG_MACRO_DIR([macros])
