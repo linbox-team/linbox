@@ -398,15 +398,33 @@ namespace LinBox
 		}
 		
 		template<class Matrix>
-		void solveAdaptive(std::vector<Element> &L, Matrix &A) {
+		void solveDet(Element &d, Matrix &A) {
 			std::vector<Element> ds;
 			halfSolve(ds, A);
 			
-			Element d;
 			_F.assign(d, ds[0]);
 			for (size_t i = 1; i < ds.size(); i++) {
 				_F.mulin(d, ds[i]);
 			}
+		}
+		
+		template<class Matrix>
+		void solveAdaptive(std::vector<Element> &L, Matrix &A) {
+			Element d;
+			solveDet(d, A);
+			
+			reduceMatrix(A, d);
+			
+			solveIliopoulosHelper(L, A, d);
+			fixDiagonal(L);
+		}
+		
+		template<class Matrix>
+		void solveAdaptive2(std::vector<Element> &L, Matrix &A) {
+			Matrix B(A);
+			
+			Element d;
+			solveDet(d, B);
 			
 			solveIliopoulosHelper(L, A, d);
 			fixDiagonal(L);

@@ -45,12 +45,96 @@ typedef MatrixDomain<PolynomialRing> PolyMatrixDom;
 typedef typename PolyMatrixDom::OwnMatrix PolyMatrix;
 typedef SmithFormKannanBachemDomain<PolynomialRing> SmithFormDom;
 
+Givaro::Timer TW;
+
 void writeInvariantFactors(std::ostream &os, PolynomialRing &R, std::vector<Polynomial> &factors) {
 	for (size_t i = 0; i < factors.size(); i++) {
 		Polynomial f;
 		R.monic(f, factors[i]);
 		R.write(os, f) << std::endl;
 	}
+}
+
+void computeDet(const PolynomialRing &R, Polynomial &det, std::vector<Polynomial> &factors) {
+	R.assign(det, R.one);
+	for (size_t i = 0; i < factors.size(); i++) {
+		R.mulin(det, factors[i]);
+	}
+}
+
+void timeTextbook(const PolynomialRing &R, std::vector<Polynomial> &result, const PolyMatrix &M) {
+	SmithFormDom SFD(R);
+	result.clear();
+	PolyMatrix G(M);
+	
+	TW.clear();
+	TW.start();
+	
+	SFD.solveTextBook(result, G);
+	
+	TW.stop();
+	double sf_time = TW.usertime();
+	std::cout << sf_time << " " << std::flush;
+}
+
+void timeKannanBachem(const PolynomialRing &R, std::vector<Polynomial> &result, const PolyMatrix &M) {
+	SmithFormDom SFD(R);
+	result.clear();
+	PolyMatrix G(M);
+	
+	TW.clear();
+	TW.start();
+	
+	SFD.solve(result, G);
+	
+	TW.stop();
+	double sf_time = TW.usertime();
+	std::cout << sf_time << " " << std::flush;
+}
+
+void timeHybrid(const PolynomialRing &R, std::vector<Polynomial> &result, const PolyMatrix &M) {
+	SmithFormDom SFD(R);
+	result.clear();
+	PolyMatrix G(M);
+	
+	TW.clear();
+	TW.start();
+	
+	SFD.solveAdaptive(result, G);
+	
+	TW.stop();
+	double sf_time = TW.usertime();
+	std::cout << sf_time << " " << std::flush;
+}
+
+void timeHybrid2(const PolynomialRing &R, std::vector<Polynomial> &result, const PolyMatrix &M) {
+	SmithFormDom SFD(R);
+	result.clear();
+	PolyMatrix G(M);
+	
+	TW.clear();
+	TW.start();
+	
+	SFD.solveAdaptive2(result, G);
+	
+	TW.stop();
+	double sf_time = TW.usertime();
+	std::cout << sf_time << " " << std::flush;
+}
+
+void timeIliopoulos(const PolynomialRing &R, std::vector<Polynomial> &result, const PolyMatrix &M, const Polynomial &det) {
+	SmithFormDom SFD(R);
+	result.clear();
+	PolyMatrix G(M);
+	
+	TW.clear();
+	TW.start();
+	
+	SFD.solveIliopoulos(result, G, det);
+	
+	TW.stop();
+	double sf_time = TW.usertime();
+	std::cout << sf_time << " " << std::flush;
 }
 
 int main(int argc, char** argv)
@@ -60,6 +144,7 @@ int main(int argc, char** argv)
 	size_t b = 5;
 	double sparsity = 0.05;
 	int seed = time(NULL);
+	size_t t = 2;
 	
 	std::string bumpFile;
 	std::string matrixFile;
@@ -76,6 +161,7 @@ int main(int argc, char** argv)
 		{ 'r', "-r R", "Random seed", TYPE_INT, &seed},
 		{ 'b', "-b B", "Block size", TYPE_INT, &b},
 		{ 'a', "-a A", "Smith form algorithm to use", TYPE_STR, &algo},
+		{ 't', "-t T", "Run iliopoulos with t-th largest invariant factor", TYPE_INT, &t},
 		END_OF_ARGUMENTS
 	};
 
@@ -131,8 +217,6 @@ int main(int argc, char** argv)
 	std::vector<Matrix> minpoly;
 	std::vector<size_t> degree;
 	
-	Givaro::Timer TW;
-	
 	TW.clear();
 	TW.start();
 	
@@ -172,24 +256,15 @@ int main(int argc, char** argv)
 	//std::cout << std::endl;
 	
 	// Compute smith form of generator
-	SmithFormDom SFD(R);
 	std::vector<Polynomial> result;
 	
-	TW.clear();
-	TW.start();
-	
-	if (algo == "kb") {
-		SFD.solve(result, G);
-	} else if (algo == "tb") {
-		SFD.solveTextBook(result, G);
-	} else if (algo == "hyb") {
-		SFD.solveAdaptive(result, G); // half tb then ilio w/ computed det
-	}
-	// SFD.solveIliopoulos(result, G, det);
-	
-	TW.stop();
-	double sf_time = TW.usertime();
-	std::cout << sf_time << " " << std::endl;
+	timeKannanBachem(R, result, G);
+	timeHybrid(R, result, G);
+	computeDet(R, det, result);
+	timeIliopoulos(R, result, G, det);
+	std::vector<Polynomial> result2;
+	timeIliopoulos(R, result2, G, result[result.size() - t]);
+	std::cout << std::endl;
 	
 	if (outFile == "") {
 		writeInvariantFactors(std::cout, R, result);

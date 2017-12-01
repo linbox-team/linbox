@@ -130,7 +130,7 @@ namespace LinBox
 		}
 		
 		template<class Matrix>
-		double sparsity(const Matrix &M) {
+		double nnz(const Matrix &M) {
 			double nnz = 0;
 			
 			for (size_t i = 0; i < M.rowdim(); i++) {
@@ -143,7 +143,12 @@ namespace LinBox
 				}
 			}
 			
-			return nnz / (M.rowdim() * M.coldim());
+			return nnz;
+		}
+		
+		template<class Matrix>
+		double sparsity(const Matrix &M) {
+			return nnz(M) / (M.rowdim() * M.coldim());
 		}
 		
 		// Next in in [0, limit), not equal to except
@@ -205,6 +210,10 @@ namespace LinBox
 						nonzero.insert(j);
 					}
 				}
+			}
+			
+			if (nonzero.size() == 0 || nnz(M) == 0) {
+				return;
 			}
 			
 			while (sparsity(M) < targetSparsity) {
