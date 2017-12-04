@@ -268,7 +268,7 @@ class SparseMatrix<Field_, SparseMatrixFormat::TPL_omp> : public BlackboxInterfa
 	// need cstor from matrix stream, read, write
 
 	// Element e is added in the i,j position.
-	void setEntry(Index i, Index j, const Element & e);
+	const Element & setEntry(Index i, Index j, const Element & e);
 
 	// Element e is set to the i,j entry.
 	Element& getEntry(Element& e, Index i, Index j) const;

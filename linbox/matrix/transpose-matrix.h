@@ -154,9 +154,9 @@ namespace LinBox
 		 * @param j Column number 0...coldim () - 1
 		 * @param a_ij Element to set
 		 */
-		void setEntry (size_t i, size_t j, const Element &a_ij)
+		const Element& setEntry (size_t i, size_t j, const Element &a_ij)
 		{
-			_Mat.setEntry (j, i, a_ij);
+			return _Mat.setEntry (j, i, a_ij);
 		}
 
 		/** Get a writeable reference to the entry in the (i, j) position.
@@ -339,9 +339,9 @@ namespace LinBox
 			return _Mat.write (stream);
 		}
 
-		inline void setEntry (size_t i, size_t j, const Element &a_ij)
+		inline const Element& setEntry (size_t i, size_t j, const Element &a_ij)
 		{
-			_Mat.setEntry (j, i, a_ij);
+			return _Mat.setEntry (j, i, a_ij);
 		}
 		inline Element &refEntry (size_t i, size_t j)
 		{
@@ -470,9 +470,9 @@ namespace LinBox
 			return _Mat.write (stream);
 		}
 
-		inline void setEntry (size_t i, size_t j, const Element &a_ij)
+		inline const Element& setEntry (size_t i, size_t j, const Element &a_ij)
 		{
-			_Mat.setEntry (j, i, a_ij);
+			return _Mat.setEntry (j, i, a_ij);
 		}
 		inline Element &refEntry (size_t i, size_t j)
 		{
@@ -581,9 +581,9 @@ namespace LinBox
 			return _Mat.write (stream);
 		}
 
-		inline void setEntry (size_t i, size_t j, const Element &a_ij)
+		inline const Element& setEntry (size_t i, size_t j, const Element &a_ij)
 		{
-			_Mat.setEntry (j, i, a_ij);
+			return _Mat.setEntry (j, i, a_ij);
 		}
 		inline Element &refEntry (size_t i, size_t j)
 		{

@@ -347,9 +347,9 @@ namespace LinBox
 	}
 
 	template < class _Matrix >
-	void BlasSubmatrix<_Matrix>::setEntry (size_t i, size_t j, const Element &a_ij)
+	const typename  LinBox::BlasSubmatrix<_Matrix>::Element & BlasSubmatrix<_Matrix>::setEntry (size_t i, size_t j, const Element &a_ij)
 	{
-		_Mat.setEntry (_r0 + i, _c0 + j, a_ij);
+		return _Mat.setEntry (_r0 + i, _c0 + j, a_ij);
 	}
 
 	template < class _Matrix >

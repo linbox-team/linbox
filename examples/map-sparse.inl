@@ -139,7 +139,7 @@ bool MapSparse<Field_>::verify()
 }
 
 template<class Field_>
-void MapSparse<Field_>::setEntry(Index i, Index j, const Element& e)
+const Element& MapSparse<Field_>::setEntry(Index i, Index j, const Element& e)
 {
 	VectorIt it=rowMap_[i].find(j);
 	if (it != rowMap_[i].end()) {
@@ -154,6 +154,7 @@ void MapSparse<Field_>::setEntry(Index i, Index j, const Element& e)
 		rowMap_[i][j]=e;
 		colMap_[j][i]=e;
 	}
+    return e;
 }
 
 template<class Field_> const typename MapSparse<Field_>::Element&
