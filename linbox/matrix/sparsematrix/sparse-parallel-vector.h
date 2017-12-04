@@ -227,10 +227,10 @@ namespace LinBox { namespace Protected {
 			return SparseMatrixWriteHelper<Self_t>::write (*this, os, format);
 		}
 
-		void appendEntry(size_t i, size_t j, const Element & value) { setEntry(i,j,value) ;}
+		const Element & appendEntry(size_t i, size_t j, const Element & value) { return setEntry(i,j,value) ;}
 		void finalize(){}
 
-		void           setEntry (size_t i, size_t j, const Element &value);
+		const Element & setEntry (size_t i, size_t j, const Element &value);
 
 
 		Element       &refEntry (size_t i, size_t j);

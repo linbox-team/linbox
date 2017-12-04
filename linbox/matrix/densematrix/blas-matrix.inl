@@ -144,7 +144,7 @@ namespace LinBox
 
 			A.apply (tmp, e);
 
-			for (tmp_p = tmp.begin(), elt_p = col_p -> begin();
+            for (tmp_p = tmp.begin(), elt_p = col_p -> begin();
 			     tmp_p != tmp.end(); ++ tmp_p, ++ elt_p)
 
 				field().assign(*elt_p, *tmp_p);
@@ -580,9 +580,11 @@ namespace LinBox
 	}
 
 	template < class _Field, class _Rep >
-	void BlasMatrix< _Field, _Rep >::setEntry (size_t i, size_t j, const Element &a_ij)
+	const typename _Field::Element & BlasMatrix< _Field, _Rep >::setEntry (size_t i, size_t j, const Element &a_ij)
 	{
+// 		return _ptr[i * _col + j] = a_ij;
 		_ptr[i * _col + j] = a_ij;
+        return a_ij;
 	}
 
 	template < class _Field, class _Rep >

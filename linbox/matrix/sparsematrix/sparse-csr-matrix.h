@@ -653,7 +653,7 @@ namespace LinBox {
 		 * @warning if this is used to build a matrix and this matrix is "well formed",
 		 * it can be sped up (no checking that the entry already exists).
 		 */
-		void setEntry(const size_t &i, const size_t &j, const Element& e
+		const Element& setEntry(const size_t &i, const size_t &j, const Element& e
 			     )
 		{
 			linbox_check(i<_rownb);
@@ -662,7 +662,8 @@ namespace LinBox {
 			linbox_check(_start[0] == 0);
 
 			if (field().isZero(e)) {
-				return clearEntry(i,j);
+				clearEntry(i,j);
+                return e;
 			}
 
 			// nothing has been done yet
@@ -677,7 +678,7 @@ namespace LinBox {
 				_colid.insert(_colid.begin()+ibeg,j);
 				_data.insert( _data.begin() +ibeg,e);
 				++_nbnz;
-				return ;
+				return e;
 			}
 			// element may exist
 			myIterator beg = _colid.begin() + (ptrdiff_t)ibeg ;
@@ -692,13 +693,12 @@ namespace LinBox {
 				_colid.insert(_colid.begin() + (ptrdiff_t)ibeg,j);
 				_data.insert (_data. begin() + (ptrdiff_t)ibeg,e);
 				++_nbnz;
-				return ;
+				return e;
 			}
 			// replace
 			else {
 				// std::cout << "# replace " << i << ',' << j << ':' << e << std::endl;
-				_data[ibeg] = e ;
-				return ;
+				return _data[ibeg] = e ;
 			}
 		}
 

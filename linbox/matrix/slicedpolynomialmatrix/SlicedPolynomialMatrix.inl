@@ -239,9 +239,10 @@ namespace Linbox
 						/////////////////////////
 		
         template < class _Field, class _Rep, class _MatrixElement >
-	void SlicedPolynomialMatrix< _Field, _Rep, _MatrixElement >::setEntry (size_t m, size_t i, size_t j, const MatrixElement &a_mij)
+	const MatrixElement& SlicedPolynomialMatrix< _Field, _Rep, _MatrixElement >::setEntry (size_t m, size_t i, size_t j, const MatrixElement &a_mij)
 	{
 		V[m].setEntry(i, j, a_mij);
+        return a_mij;
 	}
 
 	template < class _Field, class _Rep, class _MatrixElement >
