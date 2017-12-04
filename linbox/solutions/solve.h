@@ -47,7 +47,11 @@
 #include "linbox/solutions/methods.h"
 #include "linbox/algorithms/bbsolve.h"
 
+#ifdef __LINBOX_HAVE_MPI
+#include "linbox/algorithms/cra-mpi.h"
+#endif
 #include "linbox/algorithms/rational-cra2.h"
+
 #include "linbox/algorithms/varprec-cra-early-multip.h"
 #include "linbox/algorithms/block-wiedemann.h"
 #include "linbox/algorithms/coppersmith.h"
@@ -835,26 +839,64 @@ namespace LinBox
 	template <class Vector, class BB, class MyMethod>
 	Vector& solveCRA(Vector& x, typename BB::Field::Element& d, const BB& A, const Vector& b,
 		      const RingCategories::IntegerTag & tag,
-		      const MyMethod& M)
+		      const MyMethod& M
+#ifdef __LINBOX_HAVE_MPI
+						    ,Communicator                             *C = NULL
+#endif
+			)
 	{
+
+
+#ifdef __LINBOX_HAVE_MPI
+		// use of integer due to non genericity of rra (PG 2005-09-01)
+		Integer den(1);
+		if(!C || C->rank() == 0){
+			if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
+				throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
+				commentator().start ("Integer CRA Solve", "Isolve");
+		}
+
+				RandomPrimeIterator genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
+
+
+			BlasVector<Givaro::ZRing<Integer>> num(A.field(),A.coldim());
+			IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
+
+			MPIratChineseRemainder< EarlyMultipRatCRA< Givaro::Modular<double> > > mpicra(3UL, C);
+			mpicra(num, den, iteration, genprime);//(num, iteration, genprime);
+
+
+		if(!C || C->rank() == 0){
+				typename Vector::iterator it_x= x.begin();
+				typename BlasVector<Givaro::ZRing<Integer>>::const_iterator it_num= num.begin();
+
+				// convert the result
+				for (; it_x != x.end(); ++it_x, ++it_num)
+					A.field().init(*it_x, *it_num);	
+		
+			A.field().init(d, den);
+			if(!C || C->rank() == 0)commentator().stop ("done", NULL, "Isolve");
+			return x;
+		}
+
+#else
 		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
 			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
-
 		commentator().start ("Integer CRA Solve", "Isolve");
 
 		RandomPrimeIterator genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
 		//         RationalRemainder< Givaro::Modular<double> > rra((double)
 		//                                                  ( A.coldim()/2.0*log((double) A.coldim()) ) );
 
-		RationalRemainder< EarlyMultipRatCRA< Givaro::Modular<double> > > rra(3UL);
-		IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
-
 		// use of integer due to non genericity of rra (PG 2005-09-01)
-		Integer den;
+		Integer den(1);
 		BlasVector<Givaro::ZRing<Integer>> num(A.field(),A.coldim());
+		IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
+		RationalRemainder< EarlyMultipRatCRA< Givaro::Modular<double> > > rra(3UL);
+
+
 		rra(num, den, iteration, genprime);
 		//rra(x, d, iteration, genprime);
-
 		typename Vector::iterator it_x= x.begin();
 		typename BlasVector<Givaro::ZRing<Integer>>::const_iterator it_num= num.begin();
 
@@ -862,10 +904,18 @@ namespace LinBox
 		for (; it_x != x.end(); ++it_x, ++it_num)
 			A.field().init(*it_x, *it_num);
 		A.field().init(d, den);
-
 		commentator().stop ("done", NULL, "Isolve");
 		return x;
+#endif
+
+		
+
+		
 	}
+
+
+
+
 
 	//BB: How come SparseElimination needs this ?
 	// may throw SolverFailed or InconsistentSystem
