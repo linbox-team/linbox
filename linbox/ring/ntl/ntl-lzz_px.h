@@ -288,7 +288,14 @@ namespace LinBox
 		}
 		
 		Element& monic(Element& r, const Element& p) const {
-			r = p / NTL::LeadCoeff(p);
+			Coeff leadcoeff = NTL::LeadCoeff(p);
+			
+			if (leadcoeff == 0) {
+				r = p;
+				return r;
+			}
+			
+			r = p / leadcoeff;
 			return r;
 		}
 

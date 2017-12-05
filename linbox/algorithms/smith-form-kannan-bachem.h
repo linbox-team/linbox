@@ -415,8 +415,11 @@ namespace LinBox
 			
 			reduceMatrix(A, d);
 			
-			solveIliopoulosHelper(L, A, d);
-			fixDiagonal(L);
+			solveIliopoulos(L, A, d);
+			
+			if (_F.isZero(L[L.size() - 1])) {
+				L[L.size() - 1] = d;
+			}
 		}
 		
 		template<class Matrix>
@@ -426,8 +429,11 @@ namespace LinBox
 			Element d;
 			solveDet(d, B);
 			
-			solveIliopoulosHelper(L, A, d);
-			fixDiagonal(L);
+			solveIliopoulos(L, A, d);
+			
+			if (_F.isZero(L[L.size() - 1])) {
+				L[L.size() - 1] = d;
+			}
 		}
 	};
 }

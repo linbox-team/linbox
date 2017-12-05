@@ -261,8 +261,9 @@ int main(int argc, char** argv)
 	timeKannanBachem(R, result, G);
 	timeHybrid(R, result, G);
 	computeDet(R, det, result);
-	timeIliopoulos(R, result, G, det);
+	
 	std::vector<Polynomial> result2;
+	timeIliopoulos(R, result2, G, det);
 	timeIliopoulos(R, result2, G, result[result.size() - t]);
 	std::cout << std::endl;
 	
