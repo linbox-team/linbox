@@ -248,7 +248,7 @@ bool testZeroDixonSolver (const Specifier& m){
     return true;
 }
 
-bool testZeroDimensionalCharpoly(){
+bool testZeroDimensionalCharPoly(){
     Givaro::ZRing<Integer> ZZ;
     DenseMatrix<Givaro::ZRing<Integer> > A (ZZ,0,0);
     DensePolynomial<Givaro::ZRing<Integer> > P (ZZ);
@@ -264,6 +264,23 @@ bool testZeroDimensionalMinPoly(){
     PolynomialRing<Givaro::ZRing<Integer> > PR (ZZ);
     minpoly(P,A);
     return PR.isOne(P);
+}
+
+bool testBigScalarCharPoly(){
+    Givaro::ZRing<Integer> ZZ;
+    DenseMatrix<Givaro::ZRing<Integer> > A (ZZ,1,1);
+    Integer x;
+    ZZ.init(x);
+    ZZ.assign(x,ZZ.one);
+    x <<= 2000;
+    A.setEntry(0,0,x);
+    DensePolynomial<Givaro::ZRing<Integer> > P (ZZ);
+    DensePolynomial<Givaro::ZRing<Integer> > Q (ZZ,2);
+    PolynomialRing<Givaro::ZRing<Integer> > PR (ZZ);
+    charpoly(P,A);
+    ZZ.assign(Q[1],ZZ.one);
+    ZZ.neg(Q[0],x);
+    return PR.areEqual(P,Q);
 }
 
 int main (int argc, char **argv)
@@ -285,8 +302,9 @@ int main (int argc, char **argv)
     pass &= testZeroDixonSolver (Method::SparseElimination());
     pass &= testSingularDixonSolver (Method::BlasElimination());
     pass &= testZeroDixonSolver (Method::BlasElimination());
-    pass &= testZeroDimensionalCharpoly ();
+    pass &= testZeroDimensionalCharPoly ();
     pass &= testZeroDimensionalMinPoly ();
+    pass &= testBigScalarCharPoly ();
 
     return pass ? 0 : -1;
 }
