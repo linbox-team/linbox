@@ -155,7 +155,7 @@ namespace LinBox
 			BlasMatrix< typename Blackbox::Field > BBB (A);
 			BlasMatrixDomain< typename Blackbox::Field > BMD (BBB.field());
 			commentator().stop ("done", NULL, "blasconvert");
-			return BMD.minpoly (P, static_cast<const BlasMatrix<typename Blackbox::Field>& >(BBB));
+                        return BMD.minpoly (P, static_cast<const BlasMatrix<typename Blackbox::Field>& >(BBB));
 		}
 	}
 
@@ -223,6 +223,11 @@ namespace LinBox
 			     const RingCategories::IntegerTag   &tag,
 			     const MyMethod                     &M)
 	{
+                if (A.rowdim() == 0 || A.coldim() == 0){
+                        P.resize(1);
+                        P.field().assign(P[0],P.field().one);
+                        return P;
+                }
 #if 0
 		if (A.coldim() != A.rowdim())
 			throw LinboxError("LinBox ERROR: matrix must be square for minimal polynomial computation\n");

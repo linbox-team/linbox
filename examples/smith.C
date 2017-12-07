@@ -23,29 +23,29 @@
 
 /** \file examples/smith.C
  * @example  examples/smith.C
-  \brief mod m Smith form by elmination
-  \ingroup examples
+ \brief mod m Smith form by elmination
+ \ingroup examples
 
-  \author bds & zw
+ \author bds & zw
 
-  Various Smith form algorithms may be used for matrices over the
-  integers or over Z_m.  Moduli greater than 2^32 are not supported.
-  Several types of example matrices may be constructed or matrix read from file.
-  Run the program with no arguments for a synopsis of the
-  command line parameters.
+ Various Smith form algorithms may be used for matrices over the
+ integers or over Z_m.  Moduli greater than 2^32 are not supported.
+ Several types of example matrices may be constructed or matrix read from file.
+ Run the program with no arguments for a synopsis of the
+ command line parameters.
 
-  For the "adaptive" method, the matrix must be over the integers.
-  This is expected to work best for large matrices.
+ For the "adaptive" method, the matrix must be over the integers.
+ This is expected to work best for large matrices.
 
-  For the "2local" method, the computaattion is done mod 2^32.
+ For the "2local" method, the computaattion is done mod 2^32.
 
-  For the "local" method, the modulus must be a prime power.
+ For the "local" method, the modulus must be a prime power.
 
-  For the "ilio" method, the modulus may be arbitrary composite.
-  If the modulus is a multiple of the integer determinant, the intege Smith form is obtained.  Determinant plus ilio may be best for smaller matrices.
+ For the "ilio" method, the modulus may be arbitrary composite.
+ If the modulus is a multiple of the integer determinant, the intege Smith form is obtained.  Determinant plus ilio may be best for smaller matrices.
 
-  This example was used during the design process of the adaptive algorithm.
-  */
+ This example was used during the design process of the adaptive algorithm.
+*/
 
 #include <linbox/linbox-config.h>
 
@@ -76,7 +76,7 @@ using namespace LinBox;
 
 template<class PIR>
 void Mat(DenseMatrix<PIR>& M, PIR& R, int n,
-	 string src, string file, string format);
+         string src, string file, string format);
 
 template<class I1, class Lp> void distinct (I1 a, I1 b, Lp& c);
 template <class I> void display(I b, I e);
@@ -90,11 +90,11 @@ int main(int argc, char* argv[])
 		cout << "usage: " << argv[0] << " alg m n source format \n"  << endl;
 
 		cout << "alg = `adaptive', `ilio', `local', or `2local', \n"
-		<< "m is modulus (ignored by 2local, adaptive), "
-		<< "n is matrix order, \n"
-		<< "source is `random', `random-rough', `fib', `tref', or a filename \n"
-		<< "format is `dense' or `sparse' (if matrix from a file)\n"
-		<< "compile with -DBIG if you want big integers used.\n";
+             << "m is modulus (ignored by 2local, adaptive), "
+             << "n is matrix order, \n"
+             << "source is `random', `random-rough', `fib', `tref', or a filename \n"
+             << "format is `dense' or `sparse' (if matrix from a file)\n"
+             << "compile with -DBIG if you want big integers used.\n";
 
 		return 0;
 	}
@@ -120,9 +120,9 @@ int main(int argc, char* argv[])
 		DenseMatrix<Ints> M(Z);
 
 		std::ifstream input (file);
-		//MatrixStream<Ints> ms(Z, input);
+            //MatrixStream<Ints> ms(Z, input);
 		M.read(input);
-		//Mat(M, Z, n, src, file, format);
+            //Mat(M, Z, n, src, file, format);
 
 		DenseVector<Givaro::ZRing<Integer> > v(Z,(size_t)n);
 		T.start();
@@ -143,7 +143,7 @@ int main(int argc, char* argv[])
 	}
 	else if (algo == "ilio") {
 
-                PIR R( (int32_t)m);
+        PIR R( (int32_t)m);
 
 		DenseMatrix<PIR> M(R);
 
@@ -191,16 +191,17 @@ int main(int argc, char* argv[])
 
 
 			Integer p(m), im(m);
-			// Should better ask user to give the prime !!!
-                        Givaro::IntPrimeDom IPD;
+                // Should better ask user to give the prime !!!
+            Givaro::IntPrimeDom IPD;
 			for(unsigned int k = 2; ( ( ! IPD.isprime(p) ) && (p > 1) ); ++k)
-                                Givaro::root( p, im, k );
+                Givaro::root( p, im, k );
 
-                        // using Sparse Elimination
+                // using Sparse Elimination
 			LinBox::PowerGaussDomain< Field > PGD( F );
 			std::vector<std::pair<size_t,Field::Element> > local;
+            LinBox::Permutation<Field> Q(F,B.coldim());
 
-			PGD(local, B, (int32_t)m, (int32_t)p);
+			PGD(local, B, Q, (int32_t)m, (int32_t)p);
 
 			typedef list< Field::Element > List;
 			List L;
@@ -218,7 +219,7 @@ int main(int argc, char* argv[])
 
 			std::cout << "#";
 
-			//display(local.begin(), local.end());
+                //display(local.begin(), local.end());
 			display(pl.begin(), pl.end());
 			cout << "# local, PowerGaussDomain<int32_t>(" << M << "), n = " << n << endl;
 
@@ -320,9 +321,9 @@ void scramble(DenseMatrix<Ring>& M)
 
 		if (i == j) continue;
 
-		// M*i += alpha M*j and Mi* += beta Mj
+            // M*i += alpha M*j and Mi* += beta Mj
 
-		//int a = rand()%2;
+            //int a = rand()%2;
 		int a = 0;
 
 		for (size_t l = 0; l < M.rowdim(); ++l) {
@@ -335,11 +336,11 @@ void scramble(DenseMatrix<Ring>& M)
 
 				R.addin(M[(size_t)l][(size_t)i], M[(size_t)l][(size_t)j]);
 
-			//K.axpy(c, M.getEntry(l, i), x, M.getEntry(l, j));
-			//M.setEntry(l, i, c);
-				}
+                //K.axpy(c, M.getEntry(l, i), x, M.getEntry(l, j));
+                //M.setEntry(l, i, c);
+        }
 
-		//a = rand()%2;
+            //a = rand()%2;
 
 		for (size_t l = 0; l < M.coldim(); ++l) {
 
@@ -367,9 +368,9 @@ void scramble(DenseMatrix<Ring>& M)
 
 		out << "\n";
 
-		}
+    }
 
-	//}
+        //}
 }
 
 
@@ -380,22 +381,22 @@ void RandomRoughMat(DenseMatrix<PIR>& M, PIR& R, int n) {
 	M.resize((size_t)n, (size_t)n, R.zero);
 	if (n > 10000) {cerr << "n too big" << endl; exit(-1);}
 	int jth_factor[130] =
-	{2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67,
-		71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149,
-		151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229,
-		233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293, 307, 311, 313,
-		317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397, 401, 409,
-		419, 421, 431, 433, 439, 443, 449, 457, 461, 463, 467, 479, 487, 491, 499,
-		503, 509, 521, 523, 541, 547, 557, 563, 569, 571, 577, 587, 593, 599, 601,
-		607, 613, 617, 619, 631, 641, 643, 647, 653, 659, 661, 673, 677, 683, 691,
-		701, 709, 719, 727, 733};
+        {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67,
+         71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149,
+         151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229,
+         233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293, 307, 311, 313,
+         317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397, 401, 409,
+         419, 421, 431, 433, 439, 443, 449, 457, 461, 463, 467, 479, 487, 491, 499,
+         503, 509, 521, 523, 541, 547, 557, 563, 569, 571, 577, 587, 593, 599, 601,
+         607, 613, 617, 619, 631, 641, 643, 647, 653, 659, 661, 673, 677, 683, 691,
+         701, 709, 719, 727, 733};
 
 	for (int j= 0, i = 0 ; i < n; ++j)
 	{
 		typename PIR::Element v; R.init(v, jth_factor[25+j]);
 		for (int k = j ; k > 0 && i < n ; --k)
 		{   M[(size_t)i][(size_t)i] = v; ++i;
-			if (i < n) {M[(size_t)i][(size_t)i] = v; ++i;}
+        if (i < n) {M[(size_t)i][(size_t)i] = v; ++i;}
 		}
 	}
 	scramble(M);
@@ -494,13 +495,13 @@ struct pwrlist
 {
 	vector<integer> m;
 	pwrlist(integer q)
-	{ m.push_back(1); m.push_back(q); //cout << "pwrlist " << m[0] << " " << m[1] << endl;
-	}
+        { m.push_back(1); m.push_back(q); //cout << "pwrlist " << m[0] << " " << m[1] << endl;
+        }
 	integer operator[](int e)
-	{
-		for (int i = (int)m.size(); i <= e; ++i) m.push_back(m[1]*m[(size_t)i-1]);
-		return m[(size_t)e];
-	}
+        {
+            for (int i = (int)m.size(); i <= e; ++i) m.push_back(m[1]*m[(size_t)i-1]);
+            return m[(size_t)e];
+        }
 };
 
 // Read "1" or "q" or "q^e", for some (small) exponent e.
@@ -517,7 +518,7 @@ num& qread(num& Val, pwrlist& M, istream& in)
 	if (c !='^') {in.putback(c); return Val = M[1];}
 	else
 	{ int expt; in >> expt;
-		return Val = M[expt];
+    return Val = M[expt];
 	};
 }
 
@@ -545,11 +546,11 @@ void distinct (I1 a, I1 b, Lp& c)
 	else return;
 	while (a != b)
 	{  if (*a == e) ++count;
-		else
-		{ c.push_back(typename Lp::value_type(e, count));
-			e = *a; count = 1;
-		}
-		++a;
+    else
+    { c.push_back(typename Lp::value_type(e, count));
+    e = *a; count = 1;
+    }
+    ++a;
 	}
 	c.push_back(typename Lp::value_type(e, count));
 	return;
@@ -558,8 +559,8 @@ void distinct (I1 a, I1 b, Lp& c)
 template <class I>
 void display(I b, I e)
 { cout << "(";
-	for (I p = b; p != e; ++p) cout << p->first << " " << p->second << ", ";
-	cout << ")" << endl;
+ for (I p = b; p != e; ++p) cout << p->first << " " << p->second << ", ";
+ cout << ")" << endl;
 }
 
 /** Output matrix is determined by src which may be:
@@ -582,7 +583,7 @@ void display(I b, I e)
   */
 template <class PIR>
 void Mat(DenseMatrix<PIR>& M, PIR& R, int n,
-	 string src, string file, string format) {
+         string src, string file, string format) {
 
 	if (src == "random-rough") RandomRoughMat(M, R, n);
 
@@ -642,7 +643,7 @@ void Mat(DenseMatrix<PIR>& M, PIR& R, int n,
 			} while (true);
 
 		}
-		//Krattenthaler's q^e matrices, given by exponent
+            //Krattenthaler's q^e matrices, given by exponent
 		else if (format == "kdense") KratMat(M, R, n, in);
 
 		else {
@@ -654,22 +655,22 @@ void Mat(DenseMatrix<PIR>& M, PIR& R, int n,
 		}
 	}
 
-	/*show some entries
-	  for (int k = 0; k < 10; ++k)
-	  cout << M.getEntry(0,k) <<  " " << M.getEntry(M.rowdim()-1, M.coldim()-1 - k) << endl;
-	  cout << endl << M.rowdim() << " " << M.coldim() << endl;
-	  */
+        /*show some entries
+          for (int k = 0; k < 10; ++k)
+          cout << M.getEntry(0,k) <<  " " << M.getEntry(M.rowdim()-1, M.coldim()-1 - k) << endl;
+          cout << endl << M.rowdim() << " " << M.coldim() << endl;
+        */
 
-	/* some row ops and some col ops */
+        /* some row ops and some col ops */
 } // Mat
 
 //@}
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
 

@@ -98,10 +98,12 @@ int main (int argc, char **argv)
 
 		SE.strategy(Specifier::PIVOT_LINEAR);
 		// using Sparse Elimination
+        Givaro::Timer chrono; chrono.start();
 		LinBox::rankin (r, B, SE);
+        chrono.stop();
 		if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout) << endl;
 		F.write(cout << "Rank is " << r << " over ") << endl;
-
+        std::cerr << chrono << std::endl;
 
 	}
 

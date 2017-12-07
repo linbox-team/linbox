@@ -2033,7 +2033,6 @@ namespace LinBox
 		linbox_check( n == A.rowdim());
 		typedef typename Matrix::constSubMatrixType constSubMatrixType ;
 		constSubMatrixType A_v(A);
-
 		FFPACK::MinPoly<Field, Polynomial>(  F, P, n, A_v.getPointer(), A_v.getStride());
 		commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "minpoly with " << P.size() << " coefficients" << std::endl;
 
@@ -2043,9 +2042,8 @@ namespace LinBox
 
 	template<class Field, class Polynomial, class Matrix>
 	Polynomial &
-	BlasMatrixDomainCharpoly<Field,Polynomial,Matrix>::operator() ( const Field    &F,
-                                                                        Polynomial     &P,
-                                                                        const Matrix   &A) const
+	BlasMatrixDomainCharpoly<Field,Polynomial,Matrix>::operator() ( 
+        const Field    &F, Polynomial    &P, const Matrix   &A) const
 	{
 		size_t n = A.coldim();
 		P.clear();
@@ -2053,11 +2051,11 @@ namespace LinBox
 		typedef typename Matrix::constSubMatrixType constSubMatrixType ;
 		constSubMatrixType A_v(A);
 
-        typename Polynomial::Domain_t PolDom(F);
-        FFPACK::CharPoly (PolDom, P, n, A_v.getPointer(), A_v.getStride(),FFPACK::FfpackLUK);
+        typename Field::RandIter G(F);
+        typename Givaro::Poly1Dom<Field> PolDom(F);
+        FFPACK::CharPoly (PolDom, P, n, A_v.getPointer(), A_v.getStride(), G);
 		return P;
 	}
-
 
 } //end of namespace LinBox
 

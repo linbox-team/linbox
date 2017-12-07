@@ -353,7 +353,7 @@ bool run_with_field(integer q, int e, size_t b, size_t n, int iter, int numVecto
 		Field* F;
                 integer card=q;
                 do{
-                        F = FFPACK::chooseField<Field>(q, b); // F, characteristic q of b bits
+                        F = FFPACK::chooseField<Field>(q, b, ++seed); // F, characteristic q of b bits
                         card = F->cardinality();
                 }while (card < 2*n*n && card != 0); // ensures high probability of succes of the probabilistic algorithm
 		typename Field::RandIter G(*F, b, seed); //random generator over F
@@ -362,6 +362,7 @@ bool run_with_field(integer q, int e, size_t b, size_t n, int iter, int numVecto
 		if(F == nullptr)
 			return true; //if F is null, nothing to test, just pass
 
+		/*
 		ostringstream oss;
 		F->write(oss);
 		cout.fill('.');
@@ -369,6 +370,7 @@ bool run_with_field(integer q, int e, size_t b, size_t n, int iter, int numVecto
 		cout.width(40);
 		cout<<oss.str();
 		cout<<" ... ";
+		*/
 
 		ok &= testZeroMinpoly  	   (*F, n, Method::Hybrid());
 		ok &= testZeroMinpoly  	   (*F, n, Method::Elimination());
@@ -392,10 +394,12 @@ bool run_with_field(integer q, int e, size_t b, size_t n, int iter, int numVecto
                         ok &= testGramMinpoly      (*F, n, Method::Elimination());
                         ok &= testGramMinpoly      (*F, n, Method::Blackbox());
                 }
+		/*
 		if(!ok)
 			cout<<"FAILED"<<endl;
 		else
 			cout<<"PASS"<<endl;
+		*/
 
 		delete F;
 		nbiter--;

@@ -2,7 +2,7 @@
  * Copyright (C) LinBox 2008
  *
  * Written by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
- * Time-stamp: <24 Aug 17 18:24:12 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <13 Nov 17 17:00:53 Jean-Guillaume.Dumas@imag.fr>
  *
  *
  * ========LICENCE========
@@ -64,14 +64,14 @@ namespace LinBox
 		typename Field::Element Det;
 		unsigned long Rank;
 		_Matrix L(field(), A.rowdim(), A.rowdim());
-		Permutation<Field> Q((int)A.rowdim(),field());
-		Permutation<Field> P((int)A.coldim(),field());
+		Permutation<Field> Q(field(),(int)A.rowdim());
+		Permutation<Field> P(field(),(int)A.coldim());
 
 		this->QLUPin(Rank, Det, Q, L, A, P, A.rowdim(), A.coldim() );
 
-		// Sets solution values to 0 for coldim()-Rank columns
-		// Therefore, prune unnecessary elements
-		// in those last columns of U
+            // Sets solution values to 0 for coldim()-Rank columns
+            // Therefore, prune unnecessary elements
+            // in those last columns of U
 		for(typename _Matrix::RowIterator row=A.rowBegin();
 		    row != A.rowEnd(); ++row) {
 			if (row->size()) {
@@ -101,12 +101,12 @@ namespace LinBox
 		typename Field::Element Det;
 		unsigned long Rank;
 		_Matrix L(field(), A.rowdim(), A.rowdim());
-		Permutation<Field> Q((int)A.rowdim(),field());
-		Permutation<Field> P((int)A.coldim(),field());
+		Permutation<Field> Q(field(),(int)A.rowdim());
+		Permutation<Field> P(field(),(int)A.coldim());
 
 		this->QLUPin(Rank, Det, Q, L, A, P, A.rowdim(), A.coldim() );
 
-                Vector1 w(A.field(),A.coldim());
+        Vector1 w(A.field(),A.coldim());
 		for(typename Vector1::iterator it=w.begin()+(ptrdiff_t)Rank;it!=w.end();++it)
 			generator.random( *it );
 
@@ -121,9 +121,9 @@ namespace LinBox
 
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 

@@ -21,7 +21,7 @@
 
 AC_PREREQ([2.68])
 
-AC_INIT([LinBox], [1.5.0],[linbox-use@googlegroups.com],[linbox],
+AC_INIT([LinBox], [1.5.2],[linbox-use@googlegroups.com],[linbox],
 		[http://www.linalg.org/])
 
 AC_CONFIG_MACRO_DIR([macros])
@@ -182,6 +182,13 @@ echo "-----------------------------------------------"
 echo "        START  LINBOX CONFIG                   "
 echo "-----------------------------------------------"
 
+# Checks which SIMD optimization flags to use and set SIMD_CFLAGS accordingly
+INSTR_SET
+AC_SUBST(SIMD_FLAGS)
+
+dnl gcc-4.9.2 bug See https://trac.sagemath.org/ticket/17635#comment:178
+AS_IF([ test  "x$CCNAM" = "xgcc492" ],[CXXFLAGS="${CXXFLAGS} -fpermissive"],[])
+
 
 echo "-----------------------------------------------"
 LB_OMP
@@ -271,6 +278,7 @@ DEPS_CFLAGS="${FFLAS_FFPACK_CFLAGS} ${NTL_CFLAGS} ${MPFR_CFLAGS} ${FPLLL_CFLAGS}
 DEPS_LIBS=" ${NTL_LIBS} ${MPFR_LIBS} ${FPLLL_LIBS} ${IML_LIBS} ${FLINT_LIBS} ${OCL_LIBS} ${FFLAS_FFPACK_LIBS} ${XML_LIBS}"
 
 CXXFLAGS="${CXXFLAGS} ${STDFLAG}"
+CXXFLAGS="${CXXFLAGS} ${SIMD_CFLAGS}"
 
 AC_SUBST(CXXFLAGS)
 AC_SUBST(DEPS_CFLAGS)
@@ -330,6 +338,7 @@ interfaces/maple/Makefile
 interfaces/kaapi/Makefile
 interfaces/sage/Makefile
 macros/Makefile
+macros/CodeChunk/Makefile
 benchmarks/Makefile
 benchmarks/data/Makefile
 benchmarks/matrix/Makefile

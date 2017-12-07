@@ -1,4 +1,3 @@
-
 /*
  * examples/power_rank.C
  *
@@ -24,9 +23,9 @@
 
 /** \file examples/power_rank.C
  * @example  examples/power_rank.C
-  \brief Rank of sparse matrix over Z or Zp.
-  \ingroup examples
-  */
+ \brief Rank of sparse matrix over Z or Zp.
+ \ingroup examples
+*/
 #include <linbox/linbox-config.h>
 
 #include <iostream>
@@ -56,22 +55,27 @@ int tmain (int argc, char **argv)
     MatrixStream<Field> ms( F, input );
     SparseMatrix<Field, SparseMatrixFormat::SparseSeq > B (ms);
     cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
-    if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout) << endl;
+    if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout,Tag::FileFormat::Maple) << endl;
 
 		// using Sparse Elimination
     PowerGaussDomain< Field > PGD( F );
     std::vector<std::pair<size_t,Base> > local;
+    Permutation<Field> Q(F,B.coldim());
 
     Givaro::Timer tq; tq.clear(); tq.start();
-    PGD(local, B, q, p);
+    PGD(local, B, Q, q, p);
     tq.stop();
 
 
     F.write(std::cout << "Local Smith Form ") << " : " << std::endl << '(';
     for (auto ip = local.begin(); ip != local.end(); ++ip) 
-        std::cout << ip->first << " " << ip->second << ", ";
+        std::cout << '[' << ip->first << ',' << ip->second << "] ";
     cout << ")" << endl;
 
+    if (B.rowdim() <= 20 && B.coldim() <= 20) {
+        B.write(cerr,Tag::FileFormat::Maple) << endl;
+        Q.write(cerr,Tag::FileFormat::Maple) << endl;
+    }
 
     std::cerr << tq << std::endl;
 
@@ -80,7 +84,14 @@ int tmain (int argc, char **argv)
 
 int main(int argc, char ** argv) {
 	if (argc < 4 || argc > 5) {	
-        cerr << "Usage: rank <matrix-file-in-supported-format> <prime> <prime-power> [<method>]" << endl; return -1; }
+        cerr << "Usage: rank <matrix-file-in-supported-format> <prime> <prime-power> [<method>]" << endl;
+        cerr << "       methods: \
+						0=automatic, \
+						1=int_64_t, \
+						2=Integer, \
+						6-11=ruint" << endl;
+        return -1; }
+
 
     Givaro::Integer q(argv[3]);
     size_t method( argc>4? atoi(argv[4]) : 0);
@@ -100,6 +111,8 @@ int main(int argc, char ** argv) {
                 case 9: return tmain<RecInt::ruint<9>>(argc,argv);
                 case 10: return tmain<RecInt::ruint<10>>(argc,argv);
                 case 11: return tmain<RecInt::ruint<11>>(argc,argv);
+
+                default: return tmain<Givaro::Integer>(argc,argv);
             }
         }
     }
@@ -110,8 +123,8 @@ int main(int argc, char ** argv) {
 
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

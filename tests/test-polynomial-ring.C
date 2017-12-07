@@ -1,7 +1,7 @@
 /* tests/test-givaropoly.C
- * Copyright (C) 2014 Gavin Harrison,
+ * Copyright (C) 2014 The LinBox group,
  *
- * Written by Gavin Harrison <gmh33@drexel.edu>,
+ * Written by Gavin Harrison <gmh33@drexel.edu>, Jean-Guillaume.Dumas@imag.fr
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -35,13 +35,11 @@
 #include "linbox/linbox-config.h"
 
 #include <iostream>
-#include <fstream>
-#include <sstream>
 
-#include <queue>
 
-#include "givaro/givpoly1.h"
-#include "givaro/gfq.h"
+#include "linbox/ring/polynomial-ring.h"
+#include "linbox/ring/modular.h"
+#include <givaro/givquotientdomain.h>
 
 #include "test-field.h"
 
@@ -50,7 +48,7 @@ using namespace LinBox;
 int main (int argc, char **argv)
 {
 	static int p = 13;
-	static int e = 1;
+	static int e = 1; // currently not used
 
 	static Argument args[] = {
 		{ 'p', "-p P", "Set the base field prime.", TYPE_INT, &p },
@@ -60,36 +58,57 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	commentator().start("GivaroPoly field test suite", "GivaroPoly");
+	commentator().start("PolynomialRing test suite", "PolynomialRing");
 	bool pass = true;
 
-	typedef Givaro::GFqDom<int64_t> BaseDom;
-	typedef typename Givaro::Poly1Dom<BaseDom, Givaro::Dense> PolyDom;
-	typedef typename Givaro::Poly1Dom<PolyDom, Givaro::Dense> Bivariate;
+	typedef Givaro::Modular<float> BaseDom;
+	typedef PolynomialRing<BaseDom> PolyDom;
+	typedef PolynomialRing<PolyDom> Bivariate;
 	
-	BaseDom GFq(p, e);
-	PolyDom Poly(GFq);
-	Bivariate F(Poly);
 
 	// Make sure some more detailed messages get printed
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	commentator().start ("Testing GivaroPoly", "main", 10);
+	commentator().start ("Testing LB Polynomial ring", "main", 10);
 	
-	if ( not testRing (F, "GivaroPoly"))
+	BaseDom Fp(p);
+	PolyDom Poly(Fp,"X");
+	if ( not testRing (Poly, "PolynomialRing<Modular<float>>"))
 		pass = false;
 	commentator().progress ();
 	
-	commentator().stop("GivaroPoly field test suite");
+	Bivariate PPo(Poly,"Y");
+	if ( not testRing (PPo, "PolynomialRing<PolynomialRing<Modular<float>>>"))
+		pass = false;
+	commentator().progress ();
+	
+    PolyDom::Element Q;
+    Poly.init(Q, Givaro::Degree(2)); // X^2
+
+    typedef Givaro::QuotientDom<PolyDom> Quotient;
+    Quotient QD(Poly, Q);
+
+    if ( not testRing (QD, "QuotientDom<PolynomialRing<Modular<float>>>"))
+		pass = false;
+	commentator().progress ();
+
+    Fp.init(Q[0], 1); // X^2+1
+    if (p==2) Fp.init(Q[1],1); // X^2+X+1
+
+    if ( not testField(QD, "Irreducible QuotientDom<PolynomialRing<Modular<float>>>"))
+		pass = false;
+	commentator().progress ();
+
+	commentator().stop("PolynomialRing test suite");
 	return pass ? 0 : -1;
 }
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
 

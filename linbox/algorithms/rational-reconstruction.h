@@ -917,28 +917,28 @@ namespace LinBox
 			/*
 			 * dumb rational reconstruction (this is just for timing comparison)
 			 */
-#if 0
-			{
-				Timer dumb_ratrecon;
-				dumb_ratrecon.start();
-				Vector den_r(num.size()), num_r(num.size());
-				typename Vector::iterator   iter_a  = real_approximation.begin();
-				typename Vector::iterator   iter_n  = num_r.begin();
-				typename Vector::iterator   iter_d  = den_r.begin();
+// #if 0
+// 			{
+// 				Timer dumb_ratrecon;
+// 				dumb_ratrecon.start();
+// 				Vector den_r(num.size()), num_r(num.size());
+// 				typename Vector::iterator   iter_a  = real_approximation.begin();
+// 				typename Vector::iterator   iter_n  = num_r.begin();
+// 				typename Vector::iterator   iter_d  = den_r.begin();
 
-				for (size_t i=0; iter_a != real_approximation.end(); ++iter_a, ++ iter_n, ++iter_d, ++i){
-					if (!Givaro::reconstructRational(*iter_n, *iter_d,
-								    *iter_a, modulus, numbound, denbound))
-					{
-						commentator().report()
-						<< "ERROR in reconstruction ?\n" << std::endl;
-					}
-				}
-				dumb_ratrecon.stop();
-				std::cout<<"full rational reconstruction : "<<dumb_ratrecon.usertime()<<std::endl;
-			}
+// 				for (size_t i=0; iter_a != real_approximation.end(); ++iter_a, ++ iter_n, ++iter_d, ++i){
+// 					if (!Givaro::reconstructRational(*iter_n, *iter_d,
+// 								    *iter_a, modulus, numbound, denbound))
+// 					{
+// 						commentator().report()
+// 						<< "ERROR in reconstruction ?\n" << std::endl;
+// 					}
+// 				}
+// 				dumb_ratrecon.stop();
+// 				std::cout<<"full rational reconstruction : "<<dumb_ratrecon.usertime()<<std::endl;
+// 			}
 
-#endif
+// #endif
 			/*
 			 * Rational Reconstruction of each coefficient according to a common denominator
 			 */
@@ -952,7 +952,7 @@ namespace LinBox
 
 			Vector denominator(_r,num.size());
 
-			int counter=0;
+                        int counter=0;
 			typename Vector::iterator   iter_approx = real_approximation.begin();
 			typename Vector1::iterator  iter_num    = num.begin();
 			typename Vector::iterator   iter_denom  = denominator.begin();
@@ -989,30 +989,30 @@ namespace LinBox
 #endif
 						return false;
 					}
-
+ 
 					_r.mulin(common_den, *iter_denom);
 					idx_last_den=(int)i;
 					counter++;
-#if 0
-					if (i != size-1)
-					{
-						//if (! _r.isUnit(*iter_denom))
-						counter++;
+// #if 0
+// 					if (i != size-1)
+// 					{
+// 						//if (! _r.isUnit(*iter_denom))
+// 						counter++;
 
-						_r.quoin(denbound , *iter_denom);
-						_r.mul(bound, denbound,numbound);
-						_r.mulin(bound,two);
-						_r.div(tmp,modulus,prime);
-						while(tmp > bound) {
-							_r.assign(modulus,tmp);
-							_r.div(tmp,modulus,prime);
-						}
-						_r.mod(tmp , *iter_denom , modulus);
-						_r.modin(common_den_mod_prod , modulus);
-						_r.mulin(common_den_mod_prod , tmp);
-						_r.modin(common_den_mod_prod , modulus);
-					}
-#endif
+// 						_r.quoin(denbound , *iter_denom);
+// 						_r.mul(bound, denbound,numbound);
+// 						_r.mulin(bound,two);
+// 						_r.div(tmp,modulus,prime);
+// 						while(tmp > bound) {
+// 							_r.assign(modulus,tmp);
+// 							_r.div(tmp,modulus,prime);
+// 						}
+// 						_r.mod(tmp , *iter_denom , modulus);
+// 						_r.modin(common_den_mod_prod , modulus);
+// 						_r.mulin(common_den_mod_prod , tmp);
+// 						_r.modin(common_den_mod_prod , modulus);
+// 					}
+// #endif
 
 				}
 
@@ -1023,7 +1023,6 @@ namespace LinBox
 				_r.mulin(num[(size_t)i],tmp);
 				_r.mulin(tmp,denominator[(size_t)i]);
 			}
-
 
 #if 0
 			typename Vector1::reverse_iterator rev_iter_num   = num.rbegin();
@@ -2249,11 +2248,11 @@ namespace LinBox
 #endif //__LINBOX_reconstruction_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
 

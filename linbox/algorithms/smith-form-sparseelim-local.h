@@ -55,6 +55,7 @@ namespace LinBox
     };
 
     enum {
+            // Combine these in binary for use in StaticParameters
         PRIVILEGIATE_NO_COLUMN_PIVOTING	= 1,
         PRIVILEGIATE_REDUCING_FILLIN	= 2,
         PRESERVE_UPPER_MATRIX		= 4
@@ -224,8 +225,13 @@ namespace LinBox
 							lignepivot[0] = ttm;
 						}
 					}
-					if (indpermut != (long)indcol)
+					if (indpermut != (long)indcol) {
+#ifdef  LINBOX_pp_gauss_steps_OUT
+std::cerr << "------CP---- permuting cols " << indcol << " and " << indpermut << " ---" << std::endl;
+#endif
+
 						lignepivot[0].first = (indcol);
+                    }
 					indcol++ ;
 					for(j=nj;j--;)
 						--columns[ lignepivot[(size_t)j].first ];
@@ -376,9 +382,12 @@ namespace LinBox
 		// Rank calculators, defining row strategy
 		// ------------------------------------------------------
 
-		template<class Modulo, class BB, class D, class Container, bool PrivilegiateNoColumnPivoting, bool PreserveUpperMatrix>
-		void gauss_rankin(Modulo FMOD, Modulo PRIME, Container& ranks, BB& LigneA, const size_t Ni, const size_t Nj, const D& density_trait)
+		template<class Modulo, class BB, class D, class Container, class Perm, bool PrivilegiateNoColumnPivoting, bool PreserveUpperMatrix>
+		void gauss_rankin(Modulo FMOD, Modulo PRIME, Container& ranks, BB& LigneA, Perm& Q, const size_t Ni, const size_t Nj, const D& density_trait)
 		{
+            linbox_check( Q.coldim() == Q.rowdim() );
+            linbox_check( Q.coldim() == Nj );
+
 			commentator().start ("Gaussian elimination with reordering modulo a prime power",
 					   "PRGE", Ni);
 
@@ -388,7 +397,7 @@ namespace LinBox
 
 			Modulo MOD = FMOD;
 #ifdef LINBOX_PRANK_OUT
-			std::cerr << "Elimination mod " << MOD << std::endl;
+			std::cerr << "Elimination mod " << MOD << " (" << PrivilegiateNoColumnPivoting << ',' << PreserveUpperMatrix << ')' << std::endl;
 #endif
 
 			D col_density(Nj);
@@ -478,14 +487,17 @@ namespace LinBox
 					LigneA[(size_t)k] = LigneA[(size_t)p];
 					LigneA[(size_t)p] = vtm;
 				}
+				if (c != -1) {
+                    if (c != (long(indcol)-1L)) {
+                        Q.permute(indcol-1,c);
 #ifdef  LINBOX_pp_gauss_steps_OUT
-                if (c != (long(indcol)-1L))
-					std::cerr << "------------ permuting cols " << (indcol-1) << " and " << c << " ---" << std::endl;
+                        std::cerr << "------------ permuting cols " << (indcol-1) << " and " << c << " ---" << std::endl;
 #endif
-				if (c != -1)
+                    }
 					for(unsigned long l=k + 1; l < Ni; ++l)
 						FaireElimination(MOD, LigneA[(size_t)l], LigneA[(size_t)k], (long)indcol, c, col_density);
-
+                }
+                
 
 #ifdef  LINBOX_pp_gauss_steps_OUT
 				LigneA.write(std::cerr << "step[" << k << "], pivot: " << c << std::endl) << std::endl;
@@ -520,39 +532,38 @@ namespace LinBox
 
 		}
 
-		template<class Modulo, class BB, class D, class Container>
-		void prime_power_rankin (Modulo FMOD, Modulo PRIME, Container& ranks, BB& SLA, const size_t Ni, const size_t Nj, const D& density_trait, int StaticParameters=0)
+		template<class Modulo, class BB, class D, class Container, class Perm>
+		void prime_power_rankin (Modulo FMOD, Modulo PRIME, Container& ranks, BB& SLA, Perm& Q, const size_t Ni, const size_t Nj, const D& density_trait, int StaticParameters=PRIVILEGIATE_NO_COLUMN_PIVOTING)
 		{
             if (PRIVILEGIATE_NO_COLUMN_PIVOTING & StaticParameters) {
                 if (PRESERVE_UPPER_MATRIX & StaticParameters) {
-                    gauss_rankin<Modulo,BB,D,Container,true,true>(FMOD,PRIME,ranks, SLA, Ni, Nj, density_trait);
+                    gauss_rankin<Modulo,BB,D,Container,Perm,true,true>(FMOD,PRIME,ranks, SLA, Q, Ni, Nj, density_trait);
                 } else {
-                    gauss_rankin<Modulo,BB,D,Container,true,false>(FMOD,PRIME,ranks, SLA, Ni, Nj, density_trait);
+                    gauss_rankin<Modulo,BB,D,Container,Perm,true,false>(FMOD,PRIME,ranks, SLA, Q, Ni, Nj, density_trait);
                 }
             } else {
                 if (PRESERVE_UPPER_MATRIX & StaticParameters) {
-                    gauss_rankin<Modulo,BB,D,Container,false,true>(FMOD,PRIME,ranks, SLA, Ni, Nj, density_trait);
+                    gauss_rankin<Modulo,BB,D,Container,Perm,false,true>(FMOD,PRIME,ranks, SLA, Q, Ni, Nj, density_trait);
                 } else {
-                    gauss_rankin<Modulo,BB,D,Container,false,false>(FMOD,PRIME,ranks, SLA, Ni, Nj, density_trait);
+                    gauss_rankin<Modulo,BB,D,Container,Perm,false,false>(FMOD,PRIME,ranks, SLA, Q, Ni, Nj, density_trait);
                 }
             }
 		}
 
 
-		template<class Modulo, class Matrix, template<class, class> class Container, template<class> class Alloc>
-		Container<std::pair<size_t,Modulo>, Alloc<std::pair<size_t,Modulo> > >& operator()(Container<std::pair<size_t,Modulo>, Alloc<std::pair<size_t,Modulo> > >& L, Matrix& A, Modulo FMOD, Modulo PRIME, int StaticParameters=0)
+		template<class Modulo, class Matrix, class Perm, template<class, class> class Container, template<class> class Alloc>
+		Container<std::pair<size_t,Modulo>, Alloc<std::pair<size_t,Modulo> > >& operator()(Container<std::pair<size_t,Modulo>, Alloc<std::pair<size_t,Modulo> > >& L, Matrix& A, Perm& Q, Modulo FMOD, Modulo PRIME, int StaticParameters=PRIVILEGIATE_NO_COLUMN_PIVOTING)
 		{
 			Container<size_t, Alloc<size_t> > ranks;
-			prime_power_rankin( FMOD, PRIME, ranks, A, A.rowdim(), A.coldim(), std::vector<size_t>(),StaticParameters);
+			prime_power_rankin( FMOD, PRIME, ranks, A, Q, A.rowdim(), A.coldim(), std::vector<size_t>(), StaticParameters);
 			L.resize( 0 ) ;
-			size_t MOD = 1;
+			Modulo MOD = 1;
 			size_t num = 0;
 			for( typename Container<size_t, Alloc<size_t> >::const_iterator it = ranks.begin(); it != ranks.end(); ++it) {
-				size_t diff;
-				diff = *it-num;
+				size_t diff(*it-num);
 				if (diff > 0)
-					L.push_back( std::pair<size_t,Modulo>(*it-num,MOD) );
-				MOD *= (size_t)PRIME;
+					L.push_back( std::pair<size_t,Modulo>(diff,MOD) );
+				MOD *= PRIME;
 				num = *it;
 			}
 			return L;

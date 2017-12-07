@@ -158,7 +158,7 @@ namespace LinBox
 				commentator().stop ("fail", NULL, "trace");
 #if 0
 
-				Permutation<Field> P(A.rowdim(), F);
+				Permutation<Field> P(F,A.rowdim());
 				for (i = 0; i < A.rowdim (); ++i)
 					P.permute( rand() % A.rowdim() , rand() % A.rowdim() );
 				for (i = 0; i < A.rowdim (); ++i)
@@ -298,7 +298,7 @@ namespace LinBox
 			bool tryagain = (! F.areEqual( t, p2 ));
 			while( tryagain ) {
 				commentator().stop ("fail", NULL, "trace");
-				Permutation<Field> P((int)A.rowdim(), F);
+				Permutation<Field> P(F,(int)A.rowdim());
 				for (i = 0; i < A.rowdim (); ++i)
 					P.permute( (size_t)rand() % A.rowdim() , (size_t)rand() % A.rowdim() );
 				for (i = 0; i < A.rowdim (); ++i)

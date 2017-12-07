@@ -357,7 +357,8 @@ static bool testMinPoly (const Field& F, size_t n, int iterations)
 	typedef typename Field::Element                  Element;
 	typedef typename Field::RandIter                RandIter;
 	typedef typename Field::NonZeroRandIter                NonZeroRandIter;
-	typedef vector<Element>                       Polynomial;
+	typedef typename Givaro::Poly1Dom<Field> PolRing;
+	typedef typename PolRing::Element Polynomial;
 	//Commentator commentator;
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
@@ -372,8 +373,8 @@ static bool testMinPoly (const Field& F, size_t n, int iterations)
 		commentator().progress(k);
 
 		Element * A = new Element[n*n];
-		Element * X = new Element[n*(n+1)];
-		size_t * Perm = new size_t[n];
+// 		Element * X = new Element[n*(n+1)];
+// 		size_t * Perm = new size_t[n];
 
 		Polynomial P;
 		// Test MinPoly(In) = X-1
@@ -383,7 +384,7 @@ static bool testMinPoly (const Field& F, size_t n, int iterations)
 			F.assign(*(A+i*(n+1)),F.one);
 		}
 
-		FFPACK::MinPoly(  F, P, n, A, n, X, n, Perm );
+		FFPACK::MinPoly(  F, P, n, A, n);
 
 		if ( P.size() !=2 )
 			ret = false;
@@ -404,9 +405,7 @@ static bool testMinPoly (const Field& F, size_t n, int iterations)
 
 		F.negin(tmp);
 
-		for (size_t i=0; i<n ;++i)
-			Perm[i]=0;
-		FFPACK::MinPoly( F, P, n, A, n, X, n, Perm );
+		FFPACK::MinPoly( F, P, n, A, n);
 
 		if ( P.size() !=2 )
 			ret = false;
@@ -430,9 +429,7 @@ static bool testMinPoly (const Field& F, size_t n, int iterations)
 		for (size_t j=0;j<n;++j)
 			F.assign(*(A+(n-1)*n+j),F.zero);
 
-		for (size_t i=0; i<n ;++i)
-			Perm[i]=0;
-		FFPACK::MinPoly( F, P, n, A, n, X, n, Perm );
+		FFPACK::MinPoly( F, P, n, A, n);
 
 		if ( P.size() !=n+1 )
 			ret = false;
@@ -444,8 +441,6 @@ static bool testMinPoly (const Field& F, size_t n, int iterations)
 		if(!ret) cerr<<"MinP(J)!=X^n"<<endl;
 #endif
 		delete[] A;
-		delete[] X;
-		delete[] Perm;
 	}
 
 
@@ -460,7 +455,8 @@ static bool testCharPoly (const Field& F, size_t n, int iterations)
 	typedef typename Field::Element                  Element;
 	typedef typename Field::RandIter                RandIter;
 	typedef typename Field::NonZeroRandIter         NonZeroRandIter;
-	typedef vector<Element>                       Polynomial;
+	typedef typename Givaro::Poly1Dom<Field> PolRing;
+	typedef typename PolRing::Element Polynomial;
 	//Commentator commentator;
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
@@ -468,13 +464,14 @@ static bool testCharPoly (const Field& F, size_t n, int iterations)
 	Element tmp;
 	RandIter G(F);
 	NonZeroRandIter Gn(G);
+	PolRing R(F);
 	bool ret = true;
 
 	for (int k=0;k<iterations;++k) {
 
 		commentator().progress(k);
 
-		Element * A = new Element[n*n];
+        typename Field::Element_ptr A = FFLAS::fflas_new(F, n,n);
 
 		std::list<Polynomial> P;
 		// Test CharPoly(In) = (X-1)^n
@@ -487,7 +484,7 @@ static bool testCharPoly (const Field& F, size_t n, int iterations)
 		}
 		P.clear();
 
-		FFPACK::CharPoly (F, P, n, A, n);
+		FFPACK::CharPoly (R, P, n, A, n, G);
 
 
 		typename list<Polynomial>::const_iterator P_it = P.begin();
@@ -513,7 +510,7 @@ static bool testCharPoly (const Field& F, size_t n, int iterations)
 		F.negin(tmp);
 		P.clear();
 
-		FFPACK::CharPoly( F, P, n, A, n );
+		FFPACK::CharPoly( R, P, n, A, n,G );
 
 		P_it = P.begin();
 
@@ -526,7 +523,7 @@ static bool testCharPoly (const Field& F, size_t n, int iterations)
 			ret = false;
 			++P_it;
 		}
-		delete[] A;
+        FFLAS::fflas_delete (A);
 	}
 
 	commentator().stop(MSG_STATUS (ret), (const char *) 0, "testCharPoly");
@@ -538,7 +535,6 @@ template <class Field>
 static bool testInv (const Field& F,size_t n, int iterations)
 {
 
-	typedef typename Field::Element Element;
 	typedef typename Field::RandIter RandIter;
 	typedef typename Field::NonZeroRandIter NonZeroRandIter;
 
@@ -552,7 +548,7 @@ static bool testInv (const Field& F,size_t n, int iterations)
 
 	bool ret = true;
 
-	Element * Id = new Element[n*n];
+    typename Field::Element_ptr Id = FFLAS::fflas_new(F, n,n);
 	for (size_t i=0;i<n;++i){
 		for (size_t j=0;j<n;++j)
 			F.assign(*(Id+j+i*n),F.zero);
@@ -563,10 +559,9 @@ static bool testInv (const Field& F,size_t n, int iterations)
 		commentator().progress(k);
 
 
-		Element * A = new Element[n*n];
-		Element * L = new Element[n*n];
-		Element * S = new Element[n*n];
-
+        typename Field::Element_ptr A = FFLAS::fflas_new(F, n,n);
+        typename Field::Element_ptr L = FFLAS::fflas_new(F, n,n);
+        typename Field::Element_ptr S = FFLAS::fflas_new(F, n,n);
 
 
 		// create S as an upper triangular matrix of full rank
@@ -595,8 +590,9 @@ static bool testInv (const Field& F,size_t n, int iterations)
 		FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, n, n, n,
 			      F.one, L, n, S, n, F.zero, A, n );
 
-		Element * Ab = new Element[n*n];
-		Element * invA = new Element[n*n];
+        typename Field::Element_ptr Ab = FFLAS::fflas_new(F, n,n);
+        typename Field::Element_ptr invA = FFLAS::fflas_new(F, n,n);
+
 		for (size_t i = 0; i<n*n; ++i)
 			F.assign( *(Ab+i), *(A+i) );
 		// compute the inverse of A
@@ -619,13 +615,13 @@ static bool testInv (const Field& F,size_t n, int iterations)
 // 			write_field (F, cerr<<"ID2="<<endl, S, n,n,n);
 
 		}
-		delete[] L;
-		delete[] S;
-		delete[] A;
-		delete[] Ab;
-		delete[] invA;
+        FFLAS::fflas_delete (L);
+        FFLAS::fflas_delete (S);
+        FFLAS::fflas_delete (A);
+        FFLAS::fflas_delete (Ab);
+        FFLAS::fflas_delete (invA);
 	}
-	delete[] Id;
+    FFLAS::fflas_delete (Id);
 
 	commentator().stop(MSG_STATUS (ret), (const char *) 0, "testInv");
 
@@ -657,8 +653,8 @@ static bool testapplyP (const Field& F,size_t n, int iterations)
 		commentator().progress(k);
 
 
-		Element * A = new Element[n*n];
-		Element * Ab = new Element[n*n];
+        typename Field::Element_ptr A = FFLAS::fflas_new(F, n,n);
+        typename Field::Element_ptr Ab = FFLAS::fflas_new(F, n,n);
 		size_t * P =new size_t[n];
 
 
@@ -694,8 +690,8 @@ static bool testapplyP (const Field& F,size_t n, int iterations)
 		for (size_t i=0;i<n*n;++i)
 			if ( !F.areEqual(*(Ab+i),*(A+i)) )
 				ret =false;
-		delete[] A;
-		delete[] Ab;
+        FFLAS::fflas_delete (A);
+        FFLAS::fflas_delete (Ab);
 		delete[] P;
 	}
 

@@ -32,6 +32,7 @@ pkgincludesub_HEADERS =         \
     gauss-pivot.inl             \
     gauss-gf2.inl               \
     gauss-elim-gf2.inl          \
+    gauss-det-gf2.inl          \
     gauss-rank-gf2.inl          \
     gauss-pivot-gf2.inl         \
     gauss-solve-gf2.inl
