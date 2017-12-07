@@ -34,6 +34,8 @@
 #define __LINBOX_polynomial_H
 
 
+#include "givaro/givpoly1dense.h"
+#include "linbox/field/hom.h"
 namespace LinBox {
     
     template <class BaseRing, class Storage_Tag>
@@ -52,27 +54,24 @@ namespace LinBox {
         typedef DensePolynomial<Field> Self_t;
         typedef Givaro::Poly1FactorDom<Field, Givaro::Dense> Domain_t;
 
-        DensePolynomial (const Field& F) : _field (F) {}
-        DensePolynomial (const Field& F, const size_t s) : Domain_t::Element(s), _field (F) {}
-        DensePolynomial (const typename Domain_t::Element& P, const Field& F) :
-                Domain_t::Element(P),
-                _field(F)
-            {}
+        DensePolynomial () : Domain_t::Element(), _field(NULL) {}
 
-        DensePolynomial& operator=(const DensePolynomial & P)  {
-            return *this = P;
-        }
+        DensePolynomial (const Field& F) : _field (&F) {}
+
+        template<typename... Args>
+        DensePolynomial(const Field& F, Args... args) :
+                Domain_t::Element(args...),
+                _field(&F) {}
 
         template <class _OtherPoly >
         DensePolynomial (const _OtherPoly& P, const Field& F) :
                 Domain_t::Element(P.size()),
-            _field(F) 
+                _field(&F)
             {
                 typename _OtherPoly::template rebind<Field>()(*this,P);
             }
 
-
-        const Field& field () const {return _field;};
+        const Field& field () const {return *_field;};
 
         template<typename _Tp1>
         struct rebind {
@@ -90,8 +89,10 @@ namespace LinBox {
         };
 
     protected:
-
-        const Field& _field;
+	// DensePolynomials can be constructed with no Field
+	// Therefore PolynomialRing will set the Field pointer from the "init" member
+        template <class BaseRing, class Storage_Tag> friend class PolynomialRing;
+        const Field* _field;
     };
 
 } // namespace LinBox

@@ -27,8 +27,8 @@
 /** @file linbox-config.h
  * @brief linbox base configuration file
  */
-#include "fflas-ffpack/fflas-ffpack-config.h"
-#include "config.h"
+#include <fflas-ffpack/fflas-ffpack-config.h>
+#include "linbox/config.h"
 // #include "linbox-configuration.h"
 
 #ifndef INT32_MAX

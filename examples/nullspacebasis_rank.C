@@ -63,7 +63,7 @@ int main (int argc, char **argv)
   unsigned long Rank;
   size_t Ni(A.rowdim()),Nj(A.coldim());
 
-  Permutation<Field> P((int)Nj,F);
+  Permutation<Field> P(F,(int)Nj);
 
   GD.InPlaceLinearPivoting(Rank, Det, A, P, Ni, Nj );
 
