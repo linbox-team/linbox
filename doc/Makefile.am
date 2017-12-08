@@ -35,7 +35,6 @@ all all-local: $(USE_TARGETS)
 install install-data-local: $(INSTALL_TARGETS)
 
 docs :
-	cp $(top_srcdir)/doc/{mainpage.doxy,Doxyfile.mod,DoxyfileDev.mod,versionning.doxy} .
 	sed -i 's/\\version\s1.*/\\version\ $(VERSION)/' mainpage.doxy
 	if test -d linbox-html ; then echo exists; else mkdir linbox-html ; fi
 	if test -d linbox-dev-html ; then echo exists; else mkdir linbox-dev-html ; fi
