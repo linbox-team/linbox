@@ -58,18 +58,49 @@ using std::ptrdiff_t;
 #endif
 #endif
 
-#ifdef __FFLASFFPACK_HAVE_SSE4_1_INSTRUCTIONS
-#define __LINBOX_HAVE_SSE4_1_INSTRUCTIONS
-#else
-#define __LINBOX_NO_SIMD
+/* Define if sse instructions are supported */
+#ifdef __SSE__
+#define __LINBOX_HAVE_SSE_INSTRUCTIONS  1
 #endif
 
-#ifdef __FFLASFFPACK_HAVE_AVX_INSTRUCTIONS
-#define __LINBOX_HAVE_AVX_INSTRUCTIONS
+/* Define if sse2 instructions are supported */
+#ifdef __SSE2__
+#define __LINBOX_HAVE_SSE2_INSTRUCTIONS  1
 #endif
 
-#ifdef __FFLASFFPACK_HAVE_AVX2_INSTRUCTIONS
-#define __LINBOX_HAVE_AVX_INSTRUCTIONS2
+/* Define if sse3 instructions are supported */
+#ifdef __SSE3__
+#define __LINBOX_HAVE_SSE3_INSTRUCTIONS  1
+#endif
+
+/* Define if sse4.1 instructions are supported */
+#ifdef __SSE4_1__
+#define __LINBOX_HAVE_SSE4_1_INSTRUCTIONS  1
+#endif
+
+/* Define if sse4.2 instructions are supported */
+#ifdef __SSE4_2__
+#define __LINBOX_HAVE_SSE4_2_INSTRUCTIONS  1
+#endif
+
+/* Define if avx instructions are supported */
+#ifdef __AVX__
+#define __LINBOX_HAVE_AVX_INSTRUCTIONS  1
+#endif
+
+/* Define if avx2 instructions are supported */
+#ifdef __AVX2__
+#define __LINBOX_HAVE_AVX2_INSTRUCTIONS  1
+#endif
+
+/* Define if avx512f instructions are supported */
+#ifdef __AVX512F__
+#define __LINBOX_HAVE_AVX512F_INSTRUCTIONS  1
+#endif
+
+/* Define if fma instructions are supported */
+#ifdef __FMA__
+#define __LINBOX_HAVE_FMA_INSTRUCTIONS  1
 #endif
 
 namespace LinBox {
