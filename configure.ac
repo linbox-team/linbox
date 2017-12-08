@@ -305,6 +305,7 @@ AC_CONFIG_FILES([
 Makefile
 linbox-config
 examples/Makefile
+examples/data/Makefile
 doc/Makefile
 linbox/Makefile
 linbox/algorithms/Makefile
