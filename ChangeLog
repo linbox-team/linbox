@@ -1,3 +1,6 @@
+2017-12-08 v1.5.2
+	Improvements:
+	* minor bug fixes (missing config.h file, and SIMD macros)
 2017-11-22 v1.5.1
 	Improvements:
 	* minor bug fixes in the build system and autoinstall
