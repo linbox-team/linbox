@@ -55,161 +55,203 @@ typedef PolySmithFormLocalXDomain<PolynomialRing> LocalSmithFormDom;
 
 Givaro::Timer TW;
 
-void writeInvariantFactors(std::ostream &os, PolynomialRing &R, std::vector<Polynomial> &factors) {
-	for (size_t i = 0; i < factors.size(); i++) {
-		Polynomial f;
-		R.monic(f, factors[i]);
-		R.write(os, f) << std::endl;
-	}
-}
-
-double convertMinPolyToPolyMatrix(const Field &F, const PolynomialRing &R, PolyMatrix &G, const std::vector<Matrix> &minpoly) {
-	size_t b = G.rowdim();
+class TestInvariantFactorsHelper {
+public:
+	const Field F;
+	const PolynomialRing R;
+	const MatrixDomain<Field> MD;
 	
-	TW.clear();
-	TW.start();
+	TestInvariantFactorsHelper(size_t p) : F(p), R(p), MD(F) {};
 	
-	for (size_t i = 0; i < b; i++) {
-		for (size_t j = 0; j < b; j++) {
-			std::vector<long> coeffs;
-			for (size_t k = 0; k < minpoly.size(); k++) {
-				long coeff;
-				F.convert(coeff, minpoly[k].getEntry(i, j));
-				coeffs.push_back(coeff);
-			}
-			Polynomial tmp;
-			R.init(tmp, coeffs);
-			
-			G.setEntry(i, j, tmp);
+	void writeInvariantFactors(std::ostream &os, std::vector<Polynomial> &factors) const {
+		for (size_t i = 0; i < factors.size(); i++) {
+			Polynomial f;
+			R.monic(f, factors[i]);
+			R.write(os, f) << std::endl;
 		}
 	}
 	
-	TW.stop();
-	double cv_time = TW.usertime();
-	// std::cout << cv_time << " " << std::flush;
-	
-	return cv_time;
-}
-
-void computeDet(const PolynomialRing &R, Polynomial &det, std::vector<Polynomial> &factors) {
-	R.assign(det, R.one);
-	for (size_t i = 0; i < factors.size(); i++) {
-		R.mulin(det, factors[i]);
+	double computeMinpoly(std::vector<Matrix> &minpoly, const SparseMat &M, size_t b) const {
+		size_t n = M.rowdim();
+		
+		RandIter RI(F);
+		RandomMatrix RM(F, RI);
+		
+		Matrix U(F, b, n);
+		Matrix V(F, n, b);
+		
+		RM.random(U);
+		RM.random(V);
+		
+		// Construct block sequence to input to BM
+		Sequence seq(&M, F, U, V);
+		
+		// Compute minimal generating polynomial matrix
+		MasseyDom BMD(&seq); // pascal
+		CoppersmithDom BCD(MD, &seq, 10); // george
+		
+		std::vector<size_t> degree;
+		
+		TW.clear();
+		TW.start();
+		
+		//BMD.left_minpoly_rec(minpoly, degree);
+		BCD.right_minpoly(minpoly);
+		
+		TW.stop();
+		double bm_time = TW.usertime();
+		std::cout << bm_time << " " << std::flush;
+		
+		return bm_time;
 	}
 	
-	Polynomial monic_det;
-	R.monic(monic_det, det);
-	R.assign(det, monic_det);
-}
-
-void timeTextbook(const PolynomialRing &R, std::vector<Polynomial> &result, const PolyMatrix &M) {
-	SmithFormDom SFD(R);
-	result.clear();
-	PolyMatrix G(M);
-	
-	TW.clear();
-	TW.start();
-	
-	SFD.solveTextBook(result, G);
-	
-	TW.stop();
-	double sf_time = TW.usertime();
-	std::cout << sf_time << " " << std::flush;
-}
-
-double timeKannanBachem(const PolynomialRing &R, std::vector<Polynomial> &result, const PolyMatrix &M) {
-	SmithFormDom SFD(R);
-	result.clear();
-	PolyMatrix G(M);
-	
-	TW.clear();
-	TW.start();
-	
-	SFD.solve(result, G);
-	
-	TW.stop();
-	double sf_time = TW.usertime();
-	std::cout << sf_time << " " << std::flush;
-	
-	return sf_time;
-}
-
-void timeHybrid(const PolynomialRing &R, std::vector<Polynomial> &result, const PolyMatrix &M) {
-	SmithFormDom SFD(R);
-	result.clear();
-	PolyMatrix G(M);
-	
-	TW.clear();
-	TW.start();
-	
-	SFD.solveAdaptive(result, G);
-	
-	TW.stop();
-	double sf_time = TW.usertime();
-	std::cout << sf_time << " " << std::flush;
-}
-
-void timeHybrid2(const PolynomialRing &R, std::vector<Polynomial> &result, const PolyMatrix &M) {
-	SmithFormDom SFD(R);
-	result.clear();
-	PolyMatrix G(M);
-	
-	TW.clear();
-	TW.start();
-	
-	SFD.solveAdaptive2(result, G);
-	
-	TW.stop();
-	double sf_time = TW.usertime();
-	std::cout << sf_time << " " << std::flush;
-}
-
-double timeIliopoulos(const PolynomialRing &R, std::vector<Polynomial> &result, const PolyMatrix &M, const Polynomial &det) {
-	SmithFormDom SFD(R);
-	result.clear();
-	PolyMatrix G(M);
-	
-	TW.clear();
-	TW.start();
-	
-	SFD.solveIliopoulos(result, G, det);
-	
-	TW.stop();
-	double sf_time = TW.usertime();
-	std::cout << sf_time << " " << std::flush;
-	
-	return sf_time;
-}
-
-double timeLocalX(const PolynomialRing &R, std::vector<Polynomial> &result, Polynomial &det, const PolyMatrix &M, size_t exponent) {
-	LocalSmithFormDom SFD(R, exponent);
-	LocalRing L(R, exponent);
-	
-	result.clear();
-	
-	TW.clear();
-	TW.start();
-	
-	LocalMatrix G(M, L);
-	
-	SFD.solve(result, G);
-	
-	
-	R.assign(det, R.one);
-	for (size_t i = 0; i < result.size(); i++) {
-		R.mulin(det, result[i]);
+	double convertMinPolyToPolyMatrix(PolyMatrix &G, const std::vector<Matrix> &minpoly) {
+		size_t b = G.rowdim();
+		
+		TW.clear();
+		TW.start();
+		
+		for (size_t i = 0; i < b; i++) {
+			for (size_t j = 0; j < b; j++) {
+				std::vector<long> coeffs;
+				for (size_t k = 0; k < minpoly.size(); k++) {
+					long coeff;
+					F.convert(coeff, minpoly[k].getEntry(i, j));
+					coeffs.push_back(coeff);
+				}
+				Polynomial tmp;
+				R.init(tmp, coeffs);
+				
+				G.setEntry(i, j, tmp);
+			}
+		}
+		
+		TW.stop();
+		double cv_time = TW.usertime();
+		// std::cout << cv_time << " " << std::flush;
+		
+		return cv_time;
 	}
 	
-	det = NTL::trunc(det, exponent);
+	void computeDet(Polynomial &det, std::vector<Polynomial> &factors) {
+		R.assign(det, R.one);
+		for (size_t i = 0; i < factors.size(); i++) {
+			R.mulin(det, factors[i]);
+		}
+		
+		Polynomial monic_det;
+		R.monic(monic_det, det);
+		R.assign(det, monic_det);
+	}
 	
-	TW.stop();
-	double sf_time = TW.usertime();
-	std::cout << sf_time << " " << std::flush;
+	void timeTextbook(std::vector<Polynomial> &result, const PolyMatrix &M) {
+		SmithFormDom SFD(R);
+		result.clear();
+		PolyMatrix G(M);
+		
+		TW.clear();
+		TW.start();
+		
+		SFD.solveTextBook(result, G);
+		
+		TW.stop();
+		double sf_time = TW.usertime();
+		std::cout << sf_time << " " << std::flush;
+	}
 	
-	NTL::MakeMonic(det);
+	double timeKannanBachem(std::vector<Polynomial> &result, const PolyMatrix &M) {
+		SmithFormDom SFD(R);
+		result.clear();
+		PolyMatrix G(M);
+		
+		TW.clear();
+		TW.start();
+		
+		SFD.solve(result, G);
+		
+		TW.stop();
+		double sf_time = TW.usertime();
+		std::cout << sf_time << " " << std::flush;
+		
+		return sf_time;
+	}
 	
-	return sf_time;
-}
+	void timeHybrid(std::vector<Polynomial> &result, const PolyMatrix &M) {
+		SmithFormDom SFD(R);
+		result.clear();
+		PolyMatrix G(M);
+		
+		TW.clear();
+		TW.start();
+		
+		SFD.solveAdaptive(result, G);
+		
+		TW.stop();
+		double sf_time = TW.usertime();
+		std::cout << sf_time << " " << std::flush;
+	}
+	
+	void timeHybrid2(std::vector<Polynomial> &result, const PolyMatrix &M) {
+		SmithFormDom SFD(R);
+		result.clear();
+		PolyMatrix G(M);
+		
+		TW.clear();
+		TW.start();
+		
+		SFD.solveAdaptive2(result, G);
+		
+		TW.stop();
+		double sf_time = TW.usertime();
+		std::cout << sf_time << " " << std::flush;
+	}
+	
+	double timeIliopoulos(std::vector<Polynomial> &result, const PolyMatrix &M, const Polynomial &det) {
+		SmithFormDom SFD(R);
+		result.clear();
+		PolyMatrix G(M);
+		
+		TW.clear();
+		TW.start();
+		
+		SFD.solveIliopoulos(result, G, det);
+		
+		TW.stop();
+		double sf_time = TW.usertime();
+		std::cout << sf_time << " " << std::flush;
+		
+		return sf_time;
+	}
+	
+	double timeLocalX(Polynomial &det, const PolyMatrix &M, size_t exponent) {
+		LocalSmithFormDom SFD(R, exponent);
+		LocalRing L(R, exponent);
+		
+		std::vector<Polynomial> result;
+		result.clear();
+		
+		TW.clear();
+		TW.start();
+		
+		LocalMatrix G(M, L);
+		SFD.solve(result, G);
+		
+		R.assign(det, R.one);
+		for (size_t i = 0; i < result.size(); i++) {
+			R.mulin(det, result[i]);
+		}
+		
+		det = NTL::trunc(det, exponent);
+		
+		TW.stop();
+		double sf_time = TW.usertime();
+		std::cout << sf_time << " " << std::flush;
+		
+		NTL::MakeMonic(det);
+		
+		return sf_time;
+	}
+}; // End of TestInvariantFactorsHelper
 
 int main(int argc, char** argv) {
 	size_t p = 7;
@@ -218,11 +260,11 @@ int main(int argc, char** argv) {
 	double sparsity = 0.05;
 	int seed = time(NULL);
 	size_t t = 2;
+	size_t times = 1;
 	
 	std::string bumpFile;
 	std::string matrixFile;
 	std::string outFile;
-	std::string algo = "hyb";
 
 	static Argument args[] = {
 		{ 'm', "-m M", "Name of file for bumps", TYPE_STR, &bumpFile},
@@ -233,8 +275,8 @@ int main(int argc, char** argv) {
 		{ 's', "-s S", "Target sparsity of matrix", TYPE_DOUBLE, &sparsity},
 		{ 'r', "-r R", "Random seed", TYPE_INT, &seed},
 		{ 'b', "-b B", "Block size", TYPE_INT, &b},
-		{ 'a', "-a A", "Smith form algorithm to use", TYPE_STR, &algo},
 		{ 't', "-t T", "Run iliopoulos with t-th largest invariant factor", TYPE_INT, &t},
+		{ 'k', "-k K", "Repeat computation K times", TYPE_INT, &times},
 		END_OF_ARGUMENTS
 	};
 
@@ -243,7 +285,6 @@ int main(int argc, char** argv) {
 	srand(seed);
 
 	Field F(p);
-	MatrixDomain<Field> MD(F);
 	PolynomialRing R(p);
 	SparseMatrixGenerator<Field, PolynomialRing> Gen(F, R);
 	TestPolySmithFormUtil<Field> util(F);
@@ -268,72 +309,50 @@ int main(int argc, char** argv) {
 		n = M.rowdim();
 	}
 	
-	std::cout << n << " " << b << " " << Gen.sparsity(M) << " " << std::flush;
+	std::cout << n << " " << b << " " << Gen.sparsity(M) << " " << std::endl;
 	
-	// Generate random left and right projectors
-	RandIter RI(F);
-	RandomMatrix RM(F, RI);
-	
-	Matrix U(F, b, n);
-	Matrix V(F, n, b);
-	
-	RM.random(U);
-	RM.random(V);
-	
-	// Construct block sequence to input to BM
-	Sequence seq(&M, F, U, V);
-	
-	// Compute minimal generating polynomial matrix
-	MasseyDom BMD(&seq); // pascal
-	CoppersmithDom BCD(MD, &seq, 10); // george
-	
-	std::vector<Matrix> minpoly;
-	std::vector<size_t> degree;
-	
-	TW.clear();
-	TW.start();
-	
-	//BMD.left_minpoly_rec(minpoly, degree);
-	BCD.right_minpoly(minpoly);
-	
-	TW.stop();
-	double bm_time = TW.usertime();
-	std::cout << bm_time << " " << std::flush;
-	
-	// Convert to matrix with polynomial entries
-	PolyMatrix G(R, b, b);
-	convertMinPolyToPolyMatrix(F, R, G, minpoly);
-	
-	std::cout << "| " << std::flush;
-	
-	TestPolySmithFormUtil<PolynomialRing> putil(R);
-	//putil.printMatrix(G);
-	//std::cout << std::endl;
-	
-	// Compute smith form of generator
-	Polynomial det2;
-	std::vector<Polynomial> result2;
-	double local_time = timeLocalX(R, result2, det2, G, n + 1);
-	double ilio_time = timeIliopoulos(R, result2, G, det2);
-	double total_time = local_time + ilio_time;
-	std::cout << "(" << total_time << ") " << std::flush;
+	TestInvariantFactorsHelper helper(p);
 	
 	std::vector<Polynomial> result;
-	double kb_time = timeKannanBachem(R, result, G);
-	//timeHybrid(R, result, G);
-	computeDet(R, det, result);
-	
-	std::cout << "(" << (kb_time / total_time) << ")" << std::endl;
-	
-	//R.write(std::cout << "det: ", det) << std::endl;
-	//R.write(std::cout << "det2: ", det2) << std::endl;
-	std::cout << "Pass? " << (R.areEqual(det, det2) ? "True" : "False") << std::endl;
+	for (size_t i = 0; i < times; i++) {
+		// Generate random left and right projectors
+		std::vector<Matrix> minpoly;
+		helper.computeMinpoly(minpoly, M, b);
+		
+		// Convert to matrix with polynomial entries
+		PolyMatrix G(R, b, b);
+		helper.convertMinPolyToPolyMatrix(G, minpoly);
+		
+		std::cout << "| " << std::flush;
+		
+		TestPolySmithFormUtil<PolynomialRing> putil(R);
+		//putil.printMatrix(G);
+		//std::cout << std::endl;
+		
+		// Compute smith form of generator
+		Polynomial det2;
+		std::vector<Polynomial> result2;
+		double local_time = helper.timeLocalX(det2, G, n + 1);
+		double ilio_time = helper.timeIliopoulos(result2, G, det2);
+		double total_time = local_time + ilio_time;
+		std::cout << "(" << total_time << ") " << std::flush;
+		
+		double kb_time = helper.timeKannanBachem(result, G);
+		//timeHybrid(R, result, G);
+		helper.computeDet(det, result);
+		
+		std::cout << "(" << (kb_time / total_time) << ")" << std::endl;
+		
+		//R.write(std::cout << "det: ", det) << std::endl;
+		//R.write(std::cout << "det2: ", det2) << std::endl;
+		//std::cout << "Pass? " << (R.areEqual(det, det2) ? "True" : "False") << std::endl;
+	}
 	
 	if (outFile == "") {
-		writeInvariantFactors(std::cout, R, result);
+		helper.writeInvariantFactors(std::cout, result);
 	} else {
 		std::ofstream out(outFile);
-		writeInvariantFactors(out, R, result);
+		helper.writeInvariantFactors(out, result);
 		out.close();
 	}
 	
