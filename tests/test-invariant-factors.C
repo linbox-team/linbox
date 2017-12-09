@@ -63,6 +63,34 @@ void writeInvariantFactors(std::ostream &os, PolynomialRing &R, std::vector<Poly
 	}
 }
 
+double convertMinPolyToPolyMatrix(const Field &F, const PolynomialRing &R, PolyMatrix &G, const std::vector<Matrix> &minpoly) {
+	size_t b = G.rowdim();
+	
+	TW.clear();
+	TW.start();
+	
+	for (size_t i = 0; i < b; i++) {
+		for (size_t j = 0; j < b; j++) {
+			std::vector<long> coeffs;
+			for (size_t k = 0; k < minpoly.size(); k++) {
+				long coeff;
+				F.convert(coeff, minpoly[k].getEntry(i, j));
+				coeffs.push_back(coeff);
+			}
+			Polynomial tmp;
+			R.init(tmp, coeffs);
+			
+			G.setEntry(i, j, tmp);
+		}
+	}
+	
+	TW.stop();
+	double cv_time = TW.usertime();
+	// std::cout << cv_time << " " << std::flush;
+	
+	return cv_time;
+}
+
 void computeDet(const PolynomialRing &R, Polynomial &det, std::vector<Polynomial> &factors) {
 	R.assign(det, R.one);
 	for (size_t i = 0; i < factors.size(); i++) {
@@ -89,7 +117,7 @@ void timeTextbook(const PolynomialRing &R, std::vector<Polynomial> &result, cons
 	std::cout << sf_time << " " << std::flush;
 }
 
-void timeKannanBachem(const PolynomialRing &R, std::vector<Polynomial> &result, const PolyMatrix &M) {
+double timeKannanBachem(const PolynomialRing &R, std::vector<Polynomial> &result, const PolyMatrix &M) {
 	SmithFormDom SFD(R);
 	result.clear();
 	PolyMatrix G(M);
@@ -102,6 +130,8 @@ void timeKannanBachem(const PolynomialRing &R, std::vector<Polynomial> &result, 
 	TW.stop();
 	double sf_time = TW.usertime();
 	std::cout << sf_time << " " << std::flush;
+	
+	return sf_time;
 }
 
 void timeHybrid(const PolynomialRing &R, std::vector<Polynomial> &result, const PolyMatrix &M) {
@@ -134,7 +164,7 @@ void timeHybrid2(const PolynomialRing &R, std::vector<Polynomial> &result, const
 	std::cout << sf_time << " " << std::flush;
 }
 
-void timeIliopoulos(const PolynomialRing &R, std::vector<Polynomial> &result, const PolyMatrix &M, const Polynomial &det) {
+double timeIliopoulos(const PolynomialRing &R, std::vector<Polynomial> &result, const PolyMatrix &M, const Polynomial &det) {
 	SmithFormDom SFD(R);
 	result.clear();
 	PolyMatrix G(M);
@@ -147,23 +177,23 @@ void timeIliopoulos(const PolynomialRing &R, std::vector<Polynomial> &result, co
 	TW.stop();
 	double sf_time = TW.usertime();
 	std::cout << sf_time << " " << std::flush;
+	
+	return sf_time;
 }
 
-void timeLocalX(const PolynomialRing &R, std::vector<Polynomial> &result, Polynomial &det, const PolyMatrix &M, size_t exponent) {
+double timeLocalX(const PolynomialRing &R, std::vector<Polynomial> &result, Polynomial &det, const PolyMatrix &M, size_t exponent) {
 	LocalSmithFormDom SFD(R, exponent);
 	LocalRing L(R, exponent);
 	
 	result.clear();
-	LocalMatrix G(M, L);
 	
 	TW.clear();
 	TW.start();
 	
+	LocalMatrix G(M, L);
+	
 	SFD.solve(result, G);
 	
-	TW.stop();
-	double sf_time = TW.usertime();
-	std::cout << sf_time << " " << std::endl;
 	
 	R.assign(det, R.one);
 	for (size_t i = 0; i < result.size(); i++) {
@@ -171,7 +201,14 @@ void timeLocalX(const PolynomialRing &R, std::vector<Polynomial> &result, Polyno
 	}
 	
 	det = NTL::trunc(det, exponent);
+	
+	TW.stop();
+	double sf_time = TW.usertime();
+	std::cout << sf_time << " " << std::flush;
+	
 	NTL::MakeMonic(det);
+	
+	return sf_time;
 }
 
 int main(int argc, char** argv) {
@@ -263,52 +300,34 @@ int main(int argc, char** argv) {
 	double bm_time = TW.usertime();
 	std::cout << bm_time << " " << std::flush;
 	
-	TW.clear();
-	TW.start();
-	
 	// Convert to matrix with polynomial entries
 	PolyMatrix G(R, b, b);
-	for (size_t i = 0; i < b; i++) {
-		for (size_t j = 0; j < b; j++) {
-			std::vector<long> coeffs;
-			for (size_t k = 0; k < minpoly.size(); k++) {
-				long coeff;
-				F.convert(coeff, minpoly[k].getEntry(i, j));
-				coeffs.push_back(coeff);
-			}
-			Polynomial tmp;
-			R.init(tmp, coeffs);
-			
-			G.setEntry(i, j, tmp);
-		}
-	}
+	convertMinPolyToPolyMatrix(F, R, G, minpoly);
 	
-	TW.stop();
-	double cv_time = TW.usertime();
-	std::cout << cv_time << " " << std::flush;
+	std::cout << "| " << std::flush;
 	
 	TestPolySmithFormUtil<PolynomialRing> putil(R);
 	//putil.printMatrix(G);
 	//std::cout << std::endl;
 	
 	// Compute smith form of generator
-	std::vector<Polynomial> result;
+	Polynomial det2;
+	std::vector<Polynomial> result2;
+	double local_time = timeLocalX(R, result2, det2, G, n + 1);
+	double ilio_time = timeIliopoulos(R, result2, G, det2);
+	double total_time = local_time + ilio_time;
+	std::cout << "(" << total_time << ") " << std::flush;
 	
-	timeKannanBachem(R, result, G);
-	timeHybrid(R, result, G);
+	std::vector<Polynomial> result;
+	double kb_time = timeKannanBachem(R, result, G);
+	//timeHybrid(R, result, G);
 	computeDet(R, det, result);
 	
-	std::vector<Polynomial> result2;
-	timeIliopoulos(R, result2, G, det);
-	timeIliopoulos(R, result2, G, result[result.size() - t]);
-	
-	Polynomial det2;
-	timeLocalX(R, result2, det2, G, n + 1);
+	std::cout << "(" << (kb_time / total_time) << ")" << std::endl;
 	
 	//R.write(std::cout << "det: ", det) << std::endl;
 	//R.write(std::cout << "det2: ", det2) << std::endl;
 	std::cout << "Pass? " << (R.areEqual(det, det2) ? "True" : "False") << std::endl;
-	std::cout << std::endl;
 	
 	if (outFile == "") {
 		writeInvariantFactors(std::cout, R, result);
