@@ -109,8 +109,7 @@ namespace LinBox
 			}
 			
 			if (M.rowdim() < min_dim || M.coldim() < min_dim) {
-				std::cout << "Matrix too small (min dim: " << min_dim << ")" << std::endl;
-				return false;
+				M.resize(min_dim, min_dim);
 			}
 			
 			size_t offset = 0;

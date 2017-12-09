@@ -224,7 +224,6 @@ namespace LinBox
 		}
 
 	public:
-		
 		template<class Matrix>
 		void solve(std::vector<Polynomial> &result, Matrix &A) {
 			size_t initial_exp = _F.getExponent();
@@ -244,6 +243,30 @@ namespace LinBox
 				_F.denormalize(r, tmp);
 				result.push_back(r);
 			}
+		}
+		
+		template<class Matrix>
+		void solveDet(Polynomial &det, Matrix &A) {
+			size_t initial_exp = _F.getExponent();
+			
+			std::vector<Element> L;
+			std::vector<size_t> es;
+			
+			solveHelper(L, es, 0, A);
+			
+			_F.setExponent(initial_exp);
+			
+			size_t e = 0;
+			for (size_t i = 0; i < es.size(); i++) {
+				e += es[i];
+			}
+			
+			Element tmp;
+			_F.leftShift(tmp, L[0], e);
+			for (size_t i = 1; i < L.size(); i++) {
+				_F.mulin(tmp, L[i]);
+			}
+			_F.denormalize(det, tmp);
 		}
 	}; // end of class PolySmithFormLocalXDomain
 }

@@ -234,6 +234,8 @@ public:
 		TW.start();
 		
 		LocalMatrix G(M, L);
+		
+		/*
 		SFD.solve(result, G);
 		
 		R.assign(det, R.one);
@@ -242,6 +244,9 @@ public:
 		}
 		
 		det = NTL::trunc(det, exponent);
+		*/
+		
+		SFD.solveDet(det, G);
 		
 		TW.stop();
 		double sf_time = TW.usertime();
@@ -355,6 +360,7 @@ int main(int argc, char** argv) {
 		helper.writeInvariantFactors(out, result);
 		out.close();
 	}
+	
 	
 	return 0;
 }
