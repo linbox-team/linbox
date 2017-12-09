@@ -346,11 +346,12 @@ int main(int argc, char** argv) {
 		//timeHybrid(R, result, G);
 		helper.computeDet(det, result);
 		
-		std::cout << "(" << (kb_time / total_time) << ")" << std::endl;
+		std::cout << "(" << (kb_time / total_time) << ")";
 		
-		//R.write(std::cout << "det: ", det) << std::endl;
-		//R.write(std::cout << "det2: ", det2) << std::endl;
-		//std::cout << "Pass? " << (R.areEqual(det, det2) ? "True" : "False") << std::endl;
+		// R.write(std::cout << "det1: ", det) << std::endl;
+		// R.write(std::cout << "det2: ", det2) << std::endl;
+		std::cout << " " << (R.areEqual(det, det2) ? "Pass" : "Fail");
+		std::cout << std::endl;
 	}
 	
 	if (outFile == "") {

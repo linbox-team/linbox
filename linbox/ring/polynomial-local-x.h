@@ -568,7 +568,13 @@ namespace LinBox
 				return b = zero;
 			}
 			
-			return b = {a.e + e, a.f};
+			return b = {a.e + e, NTL::trunc(a.f, exp - a.e - e)};
+		}
+		
+		Element &leftShiftIn(Element &b, size_t e) const {
+			b.e += e;
+			_F.assign(b.f, NTL::trunc(b.f, exp - b.e));
+			return b;
 		}
 		
 		// b = a / x^e
