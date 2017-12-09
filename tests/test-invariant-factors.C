@@ -8,6 +8,7 @@
 
 #include "linbox/ring/modular.h"
 #include "linbox/ring/ntl.h"
+#include "linbox/ring/polynomial-local-x.h"
 
 #include "linbox/matrix/sparse-matrix.h"
 #include "linbox/matrix/dense-matrix.h"
@@ -20,6 +21,7 @@
 #include "linbox/algorithms/block-massey-domain.h"
 #include "linbox/algorithms/smith-form-kannan-bachem.h"
 #include "linbox/algorithms/smith-form-local.h"
+#include "linbox/algorithms/poly-smith-form-local-x.h"
 
 #include "sparse-matrix-generator.h"
 #include "test-poly-smith-form.h"
@@ -45,6 +47,12 @@ typedef MatrixDomain<PolynomialRing> PolyMatrixDom;
 typedef typename PolyMatrixDom::OwnMatrix PolyMatrix;
 typedef SmithFormKannanBachemDomain<PolynomialRing> SmithFormDom;
 
+typedef PolynomialLocalX<PolynomialRing> LocalRing;
+typedef typename LocalRing::Element LocalPolynomial;
+typedef MatrixDomain<LocalRing> LocalMatrixDom;
+typedef typename LocalMatrixDom::OwnMatrix LocalMatrix;
+typedef PolySmithFormLocalXDomain<PolynomialRing> LocalSmithFormDom;
+
 Givaro::Timer TW;
 
 void writeInvariantFactors(std::ostream &os, PolynomialRing &R, std::vector<Polynomial> &factors) {
@@ -60,6 +68,10 @@ void computeDet(const PolynomialRing &R, Polynomial &det, std::vector<Polynomial
 	for (size_t i = 0; i < factors.size(); i++) {
 		R.mulin(det, factors[i]);
 	}
+	
+	Polynomial monic_det;
+	R.monic(monic_det, det);
+	R.assign(det, monic_det);
 }
 
 void timeTextbook(const PolynomialRing &R, std::vector<Polynomial> &result, const PolyMatrix &M) {
@@ -137,8 +149,32 @@ void timeIliopoulos(const PolynomialRing &R, std::vector<Polynomial> &result, co
 	std::cout << sf_time << " " << std::flush;
 }
 
-int main(int argc, char** argv)
-{
+void timeLocalX(const PolynomialRing &R, std::vector<Polynomial> &result, Polynomial &det, const PolyMatrix &M, size_t exponent) {
+	LocalSmithFormDom SFD(R, exponent);
+	LocalRing L(R, exponent);
+	
+	result.clear();
+	LocalMatrix G(M, L);
+	
+	TW.clear();
+	TW.start();
+	
+	SFD.solve(result, G);
+	
+	TW.stop();
+	double sf_time = TW.usertime();
+	std::cout << sf_time << " " << std::endl;
+	
+	R.assign(det, R.one);
+	for (size_t i = 0; i < result.size(); i++) {
+		R.mulin(det, result[i]);
+	}
+	
+	det = NTL::trunc(det, exponent);
+	NTL::MakeMonic(det);
+}
+
+int main(int argc, char** argv) {
 	size_t p = 7;
 	size_t n = 10;
 	size_t b = 5;
@@ -211,8 +247,8 @@ int main(int argc, char** argv)
 	Sequence seq(&M, F, U, V);
 	
 	// Compute minimal generating polynomial matrix
-	MasseyDom BMD(&seq);
-	CoppersmithDom BCD(MD, &seq, 10);
+	MasseyDom BMD(&seq); // pascal
+	CoppersmithDom BCD(MD, &seq, 10); // george
 	
 	std::vector<Matrix> minpoly;
 	std::vector<size_t> degree;
@@ -265,6 +301,13 @@ int main(int argc, char** argv)
 	std::vector<Polynomial> result2;
 	timeIliopoulos(R, result2, G, det);
 	timeIliopoulos(R, result2, G, result[result.size() - t]);
+	
+	Polynomial det2;
+	timeLocalX(R, result2, det2, G, n + 1);
+	
+	//R.write(std::cout << "det: ", det) << std::endl;
+	//R.write(std::cout << "det2: ", det2) << std::endl;
+	std::cout << "Pass? " << (R.areEqual(det, det2) ? "True" : "False") << std::endl;
 	std::cout << std::endl;
 	
 	if (outFile == "") {

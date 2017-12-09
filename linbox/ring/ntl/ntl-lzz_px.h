@@ -231,15 +231,13 @@ namespace LinBox
 		/** Test if an element equals zero */
 		bool isZero( const Element& x ) const
 		{
-			return ( (this->deg(x) == 0) &&
-				 ( _CField.isZero( NTL::ConstTerm(x) ) ) );
+			return NTL::IsZero(x);
 		}
 
 		/** Test if an element equals one */
 		bool isOne( const Element& x ) const
 		{
-			return ( (this->deg(x) == 0) &&
-				 ( _CField.isOne( NTL::ConstTerm(x) ) ) );
+			return NTL::IsOne(x);
 		}
 
 		bool isUnit( const Element& x ) const
@@ -248,7 +246,7 @@ namespace LinBox
 				 ( _CField.isUnit( NTL::ConstTerm(x) ) ) );
 		}
 
-        bool isMOne (const Element& x) const
+        bool isMOne(const Element& x) const
 		{
 			return ( (this->deg(x) == 0) &&
 				 ( _CField.isMOne( NTL::ConstTerm(x) ) ) );
@@ -287,15 +285,9 @@ namespace LinBox
 			return c;
 		}
 		
-		Element& monic(Element& r, const Element& p) const {
-			Coeff leadcoeff = NTL::LeadCoeff(p);
-			
-			if (leadcoeff == 0) {
-				r = p;
-				return r;
-			}
-			
-			r = p / leadcoeff;
+		Element& monic(Element& r, const Element& p) const {			
+			r = p;
+			NTL::MakeMonic(r);
 			return r;
 		}
 
@@ -359,6 +351,13 @@ namespace LinBox
 			Element tmp;
 			rem(tmp, a, b);
 			return isZero(tmp);
+		}
+		
+		// a = b^(-1) % f
+		Element& invMod(Element &a, const Element &b, const Element &f) const
+		{
+			NTL::InvMod(a, b, f);
+			return a;
 		}
 
 		Element& inv( Element& y, const Element& x ) const

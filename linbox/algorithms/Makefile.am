@@ -150,6 +150,7 @@ pkgincludesub_HEADERS =            \
 	invariant-factors.h                \
 	poly-dixon.h                       \
 	invert-tb.h                        \
+	poly-smith-form-local-x.h          \
 	$(USE_OCL_HDRS)
 
 #  iml.h                              \
