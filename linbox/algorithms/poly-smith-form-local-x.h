@@ -183,15 +183,16 @@ namespace LinBox
 			_F.inv(pivot_inv, pivot);
 			_F.negin(pivot_inv);
 			
-			SubMatrix pivotRow(A, 0, 0, 1, A.coldim());			
+			SubMatrix pivotRow(A, 0, 0, 1, A.coldim());
+			_MD.mulin(pivotRow, pivot_inv);
+			
 			for (size_t r = 1; r < A.rowdim(); r++) {
 				SubMatrix otherRow(A, r, 0, 1, A.coldim());
 				
-				Element tmp;
-				otherRow.getEntry(tmp, 0, 0);
-				_F.mulin(tmp, pivot_inv);
+				Element other;
+				otherRow.getEntry(other, 0, 0);
 				
-				_MD.saxpyin(otherRow, tmp, pivotRow);
+				_MD.saxpyin(otherRow, other, pivotRow);
 			}
 		}
 		
