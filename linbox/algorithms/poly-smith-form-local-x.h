@@ -251,7 +251,6 @@ namespace LinBox
 			
 			std::vector<Element> L;
 			std::vector<size_t> es;
-			
 			solveHelper(L, es, 0, A);
 			
 			_F.setExponent(initial_exp);
