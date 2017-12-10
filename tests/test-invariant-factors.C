@@ -223,6 +223,25 @@ public:
 		return sf_time;
 	}
 	
+	size_t detLimit(const PolyMatrix &M, size_t dim) {
+		size_t limit = 0;
+		
+		for (size_t i = 0; i < M.rowdim(); i++) {
+			size_t max_degree = 0;
+			
+			for (size_t j = 0; j < M.coldim(); j++) {
+				size_t deg = R.deg(M.getEntry(i, j));
+				if (deg > max_degree) {
+					max_degree = deg;
+				}
+			}
+			
+			limit += max_degree;
+		}
+		
+		return (limit < dim ? limit : dim) + 1;
+	}
+	
 	double timeLocalX(Polynomial &det, const PolyMatrix &M, size_t exponent) {
 		LocalSmithFormDom SFD(R, exponent);
 		LocalRing L(R, exponent);
@@ -230,21 +249,10 @@ public:
 		std::vector<Polynomial> result;
 		result.clear();
 		
-		TW.clear();
-		TW.start();
-		
 		LocalMatrix G(M, L);
 		
-		/*
-		SFD.solve(result, G);
-		
-		R.assign(det, R.one);
-		for (size_t i = 0; i < result.size(); i++) {
-			R.mulin(det, result[i]);
-		}
-		
-		det = NTL::trunc(det, exponent);
-		*/
+		TW.clear();
+		TW.start();
 		
 		SFD.solveDet(det, G);
 		
@@ -330,8 +338,6 @@ int main(int argc, char** argv) {
 		PolyMatrix G(R, b, b);
 		helper.convertMinPolyToPolyMatrix(G, minpoly);
 		
-		std::cout << "| " << std::flush;
-		
 		TestPolySmithFormUtil<PolynomialRing> putil(R);
 		//putil.printMatrix(G);
 		//std::cout << std::endl;
@@ -340,7 +346,10 @@ int main(int argc, char** argv) {
 		Polynomial det2;
 		std::vector<Polynomial> result2;
 		
-		exponent = exponent == 0 ? n+1 : exponent;
+		size_t exponent_limit = helper.detLimit(G, n);
+		exponent = exponent == 0 ? exponent_limit : exponent;
+		std::cout << "| " << exponent << " " << std::flush;
+		
 		double local_time = helper.timeLocalX(det2, G, exponent);
 		double ilio_time = helper.timeIliopoulos(result2, G, det2);
 		double total_time = local_time + ilio_time;
