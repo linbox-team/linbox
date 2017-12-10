@@ -104,6 +104,7 @@ namespace LinBox
 		template<class Matrix>
 		bool findPivot(Matrix &A) const {
 			int d_row = -1, d_col = -1; // location of divisor
+			size_t d_firstNonZero = -1;
 			Element divisor;
 			bool d_isUnit = false;
 			
@@ -114,23 +115,24 @@ namespace LinBox
 					
 					if (_F.isZero(tmp)) {
 						continue;
-					} else if (_F.isUnit(tmp)) {
+					} 
+					
+					size_t firstNonZero = _F.firstNonZeroCoeff(tmp);
+					if (firstNonZero == 0) {
 						d_row = i;
 						d_col = j;
 						d_isUnit = true;
 						continue;
-					} else if (d_row == -1 && d_col == -1) {
-						_F.assign(divisor, tmp);
-						d_row = i;
-						d_col = j;
+					} 
+					
+					if (d_row > -1 && d_col > -1 && d_firstNonZero <= firstNonZero) {
 						continue;
 					}
 					
-					if (_F.isDivisor(divisor, tmp)) {
-						_F.assign(divisor, tmp);
-						d_row = i;
-						d_col = j;
-					}
+					_F.assign(divisor, tmp);
+					d_row = i;
+					d_col = j;
+					d_firstNonZero = firstNonZero;
 				}
 			}
 			
