@@ -266,6 +266,7 @@ int main(int argc, char** argv) {
 	int seed = time(NULL);
 	size_t t = 2;
 	size_t times = 1;
+	size_t exponent = 0;
 	
 	std::string bumpFile;
 	std::string matrixFile;
@@ -282,6 +283,7 @@ int main(int argc, char** argv) {
 		{ 'b', "-b B", "Block size", TYPE_INT, &b},
 		{ 't', "-t T", "Run iliopoulos with t-th largest invariant factor", TYPE_INT, &t},
 		{ 'k', "-k K", "Repeat computation K times", TYPE_INT, &times},
+		{ 'e', "-e E", "Compute local at x^e", TYPE_INT, &exponent},
 		END_OF_ARGUMENTS
 	};
 
@@ -337,7 +339,9 @@ int main(int argc, char** argv) {
 		// Compute smith form of generator
 		Polynomial det2;
 		std::vector<Polynomial> result2;
-		double local_time = helper.timeLocalX(det2, G, n + 1);
+		
+		exponent = exponent == 0 ? n+1 : exponent;
+		double local_time = helper.timeLocalX(det2, G, exponent);
 		double ilio_time = helper.timeIliopoulos(result2, G, det2);
 		double total_time = local_time + ilio_time;
 		std::cout << "(" << total_time << ") " << std::flush;
