@@ -91,7 +91,7 @@ namespace LinBox
 	// need cstor from matrix stream, read, write
 
 	// Element e is added in the i,j position.
-	void setEntry(Index i, Index j, const Element & e);
+	const Element& setEntry(Index i, Index j, const Element & e);
 
 	/// Establish triples order.  Use after setEntry's, before any applies.
 	void finalize(sortPolicy s = cacheOpt);

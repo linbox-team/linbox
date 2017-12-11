@@ -59,8 +59,8 @@ public:
 		return mat_->getEntry(e,i,j);
 	}
 
-	inline void setEntry(Index i, Index j, const Element& e) {
-		mat_->setElement(i,j,e);
+	inline const Element& setEntry(Index i, Index j, const Element& e) {
+		return mat_->setElement(i,j,e);
 	}
 
 	template <class Mat2>

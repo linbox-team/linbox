@@ -203,36 +203,32 @@ OutVector & SparseMatrix<Field_,SparseMatrixFormat::TPL>::applyTranspose(OutVect
 }
 
 template<class Field_>
- size_t SparseMatrix<Field_,SparseMatrixFormat::TPL>::
-rowdim() const { return rows_; }
+ size_t SparseMatrix<Field_,SparseMatrixFormat::TPL>::rowdim() const { return rows_; }
 
 template<class Field_>
- size_t SparseMatrix<Field_,SparseMatrixFormat::TPL>::
-coldim() const { return cols_; }
+ size_t SparseMatrix<Field_,SparseMatrixFormat::TPL>::coldim() const { return cols_; }
 
 template<class Field_>
- const Field_& SparseMatrix<Field_,SparseMatrixFormat::TPL>::
-field() const { return MD_.field(); }
+ const Field_& SparseMatrix<Field_,SparseMatrixFormat::TPL>::field() const { return MD_.field(); }
 
 template<class Field_>
- size_t SparseMatrix<Field_,SparseMatrixFormat::TPL>::
-size() const { return data_.size(); }
+ size_t SparseMatrix<Field_,SparseMatrixFormat::TPL>::size() const { return data_.size(); }
 
 template<class Field_>
- void SparseMatrix<Field_,SparseMatrixFormat::TPL>::
-setEntry(Index i, Index j, const typename Field::Element & e)
+const typename Field_::Element & SparseMatrix<Field_,SparseMatrixFormat::TPL>::setEntry(Index i, Index j, const typename Field_::Element & e)
 {
 	sort_ = unsorted;
-	data_.push_back(Triple(i, j, e));
+	data_.emplace_back(i, j, e);
+    return e;
 }
 
 template<class Field_>
- void SparseMatrix<Field_,SparseMatrixFormat::TPL>::
-finalize(sortPolicy s) { /* sort according to policy */ sort_ = s; }
+void SparseMatrix<Field_,SparseMatrixFormat::TPL>::finalize(sortPolicy s) {
+/* sort according to policy */ sort_ = s;
+}
 
 template<class Field_>
- typename Field_::Element& SparseMatrix<Field_,SparseMatrixFormat::TPL>::
-getEntry(typename Field_::Element& e, Index i, Index j) const
+ typename Field_::Element& SparseMatrix<Field_,SparseMatrixFormat::TPL>::getEntry(typename Field_::Element& e, Index i, Index j) const 
 {
 	for (Index k = 0; k < data_.size(); ++k)
 		if (data_[k].row == i and data_[k].col == j)

@@ -196,10 +196,10 @@ namespace LinBox { namespace Protected {
 		}
 
 
-		void appendEntry(size_t i, size_t j, const Element & value) { setEntry(i,j,value) ;}
+		const Element & appendEntry(size_t i, size_t j, const Element & value) { return setEntry(i,j,value) ;}
 		void finalize(){}
 
-		void           setEntry (size_t i, size_t j, const Element &value);
+		const Element & setEntry (size_t i, size_t j, const Element &value);
 
 
 		Element       &refEntry (size_t i, size_t j);

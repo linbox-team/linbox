@@ -143,7 +143,7 @@ bool SparseMatrix<Field_,SparseMatrixFormat::SMM>::verify()
 }
 
 template<class Field_>
-void SparseMatrix<Field_,SparseMatrixFormat::SMM>::setEntry(Index i, Index j, const Element& e)
+const Element& SparseMatrix<Field_,SparseMatrixFormat::SMM>::setEntry(Index i, Index j, const Element& e)
 {
 	VectorIt it=rowMap_[i].find(j);
 	if (it != rowMap_[i].end()) {
@@ -158,6 +158,7 @@ void SparseMatrix<Field_,SparseMatrixFormat::SMM>::setEntry(Index i, Index j, co
 		field().assign(rowMap_[i][j],e);
 		field().assign(colMap_[j][i],e);
 	}
+	return e;
 }
 
 template<class Field_> const typename SparseMatrix<Field_,SparseMatrixFormat::SMM>::Element&

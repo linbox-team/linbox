@@ -70,7 +70,7 @@ namespace LinBox { namespace Protected {
 	}
 
 	template <class Field, class Row>
-	void SparseMatrixGeneric<Field, Row, VectorCategories::SparseSequenceVectorTag > ::setEntry (size_t i, size_t j, const typename Field::Element &value)
+	const typename Field::Element & SparseMatrixGeneric<Field, Row, VectorCategories::SparseSequenceVectorTag > ::setEntry (size_t i, size_t j, const typename Field::Element &value)
 	{
 		typedef typename Row::value_type value_type;
 		Row &v = _matA[i];
@@ -87,6 +87,7 @@ namespace LinBox { namespace Protected {
 			else
 				iter->second = value;
 		}
+		return value;
 	}
 
 	template <class Field, class Row>

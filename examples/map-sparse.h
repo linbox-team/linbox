@@ -54,7 +54,7 @@ public:
 
 	virtual ~MapSparseIF() {};
 
-	virtual void setEntry(Index i, Index j, const Element& e) =0;
+	virtual const Element& setEntry(Index i, Index j, const Element& e) =0;
 
 	virtual const Element& getEntry(Index i, Index j) const =0;
 
@@ -102,7 +102,7 @@ public:
 
 	const Field& field() const;
 
-	void setEntry(Index i, Index j, const Element& e);
+	const Element& setEntry(Index i, Index j, const Element& e);
 
 	const Element& getEntry(Index i, Index j) const;
 

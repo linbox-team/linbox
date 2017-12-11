@@ -235,7 +235,7 @@ namespace LinBox { namespace Protected {
 
 
 	template <class Field, class Row>
-	void SparseMatrixGeneric<Field, Row, VectorCategories::SparseParallelVectorTag > ::setEntry (size_t i, size_t j, const typename Field::Element &value)
+	const typename Field::Element & SparseMatrixGeneric<Field, Row, VectorCategories::SparseParallelVectorTag > ::setEntry (size_t i, size_t j, const typename Field::Element &value)
 	{
 		while (_matA.size() < i + 1) _matA.push_back(Row());
 		_m = _matA.size();
@@ -257,6 +257,7 @@ namespace LinBox { namespace Protected {
 			else
 				*(v.second.begin () + (iter - v.first.begin ())) = value;
 		}
+		return value;
 	}
 
 	template <class Field, class Row>

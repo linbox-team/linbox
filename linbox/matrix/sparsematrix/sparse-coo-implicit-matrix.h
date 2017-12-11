@@ -402,13 +402,14 @@ namespace LinBox
 		 * @param value Value of the new entry
 		 * @todo make it faster if i is 0 or m-1 ?
 		 */
-		void setEntry(const size_t &i, const size_t &j, const Element& e)
+		const Element& setEntry(const size_t &i, const size_t &j, const Element& e)
 		{
-	linbox_check(i<_rownb);
+			linbox_check(i<_rownb);
 			linbox_check(j<_colnb);
 
 			if (field().isZero(e)) {
-				return clearEntry(i,j);
+				clearEntry(i,j);
+                return e;
 			}
 			typedef typename std::vector<size_t>::iterator myIterator ;
 			std::pair<myIterator,myIterator> bounds = std::equal_range (_rowid.begin(), _rowid.end(), i);
@@ -418,7 +419,7 @@ namespace LinBox
 				_rowid.insert(_rowid.begin()+ibeg,i);
 				_colid.insert(_colid.begin()+ibeg,j);
 				_data.insert( _data.begin() +ibeg,e);
-				return ;
+				return e;
 			}
 			myIterator beg = _colid.begin()+(ptrdiff_t)ibeg ;
 			myIterator low = std::lower_bound (beg, beg+(ptrdiff_t)iend, j);
@@ -427,11 +428,10 @@ namespace LinBox
 				_rowid.insert(_rowid.begin()+(ptrdiff_t)ibeg,i);
 				_colid.insert(_colid.begin() +(ptrdiff_t)ibeg,j);
 				_data.insert( _data. begin() +(ptrdiff_t)ibeg,e);
-				return ;
+				return e;
 			}
 			else {
-				_data[ibeg] = e ;
-				return ;
+				return _data[ibeg] = e ;
 			}
 		}
 
