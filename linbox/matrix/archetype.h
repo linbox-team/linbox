@@ -143,7 +143,7 @@ namespace LinBox
 		 * @param j Column number 0...coldim () - 1
 		 * @param a_ij Element to set
 		 */
-		void setEntry (size_t i, size_t j, const Element &a_ij);
+		const Element& setEntry (size_t i, size_t j, const Element &a_ij);
 
 		/** Get a writeable reference to the entry in the (i, j) position.
 		 * @param i Row index of entry

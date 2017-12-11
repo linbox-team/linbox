@@ -110,7 +110,7 @@ namespace Linbox
 		 * @param j Column number 0...coldim () - 1
 		 * @param a_mij Element to set
 		 */
-		void setEntry (size_t m, size_t i, size_t j, const MatrixElement &a_mij);
+		const MatrixElement& setEntry (size_t m, size_t i, size_t j, const MatrixElement &a_mij);
 		
 	private:
 		/* Get a writeable reference to the m-th matrix-coefficient at the (i, j) position.

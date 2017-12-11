@@ -324,7 +324,7 @@ public:
 	}
 	*/
 
-	void setEntry(size_t i, size_t j, const Scalar &a_ij){
+	const Scalar& setEntry(size_t i, size_t j, const Scalar &a_ij){
 		SlicedWord e = static_cast<SlicedWord>(a_ij);
 		//  determine location
 		//  TODO:  THIS SEEMS TO EXCPET _rep isn't adjusted for submatrix
@@ -352,6 +352,7 @@ public:
 
 		_rep[word].b0 |= b0 << index;
 		_rep[word].b1 |= b1 << index;
+        return a_ij;
 	}
 
 	Scalar getEntry(size_t i, size_t j) {

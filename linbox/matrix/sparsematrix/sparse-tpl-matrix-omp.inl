@@ -584,10 +584,11 @@ void SparseMatrix<Field_,SparseMatrixFormat::TPL_omp>::finalize()
 }
 
 template<class Field_>
-void SparseMatrix<Field_,SparseMatrixFormat::TPL_omp>::setEntry(Index i, Index j, const typename Field::Element & e)
+const typename Field_::Element & SparseMatrix<Field_,SparseMatrixFormat::TPL_omp>::setEntry(Index i, Index j, const typename Field_::Element & e)
 {
 	sortType_ = TRIPLES_UNSORTED;
-	data_.push_back(Triple(i, j, e));
+	data_.emplace_back(i, j, e);
+	return e;
 }
 
 template<class Field_>

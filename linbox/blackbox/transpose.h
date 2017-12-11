@@ -175,9 +175,9 @@ namespace LinBox
 			return _A_ptr->getEntry(x, j, i);
 		}
 
-		void setEntry(size_t i, size_t j, const Element& x)
+		const Element& setEntry(size_t i, size_t j, const Element& x)
 		{
-			const_cast<Blackbox_t*>(_A_ptr)->setEntry( j, i, x);
+			return const_cast<Blackbox_t*>(_A_ptr)->setEntry( j, i, x);
 		}
 
 		std::ostream &write(std::ostream & os) const {

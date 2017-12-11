@@ -100,7 +100,7 @@ namespace LinBox
 			return x;
 		}
 
-		void setEntry(size_t i, size_t j, const Scalar & x)
+		const Scalar& setEntry(size_t i, size_t j, const Scalar & x)
 		{
 			//Get all index values needed.
 			size_t unitNum = i*(_rep.size()/_rows) + (j/_valPerWord);  //Starts from 0
@@ -112,6 +112,7 @@ namespace LinBox
 
 			_rep[unitNum] &= ~(_mask << (_valPerWord - bitPlace));
 			_rep[unitNum] |= (y << (_valPerWord - bitPlace));
+            return x;
 		}
 
 		//Apply Variants
