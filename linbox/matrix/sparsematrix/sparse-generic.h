@@ -284,7 +284,7 @@ namespace LinBox { namespace Protected { /*  SparseMatrixGeneric */
 		 */
 		const Element& setEntry (size_t i, size_t j, const Element &value);
 		const Element& appendEntry(size_t i, size_t j, const Element & value) { return setEntry(i,j,value) ;}
-		void finalize(){}
+		virtual void finalize(){}
 
 		/** Get a writeable reference to an entry in the matrix
 		 * If there is no entry at the position (i, j), then a new entry
@@ -439,13 +439,11 @@ namespace LinBox { namespace Protected { /*  SparseMatrixGeneric */
 			return _matA;
 		}
 
-		void resize( const size_t & m, const size_t & n, const size_t & z = 0)
+		void resize( const size_t & m, const size_t & n, const size_t & nnz = 0 )
 		{
 			_m = m ;
 			_n = n ;
-			_matA.clear();
 			_matA.resize(m);
-
 		}
 
 	protected:
