@@ -1,7 +1,7 @@
 /* algorithms/smith-form-sparseelim-poweroftwo.h
  * Copyright (C) LinBox
  * Written by JG Dumas
- * Time-stamp: <13 Nov 17 17:32:16 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <11 Dec 17 16:29:44 Jean-Guillaume.Dumas@imag.fr>
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
@@ -28,32 +28,34 @@
 #include <givaro/givconfig.h> // for Signed_Trait
 #include "linbox/algorithms/smith-form-sparseelim-local.h"
 
+#ifdef DEBUG
+#  ifndef LINBOX_pp_gauss_intermediate_OUT
+#    define LINBOX_pp_gauss_intermediate_OUT
+#  endif
+#endif
+
 // LINBOX_pp_gauss_intermediate_OUT outputs intermediate matrices
 #ifdef LINBOX_pp_gauss_intermediate_OUT
-
-// LINBOX_pp_gauss_steps_OUT outputs elimination steps
 #  ifndef LINBOX_pp_gauss_steps_OUT
-#  define LINBOX_pp_gauss_steps_OUT
+#    define LINBOX_pp_gauss_steps_OUT
 #  endif
-
 #endif
 
 // LINBOX_pp_gauss_steps_OUT outputs elimination steps
 #ifdef LINBOX_pp_gauss_steps_OUT
-
 // LINBOX_PRANK_OUT outputs intermediate ranks
 #  ifndef LINBOX_PRANK_OUT
-#  define LINBOX_PRANK_OUT
+#    define LINBOX_PRANK_OUT
 #  endif
-
 #endif
 
 
 namespace LinBox
 {
 
-        /** \brief Repository of functions for rank modulo a prime power by elimination
-         * on sparse matrices.
+        /** \brief Repository of functions for rank modulo 
+         * a prime power by elimination on sparse matrices.
+         * Specialization for powers of 2
          */
     template<typename UnsignedIntType>
     class PowerGaussDomainPowerOfTwo  {
@@ -79,7 +81,7 @@ namespace LinBox
         bool isNZero(const UInt_t& a ) const { return (bool)a ;}
         bool isZero(const UInt_t& a ) const { return a == 0U;}
         bool isOne(const UInt_t& a ) const { return a == 1U;}
-	/// @todo use Givaro isOdd
+            /// @todo use Givaro isOdd
         bool isOdd(const UInt_t& b) const {
             return (bool)(b & 1U);
         }
@@ -209,12 +211,12 @@ namespace LinBox
                 if (pp < nj) {
                     long ds = (long)columns[ lignepivot[(size_t)pp].first ],p=pp,j=pp;
                     for(++j;j<nj;++j){
-			    long dl;
+                        long dl;
                         if ( ( (dl=(long)columns[(size_t)lignepivot[(size_t)j].first] ) < ds ) && (this->isOdd((UInt_t)lignepivot[(size_t)j].second) ) ) {
                             ds = dl;
                             p = j;
                         }
-		    }
+                    }
                     if (p != 0) {
                         if (indpermut == (long)indcol) {
                             UInt_t ttm = (UInt_t)lignepivot[(size_t)p].second;
@@ -324,7 +326,7 @@ namespace LinBox
                         if (lignepivot[(size_t)l].first > k) break;
                         // for all j such that (j>k) and A[(size_t)k,j]!=0
                     for(;l<npiv;++l) {
-                    unsigned long j_piv;
+                        unsigned long j_piv;
                         j_piv = (unsigned long) lignepivot[(size_t)l].first;
                             // if A[(size_t)k,j]=0, then A[(size_t)i,j] <-- A[(size_t)i,j]
                         for (;(m<nj) && (lignecourante[(size_t)m].first < j_piv);)
@@ -402,8 +404,8 @@ namespace LinBox
                 uint64_t EXPONENT = EXPONENTMAX;
                 UInt_t TWOK(1U); TWOK <<= EXPONENT;
                 UInt_t TWOKMONE(TWOK); --TWOKMONE;
-ENSURE( TWOK == (UInt_t(1U) << EXPONENT) );
-ENSURE( TWOKMONE == (TWOK - 1U) );
+                ENSURE( TWOK == (UInt_t(1U) << EXPONENT) );
+                ENSURE( TWOKMONE == (TWOK - 1U) );
 
 
 
@@ -487,8 +489,8 @@ ENSURE( TWOKMONE == (TWOK - 1U) );
                         TWOK >>= 1;
                         TWOKMONE >>=1;
 
-ENSURE( TWOK == (UInt_t(1U) << EXPONENT) );
-ENSURE( TWOKMONE == (TWOK - 1U) );
+                        ENSURE( TWOK == (UInt_t(1U) << EXPONENT) );
+                        ENSURE( TWOKMONE == (TWOK - 1U) );
 
                         ranks.push_back( indcol );
                         ++ind_pow;
@@ -537,6 +539,14 @@ ENSURE( TWOKMONE == (TWOK - 1U) );
                         LigneA[(size_t)last][(size_t)jjj].second >>= 1;
                     TWOK >>= 1;
                     CherchePivot( LigneA[(size_t)last], indcol, c, col_density );
+                }
+                if (c != -1) {
+                    if (c != (long(indcol)-1L)) {
+                        Q.permute(long(indcol)-1L,c);
+#ifdef  LINBOX_pp_gauss_steps_OUT
+                        std::cerr << "------------ permuting cols " << (indcol-1) << " and " << c << " ---" << std::endl;
+#endif
+                    }
                 }
                 while( TWOK > 1) {
                     TWOK >>= 1;
@@ -600,11 +610,11 @@ ENSURE( TWOKMONE == (TWOK - 1U) );
 
 #endif  //__LINBOX_pp_gauss_poweroftwo_H
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
 
