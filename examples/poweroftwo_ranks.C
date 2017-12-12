@@ -2,7 +2,7 @@
  *
  * Copyright (C) 2012 LinBox
  * Written by J-G Dumas
- * Time-stamp: <13 Nov 17 17:34:40 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <12 Dec 17 18:29:53 Jean-Guillaume.Dumas@imag.fr>
  * ========LICENCE========
  * This file is part of the library LinBox.
  *

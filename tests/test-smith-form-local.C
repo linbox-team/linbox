@@ -32,9 +32,19 @@
  * @test no doc.
  */
 
-
+#ifdef DEBUG
+# ifndef LINBOX_LOCAL_SMITH_OUTPUT_
+# define LINBOX_LOCAL_SMITH_OUTPUT_
+# endif
+#endif
 
 #include "linbox/linbox-config.h"
+#include <linbox/util/contracts.h>
+#include <linbox/matrix/sparse-matrix.h>
+#include <givaro/modular.h>
+#include <linbox/algorithms/smith-form-sparseelim-local.h>
+#include <linbox/algorithms/smith-form-sparseelim-poweroftwo.h>
+#include <linbox/solutions/rank.h>
 
 
 #include <functional>
@@ -48,6 +58,7 @@
 #include "linbox/ring/local2_32.h"
 #include "linbox/algorithms/smith-form-local.h"
 #include "linbox/matrix/matrix-domain.h"
+#include "linbox/algorithms/matrix-hom.h"
 #include "linbox/util/timer.h"
 
 using namespace LinBox;
@@ -155,19 +166,203 @@ static bool testLocalSmith (const LocalPIR &R, vector<typename LocalPIR::Element
 	return ret;
 }
 
+template<typename Base>
+bool check_ranks(const std::vector<std::pair<size_t,Base> >& local,
+                 const std::map<int, size_t>& map_values,
+                 const Base& p) {
+    bool pass(true);
+
+    auto li(local.begin());
+    auto mi(map_values.begin());
+    for (; li != local.end(); ++li, ++mi)
+        if ( (li->first != mi->second) ||
+             (li->second != Givaro::power(p,mi->first)) )
+            pass = false;
+
+    return pass;
+}
+
+
+template<typename Base, typename SparseMat>
+bool sparse_local_smith(SparseMat& B,
+                        size_t R, size_t M, size_t N,
+                        const Base& p, int exp,
+                        const std::map<int, size_t>& map_values) {
+    typedef typename std::remove_reference<decltype(B.field())>::type ModRing;
+    PowerGaussDomain< ModRing > PGD( B.field() );
+    std::vector<std::pair<size_t,Base> > local;
+    Permutation<ModRing> Q(B.field(),B.coldim());
+    PGD(local, B, Q, Givaro::power(p,exp), p, PRESERVE_UPPER_MATRIX);
+
+#ifdef LINBOX_LOCAL_SMITH_OUTPUT_
+    for (auto ip = local.begin(); ip != local.end(); ++ip)
+        std::cout << '[' << ip->first << ',' << ip->second << "] ";
+    cout << endl;
+#endif
+
+    ModRing F(p);
+    SparseMatrix<ModRing> BF(F,M,N);
+    MatrixHom::map(BF,B);
+    size_t rr;
+    LinBox::rank(rr,BF, Method::SparseElimination() );
+
+#ifdef LINBOX_LOCAL_SMITH_OUTPUT_
+    cout << "Residue rank: " << rr << endl;
+#endif
+
+    return (rr == R) && check_ranks(local,map_values,p);
+}
+
+
+template<typename Base, typename SparseMat>
+bool sparse_local_smith_poweroftwo(SparseMat& B,
+                        size_t R, size_t M, size_t N,
+                        const Base& p, int exp,
+                        const std::map<int, size_t>& map_values) {
+    LinBox::PowerGaussDomainPowerOfTwo< Base > PGD;
+    LinBox::GF2 F2;
+    Permutation<GF2> Q(F2,B.coldim());
+    std::vector<std::pair<size_t,Base> > local;
+    PGD(local, B, Q, exp, PRESERVE_UPPER_MATRIX);
+
+#ifdef LINBOX_LOCAL_SMITH_OUTPUT_
+    for (auto ip = local.begin(); ip != local.end(); ++ip)
+        std::cout << '[' << ip->first << ',' << ip->second << "] ";
+    cout << ")" << endl;
+#endif
+
+    return check_ranks(local,map_values,p);
+}
+
+
+namespace LinBox
+{
+    template<size_t K>
+	class Hom<Givaro::Modular<RecInt::ruint<K>>, Givaro::ZRing<RecInt::ruint<K>> > {
+
+	public:
+		typedef RecInt::ruint<K> Elt;
+        typedef Givaro::ZRing<Elt> Target;
+		typedef Givaro::Modular<Elt> Source;
+
+		Hom(const Source& S, const Target& T) :
+			_source (S), _target (T)
+		{}
+		inline Elt& image(Elt& t, const Elt& s)
+		{
+			return _target.assign(t,s);
+		}
+		inline Elt& preimage(Elt& s, const Elt& t)
+		{
+            return _source.assign(s,t);
+		}
+		const Source& source() { return _source;}
+		const Target& target() { return _target;}
+
+	protected:
+		const Source& _source;
+		const Target& _target;
+	}; // end Hom
+}
+
+
+
+
+template<typename Base, class Ring = Givaro::ZRing<Base> >
+bool test_sparse_local_smith(size_t seed, size_t R, size_t M, size_t N,
+                             const Base& p, int exp,
+                             double density) {
+    typedef Givaro::Modular<Base> ModRing;
+    ModRing F(Givaro::power(p,exp));
+
+    ASSERT(R<=M && R<=N);
+    std::vector<int> v(R);
+    std::srand(seed);
+    std::generate(v.begin(), v.end(), [&exp]()->int { return std::rand()% exp; });
+    std::map<int, size_t> map_values;
+    std::for_each(v.begin(), v.end(),
+                  [&](int value) { map_values[value]++; } );
+
+#ifdef LINBOX_LOCAL_SMITH_OUTPUT_
+    for(auto & it : map_values)
+        std::cout << it.first << ": " << it.second << " times\n";
+#endif
+
+    std::vector<int> indices(R);
+    size_t ii(0);
+    std::generate(indices.begin(), indices.end(), [&ii]()->int { return ii++; });
+    std::mt19937 gen; gen.seed(seed);
+    std::shuffle(indices.begin(), indices.end(), gen);
+
+    std::uniform_real_distribution<> nonzero(0., 1.);
+
+
+    typename ModRing::RandIter G(F,0,seed);
+    typename ModRing::Element pp;
+    DenseMatrix<ModRing> A(F,M,N);
+    DenseMatrix<ModRing> L(F,M,N);
+    for (size_t i=0; i<R; ++i){
+        const size_t j = indices[i];
+        F.init(pp,Givaro::power(p,v[i]));
+        L.setEntry(i,j,pp);
+        for (size_t l=i+1; l < M; ++l) {
+            if (nonzero(gen)<density) {
+                G.random (L.refEntry(l,j));
+                F.mulin(L.refEntry(l,j),pp);
+            }
+        }
+    }
+#ifdef DEBUG
+        L.write(cerr<<"L:=",Tag::FileFormat::Maple) << ';' << endl;
+#endif
+    DenseMatrix<ModRing> U(F,N,N);
+    for (size_t i=0 ; i<std::min(M,N); ++i){
+        U.setEntry(i,i,F.one);
+        for (size_t j= i+1; j<N ;++j)
+            if (nonzero(gen)<density) G.random ( U.refEntry(i,j) );
+    }
+#ifdef DEBUG
+        U.write(cerr<<"U:=",Tag::FileFormat::Maple) << ';' << endl;
+#endif
+
+    FFLAS::fgemm (F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, M,N,N, F.one, L.getPointer(), N, U.getPointer(), N, F.zero, A.getPointer(), N);
+
+#ifdef DEBUG
+        A.write(cerr<<"A:=",Tag::FileFormat::Maple) << ';' << endl;
+#endif
+
+    if (p == Base(2)) {
+        Ring RR;
+        SparseMatrix<Ring, SparseMatrixFormat::SparseSeq > B (RR,M,N);
+        MatrixHom::map(B, A);
+        return sparse_local_smith_poweroftwo(B,R,M,N,p,exp,map_values);
+    } else {
+        SparseMatrix<ModRing, SparseMatrixFormat::SparseSeq > B (F,M,N);
+        MatrixHom::map(B, A);
+        return sparse_local_smith(B,R,M,N,p,exp,map_values);
+    }
+}
+
+
 int main (int argc, char **argv)
 {
 	bool pass1 = true, pass2 = true;
 
-	static int64_t n = 6;
-	static size_t q = 3; 
-	static int32_t e = 4;
+	static int64_t m = 25;
+    static int64_t n = 27;
+    static int64_t r = 13;
+	static size_t  q = 3;
+	static int32_t e = 12;
 	//static integer q = 10201; // 101^2
+    static int rseed = (int)time(NULL);
 
 	static Argument args[] = {
-		{ 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT,     &n },
+		{ 'm', "-m M", "Set dimension of test matrices to MxN.", TYPE_INT,     &m },
+		{ 'n', "-n N", "Set dimension of test matrices to MxN.", TYPE_INT,     &n },
+		{ 'r', "-r R", "Set rank of test matrices to R.", TYPE_INT,     &r },
 		{ 'q', "-q Q", "Operate over the ring Z/q^eZ.", TYPE_INT, &q },
-		//{ 'q', "-q Q", "Operate over the ring Z/qZ.", TYPE_INTEGER, &q },
+		{ 'e', "-e e", "Operate over the ring Z/q^eZ.", TYPE_INT, &e },
+        { 's', "-s S", "Random generator seed.", TYPE_INT,     &rseed }	,
 		END_OF_ARGUMENTS
 	};
 
@@ -177,6 +372,20 @@ int main (int argc, char **argv)
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "q = " << q << std::endl;
+
+
+    bool pass0(true);
+    { // sparseelim
+
+        pass0 &= test_sparse_local_smith(rseed,r,m,n,Givaro::Integer(2),e,0.3);
+        pass0 &= test_sparse_local_smith(rseed,r,m,n,Givaro::Integer(q),e,0.1);
+        pass0 &= test_sparse_local_smith(rseed,r,m,n,uint64_t(2),e,0.3);
+        pass0 &= test_sparse_local_smith(rseed,r,m,n,uint64_t(q),e,0.1);
+//         pass0 &= test_sparse_local_smith(rseed,r,m,n,RecInt::ruint<6>(2),e,0.3);
+//         pass0 &= test_sparse_local_smith(rseed,r,m,n,RecInt::ruint<6>(q),e,0.1);
+    }
+
+
 #if 1
   { // zero-th local ring type: modulus p^e as integer.
 	typedef LocalPIRModular<integer> Ring;
@@ -239,7 +448,7 @@ int main (int argc, char **argv)
   }
 
 	commentator().stop("Local Smith Form test suite");
-	return pass1 and pass2 ? 0 : -1;
+	return pass0 and pass1 and pass2 ? 0 : -1;
 }
 
 
