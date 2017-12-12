@@ -619,11 +619,10 @@ namespace LinBox { namespace Protected {
 			return _matA;
 		}
 
-	void resize( const size_t & m, const size_t & n, const size_t & z = 0)
+        void resize( const size_t & m, const size_t & n, const size_t & nnz = 0)
 		{
 			_m = m ;
 			_n = n ;
-			_matA.clear();
 			_matA.resize(m);
 
 		}
