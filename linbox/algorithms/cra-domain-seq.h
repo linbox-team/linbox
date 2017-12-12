@@ -1,7 +1,7 @@
 /* linbox/algorithms/cra-domain-seq.h
  * Copyright (C) 1999-2010 The LinBox group
  *
- * Time-stamp: <23 Jun 17 10:50:10 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <04 Dec 17 14:59:50 Jean-Guillaume.Dumas@imag.fr>
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -102,7 +102,14 @@ namespace LinBox
                         //commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
                     ++primeiter;
                     DomainElement r; D.init(r);
+#ifdef _LB_CRATIMING
+                    Timer chrono; chrono.start();
+#endif
                     Builder_.initialize( D, Iteration(r, D) );
+#ifdef _LB_CRATIMING
+                    chrono.stop();
+                    std::clog << "1st iter : " << chrono << std::endl;
+#endif
                 }
 
                 int coprime =0, nbprimes=0;
@@ -146,7 +153,14 @@ namespace LinBox
                     commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
                     ++primeiter;
                     DomainElement r; D.init(r);
+#ifdef _LB_CRATIMING
+                    Timer chrono; chrono.start();
+#endif
                     Builder_.initialize( D, Iteration(r, D) );
+#ifdef _LB_CRATIMING
+                    chrono.stop();
+                    std::clog << "1st iter : " << chrono << std::endl;
+#endif
                 }
 
                 int coprime =0, nbprimes=0;
@@ -188,7 +202,14 @@ namespace LinBox
                     ++primeiter;
                     typename Iterator::template rebind<Domain>::other r(D);
                         //typename CRATemporaryVectorTrait<Function, Domain>::Type_t r(D);
+#ifdef _LB_CRATIMING
+                    Timer chrono; chrono.start();
+#endif
                     Builder_.initialize( D, Iteration(r, D) );
+#ifdef _LB_CRATIMING
+                    chrono.stop();
+                    std::clog << "1st iter : " << chrono << std::endl;
+#endif
                 }
                 int coprime =0, nbprimes=0;
                 int maxnoncoprime = 1000;
@@ -230,7 +251,14 @@ namespace LinBox
                     commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
                     ++primeiter;
                     typename CRATemporaryVectorTrait<Function, Domain>::Type_t r;
+#ifdef _LB_CRATIMING
+                    Timer chrono; chrono.start();
+#endif
                     Builder_.initialize( D, Iteration(r, D) );
+#ifdef _LB_CRATIMING
+                    chrono.stop();
+                    std::clog << "1st iter : " << chrono << std::endl;
+#endif
                 }
 
                 int coprime =0, nbprimes=0;

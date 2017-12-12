@@ -103,11 +103,11 @@ namespace LinBox
 		}
 
 		//void random(size_t n)
-		void random()
+		void random(unsigned int seed=(unsigned int)time(NULL))
 		{
 			size_t n = rowdim();
 			identity((int)n);
-			MersenneTwister r((unsigned int)time(NULL));
+			MersenneTwister r(seed);
 			// Knuth construction
 			for (size_t i = 0; i < n-1; ++i) {
 				size_t j = i + r.randomInt()%(n-i);
