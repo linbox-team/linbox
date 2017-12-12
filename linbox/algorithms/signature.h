@@ -230,7 +230,16 @@ namespace LinBox
                     for (p = FA, raw_p = M. Begin(); p != FA + (n*n); ++ p, ++ raw_p)
                         K1. init (*p, *raw_p);
 
+#ifdef _LB_CRATIMING
+                    Timer chrono; chrono.start();
+#endif
+
                     faithful = FFPACK::fsytrf(K1, FFLAS::FflasUpper, n, FA, n);
+
+#ifdef _LB_CRATIMING
+                    chrono.stop();
+                    std::clog << "1st sytrf: " << chrono << std::endl;
+#endif
 
 #ifdef _LB_DEBUG
                     if (!faithful) {
