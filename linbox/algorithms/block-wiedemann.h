@@ -39,7 +39,7 @@
 #include "linbox/blackbox/transpose.h"
 
 #include "linbox/util/error.h"
-#include "linbox/util/debug.h"
+//#include "linbox/util/debug.h"
 
 namespace LinBox
 {
@@ -59,28 +59,39 @@ namespace LinBox
 		VectorDomain<Field>         _VDF;
                 RandIter                   _rand;
                 size_t                 _left_blockdim;
-                size_t                 _right_blockdim;
+                size_t                 _right_blockdim; 
 
 
 #define BW_BLOCK_DEFAULT 8UL
-                
+#define BW_MAX_TRY 100               
 	public:
 		const Field & field() const { return _BMD.field(); }
 
-		BlockWiedemannSolver (const Context_ &C, size_t lblock=BW_BLOCK_DEFAULT, size_t rblock=BW_BLOCK_DEFAULT) :
+		BlockWiedemannSolver (const Context_ &C, size_t lblock=BW_BLOCK_DEFAULT, size_t rblock=BW_BLOCK_DEFAULT+1) :
 			_BMD(C.field()), _VDF(C.field()), _rand(const_cast<Field&>(C.field())), _left_blockdim(lblock), _right_blockdim(rblock)
 		{
                         if (_left_blockdim ==0) _left_blockdim=BW_BLOCK_DEFAULT;
                         if (_right_blockdim ==0) _right_blockdim=BW_BLOCK_DEFAULT;
                 }
 
-		BlockWiedemannSolver (const Field &F, RandIter &rand, size_t lblock=BW_BLOCK_DEFAULT, size_t rblock=BW_BLOCK_DEFAULT) :
+		BlockWiedemannSolver (const Field &F, RandIter &rand, size_t lblock=BW_BLOCK_DEFAULT, size_t rblock=BW_BLOCK_DEFAULT+1) :
 			_BMD(F), _VDF(F), _rand(rand) , _left_blockdim(lblock), _right_blockdim(rblock)
 		{
                         if (_left_blockdim ==0) _left_blockdim=BW_BLOCK_DEFAULT;
                         if (_right_blockdim ==0) _right_blockdim=BW_BLOCK_DEFAULT;
                 }
 
+		template <class Blackbox>
+		Vector &solve (Vector &x, const Blackbox &B, const Vector &y) const {
+                        try {
+                                solveNonSingular(x,B,y);
+                        }
+                        catch (LinboxError e) {
+                                std::cerr<<e<<std::endl;
+                        }
+                        return x;
+                }
+                
 		template <class Blackbox>
 		Vector &solveNonSingular (Vector &x, const Blackbox &B, const Vector &y) const
 		{
@@ -99,7 +110,7 @@ namespace LinBox
 
 			Block U(field(),_left_blockdim,m), UA(field(),_left_blockdim-1,m), V(field(),n,_right_blockdim);
 
-                        // LAS VEGAS VERSION 
+                        // LAS VEGAS VERSION
                         do
                                 {
                                 
@@ -238,7 +249,9 @@ namespace LinBox
                                         }
 
                                         B.apply(z,x); // checking result
+                                        if ( bw_try>  BW_MAX_TRY ) throw LinboxError("BlockWiedemann solve: LasVegas maximum tries reached");
                                         bw_try++;
+
                                 } while (!_VDF.areEqual(z,y));
 #ifdef _BW_LASVEGAS_COUNT
                         std::cerr<<"BlockWiedemannSolver: nbr of try: "<<bw_try<<std::endl;

@@ -777,10 +777,11 @@ int main (int argc, char **argv)
 		END_OF_ARGUMENTS
 	};
 
-	typedef Givaro::Modular<int64_t> Field;
+	//typedef Givaro::Modular<int64_t> Field;
+        typedef Givaro::Modular<double> Field;
 
 	parseArguments (argc, argv, args);
-	Field F (q); Field::RandIter gen(F);
+	Field F (q); Field::RandIter gen(F); Field::NonZeroRandIter nzgen(gen);
 
 	commentator().start("Solve test suite", "solve");
 
@@ -791,18 +792,20 @@ int main (int argc, char **argv)
 	commentator().getMessageClass (PROGRESS_REPORT).setMaxDepth (5);
 	//commentator().getMessageClass (BRIEF_REPORT).setMaxDepth (4);
 
-	RandomDenseStream<Field> stream1 (F, gen, n, (unsigned int)iterations), stream2 (F, gen, n, (unsigned int)iterations);
+	RandomDenseStream<Field,BlasVector<Field>, Field::NonZeroRandIter> stream1 (F, nzgen, n, (unsigned int)iterations), stream2 (F, nzgen, n, (unsigned int)iterations);
 	RandomDenseStream<Field> stream3 (F, gen, r, (unsigned int)iterations), stream4 (F, gen, r, (unsigned int)iterations);
 	RandomSparseStream<Field> stream6 (F, gen, (double) r / (double) n, n, (unsigned int)iterations);
 	RandomSparseStream<Field> A_stream (F, gen, (double) r / (double) n, n, m);
-
+#if 0
 	Method::Wiedemann WM;
 	if (!testIdentitySolve               (F, stream1, "Wiedemann", WM))
 		pass = false;
 	if (!testNonsingularSolve            (F, stream1, stream2, "Wiedemann", WM))
 		pass = false;
+#endif
 #if 1
 	Method::BlockWiedemann BWM;
+        BWM.blockingFactor (N);
 	if (!testIdentitySolve               (F, stream1, "BlockWiedemann", BWM))
 		pass = false;
 	if (!testNonsingularSolve            (F, stream1, stream2, "BlockWiedemann", BWM))
@@ -850,9 +853,11 @@ int main (int argc, char **argv)
 	if (!testRandomSolve (F, A_stream, stream1, "Block Lanczos", traits2))
 		pass = false;
 #endif
+#if 0
+        
     if ( ! testBasicMethodsSolve (F, n) )
 		pass = false;
-
+#endif
 	commentator().stop("solve test suite");
     //std::cout << (pass ? "passed" : "FAILED" ) << std::endl;
 

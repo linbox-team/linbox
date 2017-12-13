@@ -66,7 +66,7 @@ namespace LinBox
 		size_t      _block;
 	public:
 
-		// Constructor from a stl vector of BlasMatrix reprenting
+		// Constructor from a stl vector of BlasMatrix representing
 		// all different elements in the Hankel representation
 		// vector is of odd size and represent the 1st column and last row append together
 		BlockHankelInverse(const Field &F, const std::vector<BlasMatrix<Field> > &P) :
@@ -89,7 +89,7 @@ namespace LinBox
 
 			// construct the matrix power series
                         // LeftPowerSerie = [ P(x)^T  I ]^T
-                        // RighPowerSerie = [ P(x)   I ]^T --> this should be transposed but we use left order basis instaed of right one
+                        // RighPowerSerie = [ P(x)   I ]^T --> this should be transposed but we use left order basis instead of right one
 			
                         PMatrix LeftPowerSerie (field(),2*block,block,deg+2);
                         PMatrix RightPowerSerie(field(),block,2*block,deg+2);                        
