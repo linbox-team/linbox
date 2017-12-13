@@ -344,16 +344,13 @@ bool test_sparse_local_smith(size_t seed, size_t R, size_t M, size_t N,
 }
 
 
-int main (int argc, char **argv)
-{
-	bool pass1 = true, pass2 = true;
-
-	static int64_t m = 25;
+int main (int argc, char **argv) {
+    bool pass0(true), pass1(true), pass2(true);
+    static int64_t m = 25;
     static int64_t n = 27;
     static int64_t r = 13;
-	static size_t  q = 3;
-	static int32_t e = 12;
-	//static integer q = 10201; // 101^2
+    static size_t  q = 3;
+    static int32_t e = 12;
     static int rseed = (int)time(NULL);
 
 	static Argument args[] = {
@@ -373,8 +370,6 @@ int main (int argc, char **argv)
 	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "q = " << q << std::endl;
 
-
-    bool pass0(true);
     { // sparseelim
 
         pass0 &= test_sparse_local_smith(rseed,r,m,n,Givaro::Integer(2),e,0.3);
@@ -454,9 +449,9 @@ int main (int argc, char **argv)
 
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 
