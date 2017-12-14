@@ -196,10 +196,10 @@ namespace LinBox { namespace Protected {
 		}
 
 
-		void appendEntry(size_t i, size_t j, const Element & value) { setEntry(i,j,value) ;}
+		const Element & appendEntry(size_t i, size_t j, const Element & value) { return setEntry(i,j,value) ;}
 		void finalize(){}
 
-		void           setEntry (size_t i, size_t j, const Element &value);
+		const Element & setEntry (size_t i, size_t j, const Element &value);
 
 
 		Element       &refEntry (size_t i, size_t j);
@@ -591,11 +591,10 @@ namespace LinBox { namespace Protected {
 			return _matA;
 		}
 
-		void resize( const size_t & m, const size_t & n, const size_t & z = 0)
+		void resize( const size_t & m, const size_t & n, const size_t & nnz = 0)
 		{
 			_m = m ;
 			_n = n ;
-			_matA.clear();
 			_matA.resize(m);
 
 		}
@@ -670,7 +669,6 @@ namespace LinBox
 		{
 			typename SparseMatrix<_Tp1,_Rw1>::template rebind<Field,Storage>()(*this, Mat);
 		}
-
 
 		template<typename _Tp1, typename _R1 = SparseMatrixFormat::SparseSeq >
 		struct rebind {

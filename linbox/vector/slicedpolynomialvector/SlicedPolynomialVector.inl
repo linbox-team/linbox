@@ -233,9 +233,9 @@ namespace Linbox
 						/////////////////////////
 		
         template < class _Field, class _Rep, class _VectorElement >
-	void SlicedPolynomialVector< _Field, _Rep, _VectorElement >::setEntry (size_t m, size_t k, const VectorElement &a_mk)
+	const VectorElement& SlicedPolynomialVector< _Field, _Rep, _VectorElement >::setEntry (size_t m, size_t k, const VectorElement &a_mk)
 	{
-		V[m].setEntry(k, a_mk);
+		return V[m].setEntry(k, a_mk);
 	}
 
 	template < class _Field, class _Rep, class _VectorElement >

@@ -171,9 +171,9 @@ namespace LinBox
 		 *
 		 * could throw error if j != i, but now j is ignored.
 		 */
-		void setEntry (size_t i, size_t j, const Element &x)
+		const Element& setEntry (size_t i, size_t j, const Element &x)
 		{
-			_v[i] = x;
+			return _v[i] = x;
 		}
 
 		template<typename _Tp1>

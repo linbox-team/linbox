@@ -564,9 +564,9 @@ namespace LinBox { /* BlasVector */
 			return _ptr;
 		}
 
-		void setEntry (size_t i, const Element &a_i)
+		const Element& setEntry (size_t i, const Element &a_i)
 		{
-			_ptr[i] = a_i;
+			return _ptr[i] = a_i;
 		}
 
 		Element &refEntry (size_t i)
@@ -875,9 +875,9 @@ namespace LinBox { /*  BlasSubvector */
 		pointer& getWritePointer() { return &(_Vec[_i0]); }
 
 
-		void setEntry (size_t i, const Element &a_i)
+		const Element& setEntry (size_t i, const Element &a_i)
 		{
-			_Vec[_i0+i*_1stride] = a_i;
+			return _Vec[_i0+i*_1stride] = a_i;
 		}
 
 		Element &refEntry (size_t i)

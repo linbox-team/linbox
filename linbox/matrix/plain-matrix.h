@@ -95,8 +95,8 @@ namespace LinBox
 
 		Entry& getEntry(Entry& x, Index i, Index j) const
 		{ return x = rep_[i*row_stride_ + j]; }
-		void setEntry(Index i, Index j, const Entry& x )
-		{ rep_[i*row_stride_ + j] = x; }
+		const Entry& setEntry(Index i, Index j, const Entry& x )
+		{ return rep_[i*row_stride_ + j] = x; }
 
 		void submatrix(const Self_t & A, Index i, Index j, Index m, Index n)
 		{	rep_ = A.rep_ + i*row_stride_ + j;
