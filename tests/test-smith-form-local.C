@@ -30,7 +30,7 @@
  * @ingroup tests
  * @brief  no doc
  * @test no doc.
- */
+ */ 
 
 #ifdef DEBUG
 # ifndef LINBOX_LOCAL_SMITH_OUTPUT_
@@ -349,7 +349,7 @@ int main (int argc, char **argv) {
     static int64_t m = 25;
     static int64_t n = 27;
     static int64_t r = 13;
-    static size_t  q = 3;
+    static int64_t q = 3;
     static int32_t e = 12;
     static int rseed = (int)time(NULL);
 
@@ -376,7 +376,7 @@ int main (int argc, char **argv) {
         pass0 &= test_sparse_local_smith(rseed,r,m,n,Givaro::Integer(q),e,0.1);
         pass0 &= test_sparse_local_smith(rseed,r,m,n,uint64_t(2),e,0.3);
         pass0 &= test_sparse_local_smith(rseed,r,m,n,uint64_t(q),e,0.1);
-//         pass0 &= test_sparse_local_smith(rseed,r,m,n,RecInt::ruint<6>(2),e,0.3);
+        pass0 &= test_sparse_local_smith(rseed,r,m,n,RecInt::ruint<6>(2),e,0.3);
 //         pass0 &= test_sparse_local_smith(rseed,r,m,n,RecInt::ruint<6>(q),e,0.1);
     }
 
