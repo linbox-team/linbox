@@ -118,6 +118,76 @@ int test_early_single(std::ostream & report, size_t PrimeSize, size_t Size)
 	return EXIT_SUCCESS ;
 }
 
+// testing ProbSingleCRA
+template< class T >
+int test_prob_single(std::ostream & report, size_t PrimeSize, size_t Size)
+{
+
+	typedef typename std::vector<T> Vect ;
+	typedef typename Vect::iterator Iterator;
+	Vect primes(Size) ;
+	RandomPrimeIterator RP((unsigned )PrimeSize);
+	/*  primes, probably not all coprime... */
+	for (size_t i = 0 ; i < Size ; ++i) {
+		primes[i] = RP.randomPrime() ;
+		++RP ;
+	}
+
+	/*  residues */
+	Vect residues(Size) ;
+	for (size_t i = 0 ; i < Size ; ++i)
+		residues[i] = Integer::random(PrimeSize-1);
+
+	typedef Givaro::Modular<double> ModularField ;
+
+	Iterator genprime = primes.begin()  ; // prime iterator
+	Iterator residu = residues.begin()  ; // residu iterator
+
+	report << "ProbSingleCRA ()" << std::endl;
+	ProbSingleCRA<ModularField> cra(PrimeSize*Size) ;
+	Integer res = 0; // the result
+	typedef ModularField::Element Element;
+	Element residue ; // temporary
+	{ /* init */
+		ModularField F(*genprime);
+		F.init(residue,*residu);
+		cra.initialize(F,residue);
+		++genprime;
+		++residu;
+	}
+	while (genprime < primes.end() && !cra.terminated() )
+	{ /* progress */
+		if (cra.noncoprime((integer)*genprime)) {
+			report << "bad luck, you picked twice the same prime..." <<std::endl;
+			report << "EarlySingleCRA exiting successfully." << std::endl;
+			return EXIT_SUCCESS ; // pas la faute à cra...
+		}
+		ModularField F(*genprime);
+		F.init(residue,*residu);
+		cra.progress(F,residue);
+		++genprime;
+		++residu ;
+	}
+
+	cra.result(res);
+
+	for (size_t i = 0 ; i < Size ; ++i){
+		ModularField F(primes[i]);
+		Element tmp1,tmp2 ;
+		F.init(tmp1,res);
+		F.init(tmp2,residues[i]);
+		if(!F.areEqual(tmp1,tmp2)){
+			report << tmp1 << "!=" << tmp2 << std::endl;
+			report << " *** EarlySingleCRA failed. ***" << std::endl;
+			return EXIT_FAILURE ;
+		}
+	}
+
+	report << "ProbSingleCRA exiting successfully." << std::endl;
+
+	return EXIT_SUCCESS ;
+}
+
 // testing EarlyMultipCRA
 template< class T >
 int test_early_multip(std::ostream & report, size_t PrimeSize, size_t Taille, size_t Size)
@@ -496,6 +566,10 @@ bool test_CRA_algos(size_t PrimeSize, size_t Size, size_t Taille, size_t iters)
 	/* EARLY SINGLE */
 	_LB_REPEAT( if (test_early_single<double>(report,22,Size))                       pass = false ;  ) ;
 	_LB_REPEAT( if (test_early_single<integer>(report,PrimeSize,Size))               pass = false ;  ) ;
+
+        /* PROB SINGLE */
+        _LB_REPEAT( if (test_prob_single<double>(report,22,Size))                       pass = false ;  ) ;
+	_LB_REPEAT( if (test_prob_single<integer>(report,PrimeSize,Size))               pass = false ;  ) ;
 
 	/* EARLY MULTIPLE */
 	_LB_REPEAT( if (test_early_multip<double>(report,22,Taille*2,Size))              pass = false ;  ) ;
