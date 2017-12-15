@@ -37,6 +37,7 @@
 #include "linbox/solutions/methods.h"
 #include "linbox/algorithms/cra-domain.h"
 #include <vector>
+#include <array>
 #include <utility>
 
 namespace LinBox
@@ -209,6 +210,15 @@ namespace LinBox
 #endif
 		}
 
+		/** @brief Initialize the CRA with the first residue.
+		 *
+		 * The eventually-recovered number will be congruent to e modulo D.
+		 * This function must be called just once. Subsequent calls
+		 * should be made to the progress() function.
+		 *
+		 * @param D	The modulus
+		 * @param e	The residue
+		 */
 		void initialize (const Integer& D, const Integer& e)
 		{
 #ifdef _LB_CRATIMING
@@ -225,6 +235,15 @@ namespace LinBox
 #endif
 		}
 
+		/** @brief Initialize the CRA with the first residue.
+		 *
+		 * The eventually-recovered number will be congruent to e modulo D.
+		 * This function must be called just once. Subsequent calls
+		 * should be made to the progress() function.
+		 *
+		 * @param D	The modulus
+		 * @param e	The residue
+		 */
 		void initialize (const Domain& D, const DomainElement& e)
 		{
 #ifdef _LB_CRATIMING
@@ -241,16 +260,24 @@ namespace LinBox
 #endif
 		}
 
+		/** @brief Gets the result recovered so far.
+		 *
+		 * (This is the same as getResidue.)
+		 */
 		Integer& result(Integer& d)
 		{
 			return d=residue_;
 		}
 
+		/** @brief Gets the result recovered so far.
+		 */
 		Integer& getResidue(Integer& r )
 		{
 			return r= residue_;
 		}
 
+		/** @brief Gets the modulus of the result recovered so far.
+		 */
 		Integer& getModulus(Integer& m)
 		{
 
@@ -266,20 +293,18 @@ namespace LinBox
 			return m;
 		}
 
-		/* FIXME
-		virtual bool terminated() = 0;
-
-		virtual void progress (const Integer& D, const Integer& e) = 0;
-
-		virtual void progress (const Domain& D, const Domain& e) = 0;
-		*/
-
+		/** @brief Checks whether i is co-prime to the modulus so far.
+		 *
+		 * @return	true iff i shares a common factor with the modulus
+		 */
 		bool noncoprime(const Integer& i) const
 		{
 			Integer g;
 			return ( (gcd(g, i, nextM_) != 1) || (gcd(g, i, primeProd_) != 1) );
 		}
 
+		/** @brief Returns a lower bound on the number of bits in the modulus.
+		 */
 		decltype(Integer().bitsize()) modbits() const
 		{
 			return primeProd_.bitsize() + nextM_.bitsize() - 1;
@@ -330,7 +355,11 @@ namespace LinBox
 	};
 
 
-	/*!  @brief NO DOC
+	/**  @brief Heuristic Chinese Remaindering with early termination
+	 *
+	 * This approach stops as soon as the modulus doesn't changed for some
+	 * fixed number of steps in a row.
+	 *
 	 * @ingroup CRA
 	 *
 	 */
@@ -348,11 +377,28 @@ namespace LinBox
 
 	public:
 
+		/** @brief Creates a new heuristic CRA object.
+		 *
+		 * @param	EARLY how many unchanging iterations until termination.
+		 */
 		EarlySingleCRA(const unsigned long EARLY=DEFAULT_EARLY_TERM_THRESHOLD) :
 			EARLY_TERM_THRESHOLD((unsigned)EARLY-1),
 			occurency_(0U)
 		{ }
 
+		/** @brief Initialize the CRA with the first residue.
+		 *
+		 * The eventually-recovered number will be congruent to e modulo D.
+		 * This function must be called just once. Subsequent calls
+		 * should be made to the progress() function.
+		 *
+		 * Either the types of D and e should both be Integer,
+		 * or D is the domain type (e.g., Modular<double>) and
+		 * e is the element type (e.g., double)
+		 *
+		 * @param D	The modulus
+		 * @param e	The residue
+		 */
 		template <typename ModType, typename ResType>
 		void initialize (const ModType& D, const ResType& e)
 		{
@@ -360,6 +406,20 @@ namespace LinBox
 			occurency_ = 1;
 		}
 
+		/** @brief Update the residue and termination condition.
+		 *
+		 * The eventually-recovered number will be congruent to e modulo D.
+		 *
+		 * The initialize function must be called at least once before
+		 * calling this one.
+		 *
+		 * Either the types of D and e should both be Integer,
+		 * or D is the domain type (e.g., Modular<double>) and
+		 * e is the element type (e.g., double)
+		 *
+		 * @param D	The modulus of the new image
+		 * @param e	The residue modulo D
+		 */
 		template <typename ModType, typename ResType>
 		void progress (const ModType& D, const ResType& e)
 		{
@@ -371,6 +431,10 @@ namespace LinBox
 				occurency_ ++;
 		}
 
+		/** @brief Checks whether the CRA is (heuristically) finished.
+		 *
+		 * @return true iff the early termination condition has been reached.
+		 */
 		bool terminated()
 		{
 			return occurency_ > EARLY_TERM_THRESHOLD;
@@ -378,7 +442,11 @@ namespace LinBox
 	};
 
 
-	/*!  @brief NO DOC
+	/**  @brief Chinese Remaindering with guaranteed probability bound and early termination.
+	 *
+	 * This strategy terminates when the probability of failure is below a
+	 * certain threshold.
+	 *
 	 * @ingroup CRA
 	 *
 	 */
@@ -404,6 +472,11 @@ namespace LinBox
 		}
 
 	public:
+		/** @brief Creates a new probabilistic CRA object.
+		 *
+		 * @param	bitbound  An upper bound on the number of bits in the result.
+		 * @param	failprob  An upper bound on the probability of failure.
+		 */
 		ProbSingleCRA(const size_t bitbound, const double failprob = 0.001) :
 			bitbound_(bitbound),
 			failbound_(failprob),
@@ -411,6 +484,19 @@ namespace LinBox
 		{
 		}
 
+		/** @brief Initialize the CRA with the first residue.
+		 *
+		 * The eventually-recovered number will be congruent to e modulo D.
+		 * This function must be called just once. Subsequent calls
+		 * should be made to the progress() function.
+		 *
+		 * Either the types of D and e should both be Integer,
+		 * or D is the domain type (e.g., Modular<double>) and
+		 * e is the element type (e.g., double)
+		 *
+		 * @param D	The modulus
+		 * @param e	The residue
+		 */
 		template <typename ModType, typename ResType>
 		void initialize (const ModType& D, const ResType& e)
 		{
@@ -418,6 +504,20 @@ namespace LinBox
 			curfailprob_ = 1.;
 		}
 
+		/** @brief Update the residue and termination condition.
+		 *
+		 * The eventually-recovered number will be congruent to e modulo D.
+		 *
+		 * The initialize function must be called at least once before
+		 * calling this one.
+		 *
+		 * Either the types of D and e should both be Integer,
+		 * or D is the domain type (e.g., Modular<double>) and
+		 * e is the element type (e.g., double)
+		 *
+		 * @param D	The modulus of the new image
+		 * @param e	The residue modulo D
+		 */
 		template <typename ModType, typename ResType>
 		void progress (const ModType& D, const ResType& e)
 		{
@@ -443,6 +543,10 @@ namespace LinBox
 			}
 		}
 
+		/** @brief Checks whether the CRA is (heuristically) finished.
+		 *
+		 * @return true iff the early termination condition has been reached.
+		 */
 		bool terminated()
 		{
 			return curfailprob_ <= failbound_;
