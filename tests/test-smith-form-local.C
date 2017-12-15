@@ -42,9 +42,13 @@
 #include <linbox/util/contracts.h>
 #include <linbox/matrix/sparse-matrix.h>
 #include <givaro/modular.h>
+#include <givaro/modular-ruint.h>
 #include <linbox/algorithms/smith-form-sparseelim-local.h>
 #include <linbox/algorithms/smith-form-sparseelim-poweroftwo.h>
 #include <linbox/solutions/rank.h>
+#include <recint/rint.h>
+#include <recint/ruint.h>
+
 
 
 #include <functional>
@@ -238,7 +242,7 @@ bool sparse_local_smith_poweroftwo(SparseMat& B,
 namespace LinBox
 {
     template<size_t K>
-	class Hom<Givaro::Modular<RecInt::ruint<K>>, Givaro::ZRing<RecInt::ruint<K>> > {
+	class Hom<Givaro::Modular<RecInt::ruint<K>,RecInt::ruint<K+1>>, Givaro::ZRing<RecInt::ruint<K>> > {
 
 	public:
 		typedef RecInt::ruint<K> Elt;
@@ -268,11 +272,10 @@ namespace LinBox
 
 
 
-template<typename Base, class Ring = Givaro::ZRing<Base> >
+template<typename Base, class ModRing = Givaro::Modular<Base>, class Ring = Givaro::ZRing<Base> >
 bool test_sparse_local_smith(size_t seed, size_t R, size_t M, size_t N,
                              const Base& p, int exp,
                              double density) {
-    typedef Givaro::Modular<Base> ModRing;
     ModRing F(Givaro::power(p,exp));
 
     ASSERT(R<=M && R<=N);
@@ -351,6 +354,7 @@ int main (int argc, char **argv) {
     static int64_t r = 13;
     static size_t  q = 3;
     static int32_t e = 12;
+    static double d = 0.3;
     static int rseed = (int)time(NULL);
 
 	static Argument args[] = {
@@ -359,11 +363,13 @@ int main (int argc, char **argv) {
 		{ 'r', "-r R", "Set rank of test matrices to R.", TYPE_INT,     &r },
 		{ 'q', "-q Q", "Operate over the ring Z/q^eZ.", TYPE_INT, &q },
 		{ 'e', "-e e", "Operate over the ring Z/q^eZ.", TYPE_INT, &e },
+		{ 'd', "-d d", "Density of random sparse matrices.", TYPE_INT, &d },
         { 's', "-s S", "Random generator seed.", TYPE_INT,     &rseed }	,
 		END_OF_ARGUMENTS
 	};
 
 	parseArguments (argc, argv, args);
+    FFLAS::writeCommandString(std::cout, args) << std::endl;
 
 	commentator().start("Local Smith Form test suite", "LocalSmith");
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
@@ -372,13 +378,17 @@ int main (int argc, char **argv) {
 
     { // sparseelim
 
-        pass0 &= test_sparse_local_smith(rseed,r,m,n,Givaro::Integer(2),e,0.3);
-        pass0 &= test_sparse_local_smith(rseed,r,m,n,Givaro::Integer(q),e,0.1);
-        pass0 &= test_sparse_local_smith(rseed,r,m,n,uint64_t(2),e,0.3);
-        pass0 &= test_sparse_local_smith(rseed,r,m,n,uint64_t(q),e,0.1);
-//         pass0 &= test_sparse_local_smith(rseed,r,m,n,RecInt::ruint<6>(2),e,0.3);
-//         pass0 &= test_sparse_local_smith(rseed,r,m,n,RecInt::ruint<6>(q),e,0.1);
-    }
+        pass0 &= test_sparse_local_smith(rseed,r,m,n,Givaro::Integer(2),e,d);
+        pass0 &= test_sparse_local_smith(rseed,r,m,n,Givaro::Integer(q),e,d/2.);
+        pass0 &= test_sparse_local_smith(rseed,r,m,n,uint64_t(2),e,d);
+        pass0 &= test_sparse_local_smith(rseed,r,m,n,uint64_t(q),e,d/2.);
+        pass0 &= test_sparse_local_smith(rseed,r,m,n,RecInt::ruint<6>(2),e,d);
+//         typedef Givaro::Modular<RecInt::ruint<7>,RecInt::ruint<8> > MUU;
+//         pass0 &= test_sparse_local_smith< RecInt::ruint128,MUU>(rseed,r,m,n,RecInt::ruint128(q),e,d/2);
+//         pass0 &= test_sparse_local_smith(rseed,r,m,n,RecInt::ruint128(q),e,d);
+//         pass0 &= test_sparse_local_smith(rseed,r,m,n,RecInt::ruint128(2),e,d);
+//         pass0 &= test_sparse_local_smith(rseed,r,m,n,RecInt::ruint256(q),e,d/2);
+   }
 
 
 #if 1
