@@ -48,6 +48,38 @@ do { for (size_t i = 0 ; pass && i < iters ; ++i) {  command } } while(0)
 using namespace LinBox ;
 
 
+// Need these call_* functions so it uses Integers with primes
+// larger than 23 bits.
+template <typename CRAType>
+void call_initialize(CRAType& cra, const double p, const double r) {
+	using ModularField = typename CRAType::Domain;
+	using Element = typename ModularField::Element;
+	ModularField F(p);
+	Element residue;
+	F.init(residue, r);
+	cra.initialize(F, residue);
+}
+
+template <typename CRAType>
+void call_initialize(CRAType& cra, const Integer& p, const Integer& r) {
+	cra.initialize(p, r);
+}
+
+template <typename CRAType>
+void call_progress(CRAType& cra, const double p, const double r) {
+	using ModularField = typename CRAType::Domain;
+	using Element = typename ModularField::Element;
+	ModularField F(p);
+	Element residue;
+	F.init(residue, r);
+	cra.progress(F, residue);
+}
+
+template <typename CRAType>
+void call_progress(CRAType& cra, const Integer& p, const Integer& r) {
+	cra.progress(p, r);
+}
+
 // testing EarlySingleCRA
 template< class T >
 int test_early_single(std::ostream & report, size_t PrimeSize, size_t Size)
@@ -125,51 +157,67 @@ int test_prob_single(std::ostream & report, size_t PrimeSize, size_t Size)
 
 	typedef typename std::vector<T> Vect ;
 	typedef typename Vect::iterator Iterator;
+
+        Integer pprod(1); // product of distinct primes
 	Vect primes(Size) ;
 	RandomPrimeIterator RP((unsigned )PrimeSize);
 	/*  primes, probably not all coprime... */
 	for (size_t i = 0 ; i < Size ; ++i) {
 		primes[i] = RP.randomPrime() ;
 		++RP ;
+                if (pprod % primes[i]) {
+			pprod *= primes[i];
+                }
 	}
+
+	// true result
+	size_t resbits = 1 + (random() % (pprod.bitsize() - 1));
+	Integer actual = Integer::random(resbits);
 
 	/*  residues */
 	Vect residues(Size) ;
 	for (size_t i = 0 ; i < Size ; ++i)
-		residues[i] = Integer::random(PrimeSize-1);
+		residues[i] = actual % primes[i];
 
 	typedef Givaro::Modular<double> ModularField ;
 
 	Iterator genprime = primes.begin()  ; // prime iterator
 	Iterator residu = residues.begin()  ; // residu iterator
 
-	report << "ProbSingleCRA ()" << std::endl;
-	ProbSingleCRA<ModularField> cra(PrimeSize*Size) ;
+	report << "ProbSingleCRA (" << pprod.bitsize()-1 << ")";
+	report << " actual length " << actual.bitsize() << std::endl;
+	ProbSingleCRA<ModularField> cra(pprod.bitsize()-1) ;
 	Integer res = 0; // the result
 	typedef ModularField::Element Element;
 	Element residue ; // temporary
 	{ /* init */
-		ModularField F(*genprime);
-		F.init(residue,*residu);
-		cra.initialize(F,residue);
-		++genprime;
-		++residu;
+		call_initialize(cra, *genprime, *residu);
 	}
+	size_t itercount = 1;
+	size_t skips = 0;
 	while (genprime < primes.end() && !cra.terminated() )
 	{ /* progress */
 		if (cra.noncoprime((integer)*genprime)) {
-			report << "bad luck, you picked twice the same prime..." <<std::endl;
-			report << "EarlySingleCRA exiting successfully." << std::endl;
-			return EXIT_SUCCESS ; // pas la faute à cra...
+			//report << "bad luck, you picked twice the same prime..." <<std::endl;
+			++skips;
 		}
-		ModularField F(*genprime);
-		F.init(residue,*residu);
-		cra.progress(F,residue);
+		else {
+			call_progress(cra, *genprime, *residu);
+			++itercount;
+		}
 		++genprime;
 		++residu ;
 	}
+	report << "  " << itercount << " iterations, " << itercount*(PrimeSize-1) << " bits "
+		<< skips << " skips" << std::endl;
 
 	cra.result(res);
+	if (res != actual) {
+		report << res << " != " << actual << std::endl;
+		report << "pprod: " << pprod << "\n" << "pprod / actual: " << (pprod / actual) << "\n";
+		report << " *** ProbSingleCRA failed. ***" << std::endl;
+		return EXIT_FAILURE ;
+	}
 
 	for (size_t i = 0 ; i < Size ; ++i){
 		ModularField F(primes[i]);
@@ -178,7 +226,7 @@ int test_prob_single(std::ostream & report, size_t PrimeSize, size_t Size)
 		F.init(tmp2,residues[i]);
 		if(!F.areEqual(tmp1,tmp2)){
 			report << tmp1 << "!=" << tmp2 << std::endl;
-			report << " *** EarlySingleCRA failed. ***" << std::endl;
+			report << " *** ProbSingleCRA failed. ***" << std::endl;
 			return EXIT_FAILURE ;
 		}
 	}
