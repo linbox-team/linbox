@@ -477,7 +477,7 @@ namespace LinBox
                         ranks.push_back( indcol );
                         ++ind_pow;
 #ifdef LINBOX_PRANK_OUT
-                        std::cerr << "Rank mod " << (unsigned long)PRIME << "^" << ind_pow << " : " << indcol << std::endl;
+                        std::cerr << "Rank mod " << PRIME << "^" << ind_pow << " : " << indcol << std::endl;
                         if (MOD == 1) std::cerr << "wattadayada inhere ?" << std::endl;
 #endif
 
@@ -537,7 +537,7 @@ namespace LinBox
                 LigneA.write(std::cerr << "step[" << Ni-1 << "], pivot: " << c << std::endl) << std::endl;
 #endif
 #ifdef LINBOX_PRANK_OUT
-                std::cerr << "Rank mod " << (unsigned long)FMOD << " : " << indcol << std::endl;
+                std::cerr << "Rank mod " << FMOD << " : " << indcol << std::endl;
 #endif
                 commentator().stop ("done", 0, "PRGE");
 
