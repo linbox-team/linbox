@@ -363,7 +363,7 @@ int main (int argc, char **argv) {
 		{ 'r', "-r R", "Set rank of test matrices to R.", TYPE_INT,     &r },
 		{ 'q', "-q Q", "Operate over the ring Z/q^eZ.", TYPE_INT, &q },
 		{ 'e', "-e e", "Operate over the ring Z/q^eZ.", TYPE_INT, &e },
-		{ 'd', "-d d", "Density of random sparse matrices.", TYPE_INT, &d },
+		{ 'd', "-d d", "Density of random sparse matrices.", TYPE_DOUBLE, &d },
         { 's', "-s S", "Random generator seed.", TYPE_INT,     &rseed }	,
 		END_OF_ARGUMENTS
 	};
@@ -378,11 +378,12 @@ int main (int argc, char **argv) {
 
     { // sparseelim
 
-        pass0 &= test_sparse_local_smith(rseed,r,m,n,Givaro::Integer(2),e,d);
-        pass0 &= test_sparse_local_smith(rseed,r,m,n,Givaro::Integer(q),e,d/2.);
-        pass0 &= test_sparse_local_smith(rseed,r,m,n,uint64_t(2),e,d);
-        pass0 &= test_sparse_local_smith(rseed,r,m,n,uint64_t(q),e,d/2.);
-        pass0 &= test_sparse_local_smith(rseed,r,m,n,RecInt::ruint<6>(2),e,d);
+//         pass0 &= test_sparse_local_smith(rseed,r,m,n,Givaro::Integer(2),e,d);
+//         pass0 &= test_sparse_local_smith(rseed,r,m,n,Givaro::Integer(q),e,d/2.);
+//         pass0 &= test_sparse_local_smith(rseed,r,m,n,uint64_t(2),e,d);
+//         pass0 &= test_sparse_local_smith(rseed,r,m,n,uint64_t(q),e,d/2.);
+//         pass0 &= test_sparse_local_smith(rseed,r,m,n,RecInt::ruint<6>(2),e,d);
+        pass0 &= test_sparse_local_smith(rseed,r,m,n,RecInt::ruint<6>(q),e,d);
 //         typedef Givaro::Modular<RecInt::ruint<7>,RecInt::ruint<8> > MUU;
 //         pass0 &= test_sparse_local_smith< RecInt::ruint128,MUU>(rseed,r,m,n,RecInt::ruint128(q),e,d/2);
 //         pass0 &= test_sparse_local_smith(rseed,r,m,n,RecInt::ruint128(q),e,d);
