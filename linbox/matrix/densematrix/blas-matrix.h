@@ -871,7 +871,7 @@ namespace LinBox
 		BlasSubmatrix (matrixType &M);
 
 		//! @todo  BlasSub from (sub)Vector
-		// BlasSubmatrix (const vectorType &V);
+		// BlasSubmatrix (const vectorType &V, size_t row, size_t col);
 
 
 		/** Constructor from an existing submatrix and dimensions
