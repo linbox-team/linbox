@@ -34,8 +34,7 @@
 #include <linbox/matrix/sparse-matrix.h>
 #include <linbox/solutions/charpoly.h>
 #include <linbox/solutions/minpoly.h>
-#include <linbox/ring/givaro-polynomial.h>
-#include <linbox/element/givaro-polynomial.h>
+#include <linbox/ring/polynomial-ring.h>
 
 using namespace LinBox;
 using namespace std;
@@ -192,12 +191,12 @@ int main (int argc, char** argv)
 	//i_vti_v(M,In, V, detPrec);
 	generate_precRatMat(filename, M, V, detPrec);
 	cout << "detPrec is " << detPrec  << "\n";
-	typedef GivPolynomialRing<Integers,Dense> IntPolRing;
+	typedef PolynomialRing<Integers> IntPolRing;
 	IntPolRing::Element c_A;
 
 	Integer max = 1,min=0;
-	for (int i=0; i < n; ++i) {
-		for (int j=0; j < n; ++j) {
+	for (size_t i=0; i < n; ++i) {
+		for (size_t j=0; j < n; ++j) {
 			Integer a;
 			Q.convert(a,M.getEntry(i,j));
 			//      cerr<<"it="<<(*it)<<endl;
@@ -216,7 +215,7 @@ int main (int argc, char** argv)
 	cout << "had" << hadamarcp << "\n";
 	cout << "had2" << (Integer)hadamarcp*detPrec << "\n";
 
-	RandomPrimeIterator genprime( 26-(int)ceil(log((double)M.rowdim())*0.7213475205));
+	PrimeIterator<RandomCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(M.coldim()));
 	ChineseRemainder< EarlyMultipCRA<Field  > > cra(3UL);
 	typedef Method::Hybrid MyMethod;
 	MyMethod Met;

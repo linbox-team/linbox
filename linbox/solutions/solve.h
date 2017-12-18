@@ -344,10 +344,10 @@ namespace LinBox
 			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
 
 		commentator().start ("Rational CRA Solve", "Rsolve");
-		size_t bits = 26 -(int)ceil(log((double)A.rowdim())*0.7213475205);
-		RandomPrimeIterator genprime( bits);
+                typedef Givaro::ModularBalanced<double> Field;
+                PrimeIterator<RandomCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
 
-		RationalRemainder2< VarPrecEarlyMultipCRA< Givaro::Modular<double> > > rra(3UL);//using default RR method
+		RationalRemainder2< VarPrecEarlyMultipCRA<Field> > rra(3UL);//using default RR method
 		IntegerModularSolve<BB,Vector,MethodTraits > iteration(A, b, m);
 		integer den;
 		BlasVector<Givaro::ZRing<Integer> > num(A.field(),A.coldim());
@@ -536,9 +536,9 @@ namespace LinBox
 
 		commentator().start ("Padic Integer Blas-based Solving ICI", "solving");
 
-		typedef Givaro::Modular<double> Field;
+		typedef Givaro::ModularBalanced<double> Field;
 		// 0.7213475205 is an upper approximation of 1/(2log(2))
-		PrimeIterator<RandomCategories::HeuristicTag> genprime((unsigned int)( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)));
+		PrimeIterator<RandomCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
 		RationalSolver<Ring, Field, PrimeIterator<RandomCategories::HeuristicTag>, DixonTraits> rsolve(A.field(), genprime);
 		SolverReturnStatus status = SS_OK;
 
@@ -635,7 +635,7 @@ namespace LinBox
 
 		typedef Givaro::Modular<double> Field;
 		// 0.7213475205 is an upper approximation of 1/(2log(2))
-		PrimeIterator<RandomCategories::HeuristicTag> genprime((unsigned int) (26-(int)ceil(log((double)A.rowdim())*0.7213475205)));
+		PrimeIterator<RandomCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
 		RationalSolver<Ring, Field, PrimeIterator<RandomCategories::HeuristicTag>, SparseEliminationTraits> rsolve(A.field(), genprime);
 		SolverReturnStatus status = SS_OK;
 		// if singularity unknown and matrix is square, we try nonsingular solver

@@ -46,7 +46,7 @@ namespace LinBox
 	/** Compute the rank of an integer matrix in place over a finite field by Gaussian elimination.
 	 * @bug there is no generic \c rankIn method.
 	*/
-	template<class _Ring, class _Field, class _RandomPrime = RandomPrimeIterator>
+	template<class _Ring, class _Field, class _RandomPrime = PrimeIterator>
 	class MatrixRank {
 
 	public:
@@ -77,7 +77,7 @@ namespace LinBox
 		long rank(const IMatrix& A) const
 		{
 
-			rp.template setBitsField<Field>();
+			rp.setBits(FieldTraits<Field>::bestBitSize(A.coldim()));
 
 			Field F ((unsigned long)*rp);
 
@@ -102,9 +102,9 @@ namespace LinBox
 		long rank(const BlasMatrix<IRing>& A) const
 		{
 
-			rp.template setBitsField<_Field>();
+			rp.setBits(FieldTraits<Field>::bestBitSize(A.coldim()));
 
-			Field F ((integer)*rp);
+			Field F (*rp);
 			//! bug the following should work :
 			// BlasMatrix<Field>  Ap(F,A);
 			BlasMatrix<Field> Ap(F, A.rowdim(), A.coldim());
