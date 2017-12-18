@@ -32,6 +32,13 @@
 #include "linbox/algorithms/gauss.h"
 
 #ifdef DEBUG
+#  ifndef LINBOX_pp_gauss_intermediate_OUT
+#    define LINBOX_pp_gauss_intermediate_OUT
+#  endif
+#endif
+
+// LINBOX_pp_gauss_intermediate_OUT outputs intermediate matrices
+#ifdef LINBOX_pp_gauss_intermediate_OUT
 #  ifndef LINBOX_pp_gauss_steps_OUT
 #    define LINBOX_pp_gauss_steps_OUT
 #  endif
@@ -253,7 +260,8 @@ namespace LinBox
 
         template<class Vecteur>
         void PreserveUpperMatrixRow(Vecteur& ligne, Boolean_Trait<false>::BooleanType ) {
-            ligne = Vecteur(0);
+//             ligne = Vecteur(0);
+            Vecteur(0).swap(ligne);
         }
 
 
@@ -450,6 +458,12 @@ namespace LinBox
 
 #ifdef  LINBOX_pp_gauss_steps_OUT
                         std::cerr << "------------ ordered rows " << k << " -----------" << std::endl;
+                        size_t capacity(0);
+                        for(p=k; p<Ni; ++p) {
+                            capacity += LigneA[(size_t)p].capacity();
+                            std::cerr << p << " : S" << LigneA[(size_t)p].capacity()<< std::endl;
+                        }
+                        std::cerr << "Capacity: " << capacity << std::endl;
                         for( std::multimap< long, long >::const_iterator iter = psizes.begin(); iter != psizes.end(); ++iter)
                         {
                             std::cerr << (*iter).second << " : #" << (*iter).first << std::endl;
