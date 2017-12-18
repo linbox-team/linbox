@@ -2,7 +2,7 @@
  *
  * Copyright (C) 2012 LinBox
  * Written by J-G Dumas
- * Time-stamp: <12 Dec 17 18:29:53 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <18 Dec 17 11:20:34 Jean-Guillaume.Dumas@imag.fr>
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
@@ -58,7 +58,7 @@ void runpoweroftworank(ifstream& input, const size_t exponent) {
 
     Givaro::Timer tim; 
     tim.clear(); tim.start();
-    PGD(local, A, Q, exponent);
+    PGD(local, A, Q, exponent, PRESERVE_UPPER_MATRIX);
     tim.stop();
 
     R.write(std::cout << "Local Smith Form ") << " : " << std::endl << '(';
