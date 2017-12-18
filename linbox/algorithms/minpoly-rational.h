@@ -168,7 +168,7 @@ namespace LinBox
 
 		commentator().start ("Rational Minpoly", "Rminpoly");
 
-		RandomPrimeIterator genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205));
+		PrimeIterator<RandomCategories::HeuristicTag> genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205));
 
 		std::vector<Integer> F(A.rowdim()+1,1);
 		std::vector<Integer> M(A.rowdim()+1,1);

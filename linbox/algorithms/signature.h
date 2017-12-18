@@ -49,7 +49,7 @@ namespace LinBox
 		template <class Matrix>
 		static bool isPosDef (const Matrix& M, const BLAS_LPM_Method& meth)
             {
-                RandomPrimeIterator::setSeed((size_t)time(0));
+                PrimeIterator<RandomCategories::HeuristicTag>::setSeed((size_t)time(0));
                 size_t n = M. rowdim();
                 std::vector<int> P;
                 symmetricLU (P, M);
@@ -93,7 +93,7 @@ namespace LinBox
 		template <class Matrix>
 		static bool isPosSemiDef (const Matrix& M, const BLAS_LPM_Method& meth)
             {
-                RandomPrimeIterator::setSeed((size_t)time(0));
+                PrimeIterator<RandomCategories::HeuristicTag>::setSeed((size_t)time(0));
                 size_t n = M. rowdim();
                 std::vector<int> P;
                 size_t r = (size_t)rank_random (M);
@@ -195,7 +195,7 @@ namespace LinBox
                 typedef Field::Element Element;
 
                 size_t n = M. rowdim();
-                RandomPrimeIterator primeg;
+                PrimeIterator<RandomCategories::HeuristicTag> primeg;
                 if( ! primeg.template setBitsDelayedField<Field>(n) )
                     primeg.template setBitsField<Field>();
 
@@ -316,7 +316,7 @@ namespace LinBox
                     // typedef Givaro::Modular<double> Field;
                 typedef Field::Element Element;
                 typedef DenseMatrix<Field> FMatrix;
-                RandomPrimeIterator primeg; primeg.template setBitsField<Field>();
+                PrimeIterator<RandomCategories::HeuristicTag> primeg; primeg.template setBitsField<Field>();
                 Field F (*primeg);
                 FMatrix FM(F, IM.rowdim(), IM.coldim());
                     //std::clog << "Random prime " << p << "\n";
@@ -411,9 +411,8 @@ namespace LinBox
 
                     // get a prime.
                     // Compute the rank mod that prime. Accumulate into v with CRA.
-                RandomPrimeIterator primeg;
-                if( ! primeg.template setBitsDelayedField<Field>(n) )
-                    primeg.template setBitsField<Field>();
+                PrimeIterator<RandomCategories::HeuristicTag> primeg(FieldTraits<Field>::bestBitSize(n));
+                
 
                 Field K(*primeg);
 
