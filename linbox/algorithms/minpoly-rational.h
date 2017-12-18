@@ -167,8 +167,8 @@ namespace LinBox
 		typedef typename Rationals::Element Quotient;
 
 		commentator().start ("Rational Minpoly", "Rminpoly");
-
-		PrimeIterator<RandomCategories::HeuristicTag> genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205));
+                typedef Givaro::ModularBalanced<double> Field;
+		PrimeIterator<RandomCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
 
 		std::vector<Integer> F(A.rowdim()+1,1);
 		std::vector<Integer> M(A.rowdim()+1,1);
@@ -193,7 +193,7 @@ namespace LinBox
 		BlasMatrix<Givaro::ZRing<Integer> > Atilde(Z,A.rowdim(), A.coldim());
 		FA.makeAtilde(Atilde);
 
-		ChineseRemainder< EarlyMultipCRA<Givaro::Modular<double> > > cra(4UL);
+		ChineseRemainder< EarlyMultipCRA<Field > > cra(4UL);
 		MyRationalModularMinpoly<BlasMatrix<Rationals > , MyMethod> iteration1(A, Met, M);
 		MyIntegerModularMinpoly<BlasMatrix<Givaro::ZRing<Integer> >, MyMethod> iteration2(Atilde, Met, Di, M);
 		MyModularMinpoly<MyRationalModularMinpoly<BlasMatrix<Rationals > , MyMethod>,
