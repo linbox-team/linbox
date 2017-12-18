@@ -353,7 +353,7 @@ namespace LinBox
 #endif
       integer tmp;
       do {
-	do {Rd.random(tmp);}
+          do {tmp = *(++Rd);}
 	while (MM%tmp==0 || tmp>prime_max);
 	bas.push_back(tmp);
 	nbp++;
