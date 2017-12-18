@@ -2,7 +2,7 @@
  *
  * Copyright (C) 2012 LinBox
  * Written by J-G Dumas
- * Time-stamp: <18 Dec 17 11:20:34 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <18 Dec 17 16:53:06 Jean-Guillaume.Dumas@imag.fr>
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
@@ -24,9 +24,9 @@
 
 /** \file examples/poweroftwo_ranks.C
  * @example  examples/poweroftwo_ranks.C
-  \brief Ranks of sparse matrix modulo 2^k
-  \ingroup examples
-  */
+ \brief Ranks of sparse matrix modulo 2^k
+ \ingroup examples
+*/
 #include <linbox/linbox-config.h>
 
 #include <iostream>
@@ -58,7 +58,8 @@ void runpoweroftworank(ifstream& input, const size_t exponent) {
 
     Givaro::Timer tim; 
     tim.clear(); tim.start();
-    PGD(local, A, Q, exponent, PRESERVE_UPPER_MATRIX);
+//     PGD(local, A, Q, exponent, PRESERVE_UPPER_MATRIX);
+    PGD(local, A, Q, exponent);
     tim.stop();
 
     R.write(std::cout << "Local Smith Form ") << " : " << std::endl << '(';
@@ -111,8 +112,8 @@ int main (int argc, char **argv) {
 
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
