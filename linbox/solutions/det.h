@@ -574,7 +574,7 @@ namespace LinBox
 			commentator().start ("Integer Determinant", "idet");
 		// 0.7213475205 is an upper approximation of 1/(2log(2))
 		IntegerModularDet<Blackbox, MyMethod> iteration(A, Meth);
-		RandomPrimeIterator genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205));
+		PrimeIterator<RandomCategories::HeuristicTag> genprime;
 		integer dd; // use of integer due to non genericity of cra. PG 2005-08-04
 
 		//  will call regular cra if C=0
@@ -636,7 +636,7 @@ namespace LinBox
 		Integer num,den;
 
 		IntegerModularDet<Blackbox, MyMethod> iteration(A, Meth);
-		RandomPrimeIterator genprime( (unsigned int)( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)));
+		PrimeIterator<RandomCategories::HeuristicTag> genprime( (unsigned int)( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)));
 		RationalRemainder2< VarPrecEarlySingleCRA< Givaro::Modular<double> > > rra(4UL);
 
 		rra(num,den, iteration, genprime);

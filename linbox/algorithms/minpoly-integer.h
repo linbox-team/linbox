@@ -113,7 +113,7 @@ namespace LinBox
 		typedef typename IMatrix::template rebind<Field>::other FBlackbox;
 		typedef std::vector<Element> FPoly;
 		FPoly fp;
-		RandomPrimeIterator primeg; primeg.template setBitsField<Field>();
+		PrimeIterator<RandomCategories::HeuristicTag> primeg; primeg.template setBitsField<Field>();
 		for (int i = 0; i < n_try; ++ i) {
 			++primeg;
 			Field F(*primeg);
@@ -147,7 +147,7 @@ namespace LinBox
 		typedef typename IMatrix::template rebind<Field>::other FBlackbox;
 		typedef std::vector<Element> FPoly;
 
-		RandomPrimeIterator primeg; primeg.template setBitsField<Field>();
+		PrimeIterator<RandomCategories::HeuristicTag> primeg; primeg.template setBitsField<Field>();
 
 		FPoly fp (degree + 1);
 		// typename FPoly::iterator fp_p;
@@ -188,7 +188,7 @@ namespace LinBox
 		typedef typename IMatrix::template rebind<Field>::other FBlackbox;
 		typedef std::vector<Element> FPoly;
 
-		RandomPrimeIterator primeg; primeg.template setBitsField<Field>();
+		PrimeIterator<RandomCategories::HeuristicTag> primeg; primeg.template setBitsField<Field>();
 
 		FPoly fp (degree + 1);
 		// typename FPoly::iterator fp_p;
@@ -259,7 +259,7 @@ namespace LinBox
 
 		y. resize (degree + 1);
 		size_t n = M. rowdim();
-		RandomPrimeIterator primeg;
+		PrimeIterator<RandomCategories::HeuristicTag> primeg;
 		if( ! primeg.template setBitsDelayedField<Field>(n) )
 			primeg.template setBitsField<Field>();
 		Element* FA = new Element [n*n];
@@ -321,7 +321,7 @@ namespace LinBox
 		Element* p;
 		std::vector<Element> Poly;
 
-                RandomPrimeIterator primeg;
+                PrimeIterator<RandomCategories::HeuristicTag> primeg;
                 if( ! primeg.template setBitsDelayedField<Field>(n) )
                         primeg.template setBitsField<Field>();
 

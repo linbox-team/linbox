@@ -1,6 +1,7 @@
 /* Copyright (C) 2007,2010 LinBox
  * Written by <Jean-Guillaume.Dumas@imag.fr>
  * Modified by Brice Boyer (briceboyer) <boyer.brice@gmail.com> (RandomPrimeIter)
+ * Modified by Clement Pernet <clement.pernet@imag.fr> (PrimeIter)
  *
  *
  *
@@ -37,7 +38,6 @@
 #include "linbox/util/timer.h"
 #include "linbox/util/debug.h"
 #include "linbox/field/field-traits.h"
-
 namespace LinBox
 {
             /*! \brief Information about the type of Prime Iterator
@@ -45,19 +45,33 @@ namespace LinBox
         namespace RandomCategories {
                 //! Iterator following a deterministic sequence of primes (from the largest one, in decreasing order
                 struct DeterministicTag{};
-                //! Iterator sampling uniformly from all primes of given bitsize 
+                //! Iterator sampling uniformly from all primes of given bitsize
                 struct UniformTag{};
-                //! Iterator sampling randomly (no distribution guaranteed whatsoever) from all primes of given bitsize 
+                //! Iterator sampling randomly (no distribution guaranteed whatsoever) from all primes of given bitsize
                 struct HeuristicTag{};
-        }
-
+        };
+        
+            /*! \brief Whether a prime generator generates a sequence with non repeating
+             * numbers
+             */
         template<class RandomTrait>
         struct UniqueSamplingTrait;
 
-        struct UniqueSamplingTrait<DeterministicTag>{typedef std::type_true value;}
-        struct UniqueSamplingTrait<UniformTag>{typedef std::type_false value;}
-        struct UniqueSamplingTrait<HeuristicTag>{typedef std::type_false value;}
-	/*!  @brief  Prime Iterator.
+        template<>
+        struct UniqueSamplingTrait<RandomCategories::DeterministicTag>{
+                typedef std::true_type value;
+        };
+        template<>
+        struct UniqueSamplingTrait<RandomCategories::UniformTag>{
+                typedef std::false_type value;
+        };
+        template<>
+        struct UniqueSamplingTrait<RandomCategories::HeuristicTag>{
+                typedef std::false_type value;
+        };
+
+        
+        /*!  @brief  Prime Iterator.
 	 * @ingroup primes
 	 * @ingroup randiter
 	 *
@@ -66,14 +80,14 @@ namespace LinBox
 	 * @internal
 	 * It is given by <code>nextprime(2^_bits-p)</code> where <code>size(p) < _bits</code>.
 	 */
-        template<class RandomTrait = HeuristicTag>
+        template<class RandomTrait = RandomCategories::HeuristicTag>
 	class PrimeIterator{
 	private:
 		uint64_t 	_bits;  //!< common lenght of all primes
 		integer        _prime;  //!< the generated prime.
 		Givaro::IntPrimeDom _IPD; //!< empty struct dealing with primality.
 
-
+                void generatePrime();
 	public:
 		typedef integer Prime_Type ;
                 typedef typename UniqueSamplingTrait<RandomTrait>::value UniqueSamplingTag; //!< whether a prime can be picked more than once
@@ -95,10 +109,10 @@ namespace LinBox
                         generatePrime();
 		}
 
-		/** @brief operator++()
+                /** @brief operator++()  (prefix ++ operator)
 		 *  creates a new random prime.
 		 */
-		inline PrimeIterator<HeuristicTag> &operator ++ ()
+		inline PrimeIterator<RandomCategories::HeuristicTag> &operator ++ ()
 		{
 			generatePrime();
                         return *this;
@@ -155,7 +169,7 @@ namespace LinBox
 	};
 
         template<>
-        void PrimeIterator<HeuristicTag>::generatePrime(){
+        void PrimeIterator<RandomCategories::HeuristicTag>::generatePrime(){
                 integer::random_exact_2exp(_prime,_bits);
                 _IPD.nextprimein(_prime);
                 while (_prime.bitsize()>_bits)
@@ -163,12 +177,19 @@ namespace LinBox
         }
 
         template<>
-        void PrimeIterator<DeterministicTag>::generatePrime(){_IPD.prevprimein(_prime);}
+        void PrimeIterator<RandomCategories::DeterministicTag>::generatePrime(){_IPD.prevprimein(_prime);}
 
         template<>
-        void PrimeIterator<UniformTag>::generatePrime(){
-                while(!_IPD.isprim(_prime))
+        void PrimeIterator<RandomCategories::UniformTag>::generatePrime(){
+                do{
                         integer::random_exact_2exp(_prime,_bits);
+                        switch (_prime %6){
+                            case 0: _prime++; break;
+                            case 4: _prime++; break;
+                            case 2: _prime--; break;
+                            case 3: _prime+=2; break;
+                        }
+                } while(!_IPD.isprime(_prime));
         }
 }
 
