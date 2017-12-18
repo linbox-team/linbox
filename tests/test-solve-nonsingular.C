@@ -325,7 +325,7 @@ int main(int argc, char** argv) {
 
 	typedef ParamFuzzy Field;
 	typedef Givaro::Modular<int64_t> ZField;
-	typedef Givaro::Modular<double> DField;
+	typedef Givaro::ModularBalanced<double> DField;
 
 	typedef BlasMatrix<Field> Matrix;
 	typedef BlasMatrix<Ring> CommonMatrix;
@@ -388,15 +388,15 @@ int main(int argc, char** argv) {
 
 		report << "zw: not done.  Requires 64 bit architecture (maybe, needs checking -bds)." << std::endl << std::endl;
 	  } else {
-		RationalSolver<Ring, ZField, RandomPrimeIterator, NumSymNormTraits> rsolver(R);
+                  RationalSolver<Ring, ZField, PrimeIterator<RandomCategories::HeuristicTag>, NumSymNormTraits> rsolver(R);
 		part_pass = testRandomSolve(R, rsolver, A, b);
 		report << "zw: " << (part_pass ? "pass" : "fail") << std::endl << std::endl;
 	  }
 	}
 	pass = pass && part_pass;
 	if(run & 4){
-		RandomPrimeIterator genprime((unsigned int)( 26-(int)ceil(log((double)n)*0.7213475205) ));
-		RationalSolver<Ring, DField, RandomPrimeIterator, DixonTraits> rsolver(R, genprime);
+		PrimeIterator<RandomCategories::HeuristicTag> genprime(FieldTraits<DField>::bestBitSize(A.coldim()));
+		RationalSolver<Ring, DField, PrimeIterator<RandomCategories::HeuristicTag>, DixonTraits> rsolver(R, genprime);
 		part_pass = testRandomSolve(R, rsolver, A, b);
 		report << "dixon: " << (part_pass ? "pass" : "fail") << std::endl << std::endl;
 	}

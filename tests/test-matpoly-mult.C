@@ -212,19 +212,18 @@ bool runTest(uint64_t n, uint64_t d, long seed){
 	}
 	// normal prime < 2^(53--log(n))/2
 	{
-		size_t bits= (53-integer(n).bitsize())/2;;
-		RandomPrimeIter Rd(bits,seed);
+		typedef Givaro::ModularBalanced<double> Field;
+		PrimeIterator<RandomCategories::HeuristicTag> Rd(FieldTraits<Field>::bestBitSize(n),seed);
 		integer p;
-		Rd.random(p);
-
-		Givaro::Modular<double> F((int32_t)p);
+		p=*Rd;
+		Field F((int32_t)p);
 		ok&=launchTest (F,n,bits,d,seed);
 	}
 
 	// multi-precision prime
 	 {
 	 	size_t bits=114;
-	 	RandomPrimeIter Rd(bits,seed);
+	 	PrimeIterator<RandomCategories::HeuristicTag> Rd(bits,seed);
 	 	integer p= Rd.random();
 
 	 	Givaro::Modular<integer> F1(p);			

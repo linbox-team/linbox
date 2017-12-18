@@ -73,7 +73,7 @@ namespace LinBox
 		size_t nf = intFactors.size();
 
 		/* One modular characteristic polynomial computation */
-		RandomPrimeIterator primeg (22);
+		PrimeIterator<RandomCategories::HeuristicTag> primeg (FieldTraits<Field>::bestBitSize(A.coldim()));
 		++primeg;
 		Field F(*primeg);
 		FBlackbox fbb(F, A.rowdim(), A.coldim());
