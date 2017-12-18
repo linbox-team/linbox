@@ -143,6 +143,10 @@ namespace LinBox
                 return x = y & 1;
             }
 
+		Element &init (Element &x, const bool &y ) const
+            {
+                return x = y;
+            }
 /*
   Element &init (Element &x, const long &y ) const
   {
