@@ -2,7 +2,7 @@
  *
  * Copyright (C) 2012 LinBox
  * Written by J-G Dumas
- * Time-stamp: <18 Dec 17 16:53:06 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <18 Dec 17 19:09:20 Jean-Guillaume.Dumas@imag.fr>
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
@@ -39,7 +39,7 @@ using namespace LinBox;
 using namespace std;
 
 template<class Int_type, class Ring_type = Givaro::ZRing<Int_type> >
-void runpoweroftworank(ifstream& input, const size_t exponent) {
+void runpoweroftworank(ifstream& input, const size_t exponent, bool pum) {
     typedef std::vector<std::pair<size_t,Int_type> > Smith_t;
     typedef Ring_type Ring; // signed ?
     Smith_t local;
@@ -58,8 +58,10 @@ void runpoweroftworank(ifstream& input, const size_t exponent) {
 
     Givaro::Timer tim; 
     tim.clear(); tim.start();
-//     PGD(local, A, Q, exponent, PRESERVE_UPPER_MATRIX);
-    PGD(local, A, Q, exponent);
+    if (pum)
+        PGD(local, A, Q, exponent, PRESERVE_UPPER_MATRIX);
+    else
+        PGD(local, A, Q, exponent);
     tim.stop();
 
     R.write(std::cout << "Local Smith Form ") << " : " << std::endl << '(';
@@ -85,23 +87,28 @@ int main (int argc, char **argv) {
 
     ifstream input (argv[1]);
     if (!input) { cerr << "Error opening matrix file: " << argv[1] << endl; return -1; }
-    size_t method( argc>3? atoi(argv[3]): 0 );
+    int method( argc>3? atoi(argv[3]): 0 );
     
     Givaro::Timer tim;
     size_t exponent = atoi(argv[2]);
-    if ((method == 2) || ((method == 0) && (exponent >= (1<<10))) ) {
-        runpoweroftworank<Givaro::Integer>(input, exponent);
+
+    bool pum(false);
+
+    if (method < 0) { method = -method; pum = true; }
+
+    if ((method == 2) || ((method == 0) && (exponent >= (1<<11))) ) {
+        runpoweroftworank<Givaro::Integer>(input, exponent, pum);
     } else {
         if ((method == 1) || ((method == 0) && (exponent < 64)) ) {
-            runpoweroftworank<uint64_t, Givaro::ZRing<int64_t> >(input, exponent);
+            runpoweroftworank<uint64_t, Givaro::ZRing<int64_t> >(input, exponent, pum);
         } else {
             switch (method) {
-                case 6: runpoweroftworank<RecInt::ruint<6>>(input, exponent); break;
-                case 7: runpoweroftworank<RecInt::ruint<7>>(input, exponent); break;
-                case 8: runpoweroftworank<RecInt::ruint<8>>(input, exponent); break;
-                case 9: runpoweroftworank<RecInt::ruint<9>>(input, exponent); break;
-                case 10: runpoweroftworank<RecInt::ruint<10>>(input, exponent); break;
-                case 11: runpoweroftworank<RecInt::ruint<11>>(input, exponent); break;
+                case 6: runpoweroftworank<RecInt::ruint<6>>(input, exponent, pum); break;
+                case 7: runpoweroftworank<RecInt::ruint<7>>(input, exponent, pum); break;
+                case 8: runpoweroftworank<RecInt::ruint<8>>(input, exponent, pum); break;
+                case 9: runpoweroftworank<RecInt::ruint<9>>(input, exponent, pum); break;
+                case 10: runpoweroftworank<RecInt::ruint<10>>(input, exponent, pum); break;
+                case 11: runpoweroftworank<RecInt::ruint<11>>(input, exponent, pum); break;
             }
         }
     }
