@@ -30,7 +30,7 @@
  * @ingroup tests
  * @brief  no doc
  * @test no doc.
- */
+ */ 
 
 #ifdef DEBUG
 # ifndef LINBOX_LOCAL_SMITH_OUTPUT_
