@@ -246,7 +246,7 @@ namespace LinBox
 		commentator().start ("Integer Minpoly", "Iminpoly");
 #endif
 		// 0.7213475205 is an upper approximation of 1/(2log(2))
-		typename Givaro::ModularBalanced<double> Field;
+		typedef Givaro::ModularBalanced<double> Field;
                 PrimeIterator<RandomCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
 		IntegerModularMinpoly<Blackbox,MyMethod> iteration(A, M);
 #ifdef __LINBOX_HAVE_MPI
