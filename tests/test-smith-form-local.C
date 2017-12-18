@@ -180,9 +180,15 @@ bool check_ranks(const std::vector<std::pair<size_t,Base> >& local,
     auto mi(map_values.begin());
     for (; li != local.end(); ++li, ++mi)
         if ( (li->first != mi->second) ||
-             (li->second != Givaro::power(p,mi->first)) )
-            pass = false;
-
+             (li->second != Givaro::power(p,mi->first)) ) {
+            std::cerr << "*** ERROR *** (" <<
+                li->first << ',' << li->second << ')' 
+                      << " ---->---- (" <<
+                mi->second << ',' << mi->first << ')' 
+                      << std::endl;
+            return pass = false;
+        }
+    
     return pass;
 }
 
@@ -276,6 +282,9 @@ template<typename Base, class ModRing = Givaro::Modular<Base>, class Ring = Giva
 bool test_sparse_local_smith(size_t seed, size_t R, size_t M, size_t N,
                              const Base& p, int exp,
                              double density) {
+#ifdef LINBOX_LOCAL_SMITH_OUTPUT_
+    std::cerr << "test_sparse_local_smith(" << density << ") mod " << p << '^' << exp << std::endl;
+#endif
     ModRing F(Givaro::power(p,exp));
 
     ASSERT(R<=M && R<=N);
@@ -292,8 +301,8 @@ bool test_sparse_local_smith(size_t seed, size_t R, size_t M, size_t N,
 #endif
 
     std::vector<int> indices(R);
-    size_t ii(0);
-    std::generate(indices.begin(), indices.end(), [&ii]()->int { return ii++; });
+    std::iota(indices.begin(), indices.end(), 0);
+
     std::mt19937 gen; gen.seed(seed);
     std::shuffle(indices.begin(), indices.end(), gen);
 
@@ -337,7 +346,9 @@ bool test_sparse_local_smith(size_t seed, size_t R, size_t M, size_t N,
     if (p == Base(2)) {
         Ring RR;
         SparseMatrix<Ring, SparseMatrixFormat::SparseSeq > B (RR,M,N);
-        MatrixHom::map(B, A);
+        for(size_t i=0; i<M; ++i) for(size_t j=0; j<N; ++j) 
+            if (!RR.isZero(A.getEntry(i,j)))
+                B.setEntry(i,j,A.getEntry(i,j));
         return sparse_local_smith_poweroftwo(B,R,M,N,p,exp,map_values);
     } else {
         SparseMatrix<ModRing, SparseMatrixFormat::SparseSeq > B (F,M,N);
@@ -352,7 +363,7 @@ int main (int argc, char **argv) {
     static int64_t m = 25;
     static int64_t n = 27;
     static int64_t r = 13;
-    static int64_t q = 3;
+    static Integer  q = 3;
     static int32_t e = 12;
     static double d = 0.3;
     static int rseed = (int)time(NULL);
@@ -361,7 +372,7 @@ int main (int argc, char **argv) {
 		{ 'm', "-m M", "Set dimension of test matrices to MxN.", TYPE_INT,     &m },
 		{ 'n', "-n N", "Set dimension of test matrices to MxN.", TYPE_INT,     &n },
 		{ 'r', "-r R", "Set rank of test matrices to R.", TYPE_INT,     &r },
-		{ 'q', "-q Q", "Operate over the ring Z/q^eZ.", TYPE_INT, &q },
+		{ 'q', "-q Q", "Operate over the ring Z/q^eZ.", TYPE_INTEGER, &q },
 		{ 'e', "-e e", "Operate over the ring Z/q^eZ.", TYPE_INT, &e },
 		{ 'd', "-d d", "Density of random sparse matrices.", TYPE_DOUBLE, &d },
         { 's', "-s S", "Random generator seed.", TYPE_INT,     &rseed }	,
@@ -378,17 +389,28 @@ int main (int argc, char **argv) {
 
     { // sparseelim
 
-//         pass0 &= test_sparse_local_smith(rseed,r,m,n,Givaro::Integer(2),e,d);
-//         pass0 &= test_sparse_local_smith(rseed,r,m,n,Givaro::Integer(q),e,d/2.);
-//         pass0 &= test_sparse_local_smith(rseed,r,m,n,uint64_t(2),e,d);
-//         pass0 &= test_sparse_local_smith(rseed,r,m,n,uint64_t(q),e,d/2.);
-//         pass0 &= test_sparse_local_smith(rseed,r,m,n,RecInt::ruint<6>(2),e,d);
-        pass0 &= test_sparse_local_smith(rseed,r,m,n,RecInt::ruint<6>(q),e,d);
-//         typedef Givaro::Modular<RecInt::ruint<7>,RecInt::ruint<8> > MUU;
-//         pass0 &= test_sparse_local_smith< RecInt::ruint128,MUU>(rseed,r,m,n,RecInt::ruint128(q),e,d/2);
-//         pass0 &= test_sparse_local_smith(rseed,r,m,n,RecInt::ruint128(q),e,d);
-//         pass0 &= test_sparse_local_smith(rseed,r,m,n,RecInt::ruint128(2),e,d);
-//         pass0 &= test_sparse_local_smith(rseed,r,m,n,RecInt::ruint256(q),e,d/2);
+        pass0 &= test_sparse_local_smith(rseed,r,m,n,Givaro::Integer(2),e,d);
+        pass0 &= test_sparse_local_smith(rseed,r,m,n,Givaro::Integer(q),e,d/2.);
+        pass0 &= test_sparse_local_smith(rseed,r,m,n,uint64_t(2),e,d);
+        pass0 &= test_sparse_local_smith(rseed,r,m,n,uint64_t(q),e,d/2.);
+        
+        int32_t ne = ((1<<5)/(q.bitsize()-1))+1; ne = (ne>e?ne:e); // rns needs minimal size
+        pass0 &= test_sparse_local_smith<
+            RecInt::ruint<6>,
+            Givaro::Modular<RecInt::ruint<6>,RecInt::ruint<7>>>
+            (rseed,r,m,n,RecInt::ruint<6>(q),ne,d/2);
+
+        ne = ((1<<6)/(q.bitsize()-1))+1; ne = (ne>e?ne:e); // rns needs minimal size
+        pass0 &= test_sparse_local_smith<
+            RecInt::ruint<7>,
+            Givaro::Modular<RecInt::ruint<7>,RecInt::ruint<8>>>
+            (rseed,r,m,n,RecInt::ruint<7>(q),ne,d/2);
+
+        ne = ((1<<7)/(q.bitsize()-1))+1; ne = (ne>e?ne:e); // rns needs minimal size
+        pass0 &= test_sparse_local_smith<
+            RecInt::ruint<7>,
+            Givaro::Modular<RecInt::ruint<7>,RecInt::ruint<8>>>
+            (rseed,r,m,n,RecInt::ruint<8>(q),ne,d/2);
    }
 
 
