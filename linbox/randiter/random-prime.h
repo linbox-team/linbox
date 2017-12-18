@@ -138,34 +138,6 @@ namespace LinBox
 			linbox_check(bits >1);
 			generatePrime();
 		}
-
-                /** @brief Sets the bit size.
-		 *  @param bits the new bit size.
-		 */
-		template<class _ModField>
-		void setBitsField()
-		{
-			integer k = FieldTraits<_ModField >::maxModulus();
-			uint64_t bits = (uint64_t)(k.bitsize());
-			if (!bits)
-				throw("weird");
-			--bits;
-			if (bits < _bits)
-				setBits(bits);
-		}
-
-		template<class _ModField>
-		bool setBitsDelayedField(size_t n)
-		{
-			integer k = FieldTraits<_ModField >::maxModulus();
-			int bits = (int)(k.bitsize());
-			if (!bits) throw("weird");
-			--bits;
-			bits -= (int)((log((double)n)/2./M_LN2));
-			if (bits < 0) return false;
-			if (bits < (int64_t)_bits) setBits((uint64_t)bits);
-			return true;
-		}
 	};
 
         template<>
