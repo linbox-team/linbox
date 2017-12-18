@@ -195,11 +195,7 @@ namespace LinBox
                 typedef Field::Element Element;
 
                 size_t n = M. rowdim();
-                PrimeIterator<RandomCategories::HeuristicTag> primeg;
-                if( ! primeg.template setBitsDelayedField<Field>(n) )
-                    primeg.template setBitsField<Field>();
-
-
+                PrimeIterator<RandomCategories::HeuristicTag> primeg(FieldTraits<Field>::bestBitSize(A.coldim()));
 
                 Element* FA = new Element[n*n];
                 size_t* P= new size_t[n], *PQ = new size_t[n];
@@ -316,7 +312,7 @@ namespace LinBox
                     // typedef Givaro::Modular<double> Field;
                 typedef Field::Element Element;
                 typedef DenseMatrix<Field> FMatrix;
-                PrimeIterator<RandomCategories::HeuristicTag> primeg; primeg.template setBitsField<Field>();
+                PrimeIterator<RandomCategories::HeuristicTag> primeg(FieldTraits<Field>::bestBitSize(A.coldim()));
                 Field F (*primeg);
                 FMatrix FM(F, IM.rowdim(), IM.coldim());
                     //std::clog << "Random prime " << p << "\n";

@@ -129,7 +129,7 @@ namespace LinBox
 		template <class Row>
 		long rank(const SparseMatrix<Ring, Row>& A) const
 		{
-			rp.template setBitsField<Field>();
+                        rp.setBits(FieldTraits<Field>::bestBitSize(A.coldim()));
 
 			Field F (*rp);
 			typename SparseMatrix<Ring, Row>::template rebind<Field>::other Ap(A, F);
