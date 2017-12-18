@@ -1,7 +1,7 @@
 /* tests/test-local-smith.C
  * Copyright (C) LinBox
  *
- * Written by David Saunders
+ * Written by J-G. Dumas
  *
  * --------------------------------------------------------
  *
