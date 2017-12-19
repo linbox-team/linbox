@@ -294,7 +294,7 @@ namespace LinBox
 		beta = lif*bonus;
 		iteration.Beta(beta);
 
-		EarlySingleCRA< Givaro::Modular<double> > cra2(4UL);
+		EarlySingleCRA<mymodular> cra2(4UL);
 		Integer_t k = 1;
 
 		early_counter = 0;
@@ -331,7 +331,7 @@ namespace LinBox
 				//iteration.Moduli(moduli);
 				//iteration.Primes(primes);
 				k=1;
-				EarlySingleCRA< Givaro::Modular<double> > cra3(4UL);
+				EarlySingleCRA<mymodular> cra3(4UL);
 
 				early_counter = 0;
 				while ( (early_counter < myfactor) && (!cra3.terminated() )) {
