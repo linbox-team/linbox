@@ -247,7 +247,7 @@ namespace LinBox
 #endif
 		// 0.7213475205 is an upper approximation of 1/(2log(2))
 		typedef Givaro::ModularBalanced<double> Field;
-                PrimeIterator<RandomCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
+                PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
 		IntegerModularMinpoly<Blackbox,MyMethod> iteration(A, M);
 #ifdef __LINBOX_HAVE_MPI
 		MPIChineseRemainder< EarlyMultipCRA<Field > > cra(3UL, c);
@@ -273,7 +273,7 @@ namespace LinBox
 		commentator().start ("Rational Minpoly", "Rminpoly");
 
 		typedef Givaro::ModularBalanced<double> Field;
-                PrimeIterator<RandomCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
+                PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
 		RationalRemainder2< VarPrecEarlyMultipCRA<Field> > rra(3UL);
 		IntegerModularMinpoly<Blackbox,MyMethod> iteration(A, M);
 

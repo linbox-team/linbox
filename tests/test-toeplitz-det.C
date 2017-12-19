@@ -68,7 +68,7 @@ int main(int argc, char* argv[])
 	bool pass = true;
 #ifdef __LINBOX_HAVE_NTL
 	srand((unsigned)time(0));
-	PrimeIterator<RandomCategories::HeuristicTag> rp(FieldTraits<NTL_zz_p>::bestBitSize());
+	PrimeIterator<IteratorCategories::HeuristicTag> rp(FieldTraits<NTL_zz_p>::bestBitSize());
 	NTL_zz_p CF( *rp ); NTL_zz_p::RandIter randit(CF);
 	NTL_zz_pX PF(CF);
 	

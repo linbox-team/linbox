@@ -88,7 +88,7 @@ int test_early_single(std::ostream & report, size_t PrimeSize, size_t Size)
 	typedef typename std::vector<T> Vect ;
 	typedef typename Vect::iterator Iterator;
 	Vect primes(Size) ;
-	PrimeIterator<RandomCategories::HeuristicTag> RP((unsigned )PrimeSize);
+	PrimeIterator<IteratorCategories::HeuristicTag> RP((unsigned )PrimeSize);
 	/*  primes, probably not all coprime... */
 	for (size_t i = 0 ; i < Size ; ++i) {
 		primes[i] = *RP;
@@ -160,7 +160,7 @@ int test_prob_single(std::ostream & report, size_t PrimeSize, size_t Size)
 
         Integer pprod(1); // product of distinct primes
 	Vect primes(Size) ;
-	PrimeIterator<RandomCategories::HeuristicTag> RP((unsigned )PrimeSize);
+	PrimeIterator<IteratorCategories::HeuristicTag> RP((unsigned )PrimeSize);
 	/*  primes, probably not all coprime... */
 	for (size_t i = 0 ; i < Size ; ++i) {
 		primes[i] = *RP;
@@ -251,7 +251,7 @@ int test_early_multip(std::ostream & report, size_t PrimeSize, size_t Taille, si
 
 	/*  primes */
 	Vect primes(Size) ;
-	PrimeIterator<RandomCategories::HeuristicTag> RP((unsigned )PrimeSize);
+	PrimeIterator<IteratorCategories::HeuristicTag> RP((unsigned )PrimeSize);
 	for (size_t i = 0 ; i < Size ; ++i) {
 		primes[i] = *RP;
 		++RP ;
@@ -339,7 +339,7 @@ int test_full_multip_matrix(std::ostream & report, size_t PrimeSize,
 
 	Vect primes(Size) ;
 	/*  probably not all coprime... */
-	PrimeIterator<RandomCategories::HeuristicTag> RP((unsigned )PrimeSize);
+	PrimeIterator<IteratorCategories::HeuristicTag> RP((unsigned )PrimeSize);
 	for (size_t i = 0 ; i < Size ; ++i) {
 		primes[i] = *RP;
 		++RP ;
@@ -436,7 +436,7 @@ int test_full_multip(std::ostream & report, size_t PrimeSize, size_t Size, size_
 
 	Vect primes(Size) ;
 	/*  probably not all coprime... */
-	PrimeIterator<RandomCategories::HeuristicTag> RP((unsigned )PrimeSize);
+	PrimeIterator<IteratorCategories::HeuristicTag> RP((unsigned )PrimeSize);
 	for (size_t i = 0 ; i < Size ; ++i) {
 		primes[i] = *RP;
 		++RP ;
@@ -526,7 +526,7 @@ int test_full_multip_fixed(std::ostream & report, size_t PrimeSize, size_t Size,
 
 	Vect primes(Size) ;
 	/*  probably not all coprime... */
-	PrimeIterator<RandomCategories::HeuristicTag> RP((unsigned )PrimeSize);
+	PrimeIterator<IteratorCategories::HeuristicTag> RP((unsigned )PrimeSize);
 	for (size_t i = 0 ; i < Size ; ++i) {
 		primes[i] = *RP;
 		++RP ;

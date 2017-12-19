@@ -147,7 +147,7 @@ int main(int argc, char** argv){
 		check_sigma(F,G,m,n,d);
 	}
 	else {
-		PrimeIterator<RandomCategories::HeuristicTag> Rd(b,seed);
+		PrimeIterator<IteratorCategories::HeuristicTag> Rd(b,seed);
 		integer p = *Rd;
 		report<<"# starting sigma basis computation over LargeField Fp[x] with p="<<p<<endl;;		
 

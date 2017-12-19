@@ -388,7 +388,7 @@ int main(int argc, char** argv){
 			FFT_PROF_LEVEL=2;
 #endif
 
-		PrimeIterator<RandomCategories::HeuristicTag> Rd(b,seed);
+		PrimeIterator<IteratorCategories::HeuristicTag> Rd(b,seed);
 		integer p = *Rd;
 		std::cout<<"# starting sigma basis computation over Fp[x] with p="<<p<<endl;;		
 		LargeField F(p);		

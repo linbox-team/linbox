@@ -575,7 +575,7 @@ namespace LinBox
 		// 0.7213475205 is an upper approximation of 1/(2log(2))
 		IntegerModularDet<Blackbox, MyMethod> iteration(A, Meth);
                 typedef Givaro::ModularBalanced<double> Field;
-                PrimeIterator<RandomCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
+                PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
 		integer dd; // use of integer due to non genericity of cra. PG 2005-08-04
 
 		//  will call regular cra if C=0
@@ -638,7 +638,7 @@ namespace LinBox
 
 		IntegerModularDet<Blackbox, MyMethod> iteration(A, Meth);
                 typedef Givaro::ModularBalanced<double> Field;
-		PrimeIterator<RandomCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
+		PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
 		RationalRemainder2< VarPrecEarlySingleCRA< Field > > rra(4UL);
 
 		rra(num,den, iteration, genprime);

@@ -169,7 +169,7 @@ namespace LinBox
 		Integer_t beta = 1;
 		d=1;
 
-		PrimeIterator<RandomCategories::HeuristicTag> genprime(FieldTraits<mymodular>::bestBitSize(A.coldim()));
+		PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<mymodular>::bestBitSize(A.coldim()));
 		//cout << "prime size: " << p_size << "\n";
 		EarlySingleCRA<mymodular> cra(4UL);
 		IntegerModularDetReduced<Blackbox,MyMethod> iteration(A, M, beta,myfactor);
@@ -247,16 +247,16 @@ namespace LinBox
 			return d;
 		}
 
-		PrimeIterator<RandomCategories::HeuristicTag> genprime1(FieldTraits<mymodular>::bestBitSize(A.coldim()));
+		PrimeIterator<IteratorCategories::HeuristicTag> genprime1(FieldTraits<mymodular>::bestBitSize(A.coldim()));
                 
 		Integers ZZ;
-		RationalSolver < Integers , mymodular, PrimeIterator<RandomCategories::HeuristicTag>, DixonTraits > RSolver(A. field(), genprime);
+		RationalSolver < Integers , mymodular, PrimeIterator<IteratorCategories::HeuristicTag>, DixonTraits > RSolver(A. field(), genprime);
 #endif
-		RationalSolver < Integers , mymodular, PrimeIterator<RandomCategories::HeuristicTag>, DixonTraits > RSolver;
+		RationalSolver < Integers , mymodular, PrimeIterator<IteratorCategories::HeuristicTag>, DixonTraits > RSolver;
 
 		BlasVector<Integers> r_num1 (A.field(),A. coldim());
 
-		LastInvariantFactor < Integers ,RationalSolver < Integers, mymodular, PrimeIterator<RandomCategories::HeuristicTag>, DixonTraits > >  LIF(RSolver);
+		LastInvariantFactor < Integers ,RationalSolver < Integers, mymodular, PrimeIterator<IteratorCategories::HeuristicTag>, DixonTraits > >  LIF(RSolver);
 #ifdef _LB_H_DET_TIMING
 		BT.start();
 #endif
@@ -449,7 +449,7 @@ namespace LinBox
 		Integer beta = 1;
 		d=1;
 
-                PrimeIterator<RandomCategories::HeuristicTag> genprime(FieldTraits<mymodular>::bestBitSize(A.coldim()));
+                PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<mymodular>::bestBitSize(A.coldim()));
 
 		commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION) << "prime size: " << p_size << "\n";
 		ChineseRemainder< mymodular > cra(3UL);
@@ -522,10 +522,10 @@ namespace LinBox
 			return d;
 		}
 
-                PrimeIterator<RandomCategories::HeuristicTag> genprime1(FieldTraits<mymodular>::bestBitSize(A.coldim()));
+                PrimeIterator<IteratorCategories::HeuristicTag> genprime1(FieldTraits<mymodular>::bestBitSize(A.coldim()));
                 Integers ZZ;
 #endif
-		typedef RationalSolver < Integers , mymodular, PrimeIterator<RandomCategories::HeuristicTag>, BlockHankelTraits > Solver;
+		typedef RationalSolver < Integers , mymodular, PrimeIterator<IteratorCategories::HeuristicTag>, BlockHankelTraits > Solver;
 		Solver RSolver(A. field(), genprime);
 
 		typename Vector<Integers>:: Dense r_num1 (A. coldim());

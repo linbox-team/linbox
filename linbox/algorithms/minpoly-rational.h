@@ -168,7 +168,7 @@ namespace LinBox
 
 		commentator().start ("Rational Minpoly", "Rminpoly");
                 typedef Givaro::ModularBalanced<double> Field;
-		PrimeIterator<RandomCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
+		PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
 
 		std::vector<Integer> F(A.rowdim()+1,1);
 		std::vector<Integer> M(A.rowdim()+1,1);
