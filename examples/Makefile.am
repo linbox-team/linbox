@@ -45,7 +45,10 @@ LDADD += $(OPTLIBES)
 #  SUBDIRS=fields solver data blackbox
 SUBDIRS=data
 
-EXAMPLES=rank det minpoly valence solve dot-product echelon sparseelimdet sparseelimrank checksolve doubledet smithvalence charpoly blassolve solverat sparsesolverat poweroftwo_ranks power_rank#polysmith bench-fft bench-matpoly-mult genprime
+EXAMPLES=rank det minpoly valence solve dot-product echelon sparseelimdet \
+sparseelimrank checksolve doubledet smithvalence charpoly blassolve solverat \
+sparsesolverat poweroftwo_ranks power_rank genprime
+#polysmith bench-fft bench-matpoly-mult
 # EXAMPLES+=nulp yabla 
 GIVARONTL_EXAMPLES=smith graph-charpoly
 if LINBOX_HAVE_NTL
