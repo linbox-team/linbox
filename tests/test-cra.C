@@ -160,10 +160,10 @@ int test_prob_single(std::ostream & report, size_t PrimeSize, size_t Size)
 
         Integer pprod(1); // product of distinct primes
 	Vect primes(Size) ;
-	RandomPrimeIterator RP((unsigned )PrimeSize);
+	PrimeIterator<RandomCategories::HeuristicTag> RP((unsigned )PrimeSize);
 	/*  primes, probably not all coprime... */
 	for (size_t i = 0 ; i < Size ; ++i) {
-		primes[i] = RP.randomPrime() ;
+		primes[i] = *RP;
 		++RP ;
                 if (pprod % primes[i]) {
 			pprod *= primes[i];
