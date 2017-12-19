@@ -170,13 +170,13 @@ int main (int argc, char **argv) {
 	};
 
 	parseArguments (argc, argv, args);
-    std::srand(rseed);
-    FFLAS::writeCommandString(std::cout, args) << std::endl;
+	std::srand(rseed);
+	FFLAS::writeCommandString(std::cout << argv[0] << ' ', args) << std::endl;
 
 	commentator().start("Local Smith Form test suite", "LocalSmith");
-    commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
-    ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-    report << "q = " << q << std::endl;
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	report << "q = " << q << std::endl;
 
 #if 1
   { // zero-th local ring type: modulus p^e as integer.
