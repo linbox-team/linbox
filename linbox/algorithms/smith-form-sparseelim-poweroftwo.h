@@ -1,7 +1,7 @@
 /* algorithms/smith-form-sparseelim-poweroftwo.h
  * Copyright (C) LinBox
  * Written by JG Dumas
- * Time-stamp: <18 Dec 17 19:10:17 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <19 Dec 17 11:23:27 Jean-Guillaume.Dumas@imag.fr>
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
@@ -479,7 +479,7 @@ namespace LinBox
                         REQUIRE( indcol > 0);
                         unsigned long currentrank(indcol); --currentrank;
 
-                        if (c != currentrank) {
+                        if (c != (long)currentrank) {
                             Q.permute(currentrank,c);
 #ifdef  LINBOX_pp_gauss_steps_OUT
                             std::cerr << "------------ permuting cols " << (indcol-1) << " and " << c << " ---" << std::endl;
