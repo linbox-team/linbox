@@ -252,52 +252,52 @@ bool TestCra(size_t N, int S, size_t seed)
 	InteratorIt iterationIt(iteration.getVector());
         typedef Givaro::ModularBalanced<double> Field;
 	InteratorBlas<Field > iterationBlas(iteration.getVector());
-	PrimeIterator<RandomCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(N), new_seed );
+	PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(N), new_seed );
 
 	bool pass = true;
 
 	pass &= TestOneCRA< LinBox::EarlyMultipCRA< Field >,
-	     Interator, LinBox::PrimeIterator<RandomCategories::HeuristicTag> >(
+	     Interator, LinBox::PrimeIterator<IteratorCategories::HeuristicTag> >(
 						     report, iteration, genprime, N, 5);
 
 	pass &= TestOneCRA< LinBox::EarlyMultipCRA< Field >,
-	     Interator, LinBox::PrimeIterator<RandomCategories::HeuristicTag> >(
+	     Interator, LinBox::PrimeIterator<IteratorCategories::HeuristicTag> >(
 						     report, iteration, genprime, N, 15);
 
 	pass &= TestOneCRA< LinBox::FullMultipCRA< Field >,
-	     Interator, LinBox::PrimeIterator<RandomCategories::HeuristicTag> >(
+	     Interator, LinBox::PrimeIterator<IteratorCategories::HeuristicTag> >(
 						     report, iteration, genprime, N, iteration.getLogSize()+1);
 
 	pass &= TestOneCRA< LinBox::FullMultipCRA< Field >,
-	     Interator, LinBox::PrimeIterator<RandomCategories::HeuristicTag> >(
+	     Interator, LinBox::PrimeIterator<IteratorCategories::HeuristicTag> >(
 						     report, iteration, genprime, N, 3*iteration.getLogSize()+15);
 
 #if 0
 	pass &= TestOneCRAbegin<LinBox::FullMultipFixedCRA< Field >,
-	     InteratorIt, LinBox::PrimeIterator<RandomCategories::HeuristicTag> >(
+	     InteratorIt, LinBox::PrimeIterator<IteratorCategories::HeuristicTag> >(
 						       report, iterationIt, genprime, N, std::pair<size_t,double>(N,iteration.getLogSize()+1));
 
 	pass &= TestOneCRAbegin<LinBox::FullMultipFixedCRA< Field >,
-	     InteratorIt, LinBox::PrimeIterator<RandomCategories::HeuristicTag> >(
+	     InteratorIt, LinBox::PrimeIterator<IteratorCategories::HeuristicTag> >(
 						       report, iterationIt, genprime, N, std::pair<size_t,double>(N,3*iteration.getLogSize()+15));
 
 
 	pass &= TestOneCRAWritePointer<LinBox::FullMultipFixedCRA< Field >,
-	     InteratorIt, LinBox::PrimeIterator<RandomCategories::HeuristicTag> >(
+	     InteratorIt, LinBox::PrimeIterator<IteratorCategories::HeuristicTag> >(
 						       report, iterationIt, genprime, N, std::pair<size_t,double>(N,iterationIt.getLogSize()+1) );
 
 	pass &= TestOneCRAWritePointer<LinBox::FullMultipFixedCRA< Field >,
-	     InteratorIt, LinBox::PrimeIterator<RandomCategories::HeuristicTag> >(
+	     InteratorIt, LinBox::PrimeIterator<IteratorCategories::HeuristicTag> >(
 						       report, iterationIt, genprime, N, std::pair<size_t,double>(N,3*iterationIt.getLogSize()+15) );
 
 	pass &= TestOneCRAWritePointer<LinBox::FullMultipFixedCRA< Field >,
 	     InteratorBlas< Field >,
-	     LinBox::PrimeIterator<RandomCategories::HeuristicTag> >(
+	     LinBox::PrimeIterator<IteratorCategories::HeuristicTag> >(
 					  report, iterationBlas, genprime, N, std::pair<size_t,double>(N,iterationIt.getLogSize()+1) );
 
 	pass &= TestOneCRAWritePointer<LinBox::FullMultipFixedCRA< Field >,
 	     InteratorBlas< Field >,
-	     LinBox::PrimeIterator<RandomCategories::HeuristicTag> >(
+	     LinBox::PrimeIterator<IteratorCategories::HeuristicTag> >(
 					  report, iterationBlas, genprime, N, std::pair<size_t,double>(N,3*iterationIt.getLogSize()+15) );
 #endif
 

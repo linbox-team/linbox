@@ -148,7 +148,7 @@ namespace LinBox
 #else
 		typedef Givaro::ModularBalanced<double> Field;
 #endif
-                PrimeIterator<RandomCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.rowdim()));
+                PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.rowdim()));
 		ChineseRemainder< EarlySingleCRA<Field> > cra(3UL);
 
 		IntegerModularValence<Blackbox,MyMethod> iteration(A, M);
@@ -269,7 +269,7 @@ namespace LinBox
 			typedef Givaro::Modular<int32_t> Field;
 			typedef typename MatrixHomTrait<Blackbox, Field>::value_type FBlackbox;
 			size_t d;
-			PrimeIterator<RandomCategories::HeuristicTag> g(FieldTraits<Field>::bestBitSize(A.coldim()));
+			PrimeIterator<IteratorCategories::HeuristicTag> g(FieldTraits<Field>::bestBitSize(A.coldim()));
 			Field::Element v;
 			++g;
 			Field F((int32_t)*g);
@@ -293,7 +293,7 @@ namespace LinBox
 			typedef Givaro::Modular<int32_t> Field;
 			typedef typename MatrixHomTrait<Blackbox, Field>::value_type FBlackbox;
 
-			PrimeIterator<RandomCategories::HeuristicTag> rg(FieldTraits<Field>::bestBitSize(A.coldim()));
+			PrimeIterator<IteratorCategories::HeuristicTag> rg(FieldTraits<Field>::bestBitSize(A.coldim()));
 			Givaro::ZRing<Integer> Z;
 			BlasVector<Givaro::ZRing<Integer> > Lv(Z), Lm(Z);
 			size_t d1; Field::Element v; integer im = 1;

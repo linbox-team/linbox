@@ -42,7 +42,7 @@ namespace LinBox
 {
             /*! \brief Information about the type of Prime Iterator
              */
-        namespace RandomCategories {
+        namespace IteratorCategories {
                 //! Iterator following a deterministic sequence of primes (from the largest one, in decreasing order
                 struct DeterministicTag{};
                 //! Iterator sampling uniformly from all primes of given bitsize
@@ -58,15 +58,15 @@ namespace LinBox
         struct UniqueSamplingTrait;
 
         template<>
-        struct UniqueSamplingTrait<RandomCategories::DeterministicTag>{
+        struct UniqueSamplingTrait<IteratorCategories::DeterministicTag>{
                 typedef std::true_type value;
         };
         template<>
-        struct UniqueSamplingTrait<RandomCategories::UniformTag>{
+        struct UniqueSamplingTrait<IteratorCategories::UniformTag>{
                 typedef std::false_type value;
         };
         template<>
-        struct UniqueSamplingTrait<RandomCategories::HeuristicTag>{
+        struct UniqueSamplingTrait<IteratorCategories::HeuristicTag>{
                 typedef std::false_type value;
         };
 
@@ -80,7 +80,7 @@ namespace LinBox
 	 * @internal
 	 * It is given by <code>nextprime(2^_bits-p)</code> where <code>size(p) < _bits</code>.
 	 */
-        template<class RandomTrait = RandomCategories::HeuristicTag>
+        template<class RandomTrait = IteratorCategories::HeuristicTag>
 	class PrimeIterator{
 	private:
 		uint64_t 	_bits;  //!< common lenght of all primes
@@ -112,7 +112,7 @@ namespace LinBox
                 /** @brief operator++()  (prefix ++ operator)
 		 *  creates a new random prime.
 		 */
-		inline PrimeIterator<RandomCategories::HeuristicTag> &operator ++ ()
+		inline PrimeIterator<IteratorCategories::HeuristicTag> &operator ++ ()
 		{
 			generatePrime();
                         return *this;
@@ -141,7 +141,7 @@ namespace LinBox
 	};
 
         template<>
-        void PrimeIterator<RandomCategories::HeuristicTag>::generatePrime(){
+        void PrimeIterator<IteratorCategories::HeuristicTag>::generatePrime(){
                 integer::random_exact_2exp(_prime,_bits);
                 _IPD.nextprimein(_prime);
                 while (_prime.bitsize()>_bits)
@@ -149,10 +149,10 @@ namespace LinBox
         }
 
         template<>
-        void PrimeIterator<RandomCategories::DeterministicTag>::generatePrime(){_IPD.prevprimein(_prime);}
+        void PrimeIterator<IteratorCategories::DeterministicTag>::generatePrime(){_IPD.prevprimein(_prime);}
 
         template<>
-        void PrimeIterator<RandomCategories::UniformTag>::generatePrime(){
+        void PrimeIterator<IteratorCategories::UniformTag>::generatePrime(){
                 do{
                         integer::random_exact_2exp(_prime,_bits);
                         switch (_prime %6){

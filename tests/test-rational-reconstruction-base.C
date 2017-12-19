@@ -111,7 +111,7 @@ static bool testRandomFraction (size_t n, size_t d, int iterations)
 
 		ModularFraction iteration(num,den);
                 typedef Givaro::ModularBalanced<double> Field;
-		PrimeIterator<RandomCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(n));
+		PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(n));
 
 		Givaro::ZRing<Integer> Z;
 		ClassicRationalReconstruction<Givaro::ZRing<Integer> > RRB1(Z,false,false);

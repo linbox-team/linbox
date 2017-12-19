@@ -241,7 +241,7 @@ namespace LinBox
 		IntegerDoubleDetIteration<BlackBox> iteration(A, s1, s2);
 		// 0.7213475205 is an upper approximation of 1/(2log(2))
                 typedef Givaro::ModularBalanced<double> Field;
-                PrimeIterator<RandomCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
+                PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
 
 		BlasVector<typename BlackBox::Field> dd(A.field());
 		if (proof) {

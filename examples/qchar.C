@@ -215,7 +215,7 @@ int main (int argc, char** argv)
 	cout << "had" << hadamarcp << "\n";
 	cout << "had2" << (Integer)hadamarcp*detPrec << "\n";
 
-	PrimeIterator<RandomCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(M.coldim()));
+	PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(M.coldim()));
 	ChineseRemainder< EarlyMultipCRA<Field  > > cra(3UL);
 	typedef Method::Hybrid MyMethod;
 	MyMethod Met;

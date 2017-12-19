@@ -167,7 +167,7 @@ namespace LinBox { namespace BLAS2 {
 
 		{
 
-                    PrimeIterator<RandomCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
+                    PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
                     ChineseRemainder< FullMultipBlasMatCRA< ModularField > > cra( std::pair<size_t,double>(C.size(), logC) );
                     Protected::IntegerSparseCraMatMul iteration(A,B);
 

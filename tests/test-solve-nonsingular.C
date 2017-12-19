@@ -388,15 +388,15 @@ int main(int argc, char** argv) {
 
 		report << "zw: not done.  Requires 64 bit architecture (maybe, needs checking -bds)." << std::endl << std::endl;
 	  } else {
-                  RationalSolver<Ring, ZField, PrimeIterator<RandomCategories::HeuristicTag>, NumSymNormTraits> rsolver(R);
+                  RationalSolver<Ring, ZField, PrimeIterator<IteratorCategories::HeuristicTag>, NumSymNormTraits> rsolver(R);
 		part_pass = testRandomSolve(R, rsolver, A, b);
 		report << "zw: " << (part_pass ? "pass" : "fail") << std::endl << std::endl;
 	  }
 	}
 	pass = pass && part_pass;
 	if(run & 4){
-		PrimeIterator<RandomCategories::HeuristicTag> genprime(FieldTraits<DField>::bestBitSize(A.coldim()));
-		RationalSolver<Ring, DField, PrimeIterator<RandomCategories::HeuristicTag>, DixonTraits> rsolver(R, genprime);
+		PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<DField>::bestBitSize(A.coldim()));
+		RationalSolver<Ring, DField, PrimeIterator<IteratorCategories::HeuristicTag>, DixonTraits> rsolver(R, genprime);
 		part_pass = testRandomSolve(R, rsolver, A, b);
 		report << "dixon: " << (part_pass ? "pass" : "fail") << std::endl << std::endl;
 	}

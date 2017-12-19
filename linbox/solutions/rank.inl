@@ -458,7 +458,7 @@ namespace LinBox
 	{
 		commentator().start ("Integer Rank", "iirank");
 		typedef Givaro::ModularBalanced<double> projField;
-		PrimeIterator<RandomCategories::HeuristicTag> genprime(FieldTraits<projField>::bestBitSize(A.rowdim()));
+		PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<projField>::bestBitSize(A.rowdim()));
 		typedef typename Blackbox::template rebind< projField >::other FBlackbox;
 		const projField Fp(*genprime);
 		FBlackbox Ap(A, Fp );
@@ -594,7 +594,7 @@ namespace LinBox { /*  rankin */
 	{
 		commentator().start ("Integer Rank inplace", "irank");
 		typedef Givaro::ModularBalanced<double> Field;
-		PrimeIterator<RandomCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.rowdim()));
+		PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.rowdim()));
 		typedef typename Blackbox::template rebind< Field >::other FBlackbox;
 		const Field Fp(*genprime);
 		FBlackbox Ap(A, Fp);

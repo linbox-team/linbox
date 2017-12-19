@@ -364,7 +364,7 @@ namespace LinBox
 		commentator().start ("Integer BlackBox Charpoly : No NTL installation -> chinese remaindering", "IbbCharpoly");
 
         typedef Givaro::ModularBalanced<double> Field;
-		PrimeIterator<RandomCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
+		PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
 #if 0
 		typename Blackbox::ConstIterator it = A.Begin();
 		typename Blackbox::ConstIterator it_end = A.End();
@@ -408,7 +408,7 @@ namespace LinBox
 		commentator().start ("Integer Dense Charpoly : No NTL installation -> chinese remaindering", "IbbCharpoly");
 
         typedef Givaro::ModularBalanced<double> Field;
-		PrimeIterator<RandomCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
+		PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
 #if 0
 		typename Blackbox::ConstIterator it = A.Begin();
 		typename Blackbox::ConstIterator it_end = A.End();
@@ -473,7 +473,7 @@ namespace LinBox
 		commentator().start ("Rational Charpoly", "Rcharpoly");
 
         typedef Givaro::ModularBalanced<double> Field;
-		PrimeIterator<RandomCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
+		PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
 		RationalRemainder2< VarPrecEarlyMultipCRA<Field > > rra(3UL);
 		IntegerModularCharpoly<Blackbox,MyMethod> iteration(A, M);
 

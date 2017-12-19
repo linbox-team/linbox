@@ -169,7 +169,7 @@ namespace LinBox
 
 		commentator().start ("Rational Det", "Rdeterminant");
 
-		PrimeIterator<RandomCategories::HeuristicTag> genprime;
+		PrimeIterator<IteratorCategories::HeuristicTag> genprime;
 
 		Integer F = 1;
 		Integer M = 1;
@@ -242,8 +242,8 @@ namespace LinBox
 		Integer lif = 1;
 		if ((s1 > 4*s2) && (!term)){
 			//cout << "lif " << std::flush;
-			RationalSolver < Givaro::IntegerDom , Givaro::Modular<double>, PrimeIterator<RandomCategories::HeuristicTag>, DixonTraits > RSolver;
-			LastInvariantFactor < Givaro::IntegerDom ,RationalSolver < Givaro::IntegerDom, Givaro::Modular<double>, PrimeIterator<RandomCategories::HeuristicTag>, DixonTraits > >  LIF(RSolver);
+			RationalSolver < Givaro::IntegerDom , Givaro::Modular<double>, PrimeIterator<IteratorCategories::HeuristicTag>, DixonTraits > RSolver;
+			LastInvariantFactor < Givaro::IntegerDom ,RationalSolver < Givaro::IntegerDom, Givaro::Modular<double>, PrimeIterator<IteratorCategories::HeuristicTag>, DixonTraits > >  LIF(RSolver);
 			IVect r_num2 (Z,Atilde. coldim());
 			t1.clear();
 			t1.start();
