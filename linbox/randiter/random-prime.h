@@ -54,21 +54,18 @@ namespace LinBox
             /*! \brief Whether a prime generator generates a sequence with non repeating
              * numbers
              */
-        template<class RandomTrait>
+        template<class IteratorTrait>
         struct UniqueSamplingTrait;
 
         template<>
-        struct UniqueSamplingTrait<IteratorCategories::DeterministicTag>{
-                typedef std::true_type value;
-        };
+        struct UniqueSamplingTrait<IteratorCategories::DeterministicTag>
+		:public std::true_type { };
         template<>
-        struct UniqueSamplingTrait<IteratorCategories::UniformTag>{
-                typedef std::false_type value;
-        };
+        struct UniqueSamplingTrait<IteratorCategories::UniformTag>
+		:public std::false_type { };
         template<>
-        struct UniqueSamplingTrait<IteratorCategories::HeuristicTag>{
-                typedef std::false_type value;
-        };
+        struct UniqueSamplingTrait<IteratorCategories::HeuristicTag>
+		:public std::false_type { };
 
         
         /*!  @brief  Prime Iterator.
@@ -80,7 +77,7 @@ namespace LinBox
 	 * @internal
 	 * It is given by <code>nextprime(2^_bits-p)</code> where <code>size(p) < _bits</code>.
 	 */
-        template<class RandomTrait = IteratorCategories::HeuristicTag>
+        template<class Trait = IteratorCategories::HeuristicTag>
 	class PrimeIterator{
 	private:
 		uint64_t 	_bits;  //!< common lenght of all primes
@@ -90,8 +87,8 @@ namespace LinBox
                 void generatePrime();
 	public:
 		typedef integer Prime_Type ;
-                typedef typename UniqueSamplingTrait<RandomTrait>::value UniqueSamplingTag; //!< whether a prime can be picked more than once
-                typedef RandomTrait RandomTrait_Type;
+                typedef UniqueSamplingTrait<Trait> UniqueSamplingTag; //!< whether a prime can be picked more than once
+                typedef Trait IteratorTag;
 
                 /*! Constructor.
 		 * @param bits size of primes (in bits). Default is 23 so it
