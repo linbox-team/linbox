@@ -164,6 +164,7 @@ int main (int argc, char **argv) {
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT,     &n },
 		{ 'q', "-q Q", "Operate over the ring Z/q^eZ.", TYPE_INT, &q },
+        { 'e', "-e e", "Operate over the ring Z/q^eZ.", TYPE_INT, &e },
         { 's', "-s S", "Random generator seed.", TYPE_INT,     &rseed }	,
 		END_OF_ARGUMENTS
 	};
