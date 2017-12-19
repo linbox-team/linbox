@@ -360,7 +360,7 @@ namespace LinBox{
 	    //PolynomialMatrixFFTPrimeMulDomain<ModField> fftdomain (f);
 	    PolynomialMatrixThreePrimesFFTMulDomain<ModField> fftdomain (f);
 	    integer bound=integer(smallRNS._basis[l]-1)*integer(smallRNS._basis[l]-1)
-	      *integer(k)*integer((uint64_t)std::min(a.size(),b.size()));
+	      *integer(uint64_t(k))*integer((uint64_t)std::min(a.size(),b.size()));
 	    
 	    fftdomain.mul_fft(lpts, *c_i[loop+l], a_i, b_i, bound);	
 	    //FFT_PROFILE_GET(tMul);
