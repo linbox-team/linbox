@@ -55,7 +55,7 @@ namespace LinBox {
                 PolynomialMatrixFFTMulDomain (const Field& F) : _field(&F), _p(F.cardinality()) {}
 
                 template<typename Matrix1, typename Matrix2, typename Matrix3>
-                void mul (Matrix1 &c, const Matrix2 &a, const Matrix3 &b, size_t max_rowdeg=0) {
+                void mul (Matrix1 &c, const Matrix2 &a, const Matrix3 &b, size_t max_rowdeg=0) const {
 
 			size_t deg  = (max_rowdeg?max_rowdeg:a.size()+b.size()-2); //size_t deg  = a.size()+b.size()-1;
 			c.resize(deg+1);
@@ -91,7 +91,7 @@ namespace LinBox {
 
                 template<typename Matrix1, typename Matrix2, typename Matrix3>
                 void midproduct (Matrix1 &c, const Matrix2 &a, const Matrix3 &b,
-                                 bool smallLeft=true, size_t n0=0,size_t n1=0) {
+                                 bool smallLeft=true, size_t n0=0,size_t n1=0) const {
                         uint64_t pts= 1<<(integer((uint64_t)a.size()+b.size()-1).bitsize());
                         if (_p< 536870912ULL  &&  ((_p-1) % pts)==0){
 				//std::cout<<"MIDP: Staying with FFT Prime Field"<<std::endl;
