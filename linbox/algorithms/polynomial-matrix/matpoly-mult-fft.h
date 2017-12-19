@@ -289,10 +289,10 @@ namespace LinBox
     PolynomialMatrixFFTMulDomain (const Field& F);
 
     template<typename Matrix1, typename Matrix2, typename Matrix3>
-      void mul (Matrix1 &c, const Matrix2 &a, const Matrix3 &b);
+      void mul (Matrix1 &c, const Matrix2 &a, const Matrix3 &b) const;
 
     template<typename Matrix1, typename Matrix2, typename Matrix3>
-      void midproduct (Matrix1 &c, const Matrix2 &a, const Matrix3 &b, bool smallLeft=true, size_t n0=0,size_t n1=0);
+      void midproduct (Matrix1 &c, const Matrix2 &a, const Matrix3 &b, bool smallLeft=true, size_t n0=0,size_t n1=0) const;
   };
 		
 	

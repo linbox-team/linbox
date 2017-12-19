@@ -53,7 +53,7 @@ namespace LinBox
 		inline const Field& field() const {return *_field;}
 
 		template< class PMatrix1,class PMatrix2,class PMatrix3>
-		void mul(PMatrix1 &c, const PMatrix2 &a, const PMatrix3 &b, size_t max_rowdeg=0)
+		void mul(PMatrix1 &c, const PMatrix2 &a, const PMatrix3 &b, size_t max_rowdeg=0) const
 		{
 			size_t d = a.size()+b.size();
                         if (d > FFT_DEG_THRESHOLD){
@@ -77,7 +77,7 @@ namespace LinBox
                
                 
 		template< class PMatrix1,class PMatrix2,class PMatrix3>
-		void midproduct (PMatrix1 &c, const PMatrix2 &a, const PMatrix3 &b)
+		void midproduct (PMatrix1 &c, const PMatrix2 &a, const PMatrix3 &b) const
 		{
 			size_t d = b.size();
 			if (d > FFT_DEG_THRESHOLD)
@@ -94,7 +94,7 @@ namespace LinBox
 		}
 
 		template< class PMatrix1,class PMatrix2,class PMatrix3>
-		void midproductgen (PMatrix1 &c, const PMatrix2 &a, const PMatrix3 &b, bool smallLeft=true, size_t n0=0, size_t n1=0)
+		void midproductgen (PMatrix1 &c, const PMatrix2 &a, const PMatrix3 &b, bool smallLeft=true, size_t n0=0, size_t n1=0) const
 		{
 			if ( c.size() <= 4)
 				_naive.midproduct(c,a,b,smallLeft,n0,n1);
