@@ -284,9 +284,9 @@ int main (int argc, char **argv) {
 	};
 
 	parseArguments (argc, argv, args);
-    r = std::min(r,m);
-    r = std::min(r,n);
-    FFLAS::writeCommandString(std::cout, args) << std::endl;
+	r = std::min(r,m);
+	r = std::min(r,n);
+	FFLAS::writeCommandString(std::cout << argv[0] << ' ', args) << std::endl;
 
     commentator().setMaxDetailLevel (-1);
     commentator().setMaxDepth (-1);
