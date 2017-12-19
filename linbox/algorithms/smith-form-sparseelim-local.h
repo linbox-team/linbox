@@ -260,8 +260,7 @@ namespace LinBox
 
         template<class Vecteur>
         void PreserveUpperMatrixRow(Vecteur& ligne, Boolean_Trait<false>::BooleanType ) {
-//             ligne = Vecteur(0);
-            Vecteur(0).swap(ligne);
+            ligne = Vecteur(0);
         }
 
 

@@ -164,18 +164,19 @@ int main (int argc, char **argv) {
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT,     &n },
 		{ 'q', "-q Q", "Operate over the ring Z/q^eZ.", TYPE_INT, &q },
+        { 'e', "-e e", "Operate over the ring Z/q^eZ.", TYPE_INT, &e },
         { 's', "-s S", "Random generator seed.", TYPE_INT,     &rseed }	,
 		END_OF_ARGUMENTS
 	};
 
 	parseArguments (argc, argv, args);
-    std::srand(rseed);
-    FFLAS::writeCommandString(std::cout, args) << std::endl;
+	std::srand(rseed);
+	FFLAS::writeCommandString(std::cout << argv[0] << ' ', args) << std::endl;
 
 	commentator().start("Local Smith Form test suite", "LocalSmith");
-    commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
-    ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-    report << "q = " << q << std::endl;
+	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	report << "q = " << q << std::endl;
 
 #if 1
   { // zero-th local ring type: modulus p^e as integer.
