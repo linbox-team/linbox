@@ -1,7 +1,7 @@
 /* algorithms/smith-form-sparseelim-poweroftwo.h
  * Copyright (C) LinBox
  * Written by JG Dumas
- * Time-stamp: <19 Dec 17 11:23:27 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <19 Dec 17 12:12:15 Jean-Guillaume.Dumas@imag.fr>
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
@@ -115,32 +115,30 @@ namespace LinBox
             // ------------------------------------------------
             // Pivot Searchers and column strategy
             // ------------------------------------------------
-        template<class Vecteur>
-        void SameColumnPivoting(const Vecteur& lignepivot, unsigned long& indcol, long& indpermut, Boolean_Trait<false>::BooleanType ) {}
-
-
-        template<class Vecteur>
-        void SameColumnPivoting(const Vecteur& lignepivot, unsigned long& indcol, long& indpermut, Boolean_Trait<true>::BooleanType ) {
+        template<class Vecteur, class D>
+        void SameColumnPivoting(const Vecteur& lignepivot, unsigned long& indcol, long& indpermut, D& columns, Boolean_Trait<true>::BooleanType ) {
                 // Try first in the same column
             unsigned long nj = (unsigned long) lignepivot.size() ;
             if (nj && (indcol == lignepivot[0].first) && (this->isOdd((UInt_t)lignepivot[0].second) ) ) {
                 indpermut = (long)indcol;
+                for(unsigned long j=nj;j--;)
+                    --columns[ lignepivot[(size_t)j].first ];
                 ++indcol;
             }
         }
 
-        template<class BB, class Mmap>
-        bool SameColumnPivotingTrait(unsigned long& p, const BB& LigneA, const Mmap& psizes, unsigned long& indcol, long& indpermut, Boolean_Trait<false>::BooleanType ) {
+        template<class BB, class Mmap, class D>
+        bool SameColumnPivotingTrait(unsigned long& p, const BB& LigneA, const Mmap& psizes, unsigned long& indcol, long& indpermut, D& columns, Boolean_Trait<false>::BooleanType ) {
                 // Do not try first in the same column
             return false;
         }
 
-        template<class BB, class Mmap>
-        bool SameColumnPivotingTrait(unsigned long& p, const BB& LigneA, const Mmap& psizes, unsigned long& indcol, long& c, Boolean_Trait<true>::BooleanType truetrait) {
+        template<class BB, class Mmap, class D>
+        bool SameColumnPivotingTrait(unsigned long& p, const BB& LigneA, const Mmap& psizes, unsigned long& indcol, long& c, D& columns, Boolean_Trait<true>::BooleanType truetrait) {
             c=-2;
             for( typename Mmap::const_iterator iter = psizes.begin(); iter != psizes.end(); ++iter) {
                 p = (unsigned long) (*iter).second;
-                SameColumnPivoting(LigneA[(size_t)p], indcol, c, truetrait ) ;
+                SameColumnPivoting(LigneA[(size_t)p], indcol, c, columns, truetrait ) ;
                 if (c > -2 ) break;
             }
             if (c > -2)
@@ -149,21 +147,6 @@ namespace LinBox
                 return false;
 
         }
-
-        template<class Vecteur>
-        void CherchePivot( Vecteur& lignepivot, unsigned long& indcol , long& indpermut ) {
-            unsigned long nj = (unsigned long) lignepivot.size() ;
-            if (nj) {
-                indpermut=(long) lignepivot[0].first;
-                if (indpermut != (long)indcol)
-                    lignepivot[0].first = (indcol);
-                ++indcol;
-            }
-            else
-                indpermut = -1;
-        }
-
-
 
         template<class Vecteur, class D>
         void CherchePivot(Vecteur& lignepivot, unsigned long& indcol , long& indpermut, D& columns ) {
@@ -199,11 +182,11 @@ namespace LinBox
                             lignepivot[0] = ttm;
                         }
                     }
+                    for(j=nj;j--;)
+                        --columns[ lignepivot[(size_t)j].first ];
                     if (indpermut != (long)indcol)
                         lignepivot[0].first = (indcol);
                     indcol++ ;
-                    for(j=nj;j--;)
-                        --columns[ lignepivot[(size_t)j].first ];
                 }
                 else
                     indpermut = -2;
@@ -213,46 +196,40 @@ namespace LinBox
         }
 
         template<class Vecteur>
-        void PreserveUpperMatrixRow(Vecteur& ligne, Boolean_Trait<true>::BooleanType ) {}
-
-        template<class Vecteur>
-        void PreserveUpperMatrixRow(Vecteur& ligne, Boolean_Trait<false>::BooleanType ) {
-            ligne = Vecteur(0);
-        }
-
-
-        template<class Vecteur, class De>
         void PermuteColumn(Vecteur& lignecourante,
                            const unsigned long& nj,
                            const unsigned long& k,
-                           const long& indpermut,
-                           De& columns) {
+                           const long& indpermut) {
+// std::cout << "PCB " << k << " <--> " << indpermut << " :";
+// for(auto const & ci : lignecourante) std::cout << ci.first << ':' << ci.second << ' ';
+// std::cout << std::endl;
+
             typedef typename Vecteur::value_type E;
             REQUIRE( nj > 0 );
-            REQUIRE( indpermut != (long)k );
+            REQUIRE( indpermut > (long)k );
 
                 // Find first non-zero element whose index is
                 // greater than required permutation, if it exists
             unsigned long j_head(0);
             for(; j_head<nj; ++j_head)
                 if (long(lignecourante[(size_t)j_head].first) >= indpermut) break;
-                // Position before that element
-            unsigned long bjh(j_head-1);
+
             if ((j_head<nj) && (long(lignecourante[(size_t)j_head].first) == indpermut)) {
-                if (lignecourante[0].first == k) {
+                unsigned long l(0);
+                for(; l<j_head; ++l)
+                    if (lignecourante[(size_t)l].first >= k) break;
+                if (l<j_head && lignecourante[l].first == k) {
                         // non zero  <--> non zero
-                    UInt_t tmp = (UInt_t) lignecourante[0].second ;
-                    lignecourante[0].second = lignecourante[(size_t)j_head].second;
+                    UInt_t tmp = (UInt_t) lignecourante[l].second ;
+                    lignecourante[l].second = lignecourante[(size_t)j_head].second;
                     lignecourante[(size_t)j_head].second = tmp;
                 } else {
                         // zero <--> non zero
                     E tmp = (E) lignecourante[(size_t)j_head];
-                    --columns[ tmp.first ];
-                    ++columns[k];
                     tmp.first = (k);
-                    for(long l=(long)j_head; l>0; l--)
-                        lignecourante[(size_t)l] = lignecourante[(size_t)l-1];
-                    lignecourante[0] = tmp;
+                    for(unsigned long ll=j_head; ll>l; ll--)
+                        lignecourante[ll] = lignecourante[ll-1];
+                    lignecourante[l] = tmp;
                 }
             } else {
                     // -------------------------------------------
@@ -263,16 +240,43 @@ namespace LinBox
                 if ((l<nj) && (lignecourante[(size_t)l].first == k)) {
                         // non zero <--> zero
                     E tmp = (E) lignecourante[(size_t)l];
-                    --columns[tmp.first ];
-                    ++columns[(size_t)indpermut];
                     tmp.first = (unsigned long)(indpermut);
+					const unsigned long bjh(j_head-1); // Position before j_head
                     for(;l<bjh;l++)
                         lignecourante[(size_t)l] = lignecourante[(size_t)l+1];
                     lignecourante[bjh] = tmp;
                 } // else
                     // zero <--> zero
             }
+// std::cout << "PCA " << k << " <--> " << indpermut << " :";
+// for(auto const & ci : lignecourante) std::cout << ci.first << ':' << ci.second << ' ';
+// std::cout << std::endl;
         }
+
+        template<class Vecteur>
+        void PreserveUpperMatrixRow(Vecteur&, Boolean_Trait<true>::BooleanType ) {}
+
+        template<class Vecteur>
+        void PreserveUpperMatrixRow(Vecteur& ligne, Boolean_Trait<false>::BooleanType ) {
+            ligne = Vecteur(0);
+        }
+
+        template<class SpMat>
+        void PermuteSubMatrix(SpMat& LigneA,
+							  const unsigned long & start, const unsigned long & stop,
+							  const unsigned long & currentrank, const long & c) {
+			for(unsigned long l=start; l < stop; ++l)
+				if ( LigneA[(size_t)l].size() )
+					PermuteColumn(LigneA[(size_t)l], LigneA[(size_t)l].size(), currentrank, c);
+		}
+
+        template<class SpMat>
+        void PermuteUpperMatrix(SpMat& LigneA, const unsigned long & k, const unsigned long & currentrank, const long & c, Boolean_Trait<true>::BooleanType ) {
+			PermuteSubMatrix(LigneA, 0, k, currentrank, c);
+		}
+
+        template<class SpMat>
+        void PermuteUpperMatrix(SpMat&, const unsigned long &, const unsigned long &, const long &, Boolean_Trait<false>::BooleanType ) {}
 
         template<class Vecteur, class De>
         void FaireElimination( const size_t EXPONENT, const UInt_t& TWOK, const UInt_t& TWOKMONE,
@@ -288,8 +292,8 @@ namespace LinBox
             unsigned long nj = (unsigned long) lignecourante.size() ;
 
             if (nj) {
-                if (indpermut != (long)k)
-                    PermuteColumn(lignecourante,nj,k,indpermut,columns);
+                //if (indpermut != (long)k)
+                    //PermuteColumn(lignecourante,nj,k,indpermut);
 
                 if (lignecourante[0].first == k) {
                         // -------------------------------------------
@@ -330,8 +334,9 @@ namespace LinBox
 
                             if (isNZero((UInt_t)(lignecourante[(size_t)m].second)))
                                 *ci++ = lignecourante[(size_t)m++];
-                            else
+                            else {
                                 --columns[ lignecourante[(size_t)m++].first ];
+							}
                         } else {
                             UInt_t tmp(headcoeff);
                             tmp *= (UInt_t)lignepivot[(size_t)l].second;
@@ -433,7 +438,7 @@ namespace LinBox
 
 
 
-                        if ( SameColumnPivotingTrait(p, LigneA, psizes, indcol, c, typename Boolean_Trait<PrivilegiateNoColumnPivoting>::BooleanType() ) )
+                        if ( SameColumnPivotingTrait(p, LigneA, psizes, indcol, c, col_density, typename Boolean_Trait<PrivilegiateNoColumnPivoting>::BooleanType() ) )
                             break;
 
                         for( typename std::multimap< long, long >::const_iterator iter = psizes.begin(); iter != psizes.end(); ++iter) {
@@ -480,10 +485,13 @@ namespace LinBox
                         unsigned long currentrank(indcol); --currentrank;
 
                         if (c != (long)currentrank) {
-                            Q.permute(currentrank,c);
 #ifdef  LINBOX_pp_gauss_steps_OUT
-                            std::cerr << "------------ permuting cols " << (indcol-1) << " and " << c << " ---" << std::endl;
+                            std::cerr << "------------ permuting cols " << currentrank << " and " << c << " ---" << std::endl;
 #endif
+                            Q.permute(currentrank,c);
+                            std::swap(col_density[currentrank],col_density[c]);
+							PermuteUpperMatrix(LigneA, k, currentrank, c, typename Boolean_Trait<PreserveUpperMatrix>::BooleanType());
+							PermuteSubMatrix(LigneA, k+1, Ni, currentrank, c);
                         }
 
                             // Compute the inverse of the found pivot
@@ -498,14 +506,14 @@ namespace LinBox
 #endif
 
 #ifdef  LINBOX_pp_gauss_intermediate_OUT
-                    LigneA.write(std::cerr) << std::endl;
+                    LigneA.write(std::cerr, Tag::FileFormat::Maple ) << std::endl;
 #endif
 
                     PreserveUpperMatrixRow(LigneA[(size_t)k], typename Boolean_Trait<PreserveUpperMatrix>::BooleanType());
                 }
 
                 c = -2;
-                SameColumnPivoting(LigneA[(size_t)last], indcol, c, typename Boolean_Trait<PrivilegiateNoColumnPivoting>::BooleanType() );
+                SameColumnPivoting(LigneA[(size_t)last], indcol, c, col_density, typename Boolean_Trait<PrivilegiateNoColumnPivoting>::BooleanType() );
                 if (c == -2) CherchePivot( LigneA[(size_t)last], indcol, c, col_density );
                 while( c == -2) {
                     ranks.push_back( indcol );
@@ -532,7 +540,7 @@ namespace LinBox
                 std::cerr << "step[" << Ni-1 << "], pivot: " << c << std::endl;
 #endif
 #ifdef LINBOX_pp_gauss_intermediate_OUT
-                LigneA.write(std::cerr) << std::endl;
+                LigneA.write(std::cerr, Tag::FileFormat::Maple ) << std::endl;
 #endif
 #ifdef LINBOX_PRANK_OUT
                 std::cerr << "Rank mod 2^" << EXPONENTMAX << " : " << indcol << std::endl;
