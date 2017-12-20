@@ -39,7 +39,7 @@ using namespace LinBox;
 using namespace std;
 
 template<class Int_type, class Ring_type = Givaro::ZRing<Int_type> >
-void runpoweroftworank(ifstream& input, const size_t exponent, bool pum) {
+void runpoweroftworank(ifstream& input, const size_t exponent, size_t StPr) {
     typedef std::vector<std::pair<size_t,Int_type> > Smith_t;
     typedef Ring_type Ring; // signed ?
     Smith_t local;
@@ -58,10 +58,10 @@ void runpoweroftworank(ifstream& input, const size_t exponent, bool pum) {
 
     Givaro::Timer tim; 
     tim.clear(); tim.start();
-    if (pum)
-        PGD(local, A, Q, exponent, PRESERVE_UPPER_MATRIX);
+    if (StPr)
+        PGD(local, A, Q, exponent, StPr);
     else
-        PGD(local, A, Q, exponent);
+        PGD(local, A, Q, exponent, 0);
     tim.stop();
 
     R.write(std::cout << "Local Smith Form ") << " : " << std::endl << '(';
@@ -90,25 +90,26 @@ int main (int argc, char **argv) {
     int method( argc>3? atoi(argv[3]): 0 );
     
     Givaro::Timer tim;
-    size_t exponent = atoi(argv[2]);
+    int exponent = atoi(argv[2]);
 
-    bool pum(false);
+    size_t StPr(0);
 
-    if (method < 0) { method = -method; pum = true; }
+    if (exponent < 0) { exponent = -exponent; StPr |= PRESERVE_UPPER_MATRIX; }
+    if (method < 0) { method = -method; StPr |= PRIVILEGIATE_NO_COLUMN_PIVOTING; }
 
     if ((method == 2) || ((method == 0) && (exponent >= (1<<11))) ) {
-        runpoweroftworank<Givaro::Integer>(input, exponent, pum);
+        runpoweroftworank<Givaro::Integer>(input, exponent, StPr);
     } else {
         if ((method == 1) || ((method == 0) && (exponent < 64)) ) {
-            runpoweroftworank<uint64_t, Givaro::ZRing<int64_t> >(input, exponent, pum);
+            runpoweroftworank<uint64_t, Givaro::ZRing<int64_t> >(input, exponent, StPr);
         } else {
             switch (method) {
-                case 6: runpoweroftworank<RecInt::ruint<6>>(input, exponent, pum); break;
-                case 7: runpoweroftworank<RecInt::ruint<7>>(input, exponent, pum); break;
-                case 8: runpoweroftworank<RecInt::ruint<8>>(input, exponent, pum); break;
-                case 9: runpoweroftworank<RecInt::ruint<9>>(input, exponent, pum); break;
-                case 10: runpoweroftworank<RecInt::ruint<10>>(input, exponent, pum); break;
-                case 11: runpoweroftworank<RecInt::ruint<11>>(input, exponent, pum); break;
+                case 6: runpoweroftworank<RecInt::ruint<6>>(input, exponent, StPr); break;
+                case 7: runpoweroftworank<RecInt::ruint<7>>(input, exponent, StPr); break;
+                case 8: runpoweroftworank<RecInt::ruint<8>>(input, exponent, StPr); break;
+                case 9: runpoweroftworank<RecInt::ruint<9>>(input, exponent, StPr); break;
+                case 10: runpoweroftworank<RecInt::ruint<10>>(input, exponent, StPr); break;
+                case 11: runpoweroftworank<RecInt::ruint<11>>(input, exponent, StPr); break;
             }
         }
     }
