@@ -482,7 +482,7 @@ namespace LinBox
                     if (c != -1) {
                             // Pivot has been found
                         REQUIRE( indcol > 0);
-                        unsigned long currentrank(indcol); --currentrank;
+                        const unsigned long currentrank(indcol-1); 
 
                         if (c != (long)currentrank) {
 #ifdef  LINBOX_pp_gauss_steps_OUT
@@ -523,11 +523,13 @@ namespace LinBox
                     CherchePivot( LigneA[(size_t)last], indcol, c, col_density );
                 }
                 if (c != -1) {
-                    if (c != (long(indcol)-1L)) {
-                        Q.permute(long(indcol)-1L,c);
+                    const unsigned long currentrank(indcol-1);
+                    if (c != (long)currentrank) {
 #ifdef  LINBOX_pp_gauss_steps_OUT
                         std::cerr << "------------ permuting cols " << (indcol-1) << " and " << c << " ---" << std::endl;
 #endif
+                        Q.permute(currentrank,c);
+						PermuteUpperMatrix(LigneA, last, currentrank, c, typename Boolean_Trait<PreserveUpperMatrix>::BooleanType());
                     }
                 }
                 while( TWOK > 1) {
