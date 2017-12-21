@@ -32,8 +32,6 @@
  * @test no doc.
  */
 
-
-
 #include "linbox/linbox-config.h"
 
 
@@ -111,9 +109,9 @@ static bool testLocalSmith (const LocalPIR &R, vector<typename LocalPIR::Element
 	for (i = 0; i < n; ++ i)
 		for ( j = 0; j < i; ++ j) {
 			R.assign(D[i][j], R.assign(D[j][i], 0));
-			R.assign(L[i][j], rand() % 10);
+			R.assign(L[i][j], std::rand() % 10);
 			R.assign(L[j][i], 0);
-			R.assign(U[j][i], rand() % 10);
+			R.assign(U[j][i], std::rand() % 10);
 			R.assign(U[i][j], 0);
 		}
 		
@@ -155,28 +153,31 @@ static bool testLocalSmith (const LocalPIR &R, vector<typename LocalPIR::Element
 	return ret;
 }
 
-int main (int argc, char **argv)
-{
-	bool pass1 = true, pass2 = true;
 
-	static int64_t n = 6;
-	static size_t q = 3; 
-	static int32_t e = 4;
-	//static integer q = 10201; // 101^2
+int main (int argc, char **argv) {
+    bool pass1(true), pass2(true);
+    static int64_t n = 6;
+    static int  q = 3;
+    static int32_t e = 4;
+    static int rseed = (int)time(NULL);
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT,     &n },
 		{ 'q', "-q Q", "Operate over the ring Z/q^eZ.", TYPE_INT, &q },
-		//{ 'q', "-q Q", "Operate over the ring Z/qZ.", TYPE_INTEGER, &q },
+        { 'e', "-e e", "Operate over the ring Z/q^eZ.", TYPE_INT, &e },
+        { 's', "-s S", "Random generator seed.", TYPE_INT,     &rseed }	,
 		END_OF_ARGUMENTS
 	};
 
 	parseArguments (argc, argv, args);
+	std::srand(rseed);
+	FFLAS::writeCommandString(std::cout << argv[0] << ' ', args) << std::endl;
 
 	commentator().start("Local Smith Form test suite", "LocalSmith");
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "q = " << q << std::endl;
+
 #if 1
   { // zero-th local ring type: modulus p^e as integer.
 	typedef LocalPIRModular<integer> Ring;
@@ -205,7 +206,7 @@ int main (int argc, char **argv)
 	if (not pass1) report << "PIRModular sing FAIL" << std::endl;
 
 	commentator().start ("Testing local smith on nonsingular dense mat over PIRModular", "testNonsingular");
-	LocalPIR::RandIter r(R);
+	LocalPIR::RandIter r(R,rseed);
 	LocalPIR::Element e; R.init(e);
 	for( int32_t i = 0; i < n; ++i ) {	
 		r.random(e);
@@ -245,9 +246,9 @@ int main (int argc, char **argv)
 
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 
