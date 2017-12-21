@@ -62,9 +62,16 @@ int tmain (int argc, char **argv)
     std::vector<std::pair<size_t,Base> > local;
     Permutation<Field> Q(F,B.coldim());
 
+        // 1: StPr |= PRESERVE_UPPER_MATRIX
+        // 2: StPr |= PRIVILEGIATE_REDUCING_FILLIN
+        // 4: StPr |= PRIVILEGIATE_NO_COLUMN_PIVOTING
+    size_t StPr( argc>5? atoi(argv[5]): 0);
+
     Givaro::Timer tq; tq.clear(); tq.start();
-    PGD(local, B, Q, q, p, PRESERVE_UPPER_MATRIX|PRIVILEGIATE_NO_COLUMN_PIVOTING);
-    // PGD(local, B, Q, q, p);
+    if (StPr)
+        PGD(local, B, Q, q, p, StPr);
+    else
+        PGD(local, B, Q, q, p);
     tq.stop();
 
 
@@ -84,8 +91,8 @@ int tmain (int argc, char **argv)
 }
 
 int main(int argc, char ** argv) {
-	if (argc < 4 || argc > 5) {	
-        cerr << "Usage: rank <matrix-file-in-supported-format> <prime> <prime-power> [<method>]" << endl;
+	if (argc < 4 || argc > 6) {
+        cerr << "Usage: rank <matrix-file-in-supported-format> <prime> <prime-power> [<method>] [<flag>]" << endl;
         cerr << "       methods: \
 						0=automatic, \
 						1=int_64_t, \
@@ -93,11 +100,11 @@ int main(int argc, char ** argv) {
 						6-11=ruint" << endl;
         return -1; }
 
+    size_t method( argc>4? atoi(argv[4]) : 0);
 
     Givaro::Integer q(argv[3]);
-    size_t method( argc>4? atoi(argv[4]) : 0);
     const size_t logq( (size_t)ceil(logtwo(q)) );
-    
+
     if ( (method == 1) || ( (method==0) && (logq<63) ) ) {
         return tmain<int64_t>(argc,argv);
     } else {
@@ -112,7 +119,6 @@ int main(int argc, char ** argv) {
                 case 9: return tmain<RecInt::ruint<9>>(argc,argv);
                 case 10: return tmain<RecInt::ruint<10>>(argc,argv);
                 case 11: return tmain<RecInt::ruint<11>>(argc,argv);
-
                 default: return tmain<Givaro::Integer>(argc,argv);
             }
         }
