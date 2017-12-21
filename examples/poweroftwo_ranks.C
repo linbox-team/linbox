@@ -2,7 +2,7 @@
  *
  * Copyright (C) 2012 LinBox
  * Written by J-G Dumas
- * Time-stamp: <18 Dec 17 19:09:20 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <21 Dec 17 22:22:36 Jean-Guillaume.Dumas@imag.fr>
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
@@ -52,8 +52,7 @@ void runpoweroftworank(ifstream& input, const size_t exponent, size_t StPr) {
     LinBox::GF2 F2;
     Permutation<GF2> Q(F2,A.coldim());
             
-    cout << "B is " << A.rowdim() << " by " << A.coldim() << endl;
-//     R.write(std::cerr << "Last entry: ", A.getEntry(A.rowdim()-1,A.coldim()-1)) << std::endl;
+    cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
     if (A.rowdim() <= 20 && A.coldim() <= 20) A.write(cout,Tag::FileFormat::Maple) << endl;
 
     Givaro::Timer tim; 
@@ -61,7 +60,7 @@ void runpoweroftworank(ifstream& input, const size_t exponent, size_t StPr) {
     if (StPr)
         PGD(local, A, Q, exponent, StPr);
     else
-        PGD(local, A, Q, exponent, 0);
+        PGD(local, A, Q, exponent);
     tim.stop();
 
     R.write(std::cout << "Local Smith Form ") << " : " << std::endl << '(';
@@ -82,8 +81,8 @@ int main (int argc, char **argv) {
     commentator().setMaxDepth (-1);
     commentator().setReportStream (std::cerr);
 
-    if (argc < 3 || argc > 4)
-    {	cerr << "Usage: rank <matrix-file-in-supported-format> <power of two exponent> [<method>]" << endl; return -1; }
+    if (argc < 3 || argc > 5)
+    {	cerr << "Usage: rank <matrix-file-in-supported-format> <power of two exponent> [<method>] [<flag>]" << endl; return -1; }
 
     ifstream input (argv[1]);
     if (!input) { cerr << "Error opening matrix file: " << argv[1] << endl; return -1; }
@@ -92,10 +91,10 @@ int main (int argc, char **argv) {
     Givaro::Timer tim;
     int exponent = atoi(argv[2]);
 
-    size_t StPr(0);
-
-    if (exponent < 0) { exponent = -exponent; StPr |= PRESERVE_UPPER_MATRIX; }
-    if (method < 0) { method = -method; StPr |= PRIVILEGIATE_NO_COLUMN_PIVOTING; }
+        // 1: StPr |= PRESERVE_UPPER_MATRIX
+        // 2: StPr |= PRIVILEGIATE_REDUCING_FILLIN
+        // 4: StPr |= PRIVILEGIATE_NO_COLUMN_PIVOTING
+    size_t StPr( argc>4? atoi(argv[4]): 0);
 
     if ((method == 2) || ((method == 0) && (exponent >= (1<<11))) ) {
         runpoweroftworank<Givaro::Integer>(input, exponent, StPr);
@@ -110,6 +109,8 @@ int main (int argc, char **argv) {
                 case 9: runpoweroftworank<RecInt::ruint<9>>(input, exponent, StPr); break;
                 case 10: runpoweroftworank<RecInt::ruint<10>>(input, exponent, StPr); break;
                 case 11: runpoweroftworank<RecInt::ruint<11>>(input, exponent, StPr); break;
+                default: std::cerr << "Choose between ruint<6> ... ruint<11>" << std::endl;
+                    break;
             }
         }
     }
