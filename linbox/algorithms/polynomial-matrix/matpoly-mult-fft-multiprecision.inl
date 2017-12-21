@@ -75,7 +75,7 @@ namespace LinBox{
       _field(&F), _maxnorm(maxnorm) {}
 
     template<typename PMatrix1, typename PMatrix2, typename PMatrix3>
-    void mul (PMatrix1 &c, const PMatrix2 &a, const PMatrix3 &b, size_t max_rowdeg=0) {
+    void mul (PMatrix1 &c, const PMatrix2 &a, const PMatrix3 &b, size_t max_rowdeg=0) const {
       //compute a bound on the entry of the input matrix a and b
       FFT_PROFILE_START(2);
       integer maxA,maxB;
@@ -93,7 +93,7 @@ namespace LinBox{
 
     template<typename PMatrix1, typename PMatrix2, typename PMatrix3>
     void midproduct (PMatrix1 &c, const PMatrix2 &a, const PMatrix3 &b,
-		     bool smallLeft=true, size_t n0=0, size_t n1=0) {
+		     bool smallLeft=true, size_t n0=0, size_t n1=0) const {
       //compute a bound on the entry of the input matrix a and b
       FFT_PROFILE_START(2);
       integer maxA,maxB;
@@ -142,7 +142,7 @@ namespace LinBox{
     // WARNING: Polynomial Matrix should stored as matrix of polynomial with integer coefficient 
     template< typename PMatrix1,typename PMatrix2, typename PMatrix3>
     void mul_crtla(PMatrix1 &c, const PMatrix2 &a, const PMatrix3 &b,
-    		   const integer& maxA, const integer& maxB, const integer& bound, size_t max_rowdeg=0) {
+    		   const integer& maxA, const integer& maxB, const integer& bound, size_t max_rowdeg=0) const {
 
       FFT_PROFILE_START(2);
       linbox_check(a.coldim() == b.rowdim());
@@ -281,7 +281,7 @@ namespace LinBox{
     // WARNING: Polynomial Matrix should stored as matrix of polynomial with integer coefficient 
     template< typename PMatrix1,typename PMatrix2, typename PMatrix3>
     void mul_crtla2(PMatrix1 &c, const PMatrix2 &a, const PMatrix3 &b,
-		    const integer& maxA, const integer& maxB, const integer& bound) {
+		    const integer& maxA, const integer& maxB, const integer& bound) const {
 
       FFT_PROFILE_START(2);
       linbox_check(a.coldim() == b.rowdim());
@@ -360,7 +360,7 @@ namespace LinBox{
 	    //PolynomialMatrixFFTPrimeMulDomain<ModField> fftdomain (f);
 	    PolynomialMatrixThreePrimesFFTMulDomain<ModField> fftdomain (f);
 	    integer bound=integer(smallRNS._basis[l]-1)*integer(smallRNS._basis[l]-1)
-	      *integer(k)*integer((uint64_t)std::min(a.size(),b.size()));
+	      *integer(uint64_t(k))*integer((uint64_t)std::min(a.size(),b.size()));
 	    
 	    fftdomain.mul_fft(lpts, *c_i[loop+l], a_i, b_i, bound);	
 	    //FFT_PROFILE_GET(tMul);
@@ -428,7 +428,7 @@ namespace LinBox{
     template< typename PMatrix1,typename PMatrix2, typename PMatrix3>
     void midproduct_crtla(PMatrix1 &c, const PMatrix2 &a, const PMatrix3 &b,
 			  const integer& maxA, const integer& maxB, const integer& bound,
-			  bool smallLeft=true, size_t n0=0, size_t n1=0) {
+			  bool smallLeft=true, size_t n0=0, size_t n1=0) const {
       // void midproduct_crtla(MatrixP_I &c, const MatrixP_I &a, const MatrixP_I &b,
       // 			  const integer& maxA, const integer& maxB, const integer& bound,
       // 			  bool smallLeft=true, size_t n0=0, size_t n1=0) {
@@ -594,7 +594,7 @@ namespace LinBox{
     }
 
     template<typename Matrix1, typename Matrix2, typename Matrix3>
-    void mul (Matrix1 &c, const Matrix2 &a, const Matrix3 &b, size_t max_rowdeg=0) {
+    void mul (Matrix1 &c, const Matrix2 &a, const Matrix3 &b, size_t max_rowdeg=0) const {
       FFT_PROFILE_START(2);
       MatrixP_F a2(field(),a.rowdim(),a.coldim(),a.size());
       MatrixP_F b2(field(),b.rowdim(),b.coldim(),b.size());
@@ -610,7 +610,7 @@ namespace LinBox{
     }
     
     // Matrix with polynomials  
-    void mul (MatrixP_F &c, const MatrixP_F &a, const MatrixP_F &b, size_t max_rowdeg=0) {
+    void mul (MatrixP_F &c, const MatrixP_F &a, const MatrixP_F &b, size_t max_rowdeg=0) const {
 
       FFT_PROFILE_START(2);
       IntField Z;      
@@ -633,7 +633,7 @@ namespace LinBox{
 
     template<typename Matrix1, typename Matrix2, typename Matrix3>
     void midproduct (Matrix1 &c, const Matrix2 &a, const Matrix3 &b,
-		     bool smallLeft=true, size_t n0=0, size_t n1=0) {
+		     bool smallLeft=true, size_t n0=0, size_t n1=0) const {
 
       MatrixP_F a2(field(),a.rowdim(),a.coldim(),a.size());
       MatrixP_F b2(field(),b.rowdim(),b.coldim(),b.size());
@@ -645,7 +645,7 @@ namespace LinBox{
     }
 
     void midproduct (MatrixP_F &c, const MatrixP_F &a, const MatrixP_F &b,
-		     bool smallLeft=true, size_t n0=0, size_t n1=0) {
+		     bool smallLeft=true, size_t n0=0, size_t n1=0) const {
       IntField Z;
       PolynomialMatrixFFTMulDomain<IntField> Zmul(Z,_p);
       //const MatrixP_I* a2 = reinterpret_cast<const MatrixP_I*>(&a);
