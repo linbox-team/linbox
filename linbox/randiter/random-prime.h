@@ -55,17 +55,12 @@ namespace LinBox
              * numbers
              */
         template<class IteratorTrait>
-        struct UniqueSamplingTrait;
+        struct UniqueSamplingTrait
+		:public std::false_type { }; /* default: no guarantee of uniqueness */
 
         template<>
         struct UniqueSamplingTrait<IteratorCategories::DeterministicTag>
 		:public std::true_type { };
-        template<>
-        struct UniqueSamplingTrait<IteratorCategories::UniformTag>
-		:public std::false_type { };
-        template<>
-        struct UniqueSamplingTrait<IteratorCategories::HeuristicTag>
-		:public std::false_type { };
 
         
         /*!  @brief  Prime Iterator.
