@@ -1,7 +1,7 @@
 /* algorithms/smith-form-sparseelim-poweroftwo.h
  * Copyright (C) LinBox
  * Written by JG Dumas
- * Time-stamp: <11 Dec 17 16:29:44 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <18 Dec 17 11:51:53 Jean-Guillaume.Dumas@imag.fr>
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
@@ -462,6 +462,12 @@ namespace LinBox
 
 #ifdef  LINBOX_pp_gauss_steps_OUT
                         std::cerr << "------------ ordered rows " << k << " -----------" << std::endl;
+                        size_t capacity(0);
+                        for(p=k; p<Ni; ++p) {
+                            capacity += LigneA[(size_t)p].capacity();
+                            std::cerr << p << " : S" << LigneA[(size_t)p].capacity()<< std::endl;
+                        }
+                        std::cerr << "Capacity: " << capacity << std::endl;
                         for( std::multimap< long, long >::const_iterator iter = psizes.begin(); iter != psizes.end(); ++iter)
                         {
                             std::cerr << (*iter).second << " : #" << (*iter).first << std::endl;
