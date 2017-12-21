@@ -42,7 +42,7 @@ namespace LinBox {
 
 		// add function (a must be allocated with the right size)
 		template<typename PMatrix1,typename PMatrix2,typename PMatrix3>
-		void add(PMatrix1 &a, const PMatrix2 &b, const PMatrix3 &c){
+		void add(PMatrix1 &a, const PMatrix2 &b, const PMatrix3 &c) const {
 			size_t i=0;
 			for(;i<std::min(b.size(),c.size());i++)
 				_BMD.add(a[i],b[i],c[i]);
@@ -58,14 +58,14 @@ namespace LinBox {
   
 		// addin function (a must be allocated with the right size)
 		template<typename PMatrix1,typename PMatrix2>
-		void addin(PMatrix1 &a, const PMatrix2 &b){	
+		void addin(PMatrix1 &a, const PMatrix2 &b) const {	
 			for(size_t i=0;i<b.size();i++)
 				_BMD.addin(a[i],b[i]);
 		}
   
 		// sub function (a must be allocated with the right size)
 		template<typename PMatrix1,typename PMatrix2,typename PMatrix3>
-		void sub(PMatrix1 &a, const PMatrix2 &b, const PMatrix3 &c){
+		void sub(PMatrix1 &a, const PMatrix2 &b, const PMatrix3 &c) const {
 			size_t i=0;
 			for(;i<std::min(b.size(),c.size());i++)
 				_BMD.sub(a[i],b[i],c[i]);
@@ -81,7 +81,7 @@ namespace LinBox {
 
 		// subin function (a must be allocated with the right size)
 		template<typename PMatrix1,typename PMatrix2>
-		void subin(PMatrix1 &a, const PMatrix2 &b){
+		void subin(PMatrix1 &a, const PMatrix2 &b) const {
 			for(size_t i=0;i<b.size();i++)
 				_BMD.subin(a[i],b[i]);
 		}
