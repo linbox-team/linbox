@@ -56,7 +56,7 @@ namespace LinBox
 			while(tries < 3) { // if we fail 3 times to insert, we don't have enough primes to sample.
 				if (curint>maxint)
 					break;
-				RandomPrimeIterator genprimes( (unsigned int) (_ps_+penalty) );
+				PrimeIterator<IteratorCategories::HeuristicTag> genprimes( (unsigned int) (_ps_+penalty) );
 				unsigned long p = genprimes.randomPrime() ;
 				++genprimes;
 				primeset.insert(p);
@@ -183,7 +183,7 @@ namespace LinBox
 			while(tries < 3) { // if we fail 3 times to insert, we don't have enough primes to sample.
 				if (curint>maxint)
 					break;
-				RandomPrimeIterator genprimes((unsigned int) (_ps_+penalty) );
+				PrimeIterator<IteratorCategories::HeuristicTag> genprimes((unsigned int) (_ps_+penalty) );
 				unsigned long p = genprimes.randomPrime() ;
 				++genprimes;
 				primeset.insert(p);

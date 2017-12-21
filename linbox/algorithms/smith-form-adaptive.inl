@@ -407,7 +407,7 @@ namespace LinBox
 		report <<"   Compute the degree of min poly of AA^T: \n";
 		typedef Givaro::Modular<int32_t> Field;
 		integer Val; Field::Element v; unsigned long degree;
-		RandomPrimeIterator rg; rg.template setBitsField<Field>();
+                PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
 		Field F (*rg);
 		typename MatrixHomTrait<Matrix, Field>::value_type Ap(F, A.rowdim(), A.coldim());
 		MatrixHom::map (Ap, A);
@@ -533,7 +533,7 @@ namespace LinBox
 		typedef Givaro::Modular<int32_t> Field;
 		integer Val; Field::Element v; size_t degree;
 		//integer Val; Field::Element v; unsigned long degree;
-		RandomPrimeIterator rg; rg.template setBitsField<Field>();
+                PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
 		Field F (*rg);
 		typename MatrixHomTrait<BlasMatrix <IRing, _Rep>, Field>::value_type Ap(F,A.rowdim(),A.coldim());
 		MatrixHom::map (Ap, A);

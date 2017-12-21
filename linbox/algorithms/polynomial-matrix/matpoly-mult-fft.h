@@ -345,7 +345,7 @@ namespace LinBox
       while (k>1 && prime_max_tp<100) {k/=2;prime_max_tp*=2;}
       if (k<=1) {std::cout<<"getFFTPrime error: impossible to have enough primes satisfying constraints: FFLAS prime (<2^26) and FFT (2^"<<lpts<<")\n";}
 	
-      RandomPrimeIter Rd(std::min(prime_max_tp.bitsize()/2,integer(prime_max).bitsize())-1);
+      PrimeIterator<IteratorCategories::HeuristicTag> Rd(std::min(prime_max_tp.bitsize()/2,integer(prime_max).bitsize())-1);
 #ifdef VERBOSE_FFT
       std::cout<<"MM="<<MM<<std::endl;
       std::cout<<"normal primemax: "<<prime_max_tp<<" "<<prime_max<<std::endl;
@@ -353,7 +353,7 @@ namespace LinBox
 #endif
       integer tmp;
       do {
-	do {Rd.random(tmp);}
+          do {tmp = *(++Rd);}
 	while (MM%tmp==0 || tmp>prime_max);
 	bas.push_back(tmp);
 	nbp++;

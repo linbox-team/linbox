@@ -168,7 +168,8 @@ namespace LinBox
 
 		commentator().start ("Rational Charpoly", "Rminpoly");
 
-		RandomPrimeIterator genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205));
+                typedef Givaro::ModularBalanced<double> Field;
+                PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
 
 		std::vector<Integer> F(A.rowdim()+1,1);
 		std::vector<Integer> M(A.rowdim()+1,1);
@@ -193,7 +194,7 @@ namespace LinBox
 		BlasMatrix<Givaro::ZRing<Integer> > Atilde(Z,A.rowdim(), A.coldim());
 		FA.makeAtilde(Atilde);
 
-		ChineseRemainder< EarlyMultipCRA<Givaro::Modular<double> > > cra(4UL);
+		ChineseRemainder< EarlyMultipCRA<Field> > cra(4UL);
 		MyRationalModularCharpoly<BlasMatrix<Rationals > , MyMethod> iteration1(A, Met, M);
 		MyIntegerModularCharpoly<BlasMatrix<Givaro::ZRing<Integer> >, MyMethod> iteration2(Atilde, Met, Di, M);
 		MyModularCharpoly<MyRationalModularCharpoly<BlasMatrix<Rationals > , MyMethod>,

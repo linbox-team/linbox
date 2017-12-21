@@ -48,10 +48,9 @@ bool testZeroAndIdentRank (const Field &F, size_t n, unsigned int iterations = 1
 #include <iostream>
 #include <fstream>
 #include <cstdio>
-#include <givaro/modular.h>
+#include "linbox/ring/modular.h"
 
 #include "linbox/util/commentator.h"
-#include "linbox/ring/modular.h"
 #include "linbox/field/gf2.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/matrix/sparse-matrix.h"

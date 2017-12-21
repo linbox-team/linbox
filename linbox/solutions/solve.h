@@ -344,10 +344,10 @@ namespace LinBox
 			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
 
 		commentator().start ("Rational CRA Solve", "Rsolve");
-		size_t bits = 26 -(int)ceil(log((double)A.rowdim())*0.7213475205);
-		RandomPrimeIterator genprime( bits);
+                typedef Givaro::ModularBalanced<double> Field;
+                PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
 
-		RationalRemainder2< VarPrecEarlyMultipCRA< Givaro::Modular<double> > > rra(3UL);//using default RR method
+		RationalRemainder2< VarPrecEarlyMultipCRA<Field> > rra(3UL);//using default RR method
 		IntegerModularSolve<BB,Vector,MethodTraits > iteration(A, b, m);
 		integer den;
 		BlasVector<Givaro::ZRing<Integer> > num(A.field(),A.coldim());
@@ -536,10 +536,10 @@ namespace LinBox
 
 		commentator().start ("Padic Integer Blas-based Solving ICI", "solving");
 
-		typedef Givaro::Modular<double> Field;
+		typedef Givaro::ModularBalanced<double> Field;
 		// 0.7213475205 is an upper approximation of 1/(2log(2))
-		RandomPrimeIterator genprime((unsigned int)( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)));
-		RationalSolver<Ring, Field, RandomPrimeIterator, DixonTraits> rsolve(A.field(), genprime);
+		PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
+		RationalSolver<Ring, Field, PrimeIterator<IteratorCategories::HeuristicTag>, DixonTraits> rsolve(A.field(), genprime);
 		SolverReturnStatus status = SS_OK;
 
 
@@ -563,7 +563,7 @@ namespace LinBox
 					break;
 				case DixonTraits::DIOPHANTINE:
 					{
-						DiophantineSolver<RationalSolver<Ring,Field,RandomPrimeIterator, DixonTraits> > dsolve(rsolve);
+						DiophantineSolver<RationalSolver<Ring,Field,PrimeIterator<IteratorCategories::HeuristicTag>, DixonTraits> > dsolve(rsolve);
 						status= dsolve.diophantineSolve(x, d, A, b, (int)m.maxTries(),
 										(m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
 					}
@@ -597,7 +597,7 @@ namespace LinBox
 
 			case DixonTraits::DIOPHANTINE:
 				{
-					DiophantineSolver<RationalSolver<Ring,Field,RandomPrimeIterator, DixonTraits> > dsolve(rsolve);
+					DiophantineSolver<RationalSolver<Ring,Field,PrimeIterator<IteratorCategories::HeuristicTag>, DixonTraits> > dsolve(rsolve);
 					status= dsolve.diophantineSolve(x, d, A, b, (int)m.maxTries(),
 									(m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
 				}
@@ -635,8 +635,8 @@ namespace LinBox
 
 		typedef Givaro::Modular<double> Field;
 		// 0.7213475205 is an upper approximation of 1/(2log(2))
-		RandomPrimeIterator genprime((unsigned int) (26-(int)ceil(log((double)A.rowdim())*0.7213475205)));
-		RationalSolver<Ring, Field, RandomPrimeIterator, SparseEliminationTraits> rsolve(A.field(), genprime);
+		PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
+		RationalSolver<Ring, Field, PrimeIterator<IteratorCategories::HeuristicTag>, SparseEliminationTraits> rsolve(A.field(), genprime);
 		SolverReturnStatus status = SS_OK;
 		// if singularity unknown and matrix is square, we try nonsingular solver
 		switch ( m.singular() ) {
@@ -658,7 +658,7 @@ namespace LinBox
 					break;
 				case DixonTraits::DIOPHANTINE:
 					{
-						DiophantineSolver<RationalSolver<Ring,Field,RandomPrimeIterator, DixonTraits> > dsolve(rsolve);
+						DiophantineSolver<RationalSolver<Ring,Field,PrimeIterator<IteratorCategories::HeuristicTag>, DixonTraits> > dsolve(rsolve);
 						status= dsolve.diophantineSolve(x, d, A, b, (int)m.maxTries(),
 										(m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
 					}
@@ -694,7 +694,7 @@ namespace LinBox
 
 			case DixonTraits::DIOPHANTINE:
 				{
-					DiophantineSolver<RationalSolver<Ring,Field,RandomPrimeIterator, DixonTraits> > dsolve(rsolve);
+					DiophantineSolver<RationalSolver<Ring,Field,PrimeIterator<IteratorCategories::HeuristicTag>, DixonTraits> > dsolve(rsolve);
 					status= dsolve.diophantineSolve(x, d, A, b, (int)m.maxTries(),
 									(m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
 				}
@@ -842,7 +842,7 @@ namespace LinBox
 
 		commentator().start ("Integer CRA Solve", "Isolve");
 
-		RandomPrimeIterator genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
+		PrimeIterator<IteratorCategories::HeuristicTag> genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
 		//         RationalRemainder< Givaro::Modular<double> > rra((double)
 		//                                                  ( A.coldim()/2.0*log((double) A.coldim()) ) );
 
@@ -1029,7 +1029,7 @@ namespace LinBox
 			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
 		commentator().start ("Rational CRA Solve", "Rsolve");
 		size_t bits = (size_t)(26 -(int)ceil(log((double)A.rowdim())*0.7213475205));
-		RandomPrimeIterator genprime( (unsigned) bits);
+		PrimeIterator<IteratorCategories::HeuristicTag> genprime( (unsigned) bits);
 		RationalRemainder< EarlyMultipRatCRA< Givaro::Modular<double> > > rra(3UL);
 		IntegerModularSolve<BB,Vector,MethodTraits > iteration(A, b, m);
 		Integer den;
@@ -1056,7 +1056,7 @@ namespace LinBox
 			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
 		commentator().start ("Rational CRA Solve", "Rsolve");
 		size_t bits = (size_t)(26 -(int)ceil(log((double)A.rowdim())*0.7213475205));
-		RandomPrimeIterator genprime((unsigned) bits);
+		PrimeIterator<IteratorCategories::HeuristicTag> genprime((unsigned) bits);
 		RationalRemainder< EarlyMultipRatCRA< Givaro::Modular<double> > > rra(3UL);
 		IntegerModularSolve<BB,RatVector,MethodTraits > iteration(A, b, m);
 		Integer den;
@@ -1116,7 +1116,7 @@ namespace LinBox {
 		typedef Givaro::Modular<int32_t> ZField;
 		// typedef Givaro::Modular<double> ZField;
 		Givaro::ZRing<Integer> ZZ ;
-		RationalSolver<Givaro::ZRing<Integer>, ZField, RandomPrimeIterator, NumSymNormTraits> rsolver(ZZ);
+		RationalSolver<Givaro::ZRing<Integer>, ZField, PrimeIterator<IteratorCategories::HeuristicTag>, NumSymNormTraits> rsolver(ZZ);
 
 		int status = rsolver.solve(x, d, B, b);
 		if (status)
