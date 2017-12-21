@@ -457,11 +457,8 @@ namespace LinBox
                                          const MyMethod	&M)
 	{
 		commentator().start ("Integer Rank", "iirank");
-		typedef Givaro::Modular<double> projField;
-		integer mmodulus;
-		FieldTraits<projField>::maxModulus(mmodulus);
-		RandomPrimeIterator genprime( (unsigned) floor (log((double)mmodulus) ) );
-		++genprime;
+		typedef Givaro::ModularBalanced<double> projField;
+		PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<projField>::bestBitSize(A.rowdim()));
 		typedef typename Blackbox::template rebind< projField >::other FBlackbox;
 		const projField Fp(*genprime);
 		FBlackbox Ap(A, Fp );
@@ -596,11 +593,8 @@ namespace LinBox { /*  rankin */
 				      const Method::SparseElimination     &M)
 	{
 		commentator().start ("Integer Rank inplace", "irank");
-		typedef Givaro::Modular<double> Field;
-		integer mmodulus;
-		FieldTraits<Field>::maxModulus(mmodulus);
-		RandomPrimeIterator genprime( (unsigned int) floor (log((double)mmodulus) ) );
-		++genprime;
+		typedef Givaro::ModularBalanced<double> Field;
+		PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.rowdim()));
 		typedef typename Blackbox::template rebind< Field >::other FBlackbox;
 		const Field Fp(*genprime);
 		FBlackbox Ap(A, Fp);

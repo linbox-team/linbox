@@ -93,7 +93,7 @@ bool testRandomSolve (const Ring& R,
 
         for(int i = 0; i < n; ++i) R.init (D[(size_t)i][(size_t)i],  d[(size_t)i]);
 
-        typedef RationalSolver<Ring, Field, LinBox::RandomPrimeIterator> RSolver;
+        typedef RationalSolver<Ring, Field, PrimeIterator<IteratorCategories::HeuristicTag> > RSolver;
         RSolver rsolver;
 
         BlasVector<Ring> num(R,(size_t)n);

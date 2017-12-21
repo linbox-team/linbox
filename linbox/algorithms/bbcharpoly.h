@@ -186,11 +186,11 @@ namespace LinBox
 			size_t factnum = intFactors.size();
 
 			/* Choose a modular prime field */
-			RandomPrimeIterator primeg (28);
-			++primeg;
+			PrimeIterator<IteratorCategories::HeuristicTag> primeg (FieldTraits<Field>::bestBitSize(n));
 			Field F(*primeg);
+			++primeg;
 
-			/* Building the structure of factors */
+                        /* Building the structure of factors */
 			int goal =(int) n;
 
 			for (size_t i = 0; i < intFactors.size(); ++i) {
