@@ -46,15 +46,37 @@ namespace LinBox
 	};
 
 	/** \brief Glorified typedef for the CRA type based on the result type.
+	 *
+	 * Here ResultType should be some kind of vector type whose default constructor
+	 * results in zero-dimensional vectors where no init'ing is required.
 	 */
-	template <typename ResultType, typename Domain>
-	struct CRAResidueType {
-		using Type = typename ResultType::template rebind<Domain>::other;
+	template <typename ResultType>
+	struct CRAResidue {
+		template <typename Domain>
+		using ResidueType = typename ResultType::template rebind<Domain>::other;
+
+		template <typename Domain>
+		static ResidueType<Domain> create(const Domain& d) {
+			return ResidueType<Domain>(d);
+		}
 	};
 
-	template <typename Domain>
-	struct CRAResidueType<Integer, Domain> {
-		using Type = typename Domain::Element;
+	/** \brief Glorified typedef for the CRA type based on the result type.
+	 *
+	 * This is the specialization for scalar types (namely Integer) where
+	 * the residue type (such as a Modular element) must be init'ed.
+	 */
+	template <>
+	struct CRAResidue<Integer> {
+		template <typename Domain>
+		using ResidueType = typename Domain::Element;
+
+		template <typename Domain>
+		static ResidueType<Domain> create(const Domain& d) {
+			ResidueType<Domain> r;
+			d.init(r);
+			return r;
+		}
 	};
 
         /// No doc.
@@ -83,6 +105,10 @@ namespace LinBox
              * this loop produces the residues resulting from the Chinese
              * remainder process on sufficiently many primes to meet the
              * termination condition.
+			 *
+             * @warning  We won't detect bad primes.
+             *
+             * \param[out] res  an integer
              *
              * \param Iteration  Function object of two arguments, \c
              * Iteration(r, F), given prime field \p F it outputs
@@ -91,45 +117,46 @@ namespace LinBox
              * Iteration may be returning the coefficients of the minimal
              * polynomial of a matrix \c mod \p F.
              *
-             * @warning  We won't detect bad primes.
-             *
-             * \param[out] res  an integer
-             *
              * \param primeiter  iterator for generating primes.
              */
-		template<class Function, class PrimeIterator>
-		Integer& operator() (Integer& res, Function& Iteration, PrimeIterator& primeiter)
-            {
-                commentator().start ("Givaro::Modular iteration", "mmcrait");
-				(*this)(-1, res, Iteration, primeiter);
-                commentator().stop ("mmcrait");
-				return res;
-			}
-
 		template<class Iterator, class Function, class PrimeIterator>
 		Iterator& operator() (Iterator& res, Function& Iteration, PrimeIterator& primeiter)
             {
-                commentator().start ("Givaro::Modular vectorized iteration", "mmcravit");
+                commentator().start ("Givaro::Modular iteration", "mmcravit");
 				(*this)(-1, res, Iteration, primeiter);
                 commentator().stop ("done", NULL, "mmcravit");
 				return res;
             }
 
-            /*
-             *progress for k iterations
+            /** \brief Run the CRA loop a certain number of times.
+			 *
+			 * This runs the CRA loop up to k times, or until termination
+			 * if k is negative.
+			 *
+			 * \param k  maximum number of iterations, or run until termination
+			 * if k is negative.
+			 *
+             * \param[out] res  an integer
+             *
+             * \param Iteration  Function object of two arguments, \c
+             * Iteration(r, F), given prime field \p F it outputs
+             * residue(s) \p r. This loop may be parallelized.  \p
+             * Iteration  must be reentrant, thread safe. For example, \p
+             * Iteration may be returning the coefficients of the minimal
+             * polynomial of a matrix \c mod \p F.
+             *
+             * \param primeiter  iterator for generating primes.
              */
 		template<class ResultType, class Function, class PrimeIterator>
 		bool operator() (int k, ResultType& res, Function& Iteration, PrimeIterator& primeiter)
             {
-				using ResidueType = typename CRAResidueType<ResultType,Domain>::Type;
                 if ((IterCounter ==0) && (k !=0)) {
                     --k;
                     ++IterCounter;
                     Domain D(*primeiter);
                     commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
                     ++primeiter;
-					ResidueType r;
-					// D.init(r); TODO is this needed???
+					auto r = CRAResidue<ResultType>::create(D);
 #ifdef _LB_CRATIMING
                     Timer chrono; chrono.start();
 #endif
@@ -152,7 +179,8 @@ namespace LinBox
                         ++coprime;
                         if (coprime > maxnoncoprime) {
                             commentator().report(Commentator::LEVEL_ALWAYS,INTERNAL_ERROR) << "you are running out of primes. " << nbprimes << " used and " << maxnoncoprime << " coprime primes tried for a new one.";
-                            return true;//term TODO why true, shouldn't it be false?
+							Builder_.result(res);
+                            return true; // force termination, the error should indicate the result is wrong
                         }
                     }
 
@@ -161,8 +189,7 @@ namespace LinBox
                     commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
                     ++primeiter; ++nbprimes;
 
-					ResidueType r;
-					// D.init(r); TODO is this needed???
+					auto r = CRAResidue<ResultType>::create(D);
                     Builder_.progress( D, Iteration(r, D) );
                 }
                 Builder_.result(res);
