@@ -2,7 +2,7 @@
  *
  * Copyright (C) 2012 LinBox
  * Written by J-G Dumas
- * Time-stamp: <22 Dec 17 17:19:34 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <22 Dec 17 17:46:53 Jean-Guillaume.Dumas@imag.fr>
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
@@ -73,7 +73,7 @@ void runpoweroftworank(ifstream& input, const size_t exponent, size_t StPr) {
 
 //         // Reposition Output with empty rows at the end
 //     auto newend = std::remove_if(
-//         A.rowBegin(), A.rowEnd(), 
+//         A.rowBegin(), A.rowEnd(),
 //         [](typename SparseMat::ConstRow V)->bool { return V.size()==0; });
 //     A.refRep().erase(newend, A.rowEnd());
 //     A.refRep().resize(A.rowdim());
