@@ -1,7 +1,7 @@
 /* algorithms/smith-form-sparseelim-poweroftwo.h
  * Copyright (C) LinBox
  * Written by JG Dumas
- * Time-stamp: <22 Dec 17 11:50:28 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <22 Dec 17 17:01:32 Jean-Guillaume.Dumas@imag.fr>
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
@@ -558,8 +558,7 @@ namespace LinBox
             size_t num = 0;
             for( typename Container<size_t, Alloc<size_t> >::const_iterator it = ranks.begin(); it != ranks.end(); ++it) {
                 size_t diff = *it-num;
-                if (diff > 0)
-                    L.push_back( std::pair<size_t,UInt_t>(*it-num,MOD) );
+                if (diff > 0) L.emplace_back(diff,MOD);
                 MOD <<= 1;
                 num = *it;
             }
