@@ -83,7 +83,7 @@ int tmain (int argc, char **argv)
 
         // Reposition Output with empty rows at the end
     auto newend = std::remove_if(
-        B.rowBegin(), B.rowEnd(), 
+        B.rowBegin(), B.rowEnd(),
         [](typename SparseMat::ConstRow V)->bool { return V.size()==0; });
     B.refRep().erase(newend, B.rowEnd());
     B.refRep().resize(B.rowdim());
