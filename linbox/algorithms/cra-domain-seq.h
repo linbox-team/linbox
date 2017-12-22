@@ -45,6 +45,17 @@ namespace LinBox
 		typedef BlasVector<Field> Type_t;
 	};
 
+	/** \brief Glorified typedef for the CRA type based on the result type.
+	 */
+	template <typename ResultType, typename Domain>
+	struct CRAResidueType {
+		using Type = typename ResultType::template rebind<Domain>::other;
+	};
+
+	template <typename Domain>
+	struct CRAResidueType<Integer, Domain> {
+		using Type = typename Domain::Element;
+	};
 
         /// No doc.
         /// @ingroup CRA
@@ -54,21 +65,17 @@ namespace LinBox
 		typedef typename CRABase::DomainElement	DomainElement;
 	protected:
 		CRABase Builder_;
-        
+
 	public:
 		int IterCounter;
-        
-		template<class Param>
-		ChineseRemainderSeq(const Param& b) :
-                Builder_(b) //! @bug test-cra-domain/clang++ emits a warning
-            {
-                IterCounter=0;
-            }
-		ChineseRemainderSeq(const CRABase& b) :
-                Builder_(b)
-            {
-                IterCounter=0;
-            }
+
+		/** \brief Pass-through constructor to create the underlying builder.
+		 */
+		template <typename... Args>
+		ChineseRemainderSeq(Args&&... args) :
+			Builder_(std::forward<Args>(args)...),
+			IterCounter(0)
+		{ }
 
             /** \brief The \ref CRA loop
              *
@@ -86,171 +93,43 @@ namespace LinBox
              *
              * @warning  We won't detect bad primes.
              *
-             * \param primeiter  iterator for generating primes.
-             *
              * \param[out] res  an integer
+             *
+             * \param primeiter  iterator for generating primes.
              */
 		template<class Function, class PrimeIterator>
 		Integer& operator() (Integer& res, Function& Iteration, PrimeIterator& primeiter)
             {
                 commentator().start ("Givaro::Modular iteration", "mmcrait");
-                if (IterCounter==0) {
-                    ++IterCounter;
-                    Domain D(*primeiter);
-                    std::ostream& report = commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-                    report << "With prime " << *primeiter << std::endl;
-                        //commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
-                    ++primeiter;
-                    DomainElement r; D.init(r);
-#ifdef _LB_CRATIMING
-                    Timer chrono; chrono.start();
-#endif
-                    Builder_.initialize( D, Iteration(r, D) );
-#ifdef _LB_CRATIMING
-                    chrono.stop();
-                    std::clog << "1st iter : " << chrono << std::endl;
-#endif
-                }
-
-                int coprime =0, nbprimes=0;
-                int maxnoncoprime = 1000;
-
-                while( ! Builder_.terminated() ) {
-                    ++IterCounter;
-                    while(Builder_.noncoprime(*primeiter) ) {
-                        ++primeiter;
-                        ++coprime;
-                        if (coprime > maxnoncoprime) {
-                            commentator().report(Commentator::LEVEL_ALWAYS,INTERNAL_ERROR) << "you are running out of primes. " << nbprimes << " used and " << maxnoncoprime << " coprime primes tried for a new one.";
-                            return Builder_.result(res);
-                        }
-                    }
-                    coprime =0;
-                    Domain D(*primeiter);
-                    commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
-                    ++primeiter; ++nbprimes;
-                    DomainElement r; D.init(r);
-                    Builder_.progress( D, Iteration(r, D) );
-                }
-                commentator().stop ("done", NULL, "mmcrait");
-                    //std::cerr << "Used: " << IterCounter << " primes." << std::endl;
-                return Builder_.result(res);
-            }
-
-            /*
-             * progress for k>=0 iterations
-             * run until terminated if k < 0
-             */
-		template<class Function, class PrimeIterator>
-		bool operator() (const int k, Integer& res, Function& Iteration, PrimeIterator& primeiter)
-            {
-
-                int i=0;
-                if ((IterCounter ==0) && (k !=0)) {
-                    ++i;
-                    ++IterCounter;
-                    Domain D(*primeiter);
-                    commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
-                    ++primeiter;
-                    DomainElement r; D.init(r);
-#ifdef _LB_CRATIMING
-                    Timer chrono; chrono.start();
-#endif
-                    Builder_.initialize( D, Iteration(r, D) );
-#ifdef _LB_CRATIMING
-                    chrono.stop();
-                    std::clog << "1st iter : " << chrono << std::endl;
-#endif
-                }
-
-                int coprime =0, nbprimes=0;
-                int maxnoncoprime = 1000;
-
-                while ((k <0) || (i < k)) {
-                    if (Builder_.terminated()) break;
-                    ++i;
-                    while(Builder_.noncoprime(*primeiter)) {
-                        ++primeiter;
-                        ++coprime;
-                        if (coprime > maxnoncoprime) {
-                            commentator().report(Commentator::LEVEL_ALWAYS,INTERNAL_ERROR) << "you are running out of primes. " << nbprimes << " used and " << maxnoncoprime << " coprime primes tried for a new one.";
-                            return true ;//term
-                        }
-                    }
-                    coprime =0;
-
-                    Domain D(*primeiter);
-                    commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
-                    ++primeiter; ++nbprimes;
-                    DomainElement r; D.init(r);
-                    Builder_.progress( D, Iteration(r, D) );
-                }
-                Builder_.result(res);
-                if (Builder_.terminated() ) return true;
-                else return false;
-            }
-
+				(*this)(-1, res, Iteration, primeiter);
+                commentator().stop ("mmcrait");
+				return res;
+			}
 
 		template<class Iterator, class Function, class PrimeIterator>
 		Iterator& operator() (Iterator& res, Function& Iteration, PrimeIterator& primeiter)
             {
                 commentator().start ("Givaro::Modular vectorized iteration", "mmcravit");
-
-                if (IterCounter==0) {
-                    Domain D(*primeiter);
-                    commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
-                    ++primeiter;
-                    typename Iterator::template rebind<Domain>::other r(D);
-                        //typename CRATemporaryVectorTrait<Function, Domain>::Type_t r(D);
-#ifdef _LB_CRATIMING
-                    Timer chrono; chrono.start();
-#endif
-                    Builder_.initialize( D, Iteration(r, D) );
-#ifdef _LB_CRATIMING
-                    chrono.stop();
-                    std::clog << "1st iter : " << chrono << std::endl;
-#endif
-                }
-                int coprime =0, nbprimes=0;
-                int maxnoncoprime = 1000;
-
-                while( ! Builder_.terminated() ) {
-                    ++IterCounter;
-                    while(Builder_.noncoprime(*primeiter) ) {
-                        ++primeiter;
-                        ++coprime;
-                        if (coprime > maxnoncoprime) {
-                            commentator().report(Commentator::LEVEL_ALWAYS,INTERNAL_ERROR) << "you are running out of primes. " << nbprimes << " used and " << maxnoncoprime << " coprime primes tried for a new one.";
-                            return Builder_.result(res);
-                        }
-                    }
-                    coprime = 0;
-                    Domain D(*primeiter);
-                    commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
-                    ++primeiter; ++nbprimes;
-                    typename Iterator::template rebind<Domain>::other r(D);
-                        //typename CRATemporaryVectorTrait<Function, Domain>::Type_t r(D);
-                    Builder_.progress( D, Iteration(r, D) );
-                }
+				(*this)(-1, res, Iteration, primeiter);
                 commentator().stop ("done", NULL, "mmcravit");
-                return Builder_.result(res);
+				return res;
             }
 
             /*
              *progress for k iterations
              */
-		template<class Iterator, class Function, class PrimeIterator>
-		bool operator() (const int k, Iterator& res, Function& Iteration, PrimeIterator& primeiter)
+		template<class ResultType, class Function, class PrimeIterator>
+		bool operator() (int k, ResultType& res, Function& Iteration, PrimeIterator& primeiter)
             {
-
-                int i=0;
+				using ResidueType = typename CRAResidueType<ResultType,Domain>::Type;
                 if ((IterCounter ==0) && (k !=0)) {
-                    ++i;
+                    --k;
                     ++IterCounter;
                     Domain D(*primeiter);
                     commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
                     ++primeiter;
-                    typename CRATemporaryVectorTrait<Function, Domain>::Type_t r;
+					ResidueType r;
+					// D.init(r); TODO is this needed???
 #ifdef _LB_CRATIMING
                     Timer chrono; chrono.start();
 #endif
@@ -264,9 +143,8 @@ namespace LinBox
                 int coprime =0, nbprimes=0;
                 int maxnoncoprime = 1000;
 
-                while( (k <0 ) || (i < k)) {
-                    if (Builder_.terminated()) break;
-                    ++i;
+				while (k != 0 && ! Builder_.terminated()) {
+					--k;
                     ++IterCounter;
 
                     while(Builder_.noncoprime(*primeiter) ) {
@@ -274,20 +152,21 @@ namespace LinBox
                         ++coprime;
                         if (coprime > maxnoncoprime) {
                             commentator().report(Commentator::LEVEL_ALWAYS,INTERNAL_ERROR) << "you are running out of primes. " << nbprimes << " used and " << maxnoncoprime << " coprime primes tried for a new one.";
-                            return true;//term
+                            return true;//term TODO why true, shouldn't it be false?
                         }
                     }
 
                     coprime =0;
                     Domain D(*primeiter);
+                    commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
                     ++primeiter; ++nbprimes;
 
-                    typename CRATemporaryVectorTrait<Function, Domain>::Type_t r;
+					ResidueType r;
+					// D.init(r); TODO is this needed???
                     Builder_.progress( D, Iteration(r, D) );
                 }
                 Builder_.result(res);
-                if (Builder_.terminated()) return true;
-                else return false;
+				return Builder_.terminated();
             }
 
 		template<class Param>
@@ -369,4 +248,3 @@ namespace LinBox
 // c-basic-offset: 4
 // End:
 // vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
-
