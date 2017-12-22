@@ -1,7 +1,7 @@
 /* algorithms/smith-form-sparseelim-poweroftwo.h
  * Copyright (C) LinBox
  * Written by JG Dumas
- * Time-stamp: <22 Dec 17 17:01:32 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <22 Dec 17 17:23:43 Jean-Guillaume.Dumas@imag.fr>
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
@@ -517,7 +517,6 @@ namespace LinBox
                     ranks.push_back( indcol );
                 }
 
-                    //             ranks.push_back(indcol);
 #ifdef LINBOX_pp_gauss_steps_OUT
                 std::cerr << "step[" << Ni-1 << "], pivot: " << c << std::endl;
 #  ifdef LINBOX_pp_gauss_intermediate_OUT

@@ -551,7 +551,6 @@ namespace LinBox
                     ranks.push_back( indcol );
                 }
 
-                    //             ranks.push_back(indcol);
 #ifdef LINBOX_pp_gauss_steps_OUT
                 LigneA.write(std::cerr << "step[" << Ni-1 << "], pivot: " << c << std::endl, Tag::FileFormat::Maple) << std::endl;
 #endif
@@ -592,7 +591,7 @@ namespace LinBox
                 for( typename Container<size_t, Alloc<size_t> >::const_iterator it = ranks.begin(); it != ranks.end(); ++it) {
                     size_t diff(*it-num);
                     if (diff > 0)
-                        L.push_back( std::pair<size_t,Modulo>(diff,MOD) );
+                        L.emplace_back(diff,MOD);
                     MOD *= PRIME;
                     num = *it;
                 }

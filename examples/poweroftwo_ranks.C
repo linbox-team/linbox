@@ -2,7 +2,7 @@
  *
  * Copyright (C) 2012 LinBox
  * Written by J-G Dumas
- * Time-stamp: <21 Dec 17 22:22:36 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <22 Dec 17 17:19:34 Jean-Guillaume.Dumas@imag.fr>
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
@@ -42,10 +42,13 @@ template<class Int_type, class Ring_type = Givaro::ZRing<Int_type> >
 void runpoweroftworank(ifstream& input, const size_t exponent, size_t StPr) {
     typedef std::vector<std::pair<size_t,Int_type> > Smith_t;
     typedef Ring_type Ring; // signed ?
+    typedef LinBox::SparseMatrix<Ring, 
+        LinBox::SparseMatrixFormat::SparseSeq > SparseMat;
+
     Smith_t local;
     Ring R;
     LinBox::MatrixStream<Ring> ms( R, input );
-    LinBox::SparseMatrix<Ring, LinBox::SparseMatrixFormat::SparseSeq > A (ms);
+    SparseMat A (ms);
 
     input.close();
     LinBox::PowerGaussDomainPowerOfTwo< Int_type > PGD;
@@ -67,7 +70,14 @@ void runpoweroftworank(ifstream& input, const size_t exponent, size_t StPr) {
     for (auto  p = local.begin(); p != local.end(); ++p)
         std::cout << '[' << p->first << ',' << p->second << "] ";
     cout << ')' << endl;
-       
+
+//         // Reposition Output with empty rows at the end
+//     auto newend = std::remove_if(
+//         A.rowBegin(), A.rowEnd(), 
+//         [](typename SparseMat::ConstRow V)->bool { return V.size()==0; });
+//     A.refRep().erase(newend, A.rowEnd());
+//     A.refRep().resize(A.rowdim());
+
     if (A.rowdim() <= 20 && A.coldim() <= 20) {
         A.write(cerr,Tag::FileFormat::Maple) << endl;
         Q.write(cerr,Tag::FileFormat::Maple) << endl;

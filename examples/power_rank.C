@@ -51,9 +51,10 @@ int tmain (int argc, char **argv)
     Base p; Givaro::Caster(p,Givaro::Integer(argv[2]));
     Base q; Givaro::Caster(q,Givaro::Integer(argv[3]));
     typedef Givaro::Modular<Base> Field;
+    typedef SparseMatrix<Field, SparseMatrixFormat::SparseSeq > SparseMat;
     Field F(q);
     MatrixStream<Field> ms( F, input );
-    SparseMatrix<Field, SparseMatrixFormat::SparseSeq > B (ms);
+    SparseMat B (ms);
     cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
     if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout,Tag::FileFormat::Maple) << endl;
 
@@ -79,6 +80,13 @@ int tmain (int argc, char **argv)
     for (auto ip = local.begin(); ip != local.end(); ++ip) 
         std::cout << '[' << ip->first << ',' << ip->second << "] ";
     cout << ")" << endl;
+
+        // Reposition Output with empty rows at the end
+    auto newend = std::remove_if(
+        B.rowBegin(), B.rowEnd(), 
+        [](typename SparseMat::ConstRow V)->bool { return V.size()==0; });
+    B.refRep().erase(newend, B.rowEnd());
+    B.refRep().resize(B.rowdim());
 
     if (B.rowdim() <= 20 && B.coldim() <= 20) {
         B.write(cerr,Tag::FileFormat::Maple) << endl;
