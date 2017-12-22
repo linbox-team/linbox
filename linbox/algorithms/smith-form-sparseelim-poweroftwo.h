@@ -1,7 +1,7 @@
 /* algorithms/smith-form-sparseelim-poweroftwo.h
  * Copyright (C) LinBox
  * Written by JG Dumas
- * Time-stamp: <19 Dec 17 12:12:15 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <22 Dec 17 11:50:28 Jean-Guillaume.Dumas@imag.fr>
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
@@ -200,11 +200,6 @@ namespace LinBox
                            const unsigned long& nj,
                            const unsigned long& k,
                            const long& indpermut) {
-// std::cout << "PCB " << k << " <--> " << indpermut << " :";
-// for(auto const & ci : lignecourante) std::cout << ci.first << ':' << ci.second << ' ';
-// std::cout << std::endl;
-
-            typedef typename Vecteur::value_type E;
             REQUIRE( nj > 0 );
             REQUIRE( indpermut > (long)k );
 
@@ -220,12 +215,12 @@ namespace LinBox
                     if (lignecourante[(size_t)l].first >= k) break;
                 if (l<j_head && lignecourante[l].first == k) {
                         // non zero  <--> non zero
-                    UInt_t tmp = (UInt_t) lignecourante[l].second ;
+                    auto tmp = lignecourante[l].second ;
                     lignecourante[l].second = lignecourante[(size_t)j_head].second;
                     lignecourante[(size_t)j_head].second = tmp;
                 } else {
                         // zero <--> non zero
-                    E tmp = (E) lignecourante[(size_t)j_head];
+                    auto tmp = lignecourante[(size_t)j_head];
                     tmp.first = (k);
                     for(unsigned long ll=j_head; ll>l; ll--)
                         lignecourante[ll] = lignecourante[ll-1];
@@ -239,7 +234,7 @@ namespace LinBox
                     if (lignecourante[(size_t)l].first >= k) break;
                 if ((l<nj) && (lignecourante[(size_t)l].first == k)) {
                         // non zero <--> zero
-                    E tmp = (E) lignecourante[(size_t)l];
+                    auto tmp = lignecourante[(size_t)l];
                     tmp.first = (unsigned long)(indpermut);
 					const unsigned long bjh(j_head-1); // Position before j_head
                     for(;l<bjh;l++)
@@ -248,9 +243,6 @@ namespace LinBox
                 } // else
                     // zero <--> zero
             }
-// std::cout << "PCA " << k << " <--> " << indpermut << " :";
-// for(auto const & ci : lignecourante) std::cout << ci.first << ':' << ci.second << ' ';
-// std::cout << std::endl;
         }
 
         template<class Vecteur>
@@ -263,8 +255,10 @@ namespace LinBox
 
         template<class SpMat>
         void PermuteSubMatrix(SpMat& LigneA,
-							  const unsigned long & start, const unsigned long & stop,
-							  const unsigned long & currentrank, const long & c) {
+							  const unsigned long & start,
+                              const unsigned long & stop,
+							  const unsigned long & currentrank,
+                              const long & c) {
 			for(unsigned long l=start; l < stop; ++l)
 				if ( LigneA[(size_t)l].size() )
 					PermuteColumn(LigneA[(size_t)l], LigneA[(size_t)l].size(), currentrank, c);
@@ -292,9 +286,6 @@ namespace LinBox
             unsigned long nj = (unsigned long) lignecourante.size() ;
 
             if (nj) {
-                //if (indpermut != (long)k)
-                    //PermuteColumn(lignecourante,nj,k,indpermut);
-
                 if (lignecourante[0].first == k) {
                         // -------------------------------------------
                         // Head non-zero ==> Elimination
@@ -423,26 +414,16 @@ namespace LinBox
 
 #ifdef  LINBOX_pp_gauss_steps_OUT
                         std::cerr << "------------ ordered rows " << k << " -----------" << std::endl;
-                        size_t capacity(0);
-                        for(p=k; p<Ni; ++p) {
-                            capacity += LigneA[(size_t)p].capacity();
-                            std::cerr << p << " : S" << LigneA[(size_t)p].capacity()<< std::endl;
-                        }
-                        std::cerr << "Capacity: " << capacity << std::endl;
-                        for( std::multimap< long, long >::const_iterator iter = psizes.begin(); iter != psizes.end(); ++iter)
-                        {
-                            std::cerr << (*iter).second << " : #" << (*iter).first << std::endl;
-                        }
+                        for(auto const& iter: psizes)
+                            std::cerr << iter.second << " : #" << iter.first << std::endl;
                         std::cerr << "---------------------------------------" << std::endl;
 #endif
-
-
 
                         if ( SameColumnPivotingTrait(p, LigneA, psizes, indcol, c, col_density, typename Boolean_Trait<PrivilegiateNoColumnPivoting>::BooleanType() ) )
                             break;
 
-                        for( typename std::multimap< long, long >::const_iterator iter = psizes.begin(); iter != psizes.end(); ++iter) {
-                            p = (unsigned long) (*iter).second;
+                        for(auto const& iter: psizes) {
+                            p = (unsigned long) iter.second;
 
                             CherchePivot( LigneA[(size_t)p], indcol, c , col_density) ;
                             if (c > -2 ) break;
@@ -503,10 +484,9 @@ namespace LinBox
                     
 #ifdef  LINBOX_pp_gauss_steps_OUT
                     std::cerr << "step[" << k << "], pivot: " << c << std::endl;
-#endif
-
-#ifdef  LINBOX_pp_gauss_intermediate_OUT
+#  ifdef  LINBOX_pp_gauss_intermediate_OUT
                     LigneA.write(std::cerr, Tag::FileFormat::Maple ) << std::endl;
+#  endif
 #endif
 
                     PreserveUpperMatrixRow(LigneA[(size_t)k], typename Boolean_Trait<PreserveUpperMatrix>::BooleanType());
@@ -540,9 +520,9 @@ namespace LinBox
                     //             ranks.push_back(indcol);
 #ifdef LINBOX_pp_gauss_steps_OUT
                 std::cerr << "step[" << Ni-1 << "], pivot: " << c << std::endl;
-#endif
-#ifdef LINBOX_pp_gauss_intermediate_OUT
+#  ifdef LINBOX_pp_gauss_intermediate_OUT
                 LigneA.write(std::cerr, Tag::FileFormat::Maple ) << std::endl;
+#  endif
 #endif
 #ifdef LINBOX_PRANK_OUT
                 std::cerr << "Rank mod 2^" << EXPONENTMAX << " : " << indcol << std::endl;

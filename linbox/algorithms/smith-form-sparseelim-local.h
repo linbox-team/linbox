@@ -3,7 +3,6 @@
  * Written by JG Dumas
  *
  *
- *
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
@@ -147,8 +146,8 @@ namespace LinBox
             // ------------------------------------------------
             // Pivot Searchers and column strategy
             // ------------------------------------------------
-//         template<class Modulo, class Vecteur, class D>
-//         void SameColumnPivoting(Modulo PRIME,  const Vecteur& lignepivot, unsigned long& indcol, long& indpermut, D& columns, Boolean_Trait<false>::BooleanType ) {}
+        template<class Modulo, class Vecteur, class D>
+        void SameColumnPivoting(Modulo PRIME,  const Vecteur& lignepivot, unsigned long& indcol, long& indpermut, D& columns, Boolean_Trait<false>::BooleanType ) {}
 
 
         template<class Modulo, class Vecteur, class D>
@@ -184,76 +183,57 @@ namespace LinBox
 
         }
 
-// 		template<class Vecteur>
-// 		void CherchePivot( Vecteur& lignepivot, unsigned long& indcol , long& indpermut )
-//             {
-//                 unsigned long nj =  (unsigned long)lignepivot.size() ;
-//                 if (nj) {
-//                     indpermut= (long)lignepivot[0].first;
-//                     if (indpermut != (long)indcol)
-//                         lignepivot[0].first = (indcol);
-//                     ++indcol;
-//                 }
-//                 else
-//                     indpermut = -1;
-//             }
-
-
-
 		template<class Modulo, class Vecteur, class D>
-		void CherchePivot(Modulo PRIME, Vecteur& lignepivot, unsigned long& indcol , long& indpermut, D& columns )
-            {
-                typedef typename Vecteur::value_type E;
-                typedef typename Field::Element F;
-                long nj =(long)  lignepivot.size() ;
-                if (nj) {
-                    indpermut = (long)lignepivot[0].first;
-                    long pp=0;
-                    for(;pp<nj;++pp)
-                        if (! this->MY_divides(PRIME,lignepivot[(size_t)pp].second) ) break;
+		void CherchePivot(Modulo PRIME, Vecteur& lignepivot, unsigned long& indcol , long& indpermut, D& columns ) {
+            long nj =(long)  lignepivot.size() ;
+            if (nj) {
+                indpermut = (long)lignepivot[0].first;
+                long pp=0;
+                for(;pp<nj;++pp)
+                    if (! this->MY_divides(PRIME,lignepivot[(size_t)pp].second) ) break;
 
-                    if (pp < nj) {
+                if (pp < nj) {
 
-                        long ds = (long)columns[ lignepivot[(size_t)pp].first ],p=pp,j=pp;
-                        for(++j;j<nj;++j){
-                            long dl;
-                            if ( ( (dl=(long)columns[(size_t)lignepivot[(size_t)j].first] ) < ds ) && (! MY_divides(PRIME,lignepivot[(size_t)j].second) ) ) {
-                                ds = dl;
-                                p = j;
-                            }
+                    long ds = (long)columns[ lignepivot[(size_t)pp].first ],p=pp,j=pp;
+                    for(++j;j<nj;++j){
+                        long dl;
+                        if ( ( (dl=(long)columns[(size_t)lignepivot[(size_t)j].first] ) < ds ) && (! MY_divides(PRIME,lignepivot[(size_t)j].second) ) ) {
+                            ds = dl;
+                            p = j;
                         }
-                        if (p != 0) {
-                            if (indpermut == (long)indcol) {
-                                F ttm = (F)lignepivot[(size_t)p].second;
-                                indpermut = (long)lignepivot[(size_t)p].first;
-                                lignepivot[(size_t)p].second = (lignepivot[0].second);
-                                lignepivot[0].second = (ttm);
-                            }
-                            else {
-                                E ttm = (E) lignepivot[(size_t)p];
-                                indpermut = (long)ttm.first;
-                                for(long m=p;m;--m)
-                                    lignepivot[(size_t)m] = lignepivot[(size_t)m-1];
-                                lignepivot[0] = ttm;
-                            }
+                    }
+                    if (p != 0) {
+                        if (indpermut == (long)indcol) {
+                            auto ttm = lignepivot[(size_t)p].second;
+                            indpermut = (long)lignepivot[(size_t)p].first;
+                            lignepivot[(size_t)p].second = (lignepivot[0].second);
+                            lignepivot[0].second = (ttm);
                         }
-                        for(j=nj;j--;)
-                            --columns[ lignepivot[(size_t)j].first ];
-                        if (indpermut != (long)indcol) {
+                        else {
+                            auto ttm = lignepivot[(size_t)p];
+                            indpermut = (long)ttm.first;
+                            for(long m=p;m;--m)
+                                lignepivot[(size_t)m] = lignepivot[(size_t)m-1];
+                            lignepivot[0] = ttm;
+                        }
+                    }
+                    for(j=nj;j--;)
+                        --columns[ lignepivot[(size_t)j].first ];
+                    if (indpermut != (long)indcol) {
 #ifdef  LINBOX_pp_gauss_steps_OUT
-                            std::cerr << "------CP---- permuting cols " << indcol << " and " << indpermut << " ---" << std::endl;
+                        std::cerr << "------CP---- permuting cols " << indcol << " and " << indpermut << " ---" << std::endl;
 #endif
 
-                            lignepivot[0].first = (indcol);
-                        }
-                        indcol++ ;
+                        lignepivot[0].first = (indcol);
                     }
-                    else
-                        indpermut = -2;
+                    indcol++ ;
                 }
                 else
-                    indpermut = -1;
+                    indpermut = -2;
             }
+            else
+                indpermut = -1;
+        }
 
 		template<class Vecteur>
 		void PermuteColumn(Vecteur& lignecourante,
@@ -482,20 +462,10 @@ namespace LinBox
 
 #ifdef  LINBOX_pp_gauss_steps_OUT
                         std::cerr << "------------ ordered rows " << k << " -----------" << std::endl;
-                        size_t capacity(0);
-                        for(p=k; p<Ni; ++p) {
-                            capacity += LigneA[(size_t)p].capacity();
-                            std::cerr << p << " : S" << LigneA[(size_t)p].capacity()<< std::endl;
-                        }
-                        std::cerr << "Capacity: " << capacity << std::endl;
-                        for( std::multimap< long, long >::const_iterator iter = psizes.begin(); iter != psizes.end(); ++iter)
-                        {
-                            std::cerr << (*iter).second << " : #" << (*iter).first << std::endl;
-                        }
+                        for(auto const& iter: psizes)
+                            std::cerr << iter.second << " : #" << iter.first << std::endl;
                         std::cerr << "---------------------------------------" << std::endl;
 #endif
-
-
 
                         if ( SameColumnPivotingTrait(PRIME, p, LigneA, psizes, indcol, c, col_density, typename Boolean_Trait<PrivilegiateNoColumnPivoting>::BooleanType() ) )
                             break;
@@ -630,7 +600,6 @@ namespace LinBox
             }
 
 	};
-
 
 
 } // end of LinBox namespace
