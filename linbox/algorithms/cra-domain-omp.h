@@ -59,8 +59,7 @@ namespace LinBox
 		template <class ResultType, class Function, class PrimeIterator>
 		ResultType& operator() (ResultType& res, Function& Iteration, PrimeIterator& primeiter)
 		{
-			using ResidueType = typename CRAResidue<ResultType>::template ResidueType<Domain>;
-			// FIXME using ResidueType = typename CRATemporaryVectorTrait<Function,Domain>::Type_t;
+			using ResidueType = typename CRAResidue<ResultType,Function>::template ResidueType<Domain>;
 			size_t NN = omp_get_max_threads();
 			//std::cerr << "Blocs: " << NN << " iterations." << std::endl;
 			// commentator().start ("Parallel OMP Givaro::Modular iteration", "mmcrait");
@@ -84,7 +83,7 @@ namespace LinBox
 				for(auto coprimesetiter = coprimeset.cbegin(); coprimesetiter != coprimeset.cend(); ++coprimesetiter) {
 					// std::cerr << "With prime: " << *coprimesetiter << std::endl;
 					ROUNDdomains.emplace_back(*coprimesetiter);
-					ROUNDresidues.emplace_back(CRAResidue<ResultType>::create(ROUNDdomains.back()));
+					ROUNDresidues.emplace_back(CRAResidue<ResultType,Function>::create(ROUNDdomains.back()));
 				}
 
 #pragma omp parallel for

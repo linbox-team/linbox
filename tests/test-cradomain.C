@@ -91,15 +91,6 @@ struct Interator {
 	}
 };
 
-struct InteratorIt;
-namespace LinBox
-{
-	template<class Field>
-	struct CRATemporaryVectorTrait<InteratorIt , Field> {
-		typedef typename BlasVector<Field>::iterator Type_t;
-	};
-}
-
 struct InteratorIt : public Interator {
 
 	// could use BlasVector and changeField
@@ -126,16 +117,6 @@ struct InteratorIt : public Interator {
 	}
 
 };
-
-template<typename Field> struct InteratorBlas;
-
-namespace LinBox
-{
-	template<class Field>
-	struct CRATemporaryVectorTrait<InteratorBlas<Field>, Field > {
-		typedef typename LinBox::BlasMatrix<Field>::pointer Type_t;
-	};
-}
 
 template<typename Field>
 struct InteratorBlas : public Interator {
