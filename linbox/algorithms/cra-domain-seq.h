@@ -85,19 +85,60 @@ namespace LinBox
 	struct ChineseRemainderSeq {
 		typedef typename CRABase::Domain	Domain;
 		typedef typename CRABase::DomainElement	DomainElement;
-	protected:
-		CRABase Builder_;
 
 	public:
-		int IterCounter;
+		const int MAXSKIP = 1000;
+		const int MAXNONCOPRIME = 1000;
 
+	protected:
+		CRABase Builder_;
+		int ngood_ = 0;
+		int nbad_ = 0;
+		int nskip_ = 0;
+
+		/** \brief Call this when a bad prime is skipped.
+		 */
+		void doskip() {
+			commentator().report(Commentator::LEVEL_IMPORTANT,INTERNAL_WARNING) << "bad prime, skipping\n";
+			++nbad_;
+			if (++nskip_ > MAXSKIP) {
+				commentator().report(Commentator::LEVEL_ALWAYS,INTERNAL_ERROR) << "you are running out of GOOD primes. " << ngood_ << " good primes and " << nbad_ << " bad primes with " << nskip_ << " skipped in a row.\n";
+				throw LinboxError("LinBox ERROR: ran out of good primes in CRA\n");
+			}
+		}
+
+		/** \brief Gets a prime from the iterator that is coprime to the curent modulus.
+		 */
+		template <class PrimeIterator>
+		auto get_coprime(PrimeIterator& primeiter) const -> decltype(*primeiter) {
+			if (ngood_ == 0) return *primeiter;
+			int coprime = 0;
+			while (Builder_.noncoprime(*primeiter)) {
+				++primeiter;
+				++coprime;
+				if (coprime > MAXNONCOPRIME) {
+					commentator().report(Commentator::LEVEL_ALWAYS,INTERNAL_ERROR) << "you are running out of primes. " << iterCount() << " used and " << coprime << " coprime primes tried for a new one.";
+					throw LinboxError("LinBox ERROR: ran out of primes in CRA\n");
+				}
+			}
+			return *primeiter;
+		}
+
+	public:
 		/** \brief Pass-through constructor to create the underlying builder.
 		 */
 		template <typename... Args>
 		ChineseRemainderSeq(Args&&... args) :
-			Builder_(std::forward<Args>(args)...),
-			IterCounter(0)
+			Builder_(std::forward<Args>(args)...)
 		{ }
+
+		/** \brief How many iterations have been performed so far.
+		 *
+		 * (This used to be stored in the public field IterCounter.)
+		 */
+		int iterCount() const {
+			return ngood_ + nbad_;
+		}
 
             /** \brief The \ref CRA loop
              *
@@ -152,64 +193,54 @@ namespace LinBox
 		template<class ResultType, class Function, class PrimeIterator>
 		bool operator() (int k, ResultType& res, Function& Iteration, PrimeIterator& primeiter)
             {
-                if ((IterCounter ==0) && (k !=0)) {
-                    --k;
-                    ++IterCounter;
-                    Domain D(*primeiter);
+				while (k != 0 && ngood_ == 0) {
+					--k;
+					Domain D(*primeiter);
                     commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
-                    ++primeiter;
+					++primeiter;
 					auto r = CRAResidue<ResultType>::create(D);
 #ifdef _LB_CRATIMING
                     Timer chrono; chrono.start();
 #endif
-					IterationResult whattodo;
-					do { whattodo = Iteration(r,D); }
-					while (whattodo == IterationResult::SKIP);
-                    Builder_.initialize( D, r );
+					if (Iteration(r,D) == IterationResult::SKIP) {
+						doskip();
+					}
+					else {
+						++ngood_;
+						Builder_.initialize(D,r);
+					}
 #ifdef _LB_CRATIMING
                     chrono.stop();
                     std::clog << "1st iter : " << chrono << std::endl;
 #endif
-                }
-
-                int coprime =0, nbprimes=0;
-                int maxnoncoprime = 1000;
+				}
 
 				while (k != 0 && ! Builder_.terminated()) {
 					--k;
-                    ++IterCounter;
-
-                    while(Builder_.noncoprime(*primeiter) ) {
-                        ++primeiter;
-                        ++coprime;
-                        if (coprime > maxnoncoprime) {
-                            commentator().report(Commentator::LEVEL_ALWAYS,INTERNAL_ERROR) << "you are running out of primes. " << nbprimes << " used and " << maxnoncoprime << " coprime primes tried for a new one.";
-							Builder_.result(res);
-                            return true; // force termination, the error should indicate the result is wrong
-                        }
-                    }
-
-                    coprime =0;
-                    Domain D(*primeiter);
+					Domain D(get_coprime(primeiter));
                     commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
-                    ++primeiter; ++nbprimes;
-
+					++primeiter;
 					auto r = CRAResidue<ResultType>::create(D);
+
 					switch (Iteration(r, D)) {
 					case IterationResult::CONTINUE:
+						++ngood_;
 						Builder_.progress(D, r);
 						break;
 					case IterationResult::SKIP:
-						commentator().report(Commentator::LEVEL_IMPORTANT,INTERNAL_WARNING) << "bad prime, skipping\n";
+						doskip();
 						break;
 					case IterationResult::RESTART:
 						commentator().report(Commentator::LEVEL_IMPORTANT,INTERNAL_WARNING) << "previous primes were bad; restarting\n";
+						nbad_ += ngood_;
+						ngood_ = 1;
 						Builder_.initialize(D, r);
 						break;
 					}
-                }
+				}
+
                 Builder_.result(res);
-				return Builder_.terminated();
+				return ngood_ > 0 && Builder_.terminated();
             }
 
 		template<class Param>
@@ -257,7 +288,7 @@ namespace LinBox
 #ifdef _LB_CRATIMING
 		inline std::ostream& reportTimes(std::ostream& os)
             {
-                os <<  "Iterations:" << IterCounter << "\n";
+                os <<  "Iterations:" << iterCount() << "\n";
                 Builder_.reportTimes(os);
                 return os;
             }

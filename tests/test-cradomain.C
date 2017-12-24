@@ -28,7 +28,6 @@
  * @test tests LinBox::ChineseRemainer (see \ref CRA)
  */
 
-
 #include "linbox/ring/modular.h"
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/matrix/matrix-domain.h"
@@ -304,6 +303,8 @@ bool TestCra(size_t N, int S, size_t seed)
 #endif
 
 
+	// XXX fixed prime set doesn't work with openmp version
+#ifndef LINBOX_USES_OPENMP
         BlasVector<Givaro::ZRing<Integer> >  PrimeSet(Z);
         double PrimeSize = 0.0;
         for( ; PrimeSize < (iterationIt.getLogSize()+1); ++genprime ) {
@@ -321,6 +322,7 @@ bool TestCra(size_t N, int S, size_t seed)
             BlasVector<Givaro::ZRing<Integer> > ::iterator,
             BlasVector<Givaro::ZRing<Integer> >  >(
                  report, iteration, psit, N, PrimeSet);
+#endif
 
 
 	if (pass) report << "TestCra(" << N << ',' << S << ')' << ", passed." << std::endl;
