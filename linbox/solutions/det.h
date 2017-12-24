@@ -546,12 +546,12 @@ namespace LinBox
 
 
 		template<typename Field>
-		typename Field::Element& operator()(typename Field::Element& d, const Field& F) const
+		IterationResult operator()(typename Field::Element& d, const Field& F) const
 		{
 			typedef typename Blackbox::template rebind<Field>::other FBlackbox;
 			FBlackbox Ap(A, F);
 			detin( d, Ap, RingCategories::ModularTag(), M);
-			return d;
+			return IterationResult::CONTINUE;
 		}
 	};
 

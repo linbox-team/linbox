@@ -108,7 +108,7 @@ namespace LinBox
 		{}
 
 		template<class Field>
-		BlasVector<Field>&
+		IterationResult
 		operator () (BlasVector<Field>& dd,
 			     const Field& F) const
 		{
@@ -132,7 +132,7 @@ namespace LinBox
 			F.divin (dd[1], s2p);
 			//tim.stop();
 			//std::cerr<<"doubleDetModp took "<<tim.usertime()<<std::endl;
-			return dd;
+			return IterationResult::CONTINUE;
 		}
 	};
 

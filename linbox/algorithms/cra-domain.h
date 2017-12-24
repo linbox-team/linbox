@@ -36,6 +36,21 @@
  */
 
 #include "linbox/integer.h"
+
+namespace LinBox
+{
+	/*! @brief Return type for CRA iteration.
+	 *
+	 * The function object passed to the ChineseRemainder operators
+	 * should return one of these values on each iteration.
+	 */
+	enum struct IterationResult {
+		CONTINUE, ///< successful iteration; add to the result and keep going
+		SKIP, ///< "bad prime"; ignore this result and keep going
+		RESTART ///< all previous iterations were bad; start over with this residue
+	};
+}
+
 #ifdef LINBOX_USES_OPENMP
 
 #include "linbox/algorithms/cra-domain-omp.h"
@@ -76,11 +91,10 @@ namespace LinBox
 
 #endif
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

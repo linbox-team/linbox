@@ -91,7 +91,7 @@ namespace LinBox
 		}
 
 		template<typename Field>
-		typename Field::Element& operator()(typename Field::Element& d, const Field& F)
+		IterationResult operator()(typename Field::Element& d, const Field& F)
 		{
 
 			if (beta > 1) {
@@ -104,7 +104,8 @@ namespace LinBox
 					D.init(current_moduli, moduli[iter_count2]);
 					D.div(kbeta, current_moduli,pbeta);
 					++this->iter_count2;
-					return d=kbeta;
+					d=kbeta;
+					return IterationResult::CONTINUE;
 				}
 			}
 
@@ -123,7 +124,7 @@ namespace LinBox
 			}
 			++this->iter_count;
 
-			return d;
+			return IterationResult::CONTINUE;
 		}
 
 		void Beta(Integer& b) { beta = b; iter_count2=0;}
@@ -196,7 +197,8 @@ namespace LinBox
 			iteration.primes[early_counter] = *genprime;
 			mymodular::Element r;
 			D.assign(r,D.zero);
-			cra.initialize( D, iteration(r, D));
+			iteration(r, D);
+			cra.initialize( D, r);
 			++early_counter;
 		}
 
@@ -208,7 +210,8 @@ namespace LinBox
 			// prime(p, early_counter);
 			mymodular::Element r;
 			D.assign(r,D.zero);
-			cra.progress( D, iteration(r, D));
+			iteration(r,D);
+			cra.progress( D, r);
 			++early_counter;
 		}
 
@@ -238,7 +241,8 @@ namespace LinBox
 				//		prime(p, early_counter);
 				mymodular::Element r;
 				D.assign(r,D.zero);
-				cra.progress( D, iteration(r, D));
+				iteration(r, D);
+				cra.progress( D, r);
 				++early_counter;
 			}
 			commentator().stop ( "zero step", NULL, "det");
@@ -302,7 +306,8 @@ namespace LinBox
 			mymodular D(iteration.primes[early_counter]);
 			mymodular::Element r;
 			D.assign(r,D.zero);
-			cra2.progress( D, iteration(r, D) );
+			iteration(r,D);
+			cra2.progress( D, r );
 			++early_counter;
 		}
 
@@ -338,7 +343,8 @@ namespace LinBox
 					mymodular D(iteration.primes[early_counter]);
 					mymodular::Element r;
 					D.assign(r,D.zero);
-					cra3.progress( D, iteration(r, D));
+					iteration(r,D);
+					cra3.progress( D, r);
 					++early_counter;
 					//iteration.Inc();
 				}
@@ -361,7 +367,8 @@ namespace LinBox
 						mymodular D(*genprime);
 						mymodular::Element r;
 						D.assign(r,D.zero);
-						cra3.progress( D, iteration(r, D));
+						iteration(r,D);
+						cra3.progress( D, r);
 					}
 					cra3.result(k);
 					commentator().stop ("third step, bonus > 1", NULL, "det");
@@ -378,7 +385,8 @@ namespace LinBox
 					mymodular D(*genprime);
 					mymodular::Element r;
 					D.assign(r,D.zero);
-					cra2.progress( D, iteration(r, D));
+					iteration(r,D);
+					cra2.progress( D, r);
 				}
 				cra2.result(k);
 				commentator().stop ("third step, bonus = 1", NULL, "det");
@@ -393,7 +401,8 @@ namespace LinBox
 				mymodular D(*genprime);
 				mymodular::Element r;
 				D.assign(r,D.zero);
-				cra2.progress( D, iteration(r, D));
+				iteration(r,D);
+				cra2.progress( D, r);
 			}
 			cra2.result(k);
 			commentator().stop ("second step+", NULL, "det");
@@ -475,7 +484,8 @@ namespace LinBox
                 iteration.primes[early_counter] = p;
                 mymodular::Element r;
                 D.assign(r,D.zero);
-                cra.initialize( D, iteration(r, D));
+		iteration(r,D);
+                cra.initialize( D, r);
                 ++early_counter;
 
 		while ( early_counter < myfactor && !cra.terminated() ) {
@@ -486,7 +496,8 @@ namespace LinBox
 			//          prime(p, early_counter);
 			mymodular::Element r;
 			D.assign(r,D.zero);
-			cra.progress( D, iteration(r, D));
+			iteration(r,D);
+			cra.progress( D,r);
 			++early_counter;
 		}
 
@@ -513,7 +524,8 @@ namespace LinBox
 				//          prime(p, early_counter);
 				mymodular::Element r;
 				D.assign(r,D.zero);
-				cra.progress( D, iteration(r, D));
+				iteration(r,D);
+				cra.progress( D, r);
 				++early_counter;
 			}
 			commentator().stop ( "zero step", NULL, "det");
@@ -571,7 +583,8 @@ namespace LinBox
 			mymodular D(iteration.primes[early_counter]);
 			mymodular::Element r;
 			D.assign(r,D.zero);
-			cra2.progress( D, iteration(r, D));
+			iteration(r,D);
+			cra2.progress( D, r);
 			++early_counter;
 		}
 
@@ -607,7 +620,8 @@ namespace LinBox
 					mymodular D(iteration.primes[early_counter]);
 					mymodular::Element r;
 					D.assign(r,D.zero);
-					cra3.progress( D, iteration(r, D));
+					iteration(r,D);
+					cra3.progress( D, r);
 					++early_counter;
 					//iteration.Inc();
 				}
@@ -630,7 +644,8 @@ namespace LinBox
 						mymodular D(p);
 						mymodular::Element r;
 						D.assign(r,D.zero);
-						cra3.progress( D, iteration(r, D));
+						iteration(r,D);
+						cra3.progress( D, r);
 					}
 					cra3.result(k);
 					commentator().stop ("third step, bonus > 1", NULL, "det");
@@ -647,7 +662,8 @@ namespace LinBox
 					mymodular D(p);
 					mymodular::Element r;
 					D.assign(r,D.zero);
-					cra2.progress( D, iteration(r, D));
+					iteration(r,D);
+					cra2.progress( D, r);
 				}
 				cra2.result(k);
 				commentator().stop ("third step, bonus = 1", NULL, "det");
@@ -662,7 +678,8 @@ namespace LinBox
 				mymodular D(p);
 				mymodular::Element r;
 				D.assign(r,D.zero);
-				cra2.progress( D, iteration(r, D));
+				iteration(r,D);
+				cra2.progress( D, r);
 			}
 			cra2.result(k);
 			commentator().stop ("second step+", NULL, "det");
