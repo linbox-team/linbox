@@ -121,7 +121,7 @@ struct PrecRationalModularMinpoly {
 	{}
 
 	template<typename Polynomial, typename Field>
-	Polynomial& operator()(Polynomial& P, const Field& F) const
+	IterationResult operator()(Polynomial& P, const Field& F) const
 	{
 
 		typedef typename Blackbox::template rebind<Field>::other FBlackbox;
@@ -152,7 +152,7 @@ struct PrecRationalModularMinpoly {
 		}
 		//std::cout<<"prec*Det(A) mod "<<p<<" = P[0]" << P[0] << "\n";
 		//printPolynomial(cout,F,P);
-		return P;
+                return IterationResult::CONTINUE;
 	}
 };
 

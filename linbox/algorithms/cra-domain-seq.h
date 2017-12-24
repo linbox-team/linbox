@@ -106,21 +106,21 @@ namespace LinBox
              * remainder process on sufficiently many primes to meet the
              * termination condition.
 			 *
-             * @warning  We won't detect bad primes.
-             *
              * \param[out] res  an integer
              *
              * \param Iteration  Function object of two arguments, \c
-             * Iteration(r, F), given prime field \p F it outputs
-             * residue(s) \p r. This loop may be parallelized.  \p
+             * Iteration(r, F), given prime field \p F it sets \p r
+			 * to the residue(s) and returns an IterationResult
+			 * to indicate how to incorporate the new residue.
+             * This loop may be parallelized.  \p
              * Iteration  must be reentrant, thread safe. For example, \p
              * Iteration may be returning the coefficients of the minimal
              * polynomial of a matrix \c mod \p F.
              *
              * \param primeiter  iterator for generating primes.
              */
-		template<class Iterator, class Function, class PrimeIterator>
-		Iterator& operator() (Iterator& res, Function& Iteration, PrimeIterator& primeiter)
+		template<class ResultType, class Function, class PrimeIterator>
+		ResultType& operator() (ResultType& res, Function& Iteration, PrimeIterator& primeiter)
             {
                 commentator().start ("Givaro::Modular iteration", "mmcravit");
 				(*this)(-1, res, Iteration, primeiter);
@@ -139,8 +139,10 @@ namespace LinBox
              * \param[out] res  an integer
              *
              * \param Iteration  Function object of two arguments, \c
-             * Iteration(r, F), given prime field \p F it outputs
-             * residue(s) \p r. This loop may be parallelized.  \p
+             * Iteration(r, F), given prime field \p F it sets \p r
+			 * to the residue(s) and returns an IterationResult
+			 * to indicate how to incorporate the new residue.
+             * This loop may be parallelized.  \p
              * Iteration  must be reentrant, thread safe. For example, \p
              * Iteration may be returning the coefficients of the minimal
              * polynomial of a matrix \c mod \p F.
@@ -160,7 +162,10 @@ namespace LinBox
 #ifdef _LB_CRATIMING
                     Timer chrono; chrono.start();
 #endif
-                    Builder_.initialize( D, Iteration(r, D) );
+					IterationResult whattodo;
+					do { whattodo = Iteration(r,D); }
+					while (whattodo == IterationResult::SKIP);
+                    Builder_.initialize( D, r );
 #ifdef _LB_CRATIMING
                     chrono.stop();
                     std::clog << "1st iter : " << chrono << std::endl;
@@ -190,7 +195,18 @@ namespace LinBox
                     ++primeiter; ++nbprimes;
 
 					auto r = CRAResidue<ResultType>::create(D);
-                    Builder_.progress( D, Iteration(r, D) );
+					switch (Iteration(r, D)) {
+					case IterationResult::CONTINUE:
+						Builder_.progress(D, r);
+						break;
+					case IterationResult::SKIP:
+						commentator().report(Commentator::LEVEL_IMPORTANT,INTERNAL_WARNING) << "bad prime, skipping\n";
+						break;
+					case IterationResult::RESTART:
+						commentator().report(Commentator::LEVEL_IMPORTANT,INTERNAL_WARNING) << "previous primes were bad; restarting\n";
+						Builder_.initialize(D, r);
+						break;
+					}
                 }
                 Builder_.result(res);
 				return Builder_.terminated();

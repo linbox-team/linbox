@@ -92,7 +92,7 @@ namespace LinBox { namespace Protected {
 			// linbox_check(A.getPointer() == _A_.getPointer());
 		}
 
-		ModularVector& operator()(ModularVector& Cp, const Field& F) const
+		IterationResult operator()(ModularVector& Cp, const Field& F) const
 		{
 			// BlasMatrixDomain<Field>   BMD(F);
 
@@ -136,7 +136,7 @@ namespace LinBox { namespace Protected {
 				Cp.write(cout<< "Cp:=", F, true) << ';' << endl;
 			}
 #endif
-			return Cp;
+                        return IterationResult::CONTINUE;
 		}
 
 

@@ -78,7 +78,7 @@ struct Interator {
 	}
 
 	template<typename Field>
-	BlasVector<Field>& operator()(BlasVector<Field>& v,
+	IterationResult operator()(BlasVector<Field>& v,
 				      const Field& F) const
 	{
 		v.resize(_v.size());
@@ -88,7 +88,7 @@ struct Interator {
 			F.init(*eit, *vit);
 		}
 
-		return v;
+		return IterationResult::CONTINUE;
 	}
 };
 
@@ -114,7 +114,7 @@ struct InteratorIt : public Interator {
 	{}
 
 	template<typename Iterator, typename Field>
-	Iterator& operator()(Iterator& res, const Field& F) const
+	IterationResult operator()(Iterator& res, const Field& F) const
 	{
 		BlasVector<Givaro::ZRing<Integer> >::const_iterator vit=this->_v.begin();
 		std::vector<double>::iterator eit=_vectC.begin();
@@ -122,7 +122,8 @@ struct InteratorIt : public Interator {
 			F.init(*eit, *vit);
 		}
 
-		return res=_vectC.begin();
+		res=_vectC.begin();
+		return IterationResult::CONTINUE;
 	}
 
 };
@@ -156,14 +157,15 @@ struct InteratorBlas : public Interator {
 		_field(),
 		_vectC(_field,n,1) {}
 
-	Pointer& operator()(Pointer& res, const Field& F) const
+	IterationResult operator()(Pointer& res, const Field& F) const
 	{
 		BlasVector<Givaro::ZRing<Integer> >::const_iterator vit=this->_v.begin();
 		res = _vectC.getWritePointer();
 		for( ; vit != _v.end(); ++vit, ++res)
 			F.init(*res, *vit);
 
-		return res=_vectC.getWritePointer();
+		res=_vectC.getWritePointer();
+		return IterationResult::CONTINUE;
 	}
 
 };
