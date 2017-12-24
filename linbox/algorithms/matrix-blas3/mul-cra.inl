@@ -128,15 +128,6 @@ namespace LinBox { namespace BLAS3 { namespace Protected {
 } // BLAS3
 } // LinBox
 
-namespace LinBox {
-	template<class Field>
-	struct CRATemporaryVectorTrait<BLAS3::Protected::IntegerCraMatMul, Field> {
-		// typedef typename std::vector<double>::iterator Type_t ;
-		typedef typename LinBox::BlasMatrix<Field > Type_t;
-	};
-} // LinBox
-
-
 namespace LinBox { namespace BLAS3 {
 	template<class _anyMatrix>
 	_anyMatrix & mul (_anyMatrix& C,

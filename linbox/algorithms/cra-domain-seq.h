@@ -41,44 +41,6 @@
 namespace LinBox
 {
 
-	template<class Function, class Field> struct CRATemporaryVectorTrait {
-		typedef BlasVector<Field> Type_t;
-	};
-
-	/** \brief Glorified typedef for the CRA type based on the result type.
-	 *
-	 * Here ResultType should be some kind of vector type whose default constructor
-	 * results in zero-dimensional vectors where no init'ing is required.
-	 */
-	template <typename ResultType>
-	struct CRAResidue {
-		template <typename Domain>
-		using ResidueType = typename ResultType::template rebind<Domain>::other;
-
-		template <typename Domain>
-		static ResidueType<Domain> create(const Domain& d) {
-			return ResidueType<Domain>(d);
-		}
-	};
-
-	/** \brief Glorified typedef for the CRA type based on the result type.
-	 *
-	 * This is the specialization for scalar types (namely Integer) where
-	 * the residue type (such as a Modular element) must be init'ed.
-	 */
-	template <>
-	struct CRAResidue<Integer> {
-		template <typename Domain>
-		using ResidueType = typename Domain::Element;
-
-		template <typename Domain>
-		static ResidueType<Domain> create(const Domain& d) {
-			ResidueType<Domain> r;
-			d.init(r);
-			return r;
-		}
-	};
-
         /// No doc.
         /// @ingroup CRA
 	template<class CRABase>
@@ -198,7 +160,7 @@ namespace LinBox
 					Domain D(*primeiter);
                     commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
 					++primeiter;
-					auto r = CRAResidue<ResultType>::create(D);
+					auto r = CRAResidue<ResultType,Function>::create(D);
 #ifdef _LB_CRATIMING
                     Timer chrono; chrono.start();
 #endif
@@ -220,7 +182,7 @@ namespace LinBox
 					Domain D(get_coprime(primeiter));
                     commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
 					++primeiter;
-					auto r = CRAResidue<ResultType>::create(D);
+					auto r = CRAResidue<ResultType,Function>::create(D);
 
 					switch (Iteration(r, D)) {
 					case IterationResult::CONTINUE:
