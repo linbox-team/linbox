@@ -58,6 +58,34 @@ namespace LinBox
 		int nbad_ = 0;
 		int nskip_ = 0;
 
+		/** \brief Helper class to sample unique primes.
+		*/
+		template <class PrimeIterator, bool is_unique = PrimeIterator::UniqueSamplingTag::value>
+		struct PrimeSampler {
+			const ChineseRemainderSeq& outer_;
+			PrimeIterator& primeiter_;
+
+			PrimeSampler (const ChineseRemainderSeq& outer, PrimeIterator& primeiter) :
+				outer_(outer), primeiter_(primeiter)
+			{ }
+
+			/*! \brief Returns the next coprime element from the iterator.
+			 */
+			decltype(*primeiter_) operator() () {
+				if (outer_.ngood_ == 0) return *primeiter_;
+				int coprime = 0;
+				while (outer_.Builder_.noncoprime(*primeiter_)) {
+					++primeiter_;
+					++coprime;
+					if (coprime > outer_.MAXNONCOPRIME) {
+						commentator().report(Commentator::LEVEL_ALWAYS,INTERNAL_ERROR) << "you are running out of primes. " << outer_.iterCount() << " used and " << coprime << " coprime primes tried for a new one.";
+						throw LinboxError("LinBox ERROR: ran out of primes in CRA\n");
+					}
+				}
+				return *primeiter_;
+			}
+		};
+
 		/** \brief Call this when a bad prime is skipped.
 		 */
 		void doskip() {
@@ -72,18 +100,8 @@ namespace LinBox
 		/** \brief Gets a prime from the iterator that is coprime to the curent modulus.
 		 */
 		template <class PrimeIterator>
-		auto get_coprime(PrimeIterator& primeiter) const -> decltype(*primeiter) {
-			if (ngood_ == 0) return *primeiter;
-			int coprime = 0;
-			while (Builder_.noncoprime(*primeiter)) {
-				++primeiter;
-				++coprime;
-				if (coprime > MAXNONCOPRIME) {
-					commentator().report(Commentator::LEVEL_ALWAYS,INTERNAL_ERROR) << "you are running out of primes. " << iterCount() << " used and " << coprime << " coprime primes tried for a new one.";
-					throw LinboxError("LinBox ERROR: ran out of primes in CRA\n");
-				}
-			}
-			return *primeiter;
+		inline auto get_coprime(PrimeIterator& primeiter) const -> decltype(*primeiter) {
+			return PrimeSampler<PrimeIterator>(*this, primeiter)();
 		}
 
 	public:
@@ -256,6 +274,27 @@ namespace LinBox
             }
 #endif
 
+	};
+
+	/** \brief Helper class to sample unique primes.
+	 *
+	 * This is the specialization for prime iterators that are already
+	 * guaranteed to return unique primes (so that no checking is necessary).
+	*/
+	template <class CRABase>
+	template <class PrimeIterator>
+	struct ChineseRemainderSeq<CRABase>::PrimeSampler<PrimeIterator,true> {
+		PrimeIterator& primeiter_;
+
+		PrimeSampler (const ChineseRemainderSeq<CRABase>&, PrimeIterator& primeiter) :
+			primeiter_(primeiter)
+		{ }
+
+		/*! \brief Returns the next coprime element from the iterator.
+			*/
+		decltype(*primeiter_) operator() () {
+			return *primeiter_;
+		}
 	};
 
 #ifdef _LB_CRATIMING

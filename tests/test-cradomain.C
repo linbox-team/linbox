@@ -295,14 +295,14 @@ bool TestCra(size_t N, int S, size_t seed)
             }
         }
 
-        BlasVector<Givaro::ZRing<Integer> > ::iterator psit = PrimeSet.begin();
+	auto psseq = create_prime_sequence(PrimeSet);
 
 	pass &= TestOneCRA<
             LinBox::GivaroRnsFixedCRA< Field >,
             Interator,
-            BlasVector<Givaro::ZRing<Integer> > ::iterator,
+	    decltype(psseq),
             BlasVector<Givaro::ZRing<Integer> >  >(
-                 report, iteration, psit, N, PrimeSet);
+                 report, iteration, psseq, N, PrimeSet);
 #endif
 
 
