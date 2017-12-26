@@ -36,6 +36,7 @@
  */
 
 #include "linbox/integer.h"
+#include "linbox/field/rebind.h"
 
 namespace LinBox
 {
@@ -58,7 +59,7 @@ namespace LinBox
 	template <typename ResultType, typename Function>
 	struct CRAResidue {
 		template <typename Domain>
-		using ResidueType = typename ResultType::template rebind<Domain>::other;
+		using ResidueType = typename Rebind<ResultType,Domain>::other;
 
 		template <typename Domain>
 		static ResidueType<Domain> create(const Domain& d) {
