@@ -250,53 +250,54 @@ bool TestCra(size_t N, int S, size_t seed)
 
 	Interator iteration((int)N, S);
 	InteratorIt iterationIt(iteration.getVector());
-	InteratorBlas<Givaro::Modular<double> > iterationBlas(iteration.getVector());
-	LinBox::RandomPrimeIterator genprime( 24, new_seed );
+        typedef Givaro::ModularBalanced<double> Field;
+	InteratorBlas<Field > iterationBlas(iteration.getVector());
+	PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(N), new_seed );
 
 	bool pass = true;
 
-	pass &= TestOneCRA< LinBox::EarlyMultipCRA< Givaro::Modular<double> >,
-	     Interator, LinBox::RandomPrimeIterator>(
+	pass &= TestOneCRA< LinBox::EarlyMultipCRA< Field >,
+	     Interator, LinBox::PrimeIterator<IteratorCategories::HeuristicTag> >(
 						     report, iteration, genprime, N, 5);
 
-	pass &= TestOneCRA< LinBox::EarlyMultipCRA< Givaro::Modular<double> >,
-	     Interator, LinBox::RandomPrimeIterator>(
+	pass &= TestOneCRA< LinBox::EarlyMultipCRA< Field >,
+	     Interator, LinBox::PrimeIterator<IteratorCategories::HeuristicTag> >(
 						     report, iteration, genprime, N, 15);
 
-	pass &= TestOneCRA< LinBox::FullMultipCRA< Givaro::Modular<double> >,
-	     Interator, LinBox::RandomPrimeIterator>(
+	pass &= TestOneCRA< LinBox::FullMultipCRA< Field >,
+	     Interator, LinBox::PrimeIterator<IteratorCategories::HeuristicTag> >(
 						     report, iteration, genprime, N, iteration.getLogSize()+1);
 
-	pass &= TestOneCRA< LinBox::FullMultipCRA< Givaro::Modular<double> >,
-	     Interator, LinBox::RandomPrimeIterator>(
+	pass &= TestOneCRA< LinBox::FullMultipCRA< Field >,
+	     Interator, LinBox::PrimeIterator<IteratorCategories::HeuristicTag> >(
 						     report, iteration, genprime, N, 3*iteration.getLogSize()+15);
 
 #if 0
-	pass &= TestOneCRAbegin<LinBox::FullMultipFixedCRA< Givaro::Modular<double> >,
-	     InteratorIt, LinBox::RandomPrimeIterator>(
+	pass &= TestOneCRAbegin<LinBox::FullMultipFixedCRA< Field >,
+	     InteratorIt, LinBox::PrimeIterator<IteratorCategories::HeuristicTag> >(
 						       report, iterationIt, genprime, N, std::pair<size_t,double>(N,iteration.getLogSize()+1));
 
-	pass &= TestOneCRAbegin<LinBox::FullMultipFixedCRA< Givaro::Modular<double> >,
-	     InteratorIt, LinBox::RandomPrimeIterator>(
+	pass &= TestOneCRAbegin<LinBox::FullMultipFixedCRA< Field >,
+	     InteratorIt, LinBox::PrimeIterator<IteratorCategories::HeuristicTag> >(
 						       report, iterationIt, genprime, N, std::pair<size_t,double>(N,3*iteration.getLogSize()+15));
 
 
-	pass &= TestOneCRAWritePointer<LinBox::FullMultipFixedCRA< Givaro::Modular<double> >,
-	     InteratorIt, LinBox::RandomPrimeIterator>(
+	pass &= TestOneCRAWritePointer<LinBox::FullMultipFixedCRA< Field >,
+	     InteratorIt, LinBox::PrimeIterator<IteratorCategories::HeuristicTag> >(
 						       report, iterationIt, genprime, N, std::pair<size_t,double>(N,iterationIt.getLogSize()+1) );
 
-	pass &= TestOneCRAWritePointer<LinBox::FullMultipFixedCRA< Givaro::Modular<double> >,
-	     InteratorIt, LinBox::RandomPrimeIterator>(
+	pass &= TestOneCRAWritePointer<LinBox::FullMultipFixedCRA< Field >,
+	     InteratorIt, LinBox::PrimeIterator<IteratorCategories::HeuristicTag> >(
 						       report, iterationIt, genprime, N, std::pair<size_t,double>(N,3*iterationIt.getLogSize()+15) );
 
-	pass &= TestOneCRAWritePointer<LinBox::FullMultipFixedCRA< Givaro::Modular<double> >,
-	     InteratorBlas< Givaro::Modular<double> >,
-	     LinBox::RandomPrimeIterator>(
+	pass &= TestOneCRAWritePointer<LinBox::FullMultipFixedCRA< Field >,
+	     InteratorBlas< Field >,
+	     LinBox::PrimeIterator<IteratorCategories::HeuristicTag> >(
 					  report, iterationBlas, genprime, N, std::pair<size_t,double>(N,iterationIt.getLogSize()+1) );
 
-	pass &= TestOneCRAWritePointer<LinBox::FullMultipFixedCRA< Givaro::Modular<double> >,
-	     InteratorBlas< Givaro::Modular<double> >,
-	     LinBox::RandomPrimeIterator>(
+	pass &= TestOneCRAWritePointer<LinBox::FullMultipFixedCRA< Field >,
+	     InteratorBlas< Field >,
+	     LinBox::PrimeIterator<IteratorCategories::HeuristicTag> >(
 					  report, iterationBlas, genprime, N, std::pair<size_t,double>(N,3*iterationIt.getLogSize()+15) );
 #endif
 
@@ -313,7 +314,7 @@ bool TestCra(size_t N, int S, size_t seed)
         BlasVector<Givaro::ZRing<Integer> > ::iterator psit = PrimeSet.begin();
 
 	pass &= TestOneCRA<
-            LinBox::GivaroRnsFixedCRA< Givaro::Modular<double> >,
+            LinBox::GivaroRnsFixedCRA< Field >,
             Interator,
             BlasVector<Givaro::ZRing<Integer> > ::iterator,
             BlasVector<Givaro::ZRing<Integer> >  >(

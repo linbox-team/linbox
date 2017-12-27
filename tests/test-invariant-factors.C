@@ -71,7 +71,7 @@ public:
 		}
 	}
 	
-	double computeMinpoly(std::vector<Matrix> &minpoly, const SparseMat &M, size_t b) const {
+	double computeMinpoly(std::vector<size_t> &degree, std::vector<Matrix> &minpoly, const SparseMat &M, size_t b) const {
 		size_t n = M.rowdim();
 		
 		RandIter RI(F);
@@ -89,14 +89,12 @@ public:
 		// Compute minimal generating polynomial matrix
 		MasseyDom BMD(&seq); // pascal
 		CoppersmithDom BCD(MD, &seq, 10); // george
-		
-		std::vector<size_t> degree;
-		
+				
 		TW.clear();
 		TW.start();
 		
 		//BMD.left_minpoly_rec(minpoly, degree);
-		BCD.right_minpoly(minpoly);
+		degree = BCD.right_minpoly(minpoly);
 		
 		TW.stop();
 		double bm_time = TW.usertime();
@@ -224,11 +222,9 @@ public:
 	}
 	
 	size_t detLimit(const PolyMatrix &M, size_t dim) {
-		size_t limit = 0;
-		
+		size_t limit1 = 0;
 		for (size_t i = 0; i < M.rowdim(); i++) {
 			size_t max_degree = 0;
-			
 			for (size_t j = 0; j < M.coldim(); j++) {
 				size_t deg = R.deg(M.getEntry(i, j));
 				if (deg > max_degree) {
@@ -236,10 +232,25 @@ public:
 				}
 			}
 			
-			limit += max_degree;
+			limit1 += max_degree;
 		}
 		
-		return (limit < dim ? limit : dim) + 1;
+		size_t limit2 = 0;
+		for (size_t i = 0; i < M.coldim(); i++) {
+			size_t max_degree = 0;
+			for (size_t j = 0; j < M.rowdim(); j++) {
+				size_t deg = R.deg(M.getEntry(j, i));
+				if (deg > max_degree) {
+					max_degree = deg;
+				}
+			}
+			
+			limit2 += max_degree;
+		}
+		
+		std::cout << limit1 << " " << limit2 << std::flush;
+		
+		return std::min(std::min(limit1, limit2), dim) + 1;
 	}
 	
 	double timeLocalX(Polynomial &det, const PolyMatrix &M, size_t exponent) {
@@ -331,8 +342,9 @@ int main(int argc, char** argv) {
 	std::vector<Polynomial> result;
 	for (size_t i = 0; i < times; i++) {
 		// Generate random left and right projectors
+		std::vector<size_t> degree;
 		std::vector<Matrix> minpoly;
-		helper.computeMinpoly(minpoly, M, b);
+		helper.computeMinpoly(degree, minpoly, M, b);
 		
 		// Convert to matrix with polynomial entries
 		PolyMatrix G(R, b, b);
@@ -346,11 +358,12 @@ int main(int argc, char** argv) {
 		Polynomial det2;
 		std::vector<Polynomial> result2;
 		
+		std::cout << "| " << std::flush;
 		size_t exponent_limit = helper.detLimit(G, n);
-		exponent = exponent == 0 ? exponent_limit : exponent;
-		std::cout << "| " << exponent << " " << std::flush;
+		std::cout << " | " << std::flush;
+		exponent_limit = exponent == 0 ? exponent_limit : exponent;
 		
-		double local_time = helper.timeLocalX(det2, G, exponent);
+		double local_time = helper.timeLocalX(det2, G, exponent_limit);
 		double ilio_time = helper.timeIliopoulos(result2, G, det2);
 		double total_time = local_time + ilio_time;
 		std::cout << "(" << total_time << ") " << std::flush;
@@ -374,7 +387,6 @@ int main(int argc, char** argv) {
 		helper.writeInvariantFactors(out, result);
 		out.close();
 	}
-	
 	
 	return 0;
 }

@@ -499,7 +499,7 @@ int main(int argc, char** argv){
 #ifdef FFT_PROFILER		
 			FFT_PROF_LEVEL=2;
 #endif
-			RandomPrimeIter Rd(b,seed);
+			PrimeIter<IteratorCategories::HeuristicTag> Rd(b,seed);
 			integer p= Rd.random();
 			//Givaro::Modular<integer> F(p);			
 			Givaro::Modular<RecInt::ruint128,RecInt::ruint256> F(p);
@@ -520,7 +520,7 @@ int main(int argc, char** argv){
 				cout<<"++++++++++++++++++++++++++++++++++++"<<endl;
 				runTest (F,n,b,d,seed,test);
 			} else {
-				RandomPrimeIter Rd(b,seed);
+				PrimeIter<IteratorCategories::HeuristicTag> Rd(b,seed);
 				//uint64_t dd=integer(d).bitsize()+1;
 				integer p;
 				Rd.random(p);

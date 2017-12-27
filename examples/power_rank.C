@@ -63,6 +63,7 @@ int tmain (int argc, char **argv)
     Permutation<Field> Q(F,B.coldim());
 
     Givaro::Timer tq; tq.clear(); tq.start();
+    // PGD(local, B, Q, q, p, PRESERVE_UPPER_MATRIX|PRIVILEGIATE_NO_COLUMN_PIVOTING);
     PGD(local, B, Q, q, p);
     tq.stop();
 

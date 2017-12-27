@@ -376,7 +376,7 @@ int main(int argc, char** argv){
 			std::cout<<"degree is to large for field bitsize: "<<b<<std::endl;
 			exit(0);
 		}
-		RandomFFTPrime Rd(1<<b,seed);	
+		RandomFFTPrime Rd(1<<b,seed);
 		integer p = Rd.randomPrime(logd+1);
 		std::cout<<"# starting sigma basis computation over Fp[x] with p="<<p<<endl;;		
 		SmallField F(p);
@@ -388,8 +388,8 @@ int main(int argc, char** argv){
 			FFT_PROF_LEVEL=2;
 #endif
 
-		RandomPrimeIterator Rd(b,seed);	
-		integer p = Rd.randomPrime();
+		PrimeIterator<IteratorCategories::HeuristicTag> Rd(b,seed);
+		integer p = *Rd;
 		std::cout<<"# starting sigma basis computation over Fp[x] with p="<<p<<endl;;		
 		LargeField F(p);		
 		typename LargeField::RandIter G(F,b,seed);
