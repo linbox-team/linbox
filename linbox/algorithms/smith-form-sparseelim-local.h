@@ -514,7 +514,7 @@ namespace LinBox
                         UModulo invpiv; 
                         MY_Zpz_inv(invpiv, LigneA[(size_t)k][0].second, MOD);
 
-                        for(unsigned long l=k + 1; l < Ni; ++l)
+                        for(unsigned long l=k + 1; (l < Ni) && (col_density[currentrank]); ++l)
                             FaireElimination(MOD, LigneA[(size_t)l], LigneA[(size_t)k], invpiv, currentrank, c, col_density);
                     }
                 

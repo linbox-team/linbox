@@ -1,7 +1,7 @@
 /* algorithms/smith-form-sparseelim-poweroftwo.h
  * Copyright (C) LinBox
  * Written by JG Dumas
- * Time-stamp: <22 Dec 17 17:23:43 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <28 Dec 17 12:50:03 Jean-Guillaume.Dumas@imag.fr>
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
@@ -478,7 +478,7 @@ namespace LinBox
                             // Compute the inverse of the found pivot
                         UInt_t invpiv;
                         MY_Zpz_inv(invpiv, (UInt_t) (LigneA[(size_t)k][0].second), EXPONENT, TWOKMONE);
-                        for(unsigned long l=k + 1; l < Ni; ++l)
+                        for(unsigned long l=k + 1; (l < Ni) && (col_density[currentrank]); ++l)
                             FaireElimination(EXPONENT, TWOK, TWOKMONE, LigneA[(size_t)l], LigneA[(size_t)k], invpiv, currentrank, c, col_density);
                     }
                     
