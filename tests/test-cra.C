@@ -189,7 +189,6 @@ int test_prob_single(std::ostream & report, size_t PrimeSize, size_t Size)
 	ProbSingleCRA<ModularField> cra(pprod.bitsize()-1) ;
 	Integer res = 0; // the result
 	typedef ModularField::Element Element;
-	Element residue ; // temporary
 	{ /* init */
 		call_initialize(cra, *genprime, *residu);
 	}
