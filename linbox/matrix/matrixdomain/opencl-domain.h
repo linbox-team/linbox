@@ -196,7 +196,7 @@ namespace LinBox{
 			return _col;
 		}
 
-		/*! Get the stride of the matrix.
+		/*!Â Get the stride of the matrix.
 		 * @return stride of submatrix (number of cols of parent matrix)
 		 */
 		size_t getStride() const{

@@ -26,7 +26,7 @@
  */
 // ========================================================================= //
 // (C) The Linbox Group 1999
-// Calcul de rang par la méthode de Gauss pivot par ligne, sur matrice creuse
+// Calcul de rang par la mÃ©thode de Gauss pivot par ligne, sur matrice creuse
 // ========================================================================= //
 
 #ifndef __LINBOX_gauss_INL

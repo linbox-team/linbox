@@ -2,7 +2,7 @@
  * Copyright(C) LinBox
  * Written by
  *  Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
- *  Clément Pernet <Clement.Pernet@imag.fr>
+ *  ClÃ©ment Pernet <Clement.Pernet@imag.fr>
  * ========LICENCE========
  * This file is part of the library LinBox.
  *

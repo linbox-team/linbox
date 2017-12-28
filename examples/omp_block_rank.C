@@ -63,7 +63,7 @@
 
 
 // **********************************************************
-// Variable globale pour fixer le générateurs des FFT primes
+// Variable globale pour fixer le gÃ©nÃ©rateurs des FFT primes
 struct FFTSeeder {
 	unsigned long seed;
 	FFTSeeder(unsigned long s=0) : seed(s) {}
