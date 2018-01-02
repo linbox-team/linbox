@@ -56,12 +56,12 @@ std::cout<<"Computation is done over Q"<<std::endl;
 #ifdef __LINBOX_HAVE_MPI
   Communicator *Cptr = NULL;
   Cptr = new Communicator(&argc, &argv);
-  int ni=2,nj=2,max=10000;  
+  int ni=11,nj=11,max=10000;  
   Givaro::ZRing<Integer> ZZ;
   SparseMatrix<Givaro::ZRing<Integer> > A (ZZ,ni,nj);
 
 typedef DenseVector<Givaro::ZRing<Integer> > DenseVector;
-DenseVector X2(ZZ, A.coldim()),  B(ZZ, A.coldim());
+DenseVector X(ZZ, A.coldim()), X2(ZZ, A.coldim()),  B(ZZ, A.coldim());
 Givaro::ZRing<Integer>::Element d;
 
 
@@ -83,10 +83,10 @@ Givaro::Integer valeur("12345678912345678912345678912345678912345678912345678912
        A.setEntry(i,j,myrand(tmp, max));
      }
 A.setEntry(nj-1,nj-1,valeur);
-   std::cout << "A is " << A.rowdim() << " by " << A.coldim() << std::endl;
-   if (A.rowdim() <= 20 && A.coldim() <= 20) A.write(std::cerr << "A:=",Tag::FileFormat::Maple) << ';' << std::endl;
+//   std::cout << "A is " << A.rowdim() << " by " << A.coldim() << std::endl;
+//   if (A.rowdim() <= 20 && A.coldim() <= 20) A.write(std::cerr << "A:=",Tag::FileFormat::Maple) << ';' << std::endl;
 
-//Split Matrix A into arrays <==============================<<<<<<<<<<<<<
+//Split Matrix A into arrays 
 //std::cerr << "A=:= " << std::endl; 
 __mpz_struct * ptr;
    for (long i = 0; i < ni; ++i){
@@ -106,10 +106,10 @@ A_a_size[j+i*nj] = ptr->_mp_size;
 lenA = A_mp_data.size();
 
 //Split vector B into arrays
-//Givaro::Integer valeur("123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789"); 
+Givaro::Integer valeur2("448832189123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789"); 
    for (long j = 0; j < nj-1; ++j)
 	B.setEntry(j,myrand(tmp, max));
-B.setEntry(nj-1,valeur);
+B.setEntry(nj-1,valeur2);
 //std::cerr << "B:= " << std::endl; 
 //__mpz_struct * ptr;
 for(int j=0;j<nj;j++){
@@ -133,7 +133,8 @@ MPI_Send(&B_mp_data[0], B_mp_data.size(), chooseMPItype<mp_limb_t>::val, 1, 0, M
 */
 
   }//End of BLock for process(0)
-//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
 //Distribut Givaro::Integer through its elementary parts
 MPI_Barrier(MPI_COMM_WORLD);
 MPI_Bcast(&A_mp_alloc[0], ni*nj, MPI_INT, 0, MPI_COMM_WORLD);
@@ -144,7 +145,7 @@ MPI_Barrier(MPI_COMM_WORLD);
 if(0!=Cptr->rank()) A_mp_data.resize(lenA);
 MPI_Bcast(&A_mp_data[0], lenA, chooseMPItype<mp_limb_t>::val,  0, MPI_COMM_WORLD);
 MPI_Barrier(MPI_COMM_WORLD);
-//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
 MPI_Barrier(MPI_COMM_WORLD);
 MPI_Bcast(&B_mp_alloc[0], nj, MPI_INT, 0, MPI_COMM_WORLD);
 MPI_Bcast(&B_a_size[0], nj, MPI_INT, 0, MPI_COMM_WORLD);
@@ -165,7 +166,7 @@ MPI_Barrier(MPI_COMM_WORLD);
 	  A.setEntry(i,j,tmpSend[i*nj+j]);
 */
 
-//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
 //Reconstruction of matrix A
 __mpz_struct * ptr2;
 mp_limb_t * a_array;
@@ -187,7 +188,7 @@ A.setEntry(i,j,temp);//<----------------------------<<<<<
 }
 }
 
-//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
 
 /*
 MPI_Status s;
@@ -200,7 +201,7 @@ MPI_Recv(&B_mp_data[0], lenB, chooseMPItype<mp_limb_t>::val, 0, 0, MPI_COMM_WORL
 */
 
 //Reconstruction of vector B
-//std::cerr << "received B:= " << std::endl;
+//std::cerr << "received B::= " << std::endl;
 //__mpz_struct * ptr2;
 count=0;
 for(int j=0;j<nj;j++){ 
@@ -214,26 +215,22 @@ ptr2->_mp_size = B_a_size[j];
 B.setEntry(j,temp);//<----------------------------<<<<<
 //std::cerr << B.getEntry(j) << "\t" ; std::cerr<< std::endl; 
 
-
-
-
 }
 
 
 
-std::cout << "Process("<<Cptr->rank()<<") received A: " << A.rowdim() << " by " << A.coldim() << std::endl;
-    if (A.rowdim() <= 20 && A.coldim() <= 20) A.write(std::cout << "A::=",Tag::FileFormat::Maple) << ';' << std::endl;
+//std::cout << "Process("<<Cptr->rank()<<") received A: " << A.rowdim() << " by " << A.coldim() << std::endl;
+   // if (A.rowdim() <= 20 && A.coldim() <= 20) A.write(std::cout << "A::=",Tag::FileFormat::Maple) << ';' << std::endl;
 
 
-   //std::cout << "Process("<<Cptr->rank()<<") received B: " << B.rowdim() << " by " << B.coldim() << std::endl;
-    //if (B.rowdim() <= 20 && B.coldim() <= 20) 
-   //B.write(std::cout << "B::=",Tag::FileFormat::Maple) << ';' << std::endl;
 
   }
 
 
-
-/*
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+/***********************
+* Results verification 
+***********************/
 RingCategories::IntegerTag tg;
 Timer chrono;
    double starttime, endtime; 
@@ -241,11 +238,20 @@ Timer chrono;
 solveCRA (X2, d, A, B, tg, Method::Hybrid(*Cptr),Cptr);	
    endtime   = MPI_Wtime(); 
 	
-MPI_Barrier(MPI_COMM_WORLD);
+
 if(0==Cptr->rank()){
 
+/*
+std::cerr << "Compute with B: " << std::endl;
+for(int j=0;j<nj;j++) std::cerr << B.getEntry(j) << std::endl; 
+
+std::cout << "Compute with A: " << A.rowdim() << " by " << A.coldim() << std::endl;
+    if (A.rowdim() <= 20 && A.coldim() <= 20) A.write(std::cout << "A::=",Tag::FileFormat::Maple) << ';' << std::endl;
+*/
+
+
 		// BlasElimination
-		DenseVector X(ZZ, A.coldim());
+		//DenseVector X(ZZ, A.coldim());
                 std::cout << "BlasElimination" << std::endl;
                 chrono.start();
                 solve (X, d, A, B, Method::BlasElimination());
@@ -272,16 +278,16 @@ if(0==Cptr->rank()){
 
 	for (size_t j = 0 ; j < nj ; ++j){
 		if(!Givaro::ZRing<Integer>().areEqual(X[j],X2[j])){
-			std::cerr << " ************" << std::endl;
-			std::cerr << " ***Failed***" << std::endl;
-			std::cerr << " ************" << std::endl;
+			std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+			std::cerr << "                  ***Failed***                   " << std::endl;
+			std::cerr << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
 			break;
 		}
 	}
 
 
 }
-*/
+//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 
 
