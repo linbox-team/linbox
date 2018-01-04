@@ -65,7 +65,7 @@ template <class LocalPIR>
 typename LocalPIR::Element &
 normal(typename LocalPIR::Element &d, LocalPIR & R)
 {	typename LocalPIR::Element x; R.init(x, 2);  R.mulin(x, d);
-	return R.gcdin(d, x);
+	return R.gcdin(d, x); // gcd of d and 2d is |d|, associate normalized.
 }
 
 template <class LocalPIR>
@@ -194,8 +194,6 @@ int main (int argc, char **argv) {
 #endif
   { // first local ring type: modulus p^e as int32_t.
 	typedef PIRModular<int32_t> LocalPIR;
-	//typedef PIRModular<dense> LocalPIR;
-	//LocalPIR R (81); 
 	LocalPIR R (q, e);
 	vector<LocalPIR::Element> d(n);
 
