@@ -71,6 +71,7 @@ public:
 	void init(const Field& F, Index r, Index c);
 
 	void shape(Index r, Index c);
+	void resize(Index r, Index c);
 
 	SparseMatrix& operator=(const SparseMatrix& M);
 

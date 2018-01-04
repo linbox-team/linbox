@@ -1,0 +1,6 @@
+before merging to master branch remove or relocate these files.
+bump3k
+bump5k
+(and any other bump*)
+sparse-matrix-generator.h
+BEFOREMERGE
