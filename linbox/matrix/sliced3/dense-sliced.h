@@ -49,8 +49,7 @@ public:
 	}
 
 	//  only nontrivial multiplication in F(3) is *=2
-	//  which is negation, which is word swap
-	//  between the bits
+	//  which is negation, which is an xor
 	SlicedBase & operator*=(const T &two){
 		//  this is multiplication by two only!!!!
 		//  we never even read the arg.

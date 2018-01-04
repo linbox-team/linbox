@@ -241,7 +241,12 @@ namespace LinBox
 				addCol(M, b, a, z);
 			}
 		}
-		
+		// specialization for format SMM (sparse-map-map)	
+		template<class Fld>
+		void fillIn(SparseMatrix<Fld,SparseMatrixFormat::SMM> &M, 
+					double targetSparsity) {
+			M.randomSim(int(M.rowdim()*M.coldim()*targetSparsity));
+		}
 		template<class Matrix>
 		void generate(Matrix &M, Polynomial &det, const std::string &filename, double sparsity) {
 			std::vector<Polynomial> fs;
@@ -263,6 +268,7 @@ namespace LinBox
 			build(M, fs);
 			
 			fillIn(M, sparsity);
+			//M.randomSim(int(M.rowdim()*M.coldim()*sparsity));
 		}
 	};
 }

@@ -68,6 +68,11 @@ void SparseMatrix<Field_,SparseMatrixFormat::SMM>::shape(Index r, Index c) {
 }
 
 template<class Field_>
+void SparseMatrix<Field_,SparseMatrixFormat::SMM>::resize(Index r, Index c) { 
+	shape(r,c); 
+}
+
+template<class Field_>
 template<class Vector>
 void SparseMatrix<Field_,SparseMatrixFormat::SMM>::fromVector(const Vector& vec, Index r, Index c) {
         shape(r,c);
@@ -143,7 +148,7 @@ bool SparseMatrix<Field_,SparseMatrixFormat::SMM>::verify()
 }
 
 template<class Field_>
-const Element& SparseMatrix<Field_,SparseMatrixFormat::SMM>::setEntry(Index i, Index j, const Element& e)
+const typename Field_::Element& SparseMatrix<Field_,SparseMatrixFormat::SMM>::setEntry(Index i, Index j, const Element& e)
 {
 	VectorIt it=rowMap_[i].find(j);
 	if (it != rowMap_[i].end()) {
@@ -551,7 +556,7 @@ void SparseMatrix<Field_,SparseMatrixFormat::SMM>::generateDenseRandMat(SparseMa
         size_t m=mat.rowdim(),n=mat.coldim();
 	Element d;
 
-	typename Field::RandIter ri(field(),0,seed);
+	typename Field::RandIter ri(mat.field(),0,seed);
 
         for (size_t i=0;i<m;++i) {
                 for (size_t j=0;j<n;++j) {
@@ -569,7 +574,7 @@ void SparseMatrix<Field_,SparseMatrixFormat::SMM>::generateRandMat(SparseMatrix<
         
         size_t m=mat.rowdim(),n=mat.coldim();
 	Element d;
-	typename Field::RandIter ri(field(),0,seed);
+	typename Field::RandIter ri(mat.field(),0,seed);
 	srand(seed);
 
         typedef std::pair<size_t,size_t> CoordPair;
@@ -583,7 +588,7 @@ void SparseMatrix<Field_,SparseMatrixFormat::SMM>::generateRandMat(SparseMatrix<
                         col = randRange(0,(int)n);
                 } while (pairs.count(CoordPair(row,col))!=0);
 
-                nonzerorandom(field(),ri,d);
+                nonzerorandom(mat.field(),ri,d);
                 mat.setEntry(row,col,d);
                 pairs.insert(CoordPair(row,col));
         }
@@ -614,7 +619,7 @@ void SparseMatrix<Field_,SparseMatrixFormat::SMM>::generateSparseNonSingular(Spa
 	Element d;
 
         for (int i=0;i<n;++i) {
-	        nonzerorandom(field(),r,d);
+	        nonzerorandom(mat.field(),r,d);
                 mat.setEntry(i,i,d);
         }
 

@@ -3,7 +3,9 @@
 #define __LINBOX_POLY_INTERPOLATION_H
 
 
+#ifdef __LINBOX_HAVE_OPENMP
 #include <omp.h>
+#endif
 
 namespace LinBox {
 
@@ -12,7 +14,7 @@ namespace LinBox {
 template<class Field, class PolyDom>
 class PolyInterpolation {
 public:
-	//typedef GivaroPoly<PolyDom> Ring;
+	typedef GivaroPoly<PolyDom> Ring;
 	typedef typename Ring::Element RingElt;
 	typedef typename Field::Element FieldElt;
 	typedef std::vector<std::vector<RingElt> > ProductTree;
