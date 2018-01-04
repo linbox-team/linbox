@@ -165,13 +165,23 @@ public:
 		TW.clear();
 		TW.start();
 		
-		SFD.solve(result, G);
+		bool mem_error = false;
+		try {
+			SFD.solve(result, G);
+		} catch (const std::bad_alloc &e) {
+			mem_error = true;
+		}
 		
 		TW.stop();
 		double sf_time = TW.usertime();
-		std::cout << sf_time << " " << std::flush;
 		
-		return sf_time;
+		if (!mem_error) {
+			std::cout << sf_time << " " << std::flush;
+		} else {
+			std::cout << "MEM " << std::flush;
+		}
+		
+		return mem_error ? -1 : sf_time;
 	}
 	
 	void timeHybrid(std::vector<Polynomial> &result, const PolyMatrix &M) {
@@ -247,9 +257,7 @@ public:
 			
 			limit2 += max_degree;
 		}
-		
-		std::cout << limit1 << " " << limit2 << std::flush;
-		
+				
 		return std::min(std::min(limit1, limit2), dim) + 1;
 	}
 	
@@ -335,12 +343,11 @@ int main(int argc, char** argv) {
 		n = M.rowdim();
 	}
 	
-	std::cout << n << " " << b << " " << Gen.sparsity(M) << " " << std::endl;
-	
 	TestInvariantFactorsHelper helper(p);
 	
 	std::vector<Polynomial> result;
 	for (size_t i = 0; i < times; i++) {
+		std::cout << n << " " << b << " " << Gen.nnz(M) << " " << std::flush;
 		// Generate random left and right projectors
 		std::vector<size_t> degree;
 		std::vector<Matrix> minpoly;
@@ -358,25 +365,25 @@ int main(int argc, char** argv) {
 		Polynomial det2;
 		std::vector<Polynomial> result2;
 		
-		std::cout << "| " << std::flush;
 		size_t exponent_limit = helper.detLimit(G, n);
-		std::cout << " | " << std::flush;
+		std::cout << exponent_limit << " " << std::flush;
 		exponent_limit = exponent == 0 ? exponent_limit : exponent;
 		
 		double local_time = helper.timeLocalX(det2, G, exponent_limit);
 		double ilio_time = helper.timeIliopoulos(result2, G, det2);
 		double total_time = local_time + ilio_time;
-		std::cout << "(" << total_time << ") " << std::flush;
+		std::cout << total_time << " " << std::flush;
 		
 		double kb_time = helper.timeKannanBachem(result, G);
 		//timeHybrid(R, result, G);
 		helper.computeDet(det, result);
 		
-		std::cout << "(" << (kb_time / total_time) << ")";
+		std::cout << (kb_time / total_time) << " " << std::flush;
 		
 		// R.write(std::cout << "det1: ", det) << std::endl;
 		// R.write(std::cout << "det2: ", det2) << std::endl;
-		std::cout << " " << (R.areEqual(det, det2) ? "Pass" : "Fail");
+		// std::cout << (R.areEqual(det, det2) ? "Pass" : "Fail");
+		
 		std::cout << std::endl;
 	}
 	
