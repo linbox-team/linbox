@@ -153,7 +153,7 @@ namespace LinBox
 		template<class Container, class Function, class PrimeIterator>
 		Container& operator() (Container& res, Function& Iteration, PrimeIterator& primeiter)
 		{
-			typedef typename CRATemporaryVectorTrait<Function, DomainElement>::Type_t ElementContainer;
+			typedef typename CRATemporaryVectorTrait<Function, Domain>::Type_t ElementContainer;
 			size_t NN = omp_get_max_threads();
 			//std::cerr << "Blocs: " << NN << " iterations." << std::endl;
 			// commentator().start ("Parallel OMP Givaro::Modular iteration", "mmcrait");
@@ -251,11 +251,10 @@ namespace LinBox
 
 #endif //__LINBOX_omp_cra_H
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
