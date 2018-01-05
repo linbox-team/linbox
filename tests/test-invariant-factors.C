@@ -338,10 +338,10 @@ int main(int argc, char** argv) {
 		M.read(iF);
 		M.finalize();
 		iF.close();
-		
-		assert(M.rowdim() == M.coldim());
-		n = M.rowdim();
 	}
+		
+	assert(M.rowdim() == M.coldim());
+	n = M.rowdim();
 	
 	TestInvariantFactorsHelper helper(p);
 	
