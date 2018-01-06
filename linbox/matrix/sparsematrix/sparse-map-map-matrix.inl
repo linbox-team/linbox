@@ -97,7 +97,7 @@ SparseMatrix<Field_,SparseMatrixFormat::SMM>::SparseMatrix(const SparseMatrix<Fi
 template<class Field_>
 SparseMatrix<Field_,SparseMatrixFormat::SMM>& SparseMatrix<Field_,SparseMatrixFormat::SMM>::operator=(const SparseMatrix<Field_,SparseMatrixFormat::SMM>& rhs)
 {
-	if (rhs==this) return;
+	if (rhs==this) return NULL;
 	MD_.init(rhs.MD_);
 	numCols_=rhs.numCols_;
 	numRows_=rhs.numRows_;
@@ -200,7 +200,7 @@ OutVector& SparseMatrix<Field_,SparseMatrixFormat::SMM>::apply(OutVector& y, con
 {
 	linbox_check(rowdim()==y.size());
 	linbox_check(coldim()==x.size());
-	for (int i=0;i<rowdim();++i) {
+	for (size_t i=0; i<rowdim(); ++i) {
 		Element d,e;
 		field().init(d,0);
 		MapConstIt rowI=rowMap_.find(i);

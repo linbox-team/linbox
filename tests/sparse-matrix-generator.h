@@ -5,6 +5,9 @@
 #include <set>
 #include <algorithm>
 
+// NTL for random irreducible polynomial generation
+#include "linbox/ring/ntl.h"
+
 // Matrix Domains
 #include "linbox/matrix/densematrix/blas-matrix.h"
 #include "linbox/matrix/matrixdomain/matrix-domain.h"
@@ -23,24 +26,104 @@ namespace LinBox
 	{
 	public:
 		typedef typename Field::Element Element;
+		
 		typedef typename PolynomialRing::Element Polynomial;
+		typedef typename PolynomialRing::RandIter RandIter;
+		typedef typename PolynomialRing::CoeffField CoeffField;
+		typedef typename PolynomialRing::Coeff Coeff;
+		typedef typename CoeffField::RandIter CoeffRandIter;
+		
 		typedef MatrixDomain<Field> MatrixDom;
 		typedef typename MatrixDom::Matrix SubMatrix;
 		
 	private:
 		Field _F;
+		
 		PolynomialRing _R;
+		RandIter _RI;
+		CoeffRandIter _CRI;
 		
 	public:
-		SparseMatrixGenerator(const Field &F, const PolynomialRing &R): _F(F), _R(R) {}
+		SparseMatrixGenerator(const Field &F, const PolynomialRing &R): _F(F), _R(R), _RI(R), _CRI(R.getCoeffField()) {}
+		
+		void randomPolynomial(Polynomial &p, size_t d) const {
+			_RI.random(p, d);
+		}
+		
+		void randomIrreducible(Polynomial &p, size_t d) const {
+			_RI.randomIrreducible(p, d);
+		}
+		
+		void randomTrinomial(Polynomial &p, size_t d) const {
+			if (d < 2) {
+				std::cout << "Error: trinomial must have degree > 1" << std::endl;
+				exit(1);
+			}
+			
+			_R.init(p);
+			_R.setCoeff(p, d, _R.getCoeffField().one);
+			
+			Coeff c;
+			_CRI.random(c);
+			_R.setCoeff(p, 0, c);
+			
+			size_t i = rand() % d;
+			_CRI.random(c);
+			_R.setCoeff(p, i, c);
+		}
+		
+		void randomIrreducibleTrinomial(Polynomial &p, size_t d) const {
+			do {
+				randomTrinomial(p, d);
+			} while (!_R.isIrreducible(p));
+		}
+		
+		void readDivisor(std::ifstream &in, Polynomial &divisor) const {
+			std::string type;
+			in >> type;
+						
+			if (type == "c") {
+				_R.read(in, divisor);
+			} else if (type == "d") {
+				size_t d;
+				in >> d;
+				
+				randomPolynomial(divisor, d);
+			} else if (type == "i") {
+				size_t d;
+				in >> d;
+				
+				randomIrreducible(divisor, d);
+			} else if (type == "t") {
+				size_t d;
+				in >> d;
+				
+				randomTrinomial(divisor, d);
+			} else if (type == "r") {
+				size_t d;
+				in >> d;
+				
+				randomIrreducibleTrinomial(divisor, d);
+			} else {
+				std::cout << "Error: unknown divisor type (" << type << ")" << std::endl;
+				exit(1);
+			}
+		}
 		
 		/**
 		 * Reads a file of format:
 		 * <number of bumps>
-		 * <multiplicity 1> <bump 1>
-		 * <multiplicity 2> <bump 2>
+		 * <multiplicity 1> <bump type 1> <bump 1>
+		 * <multiplicity 2> <bump type 2> <bump 2>
 		 * ...
-		 * <multiplicity n> <bump n>
+		 * <multiplicity n> <bump type n> <bump n>
+		 * 
+		 * divisor types:
+		 * c - const (format of polynomial ring read)
+		 * d - random polynomial of degree d (use: d 9)
+		 * i - random irreducible of degree d (use: i 4)
+		 * t - random trinomial of degree d (use: t 5)
+		 * r - random irreducible trinomial of degree d (use: r 3)
 		 */
 		void readFile(std::vector<Polynomial> &fs, const std::string &filename) const {			
 			std::ifstream in(filename);
@@ -57,8 +140,8 @@ namespace LinBox
 				in >> multiplicity;
 				
 				Polynomial bump;
-				_R.read(in, bump);
-				_R.write(std::cout << "bump: ", bump) << std::endl;
+				readDivisor(in, bump);
+				_R.write(std::cout << "divisor (" << multiplicity << " times): ", bump) << std::endl;
 				
 				for (size_t j = 0; j < multiplicity; j++) {
 					Polynomial tmp;
@@ -78,7 +161,7 @@ namespace LinBox
 			
 			Polynomial monic_f;
 			_R.monic(monic_f, f);
-			//_R.write(std::cout << "monic f: ", monic_f) << std::endl;
+			// _R.write(std::cout << "monic f: ", monic_f) << std::endl;
 			
 			std::vector<integer> coeffs;
 			_R.convert(coeffs, monic_f);
@@ -129,7 +212,7 @@ namespace LinBox
 		}
 		
 		template<class Matrix>
-		double nnz(const Matrix &M) {
+		double nnz(const Matrix &M) const {
 			double nnz = 0;
 			
 			for (size_t i = 0; i < M.rowdim(); i++) {
@@ -146,109 +229,40 @@ namespace LinBox
 		}
 		
 		template<class Matrix>
-		double sparsity(const Matrix &M) {
+		double sparsity(const Matrix &M) const {
 			return nnz(M) / (M.rowdim() * M.coldim());
 		}
 		
-		// Next in in [0, limit), not equal to except
-		size_t nextInt(size_t limit, size_t except) {
-			size_t rv = rand() % limit;
-			
-			while(rv == except) {
-				rv = rand() % limit;
-			}
-			
-			return rv;
-		}
-		
-		template<class Matrix>
-		void addRow(Matrix &M, size_t row1, size_t row2, Element &z) {
-			for (size_t col = 0; col < M.coldim(); col++) {
-				Element tmp, a, b;
-				
-				M.getEntry(a, row1, col);
-				M.getEntry(b, row2, col);
-				
-				_F.mul(tmp, b, z);
-				_F.addin(tmp, a);
-				
-				if (!_F.areEqual(a, tmp)) {
-					M.setEntry(row1, col, tmp);
-					M.finalize();
-				}
-			}
-		}
-		
-		template<class Matrix>
-		void addCol(Matrix &M, size_t col1, size_t col2, Element &z) {
-			for (size_t row = 0; row < M.rowdim(); row++) {
-				Element tmp, a, b;
-				
-				M.getEntry(a, row, col1);
-				M.getEntry(b, row, col2);
-				
-				_F.mul(tmp, b, z);
-				_F.addin(tmp, a);
-				
-				if (!_F.areEqual(a, tmp)) {
-					M.setEntry(row, col1, tmp);
-					M.finalize();
-				}
-			}
-		}
-		
-		template<class Matrix>
-		void fillIn(Matrix &M, double targetSparsity) {
-			size_t dim = M.rowdim();
-			
-			std::set<size_t> nonzero;
-			for (size_t i = 0; i < dim; i++) {
-				for (size_t j = 0; j < dim; j++) {
-					if (!_F.isZero(M.getEntry(i, j))) {
-						nonzero.insert(i);
-						nonzero.insert(j);
-					}
-				}
-			}
-			
-			if (nonzero.size() == 0 || nnz(M) == 0) {
-				return;
-			}
-			
-			while (sparsity(M) < targetSparsity) {
-				Element z;
-				do {
-					_F.init(z, rand());
-				} while(_F.isZero(z));
-				
-				size_t a = nextInt(nonzero.size(), -1);
-				auto it = nonzero.begin();
-				std::advance(it, a);
-				a = *it;
-				
-				size_t b = nextInt(dim, a);
-				nonzero.insert(b);
-				
-				if ((rand() % 2) == 0) {
-					size_t tmp = a;
-					a = b;
-					b = tmp;
-				}
-				
-				addRow(M, a, b, z);
-				
-				_F.negin(z);
-				addCol(M, b, a, z);
-			}
-		}
 		// specialization for format SMM (sparse-map-map)	
-		template<class Fld>
-		void fillIn(SparseMatrix<Fld,SparseMatrixFormat::SMM> &M, 
-					double targetSparsity) {
+		void fillIn(SparseMatrix<Field, SparseMatrixFormat::SMM> &M, 
+					double targetSparsity) const {
 			M.randomSim(int(M.rowdim()*M.coldim()*targetSparsity));
 		}
+		
+		template<class Matrix1, class Matrix2>
+		void copy(Matrix1 &M, Matrix2 &T) const {
+			if (M.rowdim() != T.rowdim() || M.coldim() != T.coldim()) {
+				M.resize(T.rowdim(), T.coldim());
+			}
+			
+			for (size_t i = 0; i < M.rowdim(); i++) {
+				for (size_t j = 0; j < M.coldim(); j++) {
+					Element tmp;
+					T.getEntry(tmp, i, j);
+					
+					if (_F.isZero(tmp)) {
+						continue;
+					}
+					
+					M.setEntry(i, j, tmp);
+				}
+			}
+			
+			M.finalize();
+		}
+		
 		template<class Matrix>
-		void generate(Matrix &M, Polynomial &det, const std::string &filename, double sparsity) {
+		void generate(Matrix &M, Polynomial &det, const std::string &filename, double sparsity) const {
 			std::vector<Polynomial> fs;
 			readFile(fs, filename);
 			
@@ -265,10 +279,13 @@ namespace LinBox
 				_R.mulin(det, xm);
 			}
 			
-			build(M, fs);
+			// Use SMM format to generate the matrix
+			// fill in is much faster that other formats
+			SparseMatrix<Field, SparseMatrixFormat::SMM> T(_F, M.rowdim(), M.coldim());
+			build(T, fs);
+			fillIn(T, sparsity);
 			
-			fillIn(M, sparsity);
-			//M.randomSim(int(M.rowdim()*M.coldim()*sparsity));
+			copy(M, T);
 		}
 	};
 }

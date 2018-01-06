@@ -38,7 +38,7 @@
 
 #include <vector>
 #include <NTL/lzz_pX.h>
-
+#include <NTL/lzz_pXFactoring.h>
 
 #include "linbox/linbox-config.h"
 #include "linbox/util/debug.h"
@@ -251,6 +251,10 @@ namespace LinBox
 			return ( (this->deg(x) == 0) &&
 				 ( _CField.isMOne( NTL::ConstTerm(x) ) ) );
 
+		}
+		
+		bool isIrreducible(const Element &x) const {
+			return NTL::DetIrredTest(x);
 		}
 
 		/** The LinBox field for coefficients */
@@ -525,6 +529,16 @@ namespace LinBox
 		Element& random (Element& x) const
 		{
 			NTL::random(x, 1);
+			return x;
+		}
+		
+		Element& random(Element &x, size_t d) const {
+			NTL::random(x, d + 1);
+			return x;
+		}
+		
+		Element& randomIrreducible(Element &x, size_t d) const {
+			NTL::BuildIrred(x, (long) d);
 			return x;
 		}
 
