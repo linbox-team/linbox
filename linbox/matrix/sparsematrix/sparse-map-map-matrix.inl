@@ -200,7 +200,7 @@ OutVector& SparseMatrix<Field_,SparseMatrixFormat::SMM>::apply(OutVector& y, con
 {
 	linbox_check(rowdim()==y.size());
 	linbox_check(coldim()==x.size());
-	for (int i=0;i<rowdim();++i) {
+	for (size_t i=0; i<rowdim(); ++i) {
 		Element d,e;
 		field().init(d,0);
 		MapConstIt rowI=rowMap_.find(i);

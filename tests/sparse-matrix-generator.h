@@ -5,6 +5,9 @@
 #include <set>
 #include <algorithm>
 
+// NTL for random irreducible polynomial generation
+#include "linbox/ring/ntl.h"
+
 // Matrix Domains
 #include "linbox/matrix/densematrix/blas-matrix.h"
 #include "linbox/matrix/matrixdomain/matrix-domain.h"
@@ -23,24 +26,104 @@ namespace LinBox
 	{
 	public:
 		typedef typename Field::Element Element;
+		
 		typedef typename PolynomialRing::Element Polynomial;
+		typedef typename PolynomialRing::RandIter RandIter;
+		typedef typename PolynomialRing::CoeffField CoeffField;
+		typedef typename PolynomialRing::Coeff Coeff;
+		typedef typename CoeffField::RandIter CoeffRandIter;
+		
 		typedef MatrixDomain<Field> MatrixDom;
 		typedef typename MatrixDom::Matrix SubMatrix;
 		
 	private:
 		Field _F;
+		
 		PolynomialRing _R;
+		RandIter _RI;
+		CoeffRandIter _CRI;
 		
 	public:
-		SparseMatrixGenerator(const Field &F, const PolynomialRing &R): _F(F), _R(R) {}
+		SparseMatrixGenerator(const Field &F, const PolynomialRing &R): _F(F), _R(R), _RI(R), _CRI(R.getCoeffField()) {}
+		
+		void randomPolynomial(Polynomial &p, size_t d) const {
+			_RI.random(p, d);
+		}
+		
+		void randomIrreducible(Polynomial &p, size_t d) const {
+			_RI.randomIrreducible(p, d);
+		}
+		
+		void randomTrinomial(Polynomial &p, size_t d) const {
+			if (d < 2) {
+				std::cout << "Error: trinomial must have degree > 1" << std::endl;
+				exit(1);
+			}
+			
+			_R.init(p);
+			_R.setCoeff(p, d, _R.getCoeffField().one);
+			
+			Coeff c;
+			_CRI.random(c);
+			_R.setCoeff(p, 0, c);
+			
+			size_t i = rand() % d;
+			_CRI.random(c);
+			_R.setCoeff(p, i, c);
+		}
+		
+		void randomIrreducibleTrinomial(Polynomial &p, size_t d) const {
+			do {
+				randomTrinomial(p, d);
+			} while (!_R.isIrreducible(p));
+		}
+		
+		void readDivisor(std::ifstream &in, Polynomial &divisor) const {
+			std::string type;
+			in >> type;
+						
+			if (type == "c") {
+				_R.read(in, divisor);
+			} else if (type == "d") {
+				size_t d;
+				in >> d;
+				
+				randomPolynomial(divisor, d);
+			} else if (type == "i") {
+				size_t d;
+				in >> d;
+				
+				randomIrreducible(divisor, d);
+			} else if (type == "t") {
+				size_t d;
+				in >> d;
+				
+				randomTrinomial(divisor, d);
+			} else if (type == "r") {
+				size_t d;
+				in >> d;
+				
+				randomIrreducibleTrinomial(divisor, d);
+			} else {
+				std::cout << "Error: unknown divisor type (" << type << ")" << std::endl;
+				exit(1);
+			}
+		}
 		
 		/**
 		 * Reads a file of format:
 		 * <number of bumps>
-		 * <multiplicity 1> <bump 1>
-		 * <multiplicity 2> <bump 2>
+		 * <multiplicity 1> <bump type 1> <bump 1>
+		 * <multiplicity 2> <bump type 2> <bump 2>
 		 * ...
-		 * <multiplicity n> <bump n>
+		 * <multiplicity n> <bump type n> <bump n>
+		 * 
+		 * divisor types:
+		 * c - const (format of polynomial ring read)
+		 * d - random polynomial of degree d (use: d 9)
+		 * i - random irreducible of degree d (use: i 4)
+		 * t - random trinomial of degree d (use: t 5)
+		 * r - random irreducible trinomial of degree d (use: r 3)
 		 */
 		void readFile(std::vector<Polynomial> &fs, const std::string &filename) const {			
 			std::ifstream in(filename);
@@ -57,7 +140,7 @@ namespace LinBox
 				in >> multiplicity;
 				
 				Polynomial bump;
-				_R.read(in, bump);
+				readDivisor(in, bump);
 				_R.write(std::cout << "bump: ", bump) << std::endl;
 				
 				for (size_t j = 0; j < multiplicity; j++) {
