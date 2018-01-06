@@ -78,7 +78,7 @@ namespace LinBox
 			
 			Polynomial monic_f;
 			_R.monic(monic_f, f);
-			_R.write(std::cout << "monic f: ", monic_f) << std::endl;
+			//_R.write(std::cout << "monic f: ", monic_f) << std::endl;
 			
 			std::vector<integer> coeffs;
 			_R.convert(coeffs, monic_f);
