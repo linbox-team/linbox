@@ -285,6 +285,14 @@ public:
 	}
 }; // End of TestInvariantFactorsHelper
 
+// multiply by random permutation
+void precondition(SparseMat& M) {
+	for (size_t i = M.rowdim()-1; i > 0; --i) {
+		size_t j = rand()%(i+1);
+		if (i != j) M.swapRows(i, j);
+	}
+}
+
 int main(int argc, char** argv) {
 	size_t p = 7;
 	size_t n = 10;
@@ -342,6 +350,10 @@ int main(int argc, char** argv) {
 		
 	assert(M.rowdim() == M.coldim());
 	n = M.rowdim();
+//M.write(std::cout) << std::endl;
+
+	precondition(M); // valid for SMM only
+	if (M.rowdim() <= 20) M.write(std::cout) << std::endl;
 	
 	TestInvariantFactorsHelper helper(p);
 	
@@ -388,7 +400,7 @@ int main(int argc, char** argv) {
 	}
 	
 	if (outFile == "") {
-		helper.writeInvariantFactors(std::cout, result);
+		//helper.writeInvariantFactors(std::cout, result);
 	} else {
 		std::ofstream out(outFile);
 		helper.writeInvariantFactors(out, result);
