@@ -31,6 +31,7 @@ using namespace LinBox;
 typedef Givaro::Modular<double> Field;
 typedef typename Field::Element Element;
 typedef SparseMatrix<Field, SparseMatrixFormat::SMM> SparseMat;
+// typedef SparseMatrix<Field, SparseMatrixFormat::CSR> SparseMat;
 
 typedef Field::RandIter RandIter;
 typedef MatrixDomain<Field> MatrixDom;

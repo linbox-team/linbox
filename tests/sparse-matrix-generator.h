@@ -141,7 +141,7 @@ namespace LinBox
 				
 				Polynomial bump;
 				readDivisor(in, bump);
-				_R.write(std::cout << "bump: ", bump) << std::endl;
+				_R.write(std::cout << "divisor (" << multiplicity << " times): ", bump) << std::endl;
 				
 				for (size_t j = 0; j < multiplicity; j++) {
 					Polynomial tmp;
@@ -161,7 +161,7 @@ namespace LinBox
 			
 			Polynomial monic_f;
 			_R.monic(monic_f, f);
-			_R.write(std::cout << "monic f: ", monic_f) << std::endl;
+			// _R.write(std::cout << "monic f: ", monic_f) << std::endl;
 			
 			std::vector<integer> coeffs;
 			_R.convert(coeffs, monic_f);
@@ -212,7 +212,7 @@ namespace LinBox
 		}
 		
 		template<class Matrix>
-		double nnz(const Matrix &M) {
+		double nnz(const Matrix &M) const {
 			double nnz = 0;
 			
 			for (size_t i = 0; i < M.rowdim(); i++) {
@@ -229,109 +229,40 @@ namespace LinBox
 		}
 		
 		template<class Matrix>
-		double sparsity(const Matrix &M) {
+		double sparsity(const Matrix &M) const {
 			return nnz(M) / (M.rowdim() * M.coldim());
 		}
 		
-		// Next in in [0, limit), not equal to except
-		size_t nextInt(size_t limit, size_t except) {
-			size_t rv = rand() % limit;
-			
-			while(rv == except) {
-				rv = rand() % limit;
-			}
-			
-			return rv;
-		}
-		
-		template<class Matrix>
-		void addRow(Matrix &M, size_t row1, size_t row2, Element &z) {
-			for (size_t col = 0; col < M.coldim(); col++) {
-				Element tmp, a, b;
-				
-				M.getEntry(a, row1, col);
-				M.getEntry(b, row2, col);
-				
-				_F.mul(tmp, b, z);
-				_F.addin(tmp, a);
-				
-				if (!_F.areEqual(a, tmp)) {
-					M.setEntry(row1, col, tmp);
-					M.finalize();
-				}
-			}
-		}
-		
-		template<class Matrix>
-		void addCol(Matrix &M, size_t col1, size_t col2, Element &z) {
-			for (size_t row = 0; row < M.rowdim(); row++) {
-				Element tmp, a, b;
-				
-				M.getEntry(a, row, col1);
-				M.getEntry(b, row, col2);
-				
-				_F.mul(tmp, b, z);
-				_F.addin(tmp, a);
-				
-				if (!_F.areEqual(a, tmp)) {
-					M.setEntry(row, col1, tmp);
-					M.finalize();
-				}
-			}
-		}
-		
-		template<class Matrix>
-		void fillIn(Matrix &M, double targetSparsity) {
-			size_t dim = M.rowdim();
-			
-			std::set<size_t> nonzero;
-			for (size_t i = 0; i < dim; i++) {
-				for (size_t j = 0; j < dim; j++) {
-					if (!_F.isZero(M.getEntry(i, j))) {
-						nonzero.insert(i);
-						nonzero.insert(j);
-					}
-				}
-			}
-			
-			if (nonzero.size() == 0 || nnz(M) == 0) {
-				return;
-			}
-			
-			while (sparsity(M) < targetSparsity) {
-				Element z;
-				do {
-					_F.init(z, rand());
-				} while(_F.isZero(z));
-				
-				size_t a = nextInt(nonzero.size(), -1);
-				auto it = nonzero.begin();
-				std::advance(it, a);
-				a = *it;
-				
-				size_t b = nextInt(dim, a);
-				nonzero.insert(b);
-				
-				if ((rand() % 2) == 0) {
-					size_t tmp = a;
-					a = b;
-					b = tmp;
-				}
-				
-				addRow(M, a, b, z);
-				
-				_F.negin(z);
-				addCol(M, b, a, z);
-			}
-		}
 		// specialization for format SMM (sparse-map-map)	
-		template<class Fld>
-		void fillIn(SparseMatrix<Fld,SparseMatrixFormat::SMM> &M, 
-					double targetSparsity) {
+		void fillIn(SparseMatrix<Field, SparseMatrixFormat::SMM> &M, 
+					double targetSparsity) const {
 			M.randomSim(int(M.rowdim()*M.coldim()*targetSparsity));
 		}
+		
+		template<class Matrix1, class Matrix2>
+		void copy(Matrix1 &M, Matrix2 &T) const {
+			if (M.rowdim() != T.rowdim() || M.coldim() != T.coldim()) {
+				M.resize(T.rowdim(), T.coldim());
+			}
+			
+			for (size_t i = 0; i < M.rowdim(); i++) {
+				for (size_t j = 0; j < M.coldim(); j++) {
+					Element tmp;
+					T.getEntry(tmp, i, j);
+					
+					if (_F.isZero(tmp)) {
+						continue;
+					}
+					
+					M.setEntry(i, j, tmp);
+				}
+			}
+			
+			M.finalize();
+		}
+		
 		template<class Matrix>
-		void generate(Matrix &M, Polynomial &det, const std::string &filename, double sparsity) {
+		void generate(Matrix &M, Polynomial &det, const std::string &filename, double sparsity) const {
 			std::vector<Polynomial> fs;
 			readFile(fs, filename);
 			
@@ -348,10 +279,13 @@ namespace LinBox
 				_R.mulin(det, xm);
 			}
 			
-			build(M, fs);
+			// Use SMM format to generate the matrix
+			// fill in is much faster that other formats
+			SparseMatrix<Field, SparseMatrixFormat::SMM> T(_F, M.rowdim(), M.coldim());
+			build(T, fs);
+			fillIn(T, sparsity);
 			
-			fillIn(M, sparsity);
-			//M.randomSim(int(M.rowdim()*M.coldim()*sparsity));
+			copy(M, T);
 		}
 	};
 }
