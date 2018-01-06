@@ -13,6 +13,9 @@
 #include "linbox/matrix/sparse-matrix.h"
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/matrix/matrix-domain.h"
+#include "linbox/blackbox/compose.h"
+#include "linbox/blackbox/permutation.h"
+#include "linbox/blackbox/scalar-matrix.h"
 
 #include "linbox/algorithms/block-coppersmith-domain.h"
 
@@ -36,7 +39,17 @@ typedef Field::RandIter RandIter;
 typedef MatrixDomain<Field> MatrixDom;
 typedef typename MatrixDom::OwnMatrix Matrix;
 typedef RandomDenseMatrix<RandIter, Field> RandomMatrix;
-typedef BlackboxBlockContainer<Field, SparseMat> Sequence;
+//#define PRECONDITION
+
+#ifdef PRECONDITION
+typedef Permutation<Field> Preconditioner; // ..there will be others
+
+typedef Compose<SparseMat,Preconditioner> ProductMat; // yes preconditioner
+#else
+typedef SparseMat ProductMat; // no preconditioner
+#endif
+
+typedef BlackboxBlockContainer<Field, ProductMat> Sequence;
 typedef BlockMasseyDomain<Field, Sequence> MasseyDom;
 typedef BlockCoppersmithDomain<MatrixDom, Sequence> CoppersmithDom;
 
@@ -71,7 +84,7 @@ public:
 		}
 	}
 	
-	double computeMinpoly(std::vector<size_t> &degree, std::vector<Matrix> &minpoly, const SparseMat &M, size_t b) const {
+	double computeMinpoly(std::vector<size_t> &degree, std::vector<Matrix> &minpoly, const ProductMat &M, size_t b) const {
 		size_t n = M.rowdim();
 		
 		RandIter RI(F);
@@ -285,14 +298,6 @@ public:
 	}
 }; // End of TestInvariantFactorsHelper
 
-// multiply by random permutation
-void precondition(SparseMat& M) {
-	for (size_t i = M.rowdim()-1; i > 0; --i) {
-		size_t j = rand()%(i+1);
-		if (i != j) M.swapRows(i, j);
-	}
-}
-
 int main(int argc, char** argv) {
 	size_t p = 7;
 	size_t n = 10;
@@ -350,10 +355,17 @@ int main(int argc, char** argv) {
 		
 	assert(M.rowdim() == M.coldim());
 	n = M.rowdim();
-//M.write(std::cout) << std::endl;
+	if (n <= 20) M.write(std::cout) << std::endl;
 
-	precondition(M); // valid for SMM only
-	if (M.rowdim() <= 20) M.write(std::cout) << std::endl;
+#ifdef PRECONDITION
+	// Permutation preconditioner //
+	Preconditioner P(F,n,n); 
+	P.random();
+
+	ProductMat MP(M,P);
+#else
+	ProductMat MP(M);  
+#endif
 	
 	TestInvariantFactorsHelper helper(p);
 	
@@ -363,7 +375,7 @@ int main(int argc, char** argv) {
 		// Generate random left and right projectors
 		std::vector<size_t> degree;
 		std::vector<Matrix> minpoly;
-		helper.computeMinpoly(degree, minpoly, M, b);
+		helper.computeMinpoly(degree, minpoly, MP, b);
 		
 		// Convert to matrix with polynomial entries
 		PolyMatrix G(R, b, b);
