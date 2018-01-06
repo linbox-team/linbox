@@ -97,7 +97,7 @@ SparseMatrix<Field_,SparseMatrixFormat::SMM>::SparseMatrix(const SparseMatrix<Fi
 template<class Field_>
 SparseMatrix<Field_,SparseMatrixFormat::SMM>& SparseMatrix<Field_,SparseMatrixFormat::SMM>::operator=(const SparseMatrix<Field_,SparseMatrixFormat::SMM>& rhs)
 {
-	if (rhs==this) return;
+	if (rhs==this) return NULL;
 	MD_.init(rhs.MD_);
 	numCols_=rhs.numCols_;
 	numRows_=rhs.numRows_;
