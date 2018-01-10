@@ -40,7 +40,7 @@ typedef MatrixDomain<Field> MatrixDom;
 typedef typename MatrixDom::OwnMatrix Matrix;
 typedef RandomDenseMatrix<RandIter, Field> RandomMatrix;
 
-#define PRECONDITION
+// #define PRECONDITION
 
 #ifdef PRECONDITION
 typedef Permutation<Field> Preconditioner; // ..there will be others
@@ -371,6 +371,9 @@ int main(int argc, char** argv) {
 	TestInvariantFactorsHelper helper(p);
 	
 	std::vector<Polynomial> result;
+	Polynomial det2;
+	std::vector<Polynomial> result2;
+	
 	for (size_t i = 0; i < times; i++) {
 		std::cout << n << " " << b << " " << Gen.nnz(M) << " " << std::flush;
 		// Generate random left and right projectors
@@ -387,9 +390,6 @@ int main(int argc, char** argv) {
 		//std::cout << std::endl;
 		
 		// Compute smith form of generator
-		Polynomial det2;
-		std::vector<Polynomial> result2;
-		
 		size_t exponent_limit = helper.detLimit(G, n);
 		std::cout << exponent_limit << " " << std::flush;
 		exponent_limit = exponent == 0 ? exponent_limit : exponent;
@@ -407,26 +407,16 @@ int main(int argc, char** argv) {
 		
 		// R.write(std::cout << "det1: ", det) << std::endl;
 		// R.write(std::cout << "det2: ", det2) << std::endl;
-		std::cout << (R.areEqual(det, det2) ? "Pass" : "Fail");
-		
+		// std::cout << (R.areEqual(det, det2) ? "Pass" : "Fail");
 		std::cout << std::endl;
+	}
 		
-		if (outFile == "") {
-			//helper.writeInvariantFactors(std::cout, result);
-		} else {
-			std::ofstream out(outFile + "-kb");
-			helper.writeInvariantFactors(out, result);
-			out.close();
-			
-			std::ofstream out2(outFile + "-local");
-			helper.writeInvariantFactors(out2, result2);
-			out2.close();
-		}
-		
-		if (R.deg(det) > n || R.deg(det2) > n) {
-			std::cout << "Det too large" << std::endl;
-			return -1;
-		}
+	if (outFile == "") {
+		//helper.writeInvariantFactors(std::cout, result);
+	} else {
+		std::ofstream out(outFile);
+		helper.writeInvariantFactors(out, result2);
+		out.close();
 	}
 	
 	return 0;
