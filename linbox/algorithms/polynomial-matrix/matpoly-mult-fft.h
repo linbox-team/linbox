@@ -1,5 +1,3 @@
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * Copyright (C) 2013  Pascal Giorgi
  *                     Romain Lebreton
@@ -377,3 +375,11 @@ namespace LinBox
 #include "linbox/algorithms/polynomial-matrix/matpoly-mult-fft-wordsize.inl"
 
 #endif // __LINBOX_matpoly_mult_ftt_H
+
+// Local Variables:
+// mode: C++
+// tab-width: 4
+// indent-tabs-mode: nil
+// c-basic-offset: 4
+// End:
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
