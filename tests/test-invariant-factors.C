@@ -39,7 +39,8 @@ typedef Field::RandIter RandIter;
 typedef MatrixDomain<Field> MatrixDom;
 typedef typename MatrixDom::OwnMatrix Matrix;
 typedef RandomDenseMatrix<RandIter, Field> RandomMatrix;
-//#define PRECONDITION
+
+#define PRECONDITION
 
 #ifdef PRECONDITION
 typedef Permutation<Field> Preconditioner; // ..there will be others
@@ -406,17 +407,26 @@ int main(int argc, char** argv) {
 		
 		// R.write(std::cout << "det1: ", det) << std::endl;
 		// R.write(std::cout << "det2: ", det2) << std::endl;
-		// std::cout << (R.areEqual(det, det2) ? "Pass" : "Fail");
+		std::cout << (R.areEqual(det, det2) ? "Pass" : "Fail");
 		
 		std::cout << std::endl;
-	}
-	
-	if (outFile == "") {
-		//helper.writeInvariantFactors(std::cout, result);
-	} else {
-		std::ofstream out(outFile);
-		helper.writeInvariantFactors(out, result);
-		out.close();
+		
+		if (outFile == "") {
+			//helper.writeInvariantFactors(std::cout, result);
+		} else {
+			std::ofstream out(outFile + "-kb");
+			helper.writeInvariantFactors(out, result);
+			out.close();
+			
+			std::ofstream out2(outFile + "-local");
+			helper.writeInvariantFactors(out2, result2);
+			out2.close();
+		}
+		
+		if (R.deg(det) > n || R.deg(det2) > n) {
+			std::cout << "Det too large" << std::endl;
+			return -1;
+		}
 	}
 	
 	return 0;

@@ -204,17 +204,28 @@ namespace LinBox
 		}
 		
 		void fixDiagonal(std::vector<Element> &v) {
-			for (size_t i = 0; i < v.size() - 1; i++) {
-				if (_F.isZero(v[i+1])) {
-					return;
+			bool stable = false;
+			while (!stable) {
+				stable = true;
+				
+				for (size_t i = 0; i < v.size() - 1 && !_F.isZero(v[i+1]); i++) {
+					if (_F.isOne(v[i]) || _F.areEqual(v[i], v[i+1])) {
+						continue;
+					}
+					
+					Element g, q;
+					_F.gcd(g, v[i], v[i+1]);
+					
+					if (_F.areEqual(g, v[i])) {
+						continue;
+					}
+					stable = false;
+					
+					_F.div(q, v[i], g);
+					
+					_F.assign(v[i], g);
+					_F.mulin(v[i+1], q);
 				}
-				
-				Element g, q;
-				_F.gcd(g, v[i], v[i+1]);
-				_F.div(q, v[i], g);
-				
-				_F.assign(v[i], g);
-				_F.mulin(v[i+1], q);
 			}
 		}
 		
