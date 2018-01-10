@@ -160,13 +160,13 @@ def main():
     # Add end of header lines
     output.write("} // end of namespace LinBox\n\n")
     output.write("#endif // __LINBOX_opencl_matrix_domain_kernels_INL\n\n")
-    output.write("// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s\n"
-                 "// Local Variables:\n"
+    output.write("// Local Variables:\n"
                  "// mode: C++\n"
-                 "// tab-width: 8\n"
+                 "// tab-width: 4\n"
                  "// indent-tabs-mode: nil\n"
-                 "// c-basic-offset: 8\n"
-                 "// End:\n")
+                 "// c-basic-offset: 4\n"
+                 "// End:\n"
+                 "// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s\n")
 
     # Close the files
     fp.close()
