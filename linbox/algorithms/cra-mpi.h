@@ -324,8 +324,8 @@ namespace LinBox
 
 
 
-		template<class T, class Function, class PrimeIterator>
-		BlasVector<Givaro::ZRing<T> > & operator() ( BlasVector<Givaro::ZRing<T> >& num, Integer& den, Function& Iteration, PrimeIterator& primeg)
+		template<typename T, class Function, class PrimeIterator>
+		BlasVector<T>&  operator() ( BlasVector<T>& num, Integer& den, Function& Iteration, PrimeIterator& primeg)
 		{
 			//  if there is no communicator or if there is only one process,
 			//  then proceed normally (without parallel)
@@ -337,7 +337,7 @@ namespace LinBox
 			int procs = _commPtr->size();
 			int process = _commPtr->rank();
 
-			typename Rebind<BlasVector<Givaro::ZRing<T> >, Domain>::other r;
+			typename Rebind<BlasVector<T>, Domain>::other r;
 
 			//  parent propcess
 			if(process == 0){
@@ -391,7 +391,7 @@ namespace LinBox
 					Iteration(r, D);
 					_commPtr->send(r.begin(), r.end(), 0, 0);
 				}
-				return num;
+				//return Builder_.result(num,den); //return num;
 			}
 		}
 
@@ -399,7 +399,7 @@ namespace LinBox
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 /*
 		template<class Function, class PrimeIterator>
-		BlasVector<Givaro::ZRing<Integer> > & operator() ( BlasVector<Givaro::ZRing<Integer> >& num, Integer& den, Function& Iteration, PrimeIterator& primeg)
+		BlasVector<Givaro::ZRing<Integer> > & operator() ( BlasVector<Givaro::ZRing<Integer> > & num, Integer& den, Function& Iteration, PrimeIterator& primeg)
 		{
 			//  if there is no communicator or if there is only one process,
 			//  then proceed normally (without parallel)
@@ -411,17 +411,16 @@ namespace LinBox
 			int procs = _commPtr->size();
 			int process = _commPtr->rank();
 
-			typename Rebind<BlasVector<Givaro::ZRing<Integer> >, Domain>::other r;
-
+			//typename Rebind<BlasVector<Givaro::ZRing<Integer> > , Domain>::other r;
+BlasVector< Domain >  r;
 size_t nj=num.size();
   int B_mp_alloc[nj], B_a_size[nj]; 
   unsigned lenB;  Givaro::Integer temp; 
   std::vector<mp_limb_t> B_mp_data;
-   
 
 
 			//  parent propcess
-			if(process == 0){
+			if(process == 0){ 
 				int primes[procs - 1];
 				Domain D(*primeg);
 				//  for each slave process...
@@ -432,19 +431,20 @@ size_t nj=num.size();
 					primes[i - 1] = *primeg;
 					//  send the prime to a slave process
 					_commPtr->send(primes[i - 1], i);
-				}
+				}  
 				Builder_.initialize( D, Iteration(r, D) );
 				int poison_pills_left = procs - 1;
 				while(poison_pills_left > 0 ){
 					int idle_process = 0;
 					//  receive the beginnin and end of a vector in heapspace
 					//_commPtr->recv(r.begin(), r.end(), MPI_ANY_SOURCE, 0); //<---------<<
+
   MPI_Recv(&B_mp_alloc[0], nj, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
   MPI_Recv(&B_a_size[0], nj, MPI_INT, MPI_ANY_SOURCE,0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);  
   MPI_Recv(&lenB, 1, MPI_UNSIGNED, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);B_mp_data.resize(lenB);
   MPI_Recv(&B_mp_data[0], lenB, chooseMPItype<mp_limb_t>::val,  MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     //Reconstruction of vector r
-    std::cerr << "<<< received r: " << std::endl;
+    //std::cerr << "<<< received r: " << std::endl;
     __mpz_struct * ptr2;
     size_t count=0;    
     for(int j=0;j<nj;j++){ 
@@ -456,18 +456,21 @@ size_t nj=num.size();
 	ptr2->_mp_d[i] = (B_mp_data[i+count]);
       }count+=ptr2->_mp_alloc;
       r.setEntry(j,temp);
-      std::cerr << r.getEntry(j) << "\t" ; std::cerr<< std::endl;       
+      //std::cerr << r.getEntry(j) << "\t" ; std::cerr<< std::endl;       
     }
-
+std::cerr << ">>> received r: " <<r<< std::endl;
+for(size_t i=0; i< r.size(); ++i)  std::cerr << r[i] << std::endl;
 
 
 					//  determine which process sent answer
 					//  and give them a new prime
 					idle_process = (_commPtr->get_stat()).MPI_SOURCE;
 					Domain D(primes[idle_process - 1]);
-std::cerr << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
-					Builder_.progress(D, r);
-std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+std::cerr << "--------------------------------------CHECK>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"<< std::endl;
+					//Builder_.progress(D, r);
+				BlasVector<Domain > r(D);
+				Builder_.progress( D, Iteration(r, D) );
+std::cerr << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<CHECK-------------------------------"<< std::endl;
 					//  if still working, queue a prime
 					if(! Builder_.terminated()){
 						++primeg;
@@ -482,27 +485,32 @@ std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 					_commPtr->send(primes[idle_process - 1], idle_process);
 
 				}  // while
+
 				return Builder_.result(num,den);
 
 			}
 			//  child process
 			else{
-
 				int pp;
 				//  get a prime, compute, send back start and end
 				//  of heap addresses
 				while(true){
 					_commPtr->recv(pp, 0);
+
 					if(pp == 0)
 						break;
 					Domain D(pp);
 					Iteration(r, D);
 					//_commPtr->send(r.begin(), r.end(), 0, 0); //<---------<<
+
+std::cerr << ">>> sending r: " <<r<< std::endl;
+for(size_t i=0; i< r.size(); ++i)  std::cerr << r[i] << std::endl;
+
     //Split vector r into arrays
     __mpz_struct * ptr;
-std::cerr << ">>> sending r: " << std::endl;
+	//std::cerr << ">>> sending r: " << std::endl;
     for(int j=0;j<nj;j++){
-      std::cerr << r.getEntry(j)<< "\t" ; std::cerr<< std::endl;
+      //std::cerr << r.getEntry(j)<< "\t" ; std::cerr<< std::endl;
       ptr = const_cast<__mpz_struct*>(r.getEntry(j).get_mpz());
       B_mp_alloc[j] = ptr->_mp_alloc;
       B_a_size[j] = ptr->_mp_size;
@@ -512,11 +520,11 @@ std::cerr << ">>> sending r: " << std::endl;
       }
     }    
     lenB = B_mp_data.size();
-
   MPI_Send(&B_mp_alloc[0], nj, MPI_INT, 0, 0, MPI_COMM_WORLD);
   MPI_Send(&B_a_size[0], nj, MPI_INT, 0, 0, MPI_COMM_WORLD);  
   MPI_Send(&lenB, 1, MPI_UNSIGNED, 0, 0, MPI_COMM_WORLD);
   MPI_Send(&B_mp_data[0], lenB, chooseMPItype<mp_limb_t>::val, 0, 0, MPI_COMM_WORLD);
+
 
 
 				}
@@ -525,7 +533,6 @@ std::cerr << ">>> sending r: " << std::endl;
 		}
 
 */
-
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 	};
 

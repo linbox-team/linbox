@@ -305,6 +305,7 @@ namespace LinBox
 		}
 #endif
 		commentator().stop ("done", NULL, "LQUP::left_solve");
+
 		return x;
 	}
 
@@ -545,7 +546,6 @@ namespace LinBox
 		RandomPrimeIterator genprime((unsigned int)( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)));
 		RationalSolver<Ring, Field, RandomPrimeIterator, DixonTraits> rsolve(A.field(), genprime);
 		SolverReturnStatus status = SS_OK;
-
 
 		// if singularity unknown and matrix is square, we try nonsingular solver
 		switch ( m.singular() ) {
@@ -859,11 +859,13 @@ namespace LinBox
 				RandomPrimeIterator genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
 
 
+
 			BlasVector<Givaro::ZRing<Integer>> num(A.field(),A.coldim());
 			IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
 
-			MPIratChineseRemainder< EarlyMultipRatCRA< Givaro::Modular<double> > > mpicra(3UL, C);
-			mpicra(num, den, iteration, genprime);//(num, iteration, genprime);
+		MPIratChineseRemainder< EarlyMultipRatCRA< Givaro::Modular<double> > > mpicra(3UL, C);
+
+			mpicra(num, den, iteration, genprime);
 
 
 		if(!C || C->rank() == 0){
@@ -904,7 +906,7 @@ namespace LinBox
 		for (; it_x != x.end(); ++it_x, ++it_num)
 			A.field().init(*it_x, *it_num);
 		A.field().init(d, den);
-		commentator().stop ("done", NULL, "Isolve");
+		commentator().stop ("done", NULL, "Isolve"); 
 		return x;
 #endif
 
@@ -1094,6 +1096,7 @@ namespace LinBox
             ++it_x;
 		}
 		commentator().stop ("done", NULL, "Rsolve");
+
 		return x;
 	}
 
@@ -1121,6 +1124,7 @@ namespace LinBox
             ++it_x;
 		}
 		commentator().stop ("done", NULL, "Rsolve");
+ 
 		return x;
 	}
 
