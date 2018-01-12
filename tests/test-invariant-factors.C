@@ -61,6 +61,12 @@ typedef MatrixDomain<PolynomialRing> PolyMatrixDom;
 typedef typename PolyMatrixDom::OwnMatrix PolyMatrix;
 typedef SmithFormKannanBachemDomain<PolynomialRing> SmithFormDom;
 
+typedef NTL_zz_pE QuotientRing;
+typedef typename QuotientRing::Element QPolynomial;
+typedef MatrixDomain<QuotientRing> QuotMatrixDom;
+typedef typename QuotMatrixDom::OwnMatrix QuotMatrix;
+typedef SmithFormLocal<QuotientRing> SmithFormLocalDom;
+
 typedef PolynomialLocalX<PolynomialRing> LocalRing;
 typedef typename LocalRing::Element LocalPolynomial;
 typedef MatrixDomain<LocalRing> LocalMatrixDom;
@@ -71,11 +77,12 @@ Givaro::Timer TW;
 
 class TestInvariantFactorsHelper {
 public:
+	const size_t _p;
 	const Field F;
 	const PolynomialRing R;
 	const MatrixDomain<Field> MD;
 	
-	TestInvariantFactorsHelper(size_t p) : F(p), R(p), MD(F) {};
+	TestInvariantFactorsHelper(size_t p) : _p(p), F(p), R(p), MD(F) {};
 	
 	void writeInvariantFactors(std::ostream &os, std::vector<Polynomial> &factors) const {
 		for (size_t i = 0; i < factors.size(); i++) {
@@ -156,21 +163,6 @@ public:
 		R.assign(det, monic_det);
 	}
 	
-	void timeTextbook(std::vector<Polynomial> &result, const PolyMatrix &M) {
-		SmithFormDom SFD(R);
-		result.clear();
-		PolyMatrix G(M);
-		
-		TW.clear();
-		TW.start();
-		
-		SFD.solveTextBook(result, G);
-		
-		TW.stop();
-		double sf_time = TW.usertime();
-		std::cout << sf_time << " " << std::flush;
-	}
-	
 	double timeKannanBachem(std::vector<Polynomial> &result, const PolyMatrix &M) {
 		SmithFormDom SFD(R);
 		result.clear();
@@ -198,36 +190,6 @@ public:
 		return mem_error ? -1 : sf_time;
 	}
 	
-	void timeHybrid(std::vector<Polynomial> &result, const PolyMatrix &M) {
-		SmithFormDom SFD(R);
-		result.clear();
-		PolyMatrix G(M);
-		
-		TW.clear();
-		TW.start();
-		
-		SFD.solveAdaptive(result, G);
-		
-		TW.stop();
-		double sf_time = TW.usertime();
-		std::cout << sf_time << " " << std::flush;
-	}
-	
-	void timeHybrid2(std::vector<Polynomial> &result, const PolyMatrix &M) {
-		SmithFormDom SFD(R);
-		result.clear();
-		PolyMatrix G(M);
-		
-		TW.clear();
-		TW.start();
-		
-		SFD.solveAdaptive2(result, G);
-		
-		TW.stop();
-		double sf_time = TW.usertime();
-		std::cout << sf_time << " " << std::flush;
-	}
-	
 	double timeIliopoulos(std::vector<Polynomial> &result, const PolyMatrix &M, const Polynomial &det) {
 		SmithFormDom SFD(R);
 		result.clear();
@@ -243,6 +205,62 @@ public:
 		std::cout << sf_time << " " << std::flush;
 		
 		return sf_time;
+	}
+	
+	double timeFactorDet(std::vector<Polynomial> &result, const PolyMatrix &M, const Polynomial &det) {
+		SmithFormLocalDom SFD;
+		
+		std::vector<std::pair<Polynomial, long>> factors;
+		
+		TW.clear();
+		TW.start();
+		
+		R.factor(factors, det);
+		
+		result.clear();
+		for (size_t i = 0; i < M.rowdim(); i++) {
+			result.push_back(R.one);
+		}
+		
+		for (size_t i = 0; i < factors.size(); i++) {
+			if (factors[i].second == 1) {
+				R.mulin(result[result.size() - 1], factors[i].first);
+			} else {
+				Polynomial modulus;
+				R.pow(modulus, factors[i].first, factors[i].second);
+				QuotientRing QR(_p, modulus);
+				
+				
+				QuotMatrix QM(M, QR);
+				
+				std::list<QPolynomial> L;
+				SFD(L, QM, QR);
+				
+				Hom<PolynomialRing, QuotientRing> hom(R, QR);
+				
+				size_t j = 0;
+				std::list<QPolynomial>::const_iterator it;
+				for (it = L.begin(); it != L.end(); it++) {
+					Polynomial tmp;
+					hom.preimage(tmp, *it);
+										
+					if (R.isOne(tmp)) {
+						// noop
+					} else if (R.isZero(tmp)) {
+						R.mulin(result[j], modulus);
+					} else {
+						R.mulin(result[j], tmp);
+					}
+					j++;
+				}
+			}
+		}
+		
+		TW.stop();
+		double fp_time = TW.usertime();
+		std::cout << fp_time << " " << std::flush;
+		
+		return fp_time;
 	}
 	
 	size_t detLimit(const PolyMatrix &M, size_t dim) {
@@ -373,6 +391,7 @@ int main(int argc, char** argv) {
 	std::vector<Polynomial> result;
 	Polynomial det2;
 	std::vector<Polynomial> result2;
+	std::vector<Polynomial> result3;
 	
 	for (size_t i = 0; i < times; i++) {
 		std::cout << n << " " << b << " " << Gen.nnz(M) << " " << std::flush;
@@ -396,14 +415,18 @@ int main(int argc, char** argv) {
 		
 		double local_time = helper.timeLocalX(det2, G, exponent_limit);
 		double ilio_time = helper.timeIliopoulos(result2, G, det2);
+		double factored_local_time = helper.timeFactorDet(result3, G, det2);
 		double total_time = local_time + ilio_time;
-		std::cout << total_time << " " << std::flush;
+		double total2_time = local_time + factored_local_time;
+		std::cout << total_time << " ";
+		std::cout << total2_time << " " << std::flush;
 		
 		double kb_time = helper.timeKannanBachem(result, G);
 		//timeHybrid(R, result, G);
 		helper.computeDet(det, result);
 		
-		std::cout << (kb_time / total_time) << " " << std::flush;
+		std::cout << (kb_time / total_time) << " ";
+		std::cout << (kb_time / total2_time) << " " << std::flush;
 		
 		// R.write(std::cout << "det1: ", det) << std::endl;
 		// R.write(std::cout << "det2: ", det2) << std::endl;
@@ -415,7 +438,7 @@ int main(int argc, char** argv) {
 		//helper.writeInvariantFactors(std::cout, result);
 	} else {
 		std::ofstream out(outFile);
-		helper.writeInvariantFactors(out, result2);
+		helper.writeInvariantFactors(out, result3);
 		out.close();
 	}
 	
