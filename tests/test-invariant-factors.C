@@ -207,15 +207,55 @@ public:
 		return sf_time;
 	}
 	
-	double timeFactorDet(std::vector<Polynomial> &result, const PolyMatrix &M, const Polynomial &det) {
+	void localFactored(
+		std::vector<Polynomial> &result,
+		const PolyMatrix &M,
+		const Polynomial &sf_factor,
+		long multiplicity) const {
+	
 		SmithFormLocalDom SFD;
+	
+		std::vector<std::pair<Polynomial, long>> factors;
+		R.factor(factors, sf_factor);
 		
+		for (size_t i = 0; i < factors.size(); i++) {
+			Polynomial modulus;
+			R.pow(modulus, factors[i].first, factors[i].second * multiplicity);
+			
+			QuotientRing QR(_p, modulus);
+			
+			QuotMatrix QM(M, QR);
+			
+			std::list<QPolynomial> L;
+			SFD(L, QM, QR);
+			
+			Hom<PolynomialRing, QuotientRing> hom(R, QR);
+			
+			size_t j = 0;
+			std::list<QPolynomial>::const_iterator it;
+			for (it = L.begin(); it != L.end(); it++) {
+				Polynomial tmp;
+				hom.preimage(tmp, *it);
+									
+				if (R.isOne(tmp)) {
+					// noop
+				} else if (R.isZero(tmp)) {
+					R.mulin(result[j], modulus);
+				} else {
+					R.mulin(result[j], tmp);
+				}
+				j++;
+			}
+		}
+	}
+	
+	double timeFactorDet(std::vector<Polynomial> &result, const PolyMatrix &M, const Polynomial &det) {		
 		std::vector<std::pair<Polynomial, long>> factors;
 		
 		TW.clear();
 		TW.start();
 		
-		R.factor(factors, det);
+		R.squareFree(factors, det);
 		
 		result.clear();
 		for (size_t i = 0; i < M.rowdim(); i++) {
@@ -226,33 +266,7 @@ public:
 			if (factors[i].second == 1) {
 				R.mulin(result[result.size() - 1], factors[i].first);
 			} else {
-				Polynomial modulus;
-				R.pow(modulus, factors[i].first, factors[i].second);
-				QuotientRing QR(_p, modulus);
-				
-				
-				QuotMatrix QM(M, QR);
-				
-				std::list<QPolynomial> L;
-				SFD(L, QM, QR);
-				
-				Hom<PolynomialRing, QuotientRing> hom(R, QR);
-				
-				size_t j = 0;
-				std::list<QPolynomial>::const_iterator it;
-				for (it = L.begin(); it != L.end(); it++) {
-					Polynomial tmp;
-					hom.preimage(tmp, *it);
-										
-					if (R.isOne(tmp)) {
-						// noop
-					} else if (R.isZero(tmp)) {
-						R.mulin(result[j], modulus);
-					} else {
-						R.mulin(result[j], tmp);
-					}
-					j++;
-				}
+				localFactored(result, M, factors[i].first, factors[i].second);
 			}
 		}
 		

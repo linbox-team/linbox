@@ -267,7 +267,18 @@ namespace LinBox
 				factors.push_back(tmp);
 			}
 		}
-
+		
+		void squareFree(std::vector<std::pair<Element, long>> &factors, const Element &f) const {
+			NTL::Vec<NTL::Pair<Element, long>> factors1;
+			NTL::SquareFreeDecomp(factors1, f);
+			
+			for (int i = 1; i <= factors1.length(); i++) {
+				NTL::Pair<Element, long> tup = factors1(i);
+				std::pair<Element, long> tmp(tup.a, tup.b);
+				factors.push_back(tmp);
+			}
+		}
+		
 		/** The LinBox field for coefficients */
 		const CoeffField& getCoeffField() const
 		{ return _CField; }
