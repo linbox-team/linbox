@@ -190,7 +190,12 @@ public:
 		return mem_error ? -1 : sf_time;
 	}
 	
-	double timeIliopoulos(std::vector<Polynomial> &result, const PolyMatrix &M, const Polynomial &det) {
+	double timeIliopoulos(
+		std::vector<Polynomial> &result,
+		const PolyMatrix &M,
+		const Polynomial &det,
+		const std::vector<Polynomial> &resultX) {
+	
 		SmithFormDom SFD(R);
 		result.clear();
 		PolyMatrix G(M);
@@ -199,6 +204,10 @@ public:
 		TW.start();
 		
 		SFD.solveIliopoulos(result, G, det);
+		
+		for (size_t i = 0; i < result.size(); i++) {
+			R.mulin(result[i], resultX[i]);
+		}
 		
 		TW.stop();
 		double sf_time = TW.usertime();
@@ -249,7 +258,12 @@ public:
 		}
 	}
 	
-	double timeFactorDet(std::vector<Polynomial> &result, const PolyMatrix &M, const Polynomial &det) {		
+	double timeFactorDet(
+		std::vector<Polynomial> &result,
+		const PolyMatrix &M,
+		const Polynomial &det,
+		const std::vector<Polynomial> &resultX) {	
+	
 		std::vector<std::pair<Polynomial, long>> factors;
 		
 		TW.clear();
@@ -268,6 +282,10 @@ public:
 			} else {
 				localFactored(result, M, factors[i].first, factors[i].second);
 			}
+		}
+		
+		for (size_t i = 0; i < result.size(); i++) {
+			R.mulin(result[i], resultX[i]);
 		}
 		
 		TW.stop();
@@ -307,11 +325,10 @@ public:
 		return std::min(std::min(limit1, limit2), dim) + 1;
 	}
 	
-	double timeLocalX(Polynomial &det, const PolyMatrix &M, size_t exponent) {
+	double timeLocalX(Polynomial &det, std::vector<Polynomial> &result, const PolyMatrix &M, size_t exponent) {
 		LocalSmithFormDom SFD(R, exponent);
 		LocalRing L(R, exponent);
 		
-		std::vector<Polynomial> result;
 		result.clear();
 		
 		LocalMatrix G(M, L);
@@ -319,7 +336,7 @@ public:
 		TW.clear();
 		TW.start();
 		
-		SFD.solveDet(det, G);
+		SFD.solveDet(det, result, G);
 		
 		TW.stop();
 		double sf_time = TW.usertime();
@@ -404,6 +421,7 @@ int main(int argc, char** argv) {
 	
 	std::vector<Polynomial> result;
 	Polynomial det2;
+	std::vector<Polynomial> result1;
 	std::vector<Polynomial> result2;
 	std::vector<Polynomial> result3;
 	
@@ -427,9 +445,9 @@ int main(int argc, char** argv) {
 		std::cout << exponent_limit << " " << std::flush;
 		exponent_limit = exponent == 0 ? exponent_limit : exponent;
 		
-		double local_time = helper.timeLocalX(det2, G, exponent_limit);
-		double ilio_time = helper.timeIliopoulos(result2, G, det2);
-		double factored_local_time = helper.timeFactorDet(result3, G, det2);
+		double local_time = helper.timeLocalX(det2, result1, G, exponent_limit);
+		double ilio_time = helper.timeIliopoulos(result2, G, det2, result1);
+		double factored_local_time = helper.timeFactorDet(result3, G, det2, result1);
 		double total_time = local_time + ilio_time;
 		double total2_time = local_time + factored_local_time;
 		std::cout << total_time << " ";
