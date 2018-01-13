@@ -193,8 +193,7 @@ public:
 	double timeIliopoulos(
 		std::vector<Polynomial> &result,
 		const PolyMatrix &M,
-		const Polynomial &det,
-		const std::vector<Polynomial> &resultX) {
+		const Polynomial &det) {
 	
 		SmithFormDom SFD(R);
 		result.clear();
@@ -204,10 +203,6 @@ public:
 		TW.start();
 		
 		SFD.solveIliopoulos(result, G, det);
-		
-		for (size_t i = 0; i < result.size(); i++) {
-			R.mulin(result[i], resultX[i]);
-		}
 		
 		TW.stop();
 		double sf_time = TW.usertime();
@@ -261,8 +256,7 @@ public:
 	double timeFactorDet(
 		std::vector<Polynomial> &result,
 		const PolyMatrix &M,
-		const Polynomial &det,
-		const std::vector<Polynomial> &resultX) {	
+		const Polynomial &det) {	
 	
 		std::vector<std::pair<Polynomial, long>> factors;
 		
@@ -276,7 +270,11 @@ public:
 			result.push_back(R.one);
 		}
 		
+		std::cout << std::endl << std::endl;
 		for (size_t i = 0; i < factors.size(); i++) {
+			R.write(std::cout, factors[i].first) << std::endl;
+			std::cout << factors[i].second << std::endl << std::endl;
+			
 			if (factors[i].second == 1) {
 				R.mulin(result[result.size() - 1], factors[i].first);
 			} else {
@@ -284,9 +282,7 @@ public:
 			}
 		}
 		
-		for (size_t i = 0; i < result.size(); i++) {
-			R.mulin(result[i], resultX[i]);
-		}
+		R.write(std::cout, det) << std::endl << std::endl;
 		
 		TW.stop();
 		double fp_time = TW.usertime();
@@ -325,18 +321,16 @@ public:
 		return std::min(std::min(limit1, limit2), dim) + 1;
 	}
 	
-	double timeLocalX(Polynomial &det, std::vector<Polynomial> &result, const PolyMatrix &M, size_t exponent) {
+	double timeLocalX(Polynomial &det, const PolyMatrix &M, size_t exponent) {
 		LocalSmithFormDom SFD(R, exponent);
 		LocalRing L(R, exponent);
-		
-		result.clear();
-		
+				
 		LocalMatrix G(M, L);
 		
 		TW.clear();
 		TW.start();
 		
-		SFD.solveDet(det, result, G);
+		SFD.solveDet(det, G);
 		
 		TW.stop();
 		double sf_time = TW.usertime();
@@ -421,7 +415,6 @@ int main(int argc, char** argv) {
 	
 	std::vector<Polynomial> result;
 	Polynomial det2;
-	std::vector<Polynomial> result1;
 	std::vector<Polynomial> result2;
 	std::vector<Polynomial> result3;
 	
@@ -445,9 +438,9 @@ int main(int argc, char** argv) {
 		std::cout << exponent_limit << " " << std::flush;
 		exponent_limit = exponent == 0 ? exponent_limit : exponent;
 		
-		double local_time = helper.timeLocalX(det2, result1, G, exponent_limit);
-		double ilio_time = helper.timeIliopoulos(result2, G, det2, result1);
-		double factored_local_time = helper.timeFactorDet(result3, G, det2, result1);
+		double local_time = helper.timeLocalX(det2, G, exponent_limit);
+		double ilio_time = helper.timeIliopoulos(result2, G, det2);
+		double factored_local_time = helper.timeFactorDet(result3, G, det2);
 		double total_time = local_time + ilio_time;
 		double total2_time = local_time + factored_local_time;
 		std::cout << total_time << " ";
@@ -469,9 +462,17 @@ int main(int argc, char** argv) {
 	if (outFile == "") {
 		//helper.writeInvariantFactors(std::cout, result);
 	} else {
-		std::ofstream out(outFile);
-		helper.writeInvariantFactors(out, result3);
-		out.close();
+		std::ofstream out1(outFile + "1.txt");
+		std::ofstream out2(outFile + "2.txt");
+		std::ofstream out3(outFile + "3.txt");
+		
+		helper.writeInvariantFactors(out1, result);
+		helper.writeInvariantFactors(out2, result2);
+		helper.writeInvariantFactors(out3, result3);
+		
+		out1.close();
+		out2.close();
+		out3.close();
 	}
 	
 	return 0;

@@ -248,7 +248,7 @@ namespace LinBox
 		}
 		
 		template<class Matrix>
-		void solveDet(Polynomial &det, std::vector<Polynomial> &result, Matrix &A) {
+		void solveDet(Polynomial &det, Matrix &A) {
 			size_t initial_exp = _F.getExponent();
 			
 			std::vector<Element> L;
@@ -257,14 +257,13 @@ namespace LinBox
 			
 			_F.setExponent(initial_exp);
 			
+			size_t e = 0;
 			for (size_t i = 0; i < es.size(); i++) {
-				Polynomial xe;
-				_F.leftShift(xe, _F.one, es[i]);
-				result.push_back(xe);
+				e += es[i];
 			}
 			
 			Element tmp;
-			_F.assign(tmp, _F.one);
+			_F.leftShift(tmp, L[0], e);
 			for (size_t i = 1; i < L.size(); i++) {
 				_F.mulin(tmp, L[i]);
 			}
