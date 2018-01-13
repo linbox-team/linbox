@@ -270,19 +270,13 @@ public:
 			result.push_back(R.one);
 		}
 		
-		std::cout << std::endl << std::endl;
 		for (size_t i = 0; i < factors.size(); i++) {
-			R.write(std::cout, factors[i].first) << std::endl;
-			std::cout << factors[i].second << std::endl << std::endl;
-			
 			if (factors[i].second == 1) {
 				R.mulin(result[result.size() - 1], factors[i].first);
 			} else {
 				localFactored(result, M, factors[i].first, factors[i].second);
 			}
 		}
-		
-		R.write(std::cout, det) << std::endl << std::endl;
 		
 		TW.stop();
 		double fp_time = TW.usertime();
