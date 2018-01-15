@@ -500,7 +500,7 @@ int main(int argc, char** argv) {
 		exponent_limit = exponent == 0 ? exponent_limit : exponent;
 		
 		double local_time = helper.timeLocalX(det2, G, exponent_limit);
-		double ilio_time = helper.timeIliopoulos(result2, G, det2);
+		// double ilio_time = helper.timeIliopoulos(result2, G, det2);
 		double factored_local_time = helper.timeFactoredLocal(result3, G, det2);
 		double factored_ilio_time = helper.timeFactoredIlio(result4, G, det2);
 		
