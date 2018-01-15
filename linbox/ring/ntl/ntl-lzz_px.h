@@ -331,6 +331,26 @@ namespace LinBox
 			return p;
 		}
 		
+		Element &leftShift(Element &x, const Element &a, size_t shift) const {
+			x = a << shift;
+			return x;
+		}
+		
+		Element &leftShiftIn(Element &a, size_t shift) const {
+			a <<= shift;
+			return a;
+		}
+		
+		Element &rightShift(Element &x, const Element &a, size_t shift) const {
+			x = a >> shift;
+			return x;
+		}
+		
+		Element &rightShiftIn(Element &a, size_t shift) const {
+			a >>= shift;
+			return a;
+		}
+		
 		Element& pow(Element& x, const Element& a, long e) const {
 			NTL::power(x, a, e);
 			return x;

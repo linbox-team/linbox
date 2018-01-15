@@ -414,6 +414,7 @@ namespace LinBox
 		
 		template<class Matrix>
 		void solveIliopoulos(std::vector<Element> &L, Matrix &A, const Element &d) {
+			reduceMatrix(A, d);
 			solveIliopoulosHelper(L, A, d);
 			fixDiagonal(L, d);
 		}

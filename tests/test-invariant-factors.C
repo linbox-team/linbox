@@ -190,19 +190,27 @@ public:
 		return mem_error ? -1 : sf_time;
 	}
 	
+	void iliopoulos(
+		std::vector<Polynomial> &result,
+		const PolyMatrix &M,
+		const Polynomial &det) {
+		
+		SmithFormDom SFD(R);
+		result.clear();
+		PolyMatrix G(M);
+		
+		SFD.solveIliopoulos(result, G, det);
+	}
+	
 	double timeIliopoulos(
 		std::vector<Polynomial> &result,
 		const PolyMatrix &M,
 		const Polynomial &det) {
 	
-		SmithFormDom SFD(R);
-		result.clear();
-		PolyMatrix G(M);
-		
 		TW.clear();
 		TW.start();
 		
-		SFD.solveIliopoulos(result, G, det);
+		iliopoulos(result, M, det);
 		
 		TW.stop();
 		double sf_time = TW.usertime();
@@ -211,49 +219,58 @@ public:
 		return sf_time;
 	}
 	
+	void local(
+		std::vector<Polynomial> &result,
+		const PolyMatrix &M,
+		const Polynomial &f,
+		long multiplicity) const {
+	
+		SmithFormLocalDom SFD;
+		
+		Polynomial modulus;
+		R.pow(modulus, f, multiplicity);
+		
+		QuotientRing QR(_p, modulus);
+		
+		QuotMatrix QM(M, QR);
+		
+		std::list<QPolynomial> L;
+		SFD(L, QM, QR);
+		
+		Hom<PolynomialRing, QuotientRing> hom(R, QR);
+		
+		size_t j = 0;
+		std::list<QPolynomial>::const_iterator it;
+		for (it = L.begin(); it != L.end(); it++) {
+			Polynomial tmp;
+			hom.preimage(tmp, *it);
+								
+			if (R.isOne(tmp)) {
+				// noop
+			} else if (R.isZero(tmp)) {
+				R.mulin(result[j], modulus);
+			} else {
+				R.mulin(result[j], tmp);
+			}
+			j++;
+		}
+	}
+	
 	void localFactored(
 		std::vector<Polynomial> &result,
 		const PolyMatrix &M,
 		const Polynomial &sf_factor,
 		long multiplicity) const {
 	
-		SmithFormLocalDom SFD;
-	
 		std::vector<std::pair<Polynomial, long>> factors;
 		R.factor(factors, sf_factor);
 		
 		for (size_t i = 0; i < factors.size(); i++) {
-			Polynomial modulus;
-			R.pow(modulus, factors[i].first, factors[i].second * multiplicity);
-			
-			QuotientRing QR(_p, modulus);
-			
-			QuotMatrix QM(M, QR);
-			
-			std::list<QPolynomial> L;
-			SFD(L, QM, QR);
-			
-			Hom<PolynomialRing, QuotientRing> hom(R, QR);
-			
-			size_t j = 0;
-			std::list<QPolynomial>::const_iterator it;
-			for (it = L.begin(); it != L.end(); it++) {
-				Polynomial tmp;
-				hom.preimage(tmp, *it);
-									
-				if (R.isOne(tmp)) {
-					// noop
-				} else if (R.isZero(tmp)) {
-					R.mulin(result[j], modulus);
-				} else {
-					R.mulin(result[j], tmp);
-				}
-				j++;
-			}
+			local(result, M, factors[i].first, factors[i].second * multiplicity);
 		}
 	}
 	
-	double timeFactorDet(
+	double timeFactoredLocal(
 		std::vector<Polynomial> &result,
 		const PolyMatrix &M,
 		const Polynomial &det) {	
@@ -275,6 +292,55 @@ public:
 				R.mulin(result[result.size() - 1], factors[i].first);
 			} else {
 				localFactored(result, M, factors[i].first, factors[i].second);
+			}
+		}
+		
+		TW.stop();
+		double fp_time = TW.usertime();
+		std::cout << fp_time << " " << std::flush;
+		
+		return fp_time;
+	}
+	
+	double timeFactoredIlio(
+		std::vector<Polynomial> &result,
+		const PolyMatrix &M,
+		const Polynomial &det) {	
+	
+		std::vector<std::pair<Polynomial, long>> factors;
+		
+		TW.clear();
+		TW.start();
+		
+		R.squareFree(factors, det);
+		
+		result.clear();
+		for (size_t i = 0; i < M.rowdim(); i++) {
+			result.push_back(R.one);
+		}
+		
+		for (size_t i = 0; i < factors.size(); i++) {			
+			if (factors[i].second == 1) {
+				R.mulin(result[result.size() - 1], factors[i].first);
+			} else if (R.isIrreducible(factors[i].first)) {
+				local(result, M, factors[i].first, factors[i].second);
+			} else {
+				Polynomial modulus;
+				R.pow(modulus, factors[i].first, factors[i].second);
+				
+				std::vector<Polynomial> part;
+				iliopoulos(part, M, modulus);
+				
+				for (size_t i = 0; i < part.size(); i++) {
+					if (R.isZero(part[i])) {
+						R.mulin(result[i], modulus);
+					} else {
+						Polynomial tmp;
+						R.gcd(tmp, part[i], modulus);
+						
+						R.mulin(result[i], tmp);
+					}
+				}
 			}
 		}
 		
@@ -411,6 +477,7 @@ int main(int argc, char** argv) {
 	Polynomial det2;
 	std::vector<Polynomial> result2;
 	std::vector<Polynomial> result3;
+	std::vector<Polynomial> result4;
 	
 	for (size_t i = 0; i < times; i++) {
 		std::cout << n << " " << b << " " << Gen.nnz(M) << " " << std::flush;
@@ -434,18 +501,20 @@ int main(int argc, char** argv) {
 		
 		double local_time = helper.timeLocalX(det2, G, exponent_limit);
 		double ilio_time = helper.timeIliopoulos(result2, G, det2);
-		double factored_local_time = helper.timeFactorDet(result3, G, det2);
-		double total_time = local_time + ilio_time;
-		double total2_time = local_time + factored_local_time;
-		std::cout << total_time << " ";
-		std::cout << total2_time << " " << std::flush;
+		double factored_local_time = helper.timeFactoredLocal(result3, G, det2);
+		double factored_ilio_time = helper.timeFactoredIlio(result4, G, det2);
 		
-		double kb_time = helper.timeKannanBachem(result, G);
+		//double total_time = local_time + ilio_time;
+		//double total2_time = local_time + factored_local_time;
+		//std::cout << total_time << " ";
+		//std::cout << total2_time << " " << std::flush;
+		
+		//double kb_time = helper.timeKannanBachem(result, G);
 		//timeHybrid(R, result, G);
-		helper.computeDet(det, result);
+		//helper.computeDet(det, result);
 		
-		std::cout << (kb_time / total_time) << " ";
-		std::cout << (kb_time / total2_time) << " " << std::flush;
+		//std::cout << (kb_time / total_time) << " ";
+		//std::cout << (kb_time / total2_time) << " " << std::flush;
 		
 		// R.write(std::cout << "det1: ", det) << std::endl;
 		// R.write(std::cout << "det2: ", det2) << std::endl;
@@ -459,14 +528,17 @@ int main(int argc, char** argv) {
 		std::ofstream out1(outFile + "1.txt");
 		std::ofstream out2(outFile + "2.txt");
 		std::ofstream out3(outFile + "3.txt");
+		std::ofstream out4(outFile + "4.txt");
 		
 		helper.writeInvariantFactors(out1, result);
 		helper.writeInvariantFactors(out2, result2);
 		helper.writeInvariantFactors(out3, result3);
+		helper.writeInvariantFactors(out4, result4);
 		
 		out1.close();
 		out2.close();
 		out3.close();
+		out4.close();
 	}
 	
 	return 0;
