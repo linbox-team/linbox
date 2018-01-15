@@ -25,6 +25,7 @@
 #include "linbox/algorithms/smith-form-kannan-bachem.h"
 #include "linbox/algorithms/smith-form-local.h"
 #include "linbox/algorithms/poly-smith-form-local-x.h"
+#include "linbox/algorithms/weak-popov-form.h"
 
 #include "sparse-matrix-generator.h"
 #include "test-poly-smith-form.h"
@@ -72,6 +73,7 @@ typedef typename LocalRing::Element LocalPolynomial;
 typedef MatrixDomain<LocalRing> LocalMatrixDom;
 typedef typename LocalMatrixDom::OwnMatrix LocalMatrix;
 typedef PolySmithFormLocalXDomain<PolynomialRing> LocalSmithFormDom;
+typedef WeakPopovFormDomain<PolynomialRing> WeakPopovFormDom;
 
 Givaro::Timer TW;
 
@@ -400,6 +402,23 @@ public:
 		
 		return sf_time;
 	}
+	
+	double timePopov(Polynomial &det, const PolyMatrix &M) {
+		WeakPopovFormDom PFD(R);
+		
+		TW.clear();
+		TW.start();
+		
+		PFD.solveDet(det, M);
+		
+		TW.stop();
+		double sf_time = TW.usertime();
+		std::cout << sf_time << " " << std::flush;
+		
+		NTL::MakeMonic(det);
+		
+		return sf_time;
+	}
 }; // End of TestInvariantFactorsHelper
 
 int main(int argc, char** argv) {
@@ -499,6 +518,7 @@ int main(int argc, char** argv) {
 		std::cout << exponent_limit << " " << std::flush;
 		exponent_limit = exponent == 0 ? exponent_limit : exponent;
 		
+		double popov_time = helper.timePopov(det, G);
 		double local_time = helper.timeLocalX(det2, G, exponent_limit);
 		// double ilio_time = helper.timeIliopoulos(result2, G, det2);
 		double factored_local_time = helper.timeFactoredLocal(result3, G, det2);
@@ -516,9 +536,9 @@ int main(int argc, char** argv) {
 		//std::cout << (kb_time / total_time) << " ";
 		//std::cout << (kb_time / total2_time) << " " << std::flush;
 		
-		// R.write(std::cout << "det1: ", det) << std::endl;
-		// R.write(std::cout << "det2: ", det2) << std::endl;
-		// std::cout << (R.areEqual(det, det2) ? "Pass" : "Fail");
+		//R.write(std::cout << "det1: ", det) << std::endl;
+		//R.write(std::cout << "det2: ", det2) << std::endl;
+		std::cout << (R.areEqual(det, det2) ? "Pass" : "Fail");
 		std::cout << std::endl;
 	}
 		
