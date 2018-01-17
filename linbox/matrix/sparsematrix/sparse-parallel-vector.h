@@ -227,10 +227,10 @@ namespace LinBox { namespace Protected {
 			return SparseMatrixWriteHelper<Self_t>::write (*this, os, format);
 		}
 
-		void appendEntry(size_t i, size_t j, const Element & value) { setEntry(i,j,value) ;}
+		const Element & appendEntry(size_t i, size_t j, const Element & value) { return setEntry(i,j,value) ;}
 		void finalize(){}
 
-		void           setEntry (size_t i, size_t j, const Element &value);
+		const Element & setEntry (size_t i, size_t j, const Element &value);
 
 
 		Element       &refEntry (size_t i, size_t j);
@@ -619,11 +619,10 @@ namespace LinBox { namespace Protected {
 			return _matA;
 		}
 
-	void resize( const size_t & m, const size_t & n, const size_t & z = 0)
+        void resize( const size_t & m, const size_t & n, const size_t & nnz = 0)
 		{
 			_m = m ;
 			_n = n ;
-			_matA.clear();
 			_matA.resize(m);
 
 		}
@@ -725,11 +724,10 @@ namespace LinBox
 
 #endif // __LINBOX_matrix_sparsematrix_sparse_parallel_vector_H
 
-
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

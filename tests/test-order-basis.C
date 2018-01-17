@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 #include <iostream>
 #include "linbox/matrix/polynomial-matrix.h"
 #include "linbox/randiter/random-fftprime.h"
@@ -139,16 +137,16 @@ int main(int argc, char** argv){
 			report<<"degree is to large for field bitsize: "<<b<<std::endl;
 			exit(0);
 		}
-		RandomFFTPrime Rd(1<<b,seed);	
+		RandomFFTPrime Rd(1<<b,seed);
 		integer p = Rd.randomPrime(logd+1);
-		report<<"# starting sigma basis computation over SmallField [x] with p="<<p<<endl;;		
+		report<<"# starting sigma basis computation over SmallField [x] with p="<<p<<endl;
 		SmallField F(p);
 		typename SmallField::RandIter G(F,0,seed);
 		check_sigma(F,G,m,n,d);
 	}
 	else {
-		RandomPrimeIterator Rd(b,seed);	
-		integer p = Rd.randomPrime();
+		PrimeIterator<IteratorCategories::HeuristicTag> Rd(b,seed);
+		integer p = *Rd;
 		report<<"# starting sigma basis computation over LargeField Fp[x] with p="<<p<<endl;;		
 
 		LargeField F(p);
@@ -160,4 +158,10 @@ int main(int argc, char** argv){
 	return 0;
 }
 
- 
+// Local Variables:
+// mode: C++
+// tab-width: 4
+// indent-tabs-mode: nil
+// c-basic-offset: 4
+// End:
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

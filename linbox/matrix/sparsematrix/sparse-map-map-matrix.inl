@@ -143,7 +143,7 @@ bool SparseMatrix<Field_,SparseMatrixFormat::SMM>::verify()
 }
 
 template<class Field_>
-void SparseMatrix<Field_,SparseMatrixFormat::SMM>::setEntry(Index i, Index j, const Element& e)
+const Element& SparseMatrix<Field_,SparseMatrixFormat::SMM>::setEntry(Index i, Index j, const Element& e)
 {
 	VectorIt it=rowMap_[i].find(j);
 	if (it != rowMap_[i].end()) {
@@ -158,6 +158,7 @@ void SparseMatrix<Field_,SparseMatrixFormat::SMM>::setEntry(Index i, Index j, co
 		field().assign(rowMap_[i][j],e);
 		field().assign(colMap_[j][i],e);
 	}
+	return e;
 }
 
 template<class Field_> const typename SparseMatrix<Field_,SparseMatrixFormat::SMM>::Element&
@@ -665,8 +666,8 @@ SparseMatrix<Field_,SparseMatrixFormat::SMM>::nonzerorandom(const Field_& F,type
 
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

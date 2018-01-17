@@ -1,4 +1,3 @@
-
 /* tests/__LINBOX_smith_form_kannan_bachem.h
  * Copyright (C) 2014 Gavin Harrison,
  *
@@ -90,7 +89,10 @@ namespace LinBox
 			}
 
 			Element g;
-			field().dxgcd(g,s,t,u,v,a,b);
+// 			field().dxgcd(g,s,t,u,v,a,b);
+            field().gcd(g,s,t,a,b);
+            field().div(u,a,g);
+            field().div(v,b,g);
 		}
 
 		bool findPivot(Rep &A, size_t n) const
@@ -231,7 +233,7 @@ namespace LinBox
 						continue;
 
 					A.getEntry(jj, j, j);
-					field().quo(tmp, ij, jj);
+					field().div(tmp, ij, jj);
 
 					// A[i] = A[i] - quo(A[i,j], A[j,j]) * A[j]
 					for (size_t k = j; k < A.coldim(); k++)
@@ -356,3 +358,11 @@ namespace LinBox
 }
 
 #endif // __LINBOX_smith_form_kannan_bachem_domain_H
+
+// Local Variables:
+// mode: C++
+// tab-width: 4
+// indent-tabs-mode: nil
+// c-basic-offset: 4
+// End:
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

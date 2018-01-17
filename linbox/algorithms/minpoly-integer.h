@@ -113,7 +113,7 @@ namespace LinBox
 		typedef typename IMatrix::template rebind<Field>::other FBlackbox;
 		typedef std::vector<Element> FPoly;
 		FPoly fp;
-		RandomPrimeIterator primeg; primeg.template setBitsField<Field>();
+		PrimeIterator<IteratorCategories::HeuristicTag> primeg(FieldTraits<Field>::bestBitSize(M.coldim()));
 		for (int i = 0; i < n_try; ++ i) {
 			++primeg;
 			Field F(*primeg);
@@ -147,7 +147,7 @@ namespace LinBox
 		typedef typename IMatrix::template rebind<Field>::other FBlackbox;
 		typedef std::vector<Element> FPoly;
 
-		RandomPrimeIterator primeg; primeg.template setBitsField<Field>();
+		PrimeIterator<IteratorCategories::HeuristicTag> primeg(FieldTraits<Field>::bestBitSize(M.coldim()));
 
 		FPoly fp (degree + 1);
 		// typename FPoly::iterator fp_p;
@@ -188,7 +188,7 @@ namespace LinBox
 		typedef typename IMatrix::template rebind<Field>::other FBlackbox;
 		typedef std::vector<Element> FPoly;
 
-		RandomPrimeIterator primeg; primeg.template setBitsField<Field>();
+		PrimeIterator<IteratorCategories::HeuristicTag> primeg(FieldTraits<Field>::bestBitSize(M.coldim()));
 
 		FPoly fp (degree + 1);
 		// typename FPoly::iterator fp_p;
@@ -259,9 +259,7 @@ namespace LinBox
 
 		y. resize (degree + 1);
 		size_t n = M. rowdim();
-		RandomPrimeIterator primeg;
-		if( ! primeg.template setBitsDelayedField<Field>(n) )
-			primeg.template setBitsField<Field>();
+		PrimeIterator<IteratorCategories::HeuristicTag> primeg(FieldTraits<Field>::bestBitSize(M.coldim()));
 		Element* FA = new Element [n*n];
 		Element* X = new Element [n*(n+1)];
 		size_t* Perm = new size_t[n];
@@ -321,9 +319,7 @@ namespace LinBox
 		Element* p;
 		std::vector<Element> Poly;
 
-                RandomPrimeIterator primeg;
-                if( ! primeg.template setBitsDelayedField<Field>(n) )
-                        primeg.template setBitsField<Field>();
+                PrimeIterator<IteratorCategories::HeuristicTag> primeg(FieldTraits<Field>::bestBitSize(M.coldim()));
 
 		typename BlasMatrix<Ring>::ConstIterator raw_p;
 		for (int i = 0; i < n_try; ++ i) {
@@ -348,8 +344,8 @@ namespace LinBox
 
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

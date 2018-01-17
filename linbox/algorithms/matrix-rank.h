@@ -46,7 +46,7 @@ namespace LinBox
 	/** Compute the rank of an integer matrix in place over a finite field by Gaussian elimination.
 	 * @bug there is no generic \c rankIn method.
 	*/
-	template<class _Ring, class _Field, class _RandomPrime = RandomPrimeIterator>
+	template<class _Ring, class _Field, class _RandomPrime = PrimeIterator>
 	class MatrixRank {
 
 	public:
@@ -77,7 +77,7 @@ namespace LinBox
 		long rank(const IMatrix& A) const
 		{
 
-			rp.template setBitsField<Field>();
+			rp.setBits(FieldTraits<Field>::bestBitSize(A.coldim()));
 
 			Field F ((unsigned long)*rp);
 
@@ -102,9 +102,9 @@ namespace LinBox
 		long rank(const BlasMatrix<IRing>& A) const
 		{
 
-			rp.template setBitsField<_Field>();
+			rp.setBits(FieldTraits<Field>::bestBitSize(A.coldim()));
 
-			Field F ((integer)*rp);
+			Field F (*rp);
 			//! bug the following should work :
 			// BlasMatrix<Field>  Ap(F,A);
 			BlasMatrix<Field> Ap(F, A.rowdim(), A.coldim());
@@ -129,7 +129,7 @@ namespace LinBox
 		template <class Row>
 		long rank(const SparseMatrix<Ring, Row>& A) const
 		{
-			rp.template setBitsField<Field>();
+                        rp.setBits(FieldTraits<Field>::bestBitSize(A.coldim()));
 
 			Field F (*rp);
 			typename SparseMatrix<Ring, Row>::template rebind<Field>::other Ap(A, F);
@@ -248,11 +248,10 @@ namespace LinBox
 
 #endif //__LINBOX_matrix_rank_H
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

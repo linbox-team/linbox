@@ -49,7 +49,7 @@ namespace LinBox
 		template <class Matrix>
 		static bool isPosDef (const Matrix& M, const BLAS_LPM_Method& meth)
             {
-                RandomPrimeIterator::setSeed((size_t)time(0));
+                PrimeIterator<IteratorCategories::HeuristicTag>::setSeed((size_t)time(0));
                 size_t n = M. rowdim();
                 std::vector<int> P;
                 symmetricLU (P, M);
@@ -93,7 +93,7 @@ namespace LinBox
 		template <class Matrix>
 		static bool isPosSemiDef (const Matrix& M, const BLAS_LPM_Method& meth)
             {
-                RandomPrimeIterator::setSeed((size_t)time(0));
+                PrimeIterator<IteratorCategories::HeuristicTag>::setSeed((size_t)time(0));
                 size_t n = M. rowdim();
                 std::vector<int> P;
                 size_t r = (size_t)rank_random (M);
@@ -195,11 +195,7 @@ namespace LinBox
                 typedef Field::Element Element;
 
                 size_t n = M. rowdim();
-                RandomPrimeIterator primeg;
-                if( ! primeg.template setBitsDelayedField<Field>(n) )
-                    primeg.template setBitsField<Field>();
-
-
+                PrimeIterator<IteratorCategories::HeuristicTag> primeg(FieldTraits<Field>::bestBitSize(M.coldim()));
 
                 Element* FA = new Element[n*n];
                 size_t* P= new size_t[n], *PQ = new size_t[n];
@@ -230,7 +226,16 @@ namespace LinBox
                     for (p = FA, raw_p = M. Begin(); p != FA + (n*n); ++ p, ++ raw_p)
                         K1. init (*p, *raw_p);
 
+#ifdef _LB_CRATIMING
+                    Timer chrono; chrono.start();
+#endif
+
                     faithful = FFPACK::fsytrf(K1, FFLAS::FflasUpper, n, FA, n);
+
+#ifdef _LB_CRATIMING
+                    chrono.stop();
+                    std::clog << "1st sytrf: " << chrono << std::endl;
+#endif
 
 #ifdef _LB_DEBUG
                     if (!faithful) {
@@ -307,7 +312,7 @@ namespace LinBox
                     // typedef Givaro::Modular<double> Field;
                 typedef Field::Element Element;
                 typedef DenseMatrix<Field> FMatrix;
-                RandomPrimeIterator primeg; primeg.template setBitsField<Field>();
+                PrimeIterator<IteratorCategories::HeuristicTag> primeg(FieldTraits<Field>::bestBitSize(IM.coldim()));
                 Field F (*primeg);
                 FMatrix FM(F, IM.rowdim(), IM.coldim());
                     //std::clog << "Random prime " << p << "\n";
@@ -402,9 +407,8 @@ namespace LinBox
 
                     // get a prime.
                     // Compute the rank mod that prime. Accumulate into v with CRA.
-                RandomPrimeIterator primeg;
-                if( ! primeg.template setBitsDelayedField<Field>(n) )
-                    primeg.template setBitsField<Field>();
+                PrimeIterator<IteratorCategories::HeuristicTag> primeg(FieldTraits<Field>::bestBitSize(n));
+                
 
                 Field K(*primeg);
 
@@ -424,11 +428,10 @@ namespace LinBox
 
 #endif //__LINBOX_signature_H
 
-// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 4
 // indent-tabs-mode: nil
 // c-basic-offset: 4
 // End:
-
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

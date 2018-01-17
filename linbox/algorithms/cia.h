@@ -73,7 +73,7 @@ namespace LinBox
 		size_t nf = intFactors.size();
 
 		/* One modular characteristic polynomial computation */
-		RandomPrimeIterator primeg (22);
+		PrimeIterator<IteratorCategories::HeuristicTag> primeg (FieldTraits<Field>::bestBitSize(A.coldim()));
 		++primeg;
 		Field F(*primeg);
 		FBlackbox fbb(F, A.rowdim(), A.coldim());
@@ -123,11 +123,10 @@ namespace LinBox
 
 #endif // __LINBOX_cia_H
 
-
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

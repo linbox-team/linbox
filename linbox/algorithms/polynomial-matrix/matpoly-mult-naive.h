@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * Copyright (C) 2013  Pascal Giorgi
  *
@@ -54,7 +53,7 @@ namespace LinBox
 			_field(&F), _BMD(F){}
                 
 
-                void mul(PMatrix&  c, const PMatrix&  a, const PMatrix&  b)
+                void mul(PMatrix&  c, const PMatrix&  a, const PMatrix&  b) const
                 {
                         for (size_t k=0;k<a.size()+b.size()-1;k++){
                                 size_t idx_min= (k+1<b.size()?0:k+1-b.size());
@@ -68,7 +67,7 @@ namespace LinBox
 
                 // c must be allocated with the right size
                 template<typename Matrix1,typename Matrix2,typename Matrix3>
-                void mul(Matrix1& c, const Matrix2&  a, const Matrix3&  b)
+                void mul(Matrix1& c, const Matrix2&  a, const Matrix3&  b) const
                 {
                         PMatrix a2(field(),a.rowdim(),a.coldim(),a.size());
 			PMatrix b2(field(),b.rowdim(),b.coldim(),b.size());
@@ -85,7 +84,7 @@ namespace LinBox
                 // a and b can have a size smaller than required
                 template<typename Matrix1,typename Matrix2,typename Matrix3>
                 void midproduct(Matrix1& c, const Matrix2&  a, const Matrix3&  b,
-                                bool smallLeft=true, size_t n0=0,size_t n1=0) 
+                                bool smallLeft=true, size_t n0=0,size_t n1=0) const
                 {
                         PMatrix a2(field(),a.rowdim(),a.coldim(),a.size());
 			PMatrix b2(field(),b.rowdim(),b.coldim(),b.size());
@@ -96,7 +95,7 @@ namespace LinBox
 			c.copy(c2,0,c2.size()-1);
                 }                          
                 void midproduct(PMatrix&  c, const PMatrix&  a, const PMatrix&  b,
-                                bool smallLeft=true, size_t n0=0,size_t n1=0) {
+                                bool smallLeft=true, size_t n0=0,size_t n1=0) const {
                         //cout<<"naive midprod "<<a.size()<<"x"<<b.size()<<"->"<<c.size()<<endl;
                         size_t hdeg = ((n0==0)?c.size():n0);
 			size_t deg  = ((n1==0)?2*hdeg-1:n1);
@@ -134,11 +133,10 @@ namespace LinBox
 
 #endif //__LINBOX_MATPOLY_MUL_NAIVE_H
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

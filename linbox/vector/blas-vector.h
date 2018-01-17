@@ -218,7 +218,7 @@ namespace LinBox { /* BlasVector */
 			setIterators();
 
 			linbox_check(_size==0 || _ptr != NULL);
-			linbox_check(_size >= this->begin()->_stride);
+			//linbox_check(_size >= this->begin()->_stride);
 		}
 
 #endif
@@ -564,9 +564,9 @@ namespace LinBox { /* BlasVector */
 			return _ptr;
 		}
 
-		void setEntry (size_t i, const Element &a_i)
+		const Element& setEntry (size_t i, const Element &a_i)
 		{
-			_ptr[i] = a_i;
+			return _ptr[i] = a_i;
 		}
 
 		Element &refEntry (size_t i)
@@ -875,9 +875,9 @@ namespace LinBox { /*  BlasSubvector */
 		pointer& getWritePointer() { return &(_Vec[_i0]); }
 
 
-		void setEntry (size_t i, const Element &a_i)
+		const Element& setEntry (size_t i, const Element &a_i)
 		{
-			_Vec[_i0+i*_1stride] = a_i;
+			return _Vec[_i0+i*_1stride] = a_i;
 		}
 
 		Element &refEntry (size_t i)
@@ -985,8 +985,8 @@ namespace LinBox { /*  traits */
 
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

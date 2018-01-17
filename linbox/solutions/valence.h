@@ -144,12 +144,13 @@ namespace LinBox
 	{
 		commentator().start ("Integer Valence", "Ivalence");
 #if __LINBOX_SIZEOF_LONG == 8
-		RandomPrimeIterator genprime( 31 );
-		ChineseRemainder< EarlySingleCRA< Givaro::Modular< int64_t> > > cra(3UL);
+		typedef Givaro::Modular<int64_t> Field;
 #else
-		RandomPrimeIterator genprime( 26 );
-		ChineseRemainder< EarlySingleCRA< Givaro::Modular<double> > > cra(3UL);
+		typedef Givaro::ModularBalanced<double> Field;
 #endif
+                PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.rowdim()));
+		ChineseRemainder< EarlySingleCRA<Field> > cra(3UL);
+
 		IntegerModularValence<Blackbox,MyMethod> iteration(A, M);
 		cra(V, iteration, genprime);
 		commentator().stop ("done", NULL, "Ivalence");
@@ -268,7 +269,7 @@ namespace LinBox
 			typedef Givaro::Modular<int32_t> Field;
 			typedef typename MatrixHomTrait<Blackbox, Field>::value_type FBlackbox;
 			size_t d;
-			RandomPrimeIterator g; g.template setBitsField<Field>();
+			PrimeIterator<IteratorCategories::HeuristicTag> g(FieldTraits<Field>::bestBitSize(A.coldim()));
 			Field::Element v;
 			++g;
 			Field F((int32_t)*g);
@@ -292,7 +293,7 @@ namespace LinBox
 			typedef Givaro::Modular<int32_t> Field;
 			typedef typename MatrixHomTrait<Blackbox, Field>::value_type FBlackbox;
 
-			RandomPrimeIterator rg; rg.template setBitsField<Field>();
+			PrimeIterator<IteratorCategories::HeuristicTag> rg(FieldTraits<Field>::bestBitSize(A.coldim()));
 			Givaro::ZRing<Integer> Z;
 			BlasVector<Givaro::ZRing<Integer> > Lv(Z), Lm(Z);
 			size_t d1; Field::Element v; integer im = 1;
@@ -333,11 +334,10 @@ namespace LinBox
 } //End of LinBox
 #endif //__LINBOX_valence_H
 
-
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

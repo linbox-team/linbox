@@ -155,7 +155,7 @@ namespace LinBox
 			BlasMatrix< typename Blackbox::Field > BBB (A);
 			BlasMatrixDomain< typename Blackbox::Field > BMD (BBB.field());
 			commentator().stop ("done", NULL, "blasconvert");
-			return BMD.minpoly (P, static_cast<const BlasMatrix<typename Blackbox::Field>& >(BBB));
+                        return BMD.minpoly (P, static_cast<const BlasMatrix<typename Blackbox::Field>& >(BBB));
 		}
 	}
 
@@ -223,6 +223,11 @@ namespace LinBox
 			     const RingCategories::IntegerTag   &tag,
 			     const MyMethod                     &M)
 	{
+                if (A.rowdim() == 0 || A.coldim() == 0){
+                        P.resize(1);
+                        P.field().assign(P[0],P.field().one);
+                        return P;
+                }
 #if 0
 		if (A.coldim() != A.rowdim())
 			throw LinboxError("LinBox ERROR: matrix must be square for minimal polynomial computation\n");
@@ -241,13 +246,14 @@ namespace LinBox
 		commentator().start ("Integer Minpoly", "Iminpoly");
 #endif
 		// 0.7213475205 is an upper approximation of 1/(2log(2))
-		RandomPrimeIterator genprime((uint32_t) (26-(int)ceil(log((double)A.rowdim())*0.7213475205)));
+		typedef Givaro::ModularBalanced<double> Field;
+                PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
 		IntegerModularMinpoly<Blackbox,MyMethod> iteration(A, M);
 #ifdef __LINBOX_HAVE_MPI
-		MPIChineseRemainder< EarlyMultipCRA<Givaro::Modular<double> > > cra(3UL, c);
+		MPIChineseRemainder< EarlyMultipCRA<Field > > cra(3UL, c);
 		cra(P, iteration, genprime);
 #else
-		ChineseRemainder< EarlyMultipCRA<Givaro::Modular<double> > > cra(3UL);
+		ChineseRemainder< EarlyMultipCRA<Field > > cra(3UL);
 		cra(P, iteration, genprime);
 #endif
 
@@ -266,8 +272,9 @@ namespace LinBox
 	{
 		commentator().start ("Rational Minpoly", "Rminpoly");
 
-		RandomPrimeIterator genprime((uint32_t)( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)));
-		RationalRemainder2< VarPrecEarlyMultipCRA<Givaro::Modular<double> > > rra(3UL);
+		typedef Givaro::ModularBalanced<double> Field;
+                PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
+		RationalRemainder2< VarPrecEarlyMultipCRA<Field> > rra(3UL);
 		IntegerModularMinpoly<Blackbox,MyMethod> iteration(A, M);
 
 		std::vector<Integer> PP; // use of integer due to non genericity of cra. PG 2005-08-04
@@ -298,11 +305,10 @@ namespace LinBox
 } // end of LinBox namespace
 #endif // __LINBOX_minpoly_H
 
-
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

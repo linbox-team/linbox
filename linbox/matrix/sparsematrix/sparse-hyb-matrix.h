@@ -550,7 +550,7 @@ namespace LinBox
 		 * @param value Value of the new entry
 		 * @todo make it faster if i is 0 or m-1 ?
 		 */
-		void setEntry(const size_t &i, const size_t &j, const Element& e)
+		const Element& setEntry(const size_t &i, const size_t &j, const Element& e)
 		{
 			// only setentry on _reader, destroy other ?
 			// or add in coo/ wherever possible ? (seems doable)
@@ -916,8 +916,8 @@ namespace LinBox
 
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

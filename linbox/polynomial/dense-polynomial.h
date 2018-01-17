@@ -55,16 +55,13 @@ namespace LinBox {
         typedef Givaro::Poly1FactorDom<Field, Givaro::Dense> Domain_t;
 
         DensePolynomial () : Domain_t::Element(), _field(NULL) {}
-        DensePolynomial (const Field& F) : _field (&F) {}
-        DensePolynomial (const Field& F, const size_t s) : Domain_t::Element(s), _field (&F) {}
-        DensePolynomial (const typename Domain_t::Element& P, const Field& F) :
-                Domain_t::Element(P),
-                _field(&F)
-            {}
 
-        DensePolynomial& operator=(const DensePolynomial & P)  {
-            return *this = P;
-        }
+        DensePolynomial (const Field& F) : _field (&F) {}
+
+        template<typename... Args>
+        DensePolynomial(const Field& F, Args... args) :
+                Domain_t::Element(args...),
+                _field(&F) {}
 
         template <class _OtherPoly >
         DensePolynomial (const _OtherPoly& P, const Field& F) :
@@ -73,7 +70,6 @@ namespace LinBox {
             {
                 typename _OtherPoly::template rebind<Field>()(*this,P);
             }
-
 
         const Field& field () const {return *_field;};
 
@@ -102,3 +98,11 @@ namespace LinBox {
 } // namespace LinBox
 
 #endif // __LINBOX_polynomial_H
+
+// Local Variables:
+// mode: C++
+// tab-width: 4
+// indent-tabs-mode: nil
+// c-basic-offset: 4
+// End:
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

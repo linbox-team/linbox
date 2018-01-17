@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * Copyright (C) 2013  Pascal Giorgi
  *
@@ -57,7 +56,7 @@ namespace LinBox
 
                 // c must be allocated with the right size
                 template<typename Matrix1,typename Matrix2,typename Matrix3>
-                void mul(Matrix1 &c, const Matrix2 &a, const Matrix3 &b)
+                void mul(Matrix1 &c, const Matrix2 &a, const Matrix3 &b) const
                 {
                         PMatrix a2(field(),a.rowdim(),a.coldim(),a.size());
 			PMatrix b2(field(),b.rowdim(),b.coldim(),b.size());
@@ -68,7 +67,7 @@ namespace LinBox
 			c.copy(c2,0,c2.size()-1);
                 }
 		
-                void mul(PMatrix &c, const PMatrix &a, const PMatrix &b){
+                void mul(PMatrix &c, const PMatrix &a, const PMatrix &b) const {
 			linbox_check(c.size() >= (a.size()+b.size()-1));
                         typename PMatrix::plain t(*_field,c.rowdim(),c.coldim(),std::max(a.size(),b.size()));
 #ifdef KARA_TIMING
@@ -90,7 +89,7 @@ namespace LinBox
 		// compute  c= (a*b x^(-n)) mod x^n
 
                 template<typename Matrix1,typename Matrix2,typename Matrix3>
-                void midproduct(Matrix1 &c, const Matrix2 &a, const Matrix3 &b)
+                void midproduct(Matrix1 &c, const Matrix2 &a, const Matrix3 &b) const
                 {
                         PMatrix a2(field(),a.rowdim(),a.coldim(),a.size());
 			PMatrix b2(field(),b.rowdim(),b.coldim(),b.size());
@@ -101,7 +100,7 @@ namespace LinBox
 			c.copy(c2,0,c2.size()-1);
                 }
                 
-                void midproduct(PMatrix &c, const PMatrix &a, const PMatrix &b){
+                void midproduct(PMatrix &c, const PMatrix &a, const PMatrix &b) const {
 			linbox_check(2*c.size()-1==b.size());
                         typename PMatrix::plain t(field(),c.rowdim(),c.coldim(),3*c.size());
                         // Rk: if n is a power of two, only 2n-1 extra storage is needed
@@ -125,7 +124,7 @@ namespace LinBox
 	protected:
 
 		template<typename PMatrix1,typename PMatrix2,typename PMatrix3, typename PMatrix4>
-                void Karatsuba_mul(PMatrix1 &C, const PMatrix2 &A, const PMatrix3& B, PMatrix4 &TMP) {
+                void Karatsuba_mul(PMatrix1 &C, const PMatrix2 &A, const PMatrix3& B, PMatrix4 &TMP) const {
 
                         //cout<<A.size()<<"x"<<B.size()<<"->"<<C.size()<<" ("<<TMP.size()<<")"<<endl;
 
@@ -224,7 +223,7 @@ namespace LinBox
 		// compute  c= (a*b x^(-n)) mod x^n
                 // TMP must be of size 2n
                 template<typename PMatrix1,typename PMatrix2,typename PMatrix3>
-                void Karatsuba_midproduct(PMatrix1 &C, const PMatrix2 &A, const PMatrix3& B, PMatrix1 &TMP) {
+                void Karatsuba_midproduct(PMatrix1 &C, const PMatrix2 &A, const PMatrix3& B, PMatrix1 &TMP) const {
 
                         //cout<<A.size()<<"x"<<B.size()<<"->"<<C.size()<<" ("<<TMP.size()<<")\n";
 
@@ -357,11 +356,10 @@ namespace LinBox
 } // end of namespace LinBox
 #endif
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

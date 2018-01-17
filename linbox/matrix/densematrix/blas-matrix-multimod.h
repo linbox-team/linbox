@@ -70,7 +70,7 @@ namespace LinBox
 		size_t                  _row,_col;
 		Element                _One,_Zero; //! @warning used ?
 		std::vector<BlasMatrix<Givaro::Modular<double> >* > _rep;
-		std::vector<double>       _entry;
+		mutable std::vector<double>       _entry;
 	public:
 
 
@@ -179,14 +179,15 @@ namespace LinBox
 		}
 
 
-		void setEntry (size_t , size_t j, const Element &a_ij)
+		const Element& setEntry (size_t , size_t j, const Element &a_ij)
 		{
 			for (size_t i=0; i< _rep.size();++i)
 				_rep[i]->setEntry(i,j,a_ij[i]);
+            return a_ij;
 		}
 
 
-		const Element& getEntry (size_t , size_t j)
+		const Element& getEntry (size_t , size_t j) const
 		{
 			for (size_t i=0; i< _rep.size();++i)
 				_entry[i]=_rep[i]->getEntry(i,j);
@@ -207,11 +208,10 @@ namespace LinBox
 
 #endif // __LINBOX_blas_matrix_H
 
-
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
