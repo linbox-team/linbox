@@ -54,7 +54,7 @@ public:
 
 	virtual ~MapSparseIF() {};
 
-	virtual void setEntry(Index i, Index j, const Element& e) =0;
+	virtual const Element& setEntry(Index i, Index j, const Element& e) =0;
 
 	virtual const Element& getEntry(Index i, Index j) const =0;
 
@@ -102,7 +102,7 @@ public:
 
 	const Field& field() const;
 
-	void setEntry(Index i, Index j, const Element& e);
+	const Element& setEntry(Index i, Index j, const Element& e);
 
 	const Element& getEntry(Index i, Index j) const;
 
@@ -193,8 +193,8 @@ protected:
 
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

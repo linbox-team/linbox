@@ -63,6 +63,7 @@ int tmain (int argc, char **argv)
     Permutation<Field> Q(F,B.coldim());
 
     Givaro::Timer tq; tq.clear(); tq.start();
+    // PGD(local, B, Q, q, p, PRESERVE_UPPER_MATRIX|PRIVILEGIATE_NO_COLUMN_PIVOTING);
     PGD(local, B, Q, q, p);
     tq.stop();
 
@@ -120,11 +121,10 @@ int main(int argc, char ** argv) {
     return 0;
 }
 
-
 // Local Variables:
 // mode: C++
 // tab-width: 4
 // indent-tabs-mode: nil
 // c-basic-offset: 4
 // End:
-// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

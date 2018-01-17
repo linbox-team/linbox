@@ -23,7 +23,7 @@
 
 #  -DLinBoxSrcOnly
 DEFCPPFLAGS  = @DEFAULT_CFLAGS@   -DDISABLE_COMMENTATOR
-AM_CPPFLAGS = -I$(top_srcdir)/linbox $(DEFCPPFLAGS) $(DEPS_CFLAGS)
+AM_CPPFLAGS = -I$(top_srcdir) $(DEFCPPFLAGS) $(DEPS_CFLAGS)
 AM_CPPFLAGS += $(OPTFLAGS) 
 LDADD = $(DEPS_LIBS) $(LDFLAGS)
 LDADD += $(top_builddir)/linbox/liblinbox.la
@@ -43,8 +43,12 @@ LDADD += $(OPTLIBES)
 #LDADD = $(LINBOX_LIBS) $(EX_LDADD)
 
 #  SUBDIRS=fields solver data blackbox
+SUBDIRS=data
 
-EXAMPLES=rank det minpoly valence solve dot-product echelon sparseelimdet sparseelimrank checksolve doubledet smithvalence charpoly blassolve solverat sparsesolverat poweroftwo_ranks power_rank#polysmith bench-fft bench-matpoly-mult
+EXAMPLES=rank det minpoly valence solve dot-product echelon sparseelimdet \
+sparseelimrank checksolve doubledet smithvalence charpoly blassolve solverat \
+sparsesolverat poweroftwo_ranks power_rank genprime
+#polysmith bench-fft bench-matpoly-mult
 # EXAMPLES+=nulp yabla 
 GIVARONTL_EXAMPLES=smith graph-charpoly
 if LINBOX_HAVE_NTL
@@ -56,7 +60,7 @@ EXTRA_PROGRAMS= $(EXAMPLES) $(USE_GIVARONTL_EXAMPLES)
 
 CLEANFILES=$(EXTRA_PROGRAMS)
 
-EXTRA_DIST = examples.doxy smithvalence.h
+EXTRA_DIST = examples.doxy smithvalence.h test.sh
 #map-sparse.h map-sparse.inl
 
 examples:  ${EXTRA_PROGRAMS}
@@ -69,6 +73,7 @@ checksolve_SOURCES     = checksolve.C
 charpoly_SOURCES       = charpoly.C
 graph_charpoly_SOURCES = graph-charpoly.C
 det_SOURCES            = det.C
+genprime_SOURCES       = genprime.C
 rank_SOURCES           = rank.C
 smith_SOURCES          = smith.C
 minpoly_SOURCES        = minpoly.C

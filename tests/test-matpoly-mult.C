@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * Copyright (C) 2013  Pascal Giorgi
  *
@@ -212,19 +211,18 @@ bool runTest(uint64_t n, uint64_t d, long seed){
 	}
 	// normal prime < 2^(53--log(n))/2
 	{
-		size_t bits= (53-integer(n).bitsize())/2;;
-		RandomPrimeIter Rd(bits,seed);
+		typedef Givaro::ModularBalanced<double> Field;
+		PrimeIterator<IteratorCategories::HeuristicTag> Rd(FieldTraits<Field>::bestBitSize(n),seed);
 		integer p;
-		Rd.random(p);
-
-		Givaro::Modular<double> F((int32_t)p);
+		p=*Rd;
+		Field F((int32_t)p);
 		ok&=launchTest (F,n,bits,d,seed);
 	}
 
 	// multi-precision prime
 	 {
 	 	size_t bits=114;
-	 	RandomPrimeIter Rd(bits,seed);
+	 	PrimeIterator<IteratorCategories::HeuristicTag> Rd(bits,seed);
 	 	integer p= Rd.random();
 
 	 	Givaro::Modular<integer> F1(p);			
@@ -256,7 +254,11 @@ int main(int argc, char** argv){
 
 	return (runTest(n,d,seed)? 0: -1);
 } 
- 
 
-
-
+// Local Variables:
+// mode: C++
+// tab-width: 4
+// indent-tabs-mode: nil
+// c-basic-offset: 4
+// End:
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

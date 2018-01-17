@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * Copyright (C) 2015  Pascal Giorgi
  *
@@ -66,7 +65,7 @@ namespace LinBox {
 		}
 
 		template<typename Matrix1, typename Matrix2, typename Matrix3>
-		void mul (Matrix1 &c, const Matrix2 &a, const Matrix3 &b, size_t max_rowdeg=0) {
+		void mul (Matrix1 &c, const Matrix2 &a, const Matrix3 &b, size_t max_rowdeg=0) const {
 			linbox_check(a.coldim()==b.rowdim());
 			// deg is the max rowdegree of the product
 			size_t deg  = (max_rowdeg?max_rowdeg:a.size()+b.size()-2); //size_t deg  = a.size()+b.size()-1;
@@ -85,7 +84,7 @@ namespace LinBox {
 			c.copy(c2,0,deg);
 		}
 
-		void mul (MatrixP &c, const MatrixP &a, const MatrixP &b, size_t max_rowdeg=0) {
+		void mul (MatrixP &c, const MatrixP &a, const MatrixP &b, size_t max_rowdeg=0) const {
 			linbox_check(a.coldim()==b.rowdim());
 			// deg is the max rowdegree of the product
 			size_t deg  = (max_rowdeg?max_rowdeg:a.size()+b.size()-2); //size_t deg  = a.size()+b.size()-1;
@@ -106,7 +105,7 @@ namespace LinBox {
 		}
 		
 		// a,b and c must have size: 2^lpts
-		void mul_fft (size_t lpts, MatrixP &c, MatrixP &a, MatrixP &b, const integer& bound) {
+		void mul_fft (size_t lpts, MatrixP &c, MatrixP &a, MatrixP &b, const integer& bound) const {
 			size_t pts=c.size();			
 			if ((_p-1) % pts == 0){
 				PolynomialMatrixFFTPrimeMulDomain<ModField> fftprime_domain (field());
@@ -197,7 +196,7 @@ namespace LinBox {
 		// by defaut: n0=c.size() and n1=2*c.size()-1;
 		template<typename Matrix1, typename Matrix2, typename Matrix3>
 		void midproduct (Matrix1 &c, const Matrix2 &a, const Matrix3 &b,
-				 bool smallLeft=true, size_t n0=0,size_t n1=0) {
+				 bool smallLeft=true, size_t n0=0,size_t n1=0) const {
 			linbox_check(a.coldim()==b.rowdim());
 			size_t hdeg = (n0==0?c.size():n0);
 			size_t deg  = (n1==0?2*hdeg-1:n1);
@@ -237,7 +236,7 @@ namespace LinBox {
 		// a,b and c must have size: 2^lpts
 		// -> a must have been already reversed according to the midproduct algorithm
 		void midproduct_fft (size_t lpts, MatrixP &c, MatrixP &a, MatrixP &b,
-				     const integer& bound, bool smallLeft=true) {
+				     const integer& bound, bool smallLeft=true) const {
 			size_t pts=c.size();			
 			if ((_p-1) % pts == 0){
 				//std::cerr<<"3-prime FFT midp switching to FFTPrime  "<<std::endl;
@@ -329,3 +328,11 @@ namespace LinBox {
 } // end of namespace LinBox
 
 #endif
+
+// Local Variables:
+// mode: C++
+// tab-width: 4
+// indent-tabs-mode: nil
+// c-basic-offset: 4
+// End:
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

@@ -103,11 +103,11 @@ namespace LinBox
 		}
 
 		//void random(size_t n)
-		void random()
+		void random(unsigned int seed=(unsigned int)time(NULL))
 		{
 			size_t n = rowdim();
 			identity((int)n);
-			MersenneTwister r((unsigned int)time(NULL));
+			MersenneTwister r(seed);
 			// Knuth construction
 			for (size_t i = 0; i < n-1; ++i) {
 				size_t j = i + r.randomInt()%(n-i);
@@ -461,11 +461,10 @@ namespace LinBox
 
 #endif // __LINBOX_bb_permutation_H
 
-
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

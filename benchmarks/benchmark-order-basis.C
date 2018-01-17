@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 //#define __FFLASFFPACK_SEQUENTIAL
 
 #include <iostream>
@@ -376,7 +375,7 @@ int main(int argc, char** argv){
 			std::cout<<"degree is to large for field bitsize: "<<b<<std::endl;
 			exit(0);
 		}
-		RandomFFTPrime Rd(1<<b,seed);	
+		RandomFFTPrime Rd(1<<b,seed);
 		integer p = Rd.randomPrime(logd+1);
 		std::cout<<"# starting sigma basis computation over Fp[x] with p="<<p<<endl;;		
 		SmallField F(p);
@@ -388,8 +387,8 @@ int main(int argc, char** argv){
 			FFT_PROF_LEVEL=2;
 #endif
 
-		RandomPrimeIterator Rd(b,seed);	
-		integer p = Rd.randomPrime();
+		PrimeIterator<IteratorCategories::HeuristicTag> Rd(b,seed);
+		integer p = *Rd;
 		std::cout<<"# starting sigma basis computation over Fp[x] with p="<<p<<endl;;		
 		LargeField F(p);		
 		typename LargeField::RandIter G(F,b,seed);
@@ -402,3 +401,10 @@ int main(int argc, char** argv){
 	return 0;
 }
 
+// Local Variables:
+// mode: C++
+// tab-width: 4
+// indent-tabs-mode: nil
+// c-basic-offset: 4
+// End:
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

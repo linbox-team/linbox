@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * Copyright (C) 2013  Pascal Giorgi
  *                     Romain Lebreton
@@ -60,7 +59,7 @@ namespace LinBox {
 			: _field(&F), _p(field().cardinality()),  _BMD(F){}
 
 		template<typename Matrix1, typename Matrix2, typename Matrix3>
-		void mul (Matrix1 &c, const Matrix2 &a, const Matrix3 &b, size_t max_rowdeg=0) {
+		void mul (Matrix1 &c, const Matrix2 &a, const Matrix3 &b, size_t max_rowdeg=0) const {
 			linbox_check(a.coldim()==b.rowdim());
 			size_t deg  = (max_rowdeg?max_rowdeg:a.size()+b.size()-2); //size_t deg  = a.size()+b.size()-1;
 			size_t lpts = 0;
@@ -75,7 +74,7 @@ namespace LinBox {
 			c.copy(c2,0,deg);
 		}
 
-		void mul (MatrixP &c, const MatrixP &a, const MatrixP &b, size_t max_rowdeg=0) {
+		void mul (MatrixP &c, const MatrixP &a, const MatrixP &b, size_t max_rowdeg=0) const {
 			linbox_check(a.coldim()==b.rowdim());
 			size_t deg  = (max_rowdeg?max_rowdeg:a.size()+b.size()-2); //size_t deg  = a.size()+b.size()-1;
 			size_t lpts = 0;
@@ -94,7 +93,7 @@ namespace LinBox {
 
 		// a,b and c must have size: 2^lpts
 		// -> use TFT to circumvent the padding issue
-		void mul_fft (size_t lpts, MatrixP &c, MatrixP &a, MatrixP &b) {
+		void mul_fft (size_t lpts, MatrixP &c, MatrixP &a, MatrixP &b) const {
 			FFT_PROFILE_START(1);
 			size_t m = a.rowdim();
 			size_t k = a.coldim();
@@ -213,7 +212,7 @@ namespace LinBox {
 		// by defaut: n0=c.size() and n1=2*c.size()-1;
 		template<typename Matrix1, typename Matrix2, typename Matrix3>
 		void midproduct (Matrix1 &c, const Matrix2 &a, const Matrix3 &b,
-				 bool smallLeft=true, size_t n0=0,size_t n1=0) {
+				 bool smallLeft=true, size_t n0=0,size_t n1=0) const {
 			linbox_check(a.coldim()==b.rowdim());
 			size_t hdeg = (n0==0?c.size():n0);
 			size_t deg  = (n1==0?2*hdeg-1:n1);
@@ -250,7 +249,7 @@ namespace LinBox {
 		// a,b and c must have size: 2^lpts
 		// -> a must have been already reversed according to the midproduct algorithm
 		void midproduct_fft (size_t lpts, MatrixP &c, MatrixP &a, MatrixP &b,
-				     bool smallLeft=true) {
+				     bool smallLeft=true) const {
 			FFT_PROFILE_START(1);
 			size_t m = a.rowdim();
 			size_t k = a.coldim();
@@ -325,3 +324,11 @@ namespace LinBox {
 }//end of namespace LinBox
 
 #endif // __LINBOX_matpoly_mult_ftt_wordsize_fast_INL
+
+// Local Variables:
+// mode: C++
+// tab-width: 4
+// indent-tabs-mode: nil
+// c-basic-offset: 4
+// End:
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

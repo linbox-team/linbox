@@ -30,8 +30,12 @@
 #include "linbox/linbox-config.h"
 #include "givaro/modular.h"
 #include "linbox/matrix/sparse-matrix.h"
+#include "linbox/matrix/dense-matrix.h"
+#include "linbox/polynomial/dense-polynomial.h"
+#include "linbox/ring/polynomial-ring.h"
 #include "linbox/vector/blas-vector.h"
 #include "linbox/solutions/solve.h"
+#include "linbox/solutions/charpoly.h"
 using namespace LinBox;
 
 bool testSolveSparse(){
@@ -243,6 +247,42 @@ bool testZeroDixonSolver (const Specifier& m){
     }
     return true;
 }
+
+bool testZeroDimensionalCharPoly(){
+    Givaro::ZRing<Integer> ZZ;
+    DenseMatrix<Givaro::ZRing<Integer> > A (ZZ,0,0);
+    DensePolynomial<Givaro::ZRing<Integer> > P (ZZ);
+    PolynomialRing<Givaro::ZRing<Integer> > PR (ZZ);
+    charpoly(P,A);
+    return PR.isOne(P);
+}
+
+bool testZeroDimensionalMinPoly(){
+    Givaro::ZRing<Integer> ZZ;
+    DenseMatrix<Givaro::ZRing<Integer> > A (ZZ,0,0);
+    DensePolynomial<Givaro::ZRing<Integer> > P (ZZ);
+    PolynomialRing<Givaro::ZRing<Integer> > PR (ZZ);
+    minpoly(P,A);
+    return PR.isOne(P);
+}
+
+bool testBigScalarCharPoly(){
+    Givaro::ZRing<Integer> ZZ;
+    DenseMatrix<Givaro::ZRing<Integer> > A (ZZ,1,1);
+    Integer x;
+    ZZ.init(x);
+    ZZ.assign(x,ZZ.one);
+    x <<= 2000;
+    A.setEntry(0,0,x);
+    DensePolynomial<Givaro::ZRing<Integer> > P (ZZ);
+    DensePolynomial<Givaro::ZRing<Integer> > Q (ZZ,2);
+    PolynomialRing<Givaro::ZRing<Integer> > PR (ZZ);
+    charpoly(P,A);
+    ZZ.assign(Q[1],ZZ.one);
+    ZZ.neg(Q[0],x);
+    return PR.areEqual(P,Q);
+}
+
 int main (int argc, char **argv)
 {
     bool pass = true;
@@ -262,6 +302,17 @@ int main (int argc, char **argv)
     pass &= testZeroDixonSolver (Method::SparseElimination());
     pass &= testSingularDixonSolver (Method::BlasElimination());
     pass &= testZeroDixonSolver (Method::BlasElimination());
+    pass &= testZeroDimensionalCharPoly ();
+    pass &= testZeroDimensionalMinPoly ();
+    pass &= testBigScalarCharPoly ();
 
     return pass ? 0 : -1;
 }
+
+// Local Variables:
+// mode: C++
+// tab-width: 4
+// indent-tabs-mode: nil
+// c-basic-offset: 4
+// End:
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
