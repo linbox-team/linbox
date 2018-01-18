@@ -46,6 +46,7 @@ namespace LinBox
 	public:
 		SparseMatrixGenerator(const Field &F, const PolynomialRing &R): _F(F), _R(R), _RI(R), _CRI(R.getCoeffField()) {}
 		
+<<<<<<< HEAD
 		void linearPolynomial (Polynomial &p, const Coeff& a) const {
 			const CoeffField& F=_R.getCoeffField();
 			Coeff ma; F.init(ma); 
@@ -56,6 +57,9 @@ namespace LinBox
 
 		}
 
+=======
+	private:
+>>>>>>> f8f5f2e9b7175423ed5396a060404c7b009afbd6
 		void randomPolynomial(Polynomial &p, size_t d) const {
 			_RI.random(p, d);
 		}
@@ -221,28 +225,6 @@ namespace LinBox
 			return true;
 		}
 		
-		template<class Matrix>
-		double nnz(const Matrix &M) const {
-			double nnz = 0;
-			
-			for (size_t i = 0; i < M.rowdim(); i++) {
-				for (size_t j = 0; j < M.coldim(); j++) {
-					if (_F.isZero(M.getEntry(i,j))) {
-						continue;
-					}
-					
-					nnz++;
-				}
-			}
-			
-			return nnz;
-		}
-		
-		template<class Matrix>
-		double sparsity(const Matrix &M) const {
-			return nnz(M) / (M.rowdim() * M.coldim());
-		}
-		
 		// specialization for format SMM (sparse-map-map)	
 		void fillIn(SparseMatrix<Field, SparseMatrixFormat::SMM> &M, 
 					double targetSparsity) const {
@@ -269,6 +251,29 @@ namespace LinBox
 			}
 			
 			M.finalize();
+		}
+		
+	public:
+		template<class Matrix>
+		double nnz(const Matrix &M) const {
+			double nnz = 0;
+			
+			for (size_t i = 0; i < M.rowdim(); i++) {
+				for (size_t j = 0; j < M.coldim(); j++) {
+					if (_F.isZero(M.getEntry(i,j))) {
+						continue;
+					}
+					
+					nnz++;
+				}
+			}
+			
+			return nnz;
+		}
+		
+		template<class Matrix>
+		double sparsity(const Matrix &M) const {
+			return nnz(M) / (M.rowdim() * M.coldim());
 		}
 		
 		template<class Matrix>

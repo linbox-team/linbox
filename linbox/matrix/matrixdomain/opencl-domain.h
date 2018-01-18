@@ -196,7 +196,7 @@ namespace LinBox{
 			return _col;
 		}
 
-		/*! Get the stride of the matrix.
+		/*!Â Get the stride of the matrix.
 		 * @return stride of submatrix (number of cols of parent matrix)
 		 */
 		size_t getStride() const{
@@ -988,8 +988,8 @@ namespace LinBox{
 
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

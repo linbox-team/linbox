@@ -26,7 +26,7 @@
  */
 // ========================================================================= //
 // (C) The Linbox Group 1999
-// Calcul de rang par la méthode de Gauss pivot par ligne, sur matrice creuse
+// Calcul de rang par la mÃ©thode de Gauss pivot par ligne, sur matrice creuse
 // ========================================================================= //
 
 #ifndef __LINBOX_gauss_INL
@@ -969,8 +969,8 @@ namespace LinBox
 
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

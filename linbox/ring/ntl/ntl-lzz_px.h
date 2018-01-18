@@ -256,7 +256,29 @@ namespace LinBox
 		bool isIrreducible(const Element &x) const {
 			return NTL::DetIrredTest(x);
 		}
-
+		
+		void factor(std::vector<std::pair<Element, long>> &factors, const Element &f) const {
+			NTL::Vec<NTL::Pair<Element, long>> factors1;
+			NTL::CanZass(factors1, f);
+			
+			for (int i = 1; i <= factors1.length(); i++) {
+				NTL::Pair<Element, long> tup = factors1(i);
+				std::pair<Element, long> tmp(tup.a, tup.b);
+				factors.push_back(tmp);
+			}
+		}
+		
+		void squareFree(std::vector<std::pair<Element, long>> &factors, const Element &f) const {
+			NTL::Vec<NTL::Pair<Element, long>> factors1;
+			NTL::SquareFreeDecomp(factors1, f);
+			
+			for (int i = 1; i <= factors1.length(); i++) {
+				NTL::Pair<Element, long> tup = factors1(i);
+				std::pair<Element, long> tmp(tup.a, tup.b);
+				factors.push_back(tmp);
+			}
+		}
+		
 		/** The LinBox field for coefficients */
 		const CoeffField& getCoeffField() const
 		{ return _CField; }
@@ -307,6 +329,26 @@ namespace LinBox
 		{
 			NTL::SetCoeff(p,(long)i,c);
 			return p;
+		}
+		
+		Element &leftShift(Element &x, const Element &a, size_t shift) const {
+			x = a << shift;
+			return x;
+		}
+		
+		Element &leftShiftIn(Element &a, size_t shift) const {
+			a <<= shift;
+			return a;
+		}
+		
+		Element &rightShift(Element &x, const Element &a, size_t shift) const {
+			x = a >> shift;
+			return x;
+		}
+		
+		Element &rightShiftIn(Element &a, size_t shift) const {
+			a >>= shift;
+			return a;
 		}
 		
 		Element& pow(Element& x, const Element& a, long e) const {
@@ -552,12 +594,10 @@ namespace LinBox
 
 #endif // __LINBOX_field_ntl_lzz_px_H
 
-
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
