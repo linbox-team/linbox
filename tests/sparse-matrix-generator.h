@@ -46,6 +46,16 @@ namespace LinBox
 	public:
 		SparseMatrixGenerator(const Field &F, const PolynomialRing &R): _F(F), _R(R), _RI(R), _CRI(R.getCoeffField()) {}
 		
+		void linearPolynomial (Polynomial &p, const Coeff& a) const {
+			const CoeffField& F=_R.getCoeffField();
+			Coeff ma; F.init(ma); 
+			F.neg(ma, a);
+			_R.init(p);
+			_R.setCoeff(p, 1, F.one);
+			_R.setCoeff(p, 0, ma);
+
+		}
+
 		void randomPolynomial(Polynomial &p, size_t d) const {
 			_RI.random(p, d);
 		}
@@ -144,8 +154,8 @@ namespace LinBox
 				_R.write(std::cout << "divisor (" << multiplicity << " times): ", bump) << std::endl;
 				
 				for (size_t j = 0; j < multiplicity; j++) {
-					Polynomial tmp;
-					_R.assign(tmp, bump);
+					//Polynomial tmp;
+					//_R.assign(tmp, bump);
 					fs.push_back(bump);
 				}
 			}
@@ -262,10 +272,8 @@ namespace LinBox
 		}
 		
 		template<class Matrix>
-		void generate(Matrix &M, Polynomial &det, const std::string &filename, double sparsity) const {
-			std::vector<Polynomial> fs;
-			readFile(fs, filename);
-			
+		void generate(Matrix &M, Polynomial &det, const std::vector<Polynomial> & fs, double sparsity) const {
+
 			_R.assign(det, _R.one);
 			for (size_t i = 0; i < fs.size(); i++) {
 				_R.mulin(det, fs[i]);
@@ -286,8 +294,67 @@ namespace LinBox
 			fillIn(T, sparsity);
 			
 			copy(M, T);
+		} // generate from vec
+
+		template<class Matrix>
+		void generate(Matrix &M, Polynomial &det, const std::string &filename, double sparsity) const {
+			std::vector<Polynomial> fs;
+			readFile(fs, filename);
+			generate(M, det, fs, sparsity);
+		} // generate from file
+
+		std::vector<Polynomial>& augment(std::vector<Polynomial>& fs, size_t k, Polynomial& p) {
+			for (size_t i = 0; i < k; ++i) fs.push_back(p);
+			return fs;
 		}
-	};
-}
+
+		std::vector<Polynomial>& invariants(std::vector<Polynomial>& fs, size_t n, int fsnum) {
+			//choose within a small set of fs build schemes
+			Polynomial p; _R.init(p);
+			if (fsnum >= 0) {
+				Polynomial xm1, xm1s, x2m1;
+				_R.init(xm1); _R.init(xm1s); _R.init(x2m1); _R.init(p);
+				linearPolynomial(xm1,_R.getCoeffField().one);
+				linearPolynomial(x2m1,_R.getCoeffField().mOne); _R.mulin(x2m1, xm1);
+				_R.mul(xm1s, xm1, xm1);
+				switch (fsnum) {
+				case 0: // but don't use
+				case 1: //identity n (x-1)'s 
+					augment(fs, n, xm1);
+					break;
+				case 2: // n/3 x-1, n/3 (x-1)^2
+					augment(fs, n-2*(n/3), xm1);
+					augment(fs, n/3, xm1s);
+					break;
+				case 3: // n/3 x-1, n/3 (x^2-1) -- distinct roots except /F2.
+					augment(fs, n-2*(n/3), xm1);
+					augment(fs, n/3, x2m1);
+					break;
+				case 4: // tight stack
+					// k(k+1)/2 <= n < (k+1)(k+2)/2
+					size_t k = 1; 
+					while ((k*(k+1))/2 <= n) ++k; 
+					--k;
+					size_t l = n-(k*(k+1))/2;
+					_R.assign(p, xm1);
+					for (size_t i = 1; i <= k; ++i) {
+						fs.push_back(p);
+						if (i == l) fs.push_back(p);
+						_R.mulin(p, xm1);
+					}
+					break;
+				//case 5: // spread stack
+				//	break;
+				}// switch
+			} else { // fsnum is neg
+				invariants(fs, n/2, -fsnum);
+				randomPolynomial(p,n-n/2);
+				augment(fs, 1, p);
+			}
+			return fs;
+		}
+			
+	}; // SparseMatrixGenerator
+} // linbox
 
 #endif // __LINBOX_SPARSE_MATRIX_GENERATOR_H
