@@ -420,7 +420,8 @@ public:
 		}
 		
 		PolyMatrix x(R, Mx.rowdim(), 1);
-		size_t m = 16 * ((max_deg / R.deg(f)) + 1);
+		size_t m = (max_deg / R.deg(f)) + 1;
+		m = 2 * (m * m);
 		
 		bool success = DD.solve(x, Mx, b, f, m);
 		
@@ -623,8 +624,9 @@ int main(int argc, char** argv) {
 		Polynomial t1, t2;
 		R.monic(t1, mp);
 		R.monic(t2, result3[result3.size() - 1]);
-		// R.write(std::cout << "dixon = ", t1) << std::endl;
-		// R.write(std::cout << "mp = ", t2) << std::endl;
+		std::cout << std::endl;
+		R.write(std::cout << "dixon = ", t1) << std::endl;
+		R.write(std::cout << "mp = ", t2) << std::endl;
 		std::string mpPass = (R.areEqual(t1, t2) ? "Pass" : "Fail");
 		std::cout << mpPass << " " << std::flush;
 		
