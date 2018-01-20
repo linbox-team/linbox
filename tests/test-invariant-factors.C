@@ -518,18 +518,18 @@ int main(int argc, char** argv) {
 		std::cout << exponent_limit << " " << std::flush;
 		exponent_limit = exponent == 0 ? exponent_limit : exponent;
 		
-		double popov_time = helper.timePopov(det, G);
+		//double popov_time = helper.timePopov(det, G);
 		double local_time = helper.timeLocalX(det2, G, exponent_limit);
 		// double ilio_time = helper.timeIliopoulos(result2, G, det2);
 		double factored_local_time = helper.timeFactoredLocal(result3, G, det2);
-		double factored_ilio_time = helper.timeFactoredIlio(result4, G, det2);
+		//double factored_ilio_time = helper.timeFactoredIlio(result4, G, det2);
 		
 		//double total_time = local_time + ilio_time;
 		//double total2_time = local_time + factored_local_time;
 		//std::cout << total_time << " ";
 		//std::cout << total2_time << " " << std::flush;
 		
-		//double kb_time = helper.timeKannanBachem(result, G);
+		double kb_time = helper.timeKannanBachem(result, G);
 		//timeHybrid(R, result, G);
 		//helper.computeDet(det, result);
 		
@@ -538,7 +538,7 @@ int main(int argc, char** argv) {
 		
 		//R.write(std::cout << "det1: ", det) << std::endl;
 		//R.write(std::cout << "det2: ", det2) << std::endl;
-		std::cout << (R.areEqual(det, det2) ? "Pass" : "Fail");
+		//std::cout << (R.areEqual(det, det2) ? "Pass" : "Fail");
 		std::cout << std::endl;
 	}
 		

@@ -46,7 +46,6 @@ namespace LinBox
 	public:
 		SparseMatrixGenerator(const Field &F, const PolynomialRing &R): _F(F), _R(R), _RI(R), _CRI(R.getCoeffField()) {}
 		
-<<<<<<< HEAD
 		void linearPolynomial (Polynomial &p, const Coeff& a) const {
 			const CoeffField& F=_R.getCoeffField();
 			Coeff ma; F.init(ma); 
@@ -57,9 +56,6 @@ namespace LinBox
 
 		}
 
-=======
-	private:
->>>>>>> f8f5f2e9b7175423ed5396a060404c7b009afbd6
 		void randomPolynomial(Polynomial &p, size_t d) const {
 			_RI.random(p, d);
 		}
