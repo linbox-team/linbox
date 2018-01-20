@@ -420,8 +420,7 @@ public:
 		}
 		
 		PolyMatrix x(R, Mx.rowdim(), 1);
-		size_t m = (max_deg / R.deg(f)) + 1;
-		m = 2 * (m * m);
+		size_t m = 4 * ((max_deg / R.deg(f)) + 1);
 		
 		bool success = DD.solve(x, Mx, b, f, m);
 		
@@ -444,7 +443,7 @@ public:
 		return true;
 	}
 	
-	double timeDixon(Polynomial &minpoly, const PolyMatrix &M) const {
+	double timeDixon(Polynomial &minpoly, const PolyMatrix &M, size_t m) const {
 		SparseMatrixGenerator<Field, PolynomialRing> Gen(F, R);
 		
 		size_t max_deg = 0;
@@ -471,7 +470,7 @@ public:
 			Polynomial f;
 			Gen.randomIrreducible(f, d++);
 			
-			success = dixon(minpoly, M, f, max_deg);
+			success = dixon(minpoly, M, f, m);
 		}
 		
 		TW.stop();
@@ -609,7 +608,7 @@ int main(int argc, char** argv) {
 		std::cout << exponent_limit << " " << std::flush;
 		exponent_limit = exponent == 0 ? exponent_limit : exponent;
 		
-		double dixon_time = helper.timeDixon(mp, G);
+		double dixon_time = helper.timeDixon(mp, G, exponent_limit);
 		//double popov_time = helper.timePopov(det, G);
 		double local_time = helper.timeLocalX(det2, G, exponent_limit);
 		// double ilio_time = helper.timeIliopoulos(result2, G, det2);
