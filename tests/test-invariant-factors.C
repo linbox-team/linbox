@@ -466,8 +466,8 @@ public:
 		
 		size_t d = 1;
 		bool success = false;
+		Polynomial f;
 		for (size_t i = 0; i < 10 && !success; i++) {
-			Polynomial f;
 			Gen.randomIrreducible(f, d++);
 			
 			success = dixon(minpoly, M, f, m);
@@ -478,7 +478,9 @@ public:
 		std::cout << d_time << " " << std::flush;
 		
 		if (!success) {
-			std::cout << "failed" << std::endl;
+			std::cout << "failed " << std::endl;
+		} else {
+			R.write(std::cout, f) << " " << std::flush;
 		}
 		
 		return d_time;
