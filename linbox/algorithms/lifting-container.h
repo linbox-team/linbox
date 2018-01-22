@@ -393,7 +393,8 @@ namespace LinBox
 			typename Vector1::const_iterator     b_iter    = b.begin();
 			typename BlasVector<Ring>::iterator  res_iter  = _b.begin() ;
 			for (; b_iter != b.end(); ++res_iter, ++b_iter)
-				this->_intRing.init(*res_iter, int64_t(*b_iter));
+				//this->_intRing.init(*res_iter, int64_t(*b_iter)); --> PG: this is bug the vector b is a multi-precision vector fixed-size cast is allowed here
+                this->_intRing.init(*res_iter, *b_iter);
 
 			Integer_t had_sq, short_sq;
 			BoundBlackbox(this->_intRing, had_sq, short_sq, A);
