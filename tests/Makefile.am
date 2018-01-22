@@ -186,7 +186,8 @@ FULLCHECK_TESTS =               \
 	test-sparse-matrix-generator \
 	test-invariant-factors \
 	test-polynomial-local-x \
-	test-weak-popov-form
+	test-weak-popov-form \
+	try-invariant-factors
 
 # Really just one or two of these would be enough for target check.
 # The rest can be in target fullcheck.
@@ -363,6 +364,7 @@ test_sparse_matrix_generator_SOURCES =	test-sparse-matrix-generator.C
 test_invariant_factors_SOURCES =		test-invariant-factors.C
 test_polynomial_local_x_SOURCES =       test-polynomial-local-x.C
 test_weak_popov_form_SOURCES =			test-weak-popov-form.C
+try_invariant_factors_SOURCES =         try-invariant-factors.C
 
 # Perfpublisher script interaction - AB 2014/12/11
 perfpublisher:

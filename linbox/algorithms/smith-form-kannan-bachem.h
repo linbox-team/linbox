@@ -1,4 +1,3 @@
-
 /* tests/__LINBOX_smith_form_kannan_bachem.h
  * Copyright (C) 2017 Gavin Harrison,
  *
@@ -203,18 +202,40 @@ namespace LinBox
 			return true;
 		}
 		
-		void fixDiagonal(std::vector<Element> &v) {
-			for (size_t i = 0; i < v.size() - 1; i++) {
-				if (_F.isZero(v[i+1])) {
-					return;
+		bool fixDiagonalHelper(std::vector<Element> &v) const {
+			bool stable = true;
+			
+			for (size_t i = 0; i < v.size() - 1 && !_F.isZero(v[i+1]); i++) {
+				if (_F.isOne(v[i]) || _F.areEqual(v[i], v[i+1])) {
+					continue;
 				}
 				
 				Element g, q;
 				_F.gcd(g, v[i], v[i+1]);
+				
+				if (_F.areEqual(g, v[i])) {
+					continue;
+				}
+				stable = false;
+				
 				_F.div(q, v[i], g);
 				
 				_F.assign(v[i], g);
 				_F.mulin(v[i+1], q);
+			}
+			
+			return stable;
+		}
+		
+		void fixDiagonal(std::vector<Element> &v) {
+			while (!fixDiagonalHelper(v));
+		}
+		
+		void fixDiagonal(std::vector<Element> &v, const Element &det) {
+			fixDiagonal(v);
+			
+			for (size_t i = 0; i < v.size(); i++) {
+				_F.remin(v[i], det);
 			}
 		}
 		
@@ -393,8 +414,9 @@ namespace LinBox
 		
 		template<class Matrix>
 		void solveIliopoulos(std::vector<Element> &L, Matrix &A, const Element &d) {
+			reduceMatrix(A, d);
 			solveIliopoulosHelper(L, A, d);
-			fixDiagonal(L);
+			fixDiagonal(L, d);
 		}
 		
 		template<class Matrix>
@@ -439,3 +461,11 @@ namespace LinBox
 }
 
 #endif // __LINBOX_smith_form_kannan_bachem_domain_H
+
+// Local Variables:
+// mode: C++
+// tab-width: 4
+// indent-tabs-mode: nil
+// c-basic-offset: 4
+// End:
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

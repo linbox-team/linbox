@@ -136,7 +136,7 @@ namespace LinBox
 		
 		// Returns false if invert fails, i.e., not full rank or element fails to invert
 		template<class Matrix1, class Matrix2>
-		bool invert(Matrix1 &Ainv, Matrix2 &A) {
+		bool invert(Matrix1 &Ainv, Matrix2 &A) {	
 			size_t dim = A.rowdim();
 			if (dim != A.coldim() || dim != Ainv.rowdim() || dim != Ainv.coldim()) {
 				return false;
@@ -152,7 +152,7 @@ namespace LinBox
 				Inv.setEntry(i, i, _F.one);
 			}
 			
-			for (size_t i = 0; i < dim; i++) {
+			for (size_t i = 0; i < dim; i++) {				
 				if (!findPivot(B, i)) {
 					return false;
 				}

@@ -26,6 +26,7 @@
 #include "linbox/algorithms/smith-form-local.h"
 #include "linbox/algorithms/poly-smith-form-local-x.h"
 #include "linbox/algorithms/weak-popov-form.h"
+#include "linbox/algorithms/poly-dixon.h"
 
 #include "sparse-matrix-generator.h"
 #include "test-poly-smith-form.h"
@@ -41,22 +42,13 @@ typedef MatrixDomain<Field> MatrixDom;
 typedef typename MatrixDom::OwnMatrix Matrix;
 typedef RandomDenseMatrix<RandIter, Field> RandomMatrix;
 
-// #define PRECONDITION
-
-#ifdef PRECONDITION
-typedef Permutation<Field> Preconditioner; // ..there will be others
-
-typedef Compose<SparseMat,Preconditioner> ProductMat; // yes preconditioner
-#else
-typedef SparseMat ProductMat; // no preconditioner
-#endif
-
-typedef BlackboxBlockContainer<Field, ProductMat> Sequence;
+typedef BlackboxBlockContainer<Field, SparseMat> Sequence;
 typedef BlockMasseyDomain<Field, Sequence> MasseyDom;
 typedef BlockCoppersmithDomain<MatrixDom, Sequence> CoppersmithDom;
 
 typedef NTL_zz_pX PolynomialRing;
 typedef typename PolynomialRing::Element Polynomial;
+typedef typename PolynomialRing::Coeff Coeff;
 
 typedef MatrixDomain<PolynomialRing> PolyMatrixDom;
 typedef typename PolyMatrixDom::OwnMatrix PolyMatrix;
@@ -74,6 +66,7 @@ typedef MatrixDomain<LocalRing> LocalMatrixDom;
 typedef typename LocalMatrixDom::OwnMatrix LocalMatrix;
 typedef PolySmithFormLocalXDomain<PolynomialRing> LocalSmithFormDom;
 typedef WeakPopovFormDomain<PolynomialRing> WeakPopovFormDom;
+typedef PolyDixonDomain<PolynomialRing, QuotientRing> DixonDom;
 
 Givaro::Timer TW;
 
@@ -94,7 +87,7 @@ public:
 		}
 	}
 	
-	double computeMinpoly(std::vector<size_t> &degree, std::vector<Matrix> &minpoly, const ProductMat &M, size_t b) const {
+	double computeMinpoly(std::vector<size_t> &degree, std::vector<Matrix> &minpoly, const SparseMat &M, size_t b) const {
 		size_t n = M.rowdim();
 		
 		RandIter RI(F);
@@ -403,6 +396,114 @@ public:
 		return sf_time;
 	}
 	
+	size_t firstNonZeroCoeff(const Polynomial &a) const {
+		Coeff c;
+		
+		size_t i = 0;
+		for (; i <= R.deg(a) && R.getCoeffField().isZero(R.getCoeff(c, a, i)); i++);
+		return i;
+	}
+	
+	bool dixon(Polynomial &minpoly, const PolyMatrix &M, const Polynomial &f, size_t max_deg) const {
+		SparseMatrixGenerator<Field, PolynomialRing> Gen(F, R);
+		QuotientRing QR(_p, f);
+		
+		DixonDom DD(R, QR);
+		PolyMatrix Mx(M);
+				
+		PolyMatrix b(R, Mx.rowdim(), 1);
+		for (size_t i = 0; i < b.rowdim(); i++) {
+			Polynomial e;
+			Gen.randomPolynomial(e, max_deg);
+			
+			b.setEntry(i, 0, e);
+		}
+		
+		PolyMatrix x(R, Mx.rowdim(), 1);
+		size_t m = 4 * ((max_deg / R.deg(f)) + 1);
+		
+		bool success = DD.solve(x, Mx, b, f, m);
+		
+		if (!success) {
+			return false;
+		}
+		
+		Polynomial fm;
+		R.pow(fm, f, m);
+		
+		R.assign(minpoly, R.one);
+		for (size_t i = 0; i < x.rowdim(); i++) {
+			Polynomial numer, denom, tmp;
+			DD.rat_recon(numer, denom, x.getEntry(i, 0), fm);
+			
+			R.lcm(tmp, minpoly, denom);
+			R.assign(minpoly, tmp);
+		}
+		
+		return true;
+	}
+	
+	double timeDixon(Polynomial &minpoly, const PolyMatrix &M, size_t m) const {
+		SparseMatrixGenerator<Field, PolynomialRing> Gen(F, R);
+		
+		size_t max_deg = 0;
+		for (size_t i = 0; i < M.rowdim(); i++) {
+			for (size_t j = 0; j < M.coldim(); j++) {
+				Polynomial tmp;
+				M.getEntry(tmp, i, j);
+				
+				if (R.isZero(tmp)) {
+					continue;
+				}
+				
+				size_t deg = R.deg(tmp);
+				max_deg = max_deg < deg ? deg : max_deg;
+			}
+		}
+		
+		TW.clear();
+		TW.start();
+		
+		size_t d = 1;
+		bool success = false;
+		Polynomial f;
+		for (size_t i = 0; i < 10 && !success; i++) {
+			Gen.randomIrreducible(f, d++);
+			
+			success = dixon(minpoly, M, f, m);
+		}
+		
+		TW.stop();
+		double d_time = TW.usertime();
+		std::cout << d_time << " " << std::flush;
+		
+		if (!success) {
+			std::cout << "failed " << std::endl;
+		} else {
+			R.write(std::cout, f) << " " << std::flush;
+		}
+		
+		return d_time;
+	}
+	
+	bool checkDixonMp(Polynomial &dixonMp, Polynomial &mp) {
+		Polynomial tmp;
+		R.assign(tmp, mp);
+		R.rightShiftIn(tmp, firstNonZeroCoeff(tmp));
+		
+		Polynomial tmp2;
+		R.assign(tmp2, dixonMp);
+		R.rightShiftIn(tmp2, firstNonZeroCoeff(tmp2));
+		
+		Polynomial rem;
+		R.rem(rem, tmp2, tmp);
+		
+		R.write(std::cout << "a = ", dixonMp) << std::endl;
+		R.write(std::cout << "b = ", mp) << std::endl;
+		
+		return R.isZero(rem);
+	}
+	
 	double timePopov(Polynomial &det, const PolyMatrix &M) {
 		WeakPopovFormDom PFD(R);
 		
@@ -479,19 +580,10 @@ int main(int argc, char** argv) {
 	assert(M.rowdim() == M.coldim());
 	n = M.rowdim();
 	if (n <= 20) M.write(std::cout) << std::endl;
-
-#ifdef PRECONDITION
-	// Permutation preconditioner //
-	Preconditioner P(F,n,n); 
-	P.random();
-
-	ProductMat MP(M,P);
-#else
-	ProductMat MP(M);  
-#endif
 	
 	TestInvariantFactorsHelper helper(p);
 	
+	Polynomial mp;
 	std::vector<Polynomial> result;
 	Polynomial det2;
 	std::vector<Polynomial> result2;
@@ -503,7 +595,7 @@ int main(int argc, char** argv) {
 		// Generate random left and right projectors
 		std::vector<size_t> degree;
 		std::vector<Matrix> minpoly;
-		helper.computeMinpoly(degree, minpoly, MP, b);
+		helper.computeMinpoly(degree, minpoly, M, b);
 		
 		// Convert to matrix with polynomial entries
 		PolyMatrix G(R, b, b);
@@ -518,18 +610,28 @@ int main(int argc, char** argv) {
 		std::cout << exponent_limit << " " << std::flush;
 		exponent_limit = exponent == 0 ? exponent_limit : exponent;
 		
-		double popov_time = helper.timePopov(det, G);
+		double dixon_time = helper.timeDixon(mp, G, exponent_limit);
+		//double popov_time = helper.timePopov(det, G);
 		double local_time = helper.timeLocalX(det2, G, exponent_limit);
 		// double ilio_time = helper.timeIliopoulos(result2, G, det2);
 		double factored_local_time = helper.timeFactoredLocal(result3, G, det2);
-		double factored_ilio_time = helper.timeFactoredIlio(result4, G, det2);
+		//double factored_ilio_time = helper.timeFactoredIlio(result4, G, det2);
 		
 		//double total_time = local_time + ilio_time;
 		//double total2_time = local_time + factored_local_time;
 		//std::cout << total_time << " ";
 		//std::cout << total2_time << " " << std::flush;
 		
-		//double kb_time = helper.timeKannanBachem(result, G);
+		Polynomial t1, t2;
+		R.monic(t1, mp);
+		R.monic(t2, result3[result3.size() - 1]);
+		std::cout << std::endl;
+		R.write(std::cout << "dixon = ", t1) << std::endl;
+		R.write(std::cout << "mp = ", t2) << std::endl;
+		std::string mpPass = (R.areEqual(t1, t2) ? "Pass" : "Fail");
+		std::cout << mpPass << " " << std::flush;
+		
+		double kb_time = helper.timeKannanBachem(result, G);
 		//timeHybrid(R, result, G);
 		//helper.computeDet(det, result);
 		
@@ -538,7 +640,8 @@ int main(int argc, char** argv) {
 		
 		//R.write(std::cout << "det1: ", det) << std::endl;
 		//R.write(std::cout << "det2: ", det2) << std::endl;
-		std::cout << (R.areEqual(det, det2) ? "Pass" : "Fail");
+		//std::cout << (R.areEqual(det, det2) ? "Pass" : "Fail");
+		
 		std::cout << std::endl;
 	}
 		
