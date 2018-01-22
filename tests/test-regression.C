@@ -248,6 +248,31 @@ bool testZeroDixonSolver (const Specifier& m){
     return true;
 }
 
+// test for bug #107 from Zhu
+bool testDixonSolverWithMPrhs (){
+
+    // creating LinBox matrices and vectors
+    Givaro::ZRing<Integer> ZZ;
+    typedef DenseVector<Givaro::ZRing<Integer> > DenseVector;
+
+    DenseMatrix<Givaro::ZRing<Integer> > A (ZZ,1,1);
+    Givaro::ZRing<Integer>::Element D; // denominator of the solution
+    DenseVector X(ZZ, A.coldim()); // numerator of the solution
+    DenseVector B(ZZ, A.rowdim()); // Right handside of the system
+
+    A.setEntry(0,0,Integer("12345678901234567890"));
+    ZZ.assign(B[0],Integer("12345678901234567890"));
+    
+    // solving via Dixon lifting 
+    solve (X, D, A, B, Method::BlasElimination());
+
+    if (!ZZ.areEqual(X[0],ZZ.one) ||  !ZZ.areEqual(D,ZZ.one)) {
+        std::cerr<<"Fail solving a system over QQ with a DenseMatrix and a MP rhs"<<std::endl;
+        return false;
+    }
+
+    return true;
+}
 bool testZeroDimensionalCharPoly(){
     Givaro::ZRing<Integer> ZZ;
     DenseMatrix<Givaro::ZRing<Integer> > A (ZZ,0,0);
@@ -302,6 +327,7 @@ int main (int argc, char **argv)
     pass &= testZeroDixonSolver (Method::SparseElimination());
     pass &= testSingularDixonSolver (Method::BlasElimination());
     pass &= testZeroDixonSolver (Method::BlasElimination());
+    pass &= testDixonSolverWithMPrhs ();
     pass &= testZeroDimensionalCharPoly ();
     pass &= testZeroDimensionalMinPoly ();
     pass &= testBigScalarCharPoly ();
