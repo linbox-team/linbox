@@ -34,16 +34,6 @@
 #include "givaro/modular.h"
 #include <algorithm>
 
-#ifdef TRACK_MEMORY_MATPOL
-uint64_t max_memory=0, cur_memory=0;
-#define ADD_MEM(x) {cur_memory+=x; max_memory=std::max(max_memory,cur_memory);}
-#define DEL_MEM(x) {cur_memory-=x;}
-#define STR_MEMINFO std::right<<"\033[31m [ MEM: cur="<<cur_memory/1000000.<<" Mo --- max="<<max_memory/1000000.<<" Mo \033[0m]"
-#define PRINT_MEMINFO std::cerr<<"\033[31m[ MEM: cur="<<cur_memory/1000000.<<" Mo --- max="<<max_memory/1000000.<<" Mo ]\033[0m"<<std::endl;
-#else
-#define ADD_MEM(X) ;
-#define DEL_MEM(X) ;     
-#endif
 
 #define COPY_BLOCKSIZE 32
 
@@ -56,110 +46,55 @@ namespace LinBox{
 	template<size_t type, size_t storage, class Field>
 	class PolynomialMatrix;
 
-	template<typename Field> uint64_t element_storage(const Field& F)      { integer p;F.characteristic(p); return length(p);}
-	template<> uint64_t element_storage(const Givaro::Modular<Givaro::Integer> &F) { integer p;F.characteristic(p); return length(p)+sizeof(Givaro::Integer);}
+
 	
 	// Class for Polynomial Matrix stored as a Matrix of Polynomials
 	template<class _Field>
 	class PolynomialMatrix<PMType::polfirst,PMStorage::plain,_Field> {
 	public:
-		typedef _Field Field;
-		typedef typename Field::Element   Element;
-		typedef BlasMatrix<Field>          Matrix;
-		//typedef typename std::vector<Element>::iterator  Iterator;
-		//typedef typename std::vector<Element>::const_iterator  ConstIterator;
+		// type for the dense storage of vector (with SIMD alignement in memory)
 		typedef std::vector<Element,AlignedAllocator<Element, Alignment::DEFAULT>> VECT;
 		typedef typename VECT::iterator  Iterator;
 		typedef typename VECT::const_iterator  ConstIterator;
+
+
+		typedef _Field                         Field;
+		typedef typename Field::Element      Element;
+		typedef BlasMatrix<Field, VECT>       Matrix;
+		typedef Matrix                    MatpolyRep;
 		//typedef vector<Element>        Polynomial;
 		typedef Subvector<Iterator,ConstIterator>   Polynomial;
+
 		typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,_Field>  Self_t;
 		typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain,_Field> Other_t;
 
 		//PolynomialMatrix() {}
 
 		// construct a polynomial matrix in f[x]^(m x n) of degree (s-1)
-		PolynomialMatrix(const Field& f, size_t r, size_t c, size_t s, size_t stor=0) :
-			_store((stor?stor:s)), _repview(r*c),_rep(r*c*_store,f.zero), _row(r), _col(c), _size(s), _fld(&f) {
-			for (size_t i=0;i<_row;i++)
-				for (size_t j=0;j<_col;j++)
-					_repview[i*_col+j]= Polynomial(_rep.begin()+(i*_col+j)*_store,_size);
-			//integer p;
-			//std::cout<<"MatrixP allocating : "<<r*c*s*length(f.characteristic(p))/1000000.<<"Mo"<<std::endl;
-			//std::cout<<"(ALLOC) PolynomialMatrix<polfirst> at "<<this<<" : "<<r<<"x"<<c<<" - size= "<<s<<" ==> "<<MB(realmeminfo())<<" Mo   "<<STR_MEMINFO<<std::endl;
-			ADD_MEM(realmeminfo());
-		}
+		PolynomialMatrix(const Field& f, size_t r, size_t c, size_t s, size_t stor=0);
 
 		PolynomialMatrix(const Self_t&) = delete;
 		
-		~PolynomialMatrix(){
-			DEL_MEM(realmeminfo());
-			_rep.clear();
-			//std::cout<<"(FREE) PolynomialMatrix<polfirst> at "<<this<<" : "<<_row<<"x"<<_col<<" - size= "<<_store<<" ==> "<<MB(realmeminfo())<<" Mo   "<<STR_MEMINFO<<std::endl;
-
-			//integer p;
-			//std::cout<<"MatrixP Desallocating : "<<_row*_col*_store*length(_fld->characteristic(p))/1000000.<<"Mo"<<std::endl;
-			
-		}
-			
-		void clear(){
-			_rep.resize(0);
-		}
-
+		~PolynomialMatrix();
+		
 		// set the matrix A to the matrix of degree k in the polynomial matrix
-		void setMatrix(Matrix& A, size_t k) const {
-			typename Matrix::Iterator it=A.Begin();
-			for(size_t i=0;i<_row*_col;i++,it++)
-				*it = get(i,k);			
-		}
+		void setMatrix(Matrix& A, size_t k) const;
+		
 		// retrieve the matrix of degree k in the polynomial matrix
-		Matrix     operator[](size_t k)const {
-			Matrix A(field(), _row, _col);
-			setMatrix(A,k);
-			return A;
-		}
+		Matrix     operator[](size_t k)const;
+		
 		// retrieve the polynomial at entry (i,j) in the matrix
 		inline Polynomial&       operator()(size_t i, size_t j)      {return operator()(i*_col+j);}
 		inline const Polynomial& operator()(size_t i, size_t j)const {return operator()(i*_col+j);}
+
 		// retrieve the polynomial at the position i in the storage of the matrix
 		inline Polynomial&       operator()(size_t i)      {return _repview[i];}
 		inline const Polynomial& operator()(size_t i)const {return _repview[i];}
 
 		// resize the polynomial length of the polynomial matrix
-		void resize(size_t s){
-			if (s==_store) return;
-			//std::cout<<"MATPOL RESIZING : "<<_store<<" --> "<<s<<std::endl;
-			if (s>_store){
-				_rep.resize(s*_row*_col);
-				size_t k=s*_row*_col-1;
-				for(size_t i=0;i<_row*_col;i++){
-					size_t j=s;
-					for(;j>=_size;j--,k--)
-						_rep[k]=_fld->zero;
-					for(;j>size_t(-1);j--,k--)
-						_rep[k]=_rep[i*_store+j];
-				}
-			}
-			else {
-				size_t k=0;
-				for(size_t i=0;i<_row*_col;i++)
-					for (size_t j=0;j<s;j++,k++)
-						_rep[k]=_rep[i*_store+j];
-				_rep.resize(s*_row*_col);
-				//_rep.shrink_to_fit();
-			}
-			integer p;_fld->characteristic(p); size_t bb=p.bitsize(); if(bb>64) bb+=128; bb/=8;
+		void resize(size_t s);
 
-#ifdef MEM_PMBASIS
-			size_t mem=realmeminfo();
-			ADD_MEM(realmeminfo());
-			DEL_MEM(mem);
-#endif			
-			_store=s;
-			setsize(s);
-		}
-
-		void changesize(size_t s){
+		void changesize(size_t s);{
 			if (s <=_store){			
 				for (size_t i=0;i<_row*_col;i++)
 					_repview[i]= Polynomial(_rep.begin()+i*_store,s);
@@ -340,8 +275,8 @@ namespace LinBox{
 	private:
 		size_t           _store;
 		std::vector<Polynomial> _repview;
-		//std::vector<Element>    _rep;
-		VECT _rep;
+		//std::vector<Element>    _rep;		
+		MatPolyRep         _rep; // all coefficients are stored in a row major dense matrix of size (row*col,(degree+1))
 		size_t             _row;
 		size_t             _col;
 		size_t            _size;
@@ -353,8 +288,10 @@ namespace LinBox{
 	class PolynomialMatrix<PMType::matfirst,PMStorage::plain,_Field> {
 	public:
 		typedef _Field Field;
-		typedef typename Field::Element   Element;
-		typedef BlasMatrix<Field>         Matrix;
+		typedef typename Field::Element      Element;
+		typedef BlasMatrix<Field>             Matrix;
+		typedef Matrix                    MatpolyRep;
+		typedef BlasSubMatrix<Field>       SubMatrix;
 		typedef std::vector<Element>       Polynomial;
 		typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain,_Field>  Self_t;
 		typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,_Field> Other_t;		
@@ -366,11 +303,9 @@ namespace LinBox{
 		PolynomialMatrix(const Self_t&) = delete;
 		
 		PolynomialMatrix(const Field& f, size_t r, size_t c, size_t s) :
-			_rep(s,Matrix(f)), _row(r), _col(c), _size(s), _fld(&f) {
-			//_row(r), _col(c), _size(s), _fld(&f) {			
-			for(size_t i=0;i<s;i++)
-				_rep[i].init(f,r,c);
-			//integer p;
+			_rep(f, r, c*s), _row(r), _col(c), _size(s), _fld(&f) {
+			//for(size_t i=0;i<s;i++)
+			//	_rep[i].init(f,r,c);
 			//std::cout<<"(ALLOC) matfirst at "<<this<<" : "<<r<<"x"<<c<<" - size= "<<s<<" ==> "<<MB(realmeminfo())<<" Mo"<<std::endl;
 			ADD_MEM(realmeminfo());
 		}
@@ -574,11 +509,12 @@ namespace LinBox{
 		}
 		
 		// NEED FOR YUHASZ
-		typedef typename std::vector<Matrix>::const_iterator const_iterator;
+		typedef typename <Field>::const_iterator const_iterator;
 		const_iterator begin() const {return _rep.begin();}
 
 	private:
-		std::vector<Matrix>     _rep;
+		//std::vector<Matrix>     _rep;
+		MatPolyRep         _rep; // all coefficients are stored in a row major dense matrix of size (row*col,(degree+1))
 		size_t             _row;
 		size_t             _col;
 		size_t            _size;
