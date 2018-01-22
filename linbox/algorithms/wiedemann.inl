@@ -589,21 +589,20 @@ namespace LinBox
 	template <class Field>
 	SparseMatrix<Field> *WiedemannSolver<Field>::makeLambdaSparseMatrix (size_t m)
 	{
-		const double             LAMBDA = 3;
-		integer                  card;
+		const double        LAMBDA = 3;
+		integer             card;
 
 		field().cardinality (card);
 
-		double                   init_p = 1.0 - 1.0 / (double) card;
-		double                   log_m = LAMBDA * log ((double) m) / M_LN2;
+		const double  		init_p = 1.0 - 1.0 / (double) card;
+		const double		log_m = LAMBDA * log ((double) m) / M_LN2;
 
 		SparseMatrix<Field>    *P = new SparseMatrix<Field> (field(), m, m);
 
 		RandomSparseStream<Field,typename SparseMatrix<Field>::Row> stream (field(), _randiter, init_p, m, m);
 
 		for (unsigned int i = 0; i < m; ++i) {
-		double                   new_p;
-			new_p = log_m / double(m - i + 1);
+            const double new_p (log_m / double(m - i + 1));
 
 			if (init_p < new_p)
 				stream.setP (init_p);
@@ -612,6 +611,10 @@ namespace LinBox
 
 			stream >> P->getRow (i);
 		}
+
+            // Add the Identity matrix
+        for(size_t i=0; i<m; ++i)
+            P->setEntry(i,i,field().one);
 
 		return P;
 	}
@@ -623,8 +626,8 @@ namespace LinBox
 
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
