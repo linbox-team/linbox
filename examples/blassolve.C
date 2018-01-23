@@ -106,7 +106,7 @@ int main (int argc, char **argv) {
 
         // BlasElimination
     Method::BlasElimination M;
-    M.singular(Specifier::NONSINGULAR);
+    //M.singular(Specifier::NONSINGULAR);
 
     chrono.start();
     solve (X, d, A, B, M);
