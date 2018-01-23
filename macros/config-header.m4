@@ -65,24 +65,24 @@ else
   fi fi
   AC_MSG_NOTICE(creating $_OUT - prefix $_UPP for $_INP defines)
   if test -f $_INP ; then
-    echo "s/@%:@undef  *\\(@<:@m4_cr_LETTERS[]_@:>@\\)/@%:@undef $_UPP""_\\1/" > _script
-    echo "s/@%:@undef  *\\(@<:@m4_cr_letters@:>@\\)/@%:@undef $_LOW""_\\1/" >> _script
-    echo "s/@%:@def[]ine  *\\(@<:@m4_cr_LETTERS[]_@:>@@<:@_symbol@:>@*\\)\\(.*\\)/@%:@ifndef $_UPP""_\\1 \\" >> _script
-    echo "@%:@def[]ine $_UPP""_\\1 \\2 \\" >> _script
-    echo "@%:@endif/" >>_script
-    echo "s/@%:@def[]ine  *\\(@<:@m4_cr_letters@:>@@<:@_symbol@:>@*\\)\\(.*\\)/@%:@ifndef $_LOW""_\\1 \\" >> _script
-    echo "@%:@define $_LOW""_\\1 \\2 \\" >> _script
-    echo "@%:@endif/" >> _script
+    AS_ECHO("s/@%:@undef  *\\(@<:@m4_cr_LETTERS[]_@:>@\\)/@%:@undef $_UPP""_\\1/") > _script
+    AS_ECHO("s/@%:@undef  *\\(@<:@m4_cr_letters@:>@\\)/@%:@undef $_LOW""_\\1/") >> _script
+    AS_ECHO("s/@%:@def[]ine  *\\(@<:@m4_cr_LETTERS[]_@:>@@<:@_symbol@:>@*\\)\\(.*\\)/@%:@ifndef $_UPP""_\\1 \\") >> _script
+    AS_ECHO("@%:@def[]ine $_UPP""_\\1 \\2 \\") >> _script
+    AS_ECHO("@%:@endif/") >>_script
+    AS_ECHO("s/@%:@def[]ine  *\\(@<:@m4_cr_letters@:>@@<:@_symbol@:>@*\\)\\(.*\\)/@%:@ifndef $_LOW""_\\1 \\") >> _script
+    AS_ECHO("@%:@define $_LOW""_\\1 \\2 \\") >> _script
+    AS_ECHO("@%:@endif/") >> _script
     # now executing _script on _DEF input to create _OUT output file
-    echo "@%:@ifndef $_DEF"      >$tmp/pconfig.h
-    echo "@%:@def[]ine $_DEF 1" >>$tmp/pconfig.h
-    echo ' ' >>$tmp/pconfig.h
-    echo /'*' $_OUT. Generated automatically at end of configure. '*'/ >>$tmp/pconfig.h
+    AS_ECHO("@%:@ifndef $_DEF")      >$tmp/pconfig.h
+    AS_ECHO("@%:@def[]ine $_DEF 1") >>$tmp/pconfig.h
+    AS_ECHO(" ") >>$tmp/pconfig.h
+    AS_ECHO("/* $_OUT. Generated automatically at end of configure. */") >>$tmp/pconfig.h
 
     sed -f _script $_INP >>$tmp/pconfig.h
-    echo ' ' >>$tmp/pconfig.h
-    echo '/* once:' $_DEF '*/' >>$tmp/pconfig.h
-    echo "@%:@endif" >>$tmp/pconfig.h
+    AS_ECHO(" ") >>$tmp/pconfig.h
+    AS_ECHO("/* once: $_DEF */") >>$tmp/pconfig.h
+    AS_ECHO("@%:@endif") >>$tmp/pconfig.h
     if cmp -s $_OUT $tmp/pconfig.h 2>/dev/null; then
       AC_MSG_NOTICE([$_OUT is unchanged])
     else
