@@ -36,6 +36,7 @@
 #include "linbox/vector/blas-vector.h"
 #include "linbox/solutions/solve.h"
 #include "linbox/solutions/charpoly.h"
+#include "linbox/algorithms/smith-form-sparseelim-poweroftwo.h"
 using namespace LinBox;
 
 bool testSolveSparse(){
@@ -308,6 +309,67 @@ bool testBigScalarCharPoly(){
     return PR.areEqual(P,Q);
 }
 
+
+bool testLocalSmith(){
+    typedef Givaro::ZRing<int64_t> Ring;
+    typedef std::vector<std::pair<size_t,uint64_t> > Smith_t;
+    typedef LinBox::SparseMatrix<Ring,
+        LinBox::SparseMatrixFormat::SparseSeq > SparseMat;
+
+    Smith_t local;
+    Ring R;
+    SparseMat A(R,2,3);
+    A.setEntry(0,0, 2);
+    A.setEntry(0,2, 1);
+    A.setEntry(1,0, 2);
+
+    LinBox::PowerGaussDomainPowerOfTwo< uint64_t > PGD;
+    LinBox::GF2 F2;
+    Permutation<GF2> Q(F2,A.coldim());
+
+    PGD(local, A, Q, 5, PRESERVE_UPPER_MATRIX|PRIVILEGIATE_NO_COLUMN_PIVOTING);
+
+    for(auto const& it:local) std::cout << it.first << ':' << it.second << ' ';
+    std::cout << std::endl;
+
+// > ([1,1] [1,2] )
+// > [[1, 2, 0 ], [0, 1, 0 ]]
+// > [[0,0,1], [1,0,0], [0,1,0]]
+
+        // Smith form
+    bool success =
+        (local.size() == 2U) &&
+        (local[0].first == 1U) &&
+        (local[0].second == 1U) &&
+        (local[1].first == 1U) &&
+        (local[1].second == 2U) ;
+
+    A.write(std::cout) << std::endl;
+
+        // Upper triangular
+    success &=
+        (A[0].size() == 2) &&
+        (A[0][0].first == 0U) &&
+        (A[0][0].second == 1U) &&
+        (A[0][1].first == 1U) &&
+        (A[0][1].second == 2U) &&
+        (A[1].size() == 1) &&
+        (A[1][0].first == 1U) &&
+        (A[1][0].second == 1U);
+
+    Q.write(std::cout) << std::endl;
+
+        // Permutation
+    success &=
+        (Q[0] == 2) &&
+        (Q[1] == 0) &&
+        (Q[2] == 1);
+
+    return success;
+}
+
+
+
 int main (int argc, char **argv)
 {
     bool pass = true;
@@ -331,6 +393,7 @@ int main (int argc, char **argv)
     pass &= testZeroDimensionalCharPoly ();
     pass &= testZeroDimensionalMinPoly ();
     pass &= testBigScalarCharPoly ();
+    pass &= testLocalSmith ();
 
     return pass ? 0 : -1;
 }
