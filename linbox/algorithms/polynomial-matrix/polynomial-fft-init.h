@@ -152,9 +152,6 @@ namespace LinBox {
 			//uint64_t wi = 1;
 			Element wi = 1;
 
-			// Precomp Quo(2^32,p)
-			Compute_t invp; fld->precomp_p(invp);
-
 			if (ln>0){
 //				using simd=Simd<uint32_t>;
 //				using vect_t =typename simd::vect_t;
