@@ -51,8 +51,6 @@ public:
 	
 	typedef _PolynomialRing PolynomialRing;
 	typedef typename PolynomialRing::Element Polynomial;
-	typedef typename PolynomialRing::CoeffField CoeffField;
-	typedef typename CoeffField::Element Coeff;
 	typedef MatrixDomain<PolynomialRing> PolyMatrixDom;
 	typedef typename PolyMatrixDom::OwnMatrix PolyMatrix;
 	
@@ -63,7 +61,6 @@ public:
 	typedef SmithFormLocal<QuotientRing> SmithFormLocalDom;
 	
 	typedef PolynomialLocalX<PolynomialRing> LocalRing;
-	typedef typename LocalRing::Element LocalPolynomial;
 	typedef MatrixDomain<LocalRing> LocalMatrixDom;
 	typedef typename LocalMatrixDom::OwnMatrix LocalMatrix;
 	typedef PolySmithFormLocalXDomain<PolynomialRing> LocalSmithFormDom;
@@ -79,14 +76,10 @@ public:
 
 	size_t min_block_size(size_t t, double p) const {
 		size_t q = _F.cardinality();
-		
 		assert (0.0 < p < 1.0 && t >= 1 && q >= 2);
 		
-		if (q == 2) {
-			return ceil(log2(3 / (1 - sqrt(p)))) + t;
-		}
-			
-		return ceil(log(2 / (1 - sqrt(p)))/log(q)) + t;
+		double k = (q == 2) ? 3 : 2;
+		return ceil(log(k / (1 - sqrt(p)))/log(q)) + t;
 	}
 
 	template<class Blackbox>
