@@ -103,6 +103,11 @@ namespace LinBox
 			_f = f;
 		}
 		
+		NTL_zz_pE_Initialiser(const NTL::zz_pX &f) {
+			NTL::zz_pE::init(f);
+			_f = f;
+		}
+		
 		const NTL::zz_pX& modulus() const {
 			return _f;
 		}
@@ -143,7 +148,6 @@ namespace LinBox
 		 	init(const_cast<Element &>(mOne), p-1);
 		}
         
-        
 		NTL_zz_pE (const integer &p, const typename NTL_zz_pX::Element &f) :
                 NTL_zz_pE_Initialiser(p,f), Father_t()
         {
@@ -151,6 +155,14 @@ namespace LinBox
 		 	init(const_cast<Element &>(one), 1);
 		 	init(const_cast<Element &>(mOne), p-1);
         }
+        
+        NTL_zz_pE(const NTL_zz_pX &R, const typename NTL_zz_pX::Element &f) :
+        	NTL_zz_pE_Initialiser(f), Father_t()
+		{
+			init(const_cast<Element &>(zero), 0);
+			init(const_cast<Element &>(one), 1);
+			init(const_cast<Element &>(mOne), NTL::conv<NTL::zz_pE>(R.mOne));
+		}
 
 		Element& random (Element& x) const
             {

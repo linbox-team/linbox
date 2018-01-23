@@ -13,8 +13,6 @@
 #include "linbox/matrix/sparse-matrix.h"
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/matrix/matrix-domain.h"
-#include "linbox/blackbox/compose.h"
-#include "linbox/blackbox/permutation.h"
 #include "linbox/blackbox/scalar-matrix.h"
 
 #include "linbox/algorithms/block-coppersmith-domain.h"
@@ -27,6 +25,7 @@
 #include "linbox/algorithms/poly-smith-form-local-x.h"
 #include "linbox/algorithms/weak-popov-form.h"
 #include "linbox/algorithms/poly-dixon.h"
+#include "linbox/algorithms/invariant-factors.h"
 
 #include "sparse-matrix-generator.h"
 #include "test-poly-smith-form.h"
@@ -396,14 +395,6 @@ public:
 		return sf_time;
 	}
 	
-	size_t firstNonZeroCoeff(const Polynomial &a) const {
-		Coeff c;
-		
-		size_t i = 0;
-		for (; i <= R.deg(a) && R.getCoeffField().isZero(R.getCoeff(c, a, i)); i++);
-		return i;
-	}
-	
 	bool dixon(Polynomial &minpoly, const PolyMatrix &M, const Polynomial &f, size_t max_deg) const {
 		SparseMatrixGenerator<Field, PolynomialRing> Gen(F, R);
 		QuotientRing QR(_p, f);
@@ -486,24 +477,6 @@ public:
 		return d_time;
 	}
 	
-	bool checkDixonMp(Polynomial &dixonMp, Polynomial &mp) {
-		Polynomial tmp;
-		R.assign(tmp, mp);
-		R.rightShiftIn(tmp, firstNonZeroCoeff(tmp));
-		
-		Polynomial tmp2;
-		R.assign(tmp2, dixonMp);
-		R.rightShiftIn(tmp2, firstNonZeroCoeff(tmp2));
-		
-		Polynomial rem;
-		R.rem(rem, tmp2, tmp);
-		
-		R.write(std::cout << "a = ", dixonMp) << std::endl;
-		R.write(std::cout << "b = ", mp) << std::endl;
-		
-		return R.isZero(rem);
-	}
-	
 	double timePopov(Polynomial &det, const PolyMatrix &M) {
 		WeakPopovFormDom PFD(R);
 		
@@ -531,6 +504,7 @@ int main(int argc, char** argv) {
 	size_t t = 2;
 	size_t times = 1;
 	size_t exponent = 0;
+	double probability = 0.5;
 	
 	std::string bumpFile;
 	std::string matrixFile;
@@ -545,7 +519,8 @@ int main(int argc, char** argv) {
 		{ 's', "-s S", "Target sparsity of matrix", TYPE_DOUBLE, &sparsity},
 		{ 'r', "-r R", "Random seed", TYPE_INT, &seed},
 		{ 'b', "-b B", "Block size", TYPE_INT, &b},
-		{ 't', "-t T", "Run iliopoulos with t-th largest invariant factor", TYPE_INT, &t},
+		{ 't', "-t T", "Target t-th largest invariant factor", TYPE_INT, &t},
+		{ 'c', "-c C", "Choose b such that prob of t-th being correct > c", TYPE_DOUBLE, &probability},
 		{ 'k', "-k K", "Repeat computation K times", TYPE_INT, &times},
 		{ 'e', "-e E", "Compute local at x^e", TYPE_INT, &exponent},
 		END_OF_ARGUMENTS
@@ -581,6 +556,15 @@ int main(int argc, char** argv) {
 	n = M.rowdim();
 	if (n <= 20) M.write(std::cout) << std::endl;
 	
+#if 1
+	std::vector<Polynomial> lifs;
+	InvariantFactors<Field, PolynomialRing, QuotientRing> IFD(F, R);
+	IFD.largestInvariantFactors(lifs, M, t, probability);
+	
+	for (size_t i = 0; i < lifs.size(); i++) {
+		R.write(std::cout, lifs[i]) << std::endl;
+	}
+#else 
 	TestInvariantFactorsHelper helper(p);
 	
 	Polynomial mp;
@@ -663,6 +647,7 @@ int main(int argc, char** argv) {
 		out3.close();
 		out4.close();
 	}
+#endif
 	
 	return 0;
 }
