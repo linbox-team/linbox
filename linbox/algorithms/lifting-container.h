@@ -375,12 +375,8 @@ namespace LinBox
 #endif
 			linbox_check(A.rowdim() == b.size());
 #ifdef DEBUG
-			int n,m;
-			n=(int)A.rowdim();
-			m=(int)A.coldim();
-
 			//assert(m == n); //logic may not work otherwise
-			linbox_check( m == n );
+			linbox_check( A.rowdim() == A.coldim() );
 #endif
 			// initialise the prime as an Integer_t
 			//this->_intRing.init(_p,p);

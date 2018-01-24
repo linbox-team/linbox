@@ -1465,11 +1465,11 @@ namespace LinBox
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>
 	SolverReturnStatus
-	RationalSolver<Ring,Field,RandomPrime,SparseEliminationTraits>::solveNonsingular(Vector1& num,
-												     Integer& den,
-												     const IMatrix& A,
-												     const Vector2& b,
-												     int maxPrimes) const
+	RationalSolver<Ring,Field,RandomPrime,SparseEliminationTraits>::solve(Vector1& num,
+                                                                          Integer& den,
+                                                                          const IMatrix& A,
+                                                                          const Vector2& b,
+                                                                          int maxPrimes) const
 	{
 
             //linbox_check(A.rowdim() == A.coldim());

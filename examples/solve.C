@@ -227,7 +227,7 @@ int main (int argc, char **argv)
 
 
 		Timer chrono;
-
+/*
 		// BlasElimination
                 std::cout << "BlasElimination" << std::endl;
                 chrono.start();
@@ -240,6 +240,7 @@ int main (int argc, char **argv)
                 std::cout << "] / ";
                 ZZ.write(std::cout, d)<< std::endl;
                 std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
+                */
 
 		// Sparse Elimination
 		std::cout << "Sparse Elimination" << std::endl;
