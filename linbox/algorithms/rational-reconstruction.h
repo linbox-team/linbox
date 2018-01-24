@@ -809,8 +809,7 @@ namespace LinBox
 			ttRecon += tRecon;
 #endif
 #ifdef LIFTING_PROGRESS
-			Commentator lifting_commentator;
-			lifting_commentator().start("Padic Lifting","LinBox::LiftingContainer",_lcontainer.length());
+			commentator().start("Padic Lifting","LinBox::LiftingContainer",_lcontainer.length());
 #endif
 #if 0
 			Timer eval_horner,eval_horn;
@@ -821,7 +820,7 @@ namespace LinBox
 			for (size_t i=0 ; iter != _lcontainer.end() && iter.next(digit_approximation[(size_t)i]);++i) {
 
 #ifdef LIFTING_PROGRESS
-				lifting_commentator().progress(i);
+				commentator().progress(i);
 #endif
 #if 0
 				eval_horn.start();
@@ -834,7 +833,7 @@ namespace LinBox
 			}
 
 #ifdef LIFTING_PROGRESS
-			lifting_commentator().stop ("Done", "Done", "LinBox::LinBox::LiftingContainer");
+			commentator().stop ("Done", "Done", "LinBox::LinBox::LiftingContainer");
 #endif
 
 			// problem occured during lifting
@@ -1067,7 +1066,7 @@ namespace LinBox
 			if (den > 0) lcm(init_den,den,den_app);
 			_r. assign(den, _r.one);
 #ifdef DEBUG_RR
-			cout << "debug: den " << den;
+			std::cout << "debug: den " << den;
 #endif
 			Integer prime = _lcontainer.prime();                    // prime used for lifting
 			Vector digit(_lcontainer.size());                       // to store next digit
