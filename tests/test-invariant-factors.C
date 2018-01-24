@@ -508,11 +508,13 @@ int main(int argc, char** argv) {
 	
 	std::string bumpFile;
 	std::string matrixFile;
+	int fsnum = 1;
 	std::string outFile;
 
 	static Argument args[] = {
 		{ 'm', "-m M", "Name of file for bumps", TYPE_STR, &bumpFile},
 		{ 'f', "-f F", "Name of file for matrix", TYPE_STR, &matrixFile},
+		{ 'l', "-l L", "aka fsnum, Choose L-th divisor sequence (you also must set n)", TYPE_INT, &fsnum},
 		{ 'o', "-o O", "Name of output file for invariant factors", TYPE_STR, &outFile},
 		{ 'n', "-n N", "Dimension of matrix", TYPE_INT, &n},
 		{ 'p', "-p P", "Set the field GF(p)", TYPE_INT, &p},
@@ -539,8 +541,11 @@ int main(int argc, char** argv) {
 	Polynomial det;
 	
 	if (matrixFile == "" && bumpFile == "") {
-		std::cout << "Must provide either matrix or bumps input" << std::endl;
-		return -1;
+		std::vector<Polynomial> fs;
+        Gen.invariants(fs, n, fsnum);
+        Gen.generate(M, det, fs, sparsity);
+//		std::cout << "Must provide either matrix or bumps input" << std::endl;
+//		return -1;
 	} else if (matrixFile == "") {
 		// create sparse matrix from bumps and compute determinant
 		M.resize(n, n);

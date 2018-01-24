@@ -29,6 +29,7 @@
 
 #include "sparse-matrix-generator.h"
 #include "test-poly-smith-form.h"
+#include "linbox/solutions/det.h"
 
 using namespace LinBox;
 
@@ -82,11 +83,14 @@ public:
 	
 	TestInvariantFactorsHelper(size_t p) : _p(p), F(p), R(p), MD(F) {};
 	
-	void writeInvariantFactors(std::ostream &os, std::vector<Polynomial> &factors) const {
+	void writeInvariantFactors(std::ostream &os, std::vector<Polynomial> &factors, bool full=true) const {
 		for (size_t i = 0; i < factors.size(); i++) {
 			Polynomial f;
 			R.monic(f, factors[i]);
-			R.write(os, f) << std::endl;
+			if (full)
+				R.write(os, f) << std::endl;
+			else
+				os << R.deg(f) << std::endl;
 		}
 	}
 
@@ -141,7 +145,7 @@ public:
 		
 		TW.stop();
 		double bm_time = TW.usertime();
-		std::cout << bm_time << " " << std::flush;
+		std::cout << "seq->gen " << bm_time << " " << std::flush;
 		
 		return bm_time;
 	}
@@ -436,8 +440,8 @@ void randomCycle(SparseMat & P)
 	size_t n = P.rowdim();
 	std::vector<size_t> Perm;
 	randomVec(Perm, n);
-	for (size_t i = 0; i < Perm.size(); ++i) std::cout << Perm[i] << " ";
-	std::cout << std::endl;
+//	for (size_t i = 0; i < Perm.size(); ++i) std::cout << Perm[i] << " ";
+//	std::cout << std::endl;
 	size_t first = Perm.back(); Perm.pop_back();
 	size_t i = first;
 	while (Perm.size() > 0) {
@@ -509,7 +513,7 @@ int main(int argc, char** argv) {
 		{ 'v', "-v V", "Version of preconditioner", TYPE_INT, &pre},
 		{ 'm', "-m M", "Name of file for bumps", TYPE_STR, &bumpFile},
 		{ 'f', "-f F", "Name of file for matrix", TYPE_STR, &matrixFile},
-		{ 'c', "-c C", "aka fsnum, Choice of divisor sequence (also set n)", TYPE_INT, &fsnum},
+		{ 'l', "-l L", "aka fsnum, Choose L-th divisor sequence (you also must set n)", TYPE_INT, &fsnum},
 		{ 'o', "-o O", "Name of output file for invariant factors", TYPE_STR, &outFile},
 		{ 'n', "-n N", "Dimension of matrix", TYPE_INT, &n},
 		{ 'p', "-p P", "Set the field GF(p)", TYPE_INT, &p},
@@ -600,11 +604,22 @@ int main(int argc, char** argv) {
 		size_t exponent_limit = helper.detLimit(G, n);
 		std::cout << ", explim " << exponent_limit << std::endl;
 		exponent_limit = exponent == 0 ? exponent_limit : exponent;
+		std::cout << ", explim " << exponent_limit << std::endl;
 		
 		double localx_time = helper.timeLocalX(det2, G, exponent_limit);
+		std::cout << "gendetdeg " << R.deg(det2) 
+			<< ", gendet(0) " << det2[0] << std::endl; 
 		double local_time = helper.timeFactoredLocal(result2, G, det2);
+
 		double total_time = localx_time + local_time;
-		std::cout << "times:  local-x " << localx_time << ", local " << local_time << ", total " << total_time << std::flush;
+		std::cout << "times:  local-x " << localx_time << ", local " << local_time << ", total " << total_time << std::endl;
+		Element d;
+		TW.clear(); 
+		TW.start();
+		LinBox::det(d,MP);
+		TW.stop();
+		double dtime = TW.usertime();
+		F.write(std::cout << "det ", d) << " in time " << dtime << std::endl;
 		
 #if 0
 		double kb_time = helper.timeKannanBachem(result, G);
@@ -625,7 +640,7 @@ int main(int argc, char** argv) {
 		<< ", minpoldeg: " << helper.ring().deg(result2.back()) << std::endl;
 
 	if (outFile == "") {
-		helper.writeInvariantFactors(std::cout, result2);
+		helper.writeInvariantFactors(std::cout, result2, 0);
 	} else {
 		
 	  //if (helper.degInvariantFactors(result2) > M.rowdim()) {
