@@ -136,11 +136,11 @@ bool testFlatDixonSolver (const Specifier& m){
     M.setEntry(0,1,1);
     ZZ.assign(B[0],1);
 
-        // solving via Sparse Elimination
+        // solving via Dixon lifting
     solve (A, D, M, B, m);
 
     if (!ZZ.areEqual(A[0],ZZ.one) || !ZZ.areEqual(A[1],ZZ.zero) || !ZZ.areEqual(D,ZZ.one)) {
-        std::cerr<<"Fail solving a flat system over QQ with a SparseMatrix"<<std::endl;
+        std::cerr<<"Fail solving a flat system over QQ via Dixon Lifting"<<std::endl;
         return false;
     }
 
@@ -162,12 +162,12 @@ bool testFlatDixonSolver2 (const Specifier& m){
     M.setEntry(0,1,0);
     ZZ.assign(B[0],1);
 
-        // solving via Sparse Elimination
+        // solving via Dixon Lifting
     solve (A, D, M, B, m);
 
     if (!ZZ.areEqual(A[0],ZZ.one) || !ZZ.areEqual(D,ZZ.one)) {
         std::cerr<<"A = "<<A<<" D = "<<D<<std::endl;
-        std::cerr<<"Fail solving a flat system over QQ with a SparseMatrix"<<std::endl;
+        std::cerr<<"Fail solving a flat system over QQ via Dixon Lifting"<<std::endl;
         return false;
     }
 
@@ -189,11 +189,11 @@ bool testTallDixonSolver (const Specifier& m){
     ZZ.assign(B[0],1);
     ZZ.assign(B[1],1);
 
-        // solving via Sparse Elimination
+        // solving via Dixon Lifting
     solve (A, D, M, B, m);
 
     if (!ZZ.areEqual(A[0],ZZ.one) || !ZZ.areEqual(D,ZZ.one)) {
-        std::cerr<<"Fail solving a tall system over QQ with a SparseMatrix"<<std::endl;
+        std::cerr<<"Fail solving a tall system over QQ via Dixon Lifting"<<std::endl;
         return false;
     }
 
@@ -237,16 +237,18 @@ bool testZeroDixonSolver (const Specifier& m){
     M.setEntry(0,0,0);
     ZZ.assign(B[0],0);
 
-        // solving via Sparse Elimination
+        // solving via Dixon Lifting
     solve (A, D, M, B, m);
 
     if (!ZZ.areEqual(A[0],ZZ.zero) || !ZZ.areEqual(D,ZZ.one)) {
         std::cerr<<"A = "<<A<<" D = "<<D<<std::endl;
-        std::cerr<<"Fail solving a zero over QQ with a SparseMatrix"<<std::endl;
+        std::cerr<<"Fail solving a zero over QQ via Dixon Lifting"<<std::endl;
         return false;
     }
     return true;
 }
+
+
 
 // test for bug #107 from Zhu
 bool testDixonSolverWithMPrhs (){
