@@ -67,6 +67,9 @@ bool testSolveSparse(){
     if (!F.areEqual (x[0],73)) return false;
     if (!F.areEqual (x[1],76)) return false;
     if (!F.areEqual (x[2],10)) return false;
+
+    std::cout << "TSSF: PASSED" << std::endl;
+
     return true;
 }
 
@@ -113,6 +116,8 @@ bool testSolveSparseSage(){
     if (x[1] != 76) return false;
     if (x[2] != 10) return false;
     
+    std::cout << "TSSS: PASSED" << std::endl;
+
     return true;
 }
 #else
@@ -143,7 +148,9 @@ bool testFlatDixonSolver (const Specifier& m){
     if (!ZZ.areEqual(A[0],ZZ.one) || !ZZ.areEqual(A[1],ZZ.zero) || !ZZ.areEqual(D,ZZ.one)) {
         std::cerr<<"Fail solving a flat system over QQ via Dixon Lifting"<<std::endl;
         return false;
-    }
+    } else 
+        std::cout << "TFDS: PASSED" << std::endl;
+
 
     return true;
 }
@@ -170,7 +177,9 @@ bool testFlatDixonSolver2 (const Specifier& m){
         std::cerr<<"A = "<<A<<" D = "<<D<<std::endl;
         std::cerr<<"Fail solving a flat system over QQ via Dixon Lifting"<<std::endl;
         return false;
-    }
+    } else 
+        std::cout << "TFD2: PASSED" << std::endl;
+
 
     return true;
 }
@@ -196,7 +205,9 @@ bool testTallDixonSolver (const Specifier& m){
     if (!ZZ.areEqual(A[0],ZZ.one) || !ZZ.areEqual(D,ZZ.one)) {
         std::cerr<<"Fail solving a tall system over QQ via Dixon Lifting"<<std::endl;
         return false;
-    }
+    } else 
+        std::cout << "TTDS: PASSED" << std::endl;
+
 
     return true;
 
@@ -222,7 +233,9 @@ bool testSingularDixonSolver (const Specifier& m){
         std::cerr<<"A = "<<A<<" D = "<<D<<std::endl;
         std::cerr<<"Fail solving a singular system over QQ with a SparseMatrix"<<std::endl;
         return false;
-    }
+    } else 
+        std::cout << "TSDS: PASSED" << std::endl;
+
     return true;
 }
 bool testZeroDixonSolver (const Specifier& m){
@@ -245,7 +258,9 @@ bool testZeroDixonSolver (const Specifier& m){
         std::cerr<<"A = "<<A<<" D = "<<D<<std::endl;
         std::cerr<<"Fail solving a zero over QQ via Dixon Lifting"<<std::endl;
         return false;
-    }
+    } else 
+        std::cout << "TZDS: PASSED" << std::endl;
+
     return true;
 }
 
@@ -272,7 +287,9 @@ bool testDixonSolverWithMPrhs (){
     if (!ZZ.areEqual(X[0],ZZ.one) ||  !ZZ.areEqual(D,ZZ.one)) {
         std::cerr<<"Fail solving a system over QQ with a DenseMatrix and a MP rhs"<<std::endl;
         return false;
-    }
+    } else 
+        std::cout << "TDSM: PASSED" << std::endl;
+
 
     return true;
 }
@@ -287,6 +304,7 @@ bool testSparseRationalSolver() {
     A.setEntry(0,2,2);
     QQ.assign(B[0],1);
 
+        // Directly solve of Q
     solve(X,A,B,Method::SparseElimination());
 
     MatrixDomain<Rats> MD(QQ);
@@ -301,8 +319,54 @@ bool testSparseRationalSolver() {
         std::cerr<<"L:= "<< L << ';' << std::endl;
         std::cerr<<"Fail solving a sparse system over QQ"<<std::endl;
         return false;
-    }
+    } else 
+        std::cout << "TSRS: PASSED" << std::endl;
 
+
+    return true;
+}
+
+bool testDixonRectangularSolver(const Specifier& m) {
+    typedef Givaro::ZRing<Givaro::Integer> Ints;
+    Ints ZZ;
+    typedef DenseVector<Ints> RVector;
+    SparseMatrix<Ints> A (ZZ,1,3);
+    RVector X(ZZ, A.coldim()),B(ZZ, A.rowdim()),L(ZZ, A.rowdim());
+    Ints::Element d;
+    
+    A.setEntry(0,1,1);
+    A.setEntry(0,2,2);
+    ZZ.assign(B[0],1);
+
+        // Dixon Lifting 
+    solve(X,d,A,B,m);
+
+    bool pass=true;
+
+    if (ZZ.isZero(d)) 
+        pass = false;
+    else {
+        MatrixDomain<Ints> MD(ZZ);
+        VectorDomain<Ints> VD(ZZ);
+
+        MD.vectorMul(L, A, X);
+        VD.mulin(B, d);
+
+        if (! VD.areEqual(L, B)) {
+            pass = false;
+        }
+    }
+    
+    if (! pass) {
+        A.write(std::cerr << "A:=", LinBox::Tag::FileFormat::Maple) << ';' << std::endl;
+        std::cerr<<"X:= "<< X << ';' << std::endl;
+        std::cerr<<"d:= "<< d << ';' << std::endl;
+        std::cerr<<"d * B:= "<< B << ';' << std::endl;
+        std::cerr<<"L:= "<< L << ';' << std::endl;
+        std::cerr<<"Fail solving a sparse system over ZZ" <<std::endl;
+        return false;
+    } else 
+        std::cout << "TDRS: PASSED" << std::endl;
     return true;
 }
 
@@ -425,6 +489,9 @@ int main (int argc, char **argv)
     pass &= testZeroDixonSolver (Method::BlasElimination());
     pass &= testDixonSolverWithMPrhs ();
     pass &= testSparseRationalSolver ();
+    pass &= testDixonRectangularSolver (Method::BlasElimination());
+    pass &= testDixonRectangularSolver (Method::SparseElimination());
+    pass &= testDixonRectangularSolver (Method::Wiedemann());
     pass &= testZeroDimensionalCharPoly ();
     pass &= testZeroDimensionalMinPoly ();
     pass &= testBigScalarCharPoly ();
