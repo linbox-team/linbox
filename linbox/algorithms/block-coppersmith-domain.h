@@ -841,7 +841,7 @@ EARLY_TERM_THRESHOLD (ett_default)
 
 	    //Create the BM_Seq iterator whose incrementation performs a step of the generator
 	    typename BM_Seq::BM_iterator bmit(seq.BM_begin(EARLY_TERM_THRESHOLD));
-	    bmit.setDelta((int)(2*_container->getBB()->rowdim()+1));
+	    bmit.setDelta((int)(2*_container->bbrowdim()+1));
 	    typename BM_Seq::BM_iterator::TerminationState check = bmit.state();
 	    while(!check.IsGeneratorFound() ){
 		    ++bmit;

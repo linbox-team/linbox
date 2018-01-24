@@ -34,7 +34,7 @@
 #include "linbox/algorithms/smith-form-local.h"
 
 #include "linbox/algorithms/block-coppersmith-domain.h"
-#include "linbox/algorithms/blackbox-block-container.h"
+#include "linbox/algorithms/blackbox-block-container-smmx.h"
 #include "linbox/matrix/random-matrix.h"
 
 namespace LinBox
@@ -93,15 +93,23 @@ public:
 		RandomDenseMatrix<RandIter, Field> RDM(_F, RI);
 		MatrixDom MD(_F);
 		
-		size_t n = M.rowdim();
-		Matrix U(_F, b, n);
-		Matrix V(_F, n, b);
+		size_t n = M.m;
+		//Matrix U(_F, b, n);
+		//Matrix V(_F, n, b);
 		
-		RDM.random(U);
-		RDM.random(V);
+		typename Field::Element_ptr U = FFLAS::fflas_new(_F, b, n, Alignment::CACHE_LINE);
+		typename Field::Element_ptr V = FFLAS::fflas_new(_F, n, b, Alignment::CACHE_LINE);
 		
-		typedef BlackboxBlockContainer<Field, Blackbox> Sequence;
-		Sequence blockSeq(&M, _F, U, V);
+		for (size_t i = 0; i < n * b; i++) {
+			U[i] = RI.random();
+			V[i] = RI.random();
+		}
+		
+		//RDM.random(U);
+		//RDM.random(V);
+		
+		typedef BlackboxBlockContainerSmmx<Field, Blackbox> Sequence;
+		Sequence blockSeq(&M, _F, U, V, b);
 		BlockCoppersmithDomain<MatrixDom, Sequence> coppersmith(MD, &blockSeq, earlyTerm);
 		
 		coppersmith.right_minpoly(gen);
@@ -259,7 +267,7 @@ public:
 		convert(G, minpoly);
 		
 		Polynomial det;
-		size_t limit = detLimit(G, A.rowdim());
+		size_t limit = detLimit(G, A.m);
 		localX(det, G, limit);
 		
 		factoredLocal(lifs, G, det);		

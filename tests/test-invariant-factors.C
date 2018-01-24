@@ -2,6 +2,9 @@
 
 #include <iostream>
 #include <vector>
+#include <sstream>
+#include <cstdio>
+#include <cstdlib>
 //#include <omp.h>
 
 #include "givaro/givtimer.h"
@@ -19,6 +22,7 @@
 
 #include "linbox/matrix/random-matrix.h"
 #include "linbox/algorithms/blackbox-block-container.h"
+#include "linbox/algorithms/blackbox-block-container-smmx.h"
 #include "linbox/algorithms/block-massey-domain.h"
 #include "linbox/algorithms/smith-form-kannan-bachem.h"
 #include "linbox/algorithms/smith-form-local.h"
@@ -30,18 +34,23 @@
 #include "sparse-matrix-generator.h"
 #include "test-poly-smith-form.h"
 
+#include "fflas-ffpack/config-blas.h"
+#include "fflas-ffpack/fflas/fflas.h"
+#include "fflas-ffpack/fflas/fflas_sparse.h"
+
 using namespace LinBox;
 
 typedef Givaro::Modular<double> Field;
 typedef typename Field::Element Element;
 typedef SparseMatrix<Field, SparseMatrixFormat::CSR> SparseMat;
+typedef FFLAS::Sparse<Field, FFLAS::SparseMatrix_t::CSR> FSparseMat;
 
 typedef Field::RandIter RandIter;
 typedef MatrixDomain<Field> MatrixDom;
 typedef typename MatrixDom::OwnMatrix Matrix;
 typedef RandomDenseMatrix<RandIter, Field> RandomMatrix;
 
-typedef BlackboxBlockContainer<Field, SparseMat> Sequence;
+typedef BlackboxBlockContainerSmmx<Field, FSparseMat> Sequence;
 typedef BlockMasseyDomain<Field, Sequence> MasseyDom;
 typedef BlockCoppersmithDomain<MatrixDom, Sequence> CoppersmithDom;
 
@@ -85,9 +94,10 @@ public:
 			R.write(os, f) << std::endl;
 		}
 	}
+	/*
 	
-	double computeMinpoly(std::vector<size_t> &degree, std::vector<Matrix> &minpoly, const SparseMat &M, size_t b) const {
-		size_t n = M.rowdim();
+	double computeMinpoly(std::vector<size_t> &degree, std::vector<Matrix> &minpoly, const FSparseMat &M, size_t b) const {
+		size_t n = M.m; //rowdim
 		
 		RandIter RI(F);
 		RandomMatrix RM(F, RI);
@@ -99,7 +109,7 @@ public:
 		RM.random(V);
 		
 		// Construct block sequence to input to BM
-		Sequence seq(&M, F, U, V);
+		Sequence seq(&M, F, U, V, b);
 		
 		// Compute minimal generating polynomial matrix
 		MasseyDom BMD(&seq); // pascal
@@ -117,6 +127,7 @@ public:
 		
 		return bm_time;
 	}
+	*/
 	
 	double convertMinPolyToPolyMatrix(PolyMatrix &G, const std::vector<Matrix> &minpoly) {
 		size_t b = G.rowdim();
@@ -551,6 +562,31 @@ int main(int argc, char** argv) {
 		M.finalize();
 		iF.close();
 	}
+	
+	std::vector<index_t> st1 = M.getStart();
+	std::vector<index_t> col1 = M.getColid();
+	std::vector<Element> data1 = M.getData();
+	
+	uint64_t nnz = Gen.nnz(M);
+	
+	index_t *row = FFLAS::fflas_new<index_t>(nnz);
+	for (size_t j = 0; j < M.rowdim(); ++j) {
+		for (index_t k = st1[j] ; k < st1[j+1]; ++k)
+			row[k] = j;
+	}
+	
+	index_t *col = FFLAS::fflas_new<index_t>(nnz);
+	for (size_t i = 0; i < col1.size(); i++) {
+		col[i] = col1[i];
+	}
+	
+	typename Field::Element_ptr data = FFLAS::fflas_new<Field::Element>(nnz);
+	for (size_t i = 0; i < data1.size(); i++) {
+		data[i] = data1[i];
+	}
+	
+	FFLAS::Sparse<Field, FFLAS::SparseMatrix_t::CSR> FM;
+	FFLAS::sparse_init(F, FM, row, col, data, M.rowdim(), M.coldim(), nnz);
 		
 	assert(M.rowdim() == M.coldim());
 	n = M.rowdim();
@@ -559,7 +595,7 @@ int main(int argc, char** argv) {
 #if 1
 	std::vector<Polynomial> lifs;
 	InvariantFactors<Field, PolynomialRing, QuotientRing> IFD(F, R);
-	IFD.largestInvariantFactors(lifs, M, t, probability);
+	IFD.largestInvariantFactors(lifs, FM, t, probability);
 	
 	for (size_t i = 0; i < lifs.size(); i++) {
 		R.write(std::cout, lifs[i]) << std::endl;
