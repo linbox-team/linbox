@@ -276,6 +276,37 @@ bool testDixonSolverWithMPrhs (){
 
     return true;
 }
+
+bool testSparseRationalSolver() {
+    typedef Givaro::QField<Givaro::Rational> Rats;
+    Rats QQ;
+    typedef DenseVector<Rats> RVector;
+    SparseMatrix<Rats> A (QQ,1,3);
+    RVector X(QQ, A.coldim()),B(QQ, A.rowdim()),L(QQ, A.rowdim());
+    A.setEntry(0,1,1);
+    A.setEntry(0,2,2);
+    QQ.assign(B[0],1);
+
+    solve(X,A,B,Method::SparseElimination());
+
+    MatrixDomain<Rats> MD(QQ);
+    VectorDomain<Rats> VD(QQ);
+
+    MD.vectorMul(L, A, X);
+
+    if (! VD.areEqual(L, B)) {
+        A.write(std::cerr << "A:=", LinBox::Tag::FileFormat::Maple) << ';' << std::endl;
+        std::cerr<<"X:= "<< X << ';' << std::endl;
+        std::cerr<<"B:= "<< B << ';' << std::endl;
+        std::cerr<<"L:= "<< L << ';' << std::endl;
+        std::cerr<<"Fail solving a sparse system over QQ"<<std::endl;
+        return false;
+    }
+
+    return true;
+}
+
+
 bool testZeroDimensionalCharPoly(){
     Givaro::ZRing<Integer> ZZ;
     DenseMatrix<Givaro::ZRing<Integer> > A (ZZ,0,0);
@@ -331,8 +362,9 @@ bool testLocalSmith(){
 
     PGD(local, A, Q, 5, PRESERVE_UPPER_MATRIX|PRIVILEGIATE_NO_COLUMN_PIVOTING);
 
+    std::cout << "Local Smith: {";
     for(auto const& it:local) std::cout << it.first << ':' << it.second << ' ';
-    std::cout << std::endl;
+    std::cout << '}' << std::endl;
 
 // > ([1,1] [1,2] )
 // > [[1, 2, 0 ], [0, 1, 0 ]]
@@ -346,7 +378,7 @@ bool testLocalSmith(){
         (local[1].first == 1U) &&
         (local[1].second == 2U) ;
 
-    A.write(std::cout) << std::endl;
+    A.write(std::cout << "A:=", LinBox::Tag::FileFormat::Maple) << ';' << std::endl;
 
         // Upper triangular
     success &=
@@ -359,7 +391,7 @@ bool testLocalSmith(){
         (A[1][0].first == 1U) &&
         (A[1][0].second == 1U);
 
-    Q.write(std::cout) << std::endl;
+    Q.write(std::cout << "Q:=", LinBox::Tag::FileFormat::Maple) << ';' << std::endl;
 
         // Permutation
     success &=
@@ -392,6 +424,7 @@ int main (int argc, char **argv)
     pass &= testSingularDixonSolver (Method::BlasElimination());
     pass &= testZeroDixonSolver (Method::BlasElimination());
     pass &= testDixonSolverWithMPrhs ();
+    pass &= testSparseRationalSolver ();
     pass &= testZeroDimensionalCharPoly ();
     pass &= testZeroDimensionalMinPoly ();
     pass &= testBigScalarCharPoly ();
