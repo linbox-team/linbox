@@ -130,16 +130,20 @@ int main (int argc, char **argv) {
     {
 			// Check Solution
 
-        VectorDomain<Ints> VD(ZZ);
-        MatrixDomain<Ints> MD(ZZ);
-        ZVector LHS(ZZ, A.rowdim()), RHS(ZZ, B);
-            // check that Ax = d.b
-        MD.vectorMul(LHS, A, X);
-        VD.mulin(RHS, d);
-        if (VD.areEqual(LHS, RHS))
-            std::cout << "Ax=b : Yes" << std::endl;
-        else
-            std::cout << "Ax=b : No" << std::endl;
+        if (ZZ.isZero(d))
+            std::cout << "**** ERROR ****\n**** Zero denominator" << std::endl;
+        else {
+            VectorDomain<Ints> VD(ZZ);
+            MatrixDomain<Ints> MD(ZZ);
+            ZVector LHS(ZZ, A.rowdim()), RHS(ZZ, B);
+                // check that Ax = d.b
+            MD.vectorMul(LHS, A, X);
+            VD.mulin(RHS, d);
+            if (VD.areEqual(LHS, RHS))
+                std::cout << "Ax=b : Yes" << std::endl;
+            else
+                std::cout << "Ax=b : No" << std::endl;
+        }
     }
     
     {
