@@ -267,6 +267,38 @@ public:
 		factoredLocal(lifs, G, det);		
 		return lifs;
 	}
+	
+	// computes the t largest invariant factors of A with probability of at least p.
+	template<class Blackbox>
+	Element &det(
+		Element &d, // det(A)
+		const Blackbox &A,
+		size_t t,
+		double p,
+		int earlyTerm = 10) const {
+	
+		size_t b = min_block_size(t, p);
+	
+		std::vector<Matrix> minpoly;
+		computeGenerator(minpoly, A, b, earlyTerm);
+		
+		PolyMatrix G(_R, b, b);
+		convert(G, minpoly);
+		
+		Polynomial det;
+		size_t limit = detLimit(G, A.rowdim());
+		localX(det, G, limit);
+		
+		// get the constant coefficient of det and convert it to type Element
+		typename PolynomialRing::Coeff det0;
+		_R.getCoeff(det0, det, 0);
+		
+		integer tmp;
+		_R.getCoeffField().convert(tmp, det0);
+		_F.init(d, tmp);
+		
+		return d;
+	}
 };
 
 }
