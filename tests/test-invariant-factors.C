@@ -620,7 +620,7 @@ int main(int argc, char** argv) {
 	n = M.rowdim();
 	if (n <= 20) M.write(std::cout) << std::endl;
 	
-#if 1
+#if 0
 	std::vector<Polynomial> lifs;
 	InvariantFactors<Field, PolynomialRing, QuotientRing> IFD(F, R);
 	IFD.largestInvariantFactors(lifs, M, t, probability);
