@@ -35,6 +35,7 @@
 
 #include "linbox/algorithms/block-coppersmith-domain.h"
 #include "linbox/algorithms/blackbox-block-container.h"
+#include "linbox/algorithms/blackbox-block-container-smmx.h"
 #include "linbox/matrix/random-matrix.h"
 
 namespace LinBox
@@ -100,7 +101,8 @@ public:
 		RDM.random(U);
 		RDM.random(V);
 		
-		typedef BlackboxBlockContainer<Field, Blackbox> Sequence;
+		//typedef BlackboxBlockContainer<Field, Blackbox> Sequence;
+		typedef BlackboxBlockContainerSmmx<Field, Blackbox> Sequence;
 		Sequence blockSeq(&M, _F, U, V);
 		BlockCoppersmithDomain<MatrixDom, Sequence> coppersmith(MD, &blockSeq, earlyTerm);
 		

@@ -87,7 +87,14 @@ public:
 		}
 	}
 	
-	double computeMinpoly(std::vector<size_t> &degree, std::vector<Matrix> &minpoly, const SparseMat &M, size_t b) const {
+	double computeMinpoly(
+		std::vector<size_t> &degree,
+		std::vector<Matrix> &minpoly,
+		std::vector<size_t> &degree2,
+		std::vector<Matrix> &minpoly2,
+		const SparseMat &M,
+		size_t b) const {
+	
 		size_t n = M.rowdim();
 		
 		RandIter RI(F);
@@ -105,7 +112,7 @@ public:
 		// Compute minimal generating polynomial matrix
 		// MasseyDom BMD(&seq); // pascal
 		CoppersmithDom BCD(MD, &seq, 10); // george
-				
+		
 		TW.clear();
 		TW.start();
 		
@@ -115,6 +122,24 @@ public:
 		TW.stop();
 		double bm_time = TW.usertime();
 		std::cout << bm_time << " " << std::flush;
+		
+		// Construct block sequence to input to BM
+		typedef BlackboxBlockContainerSmmx<Field, SparseMat> FflasSequence;
+		FflasSequence fseq(&M, F, U, V);
+		
+		// Compute minimal generating polynomial matrix
+		// BlockMasseyDomain<Field, FflasSequence> BMD(&seq); // pascal
+		BlockCoppersmithDomain<MatrixDom, FflasSequence> FBCD(MD, &fseq, 10); // george
+		
+		TW.clear();
+		TW.start();
+		
+		//BMD.left_minpoly_rec(minpoly, degree);
+		degree2 = FBCD.right_minpoly(minpoly2);
+		
+		TW.stop();
+		double bm2_time = TW.usertime();
+		std::cout << bm2_time << " " << std::flush;
 		
 		return bm_time;
 	}
@@ -621,11 +646,13 @@ int main(int argc, char** argv) {
 		// Generate random left and right projectors
 		std::vector<size_t> degree;
 		std::vector<Matrix> minpoly;
-		helper.computeMinpoly(degree, minpoly, M, b);
-		
 		std::vector<size_t> degree2;
 		std::vector<Matrix> minpoly2;
-		helper.computeMinpolyFflas(degree2, minpoly2, M, b);
+		helper.computeMinpoly(degree, minpoly, degree2, minpoly2, M, b);
+		
+		//std::vector<size_t> degree2;
+		//std::vector<Matrix> minpoly2;
+		//helper.computeMinpolyFflas(degree2, minpoly2, M, b);
 		
 		// Convert to matrix with polynomial entries
 		PolyMatrix G(R, b, b);
