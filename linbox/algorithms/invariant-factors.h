@@ -64,7 +64,7 @@ public:
 	typedef MatrixDomain<LocalRing> LocalMatrixDom;
 	typedef typename LocalMatrixDom::OwnMatrix LocalMatrix;
 	typedef PolySmithFormLocalXDomain<PolynomialRing> LocalSmithFormDom;
-	
+		
 protected:
 	Field _F;
 	PolynomialRing _R;
