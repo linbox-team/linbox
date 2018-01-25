@@ -51,7 +51,7 @@ namespace LinBox
 		typedef typename Field::RandIter       RandIter;
 		typedef typename Field::Element_ptr    FflasBlock;
 		typedef _Blackbox                      Blackbox;
-		typedef typename MatrixDomain<Field>::OwnMatrix              Block;
+		typedef BlasMatrix<Field>              Block;
 		typedef BlasMatrix<Field>              Value;
 		
 		typedef FFLAS::Sparse<Field, FFLAS::SparseMatrix_t::CSR> FSparseMat;
