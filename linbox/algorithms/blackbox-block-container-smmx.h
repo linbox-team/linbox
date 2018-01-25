@@ -150,8 +150,7 @@ namespace LinBox
 		}
 		
 		void next() {
-			//for (size_t i = 0; i < _n * _b; i++) _tmp[i] = _W[i];
-			std::copy(_W, _W + (_n * _b), _tmp);
+			for (size_t i = 0; i < _n * _b; i++) _tmp[i] = _W[i];
 			FFLAS::fspmm(_F, _M, _b, _tmp, _b, _F.zero, _W, _b);
 		}
 		
