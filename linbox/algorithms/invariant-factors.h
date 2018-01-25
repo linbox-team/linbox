@@ -35,6 +35,7 @@
 
 #include "linbox/algorithms/block-coppersmith-domain.h"
 #include "linbox/algorithms/blackbox-block-container.h"
+#include "linbox/algorithms/blackbox-block-container-smmx.h"
 #include "linbox/matrix/random-matrix.h"
 
 namespace LinBox
@@ -64,7 +65,7 @@ public:
 	typedef MatrixDomain<LocalRing> LocalMatrixDom;
 	typedef typename LocalMatrixDom::OwnMatrix LocalMatrix;
 	typedef PolySmithFormLocalXDomain<PolynomialRing> LocalSmithFormDom;
-	
+		
 protected:
 	Field _F;
 	PolynomialRing _R;
@@ -100,7 +101,8 @@ public:
 		RDM.random(U);
 		RDM.random(V);
 		
-		typedef BlackboxBlockContainer<Field, Blackbox> Sequence;
+		//typedef BlackboxBlockContainer<Field, Blackbox> Sequence;
+		typedef BlackboxBlockContainerSmmx<Field, Blackbox> Sequence;
 		Sequence blockSeq(&M, _F, U, V);
 		BlockCoppersmithDomain<MatrixDom, Sequence> coppersmith(MD, &blockSeq, earlyTerm);
 		
@@ -267,6 +269,38 @@ public:
 		
 		factoredLocal(lifs, G, det);		
 		return lifs;
+	}
+	
+	// computes the t largest invariant factors of A with probability of at least p.
+	template<class Blackbox>
+	Element &det(
+		Element &d, // det(A)
+		const Blackbox &A,
+		size_t t,
+		double p,
+		int earlyTerm = 10) const {
+	
+		size_t b = min_block_size(t, p);
+	
+		std::vector<Matrix> minpoly;
+		computeGenerator(minpoly, A, b, earlyTerm);
+		
+		PolyMatrix G(_R, b, b);
+		convert(G, minpoly);
+		
+		Polynomial det;
+		size_t limit = detLimit(G, A.rowdim());
+		localX(det, G, limit);
+		
+		// get the constant coefficient of det and convert it to type Element
+		typename PolynomialRing::Coeff det0;
+		_R.getCoeff(det0, det, 0);
+		
+		integer tmp;
+		_R.getCoeffField().convert(tmp, det0);
+		_F.init(d, tmp);
+		
+		return d;
 	}
 };
 

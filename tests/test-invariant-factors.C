@@ -19,6 +19,7 @@
 
 #include "linbox/matrix/random-matrix.h"
 #include "linbox/algorithms/blackbox-block-container.h"
+#include "linbox/algorithms/blackbox-block-container-smmx.h"
 #include "linbox/algorithms/block-massey-domain.h"
 #include "linbox/algorithms/smith-form-kannan-bachem.h"
 #include "linbox/algorithms/smith-form-local.h"
@@ -86,7 +87,14 @@ public:
 		}
 	}
 	
-	double computeMinpoly(std::vector<size_t> &degree, std::vector<Matrix> &minpoly, const SparseMat &M, size_t b) const {
+	double computeMinpoly(
+		std::vector<size_t> &degree,
+		std::vector<Matrix> &minpoly,
+		std::vector<size_t> &degree2,
+		std::vector<Matrix> &minpoly2,
+		const SparseMat &M,
+		size_t b) const {
+	
 		size_t n = M.rowdim();
 		
 		RandIter RI(F);
@@ -102,8 +110,59 @@ public:
 		Sequence seq(&M, F, U, V);
 		
 		// Compute minimal generating polynomial matrix
-		MasseyDom BMD(&seq); // pascal
+		// MasseyDom BMD(&seq); // pascal
 		CoppersmithDom BCD(MD, &seq, 10); // george
+		
+		TW.clear();
+		TW.start();
+		
+		//BMD.left_minpoly_rec(minpoly, degree);
+		degree = BCD.right_minpoly(minpoly);
+		
+		TW.stop();
+		double bm_time = TW.usertime();
+		std::cout << bm_time << " " << std::flush;
+		
+		// Construct block sequence to input to BM
+		typedef BlackboxBlockContainerSmmx<Field, SparseMat> FflasSequence;
+		FflasSequence fseq(&M, F, U, V);
+		
+		// Compute minimal generating polynomial matrix
+		// BlockMasseyDomain<Field, FflasSequence> BMD(&seq); // pascal
+		BlockCoppersmithDomain<MatrixDom, FflasSequence> FBCD(MD, &fseq, 10); // george
+		
+		TW.clear();
+		TW.start();
+		
+		//BMD.left_minpoly_rec(minpoly, degree);
+		degree2 = FBCD.right_minpoly(minpoly2);
+		
+		TW.stop();
+		double bm2_time = TW.usertime();
+		std::cout << bm2_time << " " << std::flush;
+		
+		return bm_time;
+	}
+	
+	double computeMinpolyFflas(std::vector<size_t> &degree, std::vector<Matrix> &minpoly, const SparseMat &M, size_t b) const {
+		size_t n = M.rowdim();
+		
+		RandIter RI(F);
+		RandomMatrix RM(F, RI);
+		
+		Matrix U(F, b, n);
+		Matrix V(F, n, b);
+		
+		RM.random(U);
+		RM.random(V);
+		
+		// Construct block sequence to input to BM
+		typedef BlackboxBlockContainerSmmx<Field, SparseMat> FflasSequence;
+		FflasSequence seq(&M, F, U, V);
+		
+		// Compute minimal generating polynomial matrix
+		// BlockMasseyDomain<Field, FflasSequence> BMD(&seq); // pascal
+		BlockCoppersmithDomain<MatrixDom, FflasSequence> BCD(MD, &seq, 10); // george
 				
 		TW.clear();
 		TW.start();
@@ -469,9 +528,9 @@ public:
 		std::cout << d_time << " " << std::flush;
 		
 		if (!success) {
-			std::cout << "failed " << std::endl;
+			std::cout << "(failed) " << std::flush;
 		} else {
-			R.write(std::cout, f) << " " << std::flush;
+			// R.write(std::cout, f) << " " << std::flush;
 		}
 		
 		return d_time;
@@ -561,7 +620,7 @@ int main(int argc, char** argv) {
 	n = M.rowdim();
 	if (n <= 20) M.write(std::cout) << std::endl;
 	
-#if 1
+#if 0
 	std::vector<Polynomial> lifs;
 	InvariantFactors<Field, PolynomialRing, QuotientRing> IFD(F, R);
 	IFD.largestInvariantFactors(lifs, M, t, probability);
@@ -569,6 +628,10 @@ int main(int argc, char** argv) {
 	for (size_t i = 0; i < lifs.size(); i++) {
 		R.write(std::cout, lifs[i]) << std::endl;
 	}
+	
+	Element detM;
+	IFD.det(detM, M, t, probability);
+	F.write(std::cout, detM) << std::endl;
 #else 
 	TestInvariantFactorsHelper helper(p);
 	
@@ -579,12 +642,21 @@ int main(int argc, char** argv) {
 	std::vector<Polynomial> result3;
 	std::vector<Polynomial> result4;
 	
+	Polynomial detFflas;
+	std::vector<Polynomial> resultFflas;
+	
 	for (size_t i = 0; i < times; i++) {
 		std::cout << n << " " << b << " " << Gen.nnz(M) << " " << std::flush;
 		// Generate random left and right projectors
 		std::vector<size_t> degree;
 		std::vector<Matrix> minpoly;
-		helper.computeMinpoly(degree, minpoly, M, b);
+		std::vector<size_t> degree2;
+		std::vector<Matrix> minpoly2;
+		helper.computeMinpoly(degree, minpoly, degree2, minpoly2, M, b);
+		
+		//std::vector<size_t> degree2;
+		//std::vector<Matrix> minpoly2;
+		//helper.computeMinpolyFflas(degree2, minpoly2, M, b);
 		
 		// Convert to matrix with polynomial entries
 		PolyMatrix G(R, b, b);
@@ -606,19 +678,24 @@ int main(int argc, char** argv) {
 		double factored_local_time = helper.timeFactoredLocal(result3, G, det2);
 		//double factored_ilio_time = helper.timeFactoredIlio(result4, G, det2);
 		
+		PolyMatrix GFflas(R, b, b);
+		helper.convertMinPolyToPolyMatrix(GFflas, minpoly2);
+		helper.timeLocalX(detFflas, GFflas, helper.detLimit(GFflas, n));
+		helper.timeFactoredLocal(resultFflas, GFflas, detFflas);
+		
 		//double total_time = local_time + ilio_time;
 		//double total2_time = local_time + factored_local_time;
 		//std::cout << total_time << " ";
 		//std::cout << total2_time << " " << std::flush;
 		
-		Polynomial t1, t2;
-		R.monic(t1, mp);
-		R.monic(t2, result3[result3.size() - 1]);
-		std::cout << std::endl;
-		R.write(std::cout << "dixon = ", t1) << std::endl;
-		R.write(std::cout << "mp = ", t2) << std::endl;
-		std::string mpPass = (R.areEqual(t1, t2) ? "Pass" : "Fail");
-		std::cout << mpPass << " " << std::flush;
+		//Polynomial t1, t2;
+		//R.monic(t1, mp);
+		//R.monic(t2, result3[result3.size() - 1]);
+		//std::cout << std::endl;
+		//R.write(std::cout << "dixon = ", t1) << std::endl;
+		//R.write(std::cout << "mp = ", t2) << std::endl;
+		//std::string mpPass = (R.areEqual(t1, t2) ? "Pass" : "Fail");
+		//std::cout << mpPass << " " << std::flush;
 		
 		double kb_time = helper.timeKannanBachem(result, G);
 		//timeHybrid(R, result, G);
@@ -636,6 +713,7 @@ int main(int argc, char** argv) {
 		
 	if (outFile == "") {
 		//helper.writeInvariantFactors(std::cout, result);
+		//helper.writeInvariantFactors(std::cout, resultFflas);
 	} else {
 		std::ofstream out1(outFile + "1.txt");
 		std::ofstream out2(outFile + "2.txt");
