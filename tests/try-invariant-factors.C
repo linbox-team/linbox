@@ -25,6 +25,7 @@
 #include "linbox/algorithms/smith-form-kannan-bachem.h"
 #include "linbox/algorithms/smith-form-local.h"
 #include "linbox/algorithms/poly-smith-form-local-x.h"
+#include "linbox/algorithms/invariant-factors.h"
 #include "linbox/solutions/det.h"
 
 #include "sparse-matrix-generator.h"
@@ -36,6 +37,9 @@ using namespace LinBox;
 typedef Givaro::Modular<double> Field;
 typedef typename Field::Element Element;
 typedef SparseMatrix<Field, SparseMatrixFormat::CSR> SparseMat;
+
+typedef x ExtensionField;
+typedef SparseMatrix<ExtensionField, SparseMatrixFormat::CSR> SparseMatExtension;
 
 typedef Field::RandIter RandIter;
 typedef MatrixDomain<Field> MatrixDom;
@@ -496,13 +500,15 @@ void blockDiag(SparseMat & P, size_t b=5)
 int main(int argc, char** argv) {
 	size_t p = 3;
 	size_t n = 10;
-	size_t b = 5;
+	size_t t = 2;
+	double probability = .99;
 	double sparsity = 0.05;
 	int seed = time(NULL);
-	size_t t = 2;
 	size_t times = 1;
 	size_t exponent = 0;
 	int pre = 0;
+
+	size_t b = 0;
 	
 	std::string bumpFile;
 	std::string matrixFile;
@@ -578,74 +584,56 @@ int main(int argc, char** argv) {
 		U.write(std::cout) << std::endl;
 	}
 	*/
-	
-	TestInvariantFactorsHelper helper(p);
-	
+
 	std::vector<Polynomial> result;
-	std::vector<Polynomial> result2;
+	
+	InvariantFactors<Field, PolynomialRing, QuotientRing> IFD(F,R);
+	b = IFD.min_block_size(t,probability);
+	TestInvariantFactorsHelper helper(p);
+
 	for (size_t i = 0; i < times; i++) {
 		std::cout << "dim " << n << ", blk " << b << ", nnz " << Gen.nnz(M) << std::endl;
-		// Generate random left and right projectors
-		std::vector<size_t> degree;
-		std::vector<Matrix> minpoly;
-		helper.computeMinpoly(degree, minpoly, MP, b);
-		
-		// Convert to matrix with polynomial entries
-		PolyMatrix G(R, b, b);
-		helper.convertMinPolyToPolyMatrix(G, minpoly);
-		
-		TestPolySmithFormUtil<PolynomialRing> putil(R);
-		//putil.printMatrix(G);
-		//std::cout << std::endl;
-		
-		// Compute smith form of generator
-		Polynomial det2;
-		
-		size_t exponent_limit = helper.detLimit(G, n);
-		std::cout << ", explim " << exponent_limit << std::endl;
-		exponent_limit = exponent == 0 ? exponent_limit : exponent;
-		std::cout << ", explim " << exponent_limit << std::endl;
-		
-		double localx_time = helper.timeLocalX(det2, G, exponent_limit);
-		std::cout << "gendetdeg " << R.deg(det2) 
-			<< ", gendet(0) " << det2[0] << std::endl; 
-		double local_time = helper.timeFactoredLocal(result2, G, det2);
 
-		double total_time = localx_time + local_time;
-		std::cout << "times:  local-x " << localx_time << ", local " << local_time << ", total " << total_time << std::endl;
-		Element d;
+		// det by b3if
 		TW.clear(); 
 		TW.start();
-		LinBox::det(d,MP);
+		IFD.largestInvariantFactors(result, MP, t, probability);
+		TW.stop();
+		double iftime = TW.usertime();
+
+		typename PolynomialRing::Coeff d1;
+		Polynomial pol;
+		helper.computeDet(pol, result);
+		d1 = pol[0];
+		if (R.deg(pol) == n or R.getCoeffField().isZero(d1)) std::cout << "b3 det ";
+		else std::cout << "bogus det ";
+		if (pre == 2 and n & 1) R.getCoeffField().negin(d1);
+		R.getCoeffField().write(std::cout, d1) << " in time " << iftime << std::endl;
+
+		// det by other means
+		Element d2; F.init(d2);
+		TW.clear(); 
+		TW.start();
+		Method::Wiedemann Meth;
+		LinBox::det(d2,MP, Meth);
 		TW.stop();
 		double dtime = TW.usertime();
-		F.write(std::cout << "det ", d) << " in time " << dtime << std::endl;
+		F.write(std::cout << "wied det ", d2)
+			<< " in time " << dtime << std::endl;
 		
-#if 0
-		double kb_time = helper.timeKannanBachem(result, G);
-		//timeHybrid(R, result, G);
-		helper.computeDet(det, result);
-		
-		std::cout << (kb_time / total_time) << " " << std::flush;
-		
-		// R.write(std::cout << "det1: ", det) << std::endl;
-		// R.write(std::cout << "det2: ", det2) << std::endl;
-		// std::cout << (R.areEqual(det, det2) ? "Pass" : "Fail");
-#endif
-		
-		std::cout << std::endl;
 	}
+
 	
-	std::cout << "nontriv: " << helper.countInvariantFactors(result2)
-		<< ", minpoldeg: " << helper.ring().deg(result2.back()) << std::endl;
+	std::cout << "nontriv: " << helper.countInvariantFactors(result)
+		<< ", minpoldeg: " << helper.ring().deg(result.back()) << std::endl;
 
 	if (outFile == "") {
-		helper.writeInvariantFactors(std::cout, result2, 0);
+		helper.writeInvariantFactors(std::cout, result, 0);
 	} else {
 		
-	  //if (helper.degInvariantFactors(result2) > M.rowdim()) {
+	  //if (helper.degInvariantFactors(result) > M.rowdim()) {
 		std::ofstream out(outFile);
-		helper.writeInvariantFactors(out, result2);
+		helper.writeInvariantFactors(out, result);
 		out.close();
 	  //}
 	}

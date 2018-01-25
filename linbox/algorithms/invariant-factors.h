@@ -166,10 +166,11 @@ public:
 		NTL::MakeMonic(det);
 	}
 	
+	// SNF modulo f^multiplicity (we're in a SPIR)
 	void local(
 		std::vector<Polynomial> &result,
 		const PolyMatrix &M,
-		const Polynomial &f,
+		const Polynomial &f, // irred
 		long multiplicity) const {
 	
 		SmithFormLocalDom SFD;
@@ -203,6 +204,7 @@ public:
 		}
 	}
 	
+	// SNF via do local on the irred factors.
 	void factoredLocal(
 		std::vector<Polynomial> &result,
 		const PolyMatrix &M,
@@ -217,6 +219,7 @@ public:
 		}
 	}
 	
+	// SNF via sqfactor det and do prev factoredLocal
 	void factoredLocal(
 		std::vector<Polynomial> &result,
 		const PolyMatrix &M,
