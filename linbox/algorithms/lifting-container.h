@@ -143,7 +143,7 @@ namespace LinBox
 			// Generalization of the Hadamard's bound: product of the norm of all non-zero columns
 			if (!R.isZero(tmp[i])){
 				R.mulin (H_col_sqr,tmp[i]);
-				if (short_col_sqr > tmp[i]) short_col_sqr = tmp[i];
+				if (short_col_sqr < tmp[i]) short_col_sqr = tmp[i];
 			}
 		//short_col_sqr= *(std::min_element(tmp.begin(),tmp.end()));
 	}
@@ -454,7 +454,9 @@ namespace LinBox
 			bool next (IVector& digit)
 			{
 
-				linbox_check (digit.size() == _lc._matA.rowdim());
+#ifdef DEBUG_LC
+				linbox_check (digit.size() == _lc._matA.coldim());
+#endif
 				// compute next p-adic digit
 				_lc.nextdigit(digit,_res);
 #ifdef RSTIMING
