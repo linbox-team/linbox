@@ -1489,10 +1489,7 @@ namespace LinBox
 
 		GaussDomain<Field> GD(F);
 		GD.QLUPin(rank,det,Q,L,Ap,P,Ap.rowdim(), Ap.coldim());
-		if (rank != A.rowdim()) {
-#if 0
-			throw LinboxError ("ERROR in DIXON SparseLU: singular matrix or bad prime");
-#endif
+		if (rank < A.coldim()) {
 			// Choose a nonrandom solution with smallest entries:
 			// Sets solution values to 0 for coldim()-rank columns
 			// Therefore, prune unnecessary elements
@@ -1515,6 +1512,12 @@ namespace LinBox
 			}
 			commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT) << "Pruned : " << (origNNZ-newNNZ) << " unnecessary elements in upper triangle" << std::endl;
 		}
+
+//         A.write(std::cout << "A:=") << ';' << std::endl;
+//         Q.write(std::cout << "Q:=") << ';' << std::endl;
+//         L.write(std::cout << "L:=") << ';' << std::endl;
+//         Ap.write(std::cout << "Ap:=") << ';' << std::endl;
+//         P.write(std::cout << "P:=") << ';' << std::endl;
 
 		typedef SparseLULiftingContainer<Ring,Field,IMatrix,FMatrix> LiftingContainer;
 		LiftingContainer lc(_ring, F, A, L, Q, Ap, P, rank, b, _prime);
