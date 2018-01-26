@@ -565,11 +565,13 @@ int main(int argc, char** argv) {
 	size_t exponent = 0;
 	double probability = 0.5;
 	size_t rank = 0;
+	double sparsity1 = 0.0005;
 	
 	std::string bumpFile;
 	std::string matrixFile;
 	int fsnum = 1;
 	std::string outFile;
+	std::string matrixOFile;
 
 	static Argument args[] = {
 		{ 'm', "-m M", "Name of file for bumps", TYPE_STR, &bumpFile},
@@ -584,8 +586,9 @@ int main(int argc, char** argv) {
 		{ 't', "-t T", "Target t-th largest invariant factor", TYPE_INT, &t},
 		{ 'c', "-c C", "Choose b such that prob of t-th being correct > c", TYPE_DOUBLE, &probability},
 		{ 'k', "-k K", "Repeat computation K times", TYPE_INT, &times},
-		{ 'e', "-e E", "Compute local at x^e", TYPE_INT, &exponent},
 		{ 'R', "-R R", "Random matrix with rank R", TYPE_INT, &rank},
+		{ 'e', "-e E", "Sparsity target for equivalence transforms", TYPE_DOUBLE, &sparsity1},
+		{ 'O', "-O O", "Output randomly generated matrix to file", TYPE_STR, &matrixOFile},
 		END_OF_ARGUMENTS
 	};
 
@@ -601,9 +604,12 @@ int main(int argc, char** argv) {
 	SparseMat M(F);
 	Polynomial det;
 	
+	TW.clear();
+	TW.start();
+	
 	if (rank != 0) {
 		M.resize(n, n);
-		Gen.randomMatrix(M, n, rank, sparsity);
+		Gen.randomMatrix(M, n, rank, sparsity, sparsity1);
 	} else if (matrixFile == "" && bumpFile == "") {
 		std::vector<Polynomial> fs;
         Gen.invariants(fs, n, fsnum);
@@ -619,6 +625,16 @@ int main(int argc, char** argv) {
 		M.read(iF);
 		M.finalize();
 		iF.close();
+	}
+	
+	TW.stop();
+	double mg_time = TW.usertime();
+	std::cout << mg_time << " " << std::flush;
+	
+	if (matrixOFile != "") {
+		std::ofstream ofile(matrixOFile);
+		M.write(ofile);
+		ofile.close();
 	}
 		
 	assert(M.rowdim() == M.coldim());
@@ -676,17 +692,17 @@ int main(int argc, char** argv) {
 		std::cout << exponent_limit << " " << std::flush;
 		exponent_limit = exponent == 0 ? exponent_limit : exponent;
 		
-		double dixon_time = helper.timeDixon(mp, G, exponent_limit);
+		//double dixon_time = helper.timeDixon(mp, G, exponent_limit);
 		//double popov_time = helper.timePopov(det, G);
 		double local_time = helper.timeLocalX(det2, G, exponent_limit);
 		// double ilio_time = helper.timeIliopoulos(result2, G, det2);
 		double factored_local_time = helper.timeFactoredLocal(result3, G, det2);
 		//double factored_ilio_time = helper.timeFactoredIlio(result4, G, det2);
 		
-		PolyMatrix GFflas(R, b, b);
-		helper.convertMinPolyToPolyMatrix(GFflas, minpoly2);
-		helper.timeLocalX(detFflas, GFflas, helper.detLimit(GFflas, n));
-		helper.timeFactoredLocal(resultFflas, GFflas, detFflas);
+		//PolyMatrix GFflas(R, b, b);
+		//helper.convertMinPolyToPolyMatrix(GFflas, minpoly2);
+		//helper.timeLocalX(detFflas, GFflas, helper.detLimit(GFflas, n));
+		//helper.timeFactoredLocal(resultFflas, GFflas, detFflas);
 		
 		//double total_time = local_time + ilio_time;
 		//double total2_time = local_time + factored_local_time;
@@ -702,7 +718,7 @@ int main(int argc, char** argv) {
 		//std::string mpPass = (R.areEqual(t1, t2) ? "Pass" : "Fail");
 		//std::cout << mpPass << " " << std::flush;
 		
-		double kb_time = helper.timeKannanBachem(result, G);
+		//double kb_time = helper.timeKannanBachem(result, G);
 		//timeHybrid(R, result, G);
 		//helper.computeDet(det, result);
 		
@@ -717,7 +733,7 @@ int main(int argc, char** argv) {
 	}
 		
 	if (outFile == "") {
-		//helper.writeInvariantFactors(std::cout, result);
+		helper.writeInvariantFactors(std::cout, result3);
 		//helper.writeInvariantFactors(std::cout, resultFflas);
 	} else {
 		std::ofstream out1(outFile + "1.txt");
