@@ -284,7 +284,7 @@ static bool testSingularConsistentSolve (const Field          &F,
 					 const char           *text,
 					 MethodTraits          method)
 {
-	typedef Diagonal <Field, Vector> Blackbox;
+	typedef Diagonal <Field> Blackbox;
 
 	ostringstream str;
 	str << "Testing singular consistent solve (" << text << ")";
@@ -328,7 +328,7 @@ static bool testSingularConsistentSolve (const Field          &F,
 		VD.write (report, b);
 		report << endl;
 
-		BlasVector<Field> dd(F,d);
+		typename Blackbox::Vector_t dd(F,d);
 		Blackbox D (dd);
 		//Blackbox D (d);
 
@@ -365,7 +365,7 @@ static bool testSingularConsistentSolve (const Field          &F,
 			Report << "ERROR: Inconsistent system exception" << endl;
 
 			Report << "Certificate is: ";
-			VD.write (Report, e.u ()) << endl;
+			VD.write (Report, e.certificate ()) << endl;
 
 			ret = false;
 
@@ -406,7 +406,7 @@ static bool testSingularInconsistentSolve (const Field          &F,
 					   const char           *text,
 					   MethodTraits          method)
 {
-	typedef Diagonal <Field, Vector> Blackbox;
+	typedef Diagonal <Field> Blackbox;
 
 	ostringstream str;
 	str << "Testing singular inconsistent solve (" << text << ")";
@@ -428,7 +428,7 @@ static bool testSingularInconsistentSolve (const Field          &F,
 	VectorWrapper::ensureDim (d1, stream1.dim ());
 
 	MethodTraits traits (method);
-	traits.preconditioner (MethodTraits::NONE);
+	traits.preconditioner (MethodTraits::NO_PRECONDITIONER);
 
 	while (stream1 && stream2) {
 		commentator().startIteration ((unsigned)stream1.j ());
@@ -447,7 +447,7 @@ static bool testSingularInconsistentSolve (const Field          &F,
 		VD.write (report, b);
 		report << endl;
 
-		BlasVector<Field> dd(F,d);
+		typename Blackbox::Vector_t dd(F,d);
 		Blackbox D (dd);
 		//Blackbox D (d);
 
