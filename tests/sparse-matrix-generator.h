@@ -376,7 +376,7 @@ namespace LinBox
 		 * s = sparsity
 		 */
 		template<class Matrix>
-		void randomMatrix(Matrix &M, size_t n, size_t r, double s, double s1) {
+		void randomMatrix(Matrix &M, size_t n, size_t r, double equivSparsity, double targetSparsity) const {
 			SparseMatrix<Field, SparseMatrixFormat::SMM> T(_F, n, n);
 			
 			std::set<size_t> nzRows, nzCols;
@@ -386,49 +386,15 @@ namespace LinBox
 				nzCols.insert(i);
 			}
 			T.finalize();
-						
-			while (sparsity(T) < s1) {
-				size_t b = rand() % n;
-				
-				Element scale;
-				_F.init(scale, rand() % _F.cardinality());
-				
-				size_t rowcol = rand() % 2;
-				
-				if (rowcol) {
-					size_t a = rand() % nzRows.size();
-					auto it(nzRows.begin());
-					std::advance(it, a);
-					a = *it;
-					
-					for (size_t i = 0; i < n; i++) {
-						Element tmp;
-						_F.mul(tmp, scale, T.getEntry(a, i));
-						_F.addin(tmp, T.getEntry(b, i));
-						T.setEntry(b, i, tmp);
-					}
-					
-					nzRows.insert(b);
-				} else {
-					size_t a = rand() % nzCols.size();
-					auto it(nzCols.begin());
-					std::advance(it, a);
-					a = *it;
-					
-					for (size_t i = 0; i < n; i++) {
-						Element tmp;
-						_F.mul(tmp, scale, T.getEntry(i, a));
-						_F.addin(tmp, T.getEntry(i, b));
-						T.setEntry(i, b, tmp);
-					}
-					
-					nzCols.insert(b);
-				}
+			
+			T.randomEquiv(size_t(n * n * equivSparsity));
+			T.finalize();
+			
+			if (equivSparsity < targetSparsity) {
+				T.randomSim(size_t(n * n * targetSparsity));
 				T.finalize();
-				
-				// std::cout << "sparsity: " << sparsity(T) << std::endl;
 			}
-			fillIn(T, s);
+			
 			copy(M, T);
 		}
 			

@@ -558,20 +558,19 @@ int main(int argc, char** argv) {
 	size_t p = 7;
 	size_t n = 10;
 	size_t b = 5;
-	double sparsity = 0.05;
 	int seed = time(NULL);
 	size_t t = 2;
 	size_t times = 1;
-	size_t exponent = 0;
 	double probability = 0.5;
 	size_t rank = 0;
-	double sparsity1 = 0.0005;
+	
+	double sparsity = 0.05;
+	double equivSparsity = 0.025;
 	
 	std::string bumpFile;
 	std::string matrixFile;
 	int fsnum = 1;
 	std::string outFile;
-	std::string matrixOFile;
 
 	static Argument args[] = {
 		{ 'm', "-m M", "Name of file for bumps", TYPE_STR, &bumpFile},
@@ -587,8 +586,7 @@ int main(int argc, char** argv) {
 		{ 'c', "-c C", "Choose b such that prob of t-th being correct > c", TYPE_DOUBLE, &probability},
 		{ 'k', "-k K", "Repeat computation K times", TYPE_INT, &times},
 		{ 'R', "-R R", "Random matrix with rank R", TYPE_INT, &rank},
-		{ 'e', "-e E", "Sparsity target for equivalence transforms", TYPE_DOUBLE, &sparsity1},
-		{ 'O', "-O O", "Output randomly generated matrix to file", TYPE_STR, &matrixOFile},
+		{ 'e', "-e E", "Sparsity target for equivalence transform", TYPE_DOUBLE, &equivSparsity},
 		END_OF_ARGUMENTS
 	};
 
@@ -609,7 +607,7 @@ int main(int argc, char** argv) {
 	
 	if (rank != 0) {
 		M.resize(n, n);
-		Gen.randomMatrix(M, n, rank, sparsity, sparsity1);
+		Gen.randomMatrix(M, n, rank, equivSparsity, sparsity);
 	} else if (matrixFile == "" && bumpFile == "") {
 		std::vector<Polynomial> fs;
         Gen.invariants(fs, n, fsnum);
@@ -630,12 +628,6 @@ int main(int argc, char** argv) {
 	TW.stop();
 	double mg_time = TW.usertime();
 	std::cout << mg_time << " " << std::flush;
-	
-	if (matrixOFile != "") {
-		std::ofstream ofile(matrixOFile);
-		M.write(ofile);
-		ofile.close();
-	}
 		
 	assert(M.rowdim() == M.coldim());
 	n = M.rowdim();
@@ -690,7 +682,6 @@ int main(int argc, char** argv) {
 		// Compute smith form of generator
 		size_t exponent_limit = helper.detLimit(G, n);
 		std::cout << exponent_limit << " " << std::flush;
-		exponent_limit = exponent == 0 ? exponent_limit : exponent;
 		
 		//double dixon_time = helper.timeDixon(mp, G, exponent_limit);
 		//double popov_time = helper.timePopov(det, G);
