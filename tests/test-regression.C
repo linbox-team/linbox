@@ -372,6 +372,24 @@ bool testDixonRectangularSolver(const Specifier& m) {
     return true;
 }
 
+bool testSparse1x1Det(unsigned long v){
+    ZRingInts ZZ;
+    SparseMatrix<ZRingInts> A(ZZ, 1, 1);
+    Integer x(v);
+    A.setEntry(0,0,x);
+    Integer d; 
+    
+    if (! ZZ.areEqual(x, det(d,A)) ) {
+        A.write(std::cerr << "A:=", LinBox::Tag::FileFormat::Maple) << ';' << std::endl;
+        std::cerr<<"x:= "<< x << ';' << std::endl;
+        std::cerr<<"d:= "<< d << ';' << std::endl;
+        std::cerr<<"**** ERROR **** Fail determinant 1x1 matrix" <<std::endl;
+        return false;
+    } else 
+        std::cout << "TSD1: PASSED" << std::endl;
+    
+    return true;
+}
 
 bool testZeroDimensionalCharPoly(){
     Givaro::ZRing<Integer> ZZ;
@@ -497,6 +515,7 @@ int main (int argc, char **argv)
     pass &= testDixonRectangularSolver<DenseMatrix<ZRingInts>> (Method::BlasElimination());
     pass &= testDixonRectangularSolver<DenseMatrix<ZRingInts>> (Method::SparseElimination());
     pass &= testDixonRectangularSolver<DenseMatrix<ZRingInts>> (Method::Wiedemann());
+    pass &= testSparse1x1Det(1<<26);
     pass &= testZeroDimensionalCharPoly ();
     pass &= testZeroDimensionalMinPoly ();
     pass &= testBigScalarCharPoly ();
