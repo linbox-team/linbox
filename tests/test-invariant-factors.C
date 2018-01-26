@@ -564,6 +564,7 @@ int main(int argc, char** argv) {
 	size_t times = 1;
 	size_t exponent = 0;
 	double probability = 0.5;
+	size_t rank = 0;
 	
 	std::string bumpFile;
 	std::string matrixFile;
@@ -584,6 +585,7 @@ int main(int argc, char** argv) {
 		{ 'c', "-c C", "Choose b such that prob of t-th being correct > c", TYPE_DOUBLE, &probability},
 		{ 'k', "-k K", "Repeat computation K times", TYPE_INT, &times},
 		{ 'e', "-e E", "Compute local at x^e", TYPE_INT, &exponent},
+		{ 'R', "-R R", "Random matrix with rank R", TYPE_INT, &rank},
 		END_OF_ARGUMENTS
 	};
 
@@ -599,7 +601,10 @@ int main(int argc, char** argv) {
 	SparseMat M(F);
 	Polynomial det;
 	
-	if (matrixFile == "" && bumpFile == "") {
+	if (rank != 0) {
+		M.resize(n, n);
+		Gen.randomMatrix(M, n, rank, sparsity);
+	} else if (matrixFile == "" && bumpFile == "") {
 		std::vector<Polynomial> fs;
         Gen.invariants(fs, n, fsnum);
         Gen.generate(M, det, fs, sparsity);
