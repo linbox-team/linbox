@@ -565,7 +565,6 @@ int main(int argc, char** argv) {
 	size_t rank = 0;
 	
 	double sparsity = 0.05;
-	double equivSparsity = 0.025;
 	size_t extend = 1;
 	
 	std::string bumpFile;
@@ -586,8 +585,7 @@ int main(int argc, char** argv) {
 		{ 't', "-t T", "Target t-th largest invariant factor", TYPE_INT, &t},
 		{ 'c', "-c C", "Choose b such that prob of t-th being correct > c", TYPE_DOUBLE, &probability},
 		{ 'R', "-R R", "Random matrix with rank R", TYPE_INT, &rank},
-		{ 'e', "-e E", "Sparsity target for equivalence transform", TYPE_DOUBLE, &equivSparsity},
-		{ 'E', "-E E", "Extension field exponent", TYPE_INT, &extend},
+		{ 'e', "-e E", "Extension field exponent (p^e)", TYPE_INT, &extend},
 		END_OF_ARGUMENTS
 	};
 
@@ -608,7 +606,7 @@ int main(int argc, char** argv) {
 	
 	if (rank != 0) {
 		M.resize(n, n);
-		Gen.randomMatrix(M, n, rank, equivSparsity, sparsity);
+		Gen.randomMatrix(M, n, rank, sparsity);
 	} else if (matrixFile == "" && bumpFile == "") {
 		std::vector<Polynomial> fs;
         Gen.invariants(fs, n, fsnum);
