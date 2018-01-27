@@ -676,7 +676,7 @@ int main(int argc, char** argv) {
 			
 			TW.stop();
 			double bm_time = TW.usertime();
-			std::cout << bm_time << " " << std::endl;
+			std::cout << bm_time << " " << phi.size() << std::endl;
 		} else {
 			RandIter RI(F);
 			
@@ -693,7 +693,7 @@ int main(int argc, char** argv) {
 			
 			TW.stop();
 			double bm_time = TW.usertime();
-			std::cout << bm_time << " " << std::endl;
+			std::cout << bm_time << " " << phi.size() << std::endl;
 		}
 		
 		return 0;
