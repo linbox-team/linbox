@@ -385,8 +385,8 @@ namespace LinBox
 					T.setEntry(i, j, _F.one);
 					T.setEntry(j, i, _F.one);
 				}
-				T.finalize();
 			}
+			T.finalize();
 			
 			T.randomEquiv(size_t(n * n * equivSparsity));
 			T.finalize();
