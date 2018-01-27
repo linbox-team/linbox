@@ -571,10 +571,12 @@ int main(int argc, char** argv) {
 	std::string matrixFile;
 	int fsnum = 1;
 	std::string outFile;
+	std::string mofile;
 
 	static Argument args[] = {
 		{ 'm', "-m M", "Name of file for bumps", TYPE_STR, &bumpFile},
 		{ 'f', "-f F", "Name of file for matrix", TYPE_STR, &matrixFile},
+		{ 'F', "-F F", "Name of output file for matrix", TYPE_STR, &mofile},
 		{ 'l', "-l L", "aka fsnum, Choose L-th divisor sequence (you also must set n)", TYPE_INT, &fsnum},
 		{ 'o', "-o O", "Name of output file for invariant factors", TYPE_STR, &outFile},
 		{ 'n', "-n N", "Dimension of matrix", TYPE_INT, &n},
@@ -631,6 +633,13 @@ int main(int argc, char** argv) {
 	assert(M.rowdim() == M.coldim());
 	n = M.rowdim();
 	if (n <= 20) M.write(std::cout) << std::endl;
+	
+	if (mofile != "") {
+		std::ofstream out(mofile);
+		M.write(out);
+		out.close();
+		return 0;
+	}
 	
 #if 0
 	std::vector<Polynomial> lifs;
