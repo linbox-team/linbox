@@ -558,12 +558,15 @@ int main(int argc, char** argv) {
 	size_t p = 7;
 	size_t n = 10;
 	size_t b = 5;
-	double sparsity = 0.05;
 	int seed = time(NULL);
 	size_t t = 2;
 	size_t times = 1;
-	size_t exponent = 0;
 	double probability = 0.5;
+	size_t rank = 0;
+	
+	double sparsity = 0.05;
+	double equivSparsity = 0.025;
+	size_t extend = 1;
 	
 	std::string bumpFile;
 	std::string matrixFile;
@@ -583,7 +586,9 @@ int main(int argc, char** argv) {
 		{ 't', "-t T", "Target t-th largest invariant factor", TYPE_INT, &t},
 		{ 'c', "-c C", "Choose b such that prob of t-th being correct > c", TYPE_DOUBLE, &probability},
 		{ 'k', "-k K", "Repeat computation K times", TYPE_INT, &times},
-		{ 'e', "-e E", "Compute local at x^e", TYPE_INT, &exponent},
+		{ 'R', "-R R", "Random matrix with rank R", TYPE_INT, &rank},
+		{ 'e', "-e E", "Sparsity target for equivalence transform", TYPE_DOUBLE, &equivSparsity},
+		{ 'E', "-E E", "Extension field exponent", TYPE_INT, &extend},
 		END_OF_ARGUMENTS
 	};
 
@@ -599,7 +604,13 @@ int main(int argc, char** argv) {
 	SparseMat M(F);
 	Polynomial det;
 	
-	if (matrixFile == "" && bumpFile == "") {
+	TW.clear();
+	TW.start();
+	
+	if (rank != 0) {
+		M.resize(n, n);
+		Gen.randomMatrix(M, n, rank, equivSparsity, sparsity);
+	} else if (matrixFile == "" && bumpFile == "") {
 		std::vector<Polynomial> fs;
         Gen.invariants(fs, n, fsnum);
         Gen.generate(M, det, fs, sparsity);
@@ -615,6 +626,10 @@ int main(int argc, char** argv) {
 		M.finalize();
 		iF.close();
 	}
+	
+	TW.stop();
+	double mg_time = TW.usertime();
+	std::cout << mg_time << " " << std::flush;
 		
 	assert(M.rowdim() == M.coldim());
 	n = M.rowdim();
@@ -634,6 +649,55 @@ int main(int argc, char** argv) {
 	F.write(std::cout, detM) << std::endl;
 #else 
 	TestInvariantFactorsHelper helper(p);
+	std::cout << n << " " << b << " " << Gen.nnz(M) << " " << std::flush;
+	
+	if (b == 1) {
+		if (extend > 1) {
+			typedef Givaro::GFqDom<int64_t> ExtField;
+			typedef typename ExtField::Element ExtElement;
+			typedef typename ExtField::RandIter ExtRandIter;
+			
+			ExtField EF((uint64_t) F.cardinality(), extend);
+			ExtRandIter RI(EF);
+			
+			typedef typename SparseMat::template rebind<ExtField>::other FBlackbox;
+			FBlackbox EM(M, EF);
+			
+			typedef BlackboxContainer<ExtField, FBlackbox> BBContainer;
+			BBContainer seq(&EM, EF, RI);
+			MasseyDomain<ExtField, BBContainer> WD(&seq, 10);
+						
+			TW.clear();
+			TW.start();
+			
+			BlasVector<ExtField> phi(EF);
+			unsigned long deg;
+			WD.minpoly(phi, deg);
+			
+			TW.stop();
+			double bm_time = TW.usertime();
+			std::cout << bm_time << " " << (phi.size() - 1) << std::endl;
+		} else {
+			RandIter RI(F);
+			
+			typedef BlackboxContainer<Field, SparseMat> BBContainer;
+			BBContainer seq(&M, F, RI);
+			MasseyDomain<Field, BBContainer> WD(&seq, 10);
+						
+			TW.clear();
+			TW.start();
+			
+			BlasVector<Field> phi(F);
+			unsigned long deg;
+			WD.minpoly(phi, deg);
+			
+			TW.stop();
+			double bm_time = TW.usertime();
+			std::cout << bm_time << " " << (phi.size() - 1) << std::endl;
+		}
+		
+		return 0;
+	}
 	
 	Polynomial mp;
 	std::vector<Polynomial> result;
@@ -645,74 +709,71 @@ int main(int argc, char** argv) {
 	Polynomial detFflas;
 	std::vector<Polynomial> resultFflas;
 	
-	for (size_t i = 0; i < times; i++) {
-		std::cout << n << " " << b << " " << Gen.nnz(M) << " " << std::flush;
-		// Generate random left and right projectors
-		std::vector<size_t> degree;
-		std::vector<Matrix> minpoly;
-		std::vector<size_t> degree2;
-		std::vector<Matrix> minpoly2;
-		helper.computeMinpoly(degree, minpoly, degree2, minpoly2, M, b);
-		
-		//std::vector<size_t> degree2;
-		//std::vector<Matrix> minpoly2;
-		//helper.computeMinpolyFflas(degree2, minpoly2, M, b);
-		
-		// Convert to matrix with polynomial entries
-		PolyMatrix G(R, b, b);
-		helper.convertMinPolyToPolyMatrix(G, minpoly);
-		
-		TestPolySmithFormUtil<PolynomialRing> putil(R);
-		//putil.printMatrix(G);
-		//std::cout << std::endl;
-		
-		// Compute smith form of generator
-		size_t exponent_limit = helper.detLimit(G, n);
-		std::cout << exponent_limit << " " << std::flush;
-		exponent_limit = exponent == 0 ? exponent_limit : exponent;
-		
-		double dixon_time = helper.timeDixon(mp, G, exponent_limit);
-		//double popov_time = helper.timePopov(det, G);
-		double local_time = helper.timeLocalX(det2, G, exponent_limit);
-		// double ilio_time = helper.timeIliopoulos(result2, G, det2);
-		double factored_local_time = helper.timeFactoredLocal(result3, G, det2);
-		//double factored_ilio_time = helper.timeFactoredIlio(result4, G, det2);
-		
-		PolyMatrix GFflas(R, b, b);
-		helper.convertMinPolyToPolyMatrix(GFflas, minpoly2);
-		helper.timeLocalX(detFflas, GFflas, helper.detLimit(GFflas, n));
-		helper.timeFactoredLocal(resultFflas, GFflas, detFflas);
-		
-		//double total_time = local_time + ilio_time;
-		//double total2_time = local_time + factored_local_time;
-		//std::cout << total_time << " ";
-		//std::cout << total2_time << " " << std::flush;
-		
-		//Polynomial t1, t2;
-		//R.monic(t1, mp);
-		//R.monic(t2, result3[result3.size() - 1]);
-		//std::cout << std::endl;
-		//R.write(std::cout << "dixon = ", t1) << std::endl;
-		//R.write(std::cout << "mp = ", t2) << std::endl;
-		//std::string mpPass = (R.areEqual(t1, t2) ? "Pass" : "Fail");
-		//std::cout << mpPass << " " << std::flush;
-		
-		double kb_time = helper.timeKannanBachem(result, G);
-		//timeHybrid(R, result, G);
-		//helper.computeDet(det, result);
-		
-		//std::cout << (kb_time / total_time) << " ";
-		//std::cout << (kb_time / total2_time) << " " << std::flush;
-		
-		//R.write(std::cout << "det1: ", det) << std::endl;
-		//R.write(std::cout << "det2: ", det2) << std::endl;
-		//std::cout << (R.areEqual(det, det2) ? "Pass" : "Fail");
-		
-		std::cout << std::endl;
-	}
+	// Generate random left and right projectors
+	std::vector<size_t> degree;
+	std::vector<Matrix> minpoly;
+	std::vector<size_t> degree2;
+	std::vector<Matrix> minpoly2;
+	//helper.computeMinpoly(degree, minpoly, degree2, minpoly2, M, b);
+	helper.computeMinpolyFflas(degree, minpoly, M, b);
+	
+	//std::vector<size_t> degree2;
+	//std::vector<Matrix> minpoly2;
+	//helper.computeMinpolyFflas(degree2, minpoly2, M, b);
+	
+	// Convert to matrix with polynomial entries
+	PolyMatrix G(R, b, b);
+	helper.convertMinPolyToPolyMatrix(G, minpoly);
+	
+	TestPolySmithFormUtil<PolynomialRing> putil(R);
+	//putil.printMatrix(G);
+	//std::cout << std::endl;
+	
+	// Compute smith form of generator
+	size_t exponent_limit = helper.detLimit(G, n);
+	std::cout << exponent_limit << " " << std::flush;
+	
+	//double dixon_time = helper.timeDixon(mp, G, exponent_limit);
+	//double popov_time = helper.timePopov(det, G);
+	double local_time = helper.timeLocalX(det2, G, exponent_limit);
+	// double ilio_time = helper.timeIliopoulos(result2, G, det2);
+	double factored_local_time = helper.timeFactoredLocal(result3, G, det2);
+	//double factored_ilio_time = helper.timeFactoredIlio(result4, G, det2);
+	
+	//PolyMatrix GFflas(R, b, b);
+	//helper.convertMinPolyToPolyMatrix(GFflas, minpoly2);
+	//helper.timeLocalX(detFflas, GFflas, helper.detLimit(GFflas, n));
+	//helper.timeFactoredLocal(resultFflas, GFflas, detFflas);
+	
+	//double total_time = local_time + ilio_time;
+	//double total2_time = local_time + factored_local_time;
+	//std::cout << total_time << " ";
+	//std::cout << total2_time << " " << std::flush;
+	
+	//Polynomial t1, t2;
+	//R.monic(t1, mp);
+	//R.monic(t2, result3[result3.size() - 1]);
+	//std::cout << std::endl;
+	//R.write(std::cout << "dixon = ", t1) << std::endl;
+	//R.write(std::cout << "mp = ", t2) << std::endl;
+	//std::string mpPass = (R.areEqual(t1, t2) ? "Pass" : "Fail");
+	//std::cout << mpPass << " " << std::flush;
+	
+	//double kb_time = helper.timeKannanBachem(result, G);
+	//timeHybrid(R, result, G);
+	//helper.computeDet(det, result);
+	
+	//std::cout << (kb_time / total_time) << " ";
+	//std::cout << (kb_time / total2_time) << " " << std::flush;
+	
+	//R.write(std::cout << "det1: ", det) << std::endl;
+	//R.write(std::cout << "det2: ", det2) << std::endl;
+	//std::cout << (R.areEqual(det, det2) ? "Pass" : "Fail");
+	
+	std::cout << std::endl;
 		
 	if (outFile == "") {
-		//helper.writeInvariantFactors(std::cout, result);
+		//helper.writeInvariantFactors(std::cout, result3);
 		//helper.writeInvariantFactors(std::cout, resultFflas);
 	} else {
 		std::ofstream out1(outFile + "1.txt");

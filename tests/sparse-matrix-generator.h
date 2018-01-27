@@ -368,6 +368,35 @@ namespace LinBox
 			}
 			return fs;
 		}
+		
+		/**
+		 * Generates a random sparse matrix.
+		 * n = dimension
+		 * r = rank
+		 * s = sparsity
+		 */
+		template<class Matrix>
+		void randomMatrix(Matrix &M, size_t n, size_t r, double equivSparsity, double targetSparsity) const {
+			SparseMatrix<Field, SparseMatrixFormat::SMM> T(_F, n, n);
+			
+			std::set<size_t> nzRows, nzCols;
+			for (size_t i = 0; i < r; i++) {
+				T.setEntry(i, i, _F.one);
+				nzRows.insert(i);
+				nzCols.insert(i);
+			}
+			T.finalize();
+			
+			T.randomEquiv(size_t(n * n * equivSparsity));
+			T.finalize();
+			
+			if (equivSparsity < targetSparsity) {
+				T.randomSim(size_t(n * n * targetSparsity));
+				T.finalize();
+			}
+			
+			copy(M, T);
+		}
 			
 	}; // SparseMatrixGenerator
 } // linbox
