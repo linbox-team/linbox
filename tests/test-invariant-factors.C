@@ -561,7 +561,6 @@ int main(int argc, char** argv) {
 	size_t b = 5;
 	int seed = time(NULL);
 	size_t t = 2;
-	size_t times = 1;
 	double probability = 0.5;
 	size_t rank = 0;
 	
@@ -586,7 +585,6 @@ int main(int argc, char** argv) {
 		{ 'b', "-b B", "Block size", TYPE_INT, &b},
 		{ 't', "-t T", "Target t-th largest invariant factor", TYPE_INT, &t},
 		{ 'c', "-c C", "Choose b such that prob of t-th being correct > c", TYPE_DOUBLE, &probability},
-		{ 'k', "-k K", "Repeat computation K times", TYPE_INT, &times},
 		{ 'R', "-R R", "Random matrix with rank R", TYPE_INT, &rank},
 		{ 'e', "-e E", "Sparsity target for equivalence transform", TYPE_DOUBLE, &equivSparsity},
 		{ 'E', "-E E", "Extension field exponent", TYPE_INT, &extend},
@@ -650,7 +648,7 @@ int main(int argc, char** argv) {
 	F.write(std::cout, detM) << std::endl;
 #else 
 	TestInvariantFactorsHelper helper(p);
-	std::cout << n << " " << b << " " << Gen.nnz(M) << " " << std::flush;
+	std::cout << n << " " << Gen.nnz(M) << " " << b << " " << std::flush;
 	
 	if (b == 1) {
 		if (extend > 1) {
@@ -658,8 +656,9 @@ int main(int argc, char** argv) {
 			typedef typename ExtField::Element ExtElement;
 			typedef typename ExtField::RandIter ExtRandIter;
 			
-			uint64_t extend1 = (uint64_t)Givaro::FF_EXPONENT_MAX((uint64_t)p, (uint64_t)LINBOX_EXTENSION_DEGREE_MAX);
-			//std::cout << "extend: " << extend1 << std::endl;
+			// uint64_t extend1 = (uint64_t)Givaro::FF_EXPONENT_MAX((uint64_t)p, (uint64_t)LINBOX_EXTENSION_DEGREE_MAX);
+			uint64_t extend1 = extend;
+			std::cout << extend1 << " " << std::flush;
 			
 			ExtField EF((uint64_t) p, extend1);
 			ExtRandIter RI(EF);
@@ -682,6 +681,8 @@ int main(int argc, char** argv) {
 			double bm_time = TW.usertime();
 			std::cout << bm_time << " " << (phi.size() - 1) << std::endl;
 		} else {
+			std::cout << extend << " " << std::flush;
+			
 			RandIter RI(F);
 			
 			typedef BlackboxContainer<Field, SparseMat> BBContainer;
