@@ -676,7 +676,7 @@ int main(int argc, char** argv) {
 			
 			TW.stop();
 			double bm_time = TW.usertime();
-			std::cout << bm_time << " " << phi.size() << std::endl;
+			std::cout << bm_time << " " << (phi.size() - 1) << std::endl;
 		} else {
 			RandIter RI(F);
 			
@@ -693,7 +693,7 @@ int main(int argc, char** argv) {
 			
 			TW.stop();
 			double bm_time = TW.usertime();
-			std::cout << bm_time << " " << phi.size() << std::endl;
+			std::cout << bm_time << " " << (phi.size() - 1) << std::endl;
 		}
 		
 		return 0;
@@ -714,7 +714,8 @@ int main(int argc, char** argv) {
 	std::vector<Matrix> minpoly;
 	std::vector<size_t> degree2;
 	std::vector<Matrix> minpoly2;
-	helper.computeMinpoly(degree, minpoly, degree2, minpoly2, M, b);
+	//helper.computeMinpoly(degree, minpoly, degree2, minpoly2, M, b);
+	helper.computeMinpolyFflas(degree, minpoly, M, b);
 	
 	//std::vector<size_t> degree2;
 	//std::vector<Matrix> minpoly2;
