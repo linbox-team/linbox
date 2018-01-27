@@ -83,6 +83,7 @@ BASIC_TESTS =					\
 	test-charpoly			\
 	test-isposdef				\
 	test-ispossemidef			\
+	test-local-smith-form-sparseelim\
 	test-regression
 
 # All other tests.  
@@ -167,7 +168,6 @@ FULLCHECK_TESTS =               \
 	test-smith-form-binary      \
 	test-smith-form-iliopoulos  \
 	test-smith-form-local    	\
-	test-local-smith-form-sparseelim\
 	test-smith-form-kannan-bachem	\
 	test-solve-nonsingular		\
 	test-sparse					\
