@@ -27,6 +27,7 @@
 #include "linbox/algorithms/weak-popov-form.h"
 #include "linbox/algorithms/poly-dixon.h"
 #include "linbox/algorithms/invariant-factors.h"
+#include "linbox/algorithms/wiedemann.h"
 
 #include "sparse-matrix-generator.h"
 #include "test-poly-smith-form.h"
@@ -657,7 +658,10 @@ int main(int argc, char** argv) {
 			typedef typename ExtField::Element ExtElement;
 			typedef typename ExtField::RandIter ExtRandIter;
 			
-			ExtField EF((uint64_t) F.cardinality(), extend);
+			uint64_t extend1 = (uint64_t)Givaro::FF_EXPONENT_MAX((uint64_t)p, (uint64_t)LINBOX_EXTENSION_DEGREE_MAX);
+			//std::cout << "extend: " << extend1 << std::endl;
+			
+			ExtField EF((uint64_t) p, extend1);
 			ExtRandIter RI(EF);
 			
 			typedef typename SparseMat::template rebind<ExtField>::other FBlackbox;
