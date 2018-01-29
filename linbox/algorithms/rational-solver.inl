@@ -876,14 +876,16 @@ namespace LinBox
 
 #ifdef DEBUG_INC
 			std::cout << "P takes (0 1 ...) to (";
-			for (size_t i=0; i<A.rowdim(); ++i) std::cout << srcRow[i] << ' '; std::cout << ')' << std::endl;
+			for (size_t i=0; i<A.rowdim(); ++i) std::cout << srcRow[i] << ' ';
+            std::cout << ')' << std::endl;
 			std::cout << "Q takes (0 1 ...) to (";
-			for (size_t i=0; i<A.coldim()+1; ++i) std::cout << srcCol[i] << ' '; std::cout << ')' << std::endl;
+			for (size_t i=0; i<A.coldim()+1; ++i) std::cout << srcCol[i] << ' ';
+            std::cout << ')' << std::endl;
 #endif
 
 			bool appearsInconsistent = (srcCol[TAS_rank-1] == A.coldim());
 			size_t rank = TAS_rank - (appearsInconsistent ? 1 : 0);
-#ifdef DIXON_DEBUG
+#ifdef DEBUG_DIXON
 			std::cout << "TAS_rank, rank: " << TAS_rank << ' ' << rank << std::endl;
 #endif
 #ifdef RSTIMING

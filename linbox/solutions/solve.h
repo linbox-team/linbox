@@ -534,7 +534,7 @@ namespace LinBox
 		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
 			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
 
-		commentator().start ("Padic Integer Blas-based Solving ICI", "solving");
+		commentator().start ("Padic Integer Blas-based Solving ", "solving");
 
 		typedef Givaro::ModularBalanced<double> Field;
 		// 0.7213475205 is an upper approximation of 1/(2log(2))
