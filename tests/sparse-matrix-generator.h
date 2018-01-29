@@ -442,24 +442,20 @@ namespace LinBox
 		 * s = sparsity
 		 */
 		template<class Matrix>
-		void randomMatrix(Matrix &M, size_t n, size_t r, double equivSparsity, double targetSparsity) const {
+		void randomMatrix(Matrix &M, size_t n, size_t r, double targetSparsity) const {
 			SparseMatrix<Field, SparseMatrixFormat::SMM> T(_F, n, n);
 			
-			std::set<size_t> nzRows, nzCols;
-			for (size_t i = 0; i < r; i++) {
+			for (size_t i = 0; i < n; i++) {
 				T.setEntry(i, i, _F.one);
-				nzRows.insert(i);
-				nzCols.insert(i);
+				for (size_t j = i + r; j < n; j += r) {
+					T.setEntry(i, j, _F.one);
+					T.setEntry(j, i, _F.one);
+				}
 			}
 			T.finalize();
 			
-			T.randomEquiv(size_t(n * n * equivSparsity));
+			T.randomEquiv(size_t(n * n * targetSparsity));
 			T.finalize();
-			
-			if (equivSparsity < targetSparsity) {
-				T.randomSim(size_t(n * n * targetSparsity));
-				T.finalize();
-			}
 			
 			copy(M, T);
 		}

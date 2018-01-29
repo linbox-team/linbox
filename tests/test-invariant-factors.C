@@ -20,6 +20,7 @@
 #include "linbox/matrix/random-matrix.h"
 #include "linbox/algorithms/blackbox-block-container.h"
 #include "linbox/algorithms/blackbox-block-container-smmx.h"
+#include "linbox/algorithms/blackbox-block-container-psmmx.h"
 #include "linbox/algorithms/block-massey-domain.h"
 #include "linbox/algorithms/smith-form-kannan-bachem.h"
 #include "linbox/algorithms/smith-form-local.h"
@@ -27,6 +28,7 @@
 #include "linbox/algorithms/weak-popov-form.h"
 #include "linbox/algorithms/poly-dixon.h"
 #include "linbox/algorithms/invariant-factors.h"
+#include "linbox/algorithms/wiedemann.h"
 
 #include "sparse-matrix-generator.h"
 #include "test-poly-smith-form.h"
@@ -140,6 +142,24 @@ public:
 		TW.stop();
 		double bm2_time = TW.usertime();
 		std::cout << bm2_time << " " << std::flush;
+		
+		// Construct block sequence to input to BM
+		typedef BlackboxBlockContainerPsmmx<Field, SparseMat> PfflasSequence;
+		PfflasSequence pfseq(&M, F, U, V);
+		
+		// Compute minimal generating polynomial matrix
+		// BlockMasseyDomain<Field, FflasSequence> BMD(&seq); // pascal
+		BlockCoppersmithDomain<MatrixDom, PfflasSequence> PFBCD(MD, &pfseq, 10); // george
+		
+		TW.clear();
+		TW.start();
+		
+		//BMD.left_minpoly_rec(minpoly, degree);
+		degree2 = PFBCD.right_minpoly(minpoly2);
+		
+		TW.stop();
+		double bm3_time = TW.usertime();
+		std::cout << bm3_time << "<> " << std::flush;
 		
 		return bm_time;
 	}
@@ -560,22 +580,22 @@ int main(int argc, char** argv) {
 	size_t b = 5;
 	int seed = time(NULL);
 	size_t t = 2;
-	size_t times = 1;
 	double probability = 0.5;
 	size_t rank = 0;
 	
 	double sparsity = 0.05;
-	double equivSparsity = 0.025;
 	size_t extend = 1;
 	
 	std::string bumpFile;
 	std::string matrixFile;
 	int fsnum = 1;
 	std::string outFile;
+	std::string mofile;
 
 	static Argument args[] = {
 		{ 'm', "-m M", "Name of file for bumps", TYPE_STR, &bumpFile},
 		{ 'f', "-f F", "Name of file for matrix", TYPE_STR, &matrixFile},
+		{ 'F', "-F F", "Name of output file for matrix", TYPE_STR, &mofile},
 		{ 'l', "-l L", "aka fsnum, Choose L-th divisor sequence (you also must set n)", TYPE_INT, &fsnum},
 		{ 'o', "-o O", "Name of output file for invariant factors", TYPE_STR, &outFile},
 		{ 'n', "-n N", "Dimension of matrix", TYPE_INT, &n},
@@ -585,10 +605,8 @@ int main(int argc, char** argv) {
 		{ 'b', "-b B", "Block size", TYPE_INT, &b},
 		{ 't', "-t T", "Target t-th largest invariant factor", TYPE_INT, &t},
 		{ 'c', "-c C", "Choose b such that prob of t-th being correct > c", TYPE_DOUBLE, &probability},
-		{ 'k', "-k K", "Repeat computation K times", TYPE_INT, &times},
 		{ 'R', "-R R", "Random matrix with rank R", TYPE_INT, &rank},
-		{ 'e', "-e E", "Sparsity target for equivalence transform", TYPE_DOUBLE, &equivSparsity},
-		{ 'E', "-E E", "Extension field exponent", TYPE_INT, &extend},
+		{ 'e', "-e E", "Extension field exponent (p^e)", TYPE_INT, &extend},
 		END_OF_ARGUMENTS
 	};
 
@@ -609,7 +627,7 @@ int main(int argc, char** argv) {
 	
 	if (rank != 0) {
 		M.resize(n, n);
-		Gen.randomMatrix(M, n, rank, equivSparsity, sparsity);
+		Gen.randomMatrix(M, n, rank, sparsity);
 	} else if (matrixFile == "" && bumpFile == "") {
 		std::vector<Polynomial> fs;
         Gen.invariants(fs, n, fsnum);
@@ -629,11 +647,18 @@ int main(int argc, char** argv) {
 	
 	TW.stop();
 	double mg_time = TW.usertime();
-	std::cout << mg_time << " " << std::flush;
+	//std::cout << mg_time << " " << std::flush;
 		
 	assert(M.rowdim() == M.coldim());
 	n = M.rowdim();
 	if (n <= 20) M.write(std::cout) << std::endl;
+	
+	if (mofile != "") {
+		std::ofstream out(mofile);
+		M.write(out);
+		out.close();
+		return 0;
+	}
 	
 #if 0
 	std::vector<Polynomial> lifs;
@@ -649,7 +674,7 @@ int main(int argc, char** argv) {
 	F.write(std::cout, detM) << std::endl;
 #else 
 	TestInvariantFactorsHelper helper(p);
-	std::cout << n << " " << b << " " << Gen.nnz(M) << " " << std::flush;
+	std::cout << n << " " << Gen.nnz(M) << " " << b << " " << std::flush;
 	
 	if (b == 1) {
 		if (extend > 1) {
@@ -657,7 +682,11 @@ int main(int argc, char** argv) {
 			typedef typename ExtField::Element ExtElement;
 			typedef typename ExtField::RandIter ExtRandIter;
 			
-			ExtField EF((uint64_t) F.cardinality(), extend);
+			// uint64_t extend1 = (uint64_t)Givaro::FF_EXPONENT_MAX((uint64_t)p, (uint64_t)LINBOX_EXTENSION_DEGREE_MAX);
+			uint64_t extend1 = extend;
+			std::cout << extend1 << " " << std::flush;
+			
+			ExtField EF((uint64_t) p, extend1);
 			ExtRandIter RI(EF);
 			
 			typedef typename SparseMat::template rebind<ExtField>::other FBlackbox;
@@ -678,6 +707,8 @@ int main(int argc, char** argv) {
 			double bm_time = TW.usertime();
 			std::cout << bm_time << " " << (phi.size() - 1) << std::endl;
 		} else {
+			std::cout << extend << " " << std::flush;
+			
 			RandIter RI(F);
 			
 			typedef BlackboxContainer<Field, SparseMat> BBContainer;
@@ -714,8 +745,8 @@ int main(int argc, char** argv) {
 	std::vector<Matrix> minpoly;
 	std::vector<size_t> degree2;
 	std::vector<Matrix> minpoly2;
-	//helper.computeMinpoly(degree, minpoly, degree2, minpoly2, M, b);
-	helper.computeMinpolyFflas(degree, minpoly, M, b);
+	helper.computeMinpoly(degree, minpoly, degree2, minpoly2, M, b);
+	//helper.computeMinpolyFflas(degree, minpoly, M, b);
 	
 	//std::vector<size_t> degree2;
 	//std::vector<Matrix> minpoly2;
