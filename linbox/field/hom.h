@@ -307,6 +307,25 @@ namespace LinBox
 	}; // end Hom
 
 
+	template <>
+	class Hom<Givaro::QField<Givaro::Rational>, Givaro::QField<Givaro::Rational>> {
+
+	public:
+		typedef Givaro::QField<Givaro::Rational> Domain;
+		typedef Domain::Element Elt;
+
+		Hom(const Domain& S, const Domain& T) : _d(S) { }
+		Elt& image(Elt& t, const Elt& s) const { return t=s; }
+            // Warning, by default convert only the numerator
+		Elt& preimage(Elt& s, const Elt& t) const { return s=t; }
+		const Domain& source() const { return _d;}
+		const Domain& target() const { return _d;}
+
+	protected:
+		const Domain& _d;
+	}; // end Hom
+
+
 } // namespace LinBox
 
 
