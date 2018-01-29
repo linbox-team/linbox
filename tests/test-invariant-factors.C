@@ -20,6 +20,7 @@
 #include "linbox/matrix/random-matrix.h"
 #include "linbox/algorithms/blackbox-block-container.h"
 #include "linbox/algorithms/blackbox-block-container-smmx.h"
+#include "linbox/algorithms/blackbox-block-container-psmmx.h"
 #include "linbox/algorithms/block-massey-domain.h"
 #include "linbox/algorithms/smith-form-kannan-bachem.h"
 #include "linbox/algorithms/smith-form-local.h"
@@ -141,6 +142,24 @@ public:
 		TW.stop();
 		double bm2_time = TW.usertime();
 		std::cout << bm2_time << " " << std::flush;
+		
+		// Construct block sequence to input to BM
+		typedef BlackboxBlockContainerPsmmx<Field, SparseMat> PfflasSequence;
+		PfflasSequence pfseq(&M, F, U, V);
+		
+		// Compute minimal generating polynomial matrix
+		// BlockMasseyDomain<Field, FflasSequence> BMD(&seq); // pascal
+		BlockCoppersmithDomain<MatrixDom, PfflasSequence> PFBCD(MD, &pfseq, 10); // george
+		
+		TW.clear();
+		TW.start();
+		
+		//BMD.left_minpoly_rec(minpoly, degree);
+		degree2 = PFBCD.right_minpoly(minpoly2);
+		
+		TW.stop();
+		double bm3_time = TW.usertime();
+		std::cout << bm3_time << "<> " << std::flush;
 		
 		return bm_time;
 	}
@@ -726,8 +745,8 @@ int main(int argc, char** argv) {
 	std::vector<Matrix> minpoly;
 	std::vector<size_t> degree2;
 	std::vector<Matrix> minpoly2;
-	//helper.computeMinpoly(degree, minpoly, degree2, minpoly2, M, b);
-	helper.computeMinpolyFflas(degree, minpoly, M, b);
+	helper.computeMinpoly(degree, minpoly, degree2, minpoly2, M, b);
+	//helper.computeMinpolyFflas(degree, minpoly, M, b);
 	
 	//std::vector<size_t> degree2;
 	//std::vector<Matrix> minpoly2;
