@@ -88,7 +88,7 @@ public:
 	
 	TestInvariantFactorsHelper(size_t p) : _p(p), F(p), R(p), MD(F) {};
 	
-	void writeInvariantFactors(std::ostream &os, std::vector<Polynomial> &factors, bool full=true) const {
+	std::ostream & writeInvariantFactors(std::ostream &os, std::vector<Polynomial> &factors, bool full=true) const {
 		for (size_t i = 0; i < factors.size(); i++) {
 			Polynomial f;
 			R.monic(f, factors[i]);
@@ -98,9 +98,15 @@ public:
 				if (not R.isOne(f))
 				R.getCoeffField().write(os << R.deg(f) << ", const ", f[0]) << std::endl;
 		}
+		return os;
 	}
 
-	const PolynomialRing& ring() const { return R; }
+	std::ostream & writeInvariantFactorDegrees(std::ostream &os, std::vector<Polynomial> &factors, bool full=true) const {
+		os << R.deg(factors[0]); 
+		for (size_t i = 0; i < factors.size(); i++) 
+			os << ", " << R.deg(factors[i]);
+		return os;
+	}
 
 	// count nontrivial (not 1 or x) invariant factors.
 	size_t countInvariantFactors(std::vector<Polynomial> &factors) const {
@@ -110,9 +116,13 @@ public:
 
 		size_t count = 0;
 		for (size_t i = 0; i < factors.size(); i++) {
-			if (not R.areEqual(factors[i], R.one) and not R.areEqual(factors[i], x))
+			Polynomial & p = factors[i];
+			if (not (R.deg(p) < 1) and 
+				not (R.deg(p) == 1 and R.getCoeffField().isZero(p[0])))
 				count++;
 		}
+		if (count >= 15) R.write(std::cout << "long ", factors[13]) << ", " << count << std::endl;
+//		writeInvariantFactorDegrees(std::cout << "long ", factors) << std::endl;
 		return count;
 	}
 	
@@ -531,159 +541,4 @@ void permuteRows(Sp & MP, std::vector<size_t> & P, Sp& M) {
 			MP.setEntry(P[i],j,x);
 	MP.finalize();
 }
-
-int main(int argc, char** argv) {
-	size_t p = 3;
-	size_t n = 10;
-	size_t t = 2;
-	double probability = .99;
-	double sparsity = 0.05;
-	int seed = time(NULL);
-	size_t times = 1;
-	size_t exponent = 0;
-	int pre = 0;
-
-	size_t e = 5; // extension field degree
-	size_t b = 0;
-	
-	std::string bumpFile;
-	std::string matrixFile;
-	int fsnum = 1;
-	std::string outFile;
-
-	static Argument args[] = {
-		{ 'v', "-v V", "Version of preconditioner", TYPE_INT, &pre},
-		{ 'm', "-m M", "Name of file for bumps", TYPE_STR, &bumpFile},
-		{ 'f', "-f F", "Name of file for matrix", TYPE_STR, &matrixFile},
-		{ 'l', "-l L", "aka fsnum, Choose L-th divisor sequence (you also must set n)", TYPE_INT, &fsnum},
-		{ 'o', "-o O", "Name of output file for invariant factors", TYPE_STR, &outFile},
-		{ 'n', "-n N", "Dimension of matrix", TYPE_INT, &n},
-		{ 'p', "-p P", "Set the field GF(p)", TYPE_INT, &p},
-		{ 's', "-s S", "Target sparsity of matrix", TYPE_DOUBLE, &sparsity},
-		{ 'r', "-r R", "Random seed", TYPE_INT, &seed},
-		{ 'b', "-b B", "Block size", TYPE_INT, &b},
-		{ 't', "-t T", "Run iliopoulos with t-th largest invariant factor", TYPE_INT, &t},
-		{ 'k', "-k K", "Repeat computation K times", TYPE_INT, &times},
-		{ 'e', "-e E", "Compute local at x^e", TYPE_INT, &exponent},
-		END_OF_ARGUMENTS
-	};
-
-	parseArguments(argc,argv,args);
-	
-	srand(seed);
-
-	Field F(p);
-	PolynomialRing R(p);
-	SparseMatrixGenerator<Field, PolynomialRing> Gen(F, R);
-	TestPolySmithFormUtil<Field> util(F);
-	
-	SparseMat M(F);
-	Polynomial Det;
-	
-	if (matrixFile == "" && bumpFile == "") {
-		std::vector<Polynomial> fs;
-		Gen.invariants(fs, n, fsnum);
-		Gen.generate(M, Det, fs, sparsity);
-		//std::cout << "Must provide either matrix or bumps input" << std::endl;
-		//return -1;
-	} else if (matrixFile == "") {
-		// create sparse matrix from bumps and compute determinant
-		M.resize(n, n);
-		Gen.generate(M, Det, bumpFile, sparsity);
-	} else {
-		std::ifstream iF(matrixFile);
-		M.read(iF);
-		M.finalize();
-		iF.close();
-	}
-		
-	assert(M.rowdim() == M.coldim());
-	n = M.rowdim();
-
-	// MM is M over extension field
-	//ExtensionField K(F,3);
-	ExtensionField K(p,e);
-	SparseMatExtension MM(K,n,n);
-	MatrixHom::map(MM, M);
-
-	// Permutation preconditioner //
-	std::vector<size_t> P(n);
-	switch (pre) {
-		case 0: identityVec(P,n); break;
-		case 1: randomVec(P,n); break;
-		case 2: randomCycleVec(P,n); break;
-	//	case 3: blockDiag(P,5); break;
-	}
-
-	//P.write(std::cout) << std::endl;
-
-	SparseMat MP(F,n,n);
-	permuteRows(MP,P,M);
-	//ProductMat MP(M,P);
-	/*
-	if (n <= 20) {
-		DM U(F,n,n), V(F,n,n);
-		for (size_t i = 0; i < n; ++i) V.setEntry(i,i,F.one);
-		MP.applyRight(U,V);
-		U.write(std::cout) << std::endl;
-	}
-	*/
-
-	std::vector<Polynomial> result;
-	
-	InvariantFactors<Field, PolynomialRing, QuotientRing> IFD(F,R);
-	b = IFD.min_block_size(t,probability);
-	TestInvariantFactorsHelper helper(p);
-
-	for (size_t i = 0; i < times; i++) {
-		std::cout << "dim " << n << ", blk " << b << ", nnz " << Gen.nnz(M) << std::endl;
-
-		// det by b3if
-		TW.clear(); 
-		TW.start();
-		IFD.largestInvariantFactors(result, MP, t, probability);
-		TW.stop();
-		double iftime = TW.usertime();
-
-		typename PolynomialRing::Coeff d1;
-		Polynomial pol;
-		helper.computeDet(pol, result);
-		d1 = pol[0];
-		if (R.deg(pol) == n or R.getCoeffField().isZero(d1)) std::cout << "b3 det ";
-		else std::cout << "bogus det ";
-		if (pre == 2 and n & 1) R.getCoeffField().negin(d1);
-		R.getCoeffField().write(std::cout, d1) << " in time " << iftime << std::endl;
-
-		// det by other means
-		ExtensionField::Element d2; K.init(d2);
-		TW.clear(); 
-		TW.start();
-		Method::Wiedemann Meth;
-		RingCategories::ModularTag  tag;
-		LinBox::det(d2,MM, tag, Meth);
-		TW.stop();
-		double dtime = TW.usertime();
-		K.write(std::cout << "wied det ", d2)
-			<< " in time " << dtime << std::endl;
-		
-	}
-
-	
-	std::cout << "nontriv: " << helper.countInvariantFactors(result)
-		<< ", minpoldeg: " << helper.ring().deg(result.back()) << std::endl;
-
-	if (outFile == "") {
-		helper.writeInvariantFactors(std::cout, result, 0);
-	} else {
-		
-	  //if (helper.degInvariantFactors(result) > M.rowdim()) {
-		std::ofstream out(outFile);
-		helper.writeInvariantFactors(out, result);
-		out.close();
-	  //}
-	}
-	
-	return 0;
-}
-
 

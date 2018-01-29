@@ -46,24 +46,28 @@ namespace LinBox
 	public:
 		SparseMatrixGenerator(const Field &F, const PolynomialRing &R): _F(F), _R(R), _RI(R), _CRI(R.getCoeffField()) {}
 		
-		void linearPolynomial(Polynomial &p, const Coeff& a) const {
+		Polynomial & linearPolynomial(Polynomial &p, const Coeff& a) const {
 			const CoeffField& F=_R.getCoeffField();
 			Coeff ma; F.init(ma); 
 			F.neg(ma, a);
 			_R.init(p);
 			_R.setCoeff(p, 1, F.one);
 			_R.setCoeff(p, 0, ma);
+			return p;
 		}
 
-		void randomPolynomial(Polynomial &p, size_t d) const {
+		Polynomial & randomPolynomial(Polynomial &p, size_t d) const {
 			_RI.random(p, d);
+			_R.setCoeff(p, d, _R.getCoeffField().one);
+			return p;
 		}
 		
-		void randomIrreducible(Polynomial &p, size_t d) const {
+		Polynomial & randomIrreducible(Polynomial &p, size_t d) const {
 			_RI.randomIrreducible(p, d);
+			return p;
 		}
 		
-		void randomTrinomial(Polynomial &p, size_t d) const {
+		Polynomial & randomTrinomial(Polynomial &p, size_t d) const {
 			if (d < 2) {
 				std::cout << "Error: trinomial must have degree > 1" << std::endl;
 				exit(1);
@@ -79,12 +83,14 @@ namespace LinBox
 			size_t i = rand() % d;
 			_CRI.random(c);
 			_R.setCoeff(p, i, c);
+			return p;
 		}
 		
-		void randomIrreducibleTrinomial(Polynomial &p, size_t d) const {
+		Polynomial & randomIrreducibleTrinomial(Polynomial &p, size_t d) const {
 			do {
 				randomTrinomial(p, d);
 			} while (!_R.isIrreducible(p));
+			return p;
 		}
 		
 		void readDivisor(std::ifstream &in, Polynomial &divisor) const {
@@ -287,8 +293,8 @@ namespace LinBox
 				_R.mulin(det, xm);
 			}
 			
-			// Use SMM format to generate the matrix
-			// fill in is much faster that other formats
+			// Use SMM format to generate the matrix.
+			// Fill in is much faster than with other formats.
 			SparseMatrix<Field, SparseMatrixFormat::SMM> T(_F, M.rowdim(), M.coldim());
 			build(T, fs);
 			fillIn(T, sparsity);
@@ -303,64 +309,124 @@ namespace LinBox
 			generate(M, det, fs, sparsity);
 		} // generate from file
 
-		std::vector<Polynomial>& augment(std::vector<Polynomial>& fs, size_t k, Polynomial& p) {
+		// add k instances of p to fs
+		//std::vector<Polynomial>& 
+		size_t augment(std::vector<Polynomial>& fs, size_t k, Polynomial& p) {
 			for (size_t i = 0; i < k; ++i) fs.push_back(p);
-			return fs;
+			//return fs;
+			return k*_R.deg(p);
+		}
+
+		// To fs add triangle of slope s and total degree n.
+		// The invariants are powers of p.  Deg(p) must divide n.
+		// the i-th divisor generated is a power of p of degree ceil (i*s*deg(p)).
+		// If need be, the last invariant degree is lower.
+		// n must be a multiplle of d
+		// addTriangle(fs, n, 1/n, x-1) adds n copies of x-1 (identity matrix)
+		// addTriangle(fs, 2, 1, n/3, p) adds n/3 copies of p^2 and n/3 of p.
+		// addTriangle(fs, k, 1, k, p) adds k copies of p^i for i in 1..k
+		// addTriangle(fs, 2, n/3, 1, p) adds p^2n/3 and p^n/3
+		// addTriangle(fs, 1, n, 1, p) adds p^n 
+		//
+		size_t addTriangle (std::vector<Polynomial>& fs, 
+			size_t n, double s, Polynomial& p) {
+			size_t d = _R.deg(p);
+			n /= d;
+			Polynomial q;
+			_R.assign(q, p);
+			//std::cout << "n is " << n << ", s is " << s << std::endl;
+			size_t k = 1; // q is p^k
+			size_t sum = 0;
+			for (size_t i = 1; sum < n; ++i) {
+				size_t l = ceil(i*s);
+				if (sum+l <= n) {
+					while (k < l) {_R.mulin(q, p); k++; }
+					fs.push_back(q);
+					sum += l;
+					//std::cout << l << " is l, sum is " << sum << std::endl;
+				} else if (sum < n) { //finish
+					l = n-sum;
+					if (_R.deg(q) <= l)
+						for (size_t j = _R.deg(q); j < l; ++j) _R.mulin(q,p);
+					else 
+						for (size_t j = _R.deg(q); j > l; --j) _R.divin(q,p);
+					//std::cout << l << " is l, deg is " << _R.deg(q) << std::endl;
+					fs.push_back(q);
+					sum += l;
+				}
+			}
+			return d*n;
+		}
+
+		// add triangle of powers of x-1.
+		size_t addTriangle (std::vector<Polynomial>& fs, 
+			size_t n, double s) {
+			Polynomial xm1;
+			linearPolynomial(xm1,_R.getCoeffField().mOne);
+			return 
+			addTriangle(fs, n, s, xm1);
+		}
+
+		// Add single poly of degree d, t-triangle of x-1 powers, 
+		// z copies of x.
+		// Rank will be r, minpoly degree will be d = r-(t-2)(t+1)/2.
+		// Invariant degrees: r-t(t+1)/2 + t + 1, t, t-1, ..., 2, 1, 1, 1, ...
+		// where, right to left, the 1's correspond to x's and 
+		// the 2,3,.. to x(x_1), x(x-1)^2, ...
+		//
+		void addEll (std::vector<Polynomial>& fs, 
+			size_t r, size_t t, size_t n) {
+			Polynomial p;
+			size_t tri = t*(t+1)/2;
+			if (r > tri) augment(fs, 1, randomPolynomial(p,r-tri)); 
+			addTriangle(fs, (r > tri ? tri : r), 1);
+			Polynomial xm0;
+			linearPolynomial(xm0,_R.getCoeffField().zero);
+			augment(fs, n-r, xm0);
 		}
 
 		std::vector<Polynomial>& invariants(std::vector<Polynomial>& fs, size_t n, int fsnum) {
 			//choose within a small set of fs build schemes
 			Polynomial p; _R.init(p);
-			size_t k,t,l;
+			size_t d, t=7, k;
 			if (fsnum >= 0) {
-				Polynomial xm1, xm1s, x2m1;
+				Polynomial xm1, xm1s, x2m1; 
 				_R.init(xm1); _R.init(xm1s); _R.init(x2m1); _R.init(p);
 				linearPolynomial(xm1,_R.getCoeffField().one);
 				linearPolynomial(x2m1,_R.getCoeffField().mOne); _R.mulin(x2m1, xm1);
 				_R.mul(xm1s, xm1, xm1);
 				switch (fsnum) {
-				case 0: // but don't use
-				case 1: //identity n (x-1)'s 
-					augment(fs, n, xm1);
+				case 0: // permutation
+					_R.setCoeff(p,n,_R.getCoeffField().one);
+					_R.setCoeff(p,0,_R.getCoeffField().mOne);
+					augment(fs, 1, p);
 					break;
-				case 2: // n/3 x-1, n/3 (x-1)^2
-					augment(fs, n-2*(n/3), xm1);
-					augment(fs, n/3, xm1s);
+				case 1: // flat 2 n/3 x-1, n/3 (x-1)^2
+					//std::cout << "case n 3/n " << n << ", new n " <<
+					addTriangle(fs, n, 3.0/n);
+					//std::cout << std::endl;
 					break;
-				case 3: // n/3 x-1, n/3 (x^2-1) -- distinct roots except /F2.
-					augment(fs, n-2*(n/3), xm1);
-					augment(fs, n/3, x2m1);
+				case 2: // tight triangle
+					addTriangle(fs, n, 1.0);
 					break;
-				case 4: // tight stack
-					// k(k+1)/2 <= n < (k+1)(k+2)/2
-					for (k = t = 1; t <= n; ++k)
-						t += k + 1; 
-					--k;
-					l = n-(k*(k+1))/2;
-					_R.assign(p, xm1);
-					for (size_t i = 1; i <= k; ++i) {
-						if (i == l) augment(fs, 2, p);
-						else augment(fs, 1, p);
-						_R.mulin(p, xm1);
-					}
+				case 3: // tall 2, degree 2n/3 and n/3.
+					addTriangle(fs, n, n/3.0);
 					break;
-				case 5: // spread stack
-					// k^2(k+1)/2 <= n < (k+1)^2(k+2)/2
-					for (k = 1; (k-1)*k*(k+1) <= 2*n; ++k);
-					--k;
-					t = k*(k+1)/2;
-					for (l = k; l*t <= n; ++l);
-					--l; 
-					size_t lt = n-l*t;
+				case 4: // full rank Ell 
+					addEll(fs, n, t, n);
+					break;
+				case 5: // high rank Ell 
+					addEll(fs, 9*n/10, t, n);
+					break;
+				case 6: // medium rank Ell 
+					addEll(fs, n/2, t, n);
+					break;
+				case 7: // low rank Ell 
+					addEll(fs, n/10, t, n);
+					break;
 
-					_R.assign(p, xm1);
-					augment(fs, l+lt, p);
-					for (size_t i = 2; i <= k; ++i) {
-						_R.mulin(p, xm1);
-						augment(fs, l, p);
-					}
-					break;
-				}
+				} // switch on fsnum
+
 			} else { // fsnum is neg
 				invariants(fs, n/2, -fsnum);
 				randomPolynomial(p,n-n/2);
