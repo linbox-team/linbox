@@ -716,7 +716,7 @@ int main(int argc, char** argv) {
 			
 			// uint64_t extend1 = (uint64_t)Givaro::FF_EXPONENT_MAX((uint64_t)p, (uint64_t)LINBOX_EXTENSION_DEGREE_MAX);
 			uint64_t extend1 = extend;
-			std::cout << extend1 << " " << std::flush;
+			//std::cout << extend1 << " " << std::flush;
 			
 			ExtField EF((uint64_t) p, extend1);
 			ExtRandIter RI(EF);
