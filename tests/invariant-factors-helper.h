@@ -121,8 +121,8 @@ public:
 				not (R.deg(p) == 1 and R.getCoeffField().isZero(p[0])))
 				count++;
 		}
-		if (count >= 15) R.write(std::cout << "long ", factors[13]) << ", " << count << std::endl;
-//		writeInvariantFactorDegrees(std::cout << "long ", factors) << std::endl;
+		if (count >= 5) //R.write(std::cout << "long ", factors[13]) << ", " << count << std::endl;
+		writeInvariantFactorDegrees(std::cout << "long ", factors) << std::endl;
 		return count;
 	}
 	
@@ -533,12 +533,24 @@ void blockDiag(SparseMat & P, size_t b=5)
 
 template<class Sp>
 void permuteRows(Sp & MP, std::vector<size_t> & P, Sp& M) {
+	assert(MP.rowdim() == M.rowdim());
+	assert(P.size() == M.rowdim());
+
+	size_t n = M.rowdim();
+	for (size_t i = 0; i< n; ++i) 
+		if (P[i] >= n) std::cout << "whoa" << std::endl;
 	
+	typename Sp::IndexedIterator p;
+	for (p = M.IndexedBegin(); p != M.IndexedEnd(); ++p)
+			MP.setEntry(P[p.rowIndex()],p.colIndex(),p.value());
+	/*
 	Element x; M.field().init(x);
 	for (size_t i = 0; i < M.rowdim(); ++i)
 	for (size_t j = 0; j < M.coldim(); ++j)
 		if (not M.field().isZero(M.getEntry(x,i,j)))
-			MP.setEntry(P[i],j,x);
+		*/
 	MP.finalize();
+	assert(MP.rowdim() == n);
+	assert(M.coldim() == n);
 }
 

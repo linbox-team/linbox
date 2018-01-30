@@ -64,6 +64,7 @@ namespace LinBox
 		
 		Polynomial & randomIrreducible(Polynomial &p, size_t d) const {
 			_RI.randomIrreducible(p, d);
+			assert (_R.deg(p) == d);
 			return p;
 		}
 		
@@ -80,7 +81,7 @@ namespace LinBox
 			_CRI.random(c);
 			_R.setCoeff(p, 0, c);
 			
-			size_t i = rand() % d;
+			size_t i = 1 + rand() % (d-1);
 			_CRI.random(c);
 			_R.setCoeff(p, i, c);
 			return p;
@@ -388,7 +389,7 @@ namespace LinBox
 		std::vector<Polynomial>& invariants(std::vector<Polynomial>& fs, size_t n, int fsnum) {
 			//choose within a small set of fs build schemes
 			Polynomial p; _R.init(p);
-			size_t d, t=7, k;
+			size_t t=7;
 			if (fsnum >= 0) {
 				Polynomial xm1, xm1s, x2m1; 
 				_R.init(xm1); _R.init(xm1s); _R.init(x2m1); _R.init(p);
@@ -396,10 +397,8 @@ namespace LinBox
 				linearPolynomial(x2m1,_R.getCoeffField().mOne); _R.mulin(x2m1, xm1);
 				_R.mul(xm1s, xm1, xm1);
 				switch (fsnum) {
-				case 0: // permutation
-					_R.setCoeff(p,n,_R.getCoeffField().one);
-					_R.setCoeff(p,0,_R.getCoeffField().mOne);
-					augment(fs, 1, p);
+				case 0: // identity
+					addTriangle(fs, n, 0.5/n);
 					break;
 				case 1: // flat 2 n/3 x-1, n/3 (x-1)^2
 					//std::cout << "case n 3/n " << n << ", new n " <<
@@ -423,6 +422,11 @@ namespace LinBox
 					break;
 				case 7: // low rank Ell 
 					addEll(fs, n/10, t, n);
+					break;
+				case 8: // permutation
+					_R.setCoeff(p,n,_R.getCoeffField().one);
+					_R.setCoeff(p,0,_R.getCoeffField().mOne);
+					augment(fs, 1, p);
 					break;
 
 				} // switch on fsnum
