@@ -381,10 +381,6 @@ namespace LinBox
 			
 			for (size_t i = 0; i < n; i++) {
 				T.setEntry(i, i, _F.one);
-				for (size_t j = i + r; j < n; j += r) {
-					T.setEntry(i, j, _F.one);
-					T.setEntry(j, i, _F.one);
-				}
 			}
 			T.finalize();
 			
