@@ -375,6 +375,38 @@ public:
 		return fp_time;
 	}
 	
+	double timeFullyFactoredLocal(
+		std::vector<Polynomial> &result,
+		const PolyMatrix &M,
+		const Polynomial &det) {	
+	
+		std::vector<std::pair<Polynomial, long>> factors;
+		
+		TW.clear();
+		TW.start();
+		
+		R.factor(factors, det);
+		
+		result.clear();
+		for (size_t i = 0; i < M.rowdim(); i++) {
+			result.push_back(R.one);
+		}
+		
+		for (size_t i = 0; i < factors.size(); i++) {
+			if (factors[i].second == 1) {
+				R.mulin(result[result.size() - 1], factors[i].first);
+			} else {
+				local(result, M, factors[i].first, factors[i].second);
+			}
+		}
+		
+		TW.stop();
+		double fp_time = TW.usertime();
+		std::cout << fp_time << " " << std::flush;
+		
+		return fp_time;
+	}
+	
 	double timeFactoredIlio(
 		std::vector<Polynomial> &result,
 		const PolyMatrix &M,
@@ -736,6 +768,7 @@ int main(int argc, char** argv) {
 	std::vector<Polynomial> result2;
 	std::vector<Polynomial> result3;
 	std::vector<Polynomial> result4;
+	std::vector<Polynomial> result5;
 	
 	Polynomial detFflas;
 	std::vector<Polynomial> resultFflas;
@@ -764,22 +797,13 @@ int main(int argc, char** argv) {
 	size_t exponent_limit = helper.detLimit(G, n);
 	std::cout << exponent_limit << " " << std::flush;
 	
-	//double dixon_time = helper.timeDixon(mp, G, exponent_limit);
-	//double popov_time = helper.timePopov(det, G);
-	double local_time = helper.timeLocalX(det2, G, exponent_limit);
-	// double ilio_time = helper.timeIliopoulos(result2, G, det2);
-	double factored_local_time = helper.timeFactoredLocal(result3, G, det2);
-	//double factored_ilio_time = helper.timeFactoredIlio(result4, G, det2);
-	
-	//PolyMatrix GFflas(R, b, b);
-	//helper.convertMinPolyToPolyMatrix(GFflas, minpoly2);
-	//helper.timeLocalX(detFflas, GFflas, helper.detLimit(GFflas, n));
-	//helper.timeFactoredLocal(resultFflas, GFflas, detFflas);
-	
-	//double total_time = local_time + ilio_time;
-	//double total2_time = local_time + factored_local_time;
-	//std::cout << total_time << " ";
-	//std::cout << total2_time << " " << std::flush;
+	helper.timeDixon(mp, G, exponent_limit);
+	helper.timePopov(det, G);
+	helper.timeLocalX(det2, G, exponent_limit);
+	helper.timeFactoredLocal(result3, G, det2);
+	helper.timeFactoredIlio(result4, G, det2);
+	helper.timeFullyFactoredLocal(result5, G, det2);
+	helper.timeIliopoulos(result2, G, det2);
 	
 	//Polynomial t1, t2;
 	//R.monic(t1, mp);
