@@ -79,4 +79,4 @@ typedef PolySmithFormLocalXDomain<PolynomialRing> LocalSmithFormDom;
 
 Givaro::Timer TW;
 
-#include invariant-factors-helper.h
+#include "invariant-factors-helper.h"

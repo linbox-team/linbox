@@ -371,7 +371,11 @@ namespace LinBox
 			size_t r, size_t t, size_t n) {
 			Polynomial p;
 			size_t tri = t*(t+1)/2;
-			if (r > tri) augment(fs, 1, randomPolynomial(p,r-tri)); 
+			if (r > tri) {
+				randomPolynomial(p,r-tri); 
+				_R.setCoeff(p,r-tri,_R.getCoeffField().one);
+				augment(fs, 1, p);
+			}
 			addTriangle(fs, (r > tri ? tri : r), 1);
 			Polynomial xm0;
 			linearPolynomial(xm0,_R.getCoeffField().zero);
@@ -381,7 +385,7 @@ namespace LinBox
 		std::vector<Polynomial>& invariants(std::vector<Polynomial>& fs, size_t n, int fsnum) {
 			//choose within a small set of fs build schemes
 			Polynomial p; _R.init(p);
-			size_t k,t,l;
+			size_t t=7;
 			if (fsnum >= 0) {
 				Polynomial xm1, xm1s, x2m1;
 				_R.init(xm1); _R.init(xm1s); _R.init(x2m1); _R.init(p);

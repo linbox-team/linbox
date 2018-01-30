@@ -40,8 +40,8 @@ public:
 				not (R.deg(p) == 1 and R.getCoeffField().isZero(p[0])))
 				count++;
 		}
-		if (count >= 5) //R.write(std::cout << "long ", factors[13]) << ", " << count << std::endl;
-		writeInvariantFactorDegrees(std::cout << "long ", factors) << std::endl;
+	//	if (count >= 5) //R.write(std::cout << "long ", factors[13]) << ", " << count << std::endl;
+		//writeInvariantFactorDegrees(std::cout << "long ", factors) << std::endl;
 		return count;
 	}
 	
