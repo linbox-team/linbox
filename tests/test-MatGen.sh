@@ -13,7 +13,7 @@ do
 	esac
 done
 shift $(($OPTIND - 1))
-#mpirun -np $OPT_C
+
 if ((OPT_D<2)); then
 echo "Running a set of tests for matrix " $OPT_B "by" $OPT_B " with" $OPT_A "digits without parallelization"
     eval "./test-MatGen -d $OPT_A -n $OPT_B"
@@ -34,7 +34,6 @@ echo "Each test will be done for" $OPT_C "iteration(s) with" $OPT_D "process(es)
 	fi
         let COUNTER+=1
         let DIM+=50
-#echo DIM=$DIM
 		done
          done   
 else
