@@ -679,7 +679,7 @@ int main(int argc, char** argv) {
 	
 	TW.stop();
 	double mg_time = TW.usertime();
-	std::cout << mg_time << " " << std::flush;
+	// std::cout << mg_time << " " << std::flush;
 		
 	assert(M.rowdim() == M.coldim());
 	n = M.rowdim();
