@@ -46,29 +46,24 @@ namespace LinBox
 	public:
 		SparseMatrixGenerator(const Field &F, const PolynomialRing &R): _F(F), _R(R), _RI(R), _CRI(R.getCoeffField()) {}
 		
-		Polynomial & linearPolynomial(Polynomial &p, const Coeff& a) const {
+		void linearPolynomial(Polynomial &p, const Coeff& a) const {
 			const CoeffField& F=_R.getCoeffField();
 			Coeff ma; F.init(ma); 
 			F.neg(ma, a);
 			_R.init(p);
 			_R.setCoeff(p, 1, F.one);
 			_R.setCoeff(p, 0, ma);
-			return p;
 		}
 
-		Polynomial & randomPolynomial(Polynomial &p, size_t d) const {
+		void randomPolynomial(Polynomial &p, size_t d) const {
 			_RI.random(p, d);
-			_R.setCoeff(p, d, _R.getCoeffField().one);
-			return p;
 		}
 		
-		Polynomial & randomIrreducible(Polynomial &p, size_t d) const {
+		void randomIrreducible(Polynomial &p, size_t d) const {
 			_RI.randomIrreducible(p, d);
-			assert (_R.deg(p) == d);
-			return p;
 		}
 		
-		Polynomial & randomTrinomial(Polynomial &p, size_t d) const {
+		void randomTrinomial(Polynomial &p, size_t d) const {
 			if (d < 2) {
 				std::cout << "Error: trinomial must have degree > 1" << std::endl;
 				exit(1);
@@ -84,14 +79,12 @@ namespace LinBox
 			size_t i = 1 + rand() % (d-1);
 			_CRI.random(c);
 			_R.setCoeff(p, i, c);
-			return p;
 		}
 		
-		Polynomial & randomIrreducibleTrinomial(Polynomial &p, size_t d) const {
+		void randomIrreducibleTrinomial(Polynomial &p, size_t d) const {
 			do {
 				randomTrinomial(p, d);
 			} while (!_R.isIrreducible(p));
-			return p;
 		}
 		
 		void readDivisor(std::ifstream &in, Polynomial &divisor) const {
@@ -230,7 +223,9 @@ namespace LinBox
 		// specialization for format SMM (sparse-map-map)	
 		void fillIn(SparseMatrix<Field, SparseMatrixFormat::SMM> &M, 
 					double targetSparsity) const {
+			M.finalize();
 			M.randomSim(int(M.rowdim()*M.coldim()*targetSparsity));
+			M.finalize();
 		}
 		
 		template<class Matrix1, class Matrix2>
@@ -294,8 +289,8 @@ namespace LinBox
 				_R.mulin(det, xm);
 			}
 			
-			// Use SMM format to generate the matrix.
-			// Fill in is much faster than with other formats.
+			// Use SMM format to generate the matrix
+			// fill in is much faster that other formats
 			SparseMatrix<Field, SparseMatrixFormat::SMM> T(_F, M.rowdim(), M.coldim());
 			build(T, fs);
 			fillIn(T, sparsity);
@@ -310,12 +305,9 @@ namespace LinBox
 			generate(M, det, fs, sparsity);
 		} // generate from file
 
-		// add k instances of p to fs
-		//std::vector<Polynomial>& 
-		size_t augment(std::vector<Polynomial>& fs, size_t k, Polynomial& p) {
+		std::vector<Polynomial>& augment(std::vector<Polynomial>& fs, size_t k, Polynomial& p) {
 			for (size_t i = 0; i < k; ++i) fs.push_back(p);
-			//return fs;
-			return k*_R.deg(p);
+			return fs;
 		}
 
 		// To fs add triangle of slope s and total degree n.
@@ -369,8 +361,8 @@ namespace LinBox
 		}
 
 		// Add single poly of degree d, t-triangle of x-1 powers, 
-		// z copies of x.
-		// Rank will be r, minpoly degree will be d = r-(t-2)(t+1)/2.
+		// and z copies of x, where...
+		// rank will be r, minpoly degree will be d = r-(t-2)(t+1)/2.
 		// Invariant degrees: r-t(t+1)/2 + t + 1, t, t-1, ..., 2, 1, 1, 1, ...
 		// where, right to left, the 1's correspond to x's and 
 		// the 2,3,.. to x(x_1), x(x-1)^2, ...
@@ -389,39 +381,38 @@ namespace LinBox
 		std::vector<Polynomial>& invariants(std::vector<Polynomial>& fs, size_t n, int fsnum) {
 			//choose within a small set of fs build schemes
 			Polynomial p; _R.init(p);
-			size_t t=7;
+			size_t k,t,l;
 			if (fsnum >= 0) {
-				Polynomial xm1, xm1s, x2m1; 
+				Polynomial xm1, xm1s, x2m1;
 				_R.init(xm1); _R.init(xm1s); _R.init(x2m1); _R.init(p);
 				linearPolynomial(xm1,_R.getCoeffField().one);
 				linearPolynomial(x2m1,_R.getCoeffField().mOne); _R.mulin(x2m1, xm1);
 				_R.mul(xm1s, xm1, xm1);
 				switch (fsnum) {
-				case 0: // identity
+				case 0: // identity -- don't set sparsity!
 					addTriangle(fs, n, 0.5/n);
 					break;
-				case 1: // flat 2 n/3 x-1, n/3 (x-1)^2
-					//std::cout << "case n 3/n " << n << ", new n " <<
+				case 1: // flat 2 n/3 of (x-1), n/3 of (x-1)^2
 					addTriangle(fs, n, 3.0/n);
 					//std::cout << std::endl;
 					break;
 				case 2: // tight triangle
 					addTriangle(fs, n, 1.0);
 					break;
-				case 3: // tall 2, degree 2n/3 and n/3.
+				case 3: // tall triangle (2 invariants)
 					addTriangle(fs, n, n/3.0);
 					break;
-				case 4: // full rank Ell 
-					addEll(fs, n, t, n);
+				case 4: // full rank ell
+					addEll(fs,n,t,n);
 					break;
-				case 5: // high rank Ell 
-					addEll(fs, 9*n/10, t, n);
+				case 5: // rank 9n/10 ell
+					addEll(fs,9*n/10,t,n);
 					break;
-				case 6: // medium rank Ell 
-					addEll(fs, n/2, t, n);
+				case 6: // rank n/2 ell
+					addEll(fs,n/2,t,n);
 					break;
-				case 7: // low rank Ell 
-					addEll(fs, n/10, t, n);
+				case 7: // rank n/10 ell
+					addEll(fs,n/10,t,n);
 					break;
 				case 8: // permutation
 					_R.setCoeff(p,n,_R.getCoeffField().one);
@@ -429,8 +420,48 @@ namespace LinBox
 					augment(fs, 1, p);
 					break;
 
-				} // switch on fsnum
+#if 0
+					// snippet
+				case 2: // n/3 x-1, n/3 (x-1)^2
+					augment(fs, n-2*(n/3), xm1);
+					augment(fs, n/3, xm1s);
+					break;
+				case 3: // n/3 x-1, n/3 (x^2-1) -- distinct roots except /F2.
+					augment(fs, n-2*(n/3), xm1);
+					augment(fs, n/3, x2m1);
+					break;
+				case 4: // tight stack
+					// k(k+1)/2 <= n < (k+1)(k+2)/2
+					for (k = t = 1; t <= n; ++k)
+						t += k + 1; 
+					--k;
+					l = n-(k*(k+1))/2;
+					_R.assign(p, xm1);
+					for (size_t i = 1; i <= k; ++i) {
+						if (i == l) augment(fs, 2, p);
+						else augment(fs, 1, p);
+						_R.mulin(p, xm1);
+					}
+					break;
+				case 5: // spread stack
+					// k^2(k+1)/2 <= n < (k+1)^2(k+2)/2
+					for (k = 1; (k-1)*k*(k+1) <= 2*n; ++k);
+					--k;
+					t = k*(k+1)/2;
+					for (l = k; l*t <= n; ++l);
+					--l; 
+					size_t lt = n-l*t;
 
+					_R.assign(p, xm1);
+					augment(fs, l+lt, p);
+					for (size_t i = 2; i <= k; ++i) {
+						_R.mulin(p, xm1);
+						augment(fs, l, p);
+					}
+					break;
+					//end snippet
+#endif
+				}
 			} else { // fsnum is neg
 				invariants(fs, n/2, -fsnum);
 				randomPolynomial(p,n-n/2);
@@ -451,10 +482,6 @@ namespace LinBox
 			
 			for (size_t i = 0; i < n; i++) {
 				T.setEntry(i, i, _F.one);
-				for (size_t j = i + r; j < n; j += r) {
-					T.setEntry(i, j, _F.one);
-					T.setEntry(j, i, _F.one);
-				}
 			}
 			T.finalize();
 			
