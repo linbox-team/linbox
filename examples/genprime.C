@@ -7,7 +7,7 @@ using namespace LinBox;
 
 int main(int argc, char**argv){
 
-    PrimeIterator<RandomCategories::HeuristicTag> gen(7);
+    PrimeIterator<IteratorCategories::HeuristicTag> gen(7);
 
     for (int i=0; i < atoi(argv[1]);i++){
         integer p = *gen;
