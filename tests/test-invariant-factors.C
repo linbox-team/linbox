@@ -19,6 +19,7 @@
 
 #include "linbox/matrix/random-matrix.h"
 #include "linbox/algorithms/blackbox-block-container.h"
+#include "linbox/algorithms/blackbox-block-container-spmv.h"
 #include "linbox/algorithms/blackbox-block-container-smmx.h"
 #include "linbox/algorithms/block-massey-domain.h"
 #include "linbox/algorithms/smith-form-kannan-bachem.h"
@@ -43,7 +44,7 @@ typedef MatrixDomain<Field> MatrixDom;
 typedef typename MatrixDom::OwnMatrix Matrix;
 typedef RandomDenseMatrix<RandIter, Field> RandomMatrix;
 
-typedef BlackboxBlockContainer<Field, SparseMat> Sequence;
+typedef BlackboxBlockContainerSpmv<Field, SparseMat> Sequence;
 typedef BlockMasseyDomain<Field, Sequence> MasseyDom;
 typedef BlockCoppersmithDomain<MatrixDom, Sequence> CoppersmithDom;
 
@@ -88,7 +89,7 @@ public:
 		}
 	}
 	
-	double computeMinpoly(
+	void computeMinpoly(
 		std::vector<size_t> &degree,
 		std::vector<Matrix> &minpoly,
 		std::vector<size_t> &degree2,
@@ -122,7 +123,9 @@ public:
 		
 		TW.stop();
 		double bm_time = TW.usertime();
-		std::cout << bm_time << " " << std::flush;
+		std::cout << seq.spmmtime() << " ";
+		std::cout << seq.gemmtime() << " ";
+		std::cout << (bm_time - seq.spmmtime() - seq.gemmtime()) << " " << std::flush;
 		
 		// Construct block sequence to input to BM
 		typedef BlackboxBlockContainerSmmx<Field, SparseMat> FflasSequence;
@@ -140,9 +143,9 @@ public:
 		
 		TW.stop();
 		double bm2_time = TW.usertime();
-		std::cout << bm2_time << " " << std::flush;
-		
-		return bm_time;
+		std::cout << fseq.spmmtime() << " ";
+		std::cout << fseq.gemmtime() << " ";
+		std::cout << (bm2_time - fseq.spmmtime() - fseq.gemmtime()) << " " << std::flush;
 	}
 	
 	double computeMinpolyFflas(std::vector<size_t> &degree, std::vector<Matrix> &minpoly, const SparseMat &M, size_t b) const {
@@ -659,7 +662,7 @@ int main(int argc, char** argv) {
 	}
 	
 	TW.stop();
-	double mg_time = TW.usertime();
+	//double mg_time = TW.usertime();
 	// std::cout << mg_time << " " << std::flush;
 		
 	assert(M.rowdim() == M.coldim());
@@ -692,7 +695,6 @@ int main(int argc, char** argv) {
 	if (b == 1) {
 		if (extend > 1) {
 			typedef Givaro::GFqDom<int64_t> ExtField;
-			typedef typename ExtField::Element ExtElement;
 			typedef typename ExtField::RandIter ExtRandIter;
 			
 			// uint64_t extend1 = (uint64_t)Givaro::FF_EXPONENT_MAX((uint64_t)p, (uint64_t)LINBOX_EXTENSION_DEGREE_MAX);
@@ -784,13 +786,13 @@ int main(int argc, char** argv) {
 	size_t exponent_limit = helper.detLimit(G, n);
 	std::cout << exponent_limit << " " << std::flush;
 	
-	helper.timeDixon(mp, G, exponent_limit);
-	helper.timePopov(det, G);
-	helper.timeLocalX(det2, G, exponent_limit);
-	helper.timeFactoredLocal(result3, G, det2);
-	helper.timeFactoredIlio(result4, G, det2);
-	helper.timeFullyFactoredLocal(result5, G, det2);
-	helper.timeIliopoulos(result2, G, det2);
+	//helper.timeDixon(mp, G, exponent_limit);
+	//helper.timePopov(det, G);
+	//helper.timeLocalX(det2, G, exponent_limit);
+	//helper.timeFactoredLocal(result3, G, det2);
+	//helper.timeFactoredIlio(result4, G, det2);
+	//helper.timeFullyFactoredLocal(result5, G, det2);
+	//helper.timeIliopoulos(result2, G, det2);
 	
 	//Polynomial t1, t2;
 	//R.monic(t1, mp);

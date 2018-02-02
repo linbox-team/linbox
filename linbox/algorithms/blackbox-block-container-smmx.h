@@ -41,6 +41,8 @@
 #include "fflas-ffpack/fflas/fflas.h"
 #include "fflas-ffpack/fflas/fflas_sparse.h"
 
+#include "givaro/givtimer.h"
+
 namespace LinBox
 {
 	template<class _Field, class _Blackbox>
@@ -68,6 +70,10 @@ namespace LinBox
 		FflasBlock _W;
 		FflasBlock _C;
 		FflasBlock _tmp;
+		
+		Givaro::Timer TW;
+		double _spmv_time;
+		double _gemm_time;
 		
 	public:
 		// Default constructor
@@ -146,12 +152,29 @@ namespace LinBox
 			return _b;
 		}
 		
+		double spmmtime() const {
+			return _spmv_time;
+		}
+		
+		double gemmtime() const {
+			return _gemm_time;
+		}
+		
 		void next() {
+			TW.clear();
+			TW.start();
+			
 			for (size_t i = 0; i < _n * _b; i++) _tmp[i] = _W[i];
 			FFLAS::fspmm(_F, _M, _b, _tmp, _b, _F.zero, _W, _b);
+			
+			TW.stop();
+			_spmv_time += TW.usertime();
 		}
 		
 		const Value &getValue() {
+			TW.clear();
+			TW.start();
+			
 			fgemm(_F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, _b, _b, _n, _F.one, _U, _n, _W, _b, _F.zero, _C, _b);
 			
 			for (size_t i = 0; i < _b; i++) {
@@ -159,6 +182,9 @@ namespace LinBox
 					_V.setEntry(i, j, _C[i * _b + j]);
 				}
 			}
+			
+			TW.stop();
+			_gemm_time += TW.usertime();
 			
 			return _V;
 		}
