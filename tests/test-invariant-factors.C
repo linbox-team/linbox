@@ -778,8 +778,8 @@ int main(int argc, char** argv) {
 	size_t exponent_limit = helper.detLimit(G, n);
 	std::cout << exponent_limit << " " << std::flush;
 	
-	helper.timeDixon(mp, G, exponent_limit);
-	helper.timePopov(det, G);
+	//helper.timeDixon(mp, G, exponent_limit);
+	//helper.timePopov(det, G);
 	helper.timeLocalX(det2, G, exponent_limit);
 	helper.timeFactoredLocal(result3, G, det2);
 	helper.timeFactoredIlio(result4, G, det2);
