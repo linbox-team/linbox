@@ -720,6 +720,12 @@ int main(int argc, char** argv) {
 			double bm_time = TW.usertime();
 			std::cout << bm_time << " " << (phi.size() - 1) << std::endl;
 		} else {
+			std::vector<size_t> degree;
+			std::vector<Matrix> minpoly;
+			std::vector<size_t> degree2;
+			std::vector<Matrix> minpoly2;
+			helper.computeMinpoly(degree, minpoly, degree2, minpoly2, M, b);
+			
 			std::cout << extend << " " << std::flush;
 			
 			RandIter RI(F);
@@ -778,13 +784,13 @@ int main(int argc, char** argv) {
 	size_t exponent_limit = helper.detLimit(G, n);
 	std::cout << exponent_limit << " " << std::flush;
 	
-	//helper.timeDixon(mp, G, exponent_limit);
-	//helper.timePopov(det, G);
+	helper.timeDixon(mp, G, exponent_limit);
+	helper.timePopov(det, G);
 	helper.timeLocalX(det2, G, exponent_limit);
 	helper.timeFactoredLocal(result3, G, det2);
-	//helper.timeFactoredIlio(result4, G, det2);
-	//helper.timeFullyFactoredLocal(result5, G, det2);
-	//helper.timeIliopoulos(result2, G, det2);
+	helper.timeFactoredIlio(result4, G, det2);
+	helper.timeFullyFactoredLocal(result5, G, det2);
+	helper.timeIliopoulos(result2, G, det2);
 	
 	//Polynomial t1, t2;
 	//R.monic(t1, mp);
