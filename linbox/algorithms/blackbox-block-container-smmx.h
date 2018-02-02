@@ -146,24 +146,24 @@ namespace LinBox
 		}
 		
 		void next() {
-			TW.clear();
-			TW.start();
+			//TW.clear();
+			//TW.start();
 			
 			for (size_t i = 0; i < _n * _b; i++) _tmp[i] = _W.getPointer()[i];
 			FFLAS::fspmm(_F, _M, _b, _tmp, _b, _F.zero, _W.getPointer(), _b);
 			
-			TW.stop();
-			_spmv_time += TW.usertime();
+			//TW.stop();
+			//_spmv_time += TW.usertime();
 		}
 		
 		const Value &getValue() {
-			TW.clear();
-			TW.start();
+			//TW.clear();
+			//TW.start();
 			
 			_BMD.mul(_V, _U, _W);
 			
-			TW.stop();
-			_gemm_time += TW.usertime();
+			//TW.stop();
+			//_gemm_time += TW.usertime();
 			
 			return _V;
 		}

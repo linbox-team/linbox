@@ -44,7 +44,7 @@ typedef MatrixDomain<Field> MatrixDom;
 typedef typename MatrixDom::OwnMatrix Matrix;
 typedef RandomDenseMatrix<RandIter, Field> RandomMatrix;
 
-typedef BlackboxBlockContainerSpmv<Field, SparseMat> Sequence;
+typedef BlackboxBlockContainer<Field, SparseMat> Sequence;
 typedef BlockMasseyDomain<Field, Sequence> MasseyDom;
 typedef BlockCoppersmithDomain<MatrixDom, Sequence> CoppersmithDom;
 
@@ -123,9 +123,7 @@ public:
 		
 		TW.stop();
 		double bm_time = TW.usertime();
-		std::cout << seq.spmmtime() << " ";
-		std::cout << seq.gemmtime() << " ";
-		std::cout << (bm_time - seq.spmmtime() - seq.gemmtime()) << " " << std::flush;
+		std::cout << bm_time << " " << std::flush;
 		
 		// Construct block sequence to input to BM
 		typedef BlackboxBlockContainerSmmx<Field, SparseMat> FflasSequence;
@@ -143,9 +141,7 @@ public:
 		
 		TW.stop();
 		double bm2_time = TW.usertime();
-		std::cout << fseq.spmmtime() << " ";
-		std::cout << fseq.gemmtime() << " ";
-		std::cout << (bm2_time - fseq.spmmtime() - fseq.gemmtime()) << " " << std::flush;
+		std::cout << bm2_time << " " << std::flush;
 	}
 	
 	double computeMinpolyFflas(std::vector<size_t> &degree, std::vector<Matrix> &minpoly, const SparseMat &M, size_t b) const {
@@ -767,12 +763,8 @@ int main(int argc, char** argv) {
 	std::vector<Matrix> minpoly;
 	std::vector<size_t> degree2;
 	std::vector<Matrix> minpoly2;
-	helper.computeMinpoly(degree, minpoly, degree2, minpoly2, M, b);
-	//helper.computeMinpolyFflas(degree, minpoly, M, b);
-	
-	//std::vector<size_t> degree2;
-	//std::vector<Matrix> minpoly2;
-	//helper.computeMinpolyFflas(degree2, minpoly2, M, b);
+	//helper.computeMinpoly(degree, minpoly, degree2, minpoly2, M, b);
+	helper.computeMinpolyFflas(degree, minpoly, M, b);
 	
 	// Convert to matrix with polynomial entries
 	PolyMatrix G(R, b, b);
