@@ -795,7 +795,7 @@ int main(int argc, char** argv) {
 	//std::string mpPass = (R.areEqual(t1, t2) ? "Pass" : "Fail");
 	//std::cout << mpPass << " " << std::flush;
 	
-	//double kb_time = helper.timeKannanBachem(result, G);
+	helper.timeKannanBachem(result, G);
 	//timeHybrid(R, result, G);
 	//helper.computeDet(det, result);
 	
