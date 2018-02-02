@@ -69,9 +69,6 @@ namespace LinBox
 		FflasBlock _C;
 		FflasBlock _tmp;
 		
-		int nbw = -1;
-		FFLAS::MMHelper<Field, FFLAS::MMHelperAlgo::Winograd> _WH;
-		
 	public:
 		// Default constructor
 		BlackboxBlockContainerSmmx() {}
@@ -82,7 +79,7 @@ namespace LinBox
 			const Field &F,
 			const Block &U0,
 			const Block &V0) : 
-		_F(F), _BB(BB), _V(F, U0.rowdim(), U0.rowdim()), _WH(_F, nbw, FFLAS::ParSeqHelper::Sequential()) {
+		_F(F), _BB(BB), _V(F, U0.rowdim(), U0.rowdim()) {
 			size_t b = U0.rowdim();
 			size_t n = BB->rowdim();
 			
@@ -155,7 +152,7 @@ namespace LinBox
 		}
 		
 		const Value &getValue() {
-			fgemm(_F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, _b, _b, _n, _F.one, _U, _n, _W, _b, _F.zero, _C, _b, _WH);
+			fgemm(_F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, _b, _b, _n, _F.one, _U, _n, _W, _b, _F.zero, _C, _b);
 			
 			for (size_t i = 0; i < _b; i++) {
 				for (size_t j = 0; j < _b; j++) {
