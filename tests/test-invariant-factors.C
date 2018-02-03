@@ -820,12 +820,12 @@ int main(int argc, char** argv) {
 	std::cout << exponent_limit << " " << std::flush;
 	
 	//helper.timeDixon(mp, G, exponent_limit);
-	//helper.timePopov(det, G);
+	helper.timePopov(det, G);
 	helper.timeLocalX(det2, G, exponent_limit);
 	helper.timeFactoredLocal(result3, G, det2);
-	helper.timeFactoredIlio(result4, G, det2);
-	helper.timeFullyFactoredLocal(result5, G, det2);
-	helper.timeIliopoulos(result2, G, det2);
+	//helper.timeFactoredIlio(result4, G, det2);
+	//helper.timeFullyFactoredLocal(result5, G, det2);
+	//helper.timeIliopoulos(result2, G, det2);
 	
 	//Polynomial t1, t2;
 	//R.monic(t1, mp);
@@ -836,7 +836,7 @@ int main(int argc, char** argv) {
 	//std::string mpPass = (R.areEqual(t1, t2) ? "Pass" : "Fail");
 	//std::cout << mpPass << " " << std::flush;
 	
-	helper.timeKannanBachem(result, G);
+	//helper.timeKannanBachem(result, G);
 	//timeHybrid(R, result, G);
 	//helper.computeDet(det, result);
 	

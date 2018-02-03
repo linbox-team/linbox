@@ -351,6 +351,11 @@ namespace LinBox
 			return a;
 		}
 		
+		Element& mulCoeffIn(Element &p, const Coeff &c) const {
+			p *= c;
+			return p;
+		}
+		
 		Element& pow(Element& x, const Element& a, long e) const {
 			NTL::power(x, a, e);
 			return x;
