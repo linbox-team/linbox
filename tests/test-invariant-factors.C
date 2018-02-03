@@ -309,6 +309,32 @@ public:
 		}
 	}
 	
+	void localRank(
+		std::vector<Polynomial> &result,
+		const PolyMatrix &M,
+		const Polynomial &f) const {
+	
+		SmithFormLocalDom SFD;
+		
+		QuotientRing QR(_p, f);
+		
+		QuotMatrix QM(M, QR);
+		
+		std::list<QPolynomial> L;
+		SFD(L, QM, QR);
+		
+		std::list<QPolynomial>::reverse_iterator it = L.rbegin();
+		it++;
+		if (QR.isZero(*it)) {
+			R.mulin(result[result.size() - 2], f);
+			R.mulin(result[result.size() - 1], f);
+		} else {
+			Polynomial f2;
+			R.pow(f2, f, 2);
+			R.mulin(result[result.size() - 1], f2);
+		}
+	}
+	
 	void localFactored(
 		std::vector<Polynomial> &result,
 		const PolyMatrix &M,
@@ -320,6 +346,19 @@ public:
 		
 		for (size_t i = 0; i < factors.size(); i++) {
 			local(result, M, factors[i].first, factors[i].second * multiplicity);
+		}
+	}
+	
+	void localFactoredRank(
+		std::vector<Polynomial> &result,
+		const PolyMatrix &M,
+		const Polynomial &sf_factor) const {
+	
+		std::vector<std::pair<Polynomial, long>> factors;
+		R.factor(factors, sf_factor);
+		
+		for (size_t i = 0; i < factors.size(); i++) {
+			localRank(result, M, factors[i].first);
 		}
 	}
 	
@@ -343,6 +382,8 @@ public:
 		for (size_t i = 0; i < factors.size(); i++) {
 			if (factors[i].second == 1) {
 				R.mulin(result[result.size() - 1], factors[i].first);
+			} else if (factors[i].second == 2) {
+				localFactoredRank(result, M, factors[i].first);
 			} else {
 				localFactored(result, M, factors[i].first, factors[i].second);
 			}
