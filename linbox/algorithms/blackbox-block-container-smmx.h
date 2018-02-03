@@ -32,6 +32,7 @@
 
 #include "linbox/linbox-config.h"
 #include "linbox/util/debug.h"
+#include "givaro/givtimer.h"
 
 #include "linbox/algorithms/blackbox-block-container-base.h"
 #include "linbox/matrix/dense-matrix.h"
@@ -69,6 +70,10 @@ namespace LinBox
 		FflasBlock _C;
 		FflasBlock _tmp;
 		
+		Givaro::Timer TW;
+		double _spmmTime;
+		double _gemmTime;
+		
 	public:
 		// Default constructor
 		BlackboxBlockContainerSmmx() {}
@@ -80,6 +85,9 @@ namespace LinBox
 			const Block &U0,
 			const Block &V0) : 
 		_F(F), _BB(BB), _V(F, U0.rowdim(), U0.rowdim()) {
+			_spmmTime = 0.0;
+			_gemmTime = 0.0;
+			
 			size_t b = U0.rowdim();
 			size_t n = BB->rowdim();
 			
@@ -146,13 +154,33 @@ namespace LinBox
 			return _b;
 		}
 		
+		double spmmtime() const {
+			return _spmmTime;
+		}
+		
+		double gemmtime() const {
+			return _gemmTime;
+		}
+		
 		void next() {
+			TW.clear();
+			TW.start();
+			
 			for (size_t i = 0; i < _n * _b; i++) _tmp[i] = _W[i];
 			FFLAS::fspmm(_F, _M, _b, _tmp, _b, _F.zero, _W, _b);
+			
+			TW.stop();
+			_spmmTime += TW.usertime();
 		}
 		
 		const Value &getValue() {
+			TW.clear();
+			TW.start();
+			
 			fgemm(_F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, _b, _b, _n, _F.one, _U, _n, _W, _b, _F.zero, _C, _b);
+			
+			TW.stop();
+			_gemmTime += TW.usertime();
 			
 			for (size_t i = 0; i < _b; i++) {
 				for (size_t j = 0; j < _b; j++) {

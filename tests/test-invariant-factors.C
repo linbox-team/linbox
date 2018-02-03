@@ -123,7 +123,7 @@ public:
 		
 		TW.stop();
 		double bm_time = TW.usertime();
-		std::cout << bm_time << " " << std::flush;
+		std::cout << bm_time << "\t" << std::flush;
 		
 		// Construct block sequence to input to BM
 		typedef BlackboxBlockContainerSmmx<Field, SparseMat> FflasSequence;
@@ -141,7 +141,7 @@ public:
 		
 		TW.stop();
 		double bm2_time = TW.usertime();
-		std::cout << bm2_time << " " << std::flush;
+		std::cout << bm2_time << "\t" << std::flush;
 	}
 	
 	double computeMinpolyFflas(std::vector<size_t> &degree, std::vector<Matrix> &minpoly, const SparseMat &M, size_t b) const {
@@ -172,7 +172,9 @@ public:
 		
 		TW.stop();
 		double bm_time = TW.usertime();
-		std::cout << bm_time << " " << std::flush;
+		std::cout << seq.spmmtime() << "\t";
+		std::cout << seq.gemmtime() << "\t";
+		std::cout << (bm_time - seq.spmmtime() - seq.gemmtime()) << "\t" << std::flush;
 		
 		return bm_time;
 	}
@@ -200,7 +202,7 @@ public:
 		
 		TW.stop();
 		double cv_time = TW.usertime();
-		// std::cout << cv_time << " " << std::flush;
+		// std::cout << cv_time << "\t" << std::flush;
 		
 		return cv_time;
 	}
@@ -235,7 +237,7 @@ public:
 		double sf_time = TW.usertime();
 		
 		if (!mem_error) {
-			std::cout << sf_time << " " << std::flush;
+			std::cout << sf_time << "\t" << std::flush;
 		} else {
 			std::cout << "MEM " << std::flush;
 		}
@@ -267,7 +269,7 @@ public:
 		
 		TW.stop();
 		double sf_time = TW.usertime();
-		std::cout << sf_time << " " << std::flush;
+		std::cout << sf_time << "\t" << std::flush;
 		
 		return sf_time;
 	}
@@ -391,7 +393,7 @@ public:
 		
 		TW.stop();
 		double fp_time = TW.usertime();
-		std::cout << fp_time << " " << std::flush;
+		std::cout << fp_time << "\t" << std::flush;
 		
 		return fp_time;
 	}
@@ -423,7 +425,7 @@ public:
 		
 		TW.stop();
 		double fp_time = TW.usertime();
-		std::cout << fp_time << " " << std::flush;
+		std::cout << fp_time << "\t" << std::flush;
 		
 		return fp_time;
 	}
@@ -472,7 +474,7 @@ public:
 		
 		TW.stop();
 		double fp_time = TW.usertime();
-		std::cout << fp_time << " " << std::flush;
+		std::cout << fp_time << "\t" << std::flush;
 		
 		return fp_time;
 	}
@@ -520,7 +522,7 @@ public:
 		
 		TW.stop();
 		double sf_time = TW.usertime();
-		std::cout << sf_time << " " << std::flush;
+		std::cout << sf_time << "\t" << std::flush;
 		
 		NTL::MakeMonic(det);
 		
@@ -598,12 +600,12 @@ public:
 		
 		TW.stop();
 		double d_time = TW.usertime();
-		std::cout << d_time << " " << std::flush;
+		std::cout << d_time << "\t" << std::flush;
 		
 		if (!success) {
 			std::cout << "(failed) " << std::flush;
 		} else {
-			// R.write(std::cout, f) << " " << std::flush;
+			// R.write(std::cout, f) << "\t" << std::flush;
 		}
 		
 		return d_time;
@@ -619,7 +621,7 @@ public:
 		
 		TW.stop();
 		double sf_time = TW.usertime();
-		std::cout << sf_time << " " << std::flush;
+		std::cout << sf_time << "\t" << std::flush;
 		
 		NTL::MakeMonic(det);
 		
@@ -700,7 +702,7 @@ int main(int argc, char** argv) {
 	
 	TW.stop();
 	//double mg_time = TW.usertime();
-	// std::cout << mg_time << " " << std::flush;
+	// std::cout << mg_time << "\t" << std::flush;
 		
 	assert(M.rowdim() == M.coldim());
 	n = M.rowdim();
@@ -727,7 +729,7 @@ int main(int argc, char** argv) {
 	F.write(std::cout, detM) << std::endl;
 #else 
 	TestInvariantFactorsHelper helper(p);
-	std::cout << n << " " << Gen.nnz(M) << " " << b << " " << std::flush;
+	std::cout << n << "\t" << Gen.nnz(M) << "\t" << b << "\t" << std::flush;
 	
 	if (b == 1) {
 		if (extend > 1) {
@@ -736,7 +738,7 @@ int main(int argc, char** argv) {
 			
 			// uint64_t extend1 = (uint64_t)Givaro::FF_EXPONENT_MAX((uint64_t)p, (uint64_t)LINBOX_EXTENSION_DEGREE_MAX);
 			uint64_t extend1 = extend;
-			//std::cout << extend1 << " " << std::flush;
+			//std::cout << extend1 << "\t" << std::flush;
 			
 			ExtField EF((uint64_t) p, extend1);
 			ExtRandIter RI(EF);
@@ -757,7 +759,7 @@ int main(int argc, char** argv) {
 			
 			TW.stop();
 			double bm_time = TW.usertime();
-			std::cout << bm_time << " " << (phi.size() - 1) << std::endl;
+			std::cout << bm_time << "\t" << (phi.size() - 1) << std::endl;
 		} else {
 			std::vector<size_t> degree;
 			std::vector<Matrix> minpoly;
@@ -765,7 +767,7 @@ int main(int argc, char** argv) {
 			std::vector<Matrix> minpoly2;
 			helper.computeMinpoly(degree, minpoly, degree2, minpoly2, M, b);
 			
-			std::cout << extend << " " << std::flush;
+			std::cout << extend << "\t" << std::flush;
 			
 			RandIter RI(F);
 			
@@ -782,7 +784,7 @@ int main(int argc, char** argv) {
 			
 			TW.stop();
 			double bm_time = TW.usertime();
-			std::cout << bm_time << " " << (phi.size() - 1) << std::endl;
+			std::cout << bm_time << "\t" << (phi.size() - 1) << std::endl;
 		}
 		
 		return 0;
@@ -817,7 +819,7 @@ int main(int argc, char** argv) {
 	
 	// Compute smith form of generator
 	size_t exponent_limit = helper.detLimit(G, n);
-	std::cout << exponent_limit << " " << std::flush;
+	std::cout << exponent_limit << "\t" << std::flush;
 	
 	//helper.timeDixon(mp, G, exponent_limit);
 	helper.timePopov(det, G);
@@ -834,14 +836,14 @@ int main(int argc, char** argv) {
 	//R.write(std::cout << "dixon = ", t1) << std::endl;
 	//R.write(std::cout << "mp = ", t2) << std::endl;
 	//std::string mpPass = (R.areEqual(t1, t2) ? "Pass" : "Fail");
-	//std::cout << mpPass << " " << std::flush;
+	//std::cout << mpPass << "\t" << std::flush;
 	
 	//helper.timeKannanBachem(result, G);
 	//timeHybrid(R, result, G);
 	//helper.computeDet(det, result);
 	
-	//std::cout << (kb_time / total_time) << " ";
-	//std::cout << (kb_time / total2_time) << " " << std::flush;
+	//std::cout << (kb_time / total_time) << "\t";
+	//std::cout << (kb_time / total2_time) << "\t" << std::flush;
 	
 	//R.write(std::cout << "det1: ", det) << std::endl;
 	//R.write(std::cout << "det2: ", det2) << std::endl;
