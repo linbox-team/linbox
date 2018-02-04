@@ -70,7 +70,7 @@ namespace LinBox
 		FflasBlock _C;
 		FflasBlock _tmp;
 		
-		Givaro::Timer TW;
+//		Givaro::Timer TW;
 		double _spmmTime;
 		double _gemmTime;
 		
@@ -163,24 +163,24 @@ namespace LinBox
 		}
 		
 		void next() {
-			TW.clear();
-			TW.start();
+//			TW.clear();
+//			TW.start();
 			
 			for (size_t i = 0; i < _n * _b; i++) _tmp[i] = _W[i];
 			FFLAS::fspmm(_F, _M, _b, _tmp, _b, _F.zero, _W, _b);
 			
-			TW.stop();
-			_spmmTime += TW.usertime();
+//			TW.stop();
+//			_spmmTime += TW.usertime();
 		}
 		
 		const Value &getValue() {
-			TW.clear();
-			TW.start();
+//			TW.clear();
+//			TW.start();
 			
 			fgemm(_F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, _b, _b, _n, _F.one, _U, _n, _W, _b, _F.zero, _C, _b);
 			
-			TW.stop();
-			_gemmTime += TW.usertime();
+//			TW.stop();
+//			_gemmTime += TW.usertime();
 			
 			for (size_t i = 0; i < _b; i++) {
 				for (size_t j = 0; j < _b; j++) {
