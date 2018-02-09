@@ -13,11 +13,240 @@ void printMPItype(MPI_Datatype type){
 };
 
 
+//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+template<class Vector>
+void MPIintBcast(Vector& A, size_t ni, size_t nj, int src, LinBox::Communicator *Cptr){
+long long*A_data=(long long*)malloc(ni*nj*sizeof(long long));
 
+  if(src==Cptr->rank()){
+
+    for (size_t i = 0; i < ni; ++i)
+      for (size_t j = 0; j < nj; ++j){
+	A_data[j+i*nj] = A.getEntry(i,j);
+      }
+  }
+  MPI_Bcast(&A_data[0], ni*nj, MPI_LONG_LONG, 0, MPI_COMM_WORLD);
+  if(src!=Cptr->rank()){
+    
+
+    for (size_t i = 0; i < ni; ++i)
+      for (size_t j = 0; j < nj; ++j){
+	A.setEntry(i,j,A_data[j+i*nj]);
+      }
+  }
+
+}
+
+
+template<class Vector>
+void MPIintBcast(Vector& A, size_t ni, int src, LinBox::Communicator *Cptr){
+  long long*A_data=(long long*)malloc(ni*sizeof(long long));
+
+  if(src==Cptr->rank()) for (size_t i = 0; i < ni; ++i) A_data[i] = A.getEntry(i);
+  MPI_Bcast(&A_data[0], ni, MPI_LONG_LONG, 0, MPI_COMM_WORLD);
+  if(src!=Cptr->rank())  for (size_t i = 0; i < ni; ++i) A.setEntry(i,A_data[i]);
+
+}
+
+
+template<class Vector, typename T>
+struct gmpBcast2
+{
+ void operator()(Vector& A, size_t ni, size_t nj, int src, LinBox::Communicator *Cptr)
+ { }
+};
+template<class Vector>
+struct gmpBcast2<Vector, long>
+{
+ void operator()(Vector& A, size_t ni, size_t nj, int src, LinBox::Communicator *Cptr)
+ {
+
+MPIintBcast(A, ni, nj, src, Cptr);
+
+ }
+};
+template<class Vector>
+struct gmpBcast2<Vector, int>
+{
+ void operator()(Vector& A, size_t ni, size_t nj, int src, LinBox::Communicator *Cptr)
+ {
+
+MPIintBcast(A, ni, nj, src, Cptr);
+
+ }
+};
+template<class Vector>
+struct gmpBcast2<Vector, LinBox::Integer>
+{
+ void operator()(Vector& A, size_t ni, size_t nj, int src, LinBox::Communicator *Cptr)
+ {
+  //int A_mp_alloc[ni*nj], A_a_size[ni*nj];
+int *A_mp_alloc=(int*)malloc(ni*nj*sizeof(int));
+int *A_a_size=(int*)malloc(ni*nj*sizeof(int));
+  unsigned lenA;
+  std::vector<mp_limb_t> A_mp_data;
+  //MPI_Barrier(MPI_COMM_WORLD);
+  if(src==Cptr->rank()){
+    
+    //Split Matrix A into arrays 
+    //std::cerr << "A=:= " << std::endl; 
+    __mpz_struct * ptr;
+    for (size_t i = 0; i < ni; ++i){
+      for (size_t j = 0; j < nj; ++j){
+	
+	//std::cerr << A.getEntry(i,j)<< "\t" ; std::cerr<< std::endl;
+	ptr = const_cast<__mpz_struct*>(A.getEntry(i,j).get_mpz());
+	A_mp_alloc[j+i*nj] = ptr->_mp_alloc;
+	A_a_size[j+i*nj] = ptr->_mp_size;
+	mp_limb_t * a_array = ptr->_mp_d;
+	for(long k=0; k< ptr->_mp_alloc; ++k)
+	  A_mp_data.push_back(a_array[k]);
+	
+	
+      }
+    }
+    lenA = A_mp_data.size();
+  }
+  //Distribut Givaro::Integer through its elementary parts
+  //MPI_Barrier(MPI_COMM_WORLD);
+  MPI_Bcast(&A_mp_alloc[0], ni*nj, MPI_INT, 0, MPI_COMM_WORLD);
+  MPI_Bcast(&A_a_size[0], ni*nj, MPI_INT, 0, MPI_COMM_WORLD);
+  MPI_Bcast(&lenA, 1, MPI_UNSIGNED, 0, MPI_COMM_WORLD);
+  if(src!=Cptr->rank()) A_mp_data.resize(lenA);
+  MPI_Bcast(&A_mp_data[0], lenA, chooseMPItype<mp_limb_t>::val,  0, MPI_COMM_WORLD);
+  //MPI_Barrier(MPI_COMM_WORLD);
+  
+  if(src!=Cptr->rank()){
+    //Reconstruction of matrix A
+    __mpz_struct * ptr2;
+    size_t count=0;
+    Givaro::Integer temp; 
+    //std::cerr << "received A:= " << std::endl;
+    for (size_t i = 0; i < ni; ++i){
+      for (size_t j = 0; j < nj; ++j){
+
+	ptr2 = const_cast<__mpz_struct*>(temp.get_mpz());
+	ptr2->_mp_alloc = A_mp_alloc[j+i*nj];
+	ptr2->_mp_size = A_a_size[j+i*nj];
+	_mpz_realloc(ptr2,ptr2->_mp_alloc);
+	for(long k=0; k< ptr2->_mp_alloc; ++k){
+	  ptr2->_mp_d[k] = (A_mp_data[k+count]);	
+	}count+=ptr2->_mp_alloc;
+	A.setEntry(i,j,temp);
+	//std::cerr << A.getEntry(i,j) << "\t" ; std::cerr<< std::endl;
+      }
+    }
+    
+  }//MPI_Barrier(MPI_COMM_WORLD);
+ }
+};
+//template<class Vector, typename T>struct MPIgmpBcast;
+
+template<class Vector, typename T>
+struct gmpBcast
+{
+ void operator()(Vector& B, size_t ni, int src, LinBox::Communicator *Cptr)
+ { }
+};
+template<class Vector>
+struct gmpBcast<Vector, long>
+{
+ void operator()(Vector& B, size_t ni, int src, LinBox::Communicator *Cptr)
+ {
+MPIintBcast(B, ni, src, Cptr);
+ }
+};
+template<class Vector>
+struct gmpBcast<Vector, int>
+{
+ void operator()(Vector& B, size_t ni, int src, LinBox::Communicator *Cptr)
+ { 
+MPIintBcast(B, ni, src, Cptr);
+ }
+};
+template<class Vector>
+struct gmpBcast<Vector, LinBox::Integer>
+{
+ void operator()(Vector& B, size_t nj, int src, LinBox::Communicator *Cptr)
+ {
+//  int B_mp_alloc[nj], B_a_size[nj]; 
+int *B_mp_alloc=(int*)malloc(nj*sizeof(int));
+int *B_a_size=(int*)malloc(nj*sizeof(int));
+  unsigned lenB;  Givaro::Integer temp; 
+  std::vector<mp_limb_t> B_mp_data;
+  //MPI_Barrier(MPI_COMM_WORLD);
+  if(src==Cptr->rank()){
+    //std::cerr << "B=:= " << std::endl;
+    //Split vector B into arrays
+    __mpz_struct * ptr;
+    for(size_t j=0;j<nj;j++){
+      //std::cerr << B.getEntry(j)<< "\t" ; std::cerr<< std::endl;
+      ptr = const_cast<__mpz_struct*>(B.getEntry(j).get_mpz());
+      B_mp_alloc[j] = ptr->_mp_alloc;
+      B_a_size[j] = ptr->_mp_size;
+      mp_limb_t * a_array = ptr->_mp_d;
+      for(long i=0; i< ptr->_mp_alloc; ++i){
+	B_mp_data.push_back(a_array[i]);
+      }
+    }
+    
+    lenB = B_mp_data.size();
+    
+  }
+  //Distribut Givaro::Integer through its elementary parts
+ // MPI_Barrier(MPI_COMM_WORLD);
+  MPI_Bcast(&B_mp_alloc[0], nj, MPI_INT, 0, MPI_COMM_WORLD);
+  MPI_Bcast(&B_a_size[0], nj, MPI_INT, 0, MPI_COMM_WORLD);
+  
+  MPI_Bcast(&lenB, 1, MPI_UNSIGNED, 0, MPI_COMM_WORLD);
+  if(src!=Cptr->rank()) B_mp_data.resize(lenB);
+  MPI_Bcast(&B_mp_data[0], lenB, chooseMPItype<mp_limb_t>::val,  0, MPI_COMM_WORLD);
+  //MPI_Barrier(MPI_COMM_WORLD);
+  
+  if(src!=Cptr->rank()){
+    //Reconstruction of vector B
+    //std::cerr << "received B::= " << std::endl;
+    __mpz_struct * ptr2;
+    size_t count=0;
+    
+    for(size_t j=0;j<nj;j++){ 
+      ptr2 = const_cast<__mpz_struct*>(temp.get_mpz());
+      ptr2->_mp_alloc = B_mp_alloc[j];
+      ptr2->_mp_size = B_a_size[j];
+      _mpz_realloc(ptr2,ptr2->_mp_alloc);
+      for(long i=0; i< ptr2->_mp_alloc; ++i){
+	ptr2->_mp_d[i] = (B_mp_data[i+count]);
+      }count+=ptr2->_mp_alloc;
+      B.setEntry(j,temp);
+      //std::cerr << B.getEntry(j) << "\t" ; std::cerr<< std::endl; 
+      
+    }
+    
+  }//MPI_Barrier(MPI_COMM_WORLD);
+ }
+};
+
+template<class Vector, typename T>
+void MPIgmpBcast(Vector& A, size_t ni, size_t nj, int src, LinBox::Communicator *Cptr)
+{
+gmpBcast2<Vector, T> gB;
+gB(A, ni, nj, src, Cptr);
+}
+template<class Vector, typename T>
+void MPIgmpBcast(Vector& A, size_t ni, int src, LinBox::Communicator *Cptr)
+{
+gmpBcast<Vector, T>gB;
+gB(A, ni, src, Cptr);  
+}
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+/*
 template <class Vector>
 inline void MPIgmpBcast(Vector& B, size_t nj, int src, LinBox::Communicator *Cptr)
-{ 
-  int B_mp_alloc[nj], B_a_size[nj]; 
+{
+//  int B_mp_alloc[nj], B_a_size[nj]; 
+int *B_mp_alloc=(int*)malloc(nj*sizeof(int));
+int *B_a_size=(int*)malloc(nj*sizeof(int));
   unsigned lenB;  Givaro::Integer temp; 
   std::vector<mp_limb_t> B_mp_data;
   //MPI_Barrier(MPI_COMM_WORLD);
@@ -72,13 +301,18 @@ inline void MPIgmpBcast(Vector& B, size_t nj, int src, LinBox::Communicator *Cpt
   
 }
 
+*/
 
+
+/*
 //template<typename T>
 //void MPIvecBcast(LinBox::SparseMatrix< T > & A, int ni, int nj, Communicator *Cptr)
 template <class LinMat>
 inline void MPIgmpBcast(LinMat& A, size_t ni, size_t nj, int src, LinBox::Communicator *Cptr)
 { 
-  int A_mp_alloc[ni*nj], A_a_size[ni*nj];
+  //int A_mp_alloc[ni*nj], A_a_size[ni*nj];
+int *A_mp_alloc=(int*)malloc(ni*nj*sizeof(int));
+int *A_a_size=(int*)malloc(ni*nj*sizeof(int));
   unsigned lenA;
   std::vector<mp_limb_t> A_mp_data;
   //MPI_Barrier(MPI_COMM_WORLD);
@@ -137,7 +371,7 @@ inline void MPIgmpBcast(LinMat& A, size_t ni, size_t nj, int src, LinBox::Commun
   
 }
 
-
+*/
 
 
 
