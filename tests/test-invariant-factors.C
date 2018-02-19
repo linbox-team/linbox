@@ -172,9 +172,10 @@ public:
 		
 		TW.stop();
 		double bm_time = TW.usertime();
-		std::cout << seq.spmmtime() << "\t";
-		std::cout << seq.gemmtime() << "\t";
-		std::cout << (bm_time - seq.spmmtime() - seq.gemmtime()) << "\t" << std::flush;
+		//std::cout << seq.spmmtime() << "\t";
+		//std::cout << seq.gemmtime() << "\t";
+		//std::cout << (bm_time - seq.spmmtime() - seq.gemmtime()) << "\t" << std::flush;
+		std::cout << bm_time << "\t" << std::flush;
 		
 		return bm_time;
 	}
