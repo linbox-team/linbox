@@ -822,9 +822,9 @@ int main(int argc, char** argv) {
 	std::cout << exponent_limit << "\t" << std::flush;
 	
 	//helper.timeDixon(mp, G, exponent_limit);
-	helper.timePopov(det, G);
-	helper.timeLocalX(det2, G, exponent_limit);
-	helper.timeFactoredLocal(result3, G, det2);
+	//helper.timePopov(det, G);
+	//helper.timeLocalX(det2, G, exponent_limit);
+	//helper.timeFactoredLocal(result3, G, det2);
 	//helper.timeFactoredIlio(result4, G, det2);
 	//helper.timeFullyFactoredLocal(result5, G, det2);
 	//helper.timeIliopoulos(result2, G, det2);
