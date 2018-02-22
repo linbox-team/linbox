@@ -424,8 +424,9 @@ std::cerr<<" Use r:= "<< r <<" to Build"<<std::endl;
 			int process = _commPtr->rank();
 			//typename Rebind<BlasVector< Givaro::ZRing<Integer> > , Domain>::other r;
 Domain D(*primeg);
+Domain D2(*primeg);
 BlasVector<Domain> r(D);
-
+BlasVector<Domain> r2(D);
 
 
 			//  Manager propcess
@@ -434,6 +435,7 @@ BlasVector<Domain> r(D);
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int primes[procs - 1];
+int primes2[procs - 1];
 				//  send the prime to a slave process using Linear-array scatter
 				for (int i=1; i<procs; i++) {
 					//  generate a new prime
@@ -442,11 +444,18 @@ int primes[procs - 1];
 					primes[i - 1] = *primeg;
 					_commPtr->send(primes[i - 1], process+1); 
 				}
+				for (int i=1; i<procs; i++) {
+					//  generate a new prime
+					++primeg; while(Builder_.noncoprime(*primeg) ) ++primeg;
+					//  fix the array of currently sent primes
+					primes2[i - 1] = *primeg;
+					_commPtr->send(primes2[i - 1], process+1); 
+				}
 //std::cerr << " Manager sent "; for(int i=1; i<procs; i++) std::cerr <<primes[i - 1]<<"  "; std::cerr << std::endl;
 				Builder_.initialize( D, Iteration(r, D) );
 				int poison_pills_left = procs - 1;
 std::vector<BlasVector<Domain>> R;
-
+std::vector<BlasVector<Domain>> R2;
 while(poison_pills_left > 0 ){
 
 //std::cerr << " >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> " << std::endl;
@@ -454,12 +463,35 @@ while(poison_pills_left > 0 ){
 		_commPtr->recv(r.begin(), r.end(), i, 0); 
 		R.push_back(r);
 
+		//Domain D(primes[i - 1]);
+//std::cerr << " Manager received:"<<R[i - 1]<<" from worker("<<i<<") for "<<primes[i - 1]<<std::endl;			
+		//Builder_.progress(D,R[i - 1]);
+
+	} //R.clear();
+
+	for  (int i=1; i<procs; i++){
+		_commPtr->recv(r.begin(), r.end(), i, 0); 
+		R2.push_back(r);
+
+		//Domain D(primes[i - 1]);
+//std::cerr << " Manager received:"<<R[i - 1]<<" from worker("<<i<<") for "<<primes[i - 1]<<std::endl;			
+		//Builder_.progress(D,R[i - 1]);
+
+	} //R.clear();
+//std::cerr << " <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< " << std::endl; 
+	for  (int i=1; i<procs; i++){
 		Domain D(primes[i - 1]);
 //std::cerr << " Manager received:"<<R[i - 1]<<" from worker("<<i<<") for "<<primes[i - 1]<<std::endl;			
 		Builder_.progress(D,R[i - 1]);
 
 	} R.clear();
-//std::cerr << " <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< " << std::endl; 
+	for  (int i=1; i<procs; i++){
+		Domain D(primes2[i - 1]);
+//std::cerr << " Manager received:"<<R[i - 1]<<" from worker("<<i<<") for "<<primes[i - 1]<<std::endl;			
+		Builder_.progress(D,R2[i - 1]);
+
+	} R2.clear();
+
 
 					//  if still working, queue a prime
 			if(! Builder_.terminated()){
@@ -471,6 +503,13 @@ while(poison_pills_left > 0 ){
 					primes[i - 1] = *primeg;
 					_commPtr->send(primes[i - 1], process+1); 
 				}
+				for(int i=1; i<procs; i++){
+					//  generate a new prime
+					++primeg; while(Builder_.noncoprime(*primeg) ) ++primeg;
+					//  fix the array of currently sent primes
+					primes2[i - 1] = *primeg;
+					_commPtr->send(primes2[i - 1], process+1); 
+				}
 //std::cerr << " Manager sent "; for(int i=1; i<procs; i++) std::cerr <<primes[i - 1]<<" to proc("<<i<<")  "; std::cerr << std::endl;
 			}
 					//  otherwise, queue a poison pill
@@ -481,7 +520,12 @@ while(poison_pills_left > 0 ){
 					primes[i - 1] = 0;
 					_commPtr->send(primes[i - 1], process+1); 
 				}
-					
+				for(int i=1; i<procs; i++){
+					 poison_pills_left--;
+					//  fix the array of currently sent primes
+					primes2[i - 1] = 0;
+					_commPtr->send(primes2[i - 1], process+1); 
+				}	
 			}
 
 
@@ -500,6 +544,21 @@ return Builder_.result(num,den);
 				while(true){
 
 if(process<procs-1){
+ _commPtr->recv(p[0], process-1);
+//std::cerr << " >>>>>>>>>>>>>>>>>>>>>>>>>>>>>> proc("<< process <<") +++++++++++++++++++++++++++++++++ " << std::endl;
+for (int i=1; i<procs-1; i++) MPI_Sendrecv(&p[i-1], 1, MPI_INT, process+1, 0, &p[i], 1, MPI_INT, process-1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+//std::cerr << " ++++++++++++++++++++++++++++++ proc("<< process <<") <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< " << std::endl;
+_commPtr->send(p[procs-2], process+1);
+//std::cerr << " +++++++++++++++++++++++ proc("<< process <<") received:";for(int i=1; i<procs; i++) std::cerr <<pp[i - 1]<<"   "; std::cerr << std::endl;
+
+}else{
+//std::cerr << " >>>>>>>>>>>>>>>>>>>>>>>>>>>>>> proc("<< process <<") +++++++++++++++++++++++++++++++++ " << std::endl;
+for (int j=0; j<procs-1; j++) _commPtr->recv(p[j], process-1);
+//std::cerr << " ++++++++++++++++++++++++++++++ proc("<< process <<") <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< " << std::endl;
+//std::cerr << " +++++++++++++++++++++++ proc("<< process <<") received:";for(int i=1; i<procs; i++) std::cerr <<pp[i - 1]<<"   "; std::cerr << std::endl;
+}
+
+if(process<procs-1){
  _commPtr->recv(pp[0], process-1);
 //std::cerr << " >>>>>>>>>>>>>>>>>>>>>>>>>>>>>> proc("<< process <<") +++++++++++++++++++++++++++++++++ " << std::endl;
 for (int i=1; i<procs-1; i++) MPI_Sendrecv(&pp[i-1], 1, MPI_INT, process+1, 0, &pp[i], 1, MPI_INT, process-1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
@@ -513,15 +572,19 @@ for (int j=0; j<procs-1; j++) _commPtr->recv(pp[j], process-1);
 //std::cerr << " ++++++++++++++++++++++++++++++ proc("<< process <<") <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< " << std::endl;
 //std::cerr << " +++++++++++++++++++++++ proc("<< process <<") received:";for(int i=1; i<procs; i++) std::cerr <<pp[i - 1]<<"   "; std::cerr << std::endl;
 }
-
 //std::cerr << " proc ("<< process <<") received "<<pp[process-1] << std::endl;
 
+ 					if(p[process-1] == 0)
+						break;
  					if(pp[process-1] == 0)
 						break;
-					Domain D(pp[process-1]);
+					Domain D(p[process-1]);
 					Iteration(r, D);
+					Domain D2(pp[process-1]);
+					Iteration(r2, D2);
 //std::cerr << " Worker ("<< process <<") is sending r:"<< r <<" for "<< pp[process-1] << std::endl;
 					_commPtr->send(r.begin(), r.end(), 0, 0); 
+					_commPtr->send(r2.begin(), r2.end(), 0, 0); 
 				}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
