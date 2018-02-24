@@ -152,6 +152,7 @@ pkgincludesub_HEADERS =            \
 	invert-tb.h                        \
 	poly-smith-form-local-x.h          \
 	weak-popov-form.h                  \
+	poly-smith-form.h                  \
 	$(USE_OCL_HDRS)
 
 #  iml.h                              \

@@ -45,6 +45,7 @@
 
 #include <givaro/zring.h>
 #include "linbox/ring/ntl/ntl-lzz_p.h"
+#include "linbox/ring/ntl/ntl-lzz_pe.h"
 #include "linbox/integer.h"
 
 
@@ -80,6 +81,7 @@ namespace LinBox
 		typedef Givaro::UnparametricOperations<Element> Father_t ;
 		typedef UnparametricRandIter<Element> RandIter;
 
+		typedef NTL_zz_pE QuotientRing;
 
 		typedef NTL_zz_p CoeffField;
 		typedef NTL::zz_p Coeff;
@@ -530,6 +532,12 @@ namespace LinBox
 		template< class ANY >
 		ANY& convert( ANY& x, const Element& y ) const
 		{ return x; }
+		
+        const NTL_zz_pE quotient(const Element &f) const {
+        	integer c;
+        	QuotientRing QR(characteristic(c), f);
+        	return QR;
+        }
 
 	protected:
 		CoeffField _CField;
@@ -594,6 +602,31 @@ namespace LinBox
 		size_t _seed;
         const NTL_zz_pX& _ring;
 	}; // class UnparametricRandIters
+	
+	template<>
+	class Hom<NTL_zz_pX, NTL_zz_pE> {
+	public:
+		typedef NTL_zz_pX Source;
+		typedef NTL_zz_pE Target;
+		typedef typename Source::Element SrcElt;
+		typedef typename Target::Element Elt;
+
+		Hom(const Source& S, const Target& T) : _source(S), _target(T) {}
+
+		Elt& image(Elt& t, const SrcElt& s) {
+			return t = NTL::conv<NTL::zz_pE>(s);
+		}
+		
+		SrcElt& preimage(SrcElt& s, const Elt& t) {
+			return s = NTL::conv<NTL::zz_pX>(t);
+		}
+		
+		const Source& source() { return _source;}
+		const Target& target() { return _target;}
+	private:
+		const Source& _source;
+		const Target& _target;
+	}; // end Hom<NTL_zz_pX, NTL_zz_pE>
 
 } // end of namespace LinBox
 

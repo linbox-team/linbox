@@ -148,21 +148,13 @@ namespace LinBox
 		 	init(const_cast<Element &>(mOne), p-1);
 		}
         
-		NTL_zz_pE (const integer &p, const typename NTL_zz_pX::Element &f) :
+		NTL_zz_pE (const integer &p, const NTL::zz_pX &f) :
                 NTL_zz_pE_Initialiser(p,f), Father_t()
         {
             init(const_cast<Element &>(zero), 0);
 		 	init(const_cast<Element &>(one), 1);
 		 	init(const_cast<Element &>(mOne), p-1);
         }
-        
-        NTL_zz_pE(const NTL_zz_pX &R, const typename NTL_zz_pX::Element &f) :
-        	NTL_zz_pE_Initialiser(f), Father_t()
-		{
-			init(const_cast<Element &>(zero), 0);
-			init(const_cast<Element &>(one), 1);
-			init(const_cast<Element &>(mOne), NTL::conv<NTL::zz_pE>(R.mOne));
-		}
 
 		Element& random (Element& x) const
             {
@@ -419,31 +411,6 @@ namespace LinBox
 		size_t _seed;
         const NTL_zz_pE& _ring;
 	}; // class UnparametricRandIters
-	
-	template<>
-	class Hom<NTL_zz_pX, NTL_zz_pE> {
-	public:
-		typedef NTL_zz_pX Source;
-		typedef NTL_zz_pE Target;
-		typedef typename Source::Element SrcElt;
-		typedef typename Target::Element Elt;
-
-		Hom(const Source& S, const Target& T) : _source(S), _target(T) {}
-
-		Elt& image(Elt& t, const SrcElt& s) {
-			return t = NTL::conv<NTL::zz_pE>(s);
-		}
-		
-		SrcElt& preimage(SrcElt& s, const Elt& t) {
-			return s = NTL::conv<NTL::zz_pX>(t);
-		}
-		
-		const Source& source() { return _source;}
-		const Target& target() { return _target;}
-	private:
-		const Source& _source;
-		const Target& _target;
-	}; // end Hom<NTL_zz_pX, NTL_zz_pE>
 	
 } // LinBox
 

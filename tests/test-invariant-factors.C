@@ -22,9 +22,10 @@
 #include "linbox/algorithms/smith-form-local.h"
 #include "linbox/algorithms/poly-smith-form-local-x.h"
 #include "linbox/algorithms/weak-popov-form.h"
-#include "linbox/algorithms/poly-dixon.h"
 #include "linbox/algorithms/invariant-factors.h"
 #include "linbox/algorithms/wiedemann.h"
+
+#include "linbox/algorithms/poly-smith-form.h"
 
 #include "sparse-matrix-generator.h"
 #include "test-poly-smith-form.h"
@@ -60,7 +61,6 @@ typedef MatrixDomain<LocalRing> LocalMatrixDom;
 typedef typename LocalMatrixDom::OwnMatrix LocalMatrix;
 typedef PolySmithFormLocalXDomain<PolynomialRing> LocalSmithFormDom;
 typedef WeakPopovFormDomain<PolynomialRing> WeakPopovFormDom;
-typedef PolyDixonDomain<PolynomialRing, QuotientRing> DixonDom;
 
 Givaro::Timer TW;
 
@@ -171,7 +171,7 @@ public:
 		}
 	}
 	
-	void iliopoulos(
+	double timeIliopoulos(
 		std::vector<Polynomial> &result,
 		const PolyMatrix &M,
 		const Polynomial &det) const {
@@ -179,19 +179,11 @@ public:
 		SmithFormDom SFD(R);
 		result.clear();
 		PolyMatrix G(M);
-		
-		SFD.solveIliopoulos(result, G, det);
-	}
-	
-	double timeIliopoulos(
-		std::vector<Polynomial> &result,
-		const PolyMatrix &M,
-		const Polynomial &det) const {
 	
 		TW.clear();
 		TW.start();
 		
-		iliopoulos(result, M, det);
+		SFD.solveIliopoulos(result, G, det);
 		
 		TW.stop();
 		double sf_time = TW.usertime();
@@ -364,96 +356,6 @@ public:
 		return sf_time;
 	}
 	
-	bool dixon(
-		Polynomial &minpoly,
-		const PolyMatrix &M,
-		const Polynomial &f,
-		size_t max_deg) const {
-	
-		SparseMatrixGenerator<Field, PolynomialRing> Gen(F, R);
-		QuotientRing QR(_p, f);
-		
-		DixonDom DD(R, QR);
-		PolyMatrix Mx(M);
-				
-		PolyMatrix b(R, Mx.rowdim(), 1);
-		for (size_t i = 0; i < b.rowdim(); i++) {
-			Polynomial e;
-			Gen.randomPolynomial(e, max_deg);
-			
-			b.setEntry(i, 0, e);
-		}
-		
-		PolyMatrix x(R, Mx.rowdim(), 1);
-		size_t m = 4 * ((max_deg / R.deg(f)) + 1);
-		
-		bool success = DD.solve(x, Mx, b, f, m);
-		
-		if (!success) {
-			return false;
-		}
-		
-		Polynomial fm;
-		R.pow(fm, f, m);
-		
-		R.assign(minpoly, R.one);
-		for (size_t i = 0; i < x.rowdim(); i++) {
-			Polynomial numer, denom, tmp;
-			DD.rat_recon(numer, denom, x.getEntry(i, 0), fm);
-			
-			R.lcm(tmp, minpoly, denom);
-			R.assign(minpoly, tmp);
-		}
-		
-		return true;
-	}
-	
-	double timeDixon(
-		Polynomial &minpoly,
-		const PolyMatrix &M, size_t m) const {
-	
-		SparseMatrixGenerator<Field, PolynomialRing> Gen(F, R);
-		
-		size_t max_deg = 0;
-		for (size_t i = 0; i < M.rowdim(); i++) {
-			for (size_t j = 0; j < M.coldim(); j++) {
-				Polynomial tmp;
-				M.getEntry(tmp, i, j);
-				
-				if (R.isZero(tmp)) {
-					continue;
-				}
-				
-				size_t deg = R.deg(tmp);
-				max_deg = max_deg < deg ? deg : max_deg;
-			}
-		}
-		
-		TW.clear();
-		TW.start();
-		
-		size_t d = 1;
-		bool success = false;
-		Polynomial f;
-		for (size_t i = 0; i < 10 && !success; i++) {
-			Gen.randomIrreducible(f, d++);
-			
-			success = dixon(minpoly, M, f, m);
-		}
-		
-		TW.stop();
-		double d_time = TW.usertime();
-		std::cout << d_time << "\t" << std::flush;
-		
-		if (!success) {
-			std::cout << "(failed) " << std::flush;
-		} else {
-			// R.write(std::cout, f) << "\t" << std::flush;
-		}
-		
-		return d_time;
-	}
-	
 	double timePopov(Polynomial &det, const PolyMatrix &M) const {
 		WeakPopovFormDom PFD(R);
 		
@@ -469,6 +371,23 @@ public:
 		NTL::MakeMonic(det);
 		
 		return sf_time;
+	}
+	
+	double timeDixon(Polynomial &mp, const PolyMatrix &M, size_t m) const {
+		PolySmithFormDomain<PolynmialRing> PSFD(R);
+		
+		TW.clear();
+		TW.start();
+		
+		PSFD.dixon(mp, M, m);
+		
+		TW.stop();
+		double ds_time = TW.usertime();
+		std::cout << ds_time << "\t" << std::flush;
+		
+		NTL::MakeMonic(mp);
+		
+		return ds_time;
 	}
 }; // End of TestInvariantFactorsHelper
 
@@ -527,6 +446,8 @@ int main(int argc, char** argv) {
 		
 		return 0;
 	}
+	
+	PolySmithFormDomain<PolynomialRing> PSFD(R);
 		
 	// Generate random left and right projectors
 	std::vector<size_t> degree;
