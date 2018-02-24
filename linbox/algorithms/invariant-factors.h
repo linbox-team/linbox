@@ -128,33 +128,19 @@ public:
 		}
 	}
 	
+	template<class Iterator>
+	size_t limit(const Iterator &begin, const Iterator &end) const {
+		auto comp = [&](auto &a, auto &b){return _R.deg(a) < _R.deg(b);};		
+		auto acc = [&](size_t v, auto it) {
+			return v + _R.deg(*std::max_element(it.begin(), it.end(), comp));
+		};
+		return std::accumulate(begin, end, 0, acc);
+	}
+	
 	size_t detLimit(const PolyMatrix &M, size_t dim) const {
-		size_t limit1 = 0;
-		for (size_t i = 0; i < M.rowdim(); i++) {
-			size_t max_degree = 0;
-			for (size_t j = 0; j < M.coldim(); j++) {
-				size_t deg = _R.deg(M.getEntry(i, j));
-				if (deg > max_degree) {
-					max_degree = deg;
-				}
-			}
-			
-			limit1 += max_degree;
-		}
+		size_t limit1 = limit(M.rowBegin(), M.rowEnd());	
+		size_t limit2 = limit(M.colBegin(), M.colEnd());
 		
-		size_t limit2 = 0;
-		for (size_t i = 0; i < M.coldim(); i++) {
-			size_t max_degree = 0;
-			for (size_t j = 0; j < M.rowdim(); j++) {
-				size_t deg = _R.deg(M.getEntry(j, i));
-				if (deg > max_degree) {
-					max_degree = deg;
-				}
-			}
-			
-			limit2 += max_degree;
-		}
-				
 		return std::min(std::min(limit1, limit2), dim) + 1;
 	}
 	
