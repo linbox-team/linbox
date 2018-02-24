@@ -29,10 +29,7 @@
 #include <vector>
 #include <math.h> 
 
-#include "linbox/ring/polynomial-local-x.h"
-#include "linbox/algorithms/poly-smith-form-local-x.h"
-#include "linbox/algorithms/smith-form-local.h"
-
+#include "linbox/algorithms/poly-smith-form.h"
 #include "linbox/algorithms/block-coppersmith-domain.h"
 #include "linbox/algorithms/blackbox-block-container.h"
 #include "linbox/algorithms/blackbox-block-container-smmx.h"
@@ -41,7 +38,7 @@
 namespace LinBox
 {
 
-template<class _Field, class _PolynomialRing, class _QuotientRing>
+template<class _Field, class _PolynomialRing>
 class InvariantFactors {
 public:
 	typedef _Field Field;
@@ -52,26 +49,17 @@ public:
 	
 	typedef _PolynomialRing PolynomialRing;
 	typedef typename PolynomialRing::Element Polynomial;
-	typedef MatrixDomain<PolynomialRing> PolyMatrixDom;
-	typedef typename PolyMatrixDom::OwnMatrix PolyMatrix;
+	typedef typename MatrixDomain<PolynomialRing>::OwnMatrix PolyMatrix;
 	
-	typedef _QuotientRing QuotientRing;
-	typedef typename QuotientRing::Element QPolynomial;
-	typedef MatrixDomain<QuotientRing> QuotMatrixDom;
-	typedef typename QuotMatrixDom::OwnMatrix QuotMatrix;
-	typedef SmithFormLocal<QuotientRing> SmithFormLocalDom;
-	
-	typedef PolynomialLocalX<PolynomialRing> LocalRing;
-	typedef MatrixDomain<LocalRing> LocalMatrixDom;
-	typedef typename LocalMatrixDom::OwnMatrix LocalMatrix;
-	typedef PolySmithFormLocalXDomain<PolynomialRing> LocalSmithFormDom;
+	typedef PolySmithFormDomain<PolynomialRing> SmithFormDom;
 		
 protected:
 	Field _F;
 	PolynomialRing _R;
+	SmithFormDom _SFD;
 	
 public:
-	InvariantFactors(Field &F, PolynomialRing &R) : _F(F), _R(R) {}
+	InvariantFactors(Field &F, PolynomialRing &R) : _F(F), _R(R), _SFD(R) {}
 
 //protected:
 
@@ -88,7 +76,7 @@ public:
 		std::vector<Matrix> &gen,
 		const Blackbox &M,
 		size_t b,
-		int earlyTerm) const
+		int earlyTerm = 10) const
 	{
 		RandIter RI(_F);
 		RandomDenseMatrix<RandIter, Field> RDM(_F, RI);
@@ -122,111 +110,7 @@ public:
 				
 				Polynomial tmp;
 				_R.init(tmp, coeffs);
-				
 				G.setEntry(i, j, tmp);
-			}
-		}
-	}
-	
-	template<class Iterator>
-	size_t limit(const Iterator &begin, const Iterator &end) const {
-		auto comp = [&](auto &a, auto &b){return _R.deg(a) < _R.deg(b);};		
-		auto acc = [&](size_t v, auto it) {
-			return v + _R.deg(*std::max_element(it.begin(), it.end(), comp));
-		};
-		return std::accumulate(begin, end, 0, acc);
-	}
-	
-	size_t detLimit(const PolyMatrix &M, size_t dim) const {
-		size_t limit1 = limit(M.rowBegin(), M.rowEnd());	
-		size_t limit2 = limit(M.colBegin(), M.colEnd());
-		
-		return std::min(std::min(limit1, limit2), dim) + 1;
-	}
-	
-	void localX(Polynomial &det, const PolyMatrix &M, size_t exponent) const {
-		LocalSmithFormDom SFD(_R, exponent);
-		LocalRing L(_R, exponent);
-				
-		LocalMatrix G(M, L);
-		
-		SFD.solveDet(det, G);
-		NTL::MakeMonic(det);
-	}
-	
-	// SNF modulo f^multiplicity (we're in a SPIR)
-	void local(
-		std::vector<Polynomial> &result,
-		const PolyMatrix &M,
-		const Polynomial &f, // irred
-		long multiplicity) const {
-	
-		SmithFormLocalDom SFD;
-		
-		Polynomial modulus;
-		_R.pow(modulus, f, multiplicity);
-		
-		QuotientRing QR(_R, modulus);
-		
-		QuotMatrix QM(M, QR);
-		
-		std::list<QPolynomial> L;
-		SFD(L, QM, QR);
-		
-		Hom<PolynomialRing, QuotientRing> hom(_R, QR);
-		
-		size_t j = 0;
-		typename std::list<QPolynomial>::const_iterator it;
-		for (it = L.begin(); it != L.end(); it++) {
-			Polynomial tmp;
-			hom.preimage(tmp, *it);
-								
-			if (_R.isOne(tmp)) {
-				// noop
-			} else if (_R.isZero(tmp)) {
-				_R.mulin(result[j], modulus);
-			} else {
-				_R.mulin(result[j], tmp);
-			}
-			j++;
-		}
-	}
-	
-	// SNF via do local on the irred factors.
-	void factoredLocal(
-		std::vector<Polynomial> &result,
-		const PolyMatrix &M,
-		const Polynomial &sf_factor,
-		long multiplicity) const {
-	
-		std::vector<std::pair<Polynomial, long>> factors;
-		_R.factor(factors, sf_factor);
-		
-		for (size_t i = 0; i < factors.size(); i++) {
-			local(result, M, factors[i].first, factors[i].second * multiplicity);
-		}
-	}
-	
-	// SNF via sqfactor det and do prev factoredLocal
-	void factoredLocal(
-		std::vector<Polynomial> &result,
-		const PolyMatrix &M,
-		const Polynomial &det) const {
-	
-		std::vector<std::pair<Polynomial, long>> factors;
-		
-		_R.squareFree(factors, det);
-		
-		result.clear();
-		for (size_t i = 0; i < M.rowdim(); i++) {
-			result.push_back(_R.one);
-		}
-		
-		for (size_t i = 0; i < factors.size(); i++) {
-			if (factors[i].second == 1) {
-				_R.mulin(result[result.size() - 1], factors[i].first);
-			} else {
-				factoredLocal(result, M, factors[i].first, factors[i].second);
 			}
 		}
 	}
@@ -250,10 +134,9 @@ public:
 		convert(G, minpoly);
 		
 		Polynomial det;
-		size_t limit = detLimit(G, A.rowdim());
-		localX(det, G, limit);
+		_SFD.detLocalX(det, G);
+		_SFD.solve(lifs, G, det);	
 		
-		factoredLocal(lifs, G, det);		
 		return lifs;
 	}
 	
@@ -275,8 +158,7 @@ public:
 		convert(G, minpoly);
 		
 		Polynomial det;
-		size_t limit = detLimit(G, A.rowdim());
-		localX(det, G, limit);
+		_SFD.detLocalX(det, G);
 		
 		// get the constant coefficient of det and convert it to type Element
 		typename PolynomialRing::Coeff det0;

@@ -318,6 +318,11 @@ namespace LinBox
 			NTL::MakeMonic(r);
 			return r;
 		}
+		
+		Element& monicIn(Element& p) const {			
+			NTL::MakeMonic(p);
+			return p;
+		}
 
 		/** Get the coefficient of x^i in a given polynomial */
 		Coeff& getCoeff( Coeff& c, const Element& p, size_t i ) const

@@ -28,8 +28,13 @@
 #include <stdlib.h>
 #include <algorithm>
 
+#include "linbox/ring/polynomial-local-x.h"
+
 #include "linbox/matrix/matrixdomain/matrix-domain.h"
 
+#include "linbox/algorithms/smith-form-local.h"
+#include "linbox/algorithms/poly-smith-form-local-x.h"
+#include "linbox/algorithms/weak-popov-form.h"
 #include "linbox/algorithms/poly-dixon.h"
 
 #ifndef __LINBOX_poly_smith_form_domain_H
@@ -58,6 +63,170 @@ namespace LinBox
 	public:
 		PolySmithFormDomain(const Ring &R) : _R(R), _RI(R), _MD(_R) {}
 		PolySmithFormDomain(const PolySmithFormDomain &D) : _R(D._R), _RI(D._RI), _MD(D._MD) {}
+		
+		template<class Matrix1>
+		void local(
+			std::vector<Polynomial> &result,
+			const Matrix1 &M,
+			const Polynomial &f,
+			long multiplicity) const {
+		
+			typedef typename Ring::QuotientRing QuotientRing;
+			typedef typename QuotientRing::Element QPolynomial;
+		
+			SmithFormLocal<QuotientRing> SFD;
+			
+			Polynomial modulus;
+			_R.pow(modulus, f, multiplicity);
+			
+			QuotientRing QR(_R.quotient(modulus));
+			
+			typename MatrixDomain<QuotientRing>::OwnMatrix QM(M, QR);
+			
+			std::list<QPolynomial> L;
+			SFD(L, QM, QR);
+			
+			Hom<Ring, QuotientRing> hom(_R, QR);
+			
+			size_t j = 0;
+			typename std::list<QPolynomial>::const_iterator it;
+			for (it = L.begin(); it != L.end(); it++) {
+				Polynomial tmp;
+				hom.preimage(tmp, *it);
+									
+				if (_R.isOne(tmp)) {
+					// noop
+				} else if (_R.isZero(tmp)) {
+					_R.mulin(result[j], modulus);
+				} else {
+					_R.mulin(result[j], tmp);
+				}
+				j++;
+			}
+		}
+		
+		template<class Matrix1>
+		void localRank(
+			std::vector<Polynomial> &result,
+			const Matrix1 &M,
+			const Polynomial &f) const {
+		
+			typedef typename Ring::QuotientRing QuotientRing;
+			typedef typename QuotientRing::Element QPolynomial;
+			
+			SmithFormLocal<QuotientRing> SFD;
+			
+			QuotientRing QR(_R.quotient(f));
+			
+			typename MatrixDomain<QuotientRing>::OwnMatrix QM(M, QR);
+			
+			std::list<QPolynomial> L;
+			SFD(L, QM, QR);
+			
+			typename std::list<QPolynomial>::reverse_iterator it = L.rbegin();
+			it++;
+			if (QR.isZero(*it)) {
+				_R.mulin(result[result.size() - 2], f);
+				_R.mulin(result[result.size() - 1], f);
+			} else {
+				Polynomial f2;
+				_R.pow(f2, f, 2);
+				_R.mulin(result[result.size() - 1], f2);
+			}
+		}
+		
+		template<class Matrix1>
+		void localFactored(
+			std::vector<Polynomial> &result,
+			const Matrix1 &M,
+			const Polynomial &sf_factor,
+			long multiplicity) const {
+		
+			std::vector<std::pair<Polynomial, long>> factors;
+			_R.factor(factors, sf_factor);
+			
+			for (size_t i = 0; i < factors.size(); i++) {
+				local(result, M, factors[i].first, factors[i].second * multiplicity);
+			}
+		}
+		
+		template<class Matrix1>
+		void localFactoredRank(
+			std::vector<Polynomial> &result,
+			const Matrix1 &M,
+			const Polynomial &sf_factor) const {
+		
+			std::vector<std::pair<Polynomial, long>> factors;
+			_R.factor(factors, sf_factor);
+			
+			for (size_t i = 0; i < factors.size(); i++) {
+				localRank(result, M, factors[i].first);
+			}
+		}
+		
+		template<class Matrix1>
+		void solve(
+			std::vector<Polynomial> &result,
+			const Matrix1 &M,
+			const Polynomial &det) const {
+			
+			std::vector<std::pair<Polynomial, long>> factors;
+			
+			_R.squareFree(factors, det);
+			
+			result.clear();
+			for (size_t i = 0; i < M.rowdim(); i++) {
+				result.push_back(_R.one);
+			}
+			
+			for (size_t i = 0; i < factors.size(); i++) {
+				if (factors[i].second == 1) {
+					_R.mulin(result[result.size() - 1], factors[i].first);
+				} else if (factors[i].second == 2) {
+					localFactoredRank(result, M, factors[i].first);
+				} else {
+					localFactored(result, M, factors[i].first, factors[i].second);
+				}
+			}
+		}
+		
+		// Methods for Computing a Modulus
+		template<class Iterator>
+		size_t detLimit(const Iterator &begin, const Iterator &end) const {
+			auto comp = [&](auto &a, auto &b){return _R.deg(a) < _R.deg(b);};
+			auto acc = [&](size_t v, auto it) {
+				return v + _R.deg(*std::max_element(it.begin(), it.end(), comp));
+			};
+			return std::accumulate(begin, end, 0, acc);
+		}
+		
+		template<class Matrix1>
+		size_t detLimit(const Matrix1 &M) const {
+			size_t limit1 = detLimit(M.rowBegin(), M.rowEnd());
+			size_t limit2 = detLimit(M.colBegin(), M.colEnd());
+			
+			return std::min(limit1, limit2) + 1;
+		}
+		
+		template<class Matrix1>
+		void detLocalX(Polynomial &det, const Matrix1 &M) const {
+			size_t exponent = detLimit(M);
+		
+			PolySmithFormLocalXDomain<Ring> SFD(_R, exponent);
+			PolynomialLocalX<Ring> L(_R, exponent);
+				
+			typename MatrixDomain<PolynomialLocalX<Ring>>::OwnMatrix G(M, L);
+			
+			SFD.solveDet(det, G);
+			_R.monicIn(det);
+		}
+		
+		template<class Matrix1>
+		void detPopov(Polynomial &det, const Matrix1 &M) const {
+			WeakPopovFormDomain<Ring> PFD(_R);
+			PFD.solveDet(det, M);
+			_R.monicIn(det);
+		}
 		
 		template<class Matrix1>
 		bool dixon(
@@ -103,12 +272,17 @@ namespace LinBox
 		}
 		
 		template<class Matrix1>
-		void dixon(Polynomial &minpoly, const Matrix1 &M, size_t m) const {
-			for (size_t d = 1; d < 11; d++) {
+		bool dixon(Polynomial &mp, const Matrix1 &M) const {
+			size_t m = detLimit(M);
+			
+			bool success = false;
+			for (size_t d = 1; d < 11 && !success; d++) {
 				Polynomial f;
 				_RI.randomIrreducible(f, d++);
-				if (dixon(minpoly, M, f, m)) break;
+				success = dixon(mp, M, f, m);
 			}
+			_R.monicIn(mp);
+			return success;
 		}
 	}; // end of class PolySmithFormDomain
 }

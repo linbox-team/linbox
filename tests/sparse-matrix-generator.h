@@ -251,27 +251,6 @@ namespace LinBox
 		}
 		
 	public:
-		template<class Matrix>
-		double nnz(const Matrix &M) const {
-			double nnz = 0;
-			
-			for (size_t i = 0; i < M.rowdim(); i++) {
-				for (size_t j = 0; j < M.coldim(); j++) {
-					if (_F.isZero(M.getEntry(i,j))) {
-						continue;
-					}
-					
-					nnz++;
-				}
-			}
-			
-			return nnz;
-		}
-		
-		template<class Matrix>
-		double sparsity(const Matrix &M) const {
-			return nnz(M) / (M.rowdim() * M.coldim());
-		}
 		
 		template<class Matrix>
 		void generate(Matrix &M, Polynomial &det, const std::vector<Polynomial> & fs, double sparsity) const {
