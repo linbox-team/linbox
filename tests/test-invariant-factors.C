@@ -30,7 +30,7 @@ typedef BlasMatrix<Ring> PolyMatrix;
 
 Givaro::Timer TW;
 
-void time2(std::function<bool()> fun) {
+void time2(auto fun) {
 	TW.clear();
 	TW.start();
 	
@@ -40,8 +40,8 @@ void time2(std::function<bool()> fun) {
 	std::cout << TW.usertime() << (s ? "" : "(failed)") << "\t" << std::flush;
 }
 
-void time1(std::function<void()> fun) {
-	time2((std::function<bool()>) [fun](){fun(); return true;});
+void time1(auto fun) {
+	time2([fun](){fun(); return true;});
 }
 
 class TestInvariantFactorsHelper {
@@ -111,14 +111,35 @@ public:
 		//std::cout << extend1 << "\t" << std::flush;
 		
 		ExtField EF((uint64_t) _p, extend1);
-		
 		FBlackbox EM(M, EF);
 		
-		return wiedemann(outFile, EM);
+		wiedemann(outFile, EM);
 	}
 	
-	void extCoppersmith(
+	/*
+	template<class Field1, class Rep>
+	void coppersmith(SparseMatrix<Field1, Rep> &M, size_t b) const {
+		InvariantFactors<Field1, Ring> IFD(M.field(), R);
+			
+		// Generate random left and right projectors
+		std::vector<BlasMatrix<Field1>> minpoly;
+		time1([&](){IFD.computeGenerator(minpoly, M, b);});
+		
+		for (size_t i = 0; i < M.size(); i++) {
+			M.write(std::cout) << std::endl << std::endl;
+		}
+	}
 	
+	void extCoppersmith(SparseMat &M, size_t b, size_t extend) const {
+		typedef Givaro::GFqDom<int64_t> ExtField;
+		typedef typename SparseMat::template rebind<ExtField>::other FBlackbox;
+		
+		ExtField EF((uint64_t) _p, extend);
+		FBlackbox EM(M, EF);
+		
+		coppersmith(EM, b);
+	}
+	*/
 }; // End of TestInvariantFactorsHelper
 
 int main(int argc, char** argv) {
@@ -181,7 +202,8 @@ int main(int argc, char** argv) {
 	PolySmithFormDomain<Ring> PSFD(R);
 	
 	if (extend > 1) {
-		// TODO: BBM w/ Ext Field
+		// helper.extCoppersmith(M, b, extend);
+		return 0;
 	}
 	
 	InvariantFactors<Field, Ring> IFD(F, R);

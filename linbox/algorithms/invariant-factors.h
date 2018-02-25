@@ -59,7 +59,7 @@ protected:
 	SmithFormDom _SFD;
 	
 public:
-	InvariantFactors(Field &F, PolynomialRing &R) : _F(F), _R(R), _SFD(R) {}
+	InvariantFactors(const Field &F, const PolynomialRing &R) : _F(F), _R(R), _SFD(R) {}
 
 //protected:
 
