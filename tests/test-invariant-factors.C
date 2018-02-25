@@ -7,6 +7,7 @@
 
 #include "linbox/ring/modular.h"
 #include "linbox/ring/ntl.h"
+#include "linbox/ring/polynomial-ring.h"
 
 #include "linbox/matrix/sparse-matrix.h"
 #include "linbox/matrix/matrix-domain.h"
@@ -21,106 +22,104 @@
 using namespace LinBox;
 
 typedef Givaro::Modular<double> Field;
-typedef typename Field::Element Element;
 typedef SparseMatrix<Field, SparseMatrixFormat::CSR> SparseMat;
 
-typedef Field::RandIter RandIter;
-typedef MatrixDomain<Field> MatrixDom;
-typedef typename MatrixDom::OwnMatrix Matrix;
-typedef RandomDenseMatrix<RandIter, Field> RandomMatrix;
-
-typedef NTL_zz_pX PolynomialRing;
-typedef typename PolynomialRing::Element Polynomial;
-typedef typename PolynomialRing::Coeff Coeff;
-
-typedef MatrixDomain<PolynomialRing> PolyMatrixDom;
-typedef typename PolyMatrixDom::OwnMatrix PolyMatrix;
+typedef NTL_zz_pX Ring;
+typedef typename Ring::Element Polynomial;
+typedef BlasMatrix<Ring> PolyMatrix;
 
 Givaro::Timer TW;
+
+void time2(std::function<bool()> fun) {
+	TW.clear();
+	TW.start();
+	
+	bool s = fun();
+	
+	TW.stop();
+	std::cout << TW.usertime() << (s ? "" : "(failed)") << "\t" << std::flush;
+}
+
+void time1(std::function<void()> fun) {
+	time2((std::function<bool()>) [fun](){fun(); return true;});
+}
 
 class TestInvariantFactorsHelper {
 public:
 	const size_t _p;
 	const Field F;
-	const PolynomialRing R;
+	const Ring R;
 	const MatrixDomain<Field> MD;
 	
 	TestInvariantFactorsHelper(size_t p) : _p(p), F(p), R(p), MD(F) {};
 	
-	template<class Matrix>
-	double nnz(const Matrix &M) const {
-		double nnz = 0;
+	template<class Field1>
+	void writeInvariantFactor(std::string outFile, BlasVector<Field1> result) const {
+		if (outFile == "") {
+			return;
+		}
 		
-		for (size_t i = 0; i < M.rowdim(); i++) {
-			for (size_t j = 0; j < M.coldim(); j++) {
-				if (F.isZero(M.getEntry(i,j))) {
-					continue;
-				}
-				
-				nnz++;
+		Field1 F = result.field();
+		std::ofstream out(outFile);
+		
+		for (size_t i = 0; i < result.size(); i++) {
+			if (F.isZero(result[i])) {
+				continue;
+			}
+			
+			if (i == 0 || !F.isOne(result[i])) {
+				F.write(out, result[i]);
+			}
+			if (i > 0) {
+				out << (F.isOne(result[i]) ? "" : "*") << "x^" << i;
+			}
+			if (i < result.size() - 1) {
+				out << "+";
 			}
 		}
+		out << std::endl;
 		
-		return nnz;
-	}
-
-	void writeInvariantFactors(
-		std::ostream &os,
-		const std::vector<Polynomial> &factors) const {
-	
-		for (size_t i = 0; i < factors.size(); i++) {
-			Polynomial f;
-			R.monic(f, factors[i]);
-			R.write(os, f) << std::endl;
-		}
+		out.close();
 	}
 	
-	double extWiedemann(SparseMat &M, size_t extend) const {
+	template<class Field1, class Rep>
+	void wiedemann(std::string outFile, SparseMatrix<Field1, Rep> &M) const {
+		typedef typename Field1::RandIter RandIter;
+		typedef BlackboxContainer<Field1, SparseMatrix<Field1, Rep>> Sequence;
+		
+		BlasVector<Field1> phi(M.field());
+		unsigned long deg;
+		
+		time1([&](){
+			RandIter RI(M.field());
+			Sequence seq(&M, M.field(), RI);
+			MasseyDomain<Field1, Sequence> WD(&seq, 10);
+				
+			WD.minpoly(phi, deg);
+		});
+		writeInvariantFactor(outFile, phi);
+		
+		std::cout << (phi.size() - 1) << std::endl;
+	}
+	
+	void extWiedemann(std::string outFile, SparseMat &M, size_t extend) const {
 		typedef Givaro::GFqDom<int64_t> ExtField;
-		typedef typename ExtField::RandIter ExtRandIter;
+		typedef typename SparseMat::template rebind<ExtField>::other FBlackbox;
 		
 		// uint64_t extend1 = (uint64_t)Givaro::FF_EXPONENT_MAX((uint64_t)p, (uint64_t)LINBOX_EXTENSION_DEGREE_MAX);
 		uint64_t extend1 = extend;
 		//std::cout << extend1 << "\t" << std::flush;
 		
 		ExtField EF((uint64_t) _p, extend1);
-		ExtRandIter RI(EF);
 		
-		typedef typename SparseMat::template rebind<ExtField>::other FBlackbox;
 		FBlackbox EM(M, EF);
 		
-		typedef BlackboxContainer<ExtField, FBlackbox> BBContainer;
-		BBContainer seq(&EM, EF, RI);
-		MasseyDomain<ExtField, BBContainer> WD(&seq, 10);
-		
-		TW.clear();
-		TW.start();
-		
-		BlasVector<ExtField> phi(EF);
-		unsigned long deg;
-		WD.minpoly(phi, deg);
-		
-		TW.stop();
-		double bm_time = TW.usertime();
-		std::cout << bm_time << "\t" << (phi.size() - 1) << std::endl;
-		
-		return bm_time;
+		return wiedemann(outFile, EM);
 	}
+	
+	void extCoppersmith(
+	
 }; // End of TestInvariantFactorsHelper
-
-void time1(auto fun) {
-	TW.clear();
-	TW.start();
-	
-	bool success = fun();
-	
-	TW.stop();
-	std::cout << TW.usertime();
-	if (!success) {
-		std::cout << "(failed)";
-	}
-	std::cout << "\t" << std::flush;
-}
 
 int main(int argc, char** argv) {
 	size_t p = 7;
@@ -136,20 +135,23 @@ int main(int argc, char** argv) {
 		{ 'p', "-p P", "Set the field GF(p)", TYPE_INT, &p},
 		{ 'e', "-e E", "Extension field exponent (p^e)", TYPE_INT, &extend},
 		{ 'b', "-b B", "Block size", TYPE_INT, &b},
-		
 		{ 'f', "-f F", "Name of file for matrix", TYPE_STR, &matrixFile},
 		{ 'o', "-o O", "Name of output file for invariant factors", TYPE_STR, &outFile},
-		
 		{ 'r', "-r R", "Random seed", TYPE_INT, &seed},
 		END_OF_ARGUMENTS
 	};
 
 	parseArguments(argc,argv,args);
 	
+	if (matrixFile == "") {
+		std::cout << "an input matrix must be provided" << std::endl;
+		return -1;
+	}
+	
 	srand(seed);
 
 	Field F(p);
-	PolynomialRing R(p);
+	Ring R(p);
 	
 	SparseMat M(F);
 	{
@@ -164,45 +166,51 @@ int main(int argc, char** argv) {
 	if (n <= 20) M.write(std::cout) << std::endl;
 	
 	TestInvariantFactorsHelper helper(p);
-	std::cout << n << "\t" << helper.nnz(M) << "\t" << b << "\t" << std::flush;
+	std::cout << n << "\t" << M.size() << "\t" << b << "\t" << std::flush;
 	
 	if (b == 1) {
 		if (extend > 1) {
-			helper.extWiedemann(M, extend);
+			helper.extWiedemann(outFile, M, extend);
 		} else {
-			// TODO: implement
+			helper.wiedemann(outFile, M);
 		}
 		
 		return 0;
 	}
 	
-	PolySmithFormDomain<PolynomialRing> PSFD(R);
-	InvariantFactors<Field, PolynomialRing> IFD(F, R);
+	PolySmithFormDomain<Ring> PSFD(R);
+	
+	if (extend > 1) {
+		// TODO: BBM w/ Ext Field
+	}
+	
+	InvariantFactors<Field, Ring> IFD(F, R);
 		
 	// Generate random left and right projectors
-	std::vector<size_t> degree;
-	std::vector<Matrix> minpoly;
-	time1([&](){IFD.computeGenerator(minpoly, M, b); return true;});
+	std::vector<BlasMatrix<Field>> minpoly;
+	time1([&](){IFD.computeGenerator(minpoly, M, b);});
 	
 	// Convert to matrix with polynomial entries
 	PolyMatrix G(R, b, b);
 	IFD.convert(G, minpoly);
 	
 	// Compute smith form of generator
-	size_t exponent_limit = PSFD.detLimit(G);
-	std::cout << exponent_limit << "\t" << std::flush;
+	std::cout << PSFD.detLimit(G) << "\t" << std::flush;
 	
 	Polynomial det, mp;
 	std::vector<Polynomial> result;
-	time1([&](){return PSFD.dixon(mp, G);});
-	time1([&](){PSFD.detPopov(det, G); return true;});
-	time1([&](){PSFD.detLocalX(det, G); return true;});
-	time1([&](){PSFD.solve(result, G, det); return true;});
+	time2([&](){return PSFD.dixon(mp, G);});
+	time1([&](){PSFD.detPopov(det, G);});
+	time1([&](){PSFD.detLocalX(det, G);});
+	time1([&](){PSFD.solve(result, G, det);});
 	std::cout << std::endl;
 	
 	if (outFile != "") {
-		std::ofstream out(outFile + ".txt");
-		helper.writeInvariantFactors(out, result);
+		std::ofstream out(outFile);
+		std::for_each(result.begin(), result.end(), [&](const Polynomial &v) {
+			Polynomial f;
+			R.write(out, R.monic(f, v)) << std::endl;
+		});
 		out.close();
 	}
 	
