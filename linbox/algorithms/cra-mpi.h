@@ -322,7 +322,7 @@ namespace LinBox
 			}
 		}
 
-//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<BEGIN<<OF<<ROI<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 		template<class Function, class PrimeIterator>
 		BlasVector<Givaro::ZRing<Integer> > & operator() ( BlasVector<Givaro::ZRing<Integer> > & num, Integer& den, Function& Iteration, PrimeIterator& primeg)
@@ -368,8 +368,6 @@ Timer chrono;
 					//  and give them a new prime
 					idle_process = (_commPtr->get_stat()).MPI_SOURCE;
 					Domain D(primes[idle_process - 1]);
-//std::cerr<<" Use prime:= "<< primes[idle_process - 1] <<" to Build"<<std::endl;
-//std::cerr<<" Use r:= "<< r <<" to Build"<<std::endl;
 //chrono.start();//////////////////////////////////////////////////////////////////
 					Builder_.progress(D, r);
 //chrono.stop();///////////////////////////////////////////////////////////////////
@@ -412,11 +410,9 @@ Timer chrono;
 					_commPtr->send(r.begin(), r.end(), 0, 0); 
 				}
 			}
-#endif
+
 //<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-
-#if 0
-
+#else
 
 			if(_commPtr == 0) {
 				RationalRemainder< RatCRABase > sequential(Builder_);
@@ -455,7 +451,6 @@ int primes2[procs - 1];
 					_commPtr->send(primes2[i - 1], process+1); 
 				}
 
-//std::cerr << " Manager sent "; for(int i=1; i<procs; i++) std::cerr <<primes[i - 1]<<"  "; std::cerr << std::endl;
 				Builder_.initialize( D, Iteration(r, D) );
 				int poison_pills_left = procs - 1;
 std::vector<BlasVector<Domain>> R;
@@ -466,20 +461,20 @@ while(poison_pills_left > 0 ){
 	for  (int i=1; i<procs; i++){
 		_commPtr->recv(r.begin(), r.end(), i, 0); 
 		R.push_back(r);
-	} //R.clear();
+	} 
 
 	for  (int i=1; i<procs; i++){
 		_commPtr->recv(r.begin(), r.end(), i, 0); 
 		R2.push_back(r);
 
-	} //R.clear();
-
+	} 
  
 	for  (int i=1; i<procs; i++){
 		Domain D(primes[i - 1]);		
 		Builder_.progress(D,R[i - 1]);
 
 	} R.clear();
+
 	for  (int i=1; i<procs; i++){
 		Domain D(primes2[i - 1]);
 			
@@ -498,6 +493,7 @@ while(poison_pills_left > 0 ){
 					primes[i - 1] = *primeg;
 					_commPtr->send(primes[i - 1], process+1); 
 				}
+
 				for(int i=1; i<procs; i++){
 					//  generate a new prime
 					++primeg; while(Builder_.noncoprime(*primeg) ) ++primeg;
@@ -505,6 +501,7 @@ while(poison_pills_left > 0 ){
 					primes2[i - 1] = *primeg;
 					_commPtr->send(primes2[i - 1], process+1); 
 				}
+
 
 			}
 					//  otherwise, queue a poison pill
@@ -515,12 +512,14 @@ while(poison_pills_left > 0 ){
 					primes[i - 1] = 0;
 					_commPtr->send(primes[i - 1], process+1); 
 				}
+
 				for(int i=1; i<procs; i++){
 					 poison_pills_left--;
 					//  fix the array of currently sent primes
 					primes2[i - 1] = 0;
 					_commPtr->send(primes2[i - 1], process+1); 
 				}
+
 
 			}
 
@@ -531,7 +530,7 @@ return Builder_.result(num,den);
 
 			}else{
 
-				int p[procs-1], pp[procs-1], ppp[procs-1];
+				int p[procs-1], pp[procs-1];
 				//  get a prime, compute, send back start and end
 				//  of heap addresses
 
@@ -562,7 +561,6 @@ for (int j=0; j<procs-1; j++) _commPtr->recv(pp[j], process-1);
 }
 
 
-
  					if(p[process-1] == 0)
 						break;
  					if(pp[process-1] == 0)
@@ -587,7 +585,7 @@ for (int j=0; j<procs-1; j++) _commPtr->recv(pp[j], process-1);
 //<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 		}
 
-//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>END>>OF>>ROI>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 
 
