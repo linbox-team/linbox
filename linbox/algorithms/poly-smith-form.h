@@ -193,11 +193,14 @@ namespace LinBox
 		// Methods for Computing a Modulus
 		template<class Iterator>
 		size_t detLimit(const Iterator &begin, const Iterator &end) const {
-			auto comp = [&](auto &a, auto &b){return _R.deg(a) < _R.deg(b);};
-			auto acc = [&](size_t v, auto it) {
-				return v + _R.deg(*std::max_element(it.begin(), it.end(), comp));
-			};
-			return std::accumulate(begin, end, 0, acc);
+			auto comp = [&](const Polynomial &a, const Polynomial &b){return _R.deg(a) < _R.deg(b);};
+			
+			size_t v = 0;
+			for (auto it = begin; it != end; it++) {
+				return v + _R.deg(*std::max_element(it->begin(), it->end(), comp));
+			}
+			
+			return v;
 		}
 		
 		template<class Matrix1>
