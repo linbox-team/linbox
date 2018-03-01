@@ -34,7 +34,7 @@ typedef BlasMatrix<Ring> PolyMatrix;
 
 Givaro::Timer TW;
 
-void time2(auto fun) {
+void time2(std::function<bool()> fun) {
 	TW.clear();
 	TW.start();
 	
@@ -44,7 +44,7 @@ void time2(auto fun) {
 	std::cout << TW.usertime() << (s ? "" : "(failed)") << "\t" << std::flush;
 }
 
-void time1(auto fun) {
+void time1(std::function<void()> fun) {
 	time2([fun](){fun(); return true;});
 }
 
