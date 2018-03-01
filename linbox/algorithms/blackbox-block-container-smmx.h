@@ -32,7 +32,6 @@
 
 #include "linbox/linbox-config.h"
 #include "linbox/util/debug.h"
-#include "givaro/givtimer.h"
 
 #include "linbox/algorithms/blackbox-block-container-base.h"
 #include "linbox/matrix/dense-matrix.h"
@@ -59,20 +58,16 @@ namespace LinBox
 
 	private:
 		Field _F;
+		// BlasMatrixDomain<Field> _MD;
+		MatrixDomain<Field> _MD;
+		
 		const Blackbox *_BB;
-		Value _V;
-		
-		size_t _n;
-		size_t _b;
 		FSparseMat _M;
-		FflasBlock _U;
-		FflasBlock _W;
-		FflasBlock _C;
-		FflasBlock _tmp;
 		
-//		Givaro::Timer TW;
-		double _spmmTime;
-		double _gemmTime;
+		Block _U;
+		Block _W;
+		Block _tmp;
+		Value _V;
 		
 	public:
 		// Default constructor
@@ -84,32 +79,16 @@ namespace LinBox
 			const Field &F,
 			const Block &U0,
 			const Block &V0) : 
-		_F(F), _BB(BB), _V(F, U0.rowdim(), U0.rowdim()) {
-			_spmmTime = 0.0;
-			_gemmTime = 0.0;
-			
-			size_t b = U0.rowdim();
-			size_t n = BB->rowdim();
-			
-			_n = n;
-			_b = b;
-			
-			_U = FFLAS::fflas_new(_F, b, n, Alignment::CACHE_PAGESIZE);
-			_W = FFLAS::fflas_new(_F, n, b, Alignment::CACHE_LINE);
-			_C = FFLAS::fflas_new(_F, b, b, Alignment::CACHE_PAGESIZE);
-			_tmp = FFLAS::fflas_new(_F, _n, _b, Alignment::CACHE_LINE);
-			
-			for (size_t i = 0; i < b; i++) {
-				for (size_t j = 0; j < n; j++) {
-					_U[i * n + j] = U0.getEntry(i, j);
-				}
-			}
-			
-			for (size_t i = 0; i < n; i++) {
-				for (size_t j = 0; j < b; j++) {
-					_W[i * b + j] = V0.getEntry(i, j);
-				}
-			}
+				_F(F), 
+				_MD(F),
+				_BB(BB), 
+				_U(U0), 
+				_W(V0), 
+				_tmp(F, BB->rowdim(), U0.rowdim()), 
+				_V(F, U0.rowdim(), U0.rowdim()) 
+		{
+			// size_t b = U0.rowdim();
+			// size_t n = BB->rowdim();
 			
 			Blackbox M(*BB);
 			std::vector<index_t> st1 = M.getStart();
@@ -147,47 +126,24 @@ namespace LinBox
 		}
 		
 		size_t rowdim() const {
-			return _b;
+			return _U.rowdim();
 		}
 		
 		size_t coldim() const {
-			return _b;
-		}
-		
-		double spmmtime() const {
-			return _spmmTime;
-		}
-		
-		double gemmtime() const {
-			return _gemmTime;
+			return _V.coldim();
 		}
 		
 		void next() {
-//			TW.clear();
-//			TW.start();
+			for (size_t i = 0; i < _W.rowdim() * _W.coldim(); i++) {
+				_tmp.getPointer()[i] = _W.getPointer()[i];
+			}
 			
-			for (size_t i = 0; i < _n * _b; i++) _tmp[i] = _W[i];
-			FFLAS::fspmm(_F, _M, _b, _tmp, _b, _F.zero, _W, _b);
-			
-//			TW.stop();
-//			_spmmTime += TW.usertime();
+			size_t b = _W.coldim();
+			FFLAS::fspmm(_F, _M, b, _tmp.getPointer(), b, _F.zero, _W.getPointer(), b);
 		}
 		
 		const Value &getValue() {
-//			TW.clear();
-//			TW.start();
-			
-			fgemm(_F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, _b, _b, _n, _F.one, _U, _n, _W, _b, _F.zero, _C, _b);
-			
-//			TW.stop();
-//			_gemmTime += TW.usertime();
-			
-			for (size_t i = 0; i < _b; i++) {
-				for (size_t j = 0; j < _b; j++) {
-					_V.setEntry(i, j, _C[i * _b + j]);
-				}
-			}
-			
+			_MD.mul(_V, _U, _W);
 			return _V;
 		}
 		

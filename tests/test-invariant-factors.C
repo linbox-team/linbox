@@ -5,6 +5,8 @@
 
 #include "givaro/givtimer.h"
 
+#include "givaro/extension.h"
+#include "givaro/gfqext.h"
 #include "linbox/ring/modular.h"
 #include "linbox/ring/ntl.h"
 #include "linbox/ring/polynomial-ring.h"
@@ -18,6 +20,8 @@
 
 #include "linbox/algorithms/poly-smith-form.h"
 #include "linbox/algorithms/invariant-factors.h"
+#include "linbox/algorithms/smith-form-kannan-bachem.h"
+
 
 using namespace LinBox;
 
@@ -94,7 +98,7 @@ public:
 			RandIter RI(M.field());
 			Sequence seq(&M, M.field(), RI);
 			MasseyDomain<Field1, Sequence> WD(&seq, 10);
-				
+			
 			WD.minpoly(phi, deg);
 		});
 		writeInvariantFactor(outFile, phi);
@@ -116,7 +120,7 @@ public:
 		wiedemann(outFile, EM);
 	}
 	
-	/*
+	//*
 	template<class Field1, class Rep>
 	void coppersmith(SparseMatrix<Field1, Rep> &M, size_t b) const {
 		InvariantFactors<Field1, Ring> IFD(M.field(), R);
@@ -124,10 +128,39 @@ public:
 		// Generate random left and right projectors
 		std::vector<BlasMatrix<Field1>> minpoly;
 		time1([&](){IFD.computeGenerator(minpoly, M, b);});
+		std::cout << std::endl;
 		
-		for (size_t i = 0; i < M.size(); i++) {
-			M.write(std::cout) << std::endl << std::endl;
+		/*
+		typedef PolynomialRing<Field1> Ring1;
+		typedef typename Ring1::Element Poly;
+		
+		Ring1 ER(M.field());
+		MatrixDomain<Ring1> ERMD(ER);
+		BlasMatrix<Ring1> G(ER, b, b);
+		for (size_t i = 0; i < b; i++) {
+			for (size_t j = 0; j < b; j++) {
+				std::vector<typename Field1::Element> lst;				
+				for (size_t k = 0; k < minpoly.size(); k++) {
+					lst.push_back(minpoly[k].getEntry(i, j));
+				}
+				
+				Poly tmp;
+				ER.init(tmp, lst);
+				
+				G.setEntry(i, j, tmp);
+				ER.write(std::cout, G.getEntry(i, j)) << std::endl;
+			}
+			std::cout << std::endl;
 		}
+		
+		SmithFormKannanBachemDomain<Ring1> SFD(ER);
+		std::vector<typename Ring1::Element> result;
+		SFD.solveTextBook(result, G);
+		
+		for (size_t i = 0; i < result.size(); i++) {
+			ER.write(std::cout, result[i]) << std::endl;
+		}
+		*/
 	}
 	
 	void extCoppersmith(SparseMat &M, size_t b, size_t extend) const {
@@ -139,7 +172,7 @@ public:
 		
 		coppersmith(EM, b);
 	}
-	*/
+	//*/
 }; // End of TestInvariantFactorsHelper
 
 int main(int argc, char** argv) {
@@ -202,7 +235,8 @@ int main(int argc, char** argv) {
 	PolySmithFormDomain<Ring> PSFD(R);
 	
 	if (extend > 1) {
-		// helper.extCoppersmith(M, b, extend);
+		helper.extCoppersmith(M, b, extend);
+		
 		return 0;
 	}
 	
