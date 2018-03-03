@@ -107,6 +107,11 @@ public:
 	}
 	
 	void extWiedemann(std::string outFile, SparseMat &M, size_t extend) const {
+		if (extend == 1) {
+			wiedemann(outFile, M);
+			return;
+		}
+		
 		typedef Givaro::GFqDom<int64_t> ExtField;
 		typedef typename SparseMat::template rebind<ExtField>::other FBlackbox;
 		
@@ -160,7 +165,7 @@ public:
 		for (size_t i = 0; i < result.size(); i++) {
 			ER.write(std::cout, result[i]) << std::endl;
 		}
-		*/
+		//*/
 	}
 	
 	void extCoppersmith(SparseMat &M, size_t b, size_t extend) const {
@@ -178,16 +183,19 @@ public:
 }; // End of TestInvariantFactorsHelper
 
 int main(int argc, char** argv) {
-	size_t p = 7;
+	size_t p = 3;
 	size_t extend = 1;
-	size_t b = 5;
+	size_t b = 4;
 	
 	std::string matrixFile;
 	std::string outFile;
 	
 	int seed = time(NULL);
+	
+	size_t alg = 0;
 
 	static Argument args[] = {
+		{ 'a', "-a A", "Algs to run after BM", TYPE_INT, &alg},
 		{ 'p', "-p P", "Set the field GF(p)", TYPE_INT, &p},
 		{ 'e', "-e E", "Extension field exponent (p^e)", TYPE_INT, &extend},
 		{ 'b', "-b B", "Block size", TYPE_INT, &b},
@@ -225,24 +233,17 @@ int main(int argc, char** argv) {
 	std::cout << n << "\t" << M.size() << "\t" << b << "\t" << std::flush;
 	
 	if (b == 1) {
-		if (extend > 1) {
-			helper.extWiedemann(outFile, M, extend);
-		} else {
-			helper.wiedemann(outFile, M);
-		}
-		
+		helper.extWiedemann(outFile, M, extend);
 		return 0;
 	}
 	
-	PolySmithFormDomain<Ring> PSFD(R);
-	
 	if (extend > 1) {
 		helper.extCoppersmith(M, b, extend);
-		
 		return 0;
 	}
 	
 	InvariantFactors<Field, Ring> IFD(F, R);
+	PolySmithFormDomain<Ring> PSFD(R);
 		
 	// Generate random left and right projectors
 	std::vector<BlasMatrix<Field>> minpoly;
@@ -257,10 +258,20 @@ int main(int argc, char** argv) {
 	
 	Polynomial det, mp;
 	std::vector<Polynomial> result;
-	time2([&](){return PSFD.dixon(mp, G);});
-	time1([&](){PSFD.detPopov(det, G);});
-	time1([&](){PSFD.detLocalX(det, G);});
-	time1([&](){PSFD.solve(result, G, det);});
+		
+	if (alg & 8) {
+		time2([&](){return PSFD.dixon(mp, G);});
+	}
+	if (alg & 4) {
+		time1([&](){PSFD.detPopov(det, G);});
+	}
+	if (alg & 2) {
+		time1([&](){PSFD.detLocalX(det, G);});
+	}
+	if ((alg & 1) && !R.isZero(det)) {
+		time1([&](){PSFD.solve(result, G, det);});
+	}
+	
 	std::cout << std::endl;
 	
 	if (outFile != "") {
