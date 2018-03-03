@@ -58,8 +58,8 @@ namespace LinBox
 
 	private:
 		Field _F;
-		// BlasMatrixDomain<Field> _MD;
-		MatrixDomain<Field> _MD;
+		BlasMatrixDomain<Field> _MD;
+		//MatrixDomain<Field> _MD;
 		
 		const Blackbox *_BB;
 		FSparseMat _M;
