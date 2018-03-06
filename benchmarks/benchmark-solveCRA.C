@@ -1,3 +1,30 @@
+/* Copyright (C) 2018 The LinBox group
+ * Written by Hongguang Zhu <zhuhongguang2014@gmail.com>
+ *
+ * ========LICENCE========
+ * This file is part of the library LinBox.
+ *
+  * LinBox is free software: you can redistribute it and/or modify
+ * it under the terms of the  GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * ========LICENCE========
+ */
+
+/*! @file benchmarks/benchmark-solveCRA.C
+ * @ingroup benchmarks
+ * @brief Benchmarking the MPI parallel rational solver
+ */
+
 #define __LINBOX_HAVE_MPI
 
 #include <stdlib.h>
@@ -63,8 +90,8 @@ int main(int argc, char ** argv)
   
   static Argument args[] = {
     { 'n', "-n N", "Set column and row dimension of test matrices to N.", TYPE_INT,     &ni },
-    { 'm', "-m M", "Set the mxaimum for the range of integers to generate.", TYPE_INT,     &max },
-    { 'd', "-d M", "Set the mxaimum number of digits of integers to generate.", TYPE_INT,     &dg },
+    { 'm', "-m M", "Set the maximum for the range of integers to generate.", TYPE_INT,     &max },
+    { 'd', "-d M", "Set the maximum number of digits of integers to generate.", TYPE_INT,     &dg },
     END_OF_ARGUMENTS
   };	
   parseArguments (argc, argv, args); nj = ni;

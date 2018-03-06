@@ -226,14 +226,14 @@ int *B_a_size=(int*)malloc(nj*sizeof(int));
  }
 };
 
-template<class Vector, typename T>
-void MPIgmpBcast(Vector& A, size_t ni, size_t nj, int src, LinBox::Communicator *Cptr)
+template<class Matrix, typename T>
+void MPIgmpBcast(const Matrix& A, size_t ni, size_t nj, int src, LinBox::Communicator *Cptr)
 {
 gmpBcast2<Vector, T> gB;
 gB(A, ni, nj, src, Cptr);
 }
 template<class Vector, typename T>
-void MPIgmpBcast(Vector& A, size_t ni, int src, LinBox::Communicator *Cptr)
+void MPIgmpBcast(const Vector& A, size_t ni, int src, LinBox::Communicator *Cptr)
 {
 gmpBcast<Vector, T>gB;
 gB(A, ni, src, Cptr);  
