@@ -841,34 +841,29 @@ namespace LinBox
 		      const RingCategories::IntegerTag & tag,
 		      const MyMethod& M
 #ifdef __LINBOX_HAVE_MPI
-						    ,Communicator                             *C = NULL
+			,Communicator   *C = NULL
 #endif
 			)
 	{
+#ifdef __LINBOX_HAVE_MPI	//MPI parallel version
 
-
-#ifdef __LINBOX_HAVE_MPI
-		// use of integer due to non genericity of rra (PG 2005-09-01)
 		Integer den(1);
-		if(!C || C->rank() == 0){
+		if(!C || C->rank() == 0){ 
 			if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
 				throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
-				commentator().start ("Integer CRA Solve", "Isolve");
+                        commentator().start ("Integer CRA Solve", "Isolve");
 		}
-
-				RandomPrimeIterator genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
-
-
-
-			BlasVector<Givaro::ZRing<Integer>> num(A.field(),A.coldim());
-			IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
-
+                
+		RandomPrimeIterator genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
+                
+		BlasVector<Givaro::ZRing<Integer>> num(A.field(),A.coldim());
+                
+		IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
 		MPIratChineseRemainder< EarlyMultipRatCRA< Givaro::Modular<double> > > mpicra(3UL, C);
-
-			mpicra(num, den, iteration, genprime);
-
-
-		if(!C || C->rank() == 0){
+                
+		mpicra(num, den, iteration, genprime);
+                
+		if(!C || C->rank() == 0){ 
 				typename Vector::iterator it_x= x.begin();
 				typename BlasVector<Givaro::ZRing<Integer>>::const_iterator it_num= num.begin();
 
@@ -877,42 +872,32 @@ namespace LinBox
 					A.field().init(*it_x, *it_num);	
 		
 			A.field().init(d, den);
-			if(!C || C->rank() == 0)commentator().stop ("done", NULL, "Isolve");
+
+			commentator().stop ("done", NULL, "Isolve");
 			return x;
 		}
-
-#else
+#else   //serial version
 		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
 			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
 		commentator().start ("Integer CRA Solve", "Isolve");
-
+                
 		RandomPrimeIterator genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
-		//         RationalRemainder< Givaro::Modular<double> > rra((double)
-		//                                                  ( A.coldim()/2.0*log((double) A.coldim()) ) );
-
+                
 		// use of integer due to non genericity of rra (PG 2005-09-01)
 		Integer den(1);
 		BlasVector<Givaro::ZRing<Integer>> num(A.field(),A.coldim());
 		IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
 		RationalRemainder< EarlyMultipRatCRA< Givaro::Modular<double> > > rra(3UL);
-
-
-		rra(num, den, iteration, genprime);
-		//rra(x, d, iteration, genprime);
+		rra(num, den, iteration, genprime); //rra(x, d, iteration, genprime);
 		typename Vector::iterator it_x= x.begin();
 		typename BlasVector<Givaro::ZRing<Integer>>::const_iterator it_num= num.begin();
-
 		// convert the result
 		for (; it_x != x.end(); ++it_x, ++it_num)
 			A.field().init(*it_x, *it_num);
 		A.field().init(d, den);
 		commentator().stop ("done", NULL, "Isolve"); 
 		return x;
-#endif
-
-		
-
-		
+#endif		
 	}
 
 
