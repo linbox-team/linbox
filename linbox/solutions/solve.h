@@ -344,7 +344,7 @@ namespace LinBox
 			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
 
 		commentator().start ("Rational CRA Solve", "Rsolve");
-                typedef Givaro::ModularBalanced<double> Field;
+                typedef Givaro::Modular<double> Field;
                 PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
 
 		RationalRemainder2< VarPrecEarlyMultipCRA<Field> > rra(3UL);//using default RR method
@@ -536,7 +536,7 @@ namespace LinBox
 
 		commentator().start ("Padic Integer Blas-based Solving ", "solving");
 
-		typedef Givaro::ModularBalanced<double> Field;
+		typedef Givaro::Modular<double> Field;
 		// 0.7213475205 is an upper approximation of 1/(2log(2))
 		PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
 		RationalSolver<Ring, Field, PrimeIterator<IteratorCategories::HeuristicTag>, DixonTraits> rsolve(A.field(), genprime);

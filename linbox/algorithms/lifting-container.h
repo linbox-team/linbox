@@ -58,7 +58,7 @@ namespace LinBox
 	 * BoundBlackbox: Sets
 	 *      H_col_sqr <- H_col(A)^2,   short_col_sqr <- short_col(A)^2
 	 * where H_col(A) is prod_j sqrt(sum_i a_ij^2)     ('Hadamard column bound')
-	 *   short_col(A) is min_j  sqrt(sum_i a_ij^2)     ('shortest column')
+	 *   short_col(A) is min_j  sqrt(sum_i a_ij^2)     ('shortest nonzero column')
 	 *
 	 * @note H_col is not actually a norm! but it is what we need for lifting bound computation
          * @ note: in the presence of zero columns (happening with underdetermined system)
@@ -74,21 +74,21 @@ namespace LinBox
 		//size_t m, n, col=0;
 		//n=A.coldim();
 		//m=A.rowdim();
-
 		typename ItMatrix::ConstRowIterator row= A.rowBegin();
 		std::vector<Integer_t> tmp(A.coldim(), R.zero);
 		for (; row != A.rowEnd(); ++row){
 			typename ItMatrix::ConstRow::const_iterator elm= row->begin();
-			for (size_t i=0; elm != row->end(); ++elm, ++i)
+			for (size_t i=0; elm != row->end(); ++elm, ++i) {
 				R.axpyin(tmp[i], *elm, *elm);
+            }
 		}
 
 		R.assign(H_col_sqr, R.one);
-		R.assign (short_col_sqr, tmp[0]);
+		R.assign (short_col_sqr, R.zero);
 		for (size_t i=0;i<A.coldim();++i) {
 			if (!R.isZero(tmp[i])){
 				R.mulin(H_col_sqr,tmp[i]);
-				if(short_col_sqr> tmp[i]) short_col_sqr=tmp[i];
+                if (R.isZero(short_col_sqr) || (short_col_sqr > tmp[i])) R.assign(short_col_sqr,tmp[i]);
 			}
 		}
 		// short_col_sqr= *(std::min_element(tmp.begin(),tmp.end()));
@@ -138,14 +138,15 @@ namespace LinBox
 		for(auto indices = A.IndexedBegin(); indices != A.IndexedEnd() ; ++indices )
 			R.axpyin(tmp[indices.colIndex()], indices.value(), indices.value());
 		R.assign (H_col_sqr, R.one);
-		R.assign (short_col_sqr, tmp[0]);
-		for (size_t i=0;i<A.coldim();++i)
+		R.assign (short_col_sqr, R.zero);
+		for (size_t i=0;i<A.coldim();++i) {
 			// Generalization of the Hadamard's bound: product of the norm of all non-zero columns
 			if (!R.isZero(tmp[i])){
 				R.mulin (H_col_sqr,tmp[i]);
-				if (short_col_sqr < tmp[i]) short_col_sqr = tmp[i];
+                if (R.isZero(short_col_sqr) || (short_col_sqr > tmp[i])) R.assign(short_col_sqr,tmp[i]);
 			}
-		//short_col_sqr= *(std::min_element(tmp.begin(),tmp.end()));
+        }
+            //short_col_sqr= *(std::min_element(tmp.begin(),tmp.end()));
 	}
 
 	template < class Ring, class Blackbox>
@@ -172,8 +173,8 @@ namespace LinBox
 				sqsum += (*iter)*(*iter);
 			}
 			R.mulin(H_col_sqr, sqsum);
-			if (i==0 || sqsum < short_col_sqr)
-				short_col_sqr = sqsum;
+			if (i==0 || R.isZero(short_col_sqr) || sqsum < short_col_sqr)
+				R.assign(short_col_sqr,sqsum);
 			e[i]=R.zero;
 		}
 	}
@@ -198,8 +199,8 @@ namespace LinBox
 			for (iter=tmp.begin();iter!=tmp.end();++iter)
 				sqsum += (*iter)*(*iter);
 			R.mulin(H_col_sqr, sqsum);
-			if (i==0 || sqsum < short_col_sqr)
-				short_col_sqr = sqsum;
+			if (i==0 || R.isZero(short_col_sqr) || sqsum < short_col_sqr)
+				R.assign(short_col_sqr,sqsum);
 			e[i]=R.zero;
 		}
 	}
@@ -224,8 +225,8 @@ namespace LinBox
 			for (iter=tmp.begin();iter!=tmp.end();++iter)
 				sqsum += (*iter)*(*iter);
 			R.mulin(H_col_sqr, sqsum);
-			if (i==0 || sqsum < short_col_sqr)
-				short_col_sqr = sqsum;
+			if (i==0 || R.isZero(short_col_sqr) || sqsum < short_col_sqr)
+				R.assign(short_col_sqr,sqsum);
 			e[i]=R.zero;
 		}
 	}
@@ -415,7 +416,7 @@ namespace LinBox
 			std::cout<<" norms computed, p = "<<_p<<"\n";
 			std::cout<<" N = "<<N<<", D = "<<D<<", length = "<<_length<<"\n";
 			std::cout<<"A:=\n";
-			//_matA.write(std::cout);
+			_matA.write(std::cout);
 			std::cout<<"b:=\n";
 			for (size_t i=0;i<_b.size();++i) std::cout<<_b[i]<<" , ";
 			std::cout<<std::endl;
