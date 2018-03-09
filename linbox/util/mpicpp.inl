@@ -262,8 +262,8 @@ namespace LinBox
 
         template <class Vector>
         void Communicator::bcast_integer (Vector& B, int src){
-                size_t ni=B.rowdim(), nj=B.rowdim();
-                nj=nj>ni?ni:nj;
+                size_t nj=B.size();
+
                 int *B_mp_alloc=(int*)malloc(nj*sizeof(int));
                 int *B_a_size=(int*)malloc(nj*sizeof(int));
                 unsigned lenB;  Givaro::Integer temp; 
