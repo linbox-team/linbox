@@ -107,13 +107,27 @@ namespace LinBox
 
 		// collective communication
                 template <class X>
-                void bcast (X& x, int src);
+                void bcast (X& b, int src);
 
+                template <class Field>
+                void bcast (DenseMatrix<Field>& b, int src);
+
+                template <class Field>
+                void bcast (DenseVector<Field>& b, int src);
+                
+                template <class Field>
+                void bcast (SparseMatrix<Field>& b, int src);
+                
+                template <class X>
+                void bcast_integer (X& b, int src);
+                
+                template <class X>
+                void bcast_integer2 (X& b, int src);
+                
                 template <class X>
                 void bcast (X* b, X* e, int src);
-
-                template <class Vector>
-                void bcast (X& x);
+                
+                
                 template < class Ptr, class Function_object >
 		void reduce( Ptr bloc, Ptr eloc, Ptr bres, Function_object binop, int root);
 

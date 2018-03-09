@@ -23,6 +23,11 @@
 
 
 
+template <typename T > class chooseMPItype;
+template <> struct chooseMPItype<unsigned int>{ static constexpr MPI_Datatype val = MPI_UNSIGNED;};
+template <> struct chooseMPItype<unsigned long long int>{ static constexpr MPI_Datatype val = MPI_UNSIGNED_LONG_LONG;};
+template <> struct chooseMPItype<unsigned long int>{ static constexpr MPI_Datatype val = MPI_UNSIGNED_LONG;};
+
 #ifndef __LINBOX_mpicpp_INL
 #define __LINBOX_mpicpp_INL
 //  BRYAN - changed the iterator specific lines to simply
@@ -165,37 +170,170 @@ namespace LinBox
 			  _mpi_comm,
 			  &stat);
 	}
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
             // Broadcasts
         template <class X>
-        void bcast (X& x, int src){
+        void Communicator::bcast (X& x, int src){
                 MPI_Bcast( &x, sizeof(X), MPI_BYTE, src, _mpi_comm);
         }
-        template <class Field, class Storage>
-        void bcast (DenseMatrix<Field, Storage>& M, int src){
-                bcast(M._ptr, M._ptr+M.rowdim()*M.coldim(), src);
+        template <class Field>
+        void Communicator::bcast (DenseMatrix<Field>& M, int src){
+                MPI_Bcast(M._ptr, M._ptr+M.rowdim()*M.coldim(), src, _mpi_comm);
         }
-        template<>
-        template <class Storage>
-        void bcast (DenseMatrix<Givaro::ZRing<Integer>, Storage > & M, int src){
-                bcast_integer(M, src);
+        template <class Field>
+        void Communicator::bcast (SparseMatrix<Field>& M, int src){
+                MPI_Bcast(M._ptr, M._ptr+M.rowdim()*M.coldim(), src, _mpi_comm);
         }
-        template <class Storage>
-        void bcast (SparseMatrix<Givaro::ZRing<Integer>, Storage > & M, int src){
-                bcast_integer(M, src);
-        }
-
-        template <class Matrix>
-        void bcast_integer (Matrix& M, int src){
-
-                    //.. recopier ton code ici
+        template <class Field>
+        void Communicator::bcast (DenseVector<Field>& V, int src){
+                // MPI_Bcast(V._ptr, V._ptr+V.size(), src, _mpi_comm);
         }
         
         template <class X>
-        void bcast (X* b, X* e, int src){
+        void Communicator::bcast (X* b, X* e, int src){
                 MPI_Bcast (b, (e-b)*sizeof(X), MPI_BYTE, src, _mpi_comm);
         }
+
+        template <class Matrix>
+        void Communicator::bcast_integer2 (Matrix& A, int src){
+                size_t ni=A.rowdim(), nj=A.rowdim();
+
+                        int *A_mp_alloc=(int*)malloc(ni*nj*sizeof(int));
+                        int *A_a_size=(int*)malloc(ni*nj*sizeof(int));
+                        unsigned lenA;
+                        std::vector<mp_limb_t> A_mp_data;
+                        //MPI_Barrier(MPI_COMM_WORLD);
+                        if(src==rank()){
+                                
+                                //Split Matrix A into arrays 
+                                //std::cerr << "A=:= " << std::endl; 
+                                __mpz_struct * ptr;
+                                for (size_t i = 0; i < ni; ++i){
+                                        for (size_t j = 0; j < nj; ++j){
+                                                
+                                                //std::cerr << A.getEntry(i,j)<< "\t" ; std::cerr<< std::endl;
+                                                ptr = const_cast<__mpz_struct*>(A.getEntry(i,j).get_mpz());
+                                                A_mp_alloc[j+i*nj] = ptr->_mp_alloc;
+                                                A_a_size[j+i*nj] = ptr->_mp_size;
+                                                mp_limb_t * a_array = ptr->_mp_d;
+                                                for(long k=0; k< ptr->_mp_alloc; ++k)
+                                                        A_mp_data.push_back(a_array[k]);
+                                                
+                                                
+                                        }
+                                }
+                                lenA = A_mp_data.size();
+                        }
+                        //Distribut Givaro::Integer through its elementary parts
+                        //MPI_Barrier(MPI_COMM_WORLD);
+                        MPI_Bcast(&A_mp_alloc[0], ni*nj, MPI_INT, 0, MPI_COMM_WORLD);
+                        MPI_Bcast(&A_a_size[0], ni*nj, MPI_INT, 0, MPI_COMM_WORLD);
+                        MPI_Bcast(&lenA, 1, MPI_UNSIGNED, 0, MPI_COMM_WORLD);
+                        if(src!=rank()) A_mp_data.resize(lenA);
+                        MPI_Bcast(&A_mp_data[0], lenA, chooseMPItype<mp_limb_t>::val,  0, MPI_COMM_WORLD);
+                        //MPI_Barrier(MPI_COMM_WORLD);
+                        
+                        if(src!=rank()){
+                                //Reconstruction of matrix A
+                                __mpz_struct * ptr2;
+                                size_t count=0;
+                                Givaro::Integer temp; 
+                                //std::cerr << "received A:= " << std::endl;
+                                for (size_t i = 0; i < ni; ++i){
+                                        for (size_t j = 0; j < nj; ++j){
+                                                
+                                                ptr2 = const_cast<__mpz_struct*>(temp.get_mpz());
+                                                ptr2->_mp_alloc = A_mp_alloc[j+i*nj];
+                                                ptr2->_mp_size = A_a_size[j+i*nj];
+                                                _mpz_realloc(ptr2,ptr2->_mp_alloc);
+                                                for(long k=0; k< ptr2->_mp_alloc; ++k){
+                                                        ptr2->_mp_d[k] = (A_mp_data[k+count]);	
+                                                }count+=ptr2->_mp_alloc;
+                                                A.setEntry(i,j,temp);
+                                                //std::cerr << A.getEntry(i,j) << "\t" ; std::cerr<< std::endl;
+                                        }
+                                }
+                                
+                        }//MPI_Barrier(MPI_COMM_WORLD);
+
+        }
         
+
+        template <class Vector>
+        void Communicator::bcast_integer (Vector& B, int src){
+                size_t ni=B.rowdim(), nj=B.rowdim();
+                nj=nj>ni?ni:nj;
+                int *B_mp_alloc=(int*)malloc(nj*sizeof(int));
+                int *B_a_size=(int*)malloc(nj*sizeof(int));
+                unsigned lenB;  Givaro::Integer temp; 
+                std::vector<mp_limb_t> B_mp_data;
+                //MPI_Barrier(MPI_COMM_WORLD);
+                if(src==rank()){
+                        //std::cerr << "B=:= " << std::endl;
+                        //Split vector B into arrays
+                        __mpz_struct * ptr;
+                        for(size_t j=0;j<nj;j++){
+                                //std::cerr << B.getEntry(j)<< "\t" ; std::cerr<< std::endl;
+                                ptr = const_cast<__mpz_struct*>(B.getEntry(j).get_mpz());
+                                B_mp_alloc[j] = ptr->_mp_alloc;
+                                B_a_size[j] = ptr->_mp_size;
+                                mp_limb_t * a_array = ptr->_mp_d;
+                                for(long i=0; i< ptr->_mp_alloc; ++i){
+                                        B_mp_data.push_back(a_array[i]);
+                                }
+                        }
+                        
+                        lenB = B_mp_data.size();
+                        
+                }
+                //Distribut Givaro::Integer through its elementary parts
+                // MPI_Barrier(MPI_COMM_WORLD);
+                MPI_Bcast(&B_mp_alloc[0], nj, MPI_INT, 0, MPI_COMM_WORLD);
+                MPI_Bcast(&B_a_size[0], nj, MPI_INT, 0, MPI_COMM_WORLD);
+                
+                MPI_Bcast(&lenB, 1, MPI_UNSIGNED, 0, MPI_COMM_WORLD);
+                if(src!=rank()) B_mp_data.resize(lenB);
+                MPI_Bcast(&B_mp_data[0], lenB, chooseMPItype<mp_limb_t>::val,  0, MPI_COMM_WORLD);
+                //MPI_Barrier(MPI_COMM_WORLD);
+                
+                if(src!=rank()){
+                        //Reconstruction of vector B
+                        //std::cerr << "received B::= " << std::endl;
+                        __mpz_struct * ptr2;
+                        size_t count=0;
+                        
+                        for(size_t j=0;j<nj;j++){ 
+                                ptr2 = const_cast<__mpz_struct*>(temp.get_mpz());
+                                ptr2->_mp_alloc = B_mp_alloc[j];
+                                ptr2->_mp_size = B_a_size[j];
+                                _mpz_realloc(ptr2,ptr2->_mp_alloc);
+                                for(long i=0; i< ptr2->_mp_alloc; ++i){
+                                        ptr2->_mp_d[i] = (B_mp_data[i+count]);
+                                }count+=ptr2->_mp_alloc;
+                                B.setEntry(j,temp);
+                                //std::cerr << B.getEntry(j) << "\t" ; std::cerr<< std::endl; 
+                                
+                        }
+                        
+                }//MPI_Barrier(MPI_COMM_WORLD);
+        }
+        
+        
+        template<>
+        void Communicator::bcast (DenseMatrix<Givaro::ZRing<Integer> > & M, int src){
+                bcast_integer2(M, src);
+        }
+        void Communicator::bcast (DenseVector<Givaro::ZRing<Integer> > & V, int src){
+                bcast_integer(V, src);
+        }
+        
+        template <>
+        void Communicator::bcast (SparseMatrix<Givaro::ZRing<Integer> > & M, int src){
+                bcast_integer2(M, src);
+        }
+        
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////        
 
         
 	template < class X >
