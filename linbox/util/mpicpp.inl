@@ -166,6 +166,38 @@ namespace LinBox
 			  &stat);
 	}
 
+            // Broadcasts
+        template <class X>
+        void bcast (X& x, int src){
+                MPI_Bcast( &x, sizeof(X), MPI_BYTE, src, _mpi_comm);
+        }
+        template <class Field, class Storage>
+        void bcast (DenseMatrix<Field, Storage>& M, int src){
+                bcast(M._ptr, M._ptr+M.rowdim()*M.coldim(), src);
+        }
+        template<>
+        template <class Storage>
+        void bcast (DenseMatrix<Givaro::ZRing<Integer>, Storage > & M, int src){
+                bcast_integer(M, src);
+        }
+        template <class Storage>
+        void bcast (SparseMatrix<Givaro::ZRing<Integer>, Storage > & M, int src){
+                bcast_integer(M, src);
+        }
+
+        template <class Matrix>
+        void bcast_integer (Matrix& M, int src){
+
+                    //.. recopier ton code ici
+        }
+        
+        template <class X>
+        void bcast (X* b, X* e, int src){
+                MPI_Bcast (b, (e-b)*sizeof(X), MPI_BYTE, src, _mpi_comm);
+        }
+        
+
+        
 	template < class X >
 	void Communicator::buffer_attach(X b)
 	{

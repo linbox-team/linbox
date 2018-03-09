@@ -106,7 +106,15 @@ namespace LinBox
 
 
 		// collective communication
-		template < class Ptr, class Function_object >
+                template <class X>
+                void bcast (X& x, int src);
+
+                template <class X>
+                void bcast (X* b, X* e, int src);
+
+                template <class Vector>
+                void bcast (X& x);
+                template < class Ptr, class Function_object >
 		void reduce( Ptr bloc, Ptr eloc, Ptr bres, Function_object binop, int root);
 
 		// member access
