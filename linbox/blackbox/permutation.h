@@ -2,8 +2,7 @@
  * Copyright (C) 2001 LinBox group
  *
  * Written by Bradford Hovinen <hovinen@cis.udel.edu>
- * Meaning, this header was put by Hovinen,
- *          while everything else was from real LinBox developers
+ *            Jean-Guillaume Dumas <jean-guillaume.dumas@imag.fr>
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
