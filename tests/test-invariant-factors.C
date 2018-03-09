@@ -169,7 +169,7 @@ public:
 	}
 	
 	void extCoppersmith(SparseMat &M, size_t b, size_t extend) const {
-		/*
+		//*
 		typedef Givaro::GFqDom<int64_t> ExtField;
 		typedef typename SparseMat::template rebind<ExtField>::other FBlackbox;
 		
