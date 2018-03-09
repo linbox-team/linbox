@@ -324,6 +324,7 @@ namespace LinBox
         void Communicator::bcast (DenseMatrix<Givaro::ZRing<Integer> > & M, int src){
                 bcast_integer2(M, src);
         }
+        template<>
         void Communicator::bcast (DenseVector<Givaro::ZRing<Integer> > & V, int src){
                 bcast_integer(V, src);
         }
