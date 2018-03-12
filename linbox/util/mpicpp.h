@@ -76,14 +76,32 @@ namespace LinBox
 		void recv( Ptr b, Ptr e, int dest, int tag);
 
 		template < class X >
-		void send( X *b, X *e, int dest, int tag);
-
-		template < class X >
 		void recv( X *b, X *e, int dest, int tag);
 
 		// whole object send and recv
 		template < class X >
 		void send( X& b, int dest /*, int tag = 0 */);
+//////////////////////////////////////////////////////////////////////////////////////////////////
+                template <class Field>
+                void send (DenseMatrix<Field>& b, int dest);
+		template <class Field>
+		void send (SparseMatrix<Field>& b, int dest);
+                template <class Field>
+                void send (DenseVector<Field>& b, int dest);
+/*
+                template <class Field>
+                void bcast (DenseVector<Field>& b, int src);
+                
+                template <class Field>
+                void bcast (SparseMatrix<Field>& b, int src);
+*/                
+                template <class X>
+                void send_integer (X& b, int dest);
+
+                template <class X>
+                void send_integer2 (X& b, int dest);                
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 		template < class X >
 		void ssend( X& b, int dest /*, int tag = 0 */);
@@ -93,6 +111,29 @@ namespace LinBox
 
 		template < class X >
 		void recv( X& b, int dest /*, int tag = 0*/);
+//////////////////////////////////////////////////////////////////////////////////////////////////
+                template <class Field>
+                void recv (DenseMatrix<Field>& b, int src);
+                template <class Field>
+                void recv (SparseMatrix<Field>& b, int src);
+                template <class Field>
+                void recv (DenseVector<Field>& b, int src);
+/*
+                template <class Field>
+                void bcast (DenseVector<Field>& b, int src);
+                
+                template <class Field>
+                void bcast (SparseMatrix<Field>& b, int src);
+                
+                template <class X>
+                void bcast_integer (X& b, int src);
+*/
+                template <class X>
+                void recv_integer (X& b, int src);   
+                template <class X>
+                void recv_integer2 (X& b, int src);                
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
 		/*
 		   template < vector < class X > >
 		   void send( X& b, int dest );
