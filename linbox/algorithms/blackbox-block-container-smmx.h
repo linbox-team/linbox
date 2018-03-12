@@ -90,13 +90,46 @@ namespace LinBox
 		//MatrixDomain<Field> _MD;
 		__BBC_MMHelper<Field> _MD;
 		
+		bool left_pre = false;
+		FSparseMat _L;
+		
 		const Blackbox *_BB;
 		FSparseMat _M;
+		
+		bool right_pre = false;
+		FSparseMat _R;
 		
 		Block _U;
 		Block _W;
 		Block _tmp;
 		Value _V;
+	
+		static void convert(const Field &F, FSparseMat &A, const Blackbox *BB) {
+			std::vector<index_t> st1 = BB->getStart();
+			std::vector<index_t> col1 = BB->getColid();
+			std::vector<Element> data1 = BB->getData();
+			
+			uint64_t nnz = data1.size();
+			
+			index_t *row = FFLAS::fflas_new<index_t>(nnz);
+			for (size_t j = 0; j < BB->rowdim(); ++j) {
+				for (index_t k = st1[j] ; k < st1[j+1]; ++k) {
+					row[k] = j;
+				}
+			}
+			
+			index_t *col = FFLAS::fflas_new<index_t>(nnz);
+			for (size_t i = 0; i < col1.size(); i++) {
+				col[i] = col1[i];
+			}
+			
+			typename Field::Element_ptr data = FFLAS::fflas_new<Element>(nnz);
+			for (size_t i = 0; i < data1.size(); i++) {
+				data[i] = data1[i];
+			}
+			
+			FFLAS::sparse_init(F, A, row, col, data, BB->rowdim(), BB->coldim(), nnz);
+		}
 		
 	public:
 		// Default constructor
@@ -116,34 +149,30 @@ namespace LinBox
 				_tmp(F, BB->rowdim(), U0.rowdim()), 
 				_V(F, U0.rowdim(), U0.rowdim()) 
 		{
-			// size_t b = U0.rowdim();
-			// size_t n = BB->rowdim();
-			
-			Blackbox M(*BB);
-			std::vector<index_t> st1 = M.getStart();
-			std::vector<index_t> col1 = M.getColid();
-			std::vector<Element> data1 = M.getData();
-			
-			uint64_t nnz = data1.size();
-			
-			index_t *row = FFLAS::fflas_new<index_t>(nnz);
-			for (size_t j = 0; j < M.rowdim(); ++j) {
-				for (index_t k = st1[j] ; k < st1[j+1]; ++k) {
-					row[k] = j;
-				}
-			}
-			
-			index_t *col = FFLAS::fflas_new<index_t>(nnz);
-			for (size_t i = 0; i < col1.size(); i++) {
-				col[i] = col1[i];
-			}
-			
-			typename Field::Element_ptr data = FFLAS::fflas_new<Element>(nnz);
-			for (size_t i = 0; i < data1.size(); i++) {
-				data[i] = data1[i];
-			}
-			
-			FFLAS::sparse_init(F, _M, row, col, data, M.rowdim(), M.coldim(), nnz);
+			convert(F, _M, BB);
+		}
+		
+		BlackboxBlockContainerSmmx(
+			const Blackbox *BB,
+			const Blackbox *PreR,
+			const Field &F,
+			const Block &U0,
+			const Block &V0) : BlackboxBlockContainerSmmx(BB, F, U0, V0)
+		{
+			convert(F, _R, PreR);
+			right_pre = true;
+		}
+		
+		BlackboxBlockContainerSmmx(
+			const Blackbox *PreL,
+			const Blackbox *BB,
+			const Blackbox *PreR,
+			const Field &F,
+			const Block &U0,
+			const Block &V0) : BlackboxBlockContainerSmmx(BB, PreR, F, U0, V0)
+		{
+			convert(F, _L, PreL);
+			left_pre = true;
 		}
 		
 		const Field& field() const {
@@ -163,12 +192,29 @@ namespace LinBox
 		}
 		
 		void next() {
+			size_t b = _W.coldim();
+			
+			if (right_pre) {
+				// W = _R * W
+				for (size_t i = 0; i < _W.rowdim() * _W.coldim(); i++) {
+					_tmp.getPointer()[i] = _W.getPointer()[i];
+				}
+				FFLAS::fspmm(_F, _R, b, _tmp.getPointer(), b, _F.zero, _W.getPointer(), b);
+			}
+			
+			// W = _M * W
 			for (size_t i = 0; i < _W.rowdim() * _W.coldim(); i++) {
 				_tmp.getPointer()[i] = _W.getPointer()[i];
 			}
-			
-			size_t b = _W.coldim();
 			FFLAS::fspmm(_F, _M, b, _tmp.getPointer(), b, _F.zero, _W.getPointer(), b);
+			
+			if (left_pre) {
+				// W = _R * W
+				for (size_t i = 0; i < _W.rowdim() * _W.coldim(); i++) {
+					_tmp.getPointer()[i] = _W.getPointer()[i];
+				}
+				FFLAS::fspmm(_F, _L, b, _tmp.getPointer(), b, _F.zero, _W.getPointer(), b);
+			}
 		}
 		
 		const Value &getValue() {

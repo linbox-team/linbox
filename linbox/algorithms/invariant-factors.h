@@ -58,6 +58,7 @@ protected:
 	PolynomialRing _R;
 	SmithFormDom _SFD;
 	
+	
 public:
 	InvariantFactors(const Field &F, const PolynomialRing &R) : _F(F), _R(R), _SFD(R) {}
 
@@ -69,6 +70,61 @@ public:
 		
 		double k = (q == 2) ? 3 : 2;
 		return ceil(log(k / (1 - sqrt(p)))/log(q)) + t;
+	}
+	
+	template<class Blackbox>
+	void computeGenerator(
+		std::vector<Matrix> &gen,
+		const Blackbox &PreL,
+		const Blackbox &M,
+		const Blackbox &PreR,
+		size_t b,
+		int earlyTerm = 10) const
+	{
+		RandIter RI(_F);
+		RandomDenseMatrix<RandIter, Field> RDM(_F, RI);
+		MatrixDom MD(_F);
+		
+		size_t n = M.rowdim();
+		Matrix U(_F, b, n);
+		Matrix V(_F, n, b);
+		
+		RDM.random(U);
+		RDM.random(V);
+		
+		//typedef BlackboxBlockContainer<Field, Blackbox> Sequence;
+		typedef BlackboxBlockContainerSmmx<Field, Blackbox> Sequence;
+		Sequence blockSeq(&PreL, &M, &PreR, _F, U, V);
+		BlockCoppersmithDomain<MatrixDom, Sequence> coppersmith(MD, &blockSeq, earlyTerm);
+		
+		coppersmith.right_minpoly(gen);
+	}
+	
+	template<class Blackbox>
+	void computeGenerator(
+		std::vector<Matrix> &gen,
+		const Blackbox &M,
+		const Blackbox &PreR,
+		size_t b,
+		int earlyTerm = 10) const
+	{
+		RandIter RI(_F);
+		RandomDenseMatrix<RandIter, Field> RDM(_F, RI);
+		MatrixDom MD(_F);
+		
+		size_t n = M.rowdim();
+		Matrix U(_F, b, n);
+		Matrix V(_F, n, b);
+		
+		RDM.random(U);
+		RDM.random(V);
+		
+		//typedef BlackboxBlockContainer<Field, Blackbox> Sequence;
+		typedef BlackboxBlockContainerSmmx<Field, Blackbox> Sequence;
+		Sequence blockSeq(&M, &PreR, _F, U, V);
+		BlockCoppersmithDomain<MatrixDom, Sequence> coppersmith(MD, &blockSeq, earlyTerm);
+		
+		coppersmith.right_minpoly(gen);
 	}
 
 	template<class Blackbox>
@@ -153,6 +209,122 @@ public:
 	
 		std::vector<Matrix> minpoly;
 		computeGenerator(minpoly, A, b, earlyTerm);
+		
+		PolyMatrix G(_R, b, b);
+		convert(G, minpoly);
+		
+		Polynomial det;
+		_SFD.detLocalX(det, G);
+		
+		// get the constant coefficient of det and convert it to type Element
+		typename PolynomialRing::Coeff det0;
+		_R.getCoeff(det0, det, 0);
+		
+		integer tmp;
+		_R.getCoeffField().convert(tmp, det0);
+		_F.init(d, tmp);
+		
+		return d;
+	}
+	
+	// computes the t largest invariant factors of A with probability of at least p.
+	template<class Blackbox>
+	std::vector<Polynomial> &largestInvariantFactors(
+		std::vector<Polynomial> &lifs,
+		const Blackbox &A,
+		const Blackbox &PreR,
+		size_t t,
+		double p,
+		int earlyTerm = 10) const {
+	
+		size_t b = min_block_size(t, p);
+	
+		std::vector<Matrix> minpoly;
+		computeGenerator(minpoly, A, PreR, b, earlyTerm);
+		
+		PolyMatrix G(_R, b, b);
+		convert(G, minpoly);
+		
+		Polynomial det;
+		_SFD.detLocalX(det, G);
+		_SFD.solve(lifs, G, det);	
+		
+		return lifs;
+	}
+	
+	// computes the t largest invariant factors of A with probability of at least p.
+	template<class Blackbox>
+	Element &det(
+		Element &d, // det(A)
+		const Blackbox &A,
+		const Blackbox &PreR,
+		size_t t,
+		double p,
+		int earlyTerm = 10) const {
+	
+		size_t b = min_block_size(t, p);
+	
+		std::vector<Matrix> minpoly;
+		computeGenerator(minpoly, A, PreR, b, earlyTerm);
+		
+		PolyMatrix G(_R, b, b);
+		convert(G, minpoly);
+		
+		Polynomial det;
+		_SFD.detLocalX(det, G);
+		
+		// get the constant coefficient of det and convert it to type Element
+		typename PolynomialRing::Coeff det0;
+		_R.getCoeff(det0, det, 0);
+		
+		integer tmp;
+		_R.getCoeffField().convert(tmp, det0);
+		_F.init(d, tmp);
+		
+		return d;
+	}
+	
+	// computes the t largest invariant factors of A with probability of at least p.
+	template<class Blackbox>
+	std::vector<Polynomial> &largestInvariantFactors(
+		std::vector<Polynomial> &lifs,
+		const Blackbox &PreL,
+		const Blackbox &A,
+		const Blackbox &PreR,
+		size_t t,
+		double p,
+		int earlyTerm = 10) const {
+	
+		size_t b = min_block_size(t, p);
+	
+		std::vector<Matrix> minpoly;
+		computeGenerator(minpoly, PreL, A, PreR, b, earlyTerm);
+		
+		PolyMatrix G(_R, b, b);
+		convert(G, minpoly);
+		
+		Polynomial det;
+		_SFD.detLocalX(det, G);
+		_SFD.solve(lifs, G, det);	
+		
+		return lifs;
+	}
+	
+	// computes the t largest invariant factors of A with probability of at least p.
+	template<class Blackbox>
+	Element &det(
+		Element &d, // det(A)
+		const Blackbox &PreL,
+		const Blackbox &A,
+		const Blackbox &PreR,
+		size_t t,
+		double p,
+		int earlyTerm = 10) const {
+	
+		size_t b = min_block_size(t, p);
+	
+		std::vector<Matrix> minpoly;
+		computeGenerator(minpoly, PreL, A, PreR, b, earlyTerm);
 		
 		PolyMatrix G(_R, b, b);
 		convert(G, minpoly);

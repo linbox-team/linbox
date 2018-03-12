@@ -22,10 +22,12 @@
 #include "linbox/algorithms/invariant-factors.h"
 #include "linbox/algorithms/smith-form-kannan-bachem.h"
 
+#include "sparse-matrix-generator.h"
 
 using namespace LinBox;
 
 typedef Givaro::Modular<double> Field;
+typedef Field::Element Element;
 typedef SparseMatrix<Field, SparseMatrixFormat::CSR> SparseMat;
 
 typedef NTL_zz_pX Ring;
@@ -182,10 +184,113 @@ public:
 	//*/
 }; // End of TestInvariantFactorsHelper
 
+void randomVec(std::vector<size_t> & V, size_t n) 
+{
+	V.resize(n);
+	for (size_t i = 0; i < n; ++i) V[i] = i;
+	// Knuth construction
+	for (size_t i = 0; i < n-1; ++i) {
+		size_t j = i + rand()%(n-i);
+		std::swap(V[i], V[j]);
+	}
+}
+
+void randomPerm(SparseMat & P)
+{
+	size_t n = P.rowdim();
+	std::vector<size_t> Perm;
+	randomVec(Perm, n);
+	for (size_t i = 0; i < n; ++i) P.setEntry(i, Perm[i], P.field().one);
+	P.finalize();
+}
+
+template<class Sp>
+void permuteRows(Sp & MP, std::vector<size_t> & P, Sp& M) {
+	Element x;
+	M.field().init(x);
+	for (size_t i = 0; i < M.rowdim(); ++i) {
+		for (size_t j = 0; j < M.coldim(); ++j) {
+			if (not M.field().isZero(M.getEntry(x,i,j))) {
+				MP.setEntry(P[i],j,x);
+			}
+		}
+	}
+	
+	MP.finalize();
+}
+
+template<class Sp>
+void permuteCols(Sp & MP, std::vector<size_t> & P, Sp& M) {
+	Element x;
+	M.field().init(x);
+	for (size_t i = 0; i < M.rowdim(); ++i) {
+		for (size_t j = 0; j < M.coldim(); ++j) {
+			if (not M.field().isZero(M.getEntry(x,i,j))) {
+				MP.setEntry(i,P[j],x);
+			}
+		}
+	}
+	
+	MP.finalize();
+}
+
+void randomNonzero(const Field &F, Element &elm) {
+	typename Field::RandIter RI(F);
+	do {
+		RI.random(elm);
+	} while (F.isZero(elm));
+}
+
+void randomTriangular(SparseMat &T, size_t s) {
+	typename Field::RandIter RI(T.field());
+	
+	for (size_t i = 0; i < T.rowdim(); i++) {
+		T.setEntry(i, i, T.field().one);
+	}
+	
+	for (size_t r = 0; r < T.rowdim() - 1; r++) {
+		for (size_t k = 0; k < s; k++) {
+			size_t c = (rand() % (T.coldim() - r - 1)) + r + 1;
+			
+			Element elm;
+			randomNonzero(T.field(), elm);
+			
+			T.setEntry(r, c, elm);
+		}
+	}
+	
+	T.finalize();
+}
+
+void randomLowerTriangular(SparseMat &T, size_t s) {
+	typename Field::RandIter RI(T.field());
+	
+	for (size_t i = 0; i < T.rowdim(); i++) {
+		T.setEntry(i, i, T.field().one);
+	}
+	
+	for (size_t r = 0; r < T.rowdim() - 1; r++) {
+		for (size_t k = 0; k < s; k++) {
+			size_t c = (rand() % (T.coldim() - r - 1)) + r + 1;
+			
+			Element elm;
+			randomNonzero(T.field(), elm);
+			
+			T.setEntry(c, r, elm);
+		}
+	}
+	
+	T.finalize();
+}
+
 int main(int argc, char** argv) {
 	size_t p = 3;
 	size_t extend = 1;
 	size_t b = 4;
+	
+	size_t n = 1000;
+	size_t s = 10;
+	double fillIn = 0;
 	
 	std::string matrixFile;
 	std::string outFile;
@@ -202,31 +307,65 @@ int main(int argc, char** argv) {
 		{ 'f', "-f F", "Name of file for matrix", TYPE_STR, &matrixFile},
 		{ 'o', "-o O", "Name of output file for invariant factors", TYPE_STR, &outFile},
 		{ 'r', "-r R", "Random seed", TYPE_INT, &seed},
+		
+		{ 'n', "-n N", "Dimension of input", TYPE_INT, &n},
+		{ 's', "-s S", "Number of nonzeros in random triangular preconditioner", TYPE_INT, &s},
+		{ 'i', "-i I", "Sparsity of input matrix", TYPE_DOUBLE, &fillIn},
 		END_OF_ARGUMENTS
 	};
 
 	parseArguments(argc,argv,args);
 	
+	/*
 	if (matrixFile == "") {
 		std::cout << "an input matrix must be provided" << std::endl;
 		return -1;
 	}
+	*/
 	
 	srand(seed);
 
 	Field F(p);
 	Ring R(p);
 	
-	SparseMat M(F);
+	/*
+	SparseMat M(F);                                           
 	{
 		std::ifstream iF(matrixFile);
 		M.read(iF);
 		M.finalize();
 		iF.close();
 	}
+	*/
+	
+	SparseMat OldM(F, n, n);
+	{
+		SparseMatrixGenerator<Field, Ring> Gen(F, R);
 		
+		std::vector<integer> v;
+		Polynomial x, xm1;
+		R.init(x, v = {0, 1});
+		R.assign(xm1, x);
+		R.subin(xm1, R.one);
+		
+		Polynomial det;
+		std::vector<Polynomial> fs;
+		Gen.addTriangle(fs, n/2, 6.0 / n, x);
+		Gen.addTriangle(fs, n, 1, xm1);
+		Gen.generate(OldM, det, fs, fillIn);
+	}
+	SparseMat M(OldM);
+	
+	SparseMat PreR(F, n, n);
+	randomTriangular(PreR, s);
+	
+	SparseMat PreL(F, n, n);
+	randomLowerTriangular(PreL, s);
+	
+	std::cout << PreL.size() << "\t" << PreR.size() << "\t" << std::flush;
+	
 	assert(M.rowdim() == M.coldim());
-	size_t n = M.rowdim();
+	// size_t n = M.rowdim();
 	if (n <= 20) M.write(std::cout) << std::endl;
 	
 	TestInvariantFactorsHelper helper(p);
@@ -247,7 +386,12 @@ int main(int argc, char** argv) {
 		
 	// Generate random left and right projectors
 	std::vector<BlasMatrix<Field>> minpoly;
-	time1([&](){IFD.computeGenerator(minpoly, M, b);});
+	
+	if (s == 0) {
+		time1([&](){IFD.computeGenerator(minpoly, M, b);});
+	} else {
+		time1([&](){IFD.computeGenerator(minpoly, PreL, M, PreR, b);});
+	}
 	
 	// Convert to matrix with polynomial entries
 	PolyMatrix G(R, b, b);
@@ -272,7 +416,14 @@ int main(int argc, char** argv) {
 		time1([&](){PSFD.solve(result, G, det);});
 	}
 	
-	std::cout << std::endl;
+	size_t total = 0;
+	for (auto it = result.begin(); it != result.end(); it++) {
+		if (R.deg(*it) > 1) {
+			total++;
+		}
+	}
+	
+	std::cout << " \t" << total << std::endl;
 	
 	if (outFile != "") {
 		std::ofstream out(outFile);
