@@ -316,19 +316,19 @@ int main(int argc, char** argv) {
 
 	parseArguments(argc,argv,args);
 	
-	/*
+	//*
 	if (matrixFile == "") {
 		std::cout << "an input matrix must be provided" << std::endl;
 		return -1;
 	}
-	*/
+	//*/
 	
 	srand(seed);
 
 	Field F(p);
 	Ring R(p);
 	
-	/*
+	//*
 	SparseMat M(F);                                           
 	{
 		std::ifstream iF(matrixFile);
@@ -336,8 +336,9 @@ int main(int argc, char** argv) {
 		M.finalize();
 		iF.close();
 	}
-	*/
+	//*/
 	
+	/*
 	SparseMat OldM(F, n, n);
 	{
 		SparseMatrixGenerator<Field, Ring> Gen(F, R);
@@ -355,18 +356,17 @@ int main(int argc, char** argv) {
 		Gen.generate(OldM, det, fs, fillIn);
 	}
 	SparseMat M(OldM);
+	//*/
+	
+	assert(M.rowdim() == M.coldim());
+	n = M.rowdim();
+	if (n <= 20) M.write(std::cout) << std::endl;
 	
 	SparseMat PreR(F, n, n);
 	randomTriangular(PreR, s);
 	
 	SparseMat PreL(F, n, n);
 	randomLowerTriangular(PreL, s);
-	
-	std::cout << PreL.size() << "\t" << PreR.size() << "\t" << std::flush;
-	
-	assert(M.rowdim() == M.coldim());
-	// size_t n = M.rowdim();
-	if (n <= 20) M.write(std::cout) << std::endl;
 	
 	TestInvariantFactorsHelper helper(p);
 	std::cout << n << "\t" << M.size() << "\t" << b << "\t" << std::flush;
