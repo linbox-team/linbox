@@ -70,7 +70,7 @@ namespace LinBox
 	{	return _mpi_comm; }
 
 	// peer to peer communication
-        /*
+
 	template < class Ptr >
 	void Communicator::send( Ptr b, Ptr e, int dest, int tag)
 	{
@@ -81,7 +81,7 @@ namespace LinBox
 			  tag,
 			  _mpi_comm);
 	}
-        */
+
 	template < class Ptr >
 	void Communicator::ssend( Ptr b, Ptr e, int dest, int tag)
 	{	MPI_Ssend( &b[0],
@@ -92,6 +92,7 @@ namespace LinBox
 			   tag,
 			   _mpi_comm);
 	}
+
 
 	template < class Ptr >
 	void Communicator::recv( Ptr b, Ptr e, int dest, int tag)
@@ -104,7 +105,7 @@ namespace LinBox
 			  _mpi_comm,
 			  &stat);
 	}
-        /*
+/*
 	template < class X >
 	void Communicator::send( X *b, X *e, int dest, int tag)
 	{
@@ -115,7 +116,7 @@ namespace LinBox
 			  tag,
 			  _mpi_comm);
 	}
-        
+*/
 	template < class X >
 	void Communicator::recv( X *b, X *e, int dest, int tag)
 	{
@@ -127,8 +128,8 @@ namespace LinBox
 			  _mpi_comm,
 			  &stat);
 	}
-        */
-////////////////////////////////////////////////BEGIN OF ROI////////////////////////////////////////////////////
+
+
 	// whole object send and recv
         //	void Communicator::send( Ptr b, Ptr e, int dest, int tag)
         
@@ -154,7 +155,26 @@ namespace LinBox
                          _mpi_comm);
         }
 
-        
+        template <class Field>
+        void Communicator::send (SparseMatrix<Field>& M, int dest){
+		MPI_Send(&M,
+                         (M.rowdim()*M.coldim())*sizeof(typename Field::value_type),
+                         MPI_BYTE,
+                         dest,
+                         0,
+                         _mpi_comm);
+        }
+
+        template <class Field>
+        void Communicator::send (DenseVector<Field>& V, int dest){
+		MPI_Send(&V,
+                         V.size()*sizeof(typename Field::value_type),
+                         MPI_BYTE,
+                         dest,
+                         0,
+                         _mpi_comm);
+        }
+
         template <class Matrix>
         void Communicator::send_integer2 (Matrix& A, int dest){
                 size_t ni=A.rowdim(), nj=A.rowdim();
@@ -239,10 +259,8 @@ namespace LinBox
         void Communicator::send (DenseVector<Givaro::ZRing<Integer> >& V, int dest){
                 send_integer(V, dest);
         }
-///////////////////////////////////////////////////END OF ROI/////////////////////////////////////////////////////
 
 
-        
 	template < class X >
 	void Communicator::ssend( X& b, int dest /*, int tag = 0 */)
 	{	MPI_Ssend(&b,
@@ -252,6 +270,121 @@ namespace LinBox
 			  0,
 			  _mpi_comm);
 	}
+        
+        template <class Field>
+        void Communicator::ssend (DenseMatrix<Field>& M, int dest){
+		MPI_Ssend(&M,
+                         (M.rowdim()*M.coldim())*sizeof(typename Field::value_type),
+                         MPI_BYTE,
+                         dest,
+                         0,
+                         _mpi_comm);
+        }
+
+        template <class Field>
+        void Communicator::ssend (SparseMatrix<Field>& M, int dest){
+		MPI_Ssend(&M,
+                         (M.rowdim()*M.coldim())*sizeof(typename Field::value_type),
+                         MPI_BYTE,
+                         dest,
+                         0,
+                         _mpi_comm);
+        }
+
+        template <class Field>
+        void Communicator::ssend (DenseVector<Field>& V, int dest){
+		MPI_Ssend(&V,
+                         V.size()*sizeof(typename Field::value_type),
+                         MPI_BYTE,
+                         dest,
+                         0,
+                         _mpi_comm);
+        }
+        
+        template <class Matrix>
+        void Communicator::ssend_integer2 (Matrix& A, int dest){
+                size_t ni=A.rowdim(), nj=A.rowdim();
+                
+                int *A_mp_alloc=(int*)malloc(ni*nj*sizeof(int));
+                int *A_a_size=(int*)malloc(ni*nj*sizeof(int));
+                unsigned lenA;
+                std::vector<mp_limb_t> A_mp_data;
+
+                        
+                        //Split Matrix A into arrays 
+                        //std::cerr << "A=:= " << std::endl; 
+                        __mpz_struct * ptr;
+                        for (size_t i = 0; i < ni; ++i){
+                                for (size_t j = 0; j < nj; ++j){
+                                        
+                                        //std::cerr << A.getEntry(i,j)<< "\t" ; std::cerr<< std::endl;
+                                        ptr = const_cast<__mpz_struct*>(A.getEntry(i,j).get_mpz());
+                                        A_mp_alloc[j+i*nj] = ptr->_mp_alloc;
+                                        A_a_size[j+i*nj] = ptr->_mp_size;
+                                        mp_limb_t * a_array = ptr->_mp_d;
+                                        for(long k=0; k< ptr->_mp_alloc; ++k)
+                                                A_mp_data.push_back(a_array[k]);
+                                                                       
+                                }
+                        }
+                        lenA = A_mp_data.size();
+                        
+                        MPI_Ssend(&A_mp_alloc[0], ni*nj, MPI_INT,  dest, 0, MPI_COMM_WORLD);
+                        MPI_Ssend(&A_a_size[0], ni*nj, MPI_INT,  dest, 0, MPI_COMM_WORLD);
+                        MPI_Ssend(&lenA, 1, MPI_UNSIGNED, dest, 0, MPI_COMM_WORLD);
+                        MPI_Ssend(&A_mp_data[0], lenA, chooseMPItype<mp_limb_t>::val, dest, 0, MPI_COMM_WORLD);
+
+        }
+        
+
+
+        template <class Vector>
+        void Communicator::ssend_integer (Vector& B, int dest){
+                size_t nj=B.size();
+
+                int *B_mp_alloc=(int*)malloc(nj*sizeof(int));
+                int *B_a_size=(int*)malloc(nj*sizeof(int));
+                unsigned lenB;  Givaro::Integer temp; 
+                std::vector<mp_limb_t> B_mp_data;
+
+                //std::cerr << "B=:= " << std::endl;
+                //Split vector B into arrays
+                __mpz_struct * ptr;
+                for(size_t j=0;j<nj;j++){
+                        //std::cerr << B.getEntry(j)<< "\t" ; std::cerr<< std::endl;
+                        ptr = const_cast<__mpz_struct*>(B.getEntry(j).get_mpz());
+                        B_mp_alloc[j] = ptr->_mp_alloc;
+                        B_a_size[j] = ptr->_mp_size;
+                        mp_limb_t * a_array = ptr->_mp_d;
+                        for(long i=0; i< ptr->_mp_alloc; ++i){
+                                B_mp_data.push_back(a_array[i]);
+                        }
+                }
+                
+                lenB = B_mp_data.size();
+                
+                MPI_Ssend(&B_mp_alloc[0], nj, MPI_INT,  dest, 0, MPI_COMM_WORLD);
+                MPI_Ssend(&B_a_size[0], nj, MPI_INT,  dest, 0, MPI_COMM_WORLD);
+                MPI_Ssend(&lenB, 1, MPI_UNSIGNED, dest, 0, MPI_COMM_WORLD);
+                MPI_Ssend(&B_mp_data[0], lenB, chooseMPItype<mp_limb_t>::val, dest, 0, MPI_COMM_WORLD);
+ 
+        }
+        
+
+        
+        template<>
+        void Communicator::ssend (DenseMatrix<Givaro::ZRing<Integer> > & M, int dest){
+                ssend_integer2(M, dest);
+        }
+        
+        template <>
+        void Communicator::ssend (SparseMatrix<Givaro::ZRing<Integer> >& M, int dest){
+                ssend_integer2(M, dest);
+        }
+        template <>
+        void Communicator::ssend (DenseVector<Givaro::ZRing<Integer> >& V, int dest){
+                ssend_integer(V, dest);
+        }
 
 	template < class X >
 	void Communicator::bsend(X& b, int dest /*, int tag = 0*/)
@@ -263,12 +396,13 @@ namespace LinBox
 			   _mpi_comm);
 	}
 
+
 	template < class X >
-	void Communicator::recv( X& b, int dest /*, int tag = 0*/)
+	void Communicator::recv( X& b, int src /*, int tag = 0*/)
 	{	MPI_Recv( &b,
 			  sizeof(X),
 			  MPI_BYTE,
-			  dest,
+			  src,
 			  0,
 			  _mpi_comm,
 			  &stat);
@@ -285,6 +419,27 @@ namespace LinBox
                          MPI_STATUS_IGNORE);
         }
         
+        template <class Field>
+        void Communicator::recv (SparseMatrix<Field>& M, int src){
+		MPI_Recv(&M,
+                         (M.rowdim()*M.coldim())*sizeof(typename Field::value_type),
+                         MPI_BYTE,
+                         src,
+                         0,
+                         _mpi_comm,
+                         MPI_STATUS_IGNORE);
+        }
+        template <class Field>
+        void Communicator::recv (DenseVector<Field>& V, int src){
+		MPI_Recv(&V,
+                         V.size()*sizeof(typename Field::value_type),
+                         MPI_BYTE,
+                         src,
+                         0,
+                         _mpi_comm,
+                         MPI_STATUS_IGNORE);
+        }
+
         template <class Matrix>
         void Communicator::recv_integer2 (Matrix& A, int src){
                 size_t ni=A.rowdim(), nj=A.rowdim();
@@ -322,8 +477,8 @@ namespace LinBox
                                 //std::cerr << A.getEntry(i,j) << "\t" ; std::cerr<< std::endl;
                         }
                 }
-                
-                
+                delete A_mp_alloc;
+                delete A_a_size;
         }
         
 
@@ -361,9 +516,9 @@ namespace LinBox
                         B.setEntry(j,temp);
                         //std::cerr << B.getEntry(j) << "\t" ; std::cerr<< std::endl; 
                   }             
-                
+                delete B_mp_alloc;
+                delete B_a_size;                
         }
-        
         
         template<>
         void Communicator::recv (DenseMatrix<Givaro::ZRing<Integer> > & M, int dest){
@@ -377,7 +532,6 @@ namespace LinBox
         void Communicator::recv (DenseVector<Givaro::ZRing<Integer> > & V, int dest){
                 recv_integer(V, dest);
         }
-//////////////<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>//////////////////
         
         // Broadcasts
         template <class X>
@@ -463,7 +617,8 @@ namespace LinBox
                                 }
                                 
                         }//MPI_Barrier(MPI_COMM_WORLD);
-
+                delete A_mp_alloc;
+                delete A_a_size;
         }
         
 
@@ -524,6 +679,8 @@ namespace LinBox
                         }
                         
                 }//MPI_Barrier(MPI_COMM_WORLD);
+                delete B_mp_alloc;
+                delete B_a_size;
         }
         
         
@@ -542,13 +699,14 @@ namespace LinBox
         }
  
 
-        
+
 	template < class X >
 	void Communicator::buffer_attach(X b)
 	{
 		MPI_Buffer_attach( malloc(sizeof(X) *  60) ,
 				   sizeof(X) * 60 );
 	}
+
 
 	template < class X >
 	int Communicator::buffer_detach(X &b, int *size)
