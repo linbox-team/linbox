@@ -267,17 +267,8 @@ void randomLowerTriangular(SparseMat &T, size_t s) {
 	typename Field::RandIter RI(F);
 	
 	for (size_t i = 0; i < T.rowdim(); i++) {
-		Element elm;
-		if (s < 0) {
-			randomNonzero(F, elm);
-		} else {
-			F.assign(elm, F.one);
-		}
-		
-		T.setEntry(i, i, elm);
+		T.setEntry(i, i, F.one);
 	}
-	
-	s = s < 0 ? -s : s;
 	
 	for (size_t r = 0; r < T.rowdim() - 1; r++) {
 		for (size_t k = 0; k < s; k++) {
