@@ -277,6 +277,8 @@ void randomLowerTriangular(SparseMat &T, size_t s) {
 		T.setEntry(i, i, elm);
 	}
 	
+	s = s < 0 ? -s : s;
+	
 	for (size_t r = 0; r < T.rowdim() - 1; r++) {
 		for (size_t k = 0; k < s; k++) {
 			size_t c = (rand() % (T.coldim() - r - 1)) + r + 1;
