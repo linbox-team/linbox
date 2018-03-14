@@ -241,11 +241,22 @@ void randomNonzero(const Field &F, Element &elm) {
 	} while (F.isZero(elm));
 }
 
-void randomTriangular(SparseMat &T, size_t s) {
-	typename Field::RandIter RI(T.field());
+void randomTriangular(SparseMat &T, int s) {
+	Field F(T.field());
+	typename Field::RandIter RI(F);
 	
-	for (size_t i = 0; i < T.rowdim(); i++) {
-		T.setEntry(i, i, T.field().one);
+	if (s > 0) {
+		for (size_t i = 0; i < T.rowdim(); i++) {
+			T.setEntry(i, i, F.one);
+		}
+	} else if (s < 0) {	
+		s = -s;
+		for (size_t i = 0; i < T.rowdim(); i++) {
+			Element elm;
+			randomNonzero(F, elm);
+			
+			T.setEntry(i, i, elm);
+		}
 	}
 	
 	for (size_t r = 0; r < T.rowdim() - 1; r++) {
@@ -253,7 +264,7 @@ void randomTriangular(SparseMat &T, size_t s) {
 			size_t c = (rand() % (T.coldim() - r - 1)) + r + 1;
 			
 			Element elm;
-			randomNonzero(T.field(), elm);
+			randomNonzero(F, elm);
 			
 			T.setEntry(r, c, elm);
 		}
@@ -262,12 +273,22 @@ void randomTriangular(SparseMat &T, size_t s) {
 	T.finalize();
 }
 
-void randomLowerTriangular(SparseMat &T, size_t s) {
+void randomLowerTriangular(SparseMat &T, int s) {
 	Field F(T.field());
 	typename Field::RandIter RI(F);
 	
-	for (size_t i = 0; i < T.rowdim(); i++) {
-		T.setEntry(i, i, F.one);
+	if (s > 0) {
+		for (size_t i = 0; i < T.rowdim(); i++) {
+			T.setEntry(i, i, F.one);
+		}
+	} else if (s < 0) {	
+		s = -s;
+		for (size_t i = 0; i < T.rowdim(); i++) {
+			Element elm;
+			randomNonzero(F, elm);
+			
+			T.setEntry(i, i, elm);
+		}
 	}
 	
 	for (size_t r = 0; r < T.rowdim() - 1; r++) {
@@ -290,7 +311,7 @@ int main(int argc, char** argv) {
 	size_t b = 4;
 	
 	size_t n = 1000;
-	size_t s = 10;
+	int s = 0;
 	double fillIn = 0;
 	
 	std::string matrixFile;
