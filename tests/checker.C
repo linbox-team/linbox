@@ -1,4 +1,3 @@
-
 /*
  * Copyright (c) 2015 LinBox
  * This file is part of the library LinBox. See COPYING for license info.
@@ -29,8 +28,8 @@ The current convention is that (1) linbox' checker.C, runs the tests with no com
 #include <vector>
 //#include <iomanip>
 using namespace std;
-#include "linbox-config.h"
-//#include "linbox/linbox-config.h"
+//#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 //#include "fflas-ffpack/fflas-ffpack.h"
 
 // globals
@@ -214,3 +213,11 @@ warn("test-quad-matrix", "half baked, bds responsible");
 
 	return buildfail || runfail ? -1 : 0;
 } // main
+
+// Local Variables:
+// mode: C++
+// tab-width: 4
+// indent-tabs-mode: nil
+// c-basic-offset: 4
+// End:
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

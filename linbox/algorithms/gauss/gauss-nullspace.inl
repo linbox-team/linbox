@@ -2,7 +2,7 @@
  * Copyright (C) LinBox 2008
  *
  * Written by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
- * Time-stamp: <24 Aug 17 18:22:23 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <13 Nov 17 16:58:56 Jean-Guillaume.Dumas@imag.fr>
  *
  *
  * ========LICENCE========
@@ -102,7 +102,7 @@ namespace LinBox
 		unsigned long Rank;
 		size_t Ni(A.rowdim()),Nj(A.coldim());
 
-		Permutation<Field> P((int)Nj,field());
+		Permutation<Field> P(field(),(int)Nj);
 
 		// A.write( std::cerr << "A:=", Tag::FileFormat::Maple ) << ';' << std::endl;
 		this->InPlaceLinearPivoting(Rank, Det, A, P, Ni, Nj );
@@ -143,12 +143,10 @@ namespace LinBox
 
 #endif // __LINBOX_gauss_nullspace_INL
 
-
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

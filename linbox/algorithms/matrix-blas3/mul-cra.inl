@@ -145,8 +145,6 @@ namespace LinBox { namespace BLAS3 {
 			  const mulMethod::CRA &)
 	{
 
-		size_t PrimeSize = 22; //! @todo pourqoi ?
-
 		integer mA, mB ;
 		BlasMatrixDomain<typename _anyMatrix::Field> BMD(A.field());
 		BMD.Magnitude(mA,A);
@@ -157,7 +155,7 @@ namespace LinBox { namespace BLAS3 {
 
 		{
 
-			RandomPrimeIterator genprime( (unsigned int)PrimeSize );
+                        PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<ModularField>::bestBitSize(A.coldim()));
 			ChineseRemainder< FullMultipBlasMatCRA< ModularField > > cra( std::pair<size_t,double>(C.rowdim()*C.coldim(), logC) );
 			Protected::IntegerCraMatMul iteration(A,B);
 
@@ -182,10 +180,10 @@ namespace LinBox { namespace BLAS3 {
 
 #endif // __LINBOX_matrix_blas3_mul_cra_INL
 
-//Local Variables:
-//mode: C++
-//tab-width: 8
+// Local Variables:
+// mode: C++
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

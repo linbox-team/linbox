@@ -62,7 +62,7 @@ namespace LinBox
 		 * @param indices Vector of indices representing the permutation
 		 * Permutation P has 1 in the P_{i, _indices[i]} positions.
 		 */
-		Permutation (Storage & indices, const Field& F = Field()) :
+		Permutation (Storage & indices, const Field& F) :
 			_field(F), _indices (indices)
 		{}
 
@@ -73,25 +73,25 @@ namespace LinBox
 			return *this;
 		}
 
-		Permutation (size_t* P, size_t n, const Field& F = Field()) 
-		: _field(F) 
-		{ init(P, n); }
+		Permutation (size_t* P, size_t n, const Field& F)
+		: _field(F) {
+            init(P, n);
+        }
 
 		/** \brief n x n permutation matrix, initially the identity.
 		 * @param n The dimension of the matrix 
 		 * @param F field or ring
 		 */
-		Permutation (int n, const Field& F = Field()) :
-			_field(F)
+		Permutation (int n, const Field& F) : _field(F)
 		{
 			identity(n);
 		}
 
-		Permutation (const Field& F = Field(), size_t n=0, size_t m = 0) :
-			_field(F)
+		Permutation (const Field& F, size_t n=0, size_t m = 0) : _field(F)
 		{
 			identity((int)n);
 		}
+
 
 
 		//!@bug should be size_t
@@ -103,11 +103,11 @@ namespace LinBox
 		}
 
 		//void random(size_t n)
-		void random()
+		void random(unsigned int seed=(unsigned int)time(NULL))
 		{
 			size_t n = rowdim();
 			identity((int)n);
-			MersenneTwister r((unsigned int)time(NULL));
+			MersenneTwister r(seed);
 			// Knuth construction
 			for (size_t i = 0; i < n-1; ++i) {
 				size_t j = i + r.randomInt()%(n-i);
@@ -461,11 +461,10 @@ namespace LinBox
 
 #endif // __LINBOX_bb_permutation_H
 
-
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

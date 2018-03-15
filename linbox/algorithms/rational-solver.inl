@@ -59,7 +59,7 @@
 #include "linbox/util/timer.h"
 // #endif
 
-#define DEBUG_DIXON
+//#define DEBUG_DIXON
 //#define DEBUG_INC
 //#define SKIP_NONSINGULAR
 
@@ -876,14 +876,16 @@ namespace LinBox
 
 #ifdef DEBUG_INC
 			std::cout << "P takes (0 1 ...) to (";
-			for (size_t i=0; i<A.rowdim(); ++i) std::cout << srcRow[i] << ' '; std::cout << ')' << std::endl;
+			for (size_t i=0; i<A.rowdim(); ++i) std::cout << srcRow[i] << ' ';
+            std::cout << ')' << std::endl;
 			std::cout << "Q takes (0 1 ...) to (";
-			for (size_t i=0; i<A.coldim()+1; ++i) std::cout << srcCol[i] << ' '; std::cout << ')' << std::endl;
+			for (size_t i=0; i<A.coldim()+1; ++i) std::cout << srcCol[i] << ' ';
+            std::cout << ')' << std::endl;
 #endif
 
 			bool appearsInconsistent = (srcCol[TAS_rank-1] == A.coldim());
 			size_t rank = TAS_rank - (appearsInconsistent ? 1 : 0);
-#ifdef DIXON_DEBUG
+#ifdef DEBUG_DIXON
 			std::cout << "TAS_rank, rank: " << TAS_rank << ' ' << rank << std::endl;
 #endif
 #ifdef RSTIMING
@@ -1480,7 +1482,7 @@ namespace LinBox
 		FMatrix Ap(A, F);
 
 		// compute LQUP Factorization
-		Permutation<Field> P((int)A.coldim(),F),Q((int)A.rowdim(),F);
+		Permutation<Field> P(F,(int)A.coldim()),Q(F,(int)A.rowdim());
 		FMatrix L(F, A.rowdim(), A.rowdim());
 		unsigned long rank;
 		Element_t det;
@@ -1531,11 +1533,10 @@ namespace LinBox
 
 #endif //__LINBOX_rational_solver_INL
 
-
 // Local Variables:
 // mode: C++
 // tab-width: 4
 // indent-tabs-mode: nil
 // c-basic-offset: 4
 // End:
-// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

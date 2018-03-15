@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * Copyright (C) 2013  Pascal Giorgi
  *
@@ -499,7 +498,7 @@ int main(int argc, char** argv){
 #ifdef FFT_PROFILER		
 			FFT_PROF_LEVEL=2;
 #endif
-			RandomPrimeIter Rd(b,seed);
+			PrimeIter<IteratorCategories::HeuristicTag> Rd(b,seed);
 			integer p= Rd.random();
 			//Givaro::Modular<integer> F(p);			
 			Givaro::Modular<RecInt::ruint128,RecInt::ruint256> F(p);
@@ -520,7 +519,7 @@ int main(int argc, char** argv){
 				cout<<"++++++++++++++++++++++++++++++++++++"<<endl;
 				runTest (F,n,b,d,seed,test);
 			} else {
-				RandomPrimeIter Rd(b,seed);
+				PrimeIter<IteratorCategories::HeuristicTag> Rd(b,seed);
 				//uint64_t dd=integer(d).bitsize()+1;
 				integer p;
 				Rd.random(p);
@@ -534,7 +533,11 @@ int main(int argc, char** argv){
 	}
 	return 0; 
 } 
- 
 
-
-
+// Local Variables:
+// mode: C++
+// tab-width: 4
+// indent-tabs-mode: nil
+// c-basic-offset: 4
+// End:
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

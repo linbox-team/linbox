@@ -1,5 +1,3 @@
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * Copyright (C) 2013  Pascal Giorgi
  *                     Romain Lebreton
@@ -289,10 +287,10 @@ namespace LinBox
     PolynomialMatrixFFTMulDomain (const Field& F);
 
     template<typename Matrix1, typename Matrix2, typename Matrix3>
-      void mul (Matrix1 &c, const Matrix2 &a, const Matrix3 &b);
+      void mul (Matrix1 &c, const Matrix2 &a, const Matrix3 &b) const;
 
     template<typename Matrix1, typename Matrix2, typename Matrix3>
-      void midproduct (Matrix1 &c, const Matrix2 &a, const Matrix3 &b, bool smallLeft=true, size_t n0=0,size_t n1=0);
+      void midproduct (Matrix1 &c, const Matrix2 &a, const Matrix3 &b, bool smallLeft=true, size_t n0=0,size_t n1=0) const;
   };
 		
 	
@@ -345,7 +343,7 @@ namespace LinBox
       while (k>1 && prime_max_tp<100) {k/=2;prime_max_tp*=2;}
       if (k<=1) {std::cout<<"getFFTPrime error: impossible to have enough primes satisfying constraints: FFLAS prime (<2^26) and FFT (2^"<<lpts<<")\n";}
 	
-      RandomPrimeIter Rd(std::min(prime_max_tp.bitsize()/2,integer(prime_max).bitsize())-1);
+      PrimeIterator<IteratorCategories::HeuristicTag> Rd(std::min(prime_max_tp.bitsize()/2,integer(prime_max).bitsize())-1);
 #ifdef VERBOSE_FFT
       std::cout<<"MM="<<MM<<std::endl;
       std::cout<<"normal primemax: "<<prime_max_tp<<" "<<prime_max<<std::endl;
@@ -353,7 +351,7 @@ namespace LinBox
 #endif
       integer tmp;
       do {
-	do {Rd.random(tmp);}
+          do {tmp = *(++Rd);}
 	while (MM%tmp==0 || tmp>prime_max);
 	bas.push_back(tmp);
 	nbp++;
@@ -377,3 +375,11 @@ namespace LinBox
 #include "linbox/algorithms/polynomial-matrix/matpoly-mult-fft-wordsize.inl"
 
 #endif // __LINBOX_matpoly_mult_ftt_H
+
+// Local Variables:
+// mode: C++
+// tab-width: 4
+// indent-tabs-mode: nil
+// c-basic-offset: 4
+// End:
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

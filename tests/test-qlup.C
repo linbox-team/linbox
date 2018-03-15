@@ -1,7 +1,7 @@
 /* tests/test-qlup.C
  * Copyright (C) The LinBox group
  *
- * Time-stamp: <29 Oct 15 19:13:28 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <13 Nov 17 16:57:58 Jean-Guillaume.Dumas@imag.fr>
  * -----------------------------------------------------
  *
  * ========LICENCE========
@@ -100,8 +100,8 @@ bool testQLUP(const Field &F, size_t n, unsigned int iterations, int rseed, doub
 		GaussDomain<Field> GD ( F );
 		typename Field::Element determinant;
 		Blackbox L(F, A.rowdim(), A.coldim());
-		Permutation<Field> Q((int)A.rowdim(),F);
-		Permutation<Field> P((int)A.coldim(),F);
+		Permutation<Field> Q(F,(int)A.rowdim());
+		Permutation<Field> P(F,(int)A.coldim());
 
 		GD.QLUPin(rank, determinant,
 			  Q, L, A, P,
@@ -428,8 +428,8 @@ int main (int argc, char **argv)
 
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

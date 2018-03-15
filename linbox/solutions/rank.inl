@@ -158,7 +158,7 @@ namespace LinBox
 				commentator().stop ("fail", NULL, "trace");
 #if 0
 
-				Permutation<Field> P(A.rowdim(), F);
+				Permutation<Field> P(F,A.rowdim());
 				for (i = 0; i < A.rowdim (); ++i)
 					P.permute( rand() % A.rowdim() , rand() % A.rowdim() );
 				for (i = 0; i < A.rowdim (); ++i)
@@ -298,7 +298,7 @@ namespace LinBox
 			bool tryagain = (! F.areEqual( t, p2 ));
 			while( tryagain ) {
 				commentator().stop ("fail", NULL, "trace");
-				Permutation<Field> P((int)A.rowdim(), F);
+				Permutation<Field> P(F,(int)A.rowdim());
 				for (i = 0; i < A.rowdim (); ++i)
 					P.permute( (size_t)rand() % A.rowdim() , (size_t)rand() % A.rowdim() );
 				for (i = 0; i < A.rowdim (); ++i)
@@ -457,11 +457,8 @@ namespace LinBox
                                          const MyMethod	&M)
 	{
 		commentator().start ("Integer Rank", "iirank");
-		typedef Givaro::Modular<double> projField;
-		integer mmodulus;
-		FieldTraits<projField>::maxModulus(mmodulus);
-		RandomPrimeIterator genprime( (unsigned) floor (log((double)mmodulus) ) );
-		++genprime;
+		typedef Givaro::ModularBalanced<double> projField;
+		PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<projField>::bestBitSize(A.rowdim()));
 		typedef typename Blackbox::template rebind< projField >::other FBlackbox;
 		const projField Fp(*genprime);
 		FBlackbox Ap(A, Fp );
@@ -596,11 +593,8 @@ namespace LinBox { /*  rankin */
 				      const Method::SparseElimination     &M)
 	{
 		commentator().start ("Integer Rank inplace", "irank");
-		typedef Givaro::Modular<double> Field;
-		integer mmodulus;
-		FieldTraits<Field>::maxModulus(mmodulus);
-		RandomPrimeIterator genprime( (unsigned int) floor (log((double)mmodulus) ) );
-		++genprime;
+		typedef Givaro::ModularBalanced<double> Field;
+		PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.rowdim()));
 		typedef typename Blackbox::template rebind< Field >::other FBlackbox;
 		const Field Fp(*genprime);
 		FBlackbox Ap(A, Fp);
@@ -689,11 +683,10 @@ namespace LinBox { /*  rankin */
 
 #endif // __LINBOX_rank_INL
 
-
 // Local Variables:
 // mode: C++
 // tab-width: 4
 // indent-tabs-mode: nil
 // c-basic-offset: 4
 // End:
-// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

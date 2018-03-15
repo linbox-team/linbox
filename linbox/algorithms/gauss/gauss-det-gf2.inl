@@ -1,7 +1,7 @@
 /* linbox/algorithms/gauss-det-gf2.inl
  * Copyright (C) 2009 The LinBox group
  *
-// Time-stamp: <27 Jul 17 10:08:56 Jean-Guillaume.Dumas@imag.fr>
+// Time-stamp: <13 Nov 17 16:59:51 Jean-Guillaume.Dumas@imag.fr>
  *
  * 
  * ========LICENCE========
@@ -41,7 +41,7 @@ namespace LinBox
 		if (reord == SparseEliminationTraits::PIVOT_NONE)
 			NoReordering(Rank, determinant, A, Ni, Nj);
 		else {
-                        Permutation<GF2> P((int)A.coldim(),A.field());
+                        Permutation<GF2> P(A.field(),(int)A.coldim());
 			InPlaceLinearPivoting(Rank, determinant, A, P, Ni, Nj);
                 }
 		return determinant;
@@ -82,11 +82,10 @@ namespace LinBox
 
 #endif // __LINBOX_gauss_det_gf2_INL
 
-// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 4
 // indent-tabs-mode: nil
 // c-basic-offset: 4
 // End:
-
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

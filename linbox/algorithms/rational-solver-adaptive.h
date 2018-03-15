@@ -45,13 +45,13 @@ namespace LinBox
 			linbox_check ((M. rowdim() == M. coldim()) && (b.size() == M.rowdim()) && (num. size() ==M.coldim()));
 			typedef Givaro::Modular<int32_t> Field;
 			// typedef Givaro::Modular<double> Field;
-			RationalSolver<IRing, Field, RandomPrimeIterator, NumSymNormTraits> numerical_solver;
-			//RationalSolver<IRing, Field, RandomPrimeIterator, NumSymOverlapTraits> numerical_solver;
+			RationalSolver<IRing, Field, PrimeIterator<IteratorCategories::HeuristicTag>, NumSymNormTraits> numerical_solver;
+			//RationalSolver<IRing, Field, PrimeIterator<IteratorCategories::HeuristicTag>, NumSymOverlapTraits> numerical_solver;
 			SolverReturnStatus ret;
 			ret = numerical_solver. solve(num, den, M, b);
 
 			if (ret != SS_OK) {
-				RationalSolver<IRing, Field, RandomPrimeIterator> solver;
+				RationalSolver<IRing, Field, PrimeIterator<IteratorCategories::HeuristicTag>> solver;
 				BlasVector<IRing> Ib(M.field()); Ib.reserve(b.size());
 				typename IRing::Element tmp;
 				for(typename InVector::const_iterator biter = b.begin();
@@ -74,12 +74,12 @@ namespace LinBox
 			linbox_check ((M. rowdim() == M. coldim()) && (b.size() == M.rowdim()) && (num. size() ==M.coldim()));
 			typedef Givaro::Modular<int32_t> Field;
 			// typedef Givaro::Modular<double> Field;
-			RationalSolver<IRing, Field, RandomPrimeIterator, NumSymOverlapTraits> numerical_solver;
+			RationalSolver<IRing, Field, PrimeIterator<IteratorCategories::HeuristicTag>, NumSymOverlapTraits> numerical_solver;
 			SolverReturnStatus ret;
 			ret = numerical_solver. solve(num, den, M, b);
 
 			if (ret != SS_OK) {
-				RationalSolver<IRing, Field, RandomPrimeIterator> solver;
+				RationalSolver<IRing, Field, PrimeIterator<IteratorCategories::HeuristicTag> > solver;
 				ret = solver. solve(num, den, M, b);
 			}
 
@@ -100,11 +100,10 @@ namespace LinBox
 
 #endif //__LINBOX_rational_solver_adaptive_H
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

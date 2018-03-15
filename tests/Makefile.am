@@ -83,6 +83,7 @@ BASIC_TESTS =					\
 	test-charpoly			\
 	test-isposdef				\
 	test-ispossemidef			\
+	test-local-smith-form-sparseelim\
 	test-regression
 
 # All other tests.  
@@ -331,6 +332,7 @@ test_smith_form_binary_SOURCES =        test-smith-form-binary.C
 test_smith_form_iliopoulos_SOURCES =    test-smith-form-iliopoulos.C
 test_smith_form_kannan_bachem_SOURCES = test-smith-form-kannan-bachem.C
 test_smith_form_local_SOURCES =         test-smith-form-local.C
+test_local_smith_form_sparseelim_SOURCES = test-local-smith-form-sparseelim.C
 test_smith_form_SOURCES =               test-smith-form.C
 test_solve_nonsingular_SOURCES =        test-solve-nonsingular.C
 test_solve_SOURCES =                    test-solve.C
