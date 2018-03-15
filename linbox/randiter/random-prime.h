@@ -40,91 +40,92 @@
 #include "linbox/field/field-traits.h"
 namespace LinBox
 {
-            /*! \brief Information about the type of Prime Iterator
-             */
-        namespace IteratorCategories {
-                //! Iterator following a deterministic sequence of primes (from the largest one, in decreasing order
-                struct DeterministicTag{};
-                //! Iterator sampling uniformly from all primes of given bitsize
-                struct UniformTag{};
-                //! Iterator sampling randomly (no distribution guaranteed whatsoever) from all primes of given bitsize
-                struct HeuristicTag{};
-        };
+        /*! \brief Information about the type of Prime Iterator
+         */
+    namespace IteratorCategories {
+            //! Iterator following a deterministic sequence of primes (from the largest one, in decreasing order
+        struct DeterministicTag{};
+            //! Iterator sampling uniformly from all primes of given bitsize
+        struct UniformTag{};
+            //! Iterator sampling randomly (no distribution guaranteed whatsoever) from all primes of given bitsize
+        struct HeuristicTag{};
+    };
         
-            /*! \brief Whether a prime generator generates a sequence with non repeating
-             * numbers
-             */
-        template<class IteratorTrait>
-        struct UniqueSamplingTrait
+        /*! \brief Whether a prime generator generates a sequence with non repeating
+         * numbers
+         */
+    template<class IteratorTrait>
+    struct UniqueSamplingTrait
 		:public std::false_type { }; /* default: no guarantee of uniqueness */
 
-        template<>
-        struct UniqueSamplingTrait<IteratorCategories::DeterministicTag>
+    template<>
+    struct UniqueSamplingTrait<IteratorCategories::DeterministicTag>
 		:public std::true_type { };
 
         
         /*!  @brief  Prime Iterator.
-	 * @ingroup primes
-	 * @ingroup randiter
-	 *
-	 * Generates prime of specified length using a heuristically random distribution 
+         * @ingroup primes
+         * @ingroup randiter
+         *
+         * Generates prime of specified length using a heuristically random distribution 
          * (no guarantee whatsoever).
-	 * @internal
-	 * It is given by <code>nextprime(2^_bits-p)</code> where <code>size(p) < _bits</code>.
-	 */
-        template<class Trait = IteratorCategories::HeuristicTag>
+         * @internal
+         * It is given by <code>nextprime(2^_bits-p)</code> where <code>size(p) < _bits</code>.
+         */
+    template<class Trait = IteratorCategories::HeuristicTag>
 	class PrimeIterator{
-	private:
+	protected:
 		uint64_t 	_bits;  //!< common lenght of all primes
 		integer        _prime;  //!< the generated prime.
 		Givaro::IntPrimeDom _IPD; //!< empty struct dealing with primality.
 
-                void generatePrime();
+        virtual void generatePrime();
 	public:
 		typedef integer Prime_Type ;
-                typedef UniqueSamplingTrait<Trait> UniqueSamplingTag; //!< whether a prime can be picked more than once
-                typedef Trait IteratorTag;
+        typedef UniqueSamplingTrait<Trait> UniqueSamplingTag; //!< whether a prime can be picked more than once
+        typedef Trait IteratorTag;
 
-                /*! Constructor.
-		 * @param bits size of primes (in bits). Default is 23 so it
-		 * can fit in a <code>Linbox::Modular<double></code>.
-		 * @param seed if \c 0 a seed will be generated, otherwise, the
-		 * provided seed will be use.
-		 */
+            /*! Constructor.
+             * @param bits size of primes (in bits). Default is 23 so it
+             * can fit in a <code>Linbox::Modular<double></code>.
+             * @param seed if \c 0 a seed will be generated, otherwise, the
+             * provided seed will be use.
+             */
 		PrimeIterator(uint64_t bits = 23, uint64_t seed = 0) :
-			_bits(bits)
-		{
-			linbox_check(bits >1);
-			if (! seed)
-                                seed = BaseTimer::seed();
-                        setSeed (seed);
-                        generatePrime();
-		}
+                _bits(bits)
+            {
+                linbox_check(bits >1);
+                if (! seed)
+                    seed = BaseTimer::seed();
+                setSeed (seed);
+                _prime = Prime_Type(1)<<bits;
+                generatePrime();
+            }
 
-                /** @brief operator++()  (prefix ++ operator)
-		 *  creates a new random prime.
-		 */
-		inline PrimeIterator<IteratorCategories::HeuristicTag> &operator ++ ()
-		{
-			generatePrime();
-                        return *this;
-		}
+            /** @brief operator++()  (prefix ++ operator)
+             *  creates a new random prime.
+             */
+		inline PrimeIterator<Trait> &operator ++ ()
+            {
+                generatePrime();
+                return *this;
+            }
 
-		/** @brief get the random prime.
-		 *  returns the actual prime.
-		 *  @warning a new prime is not generated.
-		 */
+            /** @brief get the random prime.
+             *  returns the actual prime.
+             *  @warning a new prime is not generated.
+             */
 		const Prime_Type &operator * () const {return _prime;}
 
-                /** @brief Sets the seed.
-		 *  Set the random seed to be \p ul.
-		 *  @param ul the new seed.
-		 */
+            /** @brief Sets the seed.
+             *  Set the random seed to be \p ul.
+             *  @param ul the new seed.
+             */
 		void static setSeed(uint64_t ul){integer::seeding(ul);}
 
-                /** @brief Sets the bit size.
-		 *  @param bits the new bit size.
-		 */
+            /** @brief Sets the bit size.
+             *  @param bits the new bit size.
+             */
 		void setBits(uint64_t bits) {
 			_bits = bits;
 			linbox_check(bits >1);
@@ -132,29 +133,137 @@ namespace LinBox
 		}
 	};
 
-        template<>
-        void PrimeIterator<IteratorCategories::HeuristicTag>::generatePrime(){
-                integer::random_exact_2exp(_prime,_bits);
-                _IPD.nextprimein(_prime);
-                while (_prime.bitsize()>_bits)
-                        _IPD.prevprimein(_prime);
-        }
+    template<>
+    void PrimeIterator<IteratorCategories::HeuristicTag>::generatePrime(){
+        integer::random_exact_2exp(_prime,_bits);
+        _IPD.nextprimein(_prime);
+        while (_prime.bitsize()>_bits)
+            _IPD.prevprimein(_prime);
+    }
 
-        template<>
-        void PrimeIterator<IteratorCategories::DeterministicTag>::generatePrime(){_IPD.prevprimein(_prime);}
+    template<>
+    void PrimeIterator<IteratorCategories::DeterministicTag>::generatePrime(){
+        _IPD.prevprimein(_prime);
+    }
 
-        template<>
-        void PrimeIterator<IteratorCategories::UniformTag>::generatePrime(){
-                do{
-                        integer::random_exact_2exp(_prime,_bits);
-                        switch (_prime %6){
-                            case 0: _prime++; break;
-                            case 4: _prime++; break;
-                            case 2: _prime--; break;
-                            case 3: _prime+=2; break;
-                        }
-                } while(!_IPD.isprime(_prime));
+    template<>
+    void PrimeIterator<IteratorCategories::UniformTag>::generatePrime(){
+        do{
+            integer::random_exact_2exp(_prime,_bits);
+            switch (_prime %6){
+                case 0: _prime++; break;
+                case 4: _prime++; break;
+                case 2: _prime--; break;
+                case 3: _prime+=2; break;
+            }
+        } while(!_IPD.isprime(_prime));
+    }
+
+
+
+/* ================
+ * Find the log base 2 of an N-bit integer
+ * From Bit Twiddling Hacks
+ * By Sean Eron Anderson
+ * seander@cs.stanford.edu
+ * https://graphics.stanford.edu/~seander/bithacks.html
+ */
+    static const uint32_t MultiplyDeBruijnBitPosition[32] =
+    {
+        0U, 9U, 1U, 10U, 13U, 21U, 2U, 29U, 11U, 14U, 16U,
+        18U, 22U, 25U, 3U, 30U, 8U, 12U, 20U, 28U, 15U, 17U,
+        24U, 7U, 19U, 27U, 23U, 6U, 26U, 5U, 4U, 31U
+    };
+
+    uint32_t MultiplyDeBruijnHighestBit(uint32_t v)
+    {
+        v |= v >> 1; // first round down to one less than a power of 2
+        v |= v >> 2;
+        v |= v >> 4;
+        v |= v >> 8;
+        v |= v >> 16;
+
+        return MultiplyDeBruijnBitPosition[(uint32_t)(v * 0x07C4ACDDU) >> 27];
+    }
+/* ================ */
+
+
+        /*!  @brief  Masked Prime Iterator.
+         * @ingroup primes
+         * @ingroup randiter
+         *
+         * Generates prime of specified length with fixed lower bits
+         * @internal
+         */
+    template<class Trait = IteratorCategories::HeuristicTag>
+    class MaskedPrimeIterator : public PrimeIterator<Trait> {
+    private:
+        const uint32_t	_mask;
+        const uint32_t  _shift;
+
+    public:
+        typedef MaskedPrimeIterator<Trait> Self_t;
+        typedef PrimeIterator<Trait> Father_t;
+        void generatePrime();
+
+		inline Self_t &operator ++ ()
+            {
+                Father_t::operator++();
+                return *this;
+            }
+
+        MaskedPrimeIterator(uint32_t mask, uint32_t max, uint64_t bits = 23, uint64_t seed = 0) :
+                Father_t(bits,seed),
+                _mask( (mask<<1) | 0x1 ),
+                _shift( MultiplyDeBruijnHighestBit(max) + 2)
+            {
+                this->_prime >>= _shift;
+                this->_prime <<= _shift; // set lowest bits to 0000
+                this->_prime |= _mask;   // set lowest bits to _mask
+            }
+
+        const uint32_t getMask() const { return _mask; }
+        const uint32_t getShift() const { return _shift; }
+    };
+
+    template<>
+    void MaskedPrimeIterator<IteratorCategories::HeuristicTag>::generatePrime(){
+        integer::random_exact_2exp(_prime,_bits);
+
+        _prime >>= _shift;
+        _prime <<= _shift; // set first bits to 0000
+        _prime |= _mask;   // set lowest bits to _mask
+
+        while(! _IPD.isprime(_prime) ) {
+            _prime += (1<<_shift);
         }
+    }
+
+    template<>
+    void MaskedPrimeIterator<IteratorCategories::DeterministicTag>::generatePrime(){
+        _prime -= (1<<_shift);
+        while(! _IPD.isprime(_prime) )
+            _prime -= (1<<_shift);
+    }
+
+
+    template<>
+    void MaskedPrimeIterator<IteratorCategories::UniformTag>::generatePrime(){
+        do{
+            integer::random_exact_2exp(_prime,_bits);
+            switch (_prime %6){
+                case 0: _prime++; break;
+                case 4: _prime++; break;
+                case 2: _prime--; break;
+                case 3: _prime+=2; break;
+            }
+
+            _prime >>= _shift;
+            _prime <<= _shift; // set first bits to 0000
+            _prime |= _mask;   // set lowest bits to _mask
+
+        } while(!_IPD.isprime(_prime));
+    }
 }
 
 #endif //__LINBOX_random_prime_iterator_H
