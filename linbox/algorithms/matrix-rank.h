@@ -46,7 +46,7 @@ namespace LinBox
 	/** Compute the rank of an integer matrix in place over a finite field by Gaussian elimination.
 	 * @bug there is no generic \c rankIn method.
 	*/
-	template<class _Ring, class _Field, class _RandomPrime = PrimeIterator>
+	template<class _Ring, class _Field, class _RandomPrime = PrimeIterator<>>
 	class MatrixRank {
 
 	public:

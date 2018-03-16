@@ -146,9 +146,37 @@ namespace LinBox
 		}
 		
 		template<typename Matrix>
-		void eliminate(const Matrix &M1, Matrix &M2, const Matrix &V1, Matrix &V2, const Polynomial &f) const {
-			_MD.saxpyin(M2, f, M1);
-			_MD.saxpyin(V2, f, V1);
+		void eliminate(const Matrix &M1, Matrix &M2, const Matrix &V1, Matrix &V2, const Coeff &c, size_t e) const {
+			//_MD.saxpyin(M2, f, M1);
+			//_MD.saxpyin(V2, f, V1);
+			
+			for (size_t i = 0; i < M1.coldim(); i++) {
+				Polynomial f1, f2;
+				
+				M1.getEntry(f1, 0, i);
+				M2.getEntry(f2, 0, i);
+				
+				_R.mulCoeffIn(f1, c);
+				_R.leftShiftIn(f1, e);
+				
+				_R.addin(f2, f1);
+				
+				M2.setEntry(0, i, f2);
+			}
+			
+			for (size_t i = 0; i < V1.coldim(); i++) {
+				Polynomial f1, f2;
+				
+				V1.getEntry(f1, 0, i);
+				V2.getEntry(f2, 0, i);
+				
+				_R.mulCoeffIn(f1, c);
+				_R.leftShiftIn(f1, e);
+				
+				_R.addin(f2, f1);
+				
+				V2.setEntry(0, i, f2);
+			}
 		}
 		
 		template<typename Matrix1, typename Matrix2>
@@ -175,22 +203,14 @@ namespace LinBox
 				_R.getCoeffField().div(tmp, c2, c1);
 				_R.getCoeffField().negin(tmp);
 				
-				Polynomial f;
-				_R.init(f, tmp);
-				_R.leftShiftIn(f, e);
-				
-				eliminate(M1, M2, V1, V2, f);
+				eliminate(M1, M2, V1, V2, tmp, e);
 			} else {
 				size_t e = d1 - d2;
 				Coeff tmp;
 				_R.getCoeffField().div(tmp, c1, c2);
 				_R.getCoeffField().negin(tmp);
 				
-				Polynomial f;
-				_R.init(f, tmp);
-				_R.leftShiftIn(f, e);
-				
-				eliminate(M2, M1, V2, V1, f);
+				eliminate(M2, M1, V2, V1, tmp, e);
 			}
 		}
 		

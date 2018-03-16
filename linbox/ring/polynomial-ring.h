@@ -88,6 +88,20 @@ namespace LinBox {
             p._field = &Parent_t::subdomain();
             return p;
         }
+        
+        Rep& init(Rep& p, const std::vector<Type_t> &coeffs) const {
+        	p._field = &Parent_t::subdomain();
+        	
+        	typename Parent_t::Element tmp;
+        	Parent_t::init(tmp);
+        	for (long i = coeffs.size() - 1; i >= 0; i--) {        		
+				Parent_t::shiftin(tmp, 1);
+        		Parent_t::addin(tmp, coeffs[i]);
+        	}
+        	
+        	Element p1(one.field(), tmp);
+        	return assign(p, p1);;
+        }
 
             //===========================================
             // The following are needed since:
@@ -183,7 +197,16 @@ namespace LinBox {
             Parent_t::divin(z, a);
             return z;
 		}
-
+		
+		bool isDivisor(const Element &a, const Element &b) const {
+			if (Parent_t::isZero(static_cast<const ParElem&>(b))) {
+				return false;
+			}
+			
+			Element tmp;
+			mod(tmp, a, b);
+			return Parent_t::isZero(static_cast<const ParElem&>(tmp));
+		}
     };
 }
 

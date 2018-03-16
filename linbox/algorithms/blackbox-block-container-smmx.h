@@ -43,6 +43,34 @@
 
 namespace LinBox
 {
+	template<class _Field1>
+	class __BBC_MMHelper {
+	private:
+		MatrixDomain<_Field1> _MD;
+		typedef BlasMatrix<_Field1> Mat;
+		
+	public:
+		__BBC_MMHelper(const _Field1 &F) : _MD(F) {}
+		
+		inline void mul(Mat &C, const Mat &A, const Mat &B) const {
+			_MD.mul(C, A, B);
+		}
+	};
+	
+	template<>
+	class __BBC_MMHelper<Givaro::Modular<double>> {
+	private:
+		BlasMatrixDomain<Givaro::Modular<double>> _MD;
+		typedef BlasMatrix<Givaro::Modular<double>> Mat;
+		
+	public:
+		__BBC_MMHelper(const Givaro::Modular<double> &F) : _MD(F) {}
+		
+		inline void mul(Mat &C, const Mat &A, const Mat &B) const {
+			_MD.mul(C, A, B);
+		}
+	};
+	
 	template<class _Field, class _Blackbox>
 	class BlackboxBlockContainerSmmx {
 	public:
@@ -58,63 +86,33 @@ namespace LinBox
 
 	private:
 		Field _F;
+		//BlasMatrixDomain<Field> _MD;
+		//MatrixDomain<Field> _MD;
+		__BBC_MMHelper<Field> _MD;
+		
+		bool left_pre = false;
+		FSparseMat _L;
+		
 		const Blackbox *_BB;
-		Value _V;
-		
-		size_t _n;
-		size_t _b;
 		FSparseMat _M;
-		FflasBlock _U;
-		FflasBlock _W;
-		FflasBlock _C;
-		FflasBlock _tmp;
 		
-		int nbw = -1;
-		FFLAS::MMHelper<Field, FFLAS::MMHelperAlgo::Winograd> _WH;
+		bool right_pre = false;
+		FSparseMat _R;
 		
-	public:
-		// Default constructor
-		BlackboxBlockContainerSmmx() {}
-
-		// constructor of the sequence from a blackbox, a field and one block projection
-		BlackboxBlockContainerSmmx(
-			const Blackbox *BB,
-			const Field &F,
-			const Block &U0,
-			const Block &V0) : 
-		_F(F), _BB(BB), _V(F, U0.rowdim(), U0.rowdim()), _WH(_F, nbw, FFLAS::ParSeqHelper::Sequential()) {
-			size_t b = U0.rowdim();
-			size_t n = BB->rowdim();
-			
-			_n = n;
-			_b = b;
-			
-			_U = FFLAS::fflas_new(_F, b, n, Alignment::CACHE_PAGESIZE);
-			_W = FFLAS::fflas_new(_F, n, b, Alignment::CACHE_LINE);
-			_C = FFLAS::fflas_new(_F, b, b, Alignment::CACHE_PAGESIZE);
-			_tmp = FFLAS::fflas_new(_F, _n, _b, Alignment::CACHE_LINE);
-			
-			for (size_t i = 0; i < b; i++) {
-				for (size_t j = 0; j < n; j++) {
-					_U[i * n + j] = U0.getEntry(i, j);
-				}
-			}
-			
-			for (size_t i = 0; i < n; i++) {
-				for (size_t j = 0; j < b; j++) {
-					_W[i * b + j] = V0.getEntry(i, j);
-				}
-			}
-			
-			Blackbox M(*BB);
-			std::vector<index_t> st1 = M.getStart();
-			std::vector<index_t> col1 = M.getColid();
-			std::vector<Element> data1 = M.getData();
+		Block _U;
+		Block _W;
+		Block _tmp;
+		Value _V;
+	
+		static void convert(const Field &F, FSparseMat &A, const Blackbox *BB) {
+			std::vector<index_t> st1 = BB->getStart();
+			std::vector<index_t> col1 = BB->getColid();
+			std::vector<Element> data1 = BB->getData();
 			
 			uint64_t nnz = data1.size();
 			
 			index_t *row = FFLAS::fflas_new<index_t>(nnz);
-			for (size_t j = 0; j < M.rowdim(); ++j) {
+			for (size_t j = 0; j < BB->rowdim(); ++j) {
 				for (index_t k = st1[j] ; k < st1[j+1]; ++k) {
 					row[k] = j;
 				}
@@ -130,7 +128,51 @@ namespace LinBox
 				data[i] = data1[i];
 			}
 			
-			FFLAS::sparse_init(F, _M, row, col, data, M.rowdim(), M.coldim(), nnz);
+			FFLAS::sparse_init(F, A, row, col, data, BB->rowdim(), BB->coldim(), nnz);
+		}
+		
+	public:
+		// Default constructor
+		BlackboxBlockContainerSmmx() {}
+
+		// constructor of the sequence from a blackbox, a field and one block projection
+		BlackboxBlockContainerSmmx(
+			const Blackbox *BB,
+			const Field &F,
+			const Block &U0,
+			const Block &V0) : 
+				_F(F), 
+				_MD(F),
+				_BB(BB), 
+				_U(U0), 
+				_W(V0), 
+				_tmp(F, BB->rowdim(), U0.rowdim()), 
+				_V(F, U0.rowdim(), U0.rowdim()) 
+		{
+			convert(F, _M, BB);
+		}
+		
+		BlackboxBlockContainerSmmx(
+			const Blackbox *BB,
+			const Blackbox *PreR,
+			const Field &F,
+			const Block &U0,
+			const Block &V0) : BlackboxBlockContainerSmmx(BB, F, U0, V0)
+		{
+			convert(F, _R, PreR);
+			right_pre = true;
+		}
+		
+		BlackboxBlockContainerSmmx(
+			const Blackbox *PreL,
+			const Blackbox *BB,
+			const Blackbox *PreR,
+			const Field &F,
+			const Block &U0,
+			const Block &V0) : BlackboxBlockContainerSmmx(BB, PreR, F, U0, V0)
+		{
+			convert(F, _L, PreL);
+			left_pre = true;
 		}
 		
 		const Field& field() const {
@@ -142,27 +184,41 @@ namespace LinBox
 		}
 		
 		size_t rowdim() const {
-			return _b;
+			return _U.rowdim();
 		}
 		
 		size_t coldim() const {
-			return _b;
+			return _V.coldim();
 		}
 		
 		void next() {
-			for (size_t i = 0; i < _n * _b; i++) _tmp[i] = _W[i];
-			FFLAS::fspmm(_F, _M, _b, _tmp, _b, _F.zero, _W, _b);
+			size_t b = _W.coldim();
+			
+			if (right_pre) {
+				// W = _R * W
+				for (size_t i = 0; i < _W.rowdim() * _W.coldim(); i++) {
+					_tmp.getPointer()[i] = _W.getPointer()[i];
+				}
+				FFLAS::fspmm(_F, _R, b, _tmp.getPointer(), b, _F.zero, _W.getPointer(), b);
+			}
+			
+			// W = _M * W
+			for (size_t i = 0; i < _W.rowdim() * _W.coldim(); i++) {
+				_tmp.getPointer()[i] = _W.getPointer()[i];
+			}
+			FFLAS::fspmm(_F, _M, b, _tmp.getPointer(), b, _F.zero, _W.getPointer(), b);
+			
+			if (left_pre) {
+				// W = _R * W
+				for (size_t i = 0; i < _W.rowdim() * _W.coldim(); i++) {
+					_tmp.getPointer()[i] = _W.getPointer()[i];
+				}
+				FFLAS::fspmm(_F, _L, b, _tmp.getPointer(), b, _F.zero, _W.getPointer(), b);
+			}
 		}
 		
 		const Value &getValue() {
-			fgemm(_F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, _b, _b, _n, _F.one, _U, _n, _W, _b, _F.zero, _C, _b, _WH);
-			
-			for (size_t i = 0; i < _b; i++) {
-				for (size_t j = 0; j < _b; j++) {
-					_V.setEntry(i, j, _C[i * _b + j]);
-				}
-			}
-			
+			_MD.mul(_V, _U, _W);
 			return _V;
 		}
 		

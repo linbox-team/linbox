@@ -29,10 +29,7 @@
 #include <vector>
 #include <math.h> 
 
-#include "linbox/ring/polynomial-local-x.h"
-#include "linbox/algorithms/poly-smith-form-local-x.h"
-#include "linbox/algorithms/smith-form-local.h"
-
+#include "linbox/algorithms/poly-smith-form.h"
 #include "linbox/algorithms/block-coppersmith-domain.h"
 #include "linbox/algorithms/blackbox-block-container.h"
 #include "linbox/algorithms/blackbox-block-container-smmx.h"
@@ -41,7 +38,7 @@
 namespace LinBox
 {
 
-template<class _Field, class _PolynomialRing, class _QuotientRing>
+template<class _Field, class _PolynomialRing>
 class InvariantFactors {
 public:
 	typedef _Field Field;
@@ -52,26 +49,18 @@ public:
 	
 	typedef _PolynomialRing PolynomialRing;
 	typedef typename PolynomialRing::Element Polynomial;
-	typedef MatrixDomain<PolynomialRing> PolyMatrixDom;
-	typedef typename PolyMatrixDom::OwnMatrix PolyMatrix;
+	typedef typename MatrixDomain<PolynomialRing>::OwnMatrix PolyMatrix;
 	
-	typedef _QuotientRing QuotientRing;
-	typedef typename QuotientRing::Element QPolynomial;
-	typedef MatrixDomain<QuotientRing> QuotMatrixDom;
-	typedef typename QuotMatrixDom::OwnMatrix QuotMatrix;
-	typedef SmithFormLocal<QuotientRing> SmithFormLocalDom;
-	
-	typedef PolynomialLocalX<PolynomialRing> LocalRing;
-	typedef MatrixDomain<LocalRing> LocalMatrixDom;
-	typedef typename LocalMatrixDom::OwnMatrix LocalMatrix;
-	typedef PolySmithFormLocalXDomain<PolynomialRing> LocalSmithFormDom;
+	typedef PolySmithFormDomain<PolynomialRing> SmithFormDom;
 		
 protected:
 	Field _F;
 	PolynomialRing _R;
+	SmithFormDom _SFD;
+	
 	
 public:
-	InvariantFactors(Field &F, PolynomialRing &R) : _F(F), _R(R) {}
+	InvariantFactors(const Field &F, const PolynomialRing &R) : _F(F), _R(R), _SFD(R) {}
 
 //protected:
 
@@ -82,13 +71,68 @@ public:
 		double k = (q == 2) ? 3 : 2;
 		return ceil(log(k / (1 - sqrt(p)))/log(q)) + t;
 	}
+	
+	template<class Blackbox>
+	void computeGenerator(
+		std::vector<Matrix> &gen,
+		const Blackbox &PreL,
+		const Blackbox &M,
+		const Blackbox &PreR,
+		size_t b,
+		int earlyTerm = 10) const
+	{
+		RandIter RI(_F);
+		RandomDenseMatrix<RandIter, Field> RDM(_F, RI);
+		MatrixDom MD(_F);
+		
+		size_t n = M.rowdim();
+		Matrix U(_F, b, n);
+		Matrix V(_F, n, b);
+		
+		RDM.random(U);
+		RDM.random(V);
+		
+		//typedef BlackboxBlockContainer<Field, Blackbox> Sequence;
+		typedef BlackboxBlockContainerSmmx<Field, Blackbox> Sequence;
+		Sequence blockSeq(&PreL, &M, &PreR, _F, U, V);
+		BlockCoppersmithDomain<MatrixDom, Sequence> coppersmith(MD, &blockSeq, earlyTerm);
+		
+		coppersmith.right_minpoly(gen);
+	}
+	
+	template<class Blackbox>
+	void computeGenerator(
+		std::vector<Matrix> &gen,
+		const Blackbox &M,
+		const Blackbox &PreR,
+		size_t b,
+		int earlyTerm = 10) const
+	{
+		RandIter RI(_F);
+		RandomDenseMatrix<RandIter, Field> RDM(_F, RI);
+		MatrixDom MD(_F);
+		
+		size_t n = M.rowdim();
+		Matrix U(_F, b, n);
+		Matrix V(_F, n, b);
+		
+		RDM.random(U);
+		RDM.random(V);
+		
+		//typedef BlackboxBlockContainer<Field, Blackbox> Sequence;
+		typedef BlackboxBlockContainerSmmx<Field, Blackbox> Sequence;
+		Sequence blockSeq(&M, &PreR, _F, U, V);
+		BlockCoppersmithDomain<MatrixDom, Sequence> coppersmith(MD, &blockSeq, earlyTerm);
+		
+		coppersmith.right_minpoly(gen);
+	}
 
 	template<class Blackbox>
 	void computeGenerator(
 		std::vector<Matrix> &gen,
 		const Blackbox &M,
 		size_t b,
-		int earlyTerm) const
+		int earlyTerm = 10) const
 	{
 		RandIter RI(_F);
 		RandomDenseMatrix<RandIter, Field> RDM(_F, RI);
@@ -122,125 +166,7 @@ public:
 				
 				Polynomial tmp;
 				_R.init(tmp, coeffs);
-				
 				G.setEntry(i, j, tmp);
-			}
-		}
-	}
-	
-	size_t detLimit(const PolyMatrix &M, size_t dim) const {
-		size_t limit1 = 0;
-		for (size_t i = 0; i < M.rowdim(); i++) {
-			size_t max_degree = 0;
-			for (size_t j = 0; j < M.coldim(); j++) {
-				size_t deg = _R.deg(M.getEntry(i, j));
-				if (deg > max_degree) {
-					max_degree = deg;
-				}
-			}
-			
-			limit1 += max_degree;
-		}
-		
-		size_t limit2 = 0;
-		for (size_t i = 0; i < M.coldim(); i++) {
-			size_t max_degree = 0;
-			for (size_t j = 0; j < M.rowdim(); j++) {
-				size_t deg = _R.deg(M.getEntry(j, i));
-				if (deg > max_degree) {
-					max_degree = deg;
-				}
-			}
-			
-			limit2 += max_degree;
-		}
-				
-		return std::min(std::min(limit1, limit2), dim) + 1;
-	}
-	
-	void localX(Polynomial &det, const PolyMatrix &M, size_t exponent) const {
-		LocalSmithFormDom SFD(_R, exponent);
-		LocalRing L(_R, exponent);
-				
-		LocalMatrix G(M, L);
-		
-		SFD.solveDet(det, G);
-		NTL::MakeMonic(det);
-	}
-	
-	// SNF modulo f^multiplicity (we're in a SPIR)
-	void local(
-		std::vector<Polynomial> &result,
-		const PolyMatrix &M,
-		const Polynomial &f, // irred
-		long multiplicity) const {
-	
-		SmithFormLocalDom SFD;
-		
-		Polynomial modulus;
-		_R.pow(modulus, f, multiplicity);
-		
-		QuotientRing QR(_R, modulus);
-		
-		QuotMatrix QM(M, QR);
-		
-		std::list<QPolynomial> L;
-		SFD(L, QM, QR);
-		
-		Hom<PolynomialRing, QuotientRing> hom(_R, QR);
-		
-		size_t j = 0;
-		typename std::list<QPolynomial>::const_iterator it;
-		for (it = L.begin(); it != L.end(); it++) {
-			Polynomial tmp;
-			hom.preimage(tmp, *it);
-								
-			if (_R.isOne(tmp)) {
-				// noop
-			} else if (_R.isZero(tmp)) {
-				_R.mulin(result[j], modulus);
-			} else {
-				_R.mulin(result[j], tmp);
-			}
-			j++;
-		}
-	}
-	
-	// SNF via do local on the irred factors.
-	void factoredLocal(
-		std::vector<Polynomial> &result,
-		const PolyMatrix &M,
-		const Polynomial &sf_factor,
-		long multiplicity) const {
-	
-		std::vector<std::pair<Polynomial, long>> factors;
-		_R.factor(factors, sf_factor);
-		
-		for (size_t i = 0; i < factors.size(); i++) {
-			local(result, M, factors[i].first, factors[i].second * multiplicity);
-		}
-	}
-	
-	// SNF via sqfactor det and do prev factoredLocal
-	void factoredLocal(
-		std::vector<Polynomial> &result,
-		const PolyMatrix &M,
-		const Polynomial &det) const {
-	
-		std::vector<std::pair<Polynomial, long>> factors;
-		
-		_R.squareFree(factors, det);
-		
-		result.clear();
-		for (size_t i = 0; i < M.rowdim(); i++) {
-			result.push_back(_R.one);
-		}
-		
-		for (size_t i = 0; i < factors.size(); i++) {
-			if (factors[i].second == 1) {
-				_R.mulin(result[result.size() - 1], factors[i].first);
-			} else {
-				factoredLocal(result, M, factors[i].first, factors[i].second);
 			}
 		}
 	}
@@ -255,8 +181,7 @@ public:
 		double p,
 		int earlyTerm = 10) const {
 	
-		size_t b;
-		if (t > 1000) t = b = t-1000; else b = min_block_size(t, p);
+		size_t b = min_block_size(t, p);
 	
 		std::vector<Matrix> minpoly;
 		computeGenerator(minpoly, A, b, earlyTerm);
@@ -265,10 +190,9 @@ public:
 		convert(G, minpoly);
 		
 		Polynomial det;
-		size_t limit = detLimit(G, A.rowdim());
-		localX(det, G, limit);
+		_SFD.detLocalX(det, G);
+		_SFD.solve(lifs, G, det);	
 		
-		factoredLocal(lifs, G, det);		
 		return lifs;
 	}
 	
@@ -290,8 +214,124 @@ public:
 		convert(G, minpoly);
 		
 		Polynomial det;
-		size_t limit = detLimit(G, A.rowdim());
-		localX(det, G, limit);
+		_SFD.detLocalX(det, G);
+		
+		// get the constant coefficient of det and convert it to type Element
+		typename PolynomialRing::Coeff det0;
+		_R.getCoeff(det0, det, 0);
+		
+		integer tmp;
+		_R.getCoeffField().convert(tmp, det0);
+		_F.init(d, tmp);
+		
+		return d;
+	}
+	
+	// computes the t largest invariant factors of A with probability of at least p.
+	template<class Blackbox>
+	std::vector<Polynomial> &largestInvariantFactors(
+		std::vector<Polynomial> &lifs,
+		const Blackbox &A,
+		const Blackbox &PreR,
+		size_t t,
+		double p,
+		int earlyTerm = 10) const {
+	
+		size_t b = min_block_size(t, p);
+	
+		std::vector<Matrix> minpoly;
+		computeGenerator(minpoly, A, PreR, b, earlyTerm);
+		
+		PolyMatrix G(_R, b, b);
+		convert(G, minpoly);
+		
+		Polynomial det;
+		_SFD.detLocalX(det, G);
+		_SFD.solve(lifs, G, det);	
+		
+		return lifs;
+	}
+	
+	// computes the t largest invariant factors of A with probability of at least p.
+	template<class Blackbox>
+	Element &det(
+		Element &d, // det(A)
+		const Blackbox &A,
+		const Blackbox &PreR,
+		size_t t,
+		double p,
+		int earlyTerm = 10) const {
+	
+		size_t b = min_block_size(t, p);
+	
+		std::vector<Matrix> minpoly;
+		computeGenerator(minpoly, A, PreR, b, earlyTerm);
+		
+		PolyMatrix G(_R, b, b);
+		convert(G, minpoly);
+		
+		Polynomial det;
+		_SFD.detLocalX(det, G);
+		
+		// get the constant coefficient of det and convert it to type Element
+		typename PolynomialRing::Coeff det0;
+		_R.getCoeff(det0, det, 0);
+		
+		integer tmp;
+		_R.getCoeffField().convert(tmp, det0);
+		_F.init(d, tmp);
+		
+		return d;
+	}
+	
+	// computes the t largest invariant factors of A with probability of at least p.
+	template<class Blackbox>
+	std::vector<Polynomial> &largestInvariantFactors(
+		std::vector<Polynomial> &lifs,
+		const Blackbox &PreL,
+		const Blackbox &A,
+		const Blackbox &PreR,
+		size_t t,
+		double p,
+		int earlyTerm = 10) const {
+	
+		size_t b;
+		if (t > 1000) t = b = t-1000; else b = min_block_size(t, p);
+	
+		std::vector<Matrix> minpoly;
+		computeGenerator(minpoly, PreL, A, PreR, b, earlyTerm);
+		
+		PolyMatrix G(_R, b, b);
+		convert(G, minpoly);
+		
+		Polynomial det;
+		_SFD.detLocalX(det, G);
+		_SFD.solve(lifs, G, det);	
+		
+		return lifs;
+	}
+	
+	// computes the t largest invariant factors of A with probability of at least p.
+	template<class Blackbox>
+	Element &det(
+		Element &d, // det(A)
+		const Blackbox &PreL,
+		const Blackbox &A,
+		const Blackbox &PreR,
+		size_t t,
+		double p,
+		int earlyTerm = 10) const {
+	
+		size_t b = min_block_size(t, p);
+	
+		std::vector<Matrix> minpoly;
+		computeGenerator(minpoly, PreL, A, PreR, b, earlyTerm);
+		
+		PolyMatrix G(_R, b, b);
+		convert(G, minpoly);
+		
+		Polynomial det;
+		_SFD.detLocalX(det, G);
 		
 		// get the constant coefficient of det and convert it to type Element
 		typename PolynomialRing::Coeff det0;
