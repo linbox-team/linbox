@@ -255,7 +255,8 @@ public:
 		double p,
 		int earlyTerm = 10) const {
 	
-		size_t b = min_block_size(t, p);
+		size_t b;
+		if (t > 1000) t = b = t-1000; else b = min_block_size(t, p);
 	
 		std::vector<Matrix> minpoly;
 		computeGenerator(minpoly, A, b, earlyTerm);

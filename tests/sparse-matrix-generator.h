@@ -388,6 +388,8 @@ namespace LinBox
 			size_t t=7;
 			if (fsnum >= 0) {
 				Polynomial xm1, xm1s, x2m1;
+				Polynomial xm0;
+				linearPolynomial(xm0,_R.getCoeffField().zero);
 				_R.init(xm1); _R.init(xm1s); _R.init(x2m1); _R.init(p);
 				linearPolynomial(xm1,_R.getCoeffField().one);
 				linearPolynomial(x2m1,_R.getCoeffField().mOne); _R.mulin(x2m1, xm1);
@@ -423,6 +425,83 @@ namespace LinBox
 					_R.setCoeff(p,0,_R.getCoeffField().mOne);
 					augment(fs, 1, p);
 					break;
+// the following cases may change
+				case 9: // nilpotent
+				case 10: // nilpotent
+					addTriangle(fs, n, 0.05, xm0); // zero matrix
+					break;
+				case 11: // nilpotent
+					addTriangle(fs, n, 3.0/n, xm0);
+					break;
+				case 12: // nilpotent
+					addTriangle(fs, n, 1, xm0);
+					break;
+				case 13: // nilpotent
+					addTriangle(fs, n, n/3, xm0);
+					break;
+				case 14: // nilpotent
+					addTriangle(fs, n, n, xm0); // cyclic shift
+					break;
+				case 15: // nilpotent + foobar
+					addTriangle(fs, n/2, 0.05, xm0);
+					addTriangle(fs, n/2, 3.0/n, xm1);
+					break;
+				case 16: // nilpotent + foobar
+					addTriangle(fs, n/2, 3.0/n, xm0);
+					break;
+				case 17: // nilpotent + foobar
+					addTriangle(fs, n/2, 1, xm0);
+					addTriangle(fs, n/2, 3.0/n, xm1);
+					break;
+				case 18: // nilpotent + foobar
+					addTriangle(fs, n/2, n/3, xm0);
+					addTriangle(fs, n/2, 3.0/n, xm1);
+					break;
+				case 19: // nilpotent + foobar
+					addTriangle(fs, n/2, n, xm0);
+					addTriangle(fs, n/2, 3.0/n, xm1);
+					break;
+				case 20: // nilpotent
+					addTriangle(fs, n, 0.05, xm0);
+					addTriangle(fs, n/2, 1.0, xm1);
+					break;
+				case 21: // nilpotent
+					addTriangle(fs, n, 3.0/n, xm0);
+					addTriangle(fs, n/2, 1.0, xm1);
+					break;
+				case 22: // nilpotent
+					addTriangle(fs, n, 1, xm0);
+					addTriangle(fs, n/2, 1.0, xm1);
+					break;
+				case 23: // nilpotent
+					addTriangle(fs, n, n/3, xm0);
+					addTriangle(fs, n/2, 1.0, xm1);
+					break;
+				case 24: // nilpotent
+					addTriangle(fs, n, n, xm0);
+					addTriangle(fs, n/2, 1.0, xm1);
+					break;
+				case 25: // nilpotent + foobar
+					addTriangle(fs, n/2, 0.05, xm0);
+					addTriangle(fs, n/2, n/3.0, xm1);
+					break;
+				case 26: // nilpotent + foobar
+					addTriangle(fs, n/2, n/3.0, xm0);
+					addTriangle(fs, n/2, n/3.0, xm1);
+					break;
+				case 27: // nilpotent + foobar
+					addTriangle(fs, n/2, 1, xm0);
+					addTriangle(fs, n/2, n/3.0, xm1);
+					break;
+				case 28: // nilpotent + foobar
+					addTriangle(fs, n/2, n/3, xm0);
+					addTriangle(fs, n/2, n/3.0, xm1);
+					break;
+				case 29: // nilpotent + foobar
+					addTriangle(fs, n/2, n, xm0);
+					addTriangle(fs, n/2, n/3.0, xm1);
+					break;
+
 
 #if 0
 					// snippet
@@ -468,8 +547,10 @@ namespace LinBox
 				}
 			} else { // fsnum is neg
 				invariants(fs, n/2, -fsnum);
-				randomPolynomial(p,n-n/2);
-				augment(fs, 1, p);
+				addEll(fs, 0, 0, n-n/2);
+				//randomPolynomial(p,n-n/2);
+				//_R.setCoeff(p, n-n/2, _R.getCoeffField().one);
+				//augment(fs, 1, p);
 			}
 			return fs;
 		}
@@ -494,7 +575,7 @@ namespace LinBox
 			
 			copy(M, T);
 		}
-			
+
 	}; // SparseMatrixGenerator
 } // linbox
 

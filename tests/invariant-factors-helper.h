@@ -469,7 +469,64 @@ void permuteRows(Sp & MP, std::vector<size_t> & P, Sp& M) {
 		if (not M.field().isZero(M.getEntry(x,i,j)))
 		*/
 	MP.finalize();
-	assert(MP.rowdim() == n);
-	assert(M.coldim() == n);
 }
 
+template<class Sp>
+void permutePlusId(Sp & MP, std::vector<size_t> & P, Sp& M) {
+	assert(MP.rowdim() == M.rowdim());
+	assert(P.size() == M.rowdim());
+
+	/*
+	size_t n = M.rowdim();
+	for (size_t i = 0; i< n; ++i) 
+		if (P[i] >= n) std::cout << "whoa" << std::endl;
+	*/
+	
+	Element x; M.field().init(x);
+	Element y; M.field().init(y);
+	typename Sp::IndexedIterator p;
+	for (p = M.IndexedBegin(); p != M.IndexedEnd(); ++p) {
+		size_t i = p.rowIndex();
+		size_t j = p.colIndex();
+		size_t k = P[i];
+		// identity apply
+		MP.getEntry(x,i,j);
+		M.field().addin(x,p.value());
+		MP.setEntry(i,j,x);  
+		// permutation apply
+		MP.getEntry(x,k,j);
+		M.field().addin(x,p.value());
+		MP.setEntry(k,j,x);  
+	}
+	/*
+	Element x; M.field().init(x);
+	for (size_t i = 0; i < M.rowdim(); ++i)
+	for (size_t j = 0; j < M.coldim(); ++j)
+		if (not M.field().isZero(M.getEntry(x,i,j)))
+		*/
+	MP.finalize();
+}
+#include "linbox/vector/vector-domain.h"
+
+template<class Sp>
+void mul(Sp & C, Sp & A, Sp& B) {
+	const typename Sp::Field& F  = A.field();
+	LinBox::VectorDomain<typename Sp::Field> VD(A.field());
+	size_t n = A.rowdim();
+	std::vector<typename Sp::Field::Element> x, y, z;
+	typename Sp::Field::Element e;
+	x.resize(n, F.zero); y.resize(n, F.zero); z.resize(n, F.zero);
+	for (size_t i = 0; i < n; ++i) {
+		F.assign(x[i], F.one );
+		B.apply(y,x);
+		A.apply(z,y);
+		for (size_t j = 0; j < n; ++j) {
+			if (not F.isZero(z[j])) 
+				C.getEntry(e, i, j);
+				F.addin(e, z[j]);
+				C.setEntry(i,j,e);
+		}
+		F.assign(x[i], F.zero );
+	}
+	C.finalize();
+}

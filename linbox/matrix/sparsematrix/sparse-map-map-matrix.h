@@ -181,7 +181,7 @@ public:
 	// Warning: Very inefficient as nnz approaches n*m (keep nnz < about 0.2 n*m)
 	static void generateSparseNonSingular(Self_t& mat, int approxNNZ, int seed=0);
 
-protected:
+//protected:
 
 	static int randRange(int start, int end);
 
