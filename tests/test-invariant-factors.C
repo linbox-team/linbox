@@ -205,7 +205,7 @@ void randomPerm(SparseMat & P)
 }
 
 template<class Sp>
-void permuteRows(Sp & MP, std::vector<size_t> & P, Sp& M) {
+void permuteRows(Sp & MP, const std::vector<size_t> & P, const Sp& M) {
 	Element x;
 	M.field().init(x);
 	for (size_t i = 0; i < M.rowdim(); ++i) {
@@ -220,7 +220,7 @@ void permuteRows(Sp & MP, std::vector<size_t> & P, Sp& M) {
 }
 
 template<class Sp>
-void permuteCols(Sp & MP, std::vector<size_t> & P, Sp& M) {
+void permuteCols(Sp & MP, const std::vector<size_t> & P, const Sp& M) {
 	Element x;
 	M.field().init(x);
 	for (size_t i = 0; i < M.rowdim(); ++i) {
@@ -234,6 +234,29 @@ void permuteCols(Sp & MP, std::vector<size_t> & P, Sp& M) {
 	MP.finalize();
 }
 
+void readMatrix(SparseMat &M, std::string matrixFile, bool perm) {
+	if (!perm) {
+		std::ifstream iF(matrixFile);
+		M.read(iF);
+		M.finalize();
+		iF.close();
+	} else {
+		SparseMat OldM(M.field());
+		std::ifstream iF(matrixFile);
+		OldM.read(iF);
+		OldM.finalize();
+		iF.close();
+		
+		assert(M.rowdim() == M.coldim());
+		size_t n = OldM.rowdim();
+		M.resize(n, n);
+		
+		std::vector<size_t> v;
+		randomVec(v, n);
+		permuteRows(M, v, OldM);
+	}
+}
+
 void randomNonzero(const Field &F, Element &elm) {
 	typename Field::RandIter RI(F);
 	do {
@@ -241,21 +264,17 @@ void randomNonzero(const Field &F, Element &elm) {
 	} while (F.isZero(elm));
 }
 
-void randomTriangular(SparseMat &T, int s) {
+void randomTriangular(SparseMat &T, size_t s, bool upper, bool randomDiag = false) {
 	Field F(T.field());
 	typename Field::RandIter RI(F);
 	
-	if (s > 0) {
-		for (size_t i = 0; i < T.rowdim(); i++) {
-			T.setEntry(i, i, F.one);
-		}
-	} else if (s < 0) {	
-		s = -s;
-		for (size_t i = 0; i < T.rowdim(); i++) {
+	for (size_t i = 0; i < T.rowdim(); i++) {
+		if (randomDiag) {
 			Element elm;
 			randomNonzero(F, elm);
-			
 			T.setEntry(i, i, elm);
+		} else {
+			T.setEntry(i, i, F.one);
 		}
 	}
 	
@@ -266,39 +285,44 @@ void randomTriangular(SparseMat &T, int s) {
 			Element elm;
 			randomNonzero(F, elm);
 			
-			T.setEntry(r, c, elm);
+			if (upper) {
+				T.setEntry(r, c, elm);
+			} else {
+				T.setEntry(c, r, elm);
+			}
 		}
 	}
 	
 	T.finalize();
 }
 
-void randomLowerTriangular(SparseMat &T, int s) {
+void randomFatDiag(SparseMat &T, size_t s, bool upper, bool randomDiag = false) {
 	Field F(T.field());
 	typename Field::RandIter RI(F);
 	
-	if (s > 0) {
-		for (size_t i = 0; i < T.rowdim(); i++) {
-			T.setEntry(i, i, F.one);
-		}
-	} else if (s < 0) {	
-		s = -s;
-		for (size_t i = 0; i < T.rowdim(); i++) {
+	for (size_t i = 0; i < T.rowdim(); i++) {
+		if (randomDiag) {
 			Element elm;
 			randomNonzero(F, elm);
-			
 			T.setEntry(i, i, elm);
+		} else {
+			T.setEntry(i, i, F.one);
 		}
 	}
 	
-	for (size_t r = 0; r < T.rowdim() - 1; r++) {
-		for (size_t k = 0; k < s; k++) {
-			size_t c = (rand() % (T.coldim() - r - 1)) + r + 1;
+	for (size_t i = 1; i <= s; i++) {
+		for (size_t k = 0; k < T.rowdim(); k++) {
+			if (i + k >= T.rowdim()) {
+				continue;
+			}
 			
 			Element elm;
 			randomNonzero(F, elm);
-			
-			T.setEntry(c, r, elm);
+			if (upper) {
+				T.setEntry(i + k, k, elm);
+			} else {
+				T.setEntry(k, i + k, elm);
+			}
 		}
 	}
 	
@@ -310,8 +334,9 @@ int main(int argc, char** argv) {
 	size_t extend = 1;
 	size_t b = 4;
 	
-	size_t n = 1000;
-	int s = 0;
+	size_t perm = 0;
+	int precond = 0;
+	size_t s = 0;
 	double fillIn = 0;
 	
 	std::string matrixFile;
@@ -330,9 +355,10 @@ int main(int argc, char** argv) {
 		{ 'o', "-o O", "Name of output file for invariant factors", TYPE_STR, &outFile},
 		{ 'r', "-r R", "Random seed", TYPE_INT, &seed},
 		
-		{ 'n', "-n N", "Dimension of input", TYPE_INT, &n},
 		{ 's', "-s S", "Number of nonzeros in random triangular preconditioner", TYPE_INT, &s},
 		{ 'i', "-i I", "Sparsity of input matrix", TYPE_DOUBLE, &fillIn},
+		{ 'c', "-c C", "Choose what preconditioner to apply", TYPE_INT, &precond},
+		{ 'z', "-z Z", "Permute rows of input", TYPE_INT, &perm},
 		END_OF_ARGUMENTS
 	};
 
@@ -350,45 +376,27 @@ int main(int argc, char** argv) {
 	Field F(p);
 	Ring R(p);
 	
-	//*
 	SparseMat M(F);                                           
-	{
-		std::ifstream iF(matrixFile);
-		M.read(iF);
-		M.finalize();
-		iF.close();
-	}
-	//*/
+	readMatrix(M, matrixFile, perm != 0);
 	
-	/*
-	SparseMat OldM(F, n, n);
-	{
-		SparseMatrixGenerator<Field, Ring> Gen(F, R);
-		
-		std::vector<integer> v;
-		Polynomial x, xm1;
-		R.init(x, v = {0, 1});
-		R.assign(xm1, x);
-		R.subin(xm1, R.one);
-		
-		Polynomial det;
-		std::vector<Polynomial> fs;
-		Gen.addTriangle(fs, n/2, 6.0 / n, x);
-		Gen.addTriangle(fs, n, 1, xm1);
-		Gen.generate(OldM, det, fs, fillIn);
-	}
-	SparseMat M(OldM);
-	//*/
-	
-	assert(M.rowdim() == M.coldim());
-	n = M.rowdim();
+	size_t n = M.rowdim();
 	if (n <= 20) M.write(std::cout) << std::endl;
 	
 	SparseMat PreR(F, n, n);
-	randomTriangular(PreR, s);
-	
 	SparseMat PreL(F, n, n);
-	randomLowerTriangular(PreL, s);
+	
+	if (abs(precond) == 1) {
+		randomFatDiag(PreR, s, true);
+	} else if (abs(precond) == 2) {
+		randomFatDiag(PreR, s, true, precond < 0);
+		randomFatDiag(PreL, s, false, precond < 0);
+	} else if (abs(precond) == 3) {
+		randomFatDiag(PreR, s, false, precond < 0);
+		randomFatDiag(PreL, s, true, precond < 0);
+	} else if (abs(precond) == 4) {
+		randomTriangular(PreR, s, true, precond < 0);
+		randomTriangular(PreL, s, false, precond < 0);
+	}
 	
 	TestInvariantFactorsHelper helper(p);
 	std::cout << n << "\t" << M.size() << "\t" << b << "\t" << std::flush;
@@ -409,9 +417,11 @@ int main(int argc, char** argv) {
 	// Generate random left and right projectors
 	std::vector<BlasMatrix<Field>> minpoly;
 	
-	if (s == 0) {
+	if (precond == 0 || s == 0) {
 		time1([&](){IFD.computeGenerator(minpoly, M, b);});
-	} else {
+	} else if (abs(precond) == 1) {
+		time1([&](){IFD.computeGenerator(minpoly, M, PreR, b);});
+	} else if (abs(precond) > 1) {
 		time1([&](){IFD.computeGenerator(minpoly, PreL, M, PreR, b);});
 	}
 	

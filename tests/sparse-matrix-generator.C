@@ -62,6 +62,7 @@ int main(int argc, char** argv) {
 	SparseMatrixGenerator<Field, PolynomialRing> Gen(F, R);
 	TestPolySmithFormUtil<Field> util(F);
 	
+	/*
 	SparseMat M(F);
 	if (bumpFile == "") {
 		std::vector<Polynomial> fs;
@@ -76,6 +77,21 @@ int main(int argc, char** argv) {
 		M.resize(n, n);
 		Gen.generate(M, det, bumpFile, sparsity);
 	}
+	//*/
+	
+	std::vector<integer> v;
+	Polynomial x, xm1;
+	R.init(x, v = {0, 1});
+	R.assign(xm1, x);
+	R.subin(xm1, R.one);
+
+	Polynomial det;
+	std::vector<Polynomial> fs;
+	Gen.addTriangle(fs, n/2, 6.0 / n, x);
+	Gen.addTriangle(fs, n/2, 1, xm1);
+	
+	SparseMat M(F);
+	Gen.generate(M, det, fs, sparsity);
 	
 	if (mofile != "") {
 		std::ofstream out(mofile);
