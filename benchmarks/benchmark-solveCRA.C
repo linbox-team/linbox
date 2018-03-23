@@ -39,7 +39,7 @@
 #ifdef __LINBOX_HAVE_MPI
 #include <mpi.h>
 #include "linbox/util/mpicpp.h"
-#include "linbox/util/mpi-gmp.inl"
+//#include "linbox/util/mpi-gmp.inl"
 #endif
 #include <linbox/solutions/methods.h>
 #include <linbox/solutions/solve.h>
@@ -97,7 +97,7 @@ RDM.randomFullRank(A);
 
 B.random(RI);
 
-    LinBox::rank (r, A); std::cout<<"The rank of generated matrix A is:"<<r<<std::endl;  
+    //LinBox::rank (r, A); std::cout<<"The rank of generated matrix A is:"<<r<<std::endl;  
     
 /*
       std::cerr << ">>>>Compute with B: " << std::endl;      
@@ -117,8 +117,8 @@ B.random(RI);
     //MPI_Barrier(MPI_COMM_WORLD);
     //starttime = MPI_Wtime();
     //MPI data distribution for Integer type value
-    MPIgmpBcast(A, ni, nj, 0, Cptr);
-    MPIgmpBcast(B, ni, 0, Cptr);
+Cptr->bcast(A,0);   // MPIgmpBcast(A, ni, nj, 0, Cptr);
+Cptr->bcast(B,0);   // MPIgmpBcast(B, ni, 0, Cptr);
     //MPI_Barrier(MPI_COMM_WORLD);
     //endtime   = MPI_Wtime(); 
     //std::cout<<"MPI data distribution used CPU time (seconds): " <<endtime-starttime<<std::endl;
