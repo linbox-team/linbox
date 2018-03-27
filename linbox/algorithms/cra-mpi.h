@@ -330,114 +330,23 @@ namespace LinBox
 		template<class Function, class PrimeIterator>
 		BlasVector<Givaro::ZRing<Integer> > & operator() ( BlasVector<Givaro::ZRing<Integer> > & num, Integer& den, Function& Iteration, PrimeIterator& primeg)
 		{
-
-#if 0       //Defuat implementation
-                        
-			//  if there is no communicator or if there is only one process,
-			//  then proceed normally (without parallel)
-			if(_commPtr == 0 || _commPtr->size() == 1) {
-				RationalRemainder< RatCRABase > sequential(Builder_);
-				return sequential(num, den, Iteration, primeg);
-			}
-                        
-			int procs = _commPtr->size();
-			int process = _commPtr->rank();
-			//typename Rebind<BlasVector< Givaro::ZRing<Integer> > , Domain>::other r;
-                        Domain D(*primeg);
-                        BlasVector<Domain> r(D);
-                        //Timer chrono;
-                        
-			//  parent propcess
-			if(process == 0){
-                std::unordered_set<int> prime_sent;
-				int primes[procs - 1];
-				//Domain D(*primeg);
-				//  for each slave process...
-				for(int i=1; i<procs; i++){
-					//  generate a new prime
-					++primeg; while(Builder_.noncoprime(*primeg) || prime_sent.find(*primeg) != prime_sent.end()) ++primeg;	//while(Builder_.noncoprime(*primeg)) ++primeg;
-					//  fix the array of currently sent primes
-					primes[i - 1] = *primeg;
-                    prime_sent.insert(*primeg);
-					//  send the prime to a slave process
-					_commPtr->send(primes[i - 1], i);
-				}  
-
-				Builder_.initialize( D, Iteration(r, D) );
-				int poison_pills_left = procs - 1;
-				while(poison_pills_left > 0 ){
-					int idle_process = 0;
-					//  receive the beginnin and end of a vector in heapspace
-					_commPtr->recv(r.begin(), r.end(), MPI_ANY_SOURCE, 0); 
-
-					//  determine which process sent answer
-					//  and give them a new prime
-					idle_process = (_commPtr->get_stat()).MPI_SOURCE;
-					Domain D(primes[idle_process - 1]);
-                                        //chrono.start(); 
-					Builder_.progress(D, r);
-                                        //chrono.stop(); 
-                                        //std::cout<<"Builder_.progress(D, r) in the manager process used CPU time (seconds): " <<chrono.usertime()<<std::endl;
-                                        
-					//  if still working, queue a prime
-					if(! Builder_.terminated()){
-						++primeg; while(Builder_.noncoprime(*primeg) || prime_sent.find(*primeg) != prime_sent.end()) ++primeg;
-                        prime_sent.insert(*primeg);
-						primes[idle_process - 1] = *primeg;
-					}
-					//  otherwise, queue a poison pill
-					else{
-						primes[idle_process - 1] = 0;
-						poison_pills_left--;
-					}
-                                        
-                                        
-					//  send the prime or poison
-					_commPtr->send(primes[idle_process - 1], idle_process);
-				}  // while
-                                
-				return Builder_.result(num,den);
-                                
-			}
-			//  child process
-			else{
-				int pp;
-				//  get a prime, compute, send back start and end
-				//  of heap addresses
-				while(true){
-					_commPtr->recv(pp, 0);
             
-					if(pp == 0)
-						break;
-					Domain D(pp);
-                                        //chrono.start();
-					Iteration(r, D);
-                                        //chrono.stop(); 
-                                        //std::cout << "Iteration(r,D) in the worker process used CPU time (seconds):  " << chrono.usertime() << std::endl;
-std::cout << pp << std::endl;
-
-					_commPtr->send(r.begin(), r.end(), 0, 0); 
-				}
-			}
-                        
-#endif
-//<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-#if 0       //Using news prime number generation function to reduce MPI communication between manager and workers
-
+            //Using news prime number generation function to reduce MPI communication between manager and workers
+            
 			//  if there is no communicator or if there is only one process,
 			//  then proceed normally (without parallel)
 			if(_commPtr == 0 || _commPtr->size() == 1) {
 				RationalRemainder< RatCRABase > sequential(Builder_);
 				return sequential(num, den, Iteration, primeg);
 			}
-                        
+            
 			int procs = _commPtr->size();
 			int process = _commPtr->rank();
-			//typename Rebind<BlasVector< Givaro::ZRing<Integer> > , Domain>::other r;
-                        Domain D(*primeg);
-                        BlasVector<Domain> r(D);
-                        Timer chrono;
-                        
+            
+            Domain D(*primeg);
+            BlasVector<Domain> r(D);
+            Timer chrono;
+            
 			//  parent propcess
 			if(process == 0){
                 //std::unordered_set<int> prime_sent;
@@ -445,226 +354,82 @@ std::cout << pp << std::endl;
 				//Domain D(*primeg);
 				//  for each slave process...
 				for(int i=1; i<procs; i++){
-					//  generate a new prime
-					//++primeg; while(Builder_.noncoprime(*primeg) /*|| prime_sent.find(*primeg) != prime_sent.end()*/) ++primeg;	//while(Builder_.noncoprime(*primeg)) ++primeg;
-					//  fix the array of currently sent primes
 					primes[i - 1] = 1;
-                                      //  prime_sent.insert(*primeg);
-					//  send the prime to a slave process
 					_commPtr->send(primes[i - 1], i);
 				}  
-
+                
 				Builder_.initialize( D, Iteration(r, D) );
 				int poison_pills_left = procs - 1;
-int pp;
+                int pp;
 				while(poison_pills_left > 0 ){
 					int idle_process = 0;
-r.resize (r.size()+1);
+                    r.resize (r.size()+1);
 					//  receive the beginnin and end of a vector in heapspace
 					_commPtr->recv(r.begin(), r.end(), MPI_ANY_SOURCE, 0); 
-
+                    
 					//  determine which process sent answer
-					//  and give them a new prime
+					//  and give them a new tag either to continue or to stop
 					idle_process = (_commPtr->get_stat()).MPI_SOURCE;
-if(primes[idle_process - 1]==0)  poison_pills_left--;
-					//  send the prime or poison
+                    if(primes[idle_process - 1]==0)  poison_pills_left--;
+					//  send the tag
 					_commPtr->send(primes[idle_process - 1], idle_process);
-
-//std::cout << "<<<< received r:  " << r << std::endl;
-pp = r[r.size()-1];
-r.resize (r.size()-1); 
-//std::cout << "<<<< resized r:  " << r << std::endl;
-
-
-
-if(!Builder_.noncoprime(pp)){
-
-					Domain D(pp); //Domain D(primes[idle_process - 1]);
-
-//std::cerr << " >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "<< std::endl;
-					Builder_.progress(D, r);
-//std::cerr << " <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< "<< std::endl;
-}//END FOR :  if(Builder_.noncoprime(pp))
-
+                    //Store the corresponding prime number
+                    pp = r[r.size()-1];
+                    //Restructure the vector like before without added prime number
+                    r.resize (r.size()-1); 
+                    
+                    if(!Builder_.noncoprime(pp)){
+                        
+                        Domain D(pp); //Domain D(primes[idle_process - 1]);
+                        chrono.start(); 
+                        Builder_.progress(D, r);
+                        chrono.stop(); 
+                        std::cout<<"Builder_.progress(D, r) in the manager process used CPU time (seconds): "<<chrono.usertime()<<std::endl;
+                    }//END FOR :  if(Builder_.noncoprime(pp))
+                    
 					if(Builder_.terminated()){
 						primes[idle_process - 1] = 0;
 						//poison_pills_left--;
-					}                                      
-                                        
+					}                 
 
 				}  // while
-                                
+                
 				return Builder_.result(num,den);
-                                
+                
 			}
 			//  child process
 			else{
 				int pp;
-        LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   gen(process,procs);  
+                LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   gen(process,procs);  
 				//  get a prime, compute, send back start and end
 				//  of heap addresses
 				while(true){
 					_commPtr->recv(pp, 0);
-//std::cout << "Proc("<<process<<") received tag: "<< pp << std::endl;
 					if(pp == 0)
 						break;
-++gen; while(Builder_.noncoprime(*gen) ) ++gen;
-std::cout << *gen << std::endl;
-					Domain D(*gen); //Domain D(pp);                                       
-					Iteration(r, D);
-
-r.push_back(*gen);
-//std::cout <<"Proc("<<process<<")  Sending r:  " << r <<" for prime "<< *gen << std::endl;
+                    ++gen; while(Builder_.noncoprime(*gen) ) ++gen;
+                    //std::cout << *gen << std::endl;
+                    Domain D(*gen); //Domain D(pp);
+                    chrono.start();                        
+                    Iteration(r, D);
+                    chrono.stop(); 
+                    std::cout<<"Iteration(r,D) in the worker process used CPU time (seconds): "<<chrono.usertime()<<std::endl;
+                    //Add corresponding prime number as the last element in the result vector
+                    r.push_back(*gen);
 					_commPtr->send(r.begin(), r.end(), 0, 0); 
 				}
 			}
-   
-#endif
-/////////////////////////////////////////BEGIN OF ROI////////////////////////////////////////////////////
-#if 1       //Restruture using Bcast and Gather (>_<) still not work as it never terminates
-
-			//  if there is no communicator or if there is only one process,
-			//  then proceed normally (without parallel)
-			if(_commPtr == 0 || _commPtr->size() == 1) {
-				RationalRemainder< RatCRABase > sequential(Builder_);
-				return sequential(num, den, Iteration, primeg);
-			}
-                        
-			int procs = _commPtr->size();
-			int process = _commPtr->rank();
-            Domain D(*primeg);
-            BlasVector<Domain> r(D); BlasVector<Domain> rr(D);
-int tag=1;
-Builder_.initialize( D, Iteration(r, D) );
-rr.resize ((num.size()+1)*(procs));
-r.resize (num.size());
-
-while(true){
-
-MPI_Bcast(&tag, 1, MPI_INT, 0, MPI_COMM_WORLD);
-if(tag==0) break;
-
-			//  child process
-			if(process != 0){ 
-
-        LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   gen(process,procs);  
-
-++gen; while(Builder_.noncoprime(*gen) ) ++gen;
-//std::cout << *gen << std::endl;
-					Domain D(*gen); //Domain D(pp);                                       
-					Iteration(r, D);
-
-std::cout <<"Proc("<<process<<")  Sending r:  " << r <<" for prime "<< *gen << std::endl;
-r.push_back(*gen);
-
-			}
-
-
-//if(process != 0) std::cout <<"Proc("<<process<<")  Sending r:  " << r << std::endl;
-
-MPI_Gather(&r.front(), (num.size()+1), MPI_DOUBLE, &rr.front(), (num.size()+1), MPI_DOUBLE, 0,  MPI_COMM_WORLD);
-
-//std::cout <<"Proc("<<process<<")  received rr is of size :"<<rr.size()<<std::endl; 
-
-
-
-			//  parent propcess
-			if(process == 0){
-
-int pp;
-
-					int idle_process = 0;
-/*
-std::cerr <<"Received rr : "<< std::endl;
- for(long iter=0; iter<(num.size()+1)*(procs-1)-1; iter++)  std::cerr <<rr[iter]<<"   "; 
-std::cerr << std::endl;
-*/
-std::cerr <<"Proc("<<process<<")  received rr: "<<rr<<std::endl; 
-
-    for(long iter=1; iter<procs; iter++){
-std::cerr <<"Proc("<<process<<") >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "<< std::endl;
-
-        for(long i=0; i<num.size()+1; i++) r[i] = rr[iter*(num.size()+1)+i];
-        pp = r[num.size()];
-
-        std::cerr << "<<<< received r:  " << r <<" for prime: "<<pp<< std::endl;
-
-        r.resize (num.size()); 
-
-        //std::cout << "<<<< resized r:  " << r << std::endl;
-
-        if(!Builder_.noncoprime(pp)){
-					        Domain D(pp); //Domain D(primes[idle_process - 1]);
-					        Builder_.progress(D, r);
-std::cerr <<"<><><><> Checked r:  " << r <<" for prime "<< pp <<" <><><><>"<< std::endl;
-        }//END :  if(Builder_.noncoprime(pp))
-std::cerr <<"Proc("<<process<<") <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< "<< std::endl;
-//MPI_Recv(&r, 1, MPI_INT,  0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-	    if(Builder_.terminated()){
-              tag = 0;                             
-              break;
-        }
-
-    }//END for loop
-
-
-    }//END : if(process == 0)
-
-r.resize (num.size()+1);
-
-   
-}//END while(true)
-return Builder_.result(num,den);
-#endif
-
-//////////////////////////////////////////END OF ROI//////////////////////////////////////////////////////
-
+            
 		}
-
+        
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>END ROI Optimization>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-        };
-
+        
+    };
+    
 }
 
 #undef MPICH_IGNORE_CXX_SEEK
 #endif // __LINBOX_cra_mpi_H
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // Local Variables:
 // mode: C++
 // tab-width: 4
