@@ -854,7 +854,7 @@ namespace LinBox
                         commentator().start ("Integer CRA Solve", "Isolve");
 		}
                 
-		RandomPrimeIterator genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
+		PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205))); //RandomPrimeIterator genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
                 
 		BlasVector<Givaro::ZRing<Integer>> num(A.field(),A.coldim());
                 
@@ -880,11 +880,8 @@ namespace LinBox
 		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
 			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
 		commentator().start ("Integer CRA Solve", "Isolve");
-                
-		RandomPrimeIterator genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
-                
 
-		//PrimeIterator<IteratorCategories::HeuristicTag> genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
+		PrimeIterator<IteratorCategories::HeuristicTag> genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));  //RandomPrimeIterator genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
 		//         RationalRemainder< Givaro::Modular<double> > rra((double)
 		//                                                  ( A.coldim()/2.0*log((double) A.coldim()) ) );
 
