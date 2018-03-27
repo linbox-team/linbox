@@ -25,7 +25,7 @@
  * @brief Benchmarking the MPI parallel rational solver
  */
 
-#define __LINBOX_HAVE_MPI
+//#define __LINBOX_HAVE_MPI
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -50,7 +50,7 @@ using namespace std;
 
 #include <iostream>
 #include <fstream>
-using namespace std;
+
 
 int main(int argc, char ** argv)
 {
@@ -82,7 +82,6 @@ int main(int argc, char ** argv)
 #ifdef __LINBOX_HAVE_MPI  
   if(0==Cptr->rank()){
 #endif
-long unsigned int r=0;
 
 typedef Givaro::ZRing<Integer> Field;
 typedef typename Field::RandIter RandIter;
@@ -102,9 +101,9 @@ typedef typename Field::RandIter RandIter;
 	  std::cout << "Compute with A: " << A.rowdim() << " by " << A.coldim() << std::endl;
 	  if (A.rowdim() <= 20 && A.coldim() <= 20) A.write(std::cout << "A:=",Tag::FileFormat::Maple) << ';' << std::endl;
 	*/  
-	
+#ifdef __LINBOX_HAVE_MPI 	
   }//End of BLock for process(0)
-  
+#endif
   
 #ifdef __LINBOX_HAVE_MPI
   //distribute big integer compatible data
@@ -147,12 +146,13 @@ typedef typename Field::RandIter RandIter;
     Results verification 
   ***********************/
   RingCategories::IntegerTag tg;
-  Timer chrono;
-  double starttime, endtime; 
+     
 #ifdef __LINBOX_HAVE_MPI
+  double starttime, endtime;
   starttime = MPI_Wtime(); 
 #else
-  starttime = chrono.start();
+  Timer chrono;
+  chrono.start();
 #endif
   solveCRA (X2, d, A, B, tg, 
 	    Method::BlasElimination()
@@ -166,7 +166,7 @@ typedef typename Field::RandIter RandIter;
   endtime   = MPI_Wtime();
   MPI_Barrier(MPI_COMM_WORLD);
 #else
-  chrono.stop();
+  chrono.start();
 #endif
   DenseVector B2(ZZ, A.coldim());
 #ifdef __LINBOX_HAVE_MPI
@@ -190,10 +190,11 @@ typedef typename Field::RandIter RandIter;
        std::cout << "] / ";
        ZZ.write(std::cout, d) << std::endl;
     */
-    
+#ifdef __LINBOX_HAVE_MPI
     std::cout << "CPU time (seconds): " << endtime-starttime << std::endl;
-    
-    DenseVector B2(ZZ, A.coldim());
+#else
+    std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
+#endif
     DenseVector B3(ZZ, A.coldim());
     
     A.apply(B2,X2);
