@@ -864,29 +864,38 @@ namespace LinBox
 		MPIratChineseRemainder< EarlyMultipRatCRA< Givaro::Modular<double> > > cra(3UL, C);
 #else
         RationalRemainder< EarlyMultipRatCRA< Givaro::Modular<double> > > cra(3UL);
-#endif       
+#endif
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        Timer chrono;
+        chrono.start();
 		cra(num, den, iteration, genprime);
+#ifdef __LINBOX_HAVE_MPI
+        chrono.stop();std::cout << "The process ("<<C->rank()<<") spent total CPU time (seconds) in solveCRA: " << chrono.usertime() << std::endl;
+#else
+        chrono.stop();std::cout << "Spent CPU time (seconds) in solveCRA: " << chrono.usertime() << std::endl;
+#endif
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
 #ifdef __LINBOX_HAVE_MPI
 		if(!C || C->rank() == 0){ 
 #endif 
-				typename Vector::iterator it_x= x.begin();
-				typename BlasVector<Givaro::ZRing<Integer>>::const_iterator it_num= num.begin();
-
-				// convert the result
-				for (; it_x != x.end(); ++it_x, ++it_num)
-					A.field().init(*it_x, *it_num);	
-		
+            typename Vector::iterator it_x= x.begin();
+            typename BlasVector<Givaro::ZRing<Integer>>::const_iterator it_num= num.begin();
+            
+            // convert the result
+            for (; it_x != x.end(); ++it_x, ++it_num)
+                A.field().init(*it_x, *it_num);	
+            
 			A.field().init(d, den);
-
+            
 			commentator().stop ("done", NULL, "Isolve");
 			return x;
 #ifdef __LINBOX_HAVE_MPI
 		}
 #endif 
 	}
-
-
-
+    
+    
+    
 
 
 	//BB: How come SparseElimination needs this ?

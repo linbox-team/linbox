@@ -25,7 +25,7 @@
  * @brief Benchmarking the MPI parallel rational solver
  */
 
-//#define __LINBOX_HAVE_MPI
+#define __LINBOX_HAVE_MPI
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -78,29 +78,29 @@ int main(int argc, char ** argv)
   typedef BlasVector<Givaro::ZRing<Integer> > DenseVector;
   DenseVector X(ZZ, A.rowdim()), X2(ZZ, A.rowdim()),  B(ZZ, A.rowdim());
   Givaro::ZRing<Integer>::Element d;
-
+  
 #ifdef __LINBOX_HAVE_MPI  
   if(0==Cptr->rank()){
 #endif
 
-typedef Givaro::ZRing<Integer> Field;
-typedef typename Field::RandIter RandIter;
-
-	RandIter RI(ZZ,bits) ;
-	LinBox::RandomDenseMatrix<RandIter,Field>  RDM(ZZ,RI);
-	RDM.randomFullRank(A);
+    typedef Givaro::ZRing<Integer> Field;
+    typedef typename Field::RandIter RandIter;
+    
+    RandIter RI(ZZ,bits) ;
+    LinBox::RandomDenseMatrix<RandIter,Field>  RDM(ZZ,RI);
+    RDM.randomFullRank(A);
 	
-	B.random(RI);
-	
-	//LinBox::rank (r, A); std::cout<<"The rank of generated matrix A is:"<<r<<std::endl;  
-	
-	/*
-	  std::cerr << ">>>>Compute with B: " << std::endl;      
-	  for(int j=0;j<nj;j++) std::cerr << B.getEntry(j) << std::endl; 
-	  
-	  std::cout << "Compute with A: " << A.rowdim() << " by " << A.coldim() << std::endl;
-	  if (A.rowdim() <= 20 && A.coldim() <= 20) A.write(std::cout << "A:=",Tag::FileFormat::Maple) << ';' << std::endl;
-	*/  
+    B.random(RI);
+    
+    //LinBox::rank (r, A); std::cout<<"The rank of generated matrix A is:"<<r<<std::endl;  
+    
+    /*
+      std::cerr << ">>>>Compute with B: " << std::endl;      
+      for(int j=0;j<nj;j++) std::cerr << B.getEntry(j) << std::endl; 
+      
+      std::cout << "Compute with A: " << A.rowdim() << " by " << A.coldim() << std::endl;
+      if (A.rowdim() <= 20 && A.coldim() <= 20) A.write(std::cout << "A:=",Tag::FileFormat::Maple) << ';' << std::endl;
+    */  
 #ifdef __LINBOX_HAVE_MPI 	
   }//End of BLock for process(0)
 #endif
@@ -146,7 +146,7 @@ typedef typename Field::RandIter RandIter;
     Results verification 
   ***********************/
   RingCategories::IntegerTag tg;
-     
+  
 #ifdef __LINBOX_HAVE_MPI
   double starttime, endtime;
   starttime = MPI_Wtime(); 
@@ -166,7 +166,7 @@ typedef typename Field::RandIter RandIter;
   endtime   = MPI_Wtime();
   MPI_Barrier(MPI_COMM_WORLD);
 #else
-  chrono.start();
+  chrono.stop();
 #endif
   DenseVector B2(ZZ, A.coldim());
 #ifdef __LINBOX_HAVE_MPI
@@ -182,7 +182,6 @@ typedef typename Field::RandIter RandIter;
     
     
     // solveCRA
-    
     /* 
        std::cout << "MPI CRA Solution is [";
        for(DenseVector::const_iterator it=X2.begin();it != X2.end(); ++it)
@@ -219,5 +218,3 @@ typedef typename Field::RandIter RandIter;
 #endif
   
 }
-
-
