@@ -68,10 +68,11 @@ int main(int argc, char ** argv)
     { 'b', "-b M", "Set the number of bits of integers to generate.", TYPE_INT,     &bits },
     END_OF_ARGUMENTS
   };	
-  parseArguments (argc, argv, args); nj = ni;
+  parseArguments (argc, argv, args); 
 #ifdef __LINBOX_HAVE_MPI
-  MPI_Bcast(&ni, 1, MPI_INT, 0, MPI_COMM_WORLD); nj=ni;
+  MPI_Bcast(&ni, 1, MPI_INT, 0, MPI_COMM_WORLD); 
 #endif
+  nj=ni;
   Givaro::ZRing<Integer> ZZ;
   DenseMatrix<Givaro::ZRing<Integer>> A (ZZ,ni,nj);
   
@@ -179,8 +180,7 @@ int main(int argc, char ** argv)
       std::cout << "Compute with A: " << A.rowdim() << " by " << A.coldim() << std::endl;
       if (A.rowdim() <= 20 && A.coldim() <= 20) A.write(std::cout << "A::=",Tag::FileFormat::Maple) << ';' << std::endl;
     */
-    
-    
+   
     // solveCRA
     /* 
        std::cout << "MPI CRA Solution is [";

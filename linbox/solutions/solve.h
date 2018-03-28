@@ -870,9 +870,9 @@ namespace LinBox
         chrono.start();
 		cra(num, den, iteration, genprime);
 #ifdef __LINBOX_HAVE_MPI
-        chrono.stop();std::cout << "The process ("<<C->rank()<<") spent total CPU time (seconds) in solveCRA: " << chrono.usertime() << std::endl;
+        chrono.stop();//std::cout << "The process ("<<C->rank()<<") spent total CPU time (seconds) in solveCRA: " << chrono.usertime() << std::endl;
 #else
-        chrono.stop();std::cout << "Spent CPU time (seconds) in solveCRA: " << chrono.usertime() << std::endl;
+        chrono.stop();//std::cout << "Spent CPU time (seconds) in solveCRA: " << chrono.usertime() << std::endl;
 #endif
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 #ifdef __LINBOX_HAVE_MPI

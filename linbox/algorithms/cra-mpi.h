@@ -97,6 +97,7 @@ namespace LinBox
 
 			//  parent process
 			if(process == 0 ){
+
 				//  create an array to store primes
 				int primes[procs - 1];
 				DomainElement r;
@@ -135,10 +136,12 @@ namespace LinBox
 					//  send the prime or poison pill
 					_commPtr->send(primes[idle_process - 1], idle_process);
 				}  // end while
+
 				return Builder_.result(res);
 			}  // end if(parent process)
 			//  child processes
 			else{
+
 				int pp;
 				while(true){
 					//  receive the prime to work on, stop
@@ -153,6 +156,7 @@ namespace LinBox
 					// send the results
 					_commPtr->send(r, 0);
 				}
+
 				return res;
 			}
 		}
@@ -265,6 +269,7 @@ namespace LinBox
 
 			//  parent process
 			if(process == 0 ){
+
 				//  create an array to store primes
 				int primes[procs - 1];
 				DomainElement r;
@@ -303,6 +308,7 @@ namespace LinBox
 					//  send the prime or poison pill
 					_commPtr->send(primes[idle_process - 1], idle_process);
 				}  // end while
+
 				return Builder_.result(num,den);
 			}  // end if(parent process)
 			//  child processes
@@ -348,6 +354,7 @@ namespace LinBox
             
 			//  parent propcess
 			if(process == 0){
+
                 //std::unordered_set<int> prime_sent;
 				int primes[procs - 1];
 				//Domain D(*primeg);
@@ -360,6 +367,9 @@ namespace LinBox
 				Builder_.initialize( D, Iteration(r, D) );
 				int poison_pills_left = procs - 1;
                 int pp;
+                float timeExec = 0;
+                long Nrecon = 0;
+
 				while(poison_pills_left > 0 ){
 					int idle_process = 0;
                     r.resize (r.size()+1);
@@ -377,14 +387,16 @@ namespace LinBox
                     //Restructure the vector like before without added prime number
                     r.resize (r.size()-1); 
                     
-                    if(!Builder_.noncoprime(pp)){
+//                    if(!Builder_.noncoprime(pp)){
                         
                         Domain D(pp); //Domain D(primes[idle_process - 1]);
                         chrono.start(); 
                         Builder_.progress(D, r);
                         chrono.stop(); 
-                        std::cout<<"Builder_.progress(D, r) in the manager process used CPU time (seconds): "<<chrono.usertime()<<std::endl;
-                    }//END FOR :  if(Builder_.noncoprime(pp))
+//                        std::cout<<"Builder_.progress(D, r) in the manager process used CPU time (seconds): "<<chrono.usertime()<<std::endl;
+                        Nrecon++;
+                        timeExec += chrono.usertime();
+//                    }//END FOR :  if(Builder_.noncoprime(pp))
                     
 					if(Builder_.terminated()){
 						primes[idle_process - 1] = 0;
@@ -392,31 +404,46 @@ namespace LinBox
 					}                 
 
 				}  // while
-                
+                std::cerr<<"Process(0) reconstructs totally "<<Nrecon<<" times before stop"<<std::endl;
+                std::cerr<<"Reconstruction in process(0) spent CPU times : "<<timeExec<<std::endl;
+
 				return Builder_.result(num,den);
                 
 			}
 			//  child process
 			else{
+
 				int pp;
                 LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   gen(process,procs);  
 				//  get a prime, compute, send back start and end
 				//  of heap addresses
+                std::unordered_set<int> prime_used;
+                float timeExec = 0;
+                long Ncomputes = 0;
+
 				while(true){
 					_commPtr->recv(pp, 0);
 					if(pp == 0)
 						break;
-                    ++gen; while(Builder_.noncoprime(*gen) ) ++gen;
+//                    ++gen; while(Builder_.noncoprime(*gen) ) ++gen;
+                    ++gen; while(prime_used.find(*gen) != prime_used.end()) ++gen;
+                    prime_used.insert(*gen);
+
                     //std::cout << *gen << std::endl;
                     Domain D(*gen); //Domain D(pp);
                     chrono.start();                        
                     Iteration(r, D);
                     chrono.stop(); 
-                    std::cout<<"Iteration(r,D) in the worker process used CPU time (seconds): "<<chrono.usertime()<<std::endl;
+//                    std::cout<<"Iteration(r,D) in the worker process used CPU time (seconds): "<<chrono.usertime()<<std::endl;
+                    Ncomputes++;
+                    timeExec += chrono.usertime();
                     //Add corresponding prime number as the last element in the result vector
                     r.push_back(*gen);
 					_commPtr->send(r.begin(), r.end(), 0, 0); 
 				}
+                std::cerr<<"Process("<<process<<") computes "<<Ncomputes<<" times before stop"<<std::endl;
+                std::cerr<<"Iteration in process("<<process<<") spent CPU times : "<<timeExec<<std::endl;
+
 			}
             
 		}
