@@ -387,32 +387,32 @@ namespace LinBox
                     //Restructure the vector like before without added prime number
                     r.resize (r.size()-1); 
                     
-//                    if(!Builder_.noncoprime(pp)){
+//if(!Builder_.noncoprime(pp)){
                         
                         Domain D(pp); //Domain D(primes[idle_process - 1]);
                         chrono.start(); 
                         Builder_.progress(D, r);
                         chrono.stop(); 
-//                        std::cout<<"Builder_.progress(D, r) in the manager process used CPU time (seconds): "<<chrono.usertime()<<std::endl;
+                        //std::cout<<"Builder_.progress(D, r) in the manager process used CPU time (seconds): "<<chrono.usertime()<<std::endl;
                         Nrecon++;
                         timeExec += chrono.usertime();
-//                    }//END FOR :  if(Builder_.noncoprime(pp))
-                    
-					if(Builder_.terminated()){
-						primes[idle_process - 1] = 0;
-						//poison_pills_left--;
-					}                 
-
+                        //}//END FOR :  if(Builder_.noncoprime(pp))
+                        
+                        if(Builder_.terminated()){
+                            primes[idle_process - 1] = 0;
+                            //poison_pills_left--;
+                        }                 
+                        
 				}  // while
                 std::cerr<<"Process(0) reconstructs totally "<<Nrecon<<" times before stop"<<std::endl;
                 std::cerr<<"Reconstruction in process(0) spent CPU times : "<<timeExec<<std::endl;
-
+                
 				return Builder_.result(num,den);
                 
 			}
 			//  child process
 			else{
-
+                
 				int pp;
                 LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   gen(process,procs);  
 				//  get a prime, compute, send back start and end
@@ -420,21 +420,21 @@ namespace LinBox
                 std::unordered_set<int> prime_used;
                 float timeExec = 0;
                 long Ncomputes = 0;
-
+                
 				while(true){
 					_commPtr->recv(pp, 0);
 					if(pp == 0)
 						break;
-//                    ++gen; while(Builder_.noncoprime(*gen) ) ++gen;
+                    //++gen; while(Builder_.noncoprime(*gen) ) ++gen;
                     ++gen; while(prime_used.find(*gen) != prime_used.end()) ++gen;
                     prime_used.insert(*gen);
-
+                    
                     //std::cout << *gen << std::endl;
                     Domain D(*gen); //Domain D(pp);
                     chrono.start();                        
                     Iteration(r, D);
                     chrono.stop(); 
-//                    std::cout<<"Iteration(r,D) in the worker process used CPU time (seconds): "<<chrono.usertime()<<std::endl;
+                    //std::cout<<"Iteration(r,D) in the worker process used CPU time (seconds): "<<chrono.usertime()<<std::endl;
                     Ncomputes++;
                     timeExec += chrono.usertime();
                     //Add corresponding prime number as the last element in the result vector
@@ -443,7 +443,7 @@ namespace LinBox
 				}
                 std::cerr<<"Process("<<process<<") computes "<<Ncomputes<<" times before stop"<<std::endl;
                 std::cerr<<"Iteration in process("<<process<<") spent CPU times : "<<timeExec<<std::endl;
-
+                
 			}
             
 		}
