@@ -87,7 +87,7 @@ namespace LinBox
 		template <class Field>
 		void send (SparseMatrix<Field>& b, int dest);
         template <class Field>
-        void send (DenseVector<Field>& b, int dest);
+        void send (BlasVector<Field>& b, int dest);
         
         template <class X>
         void send_integer (X& b, int dest);
@@ -119,7 +119,7 @@ namespace LinBox
         template <class Field>
         void recv (SparseMatrix<Field>& b, int src);
         template <class Field>
-        void recv (DenseVector<Field>& b, int src);
+        void recv (BlasVector<Field>& b, int src);
         
         template <class X>
         void recv_integer (X& b, int src);   
@@ -147,7 +147,7 @@ namespace LinBox
         void bcast (DenseMatrix<Field>& b, int src);
         
         template <class Field>
-        void bcast (DenseVector<Field>& b, int src);
+        void bcast (BlasVector<Field>& b, int src);
         
         template <class Field>
         void bcast (SparseMatrix<Field>& b, int src);

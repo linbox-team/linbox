@@ -24,9 +24,12 @@
 
 
 template <typename T > class chooseMPItype;
+template <> struct chooseMPItype<int>{ static constexpr MPI_Datatype val = MPI_INT;};
 template <> struct chooseMPItype<unsigned int>{ static constexpr MPI_Datatype val = MPI_UNSIGNED;};
 template <> struct chooseMPItype<unsigned long long int>{ static constexpr MPI_Datatype val = MPI_UNSIGNED_LONG_LONG;};
 template <> struct chooseMPItype<unsigned long int>{ static constexpr MPI_Datatype val = MPI_UNSIGNED_LONG;};
+template <> struct chooseMPItype<float>{ static constexpr MPI_Datatype val = MPI_FLOAT;};
+template <> struct chooseMPItype<double>{ static constexpr MPI_Datatype val = MPI_DOUBLE;};
 
 #ifndef __LINBOX_mpicpp_INL
 #define __LINBOX_mpicpp_INL
@@ -147,32 +150,68 @@ namespace LinBox
     
     template <class Field>
     void Communicator::send (DenseMatrix<Field>& M, int dest){
-		MPI_Send(&M,
-                 (M.rowdim()*M.coldim())*sizeof(typename Field::value_type),
-                 MPI_BYTE,
-                 dest,
-                 0,
-                 _mpi_comm);
+
+        size_t ni=M.rowdim(), nj=M.rowdim(); 
+        typename Field::Element *A_mp_data=(typename Field::Element*)malloc(ni*nj*sizeof(typename Field::Element));        
+
+        //std::cerr << "sent A=:= " << std::endl; 
+
+        for (size_t i = 0; i < ni; ++i){
+            for (size_t j = 0; j < nj; ++j){
+                
+               // std::cerr << M.getEntry(i,j)<< "\t" ; std::cerr<< std::endl;
+                A_mp_data[j+i*nj] = M.getEntry(i,j);
+                
+            }
+        }
+
+        MPI_Send(&A_mp_data[0], ni*nj, chooseMPItype<typename Field::Element>::val, dest, 0, MPI_COMM_WORLD);
+        free(A_mp_data);
+
     }
     
     template <class Field>
     void Communicator::send (SparseMatrix<Field>& M, int dest){
-		MPI_Send(&M,
-                 (M.rowdim()*M.coldim())*sizeof(typename Field::value_type),
-                 MPI_BYTE,
-                 dest,
-                 0,
-                 _mpi_comm);
+
+        size_t ni=M.rowdim(), nj=M.rowdim(); 
+        typename Field::Element *A_mp_data=(typename Field::Element*)malloc(ni*nj*sizeof(typename Field::Element));        
+
+        //std::cerr << "sent A=:= " << std::endl; 
+
+        for (size_t i = 0; i < ni; ++i){
+            for (size_t j = 0; j < nj; ++j){
+                
+               // std::cerr << M.getEntry(i,j)<< "\t" ; std::cerr<< std::endl;
+                A_mp_data[j+i*nj] = M.getEntry(i,j);
+                
+            }
+        }
+
+        MPI_Send(&A_mp_data[0], ni*nj, chooseMPItype<typename Field::Element>::val, dest, 0, MPI_COMM_WORLD);
+        free(A_mp_data);
+
     }
     
     template <class Field>
-    void Communicator::send (DenseVector<Field>& V, int dest){
-		MPI_Send(&V,
-                 V.size()*sizeof(typename Field::value_type),
-                 MPI_BYTE,
-                 dest,
-                 0,
-                 _mpi_comm);
+    void Communicator::send (BlasVector<Field>& V, int dest){
+
+        size_t nj=V.size();
+        
+        typename Field::Element *B_mp_data=(typename Field::Element*)malloc(nj*sizeof(typename Field::Element)); 
+                
+                //std::cerr << "B=:= " << std::endl;
+
+                __mpz_struct * ptr;
+                for(size_t j=0;j<nj;j++){
+                    //std::cerr << V.getEntry(j)<< "\t" ; std::cerr<< std::endl;
+                    B_mp_data[j] = V.getEntry(j);
+
+                }
+                
+                MPI_Send(&B_mp_data[0], nj, chooseMPItype<typename Field::Element>::val, dest, 0, MPI_COMM_WORLD);              
+
+        free(B_mp_data);   
+
     }
     
     template <class Matrix>
@@ -207,6 +246,8 @@ namespace LinBox
         MPI_Send(&A_a_size[0], ni*nj, MPI_INT,  dest, 0, MPI_COMM_WORLD);
         MPI_Send(&lenA, 1, MPI_UNSIGNED, dest, 0, MPI_COMM_WORLD);
         MPI_Send(&A_mp_data[0], lenA, chooseMPItype<mp_limb_t>::val, dest, 0, MPI_COMM_WORLD);
+        free(A_mp_alloc);
+        free(A_a_size);   
         
     }
     
@@ -240,7 +281,9 @@ namespace LinBox
                 MPI_Send(&B_mp_alloc[0], nj, MPI_INT,  dest, 0, MPI_COMM_WORLD);
                 MPI_Send(&B_a_size[0], nj, MPI_INT,  dest, 0, MPI_COMM_WORLD);
                 MPI_Send(&lenB, 1, MPI_UNSIGNED, dest, 0, MPI_COMM_WORLD);
-                MPI_Send(&B_mp_data[0], lenB, chooseMPItype<mp_limb_t>::val, dest, 0, MPI_COMM_WORLD);
+                MPI_Send(&B_mp_data[0], lenB, chooseMPItype<mp_limb_t>::val, dest, 0, MPI_COMM_WORLD);              
+        free(B_mp_alloc);
+        free(B_a_size);   
                 
     }
         
@@ -403,34 +446,65 @@ namespace LinBox
     
     template <class Field>
     void Communicator::recv (DenseMatrix<Field>& M, int src){
-		MPI_Recv(&M,
-                 (M.rowdim()*M.coldim())*sizeof(typename Field::value_type),
-                 MPI_BYTE,
-                 src,
-                 0,
-                 _mpi_comm,
-                 MPI_STATUS_IGNORE);
+
+        size_t ni=M.rowdim(), nj=M.rowdim();   
+        typename Field::Element *A_mp_data=(typename Field::Element*)malloc(ni*nj*sizeof(typename Field::Element));
+
+        MPI_Recv(&A_mp_data[0], ni*nj, chooseMPItype<typename Field::Element>::val,  src, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        
+             
+ 
+        //std::cerr << "received A:= " << std::endl;
+        for (size_t i = 0; i < ni; ++i){
+            for (size_t j = 0; j < nj; ++j){
+
+                M.setEntry(i,j,A_mp_data[j+i*nj]);
+                //std::cerr << M.getEntry(i,j) << "\t" ; std::cerr<< std::endl;
+            }
+        }
+        free(A_mp_data);
+
     }
     
     template <class Field>
     void Communicator::recv (SparseMatrix<Field>& M, int src){
-		MPI_Recv(&M,
-                 (M.rowdim()*M.coldim())*sizeof(typename Field::value_type),
-                 MPI_BYTE,
-                 src,
-                 0,
-                 _mpi_comm,
-                 MPI_STATUS_IGNORE);
+
+        size_t ni=M.rowdim(), nj=M.rowdim();   
+        typename Field::Element *A_mp_data=(typename Field::Element*)malloc(ni*nj*sizeof(typename Field::Element));
+
+        MPI_Recv(&A_mp_data[0], ni*nj, chooseMPItype<typename Field::Element>::val,  src, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        
+             
+ 
+        //std::cerr << "received A:= " << std::endl;
+        for (size_t i = 0; i < ni; ++i){
+            for (size_t j = 0; j < nj; ++j){
+
+                M.setEntry(i,j,A_mp_data[j+i*nj]);
+                //std::cerr << M.getEntry(i,j) << "\t" ; std::cerr<< std::endl;
+            }
+        }
+        free(A_mp_data);
+
     }
+
     template <class Field>
-    void Communicator::recv (DenseVector<Field>& V, int src){
-		MPI_Recv(&V,
-                 V.size()*sizeof(typename Field::value_type),
-                 MPI_BYTE,
-                 src,
-                 0,
-                 _mpi_comm,
-                 MPI_STATUS_IGNORE);
+    void Communicator::recv (BlasVector<Field>& V, int src){
+
+        size_t nj=V.size();   
+        typename Field::Element *B_mp_data=(typename Field::Element*)malloc(nj*sizeof(typename Field::Element));
+
+        MPI_Recv(&B_mp_data[0], nj, chooseMPItype<typename Field::Element>::val,  src, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
+        //std::cerr << "received A:= " << std::endl;
+            for (size_t j = 0; j < nj; ++j){
+
+                V.setEntry(j,B_mp_data[j]);
+                //std::cerr << M.getEntry(i,j) << "\t" ; std::cerr<< std::endl;
+            }
+
+        free(B_mp_data);
+
     }
     
     template <class Matrix>
@@ -469,8 +543,8 @@ namespace LinBox
                 //std::cerr << A.getEntry(i,j) << "\t" ; std::cerr<< std::endl;
             }
         }
-        delete A_mp_alloc;
-        delete A_a_size;
+        free(A_mp_alloc);
+        free(A_a_size);
     }
     
     template <class Vector>
@@ -505,21 +579,21 @@ namespace LinBox
             B.setEntry(j,temp);
             //std::cerr << B.getEntry(j) << "\t" ; std::cerr<< std::endl; 
         }             
-        delete B_mp_alloc;
-        delete B_a_size;                
+        free(B_mp_alloc);
+        free(B_a_size);                
     }
     
     template<>
-    void Communicator::recv (DenseMatrix<Givaro::ZRing<Integer> > & M, int dest){
-        recv_integer2(M, dest);
+    void Communicator::recv (DenseMatrix<Givaro::ZRing<Integer> > & M, int src){
+        recv_integer2(M, src);
     }
     template<>
-    void Communicator::recv (SparseMatrix<Givaro::ZRing<Integer> > & M, int dest){
-        recv_integer2(M, dest);
+    void Communicator::recv (SparseMatrix<Givaro::ZRing<Integer> > & M, int src){
+        recv_integer2(M, src);
     }
     template<>
-    void Communicator::recv (DenseVector<Givaro::ZRing<Integer> > & V, int dest){
-        recv_integer(V, dest);
+    void Communicator::recv (DenseVector<Givaro::ZRing<Integer> > & V, int src){
+        recv_integer(V, src);
     }
     
     // Broadcasts
@@ -529,15 +603,130 @@ namespace LinBox
     }
     template <class Field>
     void Communicator::bcast (DenseMatrix<Field>& M, int src){
-        MPI_Bcast(M._ptr, M._ptr+M.rowdim()*M.coldim(), src, _mpi_comm);
+        size_t ni = M.rowdim(), nj = M.rowdim();
+        
+        typename Field::Element *A_mp_data = (typename Field::Element*)malloc(ni*nj*sizeof(typename Field::Element));
+
+        unsigned lenA = ni*nj;
+
+        //MPI_Barrier(MPI_COMM_WORLD);
+        if(src==rank()){
+                                
+            //Split Matrix A into arrays 
+            //std::cerr << "A=:= " << std::endl; 
+
+            for (size_t i = 0; i < ni; ++i){
+                for (size_t j = 0; j < nj; ++j){
+                    
+                    //std::cerr << A.getEntry(i,j)<< "\t" ; std::cerr<< std::endl;
+                    A_mp_data[j+i*nj] = M.getEntry(i,j);                
+                    
+                }
+            }
+
+        }
+        //Distribut Givaro::Integer through its elementary parts
+        //MPI_Barrier(MPI_COMM_WORLD);
+        MPI_Bcast(&A_mp_data[0], lenA, chooseMPItype<typename Field::Element>::val,  0, MPI_COMM_WORLD);
+        //MPI_Barrier(MPI_COMM_WORLD);
+        
+        if(src!=rank()){
+            //Reconstruction of matrix A
+
+            //std::cerr << "received A:= " << std::endl;
+            for (size_t i = 0; i < ni; ++i){
+                for (size_t j = 0; j < nj; ++j){
+
+                    M.setEntry(i,j,A_mp_data[j+i*nj]);
+                    //std::cerr << A.getEntry(i,j) << "\t" ; std::cerr<< std::endl;
+                }
+            }
+            
+        }//MPI_Barrier(MPI_COMM_WORLD);
+        free(A_mp_data);
     }
     template <class Field>
     void Communicator::bcast (SparseMatrix<Field>& M, int src){
-        MPI_Bcast(M._ptr, M._ptr+M.rowdim()*M.coldim(), src, _mpi_comm);
+        size_t ni = M.rowdim(), nj = M.rowdim();
+        
+        typename Field::Element *A_mp_data = (typename Field::Element*)malloc(ni*nj*sizeof(typename Field::Element));
+
+        unsigned lenA = ni*nj;
+
+        //MPI_Barrier(MPI_COMM_WORLD);
+        if(src==rank()){
+                                
+            //Split Matrix A into arrays 
+            //std::cerr << "A=:= " << std::endl; 
+
+            for (size_t i = 0; i < ni; ++i){
+                for (size_t j = 0; j < nj; ++j){
+                    
+                    //std::cerr << A.getEntry(i,j)<< "\t" ; std::cerr<< std::endl;
+                    A_mp_data[j+i*nj] = M.getEntry(i,j);                
+                    
+                }
+            }
+
+        }
+        //Distribut Givaro::Integer through its elementary parts
+        //MPI_Barrier(MPI_COMM_WORLD);
+        MPI_Bcast(&A_mp_data[0], lenA, chooseMPItype<typename Field::Element>::val,  0, MPI_COMM_WORLD);
+        //MPI_Barrier(MPI_COMM_WORLD);
+        
+        if(src!=rank()){
+            //Reconstruction of matrix A
+
+            //std::cerr << "received A:= " << std::endl;
+            for (size_t i = 0; i < ni; ++i){
+                for (size_t j = 0; j < nj; ++j){
+
+                    M.setEntry(i,j,A_mp_data[j+i*nj]);
+                    //std::cerr << A.getEntry(i,j) << "\t" ; std::cerr<< std::endl;
+                }
+            }
+            
+        }//MPI_Barrier(MPI_COMM_WORLD);
+        free(A_mp_data);
+
     }
+
     template <class Field>
-    void Communicator::bcast (DenseVector<Field>& V, int src){
-        MPI_Bcast(V._ptr, V._ptr+V.size(), src, _mpi_comm);
+    void Communicator::bcast (BlasVector<Field>& V, int src){
+
+        size_t nj = V.size();      
+        typename Field::Element *B_mp_data = (typename Field::Element*)malloc(nj*sizeof(typename Field::Element));
+        unsigned lenA = nj;
+
+        //MPI_Barrier(MPI_COMM_WORLD);
+        if(src==rank()){
+                                
+            //Split Matrix A into arrays 
+            //std::cerr << "A=:= " << std::endl; 
+                for (size_t j = 0; j < nj; ++j){
+                    //std::cerr << A.getEntry(j)<< "\t" ; std::cerr<< std::endl;
+                    B_mp_data[j] = V.getEntry(j);
+                }
+        }
+        //Distribut Givaro::Integer through its elementary parts
+        //MPI_Barrier(MPI_COMM_WORLD);
+        MPI_Bcast(&B_mp_data[0], lenA, chooseMPItype<typename Field::Element>::val,  0, MPI_COMM_WORLD);
+        //MPI_Barrier(MPI_COMM_WORLD);
+        
+        if(src!=rank()){
+            //Reconstruction of matrix A
+
+            //std::cerr << "received A:= " << std::endl;
+
+                for (size_t j = 0; j < nj; ++j){
+
+                    V.setEntry(j,B_mp_data[j]);
+                    //std::cerr << A.getEntry(i,j) << "\t" ; std::cerr<< std::endl;
+                }
+            
+        }//MPI_Barrier(MPI_COMM_WORLD);
+        free(B_mp_data);
+
     }
     
     template <class X>
@@ -606,8 +795,8 @@ namespace LinBox
             }
             
         }//MPI_Barrier(MPI_COMM_WORLD);
-        delete A_mp_alloc;
-        delete A_a_size;
+        free(A_mp_alloc);
+        free(A_a_size);
     }
     
     
@@ -668,8 +857,8 @@ namespace LinBox
             }
             
         }//MPI_Barrier(MPI_COMM_WORLD);
-        delete B_mp_alloc;
-        delete B_a_size;
+        free(B_mp_alloc);
+        free(B_a_size);
     }
     
     
