@@ -50,7 +50,50 @@ using namespace std;
 
 #include <iostream>
 #include <fstream>
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <class Field, class Matrix, class Vector>
+static bool checkResult (const Field           &ZZ,
+				    Matrix &A,//DenseMatrix<Givaro::ZRing<Integer>> &A,
+				    Vector &B,//BlasVector<Givaro::ZRing<Integer> >  &B,
+				    Vector &X2,//BlasVector<Givaro::ZRing<Integer> >  &X2,
+				    Integer &d){
+    BlasVector<Givaro::ZRing<Integer> > B2(ZZ, A.coldim());
+    BlasVector<Givaro::ZRing<Integer> > B3(ZZ, A.coldim());    
+    A.apply(B2,X2);
+    for (size_t j = 0 ; j < A.coldim() ; ++j) B3.setEntry(j,d*B.getEntry(j));
+    
+    for (size_t j = 0 ; j < A.coldim() ; ++j){
+      if(!ZZ.areEqual(B3[j],B2[j])){
+	std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+	std::cerr << "               The solution of solveCRA is incorrect                " << std::endl;
+	std::cerr << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
+	return false;
+      }
+    } 
+    return true;
+}
 
+template <class Field>
+static bool genData (const Field  &ZZ,   DenseMatrix<Field> &A, size_t bits){
+    typedef typename Field::RandIter RandIter;    
+    RandIter RI(ZZ,bits) ;
+    LinBox::RandomDenseMatrix<RandIter,Field>  RDM(ZZ,RI);
+    RDM.randomFullRank(A);
+}
+template <class Field>
+static bool genData (const Field  &ZZ,   SparseMatrix<Field> &A, size_t bits){
+    typedef typename Field::RandIter RandIter;    
+    RandIter RI(ZZ,bits) ;
+    LinBox::RandomDenseMatrix<RandIter,Field>  RDM(ZZ,RI);
+    RDM.randomFullRank(A);
+}
+template <class Field>
+static bool genData (const Field  &ZZ,   BlasVector<Field>  &B, size_t bits){
+    typedef typename Field::RandIter RandIter;    
+    RandIter RI(ZZ,bits) ;
+    B.random(RI);
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int main(int argc, char ** argv)
 {
@@ -74,7 +117,7 @@ int main(int argc, char ** argv)
 #endif
   nj=ni;
   Givaro::ZRing<Integer> ZZ;
-  DenseMatrix<Givaro::ZRing<Integer>> A (ZZ,ni,nj);
+  DenseMatrix<Givaro::ZRing<Integer> > A (ZZ,ni,nj);
   
   typedef BlasVector<Givaro::ZRing<Integer> > DenseVector;
   DenseVector X(ZZ, A.rowdim()), X2(ZZ, A.rowdim()),  B(ZZ, A.rowdim());
@@ -84,15 +127,10 @@ int main(int argc, char ** argv)
   if(0==Cptr->rank()){
 #endif
 
-    typedef Givaro::ZRing<Integer> Field;
-    typedef typename Field::RandIter RandIter;
-    
-    RandIter RI(ZZ,bits) ;
-    LinBox::RandomDenseMatrix<RandIter,Field>  RDM(ZZ,RI);
-    RDM.randomFullRank(A);
-	
-    B.random(RI);
-    
+    genData (ZZ, A, bits);
+    genData (ZZ, B, bits);
+
+
     //LinBox::rank (r, A); std::cout<<"The rank of generated matrix A is:"<<r<<std::endl;  
     
     /*
@@ -169,7 +207,8 @@ int main(int argc, char ** argv)
 #else
   chrono.stop();
 #endif
-  DenseVector B2(ZZ, A.coldim());
+//  DenseVector B2(ZZ, A.coldim());
+
 #ifdef __LINBOX_HAVE_MPI
   if(0 == Cptr->rank()){  
 #endif
@@ -194,20 +233,10 @@ int main(int argc, char ** argv)
 #else
     std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
 #endif
-    DenseVector B3(ZZ, A.coldim());
-    
-    A.apply(B2,X2);
-    for (size_t j = 0 ; j < nj ; ++j) B3.setEntry(j,d*B.getEntry(j));
-    
-    for (size_t j = 0 ; j < nj ; ++j){
-      if(!ZZ.areEqual(B3[j],B2[j])){
-	std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
-	std::cerr << "               The solution of solveCRA is incorrect                " << std::endl;
-	std::cerr << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
-	break;
-      }
-    }    
-    
+
+
+checkResult (ZZ, A, B, X2, d);
+
 #ifdef __LINBOX_HAVE_MPI    
     MPI_Finalize();
 #endif
@@ -218,3 +247,53 @@ int main(int argc, char ** argv)
 #endif
   
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
