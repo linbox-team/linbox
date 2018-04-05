@@ -51,28 +51,52 @@ using namespace std;
 #include <iostream>
 #include <fstream>
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <class Field, class Matrix, class Vector>
-static bool checkResult (const Field           &ZZ,
-				    Matrix &A,//DenseMatrix<Givaro::ZRing<Integer>> &A,
-				    Vector &B,//BlasVector<Givaro::ZRing<Integer> >  &B,
-				    Vector &X2,//BlasVector<Givaro::ZRing<Integer> >  &X2,
-				    Integer &d){
-    BlasVector<Givaro::ZRing<Integer> > B2(ZZ, A.coldim());
-    BlasVector<Givaro::ZRing<Integer> > B3(ZZ, A.coldim());    
-    A.apply(B2,X2);
-    for (size_t j = 0 ; j < A.coldim() ; ++j) B3.setEntry(j,d*B.getEntry(j));
-    
-    for (size_t j = 0 ; j < A.coldim() ; ++j){
-      if(!ZZ.areEqual(B3[j],B2[j])){
+checkResult (ZZ, A, B, X2, d);
+template <class Field>
+static bool checkResult (const Field  &ZZ,
+				BlasMatrix<Field> &A,
+				BlasVector<Field> &B,
+				BlasVector<Field> &X,
+				Integer &d){
+BlasMatrix<Field> B2(ZZ, A.coldim());
+A.apply(B2,X);
+for (size_t j = 0 ; j < A.coldim() ; ++j) B3.setEntry(j,d*B.getEntry(j));
+for (size_t j = 0 ; j < A.coldim() ; ++j)
+  for (size_t j = 0 ; j < A.coldim() ; ++j){
+    if(!ZZ.areEqual(B[j],B2[j])){
+      std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+      std::cerr << "               The solution of solveCRA is incorrect                " << std::endl;
+      std::cerr << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
+      break;
+    }
+  }
+
+    return true;
+}
+template <class Field>
+static bool checkResult (const Field  &ZZ,
+				    BlasVector<Field> &B,
+				    BlasVector<Field> &B2){
+
+    for (size_t j = 0 ; j < B.size() ; ++j)
+      if(!ZZ.areEqual(B[j],B2[j])){
 	std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
-	std::cerr << "               The solution of solveCRA is incorrect                " << std::endl;
+	std::cerr << "               The data communicated is inconsistent                " << std::endl;
 	std::cerr << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
 	return false;
       }
-    } 
+
     return true;
 }
 
+template <class Field>
+static bool genData (const Field  &ZZ,   BlasMatrix<Field> &A, size_t bits){
+    typedef typename Field::RandIter RandIter;    
+    RandIter RI(ZZ,bits) ;
+    LinBox::RandomDenseMatrix<RandIter,Field>  RDM(ZZ,RI);
+    RDM.randomFullRank(A);
+}
+/*
 template <class Field>
 static bool genData (const Field  &ZZ,   DenseMatrix<Field> &A, size_t bits){
     typedef typename Field::RandIter RandIter;    
@@ -87,6 +111,7 @@ static bool genData (const Field  &ZZ,   SparseMatrix<Field> &A, size_t bits){
     LinBox::RandomDenseMatrix<RandIter,Field>  RDM(ZZ,RI);
     RDM.randomFullRank(A);
 }
+*/
 template <class Field>
 static bool genData (const Field  &ZZ,   BlasVector<Field>  &B, size_t bits){
     typedef typename Field::RandIter RandIter;    

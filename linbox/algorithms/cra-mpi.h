@@ -50,6 +50,8 @@ template <> struct chooseMPItype<unsigned long int>{ static constexpr MPI_Dataty
 #include <unordered_set>
 #include <linbox/randiter/random-prime.h>
 
+#include <linbox/algorithms/cra-domain-omp.h>
+
 namespace LinBox
 {
 
@@ -258,6 +260,7 @@ namespace LinBox
 		template<class Function, class PrimeIterator>
 		Integer & operator() (Integer& num, Integer& den, Function& Iteration, PrimeIterator& primeg)
 		{
+
 			//  defer to standard CRA loop if no parallel usage is desired
 			if(_commPtr == 0 || _commPtr->size() == 1) {
 				RationalRemainder< RatCRABase > sequential(Builder_);
@@ -341,8 +344,13 @@ namespace LinBox
 			//  if there is no communicator or if there is only one process,
 			//  then proceed normally (without parallel)
 			if(_commPtr == 0 || _commPtr->size() == 1) {
+//std::cerr << " >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> " << std::endl;
+
 				RationalRemainder< RatCRABase > sequential(Builder_);
+//ChineseRemainderOMP< RatCRABase > OMPsequential(Builder_);
+//std::cerr << " <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< " << std::endl;
 				return sequential(num, den, Iteration, primeg);
+//return OMPsequential(num, Iteration, primeg);
 			}
             
 			int procs = _commPtr->size();

@@ -201,7 +201,6 @@ namespace LinBox
                 
                 //std::cerr << "B=:= " << std::endl;
 
-                __mpz_struct * ptr;
                 for(size_t j=0;j<nj;j++){
                     //std::cerr << V.getEntry(j)<< "\t" ; std::cerr<< std::endl;
                     B_mp_data[j] = V.getEntry(j);

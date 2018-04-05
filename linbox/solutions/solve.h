@@ -858,7 +858,6 @@ namespace LinBox
 		PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205))); //RandomPrimeIterator genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
                 
 		BlasVector<Givaro::ZRing<Integer>> num(A.field(),A.coldim());
-                
 		IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
 #ifdef __LINBOX_HAVE_MPI
 		MPIratChineseRemainder< EarlyMultipRatCRA< Givaro::Modular<double> > > cra(3UL, C);

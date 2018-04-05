@@ -24,7 +24,7 @@
  * @ingroup benchmarks
  * @brief Check MPI communicator interface
  */
-
+#define __LINBOX_HAVE_MPI //! Necessary to compile correctly for the communicator !
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>
@@ -70,7 +70,7 @@ std::string gmp_rand ( size_t maxNdigits)
   }
   return result;
 }
-////////////////////////////////////////////////////////////////////////////////////
+
 template <class Field>
 static bool checkResult (const Field  &ZZ,
 				    BlasMatrix<Field> &A,
@@ -178,7 +178,7 @@ B.setEntry(j,get_random_float());
 
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 if(0==Cptr->rank()){
 
@@ -235,7 +235,6 @@ B.write(std::cout << "process("<<Cptr->rank()<< ")<<<<Compute with B:\n",Tag::Fi
 }
   MPI_Finalize();
   return 0;  
-////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
   

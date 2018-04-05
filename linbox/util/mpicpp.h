@@ -82,8 +82,8 @@ namespace LinBox
 		template < class X >
 		void send( X& b, int dest /*, int tag = 0 */);
 
-                template <class Field>
-                void send (DenseMatrix<Field>& b, int dest);
+        template <class Field>
+        void send (DenseMatrix<Field>& b, int dest);
 		template <class Field>
 		void send (SparseMatrix<Field>& b, int dest);
         template <class Field>
