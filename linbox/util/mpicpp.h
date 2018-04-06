@@ -1,5 +1,5 @@
-/* Copyright (C) 2010 LinBox
- *
+/* Copyright (C) 2018 The LinBox group
+ * Updated by Hongguang Zhu <zhuhongguang2014@gmail.com>
  *
  *
  * ========LICENCE========
@@ -81,11 +81,14 @@ namespace LinBox
 		// whole object send and recv
 		template < class X >
 		void send( X& b, int dest /*, int tag = 0 */);
-
+/*
         template <class Field>
         void send (DenseMatrix<Field>& b, int dest);
 		template <class Field>
 		void send (SparseMatrix<Field>& b, int dest);
+*/
+		template <class Field>
+		void send (BlasMatrix<Field>& b, int dest);
         template <class Field>
         void send (BlasVector<Field>& b, int dest);
         
@@ -96,12 +99,17 @@ namespace LinBox
         
 		template < class X >
 		void ssend( X& b, int dest /*, int tag = 0 */);
+/*
 		template <class Field>
 		void ssend (DenseMatrix<Field>& b, int dest);
 		template <class Field>
 		void ssend (SparseMatrix<Field>& b, int dest);
+*/
+		template <class Field>
+		void ssend (BlasMatrix<Field>& b, int dest);
+
         template <class Field>
-        void ssend (DenseVector<Field>& b, int dest);
+        void ssend (BlasVector<Field>& b, int dest);
         
         template <class X>
         void ssend_integer (X& b, int dest);
@@ -113,11 +121,14 @@ namespace LinBox
 
 		template < class X >
 		void recv( X& b, int dest /*, int tag = 0*/);
-        
+/*        
         template <class Field>
         void recv (DenseMatrix<Field>& b, int src);
         template <class Field>
         void recv (SparseMatrix<Field>& b, int src);
+*/
+        template <class Field>
+        void recv (BlasMatrix<Field>& b, int src);
         template <class Field>
         void recv (BlasVector<Field>& b, int src);
         
@@ -142,15 +153,17 @@ namespace LinBox
 		// collective communication
         template <class X>
         void bcast (X& b, int src);
-        
+/*
         template <class Field>
         void bcast (DenseMatrix<Field>& b, int src);
-        
-        template <class Field>
-        void bcast (BlasVector<Field>& b, int src);
-        
         template <class Field>
         void bcast (SparseMatrix<Field>& b, int src);
+*/
+        template <class Field>
+        void bcast (BlasMatrix<Field>& b, int src);
+
+        template <class Field>
+        void bcast (BlasVector<Field>& b, int src);
         
         template <class X>
         void bcast_integer (X& b, int src);                
