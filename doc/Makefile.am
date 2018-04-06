@@ -41,7 +41,7 @@ docs :
 	cp $(top_srcdir)/doc/index-dev.html linbox-dev-html/index.html
 	cp $(top_srcdir)/doc/install-dist.html linbox-html/
 	cp $(top_srcdir)/doc/install-dev.html linbox-html/
-	cp $(top_srcdir)/INSTALL linbox-html/
+	cp $(top_srcdir)/README.md linbox-html/
 	cp $(top_srcdir)/COPYING linbox-html/
 	cp $(top_srcdir)/AUTHORS linbox-html/
 	doxygen Doxyfile
@@ -50,7 +50,7 @@ docs_dev :
 	make docs
 	cp $(top_srcdir)/doc/install-dist.html linbox-dev-html/
 	cp $(top_srcdir)/doc/install-dev.html linbox-dev-html/
-	cp $(top_srcdir)/INSTALL linbox-dev-html/
+	cp $(top_srcdir)/README.md linbox-dev-html/
 	cp $(top_srcdir)/COPYING linbox-dev-html/
 	cp $(top_srcdir)/AUTHORS linbox-dev-html/
 	doxygen DoxyfileDev

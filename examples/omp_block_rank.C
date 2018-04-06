@@ -43,14 +43,16 @@
  * @brief Block Wiedemann Rank with OpenMP
  */
 
+#ifndef __GIVARO_USE_OPENMP
+#define __GIVARO_USE_OPENMP
+#endif
+
 #include <linbox/linbox-config.h>
 
 
 #include <iostream>
 #include <fstream>
 #include <omp.h>
-
-#define __GIVARO_USE_OPENMP
 
 #include <givaro/givtimer.h>
 #include <givaro/givpoly1crt.h>
@@ -75,9 +77,8 @@ FFTSeeder  FFTgenerator;
 // **********************************************************
 
 
-#include <linbox/field/givaro.h>
 #define LINBOX_EXTENSION_DEGREE_MAX 20
-#include <linbox/field/givaro.h>
+#include <givaro/gfq.h>
 #include <linbox/ring/modular.h>
 #include <linbox/blackbox/zero-one.h>
 #include <linbox/blackbox/diagonal.h>
@@ -95,8 +96,7 @@ void extractLeftSigma(const Field &F,
 		      size_t                                      block)
 {
 
-	typedef typename Field::Element Element;
-	LinBox::DenseMatrixDomain<Field> _BMD(F);
+	LinBox::BlasMatrixDomain<Field> _BMD(F);
 	// take the block rows which have lowest defect
 	// compute permutation such that first block rows have lowest defect
 	std::vector<size_t> Perm(2*block);
@@ -195,7 +195,7 @@ void contaddin(Container1& C, const Field& F, const Container2& V)
 }
 
 template<class Field, class Array, class Matrix>
-void EvalPolyMat(Array& EvalDets, const Field& F, const LinBox::DenseMatrixDomain<Field>& D, const std::vector<Matrix>& matminpol, const Array& Points)
+void EvalPolyMat(Array& EvalDets, const Field& F, const LinBox::BlasMatrixDomain<Field>& D, const std::vector<Matrix>& matminpol, const Array& Points)
 {
 	const long nump = Points.size();
 	std::cerr << "num procs: " << omp_get_num_procs() << std::endl;
@@ -389,7 +389,7 @@ int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
 	std::cerr<<"done with size: " << LS2.size() << std::endl;
 	std::cerr<<"Rank of the highest degree coefficient...";
 	unsigned long rdeg;
-	LinBox::DenseMatrixDomain<Field> D(F);
+	LinBox::BlasMatrixDomain<Field> D(F);
 	rdeg = D.rank(LS2[LS2.size()-1]);
 	typename Field::Element d0,de;
 	d0 = D.det(LS2[0]);
@@ -427,7 +427,7 @@ int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
 
 	// write_sigma(F, "bminpoly", LS2);
 
-	typedef Poly1CRT< LinBox::Field>   PolyCRT;
+	typedef Poly1CRT<Field>   PolyCRT;
 	typedef typename PolyCRT::array_T VScal;
 
 	VScal EvalPoints( LS2.size()*nb );
@@ -550,7 +550,7 @@ int main (int argc, char **argv)
 	}
 #if 0
 	if (extend > 1) {
-		typedef LinBox::Givaro::GFq Field;
+		typedef Givaro::GFqDom<int64_t> Field;
 		Field EF( (unsigned long)c, extend);
 		EF.write(std::cerr << "Using an extension field ") << std::endl;
 		return OMP_BLOCK_RANK_main(EF,argc,argv);
