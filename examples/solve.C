@@ -227,19 +227,18 @@ int main (int argc, char **argv)
 
 
 		Timer chrono;
-
 		// BlasElimination
-                std::cout << "BlasElimination" << std::endl;
-                chrono.start();
-                solve (X, d, A, B, Method::BlasElimination());
-                chrono.stop();
+        std::cout << "BlasElimination" << std::endl;
+        chrono.start();
+        solve (X, d, A, B, Method::BlasElimination());
+        chrono.stop();
 
  		std::cout << "(BlasElimination) Solution is [";
-                for(DenseVector::const_iterator it=X.begin();it != X.end(); ++it)
- 			ZZ.write(cout, *it) << " ";
-                std::cout << "] / ";
-                ZZ.write(std::cout, d)<< std::endl;
-                std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
+        for(DenseVector::const_iterator it=X.begin();it != X.end(); ++it)
+ 		ZZ.write(cout, *it) << " ";
+        std::cout << "] / ";
+        ZZ.write(std::cout, d)<< std::endl;
+        std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
 
 		// Sparse Elimination
 		std::cout << "Sparse Elimination" << std::endl;
