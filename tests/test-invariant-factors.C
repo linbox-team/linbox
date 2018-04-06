@@ -296,6 +296,80 @@ void randomTriangular(SparseMat &T, size_t s, bool upper, bool randomDiag = fals
 	T.finalize();
 }
 
+void randomSparse(SparseMat &M, size_t s) {
+	Field F(M.field());
+	
+	for (size_t i = 0; i < M.rowdim(); i++) {
+		for (size_t k = 0; k < s; k++) {
+			size_t j = rand() % M.coldim();
+			
+			Element elm;
+			randomNonzero(F, elm);
+			
+			M.setEntry(i, j, elm);
+		}
+	}
+	M.finalize();
+}
+
+void randomToeplitz(SparseMat &T, bool upper, bool scaled = false) {
+	Field F(T.field());
+	typename Field::RandIter RI(F);
+	
+	SparseMatrix<Field, SparseMatrixFormat::SMM> S(F, T.rowdim(), T.rowdim());
+	
+	Element elm;
+	do {
+		RI.random(elm);
+	} while (F.isZero(elm));
+		
+	for (size_t i = 0; i < T.rowdim(); i++) {
+		S.setEntry(i, i, elm);
+	}
+	
+	
+	for (size_t i = 1; i < T.rowdim(); i++) {
+		std::cout << "i: " << i << std::endl;
+		
+		RI.random(elm);
+		if (F.isZero(elm)) {
+			continue;
+		}
+		
+		for (size_t j = 0; i+j < T.rowdim(); j++) {
+			if (upper) {
+				S.setEntry(j, i+j, elm);
+			} else {
+				S.setEntry(i+j, j, elm);
+			}
+		}
+	}
+	S.finalize();
+	
+	for (size_t i = 0; i < T.rowdim(); i++) {
+		do {
+			RI.random(elm);
+		} while (F.isZero(elm));
+		
+		for (size_t j = 0; j < T.rowdim(); j++) {
+			Element tmp;
+			S.getEntry(tmp, i, j);
+			F.mulin(tmp, elm);
+			S.setEntry(i, j, tmp);
+		}
+	}
+	S.finalize();
+	
+	for (size_t i = 0; i < T.rowdim(); i++) {
+		for (size_t j = 0; j < T.rowdim(); j++) {
+			Element tmp;
+			S.getEntry(tmp, i, j);
+			T.setEntry(i, j, tmp);
+		}
+	}
+	T.finalize();
+}
+
 void randomFatDiag(SparseMat &T, size_t s, bool upper, bool randomDiag = false) {
 	Field F(T.field());
 	typename Field::RandIter RI(F);
@@ -334,10 +408,10 @@ int main(int argc, char** argv) {
 	size_t extend = 1;
 	size_t b = 4;
 	
+	size_t testPrecond = 0;
 	size_t perm = 0;
 	int precond = 0;
 	size_t s = 0;
-	double fillIn = 0;
 	
 	std::string matrixFile;
 	std::string outFile;
@@ -355,8 +429,8 @@ int main(int argc, char** argv) {
 		{ 'o', "-o O", "Name of output file for invariant factors", TYPE_STR, &outFile},
 		{ 'r', "-r R", "Random seed", TYPE_INT, &seed},
 		
+		{ 't', "-t T", "Compute LIFs of preconditioner", TYPE_INT, &testPrecond},
 		{ 's', "-s S", "Number of nonzeros in random triangular preconditioner", TYPE_INT, &s},
-		{ 'i', "-i I", "Sparsity of input matrix", TYPE_DOUBLE, &fillIn},
 		{ 'c', "-c C", "Choose what preconditioner to apply", TYPE_INT, &precond},
 		{ 'z', "-z Z", "Permute rows of input", TYPE_INT, &perm},
 		END_OF_ARGUMENTS
@@ -364,17 +438,18 @@ int main(int argc, char** argv) {
 
 	parseArguments(argc,argv,args);
 	
-	//*
 	if (matrixFile == "") {
 		std::cout << "an input matrix must be provided" << std::endl;
 		return -1;
 	}
-	//*/
 	
 	srand(seed);
 
 	Field F(p);
 	Ring R(p);
+	MatrixDomain<Field> MD(F);
+	InvariantFactors<Field, Ring> IFD(F, R);
+	PolySmithFormDomain<Ring> PSFD(R);
 	
 	SparseMat M(F);                                           
 	readMatrix(M, matrixFile, perm != 0);
@@ -385,17 +460,35 @@ int main(int argc, char** argv) {
 	SparseMat PreR(F, n, n);
 	SparseMat PreL(F, n, n);
 	
+	bool precondL = false;
+	bool precondR = false;
+	
 	if (abs(precond) == 1) {
 		randomFatDiag(PreR, s, true);
+		precondR = true;
 	} else if (abs(precond) == 2) {
 		randomFatDiag(PreR, s, true, precond < 0);
 		randomFatDiag(PreL, s, false, precond < 0);
+		precondL = precondR = true;
 	} else if (abs(precond) == 3) {
 		randomFatDiag(PreR, s, false, precond < 0);
 		randomFatDiag(PreL, s, true, precond < 0);
+		precondL = precondR = true;
 	} else if (abs(precond) == 4) {
 		randomTriangular(PreR, s, true, precond < 0);
 		randomTriangular(PreL, s, false, precond < 0);
+		precondL = precondR = true;
+	} else if (abs(precond) == 5) {
+		randomTriangular(PreR, s, false, precond < 0);
+		randomTriangular(PreL, s, true, precond < 0);
+		precondL = precondR = true;
+	} else if (abs(precond) == 6) {
+		randomToeplitz(PreR, false);
+		randomToeplitz(PreL, true, precond < 0);
+		precondL = precondR = true;
+	} else if (precond == 7) {
+		randomSparse(PreR, s);
+		precondR = true;
 	}
 	
 	TestInvariantFactorsHelper helper(p);
@@ -410,19 +503,26 @@ int main(int argc, char** argv) {
 		helper.extCoppersmith(M, b, extend);
 		return 0;
 	}
-	
-	InvariantFactors<Field, Ring> IFD(F, R);
-	PolySmithFormDomain<Ring> PSFD(R);
 		
 	// Generate random left and right projectors
 	std::vector<BlasMatrix<Field>> minpoly;
 	
-	if (precond == 0 || s == 0) {
-		time1([&](){IFD.computeGenerator(minpoly, M, b);});
-	} else if (abs(precond) == 1) {
-		time1([&](){IFD.computeGenerator(minpoly, M, PreR, b);});
-	} else if (abs(precond) > 1) {
+	if (testPrecond) {
+		if (precondL && precondR) {
+			time1([&](){IFD.computeGenerator(minpoly, PreL, PreR, b);});
+		} else if (precondL) {
+			time1([&](){IFD.computeGenerator(minpoly, PreL, b);});
+		} else if (precondR) {
+			time1([&](){IFD.computeGenerator(minpoly, PreR, b);});
+		}
+	} else if (precondL && precondR) {
 		time1([&](){IFD.computeGenerator(minpoly, PreL, M, PreR, b);});
+	} else if (precondR) {
+		time1([&](){IFD.computeGenerator(minpoly, M, PreR, b);});
+	} else if (precondL) {
+		time1([&](){IFD.computeGenerator(minpoly, PreL, M, b);});
+	} else {
+		time1([&](){IFD.computeGenerator(minpoly, M, b);});
 	}
 	
 	// Convert to matrix with polynomial entries
