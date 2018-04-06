@@ -1,5 +1,6 @@
 #include "linbox/linbox-config.h"
 
+#include <algorithm>
 #include <iostream>
 #include <vector>
 
@@ -403,6 +404,40 @@ void randomFatDiag(SparseMat &T, size_t s, bool upper, bool randomDiag = false) 
 	T.finalize();
 }
 
+double randf() {
+	return (double)(rand() * 1.0 / RAND_MAX);
+}
+
+void randomWiedemann(SparseMat &T, double k, bool right) {
+	Field F(T.field());
+	typename Field::RandIter RI(F);
+	size_t p = F.cardinality();
+	size_t n = T.rowdim();
+		double pr1 = (p-1.0)/p;
+	
+	for (size_t i = 0; i < n; i++) {
+		for (size_t j = 0; j < n; j++) {
+			double pr2 = k * log(1.0 * n) / ((right ? j : i) + 1.0);
+			
+			Element elm;
+			F.assign(elm, F.zero);
+			if (pr1 < pr2) {
+				RI.random(elm);
+			} else if (randf() <= pr2) {
+				randomNonzero(F, elm);
+			}
+			
+			if (F.isZero(elm)) {
+				continue;
+			}
+			
+			T.setEntry(i, j, elm);
+		}
+	}
+	
+	T.finalize();
+}
+
 int main(int argc, char** argv) {
 	size_t p = 3;
 	size_t extend = 1;
@@ -489,6 +524,17 @@ int main(int argc, char** argv) {
 	} else if (precond == 7) {
 		randomSparse(PreR, s);
 		precondR = true;
+	} else if (precond == 8) {
+		randomWiedemann(PreR, 1.0, true);
+		randomWiedemann(PreL, 1.0, false);
+		
+		for (size_t i = 0; i < 20; i++) {
+			for (size_t j = 0; j < 20; j++) {
+				F.write(std::cout, PreL.getEntry(i,j)) << " ";
+			}
+			std::cout << std::endl;
+		}
+		precondL = precondR = true;
 	}
 	
 	TestInvariantFactorsHelper helper(p);
