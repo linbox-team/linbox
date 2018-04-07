@@ -104,7 +104,7 @@ public:
 		time1([&](){
 			RandIter RI(M.field());
 			Sequence seq(&M, M.field(), RI);
-			MasseyDomain<Field1, Sequence> WD(&seq, 10);
+			MasseyDomain<Field1, Sequence> WD(&seq, 20);
 			
 			WD.minpoly(phi, deg);
 		});
