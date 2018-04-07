@@ -19,6 +19,9 @@
 #include "linbox/algorithms/blackbox-block-container.h"
 #include "linbox/algorithms/wiedemann.h"
 
+#include "linbox/blackbox/compose.h"
+#include "linbox/blackbox/transpose.h"
+
 #include "linbox/algorithms/poly-smith-form.h"
 #include "linbox/algorithms/invariant-factors.h"
 #include "linbox/algorithms/smith-form-kannan-bachem.h"
@@ -66,7 +69,7 @@ public:
 			return;
 		}
 		
-		Field1 F = result.field();
+		Field1 F(result.field());
 		std::ofstream out(outFile);
 		
 		for (size_t i = 0; i < result.size(); i++) {
@@ -75,7 +78,7 @@ public:
 			}
 			
 			if (i == 0 || !F.isOne(result[i])) {
-				F.write(out, result[i]);
+				F.write(out << "(", result[i]) << ")";
 			}
 			if (i > 0) {
 				out << (F.isOne(result[i]) ? "" : "*") << "x^" << i;
@@ -89,10 +92,11 @@ public:
 		out.close();
 	}
 	
-	template<class Field1, class Rep>
-	void wiedemann(std::string outFile, SparseMatrix<Field1, Rep> &M) const {
+	template<class Blackbox>
+	void wiedemann(std::string outFile, Blackbox &M) const {
+		typedef typename Blackbox::Field Field1;
 		typedef typename Field1::RandIter RandIter;
-		typedef BlackboxContainer<Field1, SparseMatrix<Field1, Rep>> Sequence;
+		typedef BlackboxContainer<Field1, Blackbox> Sequence;
 		
 		BlasVector<Field1> phi(M.field());
 		unsigned long deg;
@@ -104,28 +108,87 @@ public:
 			
 			WD.minpoly(phi, deg);
 		});
-		writeInvariantFactor(outFile, phi);
-		
 		std::cout << (phi.size() - 1) << std::endl;
+		writeInvariantFactor(outFile, phi);
 	}
 	
-	void extWiedemann(std::string outFile, SparseMat &M, size_t extend) const {
-		if (extend == 1) {
+	template<class Field1, class Rep>
+	void wiedemann(std::string outFile, SparseMatrix<Field1, Rep> &M1, bool scale) const {
+		if (!scale) {
+			wiedemann(outFile, M1);
+			return;
+		}
+		
+		Field1 F(M1.field());
+		typename Field1::RandIter RI(F);
+		SparseMatrix<Field1, Rep> M(F, M1.rowdim(), M1.coldim());
+		std::cout << "scaling:" << std::flush;
+		time1([&](){
+			for (size_t i = 0; i < M.coldim(); i++) {
+				typename Field1::Element factor;
+				do {
+					RI.random(factor);
+				} while (F.isZero(factor));
+				
+				for (size_t j = 0; j < M.rowdim(); j++) {
+					typename Field1::Element elm, scaledElm;
+					M1.getEntry(elm, i, j);
+					if (!F.isZero(elm)) {
+						F.mul(scaledElm, elm, factor);
+						M.setEntry(i, j, scaledElm);
+					}
+				}
+			}
+			M.finalize();
+		});
+		Transpose<SparseMatrix<Field1, Rep>> T(M1);
+		Compose<Transpose<SparseMatrix<Field1, Rep>>, SparseMatrix<Field1, Rep>>  C(T, M);
+		
+		wiedemann(outFile, C);
+	}
+	
+	void extWiedemann(std::string outFile, SparseMat &M, size_t extend1, size_t extend2, bool scale) const {
+		if (extend1 <= 1 && extend2 <= 1) {
 			wiedemann(outFile, M);
 			return;
 		}
 		
-		typedef Givaro::GFqDom<int64_t> ExtField;
-		typedef typename SparseMat::template rebind<ExtField>::other FBlackbox;
+		uint64_t maxZechExt = Givaro::FF_EXPONENT_MAX((uint64_t)_p, (uint64_t)LINBOX_EXTENSION_DEGREE_MAX);
+		if (extend1 > maxZechExt) {
+			std::cout << "Zech Log Extension cannot be greater than " << maxZechExt << " for p=" << _p << std::endl;
+		}
 		
-		// uint64_t extend1 = (uint64_t)Givaro::FF_EXPONENT_MAX((uint64_t)p, (uint64_t)LINBOX_EXTENSION_DEGREE_MAX);
-		uint64_t extend1 = extend;
-		//std::cout << extend1 << "\t" << std::flush;
-		
-		ExtField EF((uint64_t) _p, extend1);
-		FBlackbox EM(M, EF);
-		
-		wiedemann(outFile, EM);
+		if (extend1 > 1 && extend2 == 1) {
+			typedef Givaro::GFqDom<int64_t> ExtField;
+			typedef typename SparseMat::template rebind<ExtField>::other FBlackbox;
+			
+			ExtField EF((uint64_t) _p, extend1);
+			FBlackbox EM(M, EF);
+			EM.finalize();
+			
+			wiedemann(outFile, EM, scale);
+		} else if (extend1 == 1 && extend2 > 1) {
+			typedef Givaro::Extension<Field> ExtField;
+			typedef typename SparseMat::template rebind<ExtField>::other FBlackbox;
+			
+			ExtField EF(M.field(), extend2);
+			FBlackbox EM(M, EF);
+			EM.finalize();
+			
+			wiedemann(outFile, EM, scale);
+		} else {
+			typedef Givaro::GFqDom<int64_t> InnerExtField;
+			typedef Givaro::Extension<InnerExtField> ExtField;
+			typedef typename SparseMat::template rebind<ExtField>::other FBlackbox;
+			
+			InnerExtField IEF((uint64_t)_p, extend1);
+			ExtField EF(IEF, extend2);
+			
+			FBlackbox EM(M, EF);
+			EM.finalize();
+			
+			wiedemann(outFile, EM, scale);
+		}
 	}
 	
 	//*
@@ -235,7 +298,7 @@ void permuteCols(Sp & MP, const std::vector<size_t> & P, const Sp& M) {
 	MP.finalize();
 }
 
-void readMatrix(SparseMat &M, std::string matrixFile, bool perm) {
+void readMatrix(SparseMat &M, const std::string matrixFile, bool perm) {
 	if (!perm) {
 		std::ifstream iF(matrixFile);
 		M.read(iF);
@@ -440,13 +503,16 @@ void randomWiedemann(SparseMat &T, double k, bool right) {
 
 int main(int argc, char** argv) {
 	size_t p = 3;
-	size_t extend = 1;
+	size_t extend1 = 1;
+	size_t extend2 = 1;
 	size_t b = 4;
 	
 	size_t testPrecond = 0;
-	size_t perm = 0;
 	int precond = 0;
 	size_t s = 0;
+	
+	size_t perm = 0;
+	size_t scale = 0;
 	
 	std::string matrixFile;
 	std::string outFile;
@@ -458,7 +524,8 @@ int main(int argc, char** argv) {
 	static Argument args[] = {
 		{ 'a', "-a A", "Algs to run after BM", TYPE_INT, &alg},
 		{ 'p', "-p P", "Set the field GF(p)", TYPE_INT, &p},
-		{ 'e', "-e E", "Extension field exponent (p^e)", TYPE_INT, &extend},
+		{ 'e', "-e E", "(Zech Log) Extension field exponent (p^e)", TYPE_INT, &extend1},
+		{ 'i', "-i I", "Extension field exponent (p^i)", TYPE_INT, &extend2},
 		{ 'b', "-b B", "Block size", TYPE_INT, &b},
 		{ 'f', "-f F", "Name of file for matrix", TYPE_STR, &matrixFile},
 		{ 'o', "-o O", "Name of output file for invariant factors", TYPE_STR, &outFile},
@@ -468,6 +535,7 @@ int main(int argc, char** argv) {
 		{ 's', "-s S", "Number of nonzeros in random triangular preconditioner", TYPE_INT, &s},
 		{ 'c', "-c C", "Choose what preconditioner to apply", TYPE_INT, &precond},
 		{ 'z', "-z Z", "Permute rows of input", TYPE_INT, &perm},
+		{ 'd', "-d D", "Scale rows of input", TYPE_INT, &scale},
 		END_OF_ARGUMENTS
 	};
 
@@ -525,8 +593,9 @@ int main(int argc, char** argv) {
 		randomSparse(PreR, s);
 		precondR = true;
 	} else if (precond == 8) {
-		randomWiedemann(PreR, 1.0, true);
-		randomWiedemann(PreL, 1.0, false);
+		double k = 0.5;
+		randomWiedemann(PreR, k, true);
+		randomWiedemann(PreL, k, false);
 		
 		for (size_t i = 0; i < 20; i++) {
 			for (size_t j = 0; j < 20; j++) {
@@ -541,12 +610,12 @@ int main(int argc, char** argv) {
 	std::cout << n << "\t" << M.size() << "\t" << b << "\t" << std::flush;
 	
 	if (b == 1) {
-		helper.extWiedemann(outFile, M, extend);
+		helper.extWiedemann(outFile, M, extend1, extend2, scale != 0);
 		return 0;
 	}
 	
-	if (extend > 1) {
-		helper.extCoppersmith(M, b, extend);
+	if (extend1 > 1) {
+		helper.extCoppersmith(M, b, extend1);
 		return 0;
 	}
 		
