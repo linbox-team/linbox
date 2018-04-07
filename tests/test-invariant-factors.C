@@ -38,6 +38,9 @@ typedef NTL_zz_pX Ring;
 typedef typename Ring::Element Polynomial;
 typedef BlasMatrix<Ring> PolyMatrix;
 
+typedef NTL_zz_pE NtlField;
+typedef NtlField::Element NtlElement;
+
 Givaro::Timer TW;
 
 void time2(std::function<bool()> fun) {
@@ -168,11 +171,23 @@ public:
 			
 			wiedemann(outFile, EM, scale);
 		} else if (extend1 == 1 && extend2 > 1) {
-			typedef Givaro::Extension<Field> ExtField;
-			typedef typename SparseMat::template rebind<ExtField>::other FBlackbox;
+			typedef NtlField ExtField;
+			typedef SparseMatrix<ExtField, SparseMatrixFormat::CSR> FBlackbox;
 			
-			ExtField EF(M.field(), extend2);
-			FBlackbox EM(M, EF);
+			ExtField EF(_p, extend2);
+			FBlackbox EM(EF, M.rowdim(), M.coldim());
+			for (size_t i = 0; i < M.rowdim(); i++) {
+				for (size_t j = 0; j < M.coldim(); j++) {
+					Element elm;
+					integer tmp;
+					NtlElement ntlElm;
+					
+					M.getEntry(elm, i, j);
+					M.field().convert(tmp, elm);
+					EM.field().init(ntlElm, tmp);
+					EM.setEntry(i, j, ntlElm);
+				}
+			}
 			EM.finalize();
 			
 			wiedemann(outFile, EM, scale);
