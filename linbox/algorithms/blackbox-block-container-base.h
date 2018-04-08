@@ -253,7 +253,7 @@ public:
 			_value = Value(*_field,m,n);
 			MatrixDomain<Field> BMD(*_field);
 			BMD.mul(_value, _blockU, _blockV);
-		}
+		}         
 	};
 
 }

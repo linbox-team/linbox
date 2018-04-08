@@ -281,33 +281,6 @@ public:
 			});
 			out.close();
 		}
-		
-		/*
-		PolySmithFormDomain<ExtRing> PSFD(ER);
-		std::cout << PSFD.detLimit(G) << "\t" << std::flush;
-		typename ExtRing::Element det;
-		time1([&](){PSFD.detLocalX(det, G);});
-		
-		std::vector<typename ExtRing::Element> result;
-		time1([&](){PSFD.solve(result, G, det);});
-		
-		size_t total = 0;
-		for (auto it = result.begin(); it != result.end(); it++) {
-			if (ER.deg(*it) > 1) {
-				total++;
-			}
-		}
-		std::cout << " \t" << total << std::endl;
-		
-		if (outFile != "") {
-			std::ofstream out(outFile);
-			std::for_each(result.begin(), result.end(), [&](const typename ExtRing::Element &v) {
-				typename ExtRing::Element f;
-				ER.write(out, ER.monic(f, v)) << std::endl;
-			});
-			out.close();
-		}
-		*/
 	}
 	//*/
 }; // End of TestInvariantFactorsHelper
