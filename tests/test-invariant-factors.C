@@ -19,7 +19,9 @@
 #include "linbox/algorithms/wiedemann.h"
 
 #include "linbox/blackbox/compose.h"
+#include "linbox/blackbox/sum.h"
 #include "linbox/blackbox/transpose.h"
+#include "linbox/blackbox/toeplitz.h"
 
 #include "linbox/algorithms/poly-smith-form.h"
 #include "linbox/algorithms/invariant-factors.h"
@@ -112,9 +114,44 @@ public:
 	}
 	
 	template<class Field1, class Rep>
-	void wiedemann(std::string outFile, SparseMatrix<Field1, Rep> &A, size_t precond) const {
+	void wiedemann(std::string outFile, SparseMatrix<Field1, Rep> &A, size_t precond, size_t k) const {
 		if (precond == 0) {
 			wiedemann(outFile, A);
+			return;
+		}
+		
+		if (precond == 3) {
+			typedef typename Field1::Element Coeff;
+			typedef typename Field1::RandIter RandIter;
+			typedef NTL_zz_pEX PRing;
+			typedef typename PRing::Element Poly;
+			
+			RandIter RI(A.field());
+			PRing ER(A.field());
+			
+			size_t n = A.rowdim();
+			
+			Poly u,v;
+			ER.init(u);
+			ER.init(v);
+			for (size_t i = 0; i < n+k-1; i++) {
+				Coeff c;
+				RI.random(c);
+				ER.setCoeff(u, i, c);
+				
+				RI.random(c);
+				ER.setCoeff(v, i, c);
+			}
+			
+			Toeplitz<Field1, PRing> U(ER, u, n, k);
+			Toeplitz<Field1, PRing> V(ER, v, k, n);
+			Compose<Toeplitz<Field1, PRing>, Toeplitz<Field1, PRing>> B(U, V);
+			Sum<SparseMatrix<Field1, Rep>, Compose<Toeplitz<Field1, PRing>, Toeplitz<Field1, PRing>>> M(A, B);
+			
+			std::cout << "Computing " << k << "-th invariant factor" << std::endl;
+			
+			wiedemann(outFile, M);
+			
 			return;
 		}
 		
@@ -172,14 +209,15 @@ public:
 		A.finalize();
 	}
 	
-	void extWiedemann(std::string outFile, SparseMat &M, size_t extend, size_t precond) const {
+	void extWiedemann(std::string outFile, SparseMat &M, size_t extend, size_t precond, size_t k) const {
 		if (extend <= 1) {
 			wiedemann(outFile, M);
 			return;
 		}
 		
-		uint64_t maxZechExt = Givaro::FF_EXPONENT_MAX((uint64_t)_p, (uint64_t)LINBOX_EXTENSION_DEGREE_MAX);
-		if (extend <= maxZechExt) {
+		//uint64_t maxZechExt = Givaro::FF_EXPONENT_MAX((uint64_t)_p, (uint64_t)LINBOX_EXTENSION_DEGREE_MAX);
+		//if (extend <= maxZechExt) {
+			/*
 			typedef Givaro::GFqDom<int64_t> ExtField;
 			typedef typename SparseMat::template rebind<ExtField>::other FBlackbox;
 			
@@ -187,8 +225,9 @@ public:
 			FBlackbox EM(M, EF);
 			EM.finalize();
 			
-			wiedemann(outFile, EM, precond);
-		} else {
+			wiedemann(outFile, EM, precond, k);
+			*/
+		//} else {
 			typedef NTL_zz_pE ExtField;
 			typedef SparseMatrix<ExtField, SparseMatrixFormat::CSR> FBlackbox;
 			
@@ -196,8 +235,8 @@ public:
 			FBlackbox EM(EF, M.rowdim(), M.coldim());
 			copy(EM, M);
 			
-			wiedemann(outFile, EM, precond);
-		}
+			wiedemann(outFile, EM, precond, k);
+		//}
 	}
 
 	template<class Blackbox>
@@ -547,6 +586,7 @@ int main(int argc, char** argv) {
 	int precond = 0;
 	size_t s = 0;
 	size_t perm = 0;
+	size_t k = 0;
 	
 	std::string matrixFile;
 	std::string outFile;
@@ -564,6 +604,7 @@ int main(int argc, char** argv) {
 		{ 'f', "-f F", "Name of file for matrix", TYPE_STR, &matrixFile},
 		{ 'o', "-o O", "Name of output file for invariant factors", TYPE_STR, &outFile},
 		{ 'r', "-r R", "Random seed", TYPE_INT, &seed},
+		{ 'k', "-k K", "Compute the (k+1)-th invariant factor", TYPE_INT, &k},
 		
 		{ 's', "-s S", "Number of nonzeros in random triangular preconditioner", TYPE_INT, &s},
 		{ 'c', "-c C", "Choose what preconditioner to apply", TYPE_INT, &precond},
@@ -642,7 +683,7 @@ int main(int argc, char** argv) {
 	std::cout << n << "\t" << M.size() << "\t" << b << "\t" << std::flush;
 	
 	if (b == 1) {
-		helper.extWiedemann(outFile, M, extend, precond);
+		helper.extWiedemann(outFile, M, extend, precond, k);
 		return 0;
 	}
 		
