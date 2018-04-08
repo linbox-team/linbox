@@ -324,8 +324,7 @@ public:
 	//*/
 }; // End of TestInvariantFactorsHelper
 
-void randomVec(std::vector<size_t> & V, size_t n) 
-{
+void randomVec(std::vector<size_t> & V, size_t n)  {
 	V.resize(n);
 	for (size_t i = 0; i < n; ++i) V[i] = i;
 	// Knuth construction
@@ -333,15 +332,6 @@ void randomVec(std::vector<size_t> & V, size_t n)
 		size_t j = i + rand()%(n-i);
 		std::swap(V[i], V[j]);
 	}
-}
-
-void randomPerm(SparseMat & P)
-{
-	size_t n = P.rowdim();
-	std::vector<size_t> Perm;
-	randomVec(Perm, n);
-	for (size_t i = 0; i < n; ++i) P.setEntry(i, Perm[i], P.field().one);
-	P.finalize();
 }
 
 template<class Sp>
@@ -352,21 +342,6 @@ void permuteRows(Sp & MP, const std::vector<size_t> & P, const Sp& M) {
 		for (size_t j = 0; j < M.coldim(); ++j) {
 			if (not M.field().isZero(M.getEntry(x,i,j))) {
 				MP.setEntry(P[i],j,x);
-			}
-		}
-	}
-	
-	MP.finalize();
-}
-
-template<class Sp>
-void permuteCols(Sp & MP, const std::vector<size_t> & P, const Sp& M) {
-	Element x;
-	M.field().init(x);
-	for (size_t i = 0; i < M.rowdim(); ++i) {
-		for (size_t j = 0; j < M.coldim(); ++j) {
-			if (not M.field().isZero(M.getEntry(x,i,j))) {
-				MP.setEntry(i,P[j],x);
 			}
 		}
 	}
@@ -436,147 +411,6 @@ void randomTriangular(SparseMat &T, size_t s, bool upper, bool randomDiag = fals
 	T.finalize();
 }
 
-void randomSparse(SparseMat &M, size_t s) {
-	Field F(M.field());
-	
-	for (size_t i = 0; i < M.rowdim(); i++) {
-		for (size_t k = 0; k < s; k++) {
-			size_t j = rand() % M.coldim();
-			
-			Element elm;
-			randomNonzero(F, elm);
-			
-			M.setEntry(i, j, elm);
-		}
-	}
-	M.finalize();
-}
-
-void randomToeplitz(SparseMat &T, bool upper, bool scaled = false) {
-	Field F(T.field());
-	typename Field::RandIter RI(F);
-	
-	SparseMatrix<Field, SparseMatrixFormat::SMM> S(F, T.rowdim(), T.rowdim());
-	
-	Element elm;
-	do {
-		RI.random(elm);
-	} while (F.isZero(elm));
-		
-	for (size_t i = 0; i < T.rowdim(); i++) {
-		S.setEntry(i, i, elm);
-	}
-	
-	
-	for (size_t i = 1; i < T.rowdim(); i++) {
-		std::cout << "i: " << i << std::endl;
-		
-		RI.random(elm);
-		if (F.isZero(elm)) {
-			continue;
-		}
-		
-		for (size_t j = 0; i+j < T.rowdim(); j++) {
-			if (upper) {
-				S.setEntry(j, i+j, elm);
-			} else {
-				S.setEntry(i+j, j, elm);
-			}
-		}
-	}
-	S.finalize();
-	
-	for (size_t i = 0; i < T.rowdim(); i++) {
-		do {
-			RI.random(elm);
-		} while (F.isZero(elm));
-		
-		for (size_t j = 0; j < T.rowdim(); j++) {
-			Element tmp;
-			S.getEntry(tmp, i, j);
-			F.mulin(tmp, elm);
-			S.setEntry(i, j, tmp);
-		}
-	}
-	S.finalize();
-	
-	for (size_t i = 0; i < T.rowdim(); i++) {
-		for (size_t j = 0; j < T.rowdim(); j++) {
-			Element tmp;
-			S.getEntry(tmp, i, j);
-			T.setEntry(i, j, tmp);
-		}
-	}
-	T.finalize();
-}
-
-void randomFatDiag(SparseMat &T, size_t s, bool upper, bool randomDiag = false) {
-	Field F(T.field());
-	typename Field::RandIter RI(F);
-	
-	for (size_t i = 0; i < T.rowdim(); i++) {
-		if (randomDiag) {
-			Element elm;
-			randomNonzero(F, elm);
-			T.setEntry(i, i, elm);
-		} else {
-			T.setEntry(i, i, F.one);
-		}
-	}
-	
-	for (size_t i = 1; i <= s; i++) {
-		for (size_t k = 0; k < T.rowdim(); k++) {
-			if (i + k >= T.rowdim()) {
-				continue;
-			}
-			
-			Element elm;
-			randomNonzero(F, elm);
-			if (upper) {
-				T.setEntry(i + k, k, elm);
-			} else {
-				T.setEntry(k, i + k, elm);
-			}
-		}
-	}
-	
-	T.finalize();
-}
-
-double randf() {
-	return (double)(rand() * 1.0 / RAND_MAX);
-}
-
-void randomWiedemann(SparseMat &T, double k, bool right) {
-	Field F(T.field());
-	typename Field::RandIter RI(F);
-	size_t p = F.cardinality();
-	size_t n = T.rowdim();
-		double pr1 = (p-1.0)/p;
-	
-	for (size_t i = 0; i < n; i++) {
-		for (size_t j = 0; j < n; j++) {
-			double pr2 = k * log(1.0 * n) / ((right ? j : i) + 1.0);
-			
-			Element elm;
-			F.assign(elm, F.zero);
-			if (pr1 < pr2) {
-				RI.random(elm);
-			} else if (randf() <= pr2) {
-				randomNonzero(F, elm);
-			}
-			
-			if (F.isZero(elm)) {
-				continue;
-			}
-			
-			T.setEntry(i, j, elm);
-		}
-	}
-	
-	T.finalize();
-}
-
 int main(int argc, char** argv) {
 	size_t p = 3;
 	size_t extend = 1;
@@ -639,43 +473,13 @@ int main(int argc, char** argv) {
 	bool precondL = false;
 	bool precondR = false;
 	
-	if (abs(precond) == 1) {
-		randomFatDiag(PreR, s, true);
-		precondR = true;
-	} else if (abs(precond) == 2) {
-		randomFatDiag(PreR, s, true, precond < 0);
-		randomFatDiag(PreL, s, false, precond < 0);
+	if (precond == 1) { // determinant
+		randomTriangular(PreR, s, false, false);
+		randomTriangular(PreL, s, true, false);
 		precondL = precondR = true;
-	} else if (abs(precond) == 3) {
-		randomFatDiag(PreR, s, false, precond < 0);
-		randomFatDiag(PreL, s, true, precond < 0);
-		precondL = precondR = true;
-	} else if (abs(precond) == 4) {
-		randomTriangular(PreR, s, true, precond < 0);
-		randomTriangular(PreL, s, false, precond < 0);
-		precondL = precondR = true;
-	} else if (abs(precond) == 5) {
-		randomTriangular(PreR, s, false, precond < 0);
-		randomTriangular(PreL, s, true, precond < 0);
-		precondL = precondR = true;
-	} else if (abs(precond) == 6) {
-		randomToeplitz(PreR, false);
-		randomToeplitz(PreL, true, precond < 0);
-		precondL = precondR = true;
-	} else if (precond == 7) {
-		randomSparse(PreR, s);
-		precondR = true;
-	} else if (precond == 8) {
-		double k = 0.5;
-		randomWiedemann(PreR, k, true);
-		randomWiedemann(PreL, k, false);
-		
-		for (size_t i = 0; i < 20; i++) {
-			for (size_t j = 0; j < 20; j++) {
-				F.write(std::cout, PreL.getEntry(i,j)) << " ";
-			}
-			std::cout << std::endl;
-		}
+	} else if (precond == 2) { // rank
+		randomTriangular(PreR, s, false, true);
+		randomTriangular(PreL, s, true, true);
 		precondL = precondR = true;
 	}
 	
