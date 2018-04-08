@@ -569,8 +569,8 @@ int main(int argc, char** argv) {
 	size_t p = 3;
 	size_t extend = 1;
 	size_t b = 4;
+	size_t modIndex = 0;
 	
-	size_t testPrecond = 0;
 	int precond = 0;
 	size_t s = 0;
 	size_t perm = 0;
@@ -587,11 +587,11 @@ int main(int argc, char** argv) {
 		{ 'p', "-p P", "Set the field GF(p)", TYPE_INT, &p},
 		{ 'e', "-e E", "Extension field exponent (p^e)", TYPE_INT, &extend},
 		{ 'b', "-b B", "Block size", TYPE_INT, &b},
+		{ 't', "-t T", "Use t-th LIF as modulus", TYPE_INT, &modIndex},
 		{ 'f', "-f F", "Name of file for matrix", TYPE_STR, &matrixFile},
 		{ 'o', "-o O", "Name of output file for invariant factors", TYPE_STR, &outFile},
 		{ 'r', "-r R", "Random seed", TYPE_INT, &seed},
 		
-		{ 't', "-t T", "Compute LIFs of preconditioner", TYPE_INT, &testPrecond},
 		{ 's', "-s S", "Number of nonzeros in random triangular preconditioner", TYPE_INT, &s},
 		{ 'c', "-c C", "Choose what preconditioner to apply", TYPE_INT, &precond},
 		{ 'z', "-z Z", "Permute rows of input", TYPE_INT, &perm},
@@ -676,15 +676,7 @@ int main(int argc, char** argv) {
 	// Generate random left and right projectors
 	std::vector<BlasMatrix<Field>> minpoly;
 	
-	if (testPrecond) {
-		if (precondL && precondR) {
-			time1([&](){IFD.computeGenerator(minpoly, PreL, PreR, b);});
-		} else if (precondL) {
-			time1([&](){IFD.computeGenerator(minpoly, PreL, b);});
-		} else if (precondR) {
-			time1([&](){IFD.computeGenerator(minpoly, PreR, b);});
-		}
-	} else if (precondL && precondR) {
+	if (precondL && precondR) {
 		time1([&](){IFD.computeGenerator(minpoly, PreL, M, PreR, b);});
 	} else if (precondR) {
 		time1([&](){IFD.computeGenerator(minpoly, M, PreR, b);});
@@ -718,7 +710,7 @@ int main(int argc, char** argv) {
 	}
 	
 	if (extend > 1) {
-		helper.extCoppersmith(outFile, M, b, extend, det);
+		helper.extCoppersmith(outFile, M, b, extend, result[result.size() - modIndex - 1]);
 		return 0;
 	}
 	
