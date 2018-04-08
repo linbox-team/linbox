@@ -152,6 +152,26 @@ public:
 		}
 	}
 	
+	template<class Blackbox1, class Blackbox2>
+	void copy(Blackbox1 &A, const Blackbox2 &B) const {
+		typedef typename Blackbox1::Field Field1;
+		typedef typename Blackbox2::Field Field2;
+		
+		for (size_t i = 0; i < B.rowdim(); i++) {
+			for (size_t j = 0; j < B.coldim(); j++) {
+				typename Field2::Element elm;
+				integer tmp;
+				typename Field1::Element oelm;
+				
+				B.getEntry(elm, i, j);
+				B.field().convert(tmp, elm);
+				A.field().init(oelm, tmp);
+				A.setEntry(i, j, oelm);
+			}
+		}
+		A.finalize();
+	}
+	
 	void extWiedemann(std::string outFile, SparseMat &M, size_t extend, size_t precond) const {
 		if (extend <= 1) {
 			wiedemann(outFile, M);
@@ -170,82 +190,124 @@ public:
 			wiedemann(outFile, EM, precond);
 		} else {
 			typedef NTL_zz_pE ExtField;
-			typedef typename ExtField::Element NtlElement;
 			typedef SparseMatrix<ExtField, SparseMatrixFormat::CSR> FBlackbox;
 			
 			ExtField EF(_p, extend);
 			FBlackbox EM(EF, M.rowdim(), M.coldim());
-			for (size_t i = 0; i < M.rowdim(); i++) {
-				for (size_t j = 0; j < M.coldim(); j++) {
-					Element elm;
-					integer tmp;
-					NtlElement ntlElm;
-					
-					M.getEntry(elm, i, j);
-					M.field().convert(tmp, elm);
-					EM.field().init(ntlElm, tmp);
-					EM.setEntry(i, j, ntlElm);
-				}
-			}
-			EM.finalize();
+			copy(EM, M);
 			
 			wiedemann(outFile, EM, precond);
 		}
 	}
-	
-	//*
-	template<class Field1, class Rep>
-	void coppersmith(SparseMatrix<Field1, Rep> &M, size_t b) const {
-		InvariantFactors<Field1, Ring> IFD(M.field(), R);
-			
-		// Generate random left and right projectors
-		std::vector<BlasMatrix<Field1>> minpoly;
-		time1([&](){IFD.computeGenerator(minpoly, M, b);});
-		std::cout << std::endl;
+
+	template<class Blackbox>
+	void computeGenerator(
+		std::vector<BlasMatrix<typename Blackbox::Field>> &gen,
+		const Blackbox &M,
+		size_t b,
+		int earlyTerm = 10) const
+	{
+		typedef typename Blackbox::Field Field1;
+		typedef typename Field1::RandIter RandIter1;
+		typedef MatrixDomain<Field1> MatrixDom1;
+		typedef typename MatrixDom1::OwnMatrix Matrix1;
 		
-		/*
-		typedef PolynomialRing<Field1> Ring1;
-		typedef typename Ring1::Element Poly;
+		Field1 EF(M.field());
+		RandIter1 RI(EF);
+		RandomDenseMatrix<RandIter1, Field1> RDM(EF, RI);
+		MatrixDom1 MD(EF);
 		
-		Ring1 ER(M.field());
-		MatrixDomain<Ring1> ERMD(ER);
-		BlasMatrix<Ring1> G(ER, b, b);
-		for (size_t i = 0; i < b; i++) {
-			for (size_t j = 0; j < b; j++) {
-				std::vector<typename Field1::Element> lst;				
-				for (size_t k = 0; k < minpoly.size(); k++) {
-					lst.push_back(minpoly[k].getEntry(i, j));
-				}
-				
-				Poly tmp;
-				ER.init(tmp, lst);
-				
-				G.setEntry(i, j, tmp);
-				ER.write(std::cout, G.getEntry(i, j)) << std::endl;
-			}
-			std::cout << std::endl;
-		}
+		size_t n = M.rowdim();
+		Matrix1 U(EF, b, n);
+		Matrix1 V(EF, n, b);
 		
-		SmithFormKannanBachemDomain<Ring1> SFD(ER);
-		std::vector<typename Ring1::Element> result;
-		SFD.solveTextBook(result, G);
+		RDM.random(U);
+		RDM.random(V);
 		
-		for (size_t i = 0; i < result.size(); i++) {
-			ER.write(std::cout, result[i]) << std::endl;
-		}
-		//*/
+		typedef BlackboxBlockContainer<Field1, Blackbox> Sequence;
+		Sequence blockSeq(&M, EF, U, V);
+		BlockCoppersmithDomain<MatrixDom1, Sequence> coppersmith(MD, &blockSeq, earlyTerm);
+		
+		coppersmith.right_minpoly(gen);
 	}
 	
-	void extCoppersmith(SparseMat &M, size_t b, size_t extend) const {
-		//*
-		typedef Givaro::GFqDom<int64_t> ExtField;
-		typedef typename SparseMat::template rebind<ExtField>::other FBlackbox;
+	void extCoppersmith(std::string outFile, SparseMat &M, size_t b, size_t extend, Polynomial modulus1) const {
+		typedef NTL_zz_pE ExtField;
+		typedef NTL_zz_pEX ExtRing;
+		typedef SparseMatrix<ExtField, SparseMatrixFormat::CSR> FBlackbox;
 		
 		ExtField EF((uint64_t) _p, extend);
-		FBlackbox EM(M, EF);
+		ExtRing ER(EF);
+		FBlackbox EM(EF, M.rowdim(), M.coldim());
+		copy(EM, M);
 		
-		coppersmith(EM, b);
-		//*/
+		typename ExtRing::Element modulus = NTL::conv<NTL::zz_pEX>(modulus1);
+		
+		std::vector<BlasMatrix<ExtField>> minpoly;
+		time1([&](){computeGenerator(minpoly, EM, b);});
+		
+		BlasMatrix<ExtRing> G(ER, b, b);
+		for (size_t i = 0; i < b; i++) {
+			for (size_t j = 0; j < b; j++) {
+				typename ExtRing::Element g;
+				ER.init(g);
+				
+				for (size_t k = 0; k < minpoly.size(); k++) {
+					ER.setCoeff(g, k, minpoly[k].getEntry(i, j));
+				}
+				
+				G.setEntry(i, j, g);
+			}
+		}
+		
+		SmithFormKannanBachemDomain<ExtRing> SFD(ER);
+		
+		std::vector<typename ExtRing::Element> result;
+		time1([&](){SFD.solveIliopoulos(result, G, modulus);});
+		
+		size_t total = 0;
+		for (auto it = result.begin(); it != result.end(); it++) {
+			if (ER.deg(*it) > 1) {
+				total++;
+			}
+		}
+		std::cout << " \t" << total << std::endl;
+		
+		if (outFile != "") {
+			std::ofstream out(outFile);
+			std::for_each(result.begin(), result.end(), [&](const typename ExtRing::Element &v) {
+				typename ExtRing::Element f;
+				ER.write(out, ER.monic(f, v)) << std::endl;
+			});
+			out.close();
+		}
+		
+		/*
+		PolySmithFormDomain<ExtRing> PSFD(ER);
+		std::cout << PSFD.detLimit(G) << "\t" << std::flush;
+		typename ExtRing::Element det;
+		time1([&](){PSFD.detLocalX(det, G);});
+		
+		std::vector<typename ExtRing::Element> result;
+		time1([&](){PSFD.solve(result, G, det);});
+		
+		size_t total = 0;
+		for (auto it = result.begin(); it != result.end(); it++) {
+			if (ER.deg(*it) > 1) {
+				total++;
+			}
+		}
+		std::cout << " \t" << total << std::endl;
+		
+		if (outFile != "") {
+			std::ofstream out(outFile);
+			std::for_each(result.begin(), result.end(), [&](const typename ExtRing::Element &v) {
+				typename ExtRing::Element f;
+				ER.write(out, ER.monic(f, v)) << std::endl;
+			});
+			out.close();
+		}
+		*/
 	}
 	//*/
 }; // End of TestInvariantFactorsHelper
@@ -610,11 +672,6 @@ int main(int argc, char** argv) {
 		helper.extWiedemann(outFile, M, extend, precond);
 		return 0;
 	}
-	
-	if (extend > 1) {
-		helper.extCoppersmith(M, b, extend);
-		return 0;
-	}
 		
 	// Generate random left and right projectors
 	std::vector<BlasMatrix<Field>> minpoly;
@@ -658,6 +715,11 @@ int main(int argc, char** argv) {
 	}
 	if ((alg & 1) && !R.isZero(det)) {
 		time1([&](){PSFD.solve(result, G, det);});
+	}
+	
+	if (extend > 1) {
+		helper.extCoppersmith(outFile, M, b, extend, det);
+		return 0;
 	}
 	
 	size_t total = 0;

@@ -227,7 +227,7 @@ public:
 			_blockU = U;
 			_blockV = V;
 			_value = Value(*_field,_m,_n);
-			BlasMatrixDomain<Field> BMD(*_field);
+			MatrixDomain<Field> BMD(*_field);
 			BMD.mul(_value, _blockU, _blockV);
 		}
 
@@ -251,7 +251,7 @@ public:
 				G.random(*iter_V);
 
 			_value = Value(*_field,m,n);
-			BlasMatrixDomain<Field> BMD(*_field);
+			MatrixDomain<Field> BMD(*_field);
 			BMD.mul(_value, _blockU, _blockV);
 		}
 	};

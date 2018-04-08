@@ -55,14 +55,12 @@ namespace LinBox
 		
 		template<typename Matrix>
 		void printMatrix(const Matrix &M) const {
-			std::cout << "M start" << std::endl;
 			for (size_t i = 0; i < M.rowdim(); i++) {
 				for (size_t j = 0; j < M.coldim(); j++) {
 					_F.write(std::cout, M.getEntry(i, j)) << std::endl;
 				}
 				std::cout << std::endl;
 			}
-			std::cout << "M end" << std::endl << std::endl;
 		}
 		
 		template<typename Matrix>
@@ -139,12 +137,6 @@ namespace LinBox
 			SubMatrix pivotCol(A, 0, 0, A.rowdim(), 1);
 			SubMatrix otherCol(A, 0, idx, A.rowdim(), 1);
 			
-			std::cout << "pivotCol:";
-			printMatrix(pivotCol);
-			
-			std::cout << "otherCol:";
-			printMatrix(otherCol);
-			
 			OwnMatrix pivotCopy(pivotCol);
 			
 			_MD.mulin(pivotCol, s);
@@ -152,12 +144,6 @@ namespace LinBox
 			
 			_MD.mulin(otherCol, u);
 			_MD.saxpyin(otherCol, v, pivotCopy);
-			
-			std::cout << "pivotCol':";
-			printMatrix(pivotCol);
-			
-			std::cout << "otherCol':";
-			printMatrix(otherCol);
 		}
 		
 		template<class Matrix>
@@ -193,12 +179,6 @@ namespace LinBox
 			SubMatrix pivotRow(A, 0, 0, 1, A.coldim());
 			SubMatrix otherRow(A, idx, 0, 1, A.coldim());
 			
-			std::cout << "pivotRow:";
-			printMatrix(pivotRow);
-			
-			std::cout << "otherRow:";
-			printMatrix(otherRow);
-			
 			OwnMatrix pivotCopy(pivotRow);
 			
 			_MD.mulin(pivotRow, s);
@@ -206,12 +186,6 @@ namespace LinBox
 			
 			_MD.mulin(otherRow, u);
 			_MD.saxpyin(otherRow, v, pivotCopy);
-			
-			std::cout << "pivotRow':";
-			printMatrix(pivotRow);
-			
-			std::cout << "otherRow':";
-			printMatrix(otherRow);
 		}
 		
 		template<class Matrix>
@@ -350,8 +324,6 @@ namespace LinBox
 				return;
 			}
 			
-			printMatrix(A);
-			
 			if (!findPivot(A)) {
 				size_t dim = A.rowdim() < A.coldim() ? A.rowdim() : A.coldim();
 				for (size_t i = 0; i < dim; i++) {
@@ -362,16 +334,10 @@ namespace LinBox
 			
 			while (!isDiagonalized(A)) {
 				eliminateCol(A);
-				
-				printMatrix(A);
-				
 				if (_F.isUnit(A.getEntry(0, 0))) {
 					break;
 				}
-				
 				eliminateRow(A);
-				
-				printMatrix(A);
 			}
 			
 			L.push_back(A.getEntry(0, 0));
@@ -428,16 +394,9 @@ namespace LinBox
 		}
 		
 		template<class Matrix>
-		void solveTextBook(std::vector<Element> &L, Matrix &A) {
-			std::cout << "a" << std::endl;
-			
+		void solveTextBook(std::vector<Element> &L, Matrix &A) {			
 			solveTextBookHelper(L, A);
-			
-			std::cout << "b" << std::endl;
-			
 			fixDiagonal(L);
-			
-			std::cout << "c" << std::endl;
 		}
 		
 		template<class Matrix>

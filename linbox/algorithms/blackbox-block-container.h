@@ -125,7 +125,7 @@ namespace LinBox
 
 	protected:
 		Block                        _blockW;
-		BlasMatrixDomain<Field>    _BMD;
+		MatrixDomain<Field>    _BMD;
 
 #ifdef _BBC_TIMING
 		Timer     ttSequence, tSequence;
@@ -376,7 +376,7 @@ namespace LinBox
 
 		Block                           _blockW;
 		Block                       _Vcopy;
-		BlasMatrixDomain<Field>       _BMD;
+		MatrixDomain<Field>       _BMD;
 		std::vector<Value>            _rep;
 		size_t                    _upd_idx;
 		std::vector<Element>            _u;

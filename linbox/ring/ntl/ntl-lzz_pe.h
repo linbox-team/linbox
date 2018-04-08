@@ -358,6 +358,16 @@ namespace LinBox
                 x=NTL::to_zz_pE(tmp);
                 return is;
             }
+            
+		std::ostream& write( std::ostream& os ) const
+            {
+                return os << "Polynomial quotient ring using NTL::zz_pE";
+            }
+            
+		std::ostream& write( std::ostream& os, const Element& x) const {
+			os << x;
+			return os;
+		}
 	}; // end of class NTL_zz_pE
 
 
