@@ -45,7 +45,7 @@
 
 using namespace LinBox;
 using namespace std;
-
+/*
 template<class T>
 T& myrand (T& r, long size)
 {
@@ -54,7 +54,6 @@ T& myrand (T& r, long size)
   else
     return r = T(  lrand48() % size ) ;
 };
-
 
 #include <gmp++/gmp++.h>
 #include <string>
@@ -70,7 +69,8 @@ std::string gmp_rand ( size_t maxNdigits)
   }
   return result;
 }
-
+*/
+///////////////////////////////////////////////////////////////////////////////////////////
 template <class Field>
 static bool checkResult (const Field  &ZZ,
 				    BlasMatrix<Field> &A,
@@ -78,6 +78,22 @@ static bool checkResult (const Field  &ZZ,
   for (long i = 0 ; i < A.rowdim() ; ++i)  
     for (long j = 0 ; j < A.coldim() ; ++j){
       if(!ZZ.areEqual(A[i][j],A2[i][j])){
+	std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+	std::cerr << "               The data communicated is inconsistent                " << std::endl;
+	std::cerr << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
+	return false;
+      }
+    } 
+
+    return true;
+}
+template <class Field>
+static bool checkResult (const Field  &ZZ,
+				    SparseMatrix<Field> &A,
+				    SparseMatrix<Field> &A2){
+  for (long i = 0 ; i < A.rowdim() ; ++i)  
+    for (long j = 0 ; j < A.coldim() ; ++j){
+      if(!ZZ.areEqual(A.getEntry(i,j),A2.getEntry(i,j))){
 	std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
 	std::cerr << "               The data communicated is inconsistent                " << std::endl;
 	std::cerr << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
@@ -102,76 +118,78 @@ static bool checkResult (const Field  &ZZ,
 
     return true;
 }
-////////////////////////////////////////////////////////////////////////////////////
-#include <limits.h>
-#include <float.h>
-double get_random_double() {
-  //return DBL_MIN * ((double) rand() / (double) RAND_MAX) - DBL_MAX;
-    double f = (double)rand() / RAND_MAX;
-    return DBL_MIN + f * (DBL_MAX - DBL_MIN);
-}
-float get_random_float() {
-//  return FLT_MIN * ((double) rand() / (double) RAND_MAX) - FLT_MAX;
-    float f = (float)rand() / RAND_MAX;
-    return FLT_MIN + f * (FLT_MAX - FLT_MIN);
-}
-int get_random_int() {
-  return INT_MIN * (rand() / RAND_MAX) - INT_MAX;
-}
-///////////////////////////////////////////////////////////////////////////////////
 
-//#include <map>
-#include <iostream>
-#include <fstream>
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <class Field>
+bool genData (BlasMatrix<Field> &A, size_t bits){
+    typename Field::Element ZZ;
+    typedef typename Field::RandIter RandIter;    
+    RandIter RI(ZZ) ;
+    LinBox::RandomDenseMatrix<RandIter,Field>  RDM(ZZ,RI);
+    RDM.randomFullRank(A);
+}
+
+template <class Field>
+bool genData (SparseMatrix<Field> &A, size_t bits){
+    typename Field::Element ZZ;
+    typedef typename Field::RandIter RandIter;    
+    RandIter RI(ZZ) ;
+    LinBox::RandomDenseMatrix<RandIter,Field>  RDM(ZZ,RI);
+    RDM.randomFullRank(A);
+}
+
+template <class Field>
+bool genData (BlasVector<Field>  &B, size_t bits){
+    typename Field::Element ZZ;
+    typedef typename Field::RandIter RandIter;    
+    RandIter RI(ZZ) ;
+    B.random(RI);
+}
 
 
-int main(int argc, char ** argv)
+template <>
+bool genData (BlasMatrix<Givaro::ZRing<Integer> >  &A, size_t bits){
+    Givaro::ZRing<Integer> ZZ;
+    typedef typename  Givaro::ZRing<Integer> ::RandIter RandIter;    
+    RandIter RI(ZZ,bits) ;
+    LinBox::RandomDenseMatrix<RandIter, Givaro::ZRing<Integer> >  RDM(ZZ,RI);
+    RDM.randomFullRank(A);
+}
+template <>
+bool genData (SparseMatrix<Givaro::ZRing<Integer> >  &A, size_t bits){
+    Givaro::ZRing<Integer> ZZ;
+    typedef typename  Givaro::ZRing<Integer> ::RandIter RandIter;    
+    RandIter RI(ZZ,bits) ;
+    LinBox::RandomDenseMatrix<RandIter, Givaro::ZRing<Integer> >  RDM(ZZ,RI);
+    RDM.randomFullRank(A);
+}
+template <>
+bool genData (DenseVector<Givaro::ZRing<Integer> >  &B, size_t bits){
+    Givaro::ZRing<Integer> ZZ;
+    typedef typename  Givaro::ZRing<Integer> ::RandIter RandIter;    
+    RandIter RI(ZZ,bits) ;
+    B.random(RI);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void test_main(size_t bits, size_t ni, size_t nj, Communicator *Cptr)
 {
-  
-  
-  Communicator *Cptr = NULL;
-  Cptr = new Communicator(&argc, &argv);
-  size_t dg,ni,nj,max;  
 
-   dg=10, ni=3,nj=3,max=1000; 
+  Givaro::ZRing<T> ZZ;
+  DenseMatrix<Givaro::ZRing<T>> A (ZZ,ni,nj), A2(ZZ,ni,nj);
 
- 	static Argument args[] = {
-		{ 'n', "-n N", "Set column and row dimension of test matrices to N.", TYPE_INT,     &ni },
-		{ 'm', "-m M", "Set the mxaimum for the range of integers to generate.", TYPE_INT,     &max },
-		{ 'd', "-d M", "Set the mxaimum number of digits of integers to generate.", TYPE_INT,     &dg },
-		END_OF_ARGUMENTS
-	};	
-parseArguments (argc, argv, args); 
-
- MPI_Bcast(&ni, 1, MPI_INT, 0, MPI_COMM_WORLD); nj=ni;
-
-  Givaro::ZRing<double> ZZ;
-  DenseMatrix<Givaro::ZRing<double>> A (ZZ,ni,nj), A2(ZZ,ni,nj);
-
-  typedef BlasVector<Givaro::ZRing<double> > DenseVector;
+  typedef BlasVector<Givaro::ZRing<T> > DenseVector;
   DenseVector B2(ZZ, A.coldim()),  B(ZZ, A.coldim());
-  Givaro::ZRing<double>::Element d;
-
-    
 
 
   if(0==Cptr->rank()){
-////////////////////////////////////////////////////////////////////////////////////////////////
-srand (time(NULL));
-    for (long i = 0; i < ni; ++i)
-      for (long j = 0; j < nj; ++j){
-A.setEntry(i,j,get_random_float());
-      }
- 
-    for (long j = 0; j < nj; ++j){
-B.setEntry(j,get_random_float());
-    }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////
+    genData (A, bits);
+    genData (B, bits);
 
-//B.write(std::cout << ">>>>Compute with B:\n",Tag::FileFormat::Maple) << ';' << std::endl;
-
-//A.write(std::cout << ">>>>Compute with A:\n",Tag::FileFormat::Maple) << ';' << std::endl;
+B.write(std::cout << ">>>>Compute with B:\n",Tag::FileFormat::Maple) << ';' << std::endl;
+A.write(std::cout << ">>>>Compute with A:\n",Tag::FileFormat::Maple) << ';' << std::endl;
 
 
   }//End of BLock for process(0)
@@ -186,8 +204,7 @@ if(0==Cptr->rank()){
 //MPI_Barrier(MPI_COMM_WORLD);
 //starttime = MPI_Wtime();
   //MPI data distribution for Integer type value
-
-    Cptr->send(B,1);   // MPIgmpBcast(A, ni, nj, 0, Cptr);
+    Cptr->ssend(B,1);
 
 //MPI_Barrier(MPI_COMM_WORLD);
 //endtime   = MPI_Wtime(); 
@@ -195,9 +212,10 @@ if(0==Cptr->rank()){
 
 }else{
 
-    Cptr->recv(B2,0);   // MPIgmpBcast(A, ni, nj, 0, Cptr);
+    Cptr->recv(B2,0);
 
 }
+
 
 if(0==Cptr->rank()){
 
@@ -206,14 +224,14 @@ if(0==Cptr->rank()){
 //starttime = MPI_Wtime();
   //MPI data distribution for Integer type value
 
-    Cptr->send(A,1);   // MPIgmpBcast(B, ni, 0, Cptr);
+    Cptr->ssend(A,1); 
 //MPI_Barrier(MPI_COMM_WORLD);
 //endtime   = MPI_Wtime(); 
 //std::cout<<"MPI data distribution used CPU time (seconds): " <<endtime-starttime<<std::endl;
 
 }else{
 
-    Cptr->recv(A2,0);   // MPIgmpBcast(B, ni, 0, Cptr
+    Cptr->recv(A2,0);
 }
 
 
@@ -225,18 +243,49 @@ Cptr->bcast(A,0);
  if(0!=Cptr->rank()) checkResult (ZZ, B, B2);
 
 //Check if data are correctly distributed to all processes
-
   if(0!=Cptr->rank()){
-/*
 B.write(std::cout << "process("<<Cptr->rank()<< ")<<<<Compute with B:\n",Tag::FileFormat::Maple) << ';' << std::endl;
- A.write(std::cout << "process("<<Cptr->rank()<< ")<<<<Compute with A: \n",Tag::FileFormat::Maple) << ';' << std::endl;
-*/
-  
+A.write(std::cout << "process("<<Cptr->rank()<< ")<<<<Compute with A: \n",Tag::FileFormat::Maple) << ';' << std::endl; 
 }
+
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+int main(int argc, char ** argv)
+{
+  
+  Communicator *Cptr = NULL;
+  Cptr = new Communicator(&argc, &argv);
+  size_t bits,ni,niter,nj;  
+
+   bits=10,niter=3, ni=3,nj=3; 
+
+ 	static Argument args[] = {
+		{ 'n', "-n N", "Set column and row dimension of test matrices to N.", TYPE_INT,     &ni },
+		{ 'b', "-b B", "Set the mxaimum number of digits of integers to generate.", TYPE_INT,     &bits },
+		{ 'i', "-i I", "Set the number of iteration over unit test sets.", TYPE_INT,     &niter },
+		END_OF_ARGUMENTS
+	};	
+parseArguments (argc, argv, args); 
+
+ MPI_Bcast(&ni, 1, MPI_INT, 0, MPI_COMM_WORLD); nj=ni;
+ MPI_Bcast(&niter, 1, MPI_INT, 0, MPI_COMM_WORLD);
+
+srand (time(NULL));
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+for(int j=0;j<niter;j++){
+	test_main<float>(bits,ni,nj,Cptr);
+	test_main<double>(bits,ni,nj,Cptr);
+	test_main<int>(bits,ni,nj,Cptr);
+	test_main<Integer>(bits,ni,nj,Cptr);
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
   MPI_Finalize();
   return 0;  
-
-
   
 }
 
