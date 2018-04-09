@@ -195,6 +195,18 @@ namespace LinBox
                 }
                 return p;
             }
+		template <class ANY>
+		Element& init( Element& p, const Subvector<ANY>& v ) const
+            {
+                p = 0;
+                Coeff temp;
+                for( long i = 0; i < (long)v.size(); ++i ) {
+                    _CField.init( temp, v[ (size_t) i ] );
+                    if( !_CField.isZero(temp) )
+                        NTL::SetCoeff( p, i, temp );
+                }
+                return p;
+            }
 
 
             /** Initialize p from a vector of coefficients.

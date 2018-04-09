@@ -55,6 +55,162 @@ void time1(std::function<void()> fun) {
 	time2([fun](){fun(); return true;});
 }
 
+template<class Field1>
+void writeInvariantFactor(
+	const std::string outFile,
+	const BlasVector<Field1> &result) {
+
+	if (outFile == "") {
+		return;
+	}
+	
+	Field1 F(result.field());
+	std::ofstream out(outFile);
+	
+	for (size_t i = 0; i < result.size(); i++) {
+		F.write(out, result[i]) << std::endl;
+	}
+	
+	out.close();
+}
+
+template<class Field1, class Rep>
+void scaleRows(SparseMatrix<Field1, Rep> &M, const SparseMatrix<Field1, Rep> &A) {
+	// M = DA
+	Field1 F(A.field());
+	typename Field1::RandIter RI(F);
+	
+	std::cout << "scaling:" << std::flush;
+	time1([&](){
+		for (size_t i = 0; i < M.coldim(); i++) {
+			typename Field1::Element factor;
+			do {
+				RI.random(factor);
+			} while (F.isZero(factor));
+			
+			for (size_t j = 0; j < M.rowdim(); j++) {
+				typename Field1::Element elm, scaledElm;
+				A.getEntry(elm, i, j);
+				if (!F.isZero(elm)) {
+					F.mul(scaledElm, elm, factor);
+					M.setEntry(i, j, scaledElm);
+				}
+			}
+		}
+		M.finalize();
+	});
+}
+
+template<class Blackbox1, class Blackbox2>
+void copy(Blackbox1 &A, const Blackbox2 &B) {
+	typedef typename Blackbox1::Field Field1;
+	typedef typename Blackbox2::Field Field2;
+	
+	for (size_t i = 0; i < B.rowdim(); i++) {
+		for (size_t j = 0; j < B.coldim(); j++) {
+			typename Field2::Element elm;
+			integer tmp;
+			typename Field1::Element oelm;
+			
+			B.getEntry(elm, i, j);
+			B.field().convert(tmp, elm);
+			A.field().init(oelm, tmp);
+			A.setEntry(i, j, oelm);
+		}
+	}
+	A.finalize();
+}
+
+template<class Ring, class Blackbox>
+void wiedemann1(BlasVector<Ring> &result, const Blackbox &M) {
+	typedef typename Blackbox::Field Field1;
+	typedef typename Field1::RandIter RandIter;
+	typedef BlackboxContainer<Field1, Blackbox> Sequence;
+	
+	BlasVector<Field1> phi(M.field());
+	unsigned long deg;
+	
+	time1([&](){
+		RandIter RI(M.field());
+		Sequence seq(&M, M.field(), RI);
+		MasseyDomain<Field1, Sequence> WD(&seq, 20);
+		
+		WD.minpoly(phi, deg);
+	});
+	std::cout << (phi.size() - 1) << std::endl;
+	result.field().init(result.refEntry(0), phi);
+}
+
+template<class Blackbox>
+void computeGenerator(
+	std::vector<BlasMatrix<typename Blackbox::Field>> &gen,
+	const Blackbox &M,
+	size_t b,
+	int earlyTerm = 10) {
+	typedef typename Blackbox::Field Field1;
+	typedef typename Field1::RandIter RandIter1;
+	typedef MatrixDomain<Field1> MatrixDom1;
+	typedef typename MatrixDom1::OwnMatrix Matrix1;
+	
+	Field1 EF(M.field());
+	RandIter1 RI(EF);
+	RandomDenseMatrix<RandIter1, Field1> RDM(EF, RI);
+	MatrixDom1 MD(EF);
+	
+	size_t n = M.rowdim();
+	Matrix1 U(EF, b, n);
+	Matrix1 V(EF, n, b);
+	
+	RDM.random(U);
+	RDM.random(V);
+	
+	typedef BlackboxBlockContainer<Field1, Blackbox> Sequence;
+	Sequence blockSeq(&M, EF, U, V);
+	BlockCoppersmithDomain<MatrixDom1, Sequence> coppersmith(MD, &blockSeq, earlyTerm);
+	
+	coppersmith.right_minpoly(gen);
+}
+
+template<class Blackbox>
+void wiedemannb(
+	BlasVector<NTL_zz_pEX> &result,
+	const Blackbox &M,
+	const typename NTL_zz_pEX::Element &modulus) {
+
+	typedef NTL_zz_pE ExtField;
+	typedef NTL_zz_pEX ExtRing;
+	
+	ExtField EF(result.field().getCoeffField());
+	ExtRing ER(result.field());
+	
+	size_t b = result.size();
+		
+	std::vector<BlasMatrix<ExtField>> minpoly;
+	time1([&](){computeGenerator(minpoly, M, b);});
+	
+	BlasMatrix<ExtRing> G(ER, b, b);
+	for (size_t i = 0; i < b; i++) {
+		for (size_t j = 0; j < b; j++) {
+			typename ExtRing::Element g;
+			ER.init(g);
+			
+			for (size_t k = 0; k < minpoly.size(); k++) {
+				ER.setCoeff(g, k, minpoly[k].getEntry(i, j));
+			}
+			
+			G.setEntry(i, j, g);
+		}
+	}
+	
+	std::vector<typename ExtRing::Element> tmpResult;
+	SmithFormKannanBachemDomain<ExtRing> SFD(ER);
+	time1([&](){SFD.solveIliopoulos(tmpResult, G, modulus);});	
+	
+	for (size_t i = 0; i < b; i++) {
+		result.setEntry(i, tmpResult[i]);
+	}
+}
+
 class TestInvariantFactorsHelper {
 public:
 	const size_t _p;
@@ -114,70 +270,14 @@ public:
 	}
 	
 	template<class Field1, class Rep>
-	void wiedemann(std::string outFile, SparseMatrix<Field1, Rep> &A, size_t precond, size_t k) const {
+	void wiedemann(std::string outFile, SparseMatrix<Field1, Rep> &A, size_t precond) const {
 		if (precond == 0) {
 			wiedemann(outFile, A);
 			return;
 		}
 		
-		if (precond == 3) {
-			typedef typename Field1::Element Coeff;
-			typedef typename Field1::RandIter RandIter;
-			typedef NTL_zz_pEX PRing;
-			typedef typename PRing::Element Poly;
-			
-			RandIter RI(A.field());
-			PRing ER(A.field());
-			
-			size_t n = A.rowdim();
-			
-			Poly u,v;
-			ER.init(u);
-			ER.init(v);
-			for (size_t i = 0; i < n+k-1; i++) {
-				Coeff c;
-				RI.random(c);
-				ER.setCoeff(u, i, c);
-				
-				RI.random(c);
-				ER.setCoeff(v, i, c);
-			}
-			
-			Toeplitz<Field1, PRing> U(ER, u, n, k);
-			Toeplitz<Field1, PRing> V(ER, v, k, n);
-			Compose<Toeplitz<Field1, PRing>, Toeplitz<Field1, PRing>> B(U, V);
-			Sum<SparseMatrix<Field1, Rep>, Compose<Toeplitz<Field1, PRing>, Toeplitz<Field1, PRing>>> M(A, B);
-			
-			std::cout << "Computing " << k << "-th invariant factor" << std::endl;
-			
-			wiedemann(outFile, M);
-			
-			return;
-		}
-		
-		// M = DA
-		Field1 F(A.field());
-		typename Field1::RandIter RI(F);
-		SparseMatrix<Field1, Rep> M(F, A.rowdim(), A.coldim());
-		std::cout << "scaling:" << std::flush;
-		time1([&](){
-			for (size_t i = 0; i < M.coldim(); i++) {
-				typename Field1::Element factor;
-				do {
-					RI.random(factor);
-				} while (F.isZero(factor));
-				
-				for (size_t j = 0; j < M.rowdim(); j++) {
-					typename Field1::Element elm, scaledElm;
-					A.getEntry(elm, i, j);
-					if (!F.isZero(elm)) {
-						F.mul(scaledElm, elm, factor);
-						M.setEntry(i, j, scaledElm);
-					}
-				}
-			}
-			M.finalize();
-		});
+		SparseMatrix<Field1, Rep> M(A.field(), A.rowdim(), A.coldim());
+		scaleRows(M, A);
 		
 		if (precond == 1) { // D A -- Determinant preconditioner
 			wiedemann(outFile, M);
@@ -189,27 +289,7 @@ public:
 		}
 	}
 	
-	template<class Blackbox1, class Blackbox2>
-	void copy(Blackbox1 &A, const Blackbox2 &B) const {
-		typedef typename Blackbox1::Field Field1;
-		typedef typename Blackbox2::Field Field2;
-		
-		for (size_t i = 0; i < B.rowdim(); i++) {
-			for (size_t j = 0; j < B.coldim(); j++) {
-				typename Field2::Element elm;
-				integer tmp;
-				typename Field1::Element oelm;
-				
-				B.getEntry(elm, i, j);
-				B.field().convert(tmp, elm);
-				A.field().init(oelm, tmp);
-				A.setEntry(i, j, oelm);
-			}
-		}
-		A.finalize();
-	}
-	
-	void extWiedemann(std::string outFile, SparseMat &M, size_t extend, size_t precond, size_t k) const {
+	void extWiedemann(std::string outFile, SparseMat &M, size_t extend, size_t precond) const {
 		if (extend <= 1) {
 			wiedemann(outFile, M);
 			return;
@@ -235,93 +315,9 @@ public:
 			FBlackbox EM(EF, M.rowdim(), M.coldim());
 			copy(EM, M);
 			
-			wiedemann(outFile, EM, precond, k);
+			wiedemann(outFile, EM, precond);
 		//}
 	}
-
-	template<class Blackbox>
-	void computeGenerator(
-		std::vector<BlasMatrix<typename Blackbox::Field>> &gen,
-		const Blackbox &M,
-		size_t b,
-		int earlyTerm = 10) const
-	{
-		typedef typename Blackbox::Field Field1;
-		typedef typename Field1::RandIter RandIter1;
-		typedef MatrixDomain<Field1> MatrixDom1;
-		typedef typename MatrixDom1::OwnMatrix Matrix1;
-		
-		Field1 EF(M.field());
-		RandIter1 RI(EF);
-		RandomDenseMatrix<RandIter1, Field1> RDM(EF, RI);
-		MatrixDom1 MD(EF);
-		
-		size_t n = M.rowdim();
-		Matrix1 U(EF, b, n);
-		Matrix1 V(EF, n, b);
-		
-		RDM.random(U);
-		RDM.random(V);
-		
-		typedef BlackboxBlockContainer<Field1, Blackbox> Sequence;
-		Sequence blockSeq(&M, EF, U, V);
-		BlockCoppersmithDomain<MatrixDom1, Sequence> coppersmith(MD, &blockSeq, earlyTerm);
-		
-		coppersmith.right_minpoly(gen);
-	}
-	
-	void extCoppersmith(std::string outFile, SparseMat &M, size_t b, size_t extend, Polynomial modulus1) const {
-		typedef NTL_zz_pE ExtField;
-		typedef NTL_zz_pEX ExtRing;
-		typedef SparseMatrix<ExtField, SparseMatrixFormat::CSR> FBlackbox;
-		
-		ExtField EF((uint64_t) _p, extend);
-		ExtRing ER(EF);
-		FBlackbox EM(EF, M.rowdim(), M.coldim());
-		copy(EM, M);
-		
-		typename ExtRing::Element modulus = NTL::conv<NTL::zz_pEX>(modulus1);
-		
-		std::vector<BlasMatrix<ExtField>> minpoly;
-		time1([&](){computeGenerator(minpoly, EM, b);});
-		
-		BlasMatrix<ExtRing> G(ER, b, b);
-		for (size_t i = 0; i < b; i++) {
-			for (size_t j = 0; j < b; j++) {
-				typename ExtRing::Element g;
-				ER.init(g);
-				
-				for (size_t k = 0; k < minpoly.size(); k++) {
-					ER.setCoeff(g, k, minpoly[k].getEntry(i, j));
-				}
-				
-				G.setEntry(i, j, g);
-			}
-		}
-		
-		SmithFormKannanBachemDomain<ExtRing> SFD(ER);
-		
-		std::vector<typename ExtRing::Element> result;
-		time1([&](){SFD.solveIliopoulos(result, G, modulus);});
-		
-		size_t total = 0;
-		for (auto it = result.begin(); it != result.end(); it++) {
-			if (ER.deg(*it) > 1) {
-				total++;
-			}
-		}
-		std::cout << " \t" << total << std::endl;
-		
-		if (outFile != "") {
-			std::ofstream out(outFile);
-			std::for_each(result.begin(), result.end(), [&](const typename ExtRing::Element &v) {
-				typename ExtRing::Element f;
-				ER.write(out, ER.monic(f, v)) << std::endl;
-			});
-			out.close();
-		}
-	}
-	//*/
 }; // End of TestInvariantFactorsHelper
 
 void randomVec(std::vector<size_t> & V, size_t n)  {
@@ -464,8 +460,8 @@ int main(int argc, char** argv) {
 	SparseMat M(F);                                           
 	readMatrix(M, matrixFile, perm != 0);
 	
+	assert(M.rowdim() == M.coldim());
 	size_t n = M.rowdim();
-	if (n <= 20) M.write(std::cout) << std::endl;
 	
 	SparseMat PreR(F, n, n);
 	SparseMat PreL(F, n, n);
@@ -481,13 +477,70 @@ int main(int argc, char** argv) {
 		randomTriangular(PreR, s, false, true);
 		randomTriangular(PreL, s, true, true);
 		precondL = precondR = true;
+	} else if (precond == 3) { // k-th invariant
+		typedef NTL_zz_pE ExtField;
+		typedef NTL_zz_pEX ExtRing;
+		typedef SparseMatrix<ExtField, SparseMatrixFormat::CSR> ExtBlackbox;
+		
+		ExtField EF(p, extend);
+		ExtRing ER(EF);
+		
+		ExtBlackbox EM(EF, n, n);
+		copy(EM, M);
+		
+		typedef typename ExtField::Element Coeff;
+		typedef typename ExtField::RandIter RandIter;
+		typedef typename ExtRing::Element Poly;
+		
+		RandIter RI(EF);
+		
+		Poly u, v;
+		ER.init(u);
+		ER.init(v);
+		for (size_t i = 0; i < n+k-1; i++) {
+			Coeff c;
+			RI.random(c);
+			ER.setCoeff(u, i, c);
+			
+			RI.random(c);
+			ER.setCoeff(v, i, c);
+		}
+		
+		typedef Toeplitz<ExtField, ExtRing> Toep;
+		Toep U(ER, u, n, k);
+		Toep V(ER, v, k, n);
+		Compose<Toep, Toep> B(U, V);
+		Sum<ExtBlackbox, Compose<Toep, Toep>> Mk(EM, B);
+		
+		BlasVector<ExtRing> result(ER, b);
+		wiedemann1(result, EM);
+		
+		Poly minpoly;
+		result.getEntry(minpoly, 0);
+		
+		if (b == 1) {
+			wiedemann1(result, Mk);
+		} else {
+			wiedemannb(result, Mk, minpoly);
+			std::cout << std::endl;
+		}
+		
+		for (size_t i = 0; i < b; i++) {
+			Poly fi;
+			ER.gcd(fi, result[i], minpoly);
+			result.setEntry(i, fi);
+		}
+		
+		writeInvariantFactor(outFile, result);
+		
+		return 0;
 	}
 	
 	TestInvariantFactorsHelper helper(p);
 	std::cout << n << "\t" << M.size() << "\t" << b << "\t" << std::flush;
 	
 	if (b == 1) {
-		helper.extWiedemann(outFile, M, extend, precond, k);
+		helper.extWiedemann(outFile, M, extend, precond);
 		return 0;
 	}
 		
@@ -525,11 +578,6 @@ int main(int argc, char** argv) {
 	}
 	if ((alg & 1) && !R.isZero(det)) {
 		time1([&](){PSFD.solve(result, G, det);});
-	}
-	
-	if (extend > 1) {
-		helper.extCoppersmith(outFile, M, b, extend, result[result.size() - modIndex - 1]);
-		return 0;
 	}
 	
 	size_t total = 0;
