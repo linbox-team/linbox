@@ -214,11 +214,8 @@ void wiedemannb(
 class TestInvariantFactorsHelper {
 public:
 	const size_t _p;
-	const Field F;
-	const Ring R;
-	const MatrixDomain<Field> MD;
 	
-	TestInvariantFactorsHelper(size_t p) : _p(p), F(p), R(p), MD(F) {};
+	TestInvariantFactorsHelper(size_t p) : _p(p) {};
 	
 	template<class Field1>
 	void writeInvariantFactor(std::string outFile, BlasVector<Field1> result) const {
@@ -295,9 +292,8 @@ public:
 			return;
 		}
 		
-		//uint64_t maxZechExt = Givaro::FF_EXPONENT_MAX((uint64_t)_p, (uint64_t)LINBOX_EXTENSION_DEGREE_MAX);
-		//if (extend <= maxZechExt) {
-			/*
+		uint64_t maxZechExt = Givaro::FF_EXPONENT_MAX((uint64_t)_p, (uint64_t)LINBOX_EXTENSION_DEGREE_MAX);
+		if (extend <= maxZechExt) {
 			typedef Givaro::GFqDom<int64_t> ExtField;
 			typedef typename SparseMat::template rebind<ExtField>::other FBlackbox;
 			
@@ -305,9 +301,8 @@ public:
 			FBlackbox EM(M, EF);
 			EM.finalize();
 			
-			wiedemann(outFile, EM, precond, k);
-			*/
-		//} else {
+			wiedemann(outFile, EM, precond);
+		} else {
 			typedef NTL_zz_pE ExtField;
 			typedef SparseMatrix<ExtField, SparseMatrixFormat::CSR> FBlackbox;
 			
@@ -316,7 +311,7 @@ public:
 			copy(EM, M);
 			
 			wiedemann(outFile, EM, precond);
-		//}
+		}
 	}
 }; // End of TestInvariantFactorsHelper
 
