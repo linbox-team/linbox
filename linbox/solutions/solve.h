@@ -859,10 +859,12 @@ namespace LinBox
                 
 		BlasVector<Givaro::ZRing<Integer>> num(A.field(),A.coldim());
 		IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
 #ifdef __LINBOX_HAVE_MPI
 		MPIratChineseRemainder< EarlyMultipRatCRA< Givaro::Modular<double> > > cra(3UL, C);
 #else
-        RationalRemainder< EarlyMultipRatCRA< Givaro::Modular<double> > > cra(3UL);
+//        ChineseRemainderRatOMP< EarlyMultipRatCRA< Givaro::Modular<double> > > cra(3UL); 
+          RationalRemainder< EarlyMultipRatCRA< Givaro::Modular<double> > > cra(3UL);
 #endif
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
         Timer chrono;
@@ -873,7 +875,7 @@ namespace LinBox
 #else
         chrono.stop();//std::cout << "Spent CPU time (seconds) in solveCRA: " << chrono.usertime() << std::endl;
 #endif
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 #ifdef __LINBOX_HAVE_MPI
 		if(!C || C->rank() == 0){ 
 #endif 
