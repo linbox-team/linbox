@@ -169,8 +169,11 @@ bool test_set(BlasVector<Givaro::ZRing<Integer> > &X2,
   double starttime, endtime;
   starttime = MPI_Wtime(); 
 #else
-  Timer chrono;
-  chrono.start();
+  //Timer chrono;
+  double start;
+  double end;
+
+  start = omp_get_wtime();
 #endif
   solveCRA (X2, d, A, B, tg, 
 	    Method::BlasElimination()
@@ -184,7 +187,7 @@ bool test_set(BlasVector<Givaro::ZRing<Integer> > &X2,
   endtime   = MPI_Wtime();
   MPI_Barrier(MPI_COMM_WORLD);
 #else
-  chrono.stop();
+  end = omp_get_wtime();
 #endif
   //  DenseVector B2(ZZ, A.coldim());
   
@@ -210,7 +213,7 @@ bool test_set(BlasVector<Givaro::ZRing<Integer> > &X2,
 #ifdef __LINBOX_HAVE_MPI
     std::cout << "CPU time (seconds): " << endtime-starttime << std::endl;
 #else
-    std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
+    std::cout << "CPU time (seconds): " << end-start << std::endl;
 #endif
     
     

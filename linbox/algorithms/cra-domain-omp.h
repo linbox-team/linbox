@@ -308,8 +308,10 @@ namespace LinBox
 
 #pragma omp parallel for
 				for(size_t i=0;i<NN;++i) {
+
 #pragma omp critical
 					Iteration(ROUNDresidues[i], ROUNDdomains[i]);
+
 				}
 #pragma omp barrier
 				++this->IterCounter;
@@ -346,10 +348,12 @@ namespace LinBox
 					ROUNDdomains.back().init( *resit );
 				}
 
-#pragma omp parallel for
+#pragma omp parallel for 
 				for(size_t i=0;i<NN;++i) {
+
 #pragma omp critical
 					Iteration(ROUNDresidues[i], ROUNDdomains[i]);
+
 				}
 #pragma omp barrier
 				for(size_t i=0;i<NN;++i) {
@@ -363,18 +367,20 @@ namespace LinBox
 		}
 
 
+#if 1
 		template<class Container, class Function, class PrimeIterator>
-		Container& operator() (Container& res, Integer& den, Function& Iteration, PrimeIterator& primeiter)
+		Container& operator()  (Container& res, Integer& den, Function& Iteration, PrimeIterator& primeiter)
 		{
 			typedef typename CRATemporaryVectorTrait<Function, Domain>::Type_t ElementContainer;
 			size_t NN = omp_get_max_threads();
 			std::cerr << "Blocs: " << NN << " iterations." << std::endl;
 			// commentator().start ("Parallel OMP Givaro::Modular iteration", "mmcrait");
-			if (NN == 1) return Father_t::operator()(res,den,Iteration,primeiter);
+			if (NN == 1) return Father_t::operator()(res, den,Iteration,primeiter);
 
 			int coprime =0;
 			int maxnoncoprime = 1000;
 long IterCounter=0;
+
 			if (IterCounter==0) {
 				std::set<Integer> coprimeset;
 				while(coprimeset.size() < NN) {
@@ -391,6 +397,7 @@ long IterCounter=0;
 					coprimeset.insert(*primeiter);
 				}
 				std::vector<Domain> ROUNDdomains; ROUNDdomains.reserve(NN);
+
 				std::vector<ElementContainer> ROUNDresidues(NN);
 				typename std::vector<ElementContainer>::iterator resit=ROUNDresidues.begin();
 				for(std::set<Integer>::const_iterator coprimesetiter = coprimeset.begin(); coprimesetiter != coprimeset.end(); ++coprimesetiter,++resit) {
@@ -401,19 +408,25 @@ long IterCounter=0;
 					//                         ROUNDdomains.back().init( *reselit );
 				}
 
-#pragma omp parallel for 
+
+#pragma omp parallel for schedule(guided) num_threads(NN)
 				for(size_t i=0;i<NN;++i) {
-#pragma omp critical
+
 					Iteration(ROUNDresidues[i], ROUNDdomains[i]);
 				}
-#pragma omp barrier
+//#pragma omp barrier
+
 
 				++IterCounter;
 				this->Builder_.initialize( ROUNDdomains[0],ROUNDresidues[0]);
+#pragma omp parallel for schedule(guided) num_threads(NN)
 				for(size_t i=1;i<NN;++i) {
 					++IterCounter;
+#pragma omp critical
 					this->Builder_.progress( ROUNDdomains[i],ROUNDresidues[i]);
 				}
+
+
 				// commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
 			}
 
@@ -433,6 +446,7 @@ long IterCounter=0;
 					coprime =0;
 					coprimeset.insert(*primeiter);
 				}
+
 				std::vector<Domain> ROUNDdomains; ROUNDdomains.reserve(NN);
 				std::vector<ElementContainer> ROUNDresidues(NN);
 				typename std::vector<ElementContainer>::iterator resit=ROUNDresidues.begin();
@@ -445,23 +459,70 @@ long IterCounter=0;
 				}
 
 
-#pragma omp parallel for 
+#pragma omp parallel for schedule(guided) num_threads(NN)
 				for(size_t i=0;i<NN;++i) {
-#pragma omp critical
-					Iteration(ROUNDresidues[i], ROUNDdomains[i]);
-				}
-#pragma omp barrier
 
+					Iteration(ROUNDresidues[i], ROUNDdomains[i]);
+
+				}
+//#pragma omp barrier
+
+
+#pragma omp parallel for schedule(guided) num_threads(NN)
 				for(size_t i=0;i<NN;++i) {
 					++IterCounter;
+#pragma omp critical
 					this->Builder_.progress( ROUNDdomains[i],ROUNDresidues[i]);
 				}
+//#pragma omp barrier
 			}
+
 			// commentator().stop ("done", NULL, "mmcrait");
 			//std::cerr << "Used: " << IterCounter << " primes." << std::endl;
 			return this->Builder_.result(res,den);
 		}
+
+#endif
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#if 0
+		template<class Container, class Function, class PrimeIterator>
+		Container& operator()  (Container& res, Integer& den, Function& Iteration, PrimeIterator& genprime)
+		{
+			++genprime;
+			{
+				Domain D(*genprime);
+				BlasVector<Domain > r(D);
+				this->Builder_.initialize( D, Iteration(r, D) );
+			}
+size_t NN = omp_get_max_threads();
+#pragma omp parallel for schedule(guided) num_threads(NN)
+for(size_t i=0;i<NN;++i)
+{
+#pragma omp critical
+{
+//std::cerr<<"Prime<"<<*genprime<<"> Thread("<<omp_get_thread_num()<<") >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "<<std::endl;
+while(! this->Builder_.terminated() ){  
+//std::cerr<<"Prime<"<<*genprime<<"> Thread("<<omp_get_thread_num()<<") >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> 2"<<std::endl;
+
+				++genprime; while(this->Builder_.noncoprime(*genprime) ) ++genprime;
+				Domain D(*genprime);
+				BlasVector<Domain > r(D);
+				this->Builder_.progress( D, Iteration(r, D) );
+//std::cerr<<"Prime<"<<*genprime<<"> Thread("<<omp_get_thread_num()<<") <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< 2"<<std::endl;
+			}
+//std::cerr<<"Prime<"<<*genprime<<"> Thread("<<omp_get_thread_num()<<") <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< "<<std::endl;
+}
+
+}
+#pragma omp barrier
+
+
+			return this->Builder_.result(res, den);
+		}
+#endif
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	};
+
 
 
 }
@@ -539,7 +600,7 @@ long IterCounter=0;
 
 
 
-
+ 
 
 
 
