@@ -22,6 +22,7 @@
 #include "linbox/blackbox/sum.h"
 #include "linbox/blackbox/transpose.h"
 #include "linbox/blackbox/toeplitz.h"
+#include "linbox/blackbox/diagonal.h"
 
 #include "linbox/algorithms/poly-smith-form.h"
 #include "linbox/algorithms/invariant-factors.h"
@@ -72,33 +73,6 @@ void writeInvariantFactor(
 	}
 	
 	out.close();
-}
-
-template<class Field1, class Rep>
-void scaleRows(SparseMatrix<Field1, Rep> &M, const SparseMatrix<Field1, Rep> &A) {
-	// M = DA
-	Field1 F(A.field());
-	typename Field1::RandIter RI(F);
-	
-	std::cout << "scaling:" << std::flush;
-	time1([&](){
-		for (size_t i = 0; i < M.coldim(); i++) {
-			typename Field1::Element factor;
-			do {
-				RI.random(factor);
-			} while (F.isZero(factor));
-			
-			for (size_t j = 0; j < M.rowdim(); j++) {
-				typename Field1::Element elm, scaledElm;
-				A.getEntry(elm, i, j);
-				if (!F.isZero(elm)) {
-					F.mul(scaledElm, elm, factor);
-					M.setEntry(i, j, scaledElm);
-				}
-			}
-		}
-		M.finalize();
-	});
 }
 
 template<class Blackbox1, class Blackbox2>
@@ -273,14 +247,17 @@ public:
 			return;
 		}
 		
-		SparseMatrix<Field1, Rep> M(A.field(), A.rowdim(), A.coldim());
-		scaleRows(M, A);
+		typedef SparseMatrix<Field1, Rep> Sp;
+		typedef Diagonal<Field1> Diag;
+		typedef Compose<Diagonal<Field1>, Sp> Scaled;
+		Diag D(A.field(), A.rowdim());
+		Scaled M(D, A);
 		
 		if (precond == 1) { // D A -- Determinant preconditioner
 			wiedemann(outFile, M);
 		} else if (precond == 2) { // A^T D A -- Rank preconditioner
-			Transpose<SparseMatrix<Field1, Rep>> T(A);
-			Compose<Transpose<SparseMatrix<Field1, Rep>>, SparseMatrix<Field1, Rep>>  C(T, M);
+			Transpose<Sp> T(A);
+			Compose<Transpose<Sp>, Scaled>  C(T, M);
 			
 			wiedemann(outFile, C);
 		}
