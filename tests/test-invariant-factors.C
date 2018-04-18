@@ -493,12 +493,16 @@ int main(int argc, char** argv) {
 		ER.init(u);
 		ER.init(v);
 		for (size_t i = 0; i < n+k-1; i++) {
-			Coeff c;
-			RI.random(c);
-			ER.setCoeff(u, i, c);
+			Coeff c1, c2;
+			do {
+				RI.random(c1);
+			} while (EF.isZero(c1));
+			ER.setCoeff(u, i, c1);
 			
-			RI.random(c);
-			ER.setCoeff(v, i, c);
+			do {
+				RI.random(c2);
+			} while (EF.isZero(c2));
+			ER.setCoeff(v, i, c2);
 		}
 		
 		typedef Toeplitz<ExtField, ExtRing> Toep;
@@ -512,20 +516,26 @@ int main(int argc, char** argv) {
 		
 		Poly minpoly;
 		result.getEntry(minpoly, 0);
+		ER.write(std::cout << "minpoly: ", minpoly) << std::endl;
 		
+		//*
 		if (b == 1) {
 			wiedemann1(result, Mk);
 		} else {
 			wiedemannb(result, Mk, minpoly);
 			std::cout << std::endl;
 		}
+		//*/
 		
+		//*
 		for (size_t i = 0; i < b; i++) {
 			Poly fi;
 			ER.gcd(fi, result[i], minpoly);
 			result.setEntry(i, fi);
 		}
+		//*/
 		
+		ER.write(std::cout << "(k+1)-th LIF: ", result[result.size() - 1]) << std::endl;
 		writeInvariantFactor(outFile, result);
 		
 		return 0;
