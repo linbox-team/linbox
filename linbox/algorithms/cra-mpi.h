@@ -334,7 +334,7 @@ namespace LinBox
 			}
 		}
 
-
+#if 1
 		template<class Function, class PrimeIterator>
 		BlasVector<Givaro::ZRing<Integer> > & operator() ( BlasVector<Givaro::ZRing<Integer> > & num, Integer& den, Function& Iteration, PrimeIterator& primeg)
 		{
@@ -398,7 +398,8 @@ namespace LinBox
 //if(!Builder_.noncoprime(pp)){
                         
                         Domain D(pp); //Domain D(primes[idle_process - 1]);
-                        chrono.start(); 
+                        chrono.start();
+
                         Builder_.progress(D, r);
                         chrono.stop(); 
                         //std::cout<<"Builder_.progress(D, r) in the manager process used CPU time (seconds): "<<chrono.usertime()<<std::endl;
@@ -455,7 +456,132 @@ namespace LinBox
 			}
             
 		}
-        
+#endif
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#if 0
+		template<class Function, class PrimeIterator>
+		BlasVector<Givaro::ZRing<Integer> > & operator() ( BlasVector<Givaro::ZRing<Integer> > & num, Integer& den, Function& Iteration, PrimeIterator& primeg)
+		{
+            
+            //Using news prime number generation function to reduce MPI communication between manager and workers
+            
+			//  if there is no communicator or if there is only one process,
+			//  then proceed normally (without parallel)
+			if(_commPtr == 0 || _commPtr->size() == 1) {
+				RationalRemainder< RatCRABase > sequential(Builder_);
+				return sequential(num, den, Iteration, primeg);
+			}
+            
+			int procs = _commPtr->size();
+			int process = _commPtr->rank();
+            
+            Domain D(*primeg);
+            BlasVector<Domain> r(D); r.resize(num.size()+1);
+Builder_.initialize( D, Iteration(r, D) );
+
+
+int tag=0;
+ std::unordered_set<int> prime_used; //should not put into the while loop as it will be release once outside the concerned scope
+std::unordered_set<int> prime_recved;//should not put into the while loop as it will be release once outside the concerned scope
+
+BlasVector<Domain> rr(D); rr.resize(procs*(num.size()+1));
+BlasVector<Domain> r2(D); r2.resize(num.size()+1);
+
+while(true){
+MPI_Bcast(&tag, 1, MPI_INT, 0, MPI_COMM_WORLD);MPI_Barrier(MPI_COMM_WORLD);
+
+
+			//  child process
+			if(process > 0){
+
+r2.resize(num.size()+1);
+
+if(tag>0) break;
+//std::cerr<<"Proc("<<process<<") >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "<<std::endl;
+                LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   gen(process,procs);  
+				//  get a prime, compute, send back start and end
+				//  of heap addresses
+               
+
+                    ++gen; while(prime_used.find(*gen) != prime_used.end()) ++gen;
+                    prime_used.insert(*gen);
+                    
+                    //std::cout << *gen << std::endl;
+                    Domain D(*gen); //Domain D(pp);
+                    
+                    Iteration(r, D);
+
+                    //Add corresponding prime number as the last element in the result vector
+                    r.push_back(*gen);
+for(size_t i=0;i<r.size();i++)r2[i]=r[i];
+//std::cerr<<"Proc("<<process<<") >>>> r2: "<<r2<<std::endl;
+
+//std::cerr<<"Proc("<<process<<") <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< "<<std::endl;
+                    //_commPtr->send(r.begin(), r.end(), 0, 0);
+
+
+			}
+
+
+//std::cerr<<"Proc("<<process<<") >>>> r2.size():= "<<r2.size()<<std::endl;
+//std::cerr<<"Proc("<<process<<") >>>> rr.size():= "<<rr.size()<<std::endl;
+if(tag<1) MPI_Gather(&r2[0], (num.size()+1), MPI_DOUBLE, &rr[0], (num.size()+1), MPI_DOUBLE, 0, MPI_COMM_WORLD);
+
+
+
+
+			//  parent propcess
+			if(process == 0){
+
+
+//r2.resize(num.size()+1);
+
+//std::cerr<<"Proc("<<process<<") <<<< rr: "<<rr<<std::endl;
+if(tag>0) return Builder_.result(num,den);
+
+
+
+
+				int poison_pills_left = procs - 1;
+                int pp;
+
+
+for(size_t i=num.size()+1;i<rr.size();i+=(num.size()+1)){
+r.resize(num.size()+1);
+for(size_t j=0;j<num.size()+1;j++)r[j]=rr[i+j];
+//std::cerr<<"Proc("<<process<<") ########### r:= "<<r<<std::endl;
+                    //Store the corresponding prime number
+                    pp = r[r.size()-1];
+//std::cerr<<"Proc("<<process<<") ########### pp:= "<<pp<<std::endl;
+                    //Restructure the vector like before without added prime number
+                    r.resize (r.size()-1); 
+
+                        if(prime_recved.find(pp) == prime_recved.end()){
+                        Domain D(pp); //Domain D(primes[idle_process - 1]);
+//std::cerr<<"Proc("<<process<<") >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "<<std::endl;
+                        Builder_.progress(D, r);
+//std::cerr<<"Proc("<<process<<") <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< "<<std::endl;
+prime_recved.insert(pp);
+                        }
+if(Builder_.terminated())  tag=1;
+}
+                        
+//r2.resize (num.size()+1);
+
+
+			}
+
+}
+
+ 
+
+
+ 
+
+
+		}
+#endif
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     };
     
 }
