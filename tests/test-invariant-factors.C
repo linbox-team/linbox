@@ -255,9 +255,14 @@ public:
 		
 		if (precond == 1) { // D A -- Determinant preconditioner
 			wiedemann(outFile, M);
-		} else if (precond == 2) { // A^T D A -- Rank preconditioner
+		} else if (precond == 2) { // D A^T D A -- Rank preconditioner
 			Transpose<Sp> T(A);
-			Compose<Transpose<Sp>, Scaled>  C(T, M);
+			Diag E(A.field(), A.rowdim());
+			
+			typedef Compose<Diagonal<Field1>, Transpose<Sp>> ScaledTranspose;
+			ScaledTranspose W(E, T);
+			
+			Compose<ScaledTranspose, Scaled>  C(W, M);
 			
 			wiedemann(outFile, C);
 		}
