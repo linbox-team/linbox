@@ -494,7 +494,7 @@ else std::cerr << "Thread("<<omp_get_thread_num()<<") <<<<<<<<<<<<< ("<<i<<")"<<
 
 #endif
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#if 1
+#if 0
 		template<class Container, class Function, class PrimeIterator>
 		Container& operator()  (Container& res, Integer& den, Function& Iteration, PrimeIterator& primeiter)
 		{
@@ -527,7 +527,8 @@ long IterCounter=0;
 
 				std::vector<ElementContainer> ROUNDresidues(NN);
 				typename std::vector<ElementContainer>::iterator resit=ROUNDresidues.begin();
-				for(std::set<Integer>::const_iterator coprimesetiter = coprimeset.begin(); coprimesetiter != coprimeset.end(); ++coprimesetiter,++resit) {
+
+				for(std::set<Integer>::const_iterator coprimesetiter = coprimeset.begin(); coprimesetiter != coprimeset.end(); ++coprimesetiter) {
 					// std::cerr << "With prime: " << *coprimesetiter << std::endl;
 					ROUNDdomains.push_back( Domain(*coprimesetiter) );
 					//                     for(typename ElementContainer::iterator reselit = resit->begin();
@@ -536,8 +537,7 @@ long IterCounter=0;
 				}
 
 
-
-#pragma omp parallel for schedule(guided)
+#pragma omp parallel for schedule(static)
 				for(size_t i=0;i<NN;++i) {
 //#pragma omp task shared ( ROUNDresidues , ROUNDdomains )
 					Iteration(ROUNDresidues[i], ROUNDdomains[i]);
@@ -567,19 +567,23 @@ long IterCounter=0;
 					while(this->Builder_.noncoprime(*primeiter) ) {
 						++primeiter;
 						++coprime;
+
 						if (coprime > maxnoncoprime) {
 							std::cout << "you are running out of primes. " << maxnoncoprime << " coprime primes found";
-							return this->Builder_.result(res,den);
+							//return this->Builder_.result(res,den);
 						}
+
 					}
-					coprime =0;
+
+					coprime = 0;
 					coprimeset.insert(*primeiter);
 				}
 
 				std::vector<Domain> ROUNDdomains; ROUNDdomains.reserve(NN);
 				std::vector<ElementContainer> ROUNDresidues(NN);
 				typename std::vector<ElementContainer>::iterator resit=ROUNDresidues.begin();
-				for(std::set<Integer>::const_iterator coprimesetiter = coprimeset.begin(); coprimesetiter != coprimeset.end(); ++coprimesetiter,++resit) {
+
+				for(std::set<Integer>::const_iterator coprimesetiter = coprimeset.begin(); coprimesetiter != coprimeset.end(); ++coprimesetiter) {
 					// std::cerr << "With prime: " << *coprimesetiter << std::endl;
 					ROUNDdomains.push_back( Domain(*coprimesetiter) );
 					//                     for(typename ElementContainer::iterator reselit = resit->begin();
@@ -587,7 +591,9 @@ long IterCounter=0;
 					//                         ROUNDdomains.back().init( *reselit );
 				}
 
-#pragma omp parallel for
+
+
+#pragma omp parallel for schedule(static)
 		 		for(size_t i=0;i<NN;++i) {
 //#pragma omp task 
 {
@@ -615,6 +621,247 @@ else std::cerr << "Thread("<<omp_get_thread_num()<<") <<<<<<<<<<<<< ("<<i<<")"<<
 			return this->Builder_.result(res,den);
 		}
 #endif
+///////////////////////////////////////////////////The///Fastest///For///Now/////////////////////////////////////////////////
+#if 0
+		template<class Container, class Function, class PrimeIterator>
+		Container& operator()  (Container& res, Integer& den, Function& Iteration, PrimeIterator& primeiter)
+		{
+			typedef typename CRATemporaryVectorTrait<Function, Domain>::Type_t ElementContainer;
+			size_t NN = 8*omp_get_max_threads();
+			std::cerr << "Blocs: " << NN << " iterations." << std::endl;
+			// commentator().start ("Parallel OMP Givaro::Modular iteration", "mmcrait");
+			if (NN == 1) return Father_t::operator()(res, den,Iteration,primeiter);
+
+			int coprime =0;
+			int maxnoncoprime = 1000;
+long IterCounter=0;
+
+			if (IterCounter==0) {
+				std::set<Integer> coprimeset;
+				while(coprimeset.size() < NN) {
+					++primeiter;
+					while(this->Builder_.noncoprime(*primeiter) ) {
+						++primeiter;
+						++coprime;
+						if (coprime > maxnoncoprime) {
+							std::cout << "you are running out of primes. " << maxnoncoprime << " coprime primes found";
+							return this->Builder_.result(res,den);
+						}
+					}
+					coprime =0;
+					coprimeset.insert(*primeiter);
+				}
+				std::vector<Domain> ROUNDdomains; ROUNDdomains.reserve(NN);
+
+				std::vector<ElementContainer> ROUNDresidues(NN);
+				typename std::vector<ElementContainer>::iterator resit=ROUNDresidues.begin();
+
+				for(std::set<Integer>::const_iterator coprimesetiter = coprimeset.begin(); coprimesetiter != coprimeset.end(); ++coprimesetiter) {
+					// std::cerr << "With prime: " << *coprimesetiter << std::endl;
+					ROUNDdomains.push_back( Domain(*coprimesetiter) );
+					//                     for(typename ElementContainer::iterator reselit = resit->begin();
+					//                         reselit != resit->end(); ++reselit)
+					//                         ROUNDdomains.back().init( *reselit );
+				}
+
+
+#pragma omp parallel for schedule(dynamic)
+				for(size_t i=0;i<NN;++i) {
+
+					Iteration(ROUNDresidues[i], ROUNDdomains[i]);
+				}
+//#pragma omp barrier
+
+				++IterCounter;
+				this->Builder_.initialize( ROUNDdomains[0],ROUNDresidues[0]);
+#pragma omp parallel for schedule(dynamic)
+				for(size_t i=1;i<NN;++i) {
+					++IterCounter;
+#pragma omp critical(ROUNDresidues)
+					this->Builder_.progress( ROUNDdomains[i],ROUNDresidues[i]);
+				}
+
+				// commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
+			}
+
+
+
+			while( ! this->Builder_.terminated() ) {
+
+//std::cerr << " >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "<< std::endl;
+				//std::cerr << "Computed: " << IterCounter << " primes." << std::endl;
+				std::set<Integer> coprimeset;
+				while(coprimeset.size() < NN) {
+					++primeiter;
+					while(this->Builder_.noncoprime(*primeiter) ) {
+						++primeiter;
+						++coprime;
+
+						if (coprime > maxnoncoprime) {
+							std::cout << "you are running out of primes. " << maxnoncoprime << " coprime primes found";
+							//return this->Builder_.result(res,den);
+						}
+
+					}
+
+					coprime = 0;
+					coprimeset.insert(*primeiter);
+				}
+
+				std::vector<Domain> ROUNDdomains; ROUNDdomains.reserve(NN);
+				std::vector<ElementContainer> ROUNDresidues(NN);
+				typename std::vector<ElementContainer>::iterator resit=ROUNDresidues.begin();
+
+				for(std::set<Integer>::const_iterator coprimesetiter = coprimeset.begin(); coprimesetiter != coprimeset.end(); ++coprimesetiter) {
+					// std::cerr << "With prime: " << *coprimesetiter << std::endl;
+					ROUNDdomains.push_back( Domain(*coprimesetiter) );
+					//                     for(typename ElementContainer::iterator reselit = resit->begin();
+					//                         reselit != resit->end(); ++reselit)
+					//                         ROUNDdomains.back().init( *reselit );
+				}
+
+
+
+#pragma omp parallel for schedule(dynamic)
+		 		for(size_t i=0;i<NN;++i) {
+//#pragma omp task 
+//{
+					Iteration(ROUNDresidues[i], ROUNDdomains[i]);
+					++IterCounter;
+/*
+if(omp_in_parallel())  std::cerr << "Thread("<<omp_get_thread_num()<<")Begin parallel executing >>>>>>>>>>> ("<<i<<")"<< std::endl;
+else std::cerr << "Thread("<<omp_get_thread_num()<<") >>>>>>>>>>> ("<<i<<")"<< std::endl;
+*/
+#pragma omp critical(ROUNDresidues)
+					this->Builder_.progress( ROUNDdomains[i],ROUNDresidues[i]);
+
+/*
+if(omp_in_parallel())  std::cerr << "Thread("<<omp_get_thread_num()<<")end parallel executing <<<<<<<<<<<<< ("<<i<<")"<< std::endl;
+else std::cerr << "Thread("<<omp_get_thread_num()<<") <<<<<<<<<<<<< ("<<i<<")"<< std::endl;
+*/
+//}
+
+				}
+//std::cerr << " <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< "<< std::endl;
+
+			}
+
+			// commentator().stop ("done", NULL, "mmcrait");
+			//std::cerr << "Used: " << IterCounter << " primes." << std::endl;
+			return this->Builder_.result(res,den);
+		}
+#endif
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#if 1
+		template<class Container, class Function, class PrimeIterator>
+		Container& operator()  (Container& res, Integer& den, Function& Iteration, PrimeIterator& primeiter)
+		{
+			typedef typename CRATemporaryVectorTrait<Function, Domain>::Type_t ElementContainer;
+			size_t NN = 8*omp_get_max_threads();
+			std::cerr << "Blocs: " << NN << " iterations." << std::endl;
+			// commentator().start ("Parallel OMP Givaro::Modular iteration", "mmcrait");
+			if (NN == 1) return Father_t::operator()(res, den,Iteration,primeiter);
+
+			int coprime =0;
+//			int maxnoncoprime = 1000;
+long IterCounter=0;
+
+			if (IterCounter==0) {
+				std::set<Integer> coprimeset;
+				while(coprimeset.size() < NN) {
+					++primeiter;
+					while(this->Builder_.noncoprime(*primeiter) ) {
+						++primeiter;
+						++coprime;
+
+					}
+					coprime =0;
+					coprimeset.insert(*primeiter);
+				}
+				std::vector<Domain> ROUNDdomains; ROUNDdomains.reserve(NN);
+
+				std::vector<ElementContainer> ROUNDresidues(NN); 
+//				typename std::vector<ElementContainer>::iterator resit=ROUNDresidues.begin();
+
+				for(std::set<Integer>::const_iterator coprimesetiter = coprimeset.begin(); coprimesetiter != coprimeset.end(); ++coprimesetiter) {
+
+					ROUNDdomains.push_back( Domain(*coprimesetiter) );
+
+				}
+
+
+Iteration(ROUNDresidues[0], ROUNDdomains[0]);
+				++IterCounter;
+				this->Builder_.initialize( ROUNDdomains[0],ROUNDresidues[0]);
+#pragma omp parallel for schedule(dynamic)
+				for(size_t i=1;i<NN;++i) {
+
+					Iteration(ROUNDresidues[i], ROUNDdomains[i]);
+
+//					++IterCounter;
+#pragma omp critical(ROUNDresidues)
+					this->Builder_.progress( ROUNDdomains[i],ROUNDresidues[i]);
+				}
+
+				// commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
+			}
+
+
+
+			while( ! this->Builder_.terminated() ) {
+
+				std::set<Integer> coprimeset;
+				while(coprimeset.size() < NN) {
+					++primeiter;
+					while(this->Builder_.noncoprime(*primeiter) ) {
+						++primeiter;
+						++coprime;
+					}
+
+					coprime = 0;
+					coprimeset.insert(*primeiter);
+				}
+
+				std::vector<Domain> ROUNDdomains; ROUNDdomains.reserve(NN);
+				std::vector<ElementContainer> ROUNDresidues(NN); 
+//				typename std::vector<ElementContainer>::iterator resit=ROUNDresidues.begin();
+
+				for(std::set<Integer>::const_iterator coprimesetiter = coprimeset.begin(); coprimesetiter != coprimeset.end(); ++coprimesetiter) {
+
+					ROUNDdomains.push_back( Domain(*coprimesetiter) );
+
+				}
+
+
+
+#pragma omp parallel for schedule(dynamic)
+		 		for(size_t i=0;i<NN;++i) {
+
+					Iteration(ROUNDresidues[i], ROUNDdomains[i]);
+					//++IterCounter;
+/*
+if(omp_in_parallel())  std::cerr << "Thread("<<omp_get_thread_num()<<")Begin parallel executing >>>>>>>>>>> ("<<i<<")"<< std::endl;
+else std::cerr << "Thread("<<omp_get_thread_num()<<") >>>>>>>>>>> ("<<i<<")"<< std::endl;
+*/
+#pragma omp critical(ROUNDresidues)
+					this->Builder_.progress( ROUNDdomains[i],ROUNDresidues[i]);
+
+/*
+if(omp_in_parallel())  std::cerr << "Thread("<<omp_get_thread_num()<<")end parallel executing <<<<<<<<<<<<< ("<<i<<")"<< std::endl;
+else std::cerr << "Thread("<<omp_get_thread_num()<<") <<<<<<<<<<<<< ("<<i<<")"<< std::endl;
+*/
+
+				}
+
+			}
+
+			// commentator().stop ("done", NULL, "mmcrait");
+			//std::cerr << "Used: " << IterCounter << " primes." << std::endl;
+			return this->Builder_.result(res,den);
+		}
+#endif
+
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	};
 
