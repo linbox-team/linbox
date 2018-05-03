@@ -818,12 +818,10 @@ namespace LinBox
 		//         RationalRemainder< Givaro::Modular<double> > rra((double)
 		//                                                  ( A.coldim()/2.0*log((double) A.coldim()) ) );
 
-		RationalRemainder< EarlyMultipRatCRA< Givaro::Modular<double> > > rra(3UL);
-		IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
-
 		// use of integer due to non genericity of rra (PG 2005-09-01)
 		Integer den(1);
 		BlasVector<Givaro::ZRing<Integer>> num(A.field(),A.coldim());
+
 		IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
 		RationalRemainder< EarlyMultipRatCRA< Givaro::Modular<double> > > rra(3UL);
 		rra(num, den, iteration, genprime); //rra(x, d, iteration, genprime);
