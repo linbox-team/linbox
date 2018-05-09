@@ -67,10 +67,13 @@ void readMatrix(SparseMat &M, const std::string matrixFile) {
 
 int main(int argc, char** argv) {
 	size_t p = 3;
+	size_t b = 8, r = 13;
 	std::string matrixFile;
 	int seed = time(NULL);
 
 	static Argument args[] = {
+		{ 'b', "-b B", "Block size for minpolyvec", TYPE_INT, &b},
+		{ 'k', "-k K", "Repeatitions for minpolyvec", TYPE_INT, &k},
 		{ 'p', "-p P", "Set the field GF(p)", TYPE_INT, &p},
 		{ 'f', "-f F", "Name of file for matrix", TYPE_STR, &matrixFile},
 		{ 'r', "-r R", "Random seed", TYPE_INT, &seed},
@@ -113,7 +116,7 @@ int main(int argc, char** argv) {
 	
 	time1([&](){
 		std::vector<Polynomial> fs;
-		FSD.solve(fs, M);
+		FSD.solve(fs, M, r);
 		
 		R.write(std::cout << "f: ", fs[0]) << std::endl;		
 	});
@@ -121,7 +124,7 @@ int main(int argc, char** argv) {
 	
 	time1([&](){
 		std::vector<Polynomial> fs;
-		FSD.solve(fs, M, MT, FM, FMT);
+		FSD.solve(fs, M, MT, FM, FMT, b);
 		
 		R.write(std::cout << "f: ", fs[0]) << std::endl;		
 	});

@@ -211,7 +211,8 @@ public:
 		BB.apply(v, vin);
 	}
 	
-	void filterv(Vector &u, Vector &v, Polynomial &f, const Blackbox &A, const Vector &uin, const Vector &vin) {
+	void filterv(Vector &u, Vector &v, Polynomial &f, const Blackbox &A, const Vector &uin, const Vector &vin,
+		size_t b) {
 		typedef Transpose<Blackbox> Transpose;
 		Transpose T(A);
 		
@@ -219,10 +220,10 @@ public:
 		minpolyseq(fm, uin, A, vin);
 		
 		Polynomial fl;
-		minpolyvec(fl, T, uin, 13);
+		minpolyvec(fl, T, uin, b);
 		
 		Polynomial fr;
-		minpolyvec(fr, A, vin, 13);
+		minpolyvec(fr, A, vin, b);
 		
 		//_R.write(std::cout << "fm: ", fm) << std::endl;
 		//_R.write(std::cout << "fl: ", fl) << std::endl;
@@ -253,16 +254,17 @@ public:
 		const Blackbox &T,
 		const FSparseMat &FA,
 		const FSparseMat &FT,
-		const Vector &uin, const Vector &vin) {
+		const Vector &uin, const Vector &vin,
+		size_t b) {
 		
 		Polynomial fm;
 		minpolyseq(fm, uin, A, vin);
 		
 		Polynomial fl;
-		minpolyvec(fl, uin, FA, 8);
+		minpolyvec(fl, uin, FA, b);
 		
 		Polynomial fr;
-		minpolyvec(fr, vin, FT, 8);
+		minpolyvec(fr, vin, FT, b);
 		
 		//_R.write(std::cout << "fm: ", fm) << std::endl;
 		//_R.write(std::cout << "fl: ", fl) << std::endl;
@@ -324,13 +326,13 @@ public:
 		_R.mul(f, h1, h2);
 	}
 	
-	void minpolspace(Vector &u, Vector &v, Polynomial &f, const Blackbox &A, const std::vector<Vector> &us, const std::vector<Vector> &vs) {
-		filterv(u, v, f, A, us[0], vs[0]);
+	void minpolspace(Vector &u, Vector &v, Polynomial &f, const Blackbox &A, const std::vector<Vector> &us, const std::vector<Vector> &vs, size_t b) {
+		filterv(u, v, f, A, us[0], vs[0], b);
 		for (size_t i = 1; i < us.size(); i++) {
 			Vector tmpu(_F);
 			Vector tmpv(_F);
 			Polynomial tmpf;
-			filterv(tmpu, tmpv, tmpf, A, us[i], vs[i]);
+			filterv(tmpu, tmpv, tmpf, A, us[i], vs[i], b);
 			mergev(u, v, f, A, u, v, f, tmpu, tmpv, tmpf);
 		}
 	}
@@ -340,19 +342,20 @@ public:
 		const Blackbox &T,
 		const FSparseMat &FA,
 		const FSparseMat &FT,
-		const std::vector<Vector> &us, const std::vector<Vector> &vs) {
+		const std::vector<Vector> &us, const std::vector<Vector> &vs,
+		size_t b) {
 	
-		filterv(u, v, f, A, us[0], vs[0]);
+		filterv(u, v, f, A, us[0], vs[0], b);
 		for (size_t i = 1; i < us.size(); i++) {
 			Vector tmpu(_F);
 			Vector tmpv(_F);
 			Polynomial tmpf;
-			filterv(tmpu, tmpv, tmpf, A, T, FA, FT, us[i], vs[i]);
+			filterv(tmpu, tmpv, tmpf, A, T, FA, FT, us[i], vs[i], b);
 			mergev(u, v, f, A, u, v, f, tmpu, tmpv, tmpf);
 		}
 	}
 	
-	void solve(std::vector<Polynomial> &fs, const Blackbox &A) {
+	void solve(std::vector<Polynomial> &fs, const Blackbox &A, size_t b) {
 		std::vector<Vector> us;
 		std::vector<Vector> vs;
 		
@@ -370,7 +373,7 @@ public:
 		Vector u(_F);
 		Vector v(_F);
 		Polynomial f;
-		minpolspace(u, v, f, A, us, vs);
+		minpolspace(u, v, f, A, us, vs, b);
 		
 		fs.push_back(f);
 	}
@@ -379,7 +382,8 @@ public:
 		const Blackbox &A, 
 		const Blackbox &T, 
 		const FSparseMat &FA,
-		const FSparseMat &FT) {
+		const FSparseMat &FT,
+		size_t b) {
 	
 		std::vector<Vector> us;
 		std::vector<Vector> vs;
@@ -398,7 +402,7 @@ public:
 		Vector u(_F);
 		Vector v(_F);
 		Polynomial f;
-		minpolspace(u, v, f, A, T, FA, FT, us, vs);
+		minpolspace(u, v, f, A, T, FA, FT, us, vs, b);
 		
 		fs.push_back(f);
 	}
