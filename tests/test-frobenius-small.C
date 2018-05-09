@@ -67,7 +67,7 @@ void readMatrix(SparseMat &M, const std::string matrixFile) {
 
 int main(int argc, char** argv) {
 	size_t p = 3;
-	size_t b = 8, r = 13;
+	size_t b = 8, k = 13;
 	std::string matrixFile;
 	int seed = time(NULL);
 
@@ -116,7 +116,7 @@ int main(int argc, char** argv) {
 	
 	time1([&](){
 		std::vector<Polynomial> fs;
-		FSD.solve(fs, M, r);
+		FSD.solve(fs, M, k);
 		
 		R.write(std::cout << "f: ", fs[0]) << std::endl;		
 	});
