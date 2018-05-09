@@ -219,10 +219,10 @@ public:
 		minpolyseq(fm, uin, A, vin);
 		
 		Polynomial fl;
-		minpolyvec(fl, T, uin, 7);
+		minpolyvec(fl, T, uin, 13);
 		
 		Polynomial fr;
-		minpolyvec(fr, A, vin, 7);
+		minpolyvec(fr, A, vin, 13);
 		
 		//_R.write(std::cout << "fm: ", fm) << std::endl;
 		//_R.write(std::cout << "fl: ", fl) << std::endl;
