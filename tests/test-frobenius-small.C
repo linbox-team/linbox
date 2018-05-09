@@ -113,6 +113,14 @@ int main(int argc, char** argv) {
 	
 	time1([&](){
 		std::vector<Polynomial> fs;
+		FSD.solve(fs, M);
+		
+		R.write(std::cout << "f: ", fs[0]) << std::endl;		
+	});
+	std::cout << std::endl;
+	
+	time1([&](){
+		std::vector<Polynomial> fs;
 		FSD.solve(fs, M, MT, FM, FMT);
 		
 		R.write(std::cout << "f: ", fs[0]) << std::endl;		
