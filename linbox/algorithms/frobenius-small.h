@@ -165,7 +165,6 @@ public:
 		}
 	}
 	
-	/*
 	// compute the minimal polynomial of uAV with random V in F^(n-by-b)
 	void minpolyvec(Polynomial &f, const Vector &u, const FSparseMat &A, size_t b) {
 		typedef BlackboxBlockContainerSmmx2<Field> Sequence;
@@ -189,7 +188,6 @@ public:
 		
 		_R.init(f, coeffs);
 	}
-	*/
 	
 	void filterp(Polynomial &h, const Polynomial &f, const Polynomial &g) {
 		Polynomial d;
@@ -225,6 +223,46 @@ public:
 		
 		Polynomial fr;
 		minpolyvec(fr, A, vin, 7);
+		
+		//_R.write(std::cout << "fm: ", fm) << std::endl;
+		//_R.write(std::cout << "fl: ", fl) << std::endl;
+		//_R.write(std::cout << "fr: ", fr) << std::endl;
+		
+		Polynomial g, fd;
+		_R.quo(fd, fl, fm);
+		_R.gcd(g, fm, fd);
+		
+		Polynomial tmp;
+		filterp(tmp, fm, g);
+		_R.assign(fm, tmp);
+		
+		_R.quo(fd, fr, fm);
+		_R.gcd(g, fm, fd);
+		filterp(f, fm, g);
+		
+		Polynomial gl, gr;
+		_R.quo(gl, fl, f);
+		_R.quo(gr, fr, f);
+		
+		apply(u, gl, T, uin);
+		apply(v, gr, A, vin);
+	}
+	
+	void filterv(Vector &u, Vector &v, Polynomial &f, 
+		const Blackbox &A, 
+		const Blackbox &T,
+		const FSparseMat &FA,
+		const FSparseMat &FT,
+		const Vector &uin, const Vector &vin) {
+		
+		Polynomial fm;
+		minpolyseq(fm, uin, A, vin);
+		
+		Polynomial fl;
+		minpolyvec(fl, uin, FA, 8);
+		
+		Polynomial fr;
+		minpolyvec(fr, vin, FT, 8);
 		
 		//_R.write(std::cout << "fm: ", fm) << std::endl;
 		//_R.write(std::cout << "fl: ", fl) << std::endl;
@@ -297,6 +335,23 @@ public:
 		}
 	}
 	
+	void minpolspace(Vector &u, Vector &v, Polynomial &f,
+		const Blackbox &A, 
+		const Blackbox &T,
+		const FSparseMat &FA,
+		const FSparseMat &FT,
+		const std::vector<Vector> &us, const std::vector<Vector> &vs) {
+	
+		filterv(u, v, f, A, us[0], vs[0]);
+		for (size_t i = 1; i < us.size(); i++) {
+			Vector tmpu(_F);
+			Vector tmpv(_F);
+			Polynomial tmpf;
+			filterv(tmpu, tmpv, tmpf, A, T, FA, FT, us[i], vs[i]);
+			mergev(u, v, f, A, u, v, f, tmpu, tmpv, tmpf);
+		}
+	}
+	
 	void solve(std::vector<Polynomial> &fs, const Blackbox &A) {
 		std::vector<Vector> us;
 		std::vector<Vector> vs;
@@ -316,6 +371,34 @@ public:
 		Vector v(_F);
 		Polynomial f;
 		minpolspace(u, v, f, A, us, vs);
+		
+		fs.push_back(f);
+	}
+	
+	void solve(std::vector<Polynomial> &fs, 
+		const Blackbox &A, 
+		const Blackbox &T, 
+		const FSparseMat &FA,
+		const FSparseMat &FT) {
+	
+		std::vector<Vector> us;
+		std::vector<Vector> vs;
+		
+		for (size_t i = 0; i < trialbound(); i++) {
+			Vector u(_F, A.rowdim());
+			Vector v(_F, A.coldim());
+			
+			randomVector(u);
+			randomVector(v);
+			
+			us.push_back(u);
+			vs.push_back(v);
+		}
+		
+		Vector u(_F);
+		Vector v(_F);
+		Polynomial f;
+		minpolspace(u, v, f, A, T, FA, FT, us, vs);
 		
 		fs.push_back(f);
 	}

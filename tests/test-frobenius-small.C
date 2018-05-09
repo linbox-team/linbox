@@ -92,11 +92,28 @@ int main(int argc, char** argv) {
 	SparseMat M(F);                                           
 	readMatrix(M, matrixFile);
 	assert(M.rowdim() == M.coldim());
+	size_t n = M.rowdim();
+	
+	SparseMat MT(F, n, n);
+	for (size_t i = 0; i < n; i++) {
+		for (size_t j = 0; j < n; j++) {
+			MT.setEntry(j, i, M.getEntry(i, j));
+		}
+	}
+	MT.finalize();
 	
 	FrobeniusSmall<Field, Ring> FSD(F, R);
+	
+	typedef typename FrobeniusSmall<Field, Ring>::FSparseMat FSparseMat;
+	
+	FSparseMat FM, FMT;
+	
+	FSD.convert(FM, M);
+	FSD.convert(FMT, MT);
+	
 	time1([&](){
 		std::vector<Polynomial> fs;
-		FSD.solve(fs, M);
+		FSD.solve(fs, M, MT, FM, FMT);
 		
 		R.write(std::cout << "f: ", fs[0]) << std::endl;		
 	});
