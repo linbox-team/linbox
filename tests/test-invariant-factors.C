@@ -28,6 +28,8 @@
 #include "linbox/algorithms/invariant-factors.h"
 #include "linbox/algorithms/smith-form-kannan-bachem.h"
 
+#include "linbox/algorithms/frobenius-small.h"
+
 #include "sparse-matrix-generator.h"
 
 using namespace LinBox;

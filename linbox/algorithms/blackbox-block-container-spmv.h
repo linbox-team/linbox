@@ -65,10 +65,6 @@ namespace LinBox
 		Block _tmp;
 		Block _V;
 		
-		Givaro::Timer TW;
-		double _spmv_time;
-		double _gemm_time;
-		
 	public:
 		// Default constructor
 		BlackboxBlockContainerSpmv() {}
@@ -80,8 +76,6 @@ namespace LinBox
 			const Block &U0,
 			const Block &V0) : 
 		_F(F), _BMD(F), _BB(BB), _U(U0), _W(V0), _tmp(V0), _V(F, U0.rowdim(), U0.rowdim()) {
-			_spmv_time = 0;
-			_gemm_time = 0;
 		}
 		
 		const Field& field() const {
@@ -113,28 +107,15 @@ namespace LinBox
 			typename Block::ColIterator p1 = _tmp.colBegin();
 			typename Block::ConstColIterator p2 = _W.colBegin();
 			
-			TW.clear();
-			TW.start();
-			
 			for (; p2 != _W.colEnd(); ++p1, ++p2) {
 				_BB->apply(*p1, *p2);
 			}
 			
 			MD.copy(_W, _tmp);
-			
-			TW.stop();
-			_spmv_time += TW.usertime();
 		}
 		
 		const Value &getValue() {
-			TW.clear();
-			TW.start();
-			
 			_BMD.mul(_V, _U, _W);
-			
-			TW.stop();
-			_gemm_time += TW.usertime();
-			
 			return _V;
 		}
 		

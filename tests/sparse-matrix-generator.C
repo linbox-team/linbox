@@ -79,16 +79,56 @@ int main(int argc, char** argv) {
 	}
 	//*/
 	
+	n = 10000;
+	
 	std::vector<integer> v;
-	Polynomial x, xm1;
+	Polynomial x, xm1, xp1, x2, x3;
 	R.init(x, v = {0, 1});
 	R.assign(xm1, x);
 	R.subin(xm1, R.one);
+	R.assign(xp1, x);
+	R.addin(xp1, R.one);
+	R.mul(x2, x, x);
+	R.mul(x3, x2, x);
 
 	Polynomial det;
 	std::vector<Polynomial> fs;
+	//Gen.addTriangle(fs, n/2, 6.0 / n, x);
+	//Gen.addTriangle(fs, n/2, 1, xm1);
+	
+	// trial 1 - identity
+	// Gen.addTriangle(fs, n, 1.0 / n, xm1);
+	
+	// trial 2 - 
+	// Gen.addTriangle(fs, n, 3.0 / n, xm1);
+	
+	// trial 3
+	// Gen.addTriangle(fs, n, 1, xm1);
+	
+	// trial 4
+	// Gen.addTriangle(fs, n, n / 3.0, xm1);
+	
+	// trial 5
+	// Gen.addTriangle(fs, n, n, xm1);
+	
+	// trial 6
+	// Gen.addTriangle(fs, n/2, 6.0 / n, xm1);
+	// Gen.addTriangle(fs, n/2, 1, xp1);
+	
+	// trial 7
 	Gen.addTriangle(fs, n/2, 6.0 / n, x);
 	Gen.addTriangle(fs, n/2, 1, xm1);
+	
+	// trial 8
+	// Gen.addTriangle(fs, n, 1.0 / n, x2);
+	
+	// trial 9
+	// Gen.addTriangle(fs, n, 1.0 / n, x3);
+	
+	// trial 10
+	// Gen.addTriangle(fs, n/2, 1.0 / n, x2);
+	// Gen.addTriangle(fs, n/2, 1, xm1);
+
 	
 	SparseMat M(F);
 	Gen.generate(M, det, fs, sparsity);

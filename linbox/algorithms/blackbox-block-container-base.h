@@ -161,7 +161,7 @@ public:
 		const Field &getField () const { return *_field; } // deprecated
 
 		// blackbox of the sequence
-		const Blackbox *getBB () const { return _BB; }
+		size_t bbdim() const { return _BB->rowdim(); }
 
 		// row dimension of the sequence element
 		size_t rowdim() const          { return _m; }

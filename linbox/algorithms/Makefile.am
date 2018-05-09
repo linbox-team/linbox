@@ -148,6 +148,7 @@ pkgincludesub_HEADERS =            \
 	rns.h                              \
 	rns.inl                            \
 	invariant-factors.h                \
+	frobenius-small.h                  \
 	poly-dixon.h                       \
 	invert-tb.h                        \
 	poly-smith-form-local-x.h          \

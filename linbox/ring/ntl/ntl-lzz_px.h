@@ -431,6 +431,14 @@ namespace LinBox
 		}
 
 		/** Get the greatest commonn divisor of two polynomials */
+		Element& gcdin( Element& a, const Element& b ) const
+		{
+			Element res;
+			NTL::GCD(res,a,b);
+			a = res;
+			return a;
+		}
+		
 		Element& gcd( Element& res, const Element& a, const Element& b ) const
 		{
 			NTL::GCD(res,a,b);
@@ -453,6 +461,14 @@ namespace LinBox
 		}
 
 		/** Get the least common multiple of two polynomials */
+		Element& lcmin( Element& a, const Element& b ) const
+		{
+			Element tmp, res; 
+			gcd(tmp, a, b);
+			div(res, a, tmp);
+			return mul(a, res, b);
+		}
+		
 		Element& lcm( Element& res, const Element& a, const Element& b ) const
 		{
 			Element tmp; 

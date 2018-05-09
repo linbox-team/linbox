@@ -27,8 +27,8 @@
  * @brief no doc.
  */
 
-#ifndef __LINBOX_blackbox_block_container_smmx_H
-#define __LINBOX_blackbox_block_container_smmx_H
+#ifndef __LINBOX_blackbox_block_container_smmx2_H
+#define __LINBOX_blackbox_block_container_smmx2_H
 
 #include <algorithm>
 
@@ -46,13 +46,13 @@
 namespace LinBox
 {
 	template<class _Field1>
-	class __BBC_MMHelper {
+	class __BBC_MMHelper2 {
 	private:
 		MatrixDomain<_Field1> _MD;
 		typedef BlasMatrix<_Field1> Mat;
 		
 	public:
-		__BBC_MMHelper(const _Field1 &F) : _MD(F) {}
+		__BBC_MMHelper2(const _Field1 &F) : _MD(F) {}
 		
 		inline void mul(Mat &C, const Mat &A, const Mat &B) const {
 			_MD.mul(C, A, B);
@@ -60,124 +60,65 @@ namespace LinBox
 	};
 	
 	template<>
-	class __BBC_MMHelper<Givaro::Modular<double>> {
+	class __BBC_MMHelper2<Givaro::Modular<double>> {
 	private:
 		BlasMatrixDomain<Givaro::Modular<double>> _MD;
 		typedef BlasMatrix<Givaro::Modular<double>> Mat;
 		
 	public:
-		__BBC_MMHelper(const Givaro::Modular<double> &F) : _MD(F) {}
+		__BBC_MMHelper2(const Givaro::Modular<double> &F) : _MD(F) {}
 		
 		inline void mul(Mat &C, const Mat &A, const Mat &B) const {
 			_MD.mul(C, A, B);
 		}
 	};
 	
-	template<class _Field, class _Blackbox>
-	class BlackboxBlockContainerSmmx {
+	template<class _Field>
+	class BlackboxBlockContainerSmmx2 {
 	public:
 		typedef _Field                         Field;
 		typedef typename Field::Element        Element;
 		typedef typename Field::RandIter       RandIter;
 		typedef typename Field::Element_ptr    FflasBlock;
-		typedef _Blackbox                      Blackbox;
 		typedef BlasMatrix<Field>              Block;
 		typedef BlasMatrix<Field>              Value;
-		
+		      
 		typedef FFLAS::Sparse<Field, FFLAS::SparseMatrix_t::CSR> FSparseMat;
 
 	private:
 		Field _F;
-		__BBC_MMHelper<Field> _MD;
+		__BBC_MMHelper2<Field> _MD;
 		
-		bool left_pre = false;
-		FSparseMat _L;
-		
-		const Blackbox *_BB;
 		FSparseMat _M;
-		
-		bool right_pre = false;
-		FSparseMat _R;
 		
 		Block _U;
 		Block _W;
 		Block _tmp;
+		Value _tmpV;
 		Value _V;
-	
-		static void convert(const Field &F, FSparseMat &A, const Blackbox *BB, bool transpose = false) {
-			std::vector<index_t> st1 = BB->getStart();
-			std::vector<index_t> col1 = BB->getColid();
-			std::vector<Element> data1 = BB->getData();
-			
-			uint64_t nnz = data1.size();
-			
-			index_t *row = FFLAS::fflas_new<index_t>(nnz);
-			for (size_t j = 0; j < BB->rowdim(); ++j) {
-				for (index_t k = st1[j] ; k < st1[j+1]; ++k) {
-					row[k] = j;
-				}
-			}
-			
-			index_t *col = FFLAS::fflas_new<index_t>(nnz);
-			for (size_t i = 0; i < col1.size(); i++) {
-				col[i] = col1[i];
-			}
-			
-			typename Field::Element_ptr data = FFLAS::fflas_new<Element>(nnz);
-			for (size_t i = 0; i < data1.size(); i++) {
-				data[i] = data1[i];
-			}
-			
-			if (transpose) {
-				std::swap(row, col);
-			}
-			
-			FFLAS::sparse_init(F, A, row, col, data, BB->rowdim(), BB->coldim(), nnz);
-		}
 		
 	public:
 		// Default constructor
-		BlackboxBlockContainerSmmx() {}
+		BlackboxBlockContainerSmmx2() {}
 
 		// constructor of the sequence from a blackbox, a field and one block projection
-		BlackboxBlockContainerSmmx(
-			const Blackbox *BB,
+		BlackboxBlockContainerSmmx2(
+			const FSparseMat &BB,
 			const Field &F,
-			const Block &U0,
-			const Block &V0,
-			bool transpose = false) : 
+			const BlasVector<Field> &U0,
+			const Block &V0) : 
 				_F(F), 
 				_MD(F),
-				_BB(BB), 
-				_U(U0), 
+				_M(BB), 
+				_U(F, 1, U0.size()), 
 				_W(V0), 
-				_tmp(F, BB->rowdim(), V0.coldim()), 
-				_V(F, U0.rowdim(), V0.coldim()) 
+				_tmp(F, U0.size(), V0.coldim()), 
+				_tmpV(F, 1, V0.coldim()),
+				_V(F, V0.coldim(), 1) 
 		{
-			convert(F, _M, BB, transpose);
-		}
-		
-		BlackboxBlockContainerSmmx(
-			const Blackbox *BB,
-			const Blackbox *PreR,
-			const Field &F,
-			const Block &U0,
-			const Block &V0) : BlackboxBlockContainerSmmx(BB, F, U0, V0)
-		{
-			convert(F, _R, PreR);
-			right_pre = true;
-		}
-		
-		BlackboxBlockContainerSmmx(
-			const Blackbox *PreL,
-			const Blackbox *BB,
-			const Blackbox *PreR,
-			const Field &F,
-			const Block &U0,
-			const Block &V0) : BlackboxBlockContainerSmmx(BB, PreR, F, U0, V0)
-		{
-			convert(F, _L, PreL);
-			left_pre = true;
+			for (size_t i = 0; i < U0.size(); i++) {
+				_U.setEntry(0, i, U0.getEntry(i));
+			}
 		}
 		
 		const Field& field() const {
@@ -189,7 +130,7 @@ namespace LinBox
 		}
 		
 		size_t rowdim() const {
-			return _U.rowdim();
+			return _V.rowdim();
 		}
 		
 		size_t coldim() const {
@@ -199,39 +140,26 @@ namespace LinBox
 		void next() {
 			size_t b = _W.coldim();
 			
-			if (right_pre) {
-				// W = _R * W
-				for (size_t i = 0; i < _W.rowdim() * _W.coldim(); i++) {
-					_tmp.getPointer()[i] = _W.getPointer()[i];
-				}
-				FFLAS::fspmm(_F, _R, b, _tmp.getPointer(), b, _F.zero, _W.getPointer(), b);
-			}
-			
 			// W = _M * W
 			for (size_t i = 0; i < _W.rowdim() * _W.coldim(); i++) {
 				_tmp.getPointer()[i] = _W.getPointer()[i];
 			}
 			FFLAS::fspmm(_F, _M, b, _tmp.getPointer(), b, _F.zero, _W.getPointer(), b);
-			
-			if (left_pre) {
-				// W = _R * W
-				for (size_t i = 0; i < _W.rowdim() * _W.coldim(); i++) {
-					_tmp.getPointer()[i] = _W.getPointer()[i];
-				}
-				FFLAS::fspmm(_F, _L, b, _tmp.getPointer(), b, _F.zero, _W.getPointer(), b);
-			}
 		}
 		
 		const Value &getValue() {
-			_MD.mul(_V, _U, _W);
+			_MD.mul(_tmpV, _U, _W);
+			for (size_t i = 0; i < _tmpV.coldim(); i++) {
+				_V.setEntry(i, 0, _tmpV.getEntry(0, i));
+			}
 			return _V;
 		}
 		
 		class const_iterator {
-			BlackboxBlockContainerSmmx<Field, Blackbox> *_c;
+			BlackboxBlockContainerSmmx2<Field> *_c;
 		public:
 			const_iterator() : _c(0){} // BB ??
-			const_iterator(BlackboxBlockContainerSmmx<Field, Blackbox> &C) :_c(&C) {}
+			const_iterator(BlackboxBlockContainerSmmx2<Field> &C) :_c(&C) {}
 			const_iterator &operator++() { _c->next(); return *this; }
 			const Value &operator*() { return _c->getValue(); }
 		};
@@ -241,7 +169,7 @@ namespace LinBox
 	};
 }
 
-#endif // __LINBOX_blackbox_block_container_smmx_H
+#endif // __LINBOX_blackbox_block_container_smmx2_H
 
 // Local Variables:
 // mode: C++
