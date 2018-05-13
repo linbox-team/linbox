@@ -311,16 +311,29 @@ void randomVec(std::vector<size_t> & V, size_t n)  {
 
 template<class Sp>
 void permuteRows(Sp & MP, const std::vector<size_t> & P, const Sp& M) {
+	Field F(M.field());
+	size_t n = M.rowdim();
+	
 	Element x;
-	M.field().init(x);
-	for (size_t i = 0; i < M.rowdim(); ++i) {
-		for (size_t j = 0; j < M.coldim(); ++j) {
-			if (not M.field().isZero(M.getEntry(x,i,j))) {
-				MP.setEntry(P[i],j,x);
+	F.init(x);
+	
+	SparseMatrix<Field, SparseMatrixFormat::SMM> T(F, n, n);
+	for (size_t i = 0; i < n; ++i) {
+		for (size_t j = 0; j < n; ++j) {
+			if (!F.isZero(M.getEntry(x,i,j))) {
+				T.setEntry(P[i],j,x);
 			}
 		}
 	}
+	T.finalize();
 	
+	for (size_t i = 0; i < n; i++) {
+		for (size_t j = 0; j < n; j++) {
+			if (!F.isZero(T.getEntry(x, i, j))) {
+				MP.setEntry(i, j, x);
+			}
+		}
+	}
 	MP.finalize();
 }
 
@@ -343,7 +356,7 @@ void readMatrix(SparseMat &M, const std::string matrixFile, bool perm) {
 		
 		std::vector<size_t> v;
 		randomVec(v, n);
-		permuteRows(M, v, OldM);
+		time1([&](){permuteRows(M, v, OldM);});
 	}
 }
 
