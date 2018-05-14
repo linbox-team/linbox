@@ -30,8 +30,9 @@ typedef typename PolynomialRing::Coeff Coeff;
 Givaro::Timer TW;
 
 int main(int argc, char** argv) {
-	size_t p = 7;
+	size_t p = 3;
 	size_t n = 10;
+	size_t t = 2;
 	int seed = time(NULL);
 	
 	double sparsity = 0.05;
@@ -50,6 +51,7 @@ int main(int argc, char** argv) {
 		{ 'p', "-p P", "Set the field GF(p)", TYPE_INT, &p},
 		{ 's', "-s S", "Target sparsity of matrix", TYPE_DOUBLE, &sparsity},
 		{ 'r', "-r R", "Random seed", TYPE_INT, &seed},
+		{ 't', "-t T", "Trial matrix number", TYPE_INT, &t},
 		END_OF_ARGUMENTS
 	};
 
@@ -79,8 +81,6 @@ int main(int argc, char** argv) {
 	}
 	//*/
 	
-	n = 10000;
-	
 	std::vector<integer> v;
 	Polynomial x, xm1, xp1, x2, x3;
 	R.init(x, v = {0, 1});
@@ -96,38 +96,40 @@ int main(int argc, char** argv) {
 	//Gen.addTriangle(fs, n/2, 6.0 / n, x);
 	//Gen.addTriangle(fs, n/2, 1, xm1);
 	
-	// trial 1 - identity
-	// Gen.addTriangle(fs, n, 1.0 / n, xm1);
-	
-	// trial 2 - 
-	// Gen.addTriangle(fs, n, 3.0 / n, xm1);
-	
-	// trial 3
-	// Gen.addTriangle(fs, n, 1, xm1);
-	
-	// trial 4
-	// Gen.addTriangle(fs, n, n / 3.0, xm1);
-	
-	// trial 5
-	// Gen.addTriangle(fs, n, n, xm1);
-	
-	// trial 6
-	// Gen.addTriangle(fs, n/2, 6.0 / n, xm1);
-	// Gen.addTriangle(fs, n/2, 1, xp1);
-	
-	// trial 7
-	Gen.addTriangle(fs, n/2, 6.0 / n, x);
-	Gen.addTriangle(fs, n/2, 1, xm1);
-	
-	// trial 8
-	// Gen.addTriangle(fs, n, 1.0 / n, x2);
-	
-	// trial 9
-	// Gen.addTriangle(fs, n, 1.0 / n, x3);
-	
-	// trial 10
-	// Gen.addTriangle(fs, n/2, 1.0 / n, x2);
-	// Gen.addTriangle(fs, n/2, 1, xm1);
+	if (t == 1) {
+		// trial 1 - identity
+		Gen.addTriangle(fs, n, 1.0 / n, xm1);
+	} else if (t == 2) {
+		// trial 2 - 
+		Gen.addTriangle(fs, n, 3.0 / n, xm1);
+	} else if (t == 3) {
+		// trial 3
+		Gen.addTriangle(fs, n, 1, xm1);
+	} else if (t == 4) {
+		// trial 4
+		Gen.addTriangle(fs, n, n / 3.0, xm1);
+	} else if (t == 5) {
+		// trial 5
+		Gen.addTriangle(fs, n, n, xm1);
+	} else if (t == 6) {
+		// trial 6
+		Gen.addTriangle(fs, n/2, 6.0 / n, xm1);
+		Gen.addTriangle(fs, n/2, 1, xp1);
+	} else if (t == 7) {
+		// trial 7
+		Gen.addTriangle(fs, n/2, 6.0 / n, x);
+		Gen.addTriangle(fs, n/2, 1, xm1);
+	} else if (t == 8) {
+		// trial 8
+		Gen.addTriangle(fs, n, 1.0 / n, x2);
+	} else if (t == 9) {
+		// trial 9
+		Gen.addTriangle(fs, n, 1.0 / n, x3);
+	} else if (t == 10) {
+		// trial 10
+		Gen.addTriangle(fs, n/2, 1.0 / n, x2);
+		Gen.addTriangle(fs, n/2, 1, xm1);
+	} 
 
 	
 	SparseMat M(F);
