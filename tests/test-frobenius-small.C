@@ -109,7 +109,8 @@ int main(int argc, char** argv) {
 	FrobeniusSmall<Field, Ring> FSD(F, R);
 	
 	std::vector<Polynomial> fs;
-	FSD.solve(fs, M, k);
+	time1([&](){FSD.solve(fs, M, k);});
+	std::cout << std::endl;
 	
 	for (size_t i = 0; i < fs.size(); i++) {
 		R.write(std::cout, fs[i]) << std::endl;

@@ -62,8 +62,6 @@ protected:
 	PolynomialRing _R;
 	MatrixDom _MD;
 	VectorDomain<Field> _VD;
-	
-	Givaro::Timer TW;
 public:
 	FrobeniusSmall(const Field &F, const PolynomialRing &R) : _F(F), _RI(F), _R(R), _MD(F), _VD(F) {}
 
@@ -321,7 +319,6 @@ public:
 	void dualbasis(
 		std::vector<Vector> &basis_u, 
 		std::vector<Vector> &basis_v,
-		std::vector<Element> &basis_s,
 		const Vector &u, 
 		const Blackbox &A, 
 		const Vector &v, 
@@ -385,25 +382,18 @@ public:
 		for (size_t i = 0; i < k; i++) {
 			Vector tmpu(_F, n);
 			Vector tmpv(_F, n);
-			Element tmps;
 			
 			for (size_t j = 0; j < n; j++) {
 				tmpu.setEntry(j, TiU.getEntry(i, j));
 				tmpv.setEntry(j, V.getEntry(j, i));
 			}
-			_VD.dot(tmps, tmpu, tmpv);
-			
-			// assert(!_F.isZero(tmps));
 			
 			basis_u.push_back(tmpu);
 			basis_v.push_back(tmpv);
-			basis_s.push_back(tmps);
 		}
 	}
 	
-	void solve(std::vector<Polynomial> &fs, const Blackbox &A, size_t limit) {
-		TW.start();
-		
+	void solve(std::vector<Polynomial> &fs, const Blackbox &A, size_t limit) {		
 		size_t n = A.rowdim();
 		size_t k = 0;
 		size_t d = 0;
@@ -413,7 +403,6 @@ public:
 		
 		std::vector<std::vector<Vector>> basis_us;
 		std::vector<std::vector<Vector>> basis_vs;
-		std::vector<std::vector<Element>> ss;
 		
 		Transpose<Blackbox> T(A);
 		
@@ -448,7 +437,6 @@ public:
 					
 					basis_us.pop_back();
 					basis_vs.pop_back();
-					ss.pop_back();
 					
 					d -= _R.deg(old_f);
 					k--;
@@ -482,21 +470,20 @@ public:
 			k++;
 			d += _R.deg(f);
 			
+			if (d == n) {
+				break;
+			}
+			
 			std::vector<Vector> basis_u;
 			std::vector<Vector> basis_v;
-			std::vector<Element> basis_s;
-			dualbasis(basis_u, basis_v, basis_s, u, A, v, _R.deg(f));
+			dualbasis(basis_u, basis_v, u, A, v, _R.deg(f));
 			basis_us.push_back(basis_u);
 			basis_vs.push_back(basis_v);
-			ss.push_back(basis_s);
 			
 			if (limit > 0 && k == limit) {
 				break;
 			}
 		}
-		
-		TW.stop();
-		std::cout << "frobenius-small: " << TW.usertime() << std::endl;
 	}
 };
 
