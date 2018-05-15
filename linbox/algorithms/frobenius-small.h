@@ -29,6 +29,7 @@
 #include <vector>
 #include <math.h> 
 
+#include "linbox/algorithms/invert-tb.h"
 #include "linbox/algorithms/block-coppersmith-domain.h"
 #include "linbox/algorithms/blackbox-container.h"
 #include "linbox/algorithms/blackbox-block-container-smmx2.h"
@@ -71,6 +72,16 @@ public:
 	void print(const Vector &v) {
 		for (size_t i = 0; i < v.size(); i++) {
 			_F.write(std::cout, v.getEntry(i)) << " ";
+		}
+		std::cout << std::endl;
+	}
+	
+	void print(const Matrix &A) {
+		for (size_t i = 0; i < A.rowdim(); i++) {
+			for (size_t j = 0; j < A.coldim(); j++) {
+				_F.write(std::cout, A.getEntry(i, j)) << " ";
+			}
+			std::cout << std::endl;
 		}
 		std::cout << std::endl;
 	}
@@ -146,50 +157,22 @@ public:
 		}
 	}
 	
-	void randomU(
+	void randomVec(
 		Vector &u, 
 		const std::vector<std::vector<Vector>> &basis_us, 
-		const std::vector<std::vector<Vector>> &basis_vs, 
-		const std::vector<std::vector<Element>> &ss) {
-		
+		const std::vector<std::vector<Vector>> &basis_vs) 
+	{	
 		randomVector(u);
-		Vector const_u(_F, u.size());
-		copy(const_u, u);
-		
+		Vector const_u(u);
 		for (size_t i = 0; i < basis_us.size(); i++) {
 			for (size_t j = 0; j < basis_us[i].size(); j++) {
 				Vector tmp(_F, u.size());
-				Element scale;
 				
+				Element scale;
 				_VD.dot(scale, const_u, basis_vs[i][j]);
-				_F.divin(scale, ss[i][j]);
 				_VD.mul(tmp, basis_us[i][j], scale);
 				
 				_VD.subin(u, tmp);
-			}
-		}
-	}
-	
-	void randomV(
-		Vector &v,
-		const std::vector<std::vector<Vector>> &basis_us, 
-		const std::vector<std::vector<Vector>> &basis_vs, 
-		const std::vector<std::vector<Element>> &ss) {
-	
-		randomVector(v);
-		Vector const_v(_F, v.size());
-		copy(const_v, v);
-		
-		for (size_t i = 0; i < basis_us.size(); i++) {
-			for (size_t j = 0; j < basis_us[i].size(); j++) {
-				Vector tmp(_F, v.size());
-				Element scale;
-				
-				_VD.dot(scale, const_v, basis_us[i][j]);
-				_F.divin(scale, ss[i][j]);
-				_VD.mul(tmp, basis_vs[i][j], scale);
-				
-				_VD.subin(v, tmp);
 			}
 		}
 	}
@@ -342,36 +325,83 @@ public:
 		const Vector &u, 
 		const Blackbox &A, 
 		const Vector &v, 
-		size_t dk) {
+		size_t k) {
 	
 		size_t n = A.rowdim();
-	
-		Vector tmpu1(u);
-		Vector tmpv1(v);
-		Element tmps1;
-		_VD.dot(tmps1, tmpu1, tmpv1);
+		Matrix U(_F, k, n);
+		for (size_t i = 0; i < n; i++) {
+			U.setEntry(0, i, u.getEntry(i));
+		}
+		Vector uprev(u);
+		for (size_t i = 1; i < k; i++) {
+			Vector ucurr(_F, n);
+			A.applyTranspose(ucurr, uprev);
+			for (size_t j = 0; j < n; j++) {
+				U.setEntry(i, j, ucurr.getEntry(j));
+			}
+			copy(uprev, ucurr);
+		}
 		
-		basis_u.push_back(tmpu1);
-		basis_v.push_back(tmpv1);
-		basis_s.push_back(tmps1);
+		Matrix V(_F, n, k);
+		for (size_t i = 0; i < n; i++) {
+			V.setEntry(i, 0, v.getEntry(i));
+		}
+		Vector vprev(v);
+		for (size_t i = 1; i < k; i++) {
+			Vector vcurr(_F, n);
+			A.apply(vcurr, vprev);
+			for (size_t j = 0; j < n; j++) {
+				V.setEntry(j, i, vcurr.getEntry(j));
+			}
+			copy(vprev, vcurr);
+		}
 		
-		for (size_t i = 1; i < dk; i++) {
+		//print(U);
+		//print(V);
+		
+		Matrix T(_F, k, k);
+		_MD.mul(T, U, V);
+		
+		//print(T);
+		
+		InvertTextbookDomain<Field> ITBD(_F);
+		
+		Matrix Ti(_F, k, k);
+		ITBD.invert(Ti, T);
+		
+		//print(Ti);
+		
+		Matrix TiU(_F, k, n);
+		_MD.mul(TiU, Ti, U);
+		
+		//print(TiU);
+		
+		Matrix TiUV(_F, k, k);
+		_MD.mul(TiUV, TiU, V);
+		
+		//print(TiUV);
+		
+		//std::cout << "k: " << k << std::endl;
+		for (size_t i = 0; i < k; i++) {
 			Vector tmpu(_F, n);
 			Vector tmpv(_F, n);
 			Element tmps;
 			
-			A.applyTranspose(tmpu, basis_u[basis_u.size() - 1]);
-			basis_u.push_back(tmpu);
-			
-			A.apply(tmpv, basis_v[basis_v.size() - 1]);
-			basis_v.push_back(tmpv);
-			
+			for (size_t j = 0; j < n; j++) {
+				tmpu.setEntry(j, TiU.getEntry(i, j));
+				tmpv.setEntry(j, V.getEntry(j, i));
+			}
 			_VD.dot(tmps, tmpu, tmpv);
+			
+			// assert(!_F.isZero(tmps));
+			
+			basis_u.push_back(tmpu);
+			basis_v.push_back(tmpv);
 			basis_s.push_back(tmps);
 		}
 	}
 	
-	void solve(std::vector<Polynomial> &fs, const Blackbox &A) {
+	void solve(std::vector<Polynomial> &fs, const Blackbox &A, size_t limit) {
 		TW.start();
 		
 		size_t n = A.rowdim();
@@ -400,12 +430,11 @@ public:
 				Vector u(_F, A.rowdim());
 				Vector v(_F, A.coldim());
 				
-				randomU(u, basis_us, basis_vs, ss);
-				randomV(v, basis_vs, basis_vs, ss);
+				randomVec(u, basis_us, basis_vs);
+				randomVec(v, basis_vs, basis_us);
 				
 				trial_us.push_back(u);
 				trial_vs.push_back(v);
-				
 				while (k > 0 && (test(fs[fs.size() - 1], T, u) || test(fs[fs.size() - 1], A, v))) {
 					dropped = true;
 					
@@ -440,26 +469,19 @@ public:
 				minpolspace(u, v, f, A, trial_us, trial_vs);
 			}
 			
+			Element tmps;
+			_VD.dot(tmps, u, v);
+			if (_F.isZero(tmps)) {
+				continue;
+			}
+			
 			fs.push_back(f);
 			us.push_back(u);
 			vs.push_back(v);
 			
-			{
-				Polynomial fu;
-				minpolyvec(fu, T, u);
-				
-				Polynomial fv;
-				minpolyvec(fv, A, v);
-				
-				//_R.write(std::cout << "fm: ", f) << std::endl;
-				//_R.write(std::cout << "fu: ", fu) << std::endl;
-				//_R.write(std::cout << "fv: ", fv) << std::endl;
-			}
-			
 			k++;
 			d += _R.deg(f);
 			
-			/*
 			std::vector<Vector> basis_u;
 			std::vector<Vector> basis_v;
 			std::vector<Element> basis_s;
@@ -468,15 +490,7 @@ public:
 			basis_vs.push_back(basis_v);
 			ss.push_back(basis_s);
 			
-			bool ifBasis = true;
-			for (size_t i = 0; i < basis_s.size(); i++) {
-				_F.write(std::cout << "s[" << i << "]: ", basis_s[i]) << std::endl;
-				ifBasis = ifBasis && !_F.isZero(basis_s[i]);
-			}
-			std::cout << std::endl;
-			*/
-			
-			if (k == 1) {
+			if (limit > 0 && k == limit) {
 				break;
 			}
 		}

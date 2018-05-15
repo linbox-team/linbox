@@ -67,13 +67,14 @@ void readMatrix(SparseMat &M, const std::string matrixFile) {
 
 int main(int argc, char** argv) {
 	size_t p = 3;
-	size_t b = 8, k = 13;
+	size_t b = 8;
+	size_t k = 4;
 	std::string matrixFile;
 	int seed = time(NULL);
 
 	static Argument args[] = {
 		{ 'b', "-b B", "Block size for minpolyvec", TYPE_INT, &b},
-		{ 'k', "-k K", "Repeatitions for minpolyvec", TYPE_INT, &k},
+		{ 'k', "-k K", "Number of invariant factors to compute", TYPE_INT, &k},
 		{ 'p', "-p P", "Set the field GF(p)", TYPE_INT, &p},
 		{ 'f', "-f F", "Name of file for matrix", TYPE_STR, &matrixFile},
 		{ 'r', "-r R", "Random seed", TYPE_INT, &seed},
@@ -108,7 +109,7 @@ int main(int argc, char** argv) {
 	FrobeniusSmall<Field, Ring> FSD(F, R);
 	
 	std::vector<Polynomial> fs;
-	FSD.solve(fs, M);
+	FSD.solve(fs, M, k);
 	
 	for (size_t i = 0; i < fs.size(); i++) {
 		R.write(std::cout, fs[i]) << std::endl;
