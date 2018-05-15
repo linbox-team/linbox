@@ -65,24 +65,7 @@ protected:
 public:
 	FrobeniusSmall(const Field &F, const PolynomialRing &R) : _F(F), _RI(F), _R(R), _MD(F), _VD(F) {}
 
-//protected:
-
-	void print(const Vector &v) {
-		for (size_t i = 0; i < v.size(); i++) {
-			_F.write(std::cout, v.getEntry(i)) << " ";
-		}
-		std::cout << std::endl;
-	}
-	
-	void print(const Matrix &A) {
-		for (size_t i = 0; i < A.rowdim(); i++) {
-			for (size_t j = 0; j < A.coldim(); j++) {
-				_F.write(std::cout, A.getEntry(i, j)) << " ";
-			}
-			std::cout << std::endl;
-		}
-		std::cout << std::endl;
-	}
+protected:
 	
 	void convert(Vector &p, const Polynomial &f) {
 		p.resize(_R.deg(f) + 1);
@@ -230,11 +213,6 @@ public:
 		Polynomial fr;
 		minpolyvec(fr, A, vin);
 		
-		//std::cout << "filterv" << std::endl;
-		//_R.write(std::cout << "fm: ", fm) << std::endl;
-		//_R.write(std::cout << "fl: ", fl) << std::endl;
-		//_R.write(std::cout << "fr: ", fr) << std::endl;
-		
 		Polynomial g, fd;
 		_R.quo(fd, fl, fm);
 		_R.gcd(g, fm, fd);
@@ -250,9 +228,6 @@ public:
 		Polynomial gl, gr;
 		_R.quo(gl, fl, f);
 		_R.quo(gr, fr, f);
-		
-		//_R.write(std::cout << "gl: ", gl) << std::endl;
-		//_R.write(std::cout << "gr: ", gr) << std::endl;
 		
 		apply(u, gl, T, uin);
 		apply(v, gr, A, vin);
@@ -353,32 +328,20 @@ public:
 			copy(vprev, vcurr);
 		}
 		
-		//print(U);
-		//print(V);
-		
 		Matrix T(_F, k, k);
 		_MD.mul(T, U, V);
-		
-		//print(T);
 		
 		InvertTextbookDomain<Field> ITBD(_F);
 		
 		Matrix Ti(_F, k, k);
 		ITBD.invert(Ti, T);
 		
-		//print(Ti);
-		
 		Matrix TiU(_F, k, n);
 		_MD.mul(TiU, Ti, U);
-		
-		//print(TiU);
 		
 		Matrix TiUV(_F, k, k);
 		_MD.mul(TiUV, TiU, V);
 		
-		//print(TiUV);
-		
-		//std::cout << "k: " << k << std::endl;
 		for (size_t i = 0; i < k; i++) {
 			Vector tmpu(_F, n);
 			Vector tmpv(_F, n);
@@ -393,6 +356,7 @@ public:
 		}
 	}
 	
+public:
 	void solve(std::vector<Polynomial> &fs, const Blackbox &A, size_t limit) {		
 		size_t n = A.rowdim();
 		size_t k = 0;
