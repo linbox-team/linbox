@@ -107,6 +107,14 @@ int main(int argc, char** argv) {
 	
 	FrobeniusSmall<Field, Ring> FSD(F, R);
 	
+	std::vector<Polynomial> fs;
+	FSD.solve(fs, M, k);
+	
+	for (size_t i = 0; i < fs.size(); i++) {
+		R.write(std::cout, fs[i]) << std::endl;
+	}
+	
+	/*
 	typedef typename FrobeniusSmall<Field, Ring>::FSparseMat FSparseMat;
 	
 	FSparseMat FM, FMT;
@@ -129,6 +137,7 @@ int main(int argc, char** argv) {
 		R.write(std::cout << "f: ", fs[0]) << std::endl;		
 	});
 	std::cout << std::endl;
+	*/
 	
 	return 0;
 }

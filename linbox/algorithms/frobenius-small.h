@@ -34,6 +34,8 @@
 #include "linbox/algorithms/blackbox-block-container-smmx2.h"
 #include "linbox/matrix/random-matrix.h"
 
+#include "givaro/givtimer.h"
+
 namespace LinBox
 {
 
@@ -47,8 +49,6 @@ public:
 	typedef typename MatrixDom::OwnMatrix Matrix;
 	
 	typedef SparseMatrix<Field, SparseMatrixFormat::CSR> Blackbox;
-	typedef FFLAS::Sparse<Field, FFLAS::SparseMatrix_t::CSR> FSparseMat;
-	
 	typedef BlasVector<Field> Vector;
 	
 	typedef _PolynomialRing PolynomialRing;
@@ -62,41 +62,11 @@ protected:
 	MatrixDom _MD;
 	VectorDomain<Field> _VD;
 	
+	Givaro::Timer TW;
 public:
 	FrobeniusSmall(const Field &F, const PolynomialRing &R) : _F(F), _RI(F), _R(R), _MD(F), _VD(F) {}
 
 //protected:
-
-	void convert(FSparseMat &A, const Blackbox &BB, bool transpose = false) const {
-		std::vector<index_t> st1 = BB.getStart();
-		std::vector<index_t> col1 = BB.getColid();
-		std::vector<Element> data1 = BB.getData();
-		
-		uint64_t nnz = data1.size();
-		
-		index_t *row = FFLAS::fflas_new<index_t>(nnz);
-		for (size_t j = 0; j < BB.rowdim(); ++j) {
-			for (index_t k = st1[j] ; k < st1[j+1]; ++k) {
-				row[k] = j;
-			}
-		}
-		
-		index_t *col = FFLAS::fflas_new<index_t>(nnz);
-		for (size_t i = 0; i < col1.size(); i++) {
-			col[i] = col1[i];
-		}
-		
-		typename Field::Element_ptr data = FFLAS::fflas_new<Element>(nnz);
-		for (size_t i = 0; i < data1.size(); i++) {
-			data[i] = data1[i];
-		}
-		
-		if (transpose) {
-			FFLAS::sparse_init(_F, A, col, row, data, BB.rowdim(), BB.coldim(), nnz);
-		} else {
-			FFLAS::sparse_init(_F, A, row, col, data, BB.rowdim(), BB.coldim(), nnz);
-		}
-	}
 	
 	void convert(Vector &p, const Polynomial &f) {
 		p.resize(_R.deg(f) + 1);
@@ -106,9 +76,21 @@ public:
 			Coeff c;
 			
 			_R.getCoeffField().convert(ei, _R.getCoeff(c, f, i));
-			_F.init(e, i);
+			_F.init(e, ei);
 			
 			p.setEntry(i, e);
+		}
+		
+		_R.write(std::cout << "f: ", f) << std::endl;
+		for (size_t i = 0; i <= _R.deg(f); i++) {
+			_F.write(std::cout, p.getEntry(i)) << " ";
+		}
+		std::cout << std::endl;
+	}
+	
+	void copy(Vector &a, const Vector &b) {
+		for (size_t i = 0; i < a.size(); i++) {
+			a.setEntry(i, b.getEntry(i));
 		}
 	}
 
@@ -136,6 +118,70 @@ public:
 			v.setEntry(i, e);
 		}
 	}
+	
+	void randomU(
+		Vector &u, 
+		const std::vector<std::vector<Vector>> &basis_us, 
+		const std::vector<std::vector<Vector>> &basis_vs, 
+		const std::vector<std::vector<Element>> &ss) {
+		
+		randomVector(u);
+		Vector const_u(_F, u.size());
+		copy(const_u, u);
+		
+		std::cout << "basis-u dim: " << basis_us.size() << std::endl;
+		std::cout << "basis-v dim: " << basis_vs.size() << std::endl;
+		std::cout << "basis-s dim: " << ss.size() << std::endl;
+		
+		for (size_t i = 0; i < basis_us.size(); i++) {
+			std::cout << "basis-u[" << i << "] dim: " << basis_us[i].size() << std::endl;
+			std::cout << "basis-u[" << i << "] dim: " << basis_vs[i].size() << std::endl;
+			std::cout << "basis-s[" << i << "] dim: " << ss[i].size() << std::endl;
+			
+			for (size_t j = 0; j < basis_us[i].size(); j++) {
+				Vector tmp(_F, u.size());
+				Element scale;
+				
+				_VD.dot(scale, const_u, basis_vs[i][j]);
+				_F.divin(scale, ss[i][j]);
+				_VD.mul(tmp, basis_us[i][j], scale);
+				
+				_VD.subin(u, tmp);
+			}
+		}
+	}
+	
+	void randomV(
+		Vector &v,
+		const std::vector<std::vector<Vector>> &basis_us, 
+		const std::vector<std::vector<Vector>> &basis_vs, 
+		const std::vector<std::vector<Element>> &ss) {
+	
+		randomVector(v);
+		Vector const_v(_F, v.size());
+		copy(const_v, v);
+		
+		std::cout << "basis-u dim: " << basis_us.size() << std::endl;
+		std::cout << "basis-v dim: " << basis_vs.size() << std::endl;
+		std::cout << "basis-s dim: " << ss.size() << std::endl;
+		
+		for (size_t i = 0; i < basis_us.size(); i++) {
+			std::cout << "basis-u[" << i << "] dim: " << basis_us[i].size() << std::endl;
+			std::cout << "basis-u[" << i << "] dim: " << basis_vs[i].size() << std::endl;
+			std::cout << "basis-s[" << i << "] dim: " << ss[i].size() << std::endl;
+			
+			for (size_t j = 0; j < basis_us[i].size(); j++) {
+				Vector tmp(_F, v.size());
+				Element scale;
+				
+				_VD.dot(scale, const_v, basis_us[i][j]);
+				_F.divin(scale, ss[i][j]);
+				_VD.mul(tmp, basis_vs[i][j], scale);
+				
+				_VD.subin(v, tmp);
+			}
+		}
+	}
 
 	template<class Blackbox1>
 	void minpolyseq(Polynomial &f, const Vector &u, const Blackbox1 &A, const Vector &v) const {
@@ -152,9 +198,13 @@ public:
 	}
 	
 	template<class Blackbox1>
-	void minpolyvec(Polynomial &f, const Blackbox1 &A, const Vector &v, size_t r) {
-		_R.assign(f, _R.one);
-		for (size_t i = 0; i < r; i++) {
+	void minpolyvec(Polynomial &f, const Blackbox1 &A, const Vector &v, size_t r) {		
+		Vector u(_F, A.rowdim());
+		randomVector(u);
+		minpolyseq(f, u, A, v);
+		
+		TW.stop();
+		for (size_t i = 1; i < r; i++) {
 			Vector u(_F, A.rowdim());
 			randomVector(u);
 			
@@ -163,30 +213,7 @@ public:
 						
 			_R.lcmin(f, tmp);
 		}
-	}
-	
-	// compute the minimal polynomial of uAV with random V in F^(n-by-b)
-	void minpolyvec(Polynomial &f, const Vector &u, const FSparseMat &A, size_t b) {
-		typedef BlackboxBlockContainerSmmx2<Field> Sequence;
-		
-		RandomDenseMatrix<RandIter, Field> RDM(_F, _RI);
-				
-		BlasMatrix<Field> V(_F, u.size(), b);
-		RDM.random(V);
-		
-		Sequence seq(A, _F, u, V);
-		
-		BlockCoppersmithDomain<MatrixDom, Sequence> coppersmith(_MD, &seq, 20);
-		
-		std::vector<BlasMatrix<Field>> gen;
-		coppersmith.right_minpoly(gen);
-		
-		std::vector<Element> coeffs;
-		for (size_t i = 0; i < gen.size(); i++) {
-			coeffs.push_back(gen[i].getEntry(0, 0));
-		}
-		
-		_R.init(f, coeffs);
+		TW.start();
 	}
 	
 	void filterp(Polynomial &h, const Polynomial &f, const Polynomial &g) {
@@ -225,9 +252,10 @@ public:
 		Polynomial fr;
 		minpolyvec(fr, A, vin, b);
 		
-		//_R.write(std::cout << "fm: ", fm) << std::endl;
-		//_R.write(std::cout << "fl: ", fl) << std::endl;
-		//_R.write(std::cout << "fr: ", fr) << std::endl;
+		std::cout << "filterv" << std::endl;
+		_R.write(std::cout << "fm: ", fm) << std::endl;
+		_R.write(std::cout << "fl: ", fl) << std::endl;
+		_R.write(std::cout << "fr: ", fr) << std::endl;
 		
 		Polynomial g, fd;
 		_R.quo(fd, fl, fm);
@@ -245,46 +273,8 @@ public:
 		_R.quo(gl, fl, f);
 		_R.quo(gr, fr, f);
 		
-		apply(u, gl, T, uin);
-		apply(v, gr, A, vin);
-	}
-	
-	void filterv(Vector &u, Vector &v, Polynomial &f, 
-		const Blackbox &A, 
-		const Blackbox &T,
-		const FSparseMat &FA,
-		const FSparseMat &FT,
-		const Vector &uin, const Vector &vin,
-		size_t b) {
-		
-		Polynomial fm;
-		minpolyseq(fm, uin, A, vin);
-		
-		Polynomial fl;
-		minpolyvec(fl, uin, FA, b);
-		
-		Polynomial fr;
-		minpolyvec(fr, vin, FT, b);
-		
-		//_R.write(std::cout << "fm: ", fm) << std::endl;
-		//_R.write(std::cout << "fl: ", fl) << std::endl;
-		//_R.write(std::cout << "fr: ", fr) << std::endl;
-		
-		Polynomial g, fd;
-		_R.quo(fd, fl, fm);
-		_R.gcd(g, fm, fd);
-		
-		Polynomial tmp;
-		filterp(tmp, fm, g);
-		_R.assign(fm, tmp);
-		
-		_R.quo(fd, fr, fm);
-		_R.gcd(g, fm, fd);
-		filterp(f, fm, g);
-		
-		Polynomial gl, gr;
-		_R.quo(gl, fl, f);
-		_R.quo(gr, fr, f);
+		_R.write(std::cout << "gl: ", gl) << std::endl;
+		_R.write(std::cout << "gr: ", gr) << std::endl;
 		
 		apply(u, gl, T, uin);
 		apply(v, gr, A, vin);
@@ -327,84 +317,308 @@ public:
 	}
 	
 	void minpolspace(Vector &u, Vector &v, Polynomial &f, const Blackbox &A, const std::vector<Vector> &us, const std::vector<Vector> &vs, size_t b) {
+		size_t n = A.rowdim();
+		
+		std::cout << "minpolyspace 1" << std::endl;
 		filterv(u, v, f, A, us[0], vs[0], b);
+		for (size_t i = 0; i < u.size(); i++) {
+			std::cout << u.getEntry(i) << " ";
+		}
+		std::cout << std::endl;
+		for (size_t i = 0; i < v.size(); i++) {
+			std::cout << v.getEntry(i) << " ";
+		}
+		std::cout << std::endl;
+		_R.write(std::cout, f) << std::endl;
+		
 		for (size_t i = 1; i < us.size(); i++) {
-			Vector tmpu(_F);
-			Vector tmpv(_F);
+			std::cout << "minpolyspace 1: " << i << std::endl;
+			
+			Vector tmpu(_F, n);
+			Vector tmpv(_F, n);
 			Polynomial tmpf;
 			filterv(tmpu, tmpv, tmpf, A, us[i], vs[i], b);
-			mergev(u, v, f, A, u, v, f, tmpu, tmpv, tmpf);
+			
+			Vector oldu(_F, n);
+			Vector oldv(_F, n);
+			Polynomial oldf;
+			
+			copy(oldu, u);
+			copy(oldv, v);
+			_R.assign(oldf, f);
+			
+			mergev(u, v, f, A, oldu, oldv, oldf, tmpu, tmpv, tmpf);
+			
+			for (size_t i = 0; i < u.size(); i++) {
+				std::cout << u.getEntry(i) << " ";
+			}
+			std::cout << std::endl;
+			for (size_t i = 0; i < v.size(); i++) {
+				std::cout << v.getEntry(i) << " ";
+			}
+			std::cout << std::endl;
+			_R.write(std::cout, f) << std::endl;
 		}
 	}
 	
-	void minpolspace(Vector &u, Vector &v, Polynomial &f,
-		const Blackbox &A, 
-		const Blackbox &T,
-		const FSparseMat &FA,
-		const FSparseMat &FT,
-		const std::vector<Vector> &us, const std::vector<Vector> &vs,
-		size_t b) {
+	void dualbasis(std::vector<Vector> &basis_u, std::vector<Vector> &basis_v,
+		const Vector &u, const Blackbox &A, const Vector &v, size_t dk) {
 	
-		filterv(u, v, f, A, us[0], vs[0], b);
-		for (size_t i = 1; i < us.size(); i++) {
-			Vector tmpu(_F);
-			Vector tmpv(_F);
-			Polynomial tmpf;
-			filterv(tmpu, tmpv, tmpf, A, T, FA, FT, us[i], vs[i], b);
-			mergev(u, v, f, A, u, v, f, tmpu, tmpv, tmpf);
+		size_t n = A.rowdim();
+		
+		std::cout << "4a" << std::endl;
+	
+		Transpose<Blackbox> T(A);
+	
+		Vector tmpu(_F, n);
+		Vector tmpv(_F, n);
+		
+		copy(tmpu, u);
+		copy(tmpv, v);
+	
+		basis_u.push_back(u);
+		basis_v.push_back(v);
+		for (size_t i = 1; i < dk; i++) {
+			Vector tmp(_F, n);
+			
+			std::cout << "4b" << std::endl;
+			
+			T.apply(tmp, tmpu);
+			
+			std::cout << "4b-1" << std::endl;
+			basis_u.push_back(tmp);
+			
+			std::cout << "4b-2" << std::endl;
+			copy(tmpu, tmp);
+			
+			std::cout << "4c" << std::endl;
+			A.apply(tmp, tmpv);
+			basis_v.push_back(tmp);
+			copy(tmpv, tmp);
 		}
+		
+		std::cout << "4d" << std::endl;
+	}
+	
+	// return true if fk(A)v <> 0
+	template<class Blackbox1>
+	bool test(const Polynomial &fk, const Blackbox1 &A, const Vector &v) {
+		_R.write(std::cout << "testing: ", fk) << std::endl;
+		
+		for (size_t i = 0; i < v.size(); i++) {
+			_F.write(std::cout, v.getEntry(i)) << " ";
+		}
+		std::cout << std::endl;
+		
+		Vector r(_F, v.size());
+		
+		apply(r, fk, A, v);
+		
+		for (size_t i = 0; i < r.size(); i++) {
+			_F.write(std::cout, r.getEntry(i)) << " ";
+		}
+		std::cout << std::endl;
+		
+		for (size_t i = 0; i < r.size(); i++) {
+			if (!_F.isZero(r.getEntry(i))) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	void solve(std::vector<Polynomial> &fs, const Blackbox &A, size_t b) {
+		TW.start();
+		
+		size_t n = A.rowdim();
+		size_t k = 0;
+		size_t d = 0;
+		
 		std::vector<Vector> us;
 		std::vector<Vector> vs;
 		
-		for (size_t i = 0; i < trialbound(); i++) {
-			Vector u(_F, A.rowdim());
-			Vector v(_F, A.coldim());
+		std::vector<std::vector<Vector>> basis_us;
+		std::vector<std::vector<Vector>> basis_vs;
+		std::vector<std::vector<Element>> ss;
+		
+		Transpose<Blackbox> T(A);
+		
+		while (d < n) {
+			std::vector<Vector> trial_us;
+			std::vector<Vector> trial_vs;
 			
-			randomVector(u);
-			randomVector(v);
+			Vector old_u(_F, n);
+			Vector old_v(_F, n);
+			Polynomial old_f;
 			
+			std::cout << "1" << std::endl;
+			
+			bool dropped = false;
+			for (size_t i = 0; i < trialbound(); i++) {
+				Vector u(_F, A.rowdim());
+				Vector v(_F, A.coldim());
+				
+				std::cout << "1a" << std::endl;
+				
+				randomU(u, basis_us, basis_vs, ss);
+				randomV(v, basis_vs, basis_vs, ss);
+			
+				std::cout << "trials " << i << ": " << std::endl;
+				for (size_t i = 0; i < u.size(); i++) {
+					std::cout << u.getEntry(i) << " ";
+				}
+				std::cout << std::endl;
+				for (size_t i = 0; i < v.size(); i++) {
+					std::cout << v.getEntry(i) << " ";
+				}
+				std::cout << std::endl;
+				
+				trial_us.push_back(u);
+				trial_vs.push_back(v);
+				
+				std::cout << "1b" << std::endl;
+				
+				while (k > 0 && (test(fs[fs.size() - 1], T, u) || test(fs[fs.size() - 1], A, v))) {
+					std::cout << "1c" << std::endl;
+					
+					dropped = true;
+					
+					_R.assign(old_f, fs[fs.size() - 1]);
+					copy(old_u, us[us.size() - 1]);
+					copy(old_v, vs[vs.size() - 1]);
+					
+					for (size_t i = 0; i < old_u.size(); i++) {
+						std::cout << old_u.getEntry(i) << " ";
+					}
+					std::cout << std::endl;
+					
+					for (size_t i = 0; i < old_v.size(); i++) {
+						std::cout << old_v.getEntry(i) << " ";
+					}
+					std::cout << std::endl;
+					_R.write(std::cout, old_f) << std::endl;
+					
+					fs.pop_back();
+					us.pop_back();
+					vs.pop_back();
+					
+					basis_us.pop_back();
+					basis_vs.pop_back();
+					ss.pop_back();
+					
+					d -= _R.deg(old_f);
+					k--;
+				}
+				std::cout << "1d" << std::endl;
+			}
+			
+			std::cout << "2" << std::endl;
+			
+			Vector u(_F, n);
+			Vector v(_F, n);
+			Polynomial f;
+			if (dropped) {
+				Vector tmpu(_F);
+				Vector tmpv(_F);
+				Polynomial tmpf;
+				
+				std::cout << "2a" << std::endl;
+				minpolspace(tmpu, tmpv, tmpf, A, trial_us, trial_vs, b);
+				
+				std::cout << "2b" << std::endl;
+				
+				for (size_t i = 0; i < old_u.size(); i++) {
+					std::cout << old_u.getEntry(i) << " ";
+				}
+				std::cout << std::endl;
+				
+				for (size_t i = 0; i < old_v.size(); i++) {
+					std::cout << old_v.getEntry(i) << " ";
+				}
+				std::cout << std::endl;
+				
+				for (size_t i = 0; i < tmpu.size(); i++) {
+					std::cout << tmpu.getEntry(i) << " ";
+				}
+				std::cout << std::endl;
+				
+				for (size_t i = 0; i < tmpv.size(); i++) {
+					std::cout << tmpv.getEntry(i) << " ";
+				}
+				std::cout << std::endl;
+				
+				_R.write(std::cout, old_f) << std::endl;
+				_R.write(std::cout, tmpf) << std::endl;
+				
+				mergev(u, v, f, A, old_u, old_v, old_f, tmpu, tmpv, tmpf);
+			
+				for (size_t i = 0; i < u.size(); i++) {
+					std::cout << u.getEntry(i) << " ";
+				}
+				std::cout << std::endl;
+				for (size_t i = 0; i < v.size(); i++) {
+					std::cout << v.getEntry(i) << " ";
+				}
+				std::cout << std::endl;
+			} else {
+				std::cout << "2c" << std::endl;
+				minpolspace(u, v, f, A, trial_us, trial_vs, b);
+			
+				for (size_t i = 0; i < u.size(); i++) {
+					std::cout << u.getEntry(i) << " ";
+				}
+				std::cout << std::endl;
+				for (size_t i = 0; i < v.size(); i++) {
+					std::cout << v.getEntry(i) << " ";
+				}
+				std::cout << std::endl;
+			}
+			
+			std::cout << "3" << std::endl;
+			
+			for (size_t i = 0; i < u.size(); i++) {
+				std::cout << u.getEntry(i) << " ";
+			}
+			std::cout << std::endl;
+			for (size_t i = 0; i < v.size(); i++) {
+				std::cout << v.getEntry(i) << " ";
+			}
+			std::cout << std::endl;
+			
+			fs.push_back(f);
 			us.push_back(u);
 			vs.push_back(v);
+			
+			k++;
+			d += _R.deg(f);
+			
+			std::cout << "deg(f): " << _R.deg(f) << std::endl;
+			
+			std::cout << "4" << std::endl;
+			
+			std::vector<Vector> basis_u;
+			std::vector<Vector> basis_v;
+			dualbasis(basis_u, basis_v, u, A, v, _R.deg(f));
+			
+			basis_us.push_back(basis_u);
+			basis_vs.push_back(basis_v);
+			
+			std::cout << "5" << std::endl;
+			
+			std::vector<Element> sk;
+			for (size_t i = 0; i < basis_u.size(); i++) {
+				Element s;
+				_VD.dot(s, basis_u[i], basis_v[i]);
+				sk.push_back(s);
+			}
+			ss.push_back(sk);
+			
+			std::cout << "6" << std::endl;
 		}
 		
-		Vector u(_F);
-		Vector v(_F);
-		Polynomial f;
-		minpolspace(u, v, f, A, us, vs, b);
-		
-		fs.push_back(f);
-	}
-	
-	void solve(std::vector<Polynomial> &fs, 
-		const Blackbox &A, 
-		const Blackbox &T, 
-		const FSparseMat &FA,
-		const FSparseMat &FT,
-		size_t b) {
-	
-		std::vector<Vector> us;
-		std::vector<Vector> vs;
-		
-		for (size_t i = 0; i < trialbound(); i++) {
-			Vector u(_F, A.rowdim());
-			Vector v(_F, A.coldim());
-			
-			randomVector(u);
-			randomVector(v);
-			
-			us.push_back(u);
-			vs.push_back(v);
-		}
-		
-		Vector u(_F);
-		Vector v(_F);
-		Polynomial f;
-		minpolspace(u, v, f, A, T, FA, FT, us, vs, b);
-		
-		fs.push_back(f);
+		TW.stop();
+		std::cout << "frobenius-small: " << TW.usertime() << std::endl;
 	}
 };
 
