@@ -61,8 +61,11 @@ namespace LinBox
 		BlasMatrixDomain<Field> _BMD;
 		const Blackbox *_BB;
 		Block _U;
-		Block _W;
-		Block _tmp;
+		
+		size_t _current_data_idx = 0;
+		Block _W0;
+		Block _W1;
+		
 		Block _V;
 		
 	public:
@@ -75,7 +78,7 @@ namespace LinBox
 			const Field &F,
 			const Block &U0,
 			const Block &V0) : 
-		_F(F), _BMD(F), _BB(BB), _U(U0), _W(V0), _tmp(V0), _V(F, U0.rowdim(), U0.rowdim()) {
+		_F(F), _BMD(F), _BB(BB), _U(U0), _W0(V0), _W1(V0), _V(F, U0.rowdim(), U0.rowdim()) {
 		}
 		
 		const Field& field() const {
@@ -96,18 +99,32 @@ namespace LinBox
 		
 		void next() {
 			MatrixDomain<Field> MD(_F);
-			typename Block::ColIterator p1 = _tmp.colBegin();
-			typename Block::ConstColIterator p2 = _W.colBegin();
 			
-			for (; p2 != _W.colEnd(); ++p1, ++p2) {
-				_BB->apply(*p1, *p2);
+			if (_current_data_idx == 0) {
+				typename Block::ColIterator p1 = _W1.colBegin();
+				typename Block::ConstColIterator p2 = _W0.colBegin();
+				
+				for (; p2 != _W0.colEnd(); ++p1, ++p2) {
+					_BB->apply(*p1, *p2);
+				}
+				_current_data_idx = 1;
+			} else {
+				typename Block::ColIterator p1 = _W0.colBegin();
+				typename Block::ConstColIterator p2 = _W1.colBegin();
+				
+				for (; p2 != _W1.colEnd(); ++p1, ++p2) {
+					_BB->apply(*p1, *p2);
+				}
+				_current_data_idx = 0;
 			}
-			
-			MD.copy(_W, _tmp);
 		}
 		
 		const Value &getValue() {
-			_BMD.mul(_V, _U, _W);
+			if (_current_data_idx == 0) {
+				_BMD.mul(_V, _U, _W0);
+			} else {
+				_BMD.mul(_V, _U, _W1);
+			}
 			return _V;
 		}
 		
