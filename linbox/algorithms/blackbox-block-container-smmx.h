@@ -100,8 +100,11 @@ namespace LinBox
 		FSparseMat _R;
 		
 		Block _U;
-		Block _W;
-		Block _tmp;
+		
+		size_t _current_data_idx = 0;
+		Block _W0;
+		Block _W1;
+		
 		Value _V;
 	
 		static void convert(const Field &F, FSparseMat &A, const Blackbox *BB, bool transpose = false) {
@@ -150,8 +153,8 @@ namespace LinBox
 				_MD(F),
 				_BB(BB), 
 				_U(U0), 
-				_W(V0), 
-				_tmp(F, BB->rowdim(), V0.coldim()), 
+				_W0(V0), 
+				_W1(F, BB->rowdim(), V0.coldim()), 
 				_V(F, U0.rowdim(), V0.coldim()) 
 		{
 			convert(F, _M, BB, transpose);
@@ -197,33 +200,42 @@ namespace LinBox
 		}
 		
 		void next() {
-			size_t b = _W.coldim();
+			size_t b = coldim();
 			
-			if (right_pre) {
-				// W = _R * W
-				for (size_t i = 0; i < _W.rowdim() * _W.coldim(); i++) {
-					_tmp.getPointer()[i] = _W.getPointer()[i];
-				}
-				FFLAS::fspmm(_F, _R, b, _tmp.getPointer(), b, _F.zero, _W.getPointer(), b);
+			// W = _R * W
+			if (right_pre && _current_data_idx == 0) {
+				FFLAS::fspmm(_F, _R, b, _W0.getPointer(), b, _F.zero, _W1.getPointer(), b);
+				_current_data_idx = 1;
+			} else if (right_pre && _current_data_idx == 1) {
+				FFLAS::fspmm(_F, _R, b, _W1.getPointer(), b, _F.zero, _W0.getPointer(), b);
+				_current_data_idx = 0;
 			}
 			
 			// W = _M * W
-			for (size_t i = 0; i < _W.rowdim() * _W.coldim(); i++) {
-				_tmp.getPointer()[i] = _W.getPointer()[i];
+			if (_current_data_idx == 0) {
+				FFLAS::fspmm(_F, _M, b, _W0.getPointer(), b, _F.zero, _W1.getPointer(), b);
+				_current_data_idx = 1;
+			} else {
+				FFLAS::fspmm(_F, _M, b, _W1.getPointer(), b, _F.zero, _W0.getPointer(), b);
+				_current_data_idx = 0;
 			}
-			FFLAS::fspmm(_F, _M, b, _tmp.getPointer(), b, _F.zero, _W.getPointer(), b);
-			
-			if (left_pre) {
-				// W = _R * W
-				for (size_t i = 0; i < _W.rowdim() * _W.coldim(); i++) {
-					_tmp.getPointer()[i] = _W.getPointer()[i];
-				}
-				FFLAS::fspmm(_F, _L, b, _tmp.getPointer(), b, _F.zero, _W.getPointer(), b);
+				
+			// W = _L * W
+			if (left_pre && _current_data_idx == 0) {
+				FFLAS::fspmm(_F, _L, b, _W0.getPointer(), b, _F.zero, _W1.getPointer(), b);
+				_current_data_idx = 1;
+			} else if (left_pre && _current_data_idx == 1) {
+				FFLAS::fspmm(_F, _L, b, _W1.getPointer(), b, _F.zero, _W0.getPointer(), b);
+				_current_data_idx = 0;
 			}
 		}
 		
 		const Value &getValue() {
-			_MD.mul(_V, _U, _W);
+			if (_current_data_idx == 0) {
+				_MD.mul(_V, _U, _W0);
+			} else {
+				_MD.mul(_V, _U, _W1);
+			}
 			return _V;
 		}
 		
