@@ -328,9 +328,11 @@ protected:
 			copy(vprev, vcurr);
 		}
 		
+		Matrix T(_F, k, k);
+		_MD.mul(T, U, V);
+		
 		Matrix Ti(_F, k, k);
-		_MD.mul(Ti, U, V);
-		_MD.invin(Ti);
+		_MD.invin(Ti, T);
 		
 		Matrix TiU(_F, k, n);
 		_MD.mul(TiU, Ti, U);
