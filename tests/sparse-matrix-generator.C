@@ -32,7 +32,7 @@ Givaro::Timer TW;
 int main(int argc, char** argv) {
 	size_t p = 3;
 	size_t n = 10;
-	size_t t = 2;
+	size_t t = 0;
 	int seed = time(NULL);
 	
 	double sparsity = 0.05;
@@ -64,75 +64,69 @@ int main(int argc, char** argv) {
 	SparseMatrixGenerator<Field, PolynomialRing> Gen(F, R);
 	TestPolySmithFormUtil<Field> util(F);
 	
-	/*
+	Polynomial det;
+	std::vector<Polynomial> fs;
+	
 	SparseMat M(F);
-	if (bumpFile == "") {
+	if (bumpFile == "" && t == 0) {
 		std::vector<Polynomial> fs;
 		Polynomial det;
 	
         Gen.invariants(fs, n, fsnum);
         Gen.generate(M, det, fs, sparsity);
-	} else {
+	} else if (bumpFile == "" && t != 0) {
+		std::vector<integer> v;
+		Polynomial x, xm1, xp1, x2, x3;
+		R.init(x, v = {0, 1});
+		R.assign(xm1, x);
+		R.subin(xm1, R.one);
+		R.assign(xp1, x);
+		R.addin(xp1, R.one);
+		R.mul(x2, x, x);
+		R.mul(x3, x2, x);
+		
+		if (t == 1) {
+			// trial 1 - identity
+			Gen.addTriangle(fs, n, 1.0 / n, xm1);
+		} else if (t == 2) {
+			// trial 2 - 
+			Gen.addTriangle(fs, n, 3.0 / n, xm1);
+		} else if (t == 3) {
+			// trial 3
+			Gen.addTriangle(fs, n, 1, xm1);
+		} else if (t == 4) {
+			// trial 4
+			Gen.addTriangle(fs, n, n / 3.0, xm1);
+		} else if (t == 5) {
+			// trial 5
+			Gen.addTriangle(fs, n, n, xm1);
+		} else if (t == 6) {
+			// trial 6
+			Gen.addTriangle(fs, n/2, 6.0 / n, xm1);
+			Gen.addTriangle(fs, n/2, 1, xp1);
+		} else if (t == 7) {
+			// trial 7
+			Gen.addTriangle(fs, n/2, 6.0 / n, x);
+			Gen.addTriangle(fs, n/2, 1, xm1);
+		} else if (t == 8) {
+			// trial 8
+			Gen.addTriangle(fs, n, 1.0 / n, x2);
+		} else if (t == 9) {
+			// trial 9
+			Gen.addTriangle(fs, n, 1.0 / n, x3);
+		} else if (t == 10) {
+			// trial 10
+			Gen.addTriangle(fs, n/2, 1.0 / n, x2);
+			Gen.addTriangle(fs, n/2, 1, xm1);
+		} 
+	} else if (bumpFile != "") {
 		Polynomial det;
 		
 		// create sparse matrix from bumps and compute determinant
 		M.resize(n, n);
 		Gen.generate(M, det, bumpFile, sparsity);
 	}
-	//*/
 	
-	std::vector<integer> v;
-	Polynomial x, xm1, xp1, x2, x3;
-	R.init(x, v = {0, 1});
-	R.assign(xm1, x);
-	R.subin(xm1, R.one);
-	R.assign(xp1, x);
-	R.addin(xp1, R.one);
-	R.mul(x2, x, x);
-	R.mul(x3, x2, x);
-
-	Polynomial det;
-	std::vector<Polynomial> fs;
-	//Gen.addTriangle(fs, n/2, 6.0 / n, x);
-	//Gen.addTriangle(fs, n/2, 1, xm1);
-	
-	if (t == 1) {
-		// trial 1 - identity
-		Gen.addTriangle(fs, n, 1.0 / n, xm1);
-	} else if (t == 2) {
-		// trial 2 - 
-		Gen.addTriangle(fs, n, 3.0 / n, xm1);
-	} else if (t == 3) {
-		// trial 3
-		Gen.addTriangle(fs, n, 1, xm1);
-	} else if (t == 4) {
-		// trial 4
-		Gen.addTriangle(fs, n, n / 3.0, xm1);
-	} else if (t == 5) {
-		// trial 5
-		Gen.addTriangle(fs, n, n, xm1);
-	} else if (t == 6) {
-		// trial 6
-		Gen.addTriangle(fs, n/2, 6.0 / n, xm1);
-		Gen.addTriangle(fs, n/2, 1, xp1);
-	} else if (t == 7) {
-		// trial 7
-		Gen.addTriangle(fs, n/2, 6.0 / n, x);
-		Gen.addTriangle(fs, n/2, 1, xm1);
-	} else if (t == 8) {
-		// trial 8
-		Gen.addTriangle(fs, n, 1.0 / n, x2);
-	} else if (t == 9) {
-		// trial 9
-		Gen.addTriangle(fs, n, 1.0 / n, x3);
-	} else if (t == 10) {
-		// trial 10
-		Gen.addTriangle(fs, n/2, 1.0 / n, x2);
-		Gen.addTriangle(fs, n/2, 1, xm1);
-	} 
-
-	
-	SparseMat M(F);
 	Gen.generate(M, det, fs, sparsity);
 	
 	if (mofile != "") {

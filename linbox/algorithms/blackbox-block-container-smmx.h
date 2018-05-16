@@ -88,7 +88,8 @@ namespace LinBox
 
 	private:
 		Field _F;
-		__BBC_MMHelper<Field> _MD;
+		// __BBC_MMHelper<Field> _MD;
+		BlasMatrixDomain<Field> _MD;
 		
 		bool left_pre = false;
 		FSparseMat _L;
@@ -199,6 +200,7 @@ namespace LinBox
 		void next() {
 			size_t b = _W.coldim();
 			
+			/*
 			if (right_pre) {
 				// W = _R * W
 				for (size_t i = 0; i < _W.rowdim() * _W.coldim(); i++) {
@@ -206,13 +208,16 @@ namespace LinBox
 				}
 				FFLAS::fspmm(_F, _R, b, _tmp.getPointer(), b, _F.zero, _W.getPointer(), b);
 			}
+			*/
 			
 			// W = _M * W
-			for (size_t i = 0; i < _W.rowdim() * _W.coldim(); i++) {
-				_tmp.getPointer()[i] = _W.getPointer()[i];
-			}
+			//for (size_t i = 0; i < _W.rowdim() * _W.coldim(); i++) {
+			//	_tmp.getPointer()[i] = _W.getPointer()[i];
+			//}
+			_MD.copy(_tmp, _W);
 			FFLAS::fspmm(_F, _M, b, _tmp.getPointer(), b, _F.zero, _W.getPointer(), b);
 			
+			/*
 			if (left_pre) {
 				// W = _R * W
 				for (size_t i = 0; i < _W.rowdim() * _W.coldim(); i++) {
@@ -220,6 +225,7 @@ namespace LinBox
 				}
 				FFLAS::fspmm(_F, _L, b, _tmp.getPointer(), b, _F.zero, _W.getPointer(), b);
 			}
+			*/
 		}
 		
 		const Value &getValue() {
