@@ -69,7 +69,7 @@ int main(int argc, char** argv) {
 	size_t p = 3;
 	size_t b = 8;
 	size_t k = 4;
-	std::string matrixFile;
+	std::string matrixFile, outFile;
 	int seed = time(NULL);
 
 	static Argument args[] = {
@@ -77,6 +77,7 @@ int main(int argc, char** argv) {
 		{ 'k', "-k K", "Number of invariant factors to compute", TYPE_INT, &k},
 		{ 'p', "-p P", "Set the field GF(p)", TYPE_INT, &p},
 		{ 'f', "-f F", "Name of file for matrix", TYPE_STR, &matrixFile},
+		{ 'o', "-o O", "Name of file for output", TYPE_STR, &outFile},
 		{ 'r', "-r R", "Random seed", TYPE_INT, &seed},
 		END_OF_ARGUMENTS
 	};
@@ -112,8 +113,13 @@ int main(int argc, char** argv) {
 	time1([&](){FSD.solve(fs, M, k);});
 	std::cout << std::endl;
 	
-	for (size_t i = 0; i < fs.size(); i++) {
-		R.write(std::cout, fs[i]) << std::endl;
+	if (outFile != "") {
+		std::ofstream out(outFile);
+		std::for_each(fs.rbegin(), fs.rend(), [&](const Polynomial &v) {
+			Polynomial f;
+			R.write(out, R.monic(f, v)) << std::endl;
+		});
+		out.close();
 	}
 	
 	return 0;
