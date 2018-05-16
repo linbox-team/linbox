@@ -82,24 +82,16 @@ namespace LinBox
 			return _F;
 		}
 		
-		const Blackbox *getBB() const {
-			return _BB;
+		size_t bbdim() const {
+			return _U.coldim();
 		}
 		
 		size_t rowdim() const {
-			return _V.rowdim();
+			return _U.rowdim();
 		}
 		
 		size_t coldim() const {
 			return _V.coldim();
-		}
-		
-		double spmmtime() const {
-			return _spmv_time;
-		}
-		
-		double gemmtime() const {
-			return _gemm_time;
 		}
 		
 		void next() {
