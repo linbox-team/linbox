@@ -29,10 +29,10 @@
 #include <vector>
 #include <math.h> 
 
-#include "linbox/algorithms/invert-tb.h"
 #include "linbox/algorithms/block-coppersmith-domain.h"
 #include "linbox/algorithms/blackbox-container.h"
 #include "linbox/algorithms/blackbox-block-container-smmx2.h"
+#include "linbox/matrix/matrixdomain/blas-matrix-domain.h"
 #include "linbox/matrix/random-matrix.h"
 
 #include "givaro/givtimer.h"
@@ -46,7 +46,7 @@ public:
 	typedef _Field Field;
 	typedef typename Field::Element Element;
 	typedef typename Field::RandIter RandIter;
-	typedef MatrixDomain<Field> MatrixDom;
+	typedef BlasMatrixDomain<Field> MatrixDom;
 	typedef typename MatrixDom::OwnMatrix Matrix;
 	
 	typedef SparseMatrix<Field, SparseMatrixFormat::CSR> Blackbox;
@@ -328,13 +328,9 @@ protected:
 			copy(vprev, vcurr);
 		}
 		
-		Matrix T(_F, k, k);
-		_MD.mul(T, U, V);
-		
-		InvertTextbookDomain<Field> ITBD(_F);
-		
 		Matrix Ti(_F, k, k);
-		ITBD.invert(Ti, T);
+		_MD.mul(Ti, U, V);
+		_MD.invin(Ti);
 		
 		Matrix TiU(_F, k, n);
 		_MD.mul(TiU, Ti, U);

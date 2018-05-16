@@ -402,7 +402,7 @@ void randomTriangular(SparseMat &T, size_t s, bool upper, bool randomDiag = fals
 int main(int argc, char** argv) {
 	size_t p = 3;
 	size_t extend = 1;
-	size_t b = 4;
+	size_t b = 4, m = 0;
 	size_t modIndex = 0;
 	
 	int precond = 0;
@@ -427,7 +427,7 @@ int main(int argc, char** argv) {
 		{ 'o', "-o O", "Name of output file for invariant factors", TYPE_STR, &outFile},
 		{ 'r', "-r R", "Random seed", TYPE_INT, &seed},
 		{ 'k', "-k K", "Compute the (k+1)-th invariant factor", TYPE_INT, &k},
-		
+		{ 'm', "-m M", "Block size 2", &m },
 		{ 's', "-s S", "Number of nonzeros in random triangular preconditioner", TYPE_INT, &s},
 		{ 'c', "-c C", "Choose what preconditioner to apply", TYPE_INT, &precond},
 		{ 'z', "-z Z", "Permute rows of input", TYPE_INT, &perm},
@@ -545,7 +545,7 @@ int main(int argc, char** argv) {
 		helper.extWiedemann(outFile, M, extend, precond);
 		return 0;
 	}
-		
+	
 	// Generate random left and right projectors
 	std::vector<BlasMatrix<Field>> minpoly;
 	
@@ -580,6 +580,17 @@ int main(int argc, char** argv) {
 	}
 	if ((alg & 1) && !R.isZero(det)) {
 		time1([&](){PSFD.solve(result, G, det);});
+	}
+	
+	if (modIndex > 0 && m > b) {
+		std::vector<BlasMatrix<Field>> minpoly2;
+		time1([&](){IFD.computeGenerator(minpoly, M, m);});
+		
+		PolyMatrix G2(R, m, m);
+		IFD.convert(G2, minpoly2);
+		
+		std::vector<Polynomial> result2;
+		time1([&](){PSFD.solve(result, G, result[modIndex]);});
 	}
 	
 	size_t total = 0;
