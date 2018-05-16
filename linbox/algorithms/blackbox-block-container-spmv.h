@@ -67,9 +67,7 @@ namespace LinBox
 		Block _W1;
 		
 		Block _V;
-		
-		Givaro::Timer TW;
-		
+				
 	public:
 		// Default constructor
 		BlackboxBlockContainerSpmv() {}
@@ -99,14 +97,9 @@ namespace LinBox
 			return _V.coldim();
 		}
 		
-		double spmmTime() const {
-			return TW.usertime();
-		}
-		
 		void next() {
 			MatrixDomain<Field> MD(_F);
 			
-			TW.start();
 			if (_current_data_idx == 0) {
 				typename Block::ColIterator p1 = _W1.colBegin();
 				typename Block::ConstColIterator p2 = _W0.colBegin();
@@ -124,7 +117,6 @@ namespace LinBox
 				}
 				_current_data_idx = 0;
 			}
-			TW.stop();
 		}
 		
 		const Value &getValue() {

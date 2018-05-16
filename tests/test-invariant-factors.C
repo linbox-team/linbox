@@ -589,7 +589,7 @@ int main(int argc, char** argv) {
 		
 		time1([&](){IFD.computeGenerator(minpoly, blockSeq);});
 	} else if (spmv != 0) {
-		typedef BlackboxBlockContainerSpmv<Field, SparseMat> Sequence;
+		typedef BlackboxBlockContainer<Field, SparseMat> Sequence;
 		Sequence blockSeq(&M, F, U, V);
 		
 		time1([&](){IFD.computeGenerator(minpoly, blockSeq);});

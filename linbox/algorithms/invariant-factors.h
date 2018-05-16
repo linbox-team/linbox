@@ -82,7 +82,6 @@ public:
 		MatrixDom MD(_F);
 		BlockCoppersmithDomain<MatrixDom, Sequence> coppersmith(MD, &blockSeq, earlyTerm);
 		coppersmith.right_minpoly(gen);
-		std::cout << "spmm:" << blockSeq.spmmTime() << "\t";
 	}
 
 	template<class Blackbox>
