@@ -562,16 +562,42 @@ int main(int argc, char** argv) {
 	// Generate random left and right projectors
 	std::vector<BlasMatrix<Field>> minpoly;
 	
+	typename Field::RandIter RI(F);
+	RandomDenseMatrix<typename Field::RandIter, Field> RDM(F, RI);
+	
+	BlasMatrix<Field> U(F, b, n);
+	BlasMatrix<Field> V(F, n, b);
+	
+	RDM.random(U);
+	RDM.random(V);
+	
+	//typedef BlackboxBlockContainer<Field, Blackbox> Sequence;
+	
 	if (precondL && precondR) {
-		time1([&](){IFD.computeGenerator(minpoly, PreL, M, PreR, b);});
+		typedef BlackboxBlockContainerSmmx<Field, SparseMat> Sequence;
+		Sequence blockSeq(&PreL, &M, &PreR, F, U, V);
+		
+		time1([&](){IFD.computeGenerator(minpoly, blockSeq);});
 	} else if (precondR) {
-		time1([&](){IFD.computeGenerator(minpoly, M, PreR, b);});
+		typedef BlackboxBlockContainerSmmx<Field, SparseMat> Sequence;
+		Sequence blockSeq(&M, &PreR, F, U, V);
+		
+		time1([&](){IFD.computeGenerator(minpoly, blockSeq);});
 	} else if (precondL) {
-		time1([&](){IFD.computeGenerator(minpoly, PreL, M, b);});
+		typedef BlackboxBlockContainerSmmx<Field, SparseMat> Sequence;
+		Sequence blockSeq(&PreL, &M, F, U, V);
+		
+		time1([&](){IFD.computeGenerator(minpoly, blockSeq);});
 	} else if (spmv != 0) {
-		time1([&](){IFD.computeGeneratorSpmv(minpoly, M, b);});
+		typedef BlackboxBlockContainerSpmv<Field, SparseMat> Sequence;
+		Sequence blockSeq(&M, F, U, V);
+		
+		time1([&](){IFD.computeGenerator(minpoly, blockSeq);});
 	} else {
-		time1([&](){IFD.computeGenerator(minpoly, M, b);});
+		typedef BlackboxBlockContainerSmmx<Field, SparseMat> Sequence;
+		Sequence blockSeq(&M, F, U, V);
+		
+		time1([&](){IFD.computeGenerator(minpoly, blockSeq);});
 	}
 	
 	// Convert to matrix with polynomial entries

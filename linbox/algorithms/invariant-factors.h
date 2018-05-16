@@ -73,59 +73,16 @@ public:
 		return ceil(log(k / (1 - sqrt(p)))/log(q)) + t;
 	}
 	
-	template<class Blackbox>
+	template<class Sequence>
 	void computeGenerator(
 		std::vector<Matrix> &gen,
-		const Blackbox &PreL,
-		const Blackbox &M,
-		const Blackbox &PreR,
-		size_t b,
+		Sequence &blockSeq,
 		int earlyTerm = 10) const
 	{
-		RandIter RI(_F);
-		RandomDenseMatrix<RandIter, Field> RDM(_F, RI);
 		MatrixDom MD(_F);
-		
-		size_t n = M.rowdim();
-		Matrix U(_F, b, n);
-		Matrix V(_F, n, b);
-		
-		RDM.random(U);
-		RDM.random(V);
-		
-		//typedef BlackboxBlockContainer<Field, Blackbox> Sequence;
-		typedef BlackboxBlockContainerSmmx<Field, Blackbox> Sequence;
-		Sequence blockSeq(&PreL, &M, &PreR, _F, U, V);
 		BlockCoppersmithDomain<MatrixDom, Sequence> coppersmith(MD, &blockSeq, earlyTerm);
-		
 		coppersmith.right_minpoly(gen);
-	}
-	
-	template<class Blackbox>
-	void computeGenerator(
-		std::vector<Matrix> &gen,
-		const Blackbox &M,
-		const Blackbox &PreR,
-		size_t b,
-		int earlyTerm = 10) const
-	{
-		RandIter RI(_F);
-		RandomDenseMatrix<RandIter, Field> RDM(_F, RI);
-		MatrixDom MD(_F);
-		
-		size_t n = M.rowdim();
-		Matrix U(_F, b, n);
-		Matrix V(_F, n, b);
-		
-		RDM.random(U);
-		RDM.random(V);
-		
-		//typedef BlackboxBlockContainer<Field, Blackbox> Sequence;
-		typedef BlackboxBlockContainerSmmx<Field, Blackbox> Sequence;
-		Sequence blockSeq(&M, &PreR, _F, U, V);
-		BlockCoppersmithDomain<MatrixDom, Sequence> coppersmith(MD, &blockSeq, earlyTerm);
-		
-		coppersmith.right_minpoly(gen);
+		std::cout << "spmm:" << blockSeq.spmmTime() << "\t";
 	}
 
 	template<class Blackbox>
@@ -152,35 +109,6 @@ public:
 		BlockCoppersmithDomain<MatrixDom, Sequence> coppersmith(MD, &blockSeq, earlyTerm);
 		
 		coppersmith.right_minpoly(gen);
-		
-		std::cout << "spmm:" << blockSeq.spmmTime() << "\t";
-	}
-
-	template<class Blackbox>
-	void computeGeneratorSpmv(
-		std::vector<Matrix> &gen,
-		const Blackbox &M,
-		size_t b,
-		int earlyTerm = 10) const
-	{
-		RandIter RI(_F);
-		RandomDenseMatrix<RandIter, Field> RDM(_F, RI);
-		MatrixDom MD(_F);
-		
-		size_t n = M.rowdim();
-		Matrix U(_F, b, n);
-		Matrix V(_F, n, b);
-		
-		RDM.random(U);
-		RDM.random(V);
-		
-		typedef BlackboxBlockContainerSpmv<Field, Blackbox> Sequence;
-		Sequence blockSeq(&M, _F, U, V);
-		BlockCoppersmithDomain<MatrixDom, Sequence> coppersmith(MD, &blockSeq, earlyTerm);
-		
-		coppersmith.right_minpoly(gen);
-		
-		std::cout << "spmm:" << blockSeq.spmmTime() << "\t";
 	}
 	
 	void convert(PolyMatrix &G, const std::vector<Matrix> &minpoly) const {
