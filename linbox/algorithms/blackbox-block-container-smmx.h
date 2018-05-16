@@ -45,34 +45,6 @@
 
 namespace LinBox
 {
-	template<class _Field1>
-	class __BBC_MMHelper {
-	private:
-		MatrixDomain<_Field1> _MD;
-		typedef BlasMatrix<_Field1> Mat;
-		
-	public:
-		__BBC_MMHelper(const _Field1 &F) : _MD(F) {}
-		
-		inline void mul(Mat &C, const Mat &A, const Mat &B) const {
-			_MD.mul(C, A, B);
-		}
-	};
-	
-	template<>
-	class __BBC_MMHelper<Givaro::Modular<double>> {
-	private:
-		BlasMatrixDomain<Givaro::Modular<double>> _MD;
-		typedef BlasMatrix<Givaro::Modular<double>> Mat;
-		
-	public:
-		__BBC_MMHelper(const Givaro::Modular<double> &F) : _MD(F) {}
-		
-		inline void mul(Mat &C, const Mat &A, const Mat &B) const {
-			_MD.mul(C, A, B);
-		}
-	};
-	
 	template<class _Field, class _Blackbox>
 	class BlackboxBlockContainerSmmx {
 	public:
@@ -88,7 +60,7 @@ namespace LinBox
 		
 	private:
 		Field _F;
-		__BBC_MMHelper<Field> _MD;
+		BlasMatrixDomain<Field> _MD;
 		
 		bool left_pre = false;
 		FSparseMat _L;
