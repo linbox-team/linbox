@@ -399,6 +399,15 @@ void randomTriangular(SparseMat &T, size_t s, bool upper, bool randomDiag = fals
 	T.finalize();
 }
 
+void writeLifs(Ring R, std::string filename, std::vector<Polynomial> &result) {
+	std::ofstream out(filename);
+	std::for_each(result.begin(), result.end(), [&](const Polynomial &v) {
+		Polynomial f;
+		R.write(out, R.monic(f, v)) << std::endl;
+	});
+	out.close();
+}
+
 int main(int argc, char** argv) {
 	size_t p = 3;
 	size_t extend = 1;
@@ -421,13 +430,15 @@ int main(int argc, char** argv) {
 		{ 'a', "-a A", "Algs to run after BM", TYPE_INT, &alg},
 		{ 'p', "-p P", "Set the field GF(p)", TYPE_INT, &p},
 		{ 'e', "-e E", "Extension field exponent (p^e)", TYPE_INT, &extend},
+		
 		{ 'b', "-b B", "Block size", TYPE_INT, &b},
+		{ 'm', "-m M", "Block size 2", TYPE_INT, &m},
 		{ 't', "-t T", "Use t-th LIF as modulus", TYPE_INT, &modIndex},
+		
 		{ 'f', "-f F", "Name of file for matrix", TYPE_STR, &matrixFile},
 		{ 'o', "-o O", "Name of output file for invariant factors", TYPE_STR, &outFile},
 		{ 'r', "-r R", "Random seed", TYPE_INT, &seed},
 		{ 'k', "-k K", "Compute the (k+1)-th invariant factor", TYPE_INT, &k},
-		{ 'm', "-m M", "Block size 2", &m },
 		{ 's', "-s S", "Number of nonzeros in random triangular preconditioner", TYPE_INT, &s},
 		{ 'c', "-c C", "Choose what preconditioner to apply", TYPE_INT, &precond},
 		{ 'z', "-z Z", "Permute rows of input", TYPE_INT, &perm},
@@ -579,18 +590,26 @@ int main(int argc, char** argv) {
 		time1([&](){PSFD.detLocalX(det, G);});
 	}
 	if ((alg & 1) && !R.isZero(det)) {
-		time1([&](){PSFD.solve(result, G, det);});
+		time1([&](){PSFD.solve(result, G, det, true);});
 	}
 	
 	if (modIndex > 0 && m > b) {
 		std::vector<BlasMatrix<Field>> minpoly2;
-		time1([&](){IFD.computeGenerator(minpoly, M, m);});
+		time1([&](){IFD.computeGenerator(minpoly2, M, m);});
 		
 		PolyMatrix G2(R, m, m);
 		IFD.convert(G2, minpoly2);
-		
+				
 		std::vector<Polynomial> result2;
-		time1([&](){PSFD.solve(result, G, result[modIndex]);});
+		time1([&](){PSFD.solve(result2, G2, result[b - modIndex]);});
+		
+		for (size_t i = b - modIndex + 1; i < result.size(); i++) {
+			result2[result2.size() - result.size() + i] = result[i];
+		}
+		
+		if (outFile != "") {
+			writeLifs(R, outFile + "2", result2);
+		}
 	}
 	
 	size_t total = 0;
@@ -603,12 +622,7 @@ int main(int argc, char** argv) {
 	std::cout << " \t" << total << std::endl;
 	
 	if (outFile != "") {
-		std::ofstream out(outFile);
-		std::for_each(result.begin(), result.end(), [&](const Polynomial &v) {
-			Polynomial f;
-			R.write(out, R.monic(f, v)) << std::endl;
-		});
-		out.close();
+		writeLifs(R, outFile, result);
 	}
 	
 	return 0;

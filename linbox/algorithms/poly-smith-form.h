@@ -168,7 +168,8 @@ namespace LinBox
 		void solve(
 			std::vector<Polynomial> &result,
 			const Matrix1 &M,
-			const Polynomial &det) const {
+			const Polynomial &det,
+			bool isDet = false) const {
 			
 			std::vector<std::pair<Polynomial, long>> factors;
 			
@@ -180,9 +181,9 @@ namespace LinBox
 			}
 			
 			for (size_t i = 0; i < factors.size(); i++) {
-				if (factors[i].second == 1) {
+				if (isDet && factors[i].second == 1) {
 					_R.mulin(result[result.size() - 1], factors[i].first);
-				} else if (factors[i].second == 2) {
+				} else if (isDet && factors[i].second == 2) {
 					localFactoredRank(result, M, factors[i].first);
 				} else {
 					localFactored(result, M, factors[i].first, factors[i].second);
