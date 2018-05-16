@@ -152,6 +152,8 @@ public:
 		BlockCoppersmithDomain<MatrixDom, Sequence> coppersmith(MD, &blockSeq, earlyTerm);
 		
 		coppersmith.right_minpoly(gen);
+		
+		std::cout << "spmm:" << blockSeq.spmmTime() << "\t";
 	}
 
 	template<class Blackbox>
@@ -177,6 +179,8 @@ public:
 		BlockCoppersmithDomain<MatrixDom, Sequence> coppersmith(MD, &blockSeq, earlyTerm);
 		
 		coppersmith.right_minpoly(gen);
+		
+		std::cout << "spmm:" << blockSeq.spmmTime() << "\t";
 	}
 	
 	void convert(PolyMatrix &G, const std::vector<Matrix> &minpoly) const {

@@ -85,6 +85,8 @@ namespace LinBox
 		typedef BlasMatrix<Field>              Value;
 		
 		typedef FFLAS::Sparse<Field, FFLAS::SparseMatrix_t::CSR> FSparseMat;
+		
+		Givaro::Timer TW;
 
 	private:
 		Field _F;
@@ -199,6 +201,10 @@ namespace LinBox
 			return _V.coldim();
 		}
 		
+		double spmmTime() const {
+			return TW.usertime();
+		}
+		
 		void next() {
 			size_t b = coldim();
 			
@@ -211,6 +217,7 @@ namespace LinBox
 				_current_data_idx = 0;
 			}
 			
+			TW.start();
 			// W = _M * W
 			if (_current_data_idx == 0) {
 				FFLAS::fspmm(_F, _M, b, _W0.getPointer(), b, _F.zero, _W1.getPointer(), b);
@@ -219,6 +226,7 @@ namespace LinBox
 				FFLAS::fspmm(_F, _M, b, _W1.getPointer(), b, _F.zero, _W0.getPointer(), b);
 				_current_data_idx = 0;
 			}
+			TW.stop();
 				
 			// W = _L * W
 			if (left_pre && _current_data_idx == 0) {
