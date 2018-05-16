@@ -152,6 +152,31 @@ public:
 		
 		coppersmith.right_minpoly(gen);
 	}
+
+	template<class Blackbox>
+	void computeGeneratorSpmv(
+		std::vector<Matrix> &gen,
+		const Blackbox &M,
+		size_t b,
+		int earlyTerm = 10) const
+	{
+		RandIter RI(_F);
+		RandomDenseMatrix<RandIter, Field> RDM(_F, RI);
+		MatrixDom MD(_F);
+		
+		size_t n = M.rowdim();
+		Matrix U(_F, b, n);
+		Matrix V(_F, n, b);
+		
+		RDM.random(U);
+		RDM.random(V);
+		
+		typedef BlackboxBlockContainer<Field, Blackbox> Sequence;
+		Sequence blockSeq(&M, _F, U, V);
+		BlockCoppersmithDomain<MatrixDom, Sequence> coppersmith(MD, &blockSeq, earlyTerm);
+		
+		coppersmith.right_minpoly(gen);
+	}
 	
 	void convert(PolyMatrix &G, const std::vector<Matrix> &minpoly) const {
 		size_t b = G.rowdim();

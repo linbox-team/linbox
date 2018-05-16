@@ -418,6 +418,7 @@ int main(int argc, char** argv) {
 	size_t s = 0;
 	size_t perm = 0;
 	size_t k = 0;
+	size_t spmv = 0;
 	
 	std::string matrixFile;
 	std::string outFile;
@@ -430,6 +431,7 @@ int main(int argc, char** argv) {
 		{ 'a', "-a A", "Algs to run after BM", TYPE_INT, &alg},
 		{ 'p', "-p P", "Set the field GF(p)", TYPE_INT, &p},
 		{ 'e', "-e E", "Extension field exponent (p^e)", TYPE_INT, &extend},
+		{ 'v', "-v V", "Enable spmv instead of spmm", TYPE_INT, &spmv},
 		
 		{ 'b', "-b B", "Block size", TYPE_INT, &b},
 		{ 'm', "-m M", "Block size 2", TYPE_INT, &m},
@@ -566,6 +568,8 @@ int main(int argc, char** argv) {
 		time1([&](){IFD.computeGenerator(minpoly, M, PreR, b);});
 	} else if (precondL) {
 		time1([&](){IFD.computeGenerator(minpoly, PreL, M, b);});
+	} else if (spmv != 0) {
+		time1([&](){IFD.computeGeneratorSpmv(minpoly, M, b);});
 	} else {
 		time1([&](){IFD.computeGenerator(minpoly, M, b);});
 	}
