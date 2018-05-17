@@ -119,6 +119,7 @@ int main(int argc, char** argv) {
 			Gen.addTriangle(fs, n/2, 1.0 / n, x2);
 			Gen.addTriangle(fs, n/2, 1, xm1);
 		} 
+		Gen.generate(M, det, fs, sparsity);
 	} else if (bumpFile != "") {
 		Polynomial det;
 		
@@ -126,8 +127,6 @@ int main(int argc, char** argv) {
 		M.resize(n, n);
 		Gen.generate(M, det, bumpFile, sparsity);
 	}
-	
-	Gen.generate(M, det, fs, sparsity);
 	
 	if (mofile != "") {
 		std::ofstream out(mofile);
