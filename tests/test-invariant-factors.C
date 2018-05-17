@@ -105,12 +105,11 @@ void wiedemann1(BlasVector<Ring> &result, const Blackbox &M) {
 	
 	BlasVector<Field1> phi(M.field());
 	unsigned long deg;
-	
+
+	RandIter RI(M.field());
+	Sequence seq(&M, M.field(), RI);
 	time1([&](){
-		RandIter RI(M.field());
-		Sequence seq(&M, M.field(), RI);
 		MasseyDomain<Field1, Sequence> WD(&seq, 20);
-		
 		WD.minpoly(phi, deg);
 	});
 	std::cout << (phi.size() - 1) << std::endl;

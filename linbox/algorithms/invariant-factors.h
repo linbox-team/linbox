@@ -76,11 +76,10 @@ public:
 	template<class Sequence>
 	void computeGenerator(
 		std::vector<Matrix> &gen,
-		Sequence &blockSeq,
-		int earlyTerm = 10) const
+		Sequence &blockSeq) const
 	{
 		MatrixDom MD(_F);
-		BlockCoppersmithDomain<MatrixDom, Sequence> coppersmith(MD, &blockSeq, earlyTerm);
+		BlockCoppersmithDomain<MatrixDom, Sequence> coppersmith(MD, &blockSeq, 10);
 		coppersmith.right_minpoly(gen);
 	}
 
@@ -88,8 +87,7 @@ public:
 	void computeGenerator(
 		std::vector<Matrix> &gen,
 		const Blackbox &M,
-		size_t b,
-		int earlyTerm = 10) const
+		size_t b) const
 	{
 		RandIter RI(_F);
 		RandomDenseMatrix<RandIter, Field> RDM(_F, RI);
@@ -105,7 +103,7 @@ public:
 		//typedef BlackboxBlockContainer<Field, Blackbox> Sequence;
 		typedef BlackboxBlockContainerSmmx<Field, Blackbox> Sequence;
 		Sequence blockSeq(&M, _F, U, V);
-		BlockCoppersmithDomain<MatrixDom, Sequence> coppersmith(MD, &blockSeq, earlyTerm);
+		BlockCoppersmithDomain<MatrixDom, Sequence> coppersmith(MD, &blockSeq, 10);
 		
 		coppersmith.right_minpoly(gen);
 	}
