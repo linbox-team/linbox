@@ -16,8 +16,11 @@
 
 #include "linbox/matrix/random-matrix.h"
 #include "linbox/algorithms/blackbox-block-container.h"
+#include "linbox/algorithms/blackbox-block-container-smmx.h"
+#include "linbox/algorithms/blackbox-block-container-spmv.h"
 #include "linbox/algorithms/wiedemann.h"
 
+#include "linbox/blackbox/fflas-csr.h"
 #include "linbox/blackbox/compose.h"
 #include "linbox/blackbox/sum.h"
 #include "linbox/blackbox/transpose.h"
@@ -531,7 +534,7 @@ int main(int argc, char** argv) {
 		if (b == 1) {
 			wiedemann1(result, Mk);
 		} else {
-			wiedemannb(result, Mk, minpoly);
+			//wiedemannb(result, Mk, minpoly);
 			std::cout << std::endl;
 		}
 		//*/
@@ -588,13 +591,15 @@ int main(int argc, char** argv) {
 		
 		time1([&](){IFD.computeGenerator(minpoly, blockSeq);});
 	} else if (spmv != 0) {
-		typedef BlackboxBlockContainerSpmv<Field, SparseMat> Sequence;
+		typedef BlackboxBlockContainer<Field, SparseMat> Sequence;
 		Sequence blockSeq(&M, F, U, V);
 		
 		time1([&](){IFD.computeGenerator(minpoly, blockSeq);});
 	} else {
-		typedef BlackboxBlockContainerSmmx<Field, SparseMat> Sequence;
-		Sequence blockSeq(&M, F, U, V);
+		FflasCsr<Field> FM(&M);
+		
+		typedef BlackboxBlockContainer<Field, FflasCsr<Field>> Sequence;
+		Sequence blockSeq(&FM, F, U, V);
 		
 		time1([&](){IFD.computeGenerator(minpoly, blockSeq);});
 	}

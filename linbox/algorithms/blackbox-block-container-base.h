@@ -50,6 +50,7 @@
 // #include "linbox/blackbox/triplesbb-omp.h"
 #include "linbox/matrix/sparse-matrix.h"
 #include "linbox/blackbox/pascal.h"
+#include "linbox/blackbox/fflas-csr.h"
 
 namespace LinBox
 {
@@ -65,7 +66,7 @@ public:
 		linbox_check( M2.coldim() == M3.rowdim());
 		linbox_check( M1.coldim() == M3.coldim());
 
-		MatrixDomain<Field> MD(F);
+		BlasMatrixDomain<Field> MD(F);
 		typename Block::ColIterator        p1 = M1.colBegin();
 		typename Block::ConstColIterator   p3 = M3.colBegin();
 
@@ -87,6 +88,11 @@ public:
 	static void mul (const Field& F,
 	                 Block &M1, const PascalBlackbox<Field> &M2, const Block& M3) {
 		M2.applyLeft(M1,M3);
+	}
+	
+	static void mul(const Field &F,
+		Block &M1, const FflasCsr<Field> &M2, const Block &M3) {
+		M2.applyLeft(M1, M3);
 	}
 };
 
@@ -227,7 +233,7 @@ public:
 			_blockU = U;
 			_blockV = V;
 			_value = Value(*_field,_m,_n);
-			MatrixDomain<Field> BMD(*_field);
+			BlasMatrixDomain<Field> BMD(*_field);
 			BMD.mul(_value, _blockU, _blockV);
 		}
 
@@ -251,7 +257,7 @@ public:
 				G.random(*iter_V);
 
 			_value = Value(*_field,m,n);
-			MatrixDomain<Field> BMD(*_field);
+			BlasMatrixDomain<Field> BMD(*_field);
 			BMD.mul(_value, _blockU, _blockV);
 		}         
 	};
