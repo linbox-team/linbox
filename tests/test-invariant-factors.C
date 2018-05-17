@@ -591,15 +591,13 @@ int main(int argc, char** argv) {
 		
 		time1([&](){IFD.computeGenerator(minpoly, blockSeq);});
 	} else if (spmv != 0) {
-		typedef BlackboxBlockContainer<Field, SparseMat> Sequence;
+		typedef BlackboxBlockContainerSpmv<Field, SparseMat> Sequence;
 		Sequence blockSeq(&M, F, U, V);
 		
 		time1([&](){IFD.computeGenerator(minpoly, blockSeq);});
 	} else {
-		FflasCsr<Field> FM(&M);
-		
-		typedef BlackboxBlockContainer<Field, FflasCsr<Field>> Sequence;
-		Sequence blockSeq(&FM, F, U, V);
+		typedef BlackboxBlockContainerSmmx<Field, SparseMat> Sequence;
+		Sequence blockSeq(&M, F, U, V);
 		
 		time1([&](){IFD.computeGenerator(minpoly, blockSeq);});
 	}
