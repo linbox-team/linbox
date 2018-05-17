@@ -73,7 +73,6 @@ int main(int argc, char** argv) {
 	int seed = time(NULL);
 
 	static Argument args[] = {
-		{ 'b', "-b B", "Block size for minpolyvec", TYPE_INT, &b},
 		{ 'k', "-k K", "Number of invariant factors to compute", TYPE_INT, &k},
 		{ 'p', "-p P", "Set the field GF(p)", TYPE_INT, &p},
 		{ 'f', "-f F", "Name of file for matrix", TYPE_STR, &matrixFile},

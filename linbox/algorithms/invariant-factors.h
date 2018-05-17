@@ -63,8 +63,7 @@ protected:
 public:
 	InvariantFactors(const Field &F, const PolynomialRing &R) : _F(F), _R(R), _SFD(R) {}
 
-//protected:
-
+public:
 	size_t min_block_size(size_t t, double p) const {
 		size_t q = _F.cardinality();
 		assert (0.0 < p < 1.0 && t >= 1 && q >= 2);
@@ -72,7 +71,8 @@ public:
 		double k = (q == 2) ? 3 : 2;
 		return ceil(log(k / (1 - sqrt(p)))/log(q)) + t;
 	}
-	
+
+//protected:
 	template<class Sequence>
 	void computeGenerator(
 		std::vector<Matrix> &gen,
@@ -132,14 +132,11 @@ public:
 	std::vector<Polynomial> &largestInvariantFactors(
 		std::vector<Polynomial> &lifs,
 		const Blackbox &A,
-		size_t t,
-		double p,
-		int earlyTerm = 10) const {
-	
-		size_t b = min_block_size(t, p);
-	
+		size_t b,
+		int earlyTerm = 10) const 
+	{
 		std::vector<Matrix> minpoly;
-		computeGenerator(minpoly, A, b, earlyTerm);
+		computeGenerator(minpoly, A, b);
 		
 		PolyMatrix G(_R, b, b);
 		convert(G, minpoly);
@@ -151,110 +148,38 @@ public:
 		return lifs;
 	}
 	
-	// computes the t largest invariant factors of A with probability of at least p.
-	template<class Blackbox>
-	Element &det(
-		Element &d, // det(A)
-		const Blackbox &A,
-		size_t t,
-		double p,
-		int earlyTerm = 10) const {
-	
-		size_t b = min_block_size(t, p);
-	
-		std::vector<Matrix> minpoly;
-		computeGenerator(minpoly, A, b, earlyTerm);
-		
-		PolyMatrix G(_R, b, b);
-		convert(G, minpoly);
-		
-		Polynomial det;
-		_SFD.detLocalX(det, G);
-		
-		// get the constant coefficient of det and convert it to type Element
-		typename PolynomialRing::Coeff det0;
-		_R.getCoeff(det0, det, 0);
-		
-		integer tmp;
-		_R.getCoeffField().convert(tmp, det0);
-		_F.init(d, tmp);
-		
-		return d;
-	}
-	
-	// computes the t largest invariant factors of A with probability of at least p.
 	template<class Blackbox>
 	std::vector<Polynomial> &largestInvariantFactors(
 		std::vector<Polynomial> &lifs,
 		const Blackbox &A,
-		const Blackbox &PreR,
-		size_t t,
-		double p,
-		int earlyTerm = 10) const {
-	
-		size_t b = min_block_size(t, p);
-	
+		const Polynomial &mod,
+		size_t b,
+		int earlyTerm = 10) const 
+	{
 		std::vector<Matrix> minpoly;
-		computeGenerator(minpoly, A, PreR, b, earlyTerm);
+		computeGenerator(minpoly, A, b);
 		
 		PolyMatrix G(_R, b, b);
 		convert(G, minpoly);
 		
 		Polynomial det;
-		_SFD.detLocalX(det, G);
-		_SFD.solve(lifs, G, det);	
+		_SFD.solve(lifs, G, mod, false);	
 		
 		return lifs;
 	}
 	
-	// computes the t largest invariant factors of A with probability of at least p.
-	template<class Blackbox>
-	Element &det(
-		Element &d, // det(A)
-		const Blackbox &A,
-		const Blackbox &PreR,
-		size_t t,
-		double p,
-		int earlyTerm = 10) const {
-	
-		size_t b = min_block_size(t, p);
-	
-		std::vector<Matrix> minpoly;
-		computeGenerator(minpoly, A, PreR, b, earlyTerm);
-		
-		PolyMatrix G(_R, b, b);
-		convert(G, minpoly);
-		
-		Polynomial det;
-		_SFD.detLocalX(det, G);
-		
-		// get the constant coefficient of det and convert it to type Element
-		typename PolynomialRing::Coeff det0;
-		_R.getCoeff(det0, det, 0);
-		
-		integer tmp;
-		_R.getCoeffField().convert(tmp, det0);
-		_F.init(d, tmp);
-		
-		return d;
-	}
-	
-	// computes the t largest invariant factors of A with probability of at least p.
 	template<class Blackbox>
 	std::vector<Polynomial> &largestInvariantFactors(
 		std::vector<Polynomial> &lifs,
-		const Blackbox &PreL,
 		const Blackbox &A,
-		const Blackbox &PreR,
 		size_t t,
 		double p,
 		int earlyTerm = 10) const {
 	
-		size_t b;
-		if (t > 1000) t = b = t-1000; else b = min_block_size(t, p);
+		size_t b = min_block_size(t, p);
 	
 		std::vector<Matrix> minpoly;
-		computeGenerator(minpoly, PreL, A, PreR, b, earlyTerm);
+		computeGenerator(minpoly, A, b);
 		
 		PolyMatrix G(_R, b, b);
 		convert(G, minpoly);
@@ -266,13 +191,48 @@ public:
 		return lifs;
 	}
 	
+	template<class Blackbox>
+	std::vector<Polynomial> &lifsit(
+		std::vector<Polynomial> &lifs,
+		const Blackbox &A,
+		size_t b,
+		size_t s,
+		size_t t,
+		size_t k) const
+	{
+		largestInvariantFactors(lifs, A, b);
+		
+		Polynomial mod;
+		_R.assign(mod, lifs[k]);
+		for (size_t i = s; i <= t; i += s) {
+			if (_R.isIrreducible(mod)) {
+				return lifs;
+			}
+			
+			std::vector<Polynomial> part;
+			largestInvariantFactors(part, A, mod, i);
+			
+			for (size_t j = 0; j < part.size() - lifs.size() + k; j++) {
+				if (_R.isZero(part[j])) {
+					_R.assign(part[j], mod);
+				}
+			}
+			for (size_t j = k; j < lifs.size(); j++) {
+				_R.assign(part[part.size() - lifs.size() + j], lifs[j]);
+			}
+			
+			lifs = part;
+			_R.assign(mod, lifs[k]);
+		}
+		
+		return lifs;
+	}
+	
 	// computes the t largest invariant factors of A with probability of at least p.
 	template<class Blackbox>
 	Element &det(
 		Element &d, // det(A)
-		const Blackbox &PreL,
 		const Blackbox &A,
-		const Blackbox &PreR,
 		size_t t,
 		double p,
 		int earlyTerm = 10) const {
@@ -280,7 +240,7 @@ public:
 		size_t b = min_block_size(t, p);
 	
 		std::vector<Matrix> minpoly;
-		computeGenerator(minpoly, PreL, A, PreR, b, earlyTerm);
+		computeGenerator(minpoly, A, b);
 		
 		PolyMatrix G(_R, b, b);
 		convert(G, minpoly);

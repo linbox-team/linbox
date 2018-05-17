@@ -118,7 +118,10 @@ int main(int argc, char** argv) {
 			// trial 10
 			Gen.addTriangle(fs, n/2, 1.0 / n, x2);
 			Gen.addTriangle(fs, n/2, 1, xm1);
-		} 
+		} else if (t == 11) {
+			Gen.addTriangle(fs, n/2, n / 6.0, xm1);
+			Gen.addTriangle(fs, n/2, 6.0 / n, x);
+		}
 		Gen.generate(M, det, fs, sparsity);
 	} else if (bumpFile != "") {
 		Polynomial det;

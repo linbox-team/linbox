@@ -413,7 +413,7 @@ void writeLifs(Ring R, std::string filename, std::vector<Polynomial> &result) {
 int main(int argc, char** argv) {
 	size_t p = 3;
 	size_t extend = 1;
-	size_t b = 4, m = 0;
+	size_t b = 4, m = 0, l = 0;
 	size_t modIndex = 0;
 	
 	int precond = 0;
@@ -436,7 +436,8 @@ int main(int argc, char** argv) {
 		{ 'v', "-v V", "Enable spmv instead of spmm", TYPE_INT, &spmv},
 		
 		{ 'b', "-b B", "Block size", TYPE_INT, &b},
-		{ 'm', "-m M", "Block size 2", TYPE_INT, &m},
+		{ 'm', "-m M", "Step size for iterative lifs", TYPE_INT, &m},
+		{ 'l', "-l L", "Limit for iterative lifs", TYPE_INT, &l},
 		{ 't', "-t T", "Use t-th LIF as modulus", TYPE_INT, &modIndex},
 		
 		{ 'f', "-f F", "Name of file for matrix", TYPE_STR, &matrixFile},
@@ -561,6 +562,18 @@ int main(int argc, char** argv) {
 		return 0;
 	}
 	
+	if (m > b && l >= m) {
+		std::cout << "Iterative: ";
+		std::vector<Polynomial> lifs;
+		time1([&](){IFD.lifsit(lifs, M, b, m, l, modIndex);});
+		std::cout << std::endl;
+		
+		if (outFile != "") {
+			writeLifs(R, outFile, lifs);
+		}
+		return 0;
+	}
+	
 	// Generate random left and right projectors
 	std::vector<BlasMatrix<Field>> minpoly;
 	
@@ -623,25 +636,6 @@ int main(int argc, char** argv) {
 	}
 	if ((alg & 1) && !R.isZero(det)) {
 		time1([&](){PSFD.solve(result, G, det, true);});
-	}
-	
-	if (modIndex > 0 && m > b) {
-		std::vector<BlasMatrix<Field>> minpoly2;
-		time1([&](){IFD.computeGenerator(minpoly2, M, m);});
-		
-		PolyMatrix G2(R, m, m);
-		IFD.convert(G2, minpoly2);
-				
-		std::vector<Polynomial> result2;
-		time1([&](){PSFD.solve(result2, G2, result[b - modIndex]);});
-		
-		for (size_t i = b - modIndex + 1; i < result.size(); i++) {
-			result2[result2.size() - result.size() + i] = result[i];
-		}
-		
-		if (outFile != "") {
-			writeLifs(R, outFile + "2", result2);
-		}
 	}
 	
 	size_t total = 0;
