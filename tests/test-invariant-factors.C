@@ -101,7 +101,7 @@ void copy(Blackbox1 &A, const Blackbox2 &B) {
 }
 
 template<class Ring, class Blackbox>
-void wiedemann1(BlasVector<Ring> &result, const Blackbox &M) {
+void wiedemann1(const Ring &R, typename Ring::Element &result, const Blackbox &M) {
 	typedef typename Blackbox::Field Field1;
 	typedef typename Field1::RandIter RandIter;
 	typedef BlackboxContainer<Field1, Blackbox> Sequence;
@@ -116,7 +116,7 @@ void wiedemann1(BlasVector<Ring> &result, const Blackbox &M) {
 		WD.minpoly(phi, deg);
 	});
 	std::cout << (phi.size() - 1) << std::endl;
-	result.field().init(result.refEntry(0), phi);
+	R.init(result, phi);
 }
 
 template<class Blackbox>
@@ -485,7 +485,7 @@ int main(int argc, char** argv) {
 		randomTriangular(PreR, s, false, true);
 		randomTriangular(PreL, s, true, true);
 		precondL = precondR = true;
-	} else if (precond == 3) { // k-th invariant
+	} else if (precond == 3 && k > 0) { // k-th invariant
 		typedef NTL_zz_pE ExtField;
 		typedef NTL_zz_pEX ExtRing;
 		typedef SparseMatrix<ExtField, SparseMatrixFormat::CSR> ExtBlackbox;
@@ -524,32 +524,17 @@ int main(int argc, char** argv) {
 		Compose<Toep, Toep> B(U, V);
 		Sum<ExtBlackbox, Compose<Toep, Toep>> Mk(EM, B);
 		
-		BlasVector<ExtRing> result(ER, b);
-		wiedemann1(result, EM);
+		//return 0;
 		
-		Poly minpoly;
-		result.getEntry(minpoly, 0);
-		ER.write(std::cout << "minpoly: ", minpoly) << std::endl;
+		Poly mp;
+		wiedemann1(ER, mp, EM);
+		ER.write(std::cout << "minpoly: ", mp) << std::endl;
 		
-		//*
-		if (b == 1) {
-			wiedemann1(result, Mk);
-		} else {
-			//wiedemannb(result, Mk, minpoly);
-			std::cout << std::endl;
-		}
-		//*/
-		
-		//*
-		for (size_t i = 0; i < b; i++) {
-			Poly fi;
-			ER.gcd(fi, result[i], minpoly);
-			result.setEntry(i, fi);
-		}
-		//*/
-		
-		ER.write(std::cout << "(k+1)-th LIF: ", result[result.size() - 1]) << std::endl;
-		writeInvariantFactor(outFile, result);
+		Poly fk;
+		wiedemann1(ER, fk, Mk);
+		ER.gcdin(fk, mp);
+		ER.write(std::cout << "(k+1)-th LIF: ", fk) << std::endl;
+		//writeInvariantFactor(outFile, result);
 		
 		return 0;
 	}

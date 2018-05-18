@@ -431,6 +431,11 @@ namespace LinBox
         	NTL::GCD(g, a, b);
         	return g;
         }
+        
+        Element &gcdin(Element &g, const Element &a) const {
+        	g = NTL::GCD(g, a);
+        	return g;
+        }
 
 		Element& gcd( Element& res, Element& s, Element& t, const Element& a, const Element& b ) const
 		{
