@@ -80,6 +80,16 @@ void writeInvariantFactor(
 	out.close();
 }
 
+template<class Ring1>
+void writeLifs(Ring1 R, std::string filename, std::vector<typename Ring1::Element> &result) {
+	std::ofstream out(filename);
+	std::for_each(result.begin(), result.end(), [&](const typename Ring1::Element &v) {
+		typename Ring1::Element f;
+		R.write(out, R.monic(f, v)) << std::endl;
+	});
+	out.close();
+}
+
 template<class Blackbox1, class Blackbox2>
 void copy(Blackbox1 &A, const Blackbox2 &B) {
 	typedef typename Blackbox1::Field Field1;
@@ -115,7 +125,7 @@ void wiedemann1(const Ring &R, typename Ring::Element &result, const Blackbox &M
 		MasseyDomain<Field1, Sequence> WD(&seq, 20);
 		WD.minpoly(phi, deg);
 	});
-	std::cout << (phi.size() - 1) << std::endl;
+	std::cout << (phi.size() - 1) << "\t";
 	R.init(result, phi);
 }
 
@@ -144,9 +154,11 @@ void computeGenerator(
 	
 	typedef BlackboxBlockContainer<Field1, Blackbox> Sequence;
 	Sequence blockSeq(&M, EF, U, V);
-	BlockCoppersmithDomain<MatrixDom1, Sequence> coppersmith(MD, &blockSeq, earlyTerm);
 	
-	coppersmith.right_minpoly(gen);
+	time1([&](){
+		BlockCoppersmithDomain<MatrixDom1, Sequence> coppersmith(MD, &blockSeq, earlyTerm);
+		coppersmith.right_minpoly(gen);
+	});
 }
 
 template<class Blackbox>
@@ -164,8 +176,9 @@ void wiedemannb(
 	size_t b = result.size();
 		
 	std::vector<BlasMatrix<ExtField>> minpoly;
-	time1([&](){computeGenerator(minpoly, M, b);});
+	computeGenerator(minpoly, M, b);
 	
+	size_t deg = 0;
 	BlasMatrix<ExtRing> G(ER, b, b);
 	for (size_t i = 0; i < b; i++) {
 		for (size_t j = 0; j < b; j++) {
@@ -176,9 +189,11 @@ void wiedemannb(
 				ER.setCoeff(g, k, minpoly[k].getEntry(i, j));
 			}
 			
+			deg = std::max(deg, ER.deg(g));
 			G.setEntry(i, j, g);
 		}
 	}
+	std::cout << deg << "\t";
 	
 	std::vector<typename ExtRing::Element> tmpResult;
 	SmithFormKannanBachemDomain<ExtRing> SFD(ER);
@@ -401,15 +416,6 @@ void randomTriangular(SparseMat &T, size_t s, bool upper, bool randomDiag = fals
 	T.finalize();
 }
 
-void writeLifs(Ring R, std::string filename, std::vector<Polynomial> &result) {
-	std::ofstream out(filename);
-	std::for_each(result.begin(), result.end(), [&](const Polynomial &v) {
-		Polynomial f;
-		R.write(out, R.monic(f, v)) << std::endl;
-	});
-	out.close();
-}
-
 int main(int argc, char** argv) {
 	size_t p = 3;
 	size_t extend = 1;
@@ -528,22 +534,23 @@ int main(int argc, char** argv) {
 		
 		Poly mp;
 		wiedemann1(ER, mp, EM);
-		ER.write(std::cout << "minpoly: ", mp) << std::endl;
 		
+		BlasVector<ExtRing> fks(ER, b);
 		if (b == 1) {
-			Poly fk;
-			wiedemann1(ER, fk, Mk);
-			ER.gcdin(fk, mp);
-			ER.write(std::cout << "(k+1)-th LIF: ", fk) << std::endl;
+			wiedemann1(ER, fks.refEntry(0), Mk);
 		} else {
-			BlasVector<ExtRing> result(ER, b);
-			wiedemannb(result, Mk, mp);
-			
+			wiedemannb(fks, Mk, mp);
+		}
+		std::cout << std::endl;
+		
+		if (outFile != "") {
+			std::vector<Poly> result;
 			for (size_t i = 0; i < b; i++) {
-				Poly fk;
-				ER.gcd(fk, mp, result.getEntry(i));
-				ER.write(std::cout << "(k+" << (i+1) << ")-th LIF: ", fk) << std::endl;
+				ER.gcdin(fks.refEntry(i), mp);
+				result.push_back(fks.getEntry(i));
 			}
+			
+			writeLifs(ER, outFile, result);
 		}
 		
 		return 0;
