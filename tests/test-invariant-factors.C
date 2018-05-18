@@ -530,11 +530,21 @@ int main(int argc, char** argv) {
 		wiedemann1(ER, mp, EM);
 		ER.write(std::cout << "minpoly: ", mp) << std::endl;
 		
-		Poly fk;
-		wiedemann1(ER, fk, Mk);
-		ER.gcdin(fk, mp);
-		ER.write(std::cout << "(k+1)-th LIF: ", fk) << std::endl;
-		//writeInvariantFactor(outFile, result);
+		if (b == 1) {
+			Poly fk;
+			wiedemann1(ER, fk, Mk);
+			ER.gcdin(fk, mp);
+			ER.write(std::cout << "(k+1)-th LIF: ", fk) << std::endl;
+		} else {
+			BlasVector<ExtRing> result(ER, b);
+			wiedemannb(result, Mk, mp);
+			
+			for (size_t i = 0; i < b; i++) {
+				Poly fk;
+				ER.gcd(fk, mp, result.getEntry(i));
+				ER.write(std::cout << "(k+" << (i+1) << ")-th LIF: ", fk) << std::endl;
+			}
+		}
 		
 		return 0;
 	}

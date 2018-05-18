@@ -66,7 +66,7 @@ public:
 		linbox_check( M2.coldim() == M3.rowdim());
 		linbox_check( M1.coldim() == M3.coldim());
 
-		BlasMatrixDomain<Field> MD(F);
+		MatrixDomain<Field> MD(F);
 		typename Block::ColIterator        p1 = M1.colBegin();
 		typename Block::ConstColIterator   p3 = M3.colBegin();
 
@@ -233,7 +233,7 @@ public:
 			_blockU = U;
 			_blockV = V;
 			_value = Value(*_field,_m,_n);
-			BlasMatrixDomain<Field> BMD(*_field);
+			MatrixDomain<Field> BMD(*_field);
 			BMD.mul(_value, _blockU, _blockV);
 		}
 
@@ -257,7 +257,7 @@ public:
 				G.random(*iter_V);
 
 			_value = Value(*_field,m,n);
-			BlasMatrixDomain<Field> BMD(*_field);
+			MatrixDomain<Field> BMD(*_field);
 			BMD.mul(_value, _blockU, _blockV);
 		}         
 	};
