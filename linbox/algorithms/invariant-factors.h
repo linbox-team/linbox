@@ -222,7 +222,7 @@ public:
 			}
 			
 			lifs = part;
-			_R.assign(mod, lifs[i - b + k]);
+			_R.assign(mod, lifs[k]);
 		}
 		
 		return lifs;
