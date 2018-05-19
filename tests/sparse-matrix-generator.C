@@ -124,6 +124,9 @@ int main(int argc, char** argv) {
 		} else if (t == 12) {
 			Gen.addTriangle(fs, n/2, n / 6.0, xm1);
 			Gen.addTriangle(fs, n/2, 1, xp1);
+		} else if (t == 13) {
+			Gen.addTriangle(fs, n/2, n / 6.0, xm1);
+			Gen.addTriangle(fs, n/2, 0.5, xp1);
 		}
 		Gen.generate(M, det, fs, sparsity);
 	} else if (bumpFile != "") {
