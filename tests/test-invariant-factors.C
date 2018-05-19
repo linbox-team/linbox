@@ -564,18 +564,6 @@ int main(int argc, char** argv) {
 		return 0;
 	}
 	
-	if (m > b && l >= m) {
-		std::cout << "Iterative: ";
-		std::vector<Polynomial> lifs;
-		time1([&](){IFD.lifsit(lifs, M, b, m, l, modIndex);});
-		std::cout << std::endl;
-		
-		if (outFile != "") {
-			writeLifs(R, outFile, lifs);
-		}
-		return 0;
-	}
-	
 	// Generate random left and right projectors
 	std::vector<BlasMatrix<Field>> minpoly;
 	
@@ -638,6 +626,29 @@ int main(int argc, char** argv) {
 	}
 	if ((alg & 1) && !R.isZero(det)) {
 		time1([&](){PSFD.solve(result, G, det, true);});
+	}
+	
+	if (m > b) {
+		BlasMatrix<Field> U2(F, m, n);
+		BlasMatrix<Field> V2(F, n, m);
+		
+		RDM.random(U2);
+		RDM.random(V2);
+		
+		typedef BlackboxBlockContainerSmmx<Field, SparseMat> Sequence;
+		Sequence blockSeq(&M, F, U2, V2);
+		
+		std::vector<BlasMatrix<Field>> minpoly2;
+		time1([&](){IFD.computeGenerator(minpoly2, blockSeq);});
+		
+		PolyMatrix G2(R, m, m);
+		IFD.convert(G2, minpoly2);
+		
+		Polynomial modulus;
+		R.assign(modulus, result[b - modIndex - 1]);
+		
+		std::vector<Polynomial> result;
+		time1([&](){PSFD.solve(result, G2, modulus, false);});
 	}
 	
 	size_t total = 0;
