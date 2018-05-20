@@ -195,22 +195,24 @@ public:
 	std::vector<Polynomial> &lifsit(
 		std::vector<Polynomial> &lifs,
 		const Blackbox &A,
-		size_t b,
+		size_t b0,
 		size_t s,
-		size_t t,
+		size_t t, // number of iterations
 		size_t k) const
 	{
-		largestInvariantFactors(lifs, A, b);
+		largestInvariantFactors(lifs, A, b0);
 		
+		size_t b = s;
 		Polynomial mod;
 		_R.assign(mod, lifs[k]);
-		for (size_t i = s; i <= t; i += s) {
+		for (size_t i = 0; i < t; i ++) {
+			std::cout << "computing using block size: " << b << std::endl;
 			if (_R.isIrreducible(mod)) {
 				return lifs;
 			}
 			
 			std::vector<Polynomial> part;
-			largestInvariantFactors(part, A, mod, i);
+			largestInvariantFactors(part, A, mod, b);
 			
 			for (size_t j = 0; j < part.size() - lifs.size() + k; j++) {
 				if (_R.isZero(part[j])) {
@@ -223,6 +225,7 @@ public:
 			
 			lifs = part;
 			_R.assign(mod, lifs[k]);
+			b *= 2;
 		}
 		
 		return lifs;
