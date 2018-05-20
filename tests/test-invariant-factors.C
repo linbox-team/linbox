@@ -16,6 +16,7 @@
 
 #include "linbox/matrix/random-matrix.h"
 #include "linbox/algorithms/blackbox-block-container.h"
+#include "linbox/algorithms/blackbox-block-blas-container.h"
 #include "linbox/algorithms/blackbox-block-container-smmx.h"
 #include "linbox/algorithms/blackbox-block-container-spmv.h"
 #include "linbox/algorithms/wiedemann.h"
@@ -26,6 +27,7 @@
 #include "linbox/blackbox/transpose.h"
 #include "linbox/blackbox/toeplitz.h"
 #include "linbox/blackbox/diagonal.h"
+#include "linbox/blackbox/polynomial.h"
 
 #include "linbox/algorithms/poly-smith-form.h"
 #include "linbox/algorithms/invariant-factors.h"
@@ -421,6 +423,7 @@ int main(int argc, char** argv) {
 	size_t extend = 1;
 	size_t b = 4, m = 0, l = 1;
 	size_t modIndex = 0;
+	size_t exponent = 0;
 	
 	int precond = 0;
 	size_t s = 0;
@@ -445,6 +448,7 @@ int main(int argc, char** argv) {
 		{ 'm', "-m M", "Step size for iterative lifs", TYPE_INT, &m},
 		{ 'l', "-l L", "Limit for iterative lifs", TYPE_INT, &l},
 		{ 't', "-t T", "Use t-th LIF as modulus", TYPE_INT, &modIndex},
+		{ 'd', "-d D", "Compute rank of ((x-1)^d)(A)", TYPE_INT, &exponent},
 		
 		{ 'f', "-f F", "Name of file for matrix", TYPE_STR, &matrixFile},
 		{ 'o', "-o O", "Name of output file for invariant factors", TYPE_STR, &outFile},
@@ -470,6 +474,9 @@ int main(int argc, char** argv) {
 	MatrixDomain<Field> MD(F);
 	InvariantFactors<Field, Ring> IFD(F, R);
 	PolySmithFormDomain<Ring> PSFD(R);
+	
+	typename Field::RandIter RI(F);
+	RandomDenseMatrix<typename Field::RandIter, Field> RDM(F, RI);
 	
 	SparseMat M(F);                                           
 	readMatrix(M, matrixFile, perm != 0);
@@ -554,6 +561,74 @@ int main(int argc, char** argv) {
 		}
 		
 		return 0;
+	} else if (precond == 4) {
+		if (exponent <= 0) {
+			std::cout << "use -d to set (x-1)^d" << std::endl;
+			return 0;
+		}
+		
+		randomTriangular(PreR, s, false, true);
+		randomTriangular(PreL, s, true, true);
+		
+		std::vector<integer> v;
+		Polynomial xm1, xm1d;
+		R.init(xm1, v = {p-1, 1});
+		R.pow(xm1d, xm1, exponent); // (x-1)^d
+		
+		BlasVector<Field> pxm1d(F, R.deg(xm1d) + 1);
+		for (size_t i = 0; i <= R.deg(xm1d); i++) {
+			integer ci;
+			typename Ring::Coeff coeff;
+			Element tmp;
+			
+			R.getCoeffField().convert(ci, R.getCoeff(coeff, xm1d, i));
+			F.init(tmp, ci);
+			pxm1d.setEntry(i, tmp);
+		}
+		
+		typedef PolynomialBB<SparseMat, BlasVector<Field>> PolyBB;
+		PolyBB gM(M, pxm1d);
+		
+		Compose<PolyBB, SparseMat> gML(gM, PreR);
+		Compose<Compose<PolyBB, SparseMat>, SparseMat> gMLU(gML, PreL);
+		
+		typedef Compose<Compose<PolyBB, SparseMat>, SparseMat> Blackbox;
+		
+		BlasMatrix<Field> U(F, b, n);
+		BlasMatrix<Field> V(F, n, b);
+		
+		RDM.random(U);
+		RDM.random(V);
+		
+		typedef BlackboxBlockBlasContainer<Field, Blackbox> Sequence;
+		Sequence blockSeq(&gMLU, F, U, V);
+		
+		std::vector<BlasMatrix<Field>> minpoly;
+		time1([&](){IFD.computeGenerator(minpoly, blockSeq);});
+		
+		PolyMatrix G(R, b, b);
+		IFD.convert(G, minpoly);
+		
+		Polynomial det;
+		time1([&](){PSFD.detLocalX(det, G);});
+		
+		std::vector<Polynomial> result;
+		time1([&](){PSFD.solve(result, G, det, true);});
+
+		size_t total = 0;
+		for (auto it = result.begin(); it != result.end(); it++) {
+			if (R.deg(*it) > 1) {
+				total++;
+			}
+		}
+		
+		std::cout << " \t" << total << std::endl;
+		
+		if (outFile != "") {
+			writeLifs(R, outFile, result);
+		}
+		
+		return 0;
 	}
 	
 	TestInvariantFactorsHelper helper(p);
@@ -578,9 +653,6 @@ int main(int argc, char** argv) {
 	
 	// Generate random left and right projectors
 	std::vector<BlasMatrix<Field>> minpoly;
-	
-	typename Field::RandIter RI(F);
-	RandomDenseMatrix<typename Field::RandIter, Field> RDM(F, RI);
 	
 	BlasMatrix<Field> U(F, b, n);
 	BlasMatrix<Field> V(F, n, b);
