@@ -117,6 +117,12 @@ public:
 		size_t m,
 		const Polynomial &fm) 
 	{
+		if (_R.areEqual(fl, fm)) {
+			fs.push_back(fl);
+			ms.push_back(m-l+1);
+			return;
+		}
+		
 		if (l == m-1) {
 			if (_R.areEqual(fl, fm)) {
 				fs.push_back(fl);
@@ -172,18 +178,25 @@ public:
 		const Blackbox &A,
 		size_t limit = 0)
 	{
-		size_t n = A.rowdim();
-		if (limit > 0) {
-			n = std::min(limit, n);
-		}
-		
-		Polynomial f1, fn;
-		
-		minpoly(f1, A);
-		kthInvariantFactor(fn, A, f1, n);
-		
+		assert(A.rowdim() == A.coldim());
 		fs.clear();
 		ms.clear();
+		
+		Polynomial f1, fn;
+		minpoly(f1, A);
+		
+		size_t n = A.rowdim() - _R.deg(f1) + 1;
+		if (limit > 1) {
+			n = std::min(limit, n);
+		}
+		if (n==1) {
+			fs.push_back(f1);
+			ms.push_back(1);
+			return;
+		}
+		
+		kthInvariantFactor(fn, A, f1, n);
+		
 		thresholdSearch(fs, ms, A, 1, f1, n, fn);
 	}
 };
