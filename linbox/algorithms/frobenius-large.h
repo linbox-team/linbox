@@ -143,21 +143,11 @@ public:
 		
 		std::vector<Polynomial> gs;
 		std::vector<size_t> as;
-		if (_R.areEqual(fl,fk)) {
-			gs.push_back(fl);
-			as.push_back(k-l+1);
-		} else {
-			thresholdSearch(gs, as, A, l, fl, k, fk);
-		}
+		thresholdSearch(gs, as, A, l, fl, k, fk);
 				
 		std::vector<Polynomial> hs;
 		std::vector<size_t> bs;
-		if (_R.areEqual(fk,fm)) {
-			hs.push_back(fk);
-			bs.push_back(m-k+1);
-		} else {
-			thresholdSearch(hs, bs, A, k, fk, m, fm);
-		}
+		thresholdSearch(hs, bs, A, k, fk, m, fm);
 				
 		for (size_t i = 0; i < as.size() - 1; i++) {
 			fs.push_back(gs[i]);
