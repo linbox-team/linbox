@@ -1,4 +1,4 @@
-/* linbox/algorithms/coppersmith-invariant-factors.h
+/* linbox/algorithms/frobenius-small.h
  * Copyright (C) 2018 Gavin Harrison
  *
  * Written by Gavin Harrison <gavin.har@gmail.com>
