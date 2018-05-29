@@ -138,7 +138,7 @@ namespace LinBox
 	// When this communicator is destroyed MPI is shut down (finalized).
 	Communicator::Communicator(int* ac, char*** av) :
 		_mpi_comm(MPI_COMM_WORLD), _mpi_boss(true)
-	{	MPI_Init(ac, av); }
+	{ MPI_Init(ac, av); }
     
 	// copy constructor
 	Communicator::Communicator(const Communicator& D) :

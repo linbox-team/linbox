@@ -25,30 +25,58 @@
  * @brief Testing the MPI parallel/serial rational solver
  */
 
-//#define __LINBOX_HAVE_MPI
+#define __LINBOX_HAVE_MPI
+
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>
-#include <linbox/linbox-config.h>
-#include <givaro/modular.h>
-#include <givaro/zring.h>
-#include <linbox/matrix/sparse-matrix.h>
+#include "linbox/linbox-config.h"
+#include "givaro/modular.h"
+#include "givaro/zring.h"
+#include "linbox/matrix/sparse-matrix.h"
 
 #ifdef __LINBOX_HAVE_MPI
 #include <mpi.h>
-#include "linbox/util/mpicpp.h"
-//#include "linbox/util/mpi-gmp.inl"
+#include "linbox/util/mpicpp.h"	//#include "linbox/util/mpi-gmp.inl"
 #else
-#include <linbox/algorithms/cra-domain-omp.h> //<---Only compile without MPI
+#include "linbox/algorithms/cra-domain-omp.h" //<---Only compile without MPI
 #endif
-#include <linbox/solutions/methods.h>
-#include <linbox/solutions/solve.h>
+#include "linbox/solutions/methods.h"
+#include "linbox/solutions/solve.h"
 #include "linbox/matrix/random-matrix.h"
 
 using namespace LinBox;
 using namespace std;
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template<class T>
+T& myrand (T& r, long size)
+{
+  if (size < 0)
+    return r = T( (lrand48() % (-size-size)) + size );
+  else
+    return r = T(  lrand48() % size ) ;
+};
+
+
+#include <gmp++/gmp++.h>
+#include <string>
+
+std::string gmp_rand ( size_t maxNdigits)
+{ 
+  std::string result, tmpStr;
+  long tmp; 
+  tmpStr = std::to_string(myrand(tmp, 10));
+  while(result.size()+tmpStr.size()<maxNdigits){
+    result+=tmpStr;
+    tmpStr = std::to_string(myrand(tmp, 10));
+  }
+  return result;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <class Field>
 static bool checkResult (const Field  &ZZ,
 			 BlasMatrix<Field> &A,
@@ -341,24 +369,61 @@ int main(int argc, char ** argv)
   
   typedef BlasVector<Givaro::ZRing<Integer> > DenseVector;
   DenseVector X(ZZ, A.rowdim()), X2(ZZ, A.rowdim()),  B(ZZ, A.rowdim());
-    
-  for(int j=0;j<niter;j++){  
+
+////////////////////////////////////Always//Generates//The//Same//Matrix//////////////////////////////////////////
+size_t r=0;
+
+
+const char * c;
+std::string result;
+
+while(r!=ni){
+
+    for (size_t i = 0; i < ni; ++i)
+      for (size_t j = 0; j < nj; ++j){
+result = gmp_rand(bits);
+c = result.c_str();
+Givaro::Integer res(c);
+A.setEntry(i,j,res);
+result.clear();
+//myfile <<i+1<<" "<<j+1<<" "<<A.getEntry(i,j)<<"\n";
+      }
+
+
+    for (size_t j = 0; j < nj; ++j){
+result = gmp_rand(bits);
+c = result.c_str();
+Givaro::Integer res(c);
+B.setEntry(j,res);
+result.clear();
+//myfile2 <<j+1<< " 1 "<<B.getEntry(j)<<"\n";
+    }
+
+LinBox::rank (r, A);
+}
+
+
+      //LinBox::rank (r, A); std::cout<<"The rank of generated matrix A is:"<<r<<std::endl;  
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  for(long j=0;j<(long)niter;j++){  
     
 #ifdef __LINBOX_HAVE_MPI  
     if(0==Cptr->rank()){
 #endif
+/*
       genData (A, bits);
       genData (B, bits);
-      
-      //LinBox::rank (r, A); std::cout<<"The rank of generated matrix A is:"<<r<<std::endl;  
-      
-      /*
+*/
+
+/*      
 	std::cerr << ">>>>Compute with B: " << std::endl;      
 	for(int j=0;j<nj;j++) std::cerr << B.getEntry(j) << std::endl; 
 	
 	std::cout << "Compute with A: " << A.rowdim() << " by " << A.coldim() << std::endl;
 	if (A.rowdim() <= 20 && A.coldim() <= 20) A.write(std::cout << "A:=",Tag::FileFormat::Maple) << ';' << std::endl;
-      */  
+*/
+
 #ifdef __LINBOX_HAVE_MPI 	
     }//End of BLock for process(0)
 #endif

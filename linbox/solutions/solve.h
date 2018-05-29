@@ -290,12 +290,14 @@ namespace LinBox
 		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
 			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
 
-		commentator().start ("Solving linear system (FFLAS LQUP)", "LQUP::left_solve");
+//		commentator().start ("Solving linear system (FFLAS LQUP)", "LQUP::left_solve");
 		//bool consistent = false;
+//std::cerr<<"Thread("<<omp_get_thread_num()<<") >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "<<std::endl;
 		LQUPMatrix<Field> LQUP(A);
 		//FactorizedMatrix<Field> LQUP(A);
 
 		LQUP.left_solve(x, b);
+//std::cerr<<"Thread("<<omp_get_thread_num()<<") <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< "<<std::endl;
 
 #if 0
 		// this should be implemented directly in left_solve
@@ -304,7 +306,7 @@ namespace LinBox
 				*i = A.field().zero;
 		}
 #endif
-		commentator().stop ("done", NULL, "LQUP::left_solve");
+//		commentator().stop ("done", NULL, "LQUP::left_solve");
 
 		return x;
 	}
@@ -856,15 +858,16 @@ namespace LinBox
 		}
 #endif         
 		PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205))); //RandomPrimeIterator genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
+//PrimeIterator<LinBox::IteratorCategories::DeterministicTag> genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
                 
 		BlasVector<Givaro::ZRing<Integer>> num(A.field(),A.coldim());
 		IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 #ifdef __LINBOX_HAVE_MPI
 		MPIratChineseRemainder< EarlyMultipRatCRA< Givaro::Modular<double> > > cra(3UL, C);
+
 #else
-//        ChineseRemainderRatOMP< EarlyMultipRatCRA< Givaro::Modular<double> > > cra(3UL); 
-          RationalRemainder< EarlyMultipRatCRA< Givaro::Modular<double> > > cra(3UL);
+        ChineseRemainderRatOMP< EarlyMultipRatCRA< Givaro::Modular<double> > > cra(3UL); 
 #endif
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
         Timer chrono;
