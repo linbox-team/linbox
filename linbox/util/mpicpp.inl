@@ -443,7 +443,7 @@ gmp_unpack(B, &B_mp_alloc[0], &B_a_size[0], B_mp_data);
         unsigned lenA;
         std::vector<mp_limb_t> A_mp_data;
 
-gmp_unpack2(A, &A_mp_alloc[0], &A_a_size[0], A_mp_data);
+        gmp_unpack2(A, &A_mp_alloc[0], &A_a_size[0], A_mp_data);
         lenA = A_mp_data.size();
         
         MPI_Ssend(&A_mp_alloc[0], ni*nj, MPI_INT,  dest, 0, MPI_COMM_WORLD);
