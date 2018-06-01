@@ -64,7 +64,8 @@ using namespace std;
 #include <linbox/util/timer.h>
 
 #include <linbox/ring/local2_32.h>
-#include <linbox/ring/pir-modular-int32.h>
+//#include <linbox/ring/pir-modular-int32.h>
+#include <linbox/ring/pir-ntl-zz_p.h>
 #include <linbox/algorithms/smith-form-local.h>
 #include <linbox/algorithms/smith-form-iliopoulos.h>
 #include <linbox/algorithms/smith-form-adaptive.h>
@@ -75,26 +76,25 @@ using namespace LinBox;
 
 
 template<class PIR>
-void Mat(DenseMatrix<PIR>& M, PIR& R, int n,
-         string src, string file, string format);
+void Mat(DenseMatrix<PIR>& M, PIR& R, int & n,
+         string src);
 
 template<class I1, class Lp> void distinct (I1 a, I1 b, Lp& c);
 template <class I> void display(I b, I e);
 
 int main(int argc, char* argv[])
 {
-	typedef PIRModular<int32_t> PIR;
+	//typedef PIRModular<int32_t> PIR;
+	typedef PIR_ntl_ZZ_p PIR;
 
-	if (argc < 5) {
+	if (argc < 4 or argc > 5) {
 
-		cout << "usage: " << argv[0] << " alg m n source format \n"  << endl;
+		cout << "usage: " << argv[0] << " alg m source [n]\n"  << endl;
 
 		cout << "alg = `adaptive', `ilio', `local', or `2local', \n"
              << "m is modulus (ignored by 2local, adaptive), "
-             << "n is matrix order, \n"
              << "source is `random', `random-rough', `fib', `tref', or a filename \n"
-             << "format is `dense' or `sparse' (if matrix from a file)\n"
-             << "compile with -DBIG if you want big integers used.\n";
+             << "n is matrix order (ignored if matrix is from file), \n";
 
 		return 0;
 	}
@@ -103,13 +103,11 @@ int main(int argc, char* argv[])
 
 	unsigned long m = atoi(argv[2]);
 
-	int n = atoi(argv[3]);
+	string src = argv[3];
 
-	string src = argv[4];
-
-	string file = src;
-
-	string format = (argc >= 6 ? argv[5] : "");
+	int n = 0;
+	if (argc >= 5) 
+		n = (argv[4][0] != 'k') ? atoi(argv[4]) : -1;
 
 	UserTimer T;
 
@@ -119,10 +117,7 @@ int main(int argc, char* argv[])
 		Ints Z;
 		DenseMatrix<Ints> M(Z);
 
-		std::ifstream input (file);
-            //MatrixStream<Ints> ms(Z, input);
-		M.read(input);
-            //Mat(M, Z, n, src, file, format);
+        Mat(M, Z, n, src);
 
 		DenseVector<Givaro::ZRing<Integer> > v(Z,(size_t)n);
 		T.start();
@@ -147,11 +142,14 @@ int main(int argc, char* argv[])
 
 		DenseMatrix<PIR> M(R);
 
-		Mat(M, R, n, src, file, format);
+		Mat(M, R, n, src);
 
 		T.start();
 
 		SmithFormIliopoulos::smithFormIn (M);
+		//PIR::Element d;
+		//IliopoulosDomain<PIR> ID(R);
+		//ID.smithFormIn (M,d);
 
 		T.stop();
 
@@ -177,6 +175,7 @@ int main(int argc, char* argv[])
 
 	else if (algo == "local") { // m must be a prime power
 
+#if 0
 		if (format == "sparse" ) {
 			typedef Givaro::Modular<int32_t> Field;
 			Field F(m);
@@ -225,36 +224,36 @@ int main(int argc, char* argv[])
 
 		}
 		else {
+#endif
 
-			PIR R( (int32_t)m);
+		PIR R( (int32_t)m);
 
-			DenseMatrix<PIR> M(R);
+		DenseMatrix<PIR> M(R);
 
-			Mat(M, R, n, src, file, format);
+		Mat(M, R, n, src);
 
-			typedef list< PIR::Element > List;
+		typedef list< PIR::Element > List;
 
-			List L;
+		List L;
 
-			SmithFormLocal<PIR> SmithForm;
+		SmithFormLocal<PIR> SmithForm;
 
-			T.start();
+		T.start();
 
-			SmithForm( L, M, R );
+		SmithForm( L, M, R );
 
-			T.stop();
+		T.stop();
 
-			list<pair<PIR::Element, size_t> > p;
+		list<pair<PIR::Element, size_t> > p;
 
-			distinct(L.begin(), L.end(), p);
+		distinct(L.begin(), L.end(), p);
 
-			cout << "#";
+		cout << "#";
 
-			display(p.begin(), p.end());
+		display(p.begin(), p.end());
 
-			cout << "# local, PIR-Modular-int32_t(" << m << "), n = " << n << endl;
+		cout << "# local, PIR-Modular-int32_t(" << m << "), n = " << n << endl;
 
-		}
 		cout << "T" << n << "local" << m << " := ";
 	}
 
@@ -264,7 +263,7 @@ int main(int argc, char* argv[])
 
 		DenseMatrix<Local2_32> M(R);
 
-		Mat(M, R, n, src, file, format);
+		Mat(M, R, n, src);
 
 		typedef list< Local2_32::Element > List;
 
@@ -291,13 +290,9 @@ int main(int argc, char* argv[])
 		cout << "T" << n << "local2_32 := ";
 	}
 
-	else {
+	else 
 
-		printf ("Unknown algorithms\n");
-
-		exit (-1);
-
-	}
+		printf ("Unknown algorithm ");
 
 	T.print(cout); cout << ";" << endl;
 
@@ -578,12 +573,11 @@ void display(I b, I e)
   where fib(1) = 1, fib(2) = 2.  But note that, depending on n,
   the last block may be truncated, thus repeating an earlier fibonacci number.
   "file" (or any other string)
-  mat read from named file with format "sparse" or "dense".
   Also "tref" and file with format "kdense"
   */
 template <class PIR>
-void Mat(DenseMatrix<PIR>& M, PIR& R, int n,
-         string src, string file, string format) {
+void Mat(DenseMatrix<PIR>& M, PIR& R, int & n,
+         string src) {
 
 	if (src == "random-rough") RandomRoughMat(M, R, n);
 
@@ -593,75 +587,18 @@ void Mat(DenseMatrix<PIR>& M, PIR& R, int n,
 
 	else if (src == "tref") TrefMat(M, R, n);
 
-	else // from file
-	{
+	else { // from file
 
-		int rdim, cdim;
-
-		std::ifstream in (file.c_str(), std::ios::in);
+		std::ifstream in (src.c_str(), std::ios::in);
 		if (! in) { cerr << "error: unable to open file" << endl; exit(-1); }
-
-		in >> rdim >> cdim;
-
-		M. resize ((size_t)rdim, (size_t)cdim);
-
-		integer Val;
-
-		if (format == "dense" ) {
-
-			for (int i = 0; i < rdim; ++ i)
-
-				for ( int j = 0; j < cdim; ++ j) {
-
-					in >> Val;
-
-					R. init (M[(size_t)i][(size_t)j], Val);
-
-				}
-		}
-
-		else if (format == "sparse") {
-
-			int i, j;
-
-			char mark;
-
-			in >> mark;
-
-			LinBox::integer val;
-
-			do {
-
-				in >> i >> j;
-				in. ignore (1);
-				in >> val;
-
-				if ( i == 0) break;
-
-				R. init (M[(size_t)i-1][(size_t)j-1], val);
-
-			} while (true);
-
-		}
-            //Krattenthaler's q^e matrices, given by exponent
-		else if (format == "kdense") KratMat(M, R, n, in);
-
-		else {
-
-			cout << "Format: " << format << " Unknown\n";
-
-			exit (-1);
-
-		}
+            
+		if (n == -1) //Krattenthaler's q^e matrices, given by exponent
+			KratMat(M, R, n, in);
+		else
+			M.read(in);
+		n = M.rowdim();
 	}
 
-        /*show some entries
-          for (int k = 0; k < 10; ++k)
-          cout << M.getEntry(0,k) <<  " " << M.getEntry(M.rowdim()-1, M.coldim()-1 - k) << endl;
-          cout << endl << M.rowdim() << " " << M.coldim() << endl;
-        */
-
-        /* some row ops and some col ops */
 } // Mat
 
 //@}
