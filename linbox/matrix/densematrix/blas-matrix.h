@@ -10,7 +10,7 @@
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
- * LinBox is free software: you can redistribute it and/or modify
+  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
@@ -74,12 +74,12 @@ namespace LinBox
 			// F.cardinality(card);
 
 			// if ((chara != card) || chara == 0)
-            // return false;
+				// return false;
 			// else
-            // if (n*chara*chara < integer("9007199254740992"))
-            // return true;
-            // else
-            // return false;
+				// if (n*chara*chara < integer("9007199254740992"))
+					// return true;
+				// else
+					// return false;
 		}
 
 		template<>
@@ -169,23 +169,23 @@ namespace LinBox
 		typedef BlasMatrix<Field,Rep>                  Self_t;    //!< Self typeype
 		typedef const BlasMatrix<Field,Rep>       constSelf_t;    //!< Self typeype
 
-        typedef BlasSubmatrix<Self_t>           subMatrixType;    //!< Submatrix type
+                typedef BlasSubmatrix<Self_t>           subMatrixType;    //!< Submatrix type
 		typedef BlasSubmatrix<constSelf_t> constSubMatrixType;    //!< Submatrix type
-        typedef Self_t                             matrixType;    //!< matrix type
-        typedef constSelf_t                   constMatrixType;    //!< matrix type
-        typedef Self_t                               blasType;    //!< blas matrix type
+                typedef Self_t                             matrixType;    //!< matrix type
+                typedef constSelf_t                   constMatrixType;    //!< matrix type
+                typedef Self_t                               blasType;    //!< blas matrix type
 
 	protected:
 		size_t			    _row;
 		size_t			    _col;
-		Rep			        _rep;
+		Rep			    _rep;
 	public:
 		bool		     _use_fflas ; //! @bug why public ?
-        //protected:
+	//protected:
 		pointer			    _ptr;
 	public:
-        // protected:
-        const Field		    * _field; //! @bug why public ?
+	// protected:
+	       	const Field		    * _field; //! @bug why public ?
 		MatrixDomain<Field>    _MD; //! @bug why public ?
 		VectorDomain<Field>    _VD;
 		// applyDomain<subMatrixType>    _AD; //! @bug why public ?
@@ -247,9 +247,9 @@ namespace LinBox
 		 */
 		template <class _Matrix>
 		void createBlasMatrix (const _Matrix& A,
-                               const size_t i0,const size_t j0,
-                               const size_t m, const size_t n,
-                               MatrixContainerCategory::Container) ;
+				       const size_t i0,const size_t j0,
+				       const size_t m, const size_t n,
+				       MatrixContainerCategory::Container) ;
 
 		/*! @internal
 		 * Copy data according to Matrix container structure (allow submatrix).
@@ -257,9 +257,9 @@ namespace LinBox
 		 */
 		template <class Matrix>
 		void createBlasMatrix (const Matrix& A,
-                               const size_t i0,const size_t j0,
-                               const size_t m, const size_t n,
-                               MatrixContainerCategory::BlasContainer) ;
+				       const size_t i0,const size_t j0,
+				       const size_t m, const size_t n,
+				       MatrixContainerCategory::BlasContainer) ;
 
 		/*! @internal
 		 * Copy data according to blackbox structure (allow submatrix).
@@ -268,9 +268,9 @@ namespace LinBox
 		 */
 		template <class Matrix>
 		void createBlasMatrix (const Matrix& A,
-                               const size_t i0,const size_t j0,
-                               const size_t m, const size_t n,
-                               MatrixContainerCategory::Blackbox) ;
+				       const size_t i0,const size_t j0,
+				       const size_t m, const size_t n,
+				       MatrixContainerCategory::Blackbox) ;
 
 		/*!@internal constructor from vector of elements.
 		 * @param v pointer to \c Element s
@@ -293,7 +293,7 @@ namespace LinBox
 
 
 		/*! Allocates a new \f$ 0 \times 0\f$ matrix (shaped and ready).
-         */
+		*/
 		BlasMatrix (const _Field &F) ;
 
 		// /*! Allocates a new bare \f$ 0 \times 0\f$ matrix (unshaped, unready).
@@ -335,8 +335,8 @@ namespace LinBox
 		 */
 		template <class Matrix>
 		BlasMatrix (const Matrix& A,
-                    const size_t & i0, const size_t & j0,
-                    const size_t & m,  const size_t & n) ;
+			    const size_t & i0, const size_t & j0,
+			    const size_t & m,  const size_t & n) ;
 
 		/*! Constructor.
 		 * @param A matrix to be copied
@@ -362,7 +362,7 @@ namespace LinBox
 		 * @param n
 		 */
 		BlasMatrix (const _Field &F, const std::vector<Element>& v,
-                    const size_t &m , const size_t &n) ;
+			    const size_t &m , const size_t &n) ;
 
 		/*! Create a BlasMatrix from an array of elements
 		 * @param F
@@ -371,7 +371,7 @@ namespace LinBox
 		 * @param n
 		 */
 		BlasMatrix (const _Field &F, const Element * v,
-                    const size_t & m, const size_t & n) ;
+			    const size_t & m, const size_t & n) ;
 
 
 		/** Constructor using a finite vector stream (stream of the rows).
@@ -572,7 +572,7 @@ namespace LinBox
 		 * @param f write in some format (@ref Tag::FileFormat::Format). Default is Maple's.
 		 */
 		std::ostream &write (std::ostream &os,
-                             LINBOX_enum (Tag::FileFormat) f/* = Tag::FileFormat::Maple*/) const
+				     LINBOX_enum (Tag::FileFormat) f/* = Tag::FileFormat::Maple*/) const
 		{
 			constSubMatrixType B(*this, 0, 0, rowdim(), coldim());
 			return B.write(os, f);
@@ -581,7 +581,7 @@ namespace LinBox
 		/*! @deprecated Only for compatiblity.
 		 */
 		std::ostream &write (std::ostream &os,
-                             bool mapleFormat) const
+				     bool mapleFormat) const
 		{
 			constSubMatrixType B(*this, 0, 0, rowdim(), coldim());
 			return B.write(os, mapleFormat);
@@ -718,7 +718,7 @@ namespace LinBox
 			return _row * _col;
 		}
 
-        void finalize() {}
+                void finalize() {}
 
 		///////////////////
 		//   BLACK BOX   //
@@ -745,20 +745,20 @@ namespace LinBox
 
 		template<class uselessTag>
 		void changeFieldSpecialised( _Field & G,
-                                     // MatrixDomain<_Field> & MD,
-                                     VectorDomain<_Field> & VD,
-                                     const _Field & F,
-                                     const uselessTag & m)
+					     // MatrixDomain<_Field> & MD,
+					     VectorDomain<_Field> & VD,
+					     const _Field & F,
+					     const uselessTag & m)
 		{
 			// don't do anything (?)
 			return;
 		}
 
 		void changeFieldSpecialised(      _Field & G,
-                                          // MatrixDomain<_Field> & MD,
-                                          VectorDomain<_Field> & VD,
-                                          const _Field & F,
-                                          const RingCategories::ModularTag & m)
+						  // MatrixDomain<_Field> & MD,
+						  VectorDomain<_Field> & VD,
+					    const _Field & F,
+					    const RingCategories::ModularTag & m)
 		{
 			G=F ;
 			// _MD = MatrixDomain<_Field>(F);
@@ -770,10 +770,10 @@ namespace LinBox
 		void changeField(const _Field &F)
 		{
 			changeFieldSpecialised(const_cast<_Field&>(_field),
-                                   // const_cast<MatrixDomain<_Field>&>(_MD),
-                                   const_cast<VectorDomain<_Field>&>(_VD),
-                                   F,
-                                   typename FieldTraits<_Field>::categoryTag());
+					       // const_cast<MatrixDomain<_Field>&>(_MD),
+					       const_cast<VectorDomain<_Field>&>(_VD),
+					       F,
+					       typename FieldTraits<_Field>::categoryTag());
 		}
 
 
@@ -810,16 +810,15 @@ namespace LinBox
 
 		typedef typename Rep::pointer           pointer;    //!< pointer type to elements
 		typedef const pointer             const_pointer;    //!< const pointer type
-        typedef Self_t                    subMatrixType;    //!< Submatrix type
-        typedef constSelf_t          constSubMatrixType;    //!< Submatrix type (const)
-        typedef typename _Matrix::Self_t     matrixType;    //!< non const matrix type
-        typedef typename _Matrix::constSelf_t  constMatrixType;    //!< matrix type (const)
-        typedef matrixType                     blasType;    //!< blas matrix type
-        typedef BlasVector<Field,Rep>        vectorType;    //!< blas matrix type
+                typedef Self_t                    subMatrixType;    //!< Submatrix type
+                typedef constSelf_t          constSubMatrixType;    //!< Submatrix type (const)
+                typedef typename _Matrix::Self_t     matrixType;    //!< non const matrix type
+                typedef typename _Matrix::constSelf_t  constMatrixType;    //!< matrix type (const)
+                typedef matrixType                     blasType;    //!< blas matrix type
+                typedef BlasVector<Field,Rep>        vectorType;    //!< blas matrix type
 
 
 	protected:
-        
 		_Matrix &_Mat;       //!< Parent BlasMatrix (ie encapsulated raw std::vector)
 		size_t _row;                   //!< row dimension of Submatrix
 		size_t _col;                   //!< col dimension of Submatrix
@@ -851,16 +850,16 @@ namespace LinBox
 		 * \param Coldim Column dimension
 		 */
 		BlasSubmatrix (constMatrixType &M,
-                       size_t rowbeg,
-                       size_t colbeg,
-                       size_t Rowdim,
-                       size_t Coldim);
+			       size_t rowbeg,
+				size_t colbeg,
+				size_t Rowdim,
+				size_t Coldim);
 
 		BlasSubmatrix (matrixType &M,
-                       size_t rowbeg,
-                       size_t colbeg,
-                       size_t Rowdim,
-                       size_t Coldim);
+			       size_t rowbeg,
+				size_t colbeg,
+				size_t Rowdim,
+				size_t Coldim);
 
 
 
@@ -884,16 +883,16 @@ namespace LinBox
 		 * @param Coldim Column dimension
 		 */
 		BlasSubmatrix (constSelf_t  &SM,
-                       size_t rowbeg,
-                       size_t colbeg,
-                       size_t Rowdim,
-                       size_t Coldim);
+				size_t rowbeg,
+				size_t colbeg,
+				size_t Rowdim,
+				size_t Coldim);
 
 		BlasSubmatrix (Self_t  &SM,
-                       size_t rowbeg,
-                       size_t colbeg,
-                       size_t Rowdim,
-                       size_t Coldim);
+				size_t rowbeg,
+				size_t colbeg,
+				size_t Rowdim,
+				size_t Coldim);
 
 		/** Copy constructor.
 		 * @param SM Submatrix to copy
@@ -915,10 +914,10 @@ namespace LinBox
 
 		// function for repurposing Submatrices.
 		BlasSubmatrix &submatrix(constSelf_t &SM,
-                                 size_t rowbeg,
-                                 size_t colbeg,
-                                 size_t Rowdim,
-                                 size_t Coldim);
+				size_t rowbeg,
+				size_t colbeg,
+				size_t Rowdim,
+				size_t Coldim);
 
 		/// This is deep copy of the data, operator= is a shallow copy.
 		template<class Matrix>
@@ -981,7 +980,7 @@ namespace LinBox
 		 * @param f write in some format (@ref Tag::FileFormat::Format). Default is MM's.
 		 */
 		std::ostream &write (std::ostream &os,
-                             LINBOX_enum (Tag::FileFormat) f = Tag::FileFormat::MatrixMarket )const;
+				     LINBOX_enum (Tag::FileFormat) f = Tag::FileFormat::MatrixMarket )const;
 
 		//////////////////
 		//   ELEMENTS   //
@@ -1171,9 +1170,9 @@ namespace LinBox
 		 * @param x (upp/low)er matrix
 		 */
 		TriangularBlasMatrix (const Field & F,
-                              const size_t m, const size_t n,
-                              LINBOX_enum (Tag::Shape) x=Tag::Shape::Upper,
-                              LINBOX_enum (Tag::Diag) y= Tag::Diag::NonUnit) ;
+				      const size_t m, const size_t n,
+				      LINBOX_enum (Tag::Shape) x=Tag::Shape::Upper,
+				      LINBOX_enum (Tag::Diag) y= Tag::Diag::NonUnit) ;
 
 		/*! Constructor from a \c BlasMatrix (copy).
 		 * @param A matrix
@@ -1181,8 +1180,8 @@ namespace LinBox
 		 * @param x (upp/low)er matrix
 		 */
 		TriangularBlasMatrix (const BlasMatrix<Field,Rep>& A,
-                              LINBOX_enum (Tag::Shape) x=Tag::Shape::Upper,
-                              LINBOX_enum (Tag::Diag) y= Tag::Diag::NonUnit) ;
+				      LINBOX_enum (Tag::Shape) x=Tag::Shape::Upper,
+				      LINBOX_enum (Tag::Diag) y= Tag::Diag::NonUnit) ;
 
 		/*! Constructor from a \c BlasMatrix (no copy).
 		 * @param A matrix
@@ -1190,8 +1189,8 @@ namespace LinBox
 		 * @param x (upp/low)er matrix
 		 */
 		TriangularBlasMatrix (BlasMatrix<Field,Rep>& A,
-                              LINBOX_enum (Tag::Shape) x=Tag::Shape::Upper,
-                              LINBOX_enum (Tag::Diag) y= Tag::Diag::NonUnit) ;
+				      LINBOX_enum (Tag::Shape) x=Tag::Shape::Upper,
+				      LINBOX_enum (Tag::Diag) y= Tag::Diag::NonUnit) ;
 
 		/*! Constructor from a \c TriangularBlasMatrix (copy).
 		 * @param A matrix
@@ -1205,8 +1204,8 @@ namespace LinBox
 		 */
 		template<class Matrix>
 		TriangularBlasMatrix (const Matrix& A,
-                              LINBOX_enum (Tag::Shape) x=Tag::Shape::Upper,
-                              LINBOX_enum (Tag::Diag) y= Tag::Diag::NonUnit) ;
+				      LINBOX_enum (Tag::Shape) x=Tag::Shape::Upper,
+				      LINBOX_enum (Tag::Diag) y= Tag::Diag::NonUnit) ;
 
 		/// get the shape of the matrix (upper or lower)
 		LINBOX_enum (Tag::Shape) getUpLo() const ;
