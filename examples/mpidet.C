@@ -26,6 +26,10 @@
   \brief Determinant of sparse matrix over Z or Zp.
   \ingroup examples
   */
+//////#include <cstdio>
+#define __LINBOX_HAVE_MPI
+#include"linbox/linbox-config.h"
+#include"mpi.h"
 
 #include <iostream>
 #include <string>

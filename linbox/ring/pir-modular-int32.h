@@ -187,7 +187,7 @@ namespace LinBox
 
 			r = a % g;
 
-			if (r != 0) throw PreconditionFailed(LB_FILE_LOC,"Div: not dividable");
+			if (r != 0) throw PreconditionFailed(LB_FILE_LOC,"Div: not divisible");
 
 			else {
 
