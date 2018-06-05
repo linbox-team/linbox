@@ -89,10 +89,7 @@ namespace LinBox
         template <class Field>
         void send (BlasVector<Field>& b, int dest);
         
-        template <class X>
-        void send_integer (X& b, int dest);
-        template <class X>
-        void send_integer2 (X& b, int dest);                
+               
         
 		template < class X >
 		void ssend( X& b, int dest /*, int tag = 0 */);
@@ -104,10 +101,7 @@ namespace LinBox
         template <class Field>
         void ssend (BlasVector<Field>& b, int dest);
         
-        template <class X>
-        void ssend_integer (X& b, int dest);
-        template <class X>
-        void ssend_integer2 (X& b, int dest);  
+
         
 		template < class X >
 		void bsend( X& b, int dest);
@@ -122,10 +116,7 @@ namespace LinBox
         template <class Field>
         void recv (BlasVector<Field>& b, int src);
         
-        template <class X>
-        void recv_integer (X& b, int src);   
-        template <class X>
-        void recv_integer2 (X& b, int src);                
+           
 
 
 		/*
@@ -151,10 +142,7 @@ namespace LinBox
         template <class Field>
         void bcast (BlasVector<Field>& b, int src);
         
-        template <class X>
-        void bcast_integer (X& b, int src);                
-        template <class X>
-        void bcast_integer2 (X& b, int src);
+
         
         template <class X>
         void bcast (X* b, X* e, int src);
@@ -171,6 +159,26 @@ namespace LinBox
 		bool _mpi_boss; // true of an MPI initializing communicator
 		// There is at most one initializing communicator.
 		MPI_Status stat; // status from most recent receive
+
+        template <class X>
+        void send_integerVec (X& b, int dest);
+        template <class X>
+        void send_integerMat (X& b, int dest); 
+        template <class X>
+        void recv_integerVec (X& b, int src);   
+        template <class X>
+        void recv_integerMat (X& b, int src);
+        template <class X>
+        void bcast_integerVec (X& b, int src);                
+        template <class X>
+        void bcast_integerMat (X& b, int src);
+        template <class X>
+        void ssend_integerVec (X& b, int dest);
+        template <class X>
+        void ssend_integerMat (X& b, int dest);  
+
+
+
         
 	};
 }// namespace LinBox
