@@ -187,12 +187,32 @@ bool test_set(BlasVector<Givaro::ZRing<Integer> > &X2,
 #else
   std::cout << "Sequential solveCRA" << std::endl;
 #endif 
-  
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//std::cerr<<"Proc("<<Cptr->rank()<<") >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "<<std::endl;
+
+BlasVector<Givaro::Modular<double> > r;r.resize(A.coldim()+1);
+if(0==Cptr->rank()){
+int size = 0;
+while(true){
+if(size==Cptr->size()-1)break;
+Cptr->recv(r.begin(), r.end(), MPI_ANY_SOURCE, 0);
+if(r[r.size()-1]==0)size++;
+}
+}else{
+r[r.size()-1]=0;
+Cptr->send(r.begin(), r.end(), 0, 0);
+}
+r.resize(0);
+
+//std::cerr<<"Proc("<<Cptr->rank()<<") <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< "<<std::endl;
+////////////////////////////////////////////////////////////////////////////////////////////////////
+ 
   /***********************
     Results verification 
   ***********************/
   RingCategories::IntegerTag tg;
-  
+
 #ifdef __LINBOX_HAVE_MPI
   double starttime, endtime;
   starttime = MPI_Wtime(); 
@@ -255,87 +275,7 @@ bool test_set(BlasVector<Givaro::ZRing<Integer> > &X2,
 #endif
   return tag;
 }
-bool test_set(BlasVector<Givaro::ZRing<Integer> > &X2,
-	      SparseMatrix<Givaro::ZRing<Integer> > &A,
-	      BlasVector<Givaro::ZRing<Integer> > &B
-#ifdef __LINBOX_HAVE_MPI
-	      , Communicator *Cptr
-#endif
-	      ){
-  bool tag = false;
-  Givaro::ZRing<Integer> ZZ;
-  Givaro::ZRing<Integer>::Element d;
-  std::cout<<"Computation is done over Q"<<std::endl;
-#ifdef __LINBOX_HAVE_MPI
-  std::cout << "MPI solveCRA" << std::endl;
-#else
-  std::cout << "Sequential solveCRA" << std::endl;
-#endif 
-  
-  /***********************
-    Results verification 
-  ***********************/
-  RingCategories::IntegerTag tg;
-  
-#ifdef __LINBOX_HAVE_MPI
-  double starttime, endtime;
-  starttime = MPI_Wtime(); 
-#else
-  Timer chrono;
-  chrono.start();
-#endif
-  solveCRA (X2, d, A, B, tg, 
-	    Method::BlasElimination()
-	    //Method::Hybrid(*Cptr)
-#ifdef __LINBOX_HAVE_MPI
-	    ,Cptr
-#endif
-	    );	
-  
-#ifdef __LINBOX_HAVE_MPI
-  endtime   = MPI_Wtime();
-  MPI_Barrier(MPI_COMM_WORLD);
-#else
-  chrono.stop();
-#endif
-  //  DenseVector B2(ZZ, A.coldim());
-  
-#ifdef __LINBOX_HAVE_MPI
-  if(0 == Cptr->rank()){  
-#endif
-    /*
-      std::cerr << "Compute with B: " << std::endl;
-      B.write(std::cout << "B::=",Tag::FileFormat::Maple) << ';' << std::endl; //for(int j=0;j<nj;j++) std::cerr << B.getEntry(j) << std::endl; 
-      
-      std::cout << "Compute with A: " << A.rowdim() << " by " << A.coldim() << std::endl;
-      A.write(std::cout << "A::=",Tag::FileFormat::Maple) << ';' << std::endl;
-    */
-    
-    // solveCRA
-    /* 
-       std::cout << "MPI CRA Solution is [";
-       for(DenseVector::const_iterator it=X2.begin();it != X2.end(); ++it)
-       ZZ.write(cout, *it) << " ";
-       std::cout << "] / ";
-       ZZ.write(std::cout, d) << std::endl;
-    */
-#ifdef __LINBOX_HAVE_MPI
-    std::cout << "CPU time (seconds): " << endtime-starttime << std::endl;
-#else
-    std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
-#endif
-    
-    
-    tag=checkResult (ZZ, A, B, X2, d);
-#ifdef __LINBOX_HAVE_MPI
-  }
-#endif 
-  
-#ifdef __LINBOX_HAVE_MPI
-  MPI_Bcast(&tag, 1, MPI::BOOL, 0, MPI_COMM_WORLD);
-#endif
-  return tag;
-}
+
 
 
 int main(int argc, char ** argv)
@@ -371,6 +311,7 @@ int main(int argc, char ** argv)
   DenseVector X(ZZ, A.rowdim()), X2(ZZ, A.rowdim()),  B(ZZ, A.rowdim());
 
 ////////////////////////////////////Always//Generates//The//Same//Matrix//////////////////////////////////////////
+
 size_t r=0;
 
 
@@ -403,7 +344,9 @@ LinBox::rank (r, A);
 }
 
 
-      //LinBox::rank (r, A); std::cout<<"The rank of generated matrix A is:"<<r<<std::endl;  
+      //LinBox::rank (r, A); std::cout<<"The rank of generated matrix A is:"<<r<<std::endl; 
+//      genData (A, bits);
+//      genData (B, bits); 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   for(long j=0;j<(long)niter;j++){  
@@ -411,10 +354,10 @@ LinBox::rank (r, A);
 #ifdef __LINBOX_HAVE_MPI  
     if(0==Cptr->rank()){
 #endif
-/*
-      genData (A, bits);
-      genData (B, bits);
-*/
+
+//      genData (A, bits);
+//      genData (B, bits);
+
 
 /*      
 	std::cerr << ">>>>Compute with B: " << std::endl;      
@@ -452,7 +395,7 @@ LinBox::rank (r, A);
       std::cerr <<"process("<<Cptr->rank()<< ")<<<<Compute with A: " << A.rowdim() << " by " << A.coldim() << std::endl;
       if (A.rowdim() <= 20 && A.coldim() <= 20) A.write(std::cout << "A:=",Tag::FileFormat::Maple) << ';' << std::endl;
   */
-    
+
     if(!test_set(X2, A, B
 #ifdef __LINBOX_HAVE_MPI
 		 , Cptr

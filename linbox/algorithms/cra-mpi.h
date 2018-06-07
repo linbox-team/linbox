@@ -932,7 +932,7 @@ int flag;MPI_Status status;
 		}
 #endif
 //////////////////////////////The///FASTEST///FOR///NOW///USING///DATA///RECEPTION///POOL//////////////////////////////////
-#if 1
+#if 0
 		template<class Function, class PrimeIterator>
 		BlasVector<Givaro::ZRing<Integer> > & operator() ( BlasVector<Givaro::ZRing<Integer> > & num, Integer& den, Function& Iteration, PrimeIterator& primeg)
 		{
@@ -1076,8 +1076,8 @@ tag=0;
 			//  child process
 			else{
 				int pp;
-//                LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   gen(process,procs);  
-LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag> gen(process,procs);
+                LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   gen(process,procs);  
+//LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag> gen(process,procs);
 
 				//  get a prime, compute, send back start and end
 				//  of heap addresses
@@ -1110,6 +1110,7 @@ LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag> gen(pr
                     //Add corresponding prime number as the last element in the result vector
                     r.push_back(*gen);
 					_commPtr->send(r.begin(), r.end(), 0, 0); 
+
 //MPI_Isend( &r[0], r.size(), MPI_DOUBLE, 0, 0,  MPI_COMM_WORLD, &req );
 
 				}
@@ -1121,7 +1122,7 @@ LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag> gen(pr
 		}
 #endif
 /////EARLY///TERMINATION///WITH///SOME///IMPROVEMENT///BUT///OVERIDDING///ERRORHANDLER///MAY///HAVE///POTENTIAL///PROBLEM////
-#if 0
+#if 1
 		template<class Function, class PrimeIterator>
 		BlasVector<Givaro::ZRing<Integer> > & operator() ( BlasVector<Givaro::ZRing<Integer> > & num, Integer& den, Function& Iteration, PrimeIterator& primeg)
 		{
@@ -1150,7 +1151,7 @@ std::vector<int> P;
 std::vector<char*> port_names;
 std::vector<MPI_Comm> clients;
 MPI_Comm_set_errhandler( MPI_COMM_WORLD, MPI_ERRORS_RETURN);
-
+std::unordered_set<int> prime_used;
 
 				for(int i=0; i<procs-1; i++){
 MPI_Comm client; 
@@ -1158,12 +1159,15 @@ clients.push_back(client);
                 }
 			//  parent propcess
 			if(process == 0){
+
 int tag=1; 
-std::unordered_set<int> prime_used;
+//std::unordered_set<int> prime_used;
+
+
 
 				int primes[procs - 1];
 
-
+//std::cerr<<" >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "<<std::endl;
 
 				//Domain D(*primeg);
 				//  for each slave process...
@@ -1176,14 +1180,14 @@ MPI_Open_port(MPI_INFO_NULL, port_names[i-1]);
   if ( MPI_Publish_name( port_names[i-1], MPI_INFO_NULL, port_names[i-1] ) ) std::cerr<<"Error in Unpublish name: "<<port_names[i-1]<<std::endl;
 //					primes[i - 1] = 1;
 //					_commPtr->send(primes[i - 1], i);
-MPI_Send(port_names[i-1], MPI_MAX_PORT_NAME, MPI_CHAR, i, 123, MPI_COMM_WORLD); //_commPtr->send(port_names[i-1], i);
+MPI_Send(port_names[i-1], MPI_MAX_PORT_NAME, MPI_CHAR, i, 123, MPI_COMM_WORLD); //_commPtr->send(port_names[i-1][0], i);
 
 MPI_Comm_accept(port_names[i-1], MPI_INFO_NULL, 0, MPI_COMM_SELF, &clients[i-1]);
 MPI_Close_port(port_names[i-1]);
 //_commPtr->send(tag, i);
 
 				}  
-                
+//std::cerr<<" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< "<<std::endl;
 				Builder_.initialize( D, Iteration(r, D) );
 				int poison_pills_left = procs - 1;
                 int pp;
@@ -1202,9 +1206,9 @@ int idle_process = 0;
 R.resize(0);
 P.resize(0);
 while(R.size() < (procs - 1) ){
-//std::cerr<<" >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "<<std::endl;
+//std::cerr<<" >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>@@@>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "<<std::endl;
          			_commPtr->recv(r.begin(), r.end(), MPI_ANY_SOURCE, 0); 
-//std::cerr<<" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< "<<std::endl;
+//std::cerr<<" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<@@@<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< "<<std::endl;
 //for (int i=1; i<procs-1; i++) MPI_Irecv(&r, num.size(), MPI_DOUBLE, i, 0,  MPI_COMM_WORLD, &request);
 
 
@@ -1219,7 +1223,7 @@ while(R.size() < (procs - 1) ){
 //					_commPtr->send(primes[idle_process - 1], idle_process);
 // MPI_Isend( &tag, 1, MPI_INT, idle_process, 0,  MPI_COMM_WORLD, &req );
 //_commPtr->send(tag, idle_process);
-
+//std::cerr<<"Process(0) received "<<r<<" from Process("<<idle_process<<")"<<std::endl;
 
 
 P.push_back(r[num.size()]);
@@ -1241,33 +1245,33 @@ for(long i=0; i<R.size();i++){
 Domain D(P[i]);//Domain D(pp);
 
 //std::cerr<<" Recevied prime: "<< P[i] <<std::endl;
-if(prime_used.size()> 0){
+//if(prime_used.size()> 0){
 
-if(prime_used.find(P[i]) == prime_used.end()){
-                        chrono.start();
-/*********************************************************************************************************************
-Need to set a unordered set data strucutre to store all used prime numbers and check if the deadlock is due to any duplicated prime number
-*********************************************************************************************************************/
+//if(prime_used.find(P[i]) == prime_used.end()){
+//                        chrono.start();
+
 
 //std::cerr<<" >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>2>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "<<std::endl;
-                        Builder_.progress(D, R[i]); prime_used.insert(P[i]);
+//                        Builder_.progress(D, R[i]); prime_used.insert(P[i]);
+//std::cout<<P[i]<<std::endl;
 //std::cerr<<" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<2<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< "<<std::endl;
-                        chrono.stop(); 
+//                        chrono.stop(); 
                         //std::cout<<"Builder_.progress(D, r) in the manager process used CPU time (seconds): "<<chrono.usertime()<<std::endl;
                         Nrecon++;
                         timeExec += chrono.usertime();
-}//END:if(prime_used.find(*gen) != prime_used.end())
+//}//END:if(prime_used.find(*gen) != prime_used.end())
 
-}else{
+//}else{
                         chrono.start();
 //std::cerr<<" >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>1>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "<<std::endl;
                         Builder_.progress(D, R[i]); prime_used.insert(P[i]);
+//std::cout<<P[i]<<std::endl;
 //std::cerr<<" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<1<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< "<<std::endl;
                         chrono.stop(); 
                         //std::cout<<"Builder_.progress(D, r) in the manager process used CPU time (seconds): "<<chrono.usertime()<<std::endl;
                         Nrecon++;
                         timeExec += chrono.usertime();
-}
+//}
 
 
 }
@@ -1288,25 +1292,34 @@ poison_pills_left--;//_commPtr->send(tag, idle_process);
 
                         if(Builder_.terminated()){
 //                            primes[idle_process - 1] = 0;
-tag=0; 
+//tag=0; 
+//std::cerr<<" >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>2>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "<<std::endl;
+for (int i=0; i<procs-1; i++)   MPI_Unpublish_name( port_names[i], MPI_INFO_NULL, port_names[i] );
+//std::cerr<<" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<2<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< "<<std::endl;
 //std::cerr<<"Proc("<<process<<") #####################FIN###################"<<std::endl;
+
 break;
 
                             //poison_pills_left--;
                         }
 
 				}  // while
-                std::cerr<<"Process(0) reconstructs totally "<<Nrecon<<" times before stop"<<std::endl;
-                std::cerr<<"Reconstruction in process(0) spent CPU times : "<<timeExec<<std::endl;
+//                std::cerr<<"Process(0) reconstructs totally "<<Nrecon<<" times before stop"<<std::endl;
+//                std::cerr<<"Reconstruction in process(0) spent CPU times : "<<timeExec<<std::endl;
 //std::cerr<<" >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>3>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "<<std::endl;
+
 for (int i=0; i<procs-1; i++){
 
-MPI_Unpublish_name( port_names[i], MPI_INFO_NULL, port_names[i] );
+//MPI_Unpublish_name( port_names[i], MPI_INFO_NULL, port_names[i] );
 
-MPI_Comm_disconnect(&clients[i]);
+//MPI_Comm_disconnect(&clients[i]);
+
+//MPI_Comm_free( &clients[i] );
 
 }
+
 //std::cerr<<" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<3<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< "<<std::endl;
+//std::cerr<<"Proc("<<process<<") ###################FIN###################"<<std::endl;
 
 				return Builder_.result(num,den);
                 
@@ -1314,25 +1327,23 @@ MPI_Comm_disconnect(&clients[i]);
 			//  child process
 			else{
 				int pp;
-//                LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   gen(process,procs);  
-LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag> gen(process,procs);
+                LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   gen(process,procs);  
+//LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag> gen(process,procs);
 
 				//  get a prime, compute, send back start and end
 				//  of heap addresses
-                std::unordered_set<int> prime_used;
+//                std::unordered_set<int> prime_used;
                 float timeExec = 0;
                 long Ncomputes = 0;
 MPI_Status status;MPI_Request req;
 char port_name[MPI_MAX_PORT_NAME];
-MPI_Recv(&port_name[0], MPI_MAX_PORT_NAME, MPI_INT, 0, 123, MPI_COMM_WORLD, &status); //_commPtr->recv(port_name[0], 0);
+MPI_Recv(&port_name[0], MPI_MAX_PORT_NAME, MPI_CHAR, 0, 123, MPI_COMM_WORLD, &status); //_commPtr->recv(port_name[0], 0);
 
 MPI_Comm_connect(port_name, MPI_INFO_NULL, 0, MPI_COMM_SELF, &clients[process-1]);
+//std::cerr<<"Proc("<<process<<") >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>########>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "<<std::endl;
 
 				while(true){
-if(MPI_Lookup_name( port_name, MPI_INFO_NULL, port_name )){  
-//std::cerr<<"Proc("<<process<<") ###################FIN###################"<<std::endl;
-break;
-}
+
 /*
 					_commPtr->recv(pp, 0);
 
@@ -1346,6 +1357,8 @@ break;
                     
                     //std::cout << *gen << std::endl;
                     Domain D(*gen); //Domain D(pp);
+
+
                     chrono.start();  
 //std::cerr<<"Proc("<<process<<") >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Iteration>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"<<std::endl;
                     Iteration(r, D);
@@ -1359,21 +1372,31 @@ break;
 
 
 
-
-
+if(!MPI_Lookup_name( port_name, MPI_INFO_NULL, port_name )){
+//std::cerr<<"Proc("<<process<<") >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"<<std::endl;
+//std::cerr<<"Process("<<process<<") sending "<<r<<" to Process(0)"<<std::endl;
 					_commPtr->send(r.begin(), r.end(), 0, 0); 
-
 //MPI_Isend( &r[0], r.size(), MPI_DOUBLE, 0, 0,  MPI_COMM_WORLD, &req );
+//std::cerr<<"Proc("<<process<<") <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"<<std::endl;
+}else{  
+//MPI_Comm_disconnect(&clients[process-1] ); 
+
+//std::cerr<<"Proc("<<process<<") ###################FIN###################"<<std::endl;
+break;
+}
+
+
 
 				}
-//std::cerr<<" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< "<<std::endl;
-                std::cerr<<"Process("<<process<<") computes "<<Ncomputes<<" times before stop"<<std::endl;
-                std::cerr<<"Iteration in process("<<process<<") spent CPU times : "<<timeExec<<std::endl;
-//std::cerr<<"Proc("<<process<<") >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"<<std::endl;
-                MPI_Comm_disconnect(&clients[process-1] ); 
-//std::cerr<<"Proc("<<process<<") <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"<<std::endl;
+//std::cerr<<"Proc("<<process<<") <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<########<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< "<<std::endl;
+//                std::cerr<<"Process("<<process<<") computes "<<Ncomputes<<" times before stop"<<std::endl;
+//                std::cerr<<"Iteration in process("<<process<<") spent CPU times : "<<timeExec<<std::endl;
+
+//                MPI_Comm_disconnect(&clients[process-1] ); 
+
 			}
-           
+
+
 		}
 #endif
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
