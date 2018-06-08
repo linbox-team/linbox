@@ -26,6 +26,7 @@
  \ingroup examples
 */
  
+#include <string>
 #include <givaro/modular.h>
 #include <givaro/givintnumtheo.h>
 
@@ -40,13 +41,17 @@
 #include <linbox/util/matrix-stream.h>
 #include <linbox/util/timer.h>
 #include <linbox/util/error.h>
+#ifdef SILENT
+bool reporting = false;
+#else 
+bool reporting = true;
+#endif
 #ifdef NOT_USING_OMP
 #define THREADS 1
 #else
 #include <omp.h>
 #define THREADS omp_get_thread_num()
 #endif
-
 
 template<class Field>
 unsigned long& TempLRank(unsigned long& r, char * filename, const Field& F)
@@ -58,6 +63,7 @@ unsigned long& TempLRank(unsigned long& r, char * filename, const Field& F)
 	LinBox::Timer tim; tim.start();
 	LinBox::rankin(r, FA);
 	tim.stop();
+	if (reporting)
 	F.write(std::cerr << "Rank over ") << " is " << r << ' ' << tim <<  " on T" << THREADS << std::endl;
 	return r;
 }
@@ -68,9 +74,11 @@ unsigned long& TempLRank(unsigned long& r, char * filename, const LinBox::GF2& F
 	LinBox::ZeroOne<LinBox::GF2> A;
 	A.read(input);
 	input.close();
+
 	LinBox::Timer tim; tim.start();
 	LinBox::rankin(r, A, LinBox::Method::SparseElimination() );
 	tim.stop();
+	if (reporting)
 	F2.write(std::cerr << "Rank over ") << " is " << r << ' ' << tim <<  " on T" << THREADS << std::endl;
 	return r;
 }
@@ -124,6 +132,7 @@ std::vector<size_t>& PRank(std::vector<size_t>& ranks, size_t& effective_exponen
 		int64_t lp(p);
 		Givaro::Integer q = pow(p,uint64_t(e)); int64_t lq(q);
 		if (q >Givaro::Integer(lq)) {
+			if (reporting)
 			std::cerr << "Power rank might need extra large composite (" << p << '^' << e << ")." << std::endl;
 			q = p;
 			for(effective_exponent=1; q <= Ring::maxCardinality(); ++effective_exponent) {
@@ -131,6 +140,7 @@ std::vector<size_t>& PRank(std::vector<size_t>& ranks, size_t& effective_exponen
 			}
 			q/=p; --effective_exponent;
 			lq = (int64_t)q;
+			if (reporting)
 			std::cerr << "First trying: " << lq << " (=" << p << '^' << effective_exponent << ", without further warning this will be sufficient)." << std::endl;
 		}
 		Ring F(lq);
@@ -138,16 +148,19 @@ std::vector<size_t>& PRank(std::vector<size_t>& ranks, size_t& effective_exponen
 		LinBox::MatrixStream<Ring> ms( F, input );
 		LinBox::SparseMatrix<Ring,LinBox::SparseMatrixFormat::SparseSeq > A (ms);
 		input.close();
+
 		LinBox::PowerGaussDomain< Ring > PGD( F );
         LinBox::Permutation<Ring> Q(F,A.coldim());
 
 		LinBox::Timer tim; tim.clear(); tim.start();
 		PGD.prime_power_rankin( lq, lp, ranks, A, Q, A.rowdim(), A.coldim(), std::vector<size_t>());
 		tim.stop();
-		F.write(std::cerr << "Ranks over ") << " are " ;
-		for(std::vector<size_t>::const_iterator rit=ranks.begin(); rit != ranks.end(); ++rit)
-			std::cerr << *rit << ' ';
-		std::cerr << ' ' << tim <<  " on T" << THREADS << std::endl;
+		if (reporting) {
+			F.write(std::cerr << "Ranks over ") << " are " ;
+			for(std::vector<size_t>::const_iterator rit=ranks.begin(); rit != ranks.end(); ++rit)
+				std::cerr << *rit << ' ';
+			std::cerr << ' ' << tim <<  " on T" << THREADS << std::endl;
+		}
 	}
 	else {
 		std::cerr << "*** WARNING *** Sorry power rank mod large composite not yet implemented" << std::endl;
@@ -165,14 +178,17 @@ std::vector<size_t>& PRankPowerOfTwo(std::vector<size_t>& ranks, size_t& effecti
 {
 	effective_exponent = e;
 	if (e > 63) {
+		if (reporting)
 		std::cerr << "Power rank power of two might need extra large composite (2^" << e << ")." << std::endl;
+		if (reporting)
 		std::cerr << "First trying: 63, without further warning this will be sufficient)." << std::endl;
 		effective_exponent = 63;
 	}
 
-	std::ifstream input(filename);
+
 	typedef Givaro::ZRing<int64_t> Ring;
 	Ring F;
+	std::ifstream input(filename);
 	LinBox::MatrixStream<Ring> ms( F, input );
 	LinBox::SparseMatrix<Ring,LinBox::SparseMatrixFormat::SparseSeq > A (ms);
 	input.close();
@@ -183,10 +199,12 @@ std::vector<size_t>& PRankPowerOfTwo(std::vector<size_t>& ranks, size_t& effecti
 	LinBox::Timer tim; tim.clear(); tim.start();
 	PGD.prime_power_rankin( effective_exponent, ranks, A, Q, A.rowdim(), A.coldim(), std::vector<size_t>());
 	tim.stop();
-	F.write(std::cerr << "Ranks over ") << " modulo 2^" << effective_exponent << " are " ;
-	for(std::vector<size_t>::const_iterator rit=ranks.begin(); rit != ranks.end(); ++rit)
-		std::cerr << *rit << ' ';
-	std::cerr << ' ' << tim <<  " on T" << THREADS << std::endl;
+	if (reporting) {
+		F.write(std::cerr << "Ranks over ") << " modulo 2^" << effective_exponent << " are " ;
+		for(std::vector<size_t>::const_iterator rit=ranks.begin(); rit != ranks.end(); ++rit)
+			std::cerr << *rit << ' ';
+		std::cerr << ' ' << tim <<  " on T" << THREADS << std::endl;
+	}
 	return ranks;
 }
 
@@ -205,10 +223,12 @@ std::vector<size_t>& PRankInteger(std::vector<size_t>& ranks, char * filename,Gi
 	LinBox::Timer tim; tim.clear(); tim.start();
 	PGD.prime_power_rankin( q, p, ranks, A, Q, A.rowdim(), A.coldim(), std::vector<size_t>());
 	tim.stop();
-	F.write(std::cerr << "Ranks over ") << " are " ;
-	for(std::vector<size_t>::const_iterator rit=ranks.begin(); rit != ranks.end(); ++rit)
-		std::cerr << *rit << ' ';
-	std::cerr << ' ' << tim << std::endl;
+	if (reporting){
+		F.write(std::cerr << "Ranks over ") << " are " ;
+		for(std::vector<size_t>::const_iterator rit=ranks.begin(); rit != ranks.end(); ++rit)
+			std::cerr << *rit << ' ';
+		std::cerr << ' ' << tim << std::endl;
+	}
 	return ranks;
 }
 
@@ -226,10 +246,12 @@ std::vector<size_t>& PRankIntegerPowerOfTwo(std::vector<size_t>& ranks, char * f
 	LinBox::Timer tim; tim.clear(); tim.start();
 	PGD.prime_power_rankin( e, ranks, A, Q, A.rowdim(), A.coldim(), std::vector<size_t>());
 	tim.stop();
-	ZZ.write(std::cerr << "Ranks over ") << " modulo 2^" << e << " are " ;
-	for(std::vector<size_t>::const_iterator rit=ranks.begin(); rit != ranks.end(); ++rit)
-		std::cerr << *rit << ' ';
-	std::cerr << ' ' << tim << std::endl;
+	if (reporting) {
+		ZZ.write(std::cerr << "Ranks over ") << " modulo 2^" << e << " are " ;
+		for(std::vector<size_t>::const_iterator rit=ranks.begin(); rit != ranks.end(); ++rit)
+			std::cerr << *rit << ' ';
+		std::cerr << ' ' << tim << std::endl;
+	}
 	return ranks;
 }
 

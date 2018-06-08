@@ -52,45 +52,34 @@ using namespace std;
 #include <linbox/util/timer.h>
 
 #include <linbox/ring/pir-modular-int32.h>
+#define SILENT 
 #define NOT_USING_OMP
 #include "smithvalence.h"
 #undef NOT_USING_OMP
+#undef SILENT 
 
 using namespace LinBox;
 
 template<class I1, class Lp> void distinct (I1 a, I1 b, Lp& c);
 template <class I> void display(I b, I e);
 
-template <class Matrix> void readMat(Matrix& M, string src) {
-	if (src[0]=='-') 
-		M.read(cin);
-	else {
-		ifstream in(src);
-		if (not in) { 
-			cerr << "file " << src << " not found." << endl;
-			exit(-1);
-		}
-		M.read(in);
-		in.close();
-	}
-}
-
 int main(int argc, char* argv[])
 {
 	Givaro::Timer chrono; 
 
 	if (argc < 2 or 3 < argc) {
-		cout << "Usage: " << argv[0] << " file [m]"  << endl;
-		cout << "where file contains the input matrix and m is the modulus, a prime power." << endl; 
-		cout << "If file is "-", cin is used" << endl;
-		cout << "If m is given, a sparse elimination over Z_m is performed." << endl;
-		cout << "if m is absent, the valence method is used.  See smithvalence for more options and info." << endl;
-		cout << "See mats.C for some examples that have been used in smith form algorithm testing" << endl;
+		cout <<
+"Usage: " << argv[0] << " file [m]"  << endl <<
+"where file contains the matrix in any supported format and m is the modulus." << endl <<
+"  With no m, Smith form over Z by the valence method is done." << endl <<
+"  Use smithvalence.C to have more options and get more output info." << endl <<
+"  Given m, a prime power, local Smith form over Z_m is done via sparse elim." << endl <<
+"  See mats.C for some examples that have been used in smith form algorithm testing" << endl;
 		return 0;
 	}
 
 	chrono.start();
-	string src = argv[1];
+	ifstream in(argv[1]);
 
 	if (argc > 2) { // so over Z_m
 		unsigned long m = atoi(argv[2]);
@@ -99,10 +88,11 @@ int main(int argc, char* argv[])
 		SPIR R(m);
 
 		SparseMatrix<SPIR, SparseMatrixFormat::SparseSeq > B (R);
-		readMat(B, src);
+		B.read(in);
 
-		cout << "matrix is " << B.rowdim() << " by " << B.coldim() << endl;
-		if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout) << endl;
+		
+	//	cout << "matrix is " << B.rowdim() << " by " << B.coldim() << endl;
+	//	if (B.rowdim() <= 10 && B.coldim() <= 10) B.write(cout) << endl;
 
 		Integer p(m), im(m);
                 // Should better ask user to give the prime !!!
@@ -148,9 +138,9 @@ int main(int argc, char* argv[])
 		Givaro::ZRing<Integer> ZZ;
 		typedef SparseMatrix<Givaro::ZRing<Integer> >  Blackbox;
 		Blackbox A (ZZ);
-		readMat(A, src);
+		A.read(in);
 	
-		cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
+	//	cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 	
 		Givaro::ZRing<Integer>::Element val_A;
 	
