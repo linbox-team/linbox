@@ -27,8 +27,10 @@
  * @warning some are commented out...
  * @example  examples/solve.C
  */
+#if 0
 #define __LINBOX_HAVE_MPI
 #include "mpi.h"
+#endif
 
 
 
@@ -303,7 +305,7 @@ if(0==Cptr->rank()){
 	//std::cout<<"ms2:"<<ms2<<std::endl;	
 
 
-		Timer chrono;
+		//Timer chrono;
 		// BlasElimination
         std::cout << "BlasElimination" << std::endl;
         chrono.start();
