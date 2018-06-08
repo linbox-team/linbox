@@ -61,6 +61,20 @@ using namespace LinBox;
 template<class I1, class Lp> void distinct (I1 a, I1 b, Lp& c);
 template <class I> void display(I b, I e);
 
+template <class Matrix> void readMat(Matrix& M, string src) {
+	if (src[0]=='-') 
+		M.read(cin);
+	else {
+		ifstream in(src);
+		if (not in) { 
+			cerr << "file " << src << " not found." << endl;
+			exit(-1);
+		}
+		M.read(in);
+		in.close();
+	}
+}
+
 int main(int argc, char* argv[])
 {
 	Givaro::Timer chrono; 
@@ -76,6 +90,7 @@ int main(int argc, char* argv[])
 	}
 
 	chrono.start();
+	string src = argv[1];
 
 	if (argc > 2) { // so over Z_m
 		unsigned long m = atoi(argv[2]);
@@ -84,15 +99,10 @@ int main(int argc, char* argv[])
 		SPIR R(m);
 
 		SparseMatrix<SPIR, SparseMatrixFormat::SparseSeq > B (R);
-		if (argv[1] == "-") 
-			B.read(std::cin);
-		else {
-			std::ifstream input (argv[1]);
-			if (!input) { std::cerr << "Error opening matrix file: " << argv[2] << std::endl; return -1; }
-			B.read(input);
-		}
-		std::cout << "matrix is " << B.rowdim() << " by " << B.coldim() << std::endl;
-		if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(std::cout) << std::endl;
+		readMat(B, src);
+
+		cout << "matrix is " << B.rowdim() << " by " << B.coldim() << endl;
+		if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout) << endl;
 
 		Integer p(m), im(m);
                 // Should better ask user to give the prime !!!
@@ -102,7 +112,7 @@ int main(int argc, char* argv[])
 
     	// using Sparse Elimination
 		LinBox::PowerGaussDomain< SPIR > PGD( R );
-		std::vector<std::pair<size_t,SPIR::Element> > vec;
+		vector<pair<size_t,SPIR::Element> > vec;
     	LinBox::Permutation<SPIR> Q(R,B.coldim());
 
 		PGD(vec, B, Q, (int32_t)m, (int32_t)p);
@@ -122,7 +132,7 @@ int main(int argc, char* argv[])
 
 		distinct(L.begin(), L.end(), pl);
 
-		//std::cout << "#";
+		//cout << "#";
 
          //display(local.begin(), local.end());
 		display(pl.begin(), pl.end());
@@ -131,20 +141,16 @@ int main(int argc, char* argv[])
 
 		chrono.stop();
 		cout << "T" << M << "local(PowerGaussDomain<int32_t>)" << m << " := "
-			<< chrono << std::endl;
+			<< chrono << endl;
 
 	} else {// argc is 2, so use valence method over ZZ
 
 		Givaro::ZRing<Integer> ZZ;
 		typedef SparseMatrix<Givaro::ZRing<Integer> >  Blackbox;
 		Blackbox A (ZZ);
+		readMat(A, src);
 	
-		std::ifstream input (argv[1]);
-		if (!input) { std::cerr << "Error opening matrix file " << argv[1] << std::endl; return -1; }
-		A.read(input);
-		input.close();
-	
-		std::cout << "A is " << A.rowdim() << " by " << A.coldim() << std::endl;
+		cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 	
 		Givaro::ZRing<Integer>::Element val_A;
 	
@@ -152,26 +158,26 @@ int main(int argc, char* argv[])
 		Transpose<Blackbox> T(&A);
 		if (A.rowdim() > A.coldim()) {//ata
 			Compose< Transpose<Blackbox>, Blackbox > C (&T, &A);
-		//	std::cout << "A^T A is " << C.rowdim() << " by " << C.coldim() << std::endl;
+		//	cout << "A^T A is " << C.rowdim() << " by " << C.coldim() << endl;
 			valence(val_A, C);
 		}
 		else if (A.rowdim() < A.coldim()) {//aat
 			Compose< Blackbox, Transpose<Blackbox> > C (&A, &T);
-		//	std::cout << "A A^T is " << C.rowdim() << " by " << C.coldim() << std::endl;
+		//	cout << "A A^T is " << C.rowdim() << " by " << C.coldim() << endl;
 			valence(val_A, C);
 		}
 		else { // square, just a
 			valence(val_A, A);
 		}
 	
-		//std::cout << "Valence is " << val_A << std::endl;
+		//cout << "Valence is " << val_A << endl;
 	
-		std::vector<integer> Moduli;
-		std::vector<size_t> exponents;
+		vector<integer> Moduli;
+		vector<size_t> exponents;
 	 	Givaro::IntFactorDom<> FTD;
 	
-		typedef std::pair<integer,unsigned long> PairIntRk;
-		std::vector< PairIntRk > smith;
+		typedef pair<integer,unsigned long> PairIntRk;
+		vector< PairIntRk > smith;
 	
 	
 		integer coprimeV=2;
@@ -179,26 +185,26 @@ int main(int argc, char* argv[])
 			FTD.nextprimein(coprimeV);
 		}
 	
-		//std::cout << "integer rank: " << std::endl;
+		//cout << "integer rank: " << endl;
 	
 		unsigned long coprimeR; LRank(coprimeR, argv[1], coprimeV);
 		smith.push_back(PairIntRk(coprimeV, coprimeR));
-		//         std::cerr << "Rank mod " << coprimeV << " is " << coprimeR << std::endl;
+		//         cerr << "Rank mod " << coprimeV << " is " << coprimeR << endl;
 	
-		//std::cout << "Some factors (5000 factoring loop bound): ";
+		//cout << "Some factors (5000 factoring loop bound): ";
 		FTD.set(Moduli, exponents, val_A, 5000);
-		std::vector<size_t>::const_iterator eit=exponents.begin();
-		//for(std::vector<integer>::const_iterator mit=Moduli.begin();
+		vector<size_t>::const_iterator eit=exponents.begin();
+		//for(vector<integer>::const_iterator mit=Moduli.begin();
 		//    mit != Moduli.end(); ++mit,++eit)
-		//	std::cout << *mit << '^' << *eit << ' ';
-		//std::cout << std::endl;
+		//	cout << *mit << '^' << *eit << ' ';
+		//cout << endl;
 	
-		std::vector<integer> SmithDiagonal(coprimeR,integer(1));
+		vector<integer> SmithDiagonal(coprimeR,integer(1));
 	
-		for(std::vector<integer>::const_iterator mit=Moduli.begin();
+		for(vector<integer>::const_iterator mit=Moduli.begin();
 		    mit != Moduli.end(); ++mit) {
 			unsigned long r; LRank(r, argv[1], *mit);
-			//             std::cerr << "Rank mod " << *mit << " is " << r << std::endl;
+			//             cerr << "Rank mod " << *mit << " is " << r << endl;
 			smith.push_back(PairIntRk(*mit, r));
 			for(size_t i=r; i < coprimeR; ++i)
 				SmithDiagonal[i] *= *mit;
@@ -206,10 +212,10 @@ int main(int argc, char* argv[])
 	
 	
 		eit=exponents.begin();
-		std::vector<PairIntRk>::const_iterator sit=smith.begin();
+		vector<PairIntRk>::const_iterator sit=smith.begin();
 		for( ++sit; sit != smith.end(); ++sit, ++eit) {
 			if (sit->second != coprimeR) {
-				std::vector<size_t> ranks;
+				vector<size_t> ranks;
 				ranks.push_back(sit->second);
 	            size_t effexp;
 				if (*eit > 1) {
@@ -229,14 +235,14 @@ int main(int argc, char* argv[])
 	                for(size_t expo = (*eit)<<1; ranks.back() < coprimeR; expo<<=1) {
 	                    PRank(ranks, effexp, argv[1], sit->first, expo, coprimeR);
 	                    if (ranks.size() < expo) {
-	     //                   std::cerr << "It seems we need a larger prime power, it will take longer ..." << std::endl;
+	     //                   cerr << "It seems we need a larger prime power, it will take longer ..." << endl;
 	                            // break;
 	                        PRankInteger(ranks, argv[1], sit->first, expo, coprimeR);
 	                    }
 	                }
 	            }
 	
-				std::vector<size_t>::const_iterator rit=ranks.begin();
+				vector<size_t>::const_iterator rit=ranks.begin();
 				// unsigned long modrank = *rit;
 				for(++rit; rit!= ranks.end(); ++rit) {
 					if ((*rit)>= coprimeR) break;
@@ -249,21 +255,21 @@ int main(int argc, char* argv[])
 	
 		integer si=1;
 		size_t num=0;
-		std::cout << '(';
-		for( std::vector<integer>::const_iterator dit=SmithDiagonal.begin();
+		cout << '(';
+		for( vector<integer>::const_iterator dit=SmithDiagonal.begin();
 		     dit != SmithDiagonal.end(); ++dit) {
 			if (*dit == si) ++num;
 			else {
 				if (num > 0)
-					std::cout << si << ' ' << num << ", ";
+					cout << si << ' ' << num << ", ";
 				num=1;
 				si = *dit;
 			}
 		}
-		std::cout << si << ' ' << num << ") " << std::endl;
+		cout << si << ' ' << num << ") " << endl;
 		chrono.stop();
 		cout << "T" << A.rowdim() << "smithvalence(ZRing<Integer>):= "
-			<< chrono << std::endl;
+			<< chrono << endl;
 	
 	}
 	return 0;
