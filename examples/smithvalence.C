@@ -53,12 +53,12 @@ int main (int argc, char **argv)
 		return -1;
 	}
 
+	Givaro::ZRing<Integer> ZZ;
+	typedef SparseMatrix<Givaro::ZRing<Integer> >  Blackbox;
+
 	std::ifstream input (argv[1]);
 	if (!input) { std::cerr << "Error opening matrix file " << argv[1] << std::endl; return -1; }
-
-	Givaro::ZRing<Integer> ZZ;
 	MatrixStream< Givaro::ZRing<Integer> > ms( ZZ, input );
-	typedef SparseMatrix<Givaro::ZRing<Integer> >  Blackbox;
 	Blackbox A (ms);
 	input.close();
 
