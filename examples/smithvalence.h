@@ -40,6 +40,12 @@
 #include <linbox/util/matrix-stream.h>
 #include <linbox/util/timer.h>
 #include <linbox/util/error.h>
+#ifdef NOT_USING_OMP
+#define THREADS 1
+#else
+#include <omp.h>
+#define THREADS omp_get_thread_num()
+#endif
 
 
 template<class Field>
@@ -52,7 +58,7 @@ unsigned long& TempLRank(unsigned long& r, char * filename, const Field& F)
 	LinBox::Timer tim; tim.start();
 	LinBox::rankin(r, FA);
 	tim.stop();
-	F.write(std::cerr << "Rank over ") << " is " << r << ' ' << tim <<  " on T" << omp_get_thread_num() << std::endl;
+	F.write(std::cerr << "Rank over ") << " is " << r << ' ' << tim <<  " on T" << THREADS << std::endl;
 	return r;
 }
 
@@ -65,7 +71,7 @@ unsigned long& TempLRank(unsigned long& r, char * filename, const LinBox::GF2& F
 	LinBox::Timer tim; tim.start();
 	LinBox::rankin(r, A, LinBox::Method::SparseElimination() );
 	tim.stop();
-	F2.write(std::cerr << "Rank over ") << " is " << r << ' ' << tim <<  " on T" << omp_get_thread_num() << std::endl;
+	F2.write(std::cerr << "Rank over ") << " is " << r << ' ' << tim <<  " on T" << THREADS << std::endl;
 	return r;
 }
 
@@ -141,7 +147,7 @@ std::vector<size_t>& PRank(std::vector<size_t>& ranks, size_t& effective_exponen
 		F.write(std::cerr << "Ranks over ") << " are " ;
 		for(std::vector<size_t>::const_iterator rit=ranks.begin(); rit != ranks.end(); ++rit)
 			std::cerr << *rit << ' ';
-		std::cerr << ' ' << tim <<  " on T" << omp_get_thread_num() << std::endl;
+		std::cerr << ' ' << tim <<  " on T" << THREADS << std::endl;
 	}
 	else {
 		std::cerr << "*** WARNING *** Sorry power rank mod large composite not yet implemented" << std::endl;
@@ -180,7 +186,7 @@ std::vector<size_t>& PRankPowerOfTwo(std::vector<size_t>& ranks, size_t& effecti
 	F.write(std::cerr << "Ranks over ") << " modulo 2^" << effective_exponent << " are " ;
 	for(std::vector<size_t>::const_iterator rit=ranks.begin(); rit != ranks.end(); ++rit)
 		std::cerr << *rit << ' ';
-	std::cerr << ' ' << tim <<  " on T" << omp_get_thread_num() << std::endl;
+	std::cerr << ' ' << tim <<  " on T" << THREADS << std::endl;
 	return ranks;
 }
 
@@ -226,6 +232,8 @@ std::vector<size_t>& PRankIntegerPowerOfTwo(std::vector<size_t>& ranks, char * f
 	std::cerr << ' ' << tim << std::endl;
 	return ranks;
 }
+
+#undef THREADS
 
 // Local Variables:
 // mode: C++

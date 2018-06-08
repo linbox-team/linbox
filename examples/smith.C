@@ -121,13 +121,13 @@ int main(int argc, char* argv[])
 
 		distinct(v.begin(), v.end(), p);
 
-		cout << "#";
+		//cout << "#";
 
 		display(p.begin(), p.end());
 
-		cout << "# adaptive, Ints, n = " << M.coldim() << endl;
+		//cout << "# adaptive, Ints, n = " << M.coldim() << endl;
 
-		cout << "T" << M.coldim() << "adaptive" << m << " := ";
+		cout << "T" << M.coldim() << "adaptive(Ints)" << m << " := ";
 
 	}
 	else if (algo == "ilio") {
@@ -158,13 +158,13 @@ int main(int argc, char* argv[])
 
 		distinct(L.begin(), L.end(), p);
 
-		cout << "#";
+		//cout << "#";
 
 		display(p.begin(), p.end());
 
-		cout << "# ilio, PIR-Modular-int32_t(" << m << "), n = " << M.coldim() << endl;
+		//cout << "# ilio, PIR-Modular-int32_t(" << m << "), n = " << M.coldim() << endl;
 
-		cout << "T" << M.coldim() << "ilio" << m << " := ";
+		cout << "T" << M.coldim() << "ilio(PIR-Modular-int32_t)" << m << " := ";
 	}
 
 	else if (algo == "local") { // m must be a prime power
@@ -242,13 +242,13 @@ int main(int argc, char* argv[])
 
 		distinct(L.begin(), L.end(), p);
 
-		cout << "#";
+		//cout << "#";
 
 		display(p.begin(), p.end());
 
-		cout << "# local, PIR-Modular-int32_t(" << m << "), n = " << M.coldim() << endl;
+		//cout << "# local, PIR-Modular-int32_t(" << m << "), n = " << M.coldim() << endl;
 
-		cout << "T" << M.coldim() << "local" << m << " := ";
+		cout << "T" << M.coldim() << "local(PIR-Modular-int32_t)" << m << " := ";
 	}
 
 	else if (algo == "2local") {
@@ -275,11 +275,11 @@ int main(int argc, char* argv[])
 
 		distinct(L.begin(), L.end(), p);
 
-		cout << "#";
+		//cout << "#";
 
 		display(p.begin(), p.end());
 
-		cout << "# 2local, Local2_32, n = " << M.coldim() << endl;
+		//cout << "# 2local, Local2_32, n = " << M.coldim() << endl;
 
 		cout << "T" << M.coldim() << "local2_32 := ";
 	}
@@ -288,7 +288,7 @@ int main(int argc, char* argv[])
 
 		printf ("Unknown algorithm ");
 
-	T.print(cout); cout << ";" << endl;
+	T.print(cout); cout << /*";" << */ endl;
 
 	return 0 ;
 }
