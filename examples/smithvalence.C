@@ -30,7 +30,9 @@
 
 #include <iostream>
 
+#define NOT_USING_OMP
 #include "smithvalence.h"
+#undef NOT_USING_OMP
 
 using namespace LinBox;
 
