@@ -238,6 +238,24 @@ r.resize(0);
   end = omp_get_wtime();
 #endif
   //  DenseVector B2(ZZ, A.coldim());
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//std::cerr<<"Proc("<<Cptr->rank()<<") >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "<<std::endl;
+r.resize(A.coldim()+1);
+if(0==Cptr->rank()){
+int size = 0;
+while(true){
+if(size==Cptr->size()-1)break;
+Cptr->recv(r.begin(), r.end(), MPI_ANY_SOURCE, 0);
+if(r[r.size()-1]==0)size++;
+}
+}else{
+r[r.size()-1]=0;
+Cptr->send(r.begin(), r.end(), 0, 0);
+}
+r.resize(0);
+
+//std::cerr<<"Proc("<<Cptr->rank()<<") <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< "<<std::endl;
+////////////////////////////////////////////////////////////////////////////////////////////////////
   
 #ifdef __LINBOX_HAVE_MPI
   if(0 == Cptr->rank()){  
