@@ -69,8 +69,8 @@ int main(int argc, char* argv[])
 
 	if (argc < 2 or 3 < argc) {
 		cout <<
-"Usage: " << argv[0] << " file [m]"  << endl <<
-"where file contains the matrix in any supported format and m is the modulus." << endl <<
+"Usage: " << /*argv[0] <<*/ "smithsparse file [m]"  << endl <<
+"  where file contains the matrix in any supported format and m is the modulus." << endl <<
 "  With no m, Smith form over Z by the valence method is done." << endl <<
 "  Use smithvalence.C to have more options and get more output info." << endl <<
 "  Given m, a prime power, local Smith form over Z_m is done via sparse elim." << endl <<
