@@ -522,14 +522,13 @@ Iteration(ROUNDresidues[0], ROUNDdomains[0]);
 				this->Builder_.initialize( ROUNDdomains[0],ROUNDresidues[0]);
 #pragma omp parallel for schedule(dynamic)
 				for(size_t i=1;i<NN;++i) {
-#pragma omp task
-{
+
 					Iteration(ROUNDresidues[i], ROUNDdomains[i]);
 //					++IterCounter;
 #pragma omp critical(ROUNDresidues)
 					this->Builder_.progress( ROUNDdomains[i],ROUNDresidues[i]);
 				}
-}
+
 				// commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
 			}
 
@@ -563,8 +562,7 @@ Iteration(ROUNDresidues[0], ROUNDdomains[0]);
 
 #pragma omp parallel for schedule(dynamic)
 		 		for(size_t i=0;i<NN;++i) {
-#pragma omp task
-{
+
 					Iteration(ROUNDresidues[i], ROUNDdomains[i]);
 					//++IterCounter;
 /*
@@ -573,7 +571,7 @@ else std::cerr << "Thread("<<omp_get_thread_num()<<") >>>>>>>>>>> ("<<i<<")"<< s
 */
 #pragma omp critical(ROUNDresidues)
 					this->Builder_.progress( ROUNDdomains[i],ROUNDresidues[i]);
-}
+
 /*
 if(omp_in_parallel())  std::cerr << "Thread("<<omp_get_thread_num()<<")end parallel executing <<<<<<<<<<<<< ("<<i<<")"<< std::endl;
 else std::cerr << "Thread("<<omp_get_thread_num()<<") <<<<<<<<<<<<< ("<<i<<")"<< std::endl;
@@ -677,35 +675,34 @@ Iteration(ROUNDresidues[0], ROUNDdomains[0]);
 				}
 
 
-
-#pragma omp parallel for schedule(dynamic)
-		 		for(size_t i=0;i<NN;i+=2) {
-
+bool early_terminated=false;
+#pragma omp parallel shared(early_terminated)
+{
+#pragma omp for schedule(dynamic) 
+		 		for(size_t i=0;i<NN;i++) {
 
 
 					Iteration(ROUNDresidues[i], ROUNDdomains[i]);
 
-					Iteration(ROUNDresidues[i+1], ROUNDdomains[i+1]);
 
 
-#pragma omp critical(ROUNDresidues)
+#pragma omp critical
 {
 					this->Builder_.progress( ROUNDdomains[i],ROUNDresidues[i]);
-					this->Builder_.progress( ROUNDdomains[i+1],ROUNDresidues[i+1]);
+	if(this->Builder_.terminated())
+	{
+		early_terminated=true;
+
+	}
 
 }
-
-
-
+#pragma omp cancel for 
 
 
 				}
 
-
-
-
-
-
+}
+if(early_terminated) break;
 
 			}
 
