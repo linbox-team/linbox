@@ -59,8 +59,6 @@ using namespace std;
 
 
 #include <linbox/ring/modular.h>
-#include <linbox/matrix/sparse-matrix.h>
-#include <linbox/algorithms/smith-form-sparseelim-local.h>
 
 #include <linbox/util/timer.h>
 
@@ -115,7 +113,9 @@ int main(int argc, char* argv[])
 
 		DenseVector<Givaro::ZRing<Integer> > v(Z,M.coldim());
 		T.start();
+		cerr << "got here" << endl;
 		SmithFormAdaptive::smithForm(v, M);
+		cerr << "got where" << endl;
 		T.stop();
 		list<pair<integer, size_t> > p;
 
@@ -169,57 +169,6 @@ int main(int argc, char* argv[])
 
 	else if (algo == "local") { // m must be a prime power
 
-#if 0
-		if (format == "sparse" ) {
-			typedef Givaro::Modular<int32_t> Field;
-			Field F(m);
-			std::ifstream input (argv[4]);
-			if (!input) { std::cerr << "Error opening matrix file: " << argv[1] << std::endl; return -1; }
-
-			MatrixStream<Field> ms( F, input );
-			SparseMatrix<Field, SparseMatrixFormat::SparseSeq > B (ms);
-			std::cout << "B is " << B.rowdim() << " by " << B.coldim() << std::endl;
-			if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(std::cout) << std::endl;
-
-
-
-			Integer p(m), im(m);
-                // Should better ask user to give the prime !!!
-            Givaro::IntPrimeDom IPD;
-			for(unsigned int k = 2; ( ( ! IPD.isprime(p) ) && (p > 1) ); ++k)
-                Givaro::root( p, im, k );
-
-                // using Sparse Elimination
-			LinBox::PowerGaussDomain< Field > PGD( F );
-			std::vector<std::pair<size_t,Field::Element> > local;
-            LinBox::Permutation<Field> Q(F,B.coldim());
-
-			PGD(local, B, Q, (int32_t)m, (int32_t)p);
-
-			typedef list< Field::Element > List;
-			List L;
-			for ( auto p_it = local.begin(); p_it != local.end(); ++p_it) {
-				for(size_t i = 0; i < (size_t) p_it->first; ++i)
-					L.push_back((Field::Element)p_it->second);
-			}
-			size_t M = (B.rowdim() > B.coldim() ? B.coldim() : B.rowdim());
-			for (size_t i = L.size(); i < M; ++i)
-				L.push_back(0);
-
-			list<pair<Field::Element, size_t> > pl;
-
-			distinct(L.begin(), L.end(), pl);
-
-			std::cout << "#";
-
-                //display(local.begin(), local.end());
-			display(pl.begin(), pl.end());
-			cout << "# local, PowerGaussDomain<int32_t>(" << M << "), n = " << n << endl;
-
-		}
-		else {
-#endif
-
 		PIR R( (int32_t)m);
 
 		DenseMatrix<PIR> M(R);
@@ -243,6 +192,13 @@ int main(int argc, char* argv[])
 		distinct(L.begin(), L.end(), p);
 
 		//cout << "#";
+
+		PIR::Element x = p.back().first, y;
+		R.neg(y,x);
+		R.gcdin(x,y);
+		if (not R.areEqual(p.back().first, x)) 
+			R.write(R.write (cerr << "x ", x) << ", back ", p.back().first) << endl;;
+		p.back().first = x;
 
 		display(p.begin(), p.end());
 
