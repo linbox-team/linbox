@@ -70,6 +70,8 @@ using namespace std;
 #include <linbox/algorithms/smith-form-iliopoulos.h>
 #include <linbox/algorithms/smith-form-adaptive.h>
 
+#include <linbox/algorithms/matrix-hom.h>
+
 using namespace LinBox;
 
 template<class I1, class Lp> void distinct (I1 a, I1 b, Lp& c);
@@ -84,13 +86,17 @@ int main(int argc, char* argv[])
 
 	if (argc < 3 or argc > 4) {
 
-		cout << "usage: " << argv[0] << " alg file [m]"  << endl;
+		cout << "\nUsage: " << argv[0] << " alg file [m]\n"  << endl;
 
 		cout << " alg = `adaptive', `ilio', `local', or `2local'," << endl
 			 << " Modulus m is needed for `local' and `ilio'" << endl 
 			 << " m must be a prime power for `local', arbitrary composite for `ilio'." << endl
-			 << " Integer smith form is obtained by `ilio' if m is a multiple of largest invariant, eg. det." << endl
-             << " Matrix is read from file, from cin if file is `-'." << endl;
+			 << " Integer smith form is obtained by `ilio' if m is a multiple of the " 
+			 << " largest invariant, eg. det." << endl
+             << " The matrix is read from file (from cin if file is `-').\n" << endl;
+		cout << " Regardless of file format, internal matrix rep is dense." << endl 
+			<< " For algoritms using sparse matrix rep, see the examples"
+			<< " smithvalence.C, power_rank.C, and poweroftwo_ranks.C." << endl;
 
 		return 0;
 	}
@@ -113,9 +119,7 @@ int main(int argc, char* argv[])
 
 		DenseVector<Givaro::ZRing<Integer> > v(Z,M.coldim());
 		T.start();
-		cerr << "got here" << endl;
 		SmithFormAdaptive::smithForm(v, M);
-		cerr << "got where" << endl;
 		T.stop();
 		list<pair<integer, size_t> > p;
 
@@ -123,6 +127,7 @@ int main(int argc, char* argv[])
 
 		//cout << "#";
 
+		cout << "Integer Smith Form using adaptive alg :\n";
 		display(p.begin(), p.end());
 
 		//cout << "# adaptive, Ints, n = " << M.coldim() << endl;
@@ -160,6 +165,7 @@ int main(int argc, char* argv[])
 
 		//cout << "#";
 
+		cout << "Modular Smith Form using ilio alg :\n";
 		display(p.begin(), p.end());
 
 		//cout << "# ilio, PIR-Modular-int32_t(" << m << "), n = " << M.coldim() << endl;
@@ -200,6 +206,7 @@ int main(int argc, char* argv[])
 			R.write(R.write (cerr << "x ", x) << ", back ", p.back().first) << endl;;
 		p.back().first = x;
 
+		cout << "Local Smith Form :\n";
 		display(p.begin(), p.end());
 
 		//cout << "# local, PIR-Modular-int32_t(" << m << "), n = " << M.coldim() << endl;
@@ -212,7 +219,6 @@ int main(int argc, char* argv[])
 		Local2_32 R;
 
 		DenseMatrix<Local2_32> M(R);
-
 		Mat(M, src);
 
 		typedef list< Local2_32::Element > List;
@@ -233,6 +239,7 @@ int main(int argc, char* argv[])
 
 		//cout << "#";
 
+		cout << "2-Local Smith Form :\n";
 		display(p.begin(), p.end());
 
 		//cout << "# 2local, Local2_32, n = " << M.coldim() << endl;
@@ -279,7 +286,7 @@ void distinct (I1 a, I1 b, Lp& c)
 template <class I>
 void display(I b, I e)
 { cout << "(";
- for (I p = b; p != e; ++p) cout << p->first << " " << p->second << ", ";
+ for (I p = b; p != e; ++p) cout << "[" << p->first << "," << p->second << "] ";
  cout << ")" << endl;
 }
 //@}
