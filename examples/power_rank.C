@@ -100,7 +100,7 @@ int tmain (int argc, char **argv)
 
 int main(int argc, char ** argv) {
 	if (argc < 4 || argc > 6) {
-        cerr << "Usage: rank <matrix-file-in-supported-format> <prime> <prime-power> [<method>] [<flag>]" << endl;
+        cerr << "Usage: power_rank <matrix-file-in-supported-format> <prime> <prime-power> [<method>] [<flag>]" << endl;
         cerr << "       methods: \
 						0=automatic, \
 						1=int_64_t, \

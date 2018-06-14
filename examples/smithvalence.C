@@ -186,6 +186,7 @@ int main (int argc, char **argv)
 
 	integer si=1;
 	size_t num=0;
+	std::cerr << "Integer Smith Form :\n(";
 	for( std::vector<integer>::const_iterator dit=SmithDiagonal.begin();
 	     dit != SmithDiagonal.end(); ++dit) {
 		if (*dit == si) ++num;
@@ -196,7 +197,7 @@ int main (int argc, char **argv)
 			si = *dit;
 		}
 	}
-	std::cerr << '[' << si << ',' << num << "] " << std::endl;
+	std::cerr << '[' << si << ',' << num << "] )" << std::endl;
 	chrono.stop();
 	std::cerr << chrono << std::endl;
 

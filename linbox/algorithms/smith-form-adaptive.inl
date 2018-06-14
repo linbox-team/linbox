@@ -63,6 +63,7 @@ namespace LinBox
 	template <class Matrix>
 	void SmithFormAdaptive::compute_local_long (BlasVector<Givaro::ZRing<Integer> >& s, const Matrix& A, int64_t p, int64_t e)
 	{
+		//std::ostream& report(cerr);
 		std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 
 		int order = (int)(A. rowdim() < A. coldim() ? A. rowdim() : A. coldim());
@@ -79,8 +80,10 @@ namespace LinBox
 			SF (l, A_local, R);
 			std::list <Local2_32::Element>::iterator l_p;
 			BlasVector<Givaro::ZRing<Integer> >::iterator s_p;
-			for (s_p = s. begin(), l_p = l. begin(); s_p != s. begin() +(ptrdiff_t) order; ++ s_p, ++ l_p)
+			for (s_p = s. begin(), l_p = l. begin(); s_p != s. begin() +(ptrdiff_t) order; ++ s_p, ++ l_p) {
 				*s_p = *l_p;
+				/* deb */report << '[' << *s_p << ',' << *l_p << ']';
+			}
 			report << "     Done\n";
 		}
 		else if (e == 1) {
@@ -216,7 +219,7 @@ namespace LinBox
 	void SmithFormAdaptive::smithFormSmooth (BlasVector<Givaro::ZRing<Integer> >& s, const Matrix& A, long r, const std::vector<int64_t>& sev)
 	{
 		Givaro::ZRing<Integer> Z;
-		//....
+		//std::ostream& report(cerr);
 		std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		report << "Computation the k-smooth part of the invariant factors starts(via local and rank):" << std::endl;
 		int order = (int)(A. rowdim() < A. coldim() ? A. rowdim() : A. coldim());
@@ -237,6 +240,7 @@ namespace LinBox
 
 				if ((*prime_p == 2) && (*sev_p < 32))
 					extra =  32 -(int) *sev_p;
+				// put in a warning if over 2^32
 				integer m = 1;
 				for (int i = 0; i < *sev_p + extra; ++ i) m *= * prime_p;
 				report << "   Compute the local smith form mod " << *prime_p <<"^" << *sev_p + extra << std::endl;
@@ -510,9 +514,9 @@ namespace LinBox
 		//commentator().start ("Smith Form starts", "Smithform");
 		Givaro::ZRing<Integer> Z;
 
+		//std::ostream& report(cerr);
 		std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		report << "Computation of the invariant factors starts (via an adaptive alg):" << std::endl;
-		//cerr << "Computation of the invariant factors starts (via an adaptive alg):" << std::endl;
 
 		// compute the rank over a random prime field.
 		const size_t order = (A. rowdim() < A. coldim() ? A. rowdim() : A. coldim());
@@ -590,8 +594,11 @@ namespace LinBox
 		// bonus assigns to its rough part
 		bonus = gcd (bonus, r_mod);
 		BlasVector<Givaro::ZRing<Integer> > smooth (Z,order), rough (Z,order);
+		report << "Computation of smooth part begins.\n";
 		smithFormSmooth (smooth, A, (long)r, e);
+		report << "Computation of rough part begins.\n";
 		smithFormRough (rough, A, bonus);
+		report << "Computation of rough/smooth parts finished.\n";
 		// fixed the rough largest invariant factor
 		if (r > 0) rough[r-1] = r_mod;
 
