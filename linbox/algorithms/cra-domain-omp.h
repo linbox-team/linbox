@@ -560,7 +560,7 @@ Iteration(ROUNDresidues[0], ROUNDdomains[0]);
 
 
 
-#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic) 
 		 		for(size_t i=0;i<NN;++i) {
 
 					Iteration(ROUNDresidues[i], ROUNDdomains[i]);
@@ -592,8 +592,8 @@ else std::cerr << "Thread("<<omp_get_thread_num()<<") <<<<<<<<<<<<< ("<<i<<")"<<
 			return this->Builder_.result(res,den);
 		}
 #endif
-///////////////////////////////////////////////////////EN COURS/////////////////////////////////////////////////////////////
-#if 1
+///////////////////////////////////////////////EARLY TERMINATION SLOWS DOWN//////////////////////////////////////////////
+#if 0
 		template<class Container, class Function, class PrimeIterator>
 		Container& operator()  (Container& res, Integer& den, Function& Iteration, PrimeIterator& primeiter)
 		{
@@ -687,22 +687,151 @@ bool early_terminated=false;
 
 
 #pragma omp critical
-{
+
 					this->Builder_.progress( ROUNDdomains[i],ROUNDresidues[i]);
+
+
 	if(this->Builder_.terminated())
 	{
 		early_terminated=true;
-
+#pragma omp cancel for 
 	}
 
-}
-#pragma omp cancel for 
+
+
 
 
 				}
 
 }
 if(early_terminated) break;
+
+			}
+
+			// commentator().stop ("done", NULL, "mmcrait");
+			//std::cerr << "Used: " << IterCounter << " primes." << std::endl;
+			return this->Builder_.result(res,den);
+		}
+#endif
+///////////////////////////////////////////////////////EN COURS/////////////////////////////////////////////////////////////
+#if 1
+		template<class Container, class Function, class PrimeIterator>
+		Container& operator()  (Container& res, Integer& den, Function& Iteration, PrimeIterator& primeiter)
+		{
+			typedef typename CRATemporaryVectorTrait<Function, Domain>::Type_t ElementContainer;
+			size_t NN = 8*omp_get_max_threads();
+			std::cerr << "Blocs: " << NN << " iterations." << std::endl;
+			// commentator().start ("Parallel OMP Givaro::Modular iteration", "mmcrait");
+			if (omp_get_max_threads() == 1) return Father_t::operator()(res, den,Iteration,primeiter);
+
+			int coprime =0;
+//			int maxnoncoprime = 1000;
+long IterCounter=0;
+
+			if (IterCounter==0) {
+				std::set<Integer> coprimeset;
+				while(coprimeset.size() < NN) {
+					++primeiter;
+					while(this->Builder_.noncoprime(*primeiter) ) {
+						++primeiter;
+						++coprime;
+
+					}
+					coprime =0;
+					coprimeset.insert(*primeiter);
+				}
+				std::vector<Domain> ROUNDdomains; ROUNDdomains.reserve(NN);
+
+				std::vector<ElementContainer> ROUNDresidues(NN); 
+//				typename std::vector<ElementContainer>::iterator resit=ROUNDresidues.begin();
+
+				for(std::set<Integer>::const_iterator coprimesetiter = coprimeset.begin(); coprimesetiter != coprimeset.end(); ++coprimesetiter) {
+
+					ROUNDdomains.push_back( Domain(*coprimesetiter) );
+				}
+
+
+Iteration(ROUNDresidues[0], ROUNDdomains[0]);
+				++IterCounter;
+				this->Builder_.initialize( ROUNDdomains[0],ROUNDresidues[0]);
+#pragma omp parallel for schedule(dynamic)
+				for(size_t i=1;i<NN;++i) {
+#pragma omp task
+{
+
+					Iteration(ROUNDresidues[i], ROUNDdomains[i]);
+//					++IterCounter;
+#pragma omp critical(ROUNDresidues)
+					this->Builder_.progress( ROUNDdomains[i],ROUNDresidues[i]);
+}
+				}
+
+				// commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
+			}
+
+
+
+			while( ! this->Builder_.terminated() ) {
+
+				std::set<Integer> coprimeset;
+				while(coprimeset.size() < NN) {
+					++primeiter;
+					while(this->Builder_.noncoprime(*primeiter) ) {
+						++primeiter;
+						++coprime;
+					}
+
+					coprime = 0;
+					coprimeset.insert(*primeiter);
+				}
+
+				std::vector<Domain> ROUNDdomains; ROUNDdomains.reserve(NN);
+				std::vector<ElementContainer> ROUNDresidues(NN); 
+//				typename std::vector<ElementContainer>::iterator resit=ROUNDresidues.begin();
+
+				for(std::set<Integer>::const_iterator coprimesetiter = coprimeset.begin(); coprimesetiter != coprimeset.end(); ++coprimesetiter) {
+
+					ROUNDdomains.push_back( Domain(*coprimesetiter) );
+
+				}
+
+
+bool early_terminated=false;
+#pragma omp parallel 
+{
+
+#pragma omp for schedule(dynamic) 
+		 		for(size_t i=0;i<NN;i++) {
+
+					Iteration(ROUNDresidues[i], ROUNDdomains[i]);
+
+#pragma omp critical 
+					this->Builder_.progress( ROUNDdomains[i],ROUNDresidues[i]);
+
+	if(this->Builder_.terminated()) 
+	{
+#pragma omp cancel for 
+early_terminated = true;
+	}
+#pragma omp cancellation point for
+
+				}
+
+
+
+}
+//if(early_terminated) break;
+
+
+
+
+
+
+
+
+
+
+
 
 			}
 
