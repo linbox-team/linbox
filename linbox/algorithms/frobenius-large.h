@@ -29,7 +29,18 @@
 #include <vector>
 #include <math.h> 
 
-#include "givaro/givtimer.h"
+#include <algorithm>
+#include <iostream>
+
+#include "linbox/matrix/matrix-domain.h"
+#include "linbox/matrix/random-matrix.h"
+
+#include "linbox/algorithms/blackbox-block-container.h"
+#include "linbox/algorithms/wiedemann.h"
+
+#include "linbox/blackbox/compose.h"
+#include "linbox/blackbox/sum.h"
+#include "linbox/blackbox/toeplitz.h"
 
 namespace LinBox
 {
