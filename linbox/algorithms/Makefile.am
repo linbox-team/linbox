@@ -91,8 +91,6 @@ pkgincludesub_HEADERS =            \
 	bitonic-sort.h                     \
 	blackbox-block-container-base.h    \
 	blackbox-block-container.h         \
-	blackbox-block-blas-container-base.h    \
-	blackbox-block-blas-container.h         \
 	block-massey-domain.h              \
 	block-wiedemann.h                  \
 	block-coppersmith-domain.h            \

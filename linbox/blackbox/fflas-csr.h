@@ -115,15 +115,19 @@ namespace LinBox
 		
 		// C = AB
 		template<class Matrix>
-		void apply(Matrix &C, const Matrix &B) const {
+		void applyLeft(Matrix &C, const Matrix &B) const {
 			size_t b = B.coldim();
 			FFLAS::fspmm(_F, _A, b, B.getPointer(), b, _F.zero, C.getPointer(), b);
 		}
 		
+		// C = BA
 		template<class Matrix>
-		void applyLeft(Matrix &C, const Matrix &B) const {
-			size_t b = B.coldim();
-			FFLAS::fspmm(_F, _T, b, B.getPointer(), b, _F.zero, C.getPointer(), b);
+		void applyRight(Matrix &C, const Matrix &B) const {
+
+		}
+		
+		const Field& field() const {
+			return _F;
 		}
 		
 		size_t rowdim() const {
