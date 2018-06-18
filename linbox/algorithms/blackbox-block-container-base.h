@@ -46,11 +46,6 @@
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/matrix/matrix-domain.h"
 
-// #include "linbox/blackbox/triplesbb-omp.h"
-#include "linbox/matrix/sparse-matrix.h"
-#include "linbox/blackbox/pascal.h"
-#include "linbox/blackbox/fflas-csr.h"
-
 namespace LinBox
 {
 

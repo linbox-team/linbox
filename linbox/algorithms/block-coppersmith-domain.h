@@ -68,12 +68,12 @@ namespace LinBox
     class BlockCoppersmithDomain {
 
     public:
-        typedef _Domain                    Domain;
-        typedef typename Domain::Field     Field;
-        typedef typename Domain::Element   Element;
-        typedef _Sequence                  Sequence;
-        typedef typename Domain::OwnMatrix Coefficient;
-        typedef typename Domain::Matrix    Sub;
+	typedef _Domain				Domain;
+        typedef typename Domain::Field           Field;
+        typedef typename Domain::Element       Element;
+        typedef _Sequence                     Sequence;
+        typedef typename Domain::OwnMatrix    Coefficient;
+        typedef typename Domain::Matrix         Sub;
 
 
     protected:
@@ -841,7 +841,7 @@ EARLY_TERM_THRESHOLD (ett_default)
 
 	    //Create the BM_Seq iterator whose incrementation performs a step of the generator
 	    typename BM_Seq::BM_iterator bmit(seq.BM_begin(EARLY_TERM_THRESHOLD));
-	    bmit.setDelta((int)(2*_container->bbdim()+1));
+	    bmit.setDelta((int)(2*_container->getBB()->rowdim()+1));
 	    typename BM_Seq::BM_iterator::TerminationState check = bmit.state();
 	    while(!check.IsGeneratorFound() ){
 		    ++bmit;
