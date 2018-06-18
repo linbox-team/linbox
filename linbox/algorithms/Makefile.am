@@ -150,6 +150,8 @@ pkgincludesub_HEADERS =            \
 	rns.inl                            \
 	invariant-factors.h                \
 	smith-form-iliopoulos2.h           \
+	frobenius-small.h                  \
+	frobenius-large.h                  \
 	$(USE_OCL_HDRS)
 
 #  iml.h                              \
