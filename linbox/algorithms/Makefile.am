@@ -103,7 +103,6 @@ pkgincludesub_HEADERS =            \
 	lifting-container.h                \
 	smith-form-local.h                 \
 	smith-form-local2.inl              \
-	smith-form-textbook.h              \
 	smith-form-kannan-bachem.h         \
 	matrix-inverse.h                   \
 	matrix-hom.h                       \
@@ -149,7 +148,6 @@ pkgincludesub_HEADERS =            \
 	rns.h                              \
 	rns.inl                            \
 	invariant-factors.h                \
-	smith-form-iliopoulos2.h           \
 	frobenius-small.h                  \
 	frobenius-large.h                  \
 	$(USE_OCL_HDRS)
