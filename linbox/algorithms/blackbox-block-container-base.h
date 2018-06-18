@@ -55,47 +55,6 @@
 namespace LinBox
 {
 
-//Temporary fix to deal with the fact that not all Blackboxes have applyLeft()
-template<class Field,class Block>
-class MulHelper {
-public:
-    template<class Blackbox>
-    static void mul(const Field& F,
-            Block &M1, const Blackbox &M2, const Block& M3) {
-        linbox_check( M1.rowdim() == M2.rowdim());
-        linbox_check( M2.coldim() == M3.rowdim());
-        linbox_check( M1.coldim() == M3.coldim());
-
-        MatrixDomain<Field> MD(F);
-        typename Block::ColIterator        p1 = M1.colBegin();
-        typename Block::ConstColIterator   p3 = M3.colBegin();
-
-        for (; p3 != M3.colEnd(); ++p1,++p3) {
-            M2.apply(*p1,*p3);
-        }
-    }
-
-    static void mul (const Field& F,
-             Block &M1, const SparseMatrix<Field,SparseMatrixFormat::TPL> &M2, const Block& M3) {
-        M2.applyLeft(M1,M3);
-    }
-
-    static void mul (const Field& F,
-             Block &M1, const SparseMatrix<Field,SparseMatrixFormat::TPL_omp> &M2, const Block& M3) {
-        M2.applyLeft(M1,M3);
-    }
-
-    static void mul (const Field& F,
-                     Block &M1, const PascalBlackbox<Field> &M2, const Block& M3) {
-        M2.applyLeft(M1,M3);
-    }
-    
-    static void mul(const Field &F,
-        Block &M1, const FflasCsr<Field> &M2, const Block &M3) {
-        M2.applyLeft(M1, M3);
-    }
-};
-
 #ifndef MIN
 #define MIN(a,b) ((a)<(b)?(a):(b))
 #endif
@@ -111,7 +70,7 @@ public:
      * Subclasses complete the implementation by defining \c _launch() and
      * \c _wait().
      */
-    template<class _Field, class _Blackbox>
+    template<class _Field, class _Blackbox, class _MatrixDomain = MatrixDomain<_Field>>
     class BlackboxBlockContainerBase {
     public:
         typedef _Field                         Field;
@@ -125,7 +84,7 @@ public:
 
         // Sequence constructor from a blackbox and a field
         // cs set the size of the sequence
-        BlackboxBlockContainerBase (const Blackbox *BD, const Field &F, size_t m, size_t n, size_t seed=(size_t)time(NULL)) :
+        BlackboxBlockContainerBase(const Blackbox *BD, const Field &F, size_t m, size_t n, size_t seed=(size_t)time(NULL)) :
             _field(&F)  , _BB(BD), _size(BD->rowdim()/m + BD->coldim()/n +2)
             , _nn(BD->rowdim()),  _m(m), _n(n)
             ,casenumber(0)
@@ -139,12 +98,12 @@ public:
         class const_iterator {
 
         protected:
-            BlackboxBlockContainerBase<Field, Blackbox> &_c;
+            BlackboxBlockContainerBase<Field, Blackbox, _MatrixDomain> &_c;
 
         public:
             const_iterator () {}
 
-            const_iterator (BlackboxBlockContainerBase<Field, Blackbox> &C) :
+            const_iterator (BlackboxBlockContainerBase<Field, Blackbox, _MatrixDomain> &C) :
                 _c (C)
             {}
 
@@ -232,7 +191,7 @@ public:
             _blockU = U;
             _blockV = V;
             _value = Value(*_field,_m,_n);
-            MatrixDomain<Field> BMD(*_field);
+            _MatrixDomain BMD(*_field);
             BMD.mul(_value, _blockU, _blockV);
         }
 
@@ -256,7 +215,7 @@ public:
                 G.random(*iter_V);
 
             _value = Value(*_field,m,n);
-            MatrixDomain<Field> BMD(*_field);
+            _MatrixDomain BMD(*_field);
             BMD.mul(_value, _blockU, _blockV);
         }         
     };
