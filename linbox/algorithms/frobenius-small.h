@@ -29,9 +29,12 @@
 #include <vector>
 #include <math.h> 
 
-#include "linbox/algorithms/blackbox-container.h"
+#include "linbox/matrix/matrix-domain.h"
 #include "linbox/matrix/matrixdomain/blas-matrix-domain.h"
 #include "linbox/matrix/random-matrix.h"
+
+#include "linbox/algorithms/blackbox-container.h"
+#include "linbox/algorithms/wiedemann.h"
 
 namespace LinBox
 {
