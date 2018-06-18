@@ -16,9 +16,6 @@
 
 #include "linbox/matrix/random-matrix.h"
 #include "linbox/algorithms/blackbox-block-container.h"
-#include "linbox/algorithms/blackbox-block-blas-container.h"
-#include "linbox/algorithms/blackbox-block-container-smmx.h"
-#include "linbox/algorithms/blackbox-block-container-spmv.h"
 #include "linbox/algorithms/wiedemann.h"
 
 #include "linbox/blackbox/fflas-csr.h"
