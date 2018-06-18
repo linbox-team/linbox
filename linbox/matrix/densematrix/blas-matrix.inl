@@ -955,7 +955,8 @@ namespace LinBox
 		ConstColIterator () {}
 
 		ConstColIterator (const ConstColIterator& rowp) :
-			_col (rowp._col)
+			_col (rowp._col),
+			_stride (rowp._stride)
 		{}
 
 		ConstColIterator& operator= (const ConstColIterator& rowp)
