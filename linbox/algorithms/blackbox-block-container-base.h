@@ -120,7 +120,7 @@ namespace LinBox
         const Field &getField () const { return *_field; } // deprecated
 
         // blackbox of the sequence
-        size_t bbdim() const { return _BB->rowdim(); }
+        const Blackbox* getBB() const { return _BB; }
 
         // row dimension of the sequence element
         size_t rowdim() const          { return _m; }

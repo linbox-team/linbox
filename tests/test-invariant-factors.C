@@ -32,8 +32,6 @@
 #include "linbox/algorithms/invariant-factors.h"
 #include "linbox/algorithms/smith-form-kannan-bachem.h"
 
-#include "sparse-matrix-generator.h"
-
 using namespace LinBox;
 
 typedef Givaro::Modular<double> Field;
