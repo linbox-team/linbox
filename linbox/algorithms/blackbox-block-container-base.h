@@ -64,7 +64,7 @@ namespace LinBox
      * Subclasses complete the implementation by defining \c _launch() and
      * \c _wait().
      */
-    template<class _Field, class _Blackbox, class _MatrixDomain = MatrixDomain<_Field>>
+    template<class _Field, class _Blackbox, class _MatrixDomain = BlasMatrixDomain<_Field>>
     class BlackboxBlockContainerBase {
     public:
         typedef _Field                         Field;

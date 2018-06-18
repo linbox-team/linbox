@@ -47,9 +47,8 @@
 namespace LinBox
 {
 
-	/*! @brief no doc.
-	 */
-	template<class _Field, class _Blackbox, class _MatrixDomain = MatrixDomain<_Field>>
+	// For non-block blackbox's use blockbb to convert to a block blackbox
+	template<class _Field, class _Blackbox, class _MatrixDomain = BlasMatrixDomain<_Field>>
 	class BlackboxBlockContainer : public BlackboxBlockContainerBase<_Field,_Blackbox,_MatrixDomain> {
 	public:
 		typedef _Field                         Field;

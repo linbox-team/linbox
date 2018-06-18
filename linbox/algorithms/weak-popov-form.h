@@ -147,9 +147,6 @@ namespace LinBox
 		
 		template<typename Matrix>
 		void eliminate(const Matrix &M1, Matrix &M2, const Matrix &V1, Matrix &V2, const Coeff &c, size_t e) const {
-			//_MD.saxpyin(M2, f, M1);
-			//_MD.saxpyin(V2, f, V1);
-			
 			for (size_t i = 0; i < M1.coldim(); i++) {
 				Polynomial f1, f2;
 				
