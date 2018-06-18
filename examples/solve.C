@@ -27,6 +27,10 @@
  * @warning some are commented out...
  * @example  examples/solve.C
  */
+#define __LINBOX_HAVE_MPI
+#include "mpi.h"
+
+
 
 #include <linbox/linbox-config.h>
 
@@ -57,18 +61,23 @@ int main (int argc, char **argv)
 	srand48( BaseTimer::seed() );
 
 	std::ifstream input (argv[1]);
+//std::cout<<"argv[1]:"<<argv[1]<<std::endl;
 	if (!input) { cerr << "Error opening matrix file " << argv[1] << endl; return -1; }
 	std::ifstream invect;
-
+//std::cout<<"argv[2]:"<<argv[2]<<std::endl;
+	std::ifstream input2 (argv[2]);
+	if (!input2) { cerr << "Error opening vector file " << argv[2] << endl; return -1; }
+//std::cout<<"intput:"<<input.rdbuf()<<std::endl;
+//std::cout<<"intput2:"<<input2.rdbuf()<<std::endl;
 	bool createB = false;
 	int ModComp = 0;
-	if (argc == 2) {
+	/*if (argc == 2) {
 		createB = true;
 		ModComp = 0;
 	}
 
 	if (argc == 3) {
-		invect.open (argv[2], std::ifstream::in);
+		invect.open (argv[3], std::ifstream::in);
 		if (!invect) {
 			createB = true;
 			ModComp = 2;
@@ -87,7 +96,7 @@ int main (int argc, char **argv)
 		}
 		else
 			createB = false;
-	}
+	}*/
 
 
 	if (ModComp) {
@@ -123,7 +132,7 @@ int main (int argc, char **argv)
 		std::cout << "B is " << B << std::endl;
 
 		Timer chrono;
-
+/*
 		// Sparse Elimination
 		std::cout << "Sparse Elimination" << std::endl;
 		chrono.clear();
@@ -162,6 +171,26 @@ int main (int argc, char **argv)
 			F.write(cout, *it) << " ";
 		std::cout << "]" << std::endl;
 		std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl<<std::endl;;
+
+
+
+std::cout << "-----------------------------------------------------------"<<std::endl;
+		// solveCRA
+		std::cout << "solveCRA" << std::endl;
+		//  set up parallel code object
+#ifdef __LINBOX_HAVE_MPI
+		Communicator *Cptr = NULL;
+		Cptr = new Communicator(&argc, &argv);
+		RingCategories::IntegerTag tg;
+		typename Field::Element FF;
+		solveCRA (X, FF, A, B, tg, Method::Hybrid(),Cptr);
+#else
+		typename Field::Element FF;
+		solveCRA (X, FF, A, B, tg, Method::Hybrid());
+#endif
+
+std::cout << "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++"<<std::endl;
+*/
 #if 0
 		// Lanczos
 		std::cout << "Lanczos" << std::endl;
@@ -195,17 +224,62 @@ int main (int argc, char **argv)
 
 	}
 	else {
+
+
+
+
+#ifdef __LINBOX_HAVE_MPI
+		Communicator *Cptr = NULL;
+		Cptr = new Communicator(&argc, &argv);
+#endif
                 cout<<"Computation is done over Q"<<endl;
 		Givaro::ZRing<Integer> ZZ;
 		typedef DenseVector<Givaro::ZRing<Integer> > DenseVector ;
 		MatrixStream< Givaro::ZRing<Integer> > ms( ZZ, input );
 		SparseMatrix<Givaro::ZRing<Integer> > A (ms);
 		Givaro::ZRing<Integer>::Element d;
+	//	std::cout << "A is " << A.rowdim() << " by " << A.coldim() << std::endl;
+        //        if (A.rowdim() <= 20 && A.coldim() <= 20) A.write(std::cerr << "A:=",Tag::FileFormat::Maple) << ';' << std::endl;
+
+Timer chrono;
+
+//std::cout<<"===============1==============="<<std::endl;
+		MatrixStream< Givaro::ZRing<Integer> > ms2( ZZ, input2 );
+//std::cout<<"===============2==============="<<std::endl;
+//std::cout << "MatrixStream for inpu2 is :" << ms2 << std::endl;
+
+		SparseMatrix<Givaro::ZRing<Integer> > C (ms2);
+//std::cout << "C is " << C.rowdim() << " by " << C.coldim() << std::endl;
+//C.write(std::cerr << "C:=",Tag::FileFormat::Maple) << ';' << std::endl;
+//std::cout<<"===============3==============="<<std::endl;
+DenseVector X(ZZ, A.coldim()),  B(ZZ, A.coldim());
+			int i=0;
+
+			for(DenseVector::iterator it=B.begin() ;
+			    it != B.end(); ++it,++i){
+//std::cout << "C ("<<i<<",0) : " << C.getEntry(i,0)<< std::endl;
+				*it=C.getEntry(i,0); //	Element& getEntry(Index i, Index j) const;
+			}
+
+#ifdef __LINBOX_HAVE_MPI
+std::cout << "process("<<Cptr->rank()<<") B is " << B << std::endl;
+std::cout << "process("<<Cptr->rank()<<") X is " << X << std::endl;
+#else
+std::cout << "B is " << B << std::endl;
+#endif
+
+#ifdef __LINBOX_HAVE_MPI
+std::cout << "process("<<Cptr->rank()<<") :" << std::endl;
 		std::cout << "A is " << A.rowdim() << " by " << A.coldim() << std::endl;
                 if (A.rowdim() <= 20 && A.coldim() <= 20) A.write(std::cerr << "A:=",Tag::FileFormat::Maple) << ';' << std::endl;
-		DenseVector X(ZZ, A.coldim()),B(ZZ, A.rowdim());
+if(0==Cptr->rank()){ 
 
-		if (createB) {
+#else
+		std::cout << "A is " << A.rowdim() << " by " << A.coldim() << std::endl;
+                if (A.rowdim() <= 20 && A.coldim() <= 20) A.write(std::cerr << "A:=",Tag::FileFormat::Maple) << ';' << std::endl;
+
+
+		/*if (createB) {
 			cerr << "Creating a random {-1,1} vector U, B is AU" << endl;
 			DenseVector U(ZZ, A.coldim() );
 			for(DenseVector::iterator it=U.begin();
@@ -220,27 +294,34 @@ int main (int argc, char **argv)
 			for(DenseVector::iterator it=B.begin();
 			    it != B.end(); ++it)
 				invect >> *it;
-		}
+		}*/
 
+#endif
 
-		std::cout << "B is " << B << std::endl;
+	
+	//std::cout<<"input2:"<<input2<<std::endl;
+	//std::cout<<"ms2:"<<ms2<<std::endl;	
 
 
 		Timer chrono;
-
 		// BlasElimination
-                std::cout << "BlasElimination" << std::endl;
-                chrono.start();
-                solve (X, d, A, B, Method::BlasElimination());
-                chrono.stop();
+        std::cout << "BlasElimination" << std::endl;
+        chrono.start();
+        solve (X, d, A, B, Method::BlasElimination());
+        chrono.stop();
 
- 		std::cout << "(BlasElimination) Solution is [";
-                for(DenseVector::const_iterator it=X.begin();it != X.end(); ++it)
- 			ZZ.write(cout, *it) << " ";
-                std::cout << "] / ";
-                ZZ.write(std::cout, d)<< std::endl;
-                std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
+        for(DenseVector::const_iterator it=X.begin();it != X.end(); ++it)
+ 		ZZ.write(cout, *it) << " ";
+        std::cout << "] / ";
+        ZZ.write(std::cout, d)<< std::endl;
+        std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
 
+#ifdef __LINBOX_HAVE_MPI
+}
+#endif
+
+
+/*
 		// Sparse Elimination
 		std::cout << "Sparse Elimination" << std::endl;
 		chrono.start();
@@ -266,9 +347,43 @@ int main (int argc, char **argv)
 		std::cout << "] / ";
 		ZZ.write(std::cout, d) << std::endl;
 		std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
+*/
+       
+
+		RingCategories::IntegerTag tg;
+		//  set up parallel code object
+#ifdef __LINBOX_HAVE_MPI
+//std::cout << "process("<<Cptr->rank()<<") B is " << B << std::endl;
+
+	solveCRA (X, d, A, B, tg, Method::Hybrid(*Cptr),Cptr);	
+if(0==Cptr->rank()){
+		// solveCRA
+		std::cout << "solveCRA" << std::endl;
+
+			std::cout << "MPI CRA Solution is [";
+			for(DenseVector::const_iterator it=X.begin();it != X.end(); ++it)
+				ZZ.write(cout, *it) << " ";
+			std::cout << "] / ";
+			ZZ.write(std::cout, d) << std::endl;
+			std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
+}
+
+#else
+		solveCRA (X, d, A, B, tg, Method::Hybrid());
+		std::cout << "MPI CRA Solution is [";
+		for(DenseVector::const_iterator it=X.begin();it != X.end(); ++it)
+			ZZ.write(cout, *it) << " ";
+		std::cout << "] / ";
+		ZZ.write(std::cout, d) << std::endl;
+		std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
+
+#endif
+
+		
 
 
-                
+
+
 #if 0
 		// Lanczos
 		std::cout << "Lanczos" << std::endl;
@@ -299,7 +414,9 @@ int main (int argc, char **argv)
 		std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
 #endif
 	}
-
+#ifdef __LINBOX_HAVE_MPI
+MPI_Finalize();
+#endif
 	return 0;
 }
 
