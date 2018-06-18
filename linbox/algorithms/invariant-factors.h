@@ -37,13 +37,13 @@
 namespace LinBox
 {
 
-template<class _Field, class _PolynomialRing>
+template<class _Field, class _PolynomialRing, class _MatrixDomain = MatrixDomain<_Field>>
 class InvariantFactors {
 public:
 	typedef _Field Field;
 	typedef typename Field::Element Element;
 	typedef typename Field::RandIter RandIter;
-	typedef MatrixDomain<Field> MatrixDom;
+	typedef _MatrixDomain MatrixDom;
 	typedef typename MatrixDom::OwnMatrix Matrix;
 	
 	typedef _PolynomialRing PolynomialRing;
@@ -70,16 +70,6 @@ public:
 	}
 
 //protected:
-	template<class Sequence>
-	void computeGenerator(
-		std::vector<Matrix> &gen,
-		Sequence &blockSeq) const
-	{
-		MatrixDom MD(_F);
-		BlockCoppersmithDomain<MatrixDom, Sequence> coppersmith(MD, &blockSeq, 10);
-		coppersmith.right_minpoly(gen);
-	}
-
 	template<class Blackbox>
 	void computeGenerator(
 		std::vector<Matrix> &gen,
@@ -97,7 +87,7 @@ public:
 		RDM.random(U);
 		RDM.random(V);
 		
-		typedef BlackboxBlockContainer<Field, Blackbox> Sequence;
+		typedef BlackboxBlockContainer<Field, Blackbox, MatrixDom> Sequence;
 		Sequence blockSeq(&M, _F, U, V);
 		BlockCoppersmithDomain<MatrixDom, Sequence> coppersmith(MD, &blockSeq, 10);
 		

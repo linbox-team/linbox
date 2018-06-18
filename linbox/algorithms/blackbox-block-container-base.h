@@ -32,7 +32,6 @@
 #ifndef __LINBOX_blackbox_block_container_base_H
 #define __LINBOX_blackbox_block_container_base_H
 
-
 #include <time.h> // for seeding
 
 #ifdef _OPENMP
