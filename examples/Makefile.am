@@ -86,7 +86,6 @@ sparseelimrank_SOURCES = sparseelimrank.C
 solverat_SOURCES       = solverat.C
 sparsesolverat_SOURCES = sparsesolverat.C
 blassolve_SOURCES      = blassolve.C
-polysmithformkb_SOURCES        = polynomial-smith-form-kb.C
 power_rank_SOURCES     = power_rank.C
 poweroftwo_ranks_SOURCES=poweroftwo_ranks.C
 #smithformlocal_SOURCES = smith-form-local.C

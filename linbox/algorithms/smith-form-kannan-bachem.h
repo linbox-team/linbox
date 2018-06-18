@@ -400,70 +400,10 @@ namespace LinBox
 		}
 		
 		template<class Matrix>
-		void halfSolve(std::vector<Element> &L, Matrix &A) {
-			if (A.rowdim() == 0 || A.coldim() == 0) {
-				return;
-			}
-			
-			if (!findPivot(A)) {
-				size_t dim = A.rowdim() < A.coldim() ? A.rowdim() : A.coldim();
-				for (size_t i = 0; i < dim; i++) {
-					L.push_back(_F.zero);
-				}
-				return;
-			}
-			
-			eliminateCol(A);
-			
-			L.push_back(A.getEntry(0, 0));
-			SubMatrix B(A, 1, 1, A.rowdim() - 1, A.coldim() - 1);
-			halfSolve(L, B);
-		}
-		
-		template<class Matrix>
 		void solveIliopoulos(std::vector<Element> &L, Matrix &A, const Element &d) {
 			reduceMatrix(A, d);
 			solveIliopoulosHelper(L, A, d);
 			fixDiagonal(L, d);
-		}
-		
-		template<class Matrix>
-		void solveDet(Element &d, Matrix &A) {
-			std::vector<Element> ds;
-			halfSolve(ds, A);
-			
-			_F.assign(d, ds[0]);
-			for (size_t i = 1; i < ds.size(); i++) {
-				_F.mulin(d, ds[i]);
-			}
-		}
-		
-		template<class Matrix>
-		void solveAdaptive(std::vector<Element> &L, Matrix &A) {
-			Element d;
-			solveDet(d, A);
-			
-			reduceMatrix(A, d);
-			
-			solveIliopoulos(L, A, d);
-			
-			if (_F.isZero(L[L.size() - 1])) {
-				L[L.size() - 1] = d;
-			}
-		}
-		
-		template<class Matrix>
-		void solveAdaptive2(std::vector<Element> &L, Matrix &A) {
-			Matrix B(A);
-			
-			Element d;
-			solveDet(d, B);
-			
-			solveIliopoulos(L, A, d);
-			
-			if (_F.isZero(L[L.size() - 1])) {
-				L[L.size() - 1] = d;
-			}
 		}
 	};
 }
