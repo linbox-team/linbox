@@ -29,17 +29,20 @@
 #include <vector>
 #include <math.h> 
 
-#include "linbox/algorithms/block-coppersmith-domain.h"
 #include "linbox/algorithms/blackbox-container.h"
-#include "linbox/algorithms/blackbox-block-container-smmx2.h"
 #include "linbox/matrix/matrixdomain/blas-matrix-domain.h"
 #include "linbox/matrix/random-matrix.h"
-
-#include "givaro/givtimer.h"
 
 namespace LinBox
 {
 
+// sources:
+//
+// Black Box Frobenius Decompositions over Small Fields (2000)
+// URL: https://doi.org/10.1145/345542.345596
+//
+// Asymptotically efficient algorithms for the Frobenius form (2000)
+// URL: http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.42.3810
 template<class _Field, class _PolynomialRing>
 class FrobeniusSmall {
 public:
@@ -62,6 +65,7 @@ protected:
 	PolynomialRing _R;
 	MatrixDom _MD;
 	VectorDomain<Field> _VD;
+	
 public:
 	FrobeniusSmall(const Field &F, const PolynomialRing &R) : _F(F), _RI(F), _R(R), _MD(F), _VD(F) {}
 

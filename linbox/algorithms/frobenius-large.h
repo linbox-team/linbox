@@ -34,6 +34,10 @@
 namespace LinBox
 {
 
+// source
+// Computing the Frobenius Normal Form of a Sparse Matrix (2000)
+// URL: https://doi.org/10.1007/978-3-642-57201-2_30
+
 // PolynomialRing = NTL_zz_pX or NTL_zz_pEX
 template<class _PolynomialRing>
 class FrobeniusLarge {
