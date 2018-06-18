@@ -183,7 +183,6 @@ FULLCHECK_TESTS =               \
 	test-tutorial				\
 	test-vector-domain			\
 	test-zero-one				\
-	test-sparse-matrix-generator \
 	test-invariant-factors \
 	test-frobenius-small \
 	test-frobenius-large \
@@ -364,7 +363,6 @@ test_tutorial_SOURCES =                 test-tutorial.C
 test_vector_domain_SOURCES =            test-vector-domain.C test-vector-domain.h
 test_zero_one_SOURCES =                 test-zero-one.C
 test_polynomial_ring_SOURCES =          test-polynomial-ring.C
-test_sparse_matrix_generator_SOURCES =	test-sparse-matrix-generator.C
 test_invariant_factors_SOURCES =		test-invariant-factors.C
 test_frobenius_small_SOURCES =          test-frobenius-small.C
 test_frobenius_large_SOURCES =          test-frobenius-large.C
