@@ -190,19 +190,21 @@ public:
 		Polynomial f1, fn;
 		minpoly(f1, A);
 		
-		size_t n = A.rowdim() - _R.deg(f1) + 1;
-		if (limit > 1) {
-			n = std::min(limit, n);
-		}
-		if (n==1) {
+		if (_R.deg(f1) == A.rowdim()) {
 			fs.push_back(f1);
 			ms.push_back(1);
 			return;
 		}
 		
-		kthInvariantFactor(fn, A, f1, n);
+		size_t n = A.rowdim() - _R.deg(f1) + 2;
+		if (0 < limit && limit < n) {
+			kthInvariantFactor(fn, A, f1, n);
+			thresholdSearch(fs, ms, A, 1, f1, n, fn);
+			n = std::min(limit, n);
+			return;
+		}
 		
-		thresholdSearch(fs, ms, A, 1, f1, n, fn);
+		thresholdSearch(fs, ms, A, 1, f1, n, _R.one);
 	}
 };
 
