@@ -1,0 +1,194 @@
+#include "linbox/linbox-config.h"
+
+#include <algorithm>
+#include <iostream>
+#include <vector>
+
+#include "givaro/givtimer.h"
+
+#include "givaro/gfqext.h"
+#include "linbox/ring/modular.h"
+#include "linbox/ring/ntl.h"
+#include "linbox/ring/polynomial-ring.h"
+
+#include "linbox/matrix/sparse-matrix.h"
+#include "linbox/matrix/matrix-domain.h"
+
+#include "linbox/matrix/random-matrix.h"
+#include "linbox/algorithms/blackbox-block-container.h"
+#include "linbox/algorithms/wiedemann.h"
+
+#include "linbox/blackbox/blockbb.h"
+#include "linbox/blackbox/block-compose.h"
+#include "linbox/blackbox/fflas-csr.h"
+#include "linbox/blackbox/compose.h"
+#include "linbox/blackbox/sum.h"
+#include "linbox/blackbox/transpose.h"
+#include "linbox/blackbox/toeplitz.h"
+#include "linbox/blackbox/diagonal.h"
+#include "linbox/blackbox/polynomial.h"
+
+#include "linbox/algorithms/poly-smith-form.h"
+#include "linbox/algorithms/invariant-factors.h"
+#include "linbox/algorithms/smith-form-kannan-bachem.h"
+
+#include "sparse-matrix-generator.h"
+
+using namespace LinBox;
+
+typedef Givaro::Modular<double> Field;
+typedef Field::Element Element;
+typedef SparseMatrix<Field, SparseMatrixFormat::CSR> SparseMat;
+
+typedef NTL_zz_pX Ring;
+typedef typename Ring::Element Polynomial;
+typedef BlasMatrix<Ring> PolyMatrix;
+
+template<class Ring1>
+void writeLifs(Ring1 R, std::string filename, std::vector<typename Ring1::Element> &result) {
+	std::ofstream out(filename);
+	std::for_each(result.begin(), result.end(), [&](const typename Ring1::Element &v) {
+		typename Ring1::Element f;
+		R.write(out, R.monic(f, v)) << std::endl;
+	});
+	out.close();
+}
+
+void readMatrix(SparseMat &M, const std::string matrixFile) {
+	std::ifstream iF(matrixFile);
+	M.read(iF);
+	M.finalize();
+	iF.close();
+}
+
+void randomNonzero(const Field &F, Element &elm) {
+	typename Field::RandIter RI(F);
+	do {
+		RI.random(elm);
+	} while (F.isZero(elm));
+}
+
+void randomTriangular(SparseMat &T, size_t s, bool upper, bool randomDiag = false) {
+	Field F(T.field());
+	typename Field::RandIter RI(F);
+	
+	for (size_t i = 0; i < T.rowdim(); i++) {
+		if (randomDiag) {
+			Element elm;
+			randomNonzero(F, elm);
+			T.setEntry(i, i, elm);
+		} else {
+			T.setEntry(i, i, F.one);
+		}
+	}
+	
+	for (size_t r = 0; r < T.rowdim() - 1; r++) {
+		for (size_t k = 0; k < s; k++) {
+			size_t c = (rand() % (T.coldim() - r - 1)) + r + 1;
+			
+			Element elm;
+			randomNonzero(F, elm);
+			
+			if (upper) {
+				T.setEntry(r, c, elm);
+			} else {
+				T.setEntry(c, r, elm);
+			}
+		}
+	}
+	
+	T.finalize();
+}
+
+int main(int argc, char** argv) {
+	size_t p = 3;
+	size_t extend = 1;
+	size_t b = 4, m = 0, l = 1;
+	size_t modIndex = 0;
+	size_t exponent = 0;
+	
+	int precond = 0;
+	size_t s = 0;
+	size_t perm = 0;
+	size_t k = 0;
+	size_t spmv = 0;
+	
+	std::string matrixFile;
+	std::string outFile;
+	
+	int seed = time(NULL);
+	
+	size_t alg = 0;
+
+	static Argument args[] = {
+		{ 'a', "-a A", "Algs to run after BM", TYPE_INT, &alg},
+		{ 'p', "-p P", "Set the field GF(p)", TYPE_INT, &p},
+		{ 'e', "-e E", "Extension field exponent (p^e)", TYPE_INT, &extend},
+		{ 'v', "-v V", "Enable spmv instead of spmm", TYPE_INT, &spmv},
+		
+		{ 'b', "-b B", "Block size", TYPE_INT, &b},
+		{ 'm', "-m M", "Step size for iterative lifs", TYPE_INT, &m},
+		{ 'l', "-l L", "Limit for iterative lifs", TYPE_INT, &l},
+		{ 't', "-t T", "Use t-th LIF as modulus", TYPE_INT, &modIndex},
+		{ 'd', "-d D", "Compute rank of ((x-1)^d)(A)", TYPE_INT, &exponent},
+		
+		{ 'f', "-f F", "Name of file for matrix", TYPE_STR, &matrixFile},
+		{ 'o', "-o O", "Name of output file for invariant factors", TYPE_STR, &outFile},
+		{ 'r', "-r R", "Random seed", TYPE_INT, &seed},
+		{ 'k', "-k K", "Compute the (k+1)-th invariant factor", TYPE_INT, &k},
+		{ 's', "-s S", "Number of nonzeros in random triangular preconditioner", TYPE_INT, &s},
+		{ 'c', "-c C", "Choose what preconditioner to apply", TYPE_INT, &precond},
+		{ 'z', "-z Z", "Permute rows of input", TYPE_INT, &perm},
+		END_OF_ARGUMENTS
+	};
+
+	parseArguments(argc,argv,args);
+	
+	if (matrixFile == "") {
+		std::cout << "an input matrix must be provided" << std::endl;
+		return -1;
+	}
+	
+	srand(seed);
+
+	Field F(p);
+	Ring R(p);
+	MatrixDomain<Field> MD(F);
+	InvariantFactors<Field, Ring> IFD(F, R);
+	PolySmithFormDomain<Ring> PSFD(R);
+	
+	typename Field::RandIter RI(F);
+	RandomDenseMatrix<typename Field::RandIter, Field> RDM(F, RI);
+	
+	SparseMat M(F);                                           
+	readMatrix(M, matrixFile);
+	
+	assert(M.rowdim() == M.coldim());
+	size_t n = M.rowdim();
+	
+	typedef FflasCsr<Field> Csr;
+	FflasCsr<Field> FM(&M);
+	std::vector<Polynomial> result;
+	if (precond == 1) { // determinant
+		SparseMat L(F, n, n);
+		SparseMat U(F, n, n);
+		randomTriangular(L, s, false, false);
+		randomTriangular(U, s, true, false);
+		
+		FflasCsr<Field> FL(&L);
+		FflasCsr<Field> FU(&U);
+		
+		BlockCompose<Csr, Csr> LU(FL, FU);
+		BlockCompose<Csr, BlockCompose<Csr, Csr>> MLU(FM, LU);
+		
+		IFD.largestInvariantFactors(result, MLU, b);
+	} else {
+		IFD.largestInvariantFactors(result, FM, b);
+	}
+	
+	if (outFile != "") {
+		writeLifs(R, outFile, result);
+	}
+	
+	return 0;
+}
