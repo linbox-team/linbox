@@ -4,35 +4,15 @@
 #include <iostream>
 #include <vector>
 
-#include "givaro/givtimer.h"
-
-#include "givaro/gfqext.h"
 #include "linbox/ring/modular.h"
 #include "linbox/ring/ntl.h"
-#include "linbox/ring/polynomial-ring.h"
 
 #include "linbox/matrix/sparse-matrix.h"
 #include "linbox/matrix/matrix-domain.h"
 
-#include "linbox/matrix/random-matrix.h"
-#include "linbox/algorithms/blackbox-block-container.h"
-#include "linbox/algorithms/wiedemann.h"
-
-#include "linbox/blackbox/fflas-csr.h"
-#include "linbox/blackbox/compose.h"
-#include "linbox/blackbox/sum.h"
-#include "linbox/blackbox/transpose.h"
-#include "linbox/blackbox/toeplitz.h"
-#include "linbox/blackbox/diagonal.h"
-#include "linbox/blackbox/polynomial.h"
-
-#include "linbox/algorithms/poly-smith-form.h"
-#include "linbox/algorithms/invariant-factors.h"
-#include "linbox/algorithms/smith-form-kannan-bachem.h"
-
 #include "linbox/algorithms/frobenius-large.h"
 
-#include "sparse-matrix-generator.h"
+#include "givaro/givtimer.h"
 
 using namespace LinBox;
 
