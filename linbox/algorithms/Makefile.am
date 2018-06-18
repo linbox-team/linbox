@@ -150,6 +150,11 @@ pkgincludesub_HEADERS =            \
 	invariant-factors.h                \
 	frobenius-small.h                  \
 	frobenius-large.h                  \
+	poly-dixon.h                       \
+	invert-tb.h                        \
+	poly-smith-form-local-x.h          \
+	weak-popov-form.h                  \
+	poly-smith-form.h                  \
 	$(USE_OCL_HDRS)
 
 #  iml.h                              \
