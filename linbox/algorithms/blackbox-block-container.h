@@ -121,7 +121,6 @@ namespace LinBox
 		}
 #endif
 
-
 	protected:
 		Block                        _blockW;
 		_MatrixDomain    _BMD;
