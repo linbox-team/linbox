@@ -165,13 +165,19 @@ namespace LinBox
         template <class X>
         void send_integerMat (X& b, int dest); 
         template <class X>
+        void send_integerSparseMat (X& b, int dest); 
+        template <class X>
         void recv_integerVec (X& b, int src);   
         template <class X>
         void recv_integerMat (X& b, int src);
         template <class X>
+        void recv_integerSparseMat (X& b, int src);
+        template <class X>
         void bcast_integerVec (X& b, int src);                
         template <class X>
         void bcast_integerMat (X& b, int src);
+        template <class X>
+        void bcast_integerSparseMat (X& b, int src);
         template <class X>
         void ssend_integerVec (X& b, int dest);
         template <class X>
