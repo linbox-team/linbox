@@ -100,17 +100,26 @@ public:
 	// Y = X*A
 	template<class Matrix>
 	Matrix& applyRight(Matrix& Y, const Matrix& X) const {
+		BlasMatrix<Field> Z(_A.field(), X.rowdim(), B.coldim());
 		
+		_B.applyRight(Z, X);
+		_A.applyRight(Y, Z);
 	}
 	
 	template<class OutVector, class InVector>
 	OutVector& apply(OutVector& y, const InVector& x) const {
+		BlasVector<Field> z(_A.field(), _A.rowdim());
 		
+		_A.apply(z, x);
+		_B.apply(y, z);
 	}
 	
 	template<class OutVector, class InVector>
 	OutVector& applyTranspose(OutVector& y, const InVector& x) const {
+		BlasVector<Field> z(_A.field(), B.coldim());
 		
+		_B.applyTranspose(z, x);
+		_A.applyTranspose(y, z);
 	}
 
 };
