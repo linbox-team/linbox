@@ -160,8 +160,8 @@ public:
 		const Blackbox &A,
 		size_t t,
 		double p,
-		int earlyTerm = 10) const {
-	
+		int earlyTerm = 10) const
+	{
 		size_t b = min_block_size(t, p);
 	
 		std::vector<Matrix> minpoly;
@@ -262,8 +262,8 @@ public:
 		std::vector<Polynomial> &lifs,
 		const Blackbox &A,
 		size_t b,
-		int earlyTerm = 10) const {
-	
+		int earlyTerm = 10) const
+	{
 		size_t n = A.rowdim();
 		size_t s = std::ceil(std::log(n)) + 1;
 		
@@ -281,6 +281,64 @@ public:
 		BlockCompose<Csr, BlockCompose<Csr, Csr>> ALU(A, LU);
 		
 		return largestInvariantFactors(lifs, ALU, b);
+	}
+	
+	template<class Blackbox>
+	bool det(
+		Element &det,
+		const Blackbox &A,
+		size_t b = 12,
+		int earlyTerm = 10) const
+	{
+		std::vector<Polynomial> lifs;
+		precondLifs(lifs, A, b, earlyTerm);
+		
+		typename PolynomialRing::CoeffField CF(_R.getCoeffField());
+		typename PolynomialRing::Coeff cdet;
+		
+		CF.assign(cdet, CF.one);
+		size_t total_deg = 0;
+		for (size_t i = 0; i < lifs.size(); i++) {
+			total_deg += _R.deg(lifs[i]);
+			
+			typename PolynomialRing::Coeff c;
+			_R.getCoeff(c, lifs[i], 0);
+			CF.mulin(cdet, c);
+		}
+		
+		integer idet;
+		CF.convert(idet, cdet);
+		_F.init(det, idet);
+		
+		return _F.isZero(det) || total_deg == A.rowdim();
+	}
+	
+	template<class Blackbox>
+	bool rank(
+		size_t &rank,
+		const Blackbox &A,
+		size_t b = 12,
+		size_t t = 3,
+		int earlyTerm = 10) const
+	{
+		std::vector<Polynomial> lifs;
+		precondLifs(lifs, A, b, earlyTerm);
+		
+		typename PolynomialRing::CoeffField CF(_R.getCoeffField());
+		typename PolynomialRing::Coeff c;
+		
+		rank = 0;
+		for (size_t i = 0; i < lifs.size(); i++) {
+			rank += _R.deg(lifs[i]);
+			
+			_R.getCoeff(c, lifs[i], 0);
+			if (CF.isZero(c)) {
+				rank -= 1;
+			}
+		}
+		
+		_R.getCoeff(c, lifs[t], 0);
+		return _R.isOne(lifs[t]) || (_R.deg(lifs[t]) == 1 && CF.isZero(c));
 	}
 };
 
