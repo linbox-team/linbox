@@ -876,14 +876,16 @@ namespace LinBox
 
 #ifdef DEBUG_INC
 			std::cout << "P takes (0 1 ...) to (";
-			for (size_t i=0; i<A.rowdim(); ++i) std::cout << srcRow[i] << ' '; std::cout << ')' << std::endl;
+			for (size_t i=0; i<A.rowdim(); ++i) std::cout << srcRow[i] << ' ';
+            std::cout << ')' << std::endl;
 			std::cout << "Q takes (0 1 ...) to (";
-			for (size_t i=0; i<A.coldim()+1; ++i) std::cout << srcCol[i] << ' '; std::cout << ')' << std::endl;
+			for (size_t i=0; i<A.coldim()+1; ++i) std::cout << srcCol[i] << ' ';
+            std::cout << ')' << std::endl;
 #endif
 
 			bool appearsInconsistent = (srcCol[TAS_rank-1] == A.coldim());
 			size_t rank = TAS_rank - (appearsInconsistent ? 1 : 0);
-#ifdef DIXON_DEBUG
+#ifdef DEBUG_DIXON
 			std::cout << "TAS_rank, rank: " << TAS_rank << ' ' << rank << std::endl;
 #endif
 #ifdef RSTIMING
@@ -1463,11 +1465,11 @@ namespace LinBox
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>
 	SolverReturnStatus
-	RationalSolver<Ring,Field,RandomPrime,SparseEliminationTraits>::solveNonsingular(Vector1& num,
-												     Integer& den,
-												     const IMatrix& A,
-												     const Vector2& b,
-												     int maxPrimes) const
+	RationalSolver<Ring,Field,RandomPrime,SparseEliminationTraits>::solve(Vector1& num,
+                                                                          Integer& den,
+                                                                          const IMatrix& A,
+                                                                          const Vector2& b,
+                                                                          int maxPrimes) const
 	{
 
             //linbox_check(A.rowdim() == A.coldim());
@@ -1487,10 +1489,7 @@ namespace LinBox
 
 		GaussDomain<Field> GD(F);
 		GD.QLUPin(rank,det,Q,L,Ap,P,Ap.rowdim(), Ap.coldim());
-		if (rank != A.rowdim()) {
-#if 0
-			throw LinboxError ("ERROR in DIXON SparseLU: singular matrix or bad prime");
-#endif
+		if (rank < A.coldim()) {
 			// Choose a nonrandom solution with smallest entries:
 			// Sets solution values to 0 for coldim()-rank columns
 			// Therefore, prune unnecessary elements
@@ -1514,6 +1513,12 @@ namespace LinBox
 			commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT) << "Pruned : " << (origNNZ-newNNZ) << " unnecessary elements in upper triangle" << std::endl;
 		}
 
+//         A.write(std::cout << "A:=") << ';' << std::endl;
+//         Q.write(std::cout << "Q:=") << ';' << std::endl;
+//         L.write(std::cout << "L:=") << ';' << std::endl;
+//         Ap.write(std::cout << "Ap:=") << ';' << std::endl;
+//         P.write(std::cout << "P:=") << ';' << std::endl;
+
 		typedef SparseLULiftingContainer<Ring,Field,IMatrix,FMatrix> LiftingContainer;
 		LiftingContainer lc(_ring, F, A, L, Q, Ap, P, rank, b, _prime);
 		RationalReconstruction<LiftingContainer > re(lc);
@@ -1531,11 +1536,10 @@ namespace LinBox
 
 #endif //__LINBOX_rational_solver_INL
 
-
 // Local Variables:
 // mode: C++
 // tab-width: 4
 // indent-tabs-mode: nil
 // c-basic-offset: 4
 // End:
-// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

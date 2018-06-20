@@ -36,6 +36,7 @@
 #include <set>
 #include <utility>
 #include <linbox/util/matrix-stream.h>
+//#include <linbox/randiter/mersenne-twister.h>
 
 namespace LinBox
 {
@@ -68,6 +69,11 @@ void SparseMatrix<Field_,SparseMatrixFormat::SMM>::shape(Index r, Index c) {
 }
 
 template<class Field_>
+void SparseMatrix<Field_,SparseMatrixFormat::SMM>::resize(Index r, Index c) { 
+	shape(r,c); 
+}
+
+template<class Field_>
 template<class Vector>
 void SparseMatrix<Field_,SparseMatrixFormat::SMM>::fromVector(const Vector& vec, Index r, Index c) {
         shape(r,c);
@@ -92,7 +98,7 @@ SparseMatrix<Field_,SparseMatrixFormat::SMM>::SparseMatrix(const SparseMatrix<Fi
 template<class Field_>
 SparseMatrix<Field_,SparseMatrixFormat::SMM>& SparseMatrix<Field_,SparseMatrixFormat::SMM>::operator=(const SparseMatrix<Field_,SparseMatrixFormat::SMM>& rhs)
 {
-	if (rhs==this) return;
+	if (rhs==this) return NULL;
 	MD_.init(rhs.MD_);
 	numCols_=rhs.numCols_;
 	numRows_=rhs.numRows_;
@@ -143,7 +149,7 @@ bool SparseMatrix<Field_,SparseMatrixFormat::SMM>::verify()
 }
 
 template<class Field_>
-const Element& SparseMatrix<Field_,SparseMatrixFormat::SMM>::setEntry(Index i, Index j, const Element& e)
+const typename Field_::Element& SparseMatrix<Field_,SparseMatrixFormat::SMM>::setEntry(Index i, Index j, const Element& e)
 {
 	VectorIt it=rowMap_[i].find(j);
 	if (it != rowMap_[i].end()) {
@@ -195,7 +201,7 @@ OutVector& SparseMatrix<Field_,SparseMatrixFormat::SMM>::apply(OutVector& y, con
 {
 	linbox_check(rowdim()==y.size());
 	linbox_check(coldim()==x.size());
-	for (int i=0;i<rowdim();++i) {
+	for (size_t i=0; i<rowdim(); ++i) {
 		Element d,e;
 		field().init(d,0);
 		MapConstIt rowI=rowMap_.find(i);
@@ -551,7 +557,7 @@ void SparseMatrix<Field_,SparseMatrixFormat::SMM>::generateDenseRandMat(SparseMa
         size_t m=mat.rowdim(),n=mat.coldim();
 	Element d;
 
-	typename Field::RandIter ri(field(),0,seed);
+	typename Field::RandIter ri(mat.field(),0,seed);
 
         for (size_t i=0;i<m;++i) {
                 for (size_t j=0;j<n;++j) {
@@ -569,7 +575,7 @@ void SparseMatrix<Field_,SparseMatrixFormat::SMM>::generateRandMat(SparseMatrix<
         
         size_t m=mat.rowdim(),n=mat.coldim();
 	Element d;
-	typename Field::RandIter ri(field(),0,seed);
+	typename Field::RandIter ri(mat.field(),0,seed);
 	srand(seed);
 
         typedef std::pair<size_t,size_t> CoordPair;
@@ -583,7 +589,7 @@ void SparseMatrix<Field_,SparseMatrixFormat::SMM>::generateRandMat(SparseMatrix<
                         col = randRange(0,(int)n);
                 } while (pairs.count(CoordPair(row,col))!=0);
 
-                nonzerorandom(field(),ri,d);
+                nonzerorandom(mat.field(),ri,d);
                 mat.setEntry(row,col,d);
                 pairs.insert(CoordPair(row,col));
         }
@@ -614,7 +620,7 @@ void SparseMatrix<Field_,SparseMatrixFormat::SMM>::generateSparseNonSingular(Spa
 	Element d;
 
         for (int i=0;i<n;++i) {
-	        nonzerorandom(field(),r,d);
+	        nonzerorandom(mat.field(),r,d);
                 mat.setEntry(i,i,d);
         }
 
@@ -666,8 +672,8 @@ SparseMatrix<Field_,SparseMatrixFormat::SMM>::nonzerorandom(const Field_& F,type
 
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
