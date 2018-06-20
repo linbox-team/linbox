@@ -162,24 +162,11 @@ int main(int argc, char** argv) {
 	readMatrix(M, matrixFile);
 	
 	assert(M.rowdim() == M.coldim());
-	size_t n = M.rowdim();
 	
-	typedef FflasCsr<Field> Csr;
 	FflasCsr<Field> FM(&M);
 	std::vector<Polynomial> result;
 	if (precond == 1) { // determinant
-		SparseMat L(F, n, n);
-		SparseMat U(F, n, n);
-		randomTriangular(L, s, false, false);
-		randomTriangular(U, s, true, false);
-		
-		FflasCsr<Field> FL(&L);
-		FflasCsr<Field> FU(&U);
-		
-		BlockCompose<Csr, Csr> LU(FL, FU);
-		BlockCompose<Csr, BlockCompose<Csr, Csr>> MLU(FM, LU);
-		
-		IFD.largestInvariantFactors(result, MLU, b);
+		IFD.precondLifs(result, FM, b);
 	} else {
 		IFD.largestInvariantFactors(result, FM, b);
 	}
