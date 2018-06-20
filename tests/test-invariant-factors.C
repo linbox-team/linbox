@@ -113,7 +113,6 @@ int main(int argc, char** argv) {
 		{ 'k', "-k K", "Compute the (k+1)-th invariant factor", TYPE_INT, &k},
 		{ 's', "-s S", "Number of nonzeros in random triangular preconditioner", TYPE_INT, &s},
 		{ 'c', "-c C", "Choose what preconditioner to apply", TYPE_INT, &precond},
-		{ 'z', "-z Z", "Permute rows of input", TYPE_INT, &perm},
 		END_OF_ARGUMENTS
 	};
 
