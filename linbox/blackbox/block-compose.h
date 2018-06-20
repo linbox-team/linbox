@@ -95,15 +95,19 @@ public:
 		
 		_A.applyLeft(Z, X);
 		_B.applyLeft(Y, Z);
+		
+		return Y;
 	}
 	
 	// Y = X*A
 	template<class Matrix>
 	Matrix& applyRight(Matrix& Y, const Matrix& X) const {
-		BlasMatrix<Field> Z(_A.field(), X.rowdim(), B.coldim());
+		BlasMatrix<Field> Z(_A.field(), X.rowdim(), _B.coldim());
 		
 		_B.applyRight(Z, X);
 		_A.applyRight(Y, Z);
+		
+		return Y;
 	}
 	
 	template<class OutVector, class InVector>
@@ -112,14 +116,18 @@ public:
 		
 		_A.apply(z, x);
 		_B.apply(y, z);
+		
+		return y;
 	}
 	
 	template<class OutVector, class InVector>
 	OutVector& applyTranspose(OutVector& y, const InVector& x) const {
-		BlasVector<Field> z(_A.field(), B.coldim());
+		BlasVector<Field> z(_A.field(), _B.coldim());
 		
 		_B.applyTranspose(z, x);
 		_A.applyTranspose(y, z);
+		
+		return y;
 	}
 
 };
