@@ -235,6 +235,63 @@ int test_prob_single(std::ostream & report, size_t PrimeSize, size_t Size)
 	return EXIT_SUCCESS ;
 }
 
+// testing FullSingleCRA
+template< class T >
+int test_full_single(std::ostream & report, size_t PrimeSize, size_t Size)
+{
+	// true result
+        size_t maxbits = (PrimeSize-1) * Size;
+	size_t resbits = 1 + (random() % maxbits);
+	Integer actual = Integer::random(resbits);
+
+	typedef Givaro::Modular<double> ModularField ;
+
+        PrimeIterator<IteratorCategories::DeterministicTag> pgen(PrimeSize);
+
+	report << "FullSingleCRA (" << maxbits << ")";
+	report << " actual length " << actual.bitsize() << std::endl;
+	FullSingleCRA<ModularField> cra(maxbits) ;
+	Integer res = 0; // the result
+	typedef ModularField::Element Element;
+	T residue;
+	T prime;
+	{ /* init */
+		prime = *pgen;
+		residue = actual % prime;
+		call_initialize(cra, prime, residue);
+		++pgen;
+	}
+	size_t itercount = 1;
+	while (!cra.terminated())
+	{ /* progress */
+		prime = *pgen;
+		residue = actual % prime;
+		if (cra.noncoprime((integer)prime)) {
+			report << "bad luck, you picked twice the same prime..." <<std::endl;
+			report << "got a duplicate prime from deterministic prime gen" << std::endl;
+			Integer mod;
+			report << prime << ' ' << cra.getModulus(mod) << std::endl;
+			report << " *** FullSingleCRA failed. ***" << std::endl;
+			return EXIT_FAILURE ;
+		}
+		call_progress(cra, prime, residue);
+		++itercount;
+		++pgen;
+	}
+	report << "  " << itercount << " iterations, " << itercount*(PrimeSize-1) << " bits "
+		<< std::endl;
+
+	cra.result(res);
+	if (res != actual) {
+		report << res << " != " << actual << std::endl;
+		report << " *** FullSingleCRA failed. ***" << std::endl;
+		return EXIT_FAILURE ;
+	}
+
+	report << "FullSingleCRA exiting successfully." << std::endl;
+	return EXIT_SUCCESS ;
+}
+
 // testing EarlyMultipCRA
 template< class T >
 int test_early_multip(std::ostream & report, size_t PrimeSize, size_t Taille, size_t Size)
@@ -618,6 +675,10 @@ bool test_CRA_algos(size_t PrimeSize, size_t Size, size_t Taille, size_t iters)
         _LB_REPEAT( if (test_prob_single<double>(report,22,Size))                       pass = false ;  ) ;
 	_LB_REPEAT( if (test_prob_single<integer>(report,PrimeSize,Size))               pass = false ;  ) ;
 
+        /* FULL SINGLE */
+        _LB_REPEAT( if (test_full_single<double>(report,22,Size))                       pass = false ;  ) ;
+	_LB_REPEAT( if (test_full_single<integer>(report,PrimeSize,Size))               pass = false ;  ) ;
+
 	/* EARLY MULTIPLE */
 	_LB_REPEAT( if (test_early_multip<double>(report,22,Taille*2,Size))              pass = false ;  ) ;
 	_LB_REPEAT( if (test_early_multip<integer>(report,PrimeSize,Taille*2,Size))      pass = false ;  ) ;
@@ -696,11 +757,10 @@ int main(int ac, char ** av)
 	return !pass ;
 }
 
-// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
-// tab-width: 4
+// tab-width: 8
 // indent-tabs-mode: nil
-// c-basic-offset: 4
+// c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

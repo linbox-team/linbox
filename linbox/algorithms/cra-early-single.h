@@ -435,7 +435,7 @@ namespace LinBox
 		 *
 		 * @return true iff the early termination condition has been reached.
 		 */
-		bool terminated()
+		bool terminated() const
 		{
 			return occurency_ > EARLY_TERM_THRESHOLD;
 		}
@@ -547,9 +547,87 @@ namespace LinBox
 		 *
 		 * @return true iff the early termination condition has been reached.
 		 */
-		bool terminated()
+		bool terminated() const
 		{
 			return curfailprob_ <= failbound_;
+		}
+	};
+
+
+	/**  @brief Chinese Remaindering with full precision and no chance of failure.
+	 *
+	 * @ingroup CRA
+	 *
+	 */
+	template<class Domain_Type>
+	struct FullSingleCRA :public SingleCRABase<Domain_Type> {
+		typedef SingleCRABase<Domain_Type>	Base;
+		typedef Domain_Type			Domain;
+		typedef typename Domain::Element DomainElement;
+		typedef EarlySingleCRA<Domain> Self_t;
+
+	protected:
+		const size_t bitbound_;
+
+	public:
+		/** @brief Creates a new deterministic CRA object.
+		 *
+		 * @param	bitbound  An upper bound on the number of bits in the result.
+		 * @param	failprob  An upper bound on the probability of failure.
+		 */
+		FullSingleCRA(const size_t bitbound) :
+			bitbound_(bitbound)
+		{
+		}
+
+		/** @brief Initialize the CRA with the first residue.
+		 *
+		 * The eventually-recovered number will be congruent to e modulo D.
+		 * This function must be called just once. Subsequent calls
+		 * should be made to the progress() function.
+		 *
+		 * Either the types of D and e should both be Integer,
+		 * or D is the domain type (e.g., Modular<double>) and
+		 * e is the element type (e.g., double)
+		 *
+		 * @param D	The modulus
+		 * @param e	The residue
+		 */
+		template <typename ModType, typename ResType>
+		void initialize (const ModType& D, const ResType& e)
+		{
+			Base::initialize(D,e);
+		}
+
+		/** @brief Update the residue and termination condition.
+		 *
+		 * The eventually-recovered number will be congruent to e modulo D.
+		 *
+		 * The initialize function must be called at least once before
+		 * calling this one.
+		 *
+		 * Either the types of D and e should both be Integer,
+		 * or D is the domain type (e.g., Modular<double>) and
+		 * e is the element type (e.g., double)
+		 *
+		 * @param D	The modulus of the new image
+		 * @param e	The residue modulo D
+		 */
+		template <typename ModType, typename ResType>
+		void progress (const ModType& D, const ResType& e)
+		{
+			// Precondition : initialize has been called once before
+			// linbox_check(curfailprob_ >= 0.);
+			Base::progress_check(D,e);
+		}
+
+		/** @brief Checks whether the CRA is finished.
+		 *
+		 * @return true iff the early termination condition has been reached.
+		 */
+		bool terminated() const
+		{
+			return Base::modbits() > bitbound_;
 		}
 	};
 
@@ -558,11 +636,10 @@ namespace LinBox
 #endif //__LINBOX_cra_early_single_H
 
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 8
 // indent-tabs-mode: nil
 // c-basic-offset: 8
 // End:
-
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
