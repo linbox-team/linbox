@@ -151,6 +151,7 @@ FULLCHECK_TESTS =               \
 	test-permutation			\
 	test-plain-domain			\
 	test-poly-det				\
+	test-poly-dixon				\
 	test-qlup					\
 	test-quad-matrix			\
 	test-randiter-nonzero		\
@@ -161,6 +162,7 @@ FULLCHECK_TESTS =               \
 	test-rat-minpoly			\
 	test-rat-solve				\
 	test-scalar-matrix			\
+	test-poly-smith-form        \
 	test-smith-form             \
 	test-smith-form-adaptive 	\
 	test-smith-form-binary      \
@@ -180,7 +182,14 @@ FULLCHECK_TESTS =               \
 	test-triplesbb-omp			\
 	test-tutorial				\
 	test-vector-domain			\
-	test-zero-one				
+	test-zero-one				\
+	test-invariant-factors \
+	test-frobenius-small \
+	test-frobenius-large \
+	test-polynomial-local-x \
+	test-weak-popov-form \
+	try-invariant-factors \
+	test-fgemm
 
 # Really just one or two of these would be enough for target check.
 # The rest can be in target fullcheck.
@@ -311,6 +320,7 @@ test_param_fuzzy_SOURCES =              test-param-fuzzy.C
 test_permutation_SOURCES =              test-permutation.C
 test_plain_domain_SOURCES =             test-plain-domain.C
 test_poly_det_SOURCES =                 test-poly-det.C
+test_poly_dixon_SOURCES =				test-poly-dixon.C
 test_qlup_SOURCES =                     test-qlup.C
 test_quad_matrix_SOURCES =              test-quad-matrix.C
 test_randiter_nonzero_SOURCES =         test-randiter-nonzero.C
@@ -332,6 +342,7 @@ test_smith_form_binary_SOURCES =        test-smith-form-binary.C
 test_smith_form_iliopoulos_SOURCES =    test-smith-form-iliopoulos.C
 test_smith_form_kannan_bachem_SOURCES = test-smith-form-kannan-bachem.C
 test_smith_form_local_SOURCES =         test-smith-form-local.C
+test_poly_smith_form_SOURCES =          test-poly-smith-form.C
 test_local_smith_form_sparseelim_SOURCES = test-local-smith-form-sparseelim.C
 test_smith_form_SOURCES =               test-smith-form.C
 test_solve_nonsingular_SOURCES =        test-solve-nonsingular.C
@@ -351,6 +362,13 @@ test_tutorial_SOURCES =                 test-tutorial.C
 test_vector_domain_SOURCES =            test-vector-domain.C test-vector-domain.h
 test_zero_one_SOURCES =                 test-zero-one.C
 test_polynomial_ring_SOURCES =          test-polynomial-ring.C
+test_invariant_factors_SOURCES =		test-invariant-factors.C
+test_frobenius_small_SOURCES =          test-frobenius-small.C
+test_frobenius_large_SOURCES =          test-frobenius-large.C
+test_polynomial_local_x_SOURCES =       test-polynomial-local-x.C
+test_weak_popov_form_SOURCES =			test-weak-popov-form.C
+try_invariant_factors_SOURCES =         try-invariant-factors.C
+test_fgemm_SOURCES =                    test-fgemm.C
 
 # Perfpublisher script interaction - AB 2014/12/11
 perfpublisher:
