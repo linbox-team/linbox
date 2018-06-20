@@ -36,7 +36,10 @@
 #include "linbox/vector/blas-vector.h"
 #include "linbox/solutions/solve.h"
 #include "linbox/solutions/charpoly.h"
+#include "linbox/algorithms/smith-form-sparseelim-poweroftwo.h"
 using namespace LinBox;
+typedef Givaro::ZRing<Givaro::Integer> ZRingInts;
+
 
 bool testSolveSparse(){
 
@@ -66,6 +69,9 @@ bool testSolveSparse(){
     if (!F.areEqual (x[0],73)) return false;
     if (!F.areEqual (x[1],76)) return false;
     if (!F.areEqual (x[2],10)) return false;
+
+    std::cout << "TSSF: PASSED" << std::endl;
+
     return true;
 }
 
@@ -112,6 +118,8 @@ bool testSolveSparseSage(){
     if (x[1] != 76) return false;
     if (x[2] != 10) return false;
     
+    std::cout << "TSSS: PASSED" << std::endl;
+
     return true;
 }
 #else
@@ -136,13 +144,15 @@ bool testFlatDixonSolver (const Specifier& m){
     M.setEntry(0,1,1);
     ZZ.assign(B[0],1);
 
-        // solving via Sparse Elimination
+        // solving via Dixon lifting
     solve (A, D, M, B, m);
 
     if (!ZZ.areEqual(A[0],ZZ.one) || !ZZ.areEqual(A[1],ZZ.zero) || !ZZ.areEqual(D,ZZ.one)) {
-        std::cerr<<"Fail solving a flat system over QQ with a SparseMatrix"<<std::endl;
+        std::cerr<<"**** ERROR **** Fail solving a flat system over QQ via Dixon Lifting"<<std::endl;
         return false;
-    }
+    } else 
+        std::cout << "TFDS: PASSED" << std::endl;
+
 
     return true;
 }
@@ -162,14 +172,16 @@ bool testFlatDixonSolver2 (const Specifier& m){
     M.setEntry(0,1,0);
     ZZ.assign(B[0],1);
 
-        // solving via Sparse Elimination
+        // solving via Dixon Lifting
     solve (A, D, M, B, m);
 
     if (!ZZ.areEqual(A[0],ZZ.one) || !ZZ.areEqual(D,ZZ.one)) {
         std::cerr<<"A = "<<A<<" D = "<<D<<std::endl;
-        std::cerr<<"Fail solving a flat system over QQ with a SparseMatrix"<<std::endl;
+        std::cerr<<"**** ERROR **** Fail solving a flat system over QQ via Dixon Lifting"<<std::endl;
         return false;
-    }
+    } else 
+        std::cout << "TFD2: PASSED" << std::endl;
+
 
     return true;
 }
@@ -189,13 +201,15 @@ bool testTallDixonSolver (const Specifier& m){
     ZZ.assign(B[0],1);
     ZZ.assign(B[1],1);
 
-        // solving via Sparse Elimination
+        // solving via Dixon Lifting
     solve (A, D, M, B, m);
 
     if (!ZZ.areEqual(A[0],ZZ.one) || !ZZ.areEqual(D,ZZ.one)) {
-        std::cerr<<"Fail solving a tall system over QQ with a SparseMatrix"<<std::endl;
+        std::cerr<<"**** ERROR **** Fail solving a tall system over QQ via Dixon Lifting"<<std::endl;
         return false;
-    }
+    } else 
+        std::cout << "TTDS: PASSED" << std::endl;
+
 
     return true;
 
@@ -219,9 +233,11 @@ bool testSingularDixonSolver (const Specifier& m){
 
     if (!ZZ.areEqual(A[0],Integer(2)) || !ZZ.areEqual(D,ZZ.one)) {
         std::cerr<<"A = "<<A<<" D = "<<D<<std::endl;
-        std::cerr<<"Fail solving a singular system over QQ with a SparseMatrix"<<std::endl;
+        std::cerr<<"**** ERROR **** Fail solving a singular system over QQ with a SparseMatrix"<<std::endl;
         return false;
-    }
+    } else 
+        std::cout << "TSDS: PASSED" << std::endl;
+
     return true;
 }
 bool testZeroDixonSolver (const Specifier& m){
@@ -237,14 +253,141 @@ bool testZeroDixonSolver (const Specifier& m){
     M.setEntry(0,0,0);
     ZZ.assign(B[0],0);
 
-        // solving via Sparse Elimination
+        // solving via Dixon Lifting
     solve (A, D, M, B, m);
 
     if (!ZZ.areEqual(A[0],ZZ.zero) || !ZZ.areEqual(D,ZZ.one)) {
         std::cerr<<"A = "<<A<<" D = "<<D<<std::endl;
-        std::cerr<<"Fail solving a zero over QQ with a SparseMatrix"<<std::endl;
+        std::cerr<<"**** ERROR **** Fail solving a zero over QQ via Dixon Lifting"<<std::endl;
         return false;
+    } else 
+        std::cout << "TZDS: PASSED" << std::endl;
+
+    return true;
+}
+
+
+
+// test for bug #107 from Zhu
+bool testDixonSolverWithMPrhs (){
+
+    // creating LinBox matrices and vectors
+    Givaro::ZRing<Integer> ZZ;
+    typedef DenseVector<Givaro::ZRing<Integer> > DenseVector;
+
+    DenseMatrix<Givaro::ZRing<Integer> > A (ZZ,1,1);
+    Givaro::ZRing<Integer>::Element D; // denominator of the solution
+    DenseVector X(ZZ, A.coldim()); // numerator of the solution
+    DenseVector B(ZZ, A.rowdim()); // Right handside of the system
+
+    A.setEntry(0,0,Integer("12345678901234567890"));
+    ZZ.assign(B[0],Integer("12345678901234567890"));
+    
+    // solving via Dixon lifting 
+    solve (X, D, A, B, Method::BlasElimination());
+
+    if (!ZZ.areEqual(X[0],ZZ.one) ||  !ZZ.areEqual(D,ZZ.one)) {
+        std::cerr<<"**** ERROR **** Fail solving a system over QQ with a DenseMatrix and a MP rhs"<<std::endl;
+        return false;
+    } else 
+        std::cout << "TDSM: PASSED" << std::endl;
+
+
+    return true;
+}
+
+bool testSparseRationalSolver() {
+    typedef Givaro::QField<Givaro::Rational> Rats;
+    Rats QQ;
+    typedef DenseVector<Rats> RVector;
+    SparseMatrix<Rats> A (QQ,1,3);
+    RVector X(QQ, A.coldim()),B(QQ, A.rowdim()),L(QQ, A.rowdim());
+    A.setEntry(0,1,1);
+    A.setEntry(0,2,2);
+    QQ.assign(B[0],1);
+
+        // Directly solve of Q
+    solve(X,A,B,Method::SparseElimination());
+
+    MatrixDomain<Rats> MD(QQ);
+    VectorDomain<Rats> VD(QQ);
+
+    MD.vectorMul(L, A, X);
+
+    if (! VD.areEqual(L, B)) {
+        A.write(std::cerr << "A:=", LinBox::Tag::FileFormat::Maple) << ';' << std::endl;
+        std::cerr<<"X:= "<< X << ';' << std::endl;
+        std::cerr<<"B:= "<< B << ';' << std::endl;
+        std::cerr<<"L:= "<< L << ';' << std::endl;
+        std::cerr<<"**** ERROR **** Fail solving a sparse system over QQ"<<std::endl;
+        return false;
+    } else 
+        std::cout << "TSRS: PASSED" << std::endl;
+
+
+    return true;
+}
+
+template<typename Matrix_t=SparseMatrix<ZRingInts>>
+bool testDixonRectangularSolver(const Specifier& m) {
+    ZRingInts ZZ;
+    typedef DenseVector<ZRingInts> RVector;
+    Matrix_t A (ZZ,1,3);
+    RVector X(ZZ, A.coldim()),B(ZZ, A.rowdim()),L(ZZ, A.rowdim());
+    ZRingInts::Element d;
+    
+    A.setEntry(0,1,1);
+    A.setEntry(0,2,2);
+    ZZ.assign(B[0],1);
+
+        // Dixon Lifting 
+    solve(X,d,A,B,m);
+
+    bool pass=true;
+
+    if (ZZ.isZero(d)) 
+        pass = false;
+    else {
+        MatrixDomain<ZRingInts> MD(ZZ);
+        VectorDomain<ZRingInts> VD(ZZ);
+
+        MD.vectorMul(L, A, X);
+        VD.mulin(B, d);
+
+        if (! VD.areEqual(L, B)) {
+            pass = false;
+        }
     }
+    
+    if (! pass) {
+        A.write(std::cerr << "A:=", LinBox::Tag::FileFormat::Maple) << ';' << std::endl;
+        std::cerr<<"X:= "<< X << ';' << std::endl;
+        std::cerr<<"d:= "<< d << ';' << std::endl;
+        std::cerr<<"d * B:= "<< B << ';' << std::endl;
+        std::cerr<<"L:= "<< L << ';' << std::endl;
+        std::cerr<<"**** ERROR **** Fail solving a sparse system over ZZ" <<std::endl;
+        return false;
+    } else 
+        std::cout << "TDRS: PASSED" << std::endl;
+    return true;
+}
+
+bool testSparse1x1Det(unsigned long v){
+    ZRingInts ZZ;
+    SparseMatrix<ZRingInts> A(ZZ, 1, 1);
+    Integer x(v);
+    A.setEntry(0,0,x);
+    Integer d; 
+    
+    if (! ZZ.areEqual(x, det(d,A)) ) {
+        A.write(std::cerr << "A:=", LinBox::Tag::FileFormat::Maple) << ';' << std::endl;
+        std::cerr<<"x:= "<< x << ';' << std::endl;
+        std::cerr<<"d:= "<< d << ';' << std::endl;
+        std::cerr<<"**** ERROR **** Fail determinant 1x1 matrix" <<std::endl;
+        return false;
+    } else 
+        std::cout << "TSD1: PASSED" << std::endl;
+    
     return true;
 }
 
@@ -283,6 +426,68 @@ bool testBigScalarCharPoly(){
     return PR.areEqual(P,Q);
 }
 
+
+bool testLocalSmith(){
+    typedef Givaro::ZRing<int64_t> Ring;
+    typedef std::vector<std::pair<size_t,uint64_t> > Smith_t;
+    typedef LinBox::SparseMatrix<Ring,
+        LinBox::SparseMatrixFormat::SparseSeq > SparseMat;
+
+    Smith_t local;
+    Ring R;
+    SparseMat A(R,2,3);
+    A.setEntry(0,0, 2);
+    A.setEntry(0,2, 1);
+    A.setEntry(1,0, 2);
+
+    LinBox::PowerGaussDomainPowerOfTwo< uint64_t > PGD;
+    LinBox::GF2 F2;
+    Permutation<GF2> Q(F2,A.coldim());
+
+    PGD(local, A, Q, 5, PRESERVE_UPPER_MATRIX|PRIVILEGIATE_NO_COLUMN_PIVOTING);
+
+    std::cout << "Local Smith: {";
+    for(auto const& it:local) std::cout << it.first << ':' << it.second << ' ';
+    std::cout << '}' << std::endl;
+
+// > ([1,1] [1,2] )
+// > [[1, 2, 0 ], [0, 1, 0 ]]
+// > [[0,0,1], [1,0,0], [0,1,0]]
+
+        // Smith form
+    bool success =
+        (local.size() == 2U) &&
+        (local[0].first == 1U) &&
+        (local[0].second == 1U) &&
+        (local[1].first == 1U) &&
+        (local[1].second == 2U) ;
+
+    A.write(std::cout << "A:=", LinBox::Tag::FileFormat::Maple) << ';' << std::endl;
+
+        // Upper triangular
+    success &=
+        (A[0].size() == 2) &&
+        (A[0][0].first == 0U) &&
+        (A[0][0].second == 1U) &&
+        (A[0][1].first == 1U) &&
+        (A[0][1].second == 2U) &&
+        (A[1].size() == 1) &&
+        (A[1][0].first == 1U) &&
+        (A[1][0].second == 1U);
+
+    Q.write(std::cout << "Q:=", LinBox::Tag::FileFormat::Maple) << ';' << std::endl;
+
+        // Permutation
+    success &=
+        (Q[0] == 2) &&
+        (Q[1] == 0) &&
+        (Q[2] == 1);
+
+    return success;
+}
+
+
+
 int main (int argc, char **argv)
 {
     bool pass = true;
@@ -302,9 +507,27 @@ int main (int argc, char **argv)
     pass &= testZeroDixonSolver (Method::SparseElimination());
     pass &= testSingularDixonSolver (Method::BlasElimination());
     pass &= testZeroDixonSolver (Method::BlasElimination());
+    pass &= testDixonSolverWithMPrhs ();
+    pass &= testSparseRationalSolver ();
+    pass &= testDixonRectangularSolver<> (Method::BlasElimination());
+    pass &= testDixonRectangularSolver<> (Method::SparseElimination());
+    pass &= testDixonRectangularSolver<> (Method::Wiedemann());
+    pass &= testDixonRectangularSolver<DenseMatrix<ZRingInts>> (Method::BlasElimination());
+    pass &= testDixonRectangularSolver<DenseMatrix<ZRingInts>> (Method::SparseElimination());
+    pass &= testDixonRectangularSolver<DenseMatrix<ZRingInts>> (Method::Wiedemann());
+    pass &= testSparse1x1Det(1<<26);
     pass &= testZeroDimensionalCharPoly ();
     pass &= testZeroDimensionalMinPoly ();
     pass &= testBigScalarCharPoly ();
+    pass &= testLocalSmith ();
 
     return pass ? 0 : -1;
 }
+
+// Local Variables:
+// mode: C++
+// tab-width: 4
+// indent-tabs-mode: nil
+// c-basic-offset: 4
+// End:
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

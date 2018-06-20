@@ -345,16 +345,16 @@ namespace LinBox
 		std::cout << "\npX in is " << pxIn << std::endl;
 		std::cout << "multiplied by " << this->pdata << std::endl;
 #endif
-
 		this->P.mul(pOut, pIn, this->pdata);
 
 #ifdef DBGMSGS
 		std::cout <<"pxOut is " << pxOut << std::endl;
 #endif
-
+		
 		size_t N = this->rowdim();
+		size_t M = this->coldim();
 		for( size_t i = 0; i < N; ++i )
-			this->P.getCoeff(v_out[i], pOut, N-1+i);
+			this->P.getCoeff(v_out[i], pOut, M-1+i);
 
 		return v_out;
 
@@ -409,8 +409,8 @@ namespace LinBox
 
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

@@ -765,8 +765,8 @@ namespace LinBox
 
 		// y= Ax
 		// y[i] = sum(A(i,j) x(j)
-		template<class Vector>
-		Vector& apply(Vector &y, const Vector& x, const Element & a ) const
+		template<class outVector, class inVector>
+		outVector& apply(outVector &y, const inVector& x, const Element & a ) const
 		{
 			// linbox_check(consistent());
 			prepare(field(),y,a);
@@ -1484,8 +1484,8 @@ namespace LinBox
 
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

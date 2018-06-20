@@ -46,7 +46,7 @@
 
 #include <givaro/zring.h>
 #include "linbox/field/field-traits.h"
-
+#include "linbox/field/hom.h"
 
 
 #include "linbox/integer.h"
@@ -88,12 +88,28 @@ namespace LinBox
 
         //! use ZZ_pEBak mechanism too ?
 	class NTL_zz_pE_Initialiser {
+		NTL::zz_pX _f;
 	public :
 		NTL_zz_pE_Initialiser( const Integer & p, const Integer & k) {
 			NTL::zz_p::init( (int64_t) p);
 			NTL::zz_pX irredPoly = NTL::BuildIrred_zz_pX ((int64_t) k);
 			NTL::zz_pE::init(irredPoly);
-
+			_f = irredPoly;
+		}
+		
+		NTL_zz_pE_Initialiser( const Integer & p, const NTL::zz_pX & f) {
+			NTL::zz_p::init((int64_t) p);
+			NTL::zz_pE::init(f);
+			_f = f;
+		}
+		
+		NTL_zz_pE_Initialiser(const NTL::zz_pX &f) {
+			NTL::zz_pE::init(f);
+			_f = f;
+		}
+		
+		const NTL::zz_pX& modulus() const {
+			return _f;
 		}
 
             // template <class ElementInt>
@@ -126,19 +142,25 @@ namespace LinBox
 
 		NTL_zz_pE (const integer &p, const integer &k) :
                 NTL_zz_pE_Initialiser(p,k),Father_t ()
-                //,zero( NTL::to_zz_pE(0)),one( NTL::to_zz_pE(1)),mOne(-one)
-
-            {	init(const_cast<Element &>(zero), 0);
+        {
+        	init(const_cast<Element &>(zero), 0);
 		 	init(const_cast<Element &>(one), 1);
 		 	init(const_cast<Element &>(mOne), p-1);
-
-                /*
-                  NTL::clear(const_cast<Element &>(zero));
-                  NTL::set(const_cast<Element &>(one));
-                  init(const_cast<Element &>(mOne));
-                  neg(const_cast<Element &>(mOne), one);
-                */
-            }
+		}
+        
+		NTL_zz_pE (const integer &p, const NTL::zz_pX &f) :
+                NTL_zz_pE_Initialiser(p,f), Father_t()
+        {
+            init(const_cast<Element &>(zero), 0);
+		 	init(const_cast<Element &>(one), 1);
+		 	init(const_cast<Element &>(mOne), p-1);
+        }
+        
+        NTL_zz_pE(const NTL_zz_pE &F) :
+        	NTL_zz_pE_Initialiser(F.modulus()), Father_t(),
+        	zero(NTL::to_zz_pE(0)), one(NTL::to_zz_pE(1)), mOne(-one)
+		{
+        }
 
 		Element& random (Element& x) const
             {
@@ -160,14 +182,15 @@ namespace LinBox
 
 		bool isUnit (const Element& x) const
             {
-                if (deg(rep(x))==0) {
-                    NTL::zz_p c(rep(x)[0]);
-                    long d,u;
-                    Givaro::invext(u,d,rep(c),NTL::zz_p::modulus());
-                    return (d==1) || (d==-1);
-//                     return !NTL::InvModStatus(d,rep(c),NTL::zz_p::modulus());
-                } else
-                    return false;
+            	if (isZero(x)) {
+            		return false;
+            	} 
+            	
+            	NTL::zz_pX g, tmp;
+            	tmp = NTL::conv<NTL::zz_pX>(x);
+            	NTL::GCD(g, tmp, modulus());
+            	
+            	return g == 1;
             }
 
 		bool isMOne (const Element& x) const
@@ -192,6 +215,15 @@ namespace LinBox
                     //write(std::cout << "init-ed ", x) << std::endl;
                 return x;
             }
+        
+        // documentation of NTL::conv:
+        // http://www.shoup.net/ntl/doc/conversions.txt
+        // XXX = long, ZZ, ZZ_p, ZZ_pE, ZZ_pX
+        template<class XXX>
+        Element &init(Element &x, const XXX &y) const {
+        	x = NTL::conv<NTL::zz_pE>(y);
+        	return x;
+        }
 
         integer & convert(integer & x, const Element & y) const
             {
@@ -247,8 +279,83 @@ namespace LinBox
                 x=one/x;
                 return x;
             }
+        
+        Element& div(Element &x, const Element &y, const Element &z) const {
+        	NTL::zz_pX g, zx;
+        	conv(zx, z);
+        	NTL::GCD(g, zx, modulus());
+        	
+        	NTL::zz_pE zg;
+        	conv(zg, zx / g);
+        	x = NTL::conv<NTL::zz_pE>(NTL::conv<NTL::zz_pX>(y) / g);
+        	x /= zg;
+        	
+        	return x;
+        }
+        
+        Element& divin(Element &x, const Element &y) const {
+        	Element r;
+        	div(r, x, y);
+        	return x = r;
+        }
 
-
+        bool isDivisor(const Element &x, const Element &y) const {
+        	if (isZero(y)) {
+        		return false;
+        	}
+        	
+        	if (isUnit(y)) {
+        		return true;
+        	}
+        	
+        	NTL::zz_pX a, b;
+        	conv(a, x);
+        	conv(b, y);
+        	
+        	NTL::zz_pX ga, gb;
+        	NTL::GCD(ga, a, modulus());
+        	NTL::GCD(gb, b, modulus());
+        	
+        	NTL::zz_pX r;
+        	r = ga % gb;
+        	return isZero(NTL::conv<Element>(r));
+        }
+		
+		Element& gcd(Element &g, const Element &a, const Element &b) const {
+			NTL::zz_pX r1, r2, x, y;
+			conv(x, a);
+			conv(y, b);
+			
+			NTL::GCD(r1, x, modulus());
+			NTL::GCD(r2, y, r1);
+			
+			return g = NTL::conv<Element>(r2);
+		}
+		
+		Element& gcdin(Element &a, const Element &b) const {
+			NTL::zz_pE g;
+			gcd(g, a, b);
+			return a = g;
+		}
+		
+		Element& dxgcd(Element &g, Element &s, Element &t, Element &u, Element &v, const Element &a, const Element &b) const {
+			NTL::zz_pX gx, sx, tx, ux, vx, ax, bx;
+			conv(ax, a);
+			conv(bx, b);
+			
+			NTL::XGCD(gx, sx, tx, ax, bx);
+			
+			ux = ax / gx;
+			vx = bx / gx;
+			
+			conv(g, gx);
+			conv(s, sx);
+			conv(t, tx);
+			conv(u, ux);
+			conv(v, vx);
+			
+			return g;
+		}
 
 		std::istream& read(std::istream& is, Element& x) const
             {
@@ -257,6 +364,16 @@ namespace LinBox
                 x=NTL::to_zz_pE(tmp);
                 return is;
             }
+            
+		std::ostream& write( std::ostream& os ) const
+            {
+                return os << "Polynomial quotient ring using NTL::zz_pE";
+            }
+            
+		std::ostream& write( std::ostream& os, const Element& x) const {
+			os << x;
+			return os;
+		}
 	}; // end of class NTL_zz_pE
 
 
@@ -310,16 +427,15 @@ namespace LinBox
 		size_t _seed;
         const NTL_zz_pE& _ring;
 	}; // class UnparametricRandIters
+	
 } // LinBox
 
 #endif //__LINBOX_ntl_lzz_pe_H
 
-
-// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 4
 // indent-tabs-mode: nil
 // c-basic-offset: 4
 // End:
-
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

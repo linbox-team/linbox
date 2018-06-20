@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
 /*
  * Copyright (C) 2015  Pascal Giorgi
  *
@@ -695,3 +694,11 @@ namespace LinBox{
 } // end of namespace LinBox
 
 #endif // __LINBOX_matpoly_mult_ftt_multiprecision_INL
+
+// Local Variables:
+// mode: C++
+// tab-width: 4
+// indent-tabs-mode: nil
+// c-basic-offset: 4
+// End:
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

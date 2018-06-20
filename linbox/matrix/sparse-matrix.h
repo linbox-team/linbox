@@ -79,6 +79,7 @@ namespace LinBox {
 // #include "sparsematrix/sparse-bcsr-matrix.h"
 // #include "sparsematrix/sparse-dia-matrix.h"
 // #include "sparsematrix/sparse-hyb-matrix.h"
+#include "sparsematrix/sparse-map-map-matrix.h"
 
 #include "sparsematrix/sparse-tpl-matrix.h"
 // #ifdef __LINBOX_USES_OPENMP
@@ -277,11 +278,10 @@ namespace LinBox { /* Junk */
 
 #endif // __LINBOX_matrix_sparse_matrix_H
 
-
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

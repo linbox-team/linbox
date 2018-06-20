@@ -47,10 +47,9 @@
 namespace LinBox
 {
 
-	/*! @brief no doc.
-	 */
-	template<class _Field, class _Blackbox>
-	class BlackboxBlockContainer : public BlackboxBlockContainerBase<_Field,_Blackbox> {
+	// For non-block blackbox's use blockbb to convert to a block blackbox
+	template<class _Field, class _Blackbox, class _MatrixDomain = BlasMatrixDomain<_Field>>
+	class BlackboxBlockContainer : public BlackboxBlockContainerBase<_Field,_Blackbox,_MatrixDomain> {
 	public:
 		typedef _Field                         Field;
 		typedef typename Field::Element      Element;
@@ -63,7 +62,7 @@ namespace LinBox
 
 		// constructor of the sequence from a blackbox, a field and one block projection
 		BlackboxBlockContainer(const _Blackbox *D, const Field &F, const Block  &U0) :
-			BlackboxBlockContainerBase<Field,_Blackbox> (D, F, U0.rowdim(), U0.coldim()) , _blockW(D->rowdim(), U0.coldim()), _BMD(F)
+			BlackboxBlockContainerBase<Field,_Blackbox,_MatrixDomain> (D, F, U0.rowdim(), U0.coldim()) , _blockW(D->rowdim(), U0.coldim()), _BMD(F)
 		{
 #ifdef _BBC_TIMING
 			clearTimer();
@@ -79,7 +78,7 @@ namespace LinBox
 
 		// constructor of the sequence from a blackbox, a field and two blocks projection
 		BlackboxBlockContainer(const _Blackbox *D, const Field &F, const Block &U0, const Block& V0) :
-			BlackboxBlockContainerBase<Field,_Blackbox> (D, F,U0.rowdim(), V0.coldim())
+			BlackboxBlockContainerBase<Field,_Blackbox,_MatrixDomain> (D, F,U0.rowdim(), V0.coldim())
 			, _blockW(F,D->rowdim(), V0.coldim()), _BMD(F)
 		{
 #ifdef _BBC_TIMING
@@ -96,7 +95,7 @@ namespace LinBox
 
 		//  constructor of the sequence from a blackbox, a field and two blocks random projection
 		BlackboxBlockContainer(const _Blackbox *D, const Field &F, size_t m, size_t n, size_t seed= (size_t)time(NULL)) :
-			BlackboxBlockContainerBase<Field, _Blackbox> (D, F, m, n,seed)
+			BlackboxBlockContainerBase<Field, _Blackbox, _MatrixDomain> (D, F, m, n,seed)
 			, _blockW(F,D->rowdim(), n), _BMD(F)
 		{
 #ifdef _BBC_TIMING
@@ -122,10 +121,9 @@ namespace LinBox
 		}
 #endif
 
-
 	protected:
 		Block                        _blockW;
-		BlasMatrixDomain<Field>    _BMD;
+		_MatrixDomain    _BMD;
 
 #ifdef _BBC_TIMING
 		Timer     ttSequence, tSequence;
@@ -159,8 +157,8 @@ namespace LinBox
 
 	/*! @brief no doc.
 	 */
-	template<class _Field, class _Blackbox>
-	class BlackboxBlockContainerRecord : public BlackboxBlockContainerBase<_Field,_Blackbox> {
+	template<class _Field, class _Blackbox, class _MatrixDomain = MatrixDomain<_Field>>
+	class BlackboxBlockContainerRecord : public BlackboxBlockContainerBase<_Field,_Blackbox,_MatrixDomain> {
 
 	public:
 		typedef _Field                        Field;
@@ -176,7 +174,7 @@ namespace LinBox
 
 		// constructor of the sequence from a blackbox, a field and one block projection
 		BlackboxBlockContainerRecord(const _Blackbox *D, const Field &F, const Block  &U0) :
-			BlackboxBlockContainerBase<Field,_Blackbox> (D, F, U0.rowdim(), U0.coldim())
+			BlackboxBlockContainerBase<Field,_Blackbox,_MatrixDomain> (D, F, U0.rowdim(), U0.coldim())
 			, _blockW(F, D->rowdim(), U0.coldim()), _BMD(F), _launcher(Nothing), _iter(1)
 		{
 			this->init (U0, U0);
@@ -191,7 +189,7 @@ namespace LinBox
 
 		// constructor of the sequence from a blackbox, a field and two blocks projection
 		BlackboxBlockContainerRecord(const _Blackbox *D, const Field &F, const Block &U0, const Block& V0, bool denseblock= true) :
-			BlackboxBlockContainerBase<Field,_Blackbox> (D, F,U0.rowdim(), V0.coldim())
+			BlackboxBlockContainerBase<Field,_Blackbox,_MatrixDomain> (D, F,U0.rowdim(), V0.coldim())
 			, _blockW(F,D->rowdim(), V0.coldim()), _BMD(F),  _launcher(Nothing), _iter(1)
 		{
 #ifdef _BBC_TIMING
@@ -236,7 +234,7 @@ namespace LinBox
 
 		//  constructor of the sequence from a blackbox, a field and two blocks random projection
 		BlackboxBlockContainerRecord(const _Blackbox *D, const Field &F, size_t m, size_t n, size_t seed= (size_t)time(NULL)) :
-			BlackboxBlockContainerBase<Field, _Blackbox> (D, F, m, n,seed),
+			BlackboxBlockContainerBase<Field, _Blackbox, _MatrixDomain> (D, F, m, n,seed),
 			_blockW(D->rowdim(), n), _BMD(F), _launcher(Nothing), _iter(1)
 		{
 #ifdef _BBC_TIMING
@@ -376,7 +374,7 @@ namespace LinBox
 
 		Block                           _blockW;
 		Block                       _Vcopy;
-		BlasMatrixDomain<Field>       _BMD;
+		_MatrixDomain       _BMD;
 		std::vector<Value>            _rep;
 		size_t                    _upd_idx;
 		std::vector<Element>            _u;
@@ -526,11 +524,10 @@ namespace LinBox
 
 #endif // __LINBOX_blackbox_block_container_H
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
