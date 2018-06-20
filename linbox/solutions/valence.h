@@ -99,7 +99,7 @@ namespace LinBox
 
 #include "linbox/ring/modular.h"
 #include "linbox/algorithms/cra-domain.h"
-#include "linbox/algorithms/cra-early-single.h"
+#include "linbox/algorithms/cra-single.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/matrix-hom.h"
 
