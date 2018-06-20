@@ -78,7 +78,7 @@ pkgincludesub_HEADERS =            \
 	cra-domain-seq.h                   \
 	cra-domain-omp.h                   \
 	cra-early-multip.h                 \
-	cra-early-single.h                 \
+	cra-single.h                       \
 	cra-full-multip.h                  \
 	cra-full-multip-fixed.h            \
 	cra-givrnsfixed.h                  \

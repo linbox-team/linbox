@@ -32,7 +32,7 @@
 #include "linbox/solutions/methods.h"
 #include <vector>
 #include <utility>
-#include "linbox/algorithms/cra-early-single.h"
+#include "linbox/algorithms/cra-single.h"
 #include "linbox/algorithms/cra-full-multip.h"
 #include "linbox/algorithms/lazy-product.h"
 

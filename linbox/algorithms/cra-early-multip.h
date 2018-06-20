@@ -36,7 +36,7 @@
 #include <vector>
 #include <utility>
 
-#include "linbox/algorithms/cra-early-single.h"
+#include "linbox/algorithms/cra-single.h"
 #include "linbox/algorithms/cra-full-multip.h"
 
 

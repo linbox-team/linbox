@@ -34,7 +34,7 @@
 #include "linbox/integer.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/cra-domain.h"
-#include "linbox/algorithms/cra-early-single.h"
+#include "linbox/algorithms/cra-single.h"
 #include "linbox/algorithms/cra-early-multip.h"
 
 #include "linbox/matrix/dense-matrix.h"
@@ -252,7 +252,6 @@ int test_full_single(std::ostream & report, size_t PrimeSize, size_t Size)
 	report << " actual length " << actual.bitsize() << std::endl;
 	FullSingleCRA<ModularField> cra(maxbits) ;
 	Integer res = 0; // the result
-	typedef ModularField::Element Element;
 	T residue;
 	T prime;
 	{ /* init */

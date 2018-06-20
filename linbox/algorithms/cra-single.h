@@ -22,14 +22,14 @@
  * ========LICENCE========
  */
 
-/*! @file algorithms/cra-early-single.h
+/*! @file algorithms/cra-single.h
  * @ingroup algorithms
- * @brief NO DOC
+ * @brief Chinese remaindering of a single value
  */
 
 
-#ifndef __LINBOX_cra_early_single_H
-#define __LINBOX_cra_early_single_H
+#ifndef __LINBOX_cra_single_H
+#define __LINBOX_cra_single_H
 
 #include "linbox/util/timer.h"
 #include <stdlib.h>
@@ -633,7 +633,7 @@ namespace LinBox
 
 }
 
-#endif //__LINBOX_cra_early_single_H
+#endif //__LINBOX_cra_single_H
 
 // Local Variables:
 // mode: C++
