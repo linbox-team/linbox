@@ -307,7 +307,6 @@ namespace LinBox
 
         } while(!_IPD.isprime(_prime));
     }
->>>>>>> master
 }
 
 #endif //__LINBOX_random_prime_iterator_H
