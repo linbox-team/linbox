@@ -30,7 +30,6 @@
 #include "linbox/field/field-traits.h"
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/matrix/matrix-domain.h"
-//#include "linbox/ring/givaro-polynomial-ring.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/bbcharpoly.h"
 // Namespace in which all LinBox library code resides

@@ -103,6 +103,13 @@ namespace LinBox
 				_indices[(size_t)i] = i;
 		}
 
+		void cyclicShift(size_t n)
+		{
+			this->_indices.resize ((size_t)n);
+			for (typename Storage::value_type i=0; i < n; ++i)
+				_indices[(size_t)i] = i+1 % n;
+		} 
+
 		//void random(size_t n)
 		void random(unsigned int seed=(unsigned int)time(NULL))
 		{
