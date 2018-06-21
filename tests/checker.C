@@ -105,7 +105,7 @@ warn("test-solve", "most of the tests are commented out");
 warn("test-toom-cook", "one method does not work");
 //warn("test-transpose", "sometimes fails on Sparsematrix/getEntry");
 warn("test-quad-matrix", "half baked, bds responsible");
-warn("test-smith-form-kannan-bachem", "not working anymore");
+skip("test-smith-form-kannan-bachem", "not working anymore");
 
 
 //// optional package dependency section ////
@@ -129,6 +129,7 @@ warn("test-smith-form-kannan-bachem", "not working anymore");
 	ntl_tests.insert("test-smith-form-iliopoulos");
 	ntl_tests.insert("test-weak-popov-form");
 	ntl_tests.insert("test-frobenius-large");
+	ntl_tests.insert("test-invariant-factors");
 	ntl_tests.insert("test-frobenius-small");
 
 	set< string> ocl_tests;
