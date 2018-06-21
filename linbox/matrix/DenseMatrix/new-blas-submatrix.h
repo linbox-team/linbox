@@ -34,8 +34,11 @@
 #define __LINBOX_densematrix_newblas_submatrix_H
 
 
+#include "linbox/matrix/MatrixDomain/apply-domain.h"
+
 namespace LinBox
-{ /* Blas Submatrix */
+{
+    /* Blas Submatrix */
   /*! Dense Submatrix representation.
    * @ingroup matrix
    * A @ref BlasSubmatrix is a matrix of \p _Field::Element, with the structure of BLAS matrices.
@@ -52,12 +55,12 @@ namespace LinBox
     template <typename _Matrix>
     class MatrixEltPointer {
     public:
-        typedef typename _Matrix::Field::Element_Ptr     pointer;    
+        typedef typename _Matrix::Field::Element_ptr     pointer;    
     };
-    template <typename T>
+    template <typename _Matrix>
     class MatrixEltPointer <const _Matrix> {
     public:
-        typedef typename _Matrix::Field::constElement_Ptr pointer;    
+        typedef typename _Matrix::Field::ConstElement_ptr pointer;    
     };
 
     
@@ -68,8 +71,8 @@ namespace LinBox
         typedef typename Field::Element                   Element;    //!< Element type
         typedef typename _Matrix::Storage                 Storage;    
         typedef BlasSubmatrix<_Matrix>                     Self_t;    //!< Self type
-        typedef MatrixEltPointer<_Matrix>::pointer        pointer;    //!< pointer type to elements
-        typedef typename _Matrix::Self_t               matrixType;    //!< matrix type
+        typedef typename MatrixEltPointer<_Matrix>::pointer        pointer;    //!< pointer type to elements
+        typedef  _Matrix                               matrixType;    //!< matrix type
 
 
     protected:

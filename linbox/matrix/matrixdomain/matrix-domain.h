@@ -48,6 +48,7 @@
 
 #include "linbox/blackbox/archetype.h"
 #include "linbox/matrix/matrix-traits.h"
+
 // #include "linbox/vector/blas-vector.h"
 
 namespace LinBox

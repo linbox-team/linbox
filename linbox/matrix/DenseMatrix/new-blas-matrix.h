@@ -45,9 +45,9 @@
 #include "linbox/matrix/matrix-traits.h"
 #include "linbox/util/matrix-stream.h"
 
-
+#include "linbox/matrix/DenseMatrix/blas-transposed-matrix.h"
+#include "linbox/matrix/matrix-domain.h"
 #include "linbox/matrix/DenseMatrix/new-blas-submatrix.h"
-
 namespace LinBox
 { /*  Blas Matrix */
 	template<class Matrix>
@@ -65,17 +65,17 @@ namespace LinBox
 	public:
 		typedef _Field                                   Field;
 		typedef typename Field::Element                Element;    //!< Element type
-        typedef typename Field::Element_Ptr        Element_Ptr;    //!< Pointer to Element type
+        typedef typename Field::Element_ptr        Element_ptr;    //!< Pointer to Element type
 		typedef _Storage                               Storage;    //!< Actually a <code>std::vector<Element></code> (or alike: cstor(n), cstor(n, val), operator[], resize(n).)
 		typedef BlasMatrix<Field,Storage>               Self_t;    //!< Self typeype
-        typedef BlasSubMatrix< Self_t>           subMatrixType;
-        typedef BlasSubMatrix<const Self_t> constSubMatrixType;
+        typedef BlasSubmatrix< Self_t>           subMatrixType;
+        typedef BlasSubmatrix<const Self_t> constSubMatrixType;
         
 	protected:
 		size_t			                               _row;
 		size_t			                               _col;
 		Storage			                               _rep;
-		typedef typename Field::Element_Ptr	 		   _ptr;
+		Element_ptr	 		                           _ptr;
         const Field&                                 _field;
         
 
@@ -86,8 +86,12 @@ namespace LinBox
 
 		/*! @internal
 		 * Copy data according to Matrix container structure (allow submatrix).*/
-		template <class Matrix, class MatrixContainerCategory>
-		void createBlasMatrix (const Matrix& A,const size_t i0,const size_t j0,const size_t m, const size_t n, MatrixContainerCategory) ;
+		template <class Matrix>
+		void createBlasMatrix (const Matrix& A,const size_t i0,const size_t j0,const size_t m, const size_t n, MatrixContainerCategory::Container);
+		template <class Matrix>
+		void createBlasMatrix (const Matrix& A,const size_t i0,const size_t j0,const size_t m, const size_t n, MatrixContainerCategory::BlasContainer);
+		template <class Matrix>
+		void createBlasMatrix (const Matrix& A,const size_t i0,const size_t j0,const size_t m, const size_t n, MatrixContainerCategory::Blackbox);
 
 
 		/*!@internal constructor from an iterator of elements.
@@ -117,7 +121,7 @@ namespace LinBox
 		 * @param n Number of columns
 		 * @param val
 		 */
-		void resize (const size_t &m, const size_t &n, const Element& val = field().zero) ;
+		void resize (const size_t &m, const size_t &n, const Element& val = Element()) ;
 
 
         //////////////////
@@ -177,6 +181,13 @@ namespace LinBox
         template <class constIterator>
 		BlasMatrix (const _Field &F, const size_t &m , const size_t &n, const constIterator& it) ;
 
+
+        /*! Create a BlasMatrix from another matrix defined over a different field (use homomorphism if it exists)
+		 * @param F Field of the created nmatrix
+		 * @param A matrix to be copied
+		 */
+		template<class _Matrix>
+		BlasMatrix ( const _Field &F, const _Matrix &A) ;
         
 		/// Destructor.
 		~BlasMatrix () {}
@@ -203,12 +214,12 @@ namespace LinBox
 		size_t coldim() const { return _col;}
 
 		/*! Get the stride of the matrix.*/		 
-		size_t getStride() const { return _stride;}
+		size_t getStride() const { return _col;}
 
 		/*! @internal
 		 * Get read-only access to the matrix data.
 		 */
-		pointer getPointer() const { return _ptr;}
+	    Element_ptr getPointer() const { return _ptr;}
         
 		//////////////////
 		//   ELEMENTS   //
@@ -279,8 +290,8 @@ namespace LinBox
 		 * a row vector in dense format
 		 */
 		//@{
-		typedef Subvector<typename Rep::iterator, typename Rep::const_iterator> Row;
-		typedef Subvector<typename Rep::const_iterator>                    ConstRow;
+		typedef Subvector<typename Storage::iterator, typename Storage::const_iterator> Row;
+		typedef Subvector<typename Storage::const_iterator>                    ConstRow;
 
 		/*!  Row Iterator.
 		 * @ingroup iterators
@@ -306,8 +317,8 @@ namespace LinBox
 		 * a column vector in dense format
 		 */
 		//@{
-		typedef Subvector<Subiterator<typename Rep::iterator> >            Col;
-		typedef Subvector<Subiterator<typename Rep::const_iterator> > ConstCol;
+		typedef Subvector<Subiterator<typename Storage::iterator> >            Col;
+		typedef Subvector<Subiterator<typename Storage::const_iterator> > ConstCol;
 		typedef Col           Column;
 		typedef ConstCol ConstColumn;
 
@@ -337,8 +348,8 @@ namespace LinBox
 		 * algorithm.
 		 */
 		//@{
-		typedef typename Rep::iterator Iterator;
-		typedef typename Rep::const_iterator ConstIterator;
+		typedef typename Storage::iterator Iterator;
+		typedef typename Storage::const_iterator ConstIterator;
 
 		Iterator      Begin ();
 		Iterator      End   ();
@@ -406,13 +417,13 @@ namespace LinBox
 		template <class Vector1, class Vector2>
 		Vector1&  apply (Vector1& y, const Vector2& x) const
         {
-            subMatrixType A(*this); return A.apply(y,x);
+            constSubMatrixType A(*this,0,0,_row,_col); return A.apply(y,x);
         }
         
 		template <class Vector1, class Vector2>
 		Vector1&  applyTranspose (Vector1& y, const Vector2& x) const
         {
-            subMatrixType A(*this); return A.apply(y,x);
+            constSubMatrixType A(*this,0,0,_row,_col); return A.apply(y,x);
         }
 
 		subMatrixType& applyRight(subMatrixType& Y, const subMatrixType& X)

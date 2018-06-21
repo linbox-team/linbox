@@ -33,6 +33,7 @@
 
 #include "linbox/integer.h"
 #include "linbox/linbox-tags.h"
+#include "linbox/matrix/matrixdomain/matrix-domain.h"
 
 namespace LinBox {
 

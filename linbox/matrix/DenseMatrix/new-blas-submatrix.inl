@@ -46,7 +46,7 @@ namespace LinBox {
         _col(Coldim),
 		_stride(M.getStride()),
         _field(M.field()),
-		,_AD(M.field())
+		_AD(M.field())
 	{
         linbox_check ( rowbeg  <= M.rowdim() ); // allow for NULL matrix
 		linbox_check ( colbeg  <= M.coldim() );
@@ -61,7 +61,7 @@ namespace LinBox {
         _col(Coldim),
 		_stride(M.getStride()),
         _field(M.field()),
-		,_AD(M.field())
+		_AD(M.field())
 	{
         linbox_check ( rowbeg  <= M.rowdim() ); // allow for NULL matrix
 		linbox_check ( colbeg  <= M.coldim() );
@@ -76,7 +76,7 @@ namespace LinBox {
         _col (M.coldim()),
 		_stride(M.getStride()),
         _field(M.field()),
-		,_AD(M.field())
+		_AD(M.field())
     {
 
     }
@@ -88,22 +88,22 @@ namespace LinBox {
     //////////////////
 
     template < class _Matrix >
-    const Element& BlasSubmatrix<_Matrix>::setEntry (size_t i, size_t j, const Element &a_ij) {
+    const typename BlasSubmatrix<_Matrix>::Element& BlasSubmatrix<_Matrix>::setEntry (size_t i, size_t j, const Element &a_ij) {
         return field().assign(a_ij, _ptr+i*_stride+j);
     }
 
     template < class _Matrix >
-    Element& BlasSubmatrix<_Matrix>::refEntry (size_t i, size_t j) {
+    typename BlasSubmatrix<_Matrix>::Element& BlasSubmatrix<_Matrix>::refEntry (size_t i, size_t j) {
         return _ptr+i*_stride+j;
     }
 
     template < class _Matrix >
-    const Element& BlasSubmatrix<_Matrix>::getEntry (size_t i, size_t j) const {
+    const typename BlasSubmatrix<_Matrix>::Element& BlasSubmatrix<_Matrix>::getEntry (size_t i, size_t j) const {
         return _ptr+i*_stride+j;
     }
 
     template < class _Matrix >
-    Element& BlasSubmatrix<_Matrix>::getEntry (Element &x, size_t i, size_t j) const {
+    typename BlasSubmatrix<_Matrix>::Element& BlasSubmatrix<_Matrix>::getEntry (Element &x, size_t i, size_t j) const {
         return field().assign(x,_ptr+i*_stride+j);
     }
 
@@ -127,7 +127,7 @@ namespace LinBox {
 		
 		if ((c != 'M') && (c != 'm')) {
             for (p = Begin (); p != End (); ++p) {
-                field()read (file, *p);
+                field().read (file, *p);
 			}
 		}
 		else { // sparse file format
@@ -136,7 +136,7 @@ namespace LinBox {
                 {
                     file >> i >> j;
                     if (i+j <= 0) break;
-                    field()read (file, _ptr+ (i-1)*_stride+(j-1));
+                    field().read (file, _ptr+ (i-1)*_stride+(j-1));
                 }
 		}
 
@@ -144,7 +144,7 @@ namespace LinBox {
     }
 
     template < class _Matrix >
-    std::ostream& BlasSubmatrix<_Matrix>::write (std::ostream &os,LINBOX_enum (Tag::FileFormat) f = Tag::FileFormat::MatrixMarket ) const {
+    std::ostream& BlasSubmatrix<_Matrix>::write (std::ostream &os,LINBOX_enum (Tag::FileFormat) f) const {
         
 		ConstRowIterator p;
 		switch(f) {
@@ -158,7 +158,7 @@ namespace LinBox {
                 integer c;
                 int wid;
 
-                field()cardinality (c);
+                field().cardinality (c);
 
                 if (c >0)
                     wid = (int) ceil (log ((double) c) / M_LN10);
@@ -173,7 +173,7 @@ namespace LinBox {
 
                     for (pe = p->begin (); pe != p->end (); ++pe) {
                         os.width (wid);
-                        field()write (os, *pe);
+                        field().write (os, *pe);
                         os << " ";
                     }
                     os << "]" << std::endl;
@@ -190,7 +190,7 @@ namespace LinBox {
                     os << "[ ";
                         
                     for (pe = p->begin (); pe != p->end (); ) {
-                        field()write (os, *pe);
+                        field().write (os, *pe);
                         ++pe ;
                         if (pe != p->end())
                             os << ", ";
