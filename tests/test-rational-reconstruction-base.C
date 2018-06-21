@@ -243,7 +243,7 @@ static bool testRandomFraction (size_t n, size_t d, int iterations)
 		}
 
 		size_t H = (n > d) ? n : d;
-		H /= (size_t)bits;
+		H /= (size_t)d;
 		++H;
 		H *=2;
 		++H;
