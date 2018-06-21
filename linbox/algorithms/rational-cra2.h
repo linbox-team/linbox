@@ -525,7 +525,8 @@ namespace LinBox
 				++genprime;
 				Domain D(*genprime);
 				BlasVector<Domain> r(D);
-				Builder_.initialize( D, Iteration(r, D) );
+                Iteration(r, D); // FIXME bad primes ignored
+				Builder_.initialize( D, r );
 			}
 			int coprime =0;
 			int maxnoncoprime = 1000;

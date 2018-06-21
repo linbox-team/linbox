@@ -23,7 +23,7 @@
 
 /*! @file algorithms/cra-early-multip.h
  * @ingroup algorithms
- * @brief NO DOC
+ * @brief vector Chinese remaindering with early termination
  */
 
 #ifndef __LINBOX_cra_early_multip_H
@@ -45,25 +45,49 @@ namespace LinBox
 
 	/*!  @brief NO DOC
 	 * @ingroup CRA
-	 *
+	 * @brief vector CRA with early termination and a PRNG reference
 	 */
+	template<class Domain_Type, class RandIter_Type>
+	struct EarlyMultipCRARGen : public EarlySingleCRA<Domain_Type>, public FullMultipCRA<Domain_Type> {
+        // Could be much faster
+        // - do not compute twice the product of moduli
+        // - reconstruct one element of e until Early Termination,
+        //   then only, try a random linear combination.
 
-	template<class Domain_Type>
-	struct EarlyMultipCRA : public EarlySingleCRA<Domain_Type>, public FullMultipCRA<Domain_Type> {
 		typedef Domain_Type			Domain;
 		typedef typename Domain::Element DomainElement;
-		typedef EarlyMultipCRA<Domain> 		Self_t;
+		typedef EarlyMultipCRARGen<Domain,RandIter_Type> Self_t;
+
+        const unsigned short LINEAR_COMB_RBITS = 15; // # of random bits in linear combination
 
 	protected:
+        // PRNG
+        RandIter_Type * const rgen_;
+
 		// Random coefficients for a linear combination
 		// of the elements to be reconstructed
-		std::vector< unsigned long >      	randv;
+		std::vector< unsigned long >      	randv_;
+
+        /** @brief Chooses a new random linear combination
+         * @ param size  is the sie of the vector
+         * XXX: Does not change any stored moduli. Generally should be called
+         * only in initialization.
+         */
+        inline void choose_linear_comb (unsigned long size) {
+			// Random coefficients for a linear combination
+			// of the elements to be reconstructed
+			randv_. resize ( size );
+			for ( auto int_p = randv_. begin(); int_p != randv_. end(); ++ int_p)
+                *int_p = (*rgen_)() >> LINEAR_COMB_RBITS;
+        }
 
 		Integer& result(Integer &d) { std::cout << "should not be called" << std::endl; return d ;} ; // DON'T TOUCH
 	public:
 
-		EarlyMultipCRA(const unsigned long EARLY=DEFAULT_EARLY_TERM_THRESHOLD) :
-			EarlySingleCRA<Domain>(EARLY), FullMultipCRA<Domain>()
+		EarlyMultipCRARGen( RandIter_Type * rgen,
+                            const unsigned long EARLY=DEFAULT_EARLY_TERM_THRESHOLD) :
+			EarlySingleCRA<Domain>(EARLY), FullMultipCRA<Domain>(),
+            rgen_ (rgen)
 		{}
 
 		Integer& getModulus(Integer& m)
@@ -88,54 +112,32 @@ namespace LinBox
 		template<template<class T> class Vect>
 		void initialize (const Integer& D, const Vect<Integer>& e)
 		{
-			srand48(BaseTimer::seed());
-			randv. resize ( e.size() );
-			for ( std::vector<unsigned long>::iterator int_p = randv. begin(); int_p != randv. end(); ++ int_p)
-				*int_p = ((unsigned long)lrand48()) % 20000;
+            choose_linear_comb(e.size());
 			Integer z;
-			dot(z, D, e, randv);
+			dot(z, D, e, randv_);
 			EarlySingleCRA<Domain>::initialize(D, z);
 			FullMultipCRA<Domain>::initialize(D, e);
 		}
 
 		template<class Vect>
-                //		template<template <class> class Alloc, template<class, class> class Vect>
 		void initialize (const Domain& D, const Vect& e)
 		{
-			// Random coefficients for a linear combination
-			// of the elements to be reconstructed
-			srand48(BaseTimer::seed());
-			randv. resize ( e.size() );
-			for ( std::vector<unsigned long>::iterator int_p = randv. begin();
-			      int_p != randv. end(); ++ int_p)
-				*int_p = ((unsigned long)lrand48()) % 20000;
+            choose_linear_comb(e.size());
 			DomainElement z;
-			// Could be much faster
-			// - do not compute twice the product of moduli
-			// - reconstruct one element of e until Early Termination,
-			//   then only, try a random linear combination.
-			EarlySingleCRA<Domain>::initialize (D, dot(z, D, e, randv));
+			EarlySingleCRA<Domain>::initialize (D, dot(z, D, e, randv_));
 			FullMultipCRA<Domain>::initialize (D, e);
 		}
 
+        /* TODO is this needed?
 		template<class OKDomain>
 		void initialize (const Domain& D, const BlasVector<OKDomain>& e)
 		{
-			// Random coefficients for a linear combination
-			// of the elements to be reconstructed
-			srand48(BaseTimer::seed());
-			randv. resize ( e.size() );
-			for ( std::vector<unsigned long>::iterator int_p = randv. begin();
-			      int_p != randv. end(); ++ int_p)
-				*int_p = ((unsigned long)lrand48()) % 20000;
+            choose_linear_comb(e.size());
 			DomainElement z;
-			// Could be much faster
-			// - do not compute twice the product of moduli
-			// - reconstruct one element of e until Early Termination,
-			//   then only, try a random linear combination.
-			EarlySingleCRA<Domain>::initialize(D,dot(z, D, e, randv) );
-			FullMultipCRA<Domain>::initialize(D, e);
+			EarlySingleCRA<Domain>::initialize (D, dot(z, D, e, randv_));
+			FullMultipCRA<Domain>::initialize (D, e);
 		}
+        */
 
 		//! Progress
 		template<template<class T> class Vect>
@@ -143,7 +145,7 @@ namespace LinBox
 		{
 
 			Integer z;
-			EarlySingleCRA<Domain>::progress(D, dot(z, D, e, randv));
+			EarlySingleCRA<Domain>::progress(D, dot(z, D, e, randv_));
 			FullMultipCRA<Domain>::progress(D, e);
 		}
 
@@ -159,7 +161,7 @@ namespace LinBox
 			  then only, try a random linear combination.
 			*/
                         DomainElement z;
-                        EarlySingleCRA<Domain>::progress(D, dot(z, D, e, randv));
+                        EarlySingleCRA<Domain>::progress(D, dot(z, D, e, randv_));
                         FullMultipCRA<Domain>::progress(D, e);
 		}
 #endif
@@ -173,7 +175,7 @@ namespace LinBox
 			  - reconstruct one element of e until Early Termination,
 			  then only, try a random linear combination.
 			*/
-			EarlySingleCRA<Domain>::progress(D, dot(z, D, e, randv));
+			EarlySingleCRA<Domain>::progress(D, dot(z, D, e, randv_));
 			FullMultipCRA<Domain>::progress(D, e);
 		}
 
@@ -203,10 +205,9 @@ namespace LinBox
 
 		bool changeVector()
 		{
-			for ( std::vector<unsigned long>::iterator int_p = randv. begin();int_p != randv. end(); ++ int_p)
-				*int_p = ((unsigned long)lrand48()) % 20000;
-
-			std::vector<Integer> e(randv.size());
+            choose_linear_comb(randv_.size());
+			std::vector<Integer> e(randv_.size());
+            // TODO clean this up, decouple with early and full classes
 			/* clear CRAEarlySingle; */
 			EarlySingleCRA<Domain>::occurency_ = 0;
 			EarlySingleCRA<Domain>::nextM_ = 1UL;
@@ -222,10 +223,10 @@ namespace LinBox
 				++shelf;
 				if (*_occ_it) {
 					Integer D = _mod_it->operator()();
-					std::vector<Integer> e_v(randv.size());
+					std::vector<Integer> e_v(randv_.size());
 					e_v = *_tab_it;
 					Integer z;
-					dot(z,D, e_v, randv);
+					dot(z,D, e_v, randv_);
 					Integer prev_residue_ = EarlySingleCRA<Domain>::residue_;
 					EarlySingleCRA<Domain>::progress(D,z);
 					if (prev_residue_ == EarlySingleCRA<Domain>::residue_ )
@@ -296,6 +297,35 @@ namespace LinBox
 		}
 
 	};
+
+
+	/*!  @brief NO DOC
+	 * @ingroup CRA
+	 * @brief vector CRA with early termination which creates its own PRNG object
+	 */
+	template<class Domain_Type, class RandIter_Type=Givaro::GivRandom>
+	struct EarlyMultipCRA : public EarlyMultipCRARGen<Domain_Type,RandIter_Type> {
+        using Parent_t = EarlyMultipCRARGen<Domain_Type,RandIter_Type>;
+        using Domain = typename Parent_t::Domain;
+        using DomainElement = typename Parent_t::DomainElement;
+
+	protected:
+        // PRNG
+        RandIter_Type actual_rgen_;
+
+	public:
+
+        template <typename... RGArgs>
+		EarlyMultipCRA(const unsigned long EARLY,
+                       RGArgs&&... rgargs) :
+            Parent_t(&actual_rgen_, EARLY),
+            actual_rgen_(std::forward<RGArgs>(rgargs)...)
+		{}
+
+        EarlyMultipCRA() :
+            Parent_t(&actual_rgen_)
+        {}
+    };
 }
 #endif //__LINBOX_cra_early_multip_H
 
