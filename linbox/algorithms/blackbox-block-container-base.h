@@ -41,13 +41,51 @@
 #include "linbox/linbox-config.h"
 #include "linbox/util/debug.h"
 #include "linbox/blackbox/archetype.h"
+#include "linbox/blackbox/pascal.h"
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/matrix/matrix-domain.h"
 
-namespace LinBox
-{
+namespace LinBox {
+//Temporary fix to deal with the fact that not all Blackboxes have applyLeft()
+    template<class Field,class Block>
+    class MulHelper {
+    public:
+        template<class Blackbox>
+        static void mul(const Field& F,
+                        Block &M1, const Blackbox &M2, const Block& M3) {
+            linbox_check( M1.rowdim() == M2.rowdim());
+            linbox_check( M2.coldim() == M3.rowdim());
+            linbox_check( M1.coldim() == M3.coldim());
+
+            MatrixDomain<Field> MD(F);
+            typename Block::ColIterator        p1 = M1.colBegin();
+            typename Block::ConstColIterator   p3 = M3.colBegin();
+
+            for (; p3 != M3.colEnd(); ++p1,++p3) {
+                M2.apply(*p1,*p3);
+            }
+        }
+
+        static void mul (const Field& F,
+                         Block &M1, const SparseMatrix<Field,SparseMatrixFormat::TPL> &M2,
+                         const Block& M3) {
+            M2.applyLeft(M1,M3);
+        }
+
+        static void mul (const Field& F,
+                         Block &M1, const SparseMatrix<Field,SparseMatrixFormat::TPL_omp> &M2,
+                         const Block& M3) {
+            M2.applyLeft(M1,M3);
+        }
+
+        static void mul (const Field& F,
+                         Block &M1, const PascalBlackbox<Field> &M2, const Block& M3) {
+            M2.applyLeft(M1,M3);
+        }
+    };
+
 
 #ifndef MIN
 #define MIN(a,b) ((a)<(b)?(a):(b))
@@ -170,7 +208,7 @@ namespace LinBox
         // Blackbox multiplication using apply function
         inline void Mul(Block &M1, const Blackbox &M2, const Block& M3)
         {
-            M2.applyLeft(M1, M3);
+            MulHelper<Field,Block>::mul(field(),M1,M2,M3);
         }
 
         /// User Left and Right blocks

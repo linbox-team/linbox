@@ -143,18 +143,12 @@ int main(int argc, char** argv) {
 	std::vector<Polynomial> result;
 	if (precond == 1) { // determinant
 		Element det;
-		if (IFD.det(det, FM, b)) {
-			F.write(std::cout << "det: ", det) << std::endl;
-		} else {
-			std::cout << "det failed" << std::endl;
-		}
+		time2([&](){return IFD.det(det, FM, b);});
+		F.write(std::cout << "det: ", det) << std::endl;
 	} else if (precond == 2) { // rank
 		size_t rank;
-		if (IFD.rank(rank, FM, b)) {
-			std::cout << "rank: " << rank << std::endl;
-		} else {
-			std::cout << "rank failed" << std::endl;
-		}
+		time2([&](){return IFD.rank(rank, FM, b);});
+		std::cout << "rank: " << rank << std::endl;
 	} else {
 		time1([&](){IFD.largestInvariantFactors(result, FM, b);});
 	}
