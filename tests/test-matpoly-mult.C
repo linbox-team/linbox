@@ -210,7 +210,7 @@ bool runTest(uint64_t n, uint64_t d, long seed){
 	}
 	// normal prime < 2^(53--log(n))/2
 	{
-		typedef Givaro::ModularBalanced<double> Field;
+		typedef Givaro::Modular<double> Field;
 		PrimeIterator<IteratorCategories::HeuristicTag> Rd(FieldTraits<Field>::bestBitSize(n),seed);
 		integer p;
 		p=*Rd;
