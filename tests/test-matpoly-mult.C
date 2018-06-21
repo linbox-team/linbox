@@ -198,10 +198,10 @@ bool launchTest(const Field& F, size_t n, long b, long d, long seed){
 bool runTest(uint64_t n, uint64_t d, long seed){
 
 	bool ok=true;
+	size_t bits= (53-integer(n).bitsize())/2;
 
 	// fourier prime < 2^(53--log(n))/2
 	{
-		size_t bits= (53-integer(n).bitsize())/2;
 		RandomFFTPrime Rd(1<<bits,seed);
 		integer p = Rd.randomPrime(integer(d).bitsize()+1);
 		
