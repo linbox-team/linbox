@@ -39,7 +39,7 @@
 
 namespace LinBox { /*  forward declarations */
 
-	template <class _Field, class _blasRep=typename Vector<_Field>::Dense >
+	template <class _Field, class _Storage=typename Vector<_Field>::Dense >
 	class BlasMatrix ;
 
 	template <class _Field>
@@ -76,7 +76,7 @@ namespace LinBox { /*  forward declarations */
 
 }
 
-#include "linbox/matrix/densematrix/blas-matrix.h"
+#include "linbox/matrix/densematrix/new-blas-matrix.h"
 // #include "linbox/matrix/densematrix/blas-matrix-multimod.h"
 // #include "linbox/matrix/densematrix/m4ri-matrix.h"
 

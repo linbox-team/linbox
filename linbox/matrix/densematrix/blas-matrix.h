@@ -33,6 +33,9 @@
  *
  */
 
+#include "new-blas-matrix.h"
+#if 0
+
 #ifndef __LINBOX_matrix_densematrix_blas_matrix_H
 #define __LINBOX_matrix_densematrix_blas_matrix_H
 
@@ -169,11 +172,11 @@ namespace LinBox
 		typedef BlasMatrix<Field,Rep>                  Self_t;    //!< Self typeype
 		typedef const BlasMatrix<Field,Rep>       constSelf_t;    //!< Self typeype
 
-                typedef BlasSubmatrix<Self_t>           subMatrixType;    //!< Submatrix type
+        typedef BlasSubmatrix<Self_t>           subMatrixType;    //!< Submatrix type
 		typedef BlasSubmatrix<constSelf_t> constSubMatrixType;    //!< Submatrix type
-                typedef Self_t                             matrixType;    //!< matrix type
-                typedef constSelf_t                   constMatrixType;    //!< matrix type
-                typedef Self_t                               blasType;    //!< blas matrix type
+        typedef Self_t                             matrixType;    //!< matrix type
+        typedef constSelf_t                   constMatrixType;    //!< matrix type
+        typedef Self_t                               blasType;    //!< blas matrix type
 
 	protected:
 		size_t			    _row;
@@ -1244,6 +1247,8 @@ namespace LinBox
 
 #endif // __LINBOX_densematrix_blas_matrix_H
 
+
+#endif // #if 0
 // Local Variables:
 // mode: C++
 // tab-width: 4
