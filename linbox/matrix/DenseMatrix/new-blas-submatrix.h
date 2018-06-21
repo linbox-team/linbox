@@ -229,8 +229,15 @@ namespace LinBox
             return _AD.apply(Tag::Transpose::Trans,y,field().one,*this,field().zero,x);			
         }
 
-
-
+        void zero() {
+            FFLAS::fzero(field(),_row,_col,_ptr,_stride);
+        }
+		// init to random field elements
+		void random()
+		{
+            typename Field::RandIter G(field());
+            FFLAS::frand(field(),G, _row,_col,_ptr,_stride);
+        }
 
         
         ///////////////////

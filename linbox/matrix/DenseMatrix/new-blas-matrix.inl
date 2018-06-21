@@ -103,29 +103,30 @@ namespace LinBox
 	{
 		linbox_check( areFieldEqual(A.field(),field() ) );
 
-		BlasVector<Field> e(A.field(),A.coldim(), field().zero), tmp(A.field(),A.rowdim());
+        BlasVector<Field> e(A.field(),A.coldim(), field().zero), tmp(A.field(),A.rowdim());
 		ColIterator col_p;
-
+        
 		typename BlasMatrix< _Field, _Storage >::Col::iterator elt_p;
-		typename BlasVector<Element>::iterator e_p, tmp_p;
+		typename BlasVector<Field>::iterator e_p, tmp_p;
 
 
-		for (col_p = colBegin(), e_p = e.begin()+(ptrdiff_t)j0;
-		     e_p != e.begin()+(ptrdiff_t)(j0+n); ++ col_p, ++ e_p) {
+		for (col_p = colBegin(), e_p = e.begin();
+		     e_p != e.end(); ++ col_p, ++ e_p)
+		{
 
 			field().assign(*e_p, field().one);
 
 			A.apply (tmp, e);
 
-			for (tmp_p = tmp.begin()+(ptrdiff_t)i0, elt_p = col_p -> begin();
-			     elt_p != col_p.end(); ++ tmp_p, ++ elt_p) {
+            for (tmp_p = tmp.begin(), elt_p = col_p -> begin();
+			     tmp_p != tmp.end(); ++ tmp_p, ++ elt_p)
+
 				field().assign(*elt_p, *tmp_p);
-			}
 
 			field().assign(*e_p, field().zero);
 		}
 	}
-
+            	
     ////////////
     // MEMORY //
     ////////////
