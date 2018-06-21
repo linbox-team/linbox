@@ -206,7 +206,7 @@ namespace LinBox
 				_ptr = NULL ;
 #endif
 			_rep = Rep(_row*_col);
-			_ptr = &_rep[0];
+			_ptr = _rep.data();
 		}
 #endif
 
