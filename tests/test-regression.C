@@ -150,7 +150,7 @@ bool testFlatDixonSolver (const Specifier& m){
     if (!ZZ.areEqual(A[0],ZZ.one) || !ZZ.areEqual(A[1],ZZ.zero) || !ZZ.areEqual(D,ZZ.one)) {
         std::cerr<<"**** ERROR **** Fail solving a flat system over QQ via Dixon Lifting"<<std::endl;
         return false;
-    } else 
+    } else
         std::cout << "TFDS: PASSED" << std::endl;
 
 
@@ -179,7 +179,7 @@ bool testFlatDixonSolver2 (const Specifier& m){
         std::cerr<<"A = "<<A<<" D = "<<D<<std::endl;
         std::cerr<<"**** ERROR **** Fail solving a flat system over QQ via Dixon Lifting"<<std::endl;
         return false;
-    } else 
+    } else
         std::cout << "TFD2: PASSED" << std::endl;
 
 
@@ -207,7 +207,7 @@ bool testTallDixonSolver (const Specifier& m){
     if (!ZZ.areEqual(A[0],ZZ.one) || !ZZ.areEqual(D,ZZ.one)) {
         std::cerr<<"**** ERROR **** Fail solving a tall system over QQ via Dixon Lifting"<<std::endl;
         return false;
-    } else 
+    } else
         std::cout << "TTDS: PASSED" << std::endl;
 
 
@@ -235,7 +235,7 @@ bool testSingularDixonSolver (const Specifier& m){
         std::cerr<<"A = "<<A<<" D = "<<D<<std::endl;
         std::cerr<<"**** ERROR **** Fail solving a singular system over QQ with a SparseMatrix"<<std::endl;
         return false;
-    } else 
+    } else
         std::cout << "TSDS: PASSED" << std::endl;
 
     return true;
@@ -260,7 +260,7 @@ bool testZeroDixonSolver (const Specifier& m){
         std::cerr<<"A = "<<A<<" D = "<<D<<std::endl;
         std::cerr<<"**** ERROR **** Fail solving a zero over QQ via Dixon Lifting"<<std::endl;
         return false;
-    } else 
+    } else
         std::cout << "TZDS: PASSED" << std::endl;
 
     return true;
@@ -289,7 +289,7 @@ bool testDixonSolverWithMPrhs (){
     if (!ZZ.areEqual(X[0],ZZ.one) ||  !ZZ.areEqual(D,ZZ.one)) {
         std::cerr<<"**** ERROR **** Fail solving a system over QQ with a DenseMatrix and a MP rhs"<<std::endl;
         return false;
-    } else 
+    } else
         std::cout << "TDSM: PASSED" << std::endl;
 
 
@@ -321,7 +321,7 @@ bool testSparseRationalSolver() {
         std::cerr<<"L:= "<< L << ';' << std::endl;
         std::cerr<<"**** ERROR **** Fail solving a sparse system over QQ"<<std::endl;
         return false;
-    } else 
+    } else
         std::cout << "TSRS: PASSED" << std::endl;
 
 
@@ -347,7 +347,7 @@ bool testDixonRectangularSolver(const Specifier& m) {
 
     if (ZZ.isZero(d)) 
         pass = false;
-    else {
+    else{
         MatrixDomain<ZRingInts> MD(ZZ);
         VectorDomain<ZRingInts> VD(ZZ);
 
@@ -367,8 +367,28 @@ bool testDixonRectangularSolver(const Specifier& m) {
         std::cerr<<"L:= "<< L << ';' << std::endl;
         std::cerr<<"**** ERROR **** Fail solving a sparse system over ZZ" <<std::endl;
         return false;
-    } else 
+    } else
         std::cout << "TDRS: PASSED" << std::endl;
+    return true;
+}
+
+bool testSparseDiagDet(size_t n){
+    ZRingInts ZZ;
+    SparseMatrix<ZRingInts> A(ZZ, n, n);
+    Integer x(2);
+    for(size_t i=0; i<n; ++i)
+        A.setEntry(i,i,x);
+    Integer d, r(Integer(1)<<n);
+
+    if (! ZZ.areEqual(r, det(d,A)) ) {
+        A.write(std::cerr << "A:=", LinBox::Tag::FileFormat::Maple) << ';' << std::endl;
+        std::cerr<<"r:= "<< r << ';' << std::endl;
+        std::cerr<<"d:= "<< d << ';' << std::endl;
+        std::cerr<<"**** ERROR **** Fail determinant 2 times Identity matrix" <<std::endl;
+        return false;
+    } else
+        std::cout << "TDD2: PASSED" << std::endl;
+
     return true;
 }
 
@@ -377,17 +397,17 @@ bool testSparse1x1Det(unsigned long v){
     SparseMatrix<ZRingInts> A(ZZ, 1, 1);
     Integer x(v);
     A.setEntry(0,0,x);
-    Integer d; 
-    
+    Integer d;
+
     if (! ZZ.areEqual(x, det(d,A)) ) {
         A.write(std::cerr << "A:=", LinBox::Tag::FileFormat::Maple) << ';' << std::endl;
         std::cerr<<"x:= "<< x << ';' << std::endl;
         std::cerr<<"d:= "<< d << ';' << std::endl;
         std::cerr<<"**** ERROR **** Fail determinant 1x1 matrix" <<std::endl;
         return false;
-    } else 
+    } else
         std::cout << "TSD1: PASSED" << std::endl;
-    
+
     return true;
 }
 
@@ -446,9 +466,9 @@ bool testLocalSmith(){
 
     PGD(local, A, Q, 5, PRESERVE_UPPER_MATRIX|PRIVILEGIATE_NO_COLUMN_PIVOTING);
 
-    std::cout << "Local Smith: {";
-    for(auto const& it:local) std::cout << it.first << ':' << it.second << ' ';
-    std::cout << '}' << std::endl;
+    std::cerr << "Local Smith: {";
+    for(auto const& it:local) std::cerr << it.first << ':' << it.second << ' ';
+    std::cerr << '}';
 
 // > ([1,1] [1,2] )
 // > [[1, 2, 0 ], [0, 1, 0 ]]
@@ -462,7 +482,7 @@ bool testLocalSmith(){
         (local[1].first == 1U) &&
         (local[1].second == 2U) ;
 
-    A.write(std::cout << "A:=", LinBox::Tag::FileFormat::Maple) << ';' << std::endl;
+    A.write(std::cerr << ", A:=", LinBox::Tag::FileFormat::Maple) << ';';
 
         // Upper triangular
     success &=
@@ -475,7 +495,7 @@ bool testLocalSmith(){
         (A[1][0].first == 1U) &&
         (A[1][0].second == 1U);
 
-    Q.write(std::cout << "Q:=", LinBox::Tag::FileFormat::Maple) << ';' << std::endl;
+    Q.write(std::cerr << ", Q:=", LinBox::Tag::FileFormat::Maple) << ';';
 
         // Permutation
     success &=
@@ -483,7 +503,12 @@ bool testLocalSmith(){
         (Q[1] == 0) &&
         (Q[2] == 1);
 
-    return success;
+    if (!success) {
+        std::cerr<<"**** ERROR **** Fail Local Smith" <<std::endl;
+        return false;
+    } else
+        std::cout << "TSLS: PASSED" << std::endl;
+     return success;
 }
 
 
@@ -516,6 +541,7 @@ int main (int argc, char **argv)
     pass &= testDixonRectangularSolver<DenseMatrix<ZRingInts>> (Method::SparseElimination());
     pass &= testDixonRectangularSolver<DenseMatrix<ZRingInts>> (Method::Wiedemann());
     pass &= testSparse1x1Det(1<<26);
+    pass &= testSparseDiagDet(46);
     pass &= testZeroDimensionalCharPoly ();
     pass &= testZeroDimensionalMinPoly ();
     pass &= testBigScalarCharPoly ();

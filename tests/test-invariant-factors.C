@@ -42,6 +42,22 @@ typedef NTL_zz_pX Ring;
 typedef typename Ring::Element Polynomial;
 typedef BlasMatrix<Ring> PolyMatrix;
 
+Givaro::Timer TW;
+
+void time2(std::function<bool()> fun) {
+	TW.clear();
+	TW.start();
+	
+	bool s = fun();
+	
+	TW.stop();
+	std::cout << TW.usertime() << (s ? "" : "(failed)") << "\t" << std::flush;
+}
+
+void time1(std::function<void()> fun) {
+	time2([fun](){fun(); return true;});
+}
+
 template<class Ring1>
 void writeLifs(Ring1 R, std::string filename, std::vector<typename Ring1::Element> &result) {
 	std::ofstream out(filename);
@@ -57,45 +73,6 @@ void readMatrix(SparseMat &M, const std::string matrixFile) {
 	M.read(iF);
 	M.finalize();
 	iF.close();
-}
-
-void randomNonzero(const Field &F, Element &elm) {
-	typename Field::RandIter RI(F);
-	do {
-		RI.random(elm);
-	} while (F.isZero(elm));
-}
-
-void randomTriangular(SparseMat &T, size_t s, bool upper, bool randomDiag = false) {
-	Field F(T.field());
-	typename Field::RandIter RI(F);
-	
-	for (size_t i = 0; i < T.rowdim(); i++) {
-		if (randomDiag) {
-			Element elm;
-			randomNonzero(F, elm);
-			T.setEntry(i, i, elm);
-		} else {
-			T.setEntry(i, i, F.one);
-		}
-	}
-	
-	for (size_t r = 0; r < T.rowdim() - 1; r++) {
-		for (size_t k = 0; k < s; k++) {
-			size_t c = (rand() % (T.coldim() - r - 1)) + r + 1;
-			
-			Element elm;
-			randomNonzero(F, elm);
-			
-			if (upper) {
-				T.setEntry(r, c, elm);
-			} else {
-				T.setEntry(c, r, elm);
-			}
-		}
-	}
-	
-	T.finalize();
 }
 
 int main(int argc, char** argv) {
@@ -136,7 +113,6 @@ int main(int argc, char** argv) {
 		{ 'k', "-k K", "Compute the (k+1)-th invariant factor", TYPE_INT, &k},
 		{ 's', "-s S", "Number of nonzeros in random triangular preconditioner", TYPE_INT, &s},
 		{ 'c', "-c C", "Choose what preconditioner to apply", TYPE_INT, &precond},
-		{ 'z', "-z Z", "Permute rows of input", TYPE_INT, &perm},
 		END_OF_ARGUMENTS
 	};
 
@@ -162,26 +138,19 @@ int main(int argc, char** argv) {
 	readMatrix(M, matrixFile);
 	
 	assert(M.rowdim() == M.coldim());
-	size_t n = M.rowdim();
 	
-	typedef FflasCsr<Field> Csr;
 	FflasCsr<Field> FM(&M);
 	std::vector<Polynomial> result;
 	if (precond == 1) { // determinant
-		SparseMat L(F, n, n);
-		SparseMat U(F, n, n);
-		randomTriangular(L, s, false, false);
-		randomTriangular(U, s, true, false);
-		
-		FflasCsr<Field> FL(&L);
-		FflasCsr<Field> FU(&U);
-		
-		BlockCompose<Csr, Csr> LU(FL, FU);
-		BlockCompose<Csr, BlockCompose<Csr, Csr>> MLU(FM, LU);
-		
-		IFD.largestInvariantFactors(result, MLU, b);
+		Element det;
+		time2([&](){return IFD.det(det, FM, b);});
+		F.write(std::cout << "det: ", det) << std::endl;
+	} else if (precond == 2) { // rank
+		size_t rank;
+		time2([&](){return IFD.rank(rank, FM, b);});
+		std::cout << "rank: " << rank << std::endl;
 	} else {
-		IFD.largestInvariantFactors(result, FM, b);
+		time1([&](){IFD.largestInvariantFactors(result, FM, b);});
 	}
 	
 	if (outFile != "") {
