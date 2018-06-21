@@ -447,6 +447,34 @@ bool testBigScalarCharPoly(){
 }
 
 
+template<typename Matrix_t=SparseMatrix<ZRingInts>>
+bool testInconsistent (const Specifier& m){
+        // creating LinBox matrices and vectors
+    Givaro::ZRing<Integer> ZZ;
+    typedef DenseVector<Givaro::ZRing<Integer> > DenseVector;
+
+    Matrix_t M (ZZ,1,1);
+    Givaro::ZRing<Integer>::Element D; // denominator of the solution
+    DenseVector A(ZZ, M.coldim()); // numerator of the solution
+    DenseVector B(ZZ, M.rowdim()); // Right handside of the system
+
+    M.setEntry(0,0,0);
+    ZZ.assign(B[0],ZZ.one);
+
+        // solving via Dixon Lifting
+    solve (A, D, M, B, m);
+
+    if (!ZZ.areEqual(A[0],ZZ.zero) || !ZZ.areEqual(D,ZZ.one)) {
+        std::cerr<<"A = "<<A<<" D = "<<D<<std::endl;
+        std::cerr<<"**** ERROR **** Fail solving an inconsistent system  over QQ via Dixon Lifting"<<std::endl;
+        return false;
+    } else
+        std::cout << "TICS: PASSED" << std::endl;
+
+    return true;
+}
+
+
 bool testLocalSmith(){
     typedef Givaro::ZRing<int64_t> Ring;
     typedef std::vector<std::pair<size_t,uint64_t> > Smith_t;
@@ -546,6 +574,9 @@ int main (int argc, char **argv)
     pass &= testZeroDimensionalMinPoly ();
     pass &= testBigScalarCharPoly ();
     pass &= testLocalSmith ();
+    pass &= testInconsistent<> (Method::BlasElimination());
+    pass &= testInconsistent<> (Method::SparseElimination());
+    pass &= testInconsistent<> (Method::Wiedemann());
 
     return pass ? 0 : -1;
 }
