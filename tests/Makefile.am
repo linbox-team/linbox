@@ -199,6 +199,7 @@ NTL_TESTS =                     \
 	test-ntl-toeplitz           \
 	test-ntl-hankel             \
 	test-ntl-sylvester          \
+	test-poly-smith-form        \
 	test-smith-form-iliopoulos  \
 	test-polynomial-local-x \
 	test-weak-popov-form \
