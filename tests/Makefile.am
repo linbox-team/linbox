@@ -184,8 +184,6 @@ FULLCHECK_TESTS =               \
 	test-vector-domain			\
 	test-zero-one				\
 	test-invariant-factors \
-	test-frobenius-small \
-	test-frobenius-large \
 	test-polynomial-local-x \
 	test-weak-popov-form \
 	try-invariant-factors \
@@ -204,6 +202,8 @@ NTL_TESTS =                     \
 	test-ntl-hankel             \
 	test-ntl-sylvester          \
 	test-smith-form-iliopoulos  \
+	test-frobenius-large \
+	test-frobenius-small \
 	test-toeplitz-det					
 
 if LINBOX_HAVE_NTL
