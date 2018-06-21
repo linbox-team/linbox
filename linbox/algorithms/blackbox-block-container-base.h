@@ -42,6 +42,7 @@
 #include "linbox/util/debug.h"
 #include "linbox/blackbox/archetype.h"
 #include "linbox/blackbox/pascal.h"
+#include "linbox/matrix/sparse-matrix.h"
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/matrix/matrix-domain.h"
