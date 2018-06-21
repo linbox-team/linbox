@@ -202,6 +202,7 @@ NTL_TESTS =                     \
 	test-ntl-hankel             \
 	test-ntl-sylvester          \
 	test-smith-form-iliopoulos  \
+	test-weak-popov-form \
 	test-frobenius-large \
 	test-frobenius-small \
 	test-toeplitz-det					
