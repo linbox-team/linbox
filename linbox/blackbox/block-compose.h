@@ -109,7 +109,7 @@ public:
 		
 		return Y;
 	}
-	
+
 	template<class OutVector, class InVector>
 	OutVector& apply(OutVector& y, const InVector& x) const {
 		BlasVector<Field> z(_A.field(), _A.rowdim());
@@ -129,7 +129,6 @@ public:
 		
 		return y;
 	}
-
 };
 } // LinBox
 

@@ -126,6 +126,16 @@ namespace LinBox
 
 		}
 		
+		template<class OutVector, class InVector>
+		OutVector& apply(OutVector &y, InVector &x) const {
+			
+		}
+		
+		template<class OutVector, class InVector>
+		OutVector& applyTranspose(OutVector &y, InVector &x) const {
+			
+		}
+		
 		const Field& field() const {
 			return _F;
 		}
