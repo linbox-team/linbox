@@ -231,21 +231,30 @@ namespace LinBox
 		 * @param j Column number 0...coldim () - 1
 		 * @param a_ij Element to set
 		 */
-		const Element& setEntry (size_t i, size_t j, const Element &a_ij) ;
+		const Element& setEntry (size_t i, size_t j, const Element &a_ij)
+        {
+            return field().assign(_ptr[i*_col+j],a_ij);
+        }
 
 		/** Get a writeable reference to the entry in the (i, j) position.
 		 * @param i Row index of entry
 		 * @param j Column index of entry
 		 * @returns Reference to matrix entry
 		 */
-		Element &refEntry (size_t i, size_t j) ;
+		Element &refEntry (size_t i, size_t j)
+        {
+            return _ptr[i*_col+j];
+        }    
 
 		/** Get a read-only reference to the entry in the (i, j) position.
 		 * @param i Row index
 		 * @param j Column index
 		 * @returns Const reference to matrix entry
 		 */
-		const Element &getEntry (size_t i, size_t j) const ;
+		const Element &getEntry (size_t i, size_t j) const
+        {
+            return _ptr[i*_col+j];
+        }
 
 		/** Copy the (i, j) entry into x, and return a reference to x.
 		 * This form is more in the Linbox style and is provided for interface
@@ -255,7 +264,10 @@ namespace LinBox
 		 * @param j Column index
 		 * @returns Reference to x
 		 */
-		Element &getEntry (Element &x, size_t i, size_t j) const ;
+		Element &getEntry (Element &x, size_t i, size_t j) const
+        {
+            field().assign(x,_ptr[i*_col+j]); return x;
+        }
 
         /** get a read only reference to the field of the matrix 
          */
@@ -417,7 +429,7 @@ namespace LinBox
 		template <class Vector1, class Vector2>
 		Vector1&  apply (Vector1& y, const Vector2& x) const
         {
-            constSubMatrixType A(*this,0,0,_row,_col); return A.apply(y,x);
+            constSubMatrixType A(*this,0,0,rowdim(),coldim()); return A.apply(y,x);
         }
         
 		template <class Vector1, class Vector2>
@@ -435,7 +447,19 @@ namespace LinBox
         {
             subMatrixType A(*this); return A.applyLeft(Y,X);
         }
-		
+        
+        // init to field zero elements
+		void zero() {
+            subMatrixType B(*this, 0, 0, rowdim(), coldim());
+			B.zero();            
+        }
+
+        // init to random field elements
+		void random()
+		{
+			subMatrixType B(*this, 0, 0, rowdim(), coldim());
+			B.random();
+		}
        
 	}; // end of class BlasMatrix
 
