@@ -109,7 +109,8 @@ namespace LinBox
 				++genprime;
 				Domain D(*genprime);
 				DomainElement r; D.init(r);
-				Builder_.initialize( D, Iteration(r, D) );
+				Iteration(r, D); // FIXME bad primes ignored
+				Builder_.initialize( D, r );
 				++IterCounter;
 			}
 
@@ -133,7 +134,8 @@ namespace LinBox
 				coprime = 0;
 				Domain D(*genprime);
 				DomainElement r; D.init(r);
-				Builder_.progress( D, Iteration(r, D) );
+				Iteration(r, D); // FIXME bad primes ignored
+				Builder_.progress( D, r );
 				if (RR_.scheduled((size_t)IterCounter-1)) {
 					Integer Mint ; Builder_.getModulus(Mint);
 					Integer rint ; Builder_.getResidue(rint);
@@ -170,7 +172,8 @@ namespace LinBox
 				++genprime;
 				Domain D(*genprime);
 				DomainElement r; D.init(r);
-				Builder_.initialize( D, Iteration(r, D) );
+				Iteration(r, D); // FIXME bad primes ignored
+				Builder_.initialize( D, r );
 			}
 
 			int coprime =0;
@@ -195,7 +198,8 @@ namespace LinBox
 				coprime = 0;
 				Domain D(*genprime);
 				DomainElement r; D.init(r);
-				Builder_.progress( D, Iteration(r, D) );
+				Iteration(r, D); // FIXME bad primes ignored
+				Builder_.progress( D, r );
 				//if (RR_.scheduled(IterCounter-1)) {
 				++IterCounter;
 #if 0
@@ -238,7 +242,8 @@ namespace LinBox
 				++genprime;
 				Domain D(*genprime);
 				DomVect r;
-				Builder_.initialize( D, Iteration(r, D) );
+                Iteration(r, D);  // FIXME bad primes ignored
+                Builder_.initialize( D, r );
 			}
 
 			int coprime =0;
@@ -264,7 +269,8 @@ namespace LinBox
 
 				Domain D(*genprime);
                 DomVect r;
-				Builder_.progress( D, Iteration(r, D) );
+				Iteration(r, D); // FIXME bad primes ignored
+				Builder_.progress( D, r );
 
 				if (RR_.scheduled((size_t)IterCounter-1) || Builder_.terminated()) {
 					Integer Mint ; Builder_.getModulus(Mint);
@@ -331,7 +337,8 @@ namespace LinBox
 				++genprime;
 				Domain D(*genprime);
 				BlasVector<Domain> r(D);
-				Builder_.initialize( D, Iteration(r, D) );
+				Iteration(r, D); // FIXME bad primes ignored
+				Builder_.initialize( D, r );
 			}
 
 			int coprime =0;
@@ -358,7 +365,8 @@ namespace LinBox
 
 				Domain D(*genprime);
 				BlasVector<Domain > r(D);
-				Builder_.progress( D, Iteration(r, D) );
+				Iteration(r, D); // FIXME bad primes ignored
+				Builder_.progress( D, r );
 
 				if (RR_.scheduled((size_t)IterCounter-1) || Builder_.terminated()) {
 					Integer Mint ; Builder_.getModulus(Mint);
@@ -430,7 +438,8 @@ namespace LinBox
 				++genprime;
 				Domain D(*genprime);
 				Vect<DomainElement, Alloc<DomainElement>  > r;
-				Builder_.initialize( D, Iteration(r, D) );
+				Iteration(r, D); // FIXME bad primes ignored
+				Builder_.initialize( D, r );
 			}
 			int coprime =0;
 			int maxnoncoprime = 1000;
@@ -452,7 +461,8 @@ namespace LinBox
 				coprime = 0;
 				Domain D(*genprime);
 				Vect<DomainElement, Alloc<DomainElement>  > r;
-				Builder_.progress( D, Iteration(r, D) );
+				Iteration(r, D); // FIXME bad primes ignored
+				Builder_.progress( D, r );
 				//if (RR_.scheduled(IterCounter-1))
 				++IterCounter;
 
@@ -538,7 +548,8 @@ namespace LinBox
 				coprime = 0;
 				Domain D(*genprime);
 				BlasVector<Domain > r(D);
-				Builder_.progress( D, Iteration(r, D) );
+				Iteration(r, D); // FIXME bad primes ignored
+				Builder_.progress( D, r );
 				//if (RR_.scheduled(IterCounter-1))
 				++IterCounter;
 

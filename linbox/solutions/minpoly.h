@@ -209,11 +209,12 @@ namespace LinBox
 
 
 		template<typename Polynomial, typename Field>
-		Polynomial& operator()(Polynomial& P, const Field& F) const
+		IterationResult operator()(Polynomial& P, const Field& F) const
 		{
 			typedef typename Blackbox::template rebind<Field>::other FBlackbox;
 			FBlackbox Ap(A, F);
-			return minpoly( P, Ap, typename FieldTraits<Field>::categoryTag(), M);
+			minpoly( P, Ap, typename FieldTraits<Field>::categoryTag(), M);
+			return IterationResult::CONTINUE;
 		}
 	};
 

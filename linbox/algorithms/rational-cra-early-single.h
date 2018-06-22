@@ -26,7 +26,7 @@
 #define __LINBOX_rational_early_single_cra_H
 
 #include "givaro/zring.h"
-#include "linbox/algorithms/cra-early-single.h"
+#include "linbox/algorithms/cra-single.h"
 
 namespace LinBox
 {
