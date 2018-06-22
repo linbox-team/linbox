@@ -149,36 +149,20 @@ namespace LinBox
 		{
             choose_linear_comb(randv_.size());
 			std::vector<Integer> e(randv_.size());
-            // TODO clean this up, decouple with early and full classes
-			/* clear CRAEarlySingle; */
-			SingleParent::occurency_ = 0;
-			SingleParent::nextM_ = 1UL;
-			SingleParent::primeProd_ = 1UL;
-			SingleParent::residue_ = 0;
 
-			/* Computation of residue_ */
-			std::vector< LazyProduct >::iterator _mod_it = MultiParent::RadixPrimeProd_.begin();// list of prime products
-			std::vector< std::vector<Integer> >::iterator _tab_it = MultiParent::RadixResidues_.begin();// list of residues as vectors of size 1
-			std::vector< bool >::iterator    _occ_it = MultiParent::RadixOccupancy_.begin();//flags of occupied fields
-			int prev_shelf=0, shelf = 0;
-			for (;_occ_it != MultiParent::RadixOccupancy_.end(); ++_mod_it, ++_tab_it, ++_occ_it ) {
-				++shelf;
-				if (*_occ_it) {
-					Integer D = _mod_it->operator()();
-					std::vector<Integer> e_v(randv_.size());
-					e_v = *_tab_it;
-                    auto z = dot(D, e_v, randv_);
-					Integer prev_residue_ = SingleParent::residue_;
-					SingleParent::progress(D,z);
-					if (prev_residue_ == SingleParent::residue_ )
-						SingleParent::occurency_ = SingleParent::occurency_ +  (shelf - prev_shelf);
-					if ( SingleParent::terminated() ) {
-						return true;
-					}
-					prev_shelf = shelf;
-				}
-			}
-			return false;
+            auto shelf = MultiParent::shelf_begin();
+            SingleParent::initialize(shelf.primeprod(),
+                dot(shelf.primeprod(), shelf.residue(), randv_));
+
+            for (++shelf; shelf != MultiParent::shelf_end(); ++shelf)
+            {
+                Integer prev_residue_ = SingleParent::residue_;
+                SingleParent::progress(shelf.primeprod(),
+                    dot(shelf.primeprod(), shelf.residue(), randv_),
+                    shelf.shelfsize());
+                if (SingleParent::terminated()) return true;
+            }
+            return false;
 		}
 
 	protected:

@@ -419,16 +419,18 @@ namespace LinBox
 		 *
 		 * @param D	The modulus of the new image
 		 * @param e	The residue modulo D
+         * @param occ_update The number of residues this update considers
+         *                   (used for early termination)
 		 */
 		template <typename ModType, typename ResType>
-		void progress (const ModType& D, const ResType& e)
+		void progress (const ModType& D, const ResType& e, int occ_update=1)
 		{
 			// Precondition : initialize has been called once before
 			// linbox_check(occurency_ > 0);
 			if (Base::progress_check(D,e))
 				occurency_ = 1;
 			else
-				occurency_ ++;
+				occurency_ += occ_update;
 		}
 
 		/** @brief Checks whether the CRA is (heuristically) finished.
@@ -519,7 +521,7 @@ namespace LinBox
 		 * @param e	The residue modulo D
 		 */
 		template <typename ModType, typename ResType>
-		void progress (const ModType& D, const ResType& e)
+		void progress (const ModType& D, const ResType& e, int UNUSED=1)
 		{
 			// Precondition : initialize has been called once before
 			// linbox_check(curfailprob_ >= 0.);
@@ -614,7 +616,7 @@ namespace LinBox
 		 * @param e	The residue modulo D
 		 */
 		template <typename ModType, typename ResType>
-		void progress (const ModType& D, const ResType& e)
+		void progress (const ModType& D, const ResType& e, int UNUSED=1)
 		{
 			// Precondition : initialize has been called once before
 			// linbox_check(curfailprob_ >= 0.);

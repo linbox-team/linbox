@@ -304,6 +304,8 @@ int test_early_multip(std::ostream & report, size_t PrimeSize, size_t Taille, si
 	typedef std::vector<Integer>                      IntVect;
 	typedef std::vector<Element>                        pVect;
 
+    Givaro::GivRandom rgen;
+
 	/*  primes */
 	Vect primes(Size) ;
 	PrimeIterator<IteratorCategories::HeuristicTag> RP((unsigned )PrimeSize);
@@ -349,6 +351,12 @@ int test_early_multip(std::ostream & report, size_t PrimeSize, size_t Taille, si
 		cra.progress(F,residue);
 		++genprime;
 		++residu ;
+
+        /* call changeVector sometimes */
+        if ((rgen() & 0x3fUL) == 0) {
+            report << "calling changeVector\n";
+            cra.changeVector();
+        }
 	}
 
 	cra.result(result);

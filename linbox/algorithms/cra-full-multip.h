@@ -613,7 +613,72 @@ namespace LinBox
 			return false;
 		}
 
+        struct ShelfIterator {
+            using Parent_t = FullMultipCRA;
 
+        protected:
+            const Parent_t& parent_;
+            decltype(parent_.RadixPrimeProd_.rbegin()) primeprod_it_;
+            decltype(parent_.RadixResidues_.rbegin()) residues_it_;
+            decltype(parent_.RadixOccupancy_.rbegin()) occupancy_it_;
+            size_t shelfsize_;
+
+        public:
+            ShelfIterator(const Parent_t& parent) :
+                parent_(parent),
+                primeprod_it_(parent.RadixPrimeProd_.rbegin()),
+                residues_it_(parent.RadixResidues_.rbegin()),
+                occupancy_it_(parent.RadixOccupancy_.rbegin()),
+                shelfsize_(1UL << (parent.RadixOccupancy_.size()))
+            {
+                for (; !*occupancy_it_ && occupancy_it_ != parent.RadixOccupancy_.rend();
+                     ++occupancy_it_, ++primeprod_it_, ++residues_it_) {
+                    shelfsize_ >>= 1;
+                }
+            }
+
+            ShelfIterator(const Parent_t& parent, int AT_END) :
+                parent_(parent),
+                occupancy_it_(parent.RadixOccupancy_.rend())
+            {
+            }
+
+            ShelfIterator& operator ++ () {
+                ++occupancy_it_; ++primeprod_it_; ++residues_it_;
+                shelfsize_ >>= 1;
+                for (; !*occupancy_it_ && occupancy_it_ != parent_.RadixOccupancy_.rend();
+                     ++occupancy_it_, ++primeprod_it_, ++residues_it_) {
+                    shelfsize_ >>= 1;
+                }
+                return *this;
+            }
+
+            const Integer& primeprod() const {
+                return (*primeprod_it_)();
+            }
+
+            const typename decltype(parent_.RadixResidues_)::value_type & residue() const {
+                return *residues_it_;
+            }
+
+            size_t shelfsize() const { return shelfsize_; }
+
+            bool operator == (const ShelfIterator& other) const {
+                return occupancy_it_ == other.occupancy_it_;
+            }
+
+            bool operator != (const ShelfIterator& other) const {
+                return occupancy_it_ != other.occupancy_it_;
+            }
+        };
+
+        ShelfIterator shelf_begin() const {
+            return ShelfIterator(*this);
+        }
+
+        ShelfIterator shelf_end() const {
+            return ShelfIterator(*this, 1);
+        }
 
 	protected:
 

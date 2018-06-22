@@ -35,6 +35,18 @@ namespace LinBox
 		typedef std::vector< Integer > Father_t;
 	protected:
 		bool                _tobecomputed;
+
+        void compute() {
+			if (_tobecomputed) {
+				Father_t::const_iterator iter = this->begin();
+				Father_t::iterator       prod = this->begin();
+				for(++iter; iter != this->end(); ++iter)
+					*prod *= *iter;
+				this->resize(1);
+				_tobecomputed = false;
+			}
+        }
+
 	public:
 
 		LazyProduct() :
@@ -72,17 +84,20 @@ namespace LinBox
 			return _tobecomputed = (this->size()>1);
 		}
 
-		Integer & operator() ()
+        Integer& operator() ()
+        {
+            compute();
+            return this->front();
+        }
+
+		const Integer& operator() () const
 		{
-			if (_tobecomputed) {
-				Father_t::const_iterator iter = this->begin();
-				Father_t::iterator       prod = this->begin();
-				for(++iter; iter != this->end(); ++iter)
-					*prod *= *iter;
-				this->resize(1);
-				_tobecomputed = false;
-			}
-			return this->back();
+            /* note: const_cast is because this method does not change
+             * the underlying value, so it should be const, but the
+             * underlying vector cannot be mutable since it is inherited.
+             */
+            const_cast<LazyProduct*>(this)->compute();
+			return this->front();
 		}
 
 		bool noncoprime(const Integer& i) const
