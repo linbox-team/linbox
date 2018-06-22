@@ -35,6 +35,8 @@
 #include "linbox/linbox-config.h"
 #include "linbox/util/debug.h"
 
+#include "linbox/blackbox/blockbb.h"
+
 #include "linbox/algorithms/blackbox-block-container-base.h"
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/matrix/matrix-domain.h"
@@ -115,25 +117,26 @@ namespace LinBox
 		
 		// C = AB
 		template<class Matrix>
-		void applyLeft(Matrix &C, const Matrix &B) const {
+		Matrix& applyLeft(Matrix &C, const Matrix &B) const {
 			size_t b = B.coldim();
 			FFLAS::fspmm(_F, _A, b, B.getPointer(), b, _F.zero, C.getPointer(), b);
+			return C;
 		}
 		
 		// C = BA
 		template<class Matrix>
-		void applyRight(Matrix &C, const Matrix &B) const {
-
+		Matrix& applyRight(Matrix &C, const Matrix &B) const {
+			return C;
+		}
+	
+		template<class OutVector, class InVector>
+		OutVector& apply(OutVector& y, const InVector& x) const {
+			return y;
 		}
 		
 		template<class OutVector, class InVector>
-		OutVector& apply(OutVector &y, InVector &x) const {
-			
-		}
-		
-		template<class OutVector, class InVector>
-		OutVector& applyTranspose(OutVector &y, InVector &x) const {
-			
+		OutVector& applyTranspose(OutVector& y, const InVector& x) const {
+			return y;
 		}
 		
 		const Field& field() const {
@@ -147,6 +150,12 @@ namespace LinBox
 		size_t coldim() const {
 			return _coldim;
 		}
+	};
+	
+	template<>
+	template<class Field>
+	struct is_blockbb<FflasCsr<Field>> {
+		static const bool value = true;
 	};
 }
 
