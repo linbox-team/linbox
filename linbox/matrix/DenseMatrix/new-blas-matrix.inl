@@ -112,19 +112,19 @@ namespace LinBox
 
 		for (col_p = colBegin(), e_p = e.begin();
 		     e_p != e.end(); ++ col_p, ++ e_p)
-		{
+            {
 
-			field().assign(*e_p, field().one);
+                field().assign(*e_p, field().one);
 
-			A.apply (tmp, e);
+                A.apply (tmp, e);
 
-            for (tmp_p = tmp.begin(), elt_p = col_p -> begin();
-			     tmp_p != tmp.end(); ++ tmp_p, ++ elt_p)
+                for (tmp_p = tmp.begin(), elt_p = col_p -> begin();
+                     tmp_p != tmp.end(); ++ tmp_p, ++ elt_p)
 
-				field().assign(*elt_p, *tmp_p);
+                    field().assign(*elt_p, *tmp_p);
 
-			field().assign(*e_p, field().zero);
-		}
+                field().assign(*e_p, field().zero);
+            }
 	}
             	
     ////////////
@@ -240,7 +240,7 @@ namespace LinBox
 
     template < class _Field, class _Storage >
     template<class OtherMatrix>
-    BlasMatrix< _Field, _Storage >::BlasMatrix (const _Field &F, const OtherMatrix &A) :
+    BlasMatrix< _Field, _Storage >::BlasMatrix (const OtherMatrix &A, const _Field &F) :
         _row(A.rowdim()), _col(A.coldim()), _rep(_row*_col), _ptr(_rep.data()), _field(F)
     {
 		typename OtherMatrix::template rebind<_Field>()(*this,A);        
@@ -258,7 +258,7 @@ namespace LinBox
         _row = A.rowdim();
         _rep = Storage(_row*_col);
         _ptr = _rep.data() ;
-        createBlasMatrix(A);
+        createBlasMatrix(A,0,0,_row,_col,MatrixContainerCategory::BlasContainer());
         return *this;
     }
 
@@ -481,170 +481,174 @@ namespace LinBox
         size_t _dis;
     };
 
-    template < class _Field, class _Storage >
-    class BlasMatrix< _Field, _Storage >::ConstColIterator {
-    public:
-        ConstColIterator (typename Storage::const_iterator p, size_t stride, size_t len) :
-            _col (Subiterator<typename Storage::const_iterator> (p, (ptrdiff_t)stride),
-                  Subiterator<typename Storage::const_iterator> (p + (ptrdiff_t)(len * stride), (ptrdiff_t)stride)),
-            _stride (stride)
-        {}
 
-        ConstColIterator (const ConstCol& col, size_t stride) :
-            _col (col),
-            _stride (stride)
-        {}
+    
+	template < class _Field, class _Storage >
+	class BlasMatrix< _Field, _Storage >::ConstColIterator {
+	public:
+		ConstColIterator (typename _Storage::const_iterator p, size_t stride, size_t len) :
+			_col (Subiterator<typename _Storage::const_iterator> (p, (ptrdiff_t)stride),
+			      Subiterator<typename _Storage::const_iterator> (p + (ptrdiff_t)(len * stride), (ptrdiff_t)stride)),
+			_stride (stride)
+		{}
 
-        ConstColIterator () {}
+		ConstColIterator (const ConstCol& col, size_t stride) :
+			_col (col),
+			_stride (stride)
+		{}
 
-        ConstColIterator (const ConstColIterator& rowp) :
-            _col (rowp._col)
-        {}
+		ConstColIterator () {}
 
-        ConstColIterator& operator= (const ConstColIterator& rowp)
-        {
-            _col = rowp._col;
-            _stride = rowp._stride;
-            return *this;
-        }
+		ConstColIterator (const ConstColIterator& rowp) :
+			_col (rowp._col),
+			_stride (rowp._stride)
+		{}
 
-        ConstColIterator& operator++ ()
-        {
-            _col = ConstCol (Subiterator<typename Storage::const_iterator> (_col.begin ().operator-> () + 1, (ptrdiff_t)_stride),
-                             Subiterator<typename Storage::const_iterator> (_col.end ().operator-> () + 1, (ptrdiff_t)_stride));
-            return *this;
-        }
+		ConstColIterator& operator= (const ConstColIterator& rowp)
+		{
+			_col = rowp._col;
+			_stride = rowp._stride;
+			return *this;
+		}
 
-        ConstColIterator  operator++ (int)
-        {
-            ConstColIterator old(*this);
-            this->operator++ ();
-            return old;
-        }
+		ConstColIterator& operator++ ()
+		{
+			_col = ConstCol (Subiterator<typename _Storage::const_iterator> (_col.begin ().operator-> () + 1, (ptrdiff_t)_stride),
+					 Subiterator<typename _Storage::const_iterator> (_col.end ().operator-> () + 1, (ptrdiff_t)_stride));
+			return *this;
+		}
 
-        ConstColIterator operator + (int i)
-        {
-            return ConstColIterator (_col.begin ().operator-> () + i, _stride, _col.size ());
-        }
+		ConstColIterator  operator++ (int)
+		{
+			ConstColIterator old(*this);
+			this->operator++ ();
+			return old;
+		}
 
-        ConstColIterator& operator += (int i)
-        {
-            _col = ConstCol (Subiterator<typename Storage::const_iterator> (_col.begin ().operator-> () + i, _stride),
-                             Subiterator<typename Storage::const_iterator> (_col.end ().operator-> () + i, _stride));
-            return *this;
-        }
+		ConstColIterator operator + (int i)
+		{
+			return ConstColIterator (_col.begin ().operator-> () + i, _stride, _col.size ());
+		}
 
-        ConstCol operator[] (int i) const
-        {
-            return ConstCol (Subiterator<typename Storage::const_iterator> (_col.begin ().operator-> () + i, _stride),
-                             Subiterator<typename Storage::const_iterator> (_col.end ().operator-> () + i, _stride));
-        }
+		ConstColIterator& operator += (int i)
+		{
+			_col = ConstCol (Subiterator<typename _Storage::const_iterator> (_col.begin ().operator-> () + i, _stride),
+					 Subiterator<typename _Storage::const_iterator> (_col.end ().operator-> () + i, _stride));
+			return *this;
+		}
 
-        ConstCol* operator-> ()
-        {
-            return &_col;
-        }
+		ConstCol operator[] (int i) const
+		{
+			return ConstCol (Subiterator<typename _Storage::const_iterator> (_col.begin ().operator-> () + i, _stride),
+					 Subiterator<typename _Storage::const_iterator> (_col.end ().operator-> () + i, _stride));
+		}
 
-        ConstCol& operator* ()
-        {
-            return _col;
-        }
+		ConstCol* operator-> ()
+		{
+			return &_col;
+		}
 
-        bool operator!= (const ConstColIterator& c) const
-        {
-            return (_col.begin () != c._col.begin ()) || (_col.end () != c._col.end ());
-        }
+		ConstCol& operator* ()
+		{
+			return _col;
+		}
 
-    private:
-        ConstCol _col;
-        size_t _stride;
-    };
+		bool operator!= (const ConstColIterator& c) const
+		{
+			return (_col.begin () != c._col.begin ()) || (_col.end () != c._col.end ());
+		}
 
-    template < class _Field, class _Storage >
-    class BlasMatrix< _Field, _Storage >::ColIterator {
-    public:
-        ColIterator (typename Storage::iterator p, size_t stride, size_t len) :
-            _col (Subiterator<typename Storage::iterator> (p, (long)stride),
-                  Subiterator<typename Storage::iterator> (p + (ptrdiff_t)(len * stride),(long) stride)), _stride (stride)
-        {}
+	private:
+		ConstCol _col;
+		size_t _stride;
+	};
 
-        ColIterator () {}
+	template < class _Field, class _Storage >
+	class BlasMatrix< _Field, _Storage >::ColIterator {
+	public:
+		ColIterator (typename _Storage::iterator p, size_t stride, size_t len) :
+			_col (Subiterator<typename _Storage::iterator> (p, (long)stride),
+			      Subiterator<typename _Storage::iterator> (p + (ptrdiff_t)(len * stride),(long) stride)), _stride (stride)
+		{}
 
-        ColIterator (const ColIterator& rowp) :
-            _col (rowp._col)
-        {}
+		ColIterator () {}
 
-        ColIterator& operator= (const ColIterator& rowp)
-        {
-            _col = rowp._col;
-            _stride = rowp._stride;
-            return *this;
-        }
+		ColIterator (const ColIterator& rowp) :
+			_col (rowp._col)
+		{}
 
-        const ColIterator& operator= (const ColIterator& rowp) const
-        {
-            const_cast<ColIterator*> (this)->_col = rowp._col;
-            return *this;
-        }
+		ColIterator& operator= (const ColIterator& rowp)
+		{
+			_col = rowp._col;
+			_stride = rowp._stride;
+			return *this;
+		}
 
-        ColIterator& operator++ ()
-        {
-            _col = Col (Subiterator<typename Storage::iterator> (_col.begin ().operator-> () + 1, (const long)_stride),
-                        Subiterator<typename Storage::iterator> (_col.end ().operator-> () + 1,(const long) _stride));
-            return *this;
-        }
+		const ColIterator& operator= (const ColIterator& rowp) const
+		{
+			const_cast<ColIterator*> (this)->_col = rowp._col;
+			return *this;
+		}
 
-        ColIterator  operator++ (int)
-        {
-            Col tmp (_col);
-            this->operator++ ();
-            return tmp;
-        }
+		ColIterator& operator++ ()
+		{
+			_col = Col (Subiterator<typename _Storage::iterator> (_col.begin ().operator-> () + 1, (const long)_stride),
+				    Subiterator<typename _Storage::iterator> (_col.end ().operator-> () + 1,(const long) _stride));
+			return *this;
+		}
 
-        ColIterator operator + (int i)
-        {
-            return ColIterator (_col.begin ().operator-> () + i, _stride, _col.size ());
-        }
+		ColIterator  operator++ (int)
+		{
+			Col tmp (_col);
+			this->operator++ ();
+			return tmp;
+		}
 
-        ColIterator& operator += (int i)
-        {
-            _col = Col (Subiterator<typename Storage::iterator> (_col.begin ().operator-> () + i, _stride),
-                        Subiterator<typename Storage::iterator> (_col.end ().operator-> () + i, _stride));
-            return *this;
-        }
+		ColIterator operator + (int i)
+		{
+			return ColIterator (_col.begin ().operator-> () + i, _stride, _col.size ());
+		}
 
-        Col operator[] (int i) const
-        {
-            return Col (Subiterator<typename Storage::iterator> (const_cast<Col&> (_col).begin ().operator-> () + i, _stride),
-                        Subiterator<typename Storage::iterator> (const_cast<Col&> (_col).end ().operator-> () + i, _stride));
-        }
+		ColIterator& operator += (int i)
+		{
+			_col = Col (Subiterator<typename _Storage::iterator> (_col.begin ().operator-> () + i, _stride),
+				    Subiterator<typename _Storage::iterator> (_col.end ().operator-> () + i, _stride));
+			return *this;
+		}
 
-        Col* operator-> ()
-        {
-            return &(this->_col);
-        }
+		Col operator[] (int i) const
+		{
+			return Col (Subiterator<typename _Storage::iterator> (const_cast<Col&> (_col).begin ().operator-> () + i, _stride),
+				    Subiterator<typename _Storage::iterator> (const_cast<Col&> (_col).end ().operator-> () + i, _stride));
+		}
 
-        Col& operator* ()
-        {
-            return _col;
-        }
+		Col* operator-> ()
+		{
+			return &(this->_col);
+		}
 
-        bool operator!= (const ColIterator& c) const
-        {
-            return (_col.begin () != c._col.begin ()) || (_col.end () != c._col.end ());
-        }
+		Col& operator* ()
+		{
+			return _col;
+		}
 
-        operator ConstColIterator ()
-        {
-            return ConstColIterator (reinterpret_cast<ConstCol&> (_col) , _stride);
-        }
+		bool operator!= (const ColIterator& c) const
+		{
+			return (_col.begin () != c._col.begin ()) || (_col.end () != c._col.end ());
+		}
 
-    private:
+		operator ConstColIterator ()
+		{
+			return ConstColIterator (reinterpret_cast<ConstCol&> (_col) , _stride);
+		}
 
-        Col _col;
-        size_t _stride;
-    };
+	private:
 
+		Col _col;
+		size_t _stride;
+	};
+
+   
     /*!   Indexed Iterator.
      * @ingroup iterators
      * @brief NO DOC
@@ -669,105 +673,106 @@ namespace LinBox
             _r_index (0), _c_index (0), _dim (1), _begin (0)
         {}
 
-        IndexedIterator (const IndexedIterator& r) :
-            _r_index (r._r_index), _c_index (r._c_index), _dim (r._dim), _begin (r._begin)
-        {}
+       
+		IndexedIterator (const IndexedIterator& r) :
+			_r_index (r._r_index), _c_index (r._c_index), _dim (r._dim), _begin (r._begin)
+		{}
 
-        IndexedIterator& operator = (const IndexedIterator &iter)
-        {
-            _r_index = iter._r_index;
-            _c_index = iter._c_index;
-            _dim = iter._dim;
-            _begin = iter._begin;
-            return *this;
-        }
+		IndexedIterator& operator = (const IndexedIterator &iter)
+		{
+			_r_index = iter._r_index;
+			_c_index = iter._c_index;
+			_dim = iter._dim;
+			_begin = iter._begin;
+			return *this;
+		}
 
-        bool operator == (const IndexedIterator &iter) const
-        {
-            return (_r_index == iter._r_index) &&
+		bool operator == (const IndexedIterator &iter) const
+		{
+			return (_r_index == iter._r_index) &&
                 (_c_index == iter._c_index) &&
                 (_dim == iter._dim) &&
                 (_begin==iter._begin);
-        }
+		}
 
-        bool operator != (const IndexedIterator& iter) const
-        {
-            return (_r_index != iter._r_index) ||
+		bool operator != (const IndexedIterator& iter) const
+		{
+			return (_r_index != iter._r_index) ||
                 (_c_index != iter._c_index) ||
                 (_dim != iter._dim) ||
                 (_begin!=iter._begin);
-        }
+		}
 
-        IndexedIterator &operator ++ ()
-        {
-            ++_c_index;
+		IndexedIterator &operator ++ ()
+		{
+			++_c_index;
 
-            if (_c_index == _dim) {
-                _c_index = 0;
-                ++_r_index;
-            }
+			if (_c_index == _dim) {
+				_c_index = 0;
+				++_r_index;
+			}
 
-            return *this;
-        }
-
-
-        IndexedIterator operator ++ (int)
-        {
-            IndexedIterator tmp = *this;
-            ++(*this);
-            return tmp;
-        }
-
-        IndexedIterator &operator -- ()
-        {
-            if (_c_index)
-                --_c_index;
-            else {
-                --_r_index;
-                _c_index = _dim - 1;
-            }
-
-            return *this;
-        }
+			return *this;
+		}
 
 
-        IndexedIterator operator -- (int)
-        {
-            IndexedIterator tmp = *this;
-            --(*this);
-            return tmp;
-        }
+		IndexedIterator operator ++ (int)
+		{
+			IndexedIterator tmp = *this;
+			++(*this);
+			return tmp;
+		}
 
-        value_type &operator * () const
-        {
-            return *(_begin +(ptrdiff_t) (_r_index * _dim + _c_index));
-        }
+		IndexedIterator &operator -- ()
+		{
+			if (_c_index)
+				--_c_index;
+			else {
+				--_r_index;
+				_c_index = _dim - 1;
+			}
 
-
-        value_type * operator -> () const
-        {
-            return _begin + (ptrdiff_t)(_r_index * _dim + _c_index);
-        }
-
-
-        size_t rowIndex () const
-        {
-            return _r_index;
-        }
-
-        size_t colIndex () const
-        {
-            return _c_index;
-        }
-
-        const value_type &value () const
-        {
-            return *(_begin + (ptrdiff_t)(_r_index * _dim + _c_index));
-        }
+			return *this;
+		}
 
 
-    };
+		IndexedIterator operator -- (int)
+		{
+			IndexedIterator tmp = *this;
+			--(*this);
+			return tmp;
+		}
 
+		value_type &operator * () const
+		{
+			return *(_begin +(ptrdiff_t) (_r_index * _dim + _c_index));
+		}
+
+
+		value_type * operator -> () const
+		{
+			return _begin + (ptrdiff_t)(_r_index * _dim + _c_index);
+		}
+
+
+		size_t rowIndex () const
+		{
+			return _r_index;
+		}
+
+		size_t colIndex () const
+		{
+			return _c_index;
+		}
+
+		const value_type &value () const
+		{
+			return *(_begin + (ptrdiff_t)(_r_index * _dim + _c_index));
+		}
+
+
+	};
+    
     template < class _Field, class _Storage >
     class BlasMatrix< _Field, _Storage >::ConstIndexedIterator {
         size_t _r_index;
@@ -881,6 +886,9 @@ namespace LinBox
             return *(_begin + (ptrdiff_t)(_r_index * _dim + _c_index));
         }
     };
+
+
+   
 
     /*   */
 

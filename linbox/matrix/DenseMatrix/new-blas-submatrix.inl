@@ -280,7 +280,7 @@ namespace LinBox {
 		/*! @internal
 		 * @brief NO DOC
 		 */
-		Iterator (const Element_ptr& cur,
+		Iterator (const typename BlasSubmatrix<_Matrix>::pointer& cur,
                   const size_t c_dim,
                   const size_t stride,
                   const size_t c_idx) :
@@ -349,7 +349,7 @@ namespace LinBox {
 		}
 
 	protected:
-		typename BlasMatrix<typename _Matrix::Field,typename _Matrix::Rep>::Iterator _cur;
+        typename BlasSubmatrix<_Matrix>::pointer  _cur;
 		size_t _c_dim;
 		size_t _stride;
 		size_t _c_idx;
@@ -372,7 +372,7 @@ namespace LinBox {
 		/*! @internal
 		 * @brief NO DOC
 		 */
-		ConstIterator (const typename BlasMatrix<typename _Matrix::Field, typename _Matrix::Rep>::ConstIterator& cur,
+		ConstIterator (const typename BlasSubmatrix<_Matrix>::pointer& cur,
                        const size_t c_dim,
                        const size_t stride,
                        const size_t c_idx) :
@@ -435,7 +435,7 @@ namespace LinBox {
 		}
 
 	protected:
-		typename BlasMatrix<typename _Matrix::Field, typename _Matrix::Rep>::ConstIterator _cur;
+        typename BlasSubmatrix<_Matrix>::pointer _cur;
 		size_t _c_dim;
 		size_t _stride;
 		size_t _c_idx;
@@ -445,28 +445,27 @@ namespace LinBox {
 	template < class _Matrix >
 	typename BlasSubmatrix<_Matrix>::Iterator BlasSubmatrix<_Matrix>::Begin ()
 	{
-		return Iterator (_Mat.Begin () + (ptrdiff_t)( _off ),
-                         _col, _stride, 0);
+		return Iterator (_ptr,_col, _stride, 0);
 	}
 
 	template < class _Matrix >
 	typename BlasSubmatrix<_Matrix>::Iterator BlasSubmatrix<_Matrix>::End ()
 	{
-		return Iterator (_Mat.Begin () +(ptrdiff_t) ( (_row) * _stride + _off ),
+		return Iterator (_ptr +(ptrdiff_t) ( (_row) * _stride ),
                          _col, _stride, 0);
 	}
 
 	template < class _Matrix >
 	typename BlasSubmatrix<_Matrix>::ConstIterator BlasSubmatrix<_Matrix>::Begin () const
 	{
-		return ConstIterator (_Mat.Begin () +(ptrdiff_t) ( _off ),
+		return ConstIterator (_ptr,
                               _col, _stride, 0);
 	}
 
 	template < class _Matrix >
 	typename BlasSubmatrix<_Matrix>::ConstIterator BlasSubmatrix<_Matrix>::End () const
 	{
-		return ConstIterator (_Mat.Begin () +(ptrdiff_t) ( (_row) * _stride + _off ),
+		return ConstIterator (_ptr +(ptrdiff_t) ( (_row) * _stride ),
                               _col, _stride, 0);
 	}
 
@@ -484,7 +483,7 @@ namespace LinBox {
 	public:
 		IndexedIterator (){}
 
-		IndexedIterator (const typename BlasMatrix<typename _Matrix::Field,typename _Matrix::Rep>::Iterator& cur,
+		IndexedIterator (const typename BlasSubmatrix<_Matrix>::pointer & cur,
                          size_t c_dim,
                          size_t stride,
                          size_t r_idx,
@@ -560,7 +559,7 @@ namespace LinBox {
 		const typename _Matrix::Element& value () const {return *_cur;}
 
 	protected:
-		typename BlasMatrix<typename _Matrix::Field, typename _Matrix::Rep>::Iterator _cur;
+        typename BlasSubmatrix<_Matrix>::pointer  _cur;
 		size_t _stride;
 		size_t _c_dim;
 		size_t _r_idx;
@@ -570,14 +569,13 @@ namespace LinBox {
 	template < class _Matrix >
 	typename BlasSubmatrix<_Matrix>::IndexedIterator BlasSubmatrix<_Matrix>::IndexedBegin ()
 	{
-		return IndexedIterator (_Mat.Begin () +(ptrdiff_t) ( (_off) ),
-                                _col , _stride, 0, 0);
+		return IndexedIterator (_ptr,_col , _stride, 0, 0);
 	}
 
 	template < class _Matrix >
 	typename BlasSubmatrix<_Matrix>::IndexedIterator BlasSubmatrix<_Matrix>::IndexedEnd ()
 	{
-		return IndexedIterator (_Mat.Begin () +(ptrdiff_t) ( (_row) * _stride + (_col+_off) ),
+		return IndexedIterator (_ptr +(ptrdiff_t) ( (_row) * _stride + (_col) ),
                                 _col, _stride, _row-1, _col-1);
 	}
 
@@ -595,7 +593,7 @@ namespace LinBox {
 	public:
 		ConstIndexedIterator (){}
 
-		ConstIndexedIterator (const typename BlasMatrix<typename _Matrix::Field, typename _Matrix::Rep>::ConstIterator& cur,
+		ConstIndexedIterator (const typename BlasSubmatrix<_Matrix>::pointer& cur,
                               size_t c_dim,
                               size_t stride,
                               size_t r_idx,
@@ -702,7 +700,7 @@ namespace LinBox {
 		}
 
 	protected:
-		typename BlasMatrix<typename _Matrix::Field, typename _Matrix::Rep>::ConstIterator _cur;
+        typename BlasSubmatrix<_Matrix>::pointer _cur;
 		size_t _stride;
 		size_t _c_dim;
 		size_t _r_idx;
@@ -712,14 +710,13 @@ namespace LinBox {
 	template < class _Matrix >
 	typename BlasSubmatrix<_Matrix>::ConstIndexedIterator BlasSubmatrix<_Matrix>::IndexedBegin () const
 	{
-		return ConstIndexedIterator (_Mat.Begin () +(ptrdiff_t) ( _off ),
-                                     _row, _stride, 0, 0);
+		return ConstIndexedIterator (_ptr,_row, _stride, 0, 0);
 	}
 
 	template < class _Matrix >
 	typename BlasSubmatrix<_Matrix>::ConstIndexedIterator BlasSubmatrix<_Matrix>::IndexedEnd () const
 	{
-		return ConstIndexedIterator (_Mat.Begin () +(ptrdiff_t) ( (_row) * _stride + (_off+_col) ),
+		return ConstIndexedIterator (_ptr +(ptrdiff_t) ( (_row) * _stride + (_col) ),
                                      _col, _stride, _row-1, _col-1);
 	}
 
@@ -727,56 +724,52 @@ namespace LinBox {
 	template < class _Matrix >
 	typename BlasSubmatrix<_Matrix>::RowIterator BlasSubmatrix<_Matrix>::rowBegin ()
 	{
-		return RowIterator (_Mat.Begin () +(ptrdiff_t) ( _off  ),
-                            _col, _stride);
+		return RowIterator (_ptr, _col, _stride);
 	}
 
 	template < class _Matrix >
 	typename BlasSubmatrix<_Matrix>::RowIterator BlasSubmatrix<_Matrix>::rowEnd ()
 	{
-		return RowIterator (_Mat.Begin () +(ptrdiff_t) ( (_row) * _stride + _off ),
+		return RowIterator (_ptr +(ptrdiff_t) ( (_row) * _stride),
                             _col, _stride);
 	}
 
 	template < class _Matrix >
 	typename BlasSubmatrix<_Matrix>::ConstRowIterator BlasSubmatrix<_Matrix>::rowBegin () const
 	{
-		return ConstRowIterator (_Mat.Begin () + (ptrdiff_t)( _off ),
-                                 _col, _stride);
+		return ConstRowIterator (_ptr,_col, _stride);
 	}
 
 	template < class _Matrix >
 	typename BlasSubmatrix<_Matrix>::ConstRowIterator BlasSubmatrix<_Matrix>::rowEnd () const
 	{
-		return ConstRowIterator (_Mat.Begin () + (ptrdiff_t)( (_row) * _stride + _off ),
+		return ConstRowIterator (_ptr + (ptrdiff_t)( (_row) * _stride ),
                                  _col, _stride);
 	}
 
 	template < class _Matrix >
 	typename BlasSubmatrix<_Matrix>::ColIterator BlasSubmatrix<_Matrix>::colBegin ()
 	{
-		return ColIterator (_Mat.Begin () + (ptrdiff_t)( _off ),
-                            _stride, _row);
+		return ColIterator (_ptr, _stride, _row);
 	}
 
 	template < class _Matrix >
 	typename BlasSubmatrix<_Matrix>::ColIterator BlasSubmatrix<_Matrix>::colEnd ()
 	{
-		return ColIterator (_Mat.Begin () + (ptrdiff_t)( (_col) + _off ),
+		return ColIterator (_ptr + (ptrdiff_t)( (_col)),
                             _stride, _row);
 	}
 
 	template < class _Matrix >
 	typename BlasSubmatrix<_Matrix>::ConstColIterator BlasSubmatrix<_Matrix>::colBegin () const
 	{
-		return ConstColIterator (_Mat.Begin () + (ptrdiff_t)( _off ),
-                                 _stride, _row);
+		return ConstColIterator (_ptr, _stride, _row);
 	}
 
 	template < class _Matrix >
 	typename BlasSubmatrix<_Matrix>::ConstColIterator BlasSubmatrix<_Matrix>::colEnd () const
 	{
-		return ConstColIterator (_Mat.Begin () + (ptrdiff_t)( (_col) + _off ),
+		return ConstColIterator (_ptr + (ptrdiff_t)( (_col)),
                                  _stride, _row);
 	}
 
@@ -784,14 +777,361 @@ namespace LinBox {
 	template < class _Matrix >
 	typename BlasSubmatrix<_Matrix>::Row BlasSubmatrix<_Matrix>::operator[] (size_t i)
 	{
-		return Row (_Mat.Begin () +(ptrdiff_t) (_r0+i) * _stride, _Mat.Begin () + (ptrdiff_t)((_r0+i) * _stride + _stride) );
+		return Row (_ptr + i * _stride, _ptr + (i+1) * _stride );
 	}
 
 	template < class _Matrix >
 	typename BlasSubmatrix<_Matrix>::ConstRow BlasSubmatrix<_Matrix>::operator[] (size_t i) const
 	{
-		return Row (_Mat.Begin () + (ptrdiff_t)(_r0+i) * _stride, _Mat.Begin () + (ptrdiff_t)((_r0+i) * _stride + _stride) );
+		return Row (_ptr+ i * _stride, _ptr + (i+1) * _stride);
 	}
+
+    
+
+    /* class for Row iterator
+     */
+    template < class _Matrix >
+    class BlasSubmatrix< _Matrix >::RowIterator {
+    public:
+        RowIterator (const pointer& p, size_t len, size_t d) :
+            _row (p, p + (ptrdiff_t)len), _dis (d)
+        {}
+
+        RowIterator () {}
+
+        RowIterator (const RowIterator& colp) :
+            _row (colp._row), _dis (colp._dis)
+        {}
+
+        RowIterator& operator = (const RowIterator& colp)
+        {
+            _row = colp._row;
+            _dis = colp._dis;
+            return *this;
+        }
+
+        RowIterator& operator ++ ()
+        {
+            _row = Row (_row.begin () + (ptrdiff_t)_dis, _row.end () + (ptrdiff_t)_dis);
+            return *this;
+        }
+
+        RowIterator  operator ++ (int)
+        {
+            RowIterator tmp (*this);
+            ++*this;
+            return tmp;
+        }
+
+        RowIterator& operator -- ()
+        {
+            _row = Row (_row.begin () - (ptrdiff_t)_dis, _row.end () - (ptrdiff_t)_dis);
+            return *this;
+        }
+
+        RowIterator  operator -- (int)
+        {
+            RowIterator tmp (*this);
+            --*this;
+            return tmp;
+        }
+
+        RowIterator operator + (int i)
+        {
+            return RowIterator (_row.begin () + (ptrdiff_t)((int)_dis * i), _row.size (), _dis);
+        }
+
+        RowIterator& operator += (int i)
+        {
+            _row = Row (_row.begin () + (ptrdiff_t)((int)_dis * i), _row.end () + (ptrdiff_t)((int)_dis * i));
+            return *this;
+        }
+
+        Row operator[] (int i) const
+        {
+            return Row (const_cast<Row&> (_row).begin () + (ptrdiff_t)((int)_dis * i),
+                        const_cast<Row&> (_row).end () + (ptrdiff_t)((int)_dis * i));
+        }
+
+        Row* operator-> ()
+        {
+            return &(this->_row);
+        }
+
+        Row& operator* ()
+        {
+            return _row;
+        }
+
+        bool operator!= (const RowIterator& c) const
+        {
+            return (_row.begin () != c._row.begin ()) || (_row.end () != c._row.end ()) || (_dis != c._dis);
+        }
+
+        operator ConstRowIterator ()
+        {
+            return ConstRowIterator (_row.begin (), _row.size (), _dis);
+        }
+
+    private:
+        Row _row;
+        size_t _dis;
+    };
+
+
+    /* class for const Row iterator
+     */
+    template < class _Matrix >
+    class BlasSubmatrix< _Matrix >::ConstRowIterator {
+    public:
+        ConstRowIterator (const const_pointer& p, size_t len, size_t d) :
+            _row (p, p + (ptrdiff_t)len), _dis (d)
+        {}
+
+        ConstRowIterator () {}
+
+        ConstRowIterator (const ConstRowIterator& colp) :
+            _row (colp._row), _dis (colp._dis)
+        {}
+
+        ConstRowIterator& operator = (const ConstRowIterator& colp)
+        {
+            _row = colp._row;
+            _dis = colp._dis;
+            return *this;
+        }
+
+        ConstRowIterator& operator --()
+        {
+            _row = ConstRow (_row.begin () - (ptrdiff_t)_dis, _row.end () - (ptrdiff_t)_dis);
+            return *this;
+        }
+
+        ConstRowIterator  operator-- (int)
+        {
+            ConstRowIterator tmp (*this);
+            --*this;
+            return tmp;
+        }
+
+
+        ConstRowIterator& operator++ ()
+        {
+            _row = ConstRow (_row.begin () + (ptrdiff_t)_dis, _row.end () + (ptrdiff_t) _dis);
+            return *this;
+        }
+
+        ConstRowIterator  operator++ (int)
+        {
+            ConstRowIterator tmp (*this);
+            ++*this;
+            return tmp;
+        }
+
+        ConstRowIterator operator+ (int i)
+        {
+            return ConstRowIterator (_row.begin () + (ptrdiff_t)((int)_dis * i), _row.size (), _dis);
+        }
+
+        ConstRowIterator& operator += (int i)
+        {
+            _row = ConstRow (_row.begin () + (ptrdiff_t)((int)_dis * i), _row.end () + (ptrdiff_t)((int)_dis * i));
+            return *this;
+        }
+
+        ConstRow operator[] (int i) const
+        {
+            return ConstRow (_row.begin () + (ptrdiff_t)((int)_dis * i), _row.end () + (ptrdiff_t)((int)_dis * i));
+        }
+
+        ConstRow* operator-> ()
+        {
+            return &_row;
+        }
+
+        ConstRow& operator* ()
+        {
+            return _row;
+        }
+
+        bool operator!= (const ConstRowIterator& c) const
+        {
+            return (_row.begin () != c._row.begin ()) || (_row.end () != c._row.end ()) || (_dis != c._dis);
+        }
+
+    private:
+        ConstRow _row;
+        size_t _dis;
+    };
+
+
+    /* class for const col iterator
+     */
+    template < class _Matrix >
+    class BlasSubmatrix< _Matrix >::ConstColIterator {
+
+    public:
+        ConstColIterator (const_pointer p, size_t stride, size_t len) :
+            _col (Subiterator<const_pointer> (p, (ptrdiff_t)stride),
+                  Subiterator<const_pointer> (p + (ptrdiff_t)(len * stride), (ptrdiff_t)stride)),
+            _stride (stride)
+        {}
+
+        ConstColIterator (const ConstCol& col, size_t stride) :
+            _col (col),
+            _stride (stride)
+        {}
+
+        ConstColIterator () {}
+
+        ConstColIterator (const ConstColIterator& rowp) :
+            _col (rowp._col)
+        {}
+
+        ConstColIterator& operator= (const ConstColIterator& rowp)
+        {
+            _col = rowp._col;
+            _stride = rowp._stride;
+            return *this;
+        }
+
+        ConstColIterator& operator++ ()
+        {
+            _col = ConstCol (Subiterator<const_pointer> (_col.begin ().operator-> () + 1, (ptrdiff_t)_stride),
+                             Subiterator<const_pointer> (_col.end ().operator-> () + 1, (ptrdiff_t)_stride));
+            return *this;
+        }
+
+        ConstColIterator  operator++ (int)
+        {
+            ConstColIterator old(*this);
+            this->operator++ ();
+            return old;
+        }
+
+        ConstColIterator operator + (int i)
+        {
+            return ConstColIterator (_col.begin ().operator-> () + i, _stride, _col.size ());
+        }
+
+        ConstColIterator& operator += (int i)
+        {
+            _col = ConstCol (Subiterator<const_pointer> (_col.begin ().operator-> () + i, _stride),
+                             Subiterator<const_pointer> (_col.end ().operator-> () + i, _stride));
+            return *this;
+        }
+
+        ConstCol operator[] (int i) const
+        {
+            return ConstCol (Subiterator<const_pointer> (_col.begin ().operator-> () + i, _stride),
+                             Subiterator<const_pointer> (_col.end ().operator-> () + i, _stride));
+        }
+
+        ConstCol* operator-> ()
+        {
+            return &_col;
+        }
+
+        ConstCol& operator* ()
+        {
+            return _col;
+        }
+
+        bool operator!= (const ConstColIterator& c) const
+        {
+            return (_col.begin () != c._col.begin ()) || (_col.end () != c._col.end ());
+        }
+
+    private:
+        ConstCol _col;
+        size_t _stride;
+    };
+
+    template < class _Matrix >
+    class BlasSubmatrix< _Matrix >::ColIterator {
+
+    public:
+        ColIterator (pointer p, size_t stride, size_t len) :
+            _col (Subiterator<pointer> (p, (long)stride),
+                  Subiterator<pointer> (p + (ptrdiff_t)(len * stride),(long) stride)), _stride (stride)
+        {}
+
+        ColIterator () {}
+
+        ColIterator (const ColIterator& rowp) :
+            _col (rowp._col)
+        {}
+
+        ColIterator& operator= (const ColIterator& rowp)
+        {
+            _col = rowp._col;
+            _stride = rowp._stride;
+            return *this;
+        }
+
+        const ColIterator& operator= (const ColIterator& rowp) const
+        {
+            const_cast<ColIterator*> (this)->_col = rowp._col;
+            return *this;
+        }
+
+        ColIterator& operator++ ()
+        {
+            _col = Col (Subiterator<pointer> (_col.begin ().operator-> () + 1, (const long)_stride),
+                        Subiterator<pointer> (_col.end ().operator-> () + 1,(const long) _stride));
+            return *this;
+        }
+
+        ColIterator  operator++ (int)
+        {
+            Col tmp (_col);
+            this->operator++ ();
+            return tmp;
+        }
+
+        ColIterator operator + (int i)
+        {
+            return ColIterator (_col.begin ().operator-> () + i, _stride, _col.size ());
+        }
+
+        ColIterator& operator += (int i)
+        {
+            _col = Col (Subiterator<pointer> (_col.begin ().operator-> () + i, _stride),
+                        Subiterator<pointer> (_col.end ().operator-> () + i, _stride));
+            return *this;
+        }
+
+        Col operator[] (int i) const
+        {
+            return Col (Subiterator<pointer> (const_cast<Col&> (_col).begin ().operator-> () + i, _stride),
+                        Subiterator<pointer> (const_cast<Col&> (_col).end ().operator-> () + i, _stride));
+        }
+
+        Col* operator-> ()
+        {
+            return &(this->_col);
+        }
+
+        Col& operator* ()
+        {
+            return _col;
+        }
+
+        bool operator!= (const ColIterator& c) const
+        {
+            return (_col.begin () != c._col.begin ()) || (_col.end () != c._col.end ());
+        }
+
+        operator ConstColIterator ()
+        {
+            return ConstColIterator (reinterpret_cast<ConstCol&> (_col) , _stride);
+        }
+
+    private:
+
+        Col _col;
+        size_t _stride;
+    };
 
     
     
