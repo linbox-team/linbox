@@ -50,10 +50,10 @@ namespace LinBox {
          *  @tparam StorageTag
          */
 	template <class BaseRing, class StorageTag= Givaro::Dense>
-	class PolynomialRing : public Givaro::Poly1FactorDom<BaseRing,StorageTag> {
+	class PolynomialRing : public Givaro::Poly1Dom<BaseRing,StorageTag> {
 	public:
         
-		typedef typename Givaro::Poly1FactorDom<BaseRing,StorageTag> Parent_t;
+		typedef typename Givaro::Poly1Dom<BaseRing,StorageTag> Parent_t;
 		typedef DensePolynomial<BaseRing> Element;
 		typedef Element Polynomial;
 		typedef Element Rep;
@@ -140,20 +140,23 @@ namespace LinBox {
            //===========================================
 
 
-            // Additional methods
-		template<template<class,class> class Vector,template <class> class Alloc>
-        Vector<Polynomial, Alloc<Polynomial> >&
+        //     // Additional methods
+
+        // factorization method from GivPoly1FactorDom only enabled over modular fields
+        template<template<class,class> class Vector,template <class> class Alloc>
+        typename std::enable_if<FieldTraits<BaseRing>::is_modular::value,size_t>::type
         factor (Vector<Polynomial,Alloc<Polynomial> >& factors,
                 std::vector<uint64_t>& exp,
                 const Polynomial& P){
 
             Vector<typename Parent_t::Element,Alloc<typename Parent_t::Element> > giv_factors;
-            this->CZfactor(giv_factors, exp, P); // Cantor-Zassenhaus factorization
+            Givaro::Poly1FactorDom<BaseRing,StorageTag> PFD(dynamic_cast<Parent_t&>(*this));
+            PFD.CZfactor(giv_factors, exp, P); // Cantor-Zassenhaus factorization
             factors.clear();
             for (size_t i=0; i<giv_factors.size();i++){
                 factors.emplace_back(this->_domain,giv_factors[i]);
             }
-            return factors;
+            return factors.size();
         }
 
 		bool areAssociates(const Element &x, const Element &y) const {
