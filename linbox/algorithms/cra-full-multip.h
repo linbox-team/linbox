@@ -58,7 +58,7 @@ namespace LinBox
 	protected:
 		std::vector< double >           	RadixSizes_;
 		std::vector< LazyProduct >      	RadixPrimeProd_;
-		std::vector< BlasVector<Givaro::ZRing<Integer> > >  RadixResidues_;
+		std::vector< std::vector<Integer> > RadixResidues_;
 		std::vector< bool >             	RadixOccupancy_;
 		const double				LOGARITHMIC_UPPER_BOUND;
 		double					totalsize;
@@ -84,55 +84,148 @@ namespace LinBox
 			return r;
 		}
 
-		//! init
-		template<class Vect>
-		void initialize (const Integer& D, const Vect& e)
-		{
-			RadixSizes_.resize(1);
-			RadixPrimeProd_.resize(1);
-			Givaro::ZRing<Integer> ZZ ;
-			const BlasVector<Givaro::ZRing<Integer> >z(ZZ);
-			RadixResidues_.resize(1,z);
-			RadixOccupancy_.resize(1); RadixOccupancy_.front() = false;
-			progress( D, e);
-#if 0
-			std::vector< double >::iterator  _dsz_it = RadixSizes_.begin();
-			std::vector< LazyProduct >::iterator _mod_it = RadixPrimeProd_.begin();
-			std::vector< BlasVector<Givaro::ZRing<Integer> > >::iterator _tab_it = RadixResidues_.begin();
-			std::vector< bool >::iterator    _occ_it = RadixOccupancy_.begin();
-			_mod_it->initialize(D);
-			*_dsz_it =  Givaro::naturallog(D);
+        // FIXME
+        void getMod(Integer& m, const Integer& D);
 
-			typename Vect::const_iterator e_it = e.begin();
-			_tab_it->resize(e.size());
-			BlasVector<Givaro::ZRing<Integer> >::iterator t0_it= _tab_it->begin();
-			for( ; e_it != e.end(); ++e_it, ++ t0_it)
-				*t0_it = *e_it;
-			*_occ_it = true;
-#endif
+        // FIXME
+        template <class Domain>
+        void getMod(Integer& m, const Domain& D);
+
+        // FIXME
+        template <class Vec1, class Vec2>
+        void copyVec(Vec1& to, const Vec2& from) {
+            to.resize(from.size());
+            auto lhs = to.begin();
+            auto rhs = from.begin();
+            while (rhs != from.end()) {
+                *lhs = *rhs;
+                ++lhs;
+                ++rhs;
+            }
+        }
+
+		//! init
+		template<typename ModType, class Vect>
+		void initialize (const ModType& D, const Vect& e)
+		{
+            RadixPrimeProd_.resize(1);
+            getMod(RadixPrimeProd_.front()(), D);
+            RadixSizes_.resize(1, Givaro::naturallog(RadixPrimeProd_.front()()));
+            RadixResidues_.resize(1);
+            copyVec(RadixResidues_.front(), e);
+            RadixOccupancy_.resize(1, true);
 			return;
 		}
 
-		template<class Vect>
-		void initialize (const Domain& D, const Vect& e)
+        // generic version
+		template <typename Modtype, class Vect>
+		void progress (const ModType& D, const Vect& e)
 		{
-			RadixSizes_.resize(1);
-			RadixPrimeProd_.resize(1);
-			Givaro::ZRing<Integer> ZZ;
-			RadixResidues_.resize(1,BlasVector<Givaro::ZRing<Integer> >(ZZ));
-			RadixOccupancy_.resize(1); RadixOccupancy_.front() = false;
-			progress(D, e);
-		}
+			auto _dsz_it = RadixSizes_.begin();
+			auto _mod_it = RadixPrimeProd_.begin();
+			auto _tab_it = RadixResidues_.begin();
+			auto _occ_it = RadixOccupancy_.begin();
 
-		template<class OKDomain>
-		void initialize (const Domain& D, const BlasVector<OKDomain>& e)
-		{
-			RadixSizes_.resize(1);
-			RadixPrimeProd_.resize(1);
-			Givaro::ZRing<Integer> ZZ ;
-			RadixResidues_.resize(1,BlasVector<Givaro::ZRing<Integer> >(ZZ));
-			RadixOccupancy_.resize(1); RadixOccupancy_.front() = false;
-			progress(D, e);
+            if (! *_occ_it) {
+                // bottom shelf empty
+                getMod((*_mod_it)(), D);
+                *_dsz_it = Givaro::naturallog((*_mod_it)());
+                copyVec(*_tab_it, e);
+                *_occ_it = true;
+                return;
+            }
+
+            Integer invprod;
+            {
+                // bottom shelf combine
+                auto e_it = e.begin();
+                auto t0_it = _tab_it->begin();
+                _mod_it->compute();
+                _mod_it->emplace_back(0);
+                getMod(_mod_it->back(), D);
+                precomputeInvProd(invprod, _mod_it->front(), _mod_it->back());
+                for (; e_it != e.end(); ++e_it, ++t0_it) {
+                    smallbigreconstruct(*t0_it, *e_it, invprod);
+                }
+                *_dsz_it += Givaro::naturallog(mod_it->back());
+                *_occ_it = false;
+            }
+
+            // combine up with full shelves
+            for (; (_occ_it+1) != RadixOccupancy_.end() && *(_occ_it+1);
+                 ++_dsz_it, ++_mod_it, ++_tab_it, ++_occ_it) {
+                auto below_it = _tab_it->begin();
+                auto above_it = (_tab_it+1)->begin();
+                precomputeInvProd(invprod, (*(_mod_it+1))(), (*_mod_it)());
+                for (; below_it != _tab_it->end(); ++below_it, ++above_it) {
+                    smallbigreconstruct(*above_it, *below_it, invprod);
+                }
+                (_mod_it+1)->mulin((*_mod_it)());
+                *(_dsz_it+1) + *_dsz_it;
+                *(_occ_it+1) = false;
+            }
+
+            if ((_occ_it+1) == RadixOccupancy_.end()) {
+                Radix_Residues_.push_back();
+                /*TODO HERE */
+                /* XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX */
+            }
+
+			BlasVector<Givaro::ZRing<Integer> > ri(e.field(),e.size()); // XXX
+			LazyProduct mi;
+			double di;
+			if (*_occ_it) {
+                // bottom shelf nonempty
+				auto e_it = e.begin();
+				auto ri_it = ri.begin();
+				auto t0_it = _tab_it->begin();
+				Integer invprod; precomputeInvProd(invprod, D, _mod_it->operator()()); // XXX
+				for( ; e_it != e.end(); ++e_it, ++ri_it, ++t0_it) {
+					*ri_it = *e_it;
+					smallbigreconstruct(*ri_it,  *t0_it, invprod );
+				}
+				di = *_dsz_it + Givaro::naturallog(D); // XXX
+				mi.mulin(D);
+				mi.mulin(*_mod_it);
+				*_occ_it = false;
+			}
+			else {
+                // bottom shelf empty
+				Integer tmp = D;
+				_mod_it->initialize(tmp);
+				*_dsz_it = Givaro::naturallog(tmp);
+				auto e_it = e.begin();
+				_tab_it->resize(e.size());
+				auto t0_it= _tab_it->begin();
+				for( ; e_it != e.end(); ++e_it, ++ t0_it)
+					*t0_it = *e_it;
+				*_occ_it = true;
+				return;
+			}
+			for(++_dsz_it, ++_mod_it, ++_tab_it, ++_occ_it ; _occ_it != RadixOccupancy_.end() ; ++_dsz_it, ++_mod_it, ++_tab_it, ++_occ_it) {
+				if (*_occ_it) {
+					auto ri_it = ri.begin();
+					auto t_it= _tab_it->begin();
+					Integer invprod; precomputeInvProd(invprod, mi(), _mod_it->operator()());
+					for( ; ri_it != ri.end(); ++ri_it, ++ t_it)
+						smallbigreconstruct(*ri_it, *t_it, invprod);
+					mi.mulin(*_mod_it);
+					di += *_dsz_it;
+					*_occ_it = false;
+				}
+				else {
+					*_dsz_it = di;
+					*_mod_it = mi;
+					*_tab_it = ri;
+					*_occ_it = true;
+					return;
+				}
+			}
+
+			RadixSizes_.push_back( di );
+			RadixResidues_.push_back( ri );
+			RadixPrimeProd_.push_back( mi );
+			RadixOccupancy_.push_back ( true );
 		}
 
 		//! progress

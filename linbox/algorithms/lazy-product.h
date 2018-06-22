@@ -37,12 +37,13 @@ namespace LinBox
 		bool                _tobecomputed;
 
         void compute() {
-			if (_tobecomputed) {
-				Father_t::const_iterator iter = this->begin();
-				Father_t::iterator       prod = this->begin();
-				for(++iter; iter != this->end(); ++iter)
-					*prod *= *iter;
-				this->resize(1);
+            if (this->empty()) {
+                this->emplace_back(1);
+                _tobecomputed = false;
+            } else if (_tobecomputed) {
+                for (auto iter = ++(this->begin()); iter != this->end; ++iter)
+                    this->front() *= *iter;
+                this->resize(1);
 				_tobecomputed = false;
 			}
         }
