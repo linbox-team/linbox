@@ -379,6 +379,96 @@ int test_early_multip(std::ostream & report, size_t PrimeSize, size_t Taille, si
 	return EXIT_SUCCESS ;
 }
 
+// testing ProbMultipCRA
+template< class T >
+int test_prob_multip(std::ostream & report, size_t PrimeSize, size_t Taille, size_t Size)
+{
+
+	typedef typename std::vector<T>                     Vect ;
+	typedef typename Vect::iterator                  Iterator;
+	typedef typename std::vector<Vect>::iterator VectIterator;
+	typedef Givaro::Modular<double>             ModularField ;
+	typedef ModularField::Element                     Element;
+	typedef std::vector<Integer>                      IntVect;
+	typedef std::vector<Element>                        pVect;
+
+    Givaro::GivRandom rgen;
+
+	/*  primes */
+    Integer pprod(1);
+	Vect primes(Size) ;
+	PrimeIterator<IteratorCategories::HeuristicTag> RP((unsigned )PrimeSize);
+	for (size_t i = 0 ; i < Size ; ++i) {
+		primes[i] = *RP;
+		++RP ;
+        if (pprod % primes[i]) pprod *= primes[i];
+	}
+
+	/*  residues */
+	std::vector<Vect> residues(Size) ;
+	for (size_t i = 0 ; i < Size ; ++i){
+		residues[i].resize(Taille);
+		for (size_t j = 0 ; j < Taille ; ++j)
+			residues[i][j] = Integer::random(PrimeSize-1);
+	}
+
+
+	Iterator   genprime = primes.begin()    ; // prime iterator
+	VectIterator residu = residues.begin()  ; // residu iterator
+
+	report << "ProbMultpCRA (" <<  (pprod.bitsize()-1) << ')' << std::endl;
+	ProbMultipCRA<ModularField> cra(pprod.bitsize() - 1) ;
+	IntVect result (Taille); // the result
+	pVect residue(Taille) ; // temporary
+	{ /* init */
+		ModularField F(*genprime);
+		for (size_t i = 0 ; i < Taille ; ++i)
+			F.init(residue[i],(*residu)[i]);
+		cra.initialize(F,residue);
+		++genprime;
+		++residu;
+	}
+	while (genprime < primes.end() && !cra.terminated() )
+	{ /* progress */
+		if (cra.noncoprime((integer)*genprime)) {
+			report << "bad luck, you picked twice the same prime..." <<std::endl;
+			report << "ProbMultipCRA exiting successfully." << std::endl;
+			return EXIT_SUCCESS ; // pas la faute à cra...
+		}
+		ModularField F(*genprime);
+		for (size_t i = 0 ; i < Taille ; ++i)
+			F.init(residue[i],(*residu)[i]);
+		cra.progress(F,residue);
+		++genprime;
+		++residu ;
+
+        /* call changeVector sometimes */
+        if ((rgen() & 0x3fUL) == 0) {
+            report << "calling changeVector\n";
+            cra.changeVector();
+        }
+	}
+
+	cra.result(result);
+
+	for (size_t i = 0 ; i < Size ; ++i){
+		ModularField F(primes[i]);
+		for (size_t j = 0 ; j < Taille ; ++j){
+			Element tmp1,tmp2 ;
+			F.init(tmp1,result[j]);
+			F.init(tmp2,residues[i][j]);
+			if(!F.areEqual(tmp1,tmp2)){
+				report << " *** ProbMultipCRA failed. ***" << std::endl;
+				return EXIT_FAILURE ;
+			}
+		}
+	}
+
+	report << "ProbMultipCRA exiting successfully." << std::endl;
+
+	return EXIT_SUCCESS ;
+}
+
 
 #if 1 /* testing FullMultipBlasMatCRA */
 template< class T>
@@ -692,6 +782,13 @@ bool test_CRA_algos(size_t PrimeSize, size_t Size, size_t Taille, size_t iters)
 
 	_LB_REPEAT( if (test_early_multip<double>(report,22,Taille/4,Size))              pass = false ;  ) ;
 	_LB_REPEAT( if (test_early_multip<integer>(report,PrimeSize,Taille/4,Size))      pass = false ;  ) ;
+
+	/* PROB MULTIPLE */
+	_LB_REPEAT( if (test_prob_multip<double>(report,22,Taille*2,Size))              pass = false ;  ) ;
+	_LB_REPEAT( if (test_prob_multip<integer>(report,PrimeSize,Taille*2,Size))      pass = false ;  ) ;
+
+	_LB_REPEAT( if (test_prob_multip<double>(report,22,Taille/4,Size))              pass = false ;  ) ;
+	_LB_REPEAT( if (test_prob_multip<integer>(report,PrimeSize,Taille/4,Size))      pass = false ;  ) ;
 
 	/* FULL MULTIPLE */
 	_LB_REPEAT( if (test_full_multip<double>(report,22,Size,Taille))                 pass = false ;  ) ;

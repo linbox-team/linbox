@@ -47,17 +47,17 @@ namespace LinBox
 	 * @ingroup CRA
 	 * @brief vector CRA with early termination and a PRNG reference
 	 */
-	template<class Domain_Type, class RandIter_Type>
-	struct EarlyMultipCRARGen : public EarlySingleCRA<Domain_Type>, public FullMultipCRA<Domain_Type> {
+	template<class Domain_Type, template <class> class SingleCRA_Type, class RandIter_Type>
+	struct EarlyMultipCRARGen : public SingleCRA_Type<Domain_Type>, public FullMultipCRA<Domain_Type> {
         // Could be much faster
         // - do not compute twice the product of moduli
         // - reconstruct one element of e until Early Termination,
         //   then only, try a random linear combination.
 
-		typedef Domain_Type			Domain;
-		typedef typename Domain::Element DomainElement;
-		typedef EarlyMultipCRARGen<Domain,RandIter_Type> Self_t;
-        using SingleParent = EarlySingleCRA<Domain>;
+		using Domain = Domain_Type;
+		using DomainElement = typename Domain::Element;
+		using Self_t = EarlyMultipCRARGen<Domain,SingleCRA_Type,RandIter_Type>;
+        using SingleParent = SingleCRA_Type<Domain>;
         using MultiParent = FullMultipCRA<Domain>;
 
         const unsigned short LINEAR_COMB_RBITS = 15; // # of random bits in linear combination
@@ -86,9 +86,10 @@ namespace LinBox
 		Integer& result(Integer &d) { std::cout << "should not be called" << std::endl; return d ;} ; // DON'T TOUCH
 	public:
 
-		EarlyMultipCRARGen( RandIter_Type * rgen,
-                            const unsigned long EARLY=DEFAULT_EARLY_TERM_THRESHOLD) :
-			SingleParent(EARLY), MultiParent(),
+        template <typename... Args>
+		EarlyMultipCRARGen(RandIter_Type * rgen, Args&&... args) :
+			SingleParent(std::forward<Args>(args)...),
+            MultiParent(),
             rgen_ (rgen)
 		{}
 
@@ -193,13 +194,12 @@ namespace LinBox
 	};
 
 
-	/*!  @brief NO DOC
+	/** @brief vector CRA with early termination which creates its own PRNG object
 	 * @ingroup CRA
-	 * @brief vector CRA with early termination which creates its own PRNG object
 	 */
 	template<class Domain_Type, class RandIter_Type=Givaro::GivRandom>
-	struct EarlyMultipCRA : public EarlyMultipCRARGen<Domain_Type,RandIter_Type> {
-        using Parent_t = EarlyMultipCRARGen<Domain_Type,RandIter_Type>;
+	struct EarlyMultipCRA : public EarlyMultipCRARGen<Domain_Type,EarlySingleCRA,RandIter_Type> {
+        using Parent_t = EarlyMultipCRARGen<Domain_Type,EarlySingleCRA,RandIter_Type>;
         using Domain = typename Parent_t::Domain;
         using DomainElement = typename Parent_t::DomainElement;
 
@@ -220,6 +220,46 @@ namespace LinBox
             Parent_t(&actual_rgen_)
         {}
     };
+
+
+	/** @brief vector CRA with guaranteed error probability which creates its own PRNG object
+	 * @ingroup CRA
+	 */
+	template<class Domain_Type, class RandIter_Type=Givaro::GivRandom>
+	struct ProbMultipCRA : public EarlyMultipCRARGen<Domain_Type,ProbSingleCRA,RandIter_Type> {
+        using Parent_t = EarlyMultipCRARGen<Domain_Type,ProbSingleCRA,RandIter_Type>;
+        using Domain = typename Parent_t::Domain;
+        using DomainElement = typename Parent_t::DomainElement;
+
+	protected:
+        // PRNG
+        RandIter_Type actual_rgen_;
+
+	public:
+
+        /** @brief Creates a new probabiistic CRA object.
+         *
+         * @param bitbound  Upper bound on the number of bits in the result
+         * @param failprob  Upper bound on the probability of failure
+         * @param rgargs  Arguments to PRNG constructor
+         */
+        template <typename... RGArgs>
+		ProbMultipCRA(size_t bitbound, double failprob,
+                      RGArgs&&... rgargs) :
+            Parent_t(&actual_rgen_, bitbound, failprob),
+            actual_rgen_(std::forward<RGArgs>(rgargs)...)
+		{}
+
+        /** @brief Creates a new probabiistic CRA object.
+         *
+         * @param bitbound  Upper bound on the number of bits in the result
+         */
+        ProbMultipCRA(size_t bitbound) :
+            Parent_t(&actual_rgen_, bitbound)
+        {}
+    };
+
+
 }
 #endif //__LINBOX_cra_early_multip_H
 
