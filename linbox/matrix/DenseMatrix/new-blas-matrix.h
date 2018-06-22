@@ -68,6 +68,7 @@ namespace LinBox
         typedef typename Field::Element_ptr        Element_ptr;    //!< Pointer to Element type
 		typedef _Storage                               Storage;    //!< Actually a <code>std::vector<Element></code> (or alike: cstor(n), cstor(n, val), operator[], resize(n).)
 		typedef BlasMatrix<Field,Storage>               Self_t;    //!< Self typeype
+        typedef Self_t                              matrixType;    //!< matrix type
         typedef BlasSubmatrix< Self_t>           subMatrixType;
         typedef BlasSubmatrix<const Self_t> constSubMatrixType;
         
