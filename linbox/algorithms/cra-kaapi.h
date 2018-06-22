@@ -103,7 +103,8 @@ namespace LinBox
 			++primeiter;
 			Domain D(*primeiter);
 			DomainElement r; D.init(r);
-			Builder_.initialize( D, Iteration(r, D) );
+                        Iteration(r,D); // FIXME bad primes ignored
+			Builder_.initialize( D, r );
 
 			// the task used to extract residue
 			Residue<Function,Domain> residue(Iteration);
@@ -152,13 +153,15 @@ namespace LinBox
 			++primeiter;
 			Domain D(*primeiter);
 			Vect<DomainElement> r;
-			Builder_.initialize( D, Iteration(r, D) );
+                        Iteration(r, D); // FIXME bad primes ignored
+			Builder_.initialize( D, r );
 
 			while( ! Builder_.terminated() ) {
 				++primeiter; while(Builder_.noncoprime(*primeiter) ) ++primeiter;
 				Domain D(*primeiter);
 				Vect<DomainElement> r;
-				Builder_.progress( D, Iteration(r, D) );
+                                Iteration(r, D); // FIXME bad primes ignored
+				Builder_.progress( D, r );
 			}
 			return Builder_.result(res);
 		}
