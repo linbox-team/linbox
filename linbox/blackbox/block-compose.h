@@ -93,24 +93,41 @@ public:
 	Matrix& applyLeft(Matrix& Y, const Matrix& X) const {
 		BlasMatrix<Field> Z(_A.field(), _A.rowdim(), X.coldim());
 		
-		_A.applyLeft(Z, X);
-		_B.applyLeft(Y, Z);
+		_B.applyLeft(Z, X);
+		_A.applyLeft(Y, Z);
+		
+		return Y;
 	}
 	
 	// Y = X*A
 	template<class Matrix>
 	Matrix& applyRight(Matrix& Y, const Matrix& X) const {
+		BlasMatrix<Field> Z(_A.field(), X.rowdim(), _B.coldim());
 		
+		_A.applyRight(Z, X);
+		_B.applyRight(Y, Z);
+		
+		return Y;
 	}
 	
 	template<class OutVector, class InVector>
 	OutVector& apply(OutVector& y, const InVector& x) const {
+		BlasVector<Field> z(_A.field(), _A.rowdim());
 		
+		_B.apply(z, x);
+		_A.apply(y, z);
+		
+		return y;
 	}
 	
 	template<class OutVector, class InVector>
 	OutVector& applyTranspose(OutVector& y, const InVector& x) const {
+		BlasVector<Field> z(_A.field(), _B.coldim());
 		
+		_A.applyTranspose(z, x);
+		_B.applyTranspose(y, z);
+		
+		return y;
 	}
 
 };
