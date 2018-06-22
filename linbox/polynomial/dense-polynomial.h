@@ -53,6 +53,7 @@ namespace LinBox {
 
         typedef DensePolynomial<Field> Self_t;
         typedef Givaro::Poly1Dom<Field, Givaro::Dense> Domain_t;
+        typedef typename Domain_t::Element Storage_t;
 
         DensePolynomial () : Domain_t::Element(), _field(NULL) {}
 
