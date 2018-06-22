@@ -36,6 +36,56 @@
  */
 
 #include "linbox/integer.h"
+#include "linbox/field/rebind.h"
+
+namespace LinBox
+{
+	/*! @brief Return type for CRA iteration.
+	 *
+	 * The function object passed to the ChineseRemainder operators
+	 * should return one of these values on each iteration.
+	 */
+	enum struct IterationResult {
+		CONTINUE, ///< successful iteration; add to the result and keep going
+		SKIP, ///< "bad prime"; ignore this result and keep going
+		RESTART ///< all previous iterations were bad; start over with this residue
+	};
+
+	/** \brief Type information for the residue in a CRA iteration.
+	 *
+	 * Here ResultType should be some kind of vector type whose default constructor
+	 * results in zero-dimensional vectors where no init'ing is required.
+	 */
+	template <typename ResultType, typename Function>
+	struct CRAResidue {
+		template <typename Domain>
+		using ResidueType = typename Rebind<ResultType,Domain>::other;
+
+		template <typename Domain>
+		static ResidueType<Domain> create(const Domain& d) {
+			return ResidueType<Domain>(d);
+		}
+	};
+
+	/** \brief Type information for the residue in a CRA iteration.
+	 *
+	 * This is the specialization for scalar types (namely Integer) where
+	 * the residue type (such as a Modular element) must be init'ed.
+	 */
+	template <typename Function>
+	struct CRAResidue<Integer, Function> {
+		template <typename Domain>
+		using ResidueType = typename Domain::Element;
+
+		template <typename Domain>
+		static ResidueType<Domain> create(const Domain& d) {
+			ResidueType<Domain> r;
+			d.init(r);
+			return r;
+		}
+	};
+}
+
 #ifdef LINBOX_USES_OPENMP
 
 #include "linbox/algorithms/cra-domain-omp.h"
