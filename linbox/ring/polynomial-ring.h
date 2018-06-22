@@ -143,9 +143,17 @@ namespace LinBox {
         //     // Additional methods
 
         // factorization method from GivPoly1FactorDom only enabled over modular fields
-        template<template<class,class> class Vector,template <class> class Alloc>
-        typename std::enable_if<FieldTraits<BaseRing>::is_modular::value,size_t>::type
-        factor (Vector<Polynomial,Alloc<Polynomial> >& factors,
+        // template<template<class,class> class Vector,template <class> class Alloc, Enable>
+        // typename std::enable_if<!FieldTraits<BaseRing>::is_modular::value,size_t>::type
+        // factor (Vector<Polynomial,Alloc<Polynomial> >& factors,
+        //         std::vector<uint64_t>& exp,
+        //         const Polynomial& P){};
+
+        template<template<class,class> class Vector, template <class> class Alloc,
+                 class B=BaseRing, // trick to force SFINAE to work on this method
+                 typename std::enable_if<FieldTraits<BaseRing>::is_modular::value
+                                         && std::is_same<B,BaseRing>::value,int>::type* =nullptr>
+        size_t factor (Vector<Polynomial,Alloc<Polynomial> >& factors,
                 std::vector<uint64_t>& exp,
                 const Polynomial& P){
 
