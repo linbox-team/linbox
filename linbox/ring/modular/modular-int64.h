@@ -40,7 +40,7 @@
 #include "linbox/util/debug.h"
 #include "linbox/field/field-traits.h"
 
-#include <givaro/modular-int64.h>
+#include <givaro/modular-integral.h>
 
 #ifndef LINBOX_MAX_INT64 /*  18446744073709551615L(L) is UINT64_MAX*/
 #ifdef __x86_64__
