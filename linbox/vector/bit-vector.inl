@@ -606,7 +606,7 @@ namespace LinBox
 		return *this;
 	}
 
-    inline BitVector::pointer BitVector::data(){return begin();};
+    inline BitVector::pointer BitVector::data(){return begin();}
 
 	inline void BitVector::resize (BitVector::size_type new_size, bool val)
 	{
