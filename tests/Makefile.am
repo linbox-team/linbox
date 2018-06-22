@@ -181,7 +181,6 @@ FULLCHECK_TESTS =               \
 	test-tutorial				\
 	test-vector-domain			\
 	test-zero-one				\
-	test-polynomial-local-x \
 	test-weak-popov-form \
 	try-invariant-factors \
 	test-fgemm
@@ -198,7 +197,9 @@ NTL_TESTS =                     \
 	test-ntl-toeplitz           \
 	test-ntl-hankel             \
 	test-ntl-sylvester          \
+	test-poly-smith-form        \
 	test-smith-form-iliopoulos  \
+	test-polynomial-local-x \
 	test-weak-popov-form \
 	test-invariant-factors \
 	test-frobenius-large \

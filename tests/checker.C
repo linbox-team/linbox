@@ -127,10 +127,12 @@ skip("test-smith-form-kannan-bachem", "not working anymore");
 	ntl_tests.insert("test-smith-form");
 	ntl_tests.insert("test-smith-form-adaptive");
 	ntl_tests.insert("test-smith-form-iliopoulos");
+	ntl_tests.insert("test-polynomial-local-x");
 	ntl_tests.insert("test-weak-popov-form");
 	ntl_tests.insert("test-frobenius-large");
 	ntl_tests.insert("test-invariant-factors");
 	ntl_tests.insert("test-frobenius-small");
+	ntl_tests.insert("test-poly-smith-form");
 
 	set< string> ocl_tests;
 	ocl_tests.insert("test-opencl-domain");
