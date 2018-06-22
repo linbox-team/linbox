@@ -100,7 +100,7 @@ namespace LinBox
 		Int& operator()(Int& P, const Field& F) const
 		{
 			typedef typename Blackbox::template rebind<Field>::other FBlackbox;
-			FBlackbox Ap(F,A);
+			FBlackbox Ap(A,F);
 			det (P, Ap, typename FieldTraits<Field>::categoryTag(), M);
 			typename Field::Element e;
 			F.init(e, mul);
@@ -131,7 +131,7 @@ namespace LinBox
 		Int& operator()(Int& P, const Field& F) const
 		{
 			typedef typename Blackbox::template rebind<Field>::other FBlackbox;
-			FBlackbox Ap(F, A);
+			FBlackbox Ap(A,F);
 			return det( P, Ap, typename FieldTraits<Field>::categoryTag(), M);
 		}
 	};

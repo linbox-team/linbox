@@ -77,6 +77,8 @@ namespace LinBox
             /** Element type
              */
 		typedef bool Element;
+        typedef BitVector::pointer Element_ptr;
+        typedef BitVector::const_pointer ConstElement_ptr;
 		typedef bool Residu_t;
 
             /** Random iterator generator type.

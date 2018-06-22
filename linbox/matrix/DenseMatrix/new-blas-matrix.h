@@ -187,7 +187,7 @@ namespace LinBox
 		 * @param A matrix to be copied
 		 */
 		template<class _Matrix>
-		BlasMatrix ( const _Field &F, const _Matrix &A) ;
+		BlasMatrix  (const _Matrix &A, const _Field &F) ;
         
 		/// Destructor.
 		~BlasMatrix () {}
@@ -220,6 +220,7 @@ namespace LinBox
 		 * Get read-only access to the matrix data.
 		 */
 	    Element_ptr getPointer() const { return _ptr;}
+        Element_ptr& getWritePointer()  { return _ptr;}
         
 		//////////////////
 		//   ELEMENTS   //
@@ -233,7 +234,7 @@ namespace LinBox
 		 */
 		const Element& setEntry (size_t i, size_t j, const Element &a_ij)
         {
-            return field().assign(_ptr[i*_col+j],a_ij);
+            field().assign(_rep[i*_col+j],a_ij); return _rep[i*_col+j];
         }
 
 		/** Get a writeable reference to the entry in the (i, j) position.
@@ -243,7 +244,7 @@ namespace LinBox
 		 */
 		Element &refEntry (size_t i, size_t j)
         {
-            return _ptr[i*_col+j];
+            return _rep[i*_col+j];
         }    
 
 		/** Get a read-only reference to the entry in the (i, j) position.
@@ -253,7 +254,7 @@ namespace LinBox
 		 */
 		const Element &getEntry (size_t i, size_t j) const
         {
-            return _ptr[i*_col+j];
+            return _rep[i*_col+j];
         }
 
 		/** Copy the (i, j) entry into x, and return a reference to x.
@@ -266,7 +267,7 @@ namespace LinBox
 		 */
 		Element &getEntry (Element &x, size_t i, size_t j) const
         {
-            field().assign(x,_ptr[i*_col+j]); return x;
+            field().assign(x,_rep[i*_col+j]); return x;
         }
 
         /** get a read only reference to the field of the matrix 

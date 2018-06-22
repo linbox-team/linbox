@@ -55,12 +55,14 @@ namespace LinBox
     template <typename _Matrix>
     class MatrixEltPointer {
     public:
-        typedef typename _Matrix::Field::Element_ptr     pointer;    
+        typedef typename _Matrix::Field::Element_ptr     pointer;
+        //typedef typename _Matrix::Field::Element*     pointer; // MUST BE MODIFIER WITH FFLAS-FFPACK API (see line above)    
     };
     template <typename _Matrix>
     class MatrixEltPointer <const _Matrix> {
     public:
-        typedef typename _Matrix::Field::ConstElement_ptr pointer;    
+        typedef typename _Matrix::Field::ConstElement_ptr pointer;
+        //typedef const typename _Matrix::Field::Element*     pointer; // MUST BE MODIFIER WITH FFLAS-FFPACK API (see line above)    
     };
 
     
@@ -71,7 +73,8 @@ namespace LinBox
         typedef typename Field::Element                   Element;    //!< Element type
         typedef typename _Matrix::Storage                 Storage;    
         typedef BlasSubmatrix<_Matrix>                     Self_t;    //!< Self type
-        typedef typename MatrixEltPointer<_Matrix>::pointer        pointer;    //!< pointer type to elements
+        typedef typename MatrixEltPointer<_Matrix>::pointer                    pointer;    //!< pointer type to elements
+        typedef typename MatrixEltPointer<const _Matrix>::pointer        const_pointer;    //!< const pointer type to elements
         typedef  _Matrix                               matrixType;    //!< matrix type
 
 
@@ -151,6 +154,11 @@ namespace LinBox
         */
         const Field& field() const { return _field ;}
 
+        /*! @internal
+         * Get pointer to the matrix data (read/write access will depend on the type of the template parameter _Matrix, i.e. const or not)
+         */
+        pointer getPointer() const {return _ptr;}
+        pointer& getWritePointer()  { return _ptr;}
 		
         ///////////////////
         //      I/O      //
@@ -173,10 +181,6 @@ namespace LinBox
         //   ELEMENTS   //
         //////////////////
 
-        /*! @internal
-         * Get pointer to the matrix data (read/write access will depend on the type of the template parameter _Matrix, i.e. const or not)
-         */
-        pointer getPointer() const ;
 
         /** Set the entry at (i, j).
          * @param i Row number, 0...rowdim () - 1
@@ -259,11 +263,12 @@ namespace LinBox
          * matrix in ascending order. Dereferencing the iterator yields
          * a row vector in dense format
          * @{
-         */
-        typedef typename matrixType::RowIterator            RowIterator;
-        typedef typename matrixType::ConstRowIterator       ConstRowIterator;
-        typedef typename matrixType::Row                    Row;
-        typedef typename matrixType::ConstRow               ConstRow;
+         */        
+        typedef Subvector<pointer>                 Row;
+		typedef Subvector<const_pointer>      ConstRow;
+        class RowIterator;
+        class ConstRowIterator;
+
         //@} Row Iterators
 
         /** @name typedef'd Column Iterators.
@@ -273,11 +278,14 @@ namespace LinBox
          * a column vector in dense format
          * @{
          */
-        typedef typename matrixType::ColIterator            ColIterator;
-        typedef typename matrixType::ConstColIterator       ConstColIterator;
-        typedef typename matrixType::Col                    Col;
-        typedef typename matrixType::Column                 Column;
-        typedef typename matrixType::ConstCol               ConstCol;
+        typedef Subvector<Subiterator<pointer > >            Col;
+		typedef Subvector<Subiterator<const_pointer> >  ConstCol;
+		typedef Col           Column;
+		typedef ConstCol ConstColumn;
+
+        class ColIterator;
+        class ConstColIterator;
+        
         //@} // Column Iterators
 
 
