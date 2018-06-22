@@ -41,6 +41,7 @@
 #include "linbox/util/debug.h"
 #include "linbox/util/field-axpy.h"
 #include "linbox/blackbox/blackbox-interface.h"
+#include "linbox/blackbox/blockbb.h"
 #include "linbox/field/hom.h"
 #include "linbox/matrix/matrix-domain.h"
 
@@ -224,6 +225,12 @@ namespace LinBox
 
 
   }; // SparseMatrix
+  
+  template<>
+  template<class Field>
+  struct is_blockbb<SparseMatrix<Field,SparseMatrixFormat::TPL>> {
+  	  static const bool value = true;
+  };
 
 } // namespace LinBox
 

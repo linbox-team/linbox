@@ -162,13 +162,11 @@ FULLCHECK_TESTS =               \
 	test-rat-minpoly			\
 	test-rat-solve				\
 	test-scalar-matrix			\
-	test-poly-smith-form        \
 	test-smith-form             \
 	test-smith-form-adaptive 	\
 	test-smith-form-binary      \
 	test-smith-form-iliopoulos  \
 	test-smith-form-local    	\
-	test-smith-form-kannan-bachem	\
 	test-solve-nonsingular		\
 	test-sparse					\
 	test-subiterator			\
@@ -341,9 +339,7 @@ test_scalar_matrix_SOURCES =            test-scalar-matrix.C
 test_smith_form_adaptive_SOURCES =      test-smith-form-adaptive.C test-common.h
 test_smith_form_binary_SOURCES =        test-smith-form-binary.C
 test_smith_form_iliopoulos_SOURCES =    test-smith-form-iliopoulos.C
-test_smith_form_kannan_bachem_SOURCES = test-smith-form-kannan-bachem.C
 test_smith_form_local_SOURCES =         test-smith-form-local.C
-test_poly_smith_form_SOURCES =          test-poly-smith-form.C
 test_local_smith_form_sparseelim_SOURCES = test-local-smith-form-sparseelim.C
 test_smith_form_SOURCES =               test-smith-form.C
 test_solve_nonsingular_SOURCES =        test-solve-nonsingular.C
