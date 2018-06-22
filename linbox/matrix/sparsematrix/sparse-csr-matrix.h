@@ -1196,7 +1196,7 @@ namespace LinBox {
 					if (i_ == Ap_->_data.size()) row_ = Ap_->rowdim();
 					// Attend to empty rows
 					else if (i_ == Ap_->_start[row_+1]) row_ += 1;
-					while(Ap_->_start[row_] == Ap_->_start[row_+1]) ++row_;
+					while (row_+1 < Ap_->rowdim() && Ap_->_start[row_] == Ap_->_start[row_+1]) ++row_;
 					return *this;
 				}
 

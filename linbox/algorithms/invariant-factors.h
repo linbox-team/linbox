@@ -160,8 +160,8 @@ public:
 		const Blackbox &A,
 		size_t t,
 		double p,
-		int earlyTerm = 10) const {
-	
+		int earlyTerm = 10) const
+	{
 		size_t b = min_block_size(t, p);
 	
 		std::vector<Matrix> minpoly;
@@ -217,35 +217,128 @@ public:
 		return lifs;
 	}
 	
-	// computes the t largest invariant factors of A with probability of at least p.
+	void randomNonzero(const Field &F, Element &elm) const {
+		typename Field::RandIter RI(F);
+		do {
+			RI.random(elm);
+		} while (F.isZero(elm));
+	}
+	
+	template<class SparseMat>
+	void randomTriangular(SparseMat &T, size_t s, bool upper, bool randomDiag = false) const {
+		Field F(T.field());
+		typename Field::RandIter RI(F);
+		
+		for (size_t i = 0; i < T.rowdim(); i++) {
+			if (randomDiag) {
+				Element elm;
+				randomNonzero(F, elm);
+				T.setEntry(i, i, elm);
+			} else {
+				T.setEntry(i, i, F.one);
+			}
+		}
+		
+		for (size_t r = 0; r < T.rowdim() - 1; r++) {
+			for (size_t k = 0; k < s; k++) {
+				size_t c = (rand() % (T.coldim() - r - 1)) + r + 1;
+				
+				Element elm;
+				randomNonzero(F, elm);
+				
+				if (upper) {
+					T.setEntry(r, c, elm);
+				} else {
+					T.setEntry(c, r, elm);
+				}
+			}
+		}
+		
+		T.finalize();
+	}
+	
 	template<class Blackbox>
-	Element &det(
-		Element &d, // det(A)
+	std::vector<Polynomial> &precondLifs(
+		std::vector<Polynomial> &lifs,
 		const Blackbox &A,
-		size_t t,
-		double p,
-		int earlyTerm = 10) const {
+		size_t b,
+		int earlyTerm = 10) const
+	{
+		size_t n = A.rowdim();
+		size_t s = std::ceil(std::log(n)) + 1;
+		
+		typedef SparseMatrix<Field, SparseMatrixFormat::CSR> SparseMat;
+		SparseMat L(_F, n, n);
+		SparseMat U(_F, n, n);
+		randomTriangular(L, s, false, false);
+		randomTriangular(U, s, true, false);
+		
+		typedef FflasCsr<Field> Csr;
+		Csr FL(&L);
+		Csr FU(&U);
+		
+		BlockCompose<Csr, Csr> LU(FL, FU);
+		BlockCompose<Csr, BlockCompose<Csr, Csr>> ALU(A, LU);
+		
+		return largestInvariantFactors(lifs, ALU, b);
+	}
 	
-		size_t b = min_block_size(t, p);
+	template<class Blackbox>
+	bool det(
+		Element &det,
+		const Blackbox &A,
+		size_t b = 12,
+		int earlyTerm = 10) const
+	{
+		std::vector<Polynomial> lifs;
+		precondLifs(lifs, A, b, earlyTerm);
+		
+		typename PolynomialRing::CoeffField CF(_R.getCoeffField());
+		typename PolynomialRing::Coeff cdet;
+		
+		CF.assign(cdet, CF.one);
+		size_t total_deg = 0;
+		for (size_t i = 0; i < lifs.size(); i++) {
+			total_deg += _R.deg(lifs[i]);
+			
+			typename PolynomialRing::Coeff c;
+			_R.getCoeff(c, lifs[i], 0);
+			CF.mulin(cdet, c);
+		}
+		
+		integer idet;
+		CF.convert(idet, cdet);
+		_F.init(det, idet);
+		
+		return _F.isZero(det) || total_deg == A.rowdim();
+	}
 	
-		std::vector<Matrix> minpoly;
-		computeGenerator(minpoly, A, b);
+	template<class Blackbox>
+	bool rank(
+		size_t &rank,
+		const Blackbox &A,
+		size_t b = 12,
+		size_t t = 3,
+		int earlyTerm = 10) const
+	{
+		std::vector<Polynomial> lifs;
+		precondLifs(lifs, A, b, earlyTerm);
 		
-		PolyMatrix G(_R, b, b);
-		convert(G, minpoly);
+		typename PolynomialRing::CoeffField CF(_R.getCoeffField());
+		typename PolynomialRing::Coeff c;
 		
-		Polynomial det;
-		_SFD.detLocalX(det, G);
+		rank = 0;
+		for (size_t i = 0; i < lifs.size(); i++) {
+			rank += _R.deg(lifs[i]);
+			
+			_R.getCoeff(c, lifs[i], 0);
+			if (CF.isZero(c)) {
+				rank -= 1;
+			}
+		}
 		
-		// get the constant coefficient of det and convert it to type Element
-		typename PolynomialRing::Coeff det0;
-		_R.getCoeff(det0, det, 0);
-		
-		integer tmp;
-		_R.getCoeffField().convert(tmp, det0);
-		_F.init(d, tmp);
-		
-		return d;
+		_R.getCoeff(c, lifs[t], 0);
+		return _R.isOne(lifs[t]) || (_R.deg(lifs[t]) == 1 && CF.isZero(c));
 	}
 };
 
