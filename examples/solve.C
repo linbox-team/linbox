@@ -91,7 +91,7 @@ int main (int argc, char **argv)
 
 
 	if (ModComp) {
-                cout<<"Computation is done over Z/("<<atoi(argv[ModComp])<<")"<<endl;
+        cout<<"Computation is done over Z/("<<atoi(argv[ModComp])<<")"<<endl;
 		typedef Givaro::Modular<double> Field;
 		double q = atof(argv[ModComp]);
 		typedef DenseVector<Field> DenseVector ;
@@ -99,13 +99,13 @@ int main (int argc, char **argv)
 		MatrixStream< Field > ms ( F, input );
 		SparseMatrix<Field> A (ms);  // A.write(std::cout);
 		cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
-                if (A.rowdim() <= 20 && A.coldim() <= 20) A.write(std::cerr << "A:=",Tag::FileFormat::Maple) << ';' << std::endl;
+        if (A.rowdim() <= 20 && A.coldim() <= 20) A.write(std::cerr << "A:=",Tag::FileFormat::Maple) << ';' << std::endl;
 		DenseVector X(F, A.coldim()),B(F, A.rowdim());
 		if (createB) {
 			cerr << "Creating a random {-1,1} vector U, B is AU (to have a consistent system)" << endl;
 			DenseVector U(F, A.coldim() );
 			for(DenseVector::iterator it=U.begin();
-			    it != U.end(); ++it)
+                it != U.end(); ++it)
 				if (drand48() <0.5)
 					F.assign(*it,F.mOne);
 				else
@@ -114,11 +114,11 @@ int main (int argc, char **argv)
 		}
 		else {
 			for(DenseVector::iterator it=B.begin();
-			    it != B.end(); ++it)
+                it != B.end(); ++it)
 				F.read(invect,*it);
 		}
 
-		//         A.write(std::cout << "A: ") << std::endl;
+		// A.write(std::cout << "A: ") << std::endl;
 
 		std::cout << "B is " << B << std::endl;
 
