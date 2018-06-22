@@ -27,10 +27,6 @@
  * @warning some are commented out...
  * @example  examples/solve.C
  */
-#define __LINBOX_HAVE_MPI
-#include "mpi.h"
-
-
 
 #include <linbox/linbox-config.h>
 
