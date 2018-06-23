@@ -61,32 +61,18 @@ namespace LinBox
             std::vector<Integer> residue;
             LazyProduct mod;
             double logmod = 0.; // natural log of the modulus on this shelf
-            bool normalized = true;
 
             Shelf(size_t dim=0) :residue(dim) { };
-
-            void normalize() const {
-                if (! normalized) {
-                    Integer halfm = mod() - 1;
-                    halfm >>= 1;
-                    for (auto& x : const_cast<std::vector<Integer>&>(residue)) {
-                        x %= mod();
-                        if (x > halfm) x -= mod();
-                    }
-                    const_cast<bool&>(normalized) = true;
-                }
-            }
         };
 
 	protected:
-        static constexpr size_t UNOCCUPIED = std::numeric_limits<size_t>::max();
         std::vector<Shelf> shelves_;
 		const double				LOGARITHMIC_UPPER_BOUND;
 		double totalsize_ = 0.; // natural log of the current modulus
         size_t dimension_ = 0; // dimension of the vector being reconstructed
-        size_t lowest_occupied_ = UNOCCUPIED; // index of first occupied shelf
+        bool collapsed_ = false;
+        bool normalized_ = false;
         // INVARIANT: shelves_.empty() || shelves_.back().occupied
-        // INVARIANT: (lowest_occupied_ == UNOCCUPIED) || shelves_[lowest_occupied_].occupied
         // INVARIANT: forall (shelf : shelves_) { shelf.residue.size() == dimension_ }
 
 	public:
@@ -98,14 +84,14 @@ namespace LinBox
 
 		Integer& getModulus(Integer& m) const
 		{
-            if (lowest_occupied_ == UNOCCUPIED) return m = 1;
+            if (shelves_.empty()) return m = 1;
             collapse();
             return m = shelves_.back().mod();
 		}
 
         const Integer& getModulus() const {
             collapse();
-            return shelves_._back().mod();
+            return shelves_.back().mod();
         }
 
         // alias for result
@@ -122,7 +108,6 @@ namespace LinBox
             shelves_.clear();
             totalsize_ = 0;
             dimension_ = e.size();
-            lowest_occupied_ = UNOCCUPIED;
             progress(D, e);
 			return;
 		}
@@ -139,6 +124,10 @@ namespace LinBox
                 }
             }
 
+            // update collapsed_ and normalized_
+            collapsed_ = shelves_.empty();
+            normalized_ = false;
+
             // put new result into the proper shelf
             Integer Dval;
             getMod(Dval, D);
@@ -154,7 +143,6 @@ namespace LinBox
                 shelves_[cur].mod.initialize(Dval);
                 shelves_[cur].logmod = logD;
                 shelves_[cur].occupied = true;
-                if (cur < lowest_occupied_) lowest_occupied_ = cur;
                 return;
             }
 
@@ -178,23 +166,16 @@ namespace LinBox
             }
 
             // combine further shelves as necessary
-            auto next = getShelf(shelves_[cur].logmod);
-            while (next != cur) {
+            decltype(cur) next;
+            while ((next = getShelf(shelves_[cur].logmod)) != cur) {
                 ensureShelf(next, shelves_, dimension_);
                 if (shelves_[next].occupied) {
                     // combine cur shelf with next shelf
                     combineShelves(shelves_[next], shelves_[cur], invprod);
                     shelves_[cur].occupied = false;
-                    next = getShelf(shelves_[next].logmod);
                 } else {
                     // put cur shelf data in next shelf position
                     std::swap(shelves_[cur], shelves_[next]);
-                }
-
-                // cur is now unoccupied, so might have to update lowest_occ
-                if (cur == lowest_occupied_) {
-                    do { ++lowest_occupied_; }
-                    while (! shelves_[lowest_occupied_].occupied);
                 }
 
                 cur = next;
@@ -204,8 +185,7 @@ namespace LinBox
 		//! result
 		const std::vector<Integer>& result () const
 		{
-            collapse();
-            shelves_.back().normalize();
+            normalize();
             return shelves_.back().residue;
         }
 
@@ -213,12 +193,11 @@ namespace LinBox
         Vect& result(Vect& r) const
         {
             r.resize(dimension_);
-            if (lowest_occupied_ == UNOCCUPIED) {
+            if (shelves_.empty()) {
                 for (auto& x : r) x = 0;
                 return r;
             }
-            collapse();
-            shelves_.back().normalize();
+            normalize();
             return copyVec(r, shelves_.back().residue);
         }
 
@@ -235,19 +214,21 @@ namespace LinBox
             return false;
 		}
 
-        // CAUTION: do not interleave with any other method calls
-        decltype(shelves_.cbegin()) shelves_begin() const {
-            return shelves_.begin();
+        // XXX iterator invalidated by many other method calls
+        decltype(shelves_.crbegin()) shelves_begin() const {
+            return shelves_.rbegin();
         }
 
-        // CAUTION: do not interleave with any other method calls
-        decltype(shelves_.cend()) shelves_end() const {
-            return shelves_.end();
+        decltype(shelves_.crend()) shelves_end() const {
+            return shelves_.rend();
         }
 
 	protected:
+        /** Returns the index where the shelf (with specified natural log of modulus) belongs.
+         */
         static inline size_t getShelf(double logmod) {
-            return floor(log2(logmod));
+            // note, the (-3) is because the smallest "reasonable" modulus is a 15-bit or 23-bit prime
+            return std::max(std::ilogb(logmod), 3) - 3;
         }
 
         static inline Integer& getMod(Integer& m, const Integer& D) {
@@ -293,30 +274,46 @@ namespace LinBox
 
         // collapse all residues to a single shelf
         void collapse() const {
+            if (collapsed_) return;
             auto& ncshelves = const_cast<std::vector<Shelf>&>(shelves_);
-            auto& lowest = const_cast<size_t&>(lowest_occupied_);
-            if (lowest == UNOCCUPIED) {
+            if (ncshelves.empty()) {
                 ncshelves.emplace_back(dimension_);
                 ncshelves.back().occupied = true;
-                lowest = 0;
             }
             else {
                 Integer temp;
-                while (lowest != ncshelves.size()-1) {
-                    auto next = lowest + 1;
-                    while (! ncshelves[next].occupied) ++next;
-                    combineShelves(ncshelves[next], ncshelves[lowest], temp);
-                    ncshelves[lowest].occupied = false;
-                    lowest = next;
+                auto cur = ncshelves.begin();
+                while(true) {
+                    auto next = cur;
+                    if (++next == ncshelves.end()) break;
+                    while (! next->occupied) ++next;
+                    combineShelves(*next, *cur, temp);
+                    cur->occupied = false;
+                    cur = next;
                 }
                 // move top shelf to higher index if necessary
-                auto topind = getShelf(ncshelves.back().logmod);
-                if (topind != lowest) {
-                    ensureShelf(topind, ncshelves, dimension_);
-                    std::swap(ncshelves[lowest], ncshelves[topind]);
-                    lowest = topind;
+                auto newtop = getShelf(ncshelves.back().logmod);
+                if (newtop >= ncshelves.size()) {
+                    auto curtop = ncshelves.size()-1;
+                    ensureShelf(newtop, ncshelves, dimension_);
+                    std::swap(ncshelves[curtop], ncshelves[newtop]);
                 }
             }
+            const_cast<bool&>(collapsed_) = true;
+        }
+
+        // collapse and then normalize the top shelf
+        void normalize() const {
+            if (normalized_) return;
+            collapse();
+            Integer halfm = shelves_.back().mod();
+            --halfm;
+            halfm >>= 1;
+            for (auto& x : const_cast<std::vector<Integer>&>(shelves_.back().residue)) {
+                x %= shelves_.back().mod();
+                if (x > halfm) x -= shelves_.back().mod();
+            }
+            const_cast<bool&>(normalized_) = true;
         }
 
 		static Integer& precomputeInvProd(Integer& res, const Integer& m1, const Integer& m0)
