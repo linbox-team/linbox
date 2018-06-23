@@ -61,6 +61,7 @@ namespace LinBox
             std::vector<Integer> residue;
             LazyProduct mod;
             double logmod = 0.; // natural log of the modulus on this shelf
+            int count = 0; // how many images combined to get this one
 
             Shelf(size_t dim=0) :residue(dim) { };
         };
@@ -76,10 +77,12 @@ namespace LinBox
         // INVARIANT: forall (shelf : shelves_) { shelf.residue.size() == dimension_ }
 
 	public:
-		// LOGARITHMIC_UPPER_BOUND is the natural logarithm
-		// of an upper bound on the resulting integers
-		FullMultipCRA(const double b=0.0) :
-			LOGARITHMIC_UPPER_BOUND(b)
+        /** @brief Creates a new vector CRA object.
+         * @param bnd  upper bound on the natural logarithm of the result
+         * @param dim  dimension of the vector to be reconstructed
+         */
+		FullMultipCRA(const double bnd=0.0, size_t dim=0) :
+			LOGARITHMIC_UPPER_BOUND(bnd), dimension_(dim)
 		{}
 
 		Integer& getModulus(Integer& m) const
@@ -103,18 +106,23 @@ namespace LinBox
 
 		//! init
 		template<typename ModType, class Vect>
-		void initialize (const ModType& D, const Vect& e)
+		inline void initialize (const ModType& D, const Vect& e)
 		{
+            initialize_iter(D, e.begin(), e.size());
+		}
+
+        template <typename ModType, class Iter>
+        inline void initialize_iter (const ModType& D, Iter e_it, size_t e_size)
+        {
             shelves_.clear();
             totalsize_ = 0;
-            dimension_ = e.size();
-            progress(D, e);
-			return;
-		}
+            dimension_ = e_size;
+            progress_iter(D, e_it, e_size);
+        }
 
         // generic version
 		template <typename ModType, class Vect>
-		void progress (const ModType& D, const Vect& e)
+		inline void progress (const ModType& D, const Vect& e)
 		{
             // resize existing residues if necessary
             if (e.size() > dimension_) {
@@ -124,6 +132,12 @@ namespace LinBox
                 }
             }
 
+            // call iterator version
+            progress_iter(D, e.begin(), e.size());
+        }
+
+        template <typename ModType, class Iter>
+        void progress_iter (const ModType& D, Iter e_it, size_t e_size) {
             // update collapsed_ and normalized_
             collapsed_ = shelves_.empty();
             normalized_ = false;
@@ -139,9 +153,10 @@ namespace LinBox
             ensureShelf(cur, shelves_, dimension_);
             if (! shelves_[cur].occupied) {
                 // shelf is empty, so just copy it there
-                copyVec(shelves_[cur].residue, e);
+                std::copy_n(e_it, e_size, shelves_[cur].residue.begin());
                 shelves_[cur].mod.initialize(Dval);
                 shelves_[cur].logmod = logD;
+                shelves_[cur].count = 1;
                 shelves_[cur].occupied = true;
                 return;
             }
@@ -153,9 +168,8 @@ namespace LinBox
                 // FIXME incorporate invP0 and fieldreconstruct when D is a domain
                 precomputeInvProd(invprod, shelves_[cur].mod(), Dval);
                 auto r_it = shelves_[cur].residue.begin();
-                for (auto& eres : e) {
-                    smallbigreconstruct(*r_it, eres, invprod);
-                    ++r_it;
+                for (size_t i=0; i < e_size; ++i, ++e_it, ++r_it) {
+                    smallbigreconstruct(*r_it, *e_it, invprod);
                 }
                 // in case e is shorter than dimension_, treat missing values as zeros
                 for (; r_it != shelves_[cur].residue.end(); ++r_it) {
@@ -163,6 +177,7 @@ namespace LinBox
                 }
                 shelves_[cur].mod.mulin(Dval);
                 shelves_[cur].logmod += logD;
+                shelves_[cur].count += 1;
             }
 
             // combine further shelves as necessary
@@ -183,22 +198,30 @@ namespace LinBox
 		}
 
 		//! result
-		const std::vector<Integer>& result () const
+		inline const std::vector<Integer>& result () const
 		{
             normalize();
             return shelves_.back().residue;
         }
 
         template <class Vect>
-        Vect& result(Vect& r) const
+        inline Vect& result(Vect& r) const
         {
             r.resize(dimension_);
+            result_iter(r.begin());
+            return r;
+        }
+
+        template <class Iter>
+        void result_iter (Iter r_it) const {
             if (shelves_.empty()) {
-                for (auto& x : r) x = 0;
-                return r;
+                for (size_t i=0; i < dimension_; ++i)
+                    *r_it = 0;
             }
-            normalize();
-            return copyVec(r, shelves_.back().residue);
+            else {
+                normalize();
+                std::copy_n(shelves_.back().residue.begin(), dimension_, r_it);
+            }
         }
 
 		bool terminated() const
@@ -240,19 +263,6 @@ namespace LinBox
             return D.characteristic(m);
         }
 
-        template <class Vec1, class Vec2>
-        static Vec1& copyVec(Vec1& to, const Vec2& from) {
-            to.resize(from.size());
-            auto lhs = to.begin();
-            auto rhs = from.begin();
-            while (rhs != from.end()) {
-                *lhs = *rhs;
-                ++lhs;
-                ++rhs;
-            }
-            return to;
-        }
-
         static inline void combineShelves(Shelf& dest, const Shelf& src, Integer& temp) {
             // assumption: dest is already occupied
             precomputeInvProd(temp, dest.mod(), src.mod());
@@ -264,6 +274,7 @@ namespace LinBox
             }
             dest.mod.mulin(src.mod());
             dest.logmod += src.logmod;
+            dest.count += src.count;
         }
 
         static inline void ensureShelf(size_t index, std::vector<Shelf>& shelves, size_t dim) {
