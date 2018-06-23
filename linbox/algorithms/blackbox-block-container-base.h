@@ -56,18 +56,17 @@ namespace LinBox {
     public:
         template<class Blackbox>
         static typename std::enable_if<is_blockbb<Blackbox>::value>::type 
-        mul(const Field& F, Block &M1, const Blackbox &M2, const Block& M3) {
+        mul(Block &M1, const Blackbox &M2, const Block& M3) {
             M2.applyLeft(M1, M3);
         }
         
         template<class Blackbox>
         static typename std::enable_if<!is_blockbb<Blackbox>::value>::type 
-        mul(const Field& F, Block &M1, const Blackbox &M2, const Block& M3) {
+        mul(Block &M1, const Blackbox &M2, const Block& M3) {
             linbox_check( M1.rowdim() == M2.rowdim());
             linbox_check( M2.coldim() == M3.rowdim());
             linbox_check( M1.coldim() == M3.coldim());
 
-            MatrixDomain<Field> MD(F);
             typename Block::ColIterator        p1 = M1.colBegin();
             typename Block::ConstColIterator   p3 = M3.colBegin();
 
@@ -198,7 +197,7 @@ namespace LinBox {
         // Blackbox multiplication using apply function
         inline void Mul(Block &M1, const Blackbox &M2, const Block& M3)
         {
-            MulHelper<Field,Block>::mul(field(),M1,M2,M3);
+            MulHelper<Field,Block>::mul(M1,M2,M3);
         }
 
         /// User Left and Right blocks
