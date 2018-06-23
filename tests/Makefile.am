@@ -199,7 +199,6 @@ NTL_TESTS =                     \
 	test-ntl-sylvester          \
 	test-poly-smith-form        \
 	test-smith-form-iliopoulos  \
-	test-polynomial-local-x \
 	test-weak-popov-form \
 	test-invariant-factors \
 	test-frobenius-large \
@@ -363,7 +362,6 @@ test_polynomial_ring_SOURCES =          test-polynomial-ring.C
 test_invariant_factors_SOURCES =		test-invariant-factors.C
 test_frobenius_small_SOURCES =          test-frobenius-small.C
 test_frobenius_large_SOURCES =          test-frobenius-large.C
-test_polynomial_local_x_SOURCES =       test-polynomial-local-x.C
 test_weak_popov_form_SOURCES =			test-weak-popov-form.C
 try_invariant_factors_SOURCES =         try-invariant-factors.C
 test_fgemm_SOURCES =                    test-fgemm.C
