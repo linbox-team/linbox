@@ -99,7 +99,7 @@ namespace LinBox
 
 #include "linbox/ring/modular.h"
 #include "linbox/algorithms/cra-domain.h"
-#include "linbox/algorithms/cra-early-single.h"
+#include "linbox/algorithms/cra-single.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/matrix-hom.h"
 
@@ -117,7 +117,7 @@ namespace LinBox
 
 
 		template<typename Field>
-		typename Field::Element& operator()(typename Field::Element& v, const Field& F) const
+		IterationResult operator()(typename Field::Element& v, const Field& F) const
 		{
 			commentator().start ("Givaro::Modular Valence", "Mvalence");
 // 			std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
@@ -132,7 +132,7 @@ namespace LinBox
 			valence( v, Ap, M);
 // 			F.write( F.write(report << "one valence: ", v) << " mod " ) << std::endl;;
 			commentator().stop ("done", NULL, "Mvalence");
-			return v;
+			return IterationResult::CONTINUE;
 		}
 	};
 
