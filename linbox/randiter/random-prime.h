@@ -187,6 +187,49 @@ namespace LinBox
     }
 /* ================ */
 
+	/*! @brief Adaptor class to make a fixed-length sequence behave like a PrimeIterator.
+	 */
+	template <typename IteratorT, class UniqueTrait = std::true_type>
+	class PrimeSequence {
+	private:
+		IteratorT _cur;
+		const IteratorT _end;
+
+	public:
+		using Prime_Type = typename std::remove_cv<typename std::remove_reference<decltype(*_cur)>::type>::type;
+		using UniqueSamplingTag = UniqueTrait;
+		using IteratorTag = IteratorCategories::DeterministicTag;
+
+		PrimeSequence(IteratorT begin, IteratorT end) :
+			_cur(begin), _end(end)
+		{ }
+
+		/** @brief operator++()  (prefix ++ operator)
+		 *  moves to the next prime in the sequence.
+		 */
+		inline PrimeSequence& operator++ () {
+			if (_cur == _end) {
+				throw LinboxError("LinBox ERROR: Ran out of primes in PrimeSequence.\n");
+			}
+			++_cur;
+			return *this;
+		}
+
+		/** @brief get the prime.
+		 *  returns the actual prime.
+		 *  @warning a new prime is not generated.
+		 */
+		const Prime_Type &operator * () const {return *_cur;}
+	};
+
+	/*! convenience factory to create a PrimeSequence from an STL-like container. */
+	template <typename Container>
+	PrimeSequence<typename Container::const_iterator>
+		create_prime_sequence(const Container& cont)
+	{
+		return PrimeSequence<typename Container::const_iterator>(cont.begin(), cont.end());
+	}
+
 
         /*!  @brief  Masked Prime Iterator.
          * @ingroup primes
