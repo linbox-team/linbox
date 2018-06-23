@@ -55,45 +55,212 @@ namespace LinBox
 		typedef typename Domain::Element DomainElement;
 		typedef FullMultipCRA<Domain> 		Self_t;
 
+    public:
+        struct Shelf {
+            bool occupied = false;
+            std::vector<Integer> residue;
+            LazyProduct mod;
+            double logmod = 0.; // natural log of the modulus on this shelf
+            bool normalized = true;
+
+            Shelf(size_t dim=0) :residue(dim) { };
+
+            void normalize() const {
+                if (! normalized) {
+                    Integer halfm = mod() - 1;
+                    halfm >>= 1;
+                    for (auto& x : const_cast<std::vector<Integer>&>(residue)) {
+                        x %= mod();
+                        if (x > halfm) x -= mod();
+                    }
+                    const_cast<bool&>(normalized) = true;
+                }
+            }
+        };
+
 	protected:
-		std::vector< double >           	RadixSizes_;
-		std::vector< LazyProduct >      	RadixPrimeProd_;
-		std::vector< std::vector<Integer> > RadixResidues_;
-		std::vector< bool >             	RadixOccupancy_;
+        static constexpr size_t UNOCCUPIED = std::numeric_limits<size_t>::max();
+        std::vector<Shelf> shelves_;
 		const double				LOGARITHMIC_UPPER_BOUND;
-		double					totalsize;
+		double totalsize_ = 0.; // natural log of the current modulus
+        size_t dimension_ = 0; // dimension of the vector being reconstructed
+        size_t lowest_occupied_ = UNOCCUPIED; // index of first occupied shelf
+        // INVARIANT: shelves_.empty() || shelves_.back().occupied
+        // INVARIANT: (lowest_occupied_ == UNOCCUPIED) || shelves_[lowest_occupied_].occupied
+        // INVARIANT: forall (shelf : shelves_) { shelf.residue.size() == dimension_ }
 
 	public:
 		// LOGARITHMIC_UPPER_BOUND is the natural logarithm
 		// of an upper bound on the resulting integers
 		FullMultipCRA(const double b=0.0) :
-			LOGARITHMIC_UPPER_BOUND(b), totalsize(0.0)
+			LOGARITHMIC_UPPER_BOUND(b)
 		{}
 
-		Integer& getModulus(Integer& m)
+		Integer& getModulus(Integer& m) const
 		{
-			Givaro::ZRing<Integer> ZZ;
-			BlasVector<Givaro::ZRing<Integer> > r(ZZ); result(r);
-			return m=RadixPrimeProd_.back()();
+            if (lowest_occupied_ == UNOCCUPIED) return m = 1;
+            collapse();
+            return m = shelves_.back().mod();
 		}
 
-		template<template<class> class Vect>
-		Vect<Integer>& getResidue(Vect<Integer>& r)
+        const Integer& getModulus() const {
+            collapse();
+            return shelves_._back().mod();
+        }
+
+        // alias for result
+		template<class Vect>
+		inline Vect& getResidue(Vect& r) const
 		{
-			result(r);
-			return r;
+			return result(r);
 		}
 
-        // FIXME
-        void getMod(Integer& m, const Integer& D);
+		//! init
+		template<typename ModType, class Vect>
+		void initialize (const ModType& D, const Vect& e)
+		{
+            shelves_.clear();
+            totalsize_ = 0;
+            dimension_ = e.size();
+            lowest_occupied_ = UNOCCUPIED;
+            progress(D, e);
+			return;
+		}
 
-        // FIXME
+        // generic version
+		template <typename ModType, class Vect>
+		void progress (const ModType& D, const Vect& e)
+		{
+            // resize existing residues if necessary
+            if (e.size() > dimension_) {
+                dimension_ = e.size();
+                for (auto& shelf : shelves_) {
+                    shelf.residue.resize(dimension_);
+                }
+            }
+
+            // put new result into the proper shelf
+            Integer Dval;
+            getMod(Dval, D);
+            double logD = Givaro::naturallog(Dval);
+            auto cur = getShelf(logD);
+
+            totalsize_ += logD;
+
+            ensureShelf(cur, shelves_, dimension_);
+            if (! shelves_[cur].occupied) {
+                // shelf is empty, so just copy it there
+                copyVec(shelves_[cur].residue, e);
+                shelves_[cur].mod.initialize(Dval);
+                shelves_[cur].logmod = logD;
+                shelves_[cur].occupied = true;
+                if (cur < lowest_occupied_) lowest_occupied_ = cur;
+                return;
+            }
+
+            Integer invprod;
+
+            // shelf is nonempty, so we incorporate the new result there
+            {
+                // FIXME incorporate invP0 and fieldreconstruct when D is a domain
+                precomputeInvProd(invprod, shelves_[cur].mod(), Dval);
+                auto r_it = shelves_[cur].residue.begin();
+                for (auto& eres : e) {
+                    smallbigreconstruct(*r_it, eres, invprod);
+                    ++r_it;
+                }
+                // in case e is shorter than dimension_, treat missing values as zeros
+                for (; r_it != shelves_[cur].residue.end(); ++r_it) {
+                    *r_it *= invprod;
+                }
+                shelves_[cur].mod.mulin(Dval);
+                shelves_[cur].logmod += logD;
+            }
+
+            // combine further shelves as necessary
+            auto next = getShelf(shelves_[cur].logmod);
+            while (next != cur) {
+                ensureShelf(next, shelves_, dimension_);
+                if (shelves_[next].occupied) {
+                    // combine cur shelf with next shelf
+                    combineShelves(shelves_[next], shelves_[cur], invprod);
+                    shelves_[cur].occupied = false;
+                    next = getShelf(shelves_[next].logmod);
+                } else {
+                    // put cur shelf data in next shelf position
+                    std::swap(shelves_[cur], shelves_[next]);
+                }
+
+                // cur is now unoccupied, so might have to update lowest_occ
+                if (cur == lowest_occupied_) {
+                    do { ++lowest_occupied_; }
+                    while (! shelves_[lowest_occupied_].occupied);
+                }
+
+                cur = next;
+            }
+		}
+
+		//! result
+		const std::vector<Integer>& result () const
+		{
+            collapse();
+            shelves_.back().normalize();
+            return shelves_.back().residue;
+        }
+
+        template <class Vect>
+        Vect& result(Vect& r) const
+        {
+            r.resize(dimension_);
+            if (lowest_occupied_ == UNOCCUPIED) {
+                for (auto& x : r) x = 0;
+                return r;
+            }
+            collapse();
+            shelves_.back().normalize();
+            return copyVec(r, shelves_.back().residue);
+        }
+
+		bool terminated() const
+		{
+			return totalsize_ > LOGARITHMIC_UPPER_BOUND;
+		}
+
+		bool noncoprime(const Integer& i) const
+		{
+            for (auto& shelf : shelves_) {
+                if (shelf.occupied && shelf.mod.noncoprime(i)) return true;
+            }
+            return false;
+		}
+
+        // CAUTION: do not interleave with any other method calls
+        decltype(shelves_.cbegin()) shelves_begin() const {
+            return shelves_.begin();
+        }
+
+        // CAUTION: do not interleave with any other method calls
+        decltype(shelves_.cend()) shelves_end() const {
+            return shelves_.end();
+        }
+
+	protected:
+        static inline size_t getShelf(double logmod) {
+            return floor(log2(logmod));
+        }
+
+        static inline Integer& getMod(Integer& m, const Integer& D) {
+            return m = D;
+        }
+
         template <class Domain>
-        void getMod(Integer& m, const Domain& D);
+        static inline Integer& getMod(Integer& m, const Domain& D) {
+            return D.characteristic(m);
+        }
 
-        // FIXME
         template <class Vec1, class Vec2>
-        void copyVec(Vec1& to, const Vec2& from) {
+        static Vec1& copyVec(Vec1& to, const Vec2& from) {
             to.resize(from.size());
             auto lhs = to.begin();
             auto rhs = from.begin();
@@ -102,692 +269,69 @@ namespace LinBox
                 ++lhs;
                 ++rhs;
             }
+            return to;
         }
 
-		//! init
-		template<typename ModType, class Vect>
-		void initialize (const ModType& D, const Vect& e)
-		{
-            RadixPrimeProd_.resize(1);
-            getMod(RadixPrimeProd_.front()(), D);
-            RadixSizes_.resize(1, Givaro::naturallog(RadixPrimeProd_.front()()));
-            RadixResidues_.resize(1);
-            copyVec(RadixResidues_.front(), e);
-            RadixOccupancy_.resize(1, true);
-			return;
-		}
-
-        // generic version
-		template <typename Modtype, class Vect>
-		void progress (const ModType& D, const Vect& e)
-		{
-			auto _dsz_it = RadixSizes_.begin();
-			auto _mod_it = RadixPrimeProd_.begin();
-			auto _tab_it = RadixResidues_.begin();
-			auto _occ_it = RadixOccupancy_.begin();
-
-            if (! *_occ_it) {
-                // bottom shelf empty
-                getMod((*_mod_it)(), D);
-                *_dsz_it = Givaro::naturallog((*_mod_it)());
-                copyVec(*_tab_it, e);
-                *_occ_it = true;
-                return;
-            }
-
-            Integer invprod;
+        static inline void combineShelves(Shelf& dest, const Shelf& src, Integer& temp) {
+            // assumption: dest is already occupied
+            precomputeInvProd(temp, dest.mod(), src.mod());
+            for (auto dest_it = dest.residue.begin(), src_it = src.residue.begin();
+                 dest_it != dest.residue.end();
+                 ++dest_it, ++src_it)
             {
-                // bottom shelf combine
-                auto e_it = e.begin();
-                auto t0_it = _tab_it->begin();
-                _mod_it->compute();
-                _mod_it->emplace_back(0);
-                getMod(_mod_it->back(), D);
-                precomputeInvProd(invprod, _mod_it->front(), _mod_it->back());
-                for (; e_it != e.end(); ++e_it, ++t0_it) {
-                    smallbigreconstruct(*t0_it, *e_it, invprod);
-                }
-                *_dsz_it += Givaro::naturallog(mod_it->back());
-                *_occ_it = false;
+                smallbigreconstruct(*dest_it, *src_it, temp);
             }
-
-            // combine up with full shelves
-            for (; (_occ_it+1) != RadixOccupancy_.end() && *(_occ_it+1);
-                 ++_dsz_it, ++_mod_it, ++_tab_it, ++_occ_it) {
-                auto below_it = _tab_it->begin();
-                auto above_it = (_tab_it+1)->begin();
-                precomputeInvProd(invprod, (*(_mod_it+1))(), (*_mod_it)());
-                for (; below_it != _tab_it->end(); ++below_it, ++above_it) {
-                    smallbigreconstruct(*above_it, *below_it, invprod);
-                }
-                (_mod_it+1)->mulin((*_mod_it)());
-                *(_dsz_it+1) + *_dsz_it;
-                *(_occ_it+1) = false;
-            }
-
-            if ((_occ_it+1) == RadixOccupancy_.end()) {
-                Radix_Residues_.push_back();
-                /*TODO HERE */
-                /* XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX */
-            }
-
-			BlasVector<Givaro::ZRing<Integer> > ri(e.field(),e.size()); // XXX
-			LazyProduct mi;
-			double di;
-			if (*_occ_it) {
-                // bottom shelf nonempty
-				auto e_it = e.begin();
-				auto ri_it = ri.begin();
-				auto t0_it = _tab_it->begin();
-				Integer invprod; precomputeInvProd(invprod, D, _mod_it->operator()()); // XXX
-				for( ; e_it != e.end(); ++e_it, ++ri_it, ++t0_it) {
-					*ri_it = *e_it;
-					smallbigreconstruct(*ri_it,  *t0_it, invprod );
-				}
-				di = *_dsz_it + Givaro::naturallog(D); // XXX
-				mi.mulin(D);
-				mi.mulin(*_mod_it);
-				*_occ_it = false;
-			}
-			else {
-                // bottom shelf empty
-				Integer tmp = D;
-				_mod_it->initialize(tmp);
-				*_dsz_it = Givaro::naturallog(tmp);
-				auto e_it = e.begin();
-				_tab_it->resize(e.size());
-				auto t0_it= _tab_it->begin();
-				for( ; e_it != e.end(); ++e_it, ++ t0_it)
-					*t0_it = *e_it;
-				*_occ_it = true;
-				return;
-			}
-			for(++_dsz_it, ++_mod_it, ++_tab_it, ++_occ_it ; _occ_it != RadixOccupancy_.end() ; ++_dsz_it, ++_mod_it, ++_tab_it, ++_occ_it) {
-				if (*_occ_it) {
-					auto ri_it = ri.begin();
-					auto t_it= _tab_it->begin();
-					Integer invprod; precomputeInvProd(invprod, mi(), _mod_it->operator()());
-					for( ; ri_it != ri.end(); ++ri_it, ++ t_it)
-						smallbigreconstruct(*ri_it, *t_it, invprod);
-					mi.mulin(*_mod_it);
-					di += *_dsz_it;
-					*_occ_it = false;
-				}
-				else {
-					*_dsz_it = di;
-					*_mod_it = mi;
-					*_tab_it = ri;
-					*_occ_it = true;
-					return;
-				}
-			}
-
-			RadixSizes_.push_back( di );
-			RadixResidues_.push_back( ri );
-			RadixPrimeProd_.push_back( mi );
-			RadixOccupancy_.push_back ( true );
-		}
-
-		//! progress
-		/* Used in the case where D is a big Integer and Domain cannot be constructed */
-		// template<template<class T> class Vect>
-		template<class Vect>
-		void progress (const Integer& D, const Vect& e)
-		{
-			std::vector< double >::iterator  _dsz_it = RadixSizes_.begin();
-			std::vector< LazyProduct >::iterator _mod_it = RadixPrimeProd_.begin();
-			std::vector< BlasVector<Givaro::ZRing<Integer> > >::iterator _tab_it = RadixResidues_.begin();
-			std::vector< bool >::iterator    _occ_it = RadixOccupancy_.begin();
-			BlasVector<Givaro::ZRing<Integer> > ri(e.field(),e.size());
-			LazyProduct mi;
-			double di;
-			if (*_occ_it) {
-				typename Vect::const_iterator  e_it = e.begin();
-				BlasVector<Givaro::ZRing<Integer> >::iterator       ri_it = ri.begin();
-				BlasVector<Givaro::ZRing<Integer> >::const_iterator t0_it = _tab_it->begin();
-				Integer invprod; precomputeInvProd(invprod, D, _mod_it->operator()());
-				for( ; e_it != e.end(); ++e_it, ++ri_it, ++ t0_it) {
-					*ri_it =* e_it;
-					smallbigreconstruct(*ri_it,  *t0_it, invprod );
-				}
-				Integer tmp = D;
-				di = *_dsz_it + Givaro::naturallog(tmp);
-				mi.mulin(tmp);
-				mi.mulin(*_mod_it);
-				*_occ_it = false;
-			}
-			else {
-				Integer tmp = D;
-				_mod_it->initialize(tmp);
-				*_dsz_it = Givaro::naturallog(tmp);
-				typename Vect::const_iterator e_it = e.begin();
-				_tab_it->resize(e.size());
-				BlasVector<Givaro::ZRing<Integer> >::iterator t0_it= _tab_it->begin();
-				for( ; e_it != e.end(); ++e_it, ++ t0_it)
-					*t0_it = *e_it;
-				*_occ_it = true;
-				return;
-			}
-			for(++_dsz_it, ++_mod_it, ++_tab_it, ++_occ_it ; _occ_it != RadixOccupancy_.end() ; ++_dsz_it, ++_mod_it, ++_tab_it, ++_occ_it) {
-				if (*_occ_it) {
-					BlasVector<Givaro::ZRing<Integer> >::iterator      ri_it = ri.begin();
-					BlasVector<Givaro::ZRing<Integer> >::const_iterator t_it= _tab_it->begin();
-					Integer invprod; precomputeInvProd(invprod, mi(), _mod_it->operator()());
-					for( ; ri_it != ri.end(); ++ri_it, ++ t_it)
-						smallbigreconstruct(*ri_it, *t_it, invprod);
-					mi.mulin(*_mod_it);
-					di += *_dsz_it;
-					*_occ_it = false;
-				}
-				else {
-					*_dsz_it = di;
-					*_mod_it = mi;
-					*_tab_it = ri;
-					*_occ_it = true;
-					return;
-				}
-			}
-
-			RadixSizes_.push_back( di );
-			RadixResidues_.push_back( ri );
-			RadixPrimeProd_.push_back( mi );
-			RadixOccupancy_.push_back ( true );
-		}
-
-		// spec for BlasVector
-		void progress (const Integer& D, const BlasVector<Givaro::ZRing<Integer> >& e)
-		{
-			std::vector< double >::iterator  _dsz_it = RadixSizes_.begin();
-			std::vector< LazyProduct >::iterator _mod_it = RadixPrimeProd_.begin();
-			std::vector< BlasVector<Givaro::ZRing<Integer> > >::iterator _tab_it = RadixResidues_.begin();
-			std::vector< bool >::iterator    _occ_it = RadixOccupancy_.begin();
-			BlasVector<Givaro::ZRing<Integer> > ri(e.field(),e.size());
-			LazyProduct mi; double di;
-			if (*_occ_it) {
-				typename BlasVector<Givaro::ZRing<Integer> >::const_iterator  e_it = e.begin();
-				BlasVector<Givaro::ZRing<Integer> >::iterator       ri_it = ri.begin();
-				BlasVector<Givaro::ZRing<Integer> >::const_iterator t0_it = _tab_it->begin();
-				Integer invprod; precomputeInvProd(invprod, D, _mod_it->operator()());
-				for( ; e_it != e.end(); ++e_it, ++ri_it, ++ t0_it) {
-					*ri_it =* e_it;
-					smallbigreconstruct(*ri_it,  *t0_it, invprod );
-				}
-				Integer tmp = D;
-				di = *_dsz_it + Givaro::naturallog(tmp);
-				mi.mulin(tmp);
-				mi.mulin(*_mod_it);
-				*_occ_it = false;
-			}
-			else {
-				Integer tmp = D;
-				_mod_it->initialize(tmp);
-				*_dsz_it = Givaro::naturallog(tmp);
-				typename BlasVector<Givaro::ZRing<Integer> >::const_iterator e_it = e.begin();
-				_tab_it->resize(e.size());
-				BlasVector<Givaro::ZRing<Integer> >::iterator t0_it= _tab_it->begin();
-				for( ; e_it != e.end(); ++e_it, ++ t0_it)
-					*t0_it = *e_it;
-				*_occ_it = true;
-				return;
-			}
-			for(++_dsz_it, ++_mod_it, ++_tab_it, ++_occ_it ; _occ_it != RadixOccupancy_.end() ; ++_dsz_it, ++_mod_it, ++_tab_it, ++_occ_it) {
-				if (*_occ_it) {
-					BlasVector<Givaro::ZRing<Integer> >::iterator      ri_it = ri.begin();
-					BlasVector<Givaro::ZRing<Integer> >::const_iterator t_it= _tab_it->begin();
-					Integer invprod; precomputeInvProd(invprod, mi(), _mod_it->operator()());
-					for( ; ri_it != ri.end(); ++ri_it, ++ t_it)
-						smallbigreconstruct(*ri_it, *t_it, invprod);
-					mi.mulin(*_mod_it);
-					di += *_dsz_it;
-					*_occ_it = false;
-				}
-				else {
-					*_dsz_it = di;
-					*_mod_it = mi;
-					*_tab_it = ri;
-					*_occ_it = true;
-					return;
-				}
-			}
-
-			RadixSizes_.push_back( di );
-			RadixResidues_.push_back( ri );
-			RadixPrimeProd_.push_back( mi );
-			RadixOccupancy_.push_back ( true );
-		}
-
-		template<class Vect>
-		void progress (const Domain& D, const Vect& e)
-		{
-			// Radix shelves
-			std::vector< double >::iterator  _dsz_it = RadixSizes_.begin();
-			std::vector< LazyProduct >::iterator _mod_it = RadixPrimeProd_.begin();
-			std::vector< BlasVector<Givaro::ZRing<Integer> > >::iterator _tab_it = RadixResidues_.begin();
-			std::vector< bool >::iterator    _occ_it = RadixOccupancy_.begin();
-			Givaro::ZRing<Integer> ZZ;
-			BlasVector<Givaro::ZRing<Integer> > ri(ZZ,e.size());
-			LazyProduct mi; double di;
-			if (*_occ_it) {
-				// If lower shelf is occupied
-				// Combine it with the new residue
-				// The for loop will try to put the resulting combination on the upper shelf
-				typename Vect::const_iterator  e_it = e.begin();
-				BlasVector<Givaro::ZRing<Integer> >::iterator       ri_it = ri.begin();
-				BlasVector<Givaro::ZRing<Integer> >::const_iterator t0_it = _tab_it->begin();
-				DomainElement invP0; precomputeInvP0(invP0, D, _mod_it->operator()() );
-				for( ; ri_it != ri.end(); ++e_it, ++ri_it, ++ t0_it)
-					fieldreconstruct(*ri_it, D, *e_it, *t0_it, invP0, (*_mod_it).operator()() );
-				Integer tmp; D.characteristic(tmp);
-				double ltp = Givaro::naturallog(tmp);
-				di = *_dsz_it + ltp;
-				totalsize += ltp;
-				mi.mulin(tmp);
-				mi.mulin(*_mod_it);
-				*_occ_it = false;
-			}
-			else {
-				// Lower shelf is free
-				// Put the new residue here and exit
-				Integer tmp; D.characteristic(tmp);
-				double ltp =  Givaro::naturallog(tmp);
-				_mod_it->initialize(tmp);
-				*_dsz_it = ltp;
-				totalsize += ltp;
-				typename Vect::const_iterator e_it = e.begin();
-				_tab_it->resize(e.size());
-				BlasVector<Givaro::ZRing<Integer> >::iterator t0_it= _tab_it->begin();
-				for( ; e_it != e.end(); ++e_it, ++ t0_it)
-					D.convert(*t0_it, *e_it);
-				*_occ_it = true;
-				return;
-			}
-
-			// We have a combination to put in the upper shelf
-			for(++_dsz_it, ++_mod_it, ++_tab_it, ++_occ_it ; _occ_it != RadixOccupancy_.end() ; ++_dsz_it, ++_mod_it, ++_tab_it, ++_occ_it) {
-				if (*_occ_it) {
-					// This shelf is occupied
-					// Combine it with the new combination
-					// The loop will try to put it on the upper shelf
-					BlasVector<Givaro::ZRing<Integer> >::iterator      ri_it = ri.begin();
-					BlasVector<Givaro::ZRing<Integer> >::const_iterator t_it= _tab_it->begin();
-
-					Integer invprod; precomputeInvProd(invprod, mi(), _mod_it->operator()());
-					for( ; ri_it != ri.end(); ++ri_it, ++ t_it)
-						smallbigreconstruct(*ri_it, *t_it, invprod);
-
-					// Product (lazy) computation
-					mi.mulin(*_mod_it);
-
-					// Moding out
-					for(ri_it = ri.begin() ; ri_it != ri.end(); ++ri_it) {
-						*ri_it %= mi();
-					}
-
-					di += *_dsz_it;
-					*_occ_it = false;
-				}
-				else {
-					// This shelf is free
-					// Put the new combination here and exit
-					*_dsz_it = di;
-					*_mod_it = mi;
-					*_tab_it = ri;
-					*_occ_it = true;
-					return;
-				}
-			}
-			// All the shelfves were occupied
-			// We create a new top shelf
-			// And put the new combination there
-			RadixSizes_.push_back( di );
-			RadixResidues_.push_back( ri );
-			RadixPrimeProd_.push_back( mi );
-			RadixOccupancy_.push_back ( true );
-		}
-
-		// spec for BlasVector
-		template<class OKDomain>
-		void progress (const Domain& D, const BlasVector<OKDomain >& e)
-		{
-			// Radix shelves
-			std::vector< double >::iterator  _dsz_it = RadixSizes_.begin();
-			std::vector< LazyProduct >::iterator _mod_it = RadixPrimeProd_.begin();
-			std::vector< BlasVector<Givaro::ZRing<Integer> > >::iterator _tab_it = RadixResidues_.begin();
-			std::vector< bool >::iterator    _occ_it = RadixOccupancy_.begin();
-			Givaro::ZRing<Integer> ZZ;
-			LazyProduct mi; double di;
-			BlasVector<Givaro::ZRing<Integer> > ri(ZZ,e.size());
-			if (*_occ_it) {
-				// If lower shelf is occupied
-				// Combine it with the new residue
-				// The for loop will try to put the resulting combination on the upper shelf
-				typename BlasVector<Domain>::const_iterator  e_it = e.begin();
-				BlasVector<Givaro::ZRing<Integer> >::iterator       ri_it = ri.begin();
-				BlasVector<Givaro::ZRing<Integer> >::const_iterator t0_it = _tab_it->begin();
-				DomainElement invP0; precomputeInvP0(invP0, D, _mod_it->operator()() );
-				for( ; ri_it != ri.end(); ++e_it, ++ri_it, ++ t0_it)
-					fieldreconstruct(*ri_it, D, *e_it, *t0_it, invP0, (*_mod_it).operator()() );
-				Integer tmp; D.characteristic(tmp);
-				double ltp = Givaro::naturallog(tmp);
-				di = *_dsz_it + ltp;
-				totalsize += ltp;
-				mi.mulin(tmp);
-				mi.mulin(*_mod_it);
-				*_occ_it = false;
-			}
-			else {
-				// Lower shelf is free
-				// Put the new residue here and exit
-				Integer tmp; D.characteristic(tmp);
-				double ltp =  Givaro::naturallog(tmp);
-				_mod_it->initialize(tmp);
-				*_dsz_it = ltp;
-				totalsize += ltp;
-				typename BlasVector<Domain>::const_iterator e_it = e.begin();
-				_tab_it->resize(e.size());
-				BlasVector<Givaro::ZRing<Integer> >::iterator t0_it= _tab_it->begin();
-				for( ; e_it != e.end(); ++e_it, ++ t0_it)
-					D.convert(*t0_it, *e_it);
-				*_occ_it = true;
-				return;
-			}
-
-			// We have a combination to put in the upper shelf
-			for(++_dsz_it, ++_mod_it, ++_tab_it, ++_occ_it ; _occ_it != RadixOccupancy_.end() ; ++_dsz_it, ++_mod_it, ++_tab_it, ++_occ_it) {
-				if (*_occ_it) {
-					// This shelf is occupied
-					// Combine it with the new combination
-					// The loop will try to put it on the upper shelf
-					BlasVector<Givaro::ZRing<Integer> >::iterator      ri_it = ri.begin();
-					BlasVector<Givaro::ZRing<Integer> >::const_iterator t_it= _tab_it->begin();
-
-					Integer invprod; precomputeInvProd(invprod, mi(), _mod_it->operator()());
-					for( ; ri_it != ri.end(); ++ri_it, ++ t_it)
-						smallbigreconstruct(*ri_it, *t_it, invprod);
-
-					// Product (lazy) computation
-					mi.mulin(*_mod_it);
-
-					// Moding out
-					for(ri_it = ri.begin() ; ri_it != ri.end(); ++ri_it) {
-						*ri_it %= mi();
-					}
-
-					di += *_dsz_it;
-					*_occ_it = false;
-				}
-				else {
-					// This shelf is free
-					// Put the new combination here and exit
-					*_dsz_it = di;
-					*_mod_it = mi;
-					*_tab_it = ri;
-					*_occ_it = true;
-					return;
-				}
-			}
-			// All the shelfves were occupied
-			// We create a new top shelf
-			// And put the new combination there
-			RadixSizes_.push_back( di );
-			RadixResidues_.push_back( ri );
-			RadixPrimeProd_.push_back( mi );
-			RadixOccupancy_.push_back ( true );
-		}
-
-
-		//! result
-		template<class Vect>
-		Vect& result (Vect &d)
-		{
-			d.resize( (RadixResidues_.front()).size() );
-			std::vector< LazyProduct >::iterator          _mod_it = RadixPrimeProd_.begin();
-			std::vector< BlasVector< Givaro::ZRing<Integer> > >::iterator _tab_it = RadixResidues_.begin();
-			std::vector< bool >::iterator                _occ_it = RadixOccupancy_.begin();
-			LazyProduct Product;
-			// We have to find to lowest occupied shelf
-			for( ; _occ_it != RadixOccupancy_.end() ; ++_mod_it, ++_tab_it, ++_occ_it) {
-				if (*_occ_it) {
-					// Found the lowest occupied shelf
-					Product = *_mod_it;
-					BlasVector<Givaro::ZRing<Integer> >::iterator t0_it = d.begin();
-					BlasVector<Givaro::ZRing<Integer> >::iterator t_it = _tab_it->begin();
-					if (++_occ_it == RadixOccupancy_.end()) {
-						// It is the only shelf of the radix
-						// We normalize the result and output it
-						for( ; t0_it != d.end(); ++t0_it, ++t_it)
-							normalize(*t0_it = *t_it, *t_it, _mod_it->operator()());
-						//RadixPrimeProd_.resize(1);
-						return d;
-					}
-					else {
-						// There are other shelves
-						// The result is initialized with this shelf
-						// The for loop will combine the other shelves m with the actual one
-						for( ; t0_it != d.end(); ++t0_it, ++t_it)
-							*t0_it  = *t_it;
-						++_mod_it; ++_tab_it;
-						break;
-					}
-				}
-			}
-			for( ; _occ_it != RadixOccupancy_.end() ; ++_mod_it, ++_tab_it, ++_occ_it) {
-				if (*_occ_it) {
-					// This shelf is occupied
-					// We need to combine it with the actual value of the result
-					BlasVector<Givaro::ZRing<Integer> >::iterator t0_it = d.begin();
-					BlasVector<Givaro::ZRing<Integer> >::const_iterator t_it = _tab_it->begin();
-					Integer invprod;
-					precomputeInvProd(invprod, Product(), _mod_it->operator()() );
-
-					for( ; t0_it != d.end(); ++t0_it, ++t_it)
-						smallbigreconstruct(*t0_it, *t_it, invprod);
-
-					// Overall product computation
-					Product.mulin(*_mod_it);
-
-					// Moding out and normalization
-					for(t0_it = d.begin();t0_it != d.end(); ++t0_it) {
-						*t0_it %= Product();
-						Integer tmp(*t0_it);
-						normalize(*t0_it, tmp, Product());
-					}
-
-				}
-			}
-
-			// We put it also the final prime product in the first shelf of products
-			// JGD : should we also put the result
-			//       in the first shelf of residues and resize it to 1
-			//       and set to true the first occupancy and resize it to 1
-			//       in case result is not the last call (more progress to go) ?
-			RadixPrimeProd_.resize(1);
-			RadixPrimeProd_.front() = Product;
-			RadixSizes_.resize(1);
-			RadixSizes_.front() =  Givaro::naturallog(Product());
-			Givaro::ZRing<Integer> ZZ;
-			RadixResidues_.resize(1,BlasVector<Givaro::ZRing<Integer> >(ZZ));
-			RadixResidues_.front() = d;
-			RadixOccupancy_.resize(1);
-			RadixOccupancy_.front() = true;
-
-			return d;
-		}
-
-		// spec for BlasVector
-		BlasVector<Givaro::ZRing<Integer> >& result (BlasVector<Givaro::ZRing<Integer> > &d)
-		{
-			d.resize( (RadixResidues_.front()).size() );
-			std::vector< LazyProduct >::iterator          _mod_it = RadixPrimeProd_.begin();
-			std::vector< BlasVector< Givaro::ZRing<Integer> > >::iterator _tab_it = RadixResidues_.begin();
-			std::vector< bool >::iterator                _occ_it = RadixOccupancy_.begin();
-			LazyProduct Product;
-			// We have to find to lowest occupied shelf
-			for( ; _occ_it != RadixOccupancy_.end() ; ++_mod_it, ++_tab_it, ++_occ_it) {
-				if (*_occ_it) {
-					// Found the lowest occupied shelf
-					Product = *_mod_it;
-					BlasVector<Givaro::ZRing<Integer> >::iterator t0_it = d.begin();
-					BlasVector<Givaro::ZRing<Integer> >::iterator t_it = _tab_it->begin();
-					if (++_occ_it == RadixOccupancy_.end()) {
-						// It is the only shelf of the radix
-						// We normalize the result and output it
-						for( ; t0_it != d.end(); ++t0_it, ++t_it)
-							normalize(*t0_it = *t_it, *t_it, _mod_it->operator()());
-						//RadixPrimeProd_.resize(1);
-						return d;
-					}
-					else {
-						// There are other shelves
-						// The result is initialized with this shelf
-						// The for loop will combine the other shelves m with the actual one
-						for( ; t0_it != d.end(); ++t0_it, ++t_it)
-							*t0_it  = *t_it;
-						++_mod_it; ++_tab_it;
-						break;
-					}
-				}
-			}
-			for( ; _occ_it != RadixOccupancy_.end() ; ++_mod_it, ++_tab_it, ++_occ_it) {
-				if (*_occ_it) {
-					// This shelf is occupied
-					// We need to combine it with the actual value of the result
-					BlasVector<Givaro::ZRing<Integer> >::iterator t0_it = d.begin();
-					BlasVector<Givaro::ZRing<Integer> >::const_iterator t_it = _tab_it->begin();
-					Integer invprod;
-					precomputeInvProd(invprod, Product(), _mod_it->operator()() );
-
-					for( ; t0_it != d.end(); ++t0_it, ++t_it)
-						smallbigreconstruct(*t0_it, *t_it, invprod);
-
-					// Overall product computation
-					Product.mulin(*_mod_it);
-
-					// Moding out and normalization
-					for(t0_it = d.begin();t0_it != d.end(); ++t0_it) {
-						*t0_it %= Product();
-						Integer tmp(*t0_it);
-						normalize(*t0_it, tmp, Product());
-					}
-
-				}
-			}
-
-			// We put it also the final prime product in the first shelf of products
-			// JGD : should we also put the result
-			//       in the first shelf of residues and resize it to 1
-			//       and set to true the first occupancy and resize it to 1
-			//       in case result is not the last call (more progress to go) ?
-			RadixPrimeProd_.resize(1);
-			RadixPrimeProd_.front() = Product;
-			RadixSizes_.resize(1);
-			RadixSizes_.front() =  Givaro::naturallog(Product());
-			Givaro::ZRing<Integer> Z;
-			RadixResidues_.resize(1,BlasVector<Givaro::ZRing<Integer> >(Z));
-			RadixResidues_.front() = d;
-			RadixOccupancy_.resize(1);
-			RadixOccupancy_.front() = true;
-
-			return d;
-		}
-
-
-		bool terminated()
-		{
-			return totalsize > LOGARITHMIC_UPPER_BOUND;
-		}
-
-		bool noncoprime(const Integer& i) const
-		{
-			std::vector< LazyProduct >::const_iterator _mod_it = RadixPrimeProd_.begin();
-			std::vector< bool >::const_iterator    _occ_it = RadixOccupancy_.begin();
-			for( ; _occ_it != RadixOccupancy_.end() ; ++_mod_it, ++_occ_it)
-				if ((*_occ_it) && (_mod_it->noncoprime(i))) return true;
-			return false;
-		}
-
-        struct ShelfIterator {
-            using Parent_t = FullMultipCRA;
-
-        protected:
-            const Parent_t& parent_;
-            decltype(parent_.RadixPrimeProd_.rbegin()) primeprod_it_;
-            decltype(parent_.RadixResidues_.rbegin()) residues_it_;
-            decltype(parent_.RadixOccupancy_.rbegin()) occupancy_it_;
-            size_t shelfsize_;
-
-        public:
-            ShelfIterator(const Parent_t& parent) :
-                parent_(parent),
-                primeprod_it_(parent.RadixPrimeProd_.rbegin()),
-                residues_it_(parent.RadixResidues_.rbegin()),
-                occupancy_it_(parent.RadixOccupancy_.rbegin()),
-                shelfsize_(1UL << (parent.RadixOccupancy_.size()))
-            {
-                for (; !*occupancy_it_ && occupancy_it_ != parent.RadixOccupancy_.rend();
-                     ++occupancy_it_, ++primeprod_it_, ++residues_it_) {
-                    shelfsize_ >>= 1;
-                }
-            }
-
-            ShelfIterator(const Parent_t& parent, int AT_END) :
-                parent_(parent),
-                occupancy_it_(parent.RadixOccupancy_.rend())
-            {
-            }
-
-            ShelfIterator& operator ++ () {
-                ++occupancy_it_; ++primeprod_it_; ++residues_it_;
-                shelfsize_ >>= 1;
-                for (; !*occupancy_it_ && occupancy_it_ != parent_.RadixOccupancy_.rend();
-                     ++occupancy_it_, ++primeprod_it_, ++residues_it_) {
-                    shelfsize_ >>= 1;
-                }
-                return *this;
-            }
-
-            const Integer& primeprod() const {
-                return (*primeprod_it_)();
-            }
-
-            const typename decltype(parent_.RadixResidues_)::value_type & residue() const {
-                return *residues_it_;
-            }
-
-            size_t shelfsize() const { return shelfsize_; }
-
-            bool operator == (const ShelfIterator& other) const {
-                return occupancy_it_ == other.occupancy_it_;
-            }
-
-            bool operator != (const ShelfIterator& other) const {
-                return occupancy_it_ != other.occupancy_it_;
-            }
-        };
-
-        ShelfIterator shelf_begin() const {
-            return ShelfIterator(*this);
+            dest.mod.mulin(src.mod());
+            dest.logmod += src.logmod;
         }
 
-        ShelfIterator shelf_end() const {
-            return ShelfIterator(*this, 1);
+        static inline void ensureShelf(size_t index, std::vector<Shelf>& shelves, size_t dim) {
+            while (index >= shelves.size()) {
+                shelves.emplace_back(dim);
+            }
         }
 
-	protected:
+        // collapse all residues to a single shelf
+        void collapse() const {
+            auto& ncshelves = const_cast<std::vector<Shelf>&>(shelves_);
+            auto& lowest = const_cast<size_t&>(lowest_occupied_);
+            if (lowest == UNOCCUPIED) {
+                ncshelves.emplace_back(dimension_);
+                ncshelves.back().occupied = true;
+                lowest = 0;
+            }
+            else {
+                Integer temp;
+                while (lowest != ncshelves.size()-1) {
+                    auto next = lowest + 1;
+                    while (! ncshelves[next].occupied) ++next;
+                    combineShelves(ncshelves[next], ncshelves[lowest], temp);
+                    ncshelves[lowest].occupied = false;
+                    lowest = next;
+                }
+                // move top shelf to higher index if necessary
+                auto topind = getShelf(ncshelves.back().logmod);
+                if (topind != lowest) {
+                    ensureShelf(topind, ncshelves, dimension_);
+                    std::swap(ncshelves[lowest], ncshelves[topind]);
+                    lowest = topind;
+                }
+            }
+        }
 
-		Integer& precomputeInvProd(Integer& res, const Integer& m1, const Integer& m0)
+		static Integer& precomputeInvProd(Integer& res, const Integer& m1, const Integer& m0)
 		{
 			inv(res, m0, m1);
 			return res *= m0; // res <-- (m0^{-1} mod m1)*m0
 		}
 
-		DomainElement& precomputeInvP0(DomainElement& invP0, const Domain& D1, const Integer& P0)
+		static DomainElement& precomputeInvP0(DomainElement& invP0, const Domain& D1, const Integer& P0)
 		{
 			return D1.invin( D1.init(invP0, P0) ); // res <-- (P0^{-1} mod m1)
 		}
 
 
-		Integer& smallbigreconstruct(Integer& u1, const Integer& u0, const Integer& invprod)
+		static Integer& smallbigreconstruct(Integer& u1, const Integer& u0, const Integer& invprod)
 		{
 			u1 -= u0;	  // u1 <-- (u1-u0)
 			u1 *= invprod;    // u1 <-- (u1-u0)( m0^{-1} mod m1 ) m0
@@ -795,7 +339,7 @@ namespace LinBox
 		}
 
 
-		Integer& normalize(Integer& u1, Integer& tmp, const Integer& m1)
+		static Integer& normalize(Integer& u1, Integer& tmp, const Integer& m1)
 		{
 			if (u1 < 0)
 				tmp += m1;
@@ -805,7 +349,7 @@ namespace LinBox
 		}
 
 
-		Integer& fieldreconstruct(Integer& res, const Domain& D1, const DomainElement& u1, const Integer& r0, const DomainElement& invP0, const Integer& P0)
+		static Integer& fieldreconstruct(Integer& res, const Domain& D1, const DomainElement& u1, const Integer& r0, const DomainElement& invP0, const Integer& P0)
 		{
                     	// u0 = r0 mod m1
 			DomainElement u0; D1.init(u0, r0);
@@ -815,7 +359,7 @@ namespace LinBox
 				return fieldreconstruct(res, D1, u1, u0, r0, invP0, P0);
 		}
 
-		Integer& fieldreconstruct(Integer& res, const Domain& D1, const DomainElement& u1, DomainElement& u0, const Integer& r0, const DomainElement& invP0, const Integer& P0)
+		static Integer& fieldreconstruct(Integer& res, const Domain& D1, const DomainElement& u1, DomainElement& u0, const Integer& r0, const DomainElement& invP0, const Integer& P0)
 		{
 			// u0 and m0 are modified
 			D1.negin(u0);   	// u0 <-- -u0

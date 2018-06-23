@@ -41,7 +41,7 @@ namespace LinBox
                 this->emplace_back(1);
                 _tobecomputed = false;
             } else if (_tobecomputed) {
-                for (auto iter = ++(this->begin()); iter != this->end; ++iter)
+                for (auto iter = ++(this->begin()); iter != this->end(); ++iter)
                     this->front() *= *iter;
                 this->resize(1);
 				_tobecomputed = false;

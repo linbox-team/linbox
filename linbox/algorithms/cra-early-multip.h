@@ -151,17 +151,20 @@ namespace LinBox
             choose_linear_comb(randv_.size());
 			std::vector<Integer> e(randv_.size());
 
-            auto shelf = MultiParent::shelf_begin();
-            SingleParent::initialize(shelf.primeprod(),
-                dot(shelf.primeprod(), shelf.residue(), randv_));
+            auto shelf = MultiParent::shelves_begin();
+            while (!shelf->occupied) ++shelf;
+            SingleParent::initialize(shelf->mod(),
+                dot(shelf->mod(), shelf->residue, randv_));
 
-            for (++shelf; shelf != MultiParent::shelf_end(); ++shelf)
+            for (++shelf; shelf != MultiParent::shelves_end(); ++shelf)
             {
-                Integer prev_residue_ = SingleParent::residue_;
-                SingleParent::progress(shelf.primeprod(),
-                    dot(shelf.primeprod(), shelf.residue(), randv_),
-                    shelf.shelfsize());
-                if (SingleParent::terminated()) return true;
+                if (shelf->occupied) {
+                    Integer prev_residue_ = SingleParent::residue_;
+                    SingleParent::progress(shelf->mod(),
+                        dot(shelf->mod(), shelf->residue, randv_));
+                    // TODO incorporate size of progress
+                    if (SingleParent::terminated()) return true;
+                }
             }
             return false;
 		}
