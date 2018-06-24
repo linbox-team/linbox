@@ -321,7 +321,7 @@ namespace LinBox
             --halfm;
             halfm >>= 1;
             for (auto& x : const_cast<std::vector<Integer>&>(shelves_.back().residue)) {
-                x %= shelves_.back().mod();
+                Integer::modin(x, shelves_.back().mod());
                 if (x > halfm) x -= shelves_.back().mod();
             }
             const_cast<bool&>(normalized_) = true;
