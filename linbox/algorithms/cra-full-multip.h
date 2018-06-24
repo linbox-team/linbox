@@ -198,14 +198,15 @@ namespace LinBox
 		}
 
 		//! result
-		inline const std::vector<Integer>& result () const
+		inline const std::vector<Integer>& result (bool normalized=true) const
 		{
-            normalize();
+            if (normalized) normalize();
+            else collapse();
             return shelves_.back().residue;
         }
 
         template <class Vect>
-        inline Vect& result(Vect& r) const
+        inline Vect& result(Vect& r, bool normalized=true) const
         {
             r.resize(dimension_);
             result_iter(r.begin());
@@ -213,13 +214,14 @@ namespace LinBox
         }
 
         template <class Iter>
-        void result_iter (Iter r_it) const {
+        void result_iter (Iter r_it, bool normalized=true) const {
             if (shelves_.empty()) {
                 for (size_t i=0; i < dimension_; ++i)
                     *r_it = 0;
             }
             else {
-                normalize();
+                if (normalized) normalize();
+                else collapse();
                 std::copy_n(shelves_.back().residue.begin(), dimension_, r_it);
             }
         }
@@ -236,6 +238,9 @@ namespace LinBox
             }
             return false;
 		}
+
+        size_t getDimension() const
+        { return dimension_; }
 
         // XXX iterator invalidated by many other method calls
         decltype(shelves_.crbegin()) shelves_begin() const {
