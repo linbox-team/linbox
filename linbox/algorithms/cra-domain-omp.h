@@ -480,7 +480,7 @@ Iteration(ROUNDresidues[0], ROUNDdomains[0]);
 		}
 #endif
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#if 1
+#if 0
 		template<class Container, class Function, class PrimeIterator>
 		Container& operator()  (Container& res, Integer& den, Function& Iteration, PrimeIterator& primeiter)
 		{
@@ -493,7 +493,7 @@ Iteration(ROUNDresidues[0], ROUNDdomains[0]);
 			int coprime =0;
 //			int maxnoncoprime = 1000;
 long IterCounter=0;
-
+omp_set_num_threads(omp_get_max_threads());
 			if (IterCounter==0) {
 				std::set<Integer> coprimeset;
 				while(coprimeset.size() < NN) {
@@ -520,7 +520,7 @@ long IterCounter=0;
 Iteration(ROUNDresidues[0], ROUNDdomains[0]);
 				++IterCounter;
 				this->Builder_.initialize( ROUNDdomains[0],ROUNDresidues[0]);
-#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic) num_threads(NN/8)
 				for(size_t i=1;i<NN;++i) {
 
 					Iteration(ROUNDresidues[i], ROUNDdomains[i]);
@@ -560,7 +560,7 @@ Iteration(ROUNDresidues[0], ROUNDdomains[0]);
 
 
 
-#pragma omp parallel for schedule(dynamic) 
+#pragma omp parallel for schedule(dynamic) num_threads(NN/8)
 		 		for(size_t i=0;i<NN;++i) {
 
 					Iteration(ROUNDresidues[i], ROUNDdomains[i]);
@@ -754,7 +754,7 @@ long IterCounter=0;
 Iteration(ROUNDresidues[0], ROUNDdomains[0]);
 				++IterCounter;
 				this->Builder_.initialize( ROUNDdomains[0],ROUNDresidues[0]);
-#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic) num_threads(NN/8)
 				for(size_t i=1;i<NN;++i) {
 #pragma omp task
 {
@@ -797,7 +797,7 @@ Iteration(ROUNDresidues[0], ROUNDdomains[0]);
 
 
 bool early_terminated=false;
-#pragma omp parallel 
+#pragma omp parallel num_threads(NN/8)
 {
 
 #pragma omp for schedule(dynamic) 
@@ -841,7 +841,7 @@ early_terminated = true;
 		}
 #endif
 ///////////////////////////////////////////////////////EN COURS 2//////////////////////////////////////////////////////////
-#if 0
+#if 1
 		template<class Container, class Function, class PrimeIterator>
 		Container& operator()  (Container& res, Integer& den, Function& Iteration, PrimeIterator& primeiter)
 		{
@@ -881,7 +881,7 @@ long IterCounter=0;
 Iteration(ROUNDresidues[0], ROUNDdomains[0]);
 				++IterCounter;
 				this->Builder_.initialize( ROUNDdomains[0],ROUNDresidues[0]);
-#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic) num_threads(NN/8)
 				for(size_t i=1;i<NN;++i) {
 #pragma omp task
 {
@@ -924,7 +924,7 @@ Iteration(ROUNDresidues[0], ROUNDdomains[0]);
 
 
                 bool early_terminated=false;
-#pragma omp parallel 
+#pragma omp parallel num_threads(NN/8)
                 {
                     
 #pragma omp for schedule(dynamic) 

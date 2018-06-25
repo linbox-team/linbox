@@ -25,7 +25,7 @@
  * @brief Testing the MPI parallel/serial rational solver
  */
 
-#define __LINBOX_HAVE_MPI
+//#define __LINBOX_HAVE_MPI
 
 
 #include <stdlib.h>
@@ -345,17 +345,19 @@ int main(int argc, char ** argv)
   Communicator *Cptr = NULL;
   Cptr = new Communicator(&argc, &argv);
 #endif
-  size_t bits,niter,ni,nj;  
+  size_t bits,niter,ni,nj,nt;  
   
-  bits=10, niter=3, ni=3,nj=3; 
+  bits=10, niter=3, ni=3,nj=3,nt=1; 
   
   static Argument args[] = {
     { 'n', "-n N", "Set column and row dimension of test matrices to N.", TYPE_INT,     &ni },
     { 'b', "-b B", "Set the mxaimum number of digits of integers to generate.", TYPE_INT,     &bits },
     { 'i', "-i I", "Set the number of times to do the random unit tests.", TYPE_INT,     &niter },
+    { 't', "-t T", "Set the number of threads to run unit tests.", TYPE_INT,     &nt },
     END_OF_ARGUMENTS
   };	
   parseArguments (argc, argv, args); 
+  omp_set_num_threads(nt);
 #ifdef __LINBOX_HAVE_MPI
   MPI_Bcast(&ni, 1, MPI_INT, 0, MPI_COMM_WORLD); 
   MPI_Bcast(&niter, 1, MPI_INT, 0, MPI_COMM_WORLD);
@@ -371,6 +373,7 @@ int main(int argc, char ** argv)
   DenseVector X(ZZ, A.rowdim()), X2(ZZ, A.rowdim()),  B(ZZ, A.rowdim());
 
 ////////////////////////////////////Always//Generates//The//Same//Matrix//////////////////////////////////////////
+#if 1
 size_t r=0;
 
 
@@ -403,7 +406,8 @@ LinBox::rank (r, A);
 }
 
 
-      //LinBox::rank (r, A); std::cout<<"The rank of generated matrix A is:"<<r<<std::endl;  
+      //LinBox::rank (r, A); std::cout<<"The rank of generated matrix A is:"<<r<<std::endl;
+#endif  
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   for(long j=0;j<(long)niter;j++){  
