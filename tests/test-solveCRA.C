@@ -329,7 +329,7 @@ int main(int argc, char ** argv)
   DenseVector X(ZZ, A.rowdim()), X2(ZZ, A.rowdim()),  B(ZZ, A.rowdim());
 
 ////////////////////////////////////Always//Generates//The//Same//Matrix//////////////////////////////////////////
-
+/*
 size_t r=0;
 
 
@@ -360,7 +360,7 @@ result.clear();
 
 LinBox::rank (r, A);
 }
-
+*/
 
       //LinBox::rank (r, A); std::cout<<"The rank of generated matrix A is:"<<r<<std::endl; 
 //      genData (A, bits);
@@ -373,8 +373,8 @@ LinBox::rank (r, A);
     if(0==Cptr->rank()){
 #endif
 
-//      genData (A, bits);
-//      genData (B, bits);
+      genData (A, bits);
+      genData (B, bits);
 
 
 /*      
