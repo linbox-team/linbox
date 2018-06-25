@@ -290,9 +290,10 @@ namespace LinBox
     template < class _Field, class _Storage >
     std::istream &BlasMatrix< _Field, _Storage >::read (std::istream &file)
     {
-        MatrixStream<Field> ms(field(), file);
-        if( !ms.getArray(_rep) || !ms.getDimensions(_row, _col) )
+        MatrixStream<Field> ms(_field, file);
+        if( !ms.getArray(_rep) || !ms.getDimensions(_row, _col) ){
             throw ms.reportError(__FUNCTION__,__LINE__);
+        }
         _ptr = _rep.data();
         return file;
     }

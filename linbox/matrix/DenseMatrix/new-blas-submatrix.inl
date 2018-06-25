@@ -117,6 +117,20 @@ namespace LinBox {
     template < class _Matrix >
     std::istream& BlasSubmatrix<_Matrix>::read (std::istream &file)
     {
+        MatrixStream<Field> ms(field(),file);
+		MatrixStreamError mse = GOOD;
+        size_t c = 0,i,j;
+		Element v;
+        do {
+            mse = ms.nextTriple(i,j,v);
+            if ( (i<0 or i> _row) and (j<0 or j> _col)){
+                std::cout<<"BEN OUI\n";
+                throw ms.reportError(__FUNCTION__,__LINE__);
+            }
+            setEntry(i,j,v);
+        }  while( mse <= END_OF_MATRIX);
+			        
+        /*        
         // must be improved maybe to allow any matrix format
 		Iterator p;
 		int m,n;
@@ -139,8 +153,9 @@ namespace LinBox {
                     field().read (file, _ptr+ (i-1)*_stride+(j-1));
                 }
 		}
-
+        */
 		return file;
+
     }
 
     template < class _Matrix >

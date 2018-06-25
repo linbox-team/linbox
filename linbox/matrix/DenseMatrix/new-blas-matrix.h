@@ -290,7 +290,7 @@ namespace LinBox
 		 * @param os Output stream to which to write
 		 * @param f write in some format (@ref Tag::FileFormat::Format). Default is Maple's.
 		 */
-		std::ostream &write (std::ostream &os, LINBOX_enum (Tag::FileFormat) f = Tag::FileFormat::Maple) const;
+		std::ostream &write (std::ostream &os, LINBOX_enum (Tag::FileFormat) f = Tag::FileFormat::MatrixMarket) const;
 
         
 		///////////////////
@@ -437,7 +437,7 @@ namespace LinBox
 		template <class Vector1, class Vector2>
 		Vector1&  applyTranspose (Vector1& y, const Vector2& x) const
         {
-            constSubMatrixType A(*this,0,0,_row,_col); return A.apply(y,x);
+            constSubMatrixType A(*this,0,0,_row,_col); return A.applyTranspose(y,x);
         }
 
 		subMatrixType& applyRight(subMatrixType& Y, const subMatrixType& X)
