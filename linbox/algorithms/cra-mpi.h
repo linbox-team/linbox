@@ -351,7 +351,7 @@ static int fastlog2(uint32_t v) {
 			}
 		}
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#if 1
+#if 0
 		template<class Function, class PrimeIterator>
 		BlasVector<Givaro::ZRing<Integer> > & operator() ( BlasVector<Givaro::ZRing<Integer> > & num, Integer& den, Function& Iteration, PrimeIterator& primeg)
 		{
@@ -1402,7 +1402,7 @@ break;
 		}
 #endif
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#if 0
+#if 1
 
 		template<class Function, class PrimeIterator>
 		BlasVector<Givaro::ZRing<Integer> > & operator() ( BlasVector<Givaro::ZRing<Integer> > & num, Integer& den, Function& Iteration, PrimeIterator& primeg)
@@ -1461,7 +1461,7 @@ ChineseRemainderRatOMP< RatCRABase > sequential(Builder_);
 //                    if(primes[idle_process - 1]==1)  poison_pills_left--;
 poison_pills_left-=primes[idle_process - 1]; //if(tag==0)  poison_pills_left--;
 					//  send the tag
-//					_commPtr->send(primes[idle_process - 1], idle_process); //<-------------to replace with Isend
+//					_commPtr->send(primes[idle_process - 1], idle_process); 
 MPI_Isend(&primes[idle_process - 1], 1, MPI_INT, idle_process, 0, MPI_COMM_WORLD, &req);
 //_commPtr->send(tag, idle_process);
 
@@ -1528,7 +1528,7 @@ MPI_Isend(&primes[0], 1, MPI_INT, i, 0, MPI_COMM_WORLD, &req);
                     timeExec += chrono.usertime();
                     //Add corresponding prime number as the last element in the result vector
                     r.push_back(*gen);
-//					_commPtr->send(r.begin(), r.end(), 0, 0); //<-------------to replace with Isend
+//					_commPtr->send(r.begin(), r.end(), 0, 0); 
 MPI_Isend(&r[0], r.size(), MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &req);
 				}
                 std::cerr<<"Process("<<process<<") computes "<<Ncomputes<<" times before stop"<<std::endl;
