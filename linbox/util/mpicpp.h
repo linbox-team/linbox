@@ -89,7 +89,17 @@ namespace LinBox
         template <class Field>
         void send (BlasVector<Field>& b, int dest);
         
-               
+
+		template < class X >
+		void isend( X& b, int dest /*, int tag = 0 */);
+
+		template <class Field>
+		void isend (BlasMatrix<Field>& b, int dest);
+		template <class Field>
+		void isend (SparseMatrix<Field>& b, int dest);
+        template <class Field>
+        void isend (BlasVector<Field>& b, int dest);
+
         
 		template < class X >
 		void ssend( X& b, int dest /*, int tag = 0 */);
@@ -159,6 +169,7 @@ namespace LinBox
 		bool _mpi_boss; // true of an MPI initializing communicator
 		// There is at most one initializing communicator.
 		MPI_Status stat; // status from most recent receive
+		MPI_Request req; // request from most recent send
 
         template <class X>
         void send_integerVec (X& b, int dest);
@@ -166,6 +177,22 @@ namespace LinBox
         void send_integerMat (X& b, int dest); 
         template <class X>
         void send_integerSparseMat (X& b, int dest); 
+
+        template <class X>
+        void ssend_integerVec (X& b, int dest);
+        template <class X>
+        void ssend_integerMat (X& b, int dest); 
+        template <class X>
+        void ssend_integerSparseMat (X& b, int dest); 
+
+        template <class X>
+        void isend_integerVec (X& b, int dest);
+        template <class X>
+        void isend_integerMat (X& b, int dest); 
+        template <class X>
+        void isend_integerSparseMat (X& b, int dest); 
+
+
         template <class X>
         void recv_integerVec (X& b, int src);   
         template <class X>
@@ -178,10 +205,6 @@ namespace LinBox
         void bcast_integerMat (X& b, int src);
         template <class X>
         void bcast_integerSparseMat (X& b, int src);
-        template <class X>
-        void ssend_integerVec (X& b, int dest);
-        template <class X>
-        void ssend_integerMat (X& b, int dest);  
 
 
 

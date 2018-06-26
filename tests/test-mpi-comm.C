@@ -228,14 +228,14 @@ void test_main(size_t bits, size_t ni, size_t nj, Communicator *Cptr)
    
   }//End of BLock for process(0)
 
-#if 1  
+#if 1
   if(0==Cptr->rank()){
     
     //double starttime, endtime; 
     //MPI_Barrier(MPI_COMM_WORLD);
     //starttime = MPI_Wtime();
     //MPI data distribution for Integer type value
-    Cptr->send(B,1);
+    Cptr->ssend(B,1);
     //MPI_Barrier(MPI_COMM_WORLD);
     //endtime   = MPI_Wtime(); 
     //std::cout<<"MPI data distribution used CPU time (seconds): " <<endtime-starttime<<std::endl;
@@ -244,7 +244,7 @@ void test_main(size_t bits, size_t ni, size_t nj, Communicator *Cptr)
   }
   Cptr->bcast(B,0);
   if(0!=Cptr->rank()) checkResult (ZZ, B, B2);
-#endif
+
 
   if(0==Cptr->rank()){
     
@@ -252,7 +252,7 @@ void test_main(size_t bits, size_t ni, size_t nj, Communicator *Cptr)
     //MPI_Barrier(MPI_COMM_WORLD);
     //starttime = MPI_Wtime();
     //MPI data distribution for Integer type value
-    Cptr->send(A,1); 
+    Cptr->ssend(A,1); 
     //MPI_Barrier(MPI_COMM_WORLD);
     //endtime   = MPI_Wtime(); 
     //std::cout<<"MPI data distribution used CPU time (seconds): " <<endtime-starttime<<std::endl;
@@ -270,7 +270,7 @@ void test_main(size_t bits, size_t ni, size_t nj, Communicator *Cptr)
     //MPI_Barrier(MPI_COMM_WORLD);
     //starttime = MPI_Wtime();
     //MPI data distribution for Integer type value
-    Cptr->send(A3,1); 
+    Cptr->ssend(A3,1); 
     //MPI_Barrier(MPI_COMM_WORLD);
     //endtime   = MPI_Wtime(); 
     //std::cout<<"MPI data distribution used CPU time (seconds): " <<endtime-starttime<<std::endl;
@@ -280,7 +280,26 @@ void test_main(size_t bits, size_t ni, size_t nj, Communicator *Cptr)
   Cptr->bcast(A3,0);
 
   if(0!=Cptr->rank()) checkResult (ZZ, A3, A4);
-  
+#endif
+
+
+  if(0==Cptr->rank()){
+    //double starttime, endtime; 
+    //MPI_Barrier(MPI_COMM_WORLD);
+    //starttime = MPI_Wtime();
+    //MPI data distribution for Integer type value
+    Cptr->isend(A3,1); 
+    //MPI_Barrier(MPI_COMM_WORLD);
+    //endtime   = MPI_Wtime(); 
+    //std::cout<<"MPI data distribution used CPU time (seconds): " <<endtime-starttime<<std::endl;
+  }else{
+    Cptr->recv(A4,0);
+  }MPI_Barrier(MPI_COMM_WORLD);
+  Cptr->bcast(A3,0);
+
+  if(0!=Cptr->rank()) checkResult (ZZ, A3, A4);
+
+
 }
 
 int main(int argc, char ** argv)
@@ -304,12 +323,12 @@ int main(int argc, char ** argv)
   MPI_Bcast(&niter, 1, MPI_INT, 0, MPI_COMM_WORLD);
   
   srand (time(NULL));
-  
+
   for(int j=0;j<niter;j++){
     test_main<float>(bits,ni,nj,Cptr);
     test_main<double>(bits,ni,nj,Cptr);
     test_main<int>(bits,ni,nj,Cptr);
-    test_main<Integer>(bits,ni,nj,Cptr);
+//    test_main<Integer>(bits,ni,nj,Cptr);
   }
   
   MPI_Finalize();
