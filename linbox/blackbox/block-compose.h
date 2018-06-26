@@ -30,6 +30,8 @@
 #include "linbox/blackbox/blackbox-interface.h"
 #include "linbox/vector/blas-vector.h"
 
+#include "linbox/blackbox/blockbb.h"
+
 namespace LinBox
 {
 
@@ -109,27 +111,12 @@ public:
 		
 		return Y;
 	}
-	
-	template<class OutVector, class InVector>
-	OutVector& apply(OutVector& y, const InVector& x) const {
-		BlasVector<Field> z(_A.field(), _A.rowdim());
-		
-		_B.apply(z, x);
-		_A.apply(y, z);
-		
-		return y;
-	}
-	
-	template<class OutVector, class InVector>
-	OutVector& applyTranspose(OutVector& y, const InVector& x) const {
-		BlasVector<Field> z(_A.field(), _B.coldim());
-		
-		_A.applyTranspose(z, x);
-		_B.applyTranspose(y, z);
-		
-		return y;
-	}
+};
 
+template<>
+template<class A, class B>
+struct is_blockbb<BlockCompose<A, B>> {
+	static const bool value = true;
 };
 } // LinBox
 
