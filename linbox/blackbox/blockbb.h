@@ -31,6 +31,11 @@
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/matrix/matrix-domain.h"
 namespace LinBox {
+	
+template<class _BB> 
+struct is_blockbb { 
+	static const bool value = false;
+};
 
 /// converts a black box into a block black box
 template<class _BB>
@@ -96,6 +101,12 @@ public:
 	}
 	
 }; // class BlockBB
+
+template<>
+template<class _BB>
+struct is_blockbb<BlockBB<_BB>> {
+	static const bool value = true;
+};
 
 } // LinBox
 #endif // __LINBOX_blockbb_H
