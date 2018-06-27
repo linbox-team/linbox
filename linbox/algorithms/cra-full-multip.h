@@ -97,13 +97,6 @@ namespace LinBox
             return shelves_.back().mod();
         }
 
-        // alias for result
-		template<class Vect>
-		inline Vect& getResidue(Vect& r) const
-		{
-			return result(r);
-		}
-
 		//! init
 		template<typename ModType, class Vect>
 		inline void initialize (const ModType& D, const Vect& e)
@@ -224,6 +217,19 @@ namespace LinBox
             }
         }
 
+        // alias for result
+		inline const std::vector<Integer>& getResidue() const
+		{
+			return result();
+		}
+
+        // alias for result
+		template<class Vect>
+		inline Vect& getResidue(Vect& r) const
+		{
+			return result(r);
+		}
+
 		bool terminated() const
 		{
 			return totalsize_ > LOGARITHMIC_UPPER_BOUND;
@@ -343,7 +349,8 @@ namespace LinBox
 		}
 
 
-		static Integer& smallbigreconstruct(Integer& u1, const Integer& u0, const Integer& invprod)
+        template <typename IntegerLike>
+		static Integer& smallbigreconstruct(Integer& u1, const IntegerLike& u0, const Integer& invprod)
 		{
 			u1 -= u0;	  // u1 <-- (u1-u0)
 			u1 *= invprod;    // u1 <-- (u1-u0)( m0^{-1} mod m1 ) m0
