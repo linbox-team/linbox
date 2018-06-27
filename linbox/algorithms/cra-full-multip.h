@@ -200,8 +200,7 @@ namespace LinBox
 		//! result
 		inline const std::vector<Integer>& result (bool normalized=true) const
 		{
-            if (normalized) normalize();
-            else collapse();
+            normalize();
             return shelves_.back().residue;
         }
 
@@ -220,8 +219,7 @@ namespace LinBox
                     *r_it = 0;
             }
             else {
-                if (normalized) normalize();
-                else collapse();
+                normalize();
                 std::copy_n(shelves_.back().residue.begin(), dimension_, r_it);
             }
         }
@@ -299,8 +297,9 @@ namespace LinBox
             else {
                 Integer temp;
                 auto cur = ncshelves.begin();
+                while (! cur->occupied) ++cur;
+                auto next = cur;
                 while(true) {
-                    auto next = cur;
                     if (++next == ncshelves.end()) break;
                     while (! next->occupied) ++next;
                     combineShelves(*next, *cur, temp);
