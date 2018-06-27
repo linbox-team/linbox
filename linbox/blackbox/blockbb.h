@@ -102,7 +102,6 @@ public:
 	
 }; // class BlockBB
 
-template<>
 template<class _BB>
 struct is_blockbb<BlockBB<_BB>> {
 	static const bool value = true;

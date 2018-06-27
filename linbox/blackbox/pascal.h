@@ -273,7 +273,6 @@ protected:
 	}
 };
 
-template<>
 template<class Field>
 struct is_blockbb<PascalBlackbox<Field>> {
 	static const bool value = true;
