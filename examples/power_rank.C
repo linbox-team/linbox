@@ -78,7 +78,7 @@ int tmain (int argc, char **argv)
 
     F.write(std::cout << "Local Smith Form ") << " : " << std::endl << '(';
     for (auto ip = local.begin(); ip != local.end(); ++ip) 
-        std::cout << '[' << ip->first << ',' << ip->second << "] ";
+        std::cout << '[' << ip->second << ',' << ip->first << "] ";
     cout << ")" << endl;
 
         // Reposition Output with empty rows at the end

@@ -186,20 +186,24 @@ int main (int argc, char **argv)
 
 	integer si=1;
 	size_t num=0;
-	std::cerr << "Integer Smith Form :\n(";
+	std::cout << "Integer Smith Form :\n(";
 	for( std::vector<integer>::const_iterator dit=SmithDiagonal.begin();
 	     dit != SmithDiagonal.end(); ++dit) {
 		if (*dit == si) ++num;
 		else {
 			if (num > 0)
-				std::cerr << '[' << si << ',' << num << "] ";
+				std::cout << '[' << si << ',' << num << "] ";
 			num=1;
 			si = *dit;
 		}
 	}
-	std::cerr << '[' << si << ',' << num << "] )" << std::endl;
+	std::cout << '[' << si << ',' << num << "] ";
+	num = A.rowdim() - SmithDiagonal.size();
+	si = ZZ.zero;
+	if (num > 0) std::cout << '[' << si << ',' << num << "] ";
+	std::cout << ")" << std::endl;
 	chrono.stop();
-	std::cerr << chrono << std::endl;
+	std::cout << chrono << std::endl;
 
 
 	return 0;
