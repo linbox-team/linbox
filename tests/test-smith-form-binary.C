@@ -111,8 +111,8 @@ int main(int argc, char** argv)
 
 	}
 
-#if 0
-//#ifdef __LINBOX_HAVE_NTL
+#if 1
+#ifdef __LINBOX_HAVE_NTL
 // NTL_ZZ not working here
 	{
 		typedef NTL_ZZ Ring;
@@ -136,6 +136,7 @@ int main(int argc, char** argv)
 
 		if (!testRandom(R, sf, s1)) pass = false;
 	}
+#endif
 #endif
 
 	commentator().stop("SmithFormBinary test suite");

@@ -393,7 +393,8 @@ namespace LinBox
 	{
 		//commentator().start ("Smith Form starts", "Smithform");
 
-		std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
+		std::ostream& report = std::cout;
+		//std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		report << "Computation of the invariant factors starts (via an adaptive alg):" << std::endl;
 
 		// compute the rank over a random prime field.
@@ -422,7 +423,7 @@ namespace LinBox
 			report << "   Computation of the valence starts:\n";
 			Valence::valence (Val, degree, A);
 			report << "      Valence = " << Val << std::endl;
-			report << "   Computation of the valence of ends.\n";
+			report << "   Computation of the valence ends.\n";
 			Val = abs (Val);
 			//Factor the k-smooth part of Val
 			for (prime_p = prime, e_p = e. begin(); e_p != e. end(); ++ prime_p, ++ e_p) {
@@ -514,8 +515,8 @@ namespace LinBox
 		//commentator().start ("Smith Form starts", "Smithform");
 		Givaro::ZRing<Integer> Z;
 
-		//std::ostream& report(cerr);
-		std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
+		std::ostream& report(cerr);
+		//std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		report << "Computation of the invariant factors starts (via an adaptive alg):" << std::endl;
 
 		// compute the rank over a random prime field.
@@ -542,13 +543,19 @@ namespace LinBox
 		typename MatrixHomTrait<BlasMatrix <IRing, _Rep>, Field>::value_type Ap(F,A.rowdim(),A.coldim());
 		MatrixHom::map (Ap, A);
 		Valence::one_valence (v, degree, Ap);
-		report <<"   Degree of minial polynomial of AA^T = " << degree << '\n';
+		//valence (v, Ap);
+		report <<"   Degree of one_valence minpol of AA^T = " << degree << '\n';
+		report <<"   value of one_valence minpol of AA^T = " << v << '\n';
 		// if degree is small
 		if (degree < sqrt(double(order))) {
 			report << "   Computation of the valence starts:\n";
+			//valence (Val, A);
 			Valence::valence (Val, degree, A);
 			report << "      Valence = " << Val << std::endl;
-			report << "   Computation of the valence of ends.\n";
+		report <<"   degree of minpol of AA^T = " << degree << '\n';
+			if (Val == 0) valence (Val, A);
+			report << " Corrected valence = " << Val << std::endl;
+			report << "   Computation of the valence ends.\n";
 			Val = abs (Val);
 			//Factor the k-smooth part of Val
 			for (prime_p = prime, e_p = e. begin(); e_p != e. end(); ++ prime_p, ++ e_p) {

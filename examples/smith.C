@@ -119,6 +119,7 @@ int main(int argc, char* argv[])
 
 		DenseVector<Givaro::ZRing<Integer> > v(Z,M.coldim());
 		T.start();
+		cout << " got here " << endl;
 		SmithFormAdaptive::smithForm(v, M);
 		T.stop();
 		list<pair<integer, size_t> > p;

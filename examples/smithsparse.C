@@ -48,6 +48,8 @@ using namespace std;
 #include <linbox/ring/modular.h>
 #include <linbox/matrix/sparse-matrix.h>
 #include <linbox/algorithms/smith-form-sparseelim-local.h>
+#include <linbox/algorithms/smith-form-sparseelim-poweroftwo.h>
+
 
 #include <linbox/util/timer.h>
 
@@ -62,6 +64,8 @@ using namespace LinBox;
 
 template<class I1, class Lp> void distinct (I1 a, I1 b, Lp& c);
 template <class I> void display(I b, I e);
+template<class Int_type, class Ring_type = Givaro::ZRing<Int_type> >
+void runpoweroftworank(ifstream& input, const size_t exponent, size_t StPr);
 
 int main(int argc, char* argv[])
 {
@@ -74,71 +78,81 @@ int main(int argc, char* argv[])
 "  With no m, Smith form over Z by the valence method is done." << endl <<
 "  Use smithvalence.C to have more options and get more output info." << endl <<
 "  Given m, a prime power, local Smith form over Z_m is done via sparse elim." << endl <<
+"  Use power_ranks.C or poweroftwo_rank.C to have more options and get more output info." << endl <<
 "  See mats.C for some examples that have been used in smith form algorithm testing" << endl;
 		return 0;
 	}
 
 	chrono.start();
-	ifstream in(argv[1]);
+	ifstream input(argv[1]);
 
 	if (argc > 2) { // so over Z_m
 		unsigned long m = atoi(argv[2]);
+		if (m > 4967296) {// too big
+			cerr << "Modulus too large for this example" << endl;
+			return -1;
+		} 
+		if (m%2 == 0) { // local at small power of 2.
+            runpoweroftworank<uint32_t, Givaro::ZRing<int32_t> >(input, 32, 0);
+		} else {  // local at general Z_p^e
 
-		typedef Givaro::Modular<int32_t> SPIR;
-		SPIR R(m);
+			typedef Givaro::Modular<int32_t> SPIR;
+			SPIR R(m);
 
-		SparseMatrix<SPIR, SparseMatrixFormat::SparseSeq > B (R);
-		B.read(in);
+			SparseMatrix<SPIR, SparseMatrixFormat::SparseSeq > B (R);
+			B.read(input);
 
 		
-	//	cout << "matrix is " << B.rowdim() << " by " << B.coldim() << endl;
-	//	if (B.rowdim() <= 10 && B.coldim() <= 10) B.write(cout) << endl;
+		//	cout << "matrix is " << B.rowdim() << " by " << B.coldim() << endl;
+		//	if (B.rowdim() <= 10 && B.coldim() <= 10) B.write(cout) << endl;
 
-		Integer p(m), im(m);
+			Integer p(m), im(m);
                 // Should better ask user to give the prime !!!
-    	Givaro::IntPrimeDom IPD;
-		for(unsigned int k = 2; ( ( ! IPD.isprime(p) ) && (p > 1) ); ++k)
-       		Givaro::root( p, im, k );
+    		Givaro::IntPrimeDom IPD;
+			for(unsigned int k = 2; ( ( ! IPD.isprime(p) ) && (p > 1) ); ++k)
+       			Givaro::root( p, im, k );
 
-    	// using Sparse Elimination
-		LinBox::PowerGaussDomain< SPIR > PGD( R );
-		vector<pair<size_t,SPIR::Element> > vec;
-    	LinBox::Permutation<SPIR> Q(R,B.coldim());
+    		// using Sparse Elimination
+			LinBox::PowerGaussDomain< SPIR > PGD( R );
+			vector<pair<size_t,SPIR::Element> > vec;
+    		LinBox::Permutation<SPIR> Q(R,B.coldim());
 
-		PGD(vec, B, Q, (int32_t)m, (int32_t)p);
+			PGD(vec, B, Q, (int32_t)m, (int32_t)p);
 
-		typedef list< SPIR::Element > List;
-		List L;
-		for ( auto p_it = vec.begin(); p_it != vec.end(); ++p_it) {
-			for(size_t i = 0; i < (size_t) p_it->first; ++i)
-				L.push_back((SPIR::Element)p_it->second);
+			typedef list< SPIR::Element > List;
+			List L;
+			for ( auto p_it = vec.begin(); p_it != vec.end(); ++p_it) {
+				for(size_t i = 0; i < (size_t) p_it->first; ++i)
+					L.push_back((SPIR::Element)p_it->second);
+			}
+			size_t M = (B.rowdim() > B.coldim() ? B.coldim() : B.rowdim());
+			size_t Min = (B.rowdim() < B.coldim() ? B.coldim() : B.rowdim());
+			for (size_t i = L.size(); i < M; ++i)
+				L.push_back(0);
+
+			list<pair<SPIR::Element, size_t> > pl;
+
+			distinct(L.begin(), L.end(), pl);
+
+			//cout << "#";
+
+        	 //display(local.begin(), local.end());
+			display(pl.begin(), pl.end());
+			//cout << "# local, PowerGaussDomain<int32_t>(" << M << "), n = " << Min << endl;
+
+
+			chrono.stop();
+			cout << "T" << M << "local(PowerGaussDomain<int32_t>)" << m << " := "
+				<< chrono << endl;
 		}
-		size_t M = (B.rowdim() > B.coldim() ? B.coldim() : B.rowdim());
-		size_t Min = (B.rowdim() < B.coldim() ? B.coldim() : B.rowdim());
-		for (size_t i = L.size(); i < M; ++i)
-			L.push_back(0);
-
-		list<pair<SPIR::Element, size_t> > pl;
-
-		distinct(L.begin(), L.end(), pl);
-
-		//cout << "#";
-
-         //display(local.begin(), local.end());
-		display(pl.begin(), pl.end());
-		//cout << "# local, PowerGaussDomain<int32_t>(" << M << "), n = " << Min << endl;
-
-
-		chrono.stop();
-		cout << "T" << M << "local(PowerGaussDomain<int32_t>)" << m << " := "
-			<< chrono << endl;
+		
 
 	} else {// argc is 2, so use valence method over ZZ
 
 		Givaro::ZRing<Integer> ZZ;
 		typedef SparseMatrix<Givaro::ZRing<Integer> >  Blackbox;
 		Blackbox A (ZZ);
-		A.read(in);
+		A.read(input);
 	
 	//	cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 	
@@ -251,12 +265,12 @@ int main(int argc, char* argv[])
 			if (*dit == si) ++num;
 			else {
 				if (num > 0)
-					cout << si << ' ' << num << ", ";
+					cout << '[' << si << ',' << num << "] ";
 				num=1;
 				si = *dit;
 			}
 		}
-		cout << si << ' ' << num << ") " << endl;
+		cout << '[' << si << ',' << num << "] )" << endl;
 		chrono.stop();
 		cout << "T" << A.rowdim() << "smithvalence(ZRing<Integer>):= "
 			<< chrono << endl;
@@ -288,10 +302,45 @@ void distinct (I1 a, I1 b, Lp& c)
 template <class I>
 void display(I b, I e)
 { cout << "(";
- for (I p = b; p != e; ++p) cout << p->first << " " << p->second << ", ";
+ for (I p = b; p != e; ++p) cout << '[' << p->first << "," << p->second << "] ";
  cout << ")" << endl;
 }
 
+template<class Int_type, class Ring_type> 
+void runpoweroftworank(ifstream& input, const size_t exponent, size_t StPr) {
+    typedef std::vector<std::pair<size_t,Int_type> > Smith_t;
+    typedef Ring_type Ring; // signed ?
+    typedef LinBox::SparseMatrix<Ring, 
+        LinBox::SparseMatrixFormat::SparseSeq > SparseMat;
+
+    Smith_t local;
+    Ring R;
+    LinBox::MatrixStream<Ring> ms( R, input );
+    SparseMat A (ms);
+
+    input.close();
+    LinBox::PowerGaussDomainPowerOfTwo< Int_type > PGD;
+    LinBox::GF2 F2;
+    Permutation<GF2> Q(F2,A.coldim());
+            
+    cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
+    if (A.rowdim() <= 20 && A.coldim() <= 20) A.write(cout,Tag::FileFormat::Maple) << endl;
+
+    Givaro::Timer tim; 
+    tim.clear(); tim.start();
+    if (StPr)
+        PGD(local, A, Q, exponent, StPr);
+    else
+        PGD(local, A, Q, exponent);
+    tim.stop();
+
+    R.write(std::cout << "Local Smith Form ") << " : " << std::endl << '(';
+    for (auto  p = local.begin(); p != local.end(); ++p)
+        std::cout << '[' << p->first << ',' << p->second << "] ";
+    cout << ')' << endl;
+
+    std::cerr << tim << std::endl;
+} // runpowerof2
 
 // Local Variables:
 // mode: C++
