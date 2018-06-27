@@ -63,20 +63,8 @@ namespace LinBox
 
 		bool mulin(const Integer& i)
 		{
-			if (this->size()) {
-				if (i != this->back()) {
-					this->push_back( i );
-					return _tobecomputed = true;
-				}
-				else {
-					return _tobecomputed;
-				}
-
-			}
-			else {
-				this->push_back( i );
-				return _tobecomputed = false;
-			}
+            this->emplace_back(i);
+            return _tobecomputed = (this->size() > 1);
 		}
 
 		bool mulin(const LazyProduct& i)
