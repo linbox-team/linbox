@@ -61,15 +61,14 @@ namespace LinBox
 		int setSwitcher(int s) {return switcher = s;}
 
 		template<typename Polynomial, typename Field>
-		Polynomial& operator()(Polynomial& P, const Field& F) const
+		IterationResult operator()(Polynomial& P, const Field& F) const
 		{
 			if (switcher ==1) {
-				t1->operator()(P,F);
+				return t1->operator()(P,F);
 			}
 			else {
-				t2->operator()(P,F);
+				return t2->operator()(P,F);
 			}
-			return P;
 		}
 	};
 
@@ -89,7 +88,7 @@ namespace LinBox
 		{}
 
 		template<typename Polynomial, typename Field>
-		Polynomial& operator()(Polynomial& P, const Field& F) const
+		IterationResult operator()(Polynomial& P, const Field& F) const
 		{
 			typedef typename Blackbox::template rebind<Field>::other FBlackbox;
 			FBlackbox * Ap;
@@ -104,7 +103,7 @@ namespace LinBox
 			}
 
 			delete Ap;
-			return P;
+                        return IterationResult::CONTINUE;
 		}
 	};
 
@@ -126,7 +125,7 @@ namespace LinBox
 		{}
 
 		template<typename Polynomial, typename Field>
-		Polynomial& operator()(Polynomial& P, const Field& F) const
+		IterationResult operator()(Polynomial& P, const Field& F) const
 		{
 			typedef typename Blackbox::template rebind<Field>::other FBlackbox;
 			FBlackbox * Ap;
@@ -154,7 +153,7 @@ namespace LinBox
 			}
 
 			delete Ap;
-			return P;
+                        return IterationResult::CONTINUE;
 		}
 	};
 

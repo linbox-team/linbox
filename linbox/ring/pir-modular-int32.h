@@ -25,7 +25,7 @@
 #ifndef __LINBOX_pir_modular_int32_H
 #define __LINBOX_pir_modular_int32_H
 
-#include <givaro/modular-int32.h>
+#include <givaro/modular-integral.h>
 //#include <linbox/util/debug.h>
 #include <linbox/vector/vector-domain.h>
 
@@ -187,7 +187,7 @@ namespace LinBox
 
 			r = a % g;
 
-			if (r != 0) throw PreconditionFailed(LB_FILE_LOC,"Div: not dividable");
+			if (r != 0) throw PreconditionFailed(LB_FILE_LOC,"Div: not divisible");
 
 			else {
 

@@ -30,7 +30,6 @@
 #include "linbox/field/field-traits.h"
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/matrix/matrix-domain.h"
-//#include "linbox/ring/givaro-polynomial-ring.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/bbcharpoly.h"
 // Namespace in which all LinBox library code resides
@@ -182,11 +181,12 @@ namespace LinBox
 		{}
 
 		template<typename Field, class Polynomial>
-		Polynomial& operator()(Polynomial& P, const Field& F) const
+		IterationResult operator()(Polynomial& P, const Field& F) const
 		{
 			typedef typename Blackbox::template rebind<Field>::other FBlackbox;
 			FBlackbox Ap(A, F);
-			return charpoly (P, Ap, typename FieldTraits<Field>::categoryTag(), M);
+			charpoly (P, Ap, typename FieldTraits<Field>::categoryTag(), M);
+			return IterationResult::CONTINUE;
 			// std::cerr << "Charpoly(A) mod "<<F.characteristic()<<" = "<<P;
 			// integer p;
 			// F.characteristic(p);
@@ -337,7 +337,7 @@ namespace LinBox
 		{}
 
 		template<typename Polynomial, typename Field>
-		Polynomial& operator()(Polynomial& P, const Field& F) const {
+		IterationResult operator()(Polynomial& P, const Field& F) const {
 			typedef typename Blackbox::template rebind<Field>::other FBlackbox;
 			FBlackbox * Ap;
 			MatrixHom::map(Ap, A, F);
@@ -347,7 +347,7 @@ namespace LinBox
                             //std::cerr<<"Charpoly(A) mod "<<p<<" = "<<P;
 
 			delete Ap;
-			return P;
+			return IterationResult::CONTINUE;
 		}
 	};
 #endif
