@@ -226,7 +226,6 @@ namespace LinBox
 
   }; // SparseMatrix
   
-  template<>
   template<class Field>
   struct is_blockbb<SparseMatrix<Field,SparseMatrixFormat::TPL>> {
   	  static const bool value = true;

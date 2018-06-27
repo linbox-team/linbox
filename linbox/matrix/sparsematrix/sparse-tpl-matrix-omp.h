@@ -400,7 +400,6 @@ protected:
         SizedChunks colBlocks_;
   }; // SparseMatrix
   
-  template<>
   template<class Field>
   struct is_blockbb<SparseMatrix<Field,SparseMatrixFormat::TPL_omp>> {
   	  static const bool value = true;

@@ -803,7 +803,7 @@ namespace LinBox { /*  uint16_t */
 
 }
 
-#include <givaro/modular-uint32.h>
+#include <givaro/modular-integral.h>
 
 namespace LinBox { /*  uint32_t */
 
@@ -1149,7 +1149,6 @@ namespace LinBox { /*  uint32_t */
 
 }
 
-#include <givaro/modular-uint64.h>
 
 namespace LinBox { /*  uint64_t */
 
