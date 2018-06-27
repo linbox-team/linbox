@@ -31,7 +31,7 @@
 #include "linbox/linbox-config.h"
 #include <iostream>
 #include "linbox/util/commentator.h"
-#include "givaro/modular-double.h"
+#include "givaro/modular-floating.h"
 #include "test-blackbox.h"
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/blackbox/fibb.h"
