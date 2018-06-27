@@ -2,9 +2,9 @@
 #define __LINBOX_POLY_INTERPOLATION_H
 
 
+#ifdef __LINBOX_HAVE_OPENMP
 #include <omp.h>
-
-#include <linbox/ring/givaro-poly.h>
+#endif
 
 namespace LinBox {
 

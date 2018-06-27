@@ -345,16 +345,16 @@ namespace LinBox
 		std::cout << "\npX in is " << pxIn << std::endl;
 		std::cout << "multiplied by " << this->pdata << std::endl;
 #endif
-
 		this->P.mul(pOut, pIn, this->pdata);
 
 #ifdef DBGMSGS
 		std::cout <<"pxOut is " << pxOut << std::endl;
 #endif
-
+		
 		size_t N = this->rowdim();
+		size_t M = this->coldim();
 		for( size_t i = 0; i < N; ++i )
-			this->P.getCoeff(v_out[i], pOut, N-1+i);
+			this->P.getCoeff(v_out[i], pOut, M-1+i);
 
 		return v_out;
 
