@@ -146,26 +146,35 @@ namespace LinBox
 			return SingleParent::noncoprime(i);
 		}
 
+        /** @brief Update the early termination vector and values.
+         * @return true iff the method is now terminated.
+         */
 		bool changeVector()
 		{
+            /* Pick a new linear combination */
             choose_linear_comb(randv_.size());
-			std::vector<Integer> e(randv_.size());
 
-            auto shelf = MultiParent::shelves_begin();
-            while (!shelf->occupied) ++shelf;
-            SingleParent::initialize(shelf->mod(),
-                dot(shelf->mod(), shelf->residue, randv_));
+            /* re-compute residues for SingleParent */
+            bool inited = false;
 
-            for (++shelf; shelf != MultiParent::shelves_end(); ++shelf)
+            for (auto shelf_it = MultiParent::shelves_begin();
+                 shelf_it != MultiParent::shelves_end();
+                 ++shelf_it)
             {
-                if (shelf->occupied) {
-                    Integer prev_residue_ = SingleParent::residue_;
-                    SingleParent::progress(shelf->mod(),
-                        dot(shelf->mod(), shelf->residue, randv_));
-                    // TODO incorporate size of progress
+                auto newval = dot(shelf_it->mod(), shelf_it->residue, randv_);
+                if (shelf_it->occupied) {
+                    if (! inited) {
+                        SingleParent::initialize(shelf_it->mod(), newval);
+                        inited = true;
+                    }
+                    else {
+                        SingleParent::progress(shelf_it->mod(), newval,
+                                               shelf_it->count);
+                    }
                     if (SingleParent::terminated()) return true;
                 }
             }
+
             return false;
 		}
 
