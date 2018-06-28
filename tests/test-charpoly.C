@@ -84,7 +84,7 @@ static bool testIdentityCharpoly (Dom &Z, size_t n, bool symmetrizing=false)
 	typedef ScalarMatrix<Dom> Blackbox;
 // 	typedef GivPolynomialRing<Dom, Givaro::Dense> PolDom;
 //  typedef BlasVector<Dom,GivPolynomialRing<Dom, Givaro::Dense> > PolDom;
-        typedef DensePolynomial<Dom> Polynomial;
+    typedef DensePolynomial<Dom> Polynomial;
 
 	LinBox::commentator().start ("Testing identity Charpoly", "testIdentityCharpoly");
 
