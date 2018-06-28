@@ -216,13 +216,18 @@ void test_main(size_t bits, size_t ni, size_t nj, Communicator *Cptr)
   typedef BlasVector<Givaro::ZRing<T> > DenseVector;
 
   DenseMatrix<Givaro::ZRing<T>> A (ZZ,ni,nj), A2(ZZ,ni,nj);
-  SparseMatrix<Givaro::ZRing<T>> A3 (ZZ,ni,nj), A4(ZZ,ni,nj);
   DenseVector B2(ZZ, A.coldim()),  B(ZZ, A.coldim());
-  
+  SparseMatrix<Givaro::ZRing<T>> A3 (ZZ,ni,nj), A4(ZZ,ni,nj);
+
+  DenseMatrix<Givaro::ZRing<T>> A5 (ZZ,ni,nj), A6(ZZ,ni,nj); 
+  SparseMatrix<Givaro::ZRing<T>> A7 (ZZ,ni,nj), A8(ZZ,ni,nj);
+
   if(0==Cptr->rank()){
     
     genData (A, bits);
     genData (A3, bits);
+    genData (A5, bits);
+    genData (A7, bits);
     genData (B, bits);
 
    
@@ -240,10 +245,10 @@ void test_main(size_t bits, size_t ni, size_t nj, Communicator *Cptr)
     //endtime   = MPI_Wtime(); 
     //std::cout<<"MPI data distribution used CPU time (seconds): " <<endtime-starttime<<std::endl;
   }else{
-    Cptr->recv(B2,0);
+     if(1==Cptr->rank()) Cptr->recv(B2,0);
   }
   Cptr->bcast(B,0);
-  if(0!=Cptr->rank()) checkResult (ZZ, B, B2);
+  if(1==Cptr->rank()) checkResult (ZZ, B, B2);
 
 
   if(0==Cptr->rank()){
@@ -257,11 +262,11 @@ void test_main(size_t bits, size_t ni, size_t nj, Communicator *Cptr)
     //endtime   = MPI_Wtime(); 
     //std::cout<<"MPI data distribution used CPU time (seconds): " <<endtime-starttime<<std::endl;
   }else{
-    Cptr->recv(A2,0);
+    if(1==Cptr->rank()) Cptr->recv(A2,0);
   }
   Cptr->bcast(A,0);
 
-  if(0!=Cptr->rank()) checkResult (ZZ, A, A2);
+  if(1==Cptr->rank()) checkResult (ZZ, A, A2);
   
 
   if(0==Cptr->rank()){
@@ -275,30 +280,46 @@ void test_main(size_t bits, size_t ni, size_t nj, Communicator *Cptr)
     //endtime   = MPI_Wtime(); 
     //std::cout<<"MPI data distribution used CPU time (seconds): " <<endtime-starttime<<std::endl;
   }else{
-    Cptr->recv(A4,0);
+    if(1==Cptr->rank()) Cptr->recv(A4,0);
   }
   Cptr->bcast(A3,0);
 
-  if(0!=Cptr->rank()) checkResult (ZZ, A3, A4);
+  if(1==Cptr->rank()) checkResult (ZZ, A3, A4);
 #endif
 
+#if 1
+  if(0==Cptr->rank()){
+    //double starttime, endtime; 
+    //MPI_Barrier(MPI_COMM_WORLD);
+    //starttime = MPI_Wtime();
+    //MPI data distribution for Integer type value
+    Cptr->isend(A5,1); 
+    //MPI_Barrier(MPI_COMM_WORLD);
+    //endtime   = MPI_Wtime(); 
+    //std::cout<<"MPI data distribution used CPU time (seconds): " <<endtime-starttime<<std::endl;
+  }else{
+    if(1==Cptr->rank()) Cptr->recv(A6,0);
+  }MPI_Barrier(MPI_COMM_WORLD);
+  Cptr->bcast(A5,0);
+
+  if(1==Cptr->rank()) checkResult (ZZ, A5, A6);
 
   if(0==Cptr->rank()){
     //double starttime, endtime; 
     //MPI_Barrier(MPI_COMM_WORLD);
     //starttime = MPI_Wtime();
     //MPI data distribution for Integer type value
-    Cptr->isend(A3,1); 
+    Cptr->isend(A7,1); 
     //MPI_Barrier(MPI_COMM_WORLD);
     //endtime   = MPI_Wtime(); 
     //std::cout<<"MPI data distribution used CPU time (seconds): " <<endtime-starttime<<std::endl;
   }else{
-    Cptr->recv(A4,0);
+    if(1==Cptr->rank()) Cptr->recv(A8,0);
   }MPI_Barrier(MPI_COMM_WORLD);
-  Cptr->bcast(A3,0);
+  Cptr->bcast(A7,0);
 
-  if(0!=Cptr->rank()) checkResult (ZZ, A3, A4);
-
+  if(1==Cptr->rank()) checkResult (ZZ, A7, A8);
+#endif
 
 }
 
@@ -328,7 +349,7 @@ int main(int argc, char ** argv)
     test_main<float>(bits,ni,nj,Cptr);
     test_main<double>(bits,ni,nj,Cptr);
     test_main<int>(bits,ni,nj,Cptr);
-//    test_main<Integer>(bits,ni,nj,Cptr);
+    test_main<Integer>(bits,ni,nj,Cptr);
   }
   
   MPI_Finalize();

@@ -503,7 +503,7 @@ namespace LinBox
         
     }
 
-#if 0    
+#if 1    
     template <class Matrix>
     void Communicator::isend_integerMat (Matrix& A, int dest){
 
@@ -523,8 +523,8 @@ namespace LinBox
         MPI_Isend(&A_a_size[0], ni*nj, MPI_INT,  dest, 0, MPI_COMM_WORLD,&req);
 
         MPI_Isend(&lenA, 1, MPI_UNSIGNED, dest, 0, MPI_COMM_WORLD,&req);
-        MPI_Send(&A_mp_data[0], lenA, chooseMPItype<mp_limb_t>::val, dest, 0, MPI_COMM_WORLD);
-
+        MPI_Isend(&A_mp_data[0], lenA, chooseMPItype<mp_limb_t>::val, dest, 0, MPI_COMM_WORLD,&req);
+        MPI_Wait(&req,  MPI_STATUS_IGNORE);
   
         
     }
@@ -554,6 +554,7 @@ namespace LinBox
 
         MPI_Isend(&A_mp_data[0], lenA, chooseMPItype<mp_limb_t>::val, dest, 0, MPI_COMM_WORLD,&req);
 //        MPI_Send(&A_mp_data[0], lenA, chooseMPItype<mp_limb_t>::val, dest, 0, MPI_COMM_WORLD);
+        MPI_Wait(&req,  MPI_STATUS_IGNORE);
         
     }
 #endif
@@ -574,35 +575,25 @@ namespace LinBox
         
         MPI_Isend(&B_a_size[0], nj, MPI_INT,  dest, 0, MPI_COMM_WORLD,&req);
         MPI_Send(&lenB, 1, MPI_UNSIGNED, dest, 0, MPI_COMM_WORLD);
-        MPI_Isend(&B_mp_data[0], lenB, chooseMPItype<mp_limb_t>::val, dest, 0, MPI_COMM_WORLD,&req);              
+        MPI_Isend(&B_mp_data[0], lenB, chooseMPItype<mp_limb_t>::val, dest, 0, MPI_COMM_WORLD,&req); 
+        MPI_Wait(&req,  MPI_STATUS_IGNORE);            
 
         
     }
     
     template <>
     void Communicator::isend (BlasMatrix<Givaro::ZRing<Integer> >& M, int dest){
-        //isend_integerMat(M, dest);
-        std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
-        std::cerr << "    Please avoid using nonblocking send for big integers which could cause segmentation fault     " << std::endl;
-        std::cerr << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
-        MPI_Abort(MPI_COMM_WORLD, 911);
+        isend_integerMat(M, dest);
     }
     template <>
     void Communicator::isend (SparseMatrix<Givaro::ZRing<Integer> >& M, int dest){
-        //isend_integerSparseMat(M, dest);
-        std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
-        std::cerr << "    Please avoid using nonblocking send for big integers which could cause segmentation fault     " << std::endl;
-        std::cerr << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
-        MPI_Abort(MPI_COMM_WORLD, 911);
+        isend_integerSparseMat(M, dest)
     }
     template <>
     void Communicator::isend (DenseVector<Givaro::ZRing<Integer> >& V, int dest){        
-        //isend_integerVec(V, dest);
-        std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
-        std::cerr << "    Please avoid using nonblocking send for big integers which could cause segmentation fault     " << std::endl;
-        std::cerr << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
-        MPI_Abort(MPI_COMM_WORLD, 911);      
+        isend_integerVec(V, dest);
     }
+
 #endif
 
 
