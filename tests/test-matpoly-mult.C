@@ -153,7 +153,6 @@ bool check_matpol_midpgen(const Field& fld,  RandIter& Gen, size_t n, size_t d) 
 
 template<typename MatrixP, typename Field, typename RandIter>
 bool debug_midpgen_dlp(const Field& fld,  RandIter& Gen) {
-	size_t d0,d1;
 	size_t n0,n1;
 
 	n0=22;
@@ -198,10 +197,10 @@ bool launchTest(const Field& F, size_t n, long b, long d, long seed){
 bool runTest(uint64_t n, uint64_t d, long seed){
 
 	bool ok=true;
+	size_t bits= (53-integer(n).bitsize())/2;
 
 	// fourier prime < 2^(53--log(n))/2
 	{
-		size_t bits= (53-integer(n).bitsize())/2;
 		RandomFFTPrime Rd(1<<bits,seed);
 		integer p = Rd.randomPrime(integer(d).bitsize()+1);
 		
@@ -211,7 +210,7 @@ bool runTest(uint64_t n, uint64_t d, long seed){
 	}
 	// normal prime < 2^(53--log(n))/2
 	{
-		typedef Givaro::ModularBalanced<double> Field;
+		typedef Givaro::Modular<double> Field;
 		PrimeIterator<IteratorCategories::HeuristicTag> Rd(FieldTraits<Field>::bestBitSize(n),seed);
 		integer p;
 		p=*Rd;
@@ -223,7 +222,7 @@ bool runTest(uint64_t n, uint64_t d, long seed){
 	 {
 	 	size_t bits=114;
 	 	PrimeIterator<IteratorCategories::HeuristicTag> Rd(bits,seed);
-	 	integer p= Rd.random();
+	 	integer p= *Rd;
 
 	 	Givaro::Modular<integer> F1(p);			
 	 	ok&=launchTest (F1,n,bits,d,seed);

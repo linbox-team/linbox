@@ -170,6 +170,8 @@ namespace LinBox
 
 		void resize (size_type new_size, bool val = false);
 
+        inline pointer data();
+        
 		inline size_type size      (void) const { return _size;            }
 		inline bool      empty     (void) const { return _v.empty ();      }
 		inline size_type max_size  (void) const { return _v.size  () * __LINBOX_BITSOF_LONG; }

@@ -28,7 +28,7 @@
 
 #include <cmath>
 #include <vector>
-#include <givaro/modular-int32.h>
+#include <givaro/modular-integral.h>
 
 #include "linbox/linbox-config.h"
 #include "linbox/integer.h"

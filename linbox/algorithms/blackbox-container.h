@@ -75,7 +75,7 @@ namespace LinBox
 			BlackboxContainerBase<Field, Blackbox> (D, F)
 			,w(F)
 		{
-			init (u0, v0); w = this->v;
+			this->init (u0, v0); w = this->v;
 #ifdef INCLUDE_TIMING
 			_applyTime = _dotTime = 0.0;
 #endif

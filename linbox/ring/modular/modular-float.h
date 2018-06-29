@@ -41,7 +41,7 @@
 #endif
 
 #include <cmath>
-#include <givaro/modular-float.h>
+#include <givaro/modular-floating.h>
 
 #include "linbox/linbox-config.h"
 #include "linbox/integer.h"

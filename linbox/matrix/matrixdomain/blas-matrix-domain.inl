@@ -1175,7 +1175,7 @@ namespace LinBox
 		{
 			if (B.isIdentity()) return A ;
                         //linbox_check( A.size() == B.getSize() );
-                        linbox_check( A.size() == B.getOrder() );
+                        linbox_check( A.size() >= B.getSize() );
 			FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasNoTrans,
 				       1, 0,(int) B.getOrder(), &A[0], 1, B.getPointer() );
 			return A;
@@ -1187,7 +1187,7 @@ namespace LinBox
 		{
 			if (B.isIdentity()) return A ;
 			//linbox_check( A.size() >= B.getSize() );
-                        linbox_check( A.size() == B.getOrder() );
+                        linbox_check( A.size() >= B.getSize() );
 			FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasNoTrans,
 				       1, 0,(int) B.getOrder(), &A[0], 1, B.getPointer() );
 			return A;
@@ -1203,7 +1203,7 @@ namespace LinBox
 						 const BlasPermutation<size_t>& B) const
 		{
 			if (B.isIdentity()) return A ;
-			linbox_check( A.size() == B.getSize() );
+			linbox_check( A.size() >= B.getSize() );
 			FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasNoTrans,
 				       1, 0,(int) B.getOrder(), A.getPointer(), 1, B.getPointer() );
 			return A;

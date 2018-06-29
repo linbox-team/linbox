@@ -92,7 +92,7 @@ namespace LinBox { namespace Protected {
 			// linbox_check(A.getPointer() == _A_.getPointer());
 		}
 
-		ModularVector& operator()(ModularVector& Cp, const Field& F) const
+		IterationResult operator()(ModularVector& Cp, const Field& F) const
 		{
 			// BlasMatrixDomain<Field>   BMD(F);
 
@@ -136,7 +136,7 @@ namespace LinBox { namespace Protected {
 				Cp.write(cout<< "Cp:=", F, true) << ';' << endl;
 			}
 #endif
-			return Cp;
+                        return IterationResult::CONTINUE;
 		}
 
 
@@ -167,19 +167,19 @@ namespace LinBox { namespace BLAS2 {
 
 		{
 
-                    PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
-                    ChineseRemainder< FullMultipBlasMatCRA< ModularField > > cra( std::pair<size_t,double>(C.size(), logC) );
-                    Protected::IntegerSparseCraMatMul iteration(A,B);
+            PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<ModularField>::bestBitSize(A.coldim()));
+            ChineseRemainder< FullMultipBlasMatCRA< ModularField > > cra( std::pair<size_t,double>(C.size(), logC) );
+            Protected::IntegerSparseCraMatMul iteration(A,B);
 
-                    cra(C, iteration, genprime);
+            cra(C, iteration, genprime);
 
 #ifdef _LB_DEBUG
 #ifdef _LB_MM_TIMING
 #endif
                     
-                    Integer mC;
-                    mC = C.magnitude();
-                    report << "C max: " << logtwo(mC) <<  " (" << LinBox::naturallog(mC) << ')' << std::endl;
+            Integer mC;
+            mC = C.magnitude();
+            report << "C max: " << logtwo(mC) <<  " (" << LinBox::naturallog(mC) << ')' << std::endl;
 #endif
 
 		}
