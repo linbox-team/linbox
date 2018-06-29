@@ -38,6 +38,7 @@
 #include "linbox/util/debug.h"
 #include "linbox/util/field-axpy.h"
 #include "linbox/blackbox/blackbox-interface.h"
+#include "linbox/blackbox/blockbb.h"
 #include "linbox/field/hom.h"
 #include "linbox/matrix/sparsematrix/triples-coord.h"
 
@@ -398,6 +399,11 @@ protected:
 
         SizedChunks colBlocks_;
   }; // SparseMatrix
+  
+  template<class Field>
+  struct is_blockbb<SparseMatrix<Field,SparseMatrixFormat::TPL_omp>> {
+  	  static const bool value = true;
+  };
 
 } // namespace LinBox
 

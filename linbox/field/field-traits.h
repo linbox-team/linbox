@@ -114,6 +114,8 @@ namespace LinBox {
 
 		typedef typename ClassifyRing<Field>::categoryTag categoryTag;
 
+        typedef std::is_same<categoryTag,RingCategories::ModularTag> is_modular;
+
 		static integer& maxModulus( integer& i )
 		{
             		return Caster(i, Field::maxCardinality());

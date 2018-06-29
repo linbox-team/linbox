@@ -606,6 +606,8 @@ namespace LinBox
 		return *this;
 	}
 
+    inline BitVector::pointer BitVector::data(){return begin();};
+
 	inline void BitVector::resize (BitVector::size_type new_size, bool val)
 	{
 		_v.resize ((new_size >> __LINBOX_LOGOF_SIZE) + ((new_size & __LINBOX_POS_ALL_ONES) ? 1UL : 0UL), val ? __LINBOX_ALL_ONES : 0UL);

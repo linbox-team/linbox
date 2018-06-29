@@ -263,14 +263,14 @@ namespace LinBox
 	{
 		_field = &F; _row = r; _col = c;
 		_rep.resize(r*c, F.zero);
-		_ptr = &_rep[0];
+		_ptr = _rep.data();
 		_VD.init(F); _MD.init(F);
 		// _AD.init(F);
 	}
 
 	template < class _Field, class _Rep >
 	BlasMatrix< _Field, _Rep >::BlasMatrix ( const _Field &F, const size_t & m, const size_t & n) :
-		_row(m),_col(n),_rep(_row*_col, F.zero),_ptr(&_rep[0]),
+            _row(m),_col(n),_rep(_row*_col, F.zero),_ptr(_rep.data()),
 		_field(&F),_MD(F),_VD(F)
 		// ,_AD(F)
 	{
@@ -288,14 +288,14 @@ namespace LinBox
 		// std::cout << "cstor 3 called" << std::endl;
 		if( !ms.getArray(_rep) || !ms.getDimensions(_row, _col) )
 			throw ms.reportError(__FUNCTION__,__LINE__);
-		_ptr = &_rep[0];
+		_ptr = _rep.data();
 		_use_fflas = Protected::checkBlasApply(field(), _col);
 	}
 
 	template < class _Field, class _Rep >
 	template <class StreamVector>
 	BlasMatrix< _Field, _Rep >::BlasMatrix (const Field &F, VectorStream<StreamVector> &stream) :
-		_row(stream.size ()), _col(stream.dim ()), _rep(_row*_col), _ptr(&_rep[0]),
+            _row(stream.size ()), _col(stream.dim ()), _rep(_row*_col), _ptr(_rep.data()),
 		_field (&F), _MD (F), _VD(F)
 		// ,_AD(F)
 	{
@@ -315,7 +315,7 @@ namespace LinBox
 	template < class _Field, class _Rep >
 	template <class Matrix>
 	BlasMatrix< _Field, _Rep >::BlasMatrix (const Matrix &A) :
-		_row(A.rowdim()),_col(A.coldim()),_rep(_row*_col),_ptr(&_rep[0]),
+            _row(A.rowdim()),_col(A.coldim()),_rep(_row*_col),_ptr(_rep.data()),
 		_field(&(A.field())),_MD(field() ),_VD(field() )
 		// ,_AD(field())
 	{
@@ -330,7 +330,7 @@ namespace LinBox
 	BlasMatrix< _Field, _Rep >::BlasMatrix (const Matrix& A,
 						const size_t &i0, const size_t &j0,
 						const size_t &m,  const size_t &n) :
-		_row(m),_col(n),_rep(_row*_col),_ptr(&_rep[0]),
+            _row(m),_col(n),_rep(_row*_col),_ptr(_rep.data()),
 		_field(&(A.field())),_MD(field() ),_VD(field() )
 		// ,_AD(field())
 	{
@@ -344,7 +344,7 @@ namespace LinBox
 	template < class _Field, class _Rep >
 	template<class _Matrix>
 	BlasMatrix< _Field, _Rep >::BlasMatrix (const _Matrix &A,  const _Field &F) :
-		_row(A.rowdim()), _col(A.coldim()),_rep(_row*_col),_ptr(&_rep[0]),
+		_row(A.rowdim()), _col(A.coldim()),_rep(_row*_col),_ptr(_rep.data()),
 		_field(&F),_MD(field() ),_VD(field() )
 		// ,_AD(field())
 	{
@@ -355,7 +355,7 @@ namespace LinBox
 
 	template < class _Field, class _Rep >
 	BlasMatrix< _Field, _Rep >::BlasMatrix (const BlasMatrix< _Field, _Rep >& A) :
-		_row(A.rowdim()), _col(A.coldim()),_rep(_row*_col),_ptr(&_rep[0]),
+		_row(A.rowdim()), _col(A.coldim()),_rep(_row*_col),_ptr(_rep.data()),
 		_field(&(A.field())),_MD(field() ),_VD(field() )
 		// ,_AD(field())
 	{
@@ -369,7 +369,7 @@ namespace LinBox
 	BlasMatrix< _Field, _Rep >::BlasMatrix (const _Field &F,
 						const std::vector<typename _Field::Element>& v,
 						const size_t & m, const size_t & n) :
-		_row(m), _col(n),_rep(_row*_col),_ptr(&_rep[0]),
+		_row(m), _col(n),_rep(_row*_col),_ptr(_rep.data()),
 		_field(&F),_MD(field() ),_VD(field() )
 		// ,_AD(field())
 	{
@@ -384,7 +384,7 @@ namespace LinBox
 	BlasMatrix< _Field, _Rep >::BlasMatrix (const _Field &F,
 						const typename _Field::Element * v,
 						const size_t & m, const size_t & n) :
-		_row(m), _col(n),_rep(_row*_col),_ptr(&_rep[0]),
+		_row(m), _col(n),_rep(_row*_col),_ptr(_rep.data()),
 		_field(&F), _MD(field() ),_VD(field() )
 		// ,_AD(field())
 	{
@@ -425,7 +425,7 @@ namespace LinBox
 		MatrixStream<Field> ms(field(), file);
 		if( !ms.getArray(_rep) || !ms.getDimensions(_row, _col) )
 			throw ms.reportError(__FUNCTION__,__LINE__);
-		_ptr = &_rep[0];
+		_ptr = _rep.data();
 		_use_fflas = Protected::checkBlasApply(field(), _col);
 		return file;
 	}
@@ -439,7 +439,7 @@ namespace LinBox
 		_col = A.coldim();
 		_row = A.rowdim();
 		_rep = Rep(_row*_col);
-		_ptr = &_rep[0] ;
+		_ptr = _rep.data() ;
 		// const_cast<_Field&>(_field ) = A.field();
 		// changeField( A.field() );
 		createBlasMatrix(A);
@@ -532,7 +532,7 @@ namespace LinBox
 		_row = m;
 		_col = n;
 		_rep.resize (m * n, val);
-		_ptr = (m*n == 0 ?  0 : &_rep[0]);
+		_ptr = _rep.data();
 #if 0
 		if (_ptr) {
 			if (m && n)
@@ -955,7 +955,8 @@ namespace LinBox
 		ConstColIterator () {}
 
 		ConstColIterator (const ConstColIterator& rowp) :
-			_col (rowp._col)
+			_col (rowp._col),
+			_stride (rowp._stride)
 		{}
 
 		ConstColIterator& operator= (const ConstColIterator& rowp)
