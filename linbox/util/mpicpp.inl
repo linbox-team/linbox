@@ -552,8 +552,8 @@ namespace LinBox
         lenA = A_mp_data.size();
         MPI_Send(&lenA, 1, MPI_UNSIGNED, dest, 0, MPI_COMM_WORLD);
 
-        MPI_Isend(&A_mp_data[0], lenA, chooseMPItype<mp_limb_t>::val, dest, 0, MPI_COMM_WORLD,&req);
 //        MPI_Send(&A_mp_data[0], lenA, chooseMPItype<mp_limb_t>::val, dest, 0, MPI_COMM_WORLD);
+        MPI_Isend(&A_mp_data[0], lenA, chooseMPItype<mp_limb_t>::val, dest, 0, MPI_COMM_WORLD,&req);
         MPI_Wait(&req,  MPI_STATUS_IGNORE);
         
     }
@@ -587,7 +587,7 @@ namespace LinBox
     }
     template <>
     void Communicator::isend (SparseMatrix<Givaro::ZRing<Integer> >& M, int dest){
-        isend_integerSparseMat(M, dest)
+        isend_integerSparseMat(M, dest);
     }
     template <>
     void Communicator::isend (DenseVector<Givaro::ZRing<Integer> >& V, int dest){        
