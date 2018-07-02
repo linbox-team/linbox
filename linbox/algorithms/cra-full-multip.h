@@ -42,12 +42,19 @@
 namespace LinBox
 {
 
-	/*! NO DOC...
+	/** @brief Chinese remaindering of a vector of elements without early termination.
 	 * @ingroup CRA
 	 * @bib
 	 * - Jean-Guillaume Dumas, Thierry Gautier et Jean-Louis Roch.  <i>Generic design
 	 * of Chinese remaindering schemes</i>  PASCO 2010, pp 26-34, 21-23 juillet,
 	 * Grenoble, France.
+     *
+     * The idea is that each "shelf" contains a vector of residues with some modulus.
+     * We want to combine shelves that have roughly the same size of modulus, for
+     * efficiency. The method is that any submitted residue is assigned to a unique
+     * shelf according to log2(log(modulus)), as computed by the getShelf() helper.
+     * When two residues belong on the same shelf, they are combined and re-assigned
+     * to another shelf, recursively.
 	 */
 	template<class Domain_Type>
 	struct FullMultipCRA {
@@ -136,8 +143,7 @@ namespace LinBox
             normalized_ = false;
 
             // put new result into the proper shelf
-            Integer Dval;
-            getMod(Dval, D);
+            const integer& Dval = mod_to_integer(D);
             double logD = Givaro::naturallog(Dval);
             auto cur = getShelf(logD);
 
@@ -154,15 +160,12 @@ namespace LinBox
                 return;
             }
 
-            Integer invprod;
-
             // shelf is nonempty, so we incorporate the new result there
             {
-                // FIXME incorporate invP0 and fieldreconstruct when D is a domain
-                precomputeInvProd(invprod, shelves_[cur].mod(), Dval);
+                auto invprod = precompInv(shelves_[cur].mod(), D);
                 auto r_it = shelves_[cur].residue.begin();
                 for (size_t i=0; i < e_size; ++i, ++e_it, ++r_it) {
-                    smallbigreconstruct(*r_it, *e_it, invprod);
+                    reconstruct(*r_it, shelves_[cur].mod(), *e_it, invprod, D);
                 }
                 // in case e is shorter than dimension_, treat missing values as zeros
                 for (; r_it != shelves_[cur].residue.end(); ++r_it) {
@@ -179,7 +182,7 @@ namespace LinBox
                 ensureShelf(next, shelves_, dimension_);
                 if (shelves_[next].occupied) {
                     // combine cur shelf with next shelf
-                    combineShelves(shelves_[next], shelves_[cur], invprod);
+                    combineShelves(shelves_[next], shelves_[cur]);
                     shelves_[cur].occupied = false;
                 } else {
                     // put cur shelf data in next shelf position
@@ -263,36 +266,53 @@ namespace LinBox
             return std::max(std::ilogb(logmod), 3) - 3;
         }
 
-        static inline Integer& getMod(Integer& m, const Integer& D) {
-            return m = D;
+        /** @brief Returns a reference to D.
+         * This is needed to automatically handle whether D is a Domain or an actual
+         * integer.
+         */
+        static inline const integer& mod_to_integer(const Integer& D) {
+            return D;
         }
 
+        /** @brief Returns the characteristic of D.
+         */
         template <class Domain>
-        static inline Integer& getMod(Integer& m, const Domain& D) {
-            return D.characteristic(m);
+        static inline integer mod_to_integer(const Domain& D) {
+            integer m;
+            D.characteristic(m);
+            return m;
         }
 
-        static inline void combineShelves(Shelf& dest, const Shelf& src, Integer& temp) {
+        /** @brief Incorporates the residue in src into dest and updates the modulus.
+         */
+        static inline void combineShelves(Shelf& dest, const Shelf& src) {
             // assumption: dest is already occupied
-            precomputeInvProd(temp, dest.mod(), src.mod());
+            auto invprod = precompInv(dest.mod(), src.mod());
             for (auto dest_it = dest.residue.begin(), src_it = src.residue.begin();
                  dest_it != dest.residue.end();
                  ++dest_it, ++src_it)
             {
-                smallbigreconstruct(*dest_it, *src_it, temp);
+                reconstruct(*dest_it, dest.mod(), *src_it, invprod, src.mod());
             }
             dest.mod.mulin(src.mod());
             dest.logmod += src.logmod;
             dest.count += src.count;
         }
 
+        /** @brief Expands the shelves as necessary so that the given index
+         * exists in the array.
+         */
         static inline void ensureShelf(size_t index, std::vector<Shelf>& shelves, size_t dim) {
             while (index >= shelves.size()) {
                 shelves.emplace_back(dim);
             }
         }
 
-        // collapse all residues to a single shelf
+        /** @brief Collapses all shelves by combining residues.
+         *
+         * After this, there will be a single (top) shelf containing the current
+         * full residue.
+         */
         void collapse() const {
             if (collapsed_) return;
             auto& ncshelves = const_cast<std::vector<Shelf>&>(shelves_);
@@ -301,14 +321,13 @@ namespace LinBox
                 ncshelves.back().occupied = true;
             }
             else {
-                Integer temp;
                 auto cur = ncshelves.begin();
                 while (! cur->occupied) ++cur;
                 auto next = cur;
                 while(true) {
                     if (++next == ncshelves.end()) break;
                     while (! next->occupied) ++next;
-                    combineShelves(*next, *cur, temp);
+                    combineShelves(*next, *cur);
                     cur->occupied = false;
                     cur = next;
                 }
@@ -323,7 +342,9 @@ namespace LinBox
             const_cast<bool&>(collapsed_) = true;
         }
 
-        // collapse and then normalize the top shelf
+        /** @brief Collapses (if necessary) the top shelf and normalizes the
+         * result into the symmetric modulus range.
+         */
         void normalize() const {
             if (normalized_) return;
             collapse();
@@ -337,57 +358,53 @@ namespace LinBox
             const_cast<bool&>(normalized_) = true;
         }
 
-		static Integer& precomputeInvProd(Integer& res, const Integer& m1, const Integer& m0)
+        // return: (m0^-1 mod m1) * m0
+        static Integer precompInv(const Integer& m1, const Integer& m0)
 		{
-			inv(res, m0, m1);
-			return res *= m0; // res <-- (m0^{-1} mod m1)*m0
+            Integer res;
+			inv(res, m0, m1); // res <- m0^{-1} mod m1
+			res *= m0; // res <-- (m0^{-1} mod m1)*m0
+            return res;
 		}
 
-		static DomainElement& precomputeInvP0(DomainElement& invP0, const Domain& D1, const Integer& P0)
-		{
-			return D1.invin( D1.init(invP0, P0) ); // res <-- (P0^{-1} mod m1)
-		}
+        // return: m1^-1 mod m0
+        template <class Domain>
+        static typename Domain::Element precompInv(const Integer& m1, const Domain& D0)
+        {
+            typename Domain::Element res;
+            D0.invin( D0.init(res, m1) ); // res <- m1^{-1} mod m0
+            return res;
+        }
 
-
+        // precond: invprod = (m0^-1 mod m1)*m0
+        // return: u1' such that u1' mod m0 = u0 and u1' mod m1 = u1
         template <typename IntegerLike>
-		static Integer& smallbigreconstruct(Integer& u1, const IntegerLike& u0, const Integer& invprod)
-		{
+        static Integer& reconstruct(Integer& u1, const Integer&, const IntegerLike& u0, const Integer& invprod, const Integer&)
+        {
 			u1 -= u0;	  // u1 <-- (u1-u0)
 			u1 *= invprod;    // u1 <-- (u1-u0)( m0^{-1} mod m1 ) m0
 			return u1 += u0;  // u1 <-- u0 + (u1-u0)( m0^{-1} mod m1 ) m0
-		}
+        }
 
+        // precond: invprod = m1^-1 mod m0
+        // return: u1' such that u1' mod m0 = u0 and u1' mod m1 = u1
+        template <class Domain>
+        static Integer& reconstruct(Integer& u1, const Integer& m1, const typename Domain::Element& u0, const typename Domain::Element& invprod, const Domain& D0)
+        {
+            typename Domain::Element u1elt;
+            D0.init(u1elt, u1);
+            if (D0.areEqual(u0, u1elt))
+                return u1;
 
-		static Integer& normalize(Integer& u1, Integer& tmp, const Integer& m1)
-		{
-			if (u1 < 0)
-				tmp += m1;
-			else
-				tmp -= m1;
-			return ((absCompare(u1,tmp) > 0)? u1 = tmp : u1 );
-		}
-
-
-		static Integer& fieldreconstruct(Integer& res, const Domain& D1, const DomainElement& u1, const Integer& r0, const DomainElement& invP0, const Integer& P0)
-		{
-                    	// u0 = r0 mod m1
-			DomainElement u0; D1.init(u0, r0);
-			if (D1.areEqual(u1, u0))
-				return res=r0;
-			else
-				return fieldreconstruct(res, D1, u1, u0, r0, invP0, P0);
-		}
-
-		static Integer& fieldreconstruct(Integer& res, const Domain& D1, const DomainElement& u1, DomainElement& u0, const Integer& r0, const DomainElement& invP0, const Integer& P0)
-		{
-			// u0 and m0 are modified
-			D1.negin(u0);   	// u0 <-- -u0
-			D1.addin(u0,u1);   	// u0 <-- u1-u0
-			D1.mulin(u0, invP0);    // u0 <-- (u1-u0)( m0^{-1} mod m1 )
-			D1.convert(res, u0);    // res <-- (u1-u0)( m0^{-1} mod m1 )         and res <  m1
-			res *= P0;      	// res <-- (u1-u0)( m0^{-1} mod m1 ) m0      and res <= (m0m1-m0)
-			return res += r0;	// res <-- u0 + (u1-u0)( m0^{-1} mod m1 ) m0 and res <  m0m1
-		}
+            D0.negin(u1elt); // u1elt <-- -u1
+            D0.addin(u1elt, u0); // u1elt <-- u0 - u1
+            D0.mulin(u1elt, invprod); // u1elt <-- (u0-u1)/m1 mod m0
+            integer temp;
+            D0.convert(temp, u1elt); // temp <-- (u0-u1)/m1 mod m0
+            temp *= m1; // temp <-- ((u0-u1)/m1 mod m0) * m1
+            u1 += temp; // u1 <-- u1 + ((u0-u1)/m1 mod m0) * m1
+            return u1;
+        }
 
 	};
 
