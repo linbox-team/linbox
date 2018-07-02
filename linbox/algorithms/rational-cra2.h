@@ -233,23 +233,23 @@ namespace LinBox
 			else return false;
 		}
 
-		template<template <class, class> class Vect, template<class> class Alloc,  class Function, class RandPrimeIterator>
-		Vect<Integer, Alloc<Integer> > & operator() (Vect<Integer, Alloc<Integer> >& num, Integer& den
-							     , Function& Iteration, RandPrimeIterator& genprime)
+		template <template<class,class> class Vect, template<class> class Alloc,  class Function, class RandPrimeIterator>
+		Vect<Integer,Alloc<Integer> > & operator() (Vect<Integer,Alloc<Integer> >& num, Integer& den, Function& Iteration, RandPrimeIterator& genprime)
 		{
+            typedef Vect<DomainElement,Alloc<DomainElement> > DomVect;
 			{
 				++IterCounter;
 				++genprime;
 				Domain D(*genprime);
-				Vect<DomainElement, Alloc<DomainElement>  > r;
-				Iteration(r, D); // FIXME bad primes ignored
-				Builder_.initialize( D, r );
+				DomVect r;
+                Iteration(r, D);  // FIXME bad primes ignored
+                Builder_.initialize( D, r );
 			}
 
 			int coprime =0;
 			int maxnoncoprime = 1000;
 
-			Vect<Integer, Alloc<Integer> > f_in,m_in;
+			Vect<Integer, Alloc<Integer>> f_in,m_in;
 			Builder_.getPreconditioner(f_in,m_in);
 
 			//while( ! Builder_.terminated() )
@@ -268,7 +268,7 @@ namespace LinBox
 
 
 				Domain D(*genprime);
-				Vect<DomainElement, Alloc<DomainElement> > r;
+                DomVect r;
 				Iteration(r, D); // FIXME bad primes ignored
 				Builder_.progress( D, r );
 
@@ -276,10 +276,10 @@ namespace LinBox
 					Integer Mint ; Builder_.getModulus(Mint);
 					if ( Builder_.terminated() ) {//early or full termination occurred, check reconstruction of the whole vector
 						//early or full termination
-						Vect<Integer, Alloc<Integer> > r_v ;
+						Vect<Integer,Alloc<Integer> > r_v ;
 						Builder_.getResidue(r_v);
 						if (RR_.reconstructRational(num,den,r_v,Mint) ) {
-							Vect<Integer, Alloc<Integer> > vnum(num),vden(m_in.size(),den);
+							Vect<Integer,Alloc<Integer> > vnum(num),vden(m_in.size(),den);
 							for (int i=0; i < (int)vnum.size(); ++ i) {
 								if (vnum[(size_t)i]==0) vnum[(size_t)i] = 1; // no prec
 							}
@@ -307,7 +307,7 @@ namespace LinBox
 						Builder_.getResidue(rint);
 						Integer n,d;
 						if (RR_.reconstructRational(n,d,rint,Mint)) {
-							Vect<Integer, Alloc<Integer> > vden(m_in.size(),d);
+							Vect<Integer,Alloc<Integer> > vden(m_in.size(),d);
 							Builder_.productin(vden,m_in);
 							Builder_.changePreconditioner(f_in,vden);
 							int k; Builder_.getThreshold(k);
