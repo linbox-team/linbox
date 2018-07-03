@@ -255,7 +255,7 @@ namespace LinBox
 			//t_hd.stop();
 			//std::cerr<<"Hadamard bound = : "<<logbound<<" in "<<t_hd.usertime()<<"s"<<std::endl;
 
-			ChineseRemainder <FullMultipCRA <Givaro::Modular <double> > > cra(logbound);
+			ChineseRemainder <Givaro::Modular<double>, FullMultipCRA> cra(logbound);
 
 			//t_hd.clear();
 			//t_cra.start();
@@ -265,7 +265,7 @@ namespace LinBox
 
 		}
 		else {
-			ChineseRemainder <EarlyMultipCRA <Field> >  cra(4UL);
+			ChineseRemainder <Field, EarlyMultipCRA <> >  cra(4UL);
 			cra (dd, iteration, genprime);
 		}
 		F.mul (d1, dd[0], s1);

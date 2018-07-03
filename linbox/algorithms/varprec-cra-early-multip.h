@@ -80,7 +80,7 @@ namespace LinBox
 		VarPrecEarlyMultipCRA(VarPrecEarlyMultipCRA& other) :
 			SingleParent(other.EARLY_TERM_THRESHOLD), MultiParent(other.LOGARITHMIC_UPPER_BOUND), vfactor_(other.vfactor_), vmultip_(other.vmultip_)
 		{
-			for (int i=0; i < vfactor_.size(); ++i) {
+			for (int i=0; i < (int)vfactor_.size(); ++i) {
 				if (vfactor_[(size_t)i]==0) vfactor_[(size_t)i]=1;
 			}
 		}
@@ -130,7 +130,7 @@ namespace LinBox
 			MultiParent::initialize(D, e);
 		}
 
-		template<class Vect>
+		template<class Domain, class Vect>
 		void initialize (const Domain& D, Vect& e) {
 			srand48(BaseTimer::seed());
 			vfactor_.resize( e.size(),1 );
@@ -140,12 +140,12 @@ namespace LinBox
 			for ( std::vector<unsigned long>::iterator int_p = randv. begin(); int_p != randv. end(); ++ int_p)
 				*int_p = ((unsigned long)lrand48()) % 20000 - 10000;
 
-			std::vector<DomainElement> vz(vfactor_.size());
+			std::vector<typename Domain::Element> vz(vfactor_.size());
 			inverse(vz,vfactor_,D);
 			productin(vz,vmultip_,D);
 			productin(vz,e,D);
 
-			DomainElement z;
+			typename Domain::Element z;
 			dot(z,D,vz,randv);
 
 			SingleParent::initialize(D, z);
@@ -172,7 +172,7 @@ namespace LinBox
 			MultiParent::progress(D, e);
 		}
 
-		template<class Vect>
+		template<class Domain, class Vect>
 		void progress (const Domain& D, const Vect& e) {
 			//z = (e/ factor mod D)
 			//!@todo Could be much faster
@@ -180,18 +180,18 @@ namespace LinBox
 			// - reconstruct one element of e until Early Termination,
 			//   then only, try a random linear combination.
 
-			std::vector<DomainElement> vz(vfactor_.size());
+			std::vector<typename Domain::Element> vz(vfactor_.size());
 			inverse(vz,vfactor_,D);
 			productin(vz,vmultip_,D);
 			productin(vz,e,D);
-			DomainElement z;
+			typename Domain::Element z;
 			dot(z,D,vz,randv);
 
 			SingleParent::progress(D, z);
 			MultiParent::progress(D, e);
 		}
 
-		template<class OKDomain>
+		template<class Domain, class OKDomain>
 		void progress (const Domain& D, const BlasVector<OKDomain>& e) {
 			//z = (e/ factor mod D)
 			//!@todo Could be much faster
@@ -203,7 +203,7 @@ namespace LinBox
 			inverse(vz,vfactor_,D);
 			productin(vz,vmultip_,D);
 			productin(vz,e,D);
-			DomainElement z;
+			typename Domain::Element z;
 			dot(z,D,vz,randv);
 
 			SingleParent::progress(D, z);
@@ -501,26 +501,24 @@ namespace LinBox
 		}
 
 	protected:
-		template <template<class> class Alloc, template<class, class> class Vect1, class Vect2>
-		DomainElement& dot (DomainElement& z, const Domain& D,
-				    const Vect1<DomainElement, Alloc<DomainElement> >& v1,
-				    const Vect2& v2)
-		{
-			D.assign(z,D.zero); DomainElement tmp;
-			typename Vect1<DomainElement, Alloc<DomainElement> >::const_iterator v1_p;
-			typename Vect2::const_iterator v2_p;
+        template <typename DomainOrInteger, typename Vect1, typename Vect2>
+        static typename Vect1::value_type&
+        dot (typename Vect1::value_type& res, const DomainOrInteger& D, const Vect1& v1, const Vect2& v2) {
+            res = 0;
+            auto v1_p = v1.begin();
+            auto v2_p = v2.begin();
+            for (; v1_p != v1.end(); ++v1_p, ++v2_p) {
+                axpyin(res, *v1_p, *v2_p, D);
+            }
+            return res;
+        }
 
-			for (v1_p  = v1. begin(), v2_p = v2. begin();v1_p != v1. end();++ v1_p, ++ v2_p)
-				D.axpyin(z, (*v1_p), D.init(tmp, (*v2_p)));
-			return z;
-		}
-
-		template<class Vect2>
-		DomainElement& dot (DomainElement& z, const Domain& D,
+		template<class Domain, class Vect2>
+		typename Domain::Element& dot (typename Domain::Element& z, const Domain& D,
 				    const BlasVector<Domain>& v1,
 				    const Vect2& v2)
 		{
-			D.assign(z,D.zero); DomainElement tmp;
+			D.assign(z,D.zero); typename Domain::Element tmp;
 			typename BlasVector<Domain>::const_iterator v1_p;
 			typename Vect2::const_iterator v2_p;
 
@@ -529,18 +527,6 @@ namespace LinBox
 			return z;
 		}
 
-
-		template <template<class> class Alloc, template<class, class> class Vect1, class Vect2>
-		Integer& dot (Integer& z, const Integer& D, const Vect1<Integer, Alloc<Integer> >& v1, const Vect2& v2)
-		{
-			z = 0;
-			typename Vect1<Integer, Alloc<Integer> >::const_iterator v1_p;
-			typename Vect2::const_iterator v2_p;
-			for (v1_p  = v1. begin(), v2_p = v2. begin(); v1_p != v1. end(); ++ v1_p, ++ v2_p) {
-				z = (z + (*v1_p)*(*v2_p))%D;
-			}
-			return z;
-		}
 
 		template<class Vect2>
 		Integer& dot (Integer& z, const Integer& D, const BlasVector<Givaro::ZRing<Integer> >& v1, const Vect2& v2)
@@ -555,14 +541,14 @@ namespace LinBox
 		}
 
 
-		template<class Vect1, class Vect2>
-		Vect1& inverse(Vect1& vz,const Vect2& vf, const Domain D)
+		template<class Vect1, class Vect2, class Domain>
+		Vect1& inverse(Vect1& vz,const Vect2& vf, const Domain& D)
 		{
 			vz.clear();
 			typename Vect2::const_iterator it = vf.begin();
 
 			for (; it != vf.end(); ++it) {
-				DomainElement z,i;
+				typename Domain::Element z,i;
 				D.assign(z,D.one);
 				D.init(i,*it);
 				if (!D.isZero(i)) D.inv(z,i);
@@ -587,13 +573,13 @@ namespace LinBox
 		}
 
 	public:
-		template<class Vect1, class Vect2>
-		Vect1& productin(Vect1& vz, const Vect2 &vm, const Domain D) {
+		template<class Vect1, class Vect2, class Domain>
+		Vect1& productin(Vect1& vz, const Vect2 &vm, const Domain& D) {
 			typename Vect1::iterator v1_p;
 			typename Vect2::const_iterator v2_p;
 
 			for (v1_p  = vz. begin(), v2_p = vm. begin(); v1_p != vz. end(); ++ v1_p, ++ v2_p) {
-				DomainElement i;
+				typename Domain::Element i;
 				D.init(i,*v2_p);
 				D.mulin(*v1_p , i);
 			}

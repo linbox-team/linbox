@@ -192,7 +192,7 @@ namespace LinBox
 		BlasMatrix<Givaro::ZRing<Integer> > Atilde(Z,A.rowdim(), A.coldim());
 		FA.makeAtilde(Atilde);
 
-		ChineseRemainder< EarlyMultipCRA<Field > > cra(4UL);
+		ChineseRemainder< Field, EarlyMultipCRA<> > cra(4UL);
 		MyRationalModularMinpoly<BlasMatrix<Rationals > , MyMethod> iteration1(A, Met, M);
 		MyIntegerModularMinpoly<BlasMatrix<Givaro::ZRing<Integer> >, MyMethod> iteration2(Atilde, Met, Di, M);
 		MyModularMinpoly<MyRationalModularMinpoly<BlasMatrix<Rationals > , MyMethod>,

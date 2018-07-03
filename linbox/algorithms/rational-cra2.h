@@ -60,7 +60,7 @@ namespace LinBox
 	struct RationalRemainder2 {
 
 
-		typedef typename DomainType		Domain;
+		typedef DomainType		Domain;
 		typedef typename Domain::Element	DomainElement;
 	protected:
 		RatCRABase Builder_;

@@ -382,9 +382,9 @@ namespace LinBox
 		size_t n=A.coldim();
 		double hadamarcp = n/2.0*(log(double(n))+2*log(double(max))+0.21163275)/log(2.0);
 
-		ChineseRemainder< FullMultipCRA<Field > > cra(hadamarcp);
+		ChineseRemainder< Field, FullMultipCRA > cra(hadamarcp);
 #endif
-		ChineseRemainder< EarlyMultipCRA<Field > > cra(3UL);
+		ChineseRemainder< Field, EarlyMultipCRA<> > cra(3UL);
 
 		IntegerModularCharpoly<Blackbox,Method::Blackbox> iteration(A, M);
 		cra.operator() (P, iteration, genprime);
@@ -426,9 +426,9 @@ namespace LinBox
 		double hadamarcp = n/2.0*(log(double(n))+2*log(double(max))+0.21163275)/log(2.0);
 
 
-		ChineseRemainder< FullMultipCRA<Field > > cra(hadamarcp);
+		ChineseRemainder< Field, FullMultipCRA > cra(hadamarcp);
 #endif
-		ChineseRemainder< EarlyMultipCRA<Field > > cra(3UL);
+		ChineseRemainder< Field, EarlyMultipCRA<> > cra(3UL);
         IntegerModularCharpoly<Blackbox,Method::BlasElimination> iteration(A, M);
 		cra (P, iteration, genprime);
 		commentator().stop ("done", NULL, "IbbCharpoly");
@@ -474,7 +474,7 @@ namespace LinBox
 
         typedef Givaro::ModularBalanced<double> Field;
 		PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
-		RationalRemainder2< VarPrecEarlyMultipCRA<Field > > rra(3UL);
+		RationalRemainder2< Field, VarPrecEarlyMultipCRA > rra(3UL);
 		IntegerModularCharpoly<Blackbox,MyMethod> iteration(A, M);
 
 		Givaro::ZRing<Integer> Z;

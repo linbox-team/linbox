@@ -117,13 +117,14 @@ namespace LinBox
 			MultiParent::initialize(D, v);
 		}
 
-		void initialize (const Domain& D, const DomainElement& e)
+        template <class Domain>
+		void initialize (const Domain& D, const typename Domain::Element& e)
 		{
-			DomainElement z;
+			typename Domain::Element z;
 			D.init(z,factor_);
 			D.invin(z);
 			D.mulin(z,e);
-			DomainElement m; D.init(m, multip_);
+			typename Domain::Element m; D.init(m, multip_);
 			D.mulin(z,m);
 
 			SingleParent::initialize(D, z);
@@ -154,14 +155,15 @@ namespace LinBox
 			MultiParent::progress(D, v);
 		}
 
-		void progress (const Domain& D, const DomainElement& e)
+        template <class Domain>
+		void progress (const Domain& D, const typename Domain::Element& e)
 		{
 
-			DomainElement z;
+			typename Domain::Element z;
 			D.init(z,factor_);
 			D.invin(z);
 			D.mulin(z,e);
-			DomainElement m; D.init(m, multip_);
+			typename Domain::Element m; D.init(m, multip_);
 			D.mulin(z,m);
 			//z = (e/ factor mod D)
 

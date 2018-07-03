@@ -149,7 +149,7 @@ namespace LinBox
 		typedef Givaro::ModularBalanced<double> Field;
 #endif
                 PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.rowdim()));
-		ChineseRemainder< EarlySingleCRA<Field> > cra(3UL);
+		ChineseRemainder< Field, EarlySingleCRA > cra(3UL);
 
 		IntegerModularValence<Blackbox,MyMethod> iteration(A, M);
 		cra(V, iteration, genprime);

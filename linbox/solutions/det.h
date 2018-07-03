@@ -580,14 +580,14 @@ namespace LinBox
 
 		//  will call regular cra if C=0
 #ifdef __LINBOX_HAVE_MPI
-		MPIChineseRemainder< EarlySingleCRA< Field > > cra(4UL, C);
+		MPIChineseRemainder< Field, EarlySingleCRA > cra(4UL, C);
 		cra(dd, iteration, genprime);
 		if(!C || C->rank() == 0){
 			A.field().init(d, dd); // convert the result from integer to original type
 			commentator().stop ("done", NULL, "det");
 		}
 #else
-		ChineseRemainder< EarlySingleCRA< Field > > cra(4UL);
+		ChineseRemainder< Field, EarlySingleCRA > cra(4UL);
 		cra(dd, iteration, genprime);
 		A.field().init(d, dd); // convert the result from integer to original type
 		commentator().stop ("done", NULL, "idet");
@@ -639,7 +639,7 @@ namespace LinBox
 		IntegerModularDet<Blackbox, MyMethod> iteration(A, Meth);
                 typedef Givaro::ModularBalanced<double> Field;
 		PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
-		RationalRemainder2< VarPrecEarlySingleCRA< Field > > rra(4UL);
+		RationalRemainder2< Field, VarPrecEarlySingleCRA > rra(4UL);
 
 		rra(num,den, iteration, genprime);
 

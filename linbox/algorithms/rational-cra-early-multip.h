@@ -62,8 +62,8 @@ namespace LinBox
 		{ }
 
 		//!init
-		template<template<class, class> class Vect, template <class> class Alloc>
-		void initialize (const Domain& D, const Vect <DomainElement, Alloc<DomainElement> >& e)
+		template<class Domain, template<class, class> class Vect, template <class> class Alloc>
+		void initialize (const Domain& D, const Vect <typename Domain::Element, Alloc<typename Domain::Element> >& e)
 		{
 			// Random coefficients for a linear combination
 			// of the elements to be reconstructed
@@ -73,7 +73,7 @@ namespace LinBox
 			      int_p != randv. end(); ++ int_p)
 				*int_p = ((unsigned long)lrand48()) % 20000;
 
-			DomainElement z;
+			typename Domain::Element z;
 			// Could be much faster
 			// - do not compute twice the product of moduli
 			// - reconstruct one element of e until Early Termination,
@@ -82,6 +82,7 @@ namespace LinBox
 			MultiParent::initialize(D, e);
 		}
 
+        template <class Domain>
 		void initialize (const Domain& D, const BlasVector<Domain>& e)
 		{
 			// Random coefficients for a linear combination
@@ -92,7 +93,7 @@ namespace LinBox
 			      int_p != randv. end(); ++ int_p)
 				*int_p = ((unsigned long)lrand48()) % 20000;
 
-			DomainElement z;
+			typename Domain::Element z;
 			// Could be much faster
 			// - do not compute twice the product of moduli
 			// - reconstruct one element of e until Early Termination,
@@ -102,10 +103,10 @@ namespace LinBox
 		}
 
 		//!progress
-		template<template<class,class> class Vect, template <class> class Alloc>
-		void progress (const Domain& D, const Vect<DomainElement, Alloc<DomainElement> >& e)
+		template<class Domain, template<class,class> class Vect, template <class> class Alloc>
+		void progress (const Domain& D, const Vect<typename Domain::Element, Alloc<typename Domain::Element> >& e)
 		{
-			DomainElement z;
+			typename Domain::Element z;
 			// Could be much faster
 			// - do not compute twice the product of moduli
 			// - reconstruct one element of e until Early Termination,
@@ -114,9 +115,10 @@ namespace LinBox
 			MultiParent::progress(D, e);
 		}
 
+        template <class Domain>
 		void progress (const Domain& D, const BlasVector<Domain>& e)
 		{
-			DomainElement z;
+			typename Domain::Element z;
 			// Could be much faster
 			// - do not compute twice the product of moduli
 			// - reconstruct one element of e until Early Termination,
@@ -150,13 +152,13 @@ namespace LinBox
 
 	protected:
 
-		template <template<class, class> class Vect1, template <class> class Alloc, class Vect2>
-		DomainElement& dot (DomainElement& z, const Domain& D,
-				    const Vect1<DomainElement, Alloc<DomainElement> >& v1, const Vect2& v2)
+		template <class Domain, template<class, class> class Vect1, template <class> class Alloc, class Vect2>
+		typename Domain::Element& dot (typename Domain::Element& z, const Domain& D,
+				    const Vect1<typename Domain::Element, Alloc<typename Domain::Element> >& v1, const Vect2& v2)
 		{
 
-			D.assign(z,D.zero); DomainElement tmp;
-			typename Vect1<DomainElement, Alloc<DomainElement> >::const_iterator v1_p;
+			D.assign(z,D.zero); typename Domain::Element tmp;
+			typename Vect1<typename Domain::Element, Alloc<typename Domain::Element> >::const_iterator v1_p;
 			typename Vect2::const_iterator v2_p;
 			for (v1_p  = v1. begin(), v2_p = v2. begin();
 			     v1_p != v1. end();
@@ -169,12 +171,12 @@ namespace LinBox
 			return z;
 		}
 
-		template <class Vect2>
-		DomainElement& dot (DomainElement& z, const Domain& D,
+		template <class Domain, class Vect2>
+		typename Domain::Element& dot (typename Domain::Element& z, const Domain& D,
 				    const BlasVector<Domain >& v1, const Vect2& v2)
 		{
 
-			D.assign(z,D.zero); DomainElement tmp;
+			D.assign(z,D.zero); typename Domain::Element tmp;
 			typename BlasVector<Domain >::const_iterator v1_p;
 			typename Vect2::const_iterator v2_p;
 			for (v1_p  = v1. begin(), v2_p = v2. begin();

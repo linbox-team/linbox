@@ -54,7 +54,7 @@ namespace LinBox
 
 	template<class DomainType, class CRABase>
 	struct MPIChineseRemainder  {
-		typedef typename DomainType	Domain;
+		typedef DomainType	Domain;
 		typedef typename Domain::Element	DomainElement;
 	protected:
 		CRABase Builder_;
