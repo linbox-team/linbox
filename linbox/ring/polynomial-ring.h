@@ -153,9 +153,9 @@ namespace LinBox {
                  class B=BaseRing, // trick to force SFINAE to work on this method
                  typename std::enable_if<FieldTraits<BaseRing>::is_modular::value
                                          && std::is_same<B,BaseRing>::value,int>::type* =nullptr>
-        size_t factor (Vector<Polynomial,Alloc<Polynomial> >& factors,
-                std::vector<uint64_t>& exp,
-                const Polynomial& P){
+        size_t modularfactor (Vector<Polynomial,Alloc<Polynomial> >& factors,
+                              std::vector<uint64_t>& exp,
+                              const Polynomial& P){
 
             Vector<typename Parent_t::Element,Alloc<typename Parent_t::Element> > giv_factors;
             Givaro::Poly1FactorDom<BaseRing,StorageTag> PFD(dynamic_cast<Parent_t&>(*this));
@@ -166,6 +166,11 @@ namespace LinBox {
             }
             return factors.size();
         }
+
+        template<template<class,class> class Vector, template <class> class Alloc>
+        size_t factor (Vector<Polynomial,Alloc<Polynomial> >& factors,
+                       std::vector<uint64_t>& exp,
+                       const Polynomial& P);
 
 		bool areAssociates(const Element &x, const Element &y) const {
 			Type_t a, b; Parent_t::subdomain().init(a); Parent_t::subdomain().init(b);
@@ -196,7 +201,22 @@ namespace LinBox {
 		}
 
     };
+
+	template <class BaseRing, class StorageTag>
+    template<template<class,class> class Vector, template <class> class Alloc>
+    size_t PolynomialRing<BaseRing,StorageTag>::factor (
+        Vector<Polynomial,Alloc<Polynomial> >& factors,
+        std::vector<uint64_t>& exp,
+        const Polynomial& P) {
+            // Default is modular factorization
+            // Need NTL for Integral factorization (see below)
+        return modularfactor(factors,exp,P);
+    }
+
 }
+
+
+
 
 #include "linbox/polynomial/dense-polynomial.h"
 
@@ -207,7 +227,7 @@ namespace LinBox {
 namespace LinBox{
     template<>
     template<>
-    std::vector<LinBox::DensePolynomial<Givaro::ZRing<Givaro::Integer> > >&
+    size_t
     LinBox::PolynomialRing<Givaro::ZRing<Givaro::Integer>,Givaro::Dense>::
     factor<std::vector> (std::vector<LinBox::DensePolynomial<Givaro::ZRing<Givaro::Integer> > >& factors,
                          std::vector<uint64_t>& exp,
@@ -237,47 +257,12 @@ namespace LinBox{
             factors.push_back(f);
             exp [i] = ntlfactors[i].b;
         }
-        return factors;
+        return factors.size();
     }
-} // namespace LinBox
 
-
-// #include "givaro/zring.h"
-// 	typedef GivaroPolynomialRing<Givaro::ZRing<Integer>, Givaro::Dense> GivaroPolPIDIntDense;
-// 	template <>
-// 	template <>
-// 	std::vector<GivaroPolPIDIntDense::Element* >&
-// 	GivaroPolPIDIntDense::factor<std::vector<GivaroPolPIDIntDense::Element* > > (std::vector<GivaroPolPIDIntDense::Element* >& factors,
-// 			std::vector<unsigned long>& exp,
-// 			const GivaroPolPIDIntDense::Element &P)
-// 	{
-// 		NTL::ZZXFac_InitNumPrimes = 1;
-// 		NTL::ZZX f;
-// 		for (size_t i = 0; i < P.size(); ++i){
-// 			NTL::SetCoeff (f, (long)i, NTL::to_ZZ((std::string( P[(size_t)i] )).c_str()) );
-// 		}
-// 		NTL::vec_pair_ZZX_long ntlfactors;
-// 		NTL::ZZ c;
-// 		NTL::factor (c, ntlfactors, f);
-
-// 		NTL::ZZ t;
-// 		NTL_ZZ NTLIntDom;
-// 		factors.resize((size_t)ntlfactors.length());
-// 		exp.resize((size_t)ntlfactors.length());
-// 		for (int i= 0; i<ntlfactors.length(); ++i) {
-// 			factors[(size_t)i] = new GivaroPolPIDIntDense::Element( (size_t)deg(ntlfactors[i].a)+1 );
-// 			for(int j = 0; j <= deg(ntlfactors[i].a); ++j) {
-// 				NTL::GetCoeff(t,ntlfactors[i].a,j);
-// 				NTLIntDom.convert( factors[(size_t)i]->operator[]((size_t)j), t );
-// 			}
-// 			exp[(size_t)i] = (unsigned long)ntlfactors[i].b;
-// 		}
-// 		return factors;
-// 	}
-namespace LinBox{
     template <>
     template <>
-    std::vector<DensePolynomial<NTL_ZZ> >&
+    size_t
     PolynomialRing<NTL_ZZ,Givaro::Dense>::factor (std::vector<DensePolynomial<NTL_ZZ> >& factors,
                                                   std::vector<uint64_t>& exp,
                                                   const DensePolynomial<NTL_ZZ> &P)
@@ -303,9 +288,9 @@ namespace LinBox{
             factors.push_back(f);
             exp [i] = ntlfactors[i].b;
         }
-        return factors;
+        return factors.size();
     }
-}
+} // namespace LinBox
 
 #endif
 
