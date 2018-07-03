@@ -35,14 +35,19 @@
 #include <iostream>
 #include <givaro/zring.h>
 #include "linbox/integer.h"
-
 #include <givaro/givpoly1factor.h>
+#include "linbox/polynomial/dense-polynomial.h"
+
 
     // Namespace in which all LinBox code resides
 namespace LinBox {
+    template<typename B1, typename B2>
+    using IS_MOD_SAME_t = std::enable_if_t<
+        FieldTraits<B1>::is_modular::value && std::is_same<B1,B2>::value,int>;
+
     template<class BaseRing>
     class DensePolynomial;
-    
+
         /** Polynomials.
          * \ingroup ring
          *
@@ -52,7 +57,7 @@ namespace LinBox {
 	template <class BaseRing, class StorageTag= Givaro::Dense>
 	class PolynomialRing : public Givaro::Poly1Dom<BaseRing,StorageTag> {
 	public:
-        
+
 		typedef typename Givaro::Poly1Dom<BaseRing,StorageTag> Parent_t;
 		typedef DensePolynomial<BaseRing> Element;
 		typedef Element Polynomial;
@@ -73,7 +78,7 @@ namespace LinBox {
                   one(R,Parent_t::one),
                   mOne(R,Parent_t::mOne)
             {}
-        
+
         PolynomialRing (const BaseRing& R, const Givaro::Indeter& I)
                 : Parent_t(R, I),
                   zero(R,Parent_t::zero),
@@ -142,30 +147,16 @@ namespace LinBox {
 
         //     // Additional methods
 
-        // factorization method from GivPoly1FactorDom only enabled over modular fields
-        // template<template<class,class> class Vector,template <class> class Alloc, Enable>
-        // typename std::enable_if<!FieldTraits<BaseRing>::is_modular::value,size_t>::type
-        // factor (Vector<Polynomial,Alloc<Polynomial> >& factors,
-        //         std::vector<uint64_t>& exp,
-        //         const Polynomial& P){};
-
-        template<template<class,class> class Vector, template <class> class Alloc,
-                 class B=BaseRing, // trick to force SFINAE to work on this method
-                 typename std::enable_if<FieldTraits<BaseRing>::is_modular::value
-                                         && std::is_same<B,BaseRing>::value,int>::type* =nullptr>
+        // factorization method from GivPoly1FactorDom
+        // only enabled over modular fields
+        template<template<class,class> class Vector,
+                 template <class> class Alloc,
+// trick to force SFINAE to work on this method
+                 class B=BaseRing,
+                 IS_MOD_SAME_t<BaseRing,B>* =nullptr>
         size_t modularfactor (Vector<Polynomial,Alloc<Polynomial> >& factors,
                               std::vector<uint64_t>& exp,
-                              const Polynomial& P){
-
-            Vector<typename Parent_t::Element,Alloc<typename Parent_t::Element> > giv_factors;
-            Givaro::Poly1FactorDom<BaseRing,StorageTag> PFD(dynamic_cast<Parent_t&>(*this));
-            PFD.CZfactor(giv_factors, exp, P); // Cantor-Zassenhaus factorization
-            factors.clear();
-            for (size_t i=0; i<giv_factors.size();i++){
-                factors.emplace_back(this->_domain,giv_factors[i]);
-            }
-            return factors.size();
-        }
+                              const Polynomial& P);
 
         template<template<class,class> class Vector, template <class> class Alloc>
         size_t factor (Vector<Polynomial,Alloc<Polynomial> >& factors,
@@ -203,6 +194,28 @@ namespace LinBox {
     };
 
 	template <class BaseRing, class StorageTag>
+    template<template<class,class> class Vector,
+             template <class> class Alloc,
+             class B,
+             IS_MOD_SAME_t<BaseRing,B>*>
+    size_t
+    PolynomialRing<BaseRing,StorageTag>::modularfactor (
+        Vector<Polynomial,Alloc<Polynomial> >& factors,
+        std::vector<uint64_t>& exp,
+        const Polynomial& P){
+        Vector<typename Parent_t::Element,Alloc<typename Parent_t::Element> > giv_factors;
+        Givaro::Poly1FactorDom<BaseRing,StorageTag> PFD(dynamic_cast<Parent_t&>(*this));
+        PFD.CZfactor(giv_factors, exp, P); // Cantor-Zassenhaus factorization
+        factors.clear();
+        for (size_t i=0; i<giv_factors.size();i++){
+            factors.emplace_back(this->_domain,giv_factors[i]);
+        }
+        return factors.size();
+    }
+
+
+
+	template <class BaseRing, class StorageTag>
     template<template<class,class> class Vector, template <class> class Alloc>
     size_t PolynomialRing<BaseRing,StorageTag>::factor (
         Vector<Polynomial,Alloc<Polynomial> >& factors,
@@ -218,8 +231,6 @@ namespace LinBox {
 
 
 
-#include "linbox/polynomial/dense-polynomial.h"
-
 #ifdef __LINBOX_HAVE_NTL
 #include "linbox/ring/ntl.h"
 #include "NTL/ZZXFactoring.h"
@@ -229,9 +240,10 @@ namespace LinBox{
     template<>
     size_t
     LinBox::PolynomialRing<Givaro::ZRing<Givaro::Integer>,Givaro::Dense>::
-    factor<std::vector> (std::vector<LinBox::DensePolynomial<Givaro::ZRing<Givaro::Integer> > >& factors,
-                         std::vector<uint64_t>& exp,
-                         const LinBox::DensePolynomial<Givaro::ZRing<Givaro::Integer> >&P)
+    factor<std::vector> (
+        std::vector<LinBox::DensePolynomial<Givaro::ZRing<Givaro::Integer> > >& factors,
+        std::vector<uint64_t>& exp,
+        const LinBox::DensePolynomial<Givaro::ZRing<Givaro::Integer> >&P)
     {
         NTL::ZZXFac_InitNumPrimes = 1;
         NTL::ZZX f;
