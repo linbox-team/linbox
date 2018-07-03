@@ -41,11 +41,11 @@
 namespace LinBox
 {
 
-	template<class CRABase>
-	struct ChineseRemainderOMP : public ChineseRemainderSeq<CRABase> {
-		typedef typename CRABase::Domain	Domain;
-		typedef typename CRABase::DomainElement	DomainElement;
-		typedef ChineseRemainderSeq<CRABase>    Father_t;
+	template<class DomainType, class CRABase>
+	struct ChineseRemainderOMP : public ChineseRemainderSeq<Domain,CRABase> {
+        using Domain = DomainType;
+		typedef typename Domain::Element	DomainElement;
+		typedef ChineseRemainderSeq<Domain,CRABase>    Father_t;
 
 		template<class Param>
 		ChineseRemainderOMP(const Param& b) :

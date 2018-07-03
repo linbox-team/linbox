@@ -116,8 +116,8 @@ namespace LinBox
 	 * This is the OMP version
 	 */
 
-	template<class CRABase>
-        using ChineseRemainder = ChineseRemainderOMP<CRABase>;
+	template<class Domain, class CRABase>
+        using ChineseRemainder = ChineseRemainderOMP<Domain,CRABase>;
 }
 
 #else
@@ -133,8 +133,8 @@ namespace LinBox
 	 *
 	 * This is the SEQ version
 	 */
-	template<class CRABase>
-        using ChineseRemainder = ChineseRemainderSeq<CRABase>;
+	template<class Domain, class CRABase>
+        using ChineseRemainder = ChineseRemainderSeq<Domain,CRABase>;
 }
 
 #endif

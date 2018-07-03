@@ -51,32 +51,28 @@ using namespace LinBox ;
 
 // Need these call_* functions so it uses Integers with primes
 // larger than 23 bits.
-template <typename CRAType>
+template <class Domain, class CRAType>
 void call_initialize(CRAType& cra, const double p, const double r) {
-	using ModularField = typename CRAType::Domain;
-	using Element = typename ModularField::Element;
-	ModularField F(p);
-	Element residue;
+	Domain F(p);
+	typename Domain::Element residue;
 	F.init(residue, r);
 	cra.initialize(F, residue);
 }
 
-template <typename CRAType>
+template <class Domain, class CRAType>
 void call_initialize(CRAType& cra, const Integer& p, const Integer& r) {
 	cra.initialize(p, r);
 }
 
-template <typename CRAType>
+template <class Domain, class CRAType>
 void call_progress(CRAType& cra, const double p, const double r) {
-	using ModularField = typename CRAType::Domain;
-	using Element = typename ModularField::Element;
-	ModularField F(p);
-	Element residue;
+	Domain F(p);
+	typename Domain::Element residue;
 	F.init(residue, r);
 	cra.progress(F, residue);
 }
 
-template <typename CRAType>
+template <class Domain, class CRAType>
 void call_progress(CRAType& cra, const Integer& p, const Integer& r) {
 	cra.progress(p, r);
 }
@@ -107,7 +103,7 @@ int test_early_single(std::ostream & report, size_t PrimeSize, size_t Size)
 	Iterator residu = residues.begin()  ; // residu iterator
 
 	report << "EarlySingleCRA (" <<  4UL << ')' << std::endl;
-	EarlySingleCRA<ModularField> cra( 4UL ) ;
+	EarlySingleCRA cra( 4UL ) ;
 	Integer res = 0; // the result
 	typedef ModularField::Element Element;
 	Element residue ; // temporary
@@ -187,11 +183,11 @@ int test_prob_single(std::ostream & report, size_t PrimeSize, size_t Size)
 
 	report << "ProbSingleCRA (" << pprod.bitsize()-1 << ")";
 	report << " actual length " << actual.bitsize() << std::endl;
-	ProbSingleCRA<ModularField> cra(pprod.bitsize()-1) ;
+	ProbSingleCRA cra(pprod.bitsize()-1) ;
 	Integer res = 0; // the result
 	typedef ModularField::Element Element;
 	{ /* init */
-		call_initialize(cra, *genprime, *residu);
+		call_initialize<ModularField>(cra, *genprime, *residu);
 	}
 	size_t itercount = 1;
 	size_t skips = 0;
@@ -202,7 +198,7 @@ int test_prob_single(std::ostream & report, size_t PrimeSize, size_t Size)
 			++skips;
 		}
 		else {
-			call_progress(cra, *genprime, *residu);
+			call_progress<ModularField>(cra, *genprime, *residu);
 			++itercount;
 		}
 		++genprime;
@@ -251,14 +247,14 @@ int test_full_single(std::ostream & report, size_t PrimeSize, size_t Size)
 
 	report << "FullSingleCRA (" << maxbits << ")";
 	report << " actual length " << actual.bitsize() << std::endl;
-	FullSingleCRA<ModularField> cra(maxbits) ;
+	FullSingleCRA cra(maxbits) ;
 	Integer res = 0; // the result
 	T residue;
 	T prime;
 	{ /* init */
 		prime = *pgen;
 		residue = actual % prime;
-		call_initialize(cra, prime, residue);
+		call_initialize<ModularField>(cra, prime, residue);
 		++pgen;
 	}
 	size_t itercount = 1;
@@ -274,7 +270,7 @@ int test_full_single(std::ostream & report, size_t PrimeSize, size_t Size)
 			report << " *** FullSingleCRA failed. ***" << std::endl;
 			return EXIT_FAILURE ;
 		}
-		call_progress(cra, prime, residue);
+		call_progress<ModularField>(cra, prime, residue);
 		++itercount;
 		++pgen;
 	}
@@ -328,7 +324,7 @@ int test_early_multip(std::ostream & report, size_t PrimeSize, size_t Taille, si
 	VectIterator residu = residues.begin()  ; // residu iterator
 
 	report << "EarlyMultpCRA (" <<  4UL << ')' << std::endl;
-	EarlyMultipCRA<ModularField> cra( 4UL ) ;
+	EarlyMultipCRA<> cra( 4UL ) ;
 	IntVect result (Taille); // the result
 	pVect residue(Taille) ; // temporary
 	{ /* init */
@@ -418,7 +414,7 @@ int test_prob_multip(std::ostream & report, size_t PrimeSize, size_t Taille, siz
 	VectIterator residu = residues.begin()  ; // residu iterator
 
 	report << "ProbMultpCRA (" <<  (pprod.bitsize()-1) << ')' << std::endl;
-	ProbMultipCRA<ModularField> cra(pprod.bitsize() - 1) ;
+	ProbMultipCRA<> cra(pprod.bitsize() - 1) ;
 	IntVect result (Taille); // the result
 	pVect residue(Taille) ; // temporary
 	{ /* init */
@@ -518,7 +514,7 @@ int test_full_multip_matrix(std::ostream & report, size_t PrimeSize,
 	std::pair<size_t,double> my_pair(dims.first*dims.second,LogIntSize)  ;
 
 	report << "FullMultipBlasMatCRA (" <<  my_pair.first << ", " << my_pair.second << ')' << std::endl;
-	FullMultipBlasMatCRA<Field> cra( my_pair ) ;
+	FullMultipBlasMatCRA cra( my_pair ) ;
 	IntMatrix result(Z,dims.first,dims.second); // the result
 	{ /* init */
 		Field F(*genprime);
@@ -611,7 +607,7 @@ int test_full_multip(std::ostream & report, size_t PrimeSize, size_t Size, size_
 	double LogIntSize = (double)PrimeSize*std::log(2.)+std::log((double)Size)+1 ;
 
 	report << "FullMultipCRA (" <<  LogIntSize << ')' << std::endl;
-	FullMultipCRA<ModularField> cra( LogIntSize ) ;
+	FullMultipCRA cra( LogIntSize ) ;
 	IntVect result(Taille) ; // the result
 	pVect  residue(Taille) ; // temporary
 	{ /* init */
@@ -714,7 +710,7 @@ int test_full_multip_rat(std::ostream & report, size_t PrimeSize, size_t Size, s
 	double LogIntSize = (double)PrimeSize*std::log(2.)+std::log((double)Size)+1 ;
 
 	report << "FullMultipRatCRA (" <<  LogIntSize << ')' << std::endl;
-	FullMultipRatCRA<ModularField> cra( LogIntSize ) ;
+	FullMultipRatCRA cra( LogIntSize ) ;
 	IntVect res_num(Taille) ; // the result
     Integer res_den;
 	{ /* init */
@@ -817,7 +813,7 @@ int test_full_multip_fixed(std::ostream & report, size_t PrimeSize, size_t Size,
 
 	report << "FullMultipFixedCRA (" <<  my_pair.first << ", " << my_pair.second << ')' << std::endl;
 
-	FullMultipFixedCRA<ModularField> cra( my_pair ) ;
+	FullMultipFixedCRA cra( my_pair ) ;
 	IntVect result(Taille) ; // the result
 	pVect  residue(Taille) ; // temporary
 	pVectIterator residue_it = residue.begin();

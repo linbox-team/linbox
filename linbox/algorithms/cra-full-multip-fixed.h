@@ -50,11 +50,9 @@ namespace LinBox
 	 * @brief Chinese Remaindering Algorithm for multiple residues.
 	 * An upper bound is given on the size of the data to reconstruct.
 	 */
-	template<class Domain_Type>
-	struct FullMultipFixedCRA : FullMultipCRA<Domain_Type> {
-		typedef Domain_Type			Domain;
-		typedef typename Domain::Element 	DomainElement;
-		typedef FullMultipFixedCRA<Domain> 	Self_t;
+	struct FullMultipFixedCRA : FullMultipCRA {
+        using Base = FullMultipCRA;
+		typedef FullMultipFixedCRA 	Self_t;
 
 		/*! Constructor.
 		 * @param p is a pair such that
@@ -64,7 +62,7 @@ namespace LinBox
 		 * .
 		 */
 		FullMultipFixedCRA(const std::pair<size_t,double>& p ) :
-			FullMultipCRA<Domain>(p.second, p.first)
+			Base(p.second, p.first)
         { }
 
 		/*! Intialize to the first residue/prime.
@@ -72,7 +70,7 @@ namespace LinBox
 		 * @param e iterator on the first residue
 		 * @pre any CRA should first call \c initialize before \c progress
 		 */
-		template<class Iterator>
+		template<class Domain, class Iterator>
 		inline void initialize (const Domain& D, Iterator& e)
         { this->initialize_iter(D, e, this->dimension_); }
 
@@ -81,7 +79,7 @@ namespace LinBox
 		 * @param e iterator for the new residue, for instance, a
 		 * <code>std::vector<T>::iterator</code>.
 		 */
-		template<class Iterator>
+		template<class Domain, class Iterator>
 		inline void progress (const Domain& D, Iterator& e)
 		{ this->progress_iter(D, e, this->dimension_); }
 
@@ -101,11 +99,9 @@ namespace LinBox
 	 * @ingroup CRA
 	 * Version of LinBox::FullMultipCRA for matrices.
 	 */
-	template<class Domain_Type>
-	struct FullMultipBlasMatCRA : FullMultipCRA<Domain_Type> {
-		typedef Domain_Type			Domain;
-		typedef typename Domain::Element 	DomainElement;
-		typedef FullMultipBlasMatCRA<Domain> 	Self_t;
+	struct FullMultipBlasMatCRA : FullMultipCRA {
+		typedef FullMultipBlasMatCRA 	Self_t;
+        using Base = FullMultipCRA;
 
 		/*! Constructor.
 		 * @param p is a pair such that
@@ -115,7 +111,7 @@ namespace LinBox
 		 * .
 		 */
 		FullMultipBlasMatCRA(const std::pair<size_t,double>& p ) :
-			FullMultipCRA<Domain>(p.second, p.first)
+			Base(p.second, p.first)
         { }
 
 		/*! Intialize to the first residue/prime.
@@ -123,7 +119,7 @@ namespace LinBox
 		 * @param e
 		 * @pre any CRA should first call \c initialize before \c progress
 		 */
-		template<class Matrix>
+		template<class Domain, class Matrix>
 		void initialize (const Domain& D, Matrix& e)
         { this->initialize_iter(D, e.Begin(), this->dimension_); }
 
@@ -131,7 +127,7 @@ namespace LinBox
 		 * @param D domain
 		 * @param e
 		 */
-		template<class Matrix>
+		template<class Domain, class Matrix>
 		void progress (const Domain& D, Matrix& e)
 		{ this->progress_iter(D, e.Begin(), this->dimension_); }
 

@@ -56,12 +56,12 @@ namespace LinBox
 	//typedef Givaro::ZRing<Integer> Integers;
 	//typedef Integers::Element Integer;
 
-	template<class RatCRABase, class RatRecon = RReconstruction<Givaro::ZRing<Integer>, ClassicMaxQRationalReconstruction<Givaro::ZRing<Integer> > > >
+	template<class DomainType, class RatCRABase, class RatRecon = RReconstruction<Givaro::ZRing<Integer>, ClassicMaxQRationalReconstruction<Givaro::ZRing<Integer> > > >
 	struct RationalRemainder2 {
 
 
-		typedef typename RatCRABase::Domain		Domain;
-		typedef typename RatCRABase::DomainElement	DomainElement;
+		typedef typename DomainType		Domain;
+		typedef typename Domain::Element	DomainElement;
 	protected:
 		RatCRABase Builder_;
 		RatRecon RR_;

@@ -41,13 +41,9 @@ namespace LinBox
 	 * @ingroup CRA
 	 * @bib
 	 */
-	template<class Domain_Type>
 	struct GivaroRnsFixedCRA : public Givaro::RNSsystemFixed<integer> {
-		typedef Domain_Type			                      Domain;
-		typedef typename Domain::Element           DomainElement;
-
 		typedef Givaro::RNSsystemFixed<integer>			Father_t;
-		typedef GivaroRnsFixedCRA<Domain> 		          Self_t;
+		typedef GivaroRnsFixedCRA		          Self_t;
 
 		const size_t				nbloops;
 		size_t					iterationnumber;
@@ -93,14 +89,8 @@ namespace LinBox
 			return result(r);
 		}
 
-		template< template<class, class> class Vect, template <class> class Alloc>
-		void initialize (const Domain& D, const Vect<DomainElement, Alloc<DomainElement> >& e)
-		{
-			residues.resize(e.size());
-			this->progress(D,e);
-		}
-
-		void initialize (const Domain& D, const BlasVector<Domain >& e)
+        template <class Domain, class Vect>
+		void initialize (const Domain& D, const Vect& e)
 		{
 			Givaro::ZRing<Integer> ZZ;
 			BlasVector<Givaro::ZRing<Integer> > Z(ZZ);
@@ -109,7 +99,7 @@ namespace LinBox
 		}
 
 
-        template <typename Vect>
+        template <typename Domain, typename Vect>
 		void progress (const Domain& D, const Vect& e)
 		{
 			++iterationnumber;

@@ -75,17 +75,13 @@ namespace LinBox
 	 * @ingroup CRA
 	 *
 	 */
-	template<class Domain_Type>
 	struct SingleCRABase {
-		typedef Domain_Type			Domain;
-		typedef typename Domain::Element DomainElement;
-		typedef SingleCRABase<Domain> Self_t;
 
 	protected:
 		// PrimeProd*nextM_ is the modulus
-		Integer 	primeProd_;
-		Integer		nextM_;
-		Integer 	residue_; 	// remainder to be reconstructed
+		integer 	primeProd_;
+		integer		nextM_;
+		integer 	residue_; 	// remainder to be reconstructed
 
 #ifdef _LB_CRATIMING
 		mutable Timer tInit, tIteration, tImaging, tIRecon, tOther;
@@ -104,7 +100,7 @@ namespace LinBox
 		 * @param e	The residue modulo D
 		 * @returns	true iff the residue changed with this update
 		 */
-		bool progress_check (const Integer& D, const Integer& e)
+		bool progress_check (const integer& D, const integer& e)
 		{
 			// Precondition : initialize has been called once before
 #ifdef _LB_CRATIMING
@@ -115,16 +111,16 @@ namespace LinBox
 			bool was_updated = false;
 			primeProd_ *= nextM_;
 			nextM_ =D;
-			Integer u0 = residue_ % D;//0
-			Integer u1 = e % D;//e
-			Integer m0 = primeProd_;//1
+			integer u0 = residue_ % D;//0
+			integer u1 = e % D;//e
+			integer m0 = primeProd_;//1
 			if (u0 != u1) {
 				was_updated = true;
 				inv(m0, m0, D); // res <-- m0^{-1} mod m1//1
 				u0 = u1 - u0;           // tmp <-- (u1-u0)//e
 				u0 *= m0;       // res <-- (u1-u0)( m0^{-1} mod m1 )//e
 				u0 %= D;
-				Integer tmp(u0);//e
+				integer tmp(u0);//e
 				if (u0 < 0)
 					tmp += D;//e+D
 				else
@@ -151,7 +147,8 @@ namespace LinBox
 		 * @param e	The residue modulo D
 		 * @returns	true iff the residue changed with this update
 		 */
-		bool progress_check (const Domain& D, const DomainElement& e)
+        template <typename Domain>
+		bool progress_check (const Domain& D, const typename Domain::Element& e)
 		{
 			// Precondition : initialize has been called once before
 #ifdef _LB_CRATIMING
@@ -163,23 +160,23 @@ namespace LinBox
 			primeProd_ *= nextM_;
 			D.characteristic( nextM_ );
 
-			DomainElement u0;
+			typename Domain::Element u0;
 			if (! D.areEqual( D.init(u0, residue_), e)) {
 				was_updated = true;
 
 				D.negin(u0);       	// u0  <-- -u0
 				D.addin(u0, e);    	// u0  <-- e-u0
 
-				DomainElement m0;
+				typename Domain::Element m0;
 				D.init(m0, primeProd_);
 				D.invin(m0);       	// m0  <-- m0^{-1} mod nextM_
 				D.mulin(u0, m0);   	// u0  <-- (e-u0)( m0^{-1} mod nextM_ )
 
-				Integer res;
+				integer res;
 				D.convert(res, u0);	// res <-- (e-u0)( m0^{-1} mod nextM_ )
 				// and res < nextM_
 
-				Integer tmp(res);
+				integer tmp(res);
 				tmp -= nextM_;
 				if (absCompare(res,tmp)>0) res = tmp; // Normalize
 
@@ -220,7 +217,7 @@ namespace LinBox
 		 * @param D	The modulus
 		 * @param e	The residue
 		 */
-		void initialize (const Integer& D, const Integer& e)
+		void initialize (const integer& D, const integer& e)
 		{
 #ifdef _LB_CRATIMING
 			tInit.clear();
@@ -245,7 +242,8 @@ namespace LinBox
 		 * @param D	The modulus
 		 * @param e	The residue
 		 */
-		void initialize (const Domain& D, const DomainElement& e)
+        template <typename Domain>
+		void initialize (const Domain& D, const typename Domain::Element& e)
 		{
 #ifdef _LB_CRATIMING
 			tInit.clear();
@@ -265,21 +263,21 @@ namespace LinBox
 		 *
 		 * (This is the same as getResidue.)
 		 */
-		Integer& result(Integer& d)
+		integer& result(integer& d)
 		{
 			return d=residue_;
 		}
 
 		/** @brief Gets the result recovered so far.
 		 */
-		Integer& getResidue(Integer& r )
+		integer& getResidue(integer& r )
 		{
 			return r= residue_;
 		}
 
 		/** @brief Gets the modulus of the result recovered so far.
 		 */
-		Integer& getModulus(Integer& m)
+		integer& getModulus(integer& m)
 		{
 
 #ifdef _LB_CRATIMING
@@ -298,15 +296,15 @@ namespace LinBox
 		 *
 		 * @return	true iff i shares a common factor with the modulus
 		 */
-		bool noncoprime(const Integer& i) const
+		bool noncoprime(const integer& i) const
 		{
-			Integer g;
+			integer g;
 			return ( (gcd(g, i, nextM_) != 1) || (gcd(g, i, primeProd_) != 1) );
 		}
 
 		/** @brief Returns a lower bound on the number of bits in the modulus.
 		 */
-		decltype(Integer().bitsize()) modbits() const
+		decltype(integer().bitsize()) modbits() const
 		{
 			return primeProd_.bitsize() + nextM_.bitsize() - 1;
 		}
@@ -340,7 +338,7 @@ namespace LinBox
 			printTime(timer.ttInit, " Init: ", os, title);
 			//printTime(timer.ttImaging, "Imaging", os, title);
 			//printTime(timer.ttIteration, "Iteration", os, title);
-			printTime(timer.ttIRecon, " Integer reconstruction: ", os, title);
+			printTime(timer.ttIRecon, " integer reconstruction: ", os, title);
 			printTime(timer.ttOther, " Other: ", os, title);
 			return os;
 		}
@@ -364,12 +362,9 @@ namespace LinBox
 	 * @ingroup CRA
 	 *
 	 */
-	template<class Domain_Type>
-	struct EarlySingleCRA :public SingleCRABase<Domain_Type> {
-		typedef SingleCRABase<Domain_Type>	Base;
-		typedef Domain_Type			Domain;
-		typedef typename Domain::Element DomainElement;
-		typedef EarlySingleCRA<Domain> Self_t;
+	struct EarlySingleCRA :public SingleCRABase {
+		typedef SingleCRABase	Base;
+		typedef EarlySingleCRA Self_t;
 
 		const unsigned int    EARLY_TERM_THRESHOLD;
 
@@ -393,7 +388,7 @@ namespace LinBox
 		 * This function must be called just once. Subsequent calls
 		 * should be made to the progress() function.
 		 *
-		 * Either the types of D and e should both be Integer,
+		 * Either the types of D and e should both be integer,
 		 * or D is the domain type (e.g., Modular<double>) and
 		 * e is the element type (e.g., double)
 		 *
@@ -414,7 +409,7 @@ namespace LinBox
 		 * The initialize function must be called at least once before
 		 * calling this one.
 		 *
-		 * Either the types of D and e should both be Integer,
+		 * Either the types of D and e should both be integer,
 		 * or D is the domain type (e.g., Modular<double>) and
 		 * e is the element type (e.g., double)
 		 *
@@ -453,23 +448,20 @@ namespace LinBox
 	 * @ingroup CRA
 	 *
 	 */
-	template<class Domain_Type>
-	struct ProbSingleCRA :public SingleCRABase<Domain_Type> {
-		typedef SingleCRABase<Domain_Type>	Base;
-		typedef Domain_Type			Domain;
-		typedef typename Domain::Element DomainElement;
-		typedef ProbSingleCRA<Domain> Self_t;
+	struct ProbSingleCRA :public SingleCRABase {
+		typedef SingleCRABase	Base;
+		typedef ProbSingleCRA Self_t;
 
 	protected:
 		const size_t bitbound_;
 		const double failbound_;
 		double curfailprob_; // the probability the result right now is incorrect
 
-		size_t mod_bitsize(const Integer& D) const { return D.bitsize(); }
+		size_t mod_bitsize(const integer& D) const { return D.bitsize(); }
 
 		template <typename Field>
 		size_t mod_bitsize(const Field& D) const {
-			Integer p;
+			integer p;
 			D.characteristic(p);
 			return p.bitsize();
 		}
@@ -493,7 +485,7 @@ namespace LinBox
 		 * This function must be called just once. Subsequent calls
 		 * should be made to the progress() function.
 		 *
-		 * Either the types of D and e should both be Integer,
+		 * Either the types of D and e should both be integer,
 		 * or D is the domain type (e.g., Modular<double>) and
 		 * e is the element type (e.g., double)
 		 *
@@ -514,7 +506,7 @@ namespace LinBox
 		 * The initialize function must be called at least once before
 		 * calling this one.
 		 *
-		 * Either the types of D and e should both be Integer,
+		 * Either the types of D and e should both be integer,
 		 * or D is the domain type (e.g., Modular<double>) and
 		 * e is the element type (e.g., double)
 		 *
@@ -562,13 +554,9 @@ namespace LinBox
 	 * @ingroup CRA
 	 *
 	 */
-	template<class Domain_Type>
-	struct FullSingleCRA :public FullMultipCRA<Domain_Type>{
-		typedef SingleCRABase<Domain_Type>	Base;
-		typedef Domain_Type			Domain;
-		typedef typename Domain::Element DomainElement;
-		typedef FullSingleCRA<Domain> Self_t;
-        using MultiParent = FullMultipCRA<Domain>;
+	struct FullSingleCRA :public FullMultipCRA {
+		typedef FullMultipCRA	Base;
+		typedef FullSingleCRA Self_t;
 
 	public:
 		/** @brief Creates a new deterministic CRA object.
@@ -577,7 +565,7 @@ namespace LinBox
 		 * @param	failprob  An upper bound on the probability of failure.
 		 */
 		FullSingleCRA(const size_t bitbound) :
-            MultiParent(((double)bitbound) * log(2.0))
+            Base(((double)bitbound) * log(2.0))
 		{
 		}
 
@@ -587,7 +575,7 @@ namespace LinBox
 		 * This function must be called just once. Subsequent calls
 		 * should be made to the progress() function.
 		 *
-		 * Either the types of D and e should both be Integer,
+		 * Either the types of D and e should both be integer,
 		 * or D is the domain type (e.g., Modular<double>) and
 		 * e is the element type (e.g., double)
 		 *
@@ -598,7 +586,7 @@ namespace LinBox
 		void initialize (const ModType& D, const ResType& e)
 		{
             std::array<ResType,1> v {e};
-            MultiParent::initialize(D,v);
+            Base::initialize(D,v);
 		}
 
 		/** @brief Update the residue and termination condition.
@@ -608,7 +596,7 @@ namespace LinBox
 		 * The initialize function must be called at least once before
 		 * calling this one.
 		 *
-		 * Either the types of D and e should both be Integer,
+		 * Either the types of D and e should both be integer,
 		 * or D is the domain type (e.g., Modular<double>) and
 		 * e is the element type (e.g., double)
 		 *
@@ -620,26 +608,26 @@ namespace LinBox
 		{
 			// Precondition : initialize has been called once before
             std::array<ResType,1> v {e};
-            MultiParent::progress(D, v);
+            Base::progress(D, v);
 		}
 
 		/** @brief Gets the result recovered so far.
 		 */
-		inline const Integer& getResidue() const
+		inline const integer& getResidue() const
 		{
-            return MultiParent::getResidue().front();
+            return Base::getResidue().front();
 		}
 
 		/** @brief Gets the result recovered so far.
 		 */
-		inline Integer& getResidue(Integer& r) const
+		inline integer& getResidue(integer& r) const
 		{
 			return r = getResidue();
 		}
 
 		/** @brief alias for getResidue
 		 */
-		inline Integer& result(Integer& r) const
+		inline integer& result(integer& r) const
 		{
 			return r = getResidue();
 		}

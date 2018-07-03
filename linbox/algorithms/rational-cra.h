@@ -49,10 +49,10 @@ namespace LinBox
 	 * Either by Early Termination see [Dumas, Saunder, Villard, JSC 32 (1/2), pp 71-99, 2001],
 	 * Or via a bound on the size of the integers.
 	 */
-	template<class RatCRABase>
+	template<class DomainType, class RatCRABase>
 	struct RationalRemainder {
-		typedef typename RatCRABase::Domain		Domain;
-		typedef typename RatCRABase::DomainElement	DomainElement;
+		typedef DomainType		Domain;
+		typedef typename Domain::Element	DomainElement;
 	protected:
 		RatCRABase Builder_;
 

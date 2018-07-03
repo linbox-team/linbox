@@ -52,10 +52,10 @@ template <> struct chooseMPItype<unsigned long int>{ static constexpr MPI_Dataty
 namespace LinBox
 {
 
-	template<class CRABase>
+	template<class DomainType, class CRABase>
 	struct MPIChineseRemainder  {
-		typedef typename CRABase::Domain	Domain;
-		typedef typename CRABase::DomainElement	DomainElement;
+		typedef typename DomainType	Domain;
+		typedef typename Domain::Element	DomainElement;
 	protected:
 		CRABase Builder_;
 		Communicator* _commPtr;

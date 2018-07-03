@@ -70,11 +70,11 @@ namespace LinBox
 	/*! No doc.
 	 * @ingroup CRA
 	 */
-	template<class CRABase>
+	template<class DomainType, class CRABase>
 	struct ChineseRemainder {
 
-		typedef typename CRABase::Domain	Domain;
-		typedef typename CRABase::DomainElement	DomainElement;
+		typedef DomainType	Domain;
+		typedef typename Domain::Element	DomainElement;
 	protected:
 		CRABase Builder_;
 

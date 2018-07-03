@@ -164,11 +164,11 @@ struct InteratorBlas : public Interator<IntVect> {
 #include <typeinfo>
 
 
-template<typename Builder, typename Iter, typename RandGen, typename BoundType>
+template<typename Field, typename Builder, typename Iter, typename RandGen, typename BoundType>
 bool TestOneCRA(std::ostream& report, Iter& iteration, RandGen& genprime, size_t N, const BoundType& bound)
 {
 	report << "ChineseRemainder<" << typeid(Builder).name() << ">(" << bound << ')' << std::endl;
-	LinBox::ChineseRemainder< Builder > cra( bound );
+	LinBox::ChineseRemainder< Field, Builder > cra( bound );
     auto Res = create_int_vect<typename Iter::IntVect>(N);
 	cra( Res, iteration, genprime);
 	bool locpass = std::equal( Res.begin(), Res.end(), iteration.getVector().begin() );
@@ -187,12 +187,12 @@ bool TestOneCRA(std::ostream& report, Iter& iteration, RandGen& genprime, size_t
 	return locpass;
 }
 
-template<typename Builder, typename Iter, typename RandGen, typename BoundType>
+template<typename Field, typename Builder, typename Iter, typename RandGen, typename BoundType>
 bool TestOneCRAbegin(std::ostream& report, Iter& iteration, RandGen& genprime, size_t N, const BoundType& bound)
 {
 	Givaro::ZRing<Integer> Z;
 	report << "ChineseRemainder<" << typeid(Builder).name() << ">(" << bound << ')' << std::endl;
-	LinBox::ChineseRemainder< Builder > cra( bound );
+	LinBox::ChineseRemainder< Field, Builder > cra( bound );
 	BlasVector<Givaro::ZRing<Integer> > Res(Z,N);
 	BlasVector<Givaro::ZRing<Integer> >::iterator ResIT= Res.begin();
 	cra( ResIT, iteration, genprime);
@@ -210,11 +210,11 @@ bool TestOneCRAbegin(std::ostream& report, Iter& iteration, RandGen& genprime, s
 	return locpass;
 }
 
-template<typename Builder, typename Iter, typename RandGen, typename BoundType>
+template<typename Field, typename Builder, typename Iter, typename RandGen, typename BoundType>
 bool TestOneCRAWritePointer(std::ostream& report, Iter& iteration, RandGen& genprime, size_t N, const BoundType& bound)
 {
 	report << "ChineseRemainder<" << typeid(Builder).name() << ">(" << bound << ')' << std::endl;
-	LinBox::ChineseRemainder< Builder > cra( bound );
+	LinBox::ChineseRemainder< Field, Builder > cra( bound );
 	Givaro::ZRing<Integer> Z ;
 	LinBox::BlasMatrix<Givaro::ZRing<Integer> > Res(Z, (int)N, (int)N);
 	cra( Res.getWritePointer(), iteration, genprime);
@@ -254,16 +254,16 @@ bool TestCra(size_t N, int S, size_t seed)
 
 	bool pass = true;
 
-	pass &= TestOneCRA< LinBox::EarlyMultipCRA< Field > >(
+	pass &= TestOneCRA< Field, LinBox::EarlyMultipCRA<> >(
 						     report, iteration, genprime, N, 5);
 
-	pass &= TestOneCRA< LinBox::EarlyMultipCRA< Field > >(
+	pass &= TestOneCRA< Field, LinBox::EarlyMultipCRA<> >(
 						     report, iteration, genprime, N, 15);
 
-	pass &= TestOneCRA< LinBox::FullMultipCRA< Field > >(
+	pass &= TestOneCRA< Field, LinBox::FullMultipCRA >(
 						     report, iteration, genprime, N, iteration.getLogSize()+1);
 
-	pass &= TestOneCRA< LinBox::FullMultipCRA< Field > >(
+	pass &= TestOneCRA< Field, LinBox::FullMultipCRA >(
 						     report, iteration, genprime, N, 3*iteration.getLogSize()+15);
 
 #if 0
@@ -309,7 +309,7 @@ bool TestCra(size_t N, int S, size_t seed)
 
 	auto psseq = create_prime_sequence(PrimeSet);
 
-	pass &= TestOneCRA< LinBox::GivaroRnsFixedCRA< Field > >(
+	pass &= TestOneCRA< Field, LinBox::GivaroRnsFixedCRA >(
                  report, iteration, psseq, N, PrimeSet);
 #endif
 

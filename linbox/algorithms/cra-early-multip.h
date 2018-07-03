@@ -47,18 +47,16 @@ namespace LinBox
 	 * @ingroup CRA
 	 * @brief vector CRA with early termination and a PRNG reference
 	 */
-	template<class Domain_Type, template <class> class SingleCRA_Type, class RandIter_Type>
-	struct EarlyMultipCRARGen : public SingleCRA_Type<Domain_Type>, public FullMultipCRA<Domain_Type> {
+	template<class SingleCRA_Type, class RandIter_Type>
+	struct EarlyMultipCRARGen : public SingleCRA_Type, public FullMultipCRA {
         // Could be much faster
         // - do not compute twice the product of moduli
         // - reconstruct one element of e until Early Termination,
         //   then only, try a random linear combination.
 
-		using Domain = Domain_Type;
-		using DomainElement = typename Domain::Element;
-		using Self_t = EarlyMultipCRARGen<Domain,SingleCRA_Type,RandIter_Type>;
-        using SingleParent = SingleCRA_Type<Domain>;
-        using MultiParent = FullMultipCRA<Domain>;
+		using Self_t = EarlyMultipCRARGen<SingleCRA_Type,RandIter_Type>;
+        using SingleParent = SingleCRA_Type;
+        using MultiParent = FullMultipCRA;
 
         const unsigned short LINEAR_COMB_RBITS = 15; // # of random bits in linear combination
 
@@ -180,19 +178,19 @@ namespace LinBox
 
 	protected:
 
-        template <typename DomElem, typename Elt2>
-        inline void axpyin (DomElem& out, const DomElem& a, const Elt2& b, const Domain& D) {
-            DomElem tmp;
+        template <typename Domain, typename Elt2>
+        static inline void axpyin (typename Domain::Element& out, const typename Domain::Element& a, const Elt2& b, const Domain& D) {
+            typename Domain::Element tmp;
             D.axpyin(out, a, D.init(tmp, b));
         }
 
         template <typename Elt2>
-        inline void axpyin (Integer& out, const Integer& a, const Elt2& b, const Integer& D) {
+        static inline void axpyin (Integer& out, const Integer& a, const Elt2& b, const Integer& D) {
             out = (out + a*b) % D;
         }
 
         template <typename DomainOrInteger, typename Vect1, typename Vect2>
-        typename Vect1::value_type
+        static typename Vect1::value_type
         dot (const DomainOrInteger& D, const Vect1& v1, const Vect2& v2) {
             typename Vect1::value_type z = 0;
             auto v1_p = v1.begin();
@@ -209,11 +207,9 @@ namespace LinBox
 	/** @brief vector CRA with early termination which creates its own PRNG object
 	 * @ingroup CRA
 	 */
-	template<class Domain_Type, class RandIter_Type=Givaro::GivRandom>
-	struct EarlyMultipCRA : public EarlyMultipCRARGen<Domain_Type,EarlySingleCRA,RandIter_Type> {
-        using Parent_t = EarlyMultipCRARGen<Domain_Type,EarlySingleCRA,RandIter_Type>;
-        using Domain = typename Parent_t::Domain;
-        using DomainElement = typename Parent_t::DomainElement;
+	template<class RandIter_Type=Givaro::GivRandom>
+	struct EarlyMultipCRA : public EarlyMultipCRARGen<EarlySingleCRA,RandIter_Type> {
+        using Parent_t = EarlyMultipCRARGen<EarlySingleCRA,RandIter_Type>;
 
 	protected:
         // PRNG
@@ -237,11 +233,9 @@ namespace LinBox
 	/** @brief vector CRA with guaranteed error probability which creates its own PRNG object
 	 * @ingroup CRA
 	 */
-	template<class Domain_Type, class RandIter_Type=Givaro::GivRandom>
-	struct ProbMultipCRA : public EarlyMultipCRARGen<Domain_Type,ProbSingleCRA,RandIter_Type> {
-        using Parent_t = EarlyMultipCRARGen<Domain_Type,ProbSingleCRA,RandIter_Type>;
-        using Domain = typename Parent_t::Domain;
-        using DomainElement = typename Parent_t::DomainElement;
+	template<class RandIter_Type=Givaro::GivRandom>
+	struct ProbMultipCRA : public EarlyMultipCRARGen<ProbSingleCRA,RandIter_Type> {
+        using Parent_t = EarlyMultipCRARGen<ProbSingleCRA,RandIter_Type>;
 
 	protected:
         // PRNG

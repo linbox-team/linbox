@@ -32,11 +32,10 @@
 namespace LinBox
 {
 
-	template<class Domain_Type>
-	struct EarlyMultipRatCRA : public EarlySingleRatCRA<Domain_Type>, public FullMultipRatCRA<Domain_Type> {
-		typedef Domain_Type			Domain;
-		typedef typename Domain_Type::Element 	DomainElement;
-		typedef EarlyMultipRatCRA<Domain>	Self_t;
+	struct EarlyMultipRatCRA : public EarlySingleRatCRA, public FullMultipRatCRA {
+        using SingleParent = EarlySingleRatCRA;
+        using MultiParent = FullMultipRatCRA;
+		typedef EarlyMultipRatCRA	Self_t;
 	protected:
 		// Random coefficients for a linear combination
 		// of the elements to be reconstructed
@@ -44,9 +43,11 @@ namespace LinBox
 
 		void initialize (const Integer& D, const Integer& e) {return;}; // DON'T TOUCH
 		void progress (const Integer & D, const Integer & e) {return;};
-		 void initialize (const Domain& D, const DomainElement& e){return;};
-		  Integer& result(Integer& d){return d;};
-		         void progress (const Domain& D, const DomainElement& e){return;};
+        template <class Domain>
+		void initialize (const Domain& D, const typename Domain::Element& e){return;};
+		Integer& result(Integer& d){return d;};
+        template <class Domain>
+		void progress (const Domain& D, const typename Domain::Element& e){return;};
 
 
 
@@ -57,7 +58,7 @@ namespace LinBox
 
 
 		EarlyMultipRatCRA(const unsigned long EARLY=DEFAULT_EARLY_TERM_THRESHOLD) :
-			EarlySingleRatCRA<Domain>(EARLY), FullMultipRatCRA<Domain>()
+			SingleParent(EARLY), MultiParent()
 		{ }
 
 		//!init
@@ -77,8 +78,8 @@ namespace LinBox
 			// - do not compute twice the product of moduli
 			// - reconstruct one element of e until Early Termination,
 			//   then only, try a random linear combination.
-			EarlySingleRatCRA<Domain>::initialize(D,dot(z, D, e, randv) );
-			FullMultipRatCRA<Domain>::initialize(D, e);
+			SingleParent::initialize(D,dot(z, D, e, randv) );
+			MultiParent::initialize(D, e);
 		}
 
 		void initialize (const Domain& D, const BlasVector<Domain>& e)
@@ -96,8 +97,8 @@ namespace LinBox
 			// - do not compute twice the product of moduli
 			// - reconstruct one element of e until Early Termination,
 			//   then only, try a random linear combination.
-			EarlySingleRatCRA<Domain>::initialize(D,dot(z, D, e, randv) );
-			FullMultipRatCRA<Domain>::initialize(D, e);
+			SingleParent::initialize(D,dot(z, D, e, randv) );
+			MultiParent::initialize(D, e);
 		}
 
 		//!progress
@@ -109,8 +110,8 @@ namespace LinBox
 			// - do not compute twice the product of moduli
 			// - reconstruct one element of e until Early Termination,
 			//   then only, try a random linear combination.
-			EarlySingleRatCRA<Domain>::progress(D, dot(z, D, e, randv));
-			FullMultipRatCRA<Domain>::progress(D, e);
+			SingleParent::progress(D, dot(z, D, e, randv));
+			MultiParent::progress(D, e);
 		}
 
 		void progress (const Domain& D, const BlasVector<Domain>& e)
@@ -120,31 +121,31 @@ namespace LinBox
 			// - do not compute twice the product of moduli
 			// - reconstruct one element of e until Early Termination,
 			//   then only, try a random linear combination.
-			EarlySingleRatCRA<Domain>::progress(D, dot(z, D, e, randv));
-			FullMultipRatCRA<Domain>::progress(D, e);
+			SingleParent::progress(D, dot(z, D, e, randv));
+			MultiParent::progress(D, e);
 		}
 
 		//!result
 		template<template<class, class> class Vect, template <class> class Alloc>
 		Vect<Integer, Alloc<Integer> >& result(Vect<Integer, Alloc<Integer> >& num, Integer& den)
 		{
-			return FullMultipRatCRA<Domain>::result(num, den);
+			return MultiParent::result(num, den);
 		}
 
 		BlasVector<Givaro::ZRing<Integer> >& result(BlasVector<Givaro::ZRing<Integer>>& num, Givaro::ZRing<Integer>::Element& den)
 		{
-			return FullMultipRatCRA<Domain>::result(num, den);
+			return MultiParent::result(num, den);
 		}
 
 		//!tools
 		bool terminated()
 		{
-			return EarlySingleRatCRA<Domain>::terminated();
+			return SingleParent::terminated();
 		}
 
 		bool noncoprime(const Integer& i) const
 		{
-			return EarlySingleRatCRA<Domain>::noncoprime(i);
+			return SingleParent::noncoprime(i);
 		}
 
 	protected:

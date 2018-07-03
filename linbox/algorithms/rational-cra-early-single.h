@@ -31,12 +31,9 @@
 namespace LinBox
 {
 
-	template<class Domain_Type>
-	struct EarlySingleRatCRA : public EarlySingleCRA<Domain_Type> {
-		typedef Domain_Type				Domain;
-		typedef EarlySingleCRA<Domain> 			Father_t;
-		typedef typename Father_t::DomainElement 	DomainElement;
-		typedef EarlySingleRatCRA<Domain>		Self_t;
+	struct EarlySingleRatCRA : public EarlySingleCRA {
+		typedef EarlySingleCRA 			Father_t;
+		typedef EarlySingleRatCRA		Self_t;
 		Givaro::ZRing<Integer> _ZZ;
 
 		Integer					Numer0;
@@ -48,9 +45,10 @@ namespace LinBox
 			Father_t(EARLY)
 		{}
 
-		void progress (const Domain& D, const DomainElement& e)
+        template <class Domain>
+		void progress (const Domain& D, const typename Domain::Element& e)
 		{
-			DomainElement u0, m0;
+			typename Domain::Element u0, m0;
 
 			fieldreconstruct(this->residue_, D, e, D.init(u0,this->residue_), D.init(m0,this->primeProd_), Integer(this->residue_), this->primeProd_);
 			D.characteristic( this->nextM_ );
@@ -85,7 +83,8 @@ namespace LinBox
 		}
 
 
-		void initialize (const Domain& D, const DomainElement& e)
+        template <class Domain>
+		void initialize (const Domain& D, const typename Domain::Element& e)
 		{
 			Father_t::initialize(D, e);
 			_ZZ.reconstructRational(Numer0, Denom0, this->residue_, this->primeProd_);
@@ -109,9 +108,10 @@ namespace LinBox
 		}
 	protected:
 
-		Integer& fieldreconstruct(Integer& res, const Domain& D1,
-					  const DomainElement& u1, DomainElement& u0,
-					  DomainElement& m0, const Integer& r0,
+        template <class Domain>
+		static Integer& fieldreconstruct(Integer& res, const Domain& D1,
+					  const typename Domain::Element& u1, typename Domain::Element& u0,
+					  typename Domain::Element& m0, const Integer& r0,
 					  const Integer& P0)
 		{
 			// u0 and m0 are modified
@@ -124,7 +124,7 @@ namespace LinBox
 			return res += r0;   // res <-- u0 + (u1-u0)( m0^{-1} mod m1 ) m0 and res <  m0m1
 		}
 
-		Integer& fieldreconstruct(Integer& res, const Integer& D,
+		static Integer& fieldreconstruct(Integer& res, const Integer& D,
 					  const Integer & u1, Integer & u0,
 					  Integer & m0, const Integer& r0,
 					  const Integer& P0)

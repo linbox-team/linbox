@@ -31,12 +31,9 @@
 namespace LinBox
 {
 
-	template<class Domain_Type>
-	struct FullMultipRatCRA : public virtual FullMultipCRA<Domain_Type> {
-		typedef Domain_Type				Domain;
-		typedef FullMultipCRA<Domain> 			Father_t;
-		typedef typename Father_t::DomainElement 	DomainElement;
-		typedef FullMultipRatCRA<Domain>		Self_t;
+	struct FullMultipRatCRA : public virtual FullMultipCRA {
+		typedef FullMultipCRA 			Father_t;
+		typedef FullMultipRatCRA		Self_t;
 		Givaro::ZRing<Integer> _ZZ;
 	public:
 

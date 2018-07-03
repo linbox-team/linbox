@@ -56,11 +56,8 @@ namespace LinBox
      * When two residues belong on the same shelf, they are combined and re-assigned
      * to another shelf, recursively.
 	 */
-	template<class Domain_Type>
 	struct FullMultipCRA {
-		typedef Domain_Type			Domain;
-		typedef typename Domain::Element DomainElement;
-		typedef FullMultipCRA<Domain> 		Self_t;
+		typedef FullMultipCRA 		Self_t;
 
     public:
         struct Shelf {
@@ -288,9 +285,9 @@ namespace LinBox
         static inline void combineShelves(Shelf& dest, const Shelf& src) {
             // assumption: dest is already occupied
             auto invprod = precompInv(dest.mod(), src.mod());
-            for (auto dest_it = dest.residue.begin(), src_it = src.residue.begin();
-                 dest_it != dest.residue.end();
-                 ++dest_it, ++src_it)
+            auto dest_it = dest.residue.begin();
+            auto src_it = src.residue.begin();
+            for (; dest_it != dest.residue.end(); ++dest_it, ++src_it)
             {
                 reconstruct(*dest_it, dest.mod(), *src_it, invprod, src.mod());
             }

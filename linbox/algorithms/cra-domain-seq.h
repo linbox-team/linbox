@@ -43,10 +43,10 @@ namespace LinBox
 
         /// No doc.
         /// @ingroup CRA
-	template<class CRABase>
+	template<class DomainType, class CRABase>
 	struct ChineseRemainderSeq {
-		typedef typename CRABase::Domain	Domain;
-		typedef typename CRABase::DomainElement	DomainElement;
+        using Domain = DomainType;
+		typedef typename Domain::Element	DomainElement;
 
 	public:
 		const int MAXSKIP = 1000;
@@ -281,12 +281,12 @@ namespace LinBox
 	 * This is the specialization for prime iterators that are already
 	 * guaranteed to return unique primes (so that no checking is necessary).
 	*/
-	template <class CRABase>
+	template <class Domain, class CRABase>
 	template <class PrimeIterator>
-	struct ChineseRemainderSeq<CRABase>::PrimeSampler<PrimeIterator,true> {
+	struct ChineseRemainderSeq<Domain,CRABase>::PrimeSampler<PrimeIterator,true> {
 		PrimeIterator& primeiter_;
 
-		PrimeSampler (const ChineseRemainderSeq<CRABase>&, PrimeIterator& primeiter) :
+		PrimeSampler (const ChineseRemainderSeq<Domain,CRABase>&, PrimeIterator& primeiter) :
 			primeiter_(primeiter)
 		{ }
 
