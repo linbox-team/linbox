@@ -63,7 +63,7 @@ namespace LinBox
 	template <class Matrix>
 	void SmithFormAdaptive::compute_local_long (BlasVector<Givaro::ZRing<Integer> >& s, const Matrix& A, int64_t p, int64_t e)
 	{
-		//std::ostream& report(cerr);
+		//std::ostream& report(std::cerr);
 		std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 
 		int order = (int)(A. rowdim() < A. coldim() ? A. rowdim() : A. coldim());
@@ -219,7 +219,7 @@ namespace LinBox
 	void SmithFormAdaptive::smithFormSmooth (BlasVector<Givaro::ZRing<Integer> >& s, const Matrix& A, long r, const std::vector<int64_t>& sev)
 	{
 		Givaro::ZRing<Integer> Z;
-		//std::ostream& report(cerr);
+		//std::ostream& report(std::cerr);
 		std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		report << "Computation the k-smooth part of the invariant factors starts(via local and rank):" << std::endl;
 		int order = (int)(A. rowdim() < A. coldim() ? A. rowdim() : A. coldim());
@@ -436,7 +436,7 @@ namespace LinBox
 			if (Val == 1) {
 				smithFormVal (s, A, r, e);
 				report << "Computation of the invariant factors ends." << std::endl;
-				//cerr << "Computation of the invariant factors ends." << std::endl;
+				//std::cerr << "Computation of the invariant factors ends." << std::endl;
 				return;
 			}
 			else
@@ -515,7 +515,7 @@ namespace LinBox
 		//commentator().start ("Smith Form starts", "Smithform");
 		Givaro::ZRing<Integer> Z;
 
-		std::ostream& report(cerr);
+		std::ostream& report(std::cerr);
 		//std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		report << "Computation of the invariant factors starts (via an adaptive alg):" << std::endl;
 
