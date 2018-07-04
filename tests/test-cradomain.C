@@ -40,28 +40,15 @@
 
 using namespace LinBox;
 
-template <class IntVect>
-inline IntVect create_int_vect(size_t size, Givaro::ZRing<Integer> F = Givaro::ZRing<Integer>());
-
-template <class IntVect>
-inline IntVect create_int_vect(size_t size, Givaro::ZRing<Integer>)
-{ return IntVect(size); }
-
-template <>
-BlasVector<Givaro::ZRing<Integer>> create_int_vect(size_t size, Givaro::ZRing<Integer> F)
-{ return BlasVector<Givaro::ZRing<Integer>>(F, size); }
-
-
-template <class IntVect_t = BlasVector<Givaro::ZRing<Integer>>>
 struct Interator {
-    using IntVect = IntVect_t;
-	IntVect _v;
+	BlasVector<Givaro::ZRing<Integer> > _v;
 	double maxsize;
 
-	Interator(const IntVect& v) :
+	Interator(const BlasVector<Givaro::ZRing<Integer> >& v) :
 		_v(v), maxsize(0.0)
 	{
-		for(auto it=_v.begin(); it != _v.end(); ++it) {
+		for(BlasVector<Givaro::ZRing<Integer> > ::const_iterator it=_v.begin();
+		    it != _v.end(); ++it) {
 			//!@bug bb: *it < 0 ?
 			double ds = Givaro::naturallog(*it);
 			maxsize = (maxsize<ds?ds:maxsize);
@@ -69,30 +56,32 @@ struct Interator {
 	}
 
 	Interator(int n, int s) :
-		_v(create_int_vect<IntVect>(n)), maxsize(0.0)
+		_v(Givaro::ZRing<Integer>(),(size_t)n), maxsize(0.0)
 	{
-		for(auto it=_v.begin(); it != _v.end(); ++it) {
+		for(BlasVector<Givaro::ZRing<Integer> >::iterator it=_v.begin();
+		    it != _v.end(); ++it) {
 			Integer::random<false>(*it, s);
 			double ds = Givaro::naturallog(*it);
 			maxsize = (maxsize<ds?ds:maxsize);
 		}
 	}
 
-	const IntVect& getVector() const
+	const BlasVector<Givaro::ZRing<Integer> >& getVector()
 	{
 	       	return _v;
-    }
+       	}
 	double getLogSize() const
 	{
 	       	return maxsize;
 	}
 
-	template<typename Vect, typename Field>
-	IterationResult operator()(Vect& v, const Field& F) const
+	template<typename Field>
+	IterationResult operator()(BlasVector<Field>& v,
+				      const Field& F) const
 	{
 		v.resize(_v.size());
-		auto vit=_v.begin();
-		auto eit=v.begin();
+		BlasVector<Givaro::ZRing<Integer> >::const_iterator vit=_v.begin();
+		typename BlasVector<Field>::iterator eit=v.begin();
 		for( ; vit != _v.end(); ++vit, ++eit){
 			F.init(*eit, *vit);
 		}
@@ -101,25 +90,24 @@ struct Interator {
 	}
 };
 
-template <class IntVect = BlasVector<Givaro::ZRing<Integer>>>
-struct InteratorIt : public Interator<IntVect> {
+struct InteratorIt : public Interator {
 
 	// could use BlasVector and changeField
 	mutable std::vector<double> _vectC;
 
-	InteratorIt(const IntVect& v) :
-		Interator<IntVect>(v), _vectC(v.size())
+	InteratorIt(const BlasVector<Givaro::ZRing<Integer> >& v) :
+		Interator(v), _vectC(v.size())
 	{}
 	InteratorIt(int n, int s) :
-		Interator<IntVect>(n,s), _vectC((size_t)n)
+		Interator(n,s), _vectC((size_t)n)
 	{}
 
 	template<typename Iterator, typename Field>
 	IterationResult operator()(Iterator& res, const Field& F) const
 	{
-		auto vit=this->_v.begin();
-		auto eit=_vectC.begin();
-		for( ; vit != this->_v.end(); ++vit, ++eit) {
+		BlasVector<Givaro::ZRing<Integer> >::const_iterator vit=this->_v.begin();
+		std::vector<double>::iterator eit=_vectC.begin();
+		for( ; vit != _v.end(); ++vit, ++eit) {
 			F.init(*eit, *vit);
 		}
 
@@ -129,30 +117,30 @@ struct InteratorIt : public Interator<IntVect> {
 
 };
 
-template<typename Field, class IntVect = BlasVector<Givaro::ZRing<Integer>>>
-struct InteratorBlas : public Interator<IntVect> {
+template<typename Field>
+struct InteratorBlas : public Interator {
 	typedef typename Field::Element Element;
 	typedef LinBox::BlasMatrix<Givaro::ZRing<Element> > Matrix;
 	typedef typename Matrix::pointer Pointer;
 	typename Givaro::ZRing<Element> _field;
 	mutable Matrix _vectC;
 
-	InteratorBlas(const IntVect& v) :
-		Interator<IntVect>(v),
+	InteratorBlas(const BlasVector<Givaro::ZRing<Integer> >& v) :
+		Interator(v),
 		_field(),
 		_vectC(_field,(int)v.size(), (int)1)
 	{}
 
 	InteratorBlas(int n, int s) :
-		Interator<IntVect>(n,s),
+		Interator(n,s),
 		_field(),
 		_vectC(_field,n,1) {}
 
 	IterationResult operator()(Pointer& res, const Field& F) const
 	{
-		auto vit=this->_v.begin();
+		BlasVector<Givaro::ZRing<Integer> >::const_iterator vit=this->_v.begin();
 		res = _vectC.getWritePointer();
-		for( ; vit != this->_v.end(); ++vit, ++res)
+		for( ; vit != _v.end(); ++vit, ++res)
 			F.init(*res, *vit);
 
 		res=_vectC.getWritePointer();
@@ -169,19 +157,18 @@ bool TestOneCRA(std::ostream& report, Iter& iteration, RandGen& genprime, size_t
 {
 	report << "ChineseRemainder<" << typeid(Builder).name() << ">(" << bound << ')' << std::endl;
 	LinBox::ChineseRemainder< Builder > cra( bound );
-    auto Res = create_int_vect<typename Iter::IntVect>(N);
+	Givaro::ZRing<Integer> Z;
+	BlasVector<Givaro::ZRing<Integer> > Res(Z,N);
 	cra( Res, iteration, genprime);
 	bool locpass = std::equal( Res.begin(), Res.end(), iteration.getVector().begin() );
 	if (locpass) report << "ChineseRemainder<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << ", passed."  << std::endl;
 	else {
 		report << "***ERROR***: ChineseRemainder<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << "***ERROR***"  << std::endl;
-		auto Rit=Res.begin();
-		auto Oit=iteration.getVector().begin();
+		BlasVector<Givaro::ZRing<Integer> >::const_iterator Rit=Res.begin();
+		BlasVector<Givaro::ZRing<Integer> >::const_iterator Oit=iteration.getVector().begin();
 		for( ; Rit!=Res.end(); ++Rit, ++Oit)
-			if (*Rit != *Oit) {
+			if (*Rit != *Oit)
 				report << *Rit <<  " != " << * Oit << std::endl;
-                { Integer a = *Rit, b; cra.getModulus(b); a += b; report << "adding mod: " << a<< std::endl; }
-            }
 
 	}
 	return locpass;
@@ -242,28 +229,28 @@ bool TestCra(size_t N, int S, size_t seed)
 	report << "TestCra(" << N << ',' << S << ',' << new_seed << ')' << std::endl;
 	Integer::seeding(new_seed);
 
-    // either of these should work
-    using IntVect = BlasVector<Givaro::ZRing<Integer>>;
-    // using IntVect = std::vector<Integer>;
-
-	Interator<IntVect> iteration((int)N, S);
-	InteratorIt<IntVect> iterationIt(iteration.getVector());
+	Interator iteration((int)N, S);
+	InteratorIt iterationIt(iteration.getVector());
         typedef Givaro::ModularBalanced<double> Field;
-	InteratorBlas<Field, IntVect> iterationBlas(iteration.getVector());
+	InteratorBlas<Field > iterationBlas(iteration.getVector());
 	PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(N), new_seed );
 
 	bool pass = true;
 
-	pass &= TestOneCRA< LinBox::EarlyMultipCRA< Field > >(
+	pass &= TestOneCRA< LinBox::EarlyMultipCRA< Field >,
+	     Interator, LinBox::PrimeIterator<IteratorCategories::HeuristicTag> >(
 						     report, iteration, genprime, N, 5);
 
-	pass &= TestOneCRA< LinBox::EarlyMultipCRA< Field > >(
+	pass &= TestOneCRA< LinBox::EarlyMultipCRA< Field >,
+	     Interator, LinBox::PrimeIterator<IteratorCategories::HeuristicTag> >(
 						     report, iteration, genprime, N, 15);
 
-	pass &= TestOneCRA< LinBox::FullMultipCRA< Field > >(
+	pass &= TestOneCRA< LinBox::FullMultipCRA< Field >,
+	     Interator, LinBox::PrimeIterator<IteratorCategories::HeuristicTag> >(
 						     report, iteration, genprime, N, iteration.getLogSize()+1);
 
-	pass &= TestOneCRA< LinBox::FullMultipCRA< Field > >(
+	pass &= TestOneCRA< LinBox::FullMultipCRA< Field >,
+	     Interator, LinBox::PrimeIterator<IteratorCategories::HeuristicTag> >(
 						     report, iteration, genprime, N, 3*iteration.getLogSize()+15);
 
 #if 0
@@ -298,7 +285,7 @@ bool TestCra(size_t N, int S, size_t seed)
 
 	// XXX fixed prime set doesn't work with openmp version
 #ifndef LINBOX_USES_OPENMP
-        auto PrimeSet = create_int_vect<IntVect>(0,Z);
+        BlasVector<Givaro::ZRing<Integer> >  PrimeSet(Z);
         double PrimeSize = 0.0;
         for( ; PrimeSize < (iterationIt.getLogSize()+1); ++genprime ) {
             if (std::find(PrimeSet.begin(), PrimeSet.end(), *genprime) == PrimeSet.end()) {
@@ -309,7 +296,11 @@ bool TestCra(size_t N, int S, size_t seed)
 
 	auto psseq = create_prime_sequence(PrimeSet);
 
-	pass &= TestOneCRA< LinBox::GivaroRnsFixedCRA< Field > >(
+	pass &= TestOneCRA<
+            LinBox::GivaroRnsFixedCRA< Field >,
+            Interator,
+	    decltype(psseq),
+            BlasVector<Givaro::ZRing<Integer> >  >(
                  report, iteration, psseq, N, PrimeSet);
 #endif
 

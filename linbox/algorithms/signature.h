@@ -142,7 +142,6 @@ namespace LinBox
 		template <class Matrix>
 		static bool isPosSemiDef (const Matrix& M, const BLAS_LPM_Method& meth)
             {
-                // FIXME this doesn't actually affect the seeding for the algorithms
                 PrimeIterator<IteratorCategories::HeuristicTag>::setSeed((size_t)time(0));
                 size_t n = M. rowdim();
                 std::vector<int> P;
@@ -171,6 +170,7 @@ namespace LinBox
                     }
                     semiD (D, PM);
                 }
+
                     //std::clog << "End semiD:\n";
 
                 return allPos(D);

@@ -459,32 +459,42 @@ namespace LinBox
 			EarlySingleCRA<Domain>::residue_ = 0;
 
 			//Computation of residue_
-            for (auto it = FullMultipCRA<Domain>::shelves_begin();
-                 it != FullMultipCRA<Domain>::shelves_end();
-                 ++it)
-            {
-                if (it->occupied) {
-					Integer D = it->mod();
+
+			//std::vector< double >::iterator  _dsz_it = RadixSizes_.begin();
+			std::vector< LazyProduct >::iterator _mod_it = FullMultipCRA<Domain>::RadixPrimeProd_.end();// list of prime products
+			std::vector< BlasVector<Givaro::ZRing<Integer> > >::iterator _tab_it = FullMultipCRA<Domain>::RadixResidues_.end();// list of residues as vectors of size 1
+			std::vector< bool >::iterator    _occ_it = FullMultipCRA<Domain>::RadixOccupancy_.end();//flags of occupied fields
+			int n = (int)FullMultipCRA<Domain>::RadixOccupancy_.size();
+			//std::vector<Integer> ri(1); LazyProduct mi; double di;
+			//could be much faster if max occupandy is stored
+			int prev_shelf=0, shelf = 0; Integer prev_residue_=0;
+			--_occ_it; --_mod_it; --_tab_it;//last elemet
+			for (int i=n; i > 0; --i, --_mod_it, --_tab_it, --_occ_it ) {
+				//--_occ_it; --_mod_it; --_tab_it;
+				++shelf;
+				if (*_occ_it) {
+					Integer D = _mod_it->operator()();
 					Vect e_v(Z,vfactor_.size());
 					inverse(e_v,vfactor_,D);
-					productin(e_v,it->residue,D);
+					productin(e_v,*_tab_it,D);
 					productin(e_v,vmultip_,D);
 
 					Integer z;
 					dot(z,D, e_v, randv);
 
 
-				    auto prev_residue_ = EarlySingleCRA<Domain>::residue_;
+					prev_residue_ = EarlySingleCRA<Domain>::residue_;
 					EarlySingleCRA<Domain>::progress(D,z);
 
 					if (prev_residue_ == EarlySingleCRA<Domain>::residue_ ) {
-						EarlySingleCRA<Domain>::occurency_ += it->count;
+						EarlySingleCRA<Domain>::occurency_ = EarlySingleCRA<Domain>::occurency_ + (unsigned int) (shelf - prev_shelf);
 					}
 					if ( EarlySingleCRA<Domain>::terminated() ) {
 						return true;
 					}
-                }
-            }
+					prev_shelf = shelf;
+				}
+			}
 
 			return EarlySingleCRA<Domain>::terminated();
 

@@ -37,7 +37,6 @@
 
 #include "linbox/integer.h"
 #include "linbox/field/rebind.h"
-#include "linbox/vector/vector.h"
 
 namespace LinBox
 {
@@ -83,21 +82,6 @@ namespace LinBox
 			ResidueType<Domain> r;
 			d.init(r);
 			return r;
-		}
-	};
-
-	/** \brief Type information for the residue in a CRA iteration.
-	 *
-	 * This is the specialization for a vector of scalar types (namely Integer)
-	 */
-	template <typename Function>
-	struct CRAResidue<std::vector<Integer>, Function> {
-		template <typename Domain>
-		using ResidueType = DenseVector<Domain>;
-
-		template <typename Domain>
-		static ResidueType<Domain> create(const Domain& d) {
-            return ResidueType<Domain>(d);
 		}
 	};
 }

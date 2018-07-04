@@ -35,19 +35,6 @@ namespace LinBox
 		typedef std::vector< Integer > Father_t;
 	protected:
 		bool                _tobecomputed;
-
-        void compute() {
-            if (this->empty()) {
-                this->emplace_back(1);
-                _tobecomputed = false;
-            } else if (_tobecomputed) {
-                for (auto iter = ++(this->begin()); iter != this->end(); ++iter)
-                    this->front() *= *iter;
-                this->resize(1);
-				_tobecomputed = false;
-			}
-        }
-
 	public:
 
 		LazyProduct() :
@@ -63,8 +50,20 @@ namespace LinBox
 
 		bool mulin(const Integer& i)
 		{
-            this->emplace_back(i);
-            return _tobecomputed = (this->size() > 1);
+			if (this->size()) {
+				if (i != this->back()) {
+					this->push_back( i );
+					return _tobecomputed = true;
+				}
+				else {
+					return _tobecomputed;
+				}
+
+			}
+			else {
+				this->push_back( i );
+				return _tobecomputed = false;
+			}
 		}
 
 		bool mulin(const LazyProduct& i)
@@ -73,20 +72,17 @@ namespace LinBox
 			return _tobecomputed = (this->size()>1);
 		}
 
-        Integer& operator() ()
-        {
-            compute();
-            return this->front();
-        }
-
-		const Integer& operator() () const
+		Integer & operator() ()
 		{
-            /* note: const_cast is because this method does not change
-             * the underlying value, so it should be const, but the
-             * underlying vector cannot be mutable since it is inherited.
-             */
-            const_cast<LazyProduct*>(this)->compute();
-			return this->front();
+			if (_tobecomputed) {
+				Father_t::const_iterator iter = this->begin();
+				Father_t::iterator       prod = this->begin();
+				for(++iter; iter != this->end(); ++iter)
+					*prod *= *iter;
+				this->resize(1);
+				_tobecomputed = false;
+			}
+			return this->back();
 		}
 
 		bool noncoprime(const Integer& i) const

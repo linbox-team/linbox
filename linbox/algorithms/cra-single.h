@@ -36,7 +36,6 @@
 #include "linbox/integer.h"
 #include "linbox/solutions/methods.h"
 #include "linbox/algorithms/cra-domain.h"
-#include "linbox/algorithms/cra-full-multip.h"
 #include <vector>
 #include <array>
 #include <utility>
@@ -456,7 +455,7 @@ namespace LinBox
 		typedef SingleCRABase<Domain_Type>	Base;
 		typedef Domain_Type			Domain;
 		typedef typename Domain::Element DomainElement;
-		typedef ProbSingleCRA<Domain> Self_t;
+		typedef EarlySingleCRA<Domain> Self_t;
 
 	protected:
 		const size_t bitbound_;
@@ -561,12 +560,14 @@ namespace LinBox
 	 *
 	 */
 	template<class Domain_Type>
-	struct FullSingleCRA :public FullMultipCRA<Domain_Type>{
+	struct FullSingleCRA :public SingleCRABase<Domain_Type> {
 		typedef SingleCRABase<Domain_Type>	Base;
 		typedef Domain_Type			Domain;
 		typedef typename Domain::Element DomainElement;
-		typedef FullSingleCRA<Domain> Self_t;
-        using MultiParent = FullMultipCRA<Domain>;
+		typedef EarlySingleCRA<Domain> Self_t;
+
+	protected:
+		const size_t bitbound_;
 
 	public:
 		/** @brief Creates a new deterministic CRA object.
@@ -575,7 +576,7 @@ namespace LinBox
 		 * @param	failprob  An upper bound on the probability of failure.
 		 */
 		FullSingleCRA(const size_t bitbound) :
-            MultiParent(((double)bitbound) * log(2.0))
+			bitbound_(bitbound)
 		{
 		}
 
@@ -595,8 +596,7 @@ namespace LinBox
 		template <typename ModType, typename ResType>
 		void initialize (const ModType& D, const ResType& e)
 		{
-            std::array<ResType,1> v {e};
-            MultiParent::initialize(D,v);
+			Base::initialize(D,e);
 		}
 
 		/** @brief Update the residue and termination condition.
@@ -617,29 +617,17 @@ namespace LinBox
 		void progress (const ModType& D, const ResType& e)
 		{
 			// Precondition : initialize has been called once before
-            std::array<ResType,1> v {e};
-            MultiParent::progress(D, v);
+			// linbox_check(curfailprob_ >= 0.);
+			Base::progress_check(D,e);
 		}
 
-		/** @brief Gets the result recovered so far.
+		/** @brief Checks whether the CRA is finished.
+		 *
+		 * @return true iff the early termination condition has been reached.
 		 */
-		inline const Integer& getResidue() const
+		bool terminated() const
 		{
-            return MultiParent::getResidue().front();
-		}
-
-		/** @brief Gets the result recovered so far.
-		 */
-		inline Integer& getResidue(Integer& r) const
-		{
-			return r = getResidue();
-		}
-
-		/** @brief alias for getResidue
-		 */
-		inline Integer& result(Integer& r) const
-		{
-			return r = getResidue();
+			return Base::modbits() > bitbound_;
 		}
 	};
 
