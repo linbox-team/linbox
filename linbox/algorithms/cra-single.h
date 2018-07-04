@@ -36,6 +36,7 @@
 #include "linbox/integer.h"
 #include "linbox/solutions/methods.h"
 #include "linbox/algorithms/cra-domain.h"
+#include "linbox/algorithms/cra-full-multip.h"
 #include <vector>
 #include <array>
 #include <utility>
@@ -455,7 +456,7 @@ namespace LinBox
 		typedef SingleCRABase<Domain_Type>	Base;
 		typedef Domain_Type			Domain;
 		typedef typename Domain::Element DomainElement;
-		typedef EarlySingleCRA<Domain> Self_t;
+		typedef ProbSingleCRA<Domain> Self_t;
 
 	protected:
 		const size_t bitbound_;
@@ -560,14 +561,12 @@ namespace LinBox
 	 *
 	 */
 	template<class Domain_Type>
-	struct FullSingleCRA :public SingleCRABase<Domain_Type> {
+	struct FullSingleCRA :public FullMultipCRA<Domain_Type>{
 		typedef SingleCRABase<Domain_Type>	Base;
 		typedef Domain_Type			Domain;
 		typedef typename Domain::Element DomainElement;
-		typedef EarlySingleCRA<Domain> Self_t;
-
-	protected:
-		const size_t bitbound_;
+		typedef FullSingleCRA<Domain> Self_t;
+        using MultiParent = FullMultipCRA<Domain>;
 
 	public:
 		/** @brief Creates a new deterministic CRA object.
@@ -576,7 +575,7 @@ namespace LinBox
 		 * @param	failprob  An upper bound on the probability of failure.
 		 */
 		FullSingleCRA(const size_t bitbound) :
-			bitbound_(bitbound)
+            MultiParent(((double)bitbound) * log(2.0))
 		{
 		}
 
@@ -596,7 +595,8 @@ namespace LinBox
 		template <typename ModType, typename ResType>
 		void initialize (const ModType& D, const ResType& e)
 		{
-			Base::initialize(D,e);
+            std::array<ResType,1> v {e};
+            MultiParent::initialize(D,v);
 		}
 
 		/** @brief Update the residue and termination condition.
@@ -617,17 +617,29 @@ namespace LinBox
 		void progress (const ModType& D, const ResType& e)
 		{
 			// Precondition : initialize has been called once before
-			// linbox_check(curfailprob_ >= 0.);
-			Base::progress_check(D,e);
+            std::array<ResType,1> v {e};
+            MultiParent::progress(D, v);
 		}
 
-		/** @brief Checks whether the CRA is finished.
-		 *
-		 * @return true iff the early termination condition has been reached.
+		/** @brief Gets the result recovered so far.
 		 */
-		bool terminated() const
+		inline const Integer& getResidue() const
 		{
-			return Base::modbits() > bitbound_;
+            return MultiParent::getResidue().front();
+		}
+
+		/** @brief Gets the result recovered so far.
+		 */
+		inline Integer& getResidue(Integer& r) const
+		{
+			return r = getResidue();
+		}
+
+		/** @brief alias for getResidue
+		 */
+		inline Integer& result(Integer& r) const
+		{
+			return r = getResidue();
 		}
 	};
 
