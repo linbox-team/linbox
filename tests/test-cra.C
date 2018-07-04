@@ -36,6 +36,7 @@
 #include "linbox/algorithms/cra-domain.h"
 #include "linbox/algorithms/cra-single.h"
 #include "linbox/algorithms/cra-early-multip.h"
+#include "linbox/algorithms/rational-cra-full-multip.h"
 
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/algorithms/cra-full-multip.h"
@@ -559,6 +560,120 @@ int test_full_multip(std::ostream & report, size_t PrimeSize, size_t Size, size_
 	return EXIT_SUCCESS ;
 }
 
+// testing FullMultipRatCRA
+template< class T>
+int test_full_multip_rat(std::ostream & report, size_t PrimeSize, size_t Size, size_t Taille)
+{
+	typedef typename std::vector<T>                    Vect ;
+	typedef std::vector<Integer>                    IntVect ;
+
+	typedef Givaro::Modular<double >           ModularField ;
+	typedef ModularField::Element                    Element;
+	typedef typename std::vector<Element>             pVect ;
+
+    static_assert(std::is_same<T,Element>::value, "Can only test modular<double> for now");
+
+    /* true answer */
+    size_t bitlen = (PrimeSize-1) * Size / 2;
+    Integer act_den = Integer::random(bitlen);
+    IntVect act_num(Taille);
+    for (auto& num_elt : act_num) {
+        num_elt = Integer::random<false>(bitlen);
+    }
+
+	Vect primes ;
+    std::vector<ModularField> fields;
+    Vect denom_imgs;
+	/*  probably not all coprime... */
+	PrimeIterator<IteratorCategories::HeuristicTag> RP((unsigned )PrimeSize);
+	for (size_t i = 0 ; i < Size ; ++i) {
+        fields.emplace_back(*RP);
+        denom_imgs.emplace_back();
+        while (fields.back().isZero(fields.back().init(denom_imgs.back(), act_den))) {
+            // hit a denominator divisor, try again
+            ++RP;
+            fields.pop_back();
+            fields.emplace_back(*RP);
+        }
+        primes.emplace_back(*RP);
+        ++RP;
+	}
+
+	/*  residues */
+    std::vector<pVect> residues;
+    for (size_t i=0; i < Size; ++i) {
+        residues.emplace_back(Taille);
+        for (size_t j=0; j < Taille; ++j) {
+            fields[i].init(residues.back()[j], act_num[j]);
+            fields[i].divin(residues.back()[j], denom_imgs[i]);
+        }
+	}
+
+	auto genprime = primes.begin()  ; // prime iterator
+    auto field_it = fields.begin();
+	auto residu = residues.begin()  ; // residu iterator
+
+	double LogIntSize = (double)PrimeSize*std::log(2.)+std::log((double)Size)+1 ;
+
+	report << "FullMultipRatCRA (" <<  LogIntSize << ')' << std::endl;
+	FullMultipRatCRA<ModularField> cra( LogIntSize ) ;
+	IntVect res_num(Taille) ; // the result
+    Integer res_den;
+	{ /* init */
+		cra.initialize(*field_it, *residu);
+		++genprime;
+        ++field_it;
+		++residu;
+	}
+	while (genprime != primes.end() /* && !cra.terminated()*/ )
+	{ /* progress */
+		if (cra.noncoprime((integer)*genprime))
+		{
+			report << "bad luck, you picked twice the same prime..." <<std::endl;
+			report << "FullMultipRatCRA exiting successfully." << std::endl;
+			return EXIT_SUCCESS ; // pas la faute à cra...
+		}
+		cra.progress(*field_it,*residu);
+		++genprime;
+        ++field_it;
+		++residu ;
+	}
+
+	cra.result(res_num, res_den);
+
+    if (act_den % res_den != 0) {
+        report << " *** FullMultipRatCRA failed. ***" << std::endl;
+        report << "denominator mismatch: " << res_den << " != " << act_den << std::endl;
+        return EXIT_FAILURE ;
+    }
+    Integer dm = act_den / res_den;
+
+    for (size_t i = 0; i < Taille; ++i) {
+        if (act_num[i] != res_num[i]*dm) {
+            report << " *** FullMultipRatCRA failed. ***" << std::endl;
+            report << "numerator mismatch: " << res_num[i] << " != " << act_num[i] << std::endl;
+            return EXIT_FAILURE ;
+        }
+    }
+
+	for (size_t i = 0 ; i < Size ; ++i){
+		for (size_t j = 0 ; j < Taille ; ++j) {
+			Element tmp1, tmp2 ;
+			fields[i].init(tmp1,res_num[j]);
+            fields[i].init(tmp2, res_den);
+            fields[i].mulin(tmp2, residues[i][j]);
+			if(!fields[i].areEqual(tmp1,tmp2)){
+				report << " *** FullMultipRatCRA failed. ***" << std::endl;
+				return EXIT_FAILURE ;
+			}
+		}
+	}
+
+	report << "FullMultipRatCRA exiting successfully." << std::endl;
+
+	return EXIT_SUCCESS ;
+}
+
 
 
 #if 1 /* testing FullMultipFixedCRA */
@@ -713,6 +828,10 @@ bool test_CRA_algos(size_t PrimeSize, size_t Size, size_t Taille, size_t iters)
 
 #endif
 
+    /* FULL MULTIPLE RATIONAL */
+	_LB_REPEAT( if (test_full_multip_rat<double>(report,22,Size,Taille))                 pass = false ;  ) ;
+	_LB_REPEAT( if (test_full_multip_rat<double>(report,22,Size,Taille/4))                 pass = false ;  ) ;
+
 	return pass ;
 
 }
@@ -752,7 +871,7 @@ int main(int ac, char ** av)
 
 	pass = test_CRA_algos(PrimeSize,Size,Taille,iters) ;
 
-	commentator().stop(MSG_STATUS (pass), (const char *) 0,"CRA-Algos test suite");
+	commentator().stop(MSG_STATUS (pass), "CRA-Algos test suite");
 	return !pass ;
 }
 
