@@ -109,26 +109,12 @@ namespace LinBox
 		}
 
 
-		template< template<class, class> class Vect, template <class> class Alloc>
-		void progress (const Domain& D, const Vect<DomainElement, Alloc<DomainElement> >& e)
+        template <typename Vect>
+		void progress (const Domain& D, const Vect& e)
 		{
 			++iterationnumber;
-			typename Vect<DomainElement, Alloc<DomainElement> >::const_iterator eit=e.begin();
-			std::vector<std::vector< Integer > >::iterator rit = residues.begin();
-
-			for( ; eit != e.end(); ++eit, ++rit) {
-				Integer tmp;
-				D.convert(tmp, *eit);
-				rit->push_back(tmp);
-			}
-
-		}
-
-		void progress (const Domain& D, const BlasVector<Domain>& e)
-		{
-			++iterationnumber;
-			typename BlasVector<Domain >::const_iterator eit=e.begin();
-			std::vector<BlasVector< Givaro::ZRing<Integer> > >::iterator rit = residues.begin();
+			auto eit=e.begin();
+			auto rit = residues.begin();
 
 			for( ; eit != e.end(); ++eit, ++rit) {
 				Integer tmp;
@@ -139,13 +125,13 @@ namespace LinBox
 		}
 
 
-		template<template<class, class> class Vect, template <class> class Alloc>
-		Vect<Integer, Alloc<Integer> >& result (Vect<Integer, Alloc<Integer> > &d)
+        template <typename Vect>
+        Vect& result(Vect &d)
 		{
 			d.resize(0);
-			for(typename Vect<Integer, Alloc<Integer> >::const_iterator rit = residues.begin(); rit != residues.end(); ++rit) {
+            for (auto& res : residues) {
 				Integer tmp;
-				RnsToRing(tmp, *rit);
+				RnsToRing(tmp, res);
 				linbox_check(tmp>=0);
 				linbox_check(tmp<_product);
 				if (tmp>_midprod)
@@ -156,22 +142,6 @@ namespace LinBox
 			return d;
 		}
 
-
-		BlasVector<Givaro::ZRing<Integer> >& result (BlasVector<Givaro::ZRing<Integer> > &d)
-		{
-			d.resize(0);
-			for(std::vector<BlasVector< Givaro::ZRing<Integer> > >::const_iterator rit = residues.begin(); rit != residues.end(); ++rit) {
-				Integer tmp;
-				RnsToRing(tmp, *rit);
-				linbox_check(tmp>=0);
-				linbox_check(tmp<_product);
-				if (tmp>_midprod)
-					tmp -= _product ;
-				linbox_check(tmp<=_midprod);
-				d.push_back(tmp);
-			}
-			return d;
-		}
 
 		bool terminated()
 		{
