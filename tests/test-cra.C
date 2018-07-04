@@ -77,6 +77,91 @@ void call_progress(CRAType& cra, const Integer& p, const Integer& r) {
 	cra.progress(p, r);
 }
 
+// testing createSingleCRA
+template <class T, class RandomContext>
+int test_create_single(std::ostream & report, size_t PrimeSize, size_t Size, RandomContext rc)
+{
+	typedef typename std::vector<T> Vect ;
+	typedef typename Vect::iterator Iterator;
+
+        Integer pprod(1); // product of distinct primes
+	Vect primes(Size) ;
+	PrimeIterator<IteratorCategories::HeuristicTag> RP((unsigned )PrimeSize);
+	/*  primes, probably not all coprime... */
+	for (size_t i = 0 ; i < Size ; ++i) {
+		primes[i] = *RP;
+		++RP ;
+                if (pprod % primes[i]) {
+			pprod *= primes[i];
+                }
+	}
+
+	// true result
+	size_t resbits = 1 + (random() % (pprod.bitsize() - 1));
+	Integer actual = Integer::random(resbits);
+
+	/*  residues */
+	Vect residues(Size) ;
+	for (size_t i = 0 ; i < Size ; ++i)
+		residues[i] = actual % primes[i];
+
+	typedef Givaro::Modular<double> ModularField ;
+
+	Iterator genprime = primes.begin()  ; // prime iterator
+	Iterator residu = residues.begin()  ; // residu iterator
+
+	report << "createSingleCRA (" << pprod.bitsize()-1 << ")";
+	report << " actual length " << actual.bitsize() << std::endl;
+    auto cra = createSingleCRA(pprod.bitsize()-1, rc);
+	Integer res = 0; // the result
+	typedef ModularField::Element Element;
+	{ /* init */
+		call_initialize<ModularField>(cra, *genprime, *residu);
+	}
+	size_t itercount = 1;
+	size_t skips = 0;
+	while (genprime < primes.end() && !cra.terminated() )
+	{ /* progress */
+		if (cra.noncoprime((integer)*genprime)) {
+			//report << "bad luck, you picked twice the same prime..." <<std::endl;
+			++skips;
+		}
+		else {
+			call_progress<ModularField>(cra, *genprime, *residu);
+			++itercount;
+		}
+		++genprime;
+		++residu ;
+	}
+	report << "  " << itercount << " iterations, " << itercount*(PrimeSize-1) << " bits "
+		<< skips << " skips" << std::endl;
+
+	cra.result(res);
+	if (res != actual) {
+		report << res << " != " << actual << std::endl;
+		report << "pprod: " << pprod << "\n" << "pprod / actual: " << (pprod / actual) << "\n";
+		report << " *** createSingleCRA failed. ***" << std::endl;
+		return EXIT_FAILURE ;
+	}
+
+	for (size_t i = 0 ; i < Size ; ++i){
+		ModularField F(primes[i]);
+		Element tmp1,tmp2 ;
+		F.init(tmp1,res);
+		F.init(tmp2,residues[i]);
+		if(!F.areEqual(tmp1,tmp2)){
+			report << tmp1 << "!=" << tmp2 << std::endl;
+			report << " *** createSingleCRA failed. ***" << std::endl;
+			return EXIT_FAILURE ;
+		}
+	}
+
+	report << "createSingleCRA exiting successfully." << std::endl;
+
+	return EXIT_SUCCESS ;
+}
+
+
 // testing EarlySingleCRA
 template< class T >
 int test_early_single(std::ostream & report, size_t PrimeSize, size_t Size)
@@ -871,13 +956,16 @@ bool test_CRA_algos(size_t PrimeSize, size_t Size, size_t Taille, size_t iters)
 	std::ostream &report = LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT,
 							   INTERNAL_DESCRIPTION);
 
-
+    auto rng = std::make_shared<Givaro::GivRandom>();
 
 	typedef std::pair<size_t,size_t> Pair ;
 
 	/* EARLY SINGLE */
 	_LB_REPEAT( if (test_early_single<double>(report,22,Size))                       pass = false ;  ) ;
 	_LB_REPEAT( if (test_early_single<integer>(report,PrimeSize,Size))               pass = false ;  ) ;
+
+	_LB_REPEAT( if (test_create_single<double>(report,22,Size,HeuristicContext(rng)))                       pass = false ;  ) ;
+	_LB_REPEAT( if (test_create_single<integer>(report,PrimeSize,Size,HeuristicContext(rng)))               pass = false ;  ) ;
 
         /* PROB SINGLE */
         _LB_REPEAT( if (test_prob_single<double>(report,22,Size))                       pass = false ;  ) ;

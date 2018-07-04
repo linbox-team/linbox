@@ -37,6 +37,7 @@
 #include "linbox/solutions/methods.h"
 #include "linbox/algorithms/cra-domain.h"
 #include "linbox/algorithms/cra-full-multip.h"
+#include "linbox/algorithms/random-context.h"
 #include <vector>
 #include <array>
 #include <utility>
@@ -633,7 +634,39 @@ namespace LinBox
 		}
 	};
 
-}
+
+    template <class RandomContext, class RandomTag>
+    auto createSingleCRA(size_t bitbound, RandomContext&& context, RandomTag tag)
+        // the next line can be deleted with C++14
+        ->decltype(createSingleCRA(bitbound, std::forward<RandomContext>(context), tag.stricter()))
+    {
+        return createSingleCRA(bitbound, std::forward<RandomContext>(context), tag.stricter());
+    }
+
+    template <class RandomContext>
+    auto createSingleCRA(size_t bitbound, RandomContext&& context)
+        // the next line can be deleted with C++14
+        ->decltype(createSingleCRA(bitbound, std::forward<RandomContext>(context), context.getTag()))
+    {
+        return createSingleCRA(bitbound, std::forward<RandomContext>(context), context.getTag());
+    }
+
+    template <class RandomContext>
+    FullSingleCRA createSingleCRA(size_t bitbound, RandomContext, DeterministicAlgorithm) {
+        return FullSingleCRA(bitbound);
+    }
+
+    template <class RandomContext>
+    ProbSingleCRA createSingleCRA(size_t bitbound, RandomContext rc, MonteCarloAlgorithm) {
+        return ProbSingleCRA(bitbound, rc.errbound());
+    }
+
+    template <class RandomContext>
+    EarlySingleCRA createSingleCRA(size_t, RandomContext, HeuristicAlgorithm) {
+        return EarlySingleCRA();
+    }
+
+} // LinBox
 
 #endif //__LINBOX_cra_single_H
 
