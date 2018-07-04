@@ -126,6 +126,7 @@ int main (int argc, char **argv)
 		printPolynomial (clog, ZZ, c_A) << endl;
 		cout << tim << endl;
 
+#ifdef __LINBOX_HAVE_NTL
 		clog << "Do you want a factorization (y/n) ? ";
 		char tmp;
 		cin >> tmp;
@@ -143,6 +144,7 @@ int main (int argc, char **argv)
 			cout << tim << endl;
 
 		}
+#endif
 	}
 	if (argc == 3) {
 
