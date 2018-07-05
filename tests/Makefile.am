@@ -69,22 +69,22 @@ PERFPUBLISHERFILE = tests-report.xml
 #
 # Once present, tests should remain present, being moved from one group to another.
 BASIC_TESTS =					\
-	test-commentator			\
-	test-det					\
-	test-frobenius              \
 	test-solve                  \
-	test-rational-solver        \
-	test-rational-solver-adaptive \
+	test-local-smith-form-sparseelim\
+	test-det					\
+	test-regression			\
 	test-rank-u32				\
 	test-rank-md				\
 	test-rank-Int				\
+	test-frobenius              \
+	test-rational-solver        \
+	test-rational-solver-adaptive \
 	test-cra					\
 	test-blas-matrix			\
 	test-charpoly			\
+	test-commentator			\
 	test-isposdef				\
-	test-ispossemidef			\
-	test-local-smith-form-sparseelim\
-	test-regression
+	test-ispossemidef
 
 # All other tests.  
 # The checker.C determines which of these are built and run in "make fullcheck".
