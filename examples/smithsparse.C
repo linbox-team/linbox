@@ -93,7 +93,7 @@ int main(int argc, char* argv[])
 			return -1;
 		} 
 		if (m%2 == 0) { // local at small power of 2.
-            runpoweroftworank<uint32_t, Givaro::ZRing<int32_t> >(input, 32, 0);
+            runpoweroftworank<uint64_t, Givaro::ZRing<int64_t> >(input, 32, 0);
 		} else {  // local at general Z_p^e
 
 			typedef Givaro::Modular<int32_t> SPIR;
@@ -306,7 +306,7 @@ void display(I b, I e)
  cout << ")" << endl;
 }
 
-template<class Int_type, class Ring_type> 
+template<class Int_type, class Ring_type>
 void runpoweroftworank(ifstream& input, const size_t exponent, size_t StPr) {
     typedef std::vector<std::pair<size_t,Int_type> > Smith_t;
     typedef Ring_type Ring; // signed ?
@@ -335,9 +335,13 @@ void runpoweroftworank(ifstream& input, const size_t exponent, size_t StPr) {
     tim.stop();
 
     R.write(std::cout << "Local Smith Form ") << " : " << std::endl << '(';
-    for (auto  p = local.begin(); p != local.end(); ++p)
-        std::cout << '[' << p->first << ',' << p->second << "] ";
-    cout << ')' << endl;
+	int num = A.rowdim();
+    for (auto  p = local.begin(); p != local.end(); ++p) {
+        std::cout << '[' << p->second << ',' << p->first << "] ";
+		num -= p->first;
+	}
+	if (num > 0) std::cout << '[' << F2.zero << ',' << num << "] ";
+	std::cout << ')' << std::endl;
 
     std::cerr << tim << std::endl;
 } // runpowerof2
