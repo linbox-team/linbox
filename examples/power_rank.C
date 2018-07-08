@@ -77,9 +77,13 @@ int tmain (int argc, char **argv)
 
 
     F.write(std::cout << "Local Smith Form ") << " : " << std::endl << '(';
-    for (auto ip = local.begin(); ip != local.end(); ++ip) 
+	int num = B.rowdim();
+    for (auto ip = local.begin(); ip != local.end(); ++ip) {
         std::cout << '[' << ip->second << ',' << ip->first << "] ";
-    cout << ")" << endl;
+		num -= ip->first;
+	}
+	if (num > 0) std::cout << '[' << F.zero << ',' << num << "] ";
+	std::cout << ")" << std::endl;
 
         // Reposition Output with empty rows at the end
     auto newend = std::remove_if(

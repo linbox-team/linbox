@@ -63,8 +63,8 @@ namespace LinBox
 	template <class Matrix>
 	void SmithFormAdaptive::compute_local_long (BlasVector<Givaro::ZRing<Integer> >& s, const Matrix& A, int64_t p, int64_t e)
 	{
-		//std::ostream& report(std::cerr);
-		std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
+		std::ostream& report(std::cout);
+		//std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 
 		int order = (int)(A. rowdim() < A. coldim() ? A. rowdim() : A. coldim());
 		linbox_check ((s. size() >= (unsigned long)order) && (p > 0) && ( e >= 0));
@@ -157,7 +157,8 @@ namespace LinBox
 	void SmithFormAdaptive::compute_local_big (BlasVector<Givaro::ZRing<Integer> >& s, const Matrix& A, int64_t p, int64_t e)
 	{
 
-		std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
+		std::ostream& report(std::cout);
+		//std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		int order = (int)(A. rowdim() < A. coldim() ? A. rowdim() : A. coldim());
 		linbox_check ((s. size() >= (unsigned long) order) && (p > 0) && ( e >= 0));
 		integer T; T = order; T <<= 20; T = pow (T, (int) sqrt((double)order));
@@ -219,8 +220,8 @@ namespace LinBox
 	void SmithFormAdaptive::smithFormSmooth (BlasVector<Givaro::ZRing<Integer> >& s, const Matrix& A, long r, const std::vector<int64_t>& sev)
 	{
 		Givaro::ZRing<Integer> Z;
-		//std::ostream& report(std::cerr);
-		std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
+		std::ostream& report(std::cout);
+		//std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		report << "Computation the k-smooth part of the invariant factors starts(via local and rank):" << std::endl;
 		int order = (int)(A. rowdim() < A. coldim() ? A. rowdim() : A. coldim());
 		linbox_check (s. size() >= (unsigned long)order);
@@ -267,7 +268,8 @@ namespace LinBox
 	void SmithFormAdaptive::smithFormRough  (BlasVector<Givaro::ZRing<Integer> >& s, const Matrix& A, integer m)
 	{
 
-		std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
+		std::ostream& report(std::cout);
+		//std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		report << "Compuation of the k-rough part f the invariant factors starts(via EGV+ or Iliopolous):\n";
 		int order = (int)(A. rowdim() < A. coldim() ? A. rowdim() : A. coldim());
 		integer T; T = order; T <<= 20; T = pow (T, (int) sqrt((double)order));
@@ -335,7 +337,8 @@ namespace LinBox
 	{
 		//....
 		Givaro::ZRing<Integer> Z;
-		std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
+		std::ostream& report(std::cout);
+		//std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		report << "Computation the local smith form at each possible prime:\n";
 		int order = (int)(A. rowdim() < A. coldim() ? A. rowdim() : A. coldim());
 		linbox_check (s. size() >= (unsigned long)order);
@@ -393,7 +396,7 @@ namespace LinBox
 	{
 		//commentator().start ("Smith Form starts", "Smithform");
 
-		std::ostream& report = std::cout;
+		std::ostream& report(std::cout);
 		//std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		report << "Computation of the invariant factors starts (via an adaptive alg):" << std::endl;
 
@@ -436,7 +439,6 @@ namespace LinBox
 			if (Val == 1) {
 				smithFormVal (s, A, r, e);
 				report << "Computation of the invariant factors ends." << std::endl;
-				//std::cerr << "Computation of the invariant factors ends." << std::endl;
 				return;
 			}
 			else
@@ -515,7 +517,7 @@ namespace LinBox
 		//commentator().start ("Smith Form starts", "Smithform");
 		Givaro::ZRing<Integer> Z;
 
-		std::ostream& report(std::cerr);
+		std::ostream& report(std::cout);
 		//std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		report << "Computation of the invariant factors starts (via an adaptive alg):" << std::endl;
 
