@@ -304,7 +304,8 @@ int main (int argc, char **argv) {
         pass0 &= ruint_test<8>(rseed,r,m,n,2,e,d);
         pass0 &= ruint_test<8>(rseed,r,m,n,q,e,d/2.);
 
-        Givaro::IntPrimeDom IPD; IPD.seeding(rseed);
+        Givaro::GivRandom rng(rseed);
+        Givaro::IntPrimeDom IPD;
         std::mt19937 gen; gen.seed(rseed);
         for(size_t i(0); i<iter; ++i) {
             int64_t im((gen()%m)+1), in((gen()%n)+1);
@@ -313,7 +314,7 @@ int main (int argc, char **argv) {
             int32_t ie((gen()%e)+1);
             double id(d>0.5?0.5:d);
             Integer iq;
-            Integer::random(iq,std::max(q,Integer(131071)));
+            Integer::random(iq,std::max(q,Integer(131071)),rng);
             IPD.nextprimein(iq);
             pass0 &= test_sparse_local_smith(rseed,ir,im,in,iq,ie,id);
         }

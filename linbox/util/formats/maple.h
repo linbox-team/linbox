@@ -402,6 +402,7 @@ namespace LinBox
 							currentCol = 7;
 							break;
 						}
+                        // FALLTHRU
 					default:
 						return BAD_FORMAT;
 					}

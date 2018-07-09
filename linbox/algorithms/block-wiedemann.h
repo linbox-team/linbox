@@ -57,7 +57,7 @@ namespace LinBox
 	protected:
 		Context_     _BMD;
 		VectorDomain<Field>         _VDF;
-		const RandIter                   _rand;
+		mutable RandIter                   _rand;
 
 	public:
 		const Field & field() const { return _BMD.field(); }

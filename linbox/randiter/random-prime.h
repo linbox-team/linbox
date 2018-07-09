@@ -265,8 +265,8 @@ namespace LinBox
                 this->_prime |= _mask;   // set lowest bits to _mask
             }
 
-        const uint32_t getMask() const { return _mask; }
-        const uint32_t getShift() const { return _shift; }
+        uint32_t getMask() const { return _mask; }
+        uint32_t getShift() const { return _shift; }
     };
 
     template<>
