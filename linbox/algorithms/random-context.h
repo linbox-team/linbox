@@ -23,10 +23,8 @@
 #ifndef __LINBOX_RANDOM_CONTEXT_H
 #define __LINBOX_RANDOM_CONTEXT_H
 
-/** @file <+directory/file-name.h+>
- * @brief desc
- * long doxy desc
- * @bib bibliography
+/** @file algorithms/random_context.h
+ * @brief Randomization context for algorithm execution
  */
 
 #include <utility>
@@ -83,10 +81,8 @@ namespace LinBox
             _rng(new RNG(std::forward<Args>(args)...))
         {}
 
-        // use the default copy and move constructor
-        //XXX why not the const Self& version?
-        //RNGContext(const Self&) = default;
-        RNGContext(Self&) = default;
+        // use the default copy and move constructors
+        RNGContext(const Self&) = default;
         RNGContext(Self&&) = default;
 
         RNG& generator() { return *_rng; }
