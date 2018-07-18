@@ -1682,8 +1682,8 @@ if(Builder_.terminated()){
             
 		}
 #endif
-//////////////////////////////////////////////EN//COURS//FOR//SCAN//TAG//////////////////////////////////////////////
-#if 1
+////////////////////////EN//COURS//FOR//SCAN//TAG//BUT//INCONSISTENT//RESULT//FOR//ITERATIVE//CHECK/////////////////////////
+#if 0
 		template<class Function, class PrimeIterator>
 		BlasVector<Givaro::ZRing<Integer> > & operator() ( BlasVector<Givaro::ZRing<Integer> > & num, Integer& den, Function& Iteration, PrimeIterator& primeg)
 		{
@@ -1708,7 +1708,7 @@ ChineseRemainderRatOMP< RatCRABase > sequential(Builder_);
             Domain D(*primeg);
             BlasVector<Domain> r(D);
             Timer chrono;
- MPI_Request req;int tag=0,result=0;
+ MPI_Request req;int tag=0, result=0;
 				int primes[procs - 1];
 /*
 
@@ -1726,13 +1726,12 @@ ChineseRemainderRatOMP< RatCRABase > sequential(Builder_);
 }
 
 */
-while(true){
-std::cerr<<">>>>>>>>>>Process("<<process<<") >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"<<std::endl;
-if(result==0)  MPI_Scan ( &tag, &result, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD );
-else break;
-std::cerr<<"<<<<<<<<<<Process("<<process<<") <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"<<std::endl;
+std::cerr<<" ##### Process("<<process<<") has tag := "<<tag<<std::endl;
+std::cerr<<" ##### Process("<<process<<") has result := "<<result<<std::endl;
+std::cerr<<" ##### Process("<<process<<") has result := "<<result<<std::endl;
 			//  parent propcess
 			if(process == 0){
+//std::cerr<<" Process("<<process<<") has tag := "<<tag<<std::endl;
 //int tag=1;
                 //std::unordered_set<int> prime_sent;
 
@@ -1752,22 +1751,21 @@ std::cerr<<"<<<<<<<<<<Process("<<process<<") <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
                 float timeExec = 0;
                 long Nrecon = 0;
 
-
 				while(poison_pills_left > 0 ){
- 
 
-
-
+MPI_Scan ( &tag, &result, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD ); 
+//std::cerr<<" Process("<<process<<") has result := "<<result<<std::endl;
 					int idle_process = 0;
                     r.resize (r.size()+1);
+//std::cerr<<">>>>>>>>>>Process("<<process<<") >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"<<std::endl;
 					//  receive the beginnin and end of a vector in heapspace
 					_commPtr->recv(r.begin(), r.end(), MPI_ANY_SOURCE, 0); 
-               
+//std::cerr<<"<<<<<<<<<<Process("<<process<<") <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"<<std::endl;         
 					//  determine which process sent answer
 					//  and give them a new tag either to continue or to stop
 					idle_process = (_commPtr->get_stat()).MPI_SOURCE;
 //                    if(primes[idle_process - 1]==1)  poison_pills_left--;
-poison_pills_left-=primes[idle_process - 1];
+//poison_pills_left-=primes[idle_process - 1];
 
 //if(tag==0)  poison_pills_left--;
 					//  send the tag
@@ -1777,6 +1775,8 @@ poison_pills_left-=primes[idle_process - 1];
 
                     //Store the corresponding prime number
 pp = r[r.size()-1];
+if(pp > 0){
+
 Domain D(pp);
 //                    Domain D(r[r.size()-1]); //Domain D(primes[idle_process - 1]);
                     //Restructure the vector like before without added prime number
@@ -1791,9 +1791,11 @@ Domain D(pp);
                         //std::cout<<"Builder_.progress(D, r) in the manager process used CPU time (seconds): "<<chrono.usertime()<<std::endl;
                         Nrecon++;
                         timeExec += chrono.usertime();
-
+}else{poison_pills_left--;r.resize (r.size()-1);}
 //primes[idle_process - 1] = Builder_.terminated(); 
-primes[idle_process - 1] = (Builder_.terminated()) ? 1:0; tag=primes[idle_process - 1];
+//primes[idle_process - 1] = (Builder_.terminated()) ? 1:0; 
+tag = (Builder_.terminated()) ? 1:0;
+
 /*
 if(Builder_.terminated()){
 
@@ -1807,12 +1809,12 @@ if(Builder_.terminated()){
                 std::cerr<<"Process(0) reconstructs totally "<<Nrecon<<" times before stop"<<std::endl;
                 std::cerr<<"Reconstruction in process(0) spent CPU times : "<<timeExec<<std::endl;
                 
-				//return Builder_.result(num,den);
+				return Builder_.result(num,den);
                 
 			}
 			//  child process
 			else{
-                
+//std::cerr<<" Process("<<process<<") has tag := "<<tag<<std::endl;
 				int pp;
                 LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   gen(process,procs);  
 
@@ -1822,14 +1824,18 @@ if(Builder_.terminated()){
                 float timeExec = 0;
                 long Ncomputes = 0;
                 
-//				while(true){
-//std::cerr<<">>>>>>>>>>Process("<<process<<") >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"<<std::endl;
+				while(true){
+MPI_Scan ( &tag, &result, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD ); 
 //_commPtr->recv(pp, 0);
-//std::cerr<<"<<<<<<<<<<Process("<<process<<") <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"<<std::endl;
 
-					if(tag == 1){
-                std::cerr<<"Process("<<process<<") computes "<<Ncomputes<<" times before stop"<<std::endl;
-                std::cerr<<"Iteration in process("<<process<<") spent CPU times : "<<timeExec<<std::endl;
+//std::cerr<<" Process("<<process<<") has result := "<<result<<std::endl;
+					if(result>0){
+//                std::cerr<<"Process("<<process<<") computes "<<Ncomputes<<" times before stop"<<std::endl;
+//                std::cerr<<"Iteration in process("<<process<<") spent CPU times : "<<timeExec<<std::endl;
+
+                    Iteration(r, D);
+r.push_back(0);
+_commPtr->send(r.begin(), r.end(), 0, 0);
                     break;}
 //						break;
                     //++gen; while(Builder_.noncoprime(*gen) ) ++gen;
@@ -1848,21 +1854,332 @@ if(Builder_.terminated()){
                     timeExec += chrono.usertime();
                     //Add corresponding prime number as the last element in the result vector
                     r.push_back(*gen);
-					MPI_Isend(&r[0], r.size(), MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &req); //_commPtr->send(r.begin(), r.end(), 0, 0); 
-
-//				}
+//std::cerr<<">>>>>>>>>>Process("<<process<<") >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"<<std::endl;
+					//MPI_Isend(&r[0], r.size(), MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &req); 
+_commPtr->send(r.begin(), r.end(), 0, 0); 
+//std::cerr<<"<<<<<<<<<<Process("<<process<<") <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"<<std::endl;
+				}
 
                 
 			}
 
-         
+
+
 
 		}
-MPI_Barrier(MPI_COMM_WORLD);
-if(process==0)  return Builder_.result(num,den);
+
+
+#endif
+//////////////////////////////////SCAN//TAG//VALUE//AS//STOP//SIGNAL//BUT//SLOW///////////////////////////////////////
+#if 0
+		template<class Function, class PrimeIterator>
+		BlasVector<Givaro::ZRing<Integer> > & operator() ( BlasVector<Givaro::ZRing<Integer> > & num, Integer& den, Function& Iteration, PrimeIterator& primeg)
+		{
+            
+            //Using news prime number generation function to reduce MPI communication between manager and workers
+            
+			//  if there is no communicator or if there is only one process,
+			//  then proceed normally (without parallel)
+			if(_commPtr == 0 || _commPtr->size() == 1) {
+//				RationalRemainder< RatCRABase > sequential(Builder_);
+ChineseRemainderRatOMP< RatCRABase > sequential(Builder_);
+				return sequential(num, den, Iteration, primeg);
+//return OMPsequential(num, Iteration, primeg);
+			}
+            
+			int procs = _commPtr->size();
+			int process = _commPtr->rank();
+            
+            Domain D(*primeg);
+            BlasVector<Domain> r(D);
+            Timer chrono;
+ MPI_Request req;int tag=0;int res=0;
+
+
+
+				int pp;
+                LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   gen(process,procs);  
+
+				//  get a prime, compute, send back start and end
+				//  of heap addresses
+                std::unordered_set<int> prime_used;
+                float timeExec = 0;
+                long Ncomputes = 0;
+
+
+                Builder_.initialize( D, Iteration(r, D) );
+				int poison_pills_left = (procs - 1);
+
+                long Nrecon = 0;
+					int idle_process = 0;
+
+
+std::unordered_set<int> poison_pills;
+MPI_Scan ( &tag, &res, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD );
+
+//A raw patch to avoid deadlock for iterative test
+while(res>0){
+//std::cerr<<" >>>>> Process("<<process<<") has tag := "<<tag<<"\n >>>>> Process("<<process<<") has res := "<<res<<std::endl;
+MPI_Scan ( &tag, &res, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD );
+//std::cerr<<" <<<<< Process("<<process<<") has tag := "<<tag<<"\n <<<<< Process("<<process<<") has res := "<<res<<std::endl;
+}
+
+
+
+while(poison_pills_left > 0 ){ 
+
+MPI_Scan ( &tag, &res, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD );
+
+			//  parent propcess
+			if(process == 0){
+//std::cerr<<" ##### Process("<<process<<") has tag := "<<tag<<"\n ##### Process("<<process<<") has res := "<<res<<std::endl;
+
+
+
+                    r.resize (r.size()+1);
+
+					_commPtr->recv(r.begin(), r.end(), MPI_ANY_SOURCE, 0); 
+//std::cerr<<" Process("<<process<<") received r:= "<<r<<std::endl;
+					idle_process = (_commPtr->get_stat()).MPI_SOURCE;
+
+
+                    //Store the corresponding prime number
+pp = r[r.size()-1];
+                    r.resize (r.size()-1); 
+if(pp > 0){
+
+Domain D(pp);
+//                    Domain D(r[r.size()-1]); //Domain D(primes[idle_process - 1]);
+                    //Restructure the vector like before without added prime number
+
+                    
+//if(!Builder_.noncoprime(pp)){
+             
+                        chrono.start();
+
+                        Builder_.progress(D, r);
+                        chrono.stop(); 
+                        //std::cout<<"Builder_.progress(D, r) in the manager process used CPU time (seconds): "<<chrono.usertime()<<std::endl;
+                        Nrecon++;
+                        timeExec += chrono.usertime();
+
+}else{
+if( poison_pills.find(idle_process) != poison_pills.end() ) poison_pills_left--;
+}poison_pills.insert(idle_process);
+//primes[idle_process - 1] = (Builder_.terminated()) ? 1:0; 
+tag = (Builder_.terminated()) ? 1:0;
+
+
+
+                
+			}else{   //  child process
+//std::cerr<<" ##### Process("<<process<<") has tag := "<<tag<<"\n ##### Process("<<process<<") has res := "<<res<<std::endl;
+
+
+//				while(true){
+
+//_commPtr->recv(pp, 0);
+
+//std::cerr<<" Process("<<process<<") has res := "<<res<<std::endl;
+					if(res>0){
+//                std::cerr<<"Process("<<process<<") computes "<<Ncomputes<<" times before stop"<<std::endl;
+//                std::cerr<<"Iteration in process("<<process<<") spent CPU times : "<<timeExec<<std::endl;
+                    Iteration(r, D);
+r.push_back(0);
+
+_commPtr->send(r.begin(), r.end(), 0, 0);
+
+//std::cerr<<" Process("<<process<<") sent r:= "<<r<<" before termination"<<" then Process("<<process<<") is going to terminate !! "<<std::endl; 
+                    poison_pills_left=0;//break;
+}else{ 
+//						break;
+                    //++gen; while(Builder_.noncoprime(*gen) ) ++gen;
+                    ++gen; while(Builder_.noncoprime(*gen)||prime_used.find(*gen) != prime_used.end()) ++gen;
+                    prime_used.insert(*gen);
+                    
+                    //std::cout << *gen << std::endl;
+                    Domain D(*gen); //Domain D(pp);
+                    chrono.start();  
+
+                    Iteration(r, D);
+
+                    chrono.stop(); 
+                    //std::cout<<"Iteration(r,D) in the worker process used CPU time (seconds): "<<chrono.usertime()<<std::endl;
+                    Ncomputes++;
+                    timeExec += chrono.usertime();
+                    //Add corresponding prime number as the last element in the result vector
+                    r.push_back(*gen);
+//std::cerr<<">>>>>>>>>>Process("<<process<<") >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"<<std::endl;
+//std::cerr<<" Process("<<process<<") sending r:= "<<r<<std::endl;
+					//MPI_Isend(&r[0], r.size(), MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &req); 
+_commPtr->send(r.begin(), r.end(), 0, 0); 
+//std::cerr<<"<<<<<<<<<<Process("<<process<<") <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"<<std::endl;
+//				}//END FOR: while(true)
+}
+                
+			}
+
+
+
 
 }
 
+
+
+if(process == 0){
+                std::cerr<<"Process(0) reconstructs totally "<<Nrecon<<" times before stop"<<std::endl;
+                std::cerr<<"Reconstruction in process(0) spent CPU times : "<<timeExec<<std::endl; 
+				return Builder_.result(num,den);
+}
+
+		}
+
+
+#endif
+//////////////////////////////EN//COURS////RMA//GET//TAG//VALUE//AS//STOP//SIGNAL///////////////////////////////////////
+#if 1
+		template<class Function, class PrimeIterator>
+		BlasVector<Givaro::ZRing<Integer> > & operator() ( BlasVector<Givaro::ZRing<Integer> > & num, Integer& den, Function& Iteration, PrimeIterator& primeg)
+		{
+            
+            //Using news prime number generation function to reduce MPI communication between manager and workers
+            
+			//  if there is no communicator or if there is only one process,
+			//  then proceed normally (without parallel)
+			if(_commPtr == 0 || _commPtr->size() == 1) {
+//				RationalRemainder< RatCRABase > sequential(Builder_);
+ChineseRemainderRatOMP< RatCRABase > sequential(Builder_);
+				return sequential(num, den, Iteration, primeg);
+//return OMPsequential(num, Iteration, primeg);
+			}
+            
+			int procs = _commPtr->size();
+			int process = _commPtr->rank();
+            
+            Domain D(*primeg);
+            BlasVector<Domain> r(D);
+            Timer chrono;
+ MPI_Request req;int tag=0;int res=0;
+MPI_Win win;
+int tag2=0;
+MPI_Win_create(&tag2, 1, sizeof(int), MPI_INFO_NULL, MPI_COMM_WORLD, &win);
+MPI_Win_fence(0, win);
+
+
+				int pp;
+                LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   gen(process,procs);  
+
+				//  get a prime, compute, send back start and end
+				//  of heap addresses
+                std::unordered_set<int> prime_used;
+                float timeExec = 0;
+                long Ncomputes = 0;
+
+
+                Builder_.initialize( D, Iteration(r, D) );
+				int poison_pills_left = (procs - 1);
+
+                long Nrecon = 0;
+					int idle_process = 0;
+
+
+std::unordered_set<int> poison_pills;
+
+
+while(poison_pills_left > 0 ){ 
+
+
+			//  parent propcess
+			if(process == 0){
+
+
+                    r.resize (r.size()+1);
+
+					_commPtr->recv(r.begin(), r.end(), MPI_ANY_SOURCE, 0); 
+//std::cerr<<" Process("<<process<<") received r:= "<<r<<std::endl;
+					idle_process = (_commPtr->get_stat()).MPI_SOURCE;
+
+
+                    //Store the corresponding prime number
+pp = r[r.size()-1];
+                    r.resize (r.size()-1); 
+if(pp > 0){
+
+Domain D(pp);
+//                    Domain D(r[r.size()-1]); //Domain D(primes[idle_process - 1]);
+                    //Restructure the vector like before without added prime number
+
+
+             
+                        chrono.start();
+
+                        Builder_.progress(D, r);
+                        chrono.stop(); 
+                        Nrecon++;
+                        timeExec += chrono.usertime();
+
+}else{
+if( poison_pills.find(idle_process) != poison_pills.end() ) poison_pills_left--;
+}poison_pills.insert(idle_process);
+//primes[idle_process - 1] = (Builder_.terminated()) ? 1:0; 
+tag = (Builder_.terminated()) ? 1:0;
+tag2=(Builder_.terminated()) ? 1:0;
+
+
+                
+			}else{   //  child process
+
+MPI_Get(&tag2, 1, MPI_INT, 0, 0, 1, MPI_INT, win);
+
+				if(tag2>0){	
+                std::cerr<<"Process("<<process<<") computes "<<Ncomputes<<" times before stop"<<std::endl;
+                std::cerr<<"Iteration in process("<<process<<") spent CPU times : "<<timeExec<<std::endl;
+                    Iteration(r, D);
+r.push_back(0);
+
+_commPtr->send(r.begin(), r.end(), 0, 0);
+
+                    poison_pills_left=0;//break;
+
+}else{ 
+
+                    ++gen; while(Builder_.noncoprime(*gen)||prime_used.find(*gen) != prime_used.end()) ++gen;
+                    prime_used.insert(*gen);
+                    
+                    //std::cout << *gen << std::endl;
+                    Domain D(*gen); //Domain D(pp);
+                    chrono.start();  
+
+                    Iteration(r, D);
+
+                    chrono.stop(); 
+
+                    Ncomputes++;
+                    timeExec += chrono.usertime();
+                    //Add corresponding prime number as the last element in the result vector
+                    r.push_back(*gen);
+
+					//MPI_Isend(&r[0], r.size(), MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &req); 
+_commPtr->send(r.begin(), r.end(), 0, 0); 
+
+}
+                
+			}
+
+
+
+
+}
+
+
+
+if(process == 0){
+                std::cerr<<"Process(0) reconstructs totally "<<Nrecon<<" times before stop"<<std::endl;
+                std::cerr<<"Reconstruction in process(0) spent CPU times : "<<timeExec<<std::endl; 
+				return Builder_.result(num,den);
+}
+
+		}
 
 
 #endif

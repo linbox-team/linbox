@@ -189,6 +189,7 @@ bool test_set(BlasVector<Givaro::ZRing<Integer> > &X2,
 #endif 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+#if 0
 //std::cerr<<"Proc("<<Cptr->rank()<<") >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "<<std::endl;
 
 BlasVector<Givaro::Modular<double> > r;r.resize(A.coldim()+1);
@@ -206,6 +207,7 @@ Cptr->send(r.begin(), r.end(), 0, 0);
 r.resize(0);
 
 //std::cerr<<"Proc("<<Cptr->rank()<<") <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< "<<std::endl;
+#endif
 ////////////////////////////////////////////////////////////////////////////////////////////////////
  
   /***********************
@@ -239,6 +241,7 @@ r.resize(0);
 #endif
   //  DenseVector B2(ZZ, A.coldim());
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+#if 0
 //std::cerr<<"Proc("<<Cptr->rank()<<") >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "<<std::endl;
 r.resize(A.coldim()+1);
 if(0==Cptr->rank()){
@@ -255,6 +258,7 @@ Cptr->send(r.begin(), r.end(), 0, 0);
 r.resize(0);
 
 //std::cerr<<"Proc("<<Cptr->rank()<<") <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< "<<std::endl;
+#endif
 ////////////////////////////////////////////////////////////////////////////////////////////////////
   
 #ifdef __LINBOX_HAVE_MPI
@@ -266,8 +270,8 @@ r.resize(0);
       
       std::cout << "Compute with A: " << A.rowdim() << " by " << A.coldim() << std::endl;
       A.write(std::cout << "A::=",Tag::FileFormat::Maple) << ';' << std::endl;
-    */
     
+    */
     // solveCRA
     /* 
        std::cout << "MPI CRA Solution is [";
@@ -282,8 +286,8 @@ r.resize(0);
     std::cout << "CPU time (seconds): " << end-start << std::endl;
 #endif
     
-    
     tag=checkResult (ZZ, A, B, X2, d);
+
 #ifdef __LINBOX_HAVE_MPI
   }
 #endif 
@@ -329,7 +333,7 @@ int main(int argc, char ** argv)
   DenseVector X(ZZ, A.rowdim()), X2(ZZ, A.rowdim()),  B(ZZ, A.rowdim());
 
 ////////////////////////////////////Always//Generates//The//Same//Matrix//////////////////////////////////////////
-/*
+#if 0
 size_t r=0;
 
 
@@ -360,11 +364,12 @@ result.clear();
 
 LinBox::rank (r, A);
 }
-*/
+
 
       //LinBox::rank (r, A); std::cout<<"The rank of generated matrix A is:"<<r<<std::endl; 
 //      genData (A, bits);
 //      genData (B, bits); 
+#endif
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   for(long j=0;j<(long)niter;j++){  
@@ -388,7 +393,7 @@ LinBox::rank (r, A);
 #ifdef __LINBOX_HAVE_MPI 	
     }//End of BLock for process(0)
 #endif
-  
+
 #ifdef __LINBOX_HAVE_MPI
     //distribute big integer compatible data
     {
