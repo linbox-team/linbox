@@ -1149,7 +1149,6 @@ namespace LinBox { /*  uint32_t */
 
 }
 
-#include <givaro/modular-integral.h>
 
 namespace LinBox { /*  uint64_t */
 

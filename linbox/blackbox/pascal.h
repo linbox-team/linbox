@@ -12,6 +12,7 @@
 
 #include "linbox/util/debug.h"
 #include "linbox/matrix/sliced3.h"
+#include "linbox/blackbox/blockbb.h"
 
 #define PASCAL_BASECASE_THRESH 81
 
@@ -270,6 +271,11 @@ protected:
 		while (powersOfThree_[i] < x) {++i;}
 		return powersOfThree_[i];
 	}
+};
+
+template<class Field>
+struct is_blockbb<PascalBlackbox<Field>> {
+	static const bool value = true;
 };
 
 }

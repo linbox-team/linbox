@@ -39,20 +39,20 @@
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/matrix/factorized-matrix.h"
 #include "linbox/matrix/matrix-domain.h"
-#include "linbox/algorithms/sigma-basis.h"
-
+#include "linbox/algorithms/polynomial-matrix/order-basis.h"
+#include "linbox/matrix/polynomial-matrix.h"
 
 #include "linbox/util/timer.h"
 
 // #define  __CHECK_RESULT
 // #define __DEBUG_MAPLE
 // #define __CHECK_LOOP
-// #define __PRINT_MINPOLY
 // #define __CHECK_DISCREPANCY
 // #define __CHECK_TRANSFORMATION
-// #define __CHECK_SIGMA_RESULT
-// #define __PRINT_SEQUENCE
-// #define __PRINT_SIGMABASE
+//  #define __CHECK_SIGMA_RESULT
+//  #define __PRINT_SEQUENCE
+//  #define __PRINT_SIGMABASE
+// #define __PRINT_MINPOLY
 
 //#define _BM_TIMING
 #define DEFAULT_BLOCK_EARLY_TERM_THRESHOLD 10
@@ -338,7 +338,7 @@ namespace LinBox
 
                                 /*
                                 Coefficient ZeroD(field(),m+n,n);
-                                if (_MD.areEqual(Discrepancy,ZeroD))
+                                if (_MD.areEqual(Discrepancy,ZeroD)) 
                                         early_stop=0;
                                 else
                                         early_stop++;
@@ -557,14 +557,15 @@ namespace LinBox
 		}
 
 
-		std::vector<size_t> masseyblock_left_rec (std::vector<Coefficient> &P)
+		std::vector<size_t> masseyblock_left_rec (std::vector<Coefficient> &lingen)
 		{
 #ifdef __CHECK_RESULT
-			std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+			//std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+                        std::ostream& report = std::cout;
 #endif
 			// Get information of the Sequence (U.A^i.V)
 			size_t length = _container->size();
-			size_t m, n;
+			size_t m, n, mn;
 			m = _container->rowdim();
 			n = _container->coldim();
 
@@ -572,82 +573,97 @@ namespace LinBox
 			const Coefficient Zero(field(),2*m,2*m);
             const Coefficient Zeromn(field(),2*m,n);
 
+            mn=m+n;
+                        
+                        
 			// Make the Power Serie from  Sequence (U.A^i.V) and Identity
-			//_container->recompute(); // make sure sequence is already computed
-			std::vector<Coefficient> PowerSerie(length,Zeromn);
+			//_container->recompute(); // make sure sequence is already computed			
+                        typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain, Field> PMatrix;
+                        PMatrix PowerSerie(field(),mn,n,length);
+                        
 			typename Sequence::const_iterator _iter (_container->begin ());
-			for (size_t i=0;i< length; ++i, ++_iter){
+			for (size_t i=0;i< length; ++i, ++_iter)
 				for (size_t j=0;j<m;++j)
 					for (size_t k=0;k<n;++k)
-						PowerSerie[i].setEntry(j,k, (*_iter).getEntry(j,k));
-			}
+						field().assign(PowerSerie.ref(j,k,i), (*_iter).getEntry(j,k));                        
 			for (size_t j=0;j<n;++j)
-				PowerSerie[0].setEntry(m+j, j, field().one);
+				field().assign(PowerSerie.ref(m+j,j,0),field().one);
 #ifdef __PRINT_SEQUENCE
 			report<<"PowerSerie:=";
-			write_maple(field(),PowerSerie);
+			PowerSerie.write(report);
 #endif
 
-
-			// Set the defect to [0 ... 0 1 ... 1]^T
-			std::vector<size_t> defect(2*m,0);
-			for (size_t i=m;i< 2*m;++i)
-				defect[i]=1;
+                        // set the shift to [ 0 .. 0 1 .. 1]
+                        std::vector<size_t> shift(mn,0);
+                        std::fill(shift.begin()+m,shift.end(),1);
 
 			// Prepare SigmaBase
-			std::vector<Coefficient> SigmaBase(length,Zero);
+			PMatrix SigmaBase(field(),mn,mn,length);
 
-			// Compute Sigma Base up to the order length - 1
-			SigmaBasis<Field> SB(field(), PowerSerie);
-			SB.left_basis(SigmaBase, length-1, defect);
+			// Compute OrderBasis up to the order length 
+                        OrderBasis<Field> SB(field());
+                        SB.PM_Basis(SigmaBase, PowerSerie, length, shift);
+
 
 			// take the m rows which have lowest defect
 			// compute permutation such that first m rows have lowest defect
-			std::vector<size_t> Perm(2*m);
-			for (size_t i=0;i<2*m;++i)
+			std::vector<size_t> Perm(mn);
+			for (size_t i=0;i<mn;++i)
 				Perm[i]=i;
-			for (size_t i=0;i<2*m;++i) {
+			for (size_t i=0;i<mn;++i) {
 				size_t idx_min=i;
-				for (size_t j=i+1;j<2*m;++j)
-					if (defect[j]< defect[idx_min])
+				for (size_t j=i+1;j<m+n;++j)
+					if (shift[j]< shift[idx_min])
 						idx_min=j;
-				std::swap(defect[i],defect[idx_min]);
+				std::swap(shift[i],shift[idx_min]);
 				Perm[i]=idx_min;
 			}
-			BlasPermutation<size_t> BPerm(Perm);
+
+                        // convert to polynomial of matrices
+                        PolynomialMatrix<PMType::matfirst,PMStorage::plain, Field> Sigma (field(), mn,mn,SigmaBase.size());                        
+                        Sigma.copy(SigmaBase);
+
+                        BlasPermutation<size_t> BPerm(Perm);
 
 			// Apply BPerm to the Sigma Base
-			for (size_t i=0;i<SigmaBase.size();++i)
-				_BMD.mulin_right(BPerm,SigmaBase[i]);
+			for (size_t i=0;i<Sigma.size();++i)
+				_BMD.mulin_right(BPerm,Sigma[i]);
 
+
+                        
 #ifdef __PRINT_SIGMABASE
-                        report<<"order is "<<length-1<<endl;
+                        report<<"order is "<<length-1<<std::endl;
 			report<<"SigmaBase:=";
-			write_maple(field(),SigmaBase);
+                        Sigma.write(report);
+                        report<<"shift:=[";
+                        std::ostream_iterator<int> out_it (report,", ");
+                        std::copy ( shift.begin(), shift.end(), out_it );
+                        report<<"];\n";
+                        
 #endif
-			// Compute the reverse polynomial of SigmaBase according to defect of each row
-			size_t max=defect[0];
-			for (size_t i=0;i<m;++i)
-				if (defect[i] > max)
-					max=defect[i];
 
-                        const Coefficient tmp(field(),m,m);
-			P = std::vector<Coefficient> (max+1,tmp);
-			for (size_t i=0;i<m;i++)
-				for (size_t j=0;j<=defect[i];j++)
-					for (size_t k=0;k<m;k++)
-						field().assign(P[defect[i]-j].refEntry(i,k), SigmaBase[j].getEntry(i,k));
+                        // Compute the reverse polynomial of Sigma according to row shift 
+                        size_t max= *std::max_element(shift.begin(),shift.begin()+m);
+                        //PMatrix lingen(field(),m,m,max+1);
+                        Coefficient Zeromm(field(),m,m);
+                        lingen.resize(max+1,Zeromm);
+                        for (size_t i=0;i<m;i++)
+                                for (size_t j=0;j<=shift[i];j++)
+                                        for (size_t k=0;k<m;k++)
+                                                field().assign(lingen[shift[i]-j].refEntry(i,k), Sigma.ref(i,k,j));
 
+
+                     
 #ifdef __CHECK_RESULT
 			report<<"Check minimal polynomial application\n";
 			bool valid=true;
-			for (size_t i=0;i< length - P.size();++i){
+			for (size_t i=0;i< length - lingen.size();++i){
 				Coefficient res(field(),m,n);
 				Coefficient Power(PowerSerie[i],0,0,m,n);
-				_BMD.mul(res,P[0],Power);
-				for (size_t k=1,j=i+1;k<P.size();++k,++j){
+				_BMD.mul(res,lingen[0],Power);
+				for (size_t k=1,j=i+1;k<lingen.size();++k,++j){
 					Coefficient Powerview(PowerSerie[j],0,0,m,n);
-					_BMD.axpyin(res,P[k],Powerview);
+					_BMD.axpyin(res,lingen[k],Powerview);
 				}
 				for (size_t j=0;j<m*n;++j)
 					if (!field().isZero(*(res.getPointer()+j)))
@@ -661,11 +677,11 @@ namespace LinBox
 
 #ifdef __PRINT_MINPOLY
 			report<<"MinPoly:=";
-			write_maple(field(),P);
+                        write_maple(field(),lingen);
 #endif
 			std::vector<size_t> degree(m);
 			for (size_t i=0;i<m;++i)
-				degree[i] = defect[i];
+				degree[i] = shift[i];
 			return degree;
 		}
 

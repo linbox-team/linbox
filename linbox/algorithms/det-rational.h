@@ -61,15 +61,14 @@ namespace LinBox
 		int setSwitcher(int s) {return switcher = s;}
 
 		template<typename Int, typename Field>
-		Int& operator()(Int& P, const Field& F) const
+		IterationResult operator()(Int& P, const Field& F) const
 		{
 			if (switcher ==1) {
-				t1->operator()(P,F);
+				return t1->operator()(P,F);
 			}
 			else {
-				t2->operator()(P,F);
+				return t2->operator()(P,F);
 			}
-			return P;
 		}
 	};
 
@@ -97,7 +96,7 @@ namespace LinBox
 		void detMul (const Integer& m) {mul = m;}
 
 		template<typename Int, typename Field>
-		Int& operator()(Int& P, const Field& F) const
+		IterationResult operator()(Int& P, const Field& F) const
 		{
 			typedef typename Blackbox::template rebind<Field>::other FBlackbox;
 			FBlackbox Ap(A,F);
@@ -106,7 +105,8 @@ namespace LinBox
 			F.init(e, mul);
 			F.mulin(P,e);
 			F.init(e, div);
-			return F.divin(P,e);
+			F.divin(P,e);
+			return IterationResult::CONTINUE;
 		}
 	};
 
@@ -128,7 +128,7 @@ namespace LinBox
 		{}
 
 		template<typename Int, typename Field>
-		Int& operator()(Int& P, const Field& F) const
+		IterationResult operator()(Int& P, const Field& F) const
 		{
 			typedef typename Blackbox::template rebind<Field>::other FBlackbox;
 			FBlackbox Ap(A,F);
