@@ -119,9 +119,9 @@ namespace LinBox
 			MBD.left_minpoly_rec(minpoly,degree);
 			//MBD.printTimer();
 
-                        //cout<<"minpoly is: \n";
-                        //write_maple(field(),minpoly);
-                        //cout<<endl;
+            std::cout<<"minpoly is: \n";
+            write_maple(field(),minpoly);
+            std::cout<<std::endl;
 
 			size_t idx=0;
 			if ( field().isZero(minpoly[0].getEntry(0,0))) {

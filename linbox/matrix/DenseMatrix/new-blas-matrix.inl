@@ -74,7 +74,8 @@ namespace LinBox
 		typename _Matrix::ConstIterator         iter_value = A.Begin();
 		typename _Matrix::ConstIndexedIterator  iter_index = A.IndexedBegin();
 
-		for (;iter_value != A.End(); ++iter_value,++iter_index){
+        // PG -> BUG if we use iter_value !=A.End() 
+		for (;iter_index != A.IndexedEnd(); ++iter_value,++iter_index){
 			int64_t i,j;
 			i=(int64_t)iter_index.rowIndex()-(int64_t)i0;
 			j=(int64_t)iter_index.colIndex()-(int64_t)j0;

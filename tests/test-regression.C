@@ -372,7 +372,7 @@ bool testDixonRectangularSolver(const Specifier& m) {
     return true;
 }
 
-bool testSparseDiagDet(size_t n){
+bool testSparseDiagDet(uint64_t n){
     ZRingInts ZZ;
     SparseMatrix<ZRingInts> A(ZZ, n, n);
     Integer x(2);
@@ -392,7 +392,7 @@ bool testSparseDiagDet(size_t n){
     return true;
 }
 
-bool testSparse1x1Det(unsigned long v){
+bool testSparse1x1Det(uint64_t v){
     ZRingInts ZZ;
     SparseMatrix<ZRingInts> A(ZZ, 1, 1);
     Integer x(v);

@@ -35,7 +35,7 @@
 #define __LINBOX_modular_double_H
 
 #include <cmath>
-#include <givaro/modular-double.h>
+#include <givaro/modular-floating.h>
 
 #include "linbox/linbox-config.h"
 #include "linbox/integer.h"

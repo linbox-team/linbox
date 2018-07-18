@@ -2043,13 +2043,13 @@ namespace LinBox
 	template<class Field, class Polynomial, class Matrix>
 	Polynomial &
 	BlasMatrixDomainCharpoly<Field,Polynomial,Matrix>::operator() ( 
-        const Field    &F, Polynomial    &P, const Matrix   &A) const
+        const Field    &F, Polynomial    &P, Matrix   &A) const
 	{
 		size_t n = A.coldim();
 		P.clear();
 		linbox_check( n == A.rowdim());
-		typedef typename Matrix::constSubMatrixType constSubMatrixType ;
-		constSubMatrixType A_v(A);
+		typedef typename Matrix::subMatrixType subMatrixType ;
+		subMatrixType A_v(A);
 
         typename Field::RandIter G(F);
         typename Givaro::Poly1Dom<Field> PolDom(F);
