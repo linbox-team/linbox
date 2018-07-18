@@ -25,7 +25,8 @@
 
 
 
-
+#ifndef __LINBOX_ORDER_BASIS
+#define __LINBOX_ORDER_BASIS
 
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/matrix/polynomial-matrix.h"
@@ -882,6 +883,7 @@ namespace LinBox {
         
 } // end of namespace LinBox
 
+#endif
 // Local Variables:
 // mode: C++
 // tab-width: 4

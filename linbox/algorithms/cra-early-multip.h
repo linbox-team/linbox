@@ -36,7 +36,7 @@
 #include <vector>
 #include <utility>
 
-#include "linbox/algorithms/cra-early-single.h"
+#include "linbox/algorithms/cra-single.h"
 #include "linbox/algorithms/cra-full-multip.h"
 
 
@@ -214,27 +214,24 @@ namespace LinBox
 			EarlySingleCRA<Domain>::residue_ = 0;
 
 			/* Computation of residue_ */
-			std::vector< LazyProduct >::iterator _mod_it = FullMultipCRA<Domain>::RadixPrimeProd_.begin();// list of prime products
-			std::vector< std::vector<Integer> >::iterator _tab_it = FullMultipCRA<Domain>::RadixResidues_.begin();// list of residues as vectors of size 1
-			std::vector< bool >::iterator    _occ_it = FullMultipCRA<Domain>::RadixOccupancy_.begin();//flags of occupied fields
-			int prev_shelf=0, shelf = 0;
-			for (;_occ_it != FullMultipCRA<Domain>::RadixOccupancy_.end(); ++_mod_it, ++_tab_it, ++_occ_it ) {
-				++shelf;
-				if (*_occ_it) {
-					Integer D = _mod_it->operator()();
+            for (auto it = FullMultipCRA<Domain>::shelves_begin();
+                 it != FullMultipCRA<Domain>::shelves_end();
+                 ++it)
+            {
+                if (it->occupied) {
+					Integer D = it->mod();
 					std::vector<Integer> e_v(randv.size());
-					e_v = *_tab_it;
+					e_v = it->residue;
 					Integer z;
 					dot(z,D, e_v, randv);
 					Integer prev_residue_ = EarlySingleCRA<Domain>::residue_;
 					EarlySingleCRA<Domain>::progress(D,z);
 					if (prev_residue_ == EarlySingleCRA<Domain>::residue_ )
-						EarlySingleCRA<Domain>::occurency_ = EarlySingleCRA<Domain>::occurency_ +  (shelf - prev_shelf);
+						EarlySingleCRA<Domain>::occurency_ += it->count;
 					if ( EarlySingleCRA<Domain>::terminated() ) {
 						return true;
 					}
-					prev_shelf = shelf;
-				}
+                }
 			}
 			return false;
 		}

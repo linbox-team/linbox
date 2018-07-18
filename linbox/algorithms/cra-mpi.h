@@ -188,7 +188,8 @@ namespace LinBox
 					//  send the prime to a slave process
 					_commPtr->send(primes[i - 1], i);
 				}
-				Builder_.initialize( D, Iteration(r, D) );
+                                Iteration(r, D);
+				Builder_.initialize( D, r );
 				int poison_pills_left = procs - 1;
 				while(poison_pills_left > 0 ){
 					int idle_process = 0;

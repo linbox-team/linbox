@@ -29,10 +29,16 @@
 #include <vector>
 #include <math.h> 
 
-#include "linbox/algorithms/poly-smith-form.h"
+#include "linbox/matrix/sparse-matrix.h"
+#include "linbox/matrix/matrix-domain.h"
+#include "linbox/matrix/random-matrix.h"
+
+#include "linbox/blackbox/block-compose.h"
+#include "linbox/blackbox/fflas-csr.h"
+
 #include "linbox/algorithms/block-coppersmith-domain.h"
 #include "linbox/algorithms/blackbox-block-container.h"
-#include "linbox/matrix/random-matrix.h"
+#include "linbox/algorithms/poly-smith-form.h"
 
 namespace LinBox
 {

@@ -22,20 +22,21 @@
  * ========LICENCE========
  */
 
-/*! @file algorithms/cra-early-single.h
+/*! @file algorithms/cra-single.h
  * @ingroup algorithms
- * @brief NO DOC
+ * @brief Chinese remaindering of a single value
  */
 
 
-#ifndef __LINBOX_cra_early_single_H
-#define __LINBOX_cra_early_single_H
+#ifndef __LINBOX_cra_single_H
+#define __LINBOX_cra_single_H
 
 #include "linbox/util/timer.h"
 #include <stdlib.h>
 #include "linbox/integer.h"
 #include "linbox/solutions/methods.h"
 #include "linbox/algorithms/cra-domain.h"
+#include "linbox/algorithms/cra-full-multip.h"
 #include <vector>
 #include <array>
 #include <utility>
@@ -435,7 +436,7 @@ namespace LinBox
 		 *
 		 * @return true iff the early termination condition has been reached.
 		 */
-		bool terminated()
+		bool terminated() const
 		{
 			return occurency_ > EARLY_TERM_THRESHOLD;
 		}
@@ -455,7 +456,7 @@ namespace LinBox
 		typedef SingleCRABase<Domain_Type>	Base;
 		typedef Domain_Type			Domain;
 		typedef typename Domain::Element DomainElement;
-		typedef EarlySingleCRA<Domain> Self_t;
+		typedef ProbSingleCRA<Domain> Self_t;
 
 	protected:
 		const size_t bitbound_;
@@ -547,15 +548,104 @@ namespace LinBox
 		 *
 		 * @return true iff the early termination condition has been reached.
 		 */
-		bool terminated()
+		bool terminated() const
 		{
 			return curfailprob_ <= failbound_;
 		}
 	};
 
+
+	/**  @brief Chinese Remaindering with full precision and no chance of failure.
+	 *
+	 * @ingroup CRA
+	 *
+	 */
+	template<class Domain_Type>
+	struct FullSingleCRA :public FullMultipCRA<Domain_Type>{
+		typedef SingleCRABase<Domain_Type>	Base;
+		typedef Domain_Type			Domain;
+		typedef typename Domain::Element DomainElement;
+		typedef FullSingleCRA<Domain> Self_t;
+        using MultiParent = FullMultipCRA<Domain>;
+
+	public:
+		/** @brief Creates a new deterministic CRA object.
+		 *
+		 * @param	bitbound  An upper bound on the number of bits in the result.
+		 * @param	failprob  An upper bound on the probability of failure.
+		 */
+		FullSingleCRA(const size_t bitbound) :
+            MultiParent(((double)bitbound) * log(2.0))
+		{
+		}
+
+		/** @brief Initialize the CRA with the first residue.
+		 *
+		 * The eventually-recovered number will be congruent to e modulo D.
+		 * This function must be called just once. Subsequent calls
+		 * should be made to the progress() function.
+		 *
+		 * Either the types of D and e should both be Integer,
+		 * or D is the domain type (e.g., Modular<double>) and
+		 * e is the element type (e.g., double)
+		 *
+		 * @param D	The modulus
+		 * @param e	The residue
+		 */
+		template <typename ModType, typename ResType>
+		void initialize (const ModType& D, const ResType& e)
+		{
+            std::array<ResType,1> v {e};
+            MultiParent::initialize(D,v);
+		}
+
+		/** @brief Update the residue and termination condition.
+		 *
+		 * The eventually-recovered number will be congruent to e modulo D.
+		 *
+		 * The initialize function must be called at least once before
+		 * calling this one.
+		 *
+		 * Either the types of D and e should both be Integer,
+		 * or D is the domain type (e.g., Modular<double>) and
+		 * e is the element type (e.g., double)
+		 *
+		 * @param D	The modulus of the new image
+		 * @param e	The residue modulo D
+		 */
+		template <typename ModType, typename ResType>
+		void progress (const ModType& D, const ResType& e)
+		{
+			// Precondition : initialize has been called once before
+            std::array<ResType,1> v {e};
+            MultiParent::progress(D, v);
+		}
+
+		/** @brief Gets the result recovered so far.
+		 */
+		inline const Integer& getResidue() const
+		{
+            return MultiParent::getResidue().front();
+		}
+
+		/** @brief Gets the result recovered so far.
+		 */
+		inline Integer& getResidue(Integer& r) const
+		{
+			return r = getResidue();
+		}
+
+		/** @brief alias for getResidue
+		 */
+		inline Integer& result(Integer& r) const
+		{
+			return r = getResidue();
+		}
+	};
+
 }
 
-#endif //__LINBOX_cra_early_single_H
+#endif //__LINBOX_cra_single_H
 
 // Local Variables:
 // mode: C++
