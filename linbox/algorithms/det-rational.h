@@ -61,15 +61,14 @@ namespace LinBox
 		int setSwitcher(int s) {return switcher = s;}
 
 		template<typename Int, typename Field>
-		Int& operator()(Int& P, const Field& F) const
+		IterationResult operator()(Int& P, const Field& F) const
 		{
 			if (switcher ==1) {
-				t1->operator()(P,F);
+				return t1->operator()(P,F);
 			}
 			else {
-				t2->operator()(P,F);
+				return t2->operator()(P,F);
 			}
-			return P;
 		}
 	};
 
@@ -97,7 +96,7 @@ namespace LinBox
 		void detMul (const Integer& m) {mul = m;}
 
 		template<typename Int, typename Field>
-		Int& operator()(Int& P, const Field& F) const
+		IterationResult operator()(Int& P, const Field& F) const
 		{
 			typedef typename Blackbox::template rebind<Field>::other FBlackbox;
 			FBlackbox Ap(A, F);
@@ -106,7 +105,8 @@ namespace LinBox
 			F.init(e, mul);
 			F.mulin(P,e);
 			F.init(e, div);
-			return F.divin(P,e);
+			F.divin(P,e);
+			return IterationResult::CONTINUE;
 		}
 	};
 
@@ -128,11 +128,12 @@ namespace LinBox
 		{}
 
 		template<typename Int, typename Field>
-		Int& operator()(Int& P, const Field& F) const
+		IterationResult operator()(Int& P, const Field& F) const
 		{
 			typedef typename Blackbox::template rebind<Field>::other FBlackbox;
 			FBlackbox Ap(A, F);
-			return det( P, Ap, typename FieldTraits<Field>::categoryTag(), M);
+			det( P, Ap, typename FieldTraits<Field>::categoryTag(), M);
+			return IterationResult::CONTINUE;
 		}
 	};
 
@@ -169,7 +170,7 @@ namespace LinBox
 
 		commentator().start ("Rational Det", "Rdeterminant");
 
-		RandomPrimeIterator genprime( (unsigned int)(26-(int)ceil(log((double)A.rowdim())*0.7213475205)));
+		PrimeIterator<IteratorCategories::HeuristicTag> genprime;
 
 		Integer F = 1;
 		Integer M = 1;
@@ -242,8 +243,8 @@ namespace LinBox
 		Integer lif = 1;
 		if ((s1 > 4*s2) && (!term)){
 			//cout << "lif " << std::flush;
-			RationalSolver < Givaro::IntegerDom , Givaro::Modular<double>, RandomPrimeIterator, DixonTraits > RSolver;
-			LastInvariantFactor < Givaro::IntegerDom ,RationalSolver < Givaro::IntegerDom, Givaro::Modular<double>, RandomPrimeIterator, DixonTraits > >  LIF(RSolver);
+			RationalSolver < Givaro::IntegerDom , Givaro::Modular<double>, PrimeIterator<IteratorCategories::HeuristicTag>, DixonTraits > RSolver;
+			LastInvariantFactor < Givaro::IntegerDom ,RationalSolver < Givaro::IntegerDom, Givaro::Modular<double>, PrimeIterator<IteratorCategories::HeuristicTag>, DixonTraits > >  LIF(RSolver);
 			IVect r_num2 (Z,Atilde. coldim());
 			t1.clear();
 			t1.start();
@@ -335,11 +336,10 @@ namespace LinBox
 
 #endif //__LINBOX_det_rational_H
 
-
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

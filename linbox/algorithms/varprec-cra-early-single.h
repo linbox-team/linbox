@@ -31,7 +31,7 @@
 #include "linbox/field/gmp-rational.h"
 #include "linbox/solutions/methods.h"
 #include <utility>
-#include "linbox/algorithms/cra-early-single.h"
+#include "linbox/algorithms/cra-single.h"
 #include "linbox/algorithms/cra-full-multip.h"
 #include "linbox/algorithms/lazy-product.h"
 
@@ -284,34 +284,26 @@ namespace LinBox
 			EarlySingleCRA<Domain>::residue_ = 0;
 
 			//Computation of residue_
-
-			//std::vector< double >::iterator  _dsz_it = RadixSizes_.begin();//nie wiem
-			std::vector< LazyProduct >::iterator          _mod_it = FullMultipCRA<Domain>::RadixPrimeProd_.end(); // list of prime products
-			std::vector< BlasVector<Givaro::ZRing<Integer> > >::iterator _tab_it = FullMultipCRA<Domain>::RadixResidues_.end();  // list of residues as vectors of size 1
-			std::vector< bool >::iterator                 _occ_it = FullMultipCRA<Domain>::RadixOccupancy_.end(); //flags of occupied fields
-			int n= (int) FullMultipCRA<Domain>::RadixOccupancy_.size();
-			//BlasVector<Givaro::ZRing<Integer> > ri(1); LazyProduct mi; double di;//nie wiem
-			// could be much faster if max occupandy is stored
-			--_mod_it; --_tab_it; --_occ_it;
-			int prev_shelf=0, shelf = 0; Integer prev_residue_ =0;
-			for (int i=n; i > 0 ; --i, --_mod_it, --_tab_it, --_occ_it ) {
-				++shelf;
-				if (*_occ_it) {
-					Integer D = _mod_it->operator()();
+            for (auto it = FullMultipCRA<Domain>::shelves_begin();
+                 it != FullMultipCRA<Domain>::shelves_end();
+                 ++it)
+            {
+                if (it->occupied) {
+					Integer D = it->mod();
 					Integer e_i;
 
 					inv(e_i,factor_,D);
 					//!@todo use faster mul/mod here !
-					Integer::mulin(e_i, (_tab_it->front()));
+					Integer::mulin(e_i, (it->residue.front()));
 					Integer::mulin(e_i, multip_);
 					e_i %=D ;
 
 
-					prev_residue_ = EarlySingleCRA<Domain>::residue_;
+					Integer prev_residue_ = EarlySingleCRA<Domain>::residue_;
 					EarlySingleCRA<Domain>::progress(D,e_i);
 
 					if (prev_residue_ == EarlySingleCRA<Domain>::residue_ ) {
-						EarlySingleCRA<Domain>::occurency_ = EarlySingleCRA<Domain>::occurency_ + (unsigned int)  (shelf - prev_shelf);
+						EarlySingleCRA<Domain>::occurency_ += it->count;
 					}
 
 
@@ -319,9 +311,8 @@ namespace LinBox
 					if ( EarlySingleCRA<Domain>::terminated() ) {
 						return true;
 					}
-					prev_shelf = shelf;
-				}
-			}
+                }
+            }
 
 			return false;
 		}
@@ -332,12 +323,10 @@ namespace LinBox
 
 #endif //__LINBOX_varprec_cra_early_single_H
 
-
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

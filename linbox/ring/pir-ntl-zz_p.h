@@ -388,7 +388,7 @@ namespace LinBox
 		/** @brief
 		 *  out << y;
 		 */
-		static std::ostream& write(std::ostream& out,const Element& y)  {
+		std::ostream& write(std::ostream& out,const Element& y) const {
 
 			out << y;
 
@@ -899,11 +899,10 @@ namespace LinBox
 
 #endif //__LINBOX_pir_ntl_zz_p_H
 
-
 // Local Variables:
 // mode: C++
 // tab-width: 4
 // indent-tabs-mode: nil
 // c-basic-offset: 4
 // End:
-// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

@@ -282,9 +282,9 @@ namespace LinBox { namespace Protected { /*  SparseMatrixGeneric */
 		 * @param j Column index of entry
 		 * @param value Value of the new entry
 		 */
-		void setEntry (size_t i, size_t j, const Element &value);
-		void appendEntry(size_t i, size_t j, const Element & value) { setEntry(i,j,value) ;}
-		void finalize(){}
+		const Element& setEntry (size_t i, size_t j, const Element &value);
+		const Element& appendEntry(size_t i, size_t j, const Element & value) { return setEntry(i,j,value) ;}
+		virtual void finalize(){}
 
 		/** Get a writeable reference to an entry in the matrix
 		 * If there is no entry at the position (i, j), then a new entry
@@ -439,13 +439,11 @@ namespace LinBox { namespace Protected { /*  SparseMatrixGeneric */
 			return _matA;
 		}
 
-		void resize( const size_t & m, const size_t & n, const size_t & z = 0)
+		void resize( const size_t & m, const size_t & n, const size_t & nnz = 0 )
 		{
 			_m = m ;
 			_n = n ;
-			_matA.clear();
 			_matA.resize(m);
-
 		}
 
 	protected:
@@ -528,11 +526,10 @@ namespace LinBox { /*  IO / Traits */
 
 #endif // __LINBOX_matrix_sparsematrix_sparse_generic_H
 
-
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

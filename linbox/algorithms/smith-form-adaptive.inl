@@ -28,7 +28,7 @@
 
 #include <cmath>
 #include <vector>
-#include <givaro/modular-int32.h>
+#include <givaro/modular-integral.h>
 
 #include "linbox/linbox-config.h"
 #include "linbox/integer.h"
@@ -407,8 +407,8 @@ namespace LinBox
 		report <<"   Compute the degree of min poly of AA^T: \n";
 		typedef Givaro::Modular<int32_t> Field;
 		integer Val; Field::Element v; unsigned long degree;
-		RandomPrimeIterator rg; rg.template setBitsField<Field>();
-		Field F (*rg);
+        PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
+		Field F (*genprime);
 		typename MatrixHomTrait<Matrix, Field>::value_type Ap(F, A.rowdim(), A.coldim());
 		MatrixHom::map (Ap, A);
 		Valence::one_valence (v, degree, Ap);
@@ -533,8 +533,8 @@ namespace LinBox
 		typedef Givaro::Modular<int32_t> Field;
 		integer Val; Field::Element v; size_t degree;
 		//integer Val; Field::Element v; unsigned long degree;
-		RandomPrimeIterator rg; rg.template setBitsField<Field>();
-		Field F (*rg);
+        PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
+		Field F (*genprime);
 		typename MatrixHomTrait<BlasMatrix <IRing, _Rep>, Field>::value_type Ap(F,A.rowdim(),A.coldim());
 		MatrixHom::map (Ap, A);
 		Valence::one_valence (v, degree, Ap);
@@ -622,11 +622,10 @@ namespace LinBox
 
 #endif //__LINBOX_smith_form_adaptive_INL
 
-
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

@@ -143,7 +143,7 @@ namespace LinBox
 		 * @param j Column number 0...coldim () - 1
 		 * @param a_ij Element to set
 		 */
-		void setEntry (size_t i, size_t j, const Element &a_ij);
+		const Element& setEntry (size_t i, size_t j, const Element &a_ij);
 
 		/** Get a writeable reference to the entry in the (i, j) position.
 		 * @param i Row index of entry
@@ -300,12 +300,10 @@ namespace LinBox
 
 #endif // __LINBOX_matrix_archetype_H
 
-
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

@@ -74,7 +74,7 @@ namespace LinBox { namespace BLAS3 { namespace Protected {
 			linbox_check(A.getPointer() == _A_.getPointer());
 		}
 
-		ModularMatrix& operator()(ModularMatrix& Cp, const Field& F) const
+		IterationResult operator()(ModularMatrix& Cp, const Field& F) const
 		{
 			BlasMatrixDomain<Field>   BMD(F);
 
@@ -117,7 +117,7 @@ namespace LinBox { namespace BLAS3 { namespace Protected {
 				Cp.write(cout<< "Cp:=", F, true) << ';' << endl;
 			}
 #endif
-			return Cp;
+			return IterationResult::CONTINUE;
 		}
 
 
@@ -128,15 +128,6 @@ namespace LinBox { namespace BLAS3 { namespace Protected {
 } // BLAS3
 } // LinBox
 
-namespace LinBox {
-	template<class Field>
-	struct CRATemporaryVectorTrait<BLAS3::Protected::IntegerCraMatMul, Field> {
-		// typedef typename std::vector<double>::iterator Type_t ;
-		typedef typename LinBox::BlasMatrix<Field > Type_t;
-	};
-} // LinBox
-
-
 namespace LinBox { namespace BLAS3 {
 	template<class _anyMatrix>
 	_anyMatrix & mul (_anyMatrix& C,
@@ -144,8 +135,6 @@ namespace LinBox { namespace BLAS3 {
 			  const _anyMatrix& B,
 			  const mulMethod::CRA &)
 	{
-
-		size_t PrimeSize = 22; //! @todo pourqoi ?
 
 		integer mA, mB ;
 		BlasMatrixDomain<typename _anyMatrix::Field> BMD(A.field());
@@ -157,7 +146,7 @@ namespace LinBox { namespace BLAS3 {
 
 		{
 
-			RandomPrimeIterator genprime( (unsigned int)PrimeSize );
+                        PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<ModularField>::bestBitSize(A.coldim()));
 			ChineseRemainder< FullMultipBlasMatCRA< ModularField > > cra( std::pair<size_t,double>(C.rowdim()*C.coldim(), logC) );
 			Protected::IntegerCraMatMul iteration(A,B);
 
@@ -182,10 +171,10 @@ namespace LinBox { namespace BLAS3 {
 
 #endif // __LINBOX_matrix_blas3_mul_cra_INL
 
-//Local Variables:
-//mode: C++
-//tab-width: 8
+// Local Variables:
+// mode: C++
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

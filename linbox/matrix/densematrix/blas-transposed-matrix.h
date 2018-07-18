@@ -67,9 +67,6 @@ namespace LinBox
 	/*! TransposedBlasMatrix.
 	 * NO DOC
 	 */
-#if !defined(__INTEL_COMPILER) && !defined(__CUDACC__) & !defined(__clang__)
-	template <>
-#endif
 	template< class Matrix >
 	class TransposedBlasMatrix< TransposedBlasMatrix< Matrix > > : public Matrix {
 
@@ -95,12 +92,10 @@ namespace LinBox
 
 #endif // __LINBOX_matrix_densematrix_blas_transposed_matrix_H
 
-
-
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

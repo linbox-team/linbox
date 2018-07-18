@@ -51,82 +51,6 @@
 #ifndef __LINBOX_ring_modular_H
 #define __LINBOX_ring_modular_H
 
-#include <givaro/modular.h>
-#include <givaro/modular-balanced.h>
-#include <givaro/gfq.h>
-#include <iostream>
-#include <climits>
-#include <cmath>
-
-#include "linbox/integer.h"
-#include "linbox/field/field-interface.h"
-#include "linbox/util/field-axpy.h"
-#include "linbox/util/write-mm.h"
-#include "linbox/vector/vector-traits.h"
-#include "linbox/linbox-config.h"
-#include "linbox/field/field-traits.h"
-
-
-// Namespace in which all LinBox code resides
-namespace LinBox
-{ /* Givaro::Modular Base */
-
-	using Givaro::Caster;
-
-	template <class Ring>
-	struct ClassifyRing;
-
-	template <class Element, class Compute>
-	struct ClassifyRing<Givaro::Modular<Element,Compute> const>
-	{
-		typedef RingCategories::ModularTag categoryTag;
-	};
-
-	template <class Element, class Compute>
-	struct ClassifyRing<Givaro::Modular<Element,Compute>>
-	{
-		typedef RingCategories::ModularTag categoryTag;
-	};
-
-        template<class Element>
-        struct ClassifyRing<Givaro::ModularBalanced<Element> > {
-                typedef RingCategories::ModularTag categoryTag;
-        };
-
-        template<typename XXX>
-        struct ClassifyRing<Givaro::GFqDom<XXX>> {
-                typedef RingCategories::ModularTag categoryTag;
-        };
-
-
-
-
-
-/*
-	template <>
-	inline std::ostream& Givaro::ModularBase<Integer>::write (std::ostream &os) const
-	{
-		return os << "GMP integers mod " << _modulus;
-	}
-*/
-
-	// template <>
-	// inline integer& Givaro::Modular<integer>::init (integer& x, const double& y) const
-	// {
-	// 	integer tmp = (integer)y % _modulus;
-	// 	if (tmp<0) tmp += _modulus;
-	// 	return x = tmp;
-	// }
-
-
-
-
-
-} // namespace LinBox
-
-
-#include "linbox/vector/vector-domain.h"
-
 namespace LinBox {
 	template<class Field>
 	class MVProductDomain ;
@@ -145,12 +69,10 @@ namespace LinBox {
 
 #endif // __LINBOX_field_modular_H
 
-
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
-
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

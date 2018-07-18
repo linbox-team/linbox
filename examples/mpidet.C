@@ -1,4 +1,3 @@
-
 /*
  * examples/mpidet.C
  *
@@ -27,6 +26,10 @@
   \brief Determinant of sparse matrix over Z or Zp.
   \ingroup examples
   */
+//////#include <cstdio>
+#define __LINBOX_HAVE_MPI
+#include"linbox/linbox-config.h"
+#include"mpi.h"
 
 #include <iostream>
 #include <string>
@@ -91,11 +94,10 @@ int main (int argc, char **argv)
 #endif
 }
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

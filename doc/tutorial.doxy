@@ -131,7 +131,7 @@ must first choose the class (representation type) of field and then instantiate
 your specific field.
 
 \code
-#include <linbox/field/modular.h>
+#include <givaro/modular.h>
 
 
 typedef Givaro::Modular<short> Field;
@@ -202,27 +202,35 @@ for ( ... )
 
 Putting it all together, we may have a program looking like this.
 \code
-#include <linbox/field/modular.h>
-#include <linbox/matrix/blas-matrix.h>
+#include <givaro/modular.h>
+#include <linbox/matrix/dense-matrix.h>
 #include <linbox/solutions/det.h>
 #include <linbox/util/matrix-stream.h>
 
 using namespace LinBox;
 
-main()
+int main()
 {
     typedef Givaro::Modular<double> Field;
-    typedef BlasMatrix<Field> Matrix;
+    typedef DenseMatrix<Field> Matrix;
+
     Field F(65521);
-	MatrixStream<Field> ms(F, std::cin);
+    MatrixStream<Field> ms(F, std::cin);
     Matrix A(ms); 
+
     Field::Element d;
-	Method::BlasElimination M;
+    Method::BlasElimination M;
     det(d, A, M);
+
     F.write(std::cout << "the determinant is ", d) << std::endl;
+
+    return 0;
 }
 
 \endcode
+
+A possible format for the input matrix is that of <a
+href="http://hpac.imag.fr">hpac.imag.fr</a>.
 
 This tutorial should continue with a discussion of compilation issues, but it
 doesn't.  Something useful may be learned from examining the Makefile.am in the examples directory.

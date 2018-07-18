@@ -1,4 +1,3 @@
-
 /* tests/test-solve.C
  * Copyright (C) 2001, 2002 Bradford Hovinen
  *
@@ -76,7 +75,8 @@ static bool testDiagRatCharpoly (size_t n, unsigned int iterations)
 	GMPRationalField Q;
 	SparseMatrix<GMPRationalField > A(Q,n,n);
 	BlasMatrix <GMPRationalField > B(Q,n,n);
-	BlasVector<GMPRationalField> c(Q);
+    
+    DensePolynomial<GMPRationalField> c(Q);
 
 	for (i=0; i < (int)iterations; i++) {
         	GMPRationalField::Element c0,cn;
@@ -166,11 +166,10 @@ int main (int argc, char **argv)
 	return pass ? 0 : -1;
 }
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

@@ -61,15 +61,14 @@ namespace LinBox
 		int setSwitcher(int s) {return switcher = s;}
 
 		template<typename Polynomial, typename Field>
-		Polynomial& operator()(Polynomial& P, const Field& F) const
+		IterationResult operator()(Polynomial& P, const Field& F) const
 		{
 			if (switcher ==1) {
-				t1->operator()(P,F);
+				return t1->operator()(P,F);
 			}
 			else {
-				t2->operator()(P,F);
+				return t2->operator()(P,F);
 			}
-			return P;
 		}
 	};
 
@@ -89,7 +88,7 @@ namespace LinBox
 		{}
 
 		template<typename Polynomial, typename Field>
-		Polynomial& operator()(Polynomial& P, const Field& F) const
+		IterationResult operator()(Polynomial& P, const Field& F) const
 		{
 			typedef typename Blackbox::template rebind<Field>::other FBlackbox;
 			FBlackbox * Ap;
@@ -104,7 +103,7 @@ namespace LinBox
 			}
 
 			delete Ap;
-			return P;
+                        return IterationResult::CONTINUE;
 		}
 	};
 
@@ -126,7 +125,7 @@ namespace LinBox
 		{}
 
 		template<typename Polynomial, typename Field>
-		Polynomial& operator()(Polynomial& P, const Field& F) const
+		IterationResult operator()(Polynomial& P, const Field& F) const
 		{
 			typedef typename Blackbox::template rebind<Field>::other FBlackbox;
 			FBlackbox * Ap;
@@ -154,7 +153,7 @@ namespace LinBox
 			}
 
 			delete Ap;
-			return P;
+                        return IterationResult::CONTINUE;
 		}
 	};
 
@@ -168,7 +167,8 @@ namespace LinBox
 
 		commentator().start ("Rational Charpoly", "Rminpoly");
 
-		RandomPrimeIterator genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205));
+                typedef Givaro::ModularBalanced<double> Field;
+                PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
 
 		std::vector<Integer> F(A.rowdim()+1,1);
 		std::vector<Integer> M(A.rowdim()+1,1);
@@ -193,7 +193,7 @@ namespace LinBox
 		BlasMatrix<Givaro::ZRing<Integer> > Atilde(Z,A.rowdim(), A.coldim());
 		FA.makeAtilde(Atilde);
 
-		ChineseRemainder< EarlyMultipCRA<Givaro::Modular<double> > > cra(4UL);
+		ChineseRemainder< EarlyMultipCRA<Field> > cra(4UL);
 		MyRationalModularCharpoly<BlasMatrix<Rationals > , MyMethod> iteration1(A, Met, M);
 		MyIntegerModularCharpoly<BlasMatrix<Givaro::ZRing<Integer> >, MyMethod> iteration2(Atilde, Met, Di, M);
 		MyModularCharpoly<MyRationalModularCharpoly<BlasMatrix<Rationals > , MyMethod>,
@@ -333,11 +333,10 @@ namespace LinBox
 
 #endif //__LINBOX_charpoly_rational_H
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

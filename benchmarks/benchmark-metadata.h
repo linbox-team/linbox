@@ -55,13 +55,11 @@ namespace LinBox {
 		//! @internal recursively free memory
 		void clean ()
 		{
-			if (this != NULL) {
-				for (size_t i = 0 ; i < metadata.size() ; ++i) {
-					metadata[i]->clean();
-					delete metadata[i] ;
-					metadata[i] = NULL ;
-				}
-			}
+            for (size_t i = 0 ; i < metadata.size() ; ++i) {
+                metadata[i]->clean();
+                delete metadata[i] ;
+                metadata[i] = nullptr ;
+            }
 			return;
 		}
 
@@ -75,7 +73,7 @@ namespace LinBox {
 			vals = md->getVals();
 			size_t md_size = md->getMetaDataSize();
 			if (md_size) {
-				metadata.resize(md_size,NULL);
+				metadata.resize(md_size,nullptr);
 				for (size_t i = 0 ; i <md_size ; ++i) {
 					metadata[i] = new MetaData ;
 					metadata[i]->deep_copy(md->getMetaData(i));
@@ -89,7 +87,7 @@ namespace LinBox {
 		void push_back(const MetaData * md)
 		{
 			size_t md_size = getMetaDataSize();
-			metadata.resize(md_size+1,NULL);
+			metadata.resize(md_size+1,nullptr);
 			metadata[md_size] = new MetaData ;
 			metadata[md_size]->deep_copy(md);
 		}
@@ -247,7 +245,7 @@ namespace LinBox {
 			}
 
 			for (size_t i = 0 ; i < getMetaDataSize() ; ++i  ) {
-				XMLElement * child = NULL ;
+				XMLElement * child = nullptr ;
 				getMetaData(i)->writeMetaData(&child,doc);
 				(*data)->InsertEndChild( child );
 			}
@@ -513,8 +511,8 @@ namespace LinBox {
 
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

@@ -528,7 +528,7 @@ namespace LinBox
 #endif
 #endif
 
-#include "linbox/algorithms/cra-early-single.h"
+#include "linbox/algorithms/cra-single.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/matrix-hom.h"
 
@@ -546,12 +546,12 @@ namespace LinBox
 
 
 		template<typename Field>
-		typename Field::Element& operator()(typename Field::Element& d, const Field& F) const
+		IterationResult operator()(typename Field::Element& d, const Field& F) const
 		{
 			typedef typename Blackbox::template rebind<Field>::other FBlackbox;
 			FBlackbox Ap(A, F);
 			detin( d, Ap, RingCategories::ModularTag(), M);
-			return d;
+			return IterationResult::CONTINUE;
 		}
 	};
 
@@ -574,19 +574,20 @@ namespace LinBox
 			commentator().start ("Integer Determinant", "idet");
 		// 0.7213475205 is an upper approximation of 1/(2log(2))
 		IntegerModularDet<Blackbox, MyMethod> iteration(A, Meth);
-		RandomPrimeIterator genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205));
+                typedef Givaro::ModularBalanced<double> Field;
+                PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
 		integer dd; // use of integer due to non genericity of cra. PG 2005-08-04
 
 		//  will call regular cra if C=0
 #ifdef __LINBOX_HAVE_MPI
-		MPIChineseRemainder< EarlySingleCRA< Givaro::Modular<double> > > cra(4UL, C);
+		MPIChineseRemainder< EarlySingleCRA< Field > > cra(4UL, C);
 		cra(dd, iteration, genprime);
 		if(!C || C->rank() == 0){
 			A.field().init(d, dd); // convert the result from integer to original type
 			commentator().stop ("done", NULL, "det");
 		}
 #else
-		ChineseRemainder< EarlySingleCRA< Givaro::Modular<double> > > cra(4UL);
+		ChineseRemainder< EarlySingleCRA< Field > > cra(4UL);
 		cra(dd, iteration, genprime);
 		A.field().init(d, dd); // convert the result from integer to original type
 		commentator().stop ("done", NULL, "idet");
@@ -636,8 +637,9 @@ namespace LinBox
 		Integer num,den;
 
 		IntegerModularDet<Blackbox, MyMethod> iteration(A, Meth);
-		RandomPrimeIterator genprime( (unsigned int)( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)));
-		RationalRemainder2< VarPrecEarlySingleCRA< Givaro::Modular<double> > > rra(4UL);
+                typedef Givaro::ModularBalanced<double> Field;
+		PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
+		RationalRemainder2< VarPrecEarlySingleCRA< Field > > rra(4UL);
 
 		rra(num,den, iteration, genprime);
 
@@ -682,11 +684,10 @@ namespace LinBox
 
 #endif // __LINBOX_det_H
 
-
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

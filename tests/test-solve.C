@@ -1,4 +1,3 @@
-
 /* tests/test-solve.C
  * Copyright (C) 2001, 2002 Bradford Hovinen
  *
@@ -285,7 +284,7 @@ static bool testSingularConsistentSolve (const Field          &F,
 					 const char           *text,
 					 MethodTraits          method)
 {
-	typedef Diagonal <Field, Vector> Blackbox;
+	typedef Diagonal <Field> Blackbox;
 
 	ostringstream str;
 	str << "Testing singular consistent solve (" << text << ")";
@@ -329,7 +328,7 @@ static bool testSingularConsistentSolve (const Field          &F,
 		VD.write (report, b);
 		report << endl;
 
-		BlasVector<Field> dd(F,d);
+		typename Blackbox::Vector_t dd(F,d);
 		Blackbox D (dd);
 		//Blackbox D (d);
 
@@ -366,7 +365,7 @@ static bool testSingularConsistentSolve (const Field          &F,
 			Report << "ERROR: Inconsistent system exception" << endl;
 
 			Report << "Certificate is: ";
-			VD.write (Report, e.u ()) << endl;
+			VD.write (Report, e.certificate ()) << endl;
 
 			ret = false;
 
@@ -407,7 +406,7 @@ static bool testSingularInconsistentSolve (const Field          &F,
 					   const char           *text,
 					   MethodTraits          method)
 {
-	typedef Diagonal <Field, Vector> Blackbox;
+	typedef Diagonal <Field> Blackbox;
 
 	ostringstream str;
 	str << "Testing singular inconsistent solve (" << text << ")";
@@ -429,7 +428,7 @@ static bool testSingularInconsistentSolve (const Field          &F,
 	VectorWrapper::ensureDim (d1, stream1.dim ());
 
 	MethodTraits traits (method);
-	traits.preconditioner (MethodTraits::NONE);
+	traits.preconditioner (MethodTraits::NO_PRECONDITIONER);
 
 	while (stream1 && stream2) {
 		commentator().startIteration ((unsigned)stream1.j ());
@@ -448,7 +447,7 @@ static bool testSingularInconsistentSolve (const Field          &F,
 		VD.write (report, b);
 		report << endl;
 
-		BlasVector<Field> dd(F,d);
+		typename Blackbox::Vector_t dd(F,d);
 		Blackbox D (dd);
 		//Blackbox D (d);
 
@@ -866,8 +865,8 @@ int main (int argc, char **argv)
 
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

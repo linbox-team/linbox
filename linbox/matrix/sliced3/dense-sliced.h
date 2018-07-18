@@ -324,7 +324,7 @@ public:
 	}
 	*/
 
-	void setEntry(size_t i, size_t j, const Scalar &a_ij){
+	const Scalar& setEntry(size_t i, size_t j, const Scalar &a_ij){
 		SlicedWord e = static_cast<SlicedWord>(a_ij);
 		//  determine location
 		//  TODO:  THIS SEEMS TO EXCPET _rep isn't adjusted for submatrix
@@ -352,6 +352,7 @@ public:
 
 		_rep[word].b0 |= b0 << index;
 		_rep[word].b1 |= b1 << index;
+        return a_ij;
 	}
 
 	Scalar getEntry(size_t i, size_t j) {
@@ -689,3 +690,11 @@ private:
 }
 
 #endif // __DENSE_SLICED_H
+
+// Local Variables:
+// mode: C++
+// tab-width: 4
+// indent-tabs-mode: nil
+// c-basic-offset: 4
+// End:
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

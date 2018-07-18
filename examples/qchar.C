@@ -1,4 +1,3 @@
-
 /*
  * examples/qchar.C
  *
@@ -34,8 +33,7 @@
 #include <linbox/matrix/sparse-matrix.h>
 #include <linbox/solutions/charpoly.h>
 #include <linbox/solutions/minpoly.h>
-#include <linbox/ring/givaro-polynomial.h>
-#include <linbox/element/givaro-polynomial.h>
+#include <linbox/ring/polynomial-ring.h>
 
 using namespace LinBox;
 using namespace std;
@@ -122,7 +120,7 @@ struct PrecRationalModularMinpoly {
 	{}
 
 	template<typename Polynomial, typename Field>
-	Polynomial& operator()(Polynomial& P, const Field& F) const
+	IterationResult operator()(Polynomial& P, const Field& F) const
 	{
 
 		typedef typename Blackbox::template rebind<Field>::other FBlackbox;
@@ -153,7 +151,7 @@ struct PrecRationalModularMinpoly {
 		}
 		//std::cout<<"prec*Det(A) mod "<<p<<" = P[0]" << P[0] << "\n";
 		//printPolynomial(cout,F,P);
-		return P;
+                return IterationResult::CONTINUE;
 	}
 };
 
@@ -192,12 +190,12 @@ int main (int argc, char** argv)
 	//i_vti_v(M,In, V, detPrec);
 	generate_precRatMat(filename, M, V, detPrec);
 	cout << "detPrec is " << detPrec  << "\n";
-	typedef GivPolynomialRing<Integers,Dense> IntPolRing;
+	typedef PolynomialRing<Integers> IntPolRing;
 	IntPolRing::Element c_A;
 
 	Integer max = 1,min=0;
-	for (int i=0; i < n; ++i) {
-		for (int j=0; j < n; ++j) {
+	for (size_t i=0; i < n; ++i) {
+		for (size_t j=0; j < n; ++j) {
 			Integer a;
 			Q.convert(a,M.getEntry(i,j));
 			//      cerr<<"it="<<(*it)<<endl;
@@ -216,7 +214,7 @@ int main (int argc, char** argv)
 	cout << "had" << hadamarcp << "\n";
 	cout << "had2" << (Integer)hadamarcp*detPrec << "\n";
 
-	RandomPrimeIterator genprime( 26-(int)ceil(log((double)M.rowdim())*0.7213475205));
+	PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(M.coldim()));
 	ChineseRemainder< EarlyMultipCRA<Field  > > cra(3UL);
 	typedef Method::Hybrid MyMethod;
 	MyMethod Met;
@@ -538,11 +536,10 @@ void generate_precRatMat(string& filename, RMatrix& M, DVector& den, Integer& de
 
 #undef _LB_CONT_FR
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

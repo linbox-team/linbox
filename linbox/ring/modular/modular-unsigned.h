@@ -803,7 +803,7 @@ namespace LinBox { /*  uint16_t */
 
 }
 
-#include <givaro/modular-uint32.h>
+#include <givaro/modular-integral.h>
 
 namespace LinBox { /*  uint32_t */
 
@@ -1149,7 +1149,6 @@ namespace LinBox { /*  uint32_t */
 
 }
 
-#include <givaro/modular-uint64.h>
 
 namespace LinBox { /*  uint64_t */
 
@@ -1359,4 +1358,4 @@ namespace LinBox { /*  uint64_t */
 // indent-tabs-mode: nil
 // c-basic-offset: 4
 // End:
-// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

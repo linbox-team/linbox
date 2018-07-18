@@ -1,4 +1,3 @@
-
 #ifndef __LINBOX_pascal_H
 #define __LINBOX_pascal_H
 
@@ -13,6 +12,7 @@
 
 #include "linbox/util/debug.h"
 #include "linbox/matrix/sliced3.h"
+#include "linbox/blackbox/blockbb.h"
 
 #define PASCAL_BASECASE_THRESH 81
 
@@ -273,6 +273,19 @@ protected:
 	}
 };
 
+template<class Field>
+struct is_blockbb<PascalBlackbox<Field>> {
+	static const bool value = true;
+};
+
 }
 
 #endif //__LINBOX_pascal_H
+
+// Local Variables:
+// mode: C++
+// tab-width: 4
+// indent-tabs-mode: nil
+// c-basic-offset: 4
+// End:
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

@@ -1,4 +1,3 @@
-
 /* linbox/blackbox/transpose.h
  * Copyright (C) 2001 Bradford Hovinen
  *
@@ -175,9 +174,9 @@ namespace LinBox
 			return _A_ptr->getEntry(x, j, i);
 		}
 
-		void setEntry(size_t i, size_t j, const Element& x)
+		const Element& setEntry(size_t i, size_t j, const Element& x)
 		{
-			const_cast<Blackbox_t*>(_A_ptr)->setEntry( j, i, x);
+			return const_cast<Blackbox_t*>(_A_ptr)->setEntry( j, i, x);
 		}
 
 		std::ostream &write(std::ostream & os) const {
@@ -340,11 +339,10 @@ namespace LinBox
 
 #endif // __LINBOX_transpose_H
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

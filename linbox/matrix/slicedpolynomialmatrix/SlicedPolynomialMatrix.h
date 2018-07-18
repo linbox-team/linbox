@@ -110,7 +110,7 @@ namespace Linbox
 		 * @param j Column number 0...coldim () - 1
 		 * @param a_mij Element to set
 		 */
-		void setEntry (size_t m, size_t i, size_t j, const MatrixElement &a_mij);
+		const MatrixElement& setEntry (size_t m, size_t i, size_t j, const MatrixElement &a_mij);
 		
 	private:
 		/* Get a writeable reference to the m-th matrix-coefficient at the (i, j) position.
@@ -195,3 +195,11 @@ namespace Linbox
 #include "SlicedPolynomialMatrix.inl"
 
 #endif
+
+// Local Variables:
+// mode: C++
+// tab-width: 4
+// indent-tabs-mode: nil
+// c-basic-offset: 4
+// End:
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
