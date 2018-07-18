@@ -570,7 +570,7 @@ namespace LinBox
 
 			// Set some useful constant
 			const Coefficient Zero(field(),2*m,2*m);
-                        const Coefficient Zeromn(field(),2*m,n);
+            const Coefficient Zeromn(field(),2*m,n);
 
 			// Make the Power Serie from  Sequence (U.A^i.V) and Identity
 			//_container->recompute(); // make sure sequence is already computed

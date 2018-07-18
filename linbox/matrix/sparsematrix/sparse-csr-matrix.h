@@ -1106,8 +1106,8 @@ namespace LinBox {
 			{
 				++_data_it ;
 
-				if (_data_it == _data_end)
-					return *this ;
+				//if (_data_it == _data_end) -> PG do not understand this line
+                return *this ;
 			}
 
 			_Iterator operator ++ (int)
@@ -1121,8 +1121,8 @@ namespace LinBox {
 			{
 				--_data_it ;
 
-				if (_data_it == _data_beg)
-					return *this ;
+				//if (_data_it == _data_beg)-> PG do not understand this line
+                return *this ;
 			}
 
 			_Iterator operator -- (int)
@@ -1388,7 +1388,7 @@ namespace LinBox {
 			if (_data.size() == 0) return IndexedEnd();
 			// Take care for empty first row(s).
 			index_t i = 0;
-			while (_start[i] == _start[i+1]) ++i;
+			while (i+1<_start.size() && _start[i] == _start[i+1]) ++i; 
 			return IndexedIterator(this, i, 0);
 
 			// bug for empty first row

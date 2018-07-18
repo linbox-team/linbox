@@ -76,7 +76,7 @@ namespace LinBox { /*  forward declarations */
 
 }
 
-#include "linbox/matrix/densematrix/new-blas-matrix.h"
+#include "linbox/matrix/densematrix/blas-matrix.h"
 // #include "linbox/matrix/densematrix/blas-matrix-multimod.h"
 // #include "linbox/matrix/densematrix/m4ri-matrix.h"
 
