@@ -34,8 +34,9 @@
 #include "linbox/integer.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/cra-domain.h"
-#include "linbox/algorithms/cra-early-single.h"
+#include "linbox/algorithms/cra-single.h"
 #include "linbox/algorithms/cra-early-multip.h"
+#include "linbox/algorithms/rational-cra-full-multip.h"
 
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/algorithms/cra-full-multip.h"
@@ -48,6 +49,38 @@ do { for (size_t i = 0 ; pass && i < iters ; ++i) {  command } } while(0)
 using namespace LinBox ;
 
 
+// Need these call_* functions so it uses Integers with primes
+// larger than 23 bits.
+template <typename CRAType>
+void call_initialize(CRAType& cra, const double p, const double r) {
+	using ModularField = typename CRAType::Domain;
+	using Element = typename ModularField::Element;
+	ModularField F(p);
+	Element residue;
+	F.init(residue, r);
+	cra.initialize(F, residue);
+}
+
+template <typename CRAType>
+void call_initialize(CRAType& cra, const Integer& p, const Integer& r) {
+	cra.initialize(p, r);
+}
+
+template <typename CRAType>
+void call_progress(CRAType& cra, const double p, const double r) {
+	using ModularField = typename CRAType::Domain;
+	using Element = typename ModularField::Element;
+	ModularField F(p);
+	Element residue;
+	F.init(residue, r);
+	cra.progress(F, residue);
+}
+
+template <typename CRAType>
+void call_progress(CRAType& cra, const Integer& p, const Integer& r) {
+	cra.progress(p, r);
+}
+
 // testing EarlySingleCRA
 template< class T >
 int test_early_single(std::ostream & report, size_t PrimeSize, size_t Size)
@@ -56,10 +89,10 @@ int test_early_single(std::ostream & report, size_t PrimeSize, size_t Size)
 	typedef typename std::vector<T> Vect ;
 	typedef typename Vect::iterator Iterator;
 	Vect primes(Size) ;
-	RandomPrimeIterator RP((unsigned )PrimeSize);
+	PrimeIterator<IteratorCategories::HeuristicTag> RP((unsigned )PrimeSize);
 	/*  primes, probably not all coprime... */
 	for (size_t i = 0 ; i < Size ; ++i) {
-		primes[i] = RP.randomPrime() ;
+		primes[i] = *RP;
 		++RP ;
 	}
 
@@ -118,6 +151,147 @@ int test_early_single(std::ostream & report, size_t PrimeSize, size_t Size)
 	return EXIT_SUCCESS ;
 }
 
+// testing ProbSingleCRA
+template< class T >
+int test_prob_single(std::ostream & report, size_t PrimeSize, size_t Size)
+{
+
+	typedef typename std::vector<T> Vect ;
+	typedef typename Vect::iterator Iterator;
+
+        Integer pprod(1); // product of distinct primes
+	Vect primes(Size) ;
+	PrimeIterator<IteratorCategories::HeuristicTag> RP((unsigned )PrimeSize);
+	/*  primes, probably not all coprime... */
+	for (size_t i = 0 ; i < Size ; ++i) {
+		primes[i] = *RP;
+		++RP ;
+                if (pprod % primes[i]) {
+			pprod *= primes[i];
+                }
+	}
+
+	// true result
+	size_t resbits = 1 + (random() % (pprod.bitsize() - 1));
+	Integer actual = Integer::random(resbits);
+
+	/*  residues */
+	Vect residues(Size) ;
+	for (size_t i = 0 ; i < Size ; ++i)
+		residues[i] = actual % primes[i];
+
+	typedef Givaro::Modular<double> ModularField ;
+
+	Iterator genprime = primes.begin()  ; // prime iterator
+	Iterator residu = residues.begin()  ; // residu iterator
+
+	report << "ProbSingleCRA (" << pprod.bitsize()-1 << ")";
+	report << " actual length " << actual.bitsize() << std::endl;
+	ProbSingleCRA<ModularField> cra(pprod.bitsize()-1) ;
+	Integer res = 0; // the result
+	typedef ModularField::Element Element;
+	{ /* init */
+		call_initialize(cra, *genprime, *residu);
+	}
+	size_t itercount = 1;
+	size_t skips = 0;
+	while (genprime < primes.end() && !cra.terminated() )
+	{ /* progress */
+		if (cra.noncoprime((integer)*genprime)) {
+			//report << "bad luck, you picked twice the same prime..." <<std::endl;
+			++skips;
+		}
+		else {
+			call_progress(cra, *genprime, *residu);
+			++itercount;
+		}
+		++genprime;
+		++residu ;
+	}
+	report << "  " << itercount << " iterations, " << itercount*(PrimeSize-1) << " bits "
+		<< skips << " skips" << std::endl;
+
+	cra.result(res);
+	if (res != actual) {
+		report << res << " != " << actual << std::endl;
+		report << "pprod: " << pprod << "\n" << "pprod / actual: " << (pprod / actual) << "\n";
+		report << " *** ProbSingleCRA failed. ***" << std::endl;
+		return EXIT_FAILURE ;
+	}
+
+	for (size_t i = 0 ; i < Size ; ++i){
+		ModularField F(primes[i]);
+		Element tmp1,tmp2 ;
+		F.init(tmp1,res);
+		F.init(tmp2,residues[i]);
+		if(!F.areEqual(tmp1,tmp2)){
+			report << tmp1 << "!=" << tmp2 << std::endl;
+			report << " *** ProbSingleCRA failed. ***" << std::endl;
+			return EXIT_FAILURE ;
+		}
+	}
+
+	report << "ProbSingleCRA exiting successfully." << std::endl;
+
+	return EXIT_SUCCESS ;
+}
+
+// testing FullSingleCRA
+template< class T >
+int test_full_single(std::ostream & report, size_t PrimeSize, size_t Size)
+{
+	// true result
+        size_t maxbits = (PrimeSize-1) * Size;
+	size_t resbits = 1 + (random() % maxbits);
+	Integer actual = Integer::random(resbits);
+
+	typedef Givaro::Modular<double> ModularField ;
+
+        PrimeIterator<IteratorCategories::DeterministicTag> pgen(PrimeSize);
+
+	report << "FullSingleCRA (" << maxbits << ")";
+	report << " actual length " << actual.bitsize() << std::endl;
+	FullSingleCRA<ModularField> cra(maxbits) ;
+	Integer res = 0; // the result
+	T residue;
+	T prime;
+	{ /* init */
+		prime = *pgen;
+		residue = actual % prime;
+		call_initialize(cra, prime, residue);
+		++pgen;
+	}
+	size_t itercount = 1;
+	while (!cra.terminated())
+	{ /* progress */
+		prime = *pgen;
+		residue = actual % prime;
+		if (cra.noncoprime((integer)prime)) {
+			report << "bad luck, you picked twice the same prime..." <<std::endl;
+			report << "got a duplicate prime from deterministic prime gen" << std::endl;
+			Integer mod;
+			report << prime << ' ' << cra.getModulus(mod) << std::endl;
+			report << " *** FullSingleCRA failed. ***" << std::endl;
+			return EXIT_FAILURE ;
+		}
+		call_progress(cra, prime, residue);
+		++itercount;
+		++pgen;
+	}
+	report << "  " << itercount << " iterations, " << itercount*(PrimeSize-1) << " bits "
+		<< std::endl;
+
+	cra.result(res);
+	if (res != actual) {
+		report << res << " != " << actual << std::endl;
+		report << " *** FullSingleCRA failed. ***" << std::endl;
+		return EXIT_FAILURE ;
+	}
+
+	report << "FullSingleCRA exiting successfully." << std::endl;
+	return EXIT_SUCCESS ;
+}
+
 // testing EarlyMultipCRA
 template< class T >
 int test_early_multip(std::ostream & report, size_t PrimeSize, size_t Taille, size_t Size)
@@ -133,9 +307,9 @@ int test_early_multip(std::ostream & report, size_t PrimeSize, size_t Taille, si
 
 	/*  primes */
 	Vect primes(Size) ;
-	RandomPrimeIterator RP((unsigned )PrimeSize);
+	PrimeIterator<IteratorCategories::HeuristicTag> RP((unsigned )PrimeSize);
 	for (size_t i = 0 ; i < Size ; ++i) {
-		primes[i] = RP.randomPrime() ;
+		primes[i] = *RP;
 		++RP ;
 	}
 
@@ -221,9 +395,9 @@ int test_full_multip_matrix(std::ostream & report, size_t PrimeSize,
 
 	Vect primes(Size) ;
 	/*  probably not all coprime... */
-	RandomPrimeIterator RP((unsigned )PrimeSize);
+	PrimeIterator<IteratorCategories::HeuristicTag> RP((unsigned )PrimeSize);
 	for (size_t i = 0 ; i < Size ; ++i) {
-		primes[i] = RP.randomPrime() ;
+		primes[i] = *RP;
 		++RP ;
 	}
 
@@ -318,9 +492,9 @@ int test_full_multip(std::ostream & report, size_t PrimeSize, size_t Size, size_
 
 	Vect primes(Size) ;
 	/*  probably not all coprime... */
-	RandomPrimeIterator RP((unsigned )PrimeSize);
+	PrimeIterator<IteratorCategories::HeuristicTag> RP((unsigned )PrimeSize);
 	for (size_t i = 0 ; i < Size ; ++i) {
-		primes[i] = RP.randomPrime() ;
+		primes[i] = *RP;
 		++RP ;
 	}
 
@@ -386,6 +560,120 @@ int test_full_multip(std::ostream & report, size_t PrimeSize, size_t Size, size_
 	return EXIT_SUCCESS ;
 }
 
+// testing FullMultipRatCRA
+template< class T>
+int test_full_multip_rat(std::ostream & report, size_t PrimeSize, size_t Size, size_t Taille)
+{
+	typedef typename std::vector<T>                    Vect ;
+	typedef std::vector<Integer>                    IntVect ;
+
+	typedef Givaro::Modular<double >           ModularField ;
+	typedef ModularField::Element                    Element;
+	typedef typename std::vector<Element>             pVect ;
+
+    static_assert(std::is_same<T,Element>::value, "Can only test modular<double> for now");
+
+    /* true answer */
+    size_t bitlen = (PrimeSize-1) * Size / 2;
+    Integer act_den = Integer::random(bitlen);
+    IntVect act_num(Taille);
+    for (auto& num_elt : act_num) {
+        num_elt = Integer::random<false>(bitlen);
+    }
+
+	Vect primes ;
+    std::vector<ModularField> fields;
+    Vect denom_imgs;
+	/*  probably not all coprime... */
+	PrimeIterator<IteratorCategories::HeuristicTag> RP((unsigned )PrimeSize);
+	for (size_t i = 0 ; i < Size ; ++i) {
+        fields.emplace_back(*RP);
+        denom_imgs.emplace_back();
+        while (fields.back().isZero(fields.back().init(denom_imgs.back(), act_den))) {
+            // hit a denominator divisor, try again
+            ++RP;
+            fields.pop_back();
+            fields.emplace_back(*RP);
+        }
+        primes.emplace_back(*RP);
+        ++RP;
+	}
+
+	/*  residues */
+    std::vector<pVect> residues;
+    for (size_t i=0; i < Size; ++i) {
+        residues.emplace_back(Taille);
+        for (size_t j=0; j < Taille; ++j) {
+            fields[i].init(residues.back()[j], act_num[j]);
+            fields[i].divin(residues.back()[j], denom_imgs[i]);
+        }
+	}
+
+	auto genprime = primes.begin()  ; // prime iterator
+    auto field_it = fields.begin();
+	auto residu = residues.begin()  ; // residu iterator
+
+	double LogIntSize = (double)PrimeSize*std::log(2.)+std::log((double)Size)+1 ;
+
+	report << "FullMultipRatCRA (" <<  LogIntSize << ')' << std::endl;
+	FullMultipRatCRA<ModularField> cra( LogIntSize ) ;
+	IntVect res_num(Taille) ; // the result
+    Integer res_den;
+	{ /* init */
+		cra.initialize(*field_it, *residu);
+		++genprime;
+        ++field_it;
+		++residu;
+	}
+	while (genprime != primes.end() /* && !cra.terminated()*/ )
+	{ /* progress */
+		if (cra.noncoprime((integer)*genprime))
+		{
+			report << "bad luck, you picked twice the same prime..." <<std::endl;
+			report << "FullMultipRatCRA exiting successfully." << std::endl;
+			return EXIT_SUCCESS ; // pas la faute à cra...
+		}
+		cra.progress(*field_it,*residu);
+		++genprime;
+        ++field_it;
+		++residu ;
+	}
+
+	cra.result(res_num, res_den);
+
+    if (act_den % res_den != 0) {
+        report << " *** FullMultipRatCRA failed. ***" << std::endl;
+        report << "denominator mismatch: " << res_den << " != " << act_den << std::endl;
+        return EXIT_FAILURE ;
+    }
+    Integer dm = act_den / res_den;
+
+    for (size_t i = 0; i < Taille; ++i) {
+        if (act_num[i] != res_num[i]*dm) {
+            report << " *** FullMultipRatCRA failed. ***" << std::endl;
+            report << "numerator mismatch: " << res_num[i] << " != " << act_num[i] << std::endl;
+            return EXIT_FAILURE ;
+        }
+    }
+
+	for (size_t i = 0 ; i < Size ; ++i){
+		for (size_t j = 0 ; j < Taille ; ++j) {
+			Element tmp1, tmp2 ;
+			fields[i].init(tmp1,res_num[j]);
+            fields[i].init(tmp2, res_den);
+            fields[i].mulin(tmp2, residues[i][j]);
+			if(!fields[i].areEqual(tmp1,tmp2)){
+				report << " *** FullMultipRatCRA failed. ***" << std::endl;
+				return EXIT_FAILURE ;
+			}
+		}
+	}
+
+	report << "FullMultipRatCRA exiting successfully." << std::endl;
+
+	return EXIT_SUCCESS ;
+}
+
 
 
 #if 1 /* testing FullMultipFixedCRA */
@@ -408,9 +696,9 @@ int test_full_multip_fixed(std::ostream & report, size_t PrimeSize, size_t Size,
 
 	Vect primes(Size) ;
 	/*  probably not all coprime... */
-	RandomPrimeIterator RP((unsigned )PrimeSize);
+	PrimeIterator<IteratorCategories::HeuristicTag> RP((unsigned )PrimeSize);
 	for (size_t i = 0 ; i < Size ; ++i) {
-		primes[i] = RP.randomPrime() ;
+		primes[i] = *RP;
 		++RP ;
 	}
 
@@ -497,6 +785,14 @@ bool test_CRA_algos(size_t PrimeSize, size_t Size, size_t Taille, size_t iters)
 	_LB_REPEAT( if (test_early_single<double>(report,22,Size))                       pass = false ;  ) ;
 	_LB_REPEAT( if (test_early_single<integer>(report,PrimeSize,Size))               pass = false ;  ) ;
 
+        /* PROB SINGLE */
+        _LB_REPEAT( if (test_prob_single<double>(report,22,Size))                       pass = false ;  ) ;
+	_LB_REPEAT( if (test_prob_single<integer>(report,PrimeSize,Size))               pass = false ;  ) ;
+
+        /* FULL SINGLE */
+        _LB_REPEAT( if (test_full_single<double>(report,22,Size))                       pass = false ;  ) ;
+	_LB_REPEAT( if (test_full_single<integer>(report,PrimeSize,Size))               pass = false ;  ) ;
+
 	/* EARLY MULTIPLE */
 	_LB_REPEAT( if (test_early_multip<double>(report,22,Taille*2,Size))              pass = false ;  ) ;
 	_LB_REPEAT( if (test_early_multip<integer>(report,PrimeSize,Taille*2,Size))      pass = false ;  ) ;
@@ -531,6 +827,10 @@ bool test_CRA_algos(size_t PrimeSize, size_t Size, size_t Taille, size_t iters)
 	_LB_REPEAT( if (test_full_multip_matrix<integer>(report,PrimeSize,Size,s))       pass = false ;  ) ;
 
 #endif
+
+    /* FULL MULTIPLE RATIONAL */
+	_LB_REPEAT( if (test_full_multip_rat<double>(report,22,Size,Taille))                 pass = false ;  ) ;
+	_LB_REPEAT( if (test_full_multip_rat<double>(report,22,Size,Taille/4))                 pass = false ;  ) ;
 
 	return pass ;
 
@@ -571,15 +871,14 @@ int main(int ac, char ** av)
 
 	pass = test_CRA_algos(PrimeSize,Size,Taille,iters) ;
 
-	commentator().stop(MSG_STATUS (pass), (const char *) 0,"CRA-Algos test suite");
+	commentator().stop(MSG_STATUS (pass), "CRA-Algos test suite");
 	return !pass ;
 }
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

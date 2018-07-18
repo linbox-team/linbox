@@ -76,23 +76,57 @@ namespace LinBox
 		void recv( Ptr b, Ptr e, int dest, int tag);
 
 		template < class X >
-		void send( X *b, X *e, int dest, int tag);
-
-		template < class X >
 		void recv( X *b, X *e, int dest, int tag);
 
 		// whole object send and recv
 		template < class X >
 		void send( X& b, int dest /*, int tag = 0 */);
 
+                template <class Field>
+                void send (DenseMatrix<Field>& b, int dest);
+		template <class Field>
+		void send (SparseMatrix<Field>& b, int dest);
+                template <class Field>
+                void send (DenseVector<Field>& b, int dest);
+                
+                template <class X>
+                void send_integer (X& b, int dest);
+                template <class X>
+                void send_integer2 (X& b, int dest);                
+
 		template < class X >
 		void ssend( X& b, int dest /*, int tag = 0 */);
+		template <class Field>
+		void ssend (DenseMatrix<Field>& b, int dest);
+		template <class Field>
+		void ssend (SparseMatrix<Field>& b, int dest);
+                template <class Field>
+                void ssend (DenseVector<Field>& b, int dest);
+
+                template <class X>
+                void ssend_integer (X& b, int dest);
+                template <class X>
+                void ssend_integer2 (X& b, int dest);  
 
 		template < class X >
 		void bsend( X& b, int dest);
 
 		template < class X >
 		void recv( X& b, int dest /*, int tag = 0*/);
+
+                template <class Field>
+                void recv (DenseMatrix<Field>& b, int src);
+                template <class Field>
+                void recv (SparseMatrix<Field>& b, int src);
+                template <class Field>
+                void recv (DenseVector<Field>& b, int src);
+
+                template <class X>
+                void recv_integer (X& b, int src);   
+                template <class X>
+                void recv_integer2 (X& b, int src);                
+
+
 		/*
 		   template < vector < class X > >
 		   void send( X& b, int dest );
@@ -106,7 +140,28 @@ namespace LinBox
 
 
 		// collective communication
-		template < class Ptr, class Function_object >
+                template <class X>
+                void bcast (X& b, int src);
+
+                template <class Field>
+                void bcast (DenseMatrix<Field>& b, int src);
+
+                template <class Field>
+                void bcast (DenseVector<Field>& b, int src);
+                
+                template <class Field>
+                void bcast (SparseMatrix<Field>& b, int src);
+                
+                template <class X>
+                void bcast_integer (X& b, int src);                
+                template <class X>
+                void bcast_integer2 (X& b, int src);
+                
+                template <class X>
+                void bcast (X* b, X* e, int src);
+                
+                
+                template < class Ptr, class Function_object >
 		void reduce( Ptr bloc, Ptr eloc, Ptr bres, Function_object binop, int root);
 
 		// member access
@@ -126,12 +181,10 @@ namespace LinBox
 #endif // __LINBOX_HAVE_MPI
 #endif // __LINBOX_mpicpp_H
 
-
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

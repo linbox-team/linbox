@@ -47,12 +47,13 @@ namespace LinBox {
          * to a PolynomialDomain which handles most operations over such polynomials.
 	 */
     template<class Field>
-    class DensePolynomial : public Givaro::Poly1FactorDom<Field, Givaro::Dense>::Element {
+    class DensePolynomial : public Givaro::Poly1Dom<Field, Givaro::Dense>::Element {
 
     public:
 
         typedef DensePolynomial<Field> Self_t;
-        typedef Givaro::Poly1FactorDom<Field, Givaro::Dense> Domain_t;
+        typedef Givaro::Poly1Dom<Field, Givaro::Dense> Domain_t;
+        typedef typename Domain_t::Element Storage_t;
 
         DensePolynomial () : Domain_t::Element(), _field(NULL) {}
 
@@ -98,3 +99,11 @@ namespace LinBox {
 } // namespace LinBox
 
 #endif // __LINBOX_polynomial_H
+
+// Local Variables:
+// mode: C++
+// tab-width: 4
+// indent-tabs-mode: nil
+// c-basic-offset: 4
+// End:
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

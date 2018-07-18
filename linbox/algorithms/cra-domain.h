@@ -36,6 +36,72 @@
  */
 
 #include "linbox/integer.h"
+#include "linbox/field/rebind.h"
+#include "linbox/vector/vector.h"
+
+namespace LinBox
+{
+	/*! @brief Return type for CRA iteration.
+	 *
+	 * The function object passed to the ChineseRemainder operators
+	 * should return one of these values on each iteration.
+	 */
+	enum struct IterationResult {
+		CONTINUE, ///< successful iteration; add to the result and keep going
+		SKIP, ///< "bad prime"; ignore this result and keep going
+		RESTART ///< all previous iterations were bad; start over with this residue
+	};
+
+	/** \brief Type information for the residue in a CRA iteration.
+	 *
+	 * Here ResultType should be some kind of vector type whose default constructor
+	 * results in zero-dimensional vectors where no init'ing is required.
+	 */
+	template <typename ResultType, typename Function>
+	struct CRAResidue {
+		template <typename Domain>
+		using ResidueType = typename Rebind<ResultType,Domain>::other;
+
+		template <typename Domain>
+		static ResidueType<Domain> create(const Domain& d) {
+			return ResidueType<Domain>(d);
+		}
+	};
+
+	/** \brief Type information for the residue in a CRA iteration.
+	 *
+	 * This is the specialization for scalar types (namely Integer) where
+	 * the residue type (such as a Modular element) must be init'ed.
+	 */
+	template <typename Function>
+	struct CRAResidue<Integer, Function> {
+		template <typename Domain>
+		using ResidueType = typename Domain::Element;
+
+		template <typename Domain>
+		static ResidueType<Domain> create(const Domain& d) {
+			ResidueType<Domain> r;
+			d.init(r);
+			return r;
+		}
+	};
+
+	/** \brief Type information for the residue in a CRA iteration.
+	 *
+	 * This is the specialization for a vector of scalar types (namely Integer)
+	 */
+	template <typename Function>
+	struct CRAResidue<std::vector<Integer>, Function> {
+		template <typename Domain>
+		using ResidueType = DenseVector<Domain>;
+
+		template <typename Domain>
+		static ResidueType<Domain> create(const Domain& d) {
+            return ResidueType<Domain>(d);
+		}
+	};
+}
+
 #ifdef LINBOX_USES_OPENMP
 
 #include "linbox/algorithms/cra-domain-omp.h"
@@ -51,19 +117,7 @@ namespace LinBox
 	 */
 
 	template<class CRABase>
-	struct ChineseRemainder : public ChineseRemainderOMP<CRABase> {
-		typedef typename CRABase::Domain	Domain;
-		typedef typename CRABase::DomainElement	DomainElement;
-
-		template<class Param>
-		ChineseRemainder(const Param& b) :
-			ChineseRemainderOMP<CRABase>(b)
-		{}
-
-		ChineseRemainder(const CRABase& b) :
-			ChineseRemainderOMP<CRABase>(b)
-		{}
-	};
+        using ChineseRemainder = ChineseRemainderOMP<CRABase>;
 }
 
 #else
@@ -79,21 +133,8 @@ namespace LinBox
 	 *
 	 * This is the SEQ version
 	 */
-
 	template<class CRABase>
-	struct ChineseRemainder : public ChineseRemainderSeq<CRABase> {
-		typedef typename CRABase::Domain	Domain;
-		typedef typename CRABase::DomainElement	DomainElement;
-
-		template<class Param>
-		ChineseRemainder(const Param& b) :
-			ChineseRemainderSeq<CRABase>(b)
-		{}
-
-		ChineseRemainder(const CRABase& b) :
-			ChineseRemainderSeq<CRABase>(b)
-		{}
-	};
+        using ChineseRemainder = ChineseRemainderSeq<CRABase>;
 }
 
 #endif
@@ -101,11 +142,10 @@ namespace LinBox
 
 #endif
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

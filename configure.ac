@@ -21,7 +21,7 @@
 
 AC_PREREQ([2.68])
 
-AC_INIT([LinBox], [1.5.2],[linbox-use@googlegroups.com],[linbox],
+AC_INIT([LinBox], [1.5.3],[linbox-use@googlegroups.com],[linbox],
 		[http://www.linalg.org/])
 
 AC_CONFIG_MACRO_DIR([macros])
@@ -225,7 +225,8 @@ LB_DRIVER
 echo "-----------------------------------------------"
 
 # Now getting GMP and Givaro from FFLAS-FFPACK - AB 2014-12-10
-PKG_CHECK_MODULES([FFLAS_FFPACK], [fflas-ffpack >= 2.3.0])
+PKG_CHECK_MODULES([FFLAS_FFPACK], [fflas-ffpack >= 2.3.1])
+PKG_CHECK_MODULES([GIVARO], [givaro >= 4.0.5])
 
 dnl LB_CHECK_FFLAS_FFPACK(,,[
 dnl echo ''
@@ -305,6 +306,7 @@ AC_CONFIG_FILES([
 Makefile
 linbox-config
 examples/Makefile
+examples/data/Makefile
 doc/Makefile
 linbox/Makefile
 linbox/algorithms/Makefile

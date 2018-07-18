@@ -74,7 +74,7 @@ int main(int argc, char** argv)
 		PIR R;
 
 		typedef Givaro::Modular<int64_t> Field;
-		typedef RationalSolver<PIR, Field, LinBox::RandomPrimeIterator> Solver;
+		typedef RationalSolver<PIR, Field, PrimeIterator<IteratorCategories::HeuristicTag> > Solver;
 		typedef LastInvariantFactor<PIR, Solver> LIF;
 		typedef OneInvariantFactor<PIR, LIF, SCompose, RandomMatrix>  OIF;
 		typedef SmithFormBinary<PIR, OIF, MatrixRank<PIR, Field > > SF;
@@ -125,7 +125,7 @@ int main(int argc, char** argv)
 		RandomDenseStream<Ring> s1 (R, gen, n, (unsigned int)iterations);
 
 		typedef Givaro::Modular<int32_t> Field;
-		typedef RationalSolver<Ring, Field, LinBox::RandomPrimeIterator> Solver;
+		typedef RationalSolver<Ring, Field, PrimeIterator<IteratorCategories::HeuristicTag> > Solver;
 		typedef LastInvariantFactor<Ring, Solver> LIF;
 		typedef OneInvariantFactor<Ring, LIF, SCompose, RandomMatrix>  OIF;
 		typedef SmithFormBinary<Ring, OIF, MatrixRank<Ring, Field > > SF;
@@ -144,8 +144,8 @@ int main(int argc, char** argv)
 
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

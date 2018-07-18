@@ -75,7 +75,7 @@ namespace LinBox
 			BlackboxContainerBase<Field, Blackbox> (D, F)
 			,w(F)
 		{
-			init (u0, v0); w = this->v;
+			this->init (u0, v0); w = this->v;
 #ifdef INCLUDE_TIMING
 			_applyTime = _dotTime = 0.0;
 #endif
@@ -165,12 +165,10 @@ namespace LinBox
 
 #endif // __LINBOX_blackbox_container_H
 
-
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

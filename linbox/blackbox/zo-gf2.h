@@ -1,7 +1,7 @@
 /* linbox/blackbox/zo-gf2.h
  * Copyright (C) 2009,2010 The LinBox group
  *
- * Time-stamp: <24 Aug 17 19:52:30 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <04 Dec 17 11:25:43 Jean-Guillaume.Dumas@imag.fr>
  *
  * 
  * ========LICENCE========
@@ -102,7 +102,7 @@ namespace LinBox
 		size_t coldim() const { return _coldim; }
 
 
-		void setEntry(size_t i, size_t j, const Element& v) ;
+		const Element& setEntry(size_t i, size_t j, const Element& v) ;
 		const Element& getEntry(size_t i, size_t j) const ;
 		Element& getEntry(Element&, size_t i, size_t j) const ;
 
@@ -168,12 +168,10 @@ namespace LinBox
 
 #endif //__LINBOX_zo_gf2_H
 
-
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

@@ -170,6 +170,8 @@ namespace LinBox
 
 		void resize (size_type new_size, bool val = false);
 
+        inline pointer data();
+        
 		inline size_type size      (void) const { return _size;            }
 		inline bool      empty     (void) const { return _v.empty ();      }
 		inline size_type max_size  (void) const { return _v.size  () * __LINBOX_BITSOF_LONG; }
@@ -214,11 +216,10 @@ namespace LinBox
 
 #endif // __LINBOX_bit_vector_H
 
-
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

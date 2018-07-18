@@ -1,4 +1,3 @@
-
 /* Copyright (C) 2011 LinBox
  * Written by Brice Boyer (briceboyer) <boyer.brice@gmail.com>
  *
@@ -56,7 +55,7 @@ namespace LinBox
 			while(tries < 3) { // if we fail 3 times to insert, we don't have enough primes to sample.
 				if (curint>maxint)
 					break;
-				RandomPrimeIterator genprimes( (unsigned int) (_ps_+penalty) );
+				PrimeIterator<IteratorCategories::HeuristicTag> genprimes( (unsigned int) (_ps_+penalty) );
 				unsigned long p = genprimes.randomPrime() ;
 				++genprimes;
 				primeset.insert(p);
@@ -183,7 +182,7 @@ namespace LinBox
 			while(tries < 3) { // if we fail 3 times to insert, we don't have enough primes to sample.
 				if (curint>maxint)
 					break;
-				RandomPrimeIterator genprimes((unsigned int) (_ps_+penalty) );
+				PrimeIterator<IteratorCategories::HeuristicTag> genprimes((unsigned int) (_ps_+penalty) );
 				unsigned long p = genprimes.randomPrime() ;
 				++genprimes;
 				primeset.insert(p);
@@ -290,11 +289,10 @@ namespace LinBox
 
 #endif // __LINBOX_algorithms_rns_INL
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

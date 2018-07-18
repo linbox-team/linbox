@@ -74,12 +74,15 @@ res=yes;
 AC_MSG_RESULT([$res])
 AS_IF([test $res = yes],
 [
-sed 's/^HAVE_DOT.*/HAVE_DOT = YES/' doc/Doxyfile.mod > doc/Doxyfile
-sed 's/^HAVE_DOT.*/HAVE_DOT = YES/' doc/DoxyfileDev.mod > doc/DoxyfileDev
+sed 's/^HAVE_DOT.*/HAVE_DOT = YES/' ${srcdir}/doc/Doxyfile.mod > doc/Doxyfile
+sed 's/^HAVE_DOT.*/HAVE_DOT = YES/' ${srcdir}/doc/DoxyfileDev.mod > doc/DoxyfileDev
 ],
-[ cp doc/Doxyfile.mod doc/Doxyfile ;
-cp doc/DoxyfileDev.mod doc/DoxyfileDev
+[ cp ${srcdir}/doc/Doxyfile.mod doc/Doxyfile ;
+cp ${srcdir}/doc/DoxyfileDev.mod doc/DoxyfileDev
 ])
+AS_IF([test "${srcdir}" =  "."],[],[cp ${srcdir}/doc/mainpage.doxy doc/])
 
 
+sed -i "s;SRCDIR;../${srcdir};" doc/Doxyfile
+sed -i "s;SRCDIR;../${srcdir};" doc/DoxyfileDev
 ])

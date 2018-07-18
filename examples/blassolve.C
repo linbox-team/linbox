@@ -106,7 +106,7 @@ int main (int argc, char **argv) {
 
         // BlasElimination
     Method::BlasElimination M;
-    M.singular(Specifier::NONSINGULAR);
+    //M.singular(Specifier::NONSINGULAR);
 
     chrono.start();
     solve (X, d, A, B, M);
@@ -130,16 +130,20 @@ int main (int argc, char **argv) {
     {
 			// Check Solution
 
-        VectorDomain<Ints> VD(ZZ);
-        MatrixDomain<Ints> MD(ZZ);
-        ZVector LHS(ZZ, A.rowdim()), RHS(ZZ, B);
-            // check that Ax = d.b
-        MD.vectorMul(LHS, A, X);
-        VD.mulin(RHS, d);
-        if (VD.areEqual(LHS, RHS))
-            std::cout << "Ax=b : Yes" << std::endl;
-        else
-            std::cout << "Ax=b : No" << std::endl;
+        if (ZZ.isZero(d))
+            std::cout << "**** ERROR ****\n**** Zero denominator" << std::endl;
+        else {
+            VectorDomain<Ints> VD(ZZ);
+            MatrixDomain<Ints> MD(ZZ);
+            ZVector LHS(ZZ, A.rowdim()), RHS(ZZ, B);
+                // check that Ax = d.b
+            MD.vectorMul(LHS, A, X);
+            VD.mulin(RHS, d);
+            if (VD.areEqual(LHS, RHS))
+                std::cout << "Ax=b : Yes" << std::endl;
+            else
+                std::cout << "Ax=b : No" << std::endl;
+        }
     }
     
     {
@@ -153,3 +157,11 @@ int main (int argc, char **argv) {
     
     return 0;
 }
+
+// Local Variables:
+// mode: C++
+// tab-width: 4
+// indent-tabs-mode: nil
+// c-basic-offset: 4
+// End:
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

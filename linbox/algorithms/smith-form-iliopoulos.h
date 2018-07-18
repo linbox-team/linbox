@@ -57,14 +57,9 @@ namespace LinBox
 		static Matrix& eliminationRow (Matrix& A, const Ring& r)
 		{
 
-
-			if (A. coldim() <= 1 || A. coldim()  == 0) return A;
-
-
-			//typedef typename Matrix::Field Field;
+			if (A. coldim() <= 1) return A;
 
 			typedef typename Ring::Element Element;
-
 
 			VectorDomain<Ring> vd (r);
 
@@ -496,12 +491,10 @@ namespace LinBox
 
 #endif //__LINBOX_smith_form_iliopoulos_H
 
-
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

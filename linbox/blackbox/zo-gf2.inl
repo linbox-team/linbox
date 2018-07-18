@@ -93,7 +93,7 @@ namespace LinBox
 	}
 
 
-	inline void ZeroOne<GF2>::setEntry(size_t i, size_t j, const Element& v) {
+	inline const ZeroOne<GF2>::Element& ZeroOne<GF2>::setEntry(size_t i, size_t j, const Element& v) {
 		Row_t& rowi = this->operator[](i);
 		Row_t::iterator there = std::lower_bound(rowi.begin(), rowi.end(), j);
 		if (! field().isZero(v) ) {
@@ -108,6 +108,7 @@ namespace LinBox
 				--_nnz;
 			}
 		}
+        return v;
 	}
 
 	inline ZeroOne<GF2>::Element& ZeroOne<GF2>::getEntry(Element& r, size_t i, size_t j) const
@@ -437,11 +438,10 @@ namespace LinBox
 
 #endif //__LINBOX_zo_gf2_INL
 
-// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 4
 // indent-tabs-mode: nil
 // c-basic-offset: 4
 // End:
-
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

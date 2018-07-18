@@ -1,4 +1,3 @@
-
 /* tests/test-fibb.C
  * -bds
  *
@@ -32,7 +31,7 @@
 #include "linbox/linbox-config.h"
 #include <iostream>
 #include "linbox/util/commentator.h"
-#include "givaro/modular-double.h"
+#include "givaro/modular-floating.h"
 #include "test-blackbox.h"
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/blackbox/fibb.h"
@@ -306,8 +305,8 @@ int main (int argc, char **argv)
 
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
