@@ -116,7 +116,8 @@ namespace LinBox
                     }
                 }
 
-                BlasMatrix<LocalPID> Ap(A, 1, 1, A.rowdim() - 1, A.coldim() - 1);
+				// submatrix!
+                BlasSubmatrix<BlasMatrix<LocalPID> > Ap(A, 1, 1, A.rowdim() - 1, A.coldim() - 1);
                 L.push_back(d);
                 return smithStep(L, d, Ap, R);
             } else {
@@ -124,6 +125,8 @@ namespace LinBox
                 for (p_it = A.Begin(); p_it != A.End(); ++p_it) {
                     R.divin(*p_it, g);
                 }
+				typename LocalPID::Element x; R.neg(x, g);
+				R.gcdin(g,x);
                 return smithStep(L, R.mulin(d, g), A, R);
             }
         }

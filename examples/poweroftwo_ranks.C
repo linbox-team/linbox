@@ -67,9 +67,14 @@ void runpoweroftworank(ifstream& input, const size_t exponent, size_t StPr) {
     tim.stop();
 
     R.write(std::cout << "Local Smith Form ") << " : " << std::endl << '(';
-    for (auto  p = local.begin(); p != local.end(); ++p)
-        std::cout << '[' << p->first << ',' << p->second << "] ";
-    cout << ')' << endl;
+	int num = A.rowdim();
+    for (auto  p = local.begin(); p != local.end(); ++p) {
+        std::cout << '[' << p->second << ',' << p->first << "] ";
+		num -= p->first;
+	}
+	if (num > 0) std::cout << '[' << F2.zero << ',' << num << "] ";
+	std::cout << ')' << std::endl;
+
 
 //         // Reposition Output with empty rows at the end
 //     auto newend = std::remove_if(
