@@ -111,7 +111,7 @@ int main(int argc, char** argv)
 
 	}
 
-#if 1
+#if 0
 #ifdef __LINBOX_HAVE_NTL
 // NTL_ZZ not working here
 	{
