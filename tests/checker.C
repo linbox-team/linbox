@@ -65,9 +65,12 @@ int main(int argc, char* argv[]) {
 if (honor_skips) {
 hide("test-block-ring", "non commutative rings not supported");
 //hide("test-ffpack", "testTURBO fails, move to ffpack tests?");
+skip("test-frobenius-small", "not unit/regression test conforming");
+skip("test-frobenius-large", "not unit/regression test conforming");
 hide("test-ftrmm", "should move to attic");
 skip("test-givaro-fields", "may fail on small fields because of supposed non-randomness or failure to find a non trivial element");
 hide("test-image-field", "deprecated");
+skip("test-invariant-factors", "not unit/regression test conforming");
 //skip("test-isposdef", "intermittent inf loop");
 //skip("test-ispossemidef", "intermittent inf loop");
 hide("test-la-block-lanczos", "not maintained. operator >> missing");
@@ -78,7 +81,7 @@ hide("test-modular-short",  "deprecated");
 //skip("test-modular-balanced-int",  "test and modular-balanced disagree on init/convert");
 //skip("test-modular-balanced-double",  "test and modular-balanced disagree on init/convert");
 //skip("test-moore-penrose", "inf loop");
-skip("test-optimization", "not in test form");
+skip("test-optimization", "not unit/regression test conforming");
 skip("test-quad-matrix", "depends on out-of-date blackbox/zo.h");
 //skip("test-rational-reconstruction-base", "inf loop");
 skip("test-rat-charpoly", "inf loop");

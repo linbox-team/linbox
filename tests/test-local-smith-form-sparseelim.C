@@ -165,9 +165,14 @@ template<typename Base, typename Compute = Base>
 bool test_sparse_local_smith(size_t seed, size_t R, size_t M, size_t N,
                              const Base& p, int exp,
                              double density) {
+	std::ostream &report = commentator().report ();
 	commentator().start ("Testing sparse elimination local smith", "SELS");
+	/*
     commentator().indent(std::cerr);
     std::cerr << "test_sparse_local_smith(" << density << ", r" << R << '[' << M << 'x' << N << "]) mod " << p << '^' << exp << std::endl;
+	*/
+    commentator().indent(report);
+    report << "test_sparse_local_smith(" << density << ", r" << R << '[' << M << 'x' << N << "]) mod " << p << '^' << exp << std::endl;
 
     ASSERT(R<=M && R<=N);
 
@@ -184,7 +189,6 @@ bool test_sparse_local_smith(size_t seed, size_t R, size_t M, size_t N,
     std::for_each(v.begin(), v.end(),
                   [&](int value) { map_values[value]++; } );
 
-	std::ostream &report = commentator().report ();
     report << "Generated Smith form exponents:\n";
     for(auto & it : map_values)
         report << it.first << ": " << it.second << " times\n";
@@ -286,12 +290,13 @@ int main (int argc, char **argv) {
 	parseArguments (argc, argv, args);
 	r = std::min(r,m);
 	r = std::min(r,n);
-	FFLAS::writeCommandString(std::cout << argv[0] << ' ', args) << std::endl;
 
     commentator().setMaxDetailLevel (-1);
     commentator().setMaxDepth (-1);
-    commentator().setReportStream (std::cerr);
+    //commentator().setReportStream (std::cerr);
+	std::ostream &report = commentator().report ();
 
+	FFLAS::writeCommandString(report << argv[0] << ' ', args) << std::endl;
     { // sparseelim
         pass0 &= test_sparse_local_smith(rseed,r,m,n,Givaro::Integer(2),e,d);
         pass0 &= test_sparse_local_smith(rseed,r,m,n,Givaro::Integer(q),e,d/2.);

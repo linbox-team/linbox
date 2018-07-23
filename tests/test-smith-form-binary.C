@@ -112,17 +112,18 @@ int main(int argc, char** argv)
 	}
 
 #if 0
-//#ifdef __LINBOX_HAVE_NTL
+#ifdef __LINBOX_HAVE_NTL
 // NTL_ZZ not working here
 	{
 		typedef NTL_ZZ Ring;
 
 		Ring R; Ring::RandIter gen(R);
 
-		report << std::endl << "EGV++ algorithm test suite with NTL_ZZ :\n";
+		commentator().report() << std::endl << "EGV++ algorithm test suite with NTL_ZZ :\n";
 		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 
-		RandomDenseStream<Ring> s1 (R, gen, n, (unsigned int)iterations);
+		//RandomDenseStream<Ring> s1 (R, gen, n, (unsigned int)iterations);
+		RandomDenseStream<Ring> s1 (R, gen, n, 1);
 
 		typedef Givaro::Modular<int32_t> Field;
 		typedef RationalSolver<Ring, Field, PrimeIterator<IteratorCategories::HeuristicTag> > Solver;
@@ -136,6 +137,7 @@ int main(int argc, char** argv)
 
 		if (!testRandom(R, sf, s1)) pass = false;
 	}
+#endif
 #endif
 
 	commentator().stop("SmithFormBinary test suite");

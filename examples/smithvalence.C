@@ -30,7 +30,9 @@
 
 #include <iostream>
 
+#define NOT_USING_OMP
 #include "smithvalence.h"
+#undef NOT_USING_OMP
 
 using namespace LinBox;
 
@@ -51,12 +53,12 @@ int main (int argc, char **argv)
 		return -1;
 	}
 
+	Givaro::ZRing<Integer> ZZ;
+	typedef SparseMatrix<Givaro::ZRing<Integer> >  Blackbox;
+
 	std::ifstream input (argv[1]);
 	if (!input) { std::cerr << "Error opening matrix file " << argv[1] << std::endl; return -1; }
-
-	Givaro::ZRing<Integer> ZZ;
 	MatrixStream< Givaro::ZRing<Integer> > ms( ZZ, input );
-	typedef SparseMatrix<Givaro::ZRing<Integer> >  Blackbox;
 	Blackbox A (ms);
 	input.close();
 
@@ -91,7 +93,7 @@ int main (int argc, char **argv)
 			valence (val_A, A);
 	}
 
-	std::cout << "Valence is " << val_A << std::endl;
+	std::cerr << "Valence is " << val_A << std::endl;
 
 	std::vector<integer> Moduli;
 	std::vector<size_t> exponents;
@@ -110,22 +112,22 @@ int main (int argc, char **argv)
 	}
 
 	if (argc >= 4) {
-		std::cout << "Suppose " << argv[3] << " is coprime with Smith form" << std::endl;
+		std::cerr << "Suppose " << argv[3] << " is coprime with Smith form" << std::endl;
 	}
 
-	std::cout << "integer rank: " << std::endl;
+	std::cerr << "integer rank: " << std::endl;
 
 	unsigned long coprimeR; LRank(coprimeR, argv[1], coprimeV);
 	smith.push_back(PairIntRk(coprimeV, coprimeR));
 	//         std::cerr << "Rank mod " << coprimeV << " is " << coprimeR << std::endl;
 
-	std::cout << "Some factors (5000 factoring loop bound): ";
+	std::cerr << "Some factors (5000 factoring loop bound): ";
 	FTD.set(Moduli, exponents, val_A, 5000);
 	std::vector<size_t>::const_iterator eit=exponents.begin();
 	for(std::vector<integer>::const_iterator mit=Moduli.begin();
 	    mit != Moduli.end(); ++mit,++eit)
-		std::cout << *mit << '^' << *eit << ' ';
-	std::cout << std::endl;
+		std::cerr << *mit << '^' << *eit << ' ';
+	std::cerr << std::endl;
 
 	std::vector<integer> SmithDiagonal(coprimeR,integer(1));
 
@@ -184,19 +186,24 @@ int main (int argc, char **argv)
 
 	integer si=1;
 	size_t num=0;
+	std::cout << "Integer Smith Form :\n(";
 	for( std::vector<integer>::const_iterator dit=SmithDiagonal.begin();
 	     dit != SmithDiagonal.end(); ++dit) {
 		if (*dit == si) ++num;
 		else {
 			if (num > 0)
-				std::cerr << '[' << si << ',' << num << "] ";
+				std::cout << '[' << si << ',' << num << "] ";
 			num=1;
 			si = *dit;
 		}
 	}
-	std::cerr << '[' << si << ',' << num << "] " << std::endl;
+	std::cout << '[' << si << ',' << num << "] ";
+	num = A.rowdim() - SmithDiagonal.size();
+	si = ZZ.zero;
+	if (num > 0) std::cout << '[' << si << ',' << num << "] ";
+	std::cout << ")" << std::endl;
 	chrono.stop();
-	std::cerr << chrono << std::endl;
+	std::cout << chrono << std::endl;
 
 
 	return 0;

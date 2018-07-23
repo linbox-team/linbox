@@ -224,7 +224,7 @@ int main (int argc, char **argv)
 
 		std::cout << "B is " << B << std::endl;
 
-		Timer chrono;
+		//Timer chrono;
 		// BlasElimination
         std::cout << "BlasElimination" << std::endl;
         chrono.start();

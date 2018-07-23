@@ -31,6 +31,7 @@
 #include "linbox/linbox-config.h"
 #include "linbox/field/field-traits.h"
 #include "linbox/integer.h"
+#include "linbox/field/hom.h"
 
 namespace LinBox
 {
@@ -246,6 +247,37 @@ namespace LinBox
 	bool FieldTraits< Local2_32 >::goodModulus( const integer& i ) {
 		return i == Local2_32::maxCardinality();
 	}
+
+	template<>
+	class Hom<Givaro::ZRing<Integer>, Local2_32> {
+	public:
+		typedef Givaro::ZRing<Integer> Source;
+		typedef Local2_32 Target;
+		typedef typename Source::Element SrcElt;
+		typedef typename Target::Element Elt;
+
+		Hom(const Source& S, const Target& T) :
+			_source (S), _target (T)
+		{}
+		inline Elt& image(Elt& t, const SrcElt& s)
+		{
+			SrcElt x = s % Local2_32::maxCardinality();
+			if (x < 0) x += Local2_32::maxCardinality();
+			_target. init (t, x);
+			return t;
+		}
+		inline SrcElt& preimage(SrcElt& s, const Elt& t)
+		{
+			_target. convert (s, t);
+			return s;
+		}
+		const Source& source() { return _source;}
+		const Target& target() { return _target;}
+
+	protected:
+		const Source& _source;
+		const Target& _target;
+	}; // end Hom
 
 } // namespace LinBox
 
