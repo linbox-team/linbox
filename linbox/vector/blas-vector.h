@@ -218,7 +218,8 @@ namespace LinBox { /* BlasVector */
 			setIterators();
 
 			linbox_check(_size==0 || _ptr != NULL);
-			//linbox_check(_size >= this->begin()->_stride);
+
+			// linbox_check(_size >= this->begin()->_stride); PG -> do not understand
 		}
 
 #endif

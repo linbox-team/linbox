@@ -138,8 +138,6 @@ pkgincludesub_HEADERS =            \
 	charpoly-rational.h                \
 	minpoly-integer.h                  \
 	minpoly-rational.h                 \
-	sigma-basis.h                      \
-	matpoly-mult.h                     \
 	echelon-form.h                     \
 	toeplitz-det.h                     \
 	dense-nullspace.h                  \
