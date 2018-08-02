@@ -106,11 +106,13 @@ namespace LinBox
 		{	for (Index i = 0; i < rowdim(); ++ i)
 				for (Index j = 0; j < coldim(); ++ j)
 					setEntry(i, j, field().zero);
+			return *this;
 		}
 		Self_t& identity() // set to I, must be square, no shape change
 		{	this->zero();
 			for (Index i = 0; i < rowdim(); ++i)
 				setEntry(i, i, field().one);
+			return *this;
 		}
 		Self_t& random() // set to random entries, no shape change
 		{	Entry x; field().assign(x,field().zero);
@@ -118,6 +120,7 @@ namespace LinBox
 			for (Index i = 0; i < rowdim(); ++ i)
 				for (Index j = 0; j < coldim(); ++ j)
 					setEntry(i, j, r.random(x));
+			return *this;
 		}
 
 		std::istream& read (std::istream &is) // The matrix read must have the same shape.
