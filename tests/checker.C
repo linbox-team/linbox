@@ -90,7 +90,6 @@ skip("test-rat-solve", "stale test. solns over QQ need fresh tests"); // "infini
 skip("test-poly-det", "incomplete test (if still relevant)");
 skip("test-sparse-map-map", "const issue in givranditer, curious use of nonexistant next() in Extension");
 //Tests requiring further development
-skip("test-tutorial", "incomplete test");
 skip("test-dense-zero-one", "half baked, bds responsible");
 }
 

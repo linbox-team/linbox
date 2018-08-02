@@ -67,7 +67,7 @@ Choose a blackbox or matrix representation suitable to your data and construct
 specific matrix \c A over \c R.
 </li>
 <li>
-Call needed algorithm.  The solutions directory is designed to support this by
+Call the desired algorithm.  The solutions directory is designed to support this by
 providing functions with simple problem oriented interfaces (\c rank(), \c
 det(), \c solve()), yet allowing some user control of algorithm details.  The
 programmer may be providing some of the parts such as an application specific
@@ -202,29 +202,28 @@ for ( ... )
 
 Putting it all together, we may have a program looking like this.
 \code
+#include <fstream>
 #include <givaro/modular.h>
 #include <linbox/matrix/dense-matrix.h>
 #include <linbox/solutions/det.h>
-#include <linbox/util/matrix-stream.h>
 
 using namespace LinBox;
 
 int main()
 {
     typedef Givaro::Modular<double> Field;
-    typedef DenseMatrix<Field> Matrix;
+    Field F(101);
 
-    Field F(65521);
-    MatrixStream<Field> ms(F, std::cin);
-    Matrix A(ms); 
+    SparseMatrix<Field> A(F); 
+	A.read(std::cin);
 
     Field::Element d;
     Method::BlasElimination M;
+
     det(d, A, M);
 
     F.write(std::cout << "the determinant is ", d) << std::endl;
-
-    return 0;
+	return 0;
 }
 
 \endcode
