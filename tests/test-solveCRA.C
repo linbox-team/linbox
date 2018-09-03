@@ -415,10 +415,10 @@ LinBox::rank (r, A);
 #ifdef __LINBOX_HAVE_MPI  
     if(0==Cptr->rank()){
 #endif
-/*
-      genData (A, bits);
-      genData (B, bits);
-*/
+
+//      genData (A, bits);
+//      genData (B, bits);
+
 
 /*      
 	std::cerr << ">>>>Compute with B: " << std::endl;      
