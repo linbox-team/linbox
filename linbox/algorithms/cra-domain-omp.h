@@ -37,6 +37,14 @@
 #include <omp.h>
 
 
+
+#include <thread>
+#include <mutex>
+#include <future> // std::async
+
+
+
+
 #include <set>
 #include "linbox/algorithms/cra-domain-seq.h"
 
@@ -162,10 +170,10 @@ namespace LinBox
 			//std::cerr << "Blocs: " << NN << " iterations." << std::endl;
 			// commentator().start ("Parallel OMP Givaro::Modular iteration", "mmcrait");
 			if (NN == 1) return Father_t::operator()(res,Iteration,primeiter);
-            
+
 			int coprime =0;
 			int maxnoncoprime = 1000;
-            
+
 			if (this->IterCounter==0) {
 				std::set<Integer> coprimeset;
 				while(coprimeset.size() < NN) {
@@ -191,7 +199,7 @@ namespace LinBox
 					//                         reselit != resit->end(); ++reselit)
 					//                         ROUNDdomains.back().init( *reselit );
 				}
-                
+
 #pragma omp parallel for
 				for(size_t i=0;i<NN;++i) {
 					Iteration(ROUNDresidues[i], ROUNDdomains[i]);
@@ -205,7 +213,7 @@ namespace LinBox
 				}
 				// commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
 			}
-            
+
 			while( ! this->Builder_.terminated() ) {
 				//std::cerr << "Computed: " << this->IterCounter << " primes." << std::endl;
 				std::set<Integer> coprimeset;
@@ -232,7 +240,7 @@ namespace LinBox
 					//                         reselit != resit->end(); ++reselit)
 					//                         ROUNDdomains.back().init( *reselit );
 				}
-                
+
 #pragma omp parallel for
 				for(size_t i=0;i<NN;++i) {
 					Iteration(ROUNDresidues[i], ROUNDdomains[i]);
@@ -247,10 +255,90 @@ namespace LinBox
 			//std::cerr << "Used: " << this->IterCounter << " primes." << std::endl;
 			return this->Builder_.result(res);
 		}
-        
-        
-        
+
+
+
 	};
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+class SpinLock{
+	std::atomic_flag m_atomic;
+public:
+	SpinLock():m_atomic(false){}
+	bool TryAcquire(){
+		bool alreadyLocked = m_atomic.test_and_set(std::memory_order_acquire);
+		return !alreadyLocked;
+	}
+	void Acquire(){
+		while(!TryAcquire()){
+			std::this_thread::yield();
+		}
+	}
+	void Release(){
+		m_atomic.clear(std::memory_order_release);
+	}
+};
+
+template<class LOCK>
+class ScopedLock{
+	typedef LOCK lock_t;
+	lock_t* m_pLock;
+public:
+	explicit ScopedLock(lock_t& lock):m_pLock(&lock){
+		m_pLock->Acquire();	
+	}
+	~ScopedLock(){
+		m_pLock->Release();	
+	}
+};
+
+
+
+SpinLock g_lock;
+
+    template<class pFunc, class Func, class ROUNDdom, class ROUNDres, class PrimeIterator>
+    void my_func(
+                 pFunc& pF,
+                 Func& iteration, 
+                 //ROUNDdom& ROUNDdomains, ROUNDres& ROUNDresidues, 
+                 std::set<int>& coprimeset,
+                 int ibeg , int iend
+                 ){
+        PrimeIterator m_primeiter; ++m_primeiter;
+        ROUNDres	ROUNDresidue;
+        ROUNDdom	ROUNDdomain;
+        
+        for(int i=ibeg; i<iend; ){
+            //if( pF.terminated() ) break; //No improvement for early termination
+            
+            while(pF.noncoprime(*m_primeiter) ) ++m_primeiter;
+            ROUNDdomain = ROUNDdom(*m_primeiter);
+            iteration(ROUNDresidue, ROUNDdomain);
+            
+            if(coprimeset.size()>0){
+                {ScopedLock<decltype(g_lock)> janitor(g_lock);
+                    if(coprimeset.find(*m_primeiter)==coprimeset.end()){
+                        pF.progress( ROUNDdomain, ROUNDresidue);
+                        i++;
+                        coprimeset.insert(*m_primeiter);
+                    }}
+            }else{
+                {ScopedLock<decltype(g_lock)> janitor(g_lock);
+                    pF.initialize( ROUNDdomain, ROUNDresidue);
+                    i++;
+                    coprimeset.insert(*m_primeiter);
+                }
+            }
+            
+        }
+        
+    }
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
@@ -371,66 +459,51 @@ namespace LinBox
 
 
 
+
 		template<class Container, class Function, class PrimeIterator>
 		Container& operator()  (Container& res, Integer& den, Function& Iteration, PrimeIterator& primeiter)
 		{
+            unsigned num_cpus = std::thread::hardware_concurrency();
+            std::cout << "Launching " << num_cpus << " threads\n";
             int Tile = 8;
 			typedef typename CRATemporaryVectorTrait<Function, Domain>::Type_t ElementContainer;
-			size_t NN = Tile*omp_get_max_threads();
+			size_t NN = Tile*num_cpus; //size_t NN = Tile*omp_get_max_threads();
 			std::cerr << "Blocs: " << NN << " iterations." << std::endl;
 			// commentator().start ("Parallel OMP Givaro::Modular iteration", "mmcrait");
-			if (omp_get_max_threads() == 1) return Father_t::operator()(res, den,Iteration,primeiter);
-            
-            std::vector<int> vecPrime; vecPrime.reserve(NN);
-            std::set<int> coprimeset;
+			if (num_cpus < 2) return Father_t::operator()(res, den,Iteration,primeiter); //if (omp_get_max_threads() == 1) return Father_t::operator()(res, den,Iteration,primeiter);
 
             
+            std::vector< std::future< void > > results;
+            
+            
+            std::set<int> coprimeset;
 			while( ! this->Builder_.terminated() ) {
                 
                 
                 
-#pragma omp parallel for num_threads(NN/Tile) 
-                for(size_t j=0;j<NN/Tile;j++)
-                    {
-                        
-                        
-#pragma omp task                        
-                        {
-                            ElementContainer	ROUNDres;
-                            Domain			ROUNDdom;
-                            PrimeIterator m_primeiter; ++m_primeiter;
-                            
-                            for(int i=0; i<NN; ){
-                                
-                                
-                                while(this->Builder_.noncoprime(*m_primeiter) ) ++m_primeiter;
-                                ROUNDdom = Domain(*m_primeiter);
-                                Iteration(ROUNDres, ROUNDdom);
-                                
-                                
-#pragma omp critical
-                                if(coprimeset.size()>0){
-                                    
-                                    if(coprimeset.find(*m_primeiter)==coprimeset.end()){
-                                        this->Builder_.progress( ROUNDdom, ROUNDres);
-                                        i++;
-                                        coprimeset.insert(*m_primeiter);
-                                        
-                                    }
-                                    
-                                }else{
-                                    
-                                    this->Builder_.initialize( ROUNDdom, ROUNDres);
-                                    i++;
-                                    coprimeset.insert(*m_primeiter);
-                                }
-                                
-                            }
-                        }
-                        
-                    }
+                for(size_t i=0;i<NN/Tile;i++){
+                    
+                    results.emplace_back(
+                                         
+                                         std::async(
+                                                    std::launch::async,
+                                                    my_func<CRABase, Function, Domain, ElementContainer, PrimeIterator>, std::ref(this->Builder_) , std::ref(Iteration), std::ref(coprimeset), i*Tile, (i+1)*Tile-1 
+                                                    )
+                                         
+                                         
+                                         );
+                    
+                }
+                
+                for(size_t i=0;i<NN/Tile;i++){
+                    
+                    if(results[i].valid()) results[i].get();
+                    else results[i].wait();
+                }
                 
                 
+                results.resize(0);
+ 
                 
                 
                 
@@ -440,13 +513,15 @@ namespace LinBox
 			// commentator().stop ("done", NULL, "mmcrait");
 			//std::cerr << "Used: " << IterCounter << " primes." << std::endl;
 			return this->Builder_.result(res,den);
+
 		}
-        
-        
+
+
+
 	};
-    
-    
-    
+
+
+
 }
 
 #endif //__LINBOX_omp_cra_H
@@ -458,3 +533,74 @@ namespace LinBox
 // c-basic-offset: 4
 // End:
 // vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
