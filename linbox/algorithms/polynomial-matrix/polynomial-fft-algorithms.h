@@ -89,6 +89,36 @@ namespace LinBox {
 			}
 		}
 
+		void DIF_sort(Element* ptr){
+			uint64_t k = this->n;
+			for(uint64_t m = 1 ; m < this->n ; m *= 2){
+				k /= 2;
+				for(uint64_t i = 0 ; i < m ; ++i){
+					uint64_t j1 = i * k * 2;
+					uint64_t j2 = j1 + k;
+					for(uint64_t j = j1 ; j < j2 ; ++j){
+						this->Butterfly_DIF_mod2p(ptr[j], ptr[j+k], this->pow_w_sort[m+i], this->pow_w_precomp[m+i]);
+					}
+				}
+			}
+		}
+
+		void DIT_sort(Element* ptr){
+			uint64_t k = 1;
+			for(uint64_t m = this->n ; m > 1 ; m /= 2){
+				uint64_t j1 = 0;
+				uint64_t h = m / 2;
+				for(uint64_t i = 0 ; i < h ; ++i){
+					uint64_t j2 = j1 + k - 1;
+					for(uint64_t j = j1 ; j <= j2 ; ++j){
+						this->Butterfly_DIT_mod4p(ptr[j], ptr[j+k], this->pow_inv_w[h+i], this->pow_inv_w_precomp[h+i]);
+					}
+					j1 = j1 + k * 2;
+				}
+				k *= 2;
+			}
+		}
+
 	}; // FFT_algorithms<Field, NoSimd<typename Field::Element>, 1>
 
 	template<typename Field, typename simd>

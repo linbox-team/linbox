@@ -83,6 +83,31 @@ namespace LinBox {
 #endif
 	};
 
+	namespace utils{
+		uint64_t bit_reverse(uint64_t x){
+			uint64_t r = x;
+			for(uint64_t i = 0 ; i < 64 ; ++i){
+				r <<= 1;
+				r |= x & 1;
+				x >>= 1;
+			}
+			return r;
+		}
+
+		template<class Vect>
+		void sort_vector_bit_reverse(Vect & v){
+			std::vector<size_t> v_idx(v.size());
+			for(size_t i = 0 ; i < v.size() ; ++i){
+				v_idx[i] = i;
+			}
+			std::sort(v_idx.begin(), v_idx.end(), [](size_t a, size_t b){return bit_reverse(a) < bit_reverse(b);});
+			Vect temp = v;
+			for(size_t i = 0 ; i < v.size() ; ++i){
+				v[i] = temp[v_idx[i]];
+			}
+		}
+	}
+
 	// class to handle FFT transform over wordsize prime field Fp (p < 2^29)
 	//	template <class Field, int SL = SimdLevelFinder::simdlevel>
 	// TODO : A rendre générique / Simd si on doit faire des précalculs dans des Simd::vect_t
@@ -116,6 +141,10 @@ namespace LinBox {
 		//           1, w^{K/8}, w^{K/4}, w^{3K/8},
 		//           1, w^{K/4},
 		//           1.
+		VECT pow_w_sort; // powers of the root of unity
+		std::vector<Compute_t, AlignedAllocator<Compute_t, Alignment::DEFAULT>> pow_w_precomp; // precomputations for Shoup multiplication by the root of unity
+		VECT pow_inv_w;
+		std::vector<Compute_t, AlignedAllocator<Compute_t, Alignment::DEFAULT>> pow_inv_w_precomp;
 
 		inline const Field & field() const { return *fld; }
 
@@ -240,6 +269,26 @@ namespace LinBox {
 			}
 		}
 
+		void init_powers_sort(){
+			pow_w_sort.resize(n);
+			pow_w_precomp.resize(n);
+			pow_inv_w.resize(n);
+			pow_inv_w_precomp.resize(n);
+			pow_w_sort[0] = 1;
+			pow_w_sort[1] = _w;
+			for(uint64_t i = 2 ; i < n ; ++i){
+				fld->mul(pow_w_sort[i], pow_w_sort[i-1], _w);
+				fld->inv(pow_inv_w[i], pow_w_sort[i]);
+			}
+			utils::sort_vector_bit_reverse(pow_w_sort);
+			for(uint64_t i = 0 ; i < n ; ++i){
+				fld->inv(pow_inv_w[i], pow_w_sort[i]);
+				fld->precomp_b(pow_w_precomp[i], pow_w_sort[i]);
+				fld->precomp_b(pow_inv_w_precomp[i], pow_inv_w[i]);
+			}
+
+		}
+
 		FFT_init (const Field& fld2, size_t ln2, Element w = 0)
 			: fld (&fld2), n ((1UL << ln2)), ln (ln2), pow_w(n - 1), pow_wp(n - 1), _data(n) {
 			_pl = fld->characteristic();
@@ -280,7 +329,14 @@ namespace LinBox {
 			init_powers();
 
 			chrono.stop();
-			//cout<<"FFT: table="<<chrono<<endl;
+			// std::cout << "FFT: table=" << chrono << std::endl;
+			chrono.start();
+			
+			init_powers_sort();
+			
+			chrono.stop();
+			// std::cout << "FFT init powers sort: " << chrono << std::endl;
+
 		}
 
 
