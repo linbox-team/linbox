@@ -110,6 +110,7 @@ bool check_DFT(const Field &fld, size_t kmax, long seed){
 
 		FFT_algorithms<Field, NoSimd<Element>> fft_algo_nosimd(fft_init);
 		fft_algo_nosimd.DIF_sort(y.data());
+		passed &= !std::equal(x.begin(), x.end(), y.begin());
 		fft_algo_nosimd.DIT_sort(y.data());
 		FFLAS::fscalin(fld, convolution_size, inv_convolution_size, y.data(), 1);
 
@@ -120,6 +121,33 @@ bool check_DFT(const Field &fld, size_t kmax, long seed){
 			print_vectors(x, y);
 			break;
 		} 
+
+		fft_algo_nosimd.DIF_sort2(y.data());
+		passed &= !std::equal(x.begin(), x.end(), y.begin());
+		fft_algo_nosimd.DIT_sort2(y.data());
+		FFLAS::fscalin(fld, convolution_size, inv_convolution_size, y.data(), 1);
+
+		passed &= std::equal(x.begin(), x.end(), y.begin());
+
+		std::cout << "size: " << log_convolution_size << " DFT sort2: " << (passed ? "passed" : "error") << std::endl;
+		if(!passed){
+			print_vectors(x, y);
+			break;
+		} 
+
+		fft_algo_nosimd.DIF_sort2_unroll(y.data());
+		passed &= !std::equal(x.begin(), x.end(), y.begin());
+		fft_algo_nosimd.DIT_sort2_unroll(y.data());
+		FFLAS::fscalin(fld, convolution_size, inv_convolution_size, y.data(), 1);
+
+		passed &= std::equal(x.begin(), x.end(), y.begin());
+
+		std::cout << "size: " << log_convolution_size << " DFT sort2 unroll: " << (passed ? "passed" : "error") << std::endl;
+		if(!passed){
+			print_vectors(x, y);
+			break;
+		} 
+		std::cout << std::endl;
 	}
 	return passed;
 }
@@ -167,7 +195,7 @@ void bench_DIF(const Field& fld, size_t kmax, long seed) {
 
 		// Generate random inputs
 		typename Field::RandIter Gen(fld,seed);
-		randomVect(Gen,x);
+		randomVect(Gen,x); 
 
 		FFT_init<Field> fft_init (fld, lpts);
 
@@ -175,12 +203,14 @@ void bench_DIF(const Field& fld, size_t kmax, long seed) {
 		using FFT_a = FFT_algorithms<Field,NoSimd<typename Field::Element> >;
 		DFT_performance(fft_algo_nosimd,&FFT_a::DIF, lpts, x, "FFT_algorithms<Field,NoSimd>::DIF");
 		DFT_performance(fft_algo_nosimd, &FFT_a::DIF_sort, lpts, x, "FFT_algorithms<Field, NoSimd>::DIF_sort");
+		DFT_performance(fft_algo_nosimd, &FFT_a::DIF_sort2, lpts, x, "FFT_algorithms<Field, NoSimd>::DIF_sort2");
+		DFT_performance(fft_algo_nosimd, &FFT_a::DIF_sort2_unroll, lpts, x, "FFT_algorithms<Field, NoSimd>::DIF_sort2_unroll");
 
 #if defined(__FFLASFFPACK_HAVE_SSE4_1_INSTRUCTIONS)
 		if (Simd128<typename Field::Element>::vect_size == 4 || Simd128<typename Field::Element>::vect_size == 8){
 			FFT_algorithms<Field,Simd128<typename Field::Element> > fft_algo_simd128 (fft_init);
 			using FFT_a128 = FFT_algorithms<Field,Simd128<typename Field::Element> >;
-			DFT_performance(fft_algo_simd128,&FFT_a128::DIF, lpts, x, "FFT_algorithms<Field,Simd128>::DIF");
+			DFT_performance(fft_algo_simd128,&FFT_a128::DIF, lpts, x, "FFT_algorithms<Field,Simd128>::DIF");   
 		}
 #endif
 
@@ -195,6 +225,8 @@ void bench_DIF(const Field& fld, size_t kmax, long seed) {
 
 		DFT_performance(fft_algo_nosimd,&FFT_a::DIT, lpts, x, "FFT_algorithms<Field,NoSimd>::DIT");
 		DFT_performance(fft_algo_nosimd, &FFT_a::DIT_sort, lpts, x, "FFT_algorithms<Field, NoSimd>::DIT_sort");
+		DFT_performance(fft_algo_nosimd, &FFT_a::DIT_sort2, lpts, x, "FFT_algorithms<Field, NoSimd>::DIT_sort2");
+		DFT_performance(fft_algo_nosimd, &FFT_a::DIT_sort2_unroll, lpts, x, "FFT_algorithms<Field, NoSimd>::DIT_sort2_unroll");
 
 #if defined(__FFLASFFPACK_HAVE_SSE4_1_INSTRUCTIONS)
 		if (Simd128<typename Field::Element>::vect_size == 4 || Simd128<typename Field::Element>::vect_size == 8){
@@ -231,10 +263,7 @@ int main(int argc, char** argv){
 
 
 	//Modular<double,double>
-#ifdef __FFLASFFPACK_HAVE_INT128
-	
 	bits = 59;
-	l2n = 24;
 	Rd = RandomFFTPrime (uint64_t(1)<<bits,seed);
 	p = (uint64_t)Rd.randomPrime(l2n);
 
@@ -245,7 +274,6 @@ int main(int argc, char** argv){
 	std::cout << "Test Modular<int64_t,uint128_t> : " << std::endl;
 	std::cout << ((check_DFT(Fi64, k, seed)) ? "OK" : "KO!!!!") << endl;
 	bench_DIF(Fi64,k,seed);
-#endif
 
 	//Modular<uint32_t,uint64_t>
 	bits = 27;

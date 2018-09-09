@@ -90,17 +90,88 @@ namespace LinBox {
 		}
 
 		void DIF_sort(Element* ptr){
-			uint64_t k = this->n;
-			for(uint64_t m = 1 ; m < this->n ; m *= 2){
-				k /= 2;
+			// uint64_t k = this->n;
+			for(uint64_t m = 1, k = this->n/2 ; m < this->n ; m *= 2, k /= 2){
+				// k /= 2;
 				for(uint64_t i = 0 ; i < m ; ++i){
-					uint64_t j1 = i * k * 2;
-					uint64_t j2 = j1 + k;
-					for(uint64_t j = j1 ; j < j2 ; ++j){
-						this->Butterfly_DIF_mod2p(ptr[j], ptr[j+k], this->pow_w_sort[m+i], this->pow_w_precomp[m+i]);
+					for(uint64_t j = 0 ; j < k ; ++j){
+						this->Butterfly_DIF_mod2p(ptr[i*k*2+j], ptr[i*k*2+j+k], this->pow_w_sort[m+i], this->pow_w_precomp[m+i]);
 					}
 				}
 			}
+		}
+
+		void DIF_sort2(Element* ptr){
+			for(uint64_t m = 1, k = this->n/2 ; m < this->n ; m *= 2, k /= 2){
+				for(uint64_t i = 0 ; i < m ; ++i){
+					for(uint64_t j = 0 ; j < k ; ++j){
+						this->CT_butterfly_shoup_lazy(ptr[i*k*2+j], ptr[i*k*2+j+k], ptr[i*k*2+j], ptr[i*k*2+j+k], this->pow_w_sort[m+i], this->pow_w_precomp[m+i], this->_pl, this->_dpl);
+					}
+				}
+			}
+			for (uint64_t i = 0; i < this->n; ++i)
+        	{
+            	if (ptr[i] >= this->_pl)
+            	{
+                	ptr[i] -= this->_pl;
+            	}
+        	}
+		}
+
+		void DIF_sort2_unroll(Element* ptr){
+			for(uint64_t m = 1, k = this->n/2 ; m < this->n/2 ; m *= 2, k /= 2){
+				for(uint64_t i = 0 ; i < m ; ++i){
+					int64_t j1 = 2 * i * k;
+               		Element* ptr1 = ptr + j1;
+               		for (uint64_t j = 0; j < k / 2; j++)
+               		{
+                   		this->CT_butterfly_shoup_lazy(ptr1[2 * j], ptr1[2 * j + k], ptr1[2 * j], ptr1[2 * j + k], this->pow_w_sort[m + i], this->pow_w_precomp[m + i], this->_pl, this->_dpl);
+                   		this->CT_butterfly_shoup_lazy(ptr1[2 * j + 1], ptr1[2 * j + k + 1], ptr1[2 * j + 1], ptr1[2 * j + k + 1], this->pow_w_sort[m + i], this->pow_w_precomp[m + i], this->_pl, this->_dpl);
+               		}
+				}
+			}
+			for(uint64_t i = 0 ; i < this->n/2 ; ++i){
+				int64_t j1 = 2 * i;
+    	       	Element* ptr1 = ptr + j1;
+        	   	this->CT_butterfly_shoup_lazy(ptr1[0], ptr1[1], ptr1[0], ptr1[1], this->pow_w_sort[this->n/2 + i], this->pow_w_precomp[this->n/2 + i], this->_pl, this->_dpl);
+			}
+			for (uint64_t i = 0; i < this->n; ++i)
+        	{
+            	if (ptr[i] >= this->_pl)
+            	{
+                	ptr[i] -= this->_pl;
+            	}
+        	}
+		}
+
+		void DIF_sort2_unroll2(Element* ptr){
+			uint64_t k = this->n;
+			uint64_t m = 1;
+			for(uint64_t k = this->n ; k >= 2 ; k /= 2, m *= 2){
+				for(uint64_t i = 0 ; i < m ; ++i){
+					int64_t j1 = 2 * i * k;
+                	Element* ptr1 = ptr + j1;
+                	for (uint64_t j = 0; j < k / 2; j++)
+                	{
+                   		this->CT_butterfly_shoup_lazy(ptr1[2 * j], ptr1[2 * j + k], ptr1[2 * j], ptr1[2 * j + k], this->pow_w_sort[m + i], this->pow_w_precomp[m + i], this->_pl, this->_dpl);
+                  		this->CT_butterfly_shoup_lazy(ptr1[2 * j + 1], ptr1[2 * j + k + 1], ptr1[2 * j + 1], ptr1[2 * j + k + 1], this->pow_w_sort[m + i], this->pow_w_precomp[m + i], this->_pl, this->_dpl);
+                	}
+				}
+			}
+			// k = 1
+			m = this-> n / 2;
+			for(uint64_t i = 0 ; i < m ; ++i){
+				int64_t j1 = 2 * i;
+    	       	Element* ptr1 = ptr + j1;
+        	   	this->CT_butterfly_shoup_lazy(ptr1[0], ptr1[1], ptr1[0], ptr1[1], this->pow_w_sort[m + i], this->pow_w_precomp[m + i], this->_pl, this->_dpl);
+			}
+			for (uint64_t i = 0; i < this->n; ++i)
+        	{
+            	if (ptr[i] >= this->_pl)
+            	{
+                	ptr[i] -= this->_pl;
+            	}
+        	}
 		}
 
 		void DIT_sort(Element* ptr){
@@ -117,6 +188,72 @@ namespace LinBox {
 				}
 				k *= 2;
 			}
+		}
+
+		void DIT_sort2(Element* ptr){
+			uint64_t k = 1;
+			for(uint64_t m = this->n ; m > 1 ; m /= 2){
+				uint64_t j1 = 0;
+				uint64_t h = m / 2;
+				for(uint64_t i = 0 ; i < h ; ++i){
+					uint64_t j2 = j1 + k - 1;
+					for(uint64_t j = j1 ; j <= j2 ; ++j){
+						this->GS_butterfly_shoup_lazy(ptr[j], ptr[j+k], ptr[j], ptr[j+k], this->pow_inv_w[h+i], this->pow_inv_w_precomp[h+i], this->_pl, this->_dpl);
+					}
+					j1 = j1 + k * 2;
+				}
+				k *= 2;
+			}
+			for (uint64_t i = 0; i < this->n; ++i)
+        	{
+            	if (ptr[i] >= this->_dpl)
+            	{
+                	ptr[i] -= this->_dpl;
+            	}
+            	if (ptr[i] >= this->_pl)
+            	{
+                	ptr[i] -= this->_pl;
+            	}
+        	}
+		}
+
+		void DIT_sort2_unroll(Element* ptr){
+			uint64_t k = 1;
+			for(uint64_t m = this->n ; m > 1 ; m /= 2){
+				uint64_t j1 = 0;
+				uint64_t h = m / 2;
+				if (k == 1){
+					for(uint64_t i = 0 ; i < h ; ++i){
+						Element* ptr1 = ptr + j1;
+        	    	    uint64_t j = 0;
+            	       	this->GS_butterfly_shoup_lazy(*(ptr1), ptr1[k], *(ptr1), ptr1[k], this->pow_inv_w[h + i], this->pow_inv_w_precomp[h + i], this->_pl, this->_dpl);
+						j1 = j1 + 2;
+					}
+				}else{
+					for(uint64_t i = 0 ; i < h ; ++i){
+						Element* ptr1 = ptr + j1;
+                		uint64_t j = 0;
+                		for (; j < k / 2; ++j)
+            	    	{
+        	            	this->GS_butterfly_shoup_lazy(ptr1[2 * j], ptr1[2 * j + k], ptr1[2 * j], ptr1[2 * j + k], this->pow_inv_w[h + i], this->pow_inv_w_precomp[h + i], this->_pl, this->_dpl);
+    	                	this->GS_butterfly_shoup_lazy(ptr1[2 * j + 1], ptr1[2 * j + k + 1], ptr1[2 * j + 1], ptr1[2 * j + k + 1], this->pow_inv_w[h + i], this->pow_inv_w_precomp[h + i], this->_pl, this->_dpl);
+	                	}
+						j1 = j1 + k * 2;
+					}
+				}
+				k *= 2;
+			}
+			for (uint64_t i = 0; i < this->n; ++i)
+        	{
+            	if (ptr[i] >= this->_dpl)
+            	{
+                	ptr[i] -= this->_dpl;
+            	}
+            	if (ptr[i] >= this->_pl)
+            	{
+                	ptr[i] -= this->_pl;
+            	}
+        	}
 		}
 
 	}; // FFT_algorithms<Field, NoSimd<typename Field::Element>, 1>

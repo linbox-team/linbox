@@ -92,6 +92,30 @@ namespace LinBox {
 			//std::cout<<A<<" $$ "<<B<<"\n ";
 		}
 
+		inline void CT_butterfly_shoup_lazy(Element &res_x, Element &res_y, Element x, Element y, Element w, typename Field::Compute_t invw, Element p, Element p2) const
+    	{
+        	if (x >= p2)
+        	{
+	            x -= p2;
+    	    }
+        	Element c = (static_cast<Element>(y) * invw) >> (4 * sizeof(typename Field::Compute_t));
+        	Element rr = y * w - c * p;
+        	res_x = x + rr;
+        	res_y = x - rr + p2;
+    	}
+
+    	inline void GS_butterfly_shoup_lazy(Element &res_x, Element &res_y, Element x, Element y, Element w, typename Field::Compute_t invw, Element p, Element p2) const
+    	{
+        	res_x = x + y;
+        	if (res_x >= p2)
+        	{
+            	res_x -= p2;
+        	}
+        	Element temp = x - y + p2;
+        	Element c = (static_cast<typename Field::Compute_t>(temp) * invw) >> (4 * sizeof(typename Field::Compute_t));
+        	res_y = temp * w - c * p;
+    	}
+
 	}; // FFT_butterflies<Field, 1>
 
 	// ATTENTION à tous les uint64_t, SimdComp restants !!!!
@@ -106,6 +130,23 @@ namespace LinBox {
 
 		FFT_butterflies(const FFT_init<Field>& f_i) : FFT_init<Field>(f_i) {
 			linbox_check(simd::vect_size == 4);
+		}
+
+		inline void CT_butterfly_shoup_lazy(Element* x, Element *y, const vect_t vw, typename Field::Compute_t w_precomp,
+											const vect_t vp, const vect_t vp2) const{
+			typename simd::Converter conv;
+			vect_t vx = simd::load(x);
+			vx = reduce<simd>(vx, vp2);
+			vect_t vc;
+			conv.v = vc;
+			conv.t[0] = (static_cast<Element>(y[0]) * w_precomp) >> (4 * sizeof(typename Field::Compute_t));
+			conv.t[1] = (static_cast<Element>(y[1]) * w_precomp) >> (4 * sizeof(typename Field::Compute_t));
+			conv.t[2] = (static_cast<Element>(y[2]) * w_precomp) >> (4 * sizeof(typename Field::Compute_t));
+			conv.t[3] = (static_cast<Element>(y[3]) * w_precomp) >> (4 * sizeof(typename Field::Compute_t));
+			vect_t vy = simd::load(y);
+			vect_t vrr = simd::sub(simd::mul(vy, vw), simd::mul(vc, vp));
+			simd::store(x, simd::add(vx, vrr));
+			simd::store(y, simd::sub(vx, simd::add(vrr, vp2)));
 		}
 
 		// TODO include P, P2 in precomp
@@ -135,6 +176,7 @@ namespace LinBox {
 			V2 = simd::sub(V3,T1);
 			MemoryOp<Element,simd>::store(EFGH,V2);
 		}
+
 
 		inline void Butterfly_DIT_mod4p_firststeps (Element* ABCD, Element* EFGH,
 													const vect_t& W,
