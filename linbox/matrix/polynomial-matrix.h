@@ -302,23 +302,23 @@ namespace LinBox{
                                 b= ((int) ceil (log ((double) _size) / M_LN10));
                                 wid*=10*(b*(b-1)/2.);
                         }
-			std::cout<<"Matrix([";
+                        std::cout<<"Matrix([";
                         for (size_t i = 0; i< _row;++i) {
-                                os << "  [ ";
-                                for (size_t j = 0;j<_col;++j){
-                                        os.width (wid);
-                                        field().write(os,get(i,j,deg_min));
-					for (size_t k=deg_min+1;k<deg_max;++k){
-                                                os<<"+";
-                                                field().write(os,get(i,j,k))<<"*x^"<<k-deg_min;
-                                        }
-                                        if (deg_max-deg_min>0){
-                                                os<<"+";
-                                                field().write(os,get(i,j,deg_max))<<"*x^"<<deg_max-deg_min;
-                                        }
-					os<<(j<_col-1?",":"" );
+                            os << "  [ ";
+                            for (size_t j = 0;j<_col;++j){
+                                os.width (wid);
+                                field().write(os,get(i,j,deg_min));
+                                for (size_t k=deg_min+1;k<deg_max;++k){
+                                    os<<"+";
+                                    field().write(os,get(i,j,k))<<"*x^"<<k-deg_min;
                                 }
-				os << (i<_row-1?"],":"]" )<< std::endl;
+                                if (deg_max-deg_min>0){
+                                    os<<"+";
+                                    field().write(os,get(i,j,deg_max))<<"*x^"<<deg_max-deg_min;
+                                }
+                                os<<(j<_col-1?",":"" );
+                            }
+                            os << (i<_row-1?"],":"]" )<< std::endl;
                         }
 			std::cout<<"]);";
 		
@@ -552,12 +552,16 @@ namespace LinBox{
                                         os.width (wid);
                                         field().write(os,_rep[deg_min].getEntry(i,j));
                                         for (size_t k=deg_min+1;k<deg_max;++k){
+                                            if (!field().isZero(_rep[k].getEntry(i,j))){
                                                 os<<"+";
                                                 field().write(os,_rep[k].getEntry(i,j))<<"*x^"<<k-deg_min;
+                                            }
                                         }
                                         if (deg_max-deg_min>0){
+                                            if (!field().isZero(_rep[deg_max].getEntry(i,j))){
                                                 os<<"+";
                                                 field().write(os,_rep[deg_max].getEntry(i,j))<<"*x^"<<deg_max-deg_min;
+                                            }
                                         }
 					os<<(j<_col-1?",":"" );
                                 }

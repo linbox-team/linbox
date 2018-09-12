@@ -23,6 +23,8 @@
  * ========LICENCE========
  */
 
+//#define __CHECK_ORDERBASIS
+//#define __DEBUG_MBASIS
 
 
 #ifndef __LINBOX_ORDER_BASIS
@@ -58,7 +60,7 @@ namespace LinBox {
 #define  PROFILE_PMBASIS
 #endif
 
-#define __CHECK_ORDERBASIS
+
 #ifdef __CHECK_ORDERBASIS
 #define __CHECK_MBASIS
 #define __CHECK_PMBASIS
@@ -449,6 +451,11 @@ namespace LinBox {
                                                     delta_copy.getWritePointer(),delta_copy.getStride(),
                                                     Qt.getWritePointer(), P.getWritePointer());
 #ifdef __DEBUG_MBASIS
+                                std::cout<<"delta :\n";
+                                delta.write(std::cout,Tag::FileFormat::Maple);
+                                std::cout<<std::endl;
+
+                                std::cout<<"delta copy :\n";
                                 delta_copy.write(std::cout,Tag::FileFormat::Maple);
                                 std::cout<<std::endl;                                
 #endif
@@ -458,8 +465,16 @@ namespace LinBox {
                                              FFLAS::FflasNoTrans,FFLAS::FflasUnit,
                                              m-rank,rank, field().mOne, L1.getPointer(),L1.getStride(), L2.getWritePointer(),L2.getStride());
 #ifdef __DEBUG_MBASIS
+                                std::cout<<"delta :\n";
+                                delta.write(std::cout,Tag::FileFormat::Maple);
+                                std::cout<<std::endl;
+                                std::cout<<"delta copy :\n";
                                 delta_copy.write(std::cout,Tag::FileFormat::Maple);
-                                std::cout<<std::endl;                                
+                                std::cout<<std::endl;
+                                std::cout<<"L2=:\n";
+                                L2.write(std::cout,Tag::FileFormat::Maple);
+                                std::cout<<std::endl;
+                                
 #endif
 
                                 

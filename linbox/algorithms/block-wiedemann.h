@@ -143,15 +143,15 @@ namespace LinBox
                     MBD.left_minpoly_rec(minpoly,degree);
                     //MBD.printTimer();
 
-                    std::cout<<"U:=";
-                    U.write(std::cout,Tag::FileFormat::Maple)<<";\n";
-                    std::cout<<"V:=";
-                    V.write(std::cout,Tag::FileFormat::Maple)<<";\n";
+                    // std::cout<<"U:=";
+                    // U.write(std::cout,Tag::FileFormat::Maple)<<";\n";
+                    // std::cout<<"V:=";
+                    // V.write(std::cout,Tag::FileFormat::Maple)<<";\n";
 
                     
-                    std::cout<<"minpoly is: \n";
-                    write_maple(field(),minpoly);
-                    std::cout<<std::endl;
+                    // std::cout<<"minpoly is: \n";
+                    // write_maple(field(),minpoly);
+                    // std::cout<<std::endl;
                                         
                     size_t idx=0;
                     if ( field().isZero(minpoly[0].getEntry(0,0))) {
