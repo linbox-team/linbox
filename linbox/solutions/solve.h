@@ -702,7 +702,7 @@ namespace LinBox
 		Context BMD(A.field());
 		BlockWiedemannSolver<Context> BWS(BMD,m.blockingFactor(), m.blockingFactor()+1);
 		//BWS.solveNonSingular(x, A, b);
-                BWS.solve(x, A, b);
+        BWS.solve(x, A, b);
 		return x;
 	}
 

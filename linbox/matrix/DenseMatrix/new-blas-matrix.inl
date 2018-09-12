@@ -134,13 +134,13 @@ namespace LinBox
 
     
 	template < class _Field, class _Storage >
-	void BlasMatrix< _Field, _Storage >::init( const size_t & m, const size_t & n)
+	void BlasMatrix< _Field, _Storage >::init(const size_t & m, const size_t & n)
 	{
         _row = m; _col = n;
 		_rep.resize(m*n, field().zero);
         //FFLAS::finit(field(), _row, _col, _ptr, _col); not yet in FFLAS
         for (size_t i=0;i<_row*_col;i++)
-            field().init(_ptr[i]);
+            field().init(_rep[i]);
 		_ptr = _rep.data();
 	}
 

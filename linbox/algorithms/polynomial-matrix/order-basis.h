@@ -58,7 +58,7 @@ namespace LinBox {
 #define  PROFILE_PMBASIS
 #endif
 
-        
+#define __CHECK_ORDERBASIS
 #ifdef __CHECK_ORDERBASIS
 #define __CHECK_MBASIS
 #define __CHECK_PMBASIS

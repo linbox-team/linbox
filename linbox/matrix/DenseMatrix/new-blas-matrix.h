@@ -437,7 +437,7 @@ namespace LinBox
 		template <class Vector1, class Vector2>
 		Vector1&  applyTranspose (Vector1& y, const Vector2& x) const
         {
-            constSubMatrixType A(*this,0,0,_row,_col); return A.applyTranspose(y,x);
+            constSubMatrixType A(*this,0,0,rowdim(),coldim()); return A.applyTranspose(y,x);
         }
 
 		subMatrixType& applyRight(subMatrixType& Y, const subMatrixType& X)
