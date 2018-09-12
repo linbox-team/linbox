@@ -368,7 +368,7 @@ namespace LinBox{
 			_rep(s,Matrix(f)), _row(r), _col(c), _size(s), _fld(&f) {
 			//_row(r), _col(c), _size(s), _fld(&f) {			
 			for(size_t i=0;i<s;i++)
-				_rep[i].init(f,r,c);
+				_rep[i].init(r,c);
 			//integer p;
 			//std::cout<<"(ALLOC) matfirst at "<<this<<" : "<<r<<"x"<<c<<" - size= "<<s<<" ==> "<<MB(realmeminfo())<<" Mo"<<std::endl;
 			ADD_MEM(realmeminfo());
@@ -410,7 +410,7 @@ namespace LinBox{
 			_rep.resize(s,Matrix(*_fld));
 			if (s>_size){
 				for(size_t i=_size;i<s;i++)
-					_rep[i].init(field(),_row,_col);
+					_rep[i].init(_row,_col);
 			}
 			_size=s;
 		}
@@ -495,8 +495,8 @@ namespace LinBox{
 
 		// get access to the the k-th coeff  of the ith matrix entry
 		inline Element& ref(size_t i, size_t k){
-			return 	_rep[k].refRep()[i];
-			//return *(_rep[k].Begin()+i);
+			//return 	_rep[k].refRep()[i];
+			return *(_rep[k].getPointer()+i); 
 		}
 		inline Element& ref(size_t i, size_t j, size_t k){
 			return ref(i*_col+j,k);

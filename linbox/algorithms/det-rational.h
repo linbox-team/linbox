@@ -132,7 +132,8 @@ namespace LinBox
 		{
 			typedef typename Blackbox::template rebind<Field>::other FBlackbox;
 			FBlackbox Ap(A,F);
-			return det( P, Ap, typename FieldTraits<Field>::categoryTag(), M);
+			det( P, Ap, typename FieldTraits<Field>::categoryTag(), M);
+            return IterationResult::CONTINUE;
 		}
 	};
 
