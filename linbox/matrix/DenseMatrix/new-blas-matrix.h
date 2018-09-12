@@ -129,6 +129,11 @@ namespace LinBox
 		// CONSTRUCTORS //
 		//////////////////
 
+        /*! Copy Constructor of a matrix (copying data).
+		 * @param A matrix to be copied.
+		 */
+		BlasMatrix (const Self_t & A) ;
+
 		/*! Allocates a new \f$ 0 \times 0\f$ matrix (shaped and ready).*/
 		BlasMatrix (const _Field &F) ;
 

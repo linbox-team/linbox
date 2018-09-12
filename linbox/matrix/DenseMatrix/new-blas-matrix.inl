@@ -247,7 +247,14 @@ namespace LinBox
 		typename OtherMatrix::template rebind<_Field>()(*this,A);        
     }
 
+    template < class _Field, class _Storage >
+    BlasMatrix< _Field, _Storage >::BlasMatrix (const  BlasMatrix< _Field, _Storage>  &A) :
+		_row(A.rowdim()), _col(A.coldim()),_rep(_row*_col),_ptr(_rep.data()),_field(A.field())
+	{
+        createBlasMatrix(A,0,0,_row,_col,MatrixContainerCategory::BlasContainer());
+	}
 
+    
     
     template < class _Field, class _Storage >
     BlasMatrix< _Field, _Storage >& BlasMatrix< _Field, _Storage >::operator= (const BlasMatrix< _Field, _Storage >& A)

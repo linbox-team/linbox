@@ -795,7 +795,7 @@ int main (int argc, char **argv)
 	RandomDenseStream<Field> stream3 (F, gen, r, (unsigned int)iterations), stream4 (F, gen, r, (unsigned int)iterations);
 	RandomSparseStream<Field> stream6 (F, gen, (double) r / (double) n, n, (unsigned int)iterations);
 	RandomSparseStream<Field> A_stream (F, gen, (double) r / (double) n, n, m);
-#if 0
+#if 1
 	Method::Wiedemann WM;
 	if (!testIdentitySolve               (F, stream1, "Wiedemann", WM))
 		pass = false;
