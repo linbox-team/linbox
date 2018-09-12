@@ -37,6 +37,7 @@
 #include "linbox/algorithms/block-massey-domain.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/blackbox/transpose.h"
+#include "linbox/util/commentator.h"
 
 #include "linbox/util/error.h"
 //#include "linbox/util/debug.h"
@@ -264,6 +265,7 @@ namespace LinBox
 #ifdef _BW_LASVEGAS_COUNT
             std::cerr<<"BlockWiedemannSolver: nbr of try: "<<bw_try<<std::endl;
 #endif 
+                        commentator().report()<<"BlockWiedemannSolver: nbr of tries: "<<bw_try<<std::endl;
 			return x;
 		}
 

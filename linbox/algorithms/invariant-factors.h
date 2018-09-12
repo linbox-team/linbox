@@ -37,6 +37,7 @@
 #include "linbox/blackbox/fflas-csr.h"
 
 #include "linbox/algorithms/block-coppersmith-domain.h"
+#include "linbox/algorithms/block-massey-domain.h"
 #include "linbox/algorithms/blackbox-block-container.h"
 #include "linbox/algorithms/poly-smith-form.h"
 
@@ -100,6 +101,30 @@ public:
 		coppersmith.right_minpoly(gen);
 	}
 	
+	template<class Blackbox>
+	void computeGenerator2(
+		std::vector<Matrix> &gen,
+		const Blackbox &M,
+		size_t b) const
+	{
+		RandIter RI(_F);
+		RandomDenseMatrix<RandIter, Field> RDM(_F, RI);
+		MatrixDom MD(_F);
+		
+		size_t n = M.rowdim();
+		Matrix U(_F, b, n);
+		Matrix V(_F, n, b);
+		
+		RDM.random(U);
+		RDM.random(V);
+		
+		typedef BlackboxBlockContainer<Field, Blackbox, MatrixDom> Sequence;
+		Sequence blockSeq(&M, _F, U, V);
+		BlockMasseyDomain<Field, Sequence> coppersmith(&blockSeq, 10);
+		
+		coppersmith.left_minpoly(gen);
+	}
+	
 	void convert(PolyMatrix &G, const std::vector<Matrix> &minpoly) const {
 		size_t b = G.rowdim();
 		for (size_t i = 0; i < b; i++) {
@@ -129,6 +154,26 @@ public:
 	{
 		std::vector<Matrix> minpoly;
 		computeGenerator(minpoly, A, b);
+		
+		PolyMatrix G(_R, b, b);
+		convert(G, minpoly);
+		
+		Polynomial det;
+		_SFD.detLocalX(det, G);
+		_SFD.solve(lifs, G, det);	
+		
+		return lifs;
+	}
+	
+	template<class Blackbox>
+	std::vector<Polynomial> &largestInvariantFactors2(
+		std::vector<Polynomial> &lifs,
+		const Blackbox &A,
+		size_t b,
+		int earlyTerm = 10) const 
+	{
+		std::vector<Matrix> minpoly;
+		computeGenerator2(minpoly, A, b);
 		
 		PolyMatrix G(_R, b, b);
 		convert(G, minpoly);

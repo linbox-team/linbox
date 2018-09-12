@@ -23,8 +23,13 @@ typedef MatrixDomain<PolynomialRing> PolyMatrixDom;
 typedef typename PolyMatrixDom::OwnMatrix Matrix;
 typedef WeakPopovFormDomain<PolynomialRing> WeakPopovFormDom;
 
-int main() {
-	
+bool writing = false;
+
+int main(int argc, char* argv[]) {
+
+	// text is written to cout iff a command line arg is present	
+	if (argc > 1) writing = true;
+
 	size_t p = 3;
 	PolynomialRing R(p);
 	PolyMatrixDom MD(R);
@@ -42,26 +47,26 @@ int main() {
 	V.setEntry(2, 0, R.one);
 	V.setEntry(3, 0, R.one);
 	
-	PFD.printMatrix(M);
-	std::cout << std::endl;
+	if (writing) PFD.printMatrix(M);
+	if (writing) std::cout << std::endl;
 	
 	std::vector<long> pivots;
 	PFD.findPivots(pivots, M);
 	
-	std::cout << pivots << std::endl;
+	if (writing) std::cout << pivots << std::endl;
 	
 	std::pair<size_t, size_t> match;
 	bool matchFound = PFD.findMatchingPivots(match, pivots);
 	
-	std::cout << (matchFound ? "true: " : "false: ") << match << std::endl;
+	if (writing) std::cout << (matchFound ? "true: " : "false: ") << match << std::endl;
 	
 	PFD.extendedSolve(M, V);
 	
-	PFD.printMatrix(M);
-	std::cout << std::endl;
+	if (writing) PFD.printMatrix(M);
+	if (writing) std::cout << std::endl;
 	
-	PFD.printMatrix(V);
-	std::cout << std::endl;
+	if (writing) PFD.printMatrix(V);
+	if (writing) std::cout << std::endl;
 	
 	Polynomial det;
 	PFD.solveDet(det, M);
