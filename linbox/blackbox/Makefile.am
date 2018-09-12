@@ -71,7 +71,8 @@ BASIC_HDRS =			\
 	toeplitz.inl            \
 	rational-matrix-factory.h\
 	fibb.h			\
-	pascal.h
+	pascal.h		\
+	fflas-csr.h
 
 NTL_HDRS =			\
 	ntl-hankel.h            \

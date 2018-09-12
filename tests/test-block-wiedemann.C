@@ -32,7 +32,9 @@
  */
 
 // to print out the number of try for BW with sigma basis code
+/*  not needed -- this will print when commentator is on (test report file set).
 #define _BW_LASVEGAS_COUNT
+*/
 
 #include "linbox/linbox-config.h"
 #include <iostream>
@@ -140,22 +142,23 @@ int main (int argc, char **argv)
 	for (size_t i = 0; i < n; ++i) S.setEntry(i, n-1, d[i]); // last col
 	S.finalize(); // companion matrix of d
 
+#if 0
 // RCS is Yuhasz' Matrix Berlekamp Massey method.
 	CoppersmithSolver< MatrixDomain<Field> > RCS(MD,blocking);
 
-/*
+
 	commentator().start("Ident, CoppersmithSolver", "I-Coppersmith");
 	pass = pass and testBlockSolver(RCS, SC, "ScalarMatrix(I), Matrix Berlekamp Massey");
 	commentator().stop("Ident, CoppersmithSolver");
-*/
 
-	// commentator().start("Diag, CoppersmithSolver", "D-Coppersmith");
-	// pass = pass and testBlockSolver(RCS, D, "Diagonal, Matrix Berlekamp Massey");
-	// commentator().stop("Diag, CoppersmithSolver");
+	commentator().start("Diag, CoppersmithSolver", "D-Coppersmith");
+	pass = pass and testBlockSolver(RCS, D, "Diagonal, Matrix Berlekamp Massey");
+	commentator().stop("Diag, CoppersmithSolver");
 
-	// commentator().start("Companion, CoppersmithSolver", "C-Coppersmith");
-	// pass = pass and testBlockSolver(RCS, S, "Companion, Matrix Berlekamp Massey");
-	// commentator().stop("Companion, CoppersmithSolver");
+	commentator().start("Companion, CoppersmithSolver", "C-Coppersmith");
+	pass = pass and testBlockSolver(RCS, S, "Companion, Matrix Berlekamp Massey");
+	commentator().stop("Companion, CoppersmithSolver");
+#endif
         
 #if 1
 // LBWS is Giorgi's block method, SigmaBasis based.

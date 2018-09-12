@@ -288,7 +288,8 @@ namespace LinBox
         static inline void combineShelves(Shelf& dest, const Shelf& src) {
             // assumption: dest is already occupied
             auto invprod = precompInv(dest.mod(), src.mod());
-            for (auto dest_it = dest.residue.begin(), src_it = src.residue.begin();
+			auto src_it = src.residue.begin();
+            for (auto dest_it = dest.residue.begin();
                  dest_it != dest.residue.end();
                  ++dest_it, ++src_it)
             {

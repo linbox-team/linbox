@@ -77,9 +77,13 @@ int tmain (int argc, char **argv)
 
 
     F.write(std::cout << "Local Smith Form ") << " : " << std::endl << '(';
-    for (auto ip = local.begin(); ip != local.end(); ++ip) 
-        std::cout << '[' << ip->first << ',' << ip->second << "] ";
-    cout << ")" << endl;
+	int num = B.rowdim();
+    for (auto ip = local.begin(); ip != local.end(); ++ip) {
+        std::cout << '[' << ip->second << ',' << ip->first << "] ";
+		num -= ip->first;
+	}
+	if (num > 0) std::cout << '[' << F.zero << ',' << num << "] ";
+	std::cout << ")" << std::endl;
 
         // Reposition Output with empty rows at the end
     auto newend = std::remove_if(
@@ -100,7 +104,7 @@ int tmain (int argc, char **argv)
 
 int main(int argc, char ** argv) {
 	if (argc < 4 || argc > 6) {
-        cerr << "Usage: rank <matrix-file-in-supported-format> <prime> <prime-power> [<method>] [<flag>]" << endl;
+        cerr << "Usage: power_rank <matrix-file-in-supported-format> <prime> <prime-power> [<method>] [<flag>]" << endl;
         cerr << "       methods: \
 						0=automatic, \
 						1=int_64_t, \

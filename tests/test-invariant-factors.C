@@ -61,40 +61,22 @@ void readMatrix(SparseMat &M, const std::string matrixFile) {
 
 int main(int argc, char** argv) {
 	size_t p = 3;
-	size_t extend = 1;
-	size_t b = 4, m = 0, l = 1;
-	size_t modIndex = 0;
-	size_t exponent = 0;
+	size_t b = 4;
 	
 	int precond = 0;
 	size_t s = 0;
-	size_t perm = 0;
-	size_t k = 0;
-	size_t spmv = 0;
 	
 	std::string matrixFile;
 	std::string outFile;
 	
 	int seed = time(NULL);
-	
-	size_t alg = 0;
 
 	static Argument args[] = {
-		{ 'a', "-a A", "Algs to run after BM", TYPE_INT, &alg},
 		{ 'p', "-p P", "Set the field GF(p)", TYPE_INT, &p},
-		{ 'e', "-e E", "Extension field exponent (p^e)", TYPE_INT, &extend},
-		{ 'v', "-v V", "Enable spmv instead of spmm", TYPE_INT, &spmv},
-		
-		{ 'b', "-b B", "Block size", TYPE_INT, &b},
-		{ 'm', "-m M", "Step size for iterative lifs", TYPE_INT, &m},
-		{ 'l', "-l L", "Limit for iterative lifs", TYPE_INT, &l},
-		{ 't', "-t T", "Use t-th LIF as modulus", TYPE_INT, &modIndex},
-		{ 'd', "-d D", "Compute rank of ((x-1)^d)(A)", TYPE_INT, &exponent},
-		
+		{ 'b', "-b B", "Block size", TYPE_INT, &b},		
 		{ 'f', "-f F", "Name of file for matrix", TYPE_STR, &matrixFile},
 		{ 'o', "-o O", "Name of output file for invariant factors", TYPE_STR, &outFile},
 		{ 'r', "-r R", "Random seed", TYPE_INT, &seed},
-		{ 'k', "-k K", "Compute the (k+1)-th invariant factor", TYPE_INT, &k},
 		{ 's', "-s S", "Number of nonzeros in random triangular preconditioner", TYPE_INT, &s},
 		{ 'c', "-c C", "Choose what preconditioner to apply", TYPE_INT, &precond},
 		END_OF_ARGUMENTS
@@ -133,8 +115,10 @@ int main(int argc, char** argv) {
 		size_t rank;
 		time2([&](){return IFD.rank(rank, FM, b);});
 		std::cout << "rank: " << rank << std::endl;
-	} else {
+	} else if (precond == 0) {
 		time1([&](){IFD.largestInvariantFactors(result, FM, b);});
+	} else if (precond == 4) {
+		time1([&](){IFD.largestInvariantFactors2(result, FM, b);});
 	}
 	
 	if (outFile != "") {

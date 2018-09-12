@@ -33,13 +33,14 @@
 
 #include "linbox/util/timer.h"
 
-#include "givaro/givtimer.h"
 #if defined(__LINBOX_USE_OPENMP) and defined(__GIVARO_USE_OPENMP)
 #include <omp.h>
+#include "givaro/givomptimer.h"
 namespace LinBox {
     typedef Givaro::OMPTimer CTimer;
 }
 #else
+#include "givaro/givtimer.h"
 namespace LinBox {
     typedef Givaro::Timer CTimer;
 }
