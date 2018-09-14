@@ -45,9 +45,9 @@
 #include "linbox/matrix/matrix-traits.h"
 #include "linbox/util/matrix-stream.h"
 
-#include "linbox/matrix/DenseMatrix/blas-transposed-matrix.h"
+#include "linbox/matrix/densematrix/blas-transposed-matrix.h"
 #include "linbox/matrix/matrix-domain.h"
-#include "linbox/matrix/DenseMatrix/new-blas-submatrix.h"
+#include "linbox/matrix/densematrix/blas-submatrix.h"
 namespace LinBox
 { /*  Blas Matrix */
 	template<class Matrix>
@@ -201,6 +201,11 @@ namespace LinBox
 		//! operator = (copying data)
 		Self_t& operator= (const Self_t& A) ;
 
+        //! operator = (copying data from different matrix type)
+        template<class _Matrix>
+        Self_t& operator= (const _Matrix& A) ;
+
+        
 		//! Rebind operator
 		template<typename _Tp1>
 		struct rebind ;
@@ -548,8 +553,8 @@ namespace LinBox
 
 } // LinBox
 
-#include "linbox/matrix/DenseMatrix/new-blas-matrix.inl"
-#include "linbox/matrix/DenseMatrix/blas-triangularmatrix.inl"
+#include "linbox/matrix/densematrix/blas-matrix.inl"
+#include "linbox/matrix/densematrix/blas-triangularmatrix.inl"
 
 #endif // __LINBOX_densematrix_blas_matrix_H
 

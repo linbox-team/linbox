@@ -84,18 +84,20 @@ namespace LinBox
 		
 		template<typename Matrix>
 		void swapRows(Matrix &M, size_t r1, size_t r2) const {
-			SubMatrix row1(M, r1, 0, 1, M.coldim());
-			SubMatrix row2(M, r2, 0, 1, M.coldim());
-			
-			row1.swap(row2);
+		  // SubMatrix row1(M, r1, 0, 1, M.coldim());
+		  // SubMatrix row2(M, r2, 0, 1, M.coldim());			
+		  // row1.swap(row2);
+		  // -> use row iterator no submatrix
+		  std::swap(*(M.rowBegin()+r1), *(M.rowBegin()+r2));
 		}
 		
 		template<typename Matrix>
 		void swapCols(Matrix &M, size_t c1, size_t c2) const {
-			SubMatrix col1(M, 0, c1, M.rowdim(), 1);
-			SubMatrix col2(M, 0, c2, M.rowdim(), 1);
-			
-			col1.swap(col2);
+		  // SubMatrix col1(M, 0, c1, M.rowdim(), 1);
+		  // SubMatrix col2(M, 0, c2, M.rowdim(), 1);		       
+		  // col1.swap(col2);
+		  // -> use row iterator no submatrix
+		  std::swap(*(M.colBegin()+c1), *(M.colBegin()+c2));
 		}
 		
 		/**

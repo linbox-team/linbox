@@ -158,7 +158,7 @@ namespace LinBox { namespace BLAS2 {
 		integer mA, mB ;
 		mA = A.magnitude();
 		mB = B.magnitude();
-		integer cA = (integer) A.maxrow();
+		integer cA = uint64_t(A.maxrow());
 		double logC = Givaro::naturallog(mA*mB*cA);
 
 		typedef Givaro::Modular<double> ModularField ;
@@ -298,8 +298,10 @@ int main(int ac, char ** av) {
 		BlasMatrix<Givaro::ZRing<Integer> > B(ZZ,k,n) ;
 		BlasMatrix<Givaro::ZRing<Integer> > C(ZZ,m,n) ;
 
-		A.random((unsigned)b);
-		B.random((unsigned)b);
+		//A.random((unsigned)b);
+		//B.random((unsigned)b);
+		A.random(); // BUG: b is ignored but was already the case before
+		B.random();
 
 		report << "Naïve " << std::endl ;
 		Tim.clear() ; Tim.start() ;

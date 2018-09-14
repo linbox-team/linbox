@@ -30,8 +30,8 @@
  * @ingroup densematrix
  */
 
-#ifndef __LINBOX_densematrix_newblas_submatrix_H
-#define __LINBOX_densematrix_newblas_submatrix_H
+#ifndef __LINBOX_densematrix_blas_submatrix_H
+#define __LINBOX_densematrix_blas_submatrix_H
 
 
 #include "linbox/matrix/MatrixDomain/apply-domain.h"
@@ -76,6 +76,8 @@ namespace LinBox
         typedef typename MatrixEltPointer<_Matrix>::pointer                    pointer;    //!< pointer type to elements
         typedef typename MatrixEltPointer<const _Matrix>::pointer        const_pointer;    //!< const pointer type to elements
         typedef  _Matrix                               matrixType;    //!< matrix type
+        typedef Self_t                              subMatrixType;
+        typedef BlasSubmatrix<const _Matrix>   constSubMatrixType;
 
 
     protected:
@@ -322,7 +324,7 @@ namespace LinBox
     };
 
 }
-#include "linbox/matrix/DenseMatrix/new-blas-submatrix.inl"
+#include "linbox/matrix/densematrix/blas-submatrix.inl"
 #endif
 
 /* // Local Variables: */

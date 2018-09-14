@@ -269,6 +269,18 @@ namespace LinBox
         createBlasMatrix(A,0,0,_row,_col,MatrixContainerCategory::BlasContainer());
         return *this;
     }
+   
+    template < class _Field, class _Storage >
+    template < class Matrix>
+    BlasMatrix< _Field, _Storage >& BlasMatrix< _Field, _Storage >::operator= (const Matrix& A)
+    {
+        _col = A.coldim();
+        _row = A.rowdim();
+        _rep = Storage(_row*_col);
+        _ptr = _rep.data() ;
+        createBlasMatrix(A,0,0,_row,_col,typename MatrixContainerTrait<Matrix>::Type());
+        return *this;
+    }
 
 
     //! @bug other rep

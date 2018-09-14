@@ -30,6 +30,7 @@
  * @ingroup densematrix
  */
 
+#include "linbox/util/write-mm.h"
 
 namespace LinBox {
 
@@ -90,7 +91,7 @@ namespace LinBox {
 
     template < class _Matrix >
     const typename BlasSubmatrix<_Matrix>::Element& BlasSubmatrix<_Matrix>::setEntry (size_t i, size_t j, const Element &a_ij) {
-        return field().assign(a_ij, _ptr[i*_stride+j]);
+        return field().assign(_ptr[i*_stride+j],a_ij);
     }
 
     template < class _Matrix >
