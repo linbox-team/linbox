@@ -130,6 +130,17 @@ namespace LinBox
          */
         BlasSubmatrix (matrixType &M);
 
+        /** Constructor from a raw pointer
+         * \param M Pointer to @ref BlasMatrix of which to construct submatrix
+         */
+        BlasSubmatrix (const Field& F,
+                       pointer ptr,
+                       size_t Rowdim,
+                       size_t Coldim,
+                       size_t stride);
+        
+
+        
         /*  Members  */
 
         //////////////////
