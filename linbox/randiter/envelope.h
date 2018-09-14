@@ -70,7 +70,7 @@ namespace LinBox
 		RandIterEnvelope (const FieldEnvelope<Field> &F,
 				  const integer &size = 0,
 				  const integer &seed = 0) :
-			_randIter (F._field, seed)
+			_randIter (F._field, uint64_t(seed))
 		{}
 
 		/** Constructor from random field element generator to be wrapped

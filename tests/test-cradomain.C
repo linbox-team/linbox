@@ -133,7 +133,7 @@ template<typename Field, class IntVect = BlasVector<Givaro::ZRing<Integer>>>
 struct InteratorBlas : public Interator<IntVect> {
 	typedef typename Field::Element Element;
 	typedef LinBox::BlasMatrix<Givaro::ZRing<Element> > Matrix;
-	typedef typename Matrix::pointer Pointer;
+	typedef typename Matrix::Element_ptr Pointer;
 	typename Givaro::ZRing<Element> _field;
 	mutable Matrix _vectC;
 

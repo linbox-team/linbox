@@ -45,8 +45,8 @@ namespace LinBox { namespace BLAS3 {
 		linbox_check(TC.rowdim() == TC.coldim());
 		size_t l = TC.rowdim();
 
-		for (size_t i = 0 ; i < l ; ++i)
-			for (size_t j = 0 ; j < l ; ++j) {
+		for (uint64_t i = 0 ; i < l ; ++i)
+			for (uint64_t j = 0 ; j < l ; ++j) {
 				TC.field().init(TC.refEntry(i,j), pow((Integer)i,j));
 			}
 		BlasMatrixDomain<Zpz> BMD(TC.field()) ;

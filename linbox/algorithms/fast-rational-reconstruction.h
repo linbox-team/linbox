@@ -122,7 +122,7 @@ namespace LinBox
 			}
 		}
 
-		Element& powtwo(Element& h, const size_t log_h) const
+		Element& powtwo(Element& h, const uint64_t log_h) const
 		{
 			h = 1;
 			// if (log_h <= 0) return h;
@@ -133,8 +133,8 @@ namespace LinBox
 		bool fastReconstructRational(Element& n, Element& d, const Element& x, const Element& m, const Element& d_bound ) const
 		{
 
-			size_t log_m = m.bitsize()-1;
-			size_t log_bound = d_bound.bitsize()-1;
+			uint64_t log_m = m.bitsize()-1;
+			uint64_t log_bound = d_bound.bitsize()-1;
 			Element ai, bi, ci, di;
 			ai=1;bi=0;ci=0;di=1;
 			Element bound;  _intRing.powtwo(bound, log_bound);
@@ -760,7 +760,7 @@ namespace LinBox
 		bool fastQMaxReconstructRational(Element& n, Element& d, const Element& x, const Element& m) const
 		{
 
-			T = m.bitsize();
+			T =uint64_t( m.bitsize());
 			c = 5; //should be changed here to enhance probability of correctness
 
 			size_t log_m = m.bitsize()-1; //true unless m = 2^k

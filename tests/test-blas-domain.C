@@ -138,6 +138,19 @@ bool launch_gf3_tests(GF3 & F, size_t n)
 ;
 #endif
 
+
+template < class _Field, class _Rep >
+void transpose(BlasMatrix< _Field, _Rep > & At, const BlasMatrix< _Field, _Rep > & A)
+{
+    size_t r = A.rowdim() ;
+    size_t c = A.coldim() ;
+    At.resize(c,r);
+    for (size_t i = 0 ; i < r ; ++i)
+        for (size_t j = 0 ; j < c ; ++j)
+            At.setEntry(j,i,A.getEntry(i,j));
+}
+
+
 // test BlasMatrixDomain<Field> for various fields
 int main(int argc, char **argv)
 {
@@ -190,7 +203,7 @@ int main(int argc, char **argv)
 
 #ifdef __LINBOX_HAVE_NTL
 #pragma message "#warning NTL_ZZp is not working at all"
-	NTL::ZZ_p::init(NTL::to_ZZ((size_t)q));
+        NTL::ZZ_p::init(NTL::to_ZZ((unsigned long)(uint64_t)q));
 	NTL_ZZ_p F8;
 	// pass &= launch_tests(F8,n,iterations);
 #endif
@@ -534,10 +547,10 @@ static bool testMulAddShapeTrans (const Field &F, size_t m, size_t n, size_t k, 
 	RandMat.random(C);
 
 	// hard tranpose A,B
-	Matrix A1 (F, k,m) ;
-	A.transpose(A1) ;
-	Matrix B1 (F, n,k) ;
-	B.transpose(B1) ;
+	Matrix A1 (F) ;
+	transpose(A1,A) ;
+	Matrix B1 (F) ;
+	transpose(B1,B) ;
 	TransposedMatrix tA(A1); // t(tA)=A
 	TransposedMatrix tB(B1); // t(tB)=B
 
@@ -616,8 +629,8 @@ static bool testTriangMulShapeTrans (const Field &F, size_t m, size_t n, int ite
 	RandMat.random(B);
 
 	// hard tranpose A,B
-	Matrix A1 (F, k,k) ;
-	A.transpose(A1) ;
+	Matrix A1 (F) ;
+	transpose(A1,A) ;
 
 
 
@@ -888,27 +901,27 @@ static bool testInv (const Field& F,size_t n, int iterations)
 		//for (size_t i=0;i<n;++i){A.setEntry(i,i,F.one); }
 		//A.setEntry(0, n-1, F.mOne);
 
-	if (n < 10) 
-		A.write(mycommentator().report() << "A") << std::endl;
+        if (n < 10) 
+            A.write(mycommentator().report() << "A") << std::endl;
 
 		// compute the inverse of A
 		Matrix invA(A);
-	if (n < 10) 
-		invA.write(mycommentator().report() << "before inversion, invA") << std::endl;
-	//int nullity;
-	//FFPACK::Invert2 (F, invA.rowdim(), A.getPointer(), A.getStride(), invA.getPointer(), invA.getStride(), nullity);
+        if (n < 10) 
+            invA.write(mycommentator().report() << "before inversion, invA") << std::endl;
+        //int nullity;
+        //FFPACK::Invert2 (F, invA.rowdim(), A.getPointer(), A.getStride(), invA.getPointer(), invA.getStride(), nullity);
 		BMD.invin(invA);
-	if (n < 10) 
-		invA.write(mycommentator().report() << "invA") << std::endl;
-
+        if (n < 10) 
+            invA.write(mycommentator().report() << "invA") << std::endl;
+        
 		// compute Ainv*A and A*Ainv
 		BMD.mul(L,invA,A);
-	if (n < 10) 
-		L.write(mycommentator().report() << "invA*A") << std::endl;
+        if (n < 10) 
+            L.write(mycommentator().report() << "invA*A") << std::endl;
 		BMD.mul(S,A,invA);
-	if (n < 10) 
-		S.write(mycommentator().report() << "A*invA") << std::endl;
-
+        if (n < 10) 
+            S.write(mycommentator().report() << "A*invA") << std::endl;
+        
 		if (!BMD.areEqual(L,Id) || !BMD.areEqual(S,Id))
 			ret=false;
 	}

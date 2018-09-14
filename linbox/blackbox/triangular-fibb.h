@@ -93,7 +93,7 @@ namespace LinBox
 		{	return applyMatrix(B, A, FFLAS::FflasRight);   }
 
 		Matrix& applyMatrix(Matrix& B, const Matrix& A, const FFLAS::FFLAS_SIDE side) const {
-			B.copy(A);
+			B=A;
 			FFLAS::ftrmm<Field> (field(), 
 				side,
 				FFLAS::FFLAS_UPLO(rep_->getUpLo()), //const FFLAS_UPLO Uplo,
@@ -191,7 +191,8 @@ namespace LinBox
 
 		Matrix& solveMatrix(Matrix& B, const Matrix& A, const Tag::Side side) const 
 		{
-			B.copy(A);
+			//B.copy(A);
+            B=A;
 			FFLAS::ftrsm<Field> (field(), FFLAS::FFLAS_SIDE(side),
 				FFLAS::FFLAS_UPLO(rep_->getUpLo()), //const FFLAS_UPLO Uplo,
 		    	FFLAS::FflasNoTrans, //const FFLAS_TRANSPOSE TransA,
