@@ -82,6 +82,21 @@ namespace LinBox {
     {
 
     }
+    template < class _Matrix >
+    BlasSubmatrix<_Matrix>::BlasSubmatrix (const typename BlasSubmatrix<_Matrix>::Field& F,
+                                           typename BlasSubmatrix<_Matrix>::pointer ptr,
+                                           size_t Rowdim,
+                                           size_t Coldim,
+                                           size_t stride):        
+        _ptr(ptr),
+        _row (Rowdim),
+        _col(Coldim),
+		_stride(stride),
+        _field(F),
+		_AD(F)
+    {
+
+    }
 
   
 
