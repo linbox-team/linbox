@@ -188,27 +188,7 @@ bool test_set(BlasVector<Givaro::ZRing<Integer> > &X2,
   std::cout << "Sequential solveCRA" << std::endl;
 #endif 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-#if 0
-//std::cerr<<"Proc("<<Cptr->rank()<<") >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "<<std::endl;
 
-BlasVector<Givaro::Modular<double> > r;r.resize(A.coldim()+1);
-if(0==Cptr->rank()){
-int size = 0;
-while(true){
-if(size==Cptr->size()-1)break;
-Cptr->recv(r.begin(), r.end(), MPI_ANY_SOURCE, 0);
-if(r[r.size()-1]==0)size++;
-}
-}else{
-r[r.size()-1]=0;
-Cptr->send(r.begin(), r.end(), 0, 0);
-}
-r.resize(0);
-
-//std::cerr<<"Proc("<<Cptr->rank()<<") <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< "<<std::endl;
-#endif
-////////////////////////////////////////////////////////////////////////////////////////////////////
  
   /***********************
     Results verification 
@@ -240,26 +220,7 @@ r.resize(0);
   end = omp_get_wtime();
 #endif
   //  DenseVector B2(ZZ, A.coldim());
-////////////////////////////////////////////////////////////////////////////////////////////////////
-#if 0
-//std::cerr<<"Proc("<<Cptr->rank()<<") >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "<<std::endl;
-r.resize(A.coldim()+1);
-if(0==Cptr->rank()){
-int size = 0;
-while(true){
-if(size==Cptr->size()-1)break;
-Cptr->recv(r.begin(), r.end(), MPI_ANY_SOURCE, 0);
-if(r[r.size()-1]==0)size++;
-}
-}else{
-r[r.size()-1]=0;
-Cptr->send(r.begin(), r.end(), 0, 0);
-}
-r.resize(0);
 
-//std::cerr<<"Proc("<<Cptr->rank()<<") <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< "<<std::endl;
-#endif
-////////////////////////////////////////////////////////////////////////////////////////////////////
   
 #ifdef __LINBOX_HAVE_MPI
   if(0 == Cptr->rank()){  
@@ -333,7 +294,7 @@ int main(int argc, char ** argv)
   DenseVector X(ZZ, A.rowdim()), X2(ZZ, A.rowdim()),  B(ZZ, A.rowdim());
 
 ////////////////////////////////////Always//Generates//The//Same//Matrix//////////////////////////////////////////
-#if 0
+#if 1
 size_t r=0;
 
 
@@ -378,8 +339,8 @@ LinBox::rank (r, A);
     if(0==Cptr->rank()){
 #endif
 
-      genData (A, bits);
-      genData (B, bits);
+//      genData (A, bits);
+//      genData (B, bits);
 
 
 /*      
@@ -401,8 +362,8 @@ LinBox::rank (r, A);
       //MPI_Barrier(MPI_COMM_WORLD);
       //starttime = MPI_Wtime();
       //MPI data distribution for Integer type value
-      Cptr->bcast(A,0);   // MPIgmpBcast(A, ni, nj, 0, Cptr);
-      Cptr->bcast(B,0);   // MPIgmpBcast(B, ni, 0, Cptr);
+      Cptr->bcast(A,0);
+      Cptr->bcast(B,0);
       //MPI_Barrier(MPI_COMM_WORLD);
       //endtime   = MPI_Wtime(); 
       //std::cout<<"MPI data distribution used CPU time (seconds): " <<endtime-starttime<<std::endl;
