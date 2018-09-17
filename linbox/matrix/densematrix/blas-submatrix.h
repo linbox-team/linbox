@@ -34,7 +34,7 @@
 #define __LINBOX_densematrix_blas_submatrix_H
 
 
-#include "linbox/matrix/MatrixDomain/apply-domain.h"
+#include "linbox/matrix/matrixdomain/apply-domain.h"
 
 namespace LinBox
 {
