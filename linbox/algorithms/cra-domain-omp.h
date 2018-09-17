@@ -381,8 +381,8 @@ namespace LinBox
 			// commentator().start ("Parallel OMP Givaro::Modular iteration", "mmcrait");
 			if (omp_get_max_threads() == 1) return Father_t::operator()(res, den,Iteration,primeiter);
             
-            std::vector<int> vecPrime; vecPrime.reserve(NN);
-            std::set<int> coprimeset;
+            //std::vector<int> vecPrime; vecPrime.reserve(NN);
+            //std::set<int> coprimeset;
 
             
 			while( ! this->Builder_.terminated() ) {
@@ -398,12 +398,15 @@ namespace LinBox
                         {
                             ElementContainer	ROUNDres;
                             Domain			ROUNDdom;
-                            PrimeIterator m_primeiter; ++m_primeiter;
-                            
+
+//                            PrimeIterator m_primeiter; ++m_primeiter;
+LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   m_primeiter( omp_get_thread_num(),NN/Tile); 
+                                        std::set<int> coprimeset;
                             for(int i=0; i<NN; ){
                                 
                                 
-                                while(this->Builder_.noncoprime(*m_primeiter) ) ++m_primeiter;
+                                while(this->Builder_.noncoprime(*m_primeiter) && coprimeset.find(*m_primeiter)!=coprimeset.end()) ++m_primeiter;
+coprimeset.insert(*m_primeiter);
                                 ROUNDdom = Domain(*m_primeiter);
                                 Iteration(ROUNDres, ROUNDdom);
                                 
@@ -411,18 +414,18 @@ namespace LinBox
 #pragma omp critical
                                 if(coprimeset.size()>0){
                                     
-                                    if(coprimeset.find(*m_primeiter)==coprimeset.end()){
+//                                    if(coprimeset.find(*m_primeiter)==coprimeset.end()){
                                         this->Builder_.progress( ROUNDdom, ROUNDres);
                                         i++;
-                                        coprimeset.insert(*m_primeiter);
+//                                        coprimeset.insert(*m_primeiter);
                                         
-                                    }
+//                                    }
                                     
                                 }else{
                                     
                                     this->Builder_.initialize( ROUNDdom, ROUNDres);
                                     i++;
-                                    coprimeset.insert(*m_primeiter);
+//                                    coprimeset.insert(*m_primeiter);
                                 }
                                 
                             }
