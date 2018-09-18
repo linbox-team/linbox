@@ -42,6 +42,7 @@
 #include <linbox/solutions/methods.h>
 #include <linbox/solutions/solve.h>
 #include "linbox/matrix/random-matrix.h"
+#include "linbox/blackbox/random-matrix.h"
 
 using namespace LinBox;
 using namespace std;
@@ -75,21 +76,29 @@ template <class Field>
 static bool checkResult (const Field  &ZZ,
 			 BlasMatrix<Field> &A,
 			 BlasMatrix<Field> &A2){
-  for (long i = 0 ; i < A.rowdim() ; ++i)  
-    for (long j = 0 ; j < A.coldim() ; ++j){
+// A.write(std::cout << " A|A3: \n",Tag::FileFormat::Maple) << ';' << std::endl;
+// A2.write(std::cout << " A2|A4: \n",Tag::FileFormat::Maple) << ';' << std::endl;
+  for (long i = 0 ; i < A.rowdim()  ; ++i)  
+    for (long j = 0 ; j < A.coldim()  ; ++j){  
       if(!ZZ.areEqual(A[i][j],A2[i][j])){
 	std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
 	std::cerr << "               The data communicated is inconsistent                " << std::endl;
 	std::cerr << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
 	return false;
-      }
+      }  
     } 
+
   return true;
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 template <class Field>
 static bool checkResult (const Field  &ZZ,
-			 SparseMatrix<Field> &A,
-			 SparseMatrix<Field> &A2){
+			 SparseMatrix<Givaro::ZRing<Integer> > &A,
+			 SparseMatrix<Givaro::ZRing<Integer> > &A2){
+// A.write(std::cout << " A|A3: \n",Tag::FileFormat::Maple) << ';' << std::endl;
+// A2.write(std::cout << " A2|A4: \n",Tag::FileFormat::Maple) << ';' << std::endl;
   for (long i = 0 ; i < A.rowdim() ; ++i)  
     for (long j = 0 ; j < A.coldim() ; ++j){
       if(!ZZ.areEqual(A.getEntry(i,j),A2.getEntry(i,j))){
@@ -99,12 +108,38 @@ static bool checkResult (const Field  &ZZ,
 	return false;
       }
     } 
+
   return true;
 }
+
+template <class Field, class T>
+static bool checkResult (const Field  &ZZ,
+			 SparseMatrix<Givaro::ZRing<T> > &A,
+			 SparseMatrix<Givaro::ZRing<T> > &A2){
+// A.write(std::cout << " A|A3: \n",Tag::FileFormat::Maple) << ';' << std::endl;
+// A2.write(std::cout << " A2|A4: \n",Tag::FileFormat::Maple) << ';' << std::endl;
+
+  for (long i = 0 ; i < A.rowdim() ; ++i)  
+    for (long j = 0 ; j < A.coldim() ; ++j){
+      if(!ZZ.areEqual(A.getEntry(i,j),A2.getEntry(i,j))){
+	std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+	std::cerr << "               The data communicated is inconsistent                " << std::endl;
+	std::cerr << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
+	return false;
+      }
+    } 
+
+  return true;
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 template <class Field>
 static bool checkResult (const Field  &ZZ,
 			 BlasVector<Field> &B,
 			 BlasVector<Field> &B2){
+// B.write(std::cout << " B: \n",Tag::FileFormat::Maple) << ';' << std::endl;
+// B2.write(std::cout << " B2: \n",Tag::FileFormat::Maple) << ';' << std::endl;
   for (size_t j = 0 ; j < B.size() ; ++j)
     if(!ZZ.areEqual(B[j],B2[j])){
       std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
@@ -130,7 +165,10 @@ bool genData (SparseMatrix<Field> &A, size_t bits){
   typedef typename Field::RandIter RandIter;    
   RandIter RI(ZZ) ;
   LinBox::RandomDenseMatrix<RandIter,Field>  RDM(ZZ,RI);
-  RDM.randomFullRank(A);
+  RDM.random(A);
+  for(size_t i=0;i<A.rowdim();i++)
+     for(size_t j=0;j<A.coldim();j++)
+         if(i!=j) A.setEntry(i,j,0);
 }
 
 template <class Field>
@@ -156,7 +194,10 @@ bool genData (SparseMatrix<Givaro::ZRing<Integer> >  &A, size_t bits){
   typedef typename  Givaro::ZRing<Integer> ::RandIter RandIter;    
   RandIter RI(ZZ,bits) ;
   LinBox::RandomDenseMatrix<RandIter, Givaro::ZRing<Integer> >  RDM(ZZ,RI);
-  RDM.randomFullRank(A);
+  RDM.random(A);
+  for(size_t i=0;i<A.rowdim();i++)
+     for(size_t j=0;j<A.coldim();j++)
+         if(i!=j) A.setEntry(i,j,ZZ.zero);
 }
 template <>
 bool genData (DenseVector<Givaro::ZRing<Integer> >  &B, size_t bits){
@@ -166,24 +207,33 @@ bool genData (DenseVector<Givaro::ZRing<Integer> >  &B, size_t bits){
   B.random(RI);
 }
 
+template<class T>
 void test_main(size_t bits, size_t ni, size_t nj, Communicator *Cptr)
 {
   
   Givaro::ZRing<T> ZZ;
-  DenseMatrix<Givaro::ZRing<T>> A (ZZ,ni,nj), A2(ZZ,ni,nj);
+
   typedef BlasVector<Givaro::ZRing<T> > DenseVector;
+
+  DenseMatrix<Givaro::ZRing<T>> A (ZZ,ni,nj), A2(ZZ,ni,nj);
   DenseVector B2(ZZ, A.coldim()),  B(ZZ, A.coldim());
-  
+  SparseMatrix<Givaro::ZRing<T>> A3 (ZZ,ni,nj), A4(ZZ,ni,nj);
+
+  DenseMatrix<Givaro::ZRing<T>> A5 (ZZ,ni,nj), A6(ZZ,ni,nj); 
+  SparseMatrix<Givaro::ZRing<T>> A7 (ZZ,ni,nj), A8(ZZ,ni,nj);
+
   if(0==Cptr->rank()){
     
     genData (A, bits);
+    genData (A3, bits);
+    genData (A5, bits);
+    genData (A7, bits);
     genData (B, bits);
-    /*
-      B.write(std::cout << ">>>>Compute with B:\n",Tag::FileFormat::Maple) << ';' << std::endl;
-      A.write(std::cout << ">>>>Compute with A:\n",Tag::FileFormat::Maple) << ';' << std::endl;
-    */
+
+   
   }//End of BLock for process(0)
-  
+
+#if 1
   if(0==Cptr->rank()){
     
     //double starttime, endtime; 
@@ -195,9 +245,12 @@ void test_main(size_t bits, size_t ni, size_t nj, Communicator *Cptr)
     //endtime   = MPI_Wtime(); 
     //std::cout<<"MPI data distribution used CPU time (seconds): " <<endtime-starttime<<std::endl;
   }else{
-    Cptr->recv(B2,0);
+     if(1==Cptr->rank()) Cptr->recv(B2,0);
   }
-  
+  Cptr->bcast(B,0);
+  if(1==Cptr->rank()) checkResult (ZZ, B, B2);
+
+
   if(0==Cptr->rank()){
     
     //double starttime, endtime; 
@@ -209,21 +262,65 @@ void test_main(size_t bits, size_t ni, size_t nj, Communicator *Cptr)
     //endtime   = MPI_Wtime(); 
     //std::cout<<"MPI data distribution used CPU time (seconds): " <<endtime-starttime<<std::endl;
   }else{
-    Cptr->recv(A2,0);
+    if(1==Cptr->rank()) Cptr->recv(A2,0);
   }
-  
-  Cptr->bcast(B,0);
   Cptr->bcast(A,0);
 
-  if(0!=Cptr->rank()) checkResult (ZZ, A, A2);
-  if(0!=Cptr->rank()) checkResult (ZZ, B, B2);
-  /*
-  //Check if data are correctly distributed to all processes
-  if(0!=Cptr->rank()){
-  B.write(std::cout << "process("<<Cptr->rank()<< ")<<<<Compute with B:\n",Tag::FileFormat::Maple) << ';' << std::endl;
-  A.write(std::cout << "process("<<Cptr->rank()<< ")<<<<Compute with A: \n",Tag::FileFormat::Maple) << ';' << std::endl; 
+  if(1==Cptr->rank()) checkResult (ZZ, A, A2);
+  
+
+  if(0==Cptr->rank()){
+    
+    //double starttime, endtime; 
+    //MPI_Barrier(MPI_COMM_WORLD);
+    //starttime = MPI_Wtime();
+    //MPI data distribution for Integer type value
+    Cptr->ssend(A3,1); 
+    //MPI_Barrier(MPI_COMM_WORLD);
+    //endtime   = MPI_Wtime(); 
+    //std::cout<<"MPI data distribution used CPU time (seconds): " <<endtime-starttime<<std::endl;
+  }else{
+    if(1==Cptr->rank()) Cptr->recv(A4,0);
   }
-  */
+  Cptr->bcast(A3,0);
+
+  if(1==Cptr->rank()) checkResult (ZZ, A3, A4);
+#endif
+
+#if 1
+  if(0==Cptr->rank()){
+    //double starttime, endtime; 
+    //MPI_Barrier(MPI_COMM_WORLD);
+    //starttime = MPI_Wtime();
+    //MPI data distribution for Integer type value
+    Cptr->isend(A5,1); 
+    //MPI_Barrier(MPI_COMM_WORLD);
+    //endtime   = MPI_Wtime(); 
+    //std::cout<<"MPI data distribution used CPU time (seconds): " <<endtime-starttime<<std::endl;
+  }else{
+    if(1==Cptr->rank()) Cptr->recv(A6,0);
+  }MPI_Barrier(MPI_COMM_WORLD);
+  Cptr->bcast(A5,0);
+
+  if(1==Cptr->rank()) checkResult (ZZ, A5, A6);
+
+  if(0==Cptr->rank()){
+    //double starttime, endtime; 
+    //MPI_Barrier(MPI_COMM_WORLD);
+    //starttime = MPI_Wtime();
+    //MPI data distribution for Integer type value
+    Cptr->isend(A7,1); 
+    //MPI_Barrier(MPI_COMM_WORLD);
+    //endtime   = MPI_Wtime(); 
+    //std::cout<<"MPI data distribution used CPU time (seconds): " <<endtime-starttime<<std::endl;
+  }else{
+    if(1==Cptr->rank()) Cptr->recv(A8,0);
+  }MPI_Barrier(MPI_COMM_WORLD);
+  Cptr->bcast(A7,0);
+
+  if(1==Cptr->rank()) checkResult (ZZ, A7, A8);
+#endif
+
 }
 
 int main(int argc, char ** argv)
@@ -247,7 +344,7 @@ int main(int argc, char ** argv)
   MPI_Bcast(&niter, 1, MPI_INT, 0, MPI_COMM_WORLD);
   
   srand (time(NULL));
-  
+
   for(int j=0;j<niter;j++){
     test_main<float>(bits,ni,nj,Cptr);
     test_main<double>(bits,ni,nj,Cptr);
