@@ -23,6 +23,7 @@ tests/test-rational-solver
 tests/test-rational-solver-adaptive
 tests/test-smith-form-binary
 tests/test-solve
+tests/test-solveCRA
 tests/test-regression
 tests/test-block-wiedemann
 tests/test-cradomain
@@ -76,6 +77,7 @@ examples/valence
 examples/benchmatpolymult
 examples/benchfft
 examples/polysmith
+benchmarks/benchmark-solveCRA
 benchmarks/benchmark-example
 libtool
 linbox-config
@@ -87,3 +89,4 @@ macros/ltversion.m4
 macros/lt~obsolete.m4
 stamp-h1
 linbox.pc
+autogen.status
