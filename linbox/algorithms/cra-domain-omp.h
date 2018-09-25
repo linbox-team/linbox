@@ -39,7 +39,7 @@
 
 #include <set>
 #include "linbox/algorithms/cra-domain-seq.h"
-
+#include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/rational-cra.h"
 
 namespace LinBox
@@ -371,6 +371,75 @@ namespace LinBox
 
 
 
+#if 1
+		template<class Container, class Function, class PrimeIterator>
+		Container& operator()  (Container& res, Integer& den, Function& Iteration, PrimeIterator& primeiter)
+		{
+            int Tile = 8;
+			typedef typename CRATemporaryVectorTrait<Function, Domain>::Type_t ElementContainer;
+			size_t NN = Tile*omp_get_max_threads();
+			std::cerr << "Blocs: " << NN << " iterations." << std::endl;
+			// commentator().start ("Parallel OMP Givaro::Modular iteration", "mmcrait");
+			if (omp_get_max_threads() == 1) return Father_t::operator()(res, den,Iteration,primeiter);
+
+            std::set<int> coprimeset;
+
+            
+			while( ! this->Builder_.terminated() ) {
+                
+                
+                
+#pragma omp parallel for num_threads(NN/Tile)  
+                for(size_t j=0;j<NN/Tile;j++)
+                    {
+                        
+                    
+#pragma omp task                        
+                        {
+
+                            ElementContainer	ROUNDres;
+                            Domain			ROUNDdom;
+
+                            LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   m_primeiter( omp_get_thread_num(),NN/Tile); 
+      
+
+                            for(int i=0; i<NN; ){
+                                
+                                
+                              ++m_primeiter; while(this->Builder_.noncoprime(*m_primeiter) && coprimeset.find(*m_primeiter)!=coprimeset.end()) ++m_primeiter;
+
+                                ROUNDdom = Domain(*m_primeiter);
+                                Iteration(ROUNDres, ROUNDdom);
+                                
+                                
+#pragma omp critical
+                                if(coprimeset.size()>0){
+                                    
+                                        this->Builder_.progress( ROUNDdom, ROUNDres);
+                                        i++;
+                                        coprimeset.insert(*m_primeiter);
+    
+                                }else{
+                                    
+                                    this->Builder_.initialize( ROUNDdom, ROUNDres);
+                                    i++;
+                                    coprimeset.insert(*m_primeiter);
+                                }
+                                
+                            }
+                        }
+                        
+                    }
+
+                
+			}
+            
+			// commentator().stop ("done", NULL, "mmcrait");
+			//std::cerr << "Used: " << IterCounter << " primes." << std::endl;
+			return this->Builder_.result(res,den);
+		}
+        
+#else
 		template<class Container, class Function, class PrimeIterator>
 		Container& operator()  (Container& res, Integer& den, Function& Iteration, PrimeIterator& primeiter)
 		{
@@ -381,8 +450,7 @@ namespace LinBox
 			// commentator().start ("Parallel OMP Givaro::Modular iteration", "mmcrait");
 			if (omp_get_max_threads() == 1) return Father_t::operator()(res, den,Iteration,primeiter);
             
-            //std::vector<int> vecPrime; vecPrime.reserve(NN);
-            //std::set<int> coprimeset;
+            std::set<int> coprimeset;
 
             
 			while( ! this->Builder_.terminated() ) {
@@ -398,15 +466,12 @@ namespace LinBox
                         {
                             ElementContainer	ROUNDres;
                             Domain			ROUNDdom;
-
-//                            PrimeIterator m_primeiter; ++m_primeiter;
-LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   m_primeiter( omp_get_thread_num(),NN/Tile); 
-                                        std::set<int> coprimeset;
+                            PrimeIterator m_primeiter; ++m_primeiter;
+                            
                             for(int i=0; i<NN; ){
                                 
                                 
-                                while(this->Builder_.noncoprime(*m_primeiter) && coprimeset.find(*m_primeiter)!=coprimeset.end()) ++m_primeiter;
-coprimeset.insert(*m_primeiter);
+                                while(this->Builder_.noncoprime(*m_primeiter) ) ++m_primeiter;
                                 ROUNDdom = Domain(*m_primeiter);
                                 Iteration(ROUNDres, ROUNDdom);
                                 
@@ -414,18 +479,18 @@ coprimeset.insert(*m_primeiter);
 #pragma omp critical
                                 if(coprimeset.size()>0){
                                     
-//                                    if(coprimeset.find(*m_primeiter)==coprimeset.end()){
+                                    if(coprimeset.find(*m_primeiter)==coprimeset.end()){
                                         this->Builder_.progress( ROUNDdom, ROUNDres);
                                         i++;
-//                                        coprimeset.insert(*m_primeiter);
+                                        coprimeset.insert(*m_primeiter);
                                         
-//                                    }
+                                    }
                                     
                                 }else{
                                     
                                     this->Builder_.initialize( ROUNDdom, ROUNDres);
                                     i++;
-//                                    coprimeset.insert(*m_primeiter);
+                                    coprimeset.insert(*m_primeiter);
                                 }
                                 
                             }
@@ -433,10 +498,7 @@ coprimeset.insert(*m_primeiter);
                         
                     }
                 
-                
-                
-                
-                
+
                 
 			}
             
@@ -444,6 +506,8 @@ coprimeset.insert(*m_primeiter);
 			//std::cerr << "Used: " << IterCounter << " primes." << std::endl;
 			return this->Builder_.result(res,den);
 		}
+
+#endif   
         
         
 	};
