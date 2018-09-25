@@ -1,6 +1,6 @@
 /* Copyright (C) 2007 LinBox
  * Written by bds and zw
- *Updated by Hongguang ZHU
+ * Updated by Hongguang ZHU
  * author: B. David Saunders and Zhendong Wan
  * parallelized for BOINC computing by Bryan Youse
  *
