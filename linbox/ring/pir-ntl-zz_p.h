@@ -388,7 +388,7 @@ namespace LinBox
 		/** @brief
 		 *  out << y;
 		 */
-		std::ostream& write(std::ostream& out,const Element& y)  {
+		std::ostream& write(std::ostream& out,const Element& y) const {
 
 			out << y;
 

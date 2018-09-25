@@ -130,7 +130,7 @@ namespace LinBox
 		typedef NTL::zz_p Element ;
 		typedef Givaro::UnparametricOperations<Element> Father_t ;
 		typedef UnparametricRandIter<NTL::zz_p> RandIter;
-
+		
 		const Element zero,one,mOne ;
 
 

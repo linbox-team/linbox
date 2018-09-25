@@ -71,6 +71,7 @@ public:
 	void init(const Field& F, Index r, Index c);
 
 	void shape(Index r, Index c);
+	void resize(Index r, Index c);
 
 	SparseMatrix& operator=(const SparseMatrix& M);
 
@@ -180,7 +181,7 @@ public:
 	// Warning: Very inefficient as nnz approaches n*m (keep nnz < about 0.2 n*m)
 	static void generateSparseNonSingular(Self_t& mat, int approxNNZ, int seed=0);
 
-protected:
+//protected:
 
 	static int randRange(int start, int end);
 

@@ -498,10 +498,10 @@ int main(int argc, char** argv){
 #ifdef FFT_PROFILER		
 			FFT_PROF_LEVEL=2;
 #endif
-			PrimeIter<IteratorCategories::HeuristicTag> Rd(b,seed);
-			integer p= Rd.random();
-			//Givaro::Modular<integer> F(p);			
-			Givaro::Modular<RecInt::ruint128,RecInt::ruint256> F(p);
+			PrimeIterator<IteratorCategories::HeuristicTag> Rd(b,seed);
+			integer p= *Rd;
+			Givaro::Modular<integer> F(p);			
+			//Givaro::Modular<RecInt::ruint128,RecInt::ruint256> F(p);
 			cout<<"Computation over Fp[x] with p=  "<<p<<" (Generic prime)"<<endl;
 			cout<<"++++++++++++++++++++++++++++++++++++"<<endl;
 			runTest (F,n,b,d,seed,test);
@@ -519,10 +519,9 @@ int main(int argc, char** argv){
 				cout<<"++++++++++++++++++++++++++++++++++++"<<endl;
 				runTest (F,n,b,d,seed,test);
 			} else {
-				PrimeIter<IteratorCategories::HeuristicTag> Rd(b,seed);
+				PrimeIterator<IteratorCategories::HeuristicTag> Rd(b,seed);
 				//uint64_t dd=integer(d).bitsize()+1;
-				integer p;
-				Rd.random(p);
+				integer p = *Rd;
 				//Givaro::Modular<int32_t> F((int32_t)p);
 				Givaro::Modular<double> F((int32_t)p);
 				cout<<"Computation over Fp[x] with p=  "<<p<<" (normal prime)"<<endl;

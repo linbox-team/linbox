@@ -78,7 +78,7 @@ pkgincludesub_HEADERS =            \
 	cra-domain-seq.h                   \
 	cra-domain-omp.h                   \
 	cra-early-multip.h                 \
-	cra-early-single.h                 \
+	cra-single.h                       \
 	cra-full-multip.h                  \
 	cra-full-multip-fixed.h            \
 	cra-givrnsfixed.h                  \
@@ -103,7 +103,6 @@ pkgincludesub_HEADERS =            \
 	lifting-container.h                \
 	smith-form-local.h                 \
 	smith-form-local2.inl              \
-	smith-form-textbook.h              \
 	smith-form-kannan-bachem.h         \
 	matrix-inverse.h                   \
 	matrix-hom.h                       \
@@ -139,8 +138,6 @@ pkgincludesub_HEADERS =            \
 	charpoly-rational.h                \
 	minpoly-integer.h                  \
 	minpoly-rational.h                 \
-	sigma-basis.h                      \
-	matpoly-mult.h                     \
 	echelon-form.h                     \
 	toeplitz-det.h                     \
 	dense-nullspace.h                  \
@@ -149,7 +146,13 @@ pkgincludesub_HEADERS =            \
 	rns.h                              \
 	rns.inl                            \
 	invariant-factors.h                \
-	smith-form-iliopoulos2.h           \
+	frobenius-small.h                  \
+	frobenius-large.h                  \
+	poly-dixon.h                       \
+	invert-tb.h                        \
+	poly-smith-form-local-x.h          \
+	weak-popov-form.h                  \
+	poly-smith-form.h                  \
 	$(USE_OCL_HDRS)
 
 #  iml.h                              \

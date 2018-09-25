@@ -325,8 +325,8 @@ namespace LinBox{
                 	return os;
                 }
 
-		Element* getWritePointer(){return &_rep[0];}
-		const Element* getPointer() const {return &_rep[0];}
+		Element* getWritePointer(){return _rep.data();}
+		const Element* getPointer() const {return _rep.data();}
 
 		size_t realmeminfo()const {
 			return _row*_col*(_store*element_storage(field())+sizeof(Polynomial));}

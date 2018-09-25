@@ -189,7 +189,7 @@ namespace LinBox{
 					integer bound=integer(RNS._basis[l]-1)*integer(RNS._basis[l]-1)
 						*integer((uint64_t) k)*integer((uint64_t)std::min(a.size(),b.size()));
 #ifdef CHECK_MATPOL_MUL
-					MatrixP_F copy_a_i(f, m, k, pts),copy_b_i(f, k, n, pts);
+					Matrixp_F copy_a_i(f, m, k, pts),copy_b_i(f, k, n, pts);
 					copy_a_i.copy(a_i);
 					copy_b_i.copy(b_i);
 #endif		 

@@ -38,7 +38,7 @@
 
 #include <vector>
 #include <NTL/lzz_pEX.h>
-
+#include <NTL/lzz_pEXFactoring.h>
 
 #include "linbox/linbox-config.h"
 #include "linbox/util/debug.h"
@@ -100,8 +100,7 @@ namespace LinBox
             {}
 
             /** Constructor from a coefficient field */
-		NTL_zz_pEX( CoeffField cf ) :
-                NTL_zz_pEX_Initialiser(cf.cardinality()),Father_t ()
+		NTL_zz_pEX( CoeffField cf ) : Father_t ()
 			,zero( NTL::to_zz_pEX(0)),one( NTL::to_zz_pEX(1)),mOne(-one)
 			,_CField(cf)
             {}
@@ -174,6 +173,30 @@ namespace LinBox
             }
 		template <class ANY>
 		Element& init( Element& p, const BlasVector<ANY>& v ) const
+            {
+                p = 0;
+                Coeff temp;
+                for( long i = 0; i < (long)v.size(); ++i ) {
+                    _CField.init( temp, v[ (size_t) i ] );
+                    if( !_CField.isZero(temp) )
+                        NTL::SetCoeff( p, i, temp );
+                }
+                return p;
+            }
+		template <class ANY>
+		Element& init( Element& p, const BlasSubvector<ANY>& v ) const
+            {
+                p = 0;
+                Coeff temp;
+                for( long i = 0; i < (long)v.size(); ++i ) {
+                    _CField.init( temp, v[ (size_t) i ] );
+                    if( !_CField.isZero(temp) )
+                        NTL::SetCoeff( p, i, temp );
+                }
+                return p;
+            }
+		template <class ANY>
+		Element& init( Element& p, const Subvector<ANY>& v ) const
             {
                 p = 0;
                 Coeff temp;
@@ -291,6 +314,43 @@ namespace LinBox
                 c = NTL::LeadCoeff(p);
                 return c;
             }
+		
+		Element& monic(Element& r, const Element& p) const {			
+			r = p;
+			NTL::MakeMonic(r);
+			return r;
+		}
+		
+		Element& monicIn(Element& p) const {			
+			NTL::MakeMonic(p);
+			return p;
+		}
+		
+		bool isIrreducible(const Element &x) const {
+			return NTL::DetIrredTest(x);
+		}
+		
+		void factor(std::vector<std::pair<Element, long>> &factors, const Element &f) const {
+			NTL::Vec<NTL::Pair<Element, long>> factors1;
+			NTL::CanZass(factors1, f);
+			
+			for (int i = 1; i <= factors1.length(); i++) {
+				NTL::Pair<Element, long> tup = factors1(i);
+				std::pair<Element, long> tmp(tup.a, tup.b);
+				factors.push_back(tmp);
+			}
+		}
+		
+		void squareFree(std::vector<std::pair<Element, long>> &factors, const Element &f) const {
+			NTL::Vec<NTL::Pair<Element, long>> factors1;
+			NTL::SquareFreeDecomp(factors1, f);
+			
+			for (int i = 1; i <= factors1.length(); i++) {
+				NTL::Pair<Element, long> tup = factors1(i);
+				std::pair<Element, long> tmp(tup.a, tup.b);
+				factors.push_back(tmp);
+			}
+		}
 
             /** Get the coefficient of x^i in a given polynomial */
 		Coeff& getCoeff( Coeff& c, const Element& p, size_t i ) const
@@ -305,6 +365,11 @@ namespace LinBox
                 NTL::SetCoeff(p,(long)i,c);
                 return p;
             }
+		
+		Element& pow(Element& x, const Element& a, long e) const {
+			NTL::power(x, a, e);
+			return x;
+		}
 
             /** Get the quotient of two polynomials */
 		Element& quo( Element& res, const Element& a, const Element& b ) const
@@ -339,6 +404,13 @@ namespace LinBox
                 NTL::DivRem(q,r,a,b);
             }
 
+		// a = b^(-1) % f
+		Element& invMod(Element &a, const Element &b, const Element &f) const
+		{
+			NTL::InvMod(a, b, f);
+			return a;
+		}
+		
 		Element& inv( Element& y, const Element& x ) const
             {
                     // Element one(0, 1);
@@ -350,6 +422,26 @@ namespace LinBox
                 Element x = y;
                 return inv(y, x);
             }
+            
+        bool isDivisor(const Element &x, const Element &y) const {
+        	return isZero(x % y);
+        }
+        
+        Element &gcd(Element &g, const Element &a, const Element &b) const {
+        	NTL::GCD(g, a, b);
+        	return g;
+        }
+        
+        Element &gcdin(Element &g, const Element &a) const {
+        	g = NTL::GCD(g, a);
+        	return g;
+        }
+
+		Element& gcd( Element& res, Element& s, Element& t, const Element& a, const Element& b ) const
+		{
+			NTL::XGCD(res,s,t,a,b);
+			return res;
+		}
 
             /** Get characteristic of the field - same as characteristic of
              * coefficient field. */
@@ -372,8 +464,39 @@ namespace LinBox
             {
                 return os << "Polynomial ring using NTL::zz_pEX";
             }
-		std::ostream& write( std::ostream& os, const Element& x) const
-            {	return Father_t::write(os, x); }
+            
+		std::ostream& write( std::ostream& os, const Element& x) const {
+			// return Father_t::write(os, x);
+			if (isZero(x)) {
+				os << "0";
+				return os;
+			}
+			
+			bool first = true;
+			for (size_t i = 0; i <= deg(x); i++) {
+				Coeff xi = NTL::coeff(x, i);
+				if (!getCoeffField().isZero(xi)) {
+					if (!first) {
+						os << "+";
+					}
+					
+					if (xi == 1 && i > 0) {
+						os << "y";
+					} else {
+						getCoeffField().write(os, xi);
+						if (i > 0) {
+							os << "*y";
+						}
+					}
+					
+					if (i > 1) {
+						os << "^" << i;
+					}
+					first = false;
+				}
+			}
+			return os;
+		}
 
             /** Conversion to scalar types doesn't make sense and should not be
              * used.  Use getCoeff or leadCoeff to get the scalar values of

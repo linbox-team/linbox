@@ -1,7 +1,8 @@
 /* linbox/blackbox/permutation.h
- * Copyright (C) 2001 Bradford Hovinen
+ * Copyright (C) 2001 LinBox group
  *
  * Written by Bradford Hovinen <hovinen@cis.udel.edu>
+ *            Jean-Guillaume Dumas <jean-guillaume.dumas@imag.fr>
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -102,6 +103,13 @@ namespace LinBox
 				_indices[(size_t)i] = i;
 		}
 
+		void cyclicShift(size_t n)
+		{
+			this->_indices.resize ((size_t)n);
+			for (typename Storage::value_type i=0; i < n; ++i)
+				_indices[(size_t)i] = i+1 % n;
+		} 
+
 		//void random(size_t n)
 		void random(unsigned int seed=(unsigned int)time(NULL))
 		{
@@ -177,7 +185,8 @@ namespace LinBox
 
 			return y;
 		}
-#if 1
+
+            // Permutes the rows of X
 		Matrix& applyRight(Matrix& Y, const Matrix& X) const
 		{
 			Element x; field().init(x);
@@ -196,13 +205,15 @@ namespace LinBox
 		*/
 			return Y; 
 		}
+
+            // Permutes the columns of X
 		Matrix& applyLeft(Matrix& Y, const Matrix& X) const
 		{
 			Element x; field().init(x);
-			for (size_t i = 0; i < Y.coldim(); ++i){
-				size_t k = _indices[i];
-				for (size_t j = 0; j < Y.rowdim(); ++j)
-					Y.setEntry(j,k, X.getEntry(x, j, i));
+			for (size_t j = 0; j < Y.coldim(); ++j){
+				size_t k = _indices[j];
+				for (size_t i = 0; i < Y.rowdim(); ++i)
+					Y.setEntry(i,k, X.getEntry(x, i, j));
 			}
 		/* desired form
 			for (size_t i = 0; i < coldim(); ++i)
@@ -233,6 +244,7 @@ namespace LinBox
 			return d = b&1 ? field().mOne : field().one; 
 		}
 		
+            // Inverse permutation on the rows
 		Matrix& solveRight(Matrix& Y, const Matrix& X) const
 		{	Element x; field().init(x);
 			for (size_t i = 0; i < Y.rowdim(); ++i){
@@ -250,12 +262,14 @@ namespace LinBox
 		*/
 			return Y; 
 		}
+
+            // Inverse permutation on the columns
 		Matrix& solveLeft(Matrix& Y, const Matrix& X) const
 		{	Element x; field().init(x);
-			for (size_t i = 0; i < Y.coldim(); ++i){
-				size_t k = _indices[i];
-				for (size_t j = 0; j < Y.rowdim(); ++j)
-					Y.setEntry(j,i, X.getEntry(x, j, k));
+			for (size_t j = 0; j < Y.coldim(); ++j){
+				size_t k = _indices[j];
+				for (size_t i = 0; i < Y.rowdim(); ++i)
+					Y.setEntry(i,j, X.getEntry(x, i, k));
 			}
 		/* desired form
 			for (size_t i = 0; i < coldim(); ++i)
@@ -276,7 +290,6 @@ namespace LinBox
 		Matrix& nullspaceBasisLeft(Matrix& N) const
 		{	N.resize(0, coldim()); return N; }
 		/* end FIBB section */
-#endif
 
 		template<typename _Tp1>
 		struct rebind {

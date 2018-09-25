@@ -40,6 +40,7 @@
 using namespace LinBox;
 typedef Givaro::ZRing<Givaro::Integer> ZRingInts;
 
+bool writing=false;
 
 bool testSolveSparse(){
 
@@ -70,7 +71,7 @@ bool testSolveSparse(){
     if (!F.areEqual (x[1],76)) return false;
     if (!F.areEqual (x[2],10)) return false;
 
-    std::cout << "TSSF: PASSED" << std::endl;
+	if (writing) std::cout << "TSSF: PASSED" << std::endl;
 
     return true;
 }
@@ -118,7 +119,7 @@ bool testSolveSparseSage(){
     if (x[1] != 76) return false;
     if (x[2] != 10) return false;
     
-    std::cout << "TSSS: PASSED" << std::endl;
+	if (writing) std::cout << "TSSS: PASSED" << std::endl;
 
     return true;
 }
@@ -148,10 +149,10 @@ bool testFlatDixonSolver (const Specifier& m){
     solve (A, D, M, B, m);
 
     if (!ZZ.areEqual(A[0],ZZ.one) || !ZZ.areEqual(A[1],ZZ.zero) || !ZZ.areEqual(D,ZZ.one)) {
-        std::cerr<<"**** ERROR **** Fail solving a flat system over QQ via Dixon Lifting"<<std::endl;
+        if (writing) std::cerr<<"**** ERROR **** Fail solving a flat system over QQ via Dixon Lifting"<<std::endl;
         return false;
-    } else 
-        std::cout << "TFDS: PASSED" << std::endl;
+    } else
+        if (writing) std::cout << "TFDS: PASSED" << std::endl;
 
 
     return true;
@@ -176,11 +177,11 @@ bool testFlatDixonSolver2 (const Specifier& m){
     solve (A, D, M, B, m);
 
     if (!ZZ.areEqual(A[0],ZZ.one) || !ZZ.areEqual(D,ZZ.one)) {
-        std::cerr<<"A = "<<A<<" D = "<<D<<std::endl;
-        std::cerr<<"**** ERROR **** Fail solving a flat system over QQ via Dixon Lifting"<<std::endl;
+        if (writing) std::cerr<<"A = "<<A<<" D = "<<D<<std::endl;
+        if (writing) std::cerr<<"**** ERROR **** Fail solving a flat system over QQ via Dixon Lifting"<<std::endl;
         return false;
-    } else 
-        std::cout << "TFD2: PASSED" << std::endl;
+    } else
+        if (writing) std::cout << "TFD2: PASSED" << std::endl;
 
 
     return true;
@@ -205,10 +206,10 @@ bool testTallDixonSolver (const Specifier& m){
     solve (A, D, M, B, m);
 
     if (!ZZ.areEqual(A[0],ZZ.one) || !ZZ.areEqual(D,ZZ.one)) {
-        std::cerr<<"**** ERROR **** Fail solving a tall system over QQ via Dixon Lifting"<<std::endl;
+        if (writing) std::cerr<<"**** ERROR **** Fail solving a tall system over QQ via Dixon Lifting"<<std::endl;
         return false;
-    } else 
-        std::cout << "TTDS: PASSED" << std::endl;
+    } else
+        if (writing) std::cout << "TTDS: PASSED" << std::endl;
 
 
     return true;
@@ -232,11 +233,11 @@ bool testSingularDixonSolver (const Specifier& m){
     solve (A, D, M, B, m);
 
     if (!ZZ.areEqual(A[0],Integer(2)) || !ZZ.areEqual(D,ZZ.one)) {
-        std::cerr<<"A = "<<A<<" D = "<<D<<std::endl;
-        std::cerr<<"**** ERROR **** Fail solving a singular system over QQ with a SparseMatrix"<<std::endl;
+        if (writing) std::cerr<<"A = "<<A<<" D = "<<D<<std::endl;
+        if (writing) std::cerr<<"**** ERROR **** Fail solving a singular system over QQ with a SparseMatrix"<<std::endl;
         return false;
-    } else 
-        std::cout << "TSDS: PASSED" << std::endl;
+    } else
+        if (writing) std::cout << "TSDS: PASSED" << std::endl;
 
     return true;
 }
@@ -257,11 +258,11 @@ bool testZeroDixonSolver (const Specifier& m){
     solve (A, D, M, B, m);
 
     if (!ZZ.areEqual(A[0],ZZ.zero) || !ZZ.areEqual(D,ZZ.one)) {
-        std::cerr<<"A = "<<A<<" D = "<<D<<std::endl;
-        std::cerr<<"**** ERROR **** Fail solving a zero over QQ via Dixon Lifting"<<std::endl;
+        if (writing) std::cerr<<"A = "<<A<<" D = "<<D<<std::endl;
+        if (writing) std::cerr<<"**** ERROR **** Fail solving a zero over QQ via Dixon Lifting"<<std::endl;
         return false;
-    } else 
-        std::cout << "TZDS: PASSED" << std::endl;
+    } else
+        if (writing) std::cout << "TZDS: PASSED" << std::endl;
 
     return true;
 }
@@ -287,10 +288,10 @@ bool testDixonSolverWithMPrhs (){
     solve (X, D, A, B, Method::BlasElimination());
 
     if (!ZZ.areEqual(X[0],ZZ.one) ||  !ZZ.areEqual(D,ZZ.one)) {
-        std::cerr<<"**** ERROR **** Fail solving a system over QQ with a DenseMatrix and a MP rhs"<<std::endl;
+        if (writing) std::cerr<<"**** ERROR **** Fail solving a system over QQ with a DenseMatrix and a MP rhs"<<std::endl;
         return false;
-    } else 
-        std::cout << "TDSM: PASSED" << std::endl;
+    } else
+        if (writing) std::cout << "TDSM: PASSED" << std::endl;
 
 
     return true;
@@ -315,14 +316,14 @@ bool testSparseRationalSolver() {
     MD.vectorMul(L, A, X);
 
     if (! VD.areEqual(L, B)) {
-        A.write(std::cerr << "A:=", LinBox::Tag::FileFormat::Maple) << ';' << std::endl;
-        std::cerr<<"X:= "<< X << ';' << std::endl;
-        std::cerr<<"B:= "<< B << ';' << std::endl;
-        std::cerr<<"L:= "<< L << ';' << std::endl;
-        std::cerr<<"**** ERROR **** Fail solving a sparse system over QQ"<<std::endl;
+        if (writing) A.write(std::cerr << "A:=", LinBox::Tag::FileFormat::Maple) << ';' << std::endl;
+        if (writing) std::cerr<<"X:= "<< X << ';' << std::endl;
+        if (writing) std::cerr<<"B:= "<< B << ';' << std::endl;
+        if (writing) std::cerr<<"L:= "<< L << ';' << std::endl;
+        if (writing) std::cerr<<"**** ERROR **** Fail solving a sparse system over QQ"<<std::endl;
         return false;
-    } else 
-        std::cout << "TSRS: PASSED" << std::endl;
+    } else
+        if (writing) std::cout << "TSRS: PASSED" << std::endl;
 
 
     return true;
@@ -347,7 +348,7 @@ bool testDixonRectangularSolver(const Specifier& m) {
 
     if (ZZ.isZero(d)) 
         pass = false;
-    else {
+    else{
         MatrixDomain<ZRingInts> MD(ZZ);
         VectorDomain<ZRingInts> VD(ZZ);
 
@@ -360,34 +361,54 @@ bool testDixonRectangularSolver(const Specifier& m) {
     }
     
     if (! pass) {
-        A.write(std::cerr << "A:=", LinBox::Tag::FileFormat::Maple) << ';' << std::endl;
-        std::cerr<<"X:= "<< X << ';' << std::endl;
-        std::cerr<<"d:= "<< d << ';' << std::endl;
-        std::cerr<<"d * B:= "<< B << ';' << std::endl;
-        std::cerr<<"L:= "<< L << ';' << std::endl;
-        std::cerr<<"**** ERROR **** Fail solving a sparse system over ZZ" <<std::endl;
+        if (writing) A.write(std::cerr << "A:=", LinBox::Tag::FileFormat::Maple) << ';' << std::endl;
+        if (writing) std::cerr<<"X:= "<< X << ';' << std::endl;
+        if (writing) std::cerr<<"d:= "<< d << ';' << std::endl;
+        if (writing) std::cerr<<"d * B:= "<< B << ';' << std::endl;
+        if (writing) std::cerr<<"L:= "<< L << ';' << std::endl;
+        if (writing) std::cerr<<"**** ERROR **** Fail solving a sparse system over ZZ" <<std::endl;
         return false;
-    } else 
-        std::cout << "TDRS: PASSED" << std::endl;
+    } else
+        if (writing) std::cout << "TDRS: PASSED" << std::endl;
     return true;
 }
 
-bool testSparse1x1Det(unsigned long v){
+bool testSparseDiagDet(uint64_t n){
+    ZRingInts ZZ;
+    SparseMatrix<ZRingInts> A(ZZ, n, n);
+    Integer x(2);
+    for(size_t i=0; i<n; ++i)
+        A.setEntry(i,i,x);
+    Integer d, r(Integer(1)<<n);
+
+    if (! ZZ.areEqual(r, det(d,A)) ) {
+        if (writing) A.write(std::cerr << "A:=", LinBox::Tag::FileFormat::Maple) << ';' << std::endl;
+        if (writing) std::cerr<<"r:= "<< r << ';' << std::endl;
+        if (writing) std::cerr<<"d:= "<< d << ';' << std::endl;
+        if (writing) std::cerr<<"**** ERROR **** Fail determinant 2 times Identity matrix" <<std::endl;
+        return false;
+    } else
+        if (writing) std::cout << "TDD2: PASSED" << std::endl;
+
+    return true;
+}
+
+bool testSparse1x1Det(uint64_t v){
     ZRingInts ZZ;
     SparseMatrix<ZRingInts> A(ZZ, 1, 1);
     Integer x(v);
     A.setEntry(0,0,x);
-    Integer d; 
-    
+    Integer d;
+
     if (! ZZ.areEqual(x, det(d,A)) ) {
-        A.write(std::cerr << "A:=", LinBox::Tag::FileFormat::Maple) << ';' << std::endl;
-        std::cerr<<"x:= "<< x << ';' << std::endl;
-        std::cerr<<"d:= "<< d << ';' << std::endl;
-        std::cerr<<"**** ERROR **** Fail determinant 1x1 matrix" <<std::endl;
+        if (writing) A.write(std::cerr << "A:=", LinBox::Tag::FileFormat::Maple) << ';' << std::endl;
+        if (writing) std::cerr<<"x:= "<< x << ';' << std::endl;
+        if (writing) std::cerr<<"d:= "<< d << ';' << std::endl;
+        if (writing) std::cerr<<"**** ERROR **** Fail determinant 1x1 matrix" <<std::endl;
         return false;
-    } else 
-        std::cout << "TSD1: PASSED" << std::endl;
-    
+    } else
+        if (writing) std::cout << "TSD1: PASSED" << std::endl;
+
     return true;
 }
 
@@ -426,6 +447,35 @@ bool testBigScalarCharPoly(){
     return PR.areEqual(P,Q);
 }
 
+/*
+template<typename Matrix_t=SparseMatrix<ZRingInts>>
+bool testInconsistent (const Specifier& m){
+        // creating LinBox matrices and vectors
+    Givaro::ZRing<Integer> ZZ;
+    typedef DenseVector<Givaro::ZRing<Integer> > DenseVector;
+
+    Matrix_t M (ZZ,1,1);
+    Givaro::ZRing<Integer>::Element D; // denominator of the solution
+    DenseVector A(ZZ, M.coldim()); // numerator of the solution
+    DenseVector B(ZZ, M.rowdim()); // Right handside of the system
+
+    M.setEntry(0,0,0);
+    ZZ.assign(B[0],ZZ.one);
+
+        // solving via Dixon Lifting
+    solve (A, D, M, B, m);
+
+    if (!ZZ.areEqual(A[0],ZZ.zero) || !ZZ.areEqual(D,ZZ.one)) {
+        if (writing) std::cerr<<"A = "<<A<<" D = "<<D<<std::endl;
+        if (writing) std::cerr<<"**** ERROR **** Fail solving an inconsistent system  over QQ via Dixon Lifting"<<std::endl;
+        return false;
+    } else
+        if (writing) std::cout << "TICS: PASSED" << std::endl;
+
+    return true;
+}
+*/
+
 
 bool testLocalSmith(){
     typedef Givaro::ZRing<int64_t> Ring;
@@ -446,9 +496,9 @@ bool testLocalSmith(){
 
     PGD(local, A, Q, 5, PRESERVE_UPPER_MATRIX|PRIVILEGIATE_NO_COLUMN_PIVOTING);
 
-    std::cout << "Local Smith: {";
-    for(auto const& it:local) std::cout << it.first << ':' << it.second << ' ';
-    std::cout << '}' << std::endl;
+    if (writing) std::cerr << "Local Smith: {";
+    for(auto const& it:local) if (writing) std::cerr << it.first << ':' << it.second << ' ';
+    if (writing) std::cerr << '}';
 
 // > ([1,1] [1,2] )
 // > [[1, 2, 0 ], [0, 1, 0 ]]
@@ -462,7 +512,7 @@ bool testLocalSmith(){
         (local[1].first == 1U) &&
         (local[1].second == 2U) ;
 
-    A.write(std::cout << "A:=", LinBox::Tag::FileFormat::Maple) << ';' << std::endl;
+    if (writing) A.write(std::cerr << ", A:=", LinBox::Tag::FileFormat::Maple) << ';';
 
         // Upper triangular
     success &=
@@ -475,7 +525,7 @@ bool testLocalSmith(){
         (A[1][0].first == 1U) &&
         (A[1][0].second == 1U);
 
-    Q.write(std::cout << "Q:=", LinBox::Tag::FileFormat::Maple) << ';' << std::endl;
+    if (writing) Q.write(std::cerr << ", Q:=", LinBox::Tag::FileFormat::Maple) << ';';
 
         // Permutation
     success &=
@@ -483,7 +533,12 @@ bool testLocalSmith(){
         (Q[1] == 0) &&
         (Q[2] == 1);
 
-    return success;
+    if (!success) {
+        if (writing) std::cerr<<"**** ERROR **** Fail Local Smith" <<std::endl;
+        return false;
+    } else
+        if (writing) std::cout << "TSLS: PASSED" << std::endl;
+     return success;
 }
 
 
@@ -491,6 +546,9 @@ bool testLocalSmith(){
 int main (int argc, char **argv)
 {
     bool pass = true;
+
+	// text is written to cerr/cout iff a command line argument is present.
+	if (argc > 1) writing = true;
 
     pass &= testSolveSparse  ();
     pass &= testSolveSparseSage ();
@@ -516,10 +574,16 @@ int main (int argc, char **argv)
     pass &= testDixonRectangularSolver<DenseMatrix<ZRingInts>> (Method::SparseElimination());
     pass &= testDixonRectangularSolver<DenseMatrix<ZRingInts>> (Method::Wiedemann());
     pass &= testSparse1x1Det(1<<26);
+    pass &= testSparseDiagDet(46);
     pass &= testZeroDimensionalCharPoly ();
     pass &= testZeroDimensionalMinPoly ();
     pass &= testBigScalarCharPoly ();
     pass &= testLocalSmith ();
+    /*
+    pass &= testInconsistent<> (Method::BlasElimination());
+    pass &= testInconsistent<> (Method::SparseElimination());
+    pass &= testInconsistent<> (Method::Wiedemann());
+    */
 
     return pass ? 0 : -1;
 }

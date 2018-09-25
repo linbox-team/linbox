@@ -26,6 +26,7 @@
 /* Function related to the signature computation of symmetric matrices */
 
 #include "linbox/ring/modular.h"
+#include "linbox/algorithms/cra-domain.h"
 #include "linbox/algorithms/cra-early-multip.h"
 #include <fflas-ffpack/ffpack/ffpack.h>
 #include "linbox/randiter/random-prime.h"
@@ -36,6 +37,54 @@
 
 namespace LinBox
 {
+
+	/*! @brief CRA iteration to get a diagonal with the same signature.
+	 */
+	template <class Matrix, class Field = Givaro::Modular<double>>
+	class SemiDIteration {
+	private:
+		const Matrix& _M;
+		size_t _n;
+
+	public:
+		using Element = typename Field::Element;
+
+		SemiDIteration(const Matrix& M) :
+			_M(M),
+			_n(M.rowdim())
+		{ }
+
+		template <typename Vector>
+		IterationResult operator() (Vector& v, const Field& K) {
+			// XXX it would be nice to just create this matrix once
+			// and re-use it, but then the iteration wouldn't be thread safe.
+			std::vector<Element> FA (_n*_n);
+			{
+				auto raw_p = _M.Begin();
+				for (auto p = FA.begin(); p != FA.end(); ++ p, ++ raw_p)
+				{
+					K. init (*p, *raw_p);
+				}
+			}
+
+			if (! FFPACK::fsytrf(K, FFLAS::FflasUpper, _n, FA.data(), _n)) {
+				return IterationResult::SKIP;
+			}
+
+			v.resize(_n);
+			Element tmp;
+			K.init(tmp, K.one);
+			{
+				auto vp = v.begin();
+				for (size_t j = 0; vp != v.end(); ++j, ++vp) {
+					K.mulin(tmp, FA[j * _n + j]);
+					K.assign(*vp, tmp);
+				}
+			}
+
+			return IterationResult::CONTINUE;
+		}
+	};
 
 	class Signature {
 	public:
@@ -93,6 +142,7 @@ namespace LinBox
 		template <class Matrix>
 		static bool isPosSemiDef (const Matrix& M, const BLAS_LPM_Method& meth)
             {
+                // FIXME this doesn't actually affect the seeding for the algorithms
                 PrimeIterator<IteratorCategories::HeuristicTag>::setSeed((size_t)time(0));
                 size_t n = M. rowdim();
                 std::vector<int> P;
@@ -104,10 +154,8 @@ namespace LinBox
                 if (P. size () < r)
                     return false;
 
-                typedef typename Matrix::Field::Element Int;
-                std::vector<Int> D(P.size());
-
                 typename Matrix::Field R = M. field();
+                DenseVector<typename Matrix::Field> D(R, P.size());
 
                     //std::clog << "Begin semiD:\n";
                 if(P. size() == n)
@@ -123,11 +171,9 @@ namespace LinBox
                     }
                     semiD (D, PM);
                 }
-
                     //std::clog << "End semiD:\n";
 
-                if (allPos(D)) return true;
-                else return false;
+                return allPos(D);
             }
 
 		template <class Matrix>
@@ -156,10 +202,10 @@ namespace LinBox
 		static bool allPos (const Vector& v)
             {
 
-                typename Vector::const_iterator p;
-                for (p = v. begin(); p != v. end(); ++ p)
+                for (auto p = v. begin(); p != v. end(); ++ p) {
                     if (*p <= 0)
                         return false;
+				}
 
                 return true;
             }
@@ -180,126 +226,16 @@ namespace LinBox
              * ie. with the same signature
              * Assume M is non-singular and symmetric with generic rank profile
              */
-
 		template <class Matrix, class Vector>
 		static Vector& semiD (Vector& out, const Matrix& M)
             {
-
-#ifdef _LB_DEBUG
-                std::clog << "Debug begin with input matrix:\n";
-                M. write (std::clog);
-#endif
-                typedef typename Matrix::Field Ring;
-                typedef typename Ring::Element Integer_t;
                 typedef Givaro::Modular<double> Field;
-                typedef Field::Element Element;
 
-                size_t n = M. rowdim();
-                PrimeIterator<IteratorCategories::HeuristicTag> primeg(FieldTraits<Field>::bestBitSize(M.coldim()));
-
-                Element* FA = new Element[n*n];
-                size_t* P= new size_t[n], *PQ = new size_t[n];
-
-                Element* p; Element tmp;
-                EarlyMultipCRA< Field > cra(3UL);
-
-                Integer_t m = 1;
-                    // std::vector<Element> v(n);
-                typedef Givaro::ZRing<Element> NoField;
-                NoField unF ;
-                DenseVector<NoField> v(unF,n);
-                size_t j = 0;
-                Field K2;
-                bool faithful = true;
-                typename Matrix::ConstIterator raw_p;
-
-                do {
-                        // get a prime.
-                        // Compute mod that prime. Accumulate into v with CRA.
-                    ++primeg ; while(cra.noncoprime(*primeg)) ++primeg;
-                    Field K1(*primeg);
-                    K2 = K1;
-
-#ifdef _LB_DEBUG
-                    std::clog << "Computing blackbox matrix mod " << *primeg;
-#endif
-                    for (p = FA, raw_p = M. Begin(); p != FA + (n*n); ++ p, ++ raw_p)
-                        K1. init (*p, *raw_p);
-
-#ifdef _LB_CRATIMING
-                    Timer chrono; chrono.start();
-#endif
-
-                    faithful = FFPACK::fsytrf(K1, FFLAS::FflasUpper, n, FA, n);
-
-#ifdef _LB_CRATIMING
-                    chrono.stop();
-                    std::clog << "1st sytrf: " << chrono << std::endl;
-#endif
-
-#ifdef _LB_DEBUG
-                    if (!faithful) {
-                        std::clog << "Not a faithful prime\n";
-                    }
-#endif
-
-                } while(! faithful);
-                K2. assign(tmp, K2.one);
-
-                typename DenseVector<NoField>::iterator vp;
-                for (j = 0, vp = v.begin(); vp != v.end(); ++j, ++vp) {
-                    K2.mulin(tmp, *(FA + (j * n + j)));
-                    K2.assign(*vp, tmp);
-                }
-                cra. initialize(K2, v );
-
-                while (! cra.terminated() ){
-                        // get a prime.
-                    ++primeg; while(cra.noncoprime(*primeg)) ++primeg;
-                    Field K3(*primeg);
-#ifdef _LB_DEBUG
-                    std::clog << "Computing blackbox matrix mod " << *primeg;
-#endif
-                    for (p = FA, raw_p = M. Begin(); p != FA + (n*n); ++ p, ++ raw_p)
-                        K3. init (*p, *raw_p);
-
-#ifdef _LB_DEBUG
-                    std::clog << "\rComputing lup mod " << *primeg << ". ";
-#endif
-                    faithful = FFPACK::fsytrf(K3, FFLAS::FflasUpper, n, FA, n);
-                    if (!faithful) {
-#ifdef _LB_DEBUG
-                        std::clog << "Not a faithful prime\n";
-#endif
-                        continue;
-                    }
-
-                    K3. assign(tmp, K3.one);
-
-                    for (j = 0, vp = v.begin(); vp != v.end(); ++j, ++vp) {
-                        K3.mulin(tmp, *(FA + (j * n + j)));
-                        K3.assign(*vp, tmp);
-                    }
-#ifdef _LB_DEBUG
-                    std::clog << "Faithful image:[";
-                    for (size_t l = 0; l < v. size(); ++ l)
-                        std::clog << v[l] << ", ";
-                    std::clog << "]\n";
-#endif
-                    cra. progress(K3, v);
-                }
-
-                delete[] FA;
-                delete[] P;
-                delete[] PQ;
-                    //std::clog << "Compute the final answer.\n";
-                cra.result(out);
-
-#ifdef _LB_CRATIMING
-                cra.reportTimes(std::clog);
-#endif
-                return out;
-            }
+				ChineseRemainder<EarlyMultipCRA<Field>> cra(3UL);
+				SemiDIteration<Matrix,Field> iter(M);
+				PrimeIterator<IteratorCategories::HeuristicTag> primes(FieldTraits<Field>::bestBitSize(M.coldim()));
+				return cra(out, iter, primes);
+			}
 
             //only works with symmetric integer matrix
             // return a permutation matrix which is represented as a vector, such that

@@ -351,7 +351,7 @@ namespace LinBox
 			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
 
 		commentator().start ("Rational CRA Solve", "Rsolve");
-                typedef Givaro::ModularBalanced<double> Field;
+                typedef Givaro::Modular<double> Field;
                 PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
 
 		RationalRemainder2< VarPrecEarlyMultipCRA<Field> > rra(3UL);//using default RR method
@@ -543,7 +543,7 @@ namespace LinBox
 
 		commentator().start ("Padic Integer Blas-based Solving ", "solving");
 
-		typedef Givaro::ModularBalanced<double> Field;
+		typedef Givaro::Modular<double> Field;
 		// 0.7213475205 is an upper approximation of 1/(2log(2))
 		PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
 		RationalSolver<Ring, Field, PrimeIterator<IteratorCategories::HeuristicTag>, DixonTraits> rsolve(A.field(), genprime);
@@ -644,76 +644,8 @@ namespace LinBox
 		PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
 		RationalSolver<Ring, Field, PrimeIterator<IteratorCategories::HeuristicTag>, SparseEliminationTraits> rsolve(A.field(), genprime);
 		SolverReturnStatus status = SS_OK;
-		// if singularity unknown and matrix is square, we try nonsingular solver
-		switch ( m.singular() ) {
-		case Specifier::SINGULARITY_UNKNOWN:
-			switch (status=rsolve.solveNonsingular(x, d, A, b,(int)m.maxTries())) {
-			case SS_OK:
-				m.singular(Specifier::NONSINGULAR);
-				break;
-#if 0
-			case SS_SINGULAR:
-				switch (m.solution()){
-				case DixonTraits::DETERMINIST:
-					status= rsolve.monolithicSolve(x, d, A, b, false, false, (int)m.maxTries(),
-								       (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
-					break;
-				case DixonTraits::RANDOM:
-					status= rsolve.monolithicSolve(x, d, A, b, false, true, (int)m.maxTries(),
-								       (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
-					break;
-				case DixonTraits::DIOPHANTINE:
-					{
-						DiophantineSolver<RationalSolver<Ring,Field,PrimeIterator<IteratorCategories::HeuristicTag>, DixonTraits> > dsolve(rsolve);
-						status= dsolve.diophantineSolve(x, d, A, b, (int)m.maxTries(),
-										(m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
-					}
-					break;
-				default:
-					break;
-				}
-				break;
-#endif
-			default:
-				break;
-			}
-			break;
-
-		case Specifier::NONSINGULAR:
-			rsolve.solveNonsingular(x, d, A, b, (int)m.maxTries());
-			break;
-
-		case Specifier::SINGULAR:
-#if 0
-			switch (m.solution()){
-			case DixonTraits::DETERMINIST:
-				status= rsolve.monolithicSolve(x, d, A, b,
-							       false, false, (int)m.maxTries(),
-							       (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
-				break;
-
-			case DixonTraits::RANDOM:
-				status= rsolve.monolithicSolve(x, d, A, b,
-							       false, true, (int)m.maxTries(),
-							       (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
-				break;
-
-			case DixonTraits::DIOPHANTINE:
-				{
-					DiophantineSolver<RationalSolver<Ring,Field,PrimeIterator<IteratorCategories::HeuristicTag>, DixonTraits> > dsolve(rsolve);
-					status= dsolve.diophantineSolve(x, d, A, b, (int)m.maxTries(),
-									(m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
-				}
-				break;
-
-				//default:
-				//	break;
-			}
-#endif
-		default:
-			break;
-		}
-
+		status=rsolve.solve(x, d, A, b,(int)m.maxTries());
+ 
 		commentator().stop("done", NULL, "solving");
 
 		if ( status == SS_INCONSISTENT ) {
@@ -770,8 +702,9 @@ namespace LinBox
 		// adapt to earlier signature of wiedemann solver
 		typedef BlasMatrixDomain<typename BB::Field> Context;
 		Context BMD(A.field());
-		BlockWiedemannSolver<Context> BWS(BMD);
-		BWS.solveNonSingular(x, A, b);
+		BlockWiedemannSolver<Context> BWS(BMD,m.blockingFactor(), m.blockingFactor()+1);
+		//BWS.solveNonSingular(x, A, b);
+                BWS.solve(x, A, b);
 		return x;
 	}
 
