@@ -254,15 +254,15 @@ namespace LinBox
 		template<class Container, class Function, class PrimeIterator>
 		Container& operator()  (Container& res, Integer& den, Function& Iteration, PrimeIterator& primeiter)
 		{
-			typedef typename CRATemporaryVectorTrait<Function, Domain>::Type_t ElementContainer;
+
 			size_t NN = 8*omp_get_max_threads();
 			std::cerr << "Blocs: " << NN << " iterations." << std::endl;
 			// commentator().start ("Parallel OMP Givaro::Modular iteration", "mmcrait");
 			if (omp_get_max_threads() == 1) return Father_t::operator()(res, den,Iteration,primeiter);
 
 			int coprime =0;
-//			int maxnoncoprime = 1000;
-long IterCounter=0;
+
+			long IterCounter=0;
 
 			if (IterCounter==0) {
 				std::set<Integer> coprimeset;
@@ -278,8 +278,8 @@ long IterCounter=0;
 				}
 				std::vector<Domain> ROUNDdomains; ROUNDdomains.reserve(NN);
 
-				std::vector<ElementContainer> ROUNDresidues(NN); 
-//				typename std::vector<ElementContainer>::iterator resit=ROUNDresidues.begin();
+				std::vector<DomainElement> ROUNDresidues(NN); 
+//				typename std::vector<DomainElement>::iterator resit=ROUNDresidues.begin();
 
 				for(std::set<Integer>::const_iterator coprimesetiter = coprimeset.begin(); coprimesetiter != coprimeset.end(); ++coprimesetiter) {
 
@@ -319,8 +319,8 @@ Iteration(ROUNDresidues[0], ROUNDdomains[0]);
 				}
 
 				std::vector<Domain> ROUNDdomains; ROUNDdomains.reserve(NN);
-				std::vector<ElementContainer> ROUNDresidues(NN); 
-//				typename std::vector<ElementContainer>::iterator resit=ROUNDresidues.begin();
+				std::vector<DomainElement> ROUNDresidues(NN); 
+//				typename std::vector<DomainElement>::iterator resit=ROUNDresidues.begin();
 
 				for(std::set<Integer>::const_iterator coprimesetiter = coprimeset.begin(); coprimesetiter != coprimeset.end(); ++coprimesetiter) {
 
