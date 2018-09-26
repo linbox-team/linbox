@@ -36,6 +36,9 @@ BASIC_HDRS =            \
     map.h               \
     multimod-field.h
 
+UNUSED_HDRS = 		\
+	image-field.h
+
 pkgincludesub_HEADERS =     \
     $(BASIC_HDRS)           
 

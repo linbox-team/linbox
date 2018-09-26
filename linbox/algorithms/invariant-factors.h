@@ -1,4 +1,4 @@
-/* linbox/algorithms/coppersmith-invariant-factors.h
+/* linbox/algorithms/invariant-factors.h
  * Copyright (C) 2015 Gavin Harrison
  *
  * Written by Gavin Harrison <gavin.har@gmail.com>

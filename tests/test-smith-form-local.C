@@ -171,7 +171,7 @@ int main (int argc, char **argv) {
 
 	parseArguments (argc, argv, args);
 	std::srand(rseed);
-	FFLAS::writeCommandString(std::cout << argv[0] << ' ', args) << std::endl;
+	//FFLAS::writeCommandString(std::cout << argv[0] << ' ', args) << std::endl;
 
 	commentator().start("Local Smith Form test suite", "LocalSmith");
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);

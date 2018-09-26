@@ -30,6 +30,8 @@ pkgincludesub_HEADERS =         \
 	sparse-ell-matrix.h     \
 	sparse-ellr-matrix.h    \
 	sparse-hyb-matrix.h     \
+	sparse-map-map-matrix.h \
+	sparse-map-map-matrix.inl \
 	sparse-tpl-matrix.h     \
 	sparse-tpl-matrix.inl   \
 	sparse-tpl-matrix-omp.h  \
@@ -38,13 +40,13 @@ pkgincludesub_HEADERS =         \
 	sparse-generic.inl \
 	sparse-associative-vector.h      \
 	sparse-associative-vector.inl    \
-        sparse-parallel-vector.h         \
-        sparse-parallel-vector.inl       \
-        sparse-sequence-vector.h         \
+	sparse-parallel-vector.h         \
+	sparse-parallel-vector.inl       \
+	sparse-sequence-vector.h         \
 	triples-coord.h  \
 	read-write-sparse.h \
 	read-write-sparse.inl \
-        sparse-sequence-vector.inl
+	sparse-sequence-vector.inl
 
 
 

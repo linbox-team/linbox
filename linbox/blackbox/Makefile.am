@@ -22,57 +22,62 @@
 pkgincludesubdir=$(pkgincludedir)/blackbox
 
 BASIC_HDRS =			\
+	apply.h                   \
 	archetype.h               \
+	bb.h                      \
 	blackbox.h                \
-	bb.h                \
-	factory.h                 \
+	blackbox-interface.h      \
+	blockbb.h                 \
+	block-hankel.h            \
+	block-hankel-inverse.h    \
+	block-compose.h           \
+	block-toeplitz.h          \
 	butterfly.h               \
-	butterfly.inl               \
-	hilbert.h                 \
+	butterfly.inl             \
+	companion.h               \
 	compose.h                 \
-	permutation.h             \
-	squarize.h                \
-	scalar-matrix.h           \
-	submatrix.h               \
-	inverse.h                 \
-	transpose.h               \
-	sum.h                     \
 	csf.h                     \
 	csf.inl                   \
-	diagonal.h                \
 	diagonal-gf2.h            \
-	moore-penrose.h           \
-	direct-sum.h              \
-	null-matrix.h             \
-	matrix-blackbox.h         \
+	diagonal.h                \
 	dif.h                     \
-	companion.h               \
+	direct-sum.h              \
+	factory.h                 \
+	fflas-csr.h               \
+	fibb.h			          \
+	fibb-product.h            \
 	frobenius.h               \
+	hilbert.h                 \
+	inverse.h                 \
+	jit-matrix.h              \
+	lambda-sparse.h           \
+	matrix-blackbox.h         \
+	moore-penrose.h           \
+	null-matrix.h             \
+	pascal.h		          \
+	permutation.h             \
+	polynomial.h              \
+	quad-matrix.h             \
+	random-matrix.h           \
+	random-matrix-traits.h    \
+	rational-matrix-factory.h \
+	scalar-matrix.h           \
+	scompose.h                \
+	squarize.h                \
+	submatrix.h               \
+	submatrix-traits.h        \
+	sum.h                     \
+	toeplitz.h                \
+	toeplitz.inl              \
+	transpose.h               \
+	triangular-fibb.h         \
 	zero-one.h                \
 	zero-one.inl              \
-	zo.h                      \
-	zo.inl                    \
 	zo-gf2.h                  \
 	zo-gf2.inl                \
-	quad-matrix.h             \
-	apply.h                   \
-	submatrix-traits.h        \
-	random-matrix-traits.h    \
-	scompose.h                \
-	blackbox-interface.h      \
-	random-matrix.h           \
-	lambda-sparse.h           \
-	polynomial.h              \
-	block-hankel.h            \
-	block-toeplitz.h          \
-	block-hankel-inverse.h    \
-	jit-matrix.h              \
-	toeplitz.h              \
-	toeplitz.inl            \
-	rational-matrix-factory.h\
-	fibb.h			\
-	pascal.h		\
-	fflas-csr.h
+	zo.h                      \
+	zoi.inl                   \
+	zo.inl
 
 NTL_HDRS =			\
 	ntl-hankel.h            \
@@ -85,6 +90,11 @@ if LINBOX_HAVE_NTL
 USE_NTL_HDRS = $(NTL_HDRS)
 endif
 
+UNUSED_HDRS =           \
+	blackbox_parallel.h \
+	blackbox_thread.h   \
+	dense-zero-one.h    \
+	subrowmatrix.h
 
 pkgincludesub_HEADERS =		\
 	$(BASIC_HDRS)		\
