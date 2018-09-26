@@ -1,6 +1,5 @@
-/* Copyright (C) 2010 LinBox
- *
- *
+/* Copyright (C) 2018 The LinBox group
+ * Updated by Hongguang Zhu <zhuhongguang2014@gmail.com>
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -35,146 +34,158 @@ typedef int Communicator;
 #undef SEEK_END
 #include <mpi.h>
 
+namespace LinBox {
+    /* Idea:  Only use ssend for send.
+    */
+    class Communicator {
+    public:
+        // constructor from existing communicator
+        //`Communicator(MPI_Comm comm = MPI_COMM_NULL);
+        Communicator(MPI_Comm comm);
+        // MPI_initializing constructor
+        // When this communicator is destroyed MPI is shut down (finalized).
+        Communicator(int* ac, char*** av);
 
-namespace LinBox
-{
-	/* Idea:  Only use ssend for send.
-	*/
-	class Communicator {
-	public:
-		// constructors and destructor
+        Communicator(const Communicator& D);
 
-		// constructor from existing communicator
-		//`Communicator(MPI_Comm comm = MPI_COMM_NULL);
-		Communicator(MPI_Comm comm);
-		// MPI_initializing constructor
-		// When this communicator is destroyed MPI is shut down (finalized).
-		Communicator(int* ac, char*** av);
+        ~Communicator();
 
-		// copy constructor
-		Communicator(const Communicator& D);
+        // Accessors
+        int size() const;
+        int rank() const;
+        MPI_Status status() const;
+        MPI_Comm mpi_communicator() const;
 
-		~Communicator();
+        // peer to peer communication
+        template <class Ptr>
+        void send(Ptr b, Ptr e, int dest, int tag);
 
-		// accessors
-		int size();
+        template <class Ptr>
+        void ssend(Ptr b, Ptr e, int dest, int tag);
 
-		int rank();
+        template <class Ptr>
+        void recv(Ptr b, Ptr e, int dest, int tag);
 
-		MPI_Status status();
+        template <class X>
+        void recv(X* b, X* e, int dest, int tag);
 
-		MPI_Comm mpi_communicator();
+        // whole object send and recv
+        template <class X>
+        void send(X& b, int dest /*, int tag = 0 */);
 
-		// peer to peer communication
-		template < class Ptr >
-		void send( Ptr b, Ptr e, int dest, int tag);
+        template <class Field>
+        void send(BlasMatrix<Field>& b, int dest);
+        template <class Field>
+        void send(SparseMatrix<Field>& b, int dest);
+        template <class Field>
+        void send(BlasVector<Field>& b, int dest);
 
-		template < class Ptr >
-		void ssend( Ptr b, Ptr e, int dest, int tag);
+        template <class X>
+        void isend(X& b, int dest /*, int tag = 0 */);
 
-		template < class Ptr >
-		void recv( Ptr b, Ptr e, int dest, int tag);
+        template <class Field>
+        void isend(BlasMatrix<Field>& b, int dest);
+        template <class Field>
+        void isend(SparseMatrix<Field>& b, int dest);
+        template <class Field>
+        void isend(BlasVector<Field>& b, int dest);
 
-		template < class X >
-		void recv( X *b, X *e, int dest, int tag);
+        template <class X>
+        void ssend(X& b, int dest /*, int tag = 0 */);
 
-		// whole object send and recv
-		template < class X >
-		void send( X& b, int dest /*, int tag = 0 */);
+        template <class Field>
+        void ssend(BlasMatrix<Field>& b, int dest);
+        template <class Field>
+        void ssend(SparseMatrix<Field>& b, int dest);
+        template <class Field>
+        void ssend(BlasVector<Field>& b, int dest);
 
-                template <class Field>
-                void send (DenseMatrix<Field>& b, int dest);
-		template <class Field>
-		void send (SparseMatrix<Field>& b, int dest);
-                template <class Field>
-                void send (DenseVector<Field>& b, int dest);
-                
-                template <class X>
-                void send_integer (X& b, int dest);
-                template <class X>
-                void send_integer2 (X& b, int dest);                
+        template <class X>
+        void bsend(X& b, int dest);
 
-		template < class X >
-		void ssend( X& b, int dest /*, int tag = 0 */);
-		template <class Field>
-		void ssend (DenseMatrix<Field>& b, int dest);
-		template <class Field>
-		void ssend (SparseMatrix<Field>& b, int dest);
-                template <class Field>
-                void ssend (DenseVector<Field>& b, int dest);
+        template <class X>
+        void recv(X& b, int dest /*, int tag = 0*/);
 
-                template <class X>
-                void ssend_integer (X& b, int dest);
-                template <class X>
-                void ssend_integer2 (X& b, int dest);  
+        template <class Field>
+        void recv(BlasMatrix<Field>& b, int src);
+        template <class Field>
+        void recv(SparseMatrix<Field>& b, int src);
+        template <class Field>
+        void recv(BlasVector<Field>& b, int src);
 
-		template < class X >
-		void bsend( X& b, int dest);
+        /*
+           template < vector < class X > >
+           void send( X& b, int dest );
+        */
 
-		template < class X >
-		void recv( X& b, int dest /*, int tag = 0*/);
+        template <class X>
+        void buffer_attach(X b);
 
-                template <class Field>
-                void recv (DenseMatrix<Field>& b, int src);
-                template <class Field>
-                void recv (SparseMatrix<Field>& b, int src);
-                template <class Field>
-                void recv (DenseVector<Field>& b, int src);
+        template <class X>
+        int buffer_detach(X& b, int* size);
 
-                template <class X>
-                void recv_integer (X& b, int src);   
-                template <class X>
-                void recv_integer2 (X& b, int src);                
+        // collective communication
+        template <class X>
+        void bcast(X& b, int src);
 
+        template <class Field>
+        void bcast(BlasMatrix<Field>& b, int src);
+        template <class Field>
+        void bcast(SparseMatrix<Field>& b, int src);
+        template <class Field>
+        void bcast(BlasVector<Field>& b, int src);
 
-		/*
-		   template < vector < class X > >
-		   void send( X& b, int dest );
-		   */
+        template <class X>
+        void bcast(X* b, X* e, int src);
 
-		template < class X >
-		void buffer_attach( X b);
+        template <class Ptr, class Function_object>
+        void reduce(Ptr bloc, Ptr eloc, Ptr bres, Function_object binop, int root);
 
-		template < class X >
-		int buffer_detach( X &b, int *size);
+        // member access
+        MPI_Status get_stat();
 
+    protected:
+        MPI_Comm _mpi_comm; // MPI's handle for the communicator
+        bool _mpi_boss;     // true of an MPI initializing communicator
+        // There is at most one initializing communicator.
+        MPI_Status stat; // status from most recent receive
+        MPI_Request req; // request from most recent send
 
-		// collective communication
-                template <class X>
-                void bcast (X& b, int src);
+        template <class X>
+        void send_integerVec(X& b, int dest);
+        template <class X>
+        void send_integerMat(X& b, int dest);
+        template <class X>
+        void send_integerSparseMat(X& b, int dest);
 
-                template <class Field>
-                void bcast (DenseMatrix<Field>& b, int src);
+        template <class X>
+        void ssend_integerVec(X& b, int dest);
+        template <class X>
+        void ssend_integerMat(X& b, int dest);
+        template <class X>
+        void ssend_integerSparseMat(X& b, int dest);
 
-                template <class Field>
-                void bcast (DenseVector<Field>& b, int src);
-                
-                template <class Field>
-                void bcast (SparseMatrix<Field>& b, int src);
-                
-                template <class X>
-                void bcast_integer (X& b, int src);                
-                template <class X>
-                void bcast_integer2 (X& b, int src);
-                
-                template <class X>
-                void bcast (X* b, X* e, int src);
-                
-                
-                template < class Ptr, class Function_object >
-		void reduce( Ptr bloc, Ptr eloc, Ptr bres, Function_object binop, int root);
+        template <class X>
+        void isend_integerVec(X& b, int dest);
+        template <class X>
+        void isend_integerMat(X& b, int dest);
+        template <class X>
+        void isend_integerSparseMat(X& b, int dest);
 
-		// member access
-		MPI_Status get_stat();
-
-	protected:
-		MPI_Comm _mpi_comm; // MPI's handle for the communicator
-		bool _mpi_boss; // true of an MPI initializing communicator
-		// There is at most one initializing communicator.
-		MPI_Status stat; // status from most recent receive
-
-	};
-}// namespace LinBox
+        template <class X>
+        void recv_integerVec(X& b, int src);
+        template <class X>
+        void recv_integerMat(X& b, int src);
+        template <class X>
+        void recv_integerSparseMat(X& b, int src);
+        template <class X>
+        void bcast_integerVec(X& b, int src);
+        template <class X>
+        void bcast_integerMat(X& b, int src);
+        template <class X>
+        void bcast_integerSparseMat(X& b, int src);
+    };
+}
 
 #include "mpicpp.inl"
 
