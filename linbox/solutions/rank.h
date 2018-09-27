@@ -76,7 +76,7 @@ namespace LinBox
 			const DomainCategory &tag, const Method &M);
 
 	template <class Blackbox, class Method, class DomainCategory>
-	inline unsigned long &rankin (unsigned long &r, const Blackbox &A, 
+	inline unsigned long &rankin (unsigned long &r, Blackbox &A, 
 			const DomainCategory &tag, const Method &M);
 
 	/**
