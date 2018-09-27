@@ -387,7 +387,7 @@ namespace LinBox {
     template <> void Communicator::send(SparseMatrix<Givaro::ZRing<Integer>>& M, int dest) { send_integerSparseMat(M, dest); }
     template <> void Communicator::send(DenseVector<Givaro::ZRing<Integer>>& V, int dest) { send_integerVec(V, dest); }
 
-#if 1
+#if 0
     template <class X> void Communicator::isend(X& b, int dest /*, int tag = 0*/)
     {
         MPI_Isend(&b, sizeof(X), MPI_BYTE, dest, 0, _mpi_comm, &req);
@@ -665,6 +665,15 @@ namespace LinBox {
     template <> void Communicator::ssend(SparseMatrix<Givaro::ZRing<Integer>>& M, int dest) { ssend_integerSparseMat(M, dest); }
     template <> void Communicator::ssend(DenseVector<Givaro::ZRing<Integer>>& V, int dest) { ssend_integerVec(V, dest); }
 
+
+    template <> void Communicator::ssend(BlasMatrix<Givaro::Modular<Integer>>& M, int dest) { ssend_integerMat(M, dest); }
+    template <> void Communicator::ssend(SparseMatrix<Givaro::Modular<Integer>>& M, int dest) { ssend_integerSparseMat(M, dest); }
+    template <> void Communicator::ssend(DenseVector<Givaro::Modular<Integer>>& V, int dest) { ssend_integerVec(V, dest); }
+
+
+
+
+
     template <class X> void Communicator::bsend(X& b, int dest /*, int tag = 0*/)
     {
         MPI_Bsend(&b, sizeof(X), MPI_BYTE, dest, 0, _mpi_comm);
@@ -813,6 +822,13 @@ namespace LinBox {
     template <> void Communicator::recv(BlasMatrix<Givaro::ZRing<Integer>>& M, int src) { recv_integerMat(M, src); }
     template <> void Communicator::recv(SparseMatrix<Givaro::ZRing<Integer>>& M, int src) { recv_integerSparseMat(M, src); }
     template <> void Communicator::recv(DenseVector<Givaro::ZRing<Integer>>& V, int src) { recv_integerVec(V, src); }
+
+
+    template <> void Communicator::recv(BlasMatrix<Givaro::Modular<Integer>>& M, int src) { recv_integerMat(M, src); }
+    template <> void Communicator::recv(SparseMatrix<Givaro::Modular<Integer>>& M, int src) { recv_integerSparseMat(M, src); }
+    template <> void Communicator::recv(DenseVector<Givaro::Modular<Integer>>& V, int src) { recv_integerVec(V, src); }
+
+
 
     // Broadcasts
     template <class X> void Communicator::bcast(X& x, int src) { MPI_Bcast(&x, sizeof(X), MPI_BYTE, src, _mpi_comm); }
@@ -1025,6 +1041,13 @@ namespace LinBox {
     template <> void Communicator::bcast(BlasMatrix<Givaro::ZRing<Integer>>& M, int src) { bcast_integerMat(M, src); }
     template <> void Communicator::bcast(SparseMatrix<Givaro::ZRing<Integer>>& M, int src) { bcast_integerSparseMat(M, src); }
     template <> void Communicator::bcast(DenseVector<Givaro::ZRing<Integer>>& V, int src) { bcast_integerVec(V, src); }
+
+
+    template <> void Communicator::bcast(BlasMatrix<Givaro::Modular<Integer>>& M, int src) { bcast_integerMat(M, src); }
+    template <> void Communicator::bcast(SparseMatrix<Givaro::Modular<Integer>>& M, int src) { bcast_integerSparseMat(M, src); }
+    template <> void Communicator::bcast(DenseVector<Givaro::Modular<Integer>>& V, int src) { bcast_integerVec(V, src); }
+
+
 
     template <class X> void Communicator::buffer_attach(X b) { MPI_Buffer_attach(malloc(sizeof(X) * 60), sizeof(X) * 60); }
 

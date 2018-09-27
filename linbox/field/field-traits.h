@@ -71,10 +71,17 @@ namespace LinBox {
         struct ClassifyRing<Givaro::QField<Givaro::Rational>> {
                 typedef RingCategories::RationalTag categoryTag;
         };
+/*
+*** Modification for random matrix generation otherwise will not succeed in compiling for MPI communication test with different data types ***
         template<>
         struct ClassifyRing<Givaro::ZRing<Givaro::Integer>> {
                 typedef RingCategories::IntegerTag categoryTag;
         };
+*/
+        template<class Element>
+        struct ClassifyRing<Givaro::ZRing<Element>> {
+                 typedef RingCategories::IntegerTag categoryTag;
+         };
         template<>
         struct ClassifyRing<Givaro::IntegerDom> {
                 typedef RingCategories::IntegerTag categoryTag;

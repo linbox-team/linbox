@@ -29,9 +29,10 @@ typedef int Communicator;
 #include <iterator>
 
 // problem of mpi(ch2) in C++
-#undef SEEK_SET
-#undef SEEK_CUR
-#undef SEEK_END
+//#undef SEEK_SET
+//#undef SEEK_CUR
+//#undef SEEK_END
+
 #include <mpi.h>
 
 namespace LinBox {
