@@ -477,10 +477,10 @@ int main(int argc, char** argv)
   
   Communicator* Cptr = NULL;
   Cptr = new Communicator(&argc, &argv);
-  size_t bits, ni, niter, nj, n;
+  size_t bits, niter, n, ni;
   bool loop=false;
   
-  bits = 10, niter = 1, ni = 3, nj = 3;
+  bits = 10, niter = 1, n = 3, ni = 1;
   Givaro::Integer q=101;
   static Argument args[] = {
     {'b', "-b B", "Set the mxaimum number of digits of integers to generate.", TYPE_INT, &bits},
@@ -490,48 +490,90 @@ int main(int argc, char** argv)
     { 'q', "-q Q", "Set the field cardinality.",  TYPE_INTEGER , &q },
     END_OF_ARGUMENTS};
   parseArguments(argc, argv, args);
-  
-  
+
+  MPI_Bcast(&n, 1, MPI_INT, 0, MPI_COMM_WORLD);
+
+  MPI_Bcast(&niter, 1, MPI_INT, 0, MPI_COMM_WORLD); 
+  MPI_Bcast(&loop, 1,  MPI::BOOL, 0, MPI_COMM_WORLD);
+
   bool peak=false;
   srand(time(NULL));
-  do{
-    for (int j = 0; j < niter; j++) {
-      if (0 == Cptr->rank()) {
-	ni=rand() % n + 1; 
-	if (ni<n/2 && ni%2==0 && !peak) ni=1;
-	
-	peak=!peak;
-	std::cout<<" Test with dimension: " << ni <<" x "<< ni<<std::endl;
-      }
-      MPI_Bcast(&ni, 1, MPI_INT, 0, MPI_COMM_WORLD);
-      nj=ni;
-      MPI_Bcast(&niter, 1, MPI_INT, 0, MPI_COMM_WORLD);
-      
-      test_with_field<Givaro::ZRing<Integer>>            (q, bits, ni, nj, Cptr);
-      
-      test_with_field<Givaro::Modular<float> >           (q, bits, ni, nj, Cptr);
-      test_with_field<Givaro::Modular<double> >          (q, bits, ni, nj, Cptr);
-      test_with_field<Givaro::Modular<int32_t> >   	   (q, bits, ni, nj, Cptr);
-      
-      
-      test_with_field<Givaro::ZRing<float>>		   (q, bits, ni, nj, Cptr);
-      test_with_field<Givaro::ZRing<double>>             (q, bits, ni, nj, Cptr);
-      test_with_field<Givaro::ZRing<int32_t>>            (q, bits, ni, nj, Cptr);
-      
-      test_with_field<Givaro::ModularBalanced<float> >    (q, bits, ni, nj, Cptr);
-      
-      test_with_field<Givaro::ModularBalanced<double> >   (q, bits, ni, nj, Cptr);
-      test_with_field<Givaro::ModularBalanced<int32_t> >  (q, bits, ni, nj, Cptr);
-      
-      
-      //test_with_field<Givaro::Modular<int64_t> >   	   (q, bits, ni, nj, Cptr);
-      //test_with_field<Givaro::ModularBalanced<int64_t> >  (q, bits, ni, nj, Cptr);
-      
-      
-      test_with_field<Givaro::Modular<Givaro::Integer> >  (q, bits, ni, nj, Cptr);
 
+
+  if(loop){
+    
+    do{
+      
+      for (int j = 0; j < niter; j++) {
+	
+	if (0 == Cptr->rank()) {
+	  ni=rand() % n + 1; 
+	  if (ni<n/2 && ni%2==0 && !peak) ni=1;
+	  
+	  peak=!peak;
+	  std::cout<<" Test with dimension: " << ni <<" x "<< ni<<std::endl;
+	}
+	MPI_Bcast(&n, 1, MPI_INT, 0, MPI_COMM_WORLD);
+	
+	MPI_Bcast(&niter, 1, MPI_INT, 0, MPI_COMM_WORLD);
+	
+	test_with_field<Givaro::ZRing<Integer>>            (q, bits, n, n, Cptr);
+	
+	test_with_field<Givaro::Modular<float> >           (q, bits, n, n, Cptr);
+	test_with_field<Givaro::Modular<double> >          (q, bits, n, n, Cptr);
+	test_with_field<Givaro::Modular<int32_t> >   	   (q, bits, n, n, Cptr);
+	
+	
+	test_with_field<Givaro::ZRing<float>>		   (q, bits, n, n, Cptr);
+	test_with_field<Givaro::ZRing<double>>             (q, bits, n, n, Cptr);
+	test_with_field<Givaro::ZRing<int32_t>>            (q, bits, n, n, Cptr);
+	
+	test_with_field<Givaro::ModularBalanced<float> >    (q, bits, n, n, Cptr);
+	
+	test_with_field<Givaro::ModularBalanced<double> >   (q, bits, n, n, Cptr);
+	test_with_field<Givaro::ModularBalanced<int32_t> >  (q, bits, n, n, Cptr);
+	
+	
+	//test_with_field<Givaro::Modular<int64_t> >   	   (q, bits, n, n, Cptr);
+	//test_with_field<Givaro::ModularBalanced<int64_t> >  (q, bits, n, n, Cptr);
+	
+	
+	test_with_field<Givaro::Modular<Givaro::Integer> >  (q, bits, n, n, Cptr);
+	
+      }
+    }while(loop);
+  }else{
+    
+    for (int j = 0; j < niter; j++) {
+      
+      
+      test_with_field<Givaro::ZRing<Integer>>            (q, bits, n, n, Cptr);
+      
+      test_with_field<Givaro::Modular<float> >           (q, bits, n, n, Cptr);
+      test_with_field<Givaro::Modular<double> >          (q, bits, n, n, Cptr);
+      test_with_field<Givaro::Modular<int32_t> >   	   (q, bits, n, n, Cptr);
+      
+      
+      test_with_field<Givaro::ZRing<float>>		   (q, bits, n, n, Cptr);
+      test_with_field<Givaro::ZRing<double>>             (q, bits, n, n, Cptr);
+      test_with_field<Givaro::ZRing<int32_t>>            (q, bits, n, n, Cptr);
+      
+      test_with_field<Givaro::ModularBalanced<float> >    (q, bits, n, n, Cptr);
+      
+      test_with_field<Givaro::ModularBalanced<double> >   (q, bits, n, n, Cptr);
+      test_with_field<Givaro::ModularBalanced<int32_t> >  (q, bits, n, n, Cptr);
+      
+      
+      //test_with_field<Givaro::Modular<int64_t> >   	   (q, bits, n, n, Cptr);
+      //test_with_field<Givaro::ModularBalanced<int64_t> >  (q, bits, n, n, Cptr);
+      
+      
+      test_with_field<Givaro::Modular<Givaro::Integer> >  (q, bits, n, n, Cptr);
+      
     }
-  }while(loop);
+  }
+  
+  
   MPI_Finalize();
   return 0;
 }
