@@ -141,7 +141,7 @@ template <class Field> static bool checkResult(const Field& ZZ, BlasVector<Field
     return true;
 }
 
-template <class Field> bool genData(BlasMatrix<Field>& A, size_t bits)
+template <class Field> void genData(BlasMatrix<Field>& A, size_t bits)
 {
     typename Field::Element ZZ;
     typedef typename Field::RandIter RandIter;
@@ -150,7 +150,7 @@ template <class Field> bool genData(BlasMatrix<Field>& A, size_t bits)
     RDM.randomFullRank(A);
 }
 
-template <class Field> bool genData(SparseMatrix<Field>& A, size_t bits)
+template <class Field> void genData(SparseMatrix<Field>& A, size_t bits)
 {
     typename Field::Element ZZ;
     typedef typename Field::RandIter RandIter;
@@ -162,7 +162,7 @@ template <class Field> bool genData(SparseMatrix<Field>& A, size_t bits)
             if (i != j) A.setEntry(i, j, 0);
 }
 
-template <class Field> bool genData(BlasVector<Field>& B, size_t bits)
+template <class Field> void genData(BlasVector<Field>& B, size_t bits)
 {
     typename Field::Element ZZ;
     typedef typename Field::RandIter RandIter;
@@ -170,7 +170,7 @@ template <class Field> bool genData(BlasVector<Field>& B, size_t bits)
     B.random(RI);
 }
 
-template <> bool genData(BlasMatrix<Givaro::ZRing<Integer>>& A, size_t bits)
+template <> void genData(BlasMatrix<Givaro::ZRing<Integer>>& A, size_t bits)
 {
     Givaro::ZRing<Integer> ZZ;
     typedef typename Givaro::ZRing<Integer>::RandIter RandIter;
@@ -178,7 +178,7 @@ template <> bool genData(BlasMatrix<Givaro::ZRing<Integer>>& A, size_t bits)
     LinBox::RandomDenseMatrix<RandIter, Givaro::ZRing<Integer>> RDM(ZZ, RI);
     RDM.randomFullRank(A);
 }
-template <> bool genData(SparseMatrix<Givaro::ZRing<Integer>>& A, size_t bits)
+template <> void genData(SparseMatrix<Givaro::ZRing<Integer>>& A, size_t bits)
 {
     Givaro::ZRing<Integer> ZZ;
     typedef typename Givaro::ZRing<Integer>::RandIter RandIter;
@@ -189,7 +189,7 @@ template <> bool genData(SparseMatrix<Givaro::ZRing<Integer>>& A, size_t bits)
         for (size_t j = 0; j < A.coldim(); j++)
             if (i != j) A.setEntry(i, j, ZZ.zero);
 }
-template <> bool genData(DenseVector<Givaro::ZRing<Integer>>& B, size_t bits)
+template <> void genData(DenseVector<Givaro::ZRing<Integer>>& B, size_t bits)
 {
     Givaro::ZRing<Integer> ZZ;
     typedef typename Givaro::ZRing<Integer>::RandIter RandIter;
@@ -221,7 +221,7 @@ template <class T> void test_main(size_t bits, size_t ni, size_t nj, Communicato
 
     } // End of BLock for process(0)
 
-#if 1
+#if 0
     if (0 == Cptr->rank()) {
 
         // double starttime, endtime;
@@ -276,7 +276,7 @@ template <class T> void test_main(size_t bits, size_t ni, size_t nj, Communicato
     if (1 == Cptr->rank()) checkResult(ZZ, A3, A4);
 #endif
 
-#if 1
+#if 0
     if (0 == Cptr->rank()) {
         // double starttime, endtime;
         // MPI_Barrier(MPI_COMM_WORLD);
@@ -336,10 +336,10 @@ int main(int argc, char** argv)
 
     srand(time(NULL));
 
-    for (int j = 0; j < niter; j++) {
-        test_main<float>(bits, ni, nj, Cptr);
-        test_main<double>(bits, ni, nj, Cptr);
-        test_main<int>(bits, ni, nj, Cptr);
+    for (auto j = 0u; j < niter; j++) {
+        // test_main<float>(bits, ni, nj, Cptr);
+        // test_main<double>(bits, ni, nj, Cptr);
+        // test_main<int>(bits, ni, nj, Cptr);
         test_main<Integer>(bits, ni, nj, Cptr);
     }
 

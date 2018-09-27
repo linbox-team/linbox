@@ -16,6 +16,7 @@ tests/test-commentator
 tests/test-cra
 tests/test-det
 tests/test-frobenius
+tests/test-mpi-comm
 tests/test-rank-Int
 tests/test-rank-md
 tests/test-rank-u32
@@ -43,6 +44,7 @@ tests/checker
 tests/checker.dSYM/
 tests/temp2
 
+.vscode/
 INSTALL
 _configs.sed
 aclocal.m4
