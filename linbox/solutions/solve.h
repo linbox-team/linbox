@@ -643,7 +643,7 @@ namespace LinBox
 		RationalSolver<Ring, Field, PrimeIterator<IteratorCategories::HeuristicTag>, SparseEliminationTraits> rsolve(A.field(), genprime);
 		SolverReturnStatus status = SS_OK;
 		status=rsolve.solve(x, d, A, b,(int)m.maxTries());
- 
+
 		commentator().stop("done", NULL, "solving");
 
 		if ( status == SS_INCONSISTENT ) {
@@ -778,32 +778,32 @@ namespace LinBox
 #endif
 			)
 	{
-#ifdef __LINBOX_HAVE_MPI	//MPI parallel version
+#ifdef false // @fixme __LINBOX_HAVE_MPI	//MPI parallel version
 
 		Integer den(1);
-		if(!C || C->rank() == 0){ 
+		if(!C || C->rank() == 0){
 			if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
 				throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
                         commentator().start ("Integer CRA Solve", "Isolve");
 		}
-                
+
 		RandomPrimeIterator genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
-                
+
 		BlasVector<Givaro::ZRing<Integer>> num(A.field(),A.coldim());
-                
+
 		IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
 		MPIratChineseRemainder< EarlyMultipRatCRA< Givaro::Modular<double> > > mpicra(3UL, C);
-                
+
 		mpicra(num, den, iteration, genprime);
-                
-		if(!C || C->rank() == 0){ 
+
+		if(!C || C->rank() == 0){
 				typename Vector::iterator it_x= x.begin();
 				typename BlasVector<Givaro::ZRing<Integer>>::const_iterator it_num= num.begin();
 
 				// convert the result
 				for (; it_x != x.end(); ++it_x, ++it_num)
-					A.field().init(*it_x, *it_num);	
-		
+					A.field().init(*it_x, *it_num);
+
 			A.field().init(d, den);
 
 			commentator().stop ("done", NULL, "Isolve");
@@ -832,9 +832,9 @@ namespace LinBox
 		for (; it_x != x.end(); ++it_x, ++it_num)
 			A.field().init(*it_x, *it_num);
 		A.field().init(d, den);
-		commentator().stop ("done", NULL, "Isolve"); 
+		commentator().stop ("done", NULL, "Isolve");
 		return x;
-#endif		
+#endif
 	}
 
 
@@ -1046,7 +1046,7 @@ namespace LinBox
             ++it_x;
 		}
 		commentator().stop ("done", NULL, "Rsolve");
- 
+
 		return x;
 	}
 

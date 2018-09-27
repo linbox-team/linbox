@@ -20,188 +20,63 @@
  * ========LICENCE========
  */
 
-template <typename T> class chooseMPItype;
-template <> struct chooseMPItype<int> {
-    static constexpr MPI_Datatype val = MPI_INT;
-};
-template <> struct chooseMPItype<unsigned int> {
-    static constexpr MPI_Datatype val = MPI_UNSIGNED;
-};
-template <> struct chooseMPItype<unsigned long long int> {
-    static constexpr MPI_Datatype val = MPI_UNSIGNED_LONG_LONG;
-};
-template <> struct chooseMPItype<unsigned long int> {
-    static constexpr MPI_Datatype val = MPI_UNSIGNED_LONG;
-};
-template <> struct chooseMPItype<float> {
-    static constexpr MPI_Datatype val = MPI_FLOAT;
-};
-template <> struct chooseMPItype<double> {
-    static constexpr MPI_Datatype val = MPI_DOUBLE;
-};
+#pragma once
 
-template <class Matrix> void gmp_unpackMat(Matrix& M, int* A_mp_alloc, int* A_a_size, std::vector<mp_limb_t>& A_mp_data)
-{
-    size_t ni = M.rowdim(), nj = M.rowdim();
-
-    __mpz_struct* ptr;
-    for (size_t i = 0; i < ni; ++i) {
-        for (size_t j = 0; j < nj; ++j) {
-
-            ptr = const_cast<__mpz_struct*>(M.getEntry(i, j).get_mpz());
-            A_mp_alloc[j + i * nj] = ptr->_mp_alloc;
-            A_a_size[j + i * nj] = ptr->_mp_size;
-            mp_limb_t* a_array = ptr->_mp_d;
-            for (long k = 0; k < ptr->_mp_alloc; ++k) A_mp_data.push_back(a_array[k]);
-        }
-    }
-}
-
-template <class Matrix> void gmp_packMat(Matrix& M, int* A_mp_alloc, int* A_a_size, std::vector<mp_limb_t>& A_mp_data)
-{
-    size_t ni = M.rowdim(), nj = M.rowdim();
-    __mpz_struct* ptr2;
-    size_t count = 0;
-    Givaro::Integer temp;
-
-    for (size_t i = 0; i < ni; ++i) {
-        for (size_t j = 0; j < nj; ++j) {
-
-            ptr2 = const_cast<__mpz_struct*>(temp.get_mpz());
-            ptr2->_mp_alloc = A_mp_alloc[j + i * nj];
-            ptr2->_mp_size = A_a_size[j + i * nj];
-            _mpz_realloc(ptr2, ptr2->_mp_alloc);
-            for (long k = 0; k < ptr2->_mp_alloc; ++k) {
-                ptr2->_mp_d[k] = (A_mp_data[k + count]);
-            }
-            count += ptr2->_mp_alloc;
-            M.setEntry(i, j, temp);
-        }
-    }
-}
-
-template <class Matrix>
-void gmp_unpackSparseMat(Matrix& M, std::vector<int>& A_mp_alloc, std::vector<int>& A_a_size, std::vector<mp_limb_t>& A_mp_data,
-                         std::vector<long>& A_index)
-{
-    size_t ni = M.rowdim(), nj = M.rowdim();
-    Givaro::ZRing<Givaro::Integer> ZZ;
-
-    __mpz_struct* ptr;
-    for (size_t i = 0; i < ni; ++i) {
-        for (size_t j = 0; j < nj; ++j) {
-            if (!ZZ.areEqual(M.getEntry(i, j), ZZ.zero)) {
-
-                ptr = const_cast<__mpz_struct*>(M.getEntry(i, j).get_mpz());
-                A_mp_alloc.push_back(ptr->_mp_alloc);
-                A_a_size.push_back(ptr->_mp_size);
-                mp_limb_t* a_array = ptr->_mp_d;
-                A_index.push_back(i);
-                A_index.push_back(j);
-                for (long k = 0; k < ptr->_mp_alloc; ++k) A_mp_data.push_back(a_array[k]);
-            }
-        }
-    }
-}
-
-template <class Matrix>
-void gmp_packSparseMat(Matrix& M, std::vector<int>& A_mp_alloc, std::vector<int>& A_a_size, std::vector<mp_limb_t>& A_mp_data,
-                       std::vector<long>& A_index)
-{
-    size_t ni = M.rowdim(), nj = M.rowdim();
-    Givaro::ZRing<Givaro::Integer> ZZ;
-    __mpz_struct* ptr2;
-    size_t count = 0;
-    Givaro::Integer temp;
-
-    for (size_t i = 0; i < ni; ++i) {
-        for (size_t j = 0; j < nj; ++j) {
-
-            M.setEntry(i, j, ZZ.zero);
-        }
-    }
-
-    for (size_t i = 0; i < A_a_size.size(); ++i) {
-
-        // ptr = const_cast<__mpz_struct*>(M.getEntry().get_mpz());
-        ptr2 = const_cast<__mpz_struct*>(temp.get_mpz());
-        ptr2->_mp_alloc = A_mp_alloc[i];
-        ptr2->_mp_size = A_a_size[i];
-        _mpz_realloc(ptr2, ptr2->_mp_alloc);
-
-        for (long k = 0; k < ptr2->_mp_alloc; ++k) {
-            ptr2->_mp_d[k] = (A_mp_data[k + count]);
-        }
-        count += ptr2->_mp_alloc;
-
-        M.setEntry(A_index[i * 2], A_index[i * 2 + 1], temp);
-    }
-}
-
-template <class Vector> void gmp_unpackVec(Vector& V, int* B_mp_alloc, int* B_a_size, std::vector<mp_limb_t>& B_mp_data)
-{
-    size_t nj = V.size();
-    Givaro::Integer temp;
-
-    // Split vector B into arrays
-    __mpz_struct* ptr;
-    for (size_t j = 0; j < nj; j++) {
-
-        ptr = const_cast<__mpz_struct*>(V.getEntry(j).get_mpz());
-        B_mp_alloc[j] = ptr->_mp_alloc;
-        B_a_size[j] = ptr->_mp_size;
-        mp_limb_t* a_array = ptr->_mp_d;
-        for (long i = 0; i < ptr->_mp_alloc; ++i) {
-            B_mp_data.push_back(a_array[i]);
-        }
-    }
-}
-
-template <class Vector> void gmp_packVec(Vector& V, int* B_mp_alloc, int* B_a_size, std::vector<mp_limb_t>& B_mp_data)
-{
-    size_t nj = V.size();
-    // Reconstruction of vector B
-    __mpz_struct* ptr2;
-    size_t count = 0;
-    Givaro::Integer temp;
-    for (size_t j = 0; j < nj; j++) {
-        ptr2 = const_cast<__mpz_struct*>(temp.get_mpz());
-        ptr2->_mp_alloc = B_mp_alloc[j];
-        ptr2->_mp_size = B_a_size[j];
-        _mpz_realloc(ptr2, ptr2->_mp_alloc);
-        for (long i = 0; i < ptr2->_mp_alloc; ++i) {
-            ptr2->_mp_d[i] = (B_mp_data[i + count]);
-        }
-        count += ptr2->_mp_alloc;
-        V.setEntry(j, temp);
-    }
-}
-
-#ifndef __LINBOX_mpicpp_INL
-#define __LINBOX_mpicpp_INL
+#include "./gmp-pack.h"
 
 namespace LinBox {
 
-    Communicator::Communicator(MPI_Comm comm = MPI_COMM_NULL)
+    template <typename T> class chooseMPItype;
+    template <> struct chooseMPItype<int8_t> {
+        static constexpr MPI_Datatype val = MPI_INT8_T;
+    };
+    template <> struct chooseMPItype<int16_t> {
+        static constexpr MPI_Datatype val = MPI_INT16_T;
+    };
+    template <> struct chooseMPItype<int32_t> {
+        static constexpr MPI_Datatype val = MPI_INT32_T;
+    };
+    template <> struct chooseMPItype<int64_t> {
+        static constexpr MPI_Datatype val = MPI_INT64_T;
+    };
+    template <> struct chooseMPItype<uint8_t> {
+        static constexpr MPI_Datatype val = MPI_UINT8_T;
+    };
+    template <> struct chooseMPItype<uint16_t> {
+        static constexpr MPI_Datatype val = MPI_UINT16_T;
+    };
+    template <> struct chooseMPItype<uint32_t> {
+        static constexpr MPI_Datatype val = MPI_UINT32_T;
+    };
+    template <> struct chooseMPItype<uint64_t> {
+        static constexpr MPI_Datatype val = MPI_UINT64_T;
+    };
+    template <> struct chooseMPItype<float> {
+        static constexpr MPI_Datatype val = MPI_FLOAT;
+    };
+    template <> struct chooseMPItype<double> {
+        static constexpr MPI_Datatype val = MPI_DOUBLE;
+    };
+
+    // ----- Constructors
+
+    Communicator::Communicator(MPI_Comm comm)
         : _mpi_comm(comm)
         , _mpi_boss(false)
     {
     }
 
-    // MPI_initializing constructor
-    // When this communicator is destroyed MPI is shut down (finalized).
-    Communicator::Communicator(int* ac, char*** av)
+    Communicator::Communicator(int* argc, char*** argv)
         : _mpi_comm(MPI_COMM_WORLD)
         , _mpi_boss(true)
     {
-        MPI_Init(ac, av);
+        MPI_Init(argc, argv);
     }
 
-    // copy constructor
-    Communicator::Communicator(const Communicator& D)
-        : _mpi_comm(D._mpi_comm)
+    Communicator::Communicator(const Communicator& communicator)
+        : _mpi_comm(communicator._mpi_comm)
+        , _mpi_status(communicator._mpi_status)
         , _mpi_boss(false)
-        , stat(D.stat)
     {
     }
 
@@ -225,10 +100,6 @@ namespace LinBox {
         return r;
     }
 
-    MPI_Status Communicator::status() const { return stat; }
-
-    MPI_Comm Communicator::mpi_communicator() const { return _mpi_comm; }
-
     // peer to peer communication
 
     template <class Ptr> void Communicator::send(Ptr b, Ptr e, int dest, int tag)
@@ -239,26 +110,23 @@ namespace LinBox {
     template <class Ptr> void Communicator::ssend(Ptr b, Ptr e, int dest, int tag)
     {
         MPI_Ssend(&b[0],
-                  //(e - b)*sizeof(iterator_traits<Ptr>::value_type),
+                  //   (e - b)*sizeof(iterator_traits<Ptr>::value_type),
                   (e - b) * sizeof(int*), MPI_BYTE, dest, tag, _mpi_comm);
     }
 
     template <class Ptr> void Communicator::recv(Ptr b, Ptr e, int dest, int tag)
     {
-        MPI_Recv(&b[0], (e - b) * sizeof(typename Ptr::value_type), MPI_BYTE, dest, tag, _mpi_comm, &stat);
+        MPI_Recv(&b[0], (e - b) * sizeof(typename Ptr::value_type), MPI_BYTE, dest, tag, _mpi_comm, &_mpi_status);
     }
 
     template <class X> void Communicator::recv(X* b, X* e, int dest, int tag)
     {
-        MPI_Recv(b, (e - b) * sizeof(X), MPI_BYTE, dest, tag, _mpi_comm, &stat);
+        MPI_Recv(b, (e - b) * sizeof(X), MPI_BYTE, dest, tag, _mpi_comm, &_mpi_status);
     }
 
     // whole object send and recv
 
-    template <class X> void Communicator::send(X& b, int dest /*, int tag = 0*/)
-    {
-        MPI_Send(&b, sizeof(X), MPI_BYTE, dest, 0, _mpi_comm);
-    }
+    template <class X> void Communicator::send(X& b, int dest) { MPI_Send(&b, sizeof(X), MPI_BYTE, dest, 0, _mpi_comm); }
 
     template <class Field> void Communicator::send(BlasMatrix<Field>& M, int dest)
     {
@@ -386,6 +254,7 @@ namespace LinBox {
     template <> void Communicator::send(BlasMatrix<Givaro::ZRing<Integer>>& M, int dest) { send_integerMat(M, dest); }
     template <> void Communicator::send(SparseMatrix<Givaro::ZRing<Integer>>& M, int dest) { send_integerSparseMat(M, dest); }
     template <> void Communicator::send(DenseVector<Givaro::ZRing<Integer>>& V, int dest) { send_integerVec(V, dest); }
+
 
 #if 0
     template <class X> void Communicator::isend(X& b, int dest /*, int tag = 0*/)
@@ -538,6 +407,7 @@ namespace LinBox {
         MPI_Ssend(&b, sizeof(X), MPI_BYTE, dest, 0, _mpi_comm);
     }
 
+
     template <class Field> void Communicator::ssend(BlasMatrix<Field>& M, int dest)
     {
 
@@ -671,17 +541,9 @@ namespace LinBox {
     template <> void Communicator::ssend(DenseVector<Givaro::Modular<Integer>>& V, int dest) { ssend_integerVec(V, dest); }
 
 
-
-
-
-    template <class X> void Communicator::bsend(X& b, int dest /*, int tag = 0*/)
-    {
-        MPI_Bsend(&b, sizeof(X), MPI_BYTE, dest, 0, _mpi_comm);
-    }
-
     template <class X> void Communicator::recv(X& b, int src /*, int tag = 0*/)
     {
-        MPI_Recv(&b, sizeof(X), MPI_BYTE, src, 0, _mpi_comm, &stat);
+        MPI_Recv(&b, sizeof(X), MPI_BYTE, src, 0, _mpi_comm, &_mpi_status);
     }
 
     template <class Field> void Communicator::recv(BlasMatrix<Field>& M, int src)
@@ -1042,28 +904,13 @@ namespace LinBox {
     template <> void Communicator::bcast(SparseMatrix<Givaro::ZRing<Integer>>& M, int src) { bcast_integerSparseMat(M, src); }
     template <> void Communicator::bcast(DenseVector<Givaro::ZRing<Integer>>& V, int src) { bcast_integerVec(V, src); }
 
-
     template <> void Communicator::bcast(BlasMatrix<Givaro::Modular<Integer>>& M, int src) { bcast_integerMat(M, src); }
     template <> void Communicator::bcast(SparseMatrix<Givaro::Modular<Integer>>& M, int src) { bcast_integerSparseMat(M, src); }
     template <> void Communicator::bcast(DenseVector<Givaro::Modular<Integer>>& V, int src) { bcast_integerVec(V, src); }
 
 
 
-    template <class X> void Communicator::buffer_attach(X b) { MPI_Buffer_attach(malloc(sizeof(X) * 60), sizeof(X) * 60); }
-
-    template <class X> int Communicator::buffer_detach(X& b, int* size) { return MPI_Buffer_detach(&b, size); }
-
-    // collective communication
-    template <class Ptr, class Function_object>
-    void Communicator::reduce(Ptr bloc, Ptr eloc, Ptr bres, Function_object binop, int root)
-    {
-    }
-
-    // member access
-    MPI_Status Communicator::get_stat() { return stat; }
-
 } // namespace LinBox
-#endif // __LINBOX_mpicpp_INL
 
 // Local Variables:
 // mode: C++

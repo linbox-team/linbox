@@ -200,6 +200,7 @@ static bool checkResult(const Field& ZZ, SparseMatrix<Givaro::ModularBalanced<T>
   return true;
 }
 
+
 template <class Field> static bool checkResult(const Field& ZZ, BlasVector<Field>& B, BlasVector<Field>& B2)
 {
   // B.write(std::cout << " B: \n",Tag::FileFormat::Maple) << ';' << std::endl;
@@ -214,6 +215,7 @@ template <class Field> static bool checkResult(const Field& ZZ, BlasVector<Field
   return true;
 }
 
+
 template <class Field> bool genData(Givaro::Integer q, BlasMatrix<Field>& A, size_t bits)
 {
   
@@ -225,6 +227,7 @@ template <class Field> bool genData(Givaro::Integer q, BlasMatrix<Field>& A, siz
   
 }
 
+
 template <class Field> bool genData(Givaro::Integer q, SparseMatrix<Field>& A, size_t bits)
 {
   Field ZZ;//typename Field::Element ZZ;
@@ -234,6 +237,7 @@ template <class Field> bool genData(Givaro::Integer q, SparseMatrix<Field>& A, s
   RDM.random(A);
   
 }
+
 
 template <class Field> bool genData(Givaro::Integer q, BlasVector<Field>& B, size_t bits)
 {
@@ -245,6 +249,7 @@ template <class Field> bool genData(Givaro::Integer q, BlasVector<Field>& B, siz
   
 }
 
+
 template <> bool genData(Givaro::Integer q, BlasMatrix<Givaro::ZRing<Integer>>& A, size_t bits)
 {
   Givaro::ZRing<Integer> ZZ;
@@ -253,6 +258,7 @@ template <> bool genData(Givaro::Integer q, BlasMatrix<Givaro::ZRing<Integer>>& 
   LinBox::RandomDenseMatrix<RandIter, Givaro::ZRing<Integer>> RDM(ZZ, RI);
   RDM.randomFullRank(A);
 }
+
 template <> bool genData(Givaro::Integer q, SparseMatrix<Givaro::ZRing<Integer>>& A, size_t bits)
 {
   Givaro::ZRing<Integer> ZZ;
@@ -421,6 +427,7 @@ void test_with_field(Givaro::Integer q, size_t bits, size_t ni, size_t nj, Commu
   Cptr->bcast(A3, 0);
   
   if (1 == Cptr->rank()) checkResult(ZZ, A3, A4);
+
 #endif
   
 #if 0
@@ -522,8 +529,7 @@ int main(int argc, char** argv)
       
       
       test_with_field<Givaro::Modular<Givaro::Integer> >  (q, bits, ni, nj, Cptr);
-      
-      
+
     }
   }while(loop);
   MPI_Finalize();
