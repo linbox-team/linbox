@@ -44,8 +44,9 @@ pkgincludesub_HEADERS =         \
 	triples-coord.h  \
 	read-write-sparse.h \
 	read-write-sparse.inl \
-        sparse-sequence-vector.inl
-
+        sparse-sequence-vector.inl	\
+	sparse-map-map-matrix.h		\
+	sparse-map-map-matrix.inl
 
 
 
