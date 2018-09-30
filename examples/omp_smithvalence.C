@@ -181,7 +181,7 @@ std::cout << "Some factors (50000 factoring loop bound): ";
                 else
                     PRank(ranks, effexp, argv[1], smith[j].first, 2, coprimeR);
             }
-            if (ranks.size() == 1) ranks.push_back(coprimeR);
+//             if (ranks.size() == 1) ranks.push_back(coprimeR);
 
             if (effexp < exponents[j]) {
                 for(size_t expo = effexp<<1; ranks.back() < coprimeR; expo<<=1) {
@@ -198,6 +198,7 @@ std::cout << "Some factors (50000 factoring loop bound): ";
                     else
                         PRank(ranks, effexp, argv[1], smith[j].first, expo, coprimeR);
                     if (ranks.size() < expo) {
+                        if (reporting)
                         std::cerr << "It seems we need a larger prime power, it will take longer ..." << std::endl;
                             // break;
                         if (smith[j].first == 2)
