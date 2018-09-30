@@ -72,7 +72,16 @@ BASIC_HDRS =			\
 	rational-matrix-factory.h\
 	fibb.h			\
 	pascal.h		\
-	fflas-csr.h
+	fflas-csr.h		\
+	zoi.inl			\
+	triangular-fibb.h	\
+	subrowmatrix.h		\
+	fibb-product.h		\
+	dense-zero-one.h	\
+	block-compose.h		\
+	blockbb.h		\
+	blackbox_thread.h	\
+	blackbox_parallel.h
 
 NTL_HDRS =			\
 	ntl-hankel.h            \
