@@ -40,6 +40,9 @@
 #include "linbox/blackbox/random-matrix.h"
 #include "linbox/matrix/random-matrix.h"
 
+// @fixme Should install something like clang-format,
+// because indentation was inexistant.
+
 using namespace LinBox;
 using namespace std;
 /*
@@ -68,153 +71,43 @@ using namespace std;
   }
 */
 
-template <class Field>
-static bool checkResult(const Field& ZZ, BlasMatrix<Field>& A, BlasMatrix<Field>& A2)
+// @fixme Some of these look like duplicates
+template <class Field, class Matrix>
+static bool checkResult(const Field& F, Matrix& A, Matrix& A2)
 {
     // A.write(std::cout << " A|A3: \n",Tag::FileFormat::Maple) << ';' << std::endl;
     // A2.write(std::cout << " A2|A4: \n",Tag::FileFormat::Maple) << ';' << std::endl;
-    for (auto i = 0u; i < A.rowdim(); ++i)
+    for (auto i = 0u; i < A.rowdim(); ++i) {
         for (auto j = 0u; j < A.coldim(); ++j) {
-            if (!ZZ.areEqual(A[i][j], A2[i][j])) {
+            if (!F.areEqual(A.getEntry(i, j), A2.getEntry(i, j))) {
                 std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
                 std::cerr << "               The data communicated is inconsistent                " << std::endl;
                 std::cerr << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
                 return false;
             }
         }
+    }
 
     return true;
 }
 
 template <class Field>
-static bool checkResult(const Field& ZZ, SparseMatrix<Givaro::ZRing<Integer>>& A, SparseMatrix<Givaro::ZRing<Integer>>& A2)
-{
-    // A.write(std::cout << " A|A3: \n",Tag::FileFormat::Maple) << ';' << std::endl;
-    // A2.write(std::cout << " A2|A4: \n",Tag::FileFormat::Maple) << ';' << std::endl;
-    for (auto i = 0u; i < A.rowdim(); ++i)
-        for (auto j = 0u; j < A.coldim(); ++j) {
-            if (!ZZ.areEqual(A.getEntry(i, j), A2.getEntry(i, j))) {
-                std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
-                std::cerr << "               The data communicated is inconsistent                " << std::endl;
-                std::cerr << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
-                return false;
-            }
-        }
-
-    return true;
-}
-
-template <class Field, class T>
-static bool checkResult(const Field& ZZ, SparseMatrix<Givaro::ZRing<T>>& A, SparseMatrix<Givaro::ZRing<T>>& A2)
-{
-    // A.write(std::cout << " A|A3: \n",Tag::FileFormat::Maple) << ';' << std::endl;
-    // A2.write(std::cout << " A2|A4: \n",Tag::FileFormat::Maple) << ';' << std::endl;
-
-    for (auto i = 0u; i < A.rowdim(); ++i)
-        for (auto j = 0u; j < A.coldim(); ++j) {
-            if (!ZZ.areEqual(A.getEntry(i, j), A2.getEntry(i, j))) {
-                std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
-                std::cerr << "               The data communicated is inconsistent                " << std::endl;
-                std::cerr << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
-                return false;
-            }
-        }
-
-    return true;
-}
-
-template <class Field>
-static bool checkResult(const Field& ZZ, SparseMatrix<Givaro::Modular<Integer>>& A, SparseMatrix<Givaro::Modular<Integer>>& A2)
-{
-    // A.write(std::cout << " A|A3: \n",Tag::FileFormat::Maple) << ';' << std::endl;
-    // A2.write(std::cout << " A2|A4: \n",Tag::FileFormat::Maple) << ';' << std::endl;
-    for (auto i = 0u; i < A.rowdim(); ++i)
-        for (auto j = 0u; j < A.coldim(); ++j) {
-            if (!ZZ.areEqual(A.getEntry(i, j), A2.getEntry(i, j))) {
-                std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
-                std::cerr << "               The data communicated is inconsistent                " << std::endl;
-                std::cerr << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
-                return false;
-            }
-        }
-
-    return true;
-}
-
-template <class Field, class T>
-static bool checkResult(const Field& ZZ, SparseMatrix<Givaro::Modular<T>>& A, SparseMatrix<Givaro::Modular<T>>& A2)
-{
-    // A.write(std::cout << " A|A3: \n",Tag::FileFormat::Maple) << ';' << std::endl;
-    // A2.write(std::cout << " A2|A4: \n",Tag::FileFormat::Maple) << ';' << std::endl;
-
-    for (auto i = 0u; i < A.rowdim(); ++i)
-        for (auto j = 0u; j < A.coldim(); ++j) {
-            if (!ZZ.areEqual(A.getEntry(i, j), A2.getEntry(i, j))) {
-                std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
-                std::cerr << "               The data communicated is inconsistent                " << std::endl;
-                std::cerr << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
-                return false;
-            }
-        }
-
-    return true;
-}
-
-/*
-  template <class Field>
-  static bool checkResult(const Field& ZZ, SparseMatrix<Givaro::ModularBalanced<Integer>>& A,
-  SparseMatrix<Givaro::ModularBalanced<Integer>>& A2)
-  {
-  // A.write(std::cout << " A|A3: \n",Tag::FileFormat::Maple) << ';' << std::endl;
-  // A2.write(std::cout << " A2|A4: \n",Tag::FileFormat::Maple) << ';' << std::endl;
-  for (auto i = 0u; i < A.rowdim(); ++i)
-  for (auto j = 0u; j < A.coldim(); ++j) {
-  if (!ZZ.areEqual(A.getEntry(i, j), A2.getEntry(i, j))) {
-  std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
-  std::cerr << "               The data communicated is inconsistent                " << std::endl;
-  std::cerr << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
-  return false;
-  }
-  }
-
-  return true;
-  }
-*/
-template <class Field, class T>
-static bool checkResult(const Field& ZZ, SparseMatrix<Givaro::ModularBalanced<T>>& A,
-                        SparseMatrix<Givaro::ModularBalanced<T>>& A2)
-{
-    // A.write(std::cout << " A|A3: \n",Tag::FileFormat::Maple) << ';' << std::endl;
-    // A2.write(std::cout << " A2|A4: \n",Tag::FileFormat::Maple) << ';' << std::endl;
-
-    for (auto i = 0u; i < A.rowdim(); ++i)
-        for (auto j = 0u; j < A.coldim(); ++j) {
-            if (!ZZ.areEqual(A.getEntry(i, j), A2.getEntry(i, j))) {
-                std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
-                std::cerr << "               The data communicated is inconsistent                " << std::endl;
-                std::cerr << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
-                return false;
-            }
-        }
-
-    return true;
-}
-
-template <class Field>
-static bool checkResult(const Field& ZZ, BlasVector<Field>& B, BlasVector<Field>& B2)
+static bool checkResult(const Field& F, BlasVector<Field>& B, BlasVector<Field>& B2)
 {
     // B.write(std::cout << " B: \n",Tag::FileFormat::Maple) << ';' << std::endl;
     // B2.write(std::cout << " B2: \n",Tag::FileFormat::Maple) << ';' << std::endl;
-    for (size_t j = 0; j < B.size(); ++j)
-        if (!ZZ.areEqual(B[j], B2[j])) {
+    for (size_t j = 0; j < B.size(); ++j) {
+        if (!F.areEqual(B[j], B2[j])) {
             std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
             std::cerr << "               The data communicated is inconsistent                " << std::endl;
             std::cerr << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
             return false;
         }
+    }
     return true;
 }
 
+// @fixme why so many, might be factorizable
 template <class Field>
 void genData(Givaro::Integer q, BlasMatrix<Field>& A, size_t bits)
 {
@@ -223,7 +116,7 @@ void genData(Givaro::Integer q, BlasMatrix<Field>& A, size_t bits)
     typedef typename Field::RandIter RandIter;
     RandIter RI(ZZ);
     LinBox::RandomDenseMatrix<RandIter, Field> RDM(ZZ, RI);
-    RDM.randomFullRank(A);
+    RDM.random(A);
 }
 
 template <class Field>
@@ -232,6 +125,7 @@ void genData(Givaro::Integer q, SparseMatrix<Field>& A, size_t bits)
     Field ZZ; // typename Field::Element ZZ;
     typedef typename Field::RandIter RandIter;
     RandIter RI(ZZ);
+    // @fixme RandomDense to fill sparse?
     LinBox::RandomDenseMatrix<RandIter, Field> RDM(ZZ, RI);
     RDM.random(A);
 }
@@ -344,20 +238,14 @@ void test_with_field(Givaro::Integer q, size_t bits, size_t ni, size_t nj, Commu
     DenseVector B2(ZZ, A.coldim()), B(ZZ, A.coldim());
     SparseMatrix<Field> A3(ZZ, ni, nj), A4(ZZ, ni, nj);
 
-    // DenseMatrix<Field> A5(ZZ, ni, nj), A6(ZZ, ni, nj);
-    // SparseMatrix<Field> A7(ZZ, ni, nj), A8(ZZ, ni, nj);
-
     if (0 == Cptr->rank()) {
 
         genData(q, A, bits);
         genData(q, A3, bits);
-        // genData(q, A5, bits);
-        // genData(q, A7, bits);
         genData(q, B, bits);
 
     } // End of BLock for process(0)
 
-#if 1
     if (0 == Cptr->rank()) {
 
         // double starttime, endtime;
@@ -413,56 +301,11 @@ void test_with_field(Givaro::Integer q, size_t bits, size_t ni, size_t nj, Commu
     Cptr->bcast(A3, 0);
 
     if (1 == Cptr->rank()) checkResult(ZZ, A3, A4);
-
-#endif
-
-#if 0
-  if (0 == Cptr->rank()) {
-    // double starttime, endtime;
-    // MPI_Barrier(MPI_COMM_WORLD);
-    // starttime = MPI_Wtime();
-    // MPI data distribution for Integer type value
-    Cptr->isend(A5, 1);
-    // MPI_Barrier(MPI_COMM_WORLD);
-    // endtime   = MPI_Wtime();
-    // std::cout<<"MPI data distribution used CPU time (seconds): " <<endtime-starttime<<std::endl;
-  }
-  else {
-
-    if (1 == Cptr->rank()) Cptr->recv(A6, 0);
-
-  }
-  MPI_Barrier(MPI_COMM_WORLD);
-  Cptr->bcast(A5, 0);
-
-  if (1 == Cptr->rank()) checkResult(ZZ, A5, A6);
-
-  if (0 == Cptr->rank()) {
-    // double starttime, endtime;
-    // MPI_Barrier(MPI_COMM_WORLD);
-    // starttime = MPI_Wtime();
-    // MPI data distribution for Integer type value
-    Cptr->isend(A7, 1);
-    // MPI_Barrier(MPI_COMM_WORLD);
-    // endtime   = MPI_Wtime();
-    // std::cout<<"MPI data distribution used CPU time (seconds): " <<endtime-starttime<<std::endl;
-  }
-  else {
-    if (1 == Cptr->rank()) Cptr->recv(A8, 0);
-  }
-  MPI_Barrier(MPI_COMM_WORLD);
-  Cptr->bcast(A7, 0);
-
-  if (1 == Cptr->rank()) checkResult(ZZ, A7, A8);
-
-#endif
 }
 
 int main(int argc, char** argv)
 {
-
-    Communicator* Cptr = NULL;
-    Cptr = new Communicator(&argc, &argv);
+    Communicator Cptr(&argc, &argv);
     size_t bits, niter, n, ni;
     bool loop = false;
 
@@ -476,77 +319,48 @@ int main(int argc, char** argv)
                               END_OF_ARGUMENTS};
     parseArguments(argc, argv, args);
 
-    MPI_Bcast(&n, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    if (Cptr.rank() == 0) {
+        std::cout << "Connected to " << Cptr.size() << " nodes." << std::endl;
+    }
 
+    MPI_Bcast(&n, 1, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Bcast(&niter, 1, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Bcast(&loop, 1, MPI::BOOL, 0, MPI_COMM_WORLD);
 
     bool peak = false;
     srand(time(NULL));
 
-    if (loop) {
+    for (auto j = 0u; loop || j < niter; j++) {
+        if (0 == Cptr.rank()) {
+            ni = rand() % n + 1;
+            if (ni < n / 2 && ni % 2 == 0 && !peak) ni = 1;
 
-        do {
-
-            for (auto j = 0u; j < niter; j++) {
-
-                if (0 == Cptr->rank()) {
-                    ni = rand() % n + 1;
-                    if (ni < n / 2 && ni % 2 == 0 && !peak) ni = 1;
-
-                    peak = !peak;
-                    std::cout << " Test with dimension: " << ni << " x " << ni << std::endl;
-                }
-                MPI_Bcast(&n, 1, MPI_INT, 0, MPI_COMM_WORLD);
-
-                MPI_Bcast(&niter, 1, MPI_INT, 0, MPI_COMM_WORLD);
-
-                test_with_field<Givaro::ZRing<Integer>>(q, bits, n, n, Cptr);
-
-                test_with_field<Givaro::Modular<float>>(q, bits, n, n, Cptr);
-                test_with_field<Givaro::Modular<double>>(q, bits, n, n, Cptr);
-                test_with_field<Givaro::Modular<int32_t>>(q, bits, n, n, Cptr);
-
-                test_with_field<Givaro::ZRing<float>>(q, bits, n, n, Cptr);
-                test_with_field<Givaro::ZRing<double>>(q, bits, n, n, Cptr);
-                test_with_field<Givaro::ZRing<int32_t>>(q, bits, n, n, Cptr);
-
-                test_with_field<Givaro::ModularBalanced<float>>(q, bits, n, n, Cptr);
-
-                test_with_field<Givaro::ModularBalanced<double>>(q, bits, n, n, Cptr);
-                test_with_field<Givaro::ModularBalanced<int32_t>>(q, bits, n, n, Cptr);
-
-                // test_with_field<Givaro::Modular<int64_t> >   	   (q, bits, n, n, Cptr);
-                // test_with_field<Givaro::ModularBalanced<int64_t> >  (q, bits, n, n, Cptr);
-
-                test_with_field<Givaro::Modular<Givaro::Integer>>(q, bits, n, n, Cptr);
-            }
-        } while (loop);
-    }
-    else {
-
-        for (auto j = 0u; j < niter; j++) {
-
-            test_with_field<Givaro::ZRing<Integer>>(q, bits, n, n, Cptr);
-
-            test_with_field<Givaro::Modular<float>>(q, bits, n, n, Cptr);
-            test_with_field<Givaro::Modular<double>>(q, bits, n, n, Cptr);
-            test_with_field<Givaro::Modular<int32_t>>(q, bits, n, n, Cptr);
-
-            test_with_field<Givaro::ZRing<float>>(q, bits, n, n, Cptr);
-            test_with_field<Givaro::ZRing<double>>(q, bits, n, n, Cptr);
-            test_with_field<Givaro::ZRing<int32_t>>(q, bits, n, n, Cptr);
-
-            test_with_field<Givaro::ModularBalanced<float>>(q, bits, n, n, Cptr);
-
-            test_with_field<Givaro::ModularBalanced<double>>(q, bits, n, n, Cptr);
-            test_with_field<Givaro::ModularBalanced<int32_t>>(q, bits, n, n, Cptr);
-
-            // test_with_field<Givaro::Modular<int64_t> >   	   (q, bits, n, n, Cptr);
-            // test_with_field<Givaro::ModularBalanced<int64_t> >  (q, bits, n, n, Cptr);
-
-            test_with_field<Givaro::Modular<Givaro::Integer>>(q, bits, n, n, Cptr);
+            peak = !peak;
+            std::cout << " Test with dimension: " << ni << " x " << ni << std::endl;
         }
+
+        MPI_Bcast(&ni, 1, MPI_INT, 0, MPI_COMM_WORLD);
+
+        // @fixme Why always square? Try rectangular matrices!
+        // @fixme Pass reference to communicator, no more pointer
+        test_with_field<Givaro::ZRing<Integer>>(q, bits, ni, ni, &Cptr);
+
+        test_with_field<Givaro::Modular<float>>(q, bits, ni, ni, &Cptr);
+        test_with_field<Givaro::Modular<double>>(q, bits, ni, ni, &Cptr);
+        test_with_field<Givaro::Modular<int32_t>>(q, bits, ni, ni, &Cptr);
+        test_with_field<Givaro::Modular<int64_t>>(q, bits, ni, ni, &Cptr);
+
+        test_with_field<Givaro::ZRing<float>>(q, bits, ni, ni, &Cptr);
+        test_with_field<Givaro::ZRing<double>>(q, bits, ni, ni, &Cptr);
+        test_with_field<Givaro::ZRing<int32_t>>(q, bits, ni, ni, &Cptr);
+
+        test_with_field<Givaro::ModularBalanced<float>>(q, bits, ni, ni, &Cptr);
+
+        test_with_field<Givaro::ModularBalanced<double>>(q, bits, ni, ni, &Cptr);
+        test_with_field<Givaro::ModularBalanced<int32_t>>(q, bits, ni, ni, &Cptr);
+        test_with_field<Givaro::ModularBalanced<int64_t>>(q, bits, ni, ni, &Cptr);
+
+        test_with_field<Givaro::Modular<Givaro::Integer>>(q, bits, ni, ni, &Cptr);
     }
 
     MPI_Finalize();
