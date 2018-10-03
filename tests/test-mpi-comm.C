@@ -130,23 +130,20 @@ void test_with_field(Givaro::Integer q, size_t bits, size_t ni, size_t nj, Commu
 
     DenseMatrix<Field> A(ZZ, ni, nj), A2(ZZ, ni, nj);
     BlasVector<Field> B2(ZZ, A.coldim()), B(ZZ, A.coldim());
-    SparseMatrix<Field> sparseSend(ZZ, ni, nj), sparseRecv(ZZ, ni, nj);
+    SparseMatrix<Field> sparseMatSend(ZZ, ni, nj), sparseMatRecv(ZZ, ni, nj);
 
     // Generating random data for matrice and vector
     if (0 == Cptr->rank()) {
         genData(ZZ, q, A, bits);
-        genData(ZZ, q, sparseSend, bits);
+        genData(ZZ, q, sparseMatSend, bits);
         genData(ZZ, q, B, bits);
     }
 
-    // @fixme Test also send() (not ssend)
-    // Is send useful if we have ssend?
-
     test_ssend_recv_bcast(ZZ, B, B2, Cptr);
     test_ssend_recv_bcast(ZZ, A, A2, Cptr);
-    test_ssend_recv_bcast(ZZ, sparseSend, sparseRecv, Cptr);
+    test_ssend_recv_bcast(ZZ, sparseMatSend, sparseMatRecv, Cptr);
 
-    // @fixme Test also
+    // @fixme Test also send() (not ssend) via
     // 0 send B
     // 1 recv B as B2
     // 1 send B2
@@ -194,23 +191,23 @@ int main(int argc, char** argv)
 
         // @fixme Why always square? Try rectangular matrices!
         // @fixme Pass reference to communicator, no more pointer
-        test_with_field<Givaro::ZRing<Integer>>(q, bits, ni, ni, &Cptr);
 
         test_with_field<Givaro::Modular<float>>(q, bits, ni, ni, &Cptr);
         test_with_field<Givaro::Modular<double>>(q, bits, ni, ni, &Cptr);
         test_with_field<Givaro::Modular<int32_t>>(q, bits, ni, ni, &Cptr);
         test_with_field<Givaro::Modular<int64_t>>(q, bits, ni, ni, &Cptr);
+        test_with_field<Givaro::Modular<Integer>>(q, bits, ni, ni, &Cptr);
 
         test_with_field<Givaro::ZRing<float>>(q, bits, ni, ni, &Cptr);
         test_with_field<Givaro::ZRing<double>>(q, bits, ni, ni, &Cptr);
         test_with_field<Givaro::ZRing<int32_t>>(q, bits, ni, ni, &Cptr);
+        test_with_field<Givaro::ZRing<int64_t>>(q, bits, ni, ni, &Cptr);
+        test_with_field<Givaro::ZRing<Integer>>(q, bits, ni, ni, &Cptr);
 
         test_with_field<Givaro::ModularBalanced<float>>(q, bits, ni, ni, &Cptr);
         test_with_field<Givaro::ModularBalanced<double>>(q, bits, ni, ni, &Cptr);
         test_with_field<Givaro::ModularBalanced<int32_t>>(q, bits, ni, ni, &Cptr);
         test_with_field<Givaro::ModularBalanced<int64_t>>(q, bits, ni, ni, &Cptr);
-
-        test_with_field<Givaro::Modular<Givaro::Integer>>(q, bits, ni, ni, &Cptr);
     }
 
     return 0;
