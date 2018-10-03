@@ -585,7 +585,7 @@ namespace LinBox {
         }
 
         size_t i = 0;
-        for (size_t j = 0; j < len; ++j) {
+        for (int j = 0; j < len; ++j) {
 
             M.setEntry(index[i], index[i + 1], datum[j]);
             i += 2;
