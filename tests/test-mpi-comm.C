@@ -78,122 +78,20 @@ static bool checkResult(const Field& F, BlasVector<Field>& B, BlasVector<Field>&
     return true;
 }
 
-// @fixme why so many, might be factorizable
-template <class Field>
-void genData(Givaro::Integer q, BlasMatrix<Field>& A, size_t bits)
+template <class Field, class Matrix>
+void genData(Field& F, Givaro::Integer q, Matrix& A, size_t bits)
 {
-
-    Field ZZ; // typename Field::Element ZZ;
     typedef typename Field::RandIter RandIter;
-    RandIter RI(ZZ);
-    LinBox::RandomDenseMatrix<RandIter, Field> RDM(ZZ, RI);
+    RandIter RI(F);
+    LinBox::RandomDenseMatrix<RandIter, Field> RDM(F, RI);
     RDM.random(A);
 }
 
 template <class Field>
-void genData(Givaro::Integer q, SparseMatrix<Field>& A, size_t bits)
+void genData(Field& F, Givaro::Integer q, BlasVector<Field>& B, size_t bits)
 {
-    Field ZZ; // typename Field::Element ZZ;
     typedef typename Field::RandIter RandIter;
-    RandIter RI(ZZ);
-    // @fixme RandomDense to fill sparse?
-    LinBox::RandomDenseMatrix<RandIter, Field> RDM(ZZ, RI);
-    RDM.random(A);
-}
-
-template <class Field>
-void genData(Givaro::Integer q, BlasVector<Field>& B, size_t bits)
-{
-
-    Field ZZ; // typename Field::Element ZZ;
-    typedef typename Field::RandIter RandIter;
-    RandIter RI(ZZ);
-    B.random(RI);
-}
-
-template <>
-void genData(Givaro::Integer q, BlasMatrix<Givaro::ZRing<Integer>>& A, size_t bits)
-{
-    Givaro::ZRing<Integer> ZZ;
-    typedef typename Givaro::ZRing<Integer>::RandIter RandIter;
-    RandIter RI(ZZ, bits);
-    LinBox::RandomDenseMatrix<RandIter, Givaro::ZRing<Integer>> RDM(ZZ, RI);
-    RDM.randomFullRank(A);
-}
-
-template <>
-void genData(Givaro::Integer q, SparseMatrix<Givaro::ZRing<Integer>>& A, size_t bits)
-{
-    Givaro::ZRing<Integer> ZZ;
-    typedef typename Givaro::ZRing<Integer>::RandIter RandIter;
-    RandIter RI(ZZ, bits);
-    LinBox::RandomDenseMatrix<RandIter, Givaro::ZRing<Integer>> RDM(ZZ, RI);
-    RDM.random(A);
-}
-template <>
-void genData(Givaro::Integer q, BlasVector<Givaro::ZRing<Integer>>& B, size_t bits)
-{
-    Givaro::ZRing<Integer> ZZ;
-    typedef typename Givaro::ZRing<Integer>::RandIter RandIter;
-    RandIter RI(ZZ, bits);
-    B.random(RI);
-}
-
-template <class T>
-void genData(Givaro::Integer q, BlasMatrix<Givaro::Modular<T>>& A, size_t bits)
-{
-
-    Givaro::Modular<T> ZZ(q);
-    typedef typename Givaro::Modular<T>::RandIter RandIter;
-    RandIter RI(ZZ, bits);
-    LinBox::RandomDenseMatrix<RandIter, Givaro::Modular<T>> RDM(ZZ, RI);
-    RDM.random(A);
-}
-template <class T>
-void genData(Givaro::Integer q, SparseMatrix<Givaro::Modular<T>>& A, size_t bits)
-{
-
-    Givaro::Modular<T> ZZ(q);
-    typedef typename Givaro::Modular<T>::RandIter RandIter;
-    RandIter RI(ZZ, bits);
-    LinBox::RandomDenseMatrix<RandIter, Givaro::Modular<T>> RDM(ZZ, RI);
-    RDM.random(A);
-}
-template <class T>
-void genData(Givaro::Integer q, BlasVector<Givaro::Modular<T>>& B, size_t bits)
-{
-    Givaro::Modular<T> ZZ(q); // typename Field::Element ZZ;
-    typedef typename Givaro::Modular<T>::RandIter RandIter;
-    RandIter RI(ZZ);
-    B.random(RI);
-}
-
-template <class T>
-void genData(Givaro::Integer q, BlasMatrix<Givaro::ModularBalanced<T>>& A, size_t bits)
-{
-
-    Givaro::ModularBalanced<T> ZZ(q);
-    typedef typename Givaro::ModularBalanced<T>::RandIter RandIter;
-    RandIter RI(ZZ, bits);
-    LinBox::RandomDenseMatrix<RandIter, Givaro::ModularBalanced<T>> RDM(ZZ, RI);
-    RDM.random(A);
-}
-template <class T>
-void genData(Givaro::Integer q, SparseMatrix<Givaro::ModularBalanced<T>>& A, size_t bits)
-{
-
-    Givaro::ModularBalanced<T> ZZ(q);
-    typedef typename Givaro::ModularBalanced<T>::RandIter RandIter;
-    RandIter RI(ZZ, bits);
-    LinBox::RandomDenseMatrix<RandIter, Givaro::ModularBalanced<T>> RDM(ZZ, RI);
-    RDM.random(A);
-}
-template <class T>
-void genData(Givaro::Integer q, BlasVector<Givaro::ModularBalanced<T>>& B, size_t bits)
-{
-    Givaro::ModularBalanced<T> ZZ(q); // typename Field::Element ZZ;
-    typedef typename Givaro::ModularBalanced<T>::RandIter RandIter;
-    RandIter RI(ZZ);
+    RandIter RI(F);
     B.random(RI);
 }
 
@@ -236,9 +134,9 @@ void test_with_field(Givaro::Integer q, size_t bits, size_t ni, size_t nj, Commu
 
     // Generating random data for matrice and vector
     if (0 == Cptr->rank()) {
-        genData(q, A, bits);
-        genData(q, sparseSend, bits);
-        genData(q, B, bits);
+        genData(ZZ, q, A, bits);
+        genData(ZZ, q, sparseSend, bits);
+        genData(ZZ, q, B, bits);
     }
 
     // @fixme Test also send() (not ssend)
@@ -308,7 +206,6 @@ int main(int argc, char** argv)
         test_with_field<Givaro::ZRing<int32_t>>(q, bits, ni, ni, &Cptr);
 
         test_with_field<Givaro::ModularBalanced<float>>(q, bits, ni, ni, &Cptr);
-
         test_with_field<Givaro::ModularBalanced<double>>(q, bits, ni, ni, &Cptr);
         test_with_field<Givaro::ModularBalanced<int32_t>>(q, bits, ni, ni, &Cptr);
         test_with_field<Givaro::ModularBalanced<int64_t>>(q, bits, ni, ni, &Cptr);
@@ -316,6 +213,5 @@ int main(int argc, char** argv)
         test_with_field<Givaro::Modular<Givaro::Integer>>(q, bits, ni, ni, &Cptr);
     }
 
-    MPI_Finalize();
     return 0;
 }
