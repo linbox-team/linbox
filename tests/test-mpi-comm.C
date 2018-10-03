@@ -40,36 +40,7 @@
 #include "linbox/blackbox/random-matrix.h"
 #include "linbox/matrix/random-matrix.h"
 
-// @fixme Should install something like clang-format,
-// because indentation was inexistant.
-
 using namespace LinBox;
-using namespace std;
-/*
-  template<class T>
-  T& myrand (T& r, long size)
-  {
-  if (size < 0)
-  return r = T( (lrand48() % (-size-size)) + size );
-  else
-  return r = T(  lrand48() % size ) ;
-  };
-
-  #include <gmp++/gmp++.h>
-  #include <string>
-
-  std::string gmp_rand ( size_t maxNdigits)
-  {
-  std::string result, tmpStr;
-  long tmp;
-  tmpStr = std::to_string(myrand(tmp, 10));
-  while(result.size()+tmpStr.size()<maxNdigits){
-  result+=tmpStr;
-  tmpStr = std::to_string(myrand(tmp, 10));
-  }
-  return result;
-  }
-*/
 
 // @fixme Some of these look like duplicates
 template <class Field, class Matrix>
@@ -226,81 +197,63 @@ void genData(Givaro::Integer q, BlasVector<Givaro::ModularBalanced<T>>& B, size_
     B.random(RI);
 }
 
+// 0 send B
+// 1 recv B as B2
+// 0 bcast B
+// 1 bcast-recv as B
+// 1 checks that B == B2
+template <class Field, class Object>
+void test_ssend_recv_bcast(Field& F, Object& objectSend, Object& objectRecv, Communicator* Cptr)
+{
+    if (0 == Cptr->rank()) {
+        // double starttime, endtime;
+        // MPI_Barrier(MPI_COMM_WORLD);
+        // starttime = MPI_Wtime();
+        // MPI data distribution for Integer type value
+        Cptr->ssend(objectSend, 1);
+        // MPI_Barrier(MPI_COMM_WORLD);
+        // endtime   = MPI_Wtime();
+        // std::cout<<"MPI data distribution used CPU time (seconds): " <<endtime-starttime<<std::endl;
+    }
+    else if (1 == Cptr->rank()) {
+        Cptr->recv(objectRecv, 0);
+    }
+
+    Cptr->bcast(objectSend, 0);
+    if (1 == Cptr->rank()) {
+        checkResult(F, objectSend, objectRecv);
+    }
+}
+
 template <class Field>
 void test_with_field(Givaro::Integer q, size_t bits, size_t ni, size_t nj, Communicator* Cptr)
 {
-
     Field ZZ(q);
 
-    typedef BlasVector<Field> DenseVector;
-
     DenseMatrix<Field> A(ZZ, ni, nj), A2(ZZ, ni, nj);
-    DenseVector B2(ZZ, A.coldim()), B(ZZ, A.coldim());
-    SparseMatrix<Field> A3(ZZ, ni, nj), A4(ZZ, ni, nj);
+    BlasVector<Field> B2(ZZ, A.coldim()), B(ZZ, A.coldim());
+    SparseMatrix<Field> sparseSend(ZZ, ni, nj), sparseRecv(ZZ, ni, nj);
 
+    // Generating random data for matrice and vector
     if (0 == Cptr->rank()) {
-
         genData(q, A, bits);
-        genData(q, A3, bits);
+        genData(q, sparseSend, bits);
         genData(q, B, bits);
-
-    } // End of BLock for process(0)
-
-    if (0 == Cptr->rank()) {
-
-        // double starttime, endtime;
-        // MPI_Barrier(MPI_COMM_WORLD);
-        // starttime = MPI_Wtime();
-        // MPI data distribution for Integer type value
-        Cptr->ssend(B, 1);
-        // MPI_Barrier(MPI_COMM_WORLD);
-        // endtime   = MPI_Wtime();
-        // std::cout<<"MPI data distribution used CPU time (seconds): " <<endtime-starttime<<std::endl;
     }
-    else {
 
-        if (1 == Cptr->rank()) Cptr->recv(B2, 0);
-    }
-    Cptr->bcast(B, 0);
-    if (1 == Cptr->rank()) checkResult(ZZ, B, B2);
+    // @fixme Test also send() (not ssend)
+    // Is send useful if we have ssend?
 
-    if (0 == Cptr->rank()) {
+    test_ssend_recv_bcast(ZZ, B, B2, Cptr);
+    test_ssend_recv_bcast(ZZ, A, A2, Cptr);
+    test_ssend_recv_bcast(ZZ, sparseSend, sparseRecv, Cptr);
 
-        // double starttime, endtime;
-        // MPI_Barrier(MPI_COMM_WORLD);
-        // starttime = MPI_Wtime();
-        // MPI data distribution for Integer type value
-        Cptr->ssend(A, 1);
-        // MPI_Barrier(MPI_COMM_WORLD);
-        // endtime   = MPI_Wtime();
-        // std::cout<<"MPI data distribution used CPU time (seconds): " <<endtime-starttime<<std::endl;
-    }
-    else {
-
-        if (1 == Cptr->rank()) Cptr->recv(A2, 0);
-    }
-    Cptr->bcast(A, 0);
-
-    if (1 == Cptr->rank()) checkResult(ZZ, A, A2);
-
-    if (0 == Cptr->rank()) {
-
-        // double starttime, endtime;
-        // MPI_Barrier(MPI_COMM_WORLD);
-        // starttime = MPI_Wtime();
-        // MPI data distribution for Integer type value
-        Cptr->ssend(A3, 1);
-        // MPI_Barrier(MPI_COMM_WORLD);
-        // endtime   = MPI_Wtime();
-        // std::cout<<"MPI data distribution used CPU time (seconds): " <<endtime-starttime<<std::endl;
-    }
-    else {
-
-        if (1 == Cptr->rank()) Cptr->recv(A4, 0);
-    }
-    Cptr->bcast(A3, 0);
-
-    if (1 == Cptr->rank()) checkResult(ZZ, A3, A4);
+    // @fixme Test also
+    // 0 send B
+    // 1 recv B as B2
+    // 1 send B2
+    // 0 recv B2 as B3
+    // 0 check that B == B3
 }
 
 int main(int argc, char** argv)
@@ -328,7 +281,7 @@ int main(int argc, char** argv)
     MPI_Bcast(&loop, 1, MPI::BOOL, 0, MPI_COMM_WORLD);
 
     bool peak = false;
-    srand(time(NULL));
+    srand(time(NULL)); // @fixme Use user-provided seed if any
 
     for (auto j = 0u; loop || j < niter; j++) {
         if (0 == Cptr.rank()) {
