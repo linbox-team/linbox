@@ -201,7 +201,7 @@ int main (int argc, char **argv)
 	}
 	std::cout << '[' << si << ',' << num << "] ";
 	num = std::min(A.rowdim(),A.coldim()) - SmithDiagonal.size();
-	si = ZZ.zero
+	si = ZZ.zero;
 	if (num > 0) std::cout << '[' << si << ',' << num << ']';
 	std::cout << ')' << std::endl;
 	std::cout << chrono << std::endl;
