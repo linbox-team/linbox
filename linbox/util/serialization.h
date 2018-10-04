@@ -41,7 +41,7 @@
  *
  * @todo GMP Integers can be configured with limbs of different sizes (32 or 64 bits),
  * depending on the machine. We do not handle that right now,
- * but storing info about they dimension might be a good idea,
+ * but storing info about their dimension might be a good idea,
  * to at least emit a warning.
  */
 

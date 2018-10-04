@@ -149,7 +149,7 @@ bool test_field(const Integer& q)
 {
     // --- Test dense matrix
 
-    Field F(q); // Mersenne M31
+    Field F(q);
     BlasMatrix<Field> denseMatrix(F, 10 + rand() % 100, 10 + rand() % 100);
 
     // Fill denseMatrix with random values!
