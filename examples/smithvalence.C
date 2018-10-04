@@ -184,10 +184,12 @@ int main (int argc, char **argv)
 			}
 		}
 	}
+	chrono.stop();
 
-	integer si=1;
+	integer si=1;;
 	size_t num=0;
-	std::cout << "Integer Smith Form :\n(";
+	std::cerr << "Integer Smith Form :" << std::endl;
+    std::cout << '(';
 	for( std::vector<integer>::const_iterator dit=SmithDiagonal.begin();
 	     dit != SmithDiagonal.end(); ++dit) {
 		if (*dit == si) ++num;
@@ -199,11 +201,10 @@ int main (int argc, char **argv)
 		}
 	}
 	std::cout << '[' << si << ',' << num << "] ";
-	num = A.rowdim() - SmithDiagonal.size();
+	num = std::min(A.rowdim(),A.coldim()) - SmithDiagonal.size();
 	si = ZZ.zero;
-	if (num > 0) std::cout << '[' << si << ',' << num << "] ";
-	std::cout << ")" << std::endl;
-	chrono.stop();
+	if (num > 0) std::cout << '[' << si << ',' << num << ']';
+	std::cout << ')' << std::endl;
 	std::cout << chrono << std::endl;
 
 

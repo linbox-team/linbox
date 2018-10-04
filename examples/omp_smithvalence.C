@@ -226,9 +226,12 @@ std::cout << "Some factors (50000 factoring loop bound): ";
             }
         }
 	}
+	chrono.stop();
 
     Givaro::Integer si=1;
 	size_t num=0;
+	std::cerr << "Integer Smith Form :" << std::endl;
+    std::cout << '(';
 	for( std::vector<Givaro::Integer>::const_iterator dit=SmithDiagonal.begin();
 	     dit != SmithDiagonal.end(); ++dit) {
 		if (*dit == si) ++num;
@@ -238,8 +241,11 @@ std::cout << "Some factors (50000 factoring loop bound): ";
 			si = *dit;
 		}
 	}
-	std::cerr << '[' << si << ',' << num << "] " << std::endl;
-	chrono.stop();
+	std::cerr << '[' << si << ',' << num << "] ";
+	num = std::min(A.rowdim(),A.coldim()) - SmithDiagonal.size();
+	si = ZZ.zero;
+	if (num > 0) std::cout << '[' << si << ',' << num << ']';
+	std::cout << ')' << std::endl;
 	std::cerr << chrono << std::endl;
 
 
