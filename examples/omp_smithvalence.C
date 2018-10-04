@@ -240,7 +240,7 @@ std::cout << "Some factors (50000 factoring loop bound): ";
 			si = *dit;
 		}
 	}
-	std::cerr << '[' << si << ',' << num << "] " << std::endl;
+	std::cerr << '[' << si << ',' << num << "] ";
 	num = std::min(A.rowdim(),A.coldim()) - SmithDiagonal.size();
 	si = ZZ.zero;
 	if (num > 0) std::cout << '[' << si << ',' << num << ']';
