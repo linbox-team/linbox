@@ -35,6 +35,7 @@ tests/test-modular-balanced-double
 tests/test-modular-balanced-int
 tests/test-moore-penrose
 tests/test-rational-reconstruction-base
+tests/test-serialization
 tests/test-smith-form-kannan-bachem
 tests/test-solve-nonsingular
 
@@ -43,6 +44,7 @@ tests/checker
 tests/checker.dSYM/
 tests/temp2
 
+.vscode/
 INSTALL
 _configs.sed
 aclocal.m4
@@ -87,3 +89,4 @@ macros/ltversion.m4
 macros/lt~obsolete.m4
 stamp-h1
 linbox.pc
+autogen.status
