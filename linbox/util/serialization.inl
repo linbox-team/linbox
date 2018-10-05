@@ -291,14 +291,13 @@ namespace LinBox {
     template <class Field>
     inline uint64_t unserialize(SparseMatrix<Field>& M, const std::vector<uint8_t>& bytes, uint64_t offset)
     {
-        uint64_t n, m, size;
+        uint64_t n, m;
         uint64_t bytesRead = 0u;
         bytesRead += unserialize(n, bytes, offset + bytesRead);
         bytesRead += unserialize(m, bytes, offset + bytesRead);
-        bytesRead += unserialize(size, bytes, offset + bytesRead);
 
         M.resize(n, m);
-        for (uint64_t s = 0; s < size; ++s) {
+        while (true) {
             uint64_t i, j;
             bytesRead += unserialize(i, bytes, offset + bytesRead);
 
