@@ -267,10 +267,9 @@ namespace LinBox {
     inline uint64_t serialize(std::vector<uint8_t>& bytes, const SparseMatrix<Field>& M)
     {
         const auto& F = M.field();
-        uint64_t n = M.rowdim(), m = M.coldim(), size = M.size();
+        uint64_t n = M.rowdim(), m = M.coldim();
         auto bytesWritten = serialize(bytes, n);
         bytesWritten += serialize(bytes, m);
-        bytesWritten += serialize(bytes, size);
 
         for (uint64_t i = 0; i < n; ++i) {
             for (uint64_t j = 0; j < m; ++j) {
@@ -282,6 +281,9 @@ namespace LinBox {
                 }
             }
         }
+
+        constexpr const uint64_t endMarker = 0xFFFFFFFF'FFFFFFFF;
+        bytesWritten += serialize(bytes, endMarker);
 
         return bytesWritten;
     }
@@ -299,6 +301,12 @@ namespace LinBox {
         for (uint64_t s = 0; s < size; ++s) {
             uint64_t i, j;
             bytesRead += unserialize(i, bytes, offset + bytesRead);
+
+            // Check if there is the mark of the end of the matrix entries
+            if (i == 0xFFFFFFFF'FFFFFFFF) {
+                break;
+            }
+
             bytesRead += unserialize(j, bytes, offset + bytesRead);
 
             typename Field::Element entry;
