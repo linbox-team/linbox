@@ -201,7 +201,6 @@ int main(int argc, char** argv)
 
     bool ok = true;
     do {
-        auto lastKnownSeed = seed;
         ok = ok && test_basic_type<int8_t>();
         ok = ok && test_basic_type<uint8_t>();
         ok = ok && test_basic_type<int16_t>();
@@ -218,9 +217,9 @@ int main(int argc, char** argv)
         ok = ok && test_field<Givaro::ZRing<Integer>>(q);
         ok = ok && test_field<Givaro::Modular<float>>(q);
         ok = ok && test_field<Givaro::Modular<double>>(q);
-
-        if (!ok) std::cerr << "Failed with seed: " << lastKnownSeed << std::endl;
     } while (loop && ok);
+
+    if (!ok) std::cerr << "Failed with seed: " << seed << std::endl;
 
     return !ok;
 }

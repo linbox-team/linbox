@@ -119,11 +119,11 @@ namespace LinBox {
      * Format is (by bytes count):
      *  0-7   n     Row dimension of matrix
      *  8-15  m     Column dimension of matrix
-     *  16-23 size  Number of non-zero entries in the matrix
-     *  24-..       Entries of the matrix, only non-zero, stored as:
+     *  23-..       Entries of the matrix, only non-zero, stored as:
      *      0-7  i      Row index
      *      8-15 j      Column index
      *      16-..       Entry value
+     *  (8 bytes) End of sparse entries, with a value of 0xFFFFFFFF'FFFFFFFF
      */
     template <class Field>
     uint64_t serialize(std::vector<uint8_t>& bytes, const SparseMatrix<Field>& M);
