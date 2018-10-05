@@ -16,14 +16,14 @@ using namespace std;
 //ostream& report = std::cout;
 
 template<typename Field, typename Mat>
-string check_sigma(const Field& F, const Mat& sigma,  Mat& serie, size_t ord){
-	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+bool check_sigma(const Field& F, const Mat& sigma,  Mat& serie, size_t ord, string& msg){
+	ostream &report = commentator().report ();//Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	Mat T(F,sigma.rowdim(),serie.coldim(),sigma.size()+serie.size()-1);
 	PolynomialMatrixMulDomain<Field> PMD(F);
 	PMD.mul(T,sigma,serie);
 	MatrixDomain<Field> MD(F);
 	size_t i=0;
-	string msg(".....");
+	msg= string(".....");
 	bool nul_sigma=true;
 	while(i<ord && MD.isZero(T[i])){
 		if (!MD.isZero(sigma[i])) nul_sigma=false;		
@@ -39,15 +39,14 @@ string check_sigma(const Field& F, const Mat& sigma,  Mat& serie, size_t ord){
 	
 	
 	if (i==ord && !nul_sigma)
-		msg+="done";
+		{msg+="done"; return true;}
 	else
-		msg+="error";
-	return msg;
+		{msg+="error"; return false;}
 }
 
 template<typename MatPol>
 bool operator==(const MatPol& A, const MatPol& B){
-	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = commentator().report ();//Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	MatrixDomain<typename MatPol::Field> MD(A.field());
 	if (A.real_degree()!=B.real_degree()|| A.rowdim()!= B.rowdim() || A.coldim()!=B.coldim()){
 		report<<A.size()<<"("<<A.rowdim()<<"x"<<A.coldim()<<") <> "
@@ -68,8 +67,8 @@ bool operator==(const MatPol& A, const MatPol& B){
  
 
 template<typename Field, typename RandIter>
-void check_sigma(const Field& F, RandIter& Gen, size_t m, size_t n, size_t d) {
-	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+bool check_sigma(const Field& F, RandIter& Gen, size_t m, size_t n, size_t d) {
+	ostream &report = commentator().report ();//Commentator::LEVEL_ALWAYS, INTERNAL_DESCRIPTION);
 	//typedef typename Field::Element Element;
 	typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain,Field> MatrixP;
 	//typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field> MatrixP;
@@ -89,73 +88,106 @@ void check_sigma(const Field& F, RandIter& Gen, size_t m, size_t n, size_t d) {
 	vector<size_t> shift2(shift),shift3(shift);
 
 	OrderBasis<Field> SB(F);
-
+    bool passed(true); string msg;
+    // MBasis check
 	SB.M_Basis(Sigma3, Serie, d, shift3);
-	report << "M-Basis       : " <<check_sigma(F,Sigma3,Serie,d)<<endl;
+    passed&=check_sigma(F,Sigma3,Serie,d, msg);    
+	report << "M-Basis       : " <<msg<<endl;
+    // PMBasis check
 	SB.PM_Basis(Sigma1,Serie, d, shift);
-	report << "PM-Basis      : " <<check_sigma(F,Sigma1,Serie,d)<<endl;
-	//SB.oPM_Basis(Sigma2, Serie, d, shift2);
-	//report << "PM-Basis iter : " <<check_sigma(F,Sigma2,Serie,d)<<endl;
+    passed&=check_sigma(F,Sigma1,Serie,d, msg);    
+	report << "PM-Basis      : " <<msg<<endl;
 
-	// if (!(Sigma1==Sigma2)){
-	// report<<"---> different basis for PM-Basis and PM-Basis iter"<<endl;
-	// report<<Sigma1<<endl;
-	// report<<Sigma2<<endl;
-	// }
+    // PMBasis online check
+	// SB.oPM_Basis(Sigma2, Serie, d, shift2);
+    // passed&=check_sigma(F,Sigma2,Serie,d, msg);    
+	// report << "PM-Basis iter : " <<msg<<endl;
+
 	report<<endl;
+    return passed;
+}
+
+bool runTest(uint64_t m,uint64_t n, uint64_t d, long seed){
+
+    commentator().start ("Testing order basis computation", "testOrderBasis", 1);
+    
+	bool ok=true,passed;
+    size_t bits= (53-integer(n).bitsize())/2;
+
+    typedef Givaro::Modular<double>              SmallField;	
+	typedef Givaro::Modular<Givaro::Integer>      LargeField1;
+    typedef Givaro::Modular<RecInt::ruint128,RecInt::ruint256> LargeField2;
+
+	ostream &report = commentator().report ();//Commentator::LEVEL_ALWAYS, INTERNAL_DESCRIPTION);
+	report<<"###  matrix series is of size "<<m<<" x "<<n<<" of degree "<<d<<std::endl;
+    
+    
+	// fourier prime < 2^(53--log(n))/2
+	{
+		RandomFFTPrime Rd(1<<bits,seed);
+		integer p = Rd.randomPrime(integer(d).bitsize()+1);		
+		SmallField  F((int32_t)p);
+        typename SmallField::RandIter G(F,0,seed);
+        report<<"   - checking with small FFT prime p="<<p<<endl;
+        ok&=passed=check_sigma (F,G,m,n,d);
+        report<<"   ---> "<<(passed?"done":"error")<<std::endl<<std::endl;
+		
+	}
+	// normal prime < 2^(53--log(n))/2
+	{
+		typedef Givaro::Modular<double> Field;
+		PrimeIterator<IteratorCategories::HeuristicTag> Rd(FieldTraits<Field>::bestBitSize(n),seed);
+		integer p;
+		p=*Rd;
+        SmallField  F((int32_t)p);
+        typename SmallField::RandIter G(F,0,seed);
+        report<<"   - checking with small generic prime p="<<p<<std::endl;
+		ok&=passed=check_sigma (F,G,m,n,d);
+        report<<"   ---> "<<(passed?"done":"error")<<std::endl<<std::endl;
+	}
+
+	// multi-precision prime
+	 {
+	 	size_t bits=114;
+	 	PrimeIterator<IteratorCategories::HeuristicTag> Rd(bits,seed);
+	 	integer p= *Rd;
+        // Modular<integer>
+        LargeField1  F1(p);
+        typename LargeField1::RandIter G1(F1,0,seed);
+        report<<"   - checking with multiprecision prime (Modular<integer>) p="<<p<<std::endl;
+		ok&=passed=check_sigma (F1,G1,m,n,d);
+        report<<"   ---> "<<(passed?"done":"error")<<std::endl<<std::endl;
+        // Modular<recint<128 ,256 >>
+        LargeField2  F2(p);
+        typename LargeField2::RandIter G2(F2,0,seed);
+        report<<"   - checking with multiprecision prime (Modular<recint>) p="<<p<<std::endl;
+		ok&=passed=check_sigma (F2,G2,m,n,d);
+        report<<"   ---> "<<(passed?"done":"error")<<std::endl<<std::endl;
+	 }
+
+     commentator().stop (MSG_STATUS (ok), (const char *) 0, "testOrderBasis"); 
+     return ok;
 }
 
 int main(int argc, char** argv){
-	static size_t  m = 64; // matrix dimension
-	static size_t  n = 32; // matrix dimension
-	static size_t  b = 20; // entries bitsize
-	static size_t  d = 32;  // matrix degree
+	static size_t  m = 8; // matrix dimension
+	static size_t  n = 4; // matrix dimension
+    //	static size_t  b = 20; // entries bitsize
+	static size_t  d = 80;  // matrix degree
 	static long    seed = time(NULL);
 
 	static Argument args[] = {
 		{ 'm', "-m M", "Set row dimension of matrix series to M.", TYPE_INT,     &m },
 		{ 'n', "-n N", "Set column dimension of matrix series to N.", TYPE_INT,     &n },
 		{ 'd', "-d D", "Set degree of  matrix series to D.", TYPE_INT,     &d },
-		{ 'b', "-b B", "Set bitsize of the matrix entries", TYPE_INT, &b },
+        //		{ 'b', "-b B", "Set bitsize of the matrix entries", TYPE_INT, &b },
 		{ 's', "-s s", "Set the random seed to a specific value", TYPE_INT, &seed},
 		END_OF_ARGUMENTS
 	};
 	
 	parseArguments (argc, argv, args);
 
-	typedef Givaro::Modular<double>              SmallField;	
-	typedef Givaro::Modular<Givaro::Integer>      LargeField;
-
-	size_t logd=integer((uint64_t)d).bitsize();
-	commentator().start ("Testing order basis computation", "testOrderBasis", 1);
-
-	
-	ostream &report = commentator().report (Commentator::LEVEL_ALWAYS, INTERNAL_DESCRIPTION);
-	report<<"###  matrix series is of size "<<m<<" x "<<n<<" of degree "<<d<<std::endl;
-	if (b < 26){
-		if (logd>b-2){
-			report<<"degree is to large for field bitsize: "<<b<<std::endl;
-			exit(0);
-		}
-		RandomFFTPrime Rd(1<<b,seed);
-		integer p = Rd.randomPrime(logd+1);
-		report<<"# starting sigma basis computation over SmallField [x] with p="<<p<<endl;
-		SmallField F(p);
-		typename SmallField::RandIter G(F,0,seed);
-		check_sigma(F,G,m,n,d);
-	}
-	else {
-		PrimeIterator<IteratorCategories::HeuristicTag> Rd(b,seed);
-		integer p = *Rd;
-		report<<"# starting sigma basis computation over LargeField Fp[x] with p="<<p<<endl;;		
-
-		LargeField F(p);
-		typename LargeField::RandIter G(F,0,seed);
-		check_sigma(F,G,m,n,d);
-	}
-
-	commentator().stop (MSG_STATUS (true), (const char *) 0, "testOrderBasis"); 
-	return 0;
+	return (runTest(m,n,d,seed)?0:-1);
 }
 
 // Local Variables:
