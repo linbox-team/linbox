@@ -39,14 +39,6 @@
 #include "linbox/algorithms/rational-cra2.h"
 #include "linbox/algorithms/rational-cra.h"
 #include "linbox/util/mpicpp.h"
-/*
-template <typename T > class chooseMPItype;
-template <> struct chooseMPItype<unsigned int>{ static constexpr MPI_Datatype val = MPI_UNSIGNED;};
-template <> struct chooseMPItype<unsigned long long int>{ static constexpr MPI_Datatype val = MPI_UNSIGNED_LONG_LONG;};
-template <> struct chooseMPItype<unsigned long int>{ static constexpr MPI_Datatype val = MPI_UNSIGNED_LONG;};
-#include <gmp++/gmp++.h>
-#include <string>
-*/
 #include <unordered_set>
 
 namespace LinBox
