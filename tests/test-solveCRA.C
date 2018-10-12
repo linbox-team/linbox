@@ -40,7 +40,7 @@
 #include <mpi.h>
 #include "linbox/util/mpicpp.h"	//#include "linbox/util/mpi-gmp.inl"
 #else
-#include "linbox/algorithms/cra-domain-omp.h" //<---Only compile without MPI
+//#include "linbox/algorithms/cra-domain-omp.h" //<---Only compile without MPI
 #endif
 #include "linbox/solutions/methods.h"
 #include "linbox/solutions/solve.h"
@@ -86,15 +86,30 @@ static bool checkResult (const Field  &ZZ,
 {
   BlasVector<Field> B2(ZZ, A.coldim());
   BlasVector<Field> B3(ZZ, A.coldim());
+  /*
+A.write(std::cout << "A::=",Tag::FileFormat::Maple) << ';' << std::endl;
+B.write(std::cout << "B::=",Tag::FileFormat::Maple) << ';' << std::endl;
+X.write(std::cout << "X::=",Tag::FileFormat::Maple) << ';' << std::endl;
+*/
   A.apply(B2,X);
-  for (size_t j = 0 ; j < B.size() ; ++j) B3.setEntry(j,d*B.getEntry(j));
-  
-  for (size_t j = 0 ; j < A.coldim() ; ++j)
+//B2.write(std::cout << "B2::=",Tag::FileFormat::Maple) << ';' << std::endl;
+//std::cerr << " >>>>>>>>>>>> d:=" <<d<< std::endl;
+Integer tmp;
+  for (size_t j = 0 ; j < B.size() ; ++j){
+  /*
+  ZZ.mul(tmp, d,B.getEntry(j)); 
+    B3.setEntry(j, tmp);
+    */
+    B3.setEntry(j,d*B.getEntry(j));
+  }
+//B3.write(std::cout << "B3::=",Tag::FileFormat::Maple) << ';' << std::endl;
+  for (size_t j = 0 ; j < A.coldim() ; ++j){
     if(!ZZ.areEqual(B2[j],B3[j])){
       std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
       std::cerr << "               The solution of solveCRA is incorrect                " << std::endl;
       std::cerr << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
       return false;
+    }
     }
   return true;
 }
@@ -108,8 +123,10 @@ static bool checkResult (const Field  &ZZ,
   BlasVector<Field> B2(ZZ, A.coldim());
   BlasVector<Field> B3(ZZ, A.coldim());
   A.apply(B2,X);
-  for (size_t j = 0 ; j < B.size() ; ++j) B3.setEntry(j,d*B.getEntry(j));
-  
+
+  for (size_t j = 0 ; j < B.size() ; ++j){
+  B3.setEntry(j,d*B.getEntry(j));
+ }
   for (size_t j = 0 ; j < A.coldim() ; ++j)
     if(!ZZ.areEqual(B2[j],B3[j])){
       std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
@@ -124,7 +141,7 @@ template <class Field>
 bool genData (BlasMatrix<Field> &A, size_t bits){
   typename Field::Element ZZ;
   typedef typename Field::RandIter RandIter;    
-  RandIter RI(ZZ) ;
+  RandIter RI(ZZ,bits,5);//RandIter RI(ZZ) ;
   LinBox::RandomDenseMatrix<RandIter,Field>  RDM(ZZ,RI);
   RDM.randomFullRank(A);
 }
@@ -133,7 +150,7 @@ template <class Field>
 bool genData (SparseMatrix<Field> &A, size_t bits){
   typename Field::Element ZZ;
   typedef typename Field::RandIter RandIter;    
-  RandIter RI(ZZ) ;
+  RandIter RI(ZZ,bits,5);//RandIter RI(ZZ) ;
   LinBox::RandomDenseMatrix<RandIter,Field>  RDM(ZZ,RI);
   RDM.randomFullRank(A);
 }
@@ -142,7 +159,7 @@ template <class Field>
 bool genData (BlasVector<Field>  &B, size_t bits){
   typename Field::Element ZZ;
   typedef typename Field::RandIter RandIter;    
-  RandIter RI(ZZ) ;
+  RandIter RI(ZZ,bits,5);//RandIter RI(ZZ) ;
   B.random(RI);
 }
 
@@ -151,7 +168,7 @@ template <>
 bool genData (BlasMatrix<Givaro::ZRing<Integer> >  &A, size_t bits){
   Givaro::ZRing<Integer> ZZ;
   typedef typename  Givaro::ZRing<Integer> ::RandIter RandIter;    
-  RandIter RI(ZZ,bits) ;
+  RandIter RI(ZZ,bits,5);//RandIter RI(ZZ,bits) ;
   LinBox::RandomDenseMatrix<RandIter, Givaro::ZRing<Integer> >  RDM(ZZ,RI);
   RDM.randomFullRank(A);
 }
@@ -159,7 +176,7 @@ template <>
 bool genData (SparseMatrix<Givaro::ZRing<Integer> >  &A, size_t bits){
   Givaro::ZRing<Integer> ZZ;
   typedef typename  Givaro::ZRing<Integer> ::RandIter RandIter;    
-  RandIter RI(ZZ,bits) ;
+  RandIter RI(ZZ,bits,5);//RandIter RI(ZZ,bits) ;
   LinBox::RandomDenseMatrix<RandIter, Givaro::ZRing<Integer> >  RDM(ZZ,RI);
   RDM.randomFullRank(A);
 }
@@ -167,7 +184,7 @@ template <>
 bool genData (DenseVector<Givaro::ZRing<Integer> >  &B, size_t bits){
   Givaro::ZRing<Integer> ZZ;
   typedef typename  Givaro::ZRing<Integer> ::RandIter RandIter;    
-  RandIter RI(ZZ,bits) ;
+  RandIter RI(ZZ,bits,5);//RandIter RI(ZZ,bits) ;
   B.random(RI);
 }
 
@@ -231,8 +248,8 @@ bool test_set(BlasVector<Givaro::ZRing<Integer> > &X2,
       
       std::cout << "Compute with A: " << A.rowdim() << " by " << A.coldim() << std::endl;
       A.write(std::cout << "A::=",Tag::FileFormat::Maple) << ';' << std::endl;
-    
     */
+    
     // solveCRA
     /* 
        std::cout << "MPI CRA Solution is [";
@@ -270,7 +287,7 @@ int main(int argc, char ** argv)
 #endif
   size_t bits,niter,ni,nj;  
   
-  bits=10, niter=3, ni=3,nj=3; 
+  bits=10, niter=1, ni=1,nj=1; 
   
   static Argument args[] = {
     { 'n', "-n N", "Set column and row dimension of test matrices to N.", TYPE_INT,     &ni },
@@ -291,26 +308,30 @@ int main(int argc, char ** argv)
   DenseMatrix<Givaro::ZRing<Integer> > A (ZZ,ni,nj);
   
   typedef BlasVector<Givaro::ZRing<Integer> > DenseVector;
-  DenseVector X(ZZ, A.rowdim()), X2(ZZ, A.rowdim()),  B(ZZ, A.rowdim());
+  DenseVector X(ZZ, A.rowdim()), X2(ZZ, A.coldim()),  B(ZZ, A.coldim());
 
 ////////////////////////////////////Always//Generates//The//Same//Matrix//////////////////////////////////////////
-#if 1
+#if 0
 size_t r=0;
-
 
 const char * c;
 std::string result;
 
-while(r!=ni){
+
+
+while(r!=ni){ 
 
     for (size_t i = 0; i < ni; ++i)
       for (size_t j = 0; j < nj; ++j){
 result = gmp_rand(bits);
 c = result.c_str();
 Givaro::Integer res(c);
-A.setEntry(i,j,res);
+
+A.setEntry(i,j, res);
+ 
 result.clear();
 //myfile <<i+1<<" "<<j+1<<" "<<A.getEntry(i,j)<<"\n";
+
       }
 
 
@@ -319,6 +340,7 @@ result = gmp_rand(bits);
 c = result.c_str();
 Givaro::Integer res(c);
 B.setEntry(j,res);
+
 result.clear();
 //myfile2 <<j+1<< " 1 "<<B.getEntry(j)<<"\n";
     }
@@ -339,17 +361,14 @@ LinBox::rank (r, A);
     if(0==Cptr->rank()){
 #endif
 
-//      genData (A, bits);
-//      genData (B, bits);
+      genData (A, bits);
+      genData (B, bits);
 
 
-/*      
-	std::cerr << ">>>>Compute with B: " << std::endl;      
-	for(int j=0;j<nj;j++) std::cerr << B.getEntry(j) << std::endl; 
-	
-	std::cout << "Compute with A: " << A.rowdim() << " by " << A.coldim() << std::endl;
-	if (A.rowdim() <= 20 && A.coldim() <= 20) A.write(std::cout << "A:=",Tag::FileFormat::Maple) << ';' << std::endl;
-*/
+
+//	B.write(std::cout << "Compute with B:=",Tag::FileFormat::Maple) << ';' << std::endl;
+//	A.write(std::cout << "Compute with A:=",Tag::FileFormat::Maple) << ';' << std::endl;
+
 
 #ifdef __LINBOX_HAVE_MPI 	
     }//End of BLock for process(0)
@@ -386,7 +405,8 @@ LinBox::rank (r, A);
 #endif
 		 )) break;
   }
-  
+
+      
 #ifdef __LINBOX_HAVE_MPI
   if(0 == Cptr->rank()){  
 #endif

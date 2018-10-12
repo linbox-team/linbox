@@ -796,11 +796,28 @@ namespace LinBox
 		BlasVector<Givaro::ZRing<Integer>> num(A.field(),A.coldim());
 		IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+		typename BB::ConstIterator it = A.Begin();
+		typename BB::ConstIterator it_end = A.End();
+		integer max = 1,min=0;
+		while( it != it_end ){
+			if (max < (*it))
+				max = *it;
+			if ( min > (*it))
+				min = *it;
+			it++;
+		}
+		if (max<-min)
+			max=-min;
+		size_t n=A.coldim();
+		double hadamard = n*(log(double(n))+2*log(double(max)));
+
 #ifdef __LINBOX_HAVE_MPI
 		MPIratChineseRemainder< EarlyMultipRatCRA< Givaro::Modular<double> > > cra(3UL, C);
+//		MPIratChineseRemainder< FullMultipRatCRA< Givaro::Modular<double> > > cra(hadamard, C);
 
 #else
-        ChineseRemainderRatOMP< EarlyMultipRatCRA< Givaro::Modular<double> > > cra(3UL); 
+        RationalRemainder< EarlyMultipRatCRA< Givaro::Modular<double> > > cra(3UL);
+//        RationalRemainder< FullMultipRatCRA< Givaro::Modular<double> > > cra(hadamard);
 #endif
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
         Timer chrono;
