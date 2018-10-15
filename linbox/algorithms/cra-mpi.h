@@ -486,21 +486,33 @@ namespace LinBox
             
             Domain D(*primeg);
             BlasVector<Domain> r(D);
+#ifdef __Detailed_Time_Measurement
             Timer chrono;
-            
+#endif
 			//  parent propcess
 			if(process == 0){
                 
 				int primes[procs - 1];
-                
+#ifdef __Detailed_Time_Measurement
+                chrono.start();
+#endif
 				//  for each slave process...
 				for(int i=1; i<procs; i++){
 					primes[i - 1] = 0;
 					_commPtr->send(primes[i - 1], i);
                     
-				}  
-                
+				}
+#ifdef __Detailed_Time_Measurement
+				chrono.stop();
+                std::cout<<"First sending to all workers in process("<<process<<") spent CPU times : "<<chrono.usertime()<<std::endl;
+                                
+                chrono.start();
+#endif
 				Builder_.initialize( D, Iteration(r, D) );
+#ifdef __Detailed_Time_Measurement
+				chrono.stop();
+                std::cout<<"Builder_.initialize in process("<<process<<") spent CPU times : "<<chrono.usertime()<<std::endl;
+#endif
 				int poison_pills_left = procs - 1;
                 int pp;
                                 
@@ -508,31 +520,47 @@ namespace LinBox
                     
 					int idle_process = 0;
                     r.resize (r.size()+1);
+#ifdef __Detailed_Time_Measurement
+                    chrono.start();
+#endif
 					//  receive the beginnin and end of a vector in heapspace
-					_commPtr->recv(r.begin(), r.end(), MPI_ANY_SOURCE, 0); 
-                    
+					_commPtr->recv(r.begin(), r.end(), MPI_ANY_SOURCE, 0);
+#ifdef __Detailed_Time_Measurement
+                    chrono.stop();
+                    std::cout<<"Recv in process("<<process<<") spent CPU times : "<<chrono.usertime()<<std::endl;
+#endif
 					//  determine which process sent answer
 					//  and give them a new tag either to continue or to stop
 					idle_process = (_commPtr->get_stat()).MPI_SOURCE;
                     
                     poison_pills_left-=primes[idle_process - 1];
-                    
+#ifdef __Detailed_Time_Measurement
+                    chrono.start();
+#endif
 					//  send the tag
-					_commPtr->send(primes[idle_process - 1], idle_process);                     
-                    
+					_commPtr->send(primes[idle_process - 1], idle_process);
+#ifdef __Detailed_Time_Measurement                
+                    chrono.stop();
+                    std::cout<<"Send in process("<<process<<") spent CPU times : "<<chrono.usertime()<<std::endl;
+#endif
                     //Store the corresponding prime number
                     pp = r[r.size()-1];
-                    Domain D(pp);
                     
                     //Restructure the vector like before without added prime number
-                    r.resize (r.size()-1); 
-                    
+                    r.resize (r.size()-1);
+#ifdef __Detailed_Time_Measurement
+                    chrono.start();
+#endif
+                    Domain D(pp);
                     Builder_.progress(D, r);
-                    
+#ifdef __Detailed_Time_Measurement
+                    chrono.stop();
+                    std::cout<<"Builder_.progress in process("<<process<<") spent CPU times : "<<chrono.usertime()<<std::endl;
+#endif
                     primes[idle_process - 1] = (Builder_.terminated()) ? 1:0;
                     
 				}
-                
+
 				return Builder_.result(num,den);
                 
 			}
@@ -547,23 +575,48 @@ namespace LinBox
                 std::unordered_set<int> prime_used;
                 
 				while(true){
+#ifdef __Detailed_Time_Measurement
+					chrono.start();
+#endif
 					_commPtr->recv(pp, 0);
+#ifdef __Detailed_Time_Measurement
+					chrono.stop();
+                    std::cout<<"Recv in process("<<process<<") spent CPU times : "<<chrono.usertime()<<std::endl;
+#endif
 					if(pp == 1)
 						break;
-                    
+#ifdef __Detailed_Time_Measurement
+					chrono.start();
+#endif              
                     ++gen; while(Builder_.noncoprime(*gen)||prime_used.find(*gen) != prime_used.end()) ++gen;
                     prime_used.insert(*gen);                    
-                    
+#ifdef __Detailed_Time_Measurement
+					chrono.stop();
+                    std::cout<<"New prime number generation in process("<<process<<") spent CPU times : "<<chrono.usertime()<<std::endl;
+#endif
+              
+
+#ifdef __Detailed_Time_Measurement
+                    chrono.start();
+#endif
                     Domain D(*gen);
-                    
-                    Iteration(r, D);                    
-                    
+                    Iteration(r, D);
+#ifdef __Detailed_Time_Measurement               
+                    chrono.stop();
+                    std::cout<<"Iteration in process("<<process<<") spent CPU times : "<<chrono.usertime()<<std::endl;
+#endif
                     //Add corresponding prime number as the last element in the result vector
                     r.push_back(*gen);
+#ifdef __Detailed_Time_Measurement
+                    chrono.start();
+#endif
 					_commPtr->send(r.begin(), r.end(), 0, 0); 
-                    
+#ifdef __Detailed_Time_Measurement
+                    chrono.stop();
+                    std::cout<<"Send in process("<<process<<") spent CPU times : "<<chrono.usertime()<<std::endl;
+#endif
 				}                
-                
+
 			}
             
 		}
