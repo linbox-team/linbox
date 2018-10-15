@@ -614,7 +614,7 @@ namespace LinBox {
                         k=serie.coldim();
 
                         // log of the order
-                        size_t log_order=integer(order).bitsize();
+                        size_t log_order=integer(uint64_t(order)).bitsize();
 
                         //  leaf size of the recursive PM_Basis algorithm (must be a power of 2)
                         size_t log_ord = MBASIS_THRESHOLD_LOG;
