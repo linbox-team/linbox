@@ -41,10 +41,6 @@ NTL_HDRS =              \
     pid-ntl-zz_p.h     \
     pir-ntl-zz_p.h
 
-UNUSED_HDRS =          \
-    gcd32.h            \
-    gcd64.h            
-
 if LINBOX_HAVE_NTL
 USE_NTL_HDRS = $(NTL_HDRS)
 endif

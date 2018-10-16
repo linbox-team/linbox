@@ -161,9 +161,6 @@ pkgincludesub_HEADERS =            \
 	wiedemann.inl                      \
 	$(USE_OCL_HDRS)
 
-UNUSED_HDRS =                          \
-	density.h 
-
 #  iml.h                              \
 #
 

@@ -90,12 +90,6 @@ if LINBOX_HAVE_NTL
 USE_NTL_HDRS = $(NTL_HDRS)
 endif
 
-UNUSED_HDRS =           \
-	blackbox_parallel.h \
-	blackbox_thread.h   \
-	dense-zero-one.h    \
-	subrowmatrix.h
-
 pkgincludesub_HEADERS =		\
 	$(BASIC_HDRS)		\
 	$(USE_NTL_HDRS)		
