@@ -269,15 +269,16 @@ int main(int argc, char** argv){
 
 	//Modular<double,double>
 	
-	bits = 22;
-	Rd = RandomFFTPrime (1<<bits,seed);
-	p = (double)Rd.randomPrime(l2n);
+	// bits = 22;
+	// Rd = RandomFFTPrime (1<<bits,seed);
+	// p = (double)Rd.randomPrime(l2n);
 
-	cout<<"prime : "<<p<<endl;
-	cout<<endl;
+	// cout<<"prime : "<<p<<endl;
+	// cout<<endl;
 
-	Givaro::Modular<double> Fd(p);
-	cout << "Test Modular<double,double>: " << ((check_DIF(Fd,k,seed))?"OK":"KO!!!!") << endl;
+	// Givaro::Modular<double> Fd(p);
+	// cout << "Test Modular<double,double>: " << ((check_DIF(Fd,k,seed))?"OK":"KO!!!!") << endl;
+
 	/*
 #ifdef __FFLASFFPACK_HAVE_INT128
 	//Modular<int64_t,uint128_t>
