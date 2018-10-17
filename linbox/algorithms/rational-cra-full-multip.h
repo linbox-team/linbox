@@ -48,11 +48,12 @@ namespace LinBox
         template <class Vect>
 		Vect& result (Vect &num, Integer& den)
 		{
+            Father_t::result(num, false);
+            
 #ifdef __Detailed_Time_Measurement
             Timer chrono;
             chrono.start();
 #endif
-            Father_t::result(num, false);
             den = 1;
             const auto& mod = Father_t::getModulus();
             Integer s, nd;
@@ -67,8 +68,8 @@ namespace LinBox
                 }
             }
 #ifdef __Detailed_Time_Measurement
-				chrono.stop();
-                std::cout<<"The final reconstruction spent CPU times : "<<chrono.usertime()<<std::endl;
+		    chrono.stop();
+            std::cout<<"Process 0 RR "<<chrono.usertime()<<std::endl;
 #endif
             return num;
         }

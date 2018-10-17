@@ -756,16 +756,39 @@ namespace LinBox
 
 
 		template<typename Field>
-		typename Rebind<Vector, Field>::other& operator()(typename Rebind<Vector, Field>::other& x, const Field& F) const
+		typename Rebind<Vector, Field>::other& operator()(typename Rebind<Vector, Field>::other& x, const Field& F
+#ifdef __Detailed_Time_Measurement
+#ifdef __LINBOX_HAVE_MPI
+			,Communicator   *C = NULL
+#endif
+#endif
+		) const
 		{
 			typedef typename Blackbox::template rebind<Field>::other FBlackbox;
+#ifdef __Detailed_Time_Measurement
+            Timer chrono;
+            chrono.start();
+#endif
 			FBlackbox Ap(A, F);
 
 			typedef typename Rebind<Vector, Field>::other FVector;
 			FVector Bp(F, B);
+#ifdef __Detailed_Time_Measurement
+            chrono.stop();
+            std::cout<<"Process "<<C->rank()<<" Modulo "<<chrono.usertime()<<std::endl;
+#endif
 
 			VectorWrapper::ensureDim (x, A.coldim());
-			return solve( x, Ap, Bp, M);
+			//return solve( x, Ap, Bp, M);
+#ifdef __Detailed_Time_Measurement
+            chrono.start();
+#endif
+			solve( x, Ap, Bp, M);
+#ifdef __Detailed_Time_Measurement
+            chrono.stop();
+            std::cout<<"Process "<<C->rank()<<" Solve "<<chrono.usertime()<<std::endl;
+#endif
+			return x;
 		}
 	};
 
@@ -820,13 +843,13 @@ namespace LinBox
         RationalRemainder< FullMultipRatCRA< Givaro::Modular<double> > > cra(hadamard);
 #endif
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        Timer chrono;
-        chrono.start();
+//        Timer chrono;
+//        chrono.start();
 		cra(num, den, iteration, genprime);
 #ifdef __LINBOX_HAVE_MPI
-        chrono.stop();//std::cout << "The process ("<<C->rank()<<") spent total CPU time (seconds) in solveCRA: " << chrono.usertime() << std::endl;
+//        chrono.stop();//std::cout << "The process ("<<C->rank()<<") spent total CPU time (seconds) in solveCRA: " << chrono.usertime() << std::endl;
 #else
-        chrono.stop();//std::cout << "Spent CPU time (seconds) in solveCRA: " << chrono.usertime() << std::endl;
+ //       chrono.stop();//std::cout << "Spent CPU time (seconds) in solveCRA: " << chrono.usertime() << std::endl;
 #endif
 
 #ifdef __LINBOX_HAVE_MPI

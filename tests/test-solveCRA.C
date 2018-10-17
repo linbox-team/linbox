@@ -24,7 +24,7 @@
  * @ingroup benchmarks
  * @brief Testing the MPI parallel/serial rational solver
  */
-//#define __Detailed_Time_Measurement
+#define __Detailed_Time_Measurement
 #define __LINBOX_HAVE_MPI
 
 
@@ -146,11 +146,11 @@ bool test_set(BlasVector<Givaro::ZRing<Integer> > &X2,
   bool tag = false;
   Givaro::ZRing<Integer> ZZ;
   Givaro::ZRing<Integer>::Element d;
-  std::cout<<"Computation is done over Q"<<std::endl;
+  std::cerr<<"Computation is done over Q"<<std::endl;
 #ifdef __LINBOX_HAVE_MPI
-  std::cout << "MPI solveCRA" << std::endl;
+  std::cerr << "MPI solveCRA" << std::endl;
 #else
-  std::cout << "Sequential solveCRA" << std::endl;
+  std::cerr << "Sequential solveCRA" << std::endl;
 #endif 
 
 
@@ -190,9 +190,9 @@ bool test_set(BlasVector<Givaro::ZRing<Integer> > &X2,
 #ifdef __LINBOX_HAVE_MPI
   if(0 == Cptr->rank()){  
 
-    std::cout << "CPU time (seconds): " << endtime-starttime << std::endl;
+    std::cout << "Total CPU time (seconds): " << endtime-starttime << std::endl;
 #else
-    std::cout << "CPU time (seconds): " << end-start << std::endl;
+    std::cout << "Total CPU time (seconds): " << end-start << std::endl;
 #endif
     
     tag=checkResult (ZZ, A, B, X2, d);
@@ -264,19 +264,23 @@ int main(int argc, char ** argv)
 #ifdef __LINBOX_HAVE_MPI
     //distribute big integer compatible data
     {
+    /*
 #ifdef __Detailed_Time_Measurement
       double starttime, endtime; 
       MPI_Barrier(MPI_COMM_WORLD);
       starttime = MPI_Wtime();
 #endif
+*/
       //MPI data distribution for Integer type value
       Cptr->bcast(A,0);
       Cptr->bcast(B,0);
+      /*
 #ifdef __Detailed_Time_Measurement
       MPI_Barrier(MPI_COMM_WORLD);
       endtime   = MPI_Wtime(); 
       std::cout<<"In Proc("<<Cptr->rank()<<") MPI data distribution used CPU time (seconds): " <<endtime-starttime<<std::endl;
 #endif
+*/
     }
 #endif
     
