@@ -311,6 +311,22 @@ namespace LinBox
 		return x;
 	}
 
+    //! @internal  Elimination for DenseMatrix on Z/pZ. Matrix A can be overwritten.
+	template <class Vector, class Field>
+	Vector& solvein(Vector& x, BlasMatrix<Field>& A, const Vector& b,
+		      const Method::BlasElimination& m)
+	{
+		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
+			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
+
+//		commentator().start ("Solving linear system (FFLAS LQUP)", "LQUP::left_solve");
+		LQUPMatrix<Field> LQUP(A);
+		LQUP.left_solve(x, b);
+//		commentator().stop ("done", NULL, "LQUP::left_solve");
+
+		return x;
+	}
+
 	template <class Vector, class Field>
 	Vector& solve(Vector& x, const BlasMatrix<Field>& A, const Vector& b,
 		      const RingCategories::ModularTag & tag,
@@ -645,7 +661,7 @@ namespace LinBox
 		RationalSolver<Ring, Field, PrimeIterator<IteratorCategories::HeuristicTag>, SparseEliminationTraits> rsolve(A.field(), genprime);
 		SolverReturnStatus status = SS_OK;
 		status=rsolve.solve(x, d, A, b,(int)m.maxTries());
- 
+
 		commentator().stop("done", NULL, "solving");
 
 		if ( status == SS_INCONSISTENT ) {
@@ -779,11 +795,10 @@ namespace LinBox
 #endif
 
 			VectorWrapper::ensureDim (x, A.coldim());
-			//return solve( x, Ap, Bp, M);
 #ifdef __Detailed_Time_Measurement
             chrono.start();
 #endif
-			solve( x, Ap, Bp, M);
+			solvein( x, Ap, Bp, M);
 #ifdef __Detailed_Time_Measurement
             chrono.stop();
             std::cout<<"Process "<<C->rank()<<" Solve "<<chrono.usertime()<<std::endl;
@@ -806,16 +821,16 @@ namespace LinBox
 		Integer den(1);
 #ifdef __LINBOX_HAVE_MPI	//MPI parallel version
 		if(!C || C->rank() == 0){
-#endif 
+#endif
 			if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
 				throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
                         commentator().start ("Integer CRA Solve", "Isolve");
 #ifdef __LINBOX_HAVE_MPI
 		}
-#endif         
+#endif
 		PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205))); //RandomPrimeIterator genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
 //PrimeIterator<LinBox::IteratorCategories::DeterministicTag> genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
-                
+
 		BlasVector<Givaro::ZRing<Integer>> num(A.field(),A.coldim());
 		IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -853,26 +868,26 @@ namespace LinBox
 #endif
 
 #ifdef __LINBOX_HAVE_MPI
-		if(!C || C->rank() == 0){ 
-#endif 
+		if(!C || C->rank() == 0){
+#endif
             typename Vector::iterator it_x= x.begin();
             typename BlasVector<Givaro::ZRing<Integer>>::const_iterator it_num= num.begin();
-            
+
             // convert the result
             for (; it_x != x.end(); ++it_x, ++it_num)
-                A.field().init(*it_x, *it_num);	
-            
+                A.field().init(*it_x, *it_num);
+
 			A.field().init(d, den);
-            
+
 			commentator().stop ("done", NULL, "Isolve");
 			return x;
 #ifdef __LINBOX_HAVE_MPI
 		}
-#endif 
+#endif
 	}
-    
-    
-    
+
+
+
 
 
 	//BB: How come SparseElimination needs this ?
@@ -1080,7 +1095,7 @@ namespace LinBox
             ++it_x;
 		}
 		commentator().stop ("done", NULL, "Rsolve");
- 
+
 		return x;
 	}
 
