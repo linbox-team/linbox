@@ -850,12 +850,12 @@ namespace LinBox
 		double hadamard = n*(log(double(n))+2*log(double(max)));
 
 #ifdef __LINBOX_HAVE_MPI
-//		MPIratChineseRemainder< EarlyMultipRatCRA< Givaro::Modular<double> > > cra(3UL, C);
-		MPIratChineseRemainder< FullMultipRatCRA< Givaro::Modular<double> > > cra(hadamard, C);
+//		MPIratChineseRemainder< EarlyMultipRatCRA< Givaro::ModularBalanced<double> > > cra(3UL, C);
+		MPIratChineseRemainder< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(hadamard, C);
 
 #else
-//        RationalRemainder< EarlyMultipRatCRA< Givaro::Modular<double> > > cra(3UL);
-        RationalRemainder< FullMultipRatCRA< Givaro::Modular<double> > > cra(hadamard);
+//        RationalRemainder< EarlyMultipRatCRA< Givaro::ModularBalanced<double> > > cra(3UL);
+        RationalRemainder< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(hadamard);
 #endif
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //        Timer chrono;
