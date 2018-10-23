@@ -84,64 +84,57 @@ void genData(Field& F, BlasVector<Field>& B, size_t bits)
     B.random(RI);
 }
 
-bool run(BlasVector<Field>& X2, BlasMatrix<Field>& A, BlasVector<Field>& B, Communicator* Cptr)
+void run(BlasVector<Field>& X2, BlasMatrix<Field>& A, BlasVector<Field>& B, Communicator& communicator)
 {
     Field ZZ;
     Field::Element d;
 
     double starttime = MPI_Wtime();
-    solveCRA(X2, d, A, B, RingCategories::IntegerTag(), Method::BlasElimination(),
-             // Method::Hybrid(*Cptr),
-             Cptr);
+    solveCRA(X2, d, A, B, RingCategories::IntegerTag(),
+             Method::BlasElimination(),
+             // Method::Hybrid(communicator),
+             &communicator);
 
-    double endtime = MPI_Wtime();
-    MPI_Barrier(MPI_COMM_WORLD);
-
-    bool ok = false;
-    if (0 == Cptr->rank()) {
+    if (0 == communicator.rank()) {
+        double endtime = MPI_Wtime();
         std::cout << "Total CPU time (seconds): " << endtime - starttime << std::endl;
-        ok = checkResult(ZZ, A, B, X2, d);
+        checkResult(ZZ, A, B, X2, d);
     }
 
-    MPI_Bcast(&ok, 1, MPI_C_BOOL, 0, MPI_COMM_WORLD);
-    return ok;
+    MPI_Barrier(MPI_COMM_WORLD);
 }
 
 int main(int argc, char** argv)
 {
-    Communicator Cptr(&argc, &argv);
+    // @fixme To be able to not fill this file with __LINBOX_HAVE_MPI,
+    // we should just have a dummy communicator at user level,
+    // which wouldn't broadcast anything.
+    Communicator communicator(&argc, &argv);
 
-    size_t bits, niter, ni, nj;
-    bits = 10, niter = 1, ni = 1, nj = 1;
+    size_t bits = 10;
+    size_t n = 1;
 
-    static Argument args[] = {{'n', "-n N", "Set column and row dimension of test matrices to N.", TYPE_INT, &ni},
+    static Argument args[] = {{'n', "-n N", "Set column and row dimension of test matrices to N.", TYPE_INT, &n},
                               {'b', "-b B", "Set the mxaimum number of digits of integers to generate.", TYPE_INT, &bits},
-                              {'i', "-i I", "Set the number of times to do the random unit tests.", TYPE_INT, &niter},
                               END_OF_ARGUMENTS};
     parseArguments(argc, argv, args);
 
-    MPI_Bcast(&ni, 1, MPI_INT, 0, MPI_COMM_WORLD);
-    MPI_Bcast(&niter, 1, MPI_INT, 0, MPI_COMM_WORLD);
-
-    // Force square for now
-    nj = ni;
+    MPI_Bcast(&n, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
     Field ZZ;
-    DenseMatrix<Field> A(ZZ, ni, nj);
+    DenseMatrix<Field> A(ZZ, n, n);
     BlasVector<Field> X(ZZ, A.coldim()), B(ZZ, A.coldim());
 
-    for (long j = 0; j < (long)niter; j++) {
-        if (0 == Cptr.rank()) {
-            genData(ZZ, A, bits);
-            genData(ZZ, B, bits);
-        }
-
-        // distribute big integer compatible data
-        Cptr.bcast(A, 0);
-        Cptr.bcast(B, 0);
-
-        if (!run(X, A, B, &Cptr)) break;
+    // Generating data
+    if (0 == communicator.rank()) {
+        genData(ZZ, A, bits);
+        genData(ZZ, B, bits);
     }
+
+    communicator.bcast(A, 0);
+    communicator.bcast(B, 0);
+
+    run(X, A, B, communicator);
 
     return EXIT_SUCCESS;
 }
