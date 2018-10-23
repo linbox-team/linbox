@@ -29,12 +29,7 @@ typedef int Communicator;
 #else
 #include <iterator>
 
-// problem of mpi(ch2) in C++
-#undef SEEK_SET
-#undef SEEK_CUR
-#undef SEEK_END
 #include <mpi.h>
-
 
 namespace LinBox
 {
@@ -88,7 +83,7 @@ namespace LinBox
 		void send (SparseMatrix<Field>& b, int dest);
         template <class Field>
         void send (BlasVector<Field>& b, int dest);
-        
+
 
 		template < class X >
 		void isend( X& b, int dest /*, int tag = 0 */);
@@ -100,7 +95,7 @@ namespace LinBox
         template <class Field>
         void isend (BlasVector<Field>& b, int dest);
 
-        
+
 		template < class X >
 		void ssend( X& b, int dest /*, int tag = 0 */);
 
@@ -110,9 +105,9 @@ namespace LinBox
 		void ssend (SparseMatrix<Field>& b, int dest);
         template <class Field>
         void ssend (BlasVector<Field>& b, int dest);
-        
 
-        
+
+
 		template < class X >
 		void bsend( X& b, int dest);
 
@@ -125,8 +120,8 @@ namespace LinBox
         void recv (SparseMatrix<Field>& b, int src);
         template <class Field>
         void recv (BlasVector<Field>& b, int src);
-        
-           
+
+
 
 
 		/*
@@ -151,19 +146,19 @@ namespace LinBox
         void bcast (SparseMatrix<Field>& b, int src);
         template <class Field>
         void bcast (BlasVector<Field>& b, int src);
-        
 
-        
+
+
         template <class X>
         void bcast (X* b, X* e, int src);
-        
-        
+
+
         template < class Ptr, class Function_object >
 		void reduce( Ptr bloc, Ptr eloc, Ptr bres, Function_object binop, int root);
-        
+
 		// member access
 		MPI_Status get_stat();
-        
+
 	protected:
 		MPI_Comm _mpi_comm; // MPI's handle for the communicator
 		bool _mpi_boss; // true of an MPI initializing communicator
@@ -174,33 +169,33 @@ namespace LinBox
         template <class X>
         void send_integerVec (X& b, int dest);
         template <class X>
-        void send_integerMat (X& b, int dest); 
+        void send_integerMat (X& b, int dest);
         template <class X>
-        void send_integerSparseMat (X& b, int dest); 
+        void send_integerSparseMat (X& b, int dest);
 
         template <class X>
         void ssend_integerVec (X& b, int dest);
         template <class X>
-        void ssend_integerMat (X& b, int dest); 
+        void ssend_integerMat (X& b, int dest);
         template <class X>
-        void ssend_integerSparseMat (X& b, int dest); 
+        void ssend_integerSparseMat (X& b, int dest);
 
         template <class X>
         void isend_integerVec (X& b, int dest);
         template <class X>
-        void isend_integerMat (X& b, int dest); 
+        void isend_integerMat (X& b, int dest);
         template <class X>
-        void isend_integerSparseMat (X& b, int dest); 
+        void isend_integerSparseMat (X& b, int dest);
 
 
         template <class X>
-        void recv_integerVec (X& b, int src);   
+        void recv_integerVec (X& b, int src);
         template <class X>
         void recv_integerMat (X& b, int src);
         template <class X>
         void recv_integerSparseMat (X& b, int src);
         template <class X>
-        void bcast_integerVec (X& b, int src);                
+        void bcast_integerVec (X& b, int src);
         template <class X>
         void bcast_integerMat (X& b, int src);
         template <class X>
@@ -208,7 +203,7 @@ namespace LinBox
 
 
 
-        
+
 	};
 }// namespace LinBox
 

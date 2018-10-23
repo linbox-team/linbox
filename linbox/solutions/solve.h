@@ -880,10 +880,11 @@ namespace LinBox
 			A.field().init(d, den);
 
 			commentator().stop ("done", NULL, "Isolve");
-			return x;
 #ifdef __LINBOX_HAVE_MPI
 		}
 #endif
+
+        return x;
 	}
 
 

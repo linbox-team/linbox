@@ -23,7 +23,7 @@ SUBDIRS=data matrix
 DEFCPPFLAGS  = @DEFAULT_CFLAGS@   -DDISABLE_COMMENTATOR -DLinBoxSrcOnly
 AM_CPPFLAGS = -I$(top_srcdir)  $(DEFCPPFLAGS)  $(DEPS_CFLAGS)
 LDADD =   $(DEPS_LIBS) $(LDFLAGS)
-LDADD += $(top_builddir)/linbox/liblinbox.la
+# LDADD += $(top_builddir)/linbox/liblinbox.la
 pkgincludesubdir=$(pkgincludedir)/benchmarks
 
 noinst_LTLIBRARIES=libbenchmarks.la
