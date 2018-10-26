@@ -847,7 +847,8 @@ namespace LinBox
 		if (max<-min)
 			max=-min;
 		size_t n=A.coldim();
-		double hadamard = n*(log(double(n))+2*log(double(max)));
+
+		double hadamard = n*(Givaro::naturallog(n)+2*Givaro::naturallog(max));
 
 #ifdef __LINBOX_HAVE_MPI
 //		MPIratChineseRemainder< EarlyMultipRatCRA< Givaro::ModularBalanced<double> > > cra(3UL, C);
