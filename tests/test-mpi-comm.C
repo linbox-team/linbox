@@ -24,30 +24,22 @@
  * @ingroup benchmarks
  * @brief Check MPI communicator interface
  */
-#define __LINBOX_HAVE_MPI //! Necessary to compile correctly for the communicator !
+
 #include <givaro/modular.h>
 #include <givaro/zring.h>
-#include <iostream>
 #include <linbox/linbox-config.h>
 #include <linbox/matrix/sparse-matrix.h>
-#include <stdio.h>
-#include <stdlib.h>
 
 #include "linbox/util/mpicpp.h"
-#include <mpi.h>
-//#include "linbox/util/mpi-gmp.inl"
 
 #include "linbox/blackbox/random-matrix.h"
 #include "linbox/matrix/random-matrix.h"
 
 using namespace LinBox;
 
-// @fixme Some of these look like duplicates
 template <class Field, class Matrix>
-static bool checkResult(const Field& F, Matrix& A, Matrix& A2)
+static bool ensureEqual(const Field& F, Matrix& A, Matrix& A2)
 {
-    // A.write(std::cout << " A|A3: \n",Tag::FileFormat::Maple) << ';' << std::endl;
-    // A2.write(std::cout << " A2|A4: \n",Tag::FileFormat::Maple) << ';' << std::endl;
     for (auto i = 0u; i < A.rowdim(); ++i) {
         for (auto j = 0u; j < A.coldim(); ++j) {
             if (!F.areEqual(A.getEntry(i, j), A2.getEntry(i, j))) {
@@ -63,10 +55,8 @@ static bool checkResult(const Field& F, Matrix& A, Matrix& A2)
 }
 
 template <class Field>
-static bool checkResult(const Field& F, BlasVector<Field>& B, BlasVector<Field>& B2)
+static bool ensureEqual(const Field& F, BlasVector<Field>& B, BlasVector<Field>& B2)
 {
-    // B.write(std::cout << " B: \n",Tag::FileFormat::Maple) << ';' << std::endl;
-    // B2.write(std::cout << " B2: \n",Tag::FileFormat::Maple) << ';' << std::endl;
     for (size_t j = 0; j < B.size(); ++j) {
         if (!F.areEqual(B[j], B2[j])) {
             std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
@@ -95,119 +85,142 @@ void genData(Field& F, Givaro::Integer q, BlasVector<Field>& B, size_t bits)
     B.random(RI);
 }
 
-// 0 send B
+// 0 ssend B
 // 1 recv B as B2
 // 0 bcast B
 // 1 bcast-recv as B
 // 1 checks that B == B2
 template <class Field, class Object>
-void test_ssend_recv_bcast(Field& F, Object& objectSend, Object& objectRecv, Communicator* Cptr)
+bool test_ssend_recv_bcast(Field& F, Object& B, Object& B2, Communicator& comm)
 {
-    if (0 == Cptr->rank()) {
-        // double starttime, endtime;
-        // MPI_Barrier(MPI_COMM_WORLD);
-        // starttime = MPI_Wtime();
-        // MPI data distribution for Integer type value
-        Cptr->ssend(objectSend, 1);
-        // MPI_Barrier(MPI_COMM_WORLD);
-        // endtime   = MPI_Wtime();
-        // std::cout<<"MPI data distribution used CPU time (seconds): " <<endtime-starttime<<std::endl;
+    if (comm.rank() == 0) {
+        comm.ssend(B, 1);
     }
-    else if (1 == Cptr->rank()) {
-        Cptr->recv(objectRecv, 0);
+    else if (comm.rank() == 1) {
+        comm.recv(B2, 0);
     }
 
-    Cptr->bcast(objectSend, 0);
-    if (1 == Cptr->rank()) {
-        checkResult(F, objectSend, objectRecv);
+    bool ok = false;
+    comm.bcast(B, 0);
+    if (comm.rank() == 1) {
+        ok = ensureEqual(F, B, B2);
     }
+    MPI_Bcast(&ok, 1, MPI_CXX_BOOL, 0, MPI_COMM_WORLD);
+
+    return ok;
+}
+
+// 0 send B
+// 1 recv B as B2
+// 1 send B2
+// 0 recv B2 as B3
+// 0 check that B == B3
+template <class Field, class Object>
+bool test_send_recv(Field& F, Object& B, Object& B2, Object& B3, Communicator& comm)
+{
+    if (comm.rank() == 0) {
+        comm.send(B, 1);
+        comm.recv(B3, 1);
+    }
+    else if (comm.rank() == 1) {
+        comm.recv(B2, 0);
+        comm.send(B2, 0);
+    }
+
+    bool ok = false;
+    if (comm.rank() == 0) {
+        ok = ensureEqual(F, B, B3);
+    }
+    MPI_Bcast(&ok, 1, MPI_CXX_BOOL, 0, MPI_COMM_WORLD);
+
+    return ok;
 }
 
 template <class Field>
-void test_with_field(Givaro::Integer q, size_t bits, size_t ni, size_t nj, Communicator* Cptr)
+bool test_with_field(Givaro::Integer q, size_t bits, size_t ni, size_t nj, Communicator& comm)
 {
     Field ZZ(q);
 
-    DenseMatrix<Field> A(ZZ, ni, nj), A2(ZZ, ni, nj);
-    BlasVector<Field> B2(ZZ, A.coldim()), B(ZZ, A.coldim());
-    SparseMatrix<Field> sparseMatSend(ZZ, ni, nj), sparseMatRecv(ZZ, ni, nj);
+    DenseMatrix<Field> denseMatrix(ZZ, ni, nj), denseMatrix2(ZZ, ni, nj), denseMatrix3(ZZ, ni, nj);
+    SparseMatrix<Field> sparseMatrix(ZZ, ni, nj), sparseMatrix2(ZZ, ni, nj), sparseMatrix3(ZZ, ni, nj);
+    BlasVector<Field> blasVector(ZZ, nj), blasVector2(ZZ, nj), blasVector3(ZZ, nj);
 
     // Generating random data for matrice and vector
-    if (0 == Cptr->rank()) {
-        genData(ZZ, q, A, bits);
-        genData(ZZ, q, sparseMatSend, bits);
-        genData(ZZ, q, B, bits);
+    if (0 == comm.rank()) {
+        genData(ZZ, q, denseMatrix, bits);
+        genData(ZZ, q, sparseMatrix, bits);
+        genData(ZZ, q, blasVector, bits);
     }
 
-    test_ssend_recv_bcast(ZZ, B, B2, Cptr);
-    test_ssend_recv_bcast(ZZ, A, A2, Cptr);
-    test_ssend_recv_bcast(ZZ, sparseMatSend, sparseMatRecv, Cptr);
+    bool ok = true;
+    ok &= test_ssend_recv_bcast(ZZ, blasVector, blasVector2, comm);
+    ok &= test_ssend_recv_bcast(ZZ, denseMatrix, denseMatrix2, comm);
+    ok &= test_ssend_recv_bcast(ZZ, sparseMatrix, sparseMatrix2, comm);
 
-    // @fixme Test also send() (not ssend) via
-    // 0 send B
-    // 1 recv B as B2
-    // 1 send B2
-    // 0 recv B2 as B3
-    // 0 check that B == B3
+    ok &= test_send_recv(ZZ, blasVector, blasVector2, blasVector3, comm);
+    ok &= test_send_recv(ZZ, denseMatrix, denseMatrix2, denseMatrix3, comm);
+    ok &= test_send_recv(ZZ, sparseMatrix, sparseMatrix2, sparseMatrix3, comm);
+
+    return ok;
 }
 
 int main(int argc, char** argv)
 {
-    Communicator Cptr(&argc, &argv);
-    size_t bits, niter, n, ni;
+    Communicator comm(&argc, &argv);
+
+    Givaro::Integer q = 101;
+    size_t bits = 10;
+    size_t niter = 1;
+    size_t m = 10;
+    size_t n = 10;
+    size_t seed = time(nullptr);
     bool loop = false;
 
-    bits = 10, niter = 1, n = 3, ni = 1;
-    Givaro::Integer q = 101;
-    static Argument args[] = {{'b', "-b B", "Set the maximum number of digits of integers to generate.", TYPE_INT, &bits},
-                              {'i', "-i I", "Set the number of iteration over unit test sets.", TYPE_INT, &niter},
-                              {'l', "-loop Y/N", "run the test in an infinite loop.", TYPE_BOOL, &loop},
-                              {'n', "-n N", "Set column and row dimension of test matrices to N.", TYPE_INT, &n},
-                              {'q', "-q Q", "Set the field cardinality.", TYPE_INTEGER, &q},
-                              END_OF_ARGUMENTS};
+    Argument args[] = {{'b', "-b B", "Set the maximum number of digits of integers to generate.", TYPE_INT, &bits},
+                       {'i', "-i I", "Set the number of iteration over unit test sets.", TYPE_INT, &niter},
+                       {'l', "-loop Y/N", "run the test in an infinite loop.", TYPE_BOOL, &loop},
+                       {'m', "-m M", "Set column dimension of test matrices to M.", TYPE_INT, &m},
+                       {'n', "-n N", "Set row dimension of test matrices to N.", TYPE_INT, &n},
+                       {'s', "-s SEED", "Seed used for randomness.", TYPE_INT, &seed},
+                       {'q', "-q Q", "Set the field cardinality.", TYPE_INTEGER, &q},
+                       END_OF_ARGUMENTS};
     parseArguments(argc, argv, args);
 
-    if (Cptr.rank() == 0) {
-        std::cout << "Connected to " << Cptr.size() << " nodes." << std::endl;
+    if (comm.size() < 2) {
+        std::cerr << "This test requires at least 2 MPI nodes, but " << comm.size() << " provided." << std::endl;
+        std::cerr << "Please run it with mpirun." << std::endl;
+        return -1;
     }
 
-    MPI_Bcast(&n, 1, MPI_INT, 0, MPI_COMM_WORLD);
-    MPI_Bcast(&niter, 1, MPI_INT, 0, MPI_COMM_WORLD);
-    MPI_Bcast(&loop, 1, MPI::BOOL, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&seed, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
-    bool peak = false;
-    srand(time(NULL)); // @fixme Use user-provided seed if any
+    srand(seed);
 
-    for (auto j = 0u; loop || j < niter; j++) {
-        if (0 == Cptr.rank()) {
-            ni = rand() % n + 1;
-            if (ni < n / 2 && ni % 2 == 0 && !peak) ni = 1;
+    bool ok = true;
+    for (auto j = 0u; ok && (loop || j < niter); j++) {
+        ok &= test_with_field<Givaro::Modular<float>>(q, bits, m, n, comm);
+        ok &= test_with_field<Givaro::Modular<double>>(q, bits, m, n, comm);
+        ok &= test_with_field<Givaro::Modular<int32_t>>(q, bits, m, n, comm);
+        ok &= test_with_field<Givaro::Modular<int64_t>>(q, bits, m, n, comm);
+        ok &= test_with_field<Givaro::Modular<Integer>>(q, bits, m, n, comm);
 
-            peak = !peak;
-            std::cout << " Test with dimension: " << ni << " x " << ni << std::endl;
+        ok &= test_with_field<Givaro::ZRing<float>>(q, bits, m, n, comm);
+        ok &= test_with_field<Givaro::ZRing<double>>(q, bits, m, n, comm);
+        ok &= test_with_field<Givaro::ZRing<int32_t>>(q, bits, m, n, comm);
+        ok &= test_with_field<Givaro::ZRing<int64_t>>(q, bits, m, n, comm);
+        ok &= test_with_field<Givaro::ZRing<Integer>>(q, bits, m, n, comm);
+
+        ok &= test_with_field<Givaro::ModularBalanced<float>>(q, bits, m, n, comm);
+        ok &= test_with_field<Givaro::ModularBalanced<double>>(q, bits, m, n, comm);
+        ok &= test_with_field<Givaro::ModularBalanced<int32_t>>(q, bits, m, n, comm);
+        ok &= test_with_field<Givaro::ModularBalanced<int64_t>>(q, bits, m, n, comm);
+
+        if (!ok) {
+            std::cerr << "Failed with seed " << seed << std::endl;
+            break;
         }
 
-        MPI_Bcast(&ni, 1, MPI_INT, 0, MPI_COMM_WORLD);
-
-        // @fixme Why always square? Try rectangular matrices!
-        // @fixme Pass reference to communicator, no more pointer
-
-        test_with_field<Givaro::Modular<float>>(q, bits, ni, ni, &Cptr);
-        test_with_field<Givaro::Modular<double>>(q, bits, ni, ni, &Cptr);
-        test_with_field<Givaro::Modular<int32_t>>(q, bits, ni, ni, &Cptr);
-        test_with_field<Givaro::Modular<int64_t>>(q, bits, ni, ni, &Cptr);
-        test_with_field<Givaro::Modular<Integer>>(q, bits, ni, ni, &Cptr);
-
-        test_with_field<Givaro::ZRing<float>>(q, bits, ni, ni, &Cptr);
-        test_with_field<Givaro::ZRing<double>>(q, bits, ni, ni, &Cptr);
-        test_with_field<Givaro::ZRing<int32_t>>(q, bits, ni, ni, &Cptr);
-        test_with_field<Givaro::ZRing<int64_t>>(q, bits, ni, ni, &Cptr);
-        test_with_field<Givaro::ZRing<Integer>>(q, bits, ni, ni, &Cptr);
-
-        test_with_field<Givaro::ModularBalanced<float>>(q, bits, ni, ni, &Cptr);
-        test_with_field<Givaro::ModularBalanced<double>>(q, bits, ni, ni, &Cptr);
-        test_with_field<Givaro::ModularBalanced<int32_t>>(q, bits, ni, ni, &Cptr);
-        test_with_field<Givaro::ModularBalanced<int64_t>>(q, bits, ni, ni, &Cptr);
+        seed += 1;
     }
 
     return 0;

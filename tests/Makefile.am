@@ -17,9 +17,9 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 # ========LICENCE========
 
-# All tests should appear in one of the lists of this makefile (and sources given). 
+# All tests should appear in one of the lists of this makefile (and sources given).
 # Tests not used for target "check" can be in the FULLCHECK_TESTS list.
-# All tests will be processed by checker.C (target fullcheck), 
+# All tests will be processed by checker.C (target fullcheck),
 # where skips can be specified, warnings issued, package dependency handled.
 
 #AM_CPPFLAGS=-I$(top_srcdir) -I$(top_srcdir)/linbox -I${PREFIX}/include
@@ -56,7 +56,7 @@ EXTRA_DIST =					\
 		test-rank.h				\
 		test-vector-domain.h	\
 		tests.doxy				\
-		checker.C				
+		checker.C
 
 PERFPUBLISHERFILE = tests-report.xml
 
@@ -86,7 +86,7 @@ BASIC_TESTS =					\
 	test-isposdef				\
 	test-ispossemidef
 
-# All other tests.  
+# All other tests.
 # The checker.C determines which of these are built and run in "make fullcheck".
 FULLCHECK_TESTS =               \
 	test-bitonic-sort           \
@@ -199,17 +199,21 @@ NTL_TESTS =                     \
 	test-ntl-sylvester          \
 	test-poly-smith-form        \
 	test-smith-form-iliopoulos  \
-	test-weak-popov-form \
-	test-invariant-factors \
-	test-frobenius-large \
-	test-frobenius-small \
-	test-toeplitz-det					
+	test-weak-popov-form        \
+	test-invariant-factors      \
+	test-frobenius-large        \
+	test-frobenius-small        \
+	test-toeplitz-det
+
+if LINBOX_HAVE_MPI
+MPI_TESTS =         \
+	test-mpi-comm
+endif
 
 if LINBOX_HAVE_NTL
-#USE_NTL_TESTS = $(NTL_TESTS)
-USE_NTL_TESTS = \
-	test-ntl-lzz_pex            \
-	test-toeplitz-det					
+USE_NTL_TESTS =         \
+	test-ntl-lzz_pex    \
+	test-toeplitz-det
 endif
 
 # if LINBOX_HAVE_SAGE
@@ -221,33 +225,32 @@ OCL_TESTS = test-opencl-domain
 
 if LINBOX_HAVE_OCL
 USE_OCL_TESTS = $(OCL_TESTS)
-#AM_CPPFLAGS += $(OCL_CFLAGS)
-#LDADD += $(OCL_LIBS)
 endif
 
 # check builds and runs these
 TESTS =                 \
-    $(BASIC_TESTS)        \
-    $(USE_NTL_TESTS)    \
-    $(USE_OCL_TESTS)
+	$(BASIC_TESTS)      \
+	$(USE_NTL_TESTS)    \
+	$(USE_OCL_TESTS)    \
+	$(MPI_TESTS)
 
 # alternate definition of check target
 #check: checker
 #	checker -c
 
-EXTRA_PROGRAMS =		\
-	$(BASIC_TESTS)		\
-	$(NTL_TESTS)		\
-	$(FULLCHECK_TESTS) 	\
+EXTRA_PROGRAMS =        \
+	$(BASIC_TESTS)      \
+	$(NTL_TESTS)        \
+	$(FULLCHECK_TESTS)  \
 	$(OCL_TESTS)
 
-CLEANFILES= checker               \
-			$(TESTS)              \
-			$(BASIC_TESTS)        \
-			$(FULLCHECK_TESTS)      \
-			$(NTL_TESTS)          \
-			$(OCL_TESTS)          \
-			$(PERFPUBLISHERFILE)
+CLEANFILES= checker         \
+	$(TESTS)                \
+	$(BASIC_TESTS)          \
+	$(FULLCHECK_TESTS)      \
+	$(NTL_TESTS)            \
+	$(OCL_TESTS)            \
+	$(PERFPUBLISHERFILE)
 
 test_bitonic_sort_SOURCES =             test-bitonic-sort.C
 test_blackbox_block_container_SOURCES = test-blackbox-block-container.C
@@ -255,7 +258,7 @@ test_blas_domain_SOURCES =              test-blas-domain.C
 test_blas_matrix_SOURCES =              test-blas-matrix.C
 test_block_ring_SOURCES =               test-block-ring.C
 test_block_wiedemann_SOURCES =          test-block-wiedemann.C
-test_butterfly_SOURCES = test-butterfly.C test-vector-domain.h test-blackbox.h
+test_butterfly_SOURCES =                test-butterfly.C test-vector-domain.h test-blackbox.h
 test_charpoly_SOURCES =                 test-charpoly.C
 test_commentator_SOURCES =              test-commentator.C
 test_companion_SOURCES =                test-companion.C
@@ -287,7 +290,7 @@ test_isposdef_SOURCES =                 test-isposdef.C
 test_ispossemidef_SOURCES =             test-ispossemidef.C
 test_la_block_lanczos_SOURCES =         test-la-block-lanczos.C
 test_last_invariant_factor_SOURCES =    test-last-invariant-factor.C
-test_matpoly_mult_SOURCES=		test-matpoly-mult.C
+test_matpoly_mult_SOURCES=              test-matpoly-mult.C
 test_matrix_domain_SOURCES =            test-matrix-domain.C test-common.h
 test_matrix_stream_SOURCES =            test-matrix-stream.C
 test_mg_block_lanczos_SOURCES =         test-mg-block-lanczos.C
@@ -329,7 +332,7 @@ test_rank_md_SOURCES =                  test-rank-md.C test-rank.h
 test_rank_u32_SOURCES =                 test-rank-u32.C test-rank.h
 test_rat_charpoly_SOURCES =             test-rat-charpoly.C test-common.h
 test_rational_matrix_factory_SOURCES =  test-rational-matrix-factory.C
-test_rational_reconstruction_base_SOURCES =  test-rational-reconstruction-base.C
+test_rational_reconstruction_base_SOURCES = test-rational-reconstruction-base.C
 test_rational_solver_adaptive_SOURCES = test-rational-solver-adaptive.C test-common.h
 test_rational_solver_SOURCES =          test-rational-solver.C
 test_rat_minpoly_SOURCES =              test-rat-minpoly.C test-common.h
@@ -365,6 +368,7 @@ test_frobenius_large_SOURCES =          test-frobenius-large.C
 test_weak_popov_form_SOURCES =			test-weak-popov-form.C
 try_invariant_factors_SOURCES =         try-invariant-factors.C
 test_fgemm_SOURCES =                    test-fgemm.C
+test_mpi_comm_SOURCES =                 test-mpi-comm.C
 
 # Perfpublisher script interaction - AB 2014/12/11
 perfpublisher:
@@ -376,6 +380,10 @@ perfpublisher:
 # for compilation of non-enumerated programs
 %:%.C
 	$(CXX) $(CXXFLAGS) $(AM_CPPFLAGS)  ${INCLUDES} $(AM_CPPFLAGS) $*.C -o $@ $(LDADD)
+
+# for compilation of non-enumerated programs (mpi)
+test-mpi-%:test-mpi-%.C
+	$(MPI_CXX) $(CXXFLAGS) $(AM_CPPFLAGS)  ${INCLUDES} $(AM_CPPFLAGS) test-mpi-$*.C -o $@ $(LDADD)
 
 fullcheck: checker
 	./checker

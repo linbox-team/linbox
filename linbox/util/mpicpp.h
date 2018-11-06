@@ -24,7 +24,10 @@
 #define __LINBOX_mpicpp_H
 
 #ifndef __LINBOX_HAVE_MPI
-typedef int Communicator;
+namespace LinBox {
+    // Dummy declaration.
+    using Communicator = int;
+}
 #else
 
 #include <mpi.h>
