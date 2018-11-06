@@ -69,19 +69,19 @@ static bool ensureEqual(const Field& F, BlasVector<Field>& B, BlasVector<Field>&
 }
 
 template <class Field, class Matrix>
-void genData(Field& F, Givaro::Integer q, Matrix& A, size_t bits)
+void genData(Field& F, Givaro::Integer q, Matrix& A, size_t seed, size_t bits)
 {
     typedef typename Field::RandIter RandIter;
-    RandIter RI(F);
+    RandIter RI(F, 0, seed);
     LinBox::RandomDenseMatrix<RandIter, Field> RDM(F, RI);
     RDM.random(A);
 }
 
 template <class Field>
-void genData(Field& F, Givaro::Integer q, BlasVector<Field>& B, size_t bits)
+void genData(Field& F, Givaro::Integer q, BlasVector<Field>& B, size_t seed, size_t bits)
 {
     typedef typename Field::RandIter RandIter;
-    RandIter RI(F);
+    RandIter RI(F, 0, seed);
     B.random(RI);
 }
 
@@ -105,7 +105,7 @@ bool test_ssend_recv_bcast(Field& F, Object& B, Object& B2, Communicator& comm)
     if (comm.rank() == 1) {
         ok = ensureEqual(F, B, B2);
     }
-    MPI_Bcast(&ok, 1, MPI_CXX_BOOL, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&ok, 1, MPI_CXX_BOOL, 1, MPI_COMM_WORLD);
 
     return ok;
 }
@@ -137,7 +137,7 @@ bool test_send_recv(Field& F, Object& B, Object& B2, Object& B3, Communicator& c
 }
 
 template <class Field>
-bool test_with_field(Givaro::Integer q, size_t bits, size_t ni, size_t nj, Communicator& comm)
+bool test_with_field(Givaro::Integer q, size_t bits, size_t ni, size_t nj, Communicator& comm, size_t& seed)
 {
     Field ZZ(q);
 
@@ -147,19 +147,22 @@ bool test_with_field(Givaro::Integer q, size_t bits, size_t ni, size_t nj, Commu
 
     // Generating random data for matrice and vector
     if (0 == comm.rank()) {
-        genData(ZZ, q, denseMatrix, bits);
-        genData(ZZ, q, sparseMatrix, bits);
-        genData(ZZ, q, blasVector, bits);
+        genData(ZZ, q, denseMatrix, seed, bits);
+        seed += 1;
+        genData(ZZ, q, sparseMatrix, seed, bits);
+        seed += 1;
+        genData(ZZ, q, blasVector, seed, bits);
+        seed += 1;
     }
 
     bool ok = true;
-    ok &= test_ssend_recv_bcast(ZZ, blasVector, blasVector2, comm);
-    ok &= test_ssend_recv_bcast(ZZ, denseMatrix, denseMatrix2, comm);
-    ok &= test_ssend_recv_bcast(ZZ, sparseMatrix, sparseMatrix2, comm);
+    ok = ok && test_ssend_recv_bcast(ZZ, blasVector, blasVector2, comm);
+    ok = ok && test_ssend_recv_bcast(ZZ, denseMatrix, denseMatrix2, comm);
+    ok = ok && test_ssend_recv_bcast(ZZ, sparseMatrix, sparseMatrix2, comm);
 
-    ok &= test_send_recv(ZZ, blasVector, blasVector2, blasVector3, comm);
-    ok &= test_send_recv(ZZ, denseMatrix, denseMatrix2, denseMatrix3, comm);
-    ok &= test_send_recv(ZZ, sparseMatrix, sparseMatrix2, sparseMatrix3, comm);
+    ok = ok && test_send_recv(ZZ, blasVector, blasVector2, blasVector3, comm);
+    ok = ok && test_send_recv(ZZ, denseMatrix, denseMatrix2, denseMatrix3, comm);
+    ok = ok && test_send_recv(ZZ, sparseMatrix, sparseMatrix2, sparseMatrix3, comm);
 
     return ok;
 }
@@ -189,39 +192,38 @@ int main(int argc, char** argv)
     if (comm.size() < 2) {
         std::cerr << "This test requires at least 2 MPI nodes, but " << comm.size() << " provided." << std::endl;
         std::cerr << "Please run it with mpirun." << std::endl;
-        return -1;
+        return -2;
     }
 
     MPI_Bcast(&seed, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
-    srand(seed);
-
     bool ok = true;
     for (auto j = 0u; ok && (loop || j < niter); j++) {
-        ok &= test_with_field<Givaro::Modular<float>>(q, bits, m, n, comm);
-        ok &= test_with_field<Givaro::Modular<double>>(q, bits, m, n, comm);
-        ok &= test_with_field<Givaro::Modular<int32_t>>(q, bits, m, n, comm);
-        ok &= test_with_field<Givaro::Modular<int64_t>>(q, bits, m, n, comm);
-        ok &= test_with_field<Givaro::Modular<Integer>>(q, bits, m, n, comm);
+        size_t startingSeed = seed;
+        srand(seed);
 
-        ok &= test_with_field<Givaro::ZRing<float>>(q, bits, m, n, comm);
-        ok &= test_with_field<Givaro::ZRing<double>>(q, bits, m, n, comm);
-        ok &= test_with_field<Givaro::ZRing<int32_t>>(q, bits, m, n, comm);
-        ok &= test_with_field<Givaro::ZRing<int64_t>>(q, bits, m, n, comm);
-        ok &= test_with_field<Givaro::ZRing<Integer>>(q, bits, m, n, comm);
+        ok = ok && test_with_field<Givaro::Modular<float>>(q, bits, m, n, comm, seed);
+        ok = ok && test_with_field<Givaro::Modular<double>>(q, bits, m, n, comm, seed);
+        ok = ok && test_with_field<Givaro::Modular<int32_t>>(q, bits, m, n, comm, seed);
+        ok = ok && test_with_field<Givaro::Modular<int64_t>>(q, bits, m, n, comm, seed);
+        ok = ok && test_with_field<Givaro::Modular<Integer>>(q, bits, m, n, comm, seed);
 
-        ok &= test_with_field<Givaro::ModularBalanced<float>>(q, bits, m, n, comm);
-        ok &= test_with_field<Givaro::ModularBalanced<double>>(q, bits, m, n, comm);
-        ok &= test_with_field<Givaro::ModularBalanced<int32_t>>(q, bits, m, n, comm);
-        ok &= test_with_field<Givaro::ModularBalanced<int64_t>>(q, bits, m, n, comm);
+        ok = ok && test_with_field<Givaro::ZRing<float>>(q, bits, m, n, comm, seed);
+        ok = ok && test_with_field<Givaro::ZRing<double>>(q, bits, m, n, comm, seed);
+        ok = ok && test_with_field<Givaro::ZRing<int32_t>>(q, bits, m, n, comm, seed);
+        ok = ok && test_with_field<Givaro::ZRing<int64_t>>(q, bits, m, n, comm, seed);
+        ok = ok && test_with_field<Givaro::ZRing<Integer>>(q, bits, m, n, comm, seed);
 
-        if (!ok) {
-            std::cerr << "Failed with seed " << seed << std::endl;
+        ok = ok && test_with_field<Givaro::ModularBalanced<float>>(q, bits, m, n, comm, seed);
+        ok = ok && test_with_field<Givaro::ModularBalanced<double>>(q, bits, m, n, comm, seed);
+        ok = ok && test_with_field<Givaro::ModularBalanced<int32_t>>(q, bits, m, n, comm, seed);
+        ok = ok && test_with_field<Givaro::ModularBalanced<int64_t>>(q, bits, m, n, comm, seed);
+
+        if (!ok && comm.rank() == 0) {
+            std::cerr << "Failed with seed " << startingSeed << std::endl;
             break;
         }
-
-        seed += 1;
     }
 
-    return 0;
+    return ok ? 0 : -1;
 }
