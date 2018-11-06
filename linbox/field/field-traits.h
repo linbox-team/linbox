@@ -71,13 +71,6 @@ namespace LinBox {
         struct ClassifyRing<Givaro::QField<Givaro::Rational>> {
                 typedef RingCategories::RationalTag categoryTag;
         };
-/*
-*** Modification for random matrix generation otherwise will not succeed in compiling for MPI communication test with different data types ***
-        template<>
-        struct ClassifyRing<Givaro::ZRing<Givaro::Integer>> {
-                typedef RingCategories::IntegerTag categoryTag;
-        };
-*/
         template<class Element>
         struct ClassifyRing<Givaro::ZRing<Element>> {
                  typedef RingCategories::IntegerTag categoryTag;
@@ -180,11 +173,11 @@ namespace LinBox {
 				return ( i >= 1 && i <= max );
 		}
 
-                    /* \brief returns the best modulus bitsize to use for e.g. ChineseRemaindering 
+                    /* \brief returns the best modulus bitsize to use for e.g. ChineseRemaindering
                      */
                 static inline uint64_t bestBitSize(){return maxModulus().bitsize()-1;}
 
-                    /* \brief returns the best modulus bitsize to use for e.g. ChineseRemaindering, 
+                    /* \brief returns the best modulus bitsize to use for e.g. ChineseRemaindering,
                      * given the dimension of linear algebra operations to be performed.
                      * Will be specialized for fields with delayed modular reductions.
                      */
