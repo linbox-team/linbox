@@ -32,8 +32,12 @@
 
 #ifndef __LINBOX_omp_cra_H
 #define __LINBOX_omp_cra_H
+
 // commentator is not thread safe
+#ifndef DISABLE_COMMENTATOR
 #define DISABLE_COMMENTATOR
+#endif
+
 #include <omp.h>
 #include <set>
 #include "linbox/algorithms/cra-domain-seq.h"
@@ -231,7 +235,7 @@ namespace LinBox
 					ROUNDdomains.back().init( *resit );
 				}
 
-#pragma omp parallel for 
+#pragma omp parallel for
 				for(size_t i=0;i<NN;++i) {
 
 //#pragma omp critical
@@ -278,7 +282,7 @@ namespace LinBox
 				}
 				std::vector<Domain> ROUNDdomains; ROUNDdomains.reserve(NN);
 
-				std::vector<DomainElement> ROUNDresidues(NN); 
+				std::vector<DomainElement> ROUNDresidues(NN);
 //				typename std::vector<DomainElement>::iterator resit=ROUNDresidues.begin();
 
 				for(std::set<Integer>::const_iterator coprimesetiter = coprimeset.begin(); coprimesetiter != coprimeset.end(); ++coprimesetiter) {
@@ -319,7 +323,7 @@ Iteration(ROUNDresidues[0], ROUNDdomains[0]);
 				}
 
 				std::vector<Domain> ROUNDdomains; ROUNDdomains.reserve(NN);
-				std::vector<DomainElement> ROUNDresidues(NN); 
+				std::vector<DomainElement> ROUNDresidues(NN);
 //				typename std::vector<DomainElement>::iterator resit=ROUNDresidues.begin();
 
 				for(std::set<Integer>::const_iterator coprimesetiter = coprimeset.begin(); coprimesetiter != coprimeset.end(); ++coprimesetiter) {
@@ -443,7 +447,7 @@ else std::cerr << "Thread("<<omp_get_thread_num()<<") <<<<<<<<<<<<< ("<<i<<")"<<
 
 
 
- 
+
 
 
 

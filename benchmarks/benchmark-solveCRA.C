@@ -4,7 +4,7 @@
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
-  * LinBox is free software: you can redistribute it and/or modify
+ * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
@@ -20,305 +20,121 @@
  * ========LICENCE========
  */
 
-/*! @file benchmarks/benchmark-solveCRA.C
+/*! @file tests/test-solveCRA.C
  * @ingroup benchmarks
- * @brief Benchmarking the MPI parallel rational solver
+ * @brief Testing the MPI parallel/serial rational solver
  */
 
 #define __LINBOX_HAVE_MPI
+#define __Detailed_Time_Measurement
 
-#include <stdlib.h>
-#include <stdio.h>
+#include "givaro/modular.h"
+#include "givaro/zring.h"
+#include "linbox/linbox-config.h"
+#include "linbox/matrix/sparse-matrix.h"
 #include <iostream>
-#include <linbox/linbox-config.h>
-#include <givaro/modular.h>
-#include <givaro/zring.h>
-#include <linbox/matrix/sparse-matrix.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-
-#ifdef __LINBOX_HAVE_MPI
-#include <mpi.h>
-#include "linbox/util/mpicpp.h"
-//#include "linbox/util/mpi-gmp.inl"
-#endif
-#include <linbox/solutions/methods.h>
-#include <linbox/solutions/solve.h>
 #include "linbox/matrix/random-matrix.h"
+#include "linbox/solutions/methods.h"
+#include "linbox/solutions/solve.h"
+#include "linbox/util/mpicpp.h"
 
 using namespace LinBox;
-using namespace std;
 
-#include <iostream>
-#include <fstream>
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
-checkResult (ZZ, A, B, X2, d);
-template <class Field>
-static bool checkResult (const Field  &ZZ,
-				BlasMatrix<Field> &A,
-				BlasVector<Field> &B,
-				BlasVector<Field> &X,
-				Integer &d){
-BlasMatrix<Field> B2(ZZ, A.coldim());
-A.apply(B2,X);
-for (size_t j = 0 ; j < A.coldim() ; ++j) B3.setEntry(j,d*B.getEntry(j));
-for (size_t j = 0 ; j < A.coldim() ; ++j)
-  for (size_t j = 0 ; j < A.coldim() ; ++j){
-    if(!ZZ.areEqual(B[j],B2[j])){
-      std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
-      std::cerr << "               The solution of solveCRA is incorrect                " << std::endl;
-      std::cerr << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
-      break;
+using Field = Givaro::ZRing<Integer>;
+
+template <class Field, class Matrix>
+static bool checkResult(const Field& ZZ, Matrix& A, BlasVector<Field>& B, BlasVector<Field>& X, Integer& d)
+{
+    BlasVector<Field> B2(ZZ, A.coldim());
+    BlasVector<Field> B3(ZZ, A.coldim());
+    A.apply(B2, X);
+
+    Integer tmp;
+    for (size_t j = 0; j < B.size(); ++j) {
+        B3.setEntry(j, d * B.getEntry(j));
     }
-  }
-
-    return true;
-}
-template <class Field>
-static bool checkResult (const Field  &ZZ,
-				    BlasVector<Field> &B,
-				    BlasVector<Field> &B2){
-
-    for (size_t j = 0 ; j < B.size() ; ++j)
-      if(!ZZ.areEqual(B[j],B2[j])){
-	std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
-	std::cerr << "               The data communicated is inconsistent                " << std::endl;
-	std::cerr << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
-	return false;
-      }
-
+    for (size_t j = 0; j < A.coldim(); ++j) {
+        if (!ZZ.areEqual(B2[j], B3[j])) {
+            std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+            std::cerr << "               The solution of solveCRA is incorrect                " << std::endl;
+            std::cerr << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
+            return false;
+        }
+    }
     return true;
 }
 
-template <class Field>
-static bool genData (const Field  &ZZ,   BlasMatrix<Field> &A, size_t bits){
-    typedef typename Field::RandIter RandIter;    
-    RandIter RI(ZZ,bits) ;
-    LinBox::RandomDenseMatrix<RandIter,Field>  RDM(ZZ,RI);
+template <class Field, class Matrix>
+void genData(Field& F, Matrix& A, size_t bits)
+{
+    typedef typename Field::RandIter RandIter;
+    RandIter RI(F, bits, 5);
+    LinBox::RandomDenseMatrix<RandIter, Field> RDM(F, RI);
     RDM.randomFullRank(A);
 }
-/*
+
 template <class Field>
-static bool genData (const Field  &ZZ,   DenseMatrix<Field> &A, size_t bits){
-    typedef typename Field::RandIter RandIter;    
-    RandIter RI(ZZ,bits) ;
-    LinBox::RandomDenseMatrix<RandIter,Field>  RDM(ZZ,RI);
-    RDM.randomFullRank(A);
-}
-template <class Field>
-static bool genData (const Field  &ZZ,   SparseMatrix<Field> &A, size_t bits){
-    typedef typename Field::RandIter RandIter;    
-    RandIter RI(ZZ,bits) ;
-    LinBox::RandomDenseMatrix<RandIter,Field>  RDM(ZZ,RI);
-    RDM.randomFullRank(A);
-}
-*/
-template <class Field>
-static bool genData (const Field  &ZZ,   BlasVector<Field>  &B, size_t bits){
-    typedef typename Field::RandIter RandIter;    
-    RandIter RI(ZZ,bits) ;
+void genData(Field& F, BlasVector<Field>& B, size_t bits)
+{
+    typedef typename Field::RandIter RandIter;
+    RandIter RI(F, bits, 5);
     B.random(RI);
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-int main(int argc, char ** argv)
+void run(BlasVector<Field>& X2, BlasMatrix<Field>& A, BlasVector<Field>& B, Communicator& communicator)
 {
-  
-#ifdef __LINBOX_HAVE_MPI
-  Communicator *Cptr = NULL;
-  Cptr = new Communicator(&argc, &argv);
-#endif
-  size_t bits,ni,nj;  
-  
-  bits=10, ni=3,nj=3; 
+    Field ZZ;
+    Field::Element d;
 
-  static Argument args[] = {
-    { 'n', "-n N", "Set column and row dimension of test matrices to N.", TYPE_INT,     &ni },
-    { 'b', "-b M", "Set the number of bits of integers to generate.", TYPE_INT,     &bits },
-    END_OF_ARGUMENTS
-  };	
-  parseArguments (argc, argv, args); 
-#ifdef __LINBOX_HAVE_MPI
-  MPI_Bcast(&ni, 1, MPI_INT, 0, MPI_COMM_WORLD); 
-#endif
-  nj=ni;
-  Givaro::ZRing<Integer> ZZ;
-  DenseMatrix<Givaro::ZRing<Integer> > A (ZZ,ni,nj);
-  
-  typedef BlasVector<Givaro::ZRing<Integer> > DenseVector;
-  DenseVector X(ZZ, A.rowdim()), X2(ZZ, A.rowdim()),  B(ZZ, A.rowdim());
-  Givaro::ZRing<Integer>::Element d;
-  
-#ifdef __LINBOX_HAVE_MPI  
-  if(0==Cptr->rank()){
-#endif
+    double starttime = MPI_Wtime();
+    solveCRA(X2, d, A, B, RingCategories::IntegerTag(),
+             Method::BlasElimination(),
+             // Method::Hybrid(communicator),
+             &communicator);
 
-    genData (ZZ, A, bits);
-    genData (ZZ, B, bits);
+    if (0 == communicator.rank()) {
+        double endtime = MPI_Wtime();
+        std::cout << "Total CPU time (seconds): " << endtime - starttime << std::endl;
+        checkResult(ZZ, A, B, X2, d);
+    }
 
-
-    //LinBox::rank (r, A); std::cout<<"The rank of generated matrix A is:"<<r<<std::endl;  
-    
-    /*
-      std::cerr << ">>>>Compute with B: " << std::endl;      
-      for(int j=0;j<nj;j++) std::cerr << B.getEntry(j) << std::endl; 
-      
-      std::cout << "Compute with A: " << A.rowdim() << " by " << A.coldim() << std::endl;
-      if (A.rowdim() <= 20 && A.coldim() <= 20) A.write(std::cout << "A:=",Tag::FileFormat::Maple) << ';' << std::endl;
-    */  
-#ifdef __LINBOX_HAVE_MPI 	
-  }//End of BLock for process(0)
-#endif
-  
-#ifdef __LINBOX_HAVE_MPI
-  //distribute big integer compatible data
-  {
-    //double starttime, endtime; 
-    //MPI_Barrier(MPI_COMM_WORLD);
-    //starttime = MPI_Wtime();
-    //MPI data distribution for Integer type value
-    Cptr->bcast(A,0);   // MPIgmpBcast(A, ni, nj, 0, Cptr);
-    Cptr->bcast(B,0);   // MPIgmpBcast(B, ni, 0, Cptr);
-    //MPI_Barrier(MPI_COMM_WORLD);
-    //endtime   = MPI_Wtime(); 
-    //std::cout<<"MPI data distribution used CPU time (seconds): " <<endtime-starttime<<std::endl;
-  }
-#endif
-  
-  
-  //Check if data are correctly distributed to all processes
-  /*
-    if(0!=Cptr->rank()){std::cerr <<"process("<<Cptr->rank()<< ")<<<<Compute with B: " << std::endl;
-    for(int j=0;j<nj;j++) std::cerr << B.getEntry(j) << std::endl; }
-    
-    std::cerr <<"process("<<Cptr->rank()<< ")<<<<Compute with A: " << A.rowdim() << " by " << A.coldim() << std::endl;
-    if (A.rowdim() <= 20 && A.coldim() <= 20) A.write(std::cout << "A:=",Tag::FileFormat::Maple) << ';' << std::endl;
-  */
-  
-  
-#ifdef __LINBOX_HAVE_MPI
-  MPI_Barrier(MPI_COMM_WORLD);
-#endif
-  
-  std::cout<<"Computation is done over Q"<<std::endl;
-#ifdef __LINBOX_HAVE_MPI
-  std::cout << "MPI solveCRA" << std::endl;
-#else
-  std::cout << "Sequential solveCRA" << std::endl;
-#endif 
-  
-  /***********************
-    Results verification 
-  ***********************/
-  RingCategories::IntegerTag tg;
-  
-#ifdef __LINBOX_HAVE_MPI
-  double starttime, endtime;
-  starttime = MPI_Wtime(); 
-#else
-  Timer chrono;
-  chrono.start();
-#endif
-  solveCRA (X2, d, A, B, tg, 
-	    Method::BlasElimination()
-	    //Method::Hybrid(*Cptr)
-#ifdef __LINBOX_HAVE_MPI
-	    ,Cptr
-#endif
-	    );	
-  
-#ifdef __LINBOX_HAVE_MPI
-  endtime   = MPI_Wtime();
-  MPI_Barrier(MPI_COMM_WORLD);
-#else
-  chrono.stop();
-#endif
-//  DenseVector B2(ZZ, A.coldim());
-
-#ifdef __LINBOX_HAVE_MPI
-  if(0 == Cptr->rank()){  
-#endif
-    /*
-      std::cerr << "Compute with B: " << std::endl;
-      for(int j=0;j<nj;j++) std::cerr << B.getEntry(j) << std::endl; 
-      
-      std::cout << "Compute with A: " << A.rowdim() << " by " << A.coldim() << std::endl;
-      if (A.rowdim() <= 20 && A.coldim() <= 20) A.write(std::cout << "A::=",Tag::FileFormat::Maple) << ';' << std::endl;
-    */
-   
-    // solveCRA
-    /* 
-       std::cout << "MPI CRA Solution is [";
-       for(DenseVector::const_iterator it=X2.begin();it != X2.end(); ++it)
-       ZZ.write(cout, *it) << " ";
-       std::cout << "] / ";
-       ZZ.write(std::cout, d) << std::endl;
-    */
-#ifdef __LINBOX_HAVE_MPI
-    std::cout << "CPU time (seconds): " << endtime-starttime << std::endl;
-#else
-    std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
-#endif
-
-
-checkResult (ZZ, A, B, X2, d);
-
-#ifdef __LINBOX_HAVE_MPI    
-    MPI_Finalize();
-#endif
-    return 0;
-#ifdef __LINBOX_HAVE_MPI
-  }
-  MPI_Finalize();
-#endif
-  
+    MPI_Barrier(MPI_COMM_WORLD);
 }
 
+int main(int argc, char** argv)
+{
+    // @fixme To be able to not fill this file with __LINBOX_HAVE_MPI,
+    // we should just have a dummy communicator at user level,
+    // which wouldn't broadcast anything.
+    Communicator communicator(&argc, &argv);
 
+    size_t bits = 10;
+    size_t n = 1;
 
+    static Argument args[] = {{'n', "-n N", "Set column and row dimension of test matrices to N.", TYPE_INT, &n},
+                              {'b', "-b B", "Set the mxaimum number of digits of integers to generate.", TYPE_INT, &bits},
+                              END_OF_ARGUMENTS};
+    parseArguments(argc, argv, args);
 
+    MPI_Bcast(&n, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
+    Field ZZ;
+    DenseMatrix<Field> A(ZZ, n, n);
+    BlasVector<Field> X(ZZ, A.coldim()), B(ZZ, A.coldim());
 
+    // Generating data
+    if (0 == communicator.rank()) {
+        genData(ZZ, A, bits);
+        genData(ZZ, B, bits);
+    }
 
+    communicator.bcast(A, 0);
+    communicator.bcast(B, 0);
 
+    run(X, A, B, communicator);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    return EXIT_SUCCESS;
+}
