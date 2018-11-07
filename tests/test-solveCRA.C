@@ -25,7 +25,7 @@
  * @brief Testing the MPI parallel/serial rational solver
  */
 #define __Detailed_Time_Measurement
-#define __LINBOX_HAVE_MPI
+//#define __LINBOX_HAVE_MPI
 
 
 #include <stdlib.h>
@@ -83,7 +83,7 @@ template <class Field>
 bool genData (BlasMatrix<Field> &A, size_t bits){
   typename Field::Element ZZ;
   typedef typename Field::RandIter RandIter;    
-  RandIter RI(ZZ,bits,5);//RandIter RI(ZZ) ;
+  RandIter RI(ZZ,bits,6);//RandIter RI(ZZ) ;
   LinBox::RandomDenseMatrix<RandIter,Field>  RDM(ZZ,RI);
   RDM.randomFullRank(A);
 }
@@ -92,7 +92,7 @@ template <class Field>
 bool genData (SparseMatrix<Field> &A, size_t bits){
   typename Field::Element ZZ;
   typedef typename Field::RandIter RandIter;    
-  RandIter RI(ZZ,bits,5);//RandIter RI(ZZ) ;
+  RandIter RI(ZZ,bits,7);//RandIter RI(ZZ) ;
   LinBox::RandomDenseMatrix<RandIter,Field>  RDM(ZZ,RI);
   RDM.randomFullRank(A);
 }
@@ -101,7 +101,7 @@ template <>
 bool genData (BlasMatrix<Givaro::ZRing<Integer> >  &A, size_t bits){
   Givaro::ZRing<Integer> ZZ;
   typedef typename  Givaro::ZRing<Integer> ::RandIter RandIter;    
-  RandIter RI(ZZ,bits,5);//RandIter RI(ZZ,bits) ;
+  RandIter RI(ZZ,bits,7);//RandIter RI(ZZ,bits) ;
   LinBox::RandomDenseMatrix<RandIter, Givaro::ZRing<Integer> >  RDM(ZZ,RI);
   RDM.randomFullRank(A);
 }
@@ -109,7 +109,7 @@ template <>
 bool genData (SparseMatrix<Givaro::ZRing<Integer> >  &A, size_t bits){
   Givaro::ZRing<Integer> ZZ;
   typedef typename  Givaro::ZRing<Integer> ::RandIter RandIter;    
-  RandIter RI(ZZ,bits,5);//RandIter RI(ZZ,bits) ;
+  RandIter RI(ZZ,bits,7);//RandIter RI(ZZ,bits) ;
   LinBox::RandomDenseMatrix<RandIter, Givaro::ZRing<Integer> >  RDM(ZZ,RI);
   RDM.randomFullRank(A);
 }
@@ -147,12 +147,13 @@ bool test_set(BlasVector<Givaro::ZRing<Integer> > &X2,
   Givaro::ZRing<Integer> ZZ;
   Givaro::ZRing<Integer>::Element d;
   std::cerr<<"Computation is done over Q"<<std::endl;
+/*  
 #ifdef __LINBOX_HAVE_MPI
   std::cerr << "MPI solveCRA" << std::endl;
 #else
   std::cerr << "Sequential solveCRA" << std::endl;
 #endif 
-
+*/
 
  
   /***********************

@@ -121,6 +121,10 @@ namespace LinBox
 		template<class Function, class RandPrimeIterator>
 		BlasVector<Givaro::ZRing<Integer> > & operator() ( BlasVector<Givaro::ZRing<Integer> >& num, Integer& den, Function& Iteration, RandPrimeIterator& genprime)
 		{
+#ifdef __Detailed_Time_Measurement
+            Timer chrono;
+            double CRTime=0.0;
+#endif
 			++genprime;
 			{
 				Domain D(*genprime);
@@ -129,10 +133,20 @@ namespace LinBox
 			}
 			while( ! Builder_.terminated() ) {
 				++genprime; while(Builder_.noncoprime(*genprime) ) ++genprime;
+#ifdef __Detailed_Time_Measurement
+            chrono.start();
+#endif
 				Domain D(*genprime);
 				BlasVector<Domain > r(D);
 				Builder_.progress( D, Iteration(r, D) );
+#ifdef __Detailed_Time_Measurement
+                    chrono.stop();
+                    CRTime+=chrono.usertime();
+#endif
 			}
+#ifdef __Detailed_Time_Measurement
+                    std::cout<<"Total CRT "<<CRTime<<std::endl;
+#endif
 			return Builder_.result(num, den);
 		}
 

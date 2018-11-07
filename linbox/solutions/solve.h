@@ -775,7 +775,11 @@ namespace LinBox
 			FVector Bp(F, B);
 #ifdef __Detailed_Time_Measurement
             chrono.stop();
-            std::cout<<"Process "<<C->rank()<<" Modulo "<<chrono.usertime()<<std::endl;
+            std::cout<<
+#ifdef __LINBOX_HAVE_MPI
+            "Process "<<C->rank()<< 
+#endif
+            " Modulo "<<chrono.usertime()<<std::endl;
 #endif
 
 			VectorWrapper::ensureDim (x, A.coldim());
@@ -786,7 +790,11 @@ namespace LinBox
 			solve( x, Ap, Bp, M);
 #ifdef __Detailed_Time_Measurement
             chrono.stop();
-            std::cout<<"Process "<<C->rank()<<" Solve "<<chrono.usertime()<<std::endl;
+            std::cout<< 
+#ifdef __LINBOX_HAVE_MPI
+            "Process "<<C->rank()<< 
+#endif
+            " Solve "<<chrono.usertime()<<std::endl;
 #endif
 			return x;
 		}
@@ -812,10 +820,15 @@ namespace LinBox
                         commentator().start ("Integer CRA Solve", "Isolve");
 #ifdef __LINBOX_HAVE_MPI
 		}
-#endif         
-		PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205))); //RandomPrimeIterator genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
+#endif   
+
+#ifdef __LINBOX_HAVE_MPI
+LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   genprime(C->size(),C->rank(),25);
+#else      
+PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime(25);
+//		PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205))); //RandomPrimeIterator genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
 //PrimeIterator<LinBox::IteratorCategories::DeterministicTag> genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
-                
+#endif
 		BlasVector<Givaro::ZRing<Integer>> num(A.field(),A.coldim());
 		IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -832,20 +845,22 @@ namespace LinBox
 		if (max<-min)
 			max=-min;
 		size_t n=A.coldim();
-		double hadamard = n*(log(double(n))+2*log(double(max)));
-
+		double hadamard = n*(Givaro::naturallog(n)+2*Givaro::naturallog(max));//double hadamard = n*(log(double(n))+2*log(double(max)));
+std::cout << " >>>>>>>>>>>>>>>> Hadamard:= " << hadamard << std::endl;
 #ifdef __LINBOX_HAVE_MPI
-//		MPIratChineseRemainder< EarlyMultipRatCRA< Givaro::Modular<double> > > cra(3UL, C);
-		MPIratChineseRemainder< FullMultipRatCRA< Givaro::Modular<double> > > cra(hadamard, C);
+//		MPIratChineseRemainder< EarlyMultipRatCRA< Givaro::ModularBalanced<double> > > cra(3UL, C);
+		MPIratChineseRemainder< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(hadamard, C);
 
 #else
-//        RationalRemainder< EarlyMultipRatCRA< Givaro::Modular<double> > > cra(3UL);
-        RationalRemainder< FullMultipRatCRA< Givaro::Modular<double> > > cra(hadamard);
+
+std::cerr << "Sequential solveCRA" << std::endl;
+//        RationalRemainder< EarlyMultipRatCRA< Givaro::ModularBalanced<double> > > cra(3UL);
+        RationalRemainder< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(hadamard);
 #endif
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //        Timer chrono;
 //        chrono.start();
-		cra(num, den, iteration, genprime);
+		cra(num, den, iteration, genprime); //Repalce genprime with the masked one then every process will have its own generator
 #ifdef __LINBOX_HAVE_MPI
 //        chrono.stop();//std::cout << "The process ("<<C->rank()<<") spent total CPU time (seconds) in solveCRA: " << chrono.usertime() << std::endl;
 #else
