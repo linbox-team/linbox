@@ -336,14 +336,10 @@ namespace LinBox
         template<class Function>
         void worker_task(Function& Iteration,  BlasVector<Domain> &r)
         {
-			int procs = _commPtr->size();
-			int process = _commPtr->rank();
             
             int pp;
-            LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   gen(process,procs);  
+            LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   gen(_commPtr->rank(),_commPtr->size());  
             
-            //  get a prime, compute, send back start and end
-            //  of heap addresses
             std::unordered_set<int> prime_used;
             
             while(true){
@@ -403,31 +399,6 @@ namespace LinBox
             int idle_process = 0;
             while(poison_pills_left > 0 ){
 
-                /*
-                idle_process = 0;
-                
-                r.resize (r.size()+1);
-        
-                //  receive the beginnin and end of a vector in heapspace
-                _commPtr->recv(r.begin(), r.end(), MPI_ANY_SOURCE, 0); 
-                
-                //  determine which process sent answer
-                //  and give them a new tag either to continue or to stop
-                idle_process = (_commPtr->get_stat()).MPI_SOURCE;
-                
-                poison_pills_left-=primes[idle_process - 1];
-                
-                //  send the tag
-                _commPtr->send(primes[idle_process - 1], idle_process);
-                
-                
-                //Store the corresponding prime number
-                pp = r[r.size()-1];
-                Domain D(pp);
-                
-                //Restructure the vector like before without added prime number
-                r.resize (r.size()-1); 
-                */
                 compute_stat_comm(primes, r, pp, idle_process, poison_pills_left);
 
                 Domain D(pp);
@@ -465,8 +436,8 @@ namespace LinBox
         }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#if 1
 #if 0
+
 		template<class Function, class PrimeIterator>
 		BlasVector<Givaro::ZRing<Integer> > & operator() ( BlasVector<Givaro::ZRing<Integer> > & num, Integer& den, Function& Iteration, PrimeIterator& primeg)
 		{
@@ -599,141 +570,7 @@ namespace LinBox
 			}
             
 		}
-#endif
-		template<class Function, class PrimeIterator>
-		BlasVector<Givaro::ZRing<Integer> > & operator() ( BlasVector<Givaro::ZRing<Integer> > & num, Integer& den, Function& Iteration, PrimeIterator& primeg)
-		{
-          
-			//  if there is no communicator or if there is only one process,
-			//  then proceed normally (without parallel)
-			if(_commPtr == 0 || _commPtr->size() == 1) {
-			    std::cerr << "No possible MPI solveCRA so change to pseudo sequential solveCRA" << std::endl;
-                RationalRemainder< RatCRABase > sequential(Builder_);                
-				return sequential(num, den, Iteration, primeg);      
-			}
-            
-#ifdef __LINBOX_HAVE_MPI
-  std::cerr << "MPI solveCRA" << std::endl;
-  			int procs = _commPtr->size();
-			int process = _commPtr->rank();
-#endif        
 
-
-
-
-            Domain D(*primeg);
-            BlasVector<Domain> r(D);
-#ifdef __Detailed_Time_Measurement
-            Timer chrono;
-            double MasterTime=0.0;
-#endif
-			//  parent propcess
-			if(process == 0){
-              
-				int primes[procs - 1];
-
-				//  for each slave process...
-				for(int i=1; i<procs; i++){
-					primes[i - 1] = 0;
-					_commPtr->send(primes[i - 1], i);
-                    
-				}
-
-
-				Builder_.initialize( D, Iteration(r, D 
-#ifdef __Detailed_Time_Measurement
-#ifdef __LINBOX_HAVE_MPI
-				,_commPtr
-#endif
-#endif
-				) );
-
-				int poison_pills_left = procs - 1;
-                int pp;
-
-				while(poison_pills_left > 0 ){
-
-					int idle_process = 0;
-                    r.resize (r.size()+1);
-
-					//  receive the beginnin and end of a vector in heapspace
-					_commPtr->recv(r.begin(), r.end(), MPI_ANY_SOURCE, 0);
-
-#ifdef __Detailed_Time_Measurement
-                    chrono.start();
-#endif
-
-					//  determine which process sent answer
-					//  and give them a new tag either to continue or to stop
-					idle_process = (_commPtr->get_stat()).MPI_SOURCE;
-                    
-                    poison_pills_left-=primes[idle_process - 1];
-
-					//  send the tag
-					_commPtr->send(primes[idle_process - 1], idle_process);
-
-                    //Store the corresponding prime number
-                    pp = r[r.size()-1];
-                    
-                    //Restructure the vector like before without added prime number
-                    r.resize (r.size()-1);
-
-                    Domain D(pp);
-                    Builder_.progress(D, r);
-
-                    primes[idle_process - 1] = (Builder_.terminated()) ? 1:0;
-#ifdef __Detailed_Time_Measurement
-                    chrono.stop();
-                    MasterTime+=chrono.usertime();
-#endif         
-				}
-#ifdef __Detailed_Time_Measurement
-                    std::cout<<"Process "<<process<<" CRT "<<MasterTime<<std::endl;
-#endif
-				return Builder_.result(num,den);
-                
-			}
-			//  child process
-			else{
-                
-				int pp;
-//                LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   gen(process,procs,25);  
-                
-				//  get a prime, compute, send back start and end
-				//  of heap addresses
-                std::unordered_set<int> prime_used;
-                
-				while(true){
-
-					_commPtr->recv(pp, 0);
-
-					if(pp == 1)
-						break;
-
-                    ++primeg; while(Builder_.noncoprime(*primeg)||prime_used.find(*primeg) != prime_used.end()) ++primeg;
-                    prime_used.insert(*primeg);                    
-
-                    Domain D(*primeg);
-
-                    Iteration(r, D
-#ifdef __Detailed_Time_Measurement
-#ifdef __LINBOX_HAVE_MPI
-,_commPtr
-#endif
-#endif
-                    );
-
-
-                    //Add corresponding prime number as the last element in the result vector
-                    r.push_back(*primeg);
-
-					_commPtr->send(r.begin(), r.end(), 0, 0); 
-
-				}                
-
-			}
-            
-		}
 #else
 		template<class Function, class PrimeIterator>
 		BlasVector<Givaro::ZRing<Integer> > & operator() ( BlasVector<Givaro::ZRing<Integer> > & num, Integer& den, Function& Iteration, PrimeIterator& primeg)

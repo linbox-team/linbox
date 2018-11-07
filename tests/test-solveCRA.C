@@ -24,8 +24,8 @@
  * @ingroup benchmarks
  * @brief Testing the MPI parallel/serial rational solver
  */
-#define __Detailed_Time_Measurement
-//#define __LINBOX_HAVE_MPI
+//#define __Detailed_Time_Measurement
+#define __LINBOX_HAVE_MPI
 
 
 #include <stdlib.h>

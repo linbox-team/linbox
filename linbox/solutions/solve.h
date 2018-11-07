@@ -823,10 +823,11 @@ namespace LinBox
 #endif   
 
 #ifdef __LINBOX_HAVE_MPI
-LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   genprime(C->size(),C->rank(),25);
+//LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   genprime(C->size(),C->rank());
+PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205))); 
 #else      
-PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime(25);
-//		PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205))); //RandomPrimeIterator genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
+//PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime(25);
+		PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205))); //RandomPrimeIterator genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
 //PrimeIterator<LinBox::IteratorCategories::DeterministicTag> genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
 #endif
 		BlasVector<Givaro::ZRing<Integer>> num(A.field(),A.coldim());
@@ -846,7 +847,7 @@ PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime(25);
 			max=-min;
 		size_t n=A.coldim();
 		double hadamard = n*(Givaro::naturallog(n)+2*Givaro::naturallog(max));//double hadamard = n*(log(double(n))+2*log(double(max)));
-std::cout << " >>>>>>>>>>>>>>>> Hadamard:= " << hadamard << std::endl;
+//std::cout << " >>>>>>>>>>>>>>>> Hadamard:= " << hadamard << std::endl;
 #ifdef __LINBOX_HAVE_MPI
 //		MPIratChineseRemainder< EarlyMultipRatCRA< Givaro::ModularBalanced<double> > > cra(3UL, C);
 		MPIratChineseRemainder< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(hadamard, C);
