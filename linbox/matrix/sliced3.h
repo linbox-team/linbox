@@ -30,8 +30,8 @@
 #ifndef __LINBOX_matrix_sliced3_H
 #define __LINBOX_matrix_sliced3_H
 
-#include "sliced3/dense-sliced.h"
-#include "sliced3/sliced-domain.h"
+#include "linbox/matrix/sliced3/dense-sliced.h"
+#include "linbox/matrix/sliced3/sliced-domain.h"
 
 #endif // __LINBOX_matrix_sliced3_H
 
