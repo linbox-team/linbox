@@ -60,30 +60,76 @@ namespace LinBox
 			Father_t(b)
 		{}
 
-		template <class ResultType, class Function, class PrimeIterator>
-		ResultType& operator() (ResultType& res, Function& Iteration, PrimeIterator& primeiter)
+		template<class Function, class PrimeIterator>
+		Integer& operator() (Integer& res, Function& Iteration, PrimeIterator& primeiter)
 		{
-			using ResidueType = typename CRAResidue<ResultType,Function>::template ResidueType<Domain>;
+			//! @bug why why why ???
+			/** erreur: ‘omp_get_max_threads’ has not been declared
+			 * ../linbox/algorithms/cra-domain-omp.h:152:16: note: suggested alternative:
+			 * /usr/lib/gcc/x86_64-linux-gnu/4.6/include/omp.h:64:12: note:   ‘Givaro::omp_get_max_threads’
+			 */
 			size_t NN = omp_get_max_threads();
 			//std::cerr << "Blocs: " << NN << " iterations." << std::endl;
 			// commentator().start ("Parallel OMP Givaro::Modular iteration", "mmcrait");
 			if (NN == 1) return Father_t::operator()(res,Iteration,primeiter);
 
-			std::vector<Domain> ROUNDdomains; ROUNDdomains.reserve(NN);
-			std::vector<ResidueType> ROUNDresidues; ROUNDresidues.reserve(NN);
-			std::vector<IterationResult> ROUNDresults(NN);
-			std::set<Integer> coprimeset;
+			int coprime =0;
+			int maxnoncoprime = 1000;
 
-			while (! this->Builder_.terminated()) {
-				ROUNDdomains.clear();
-				ROUNDresidues.clear();
-				coprimeset.clear();
-
-				while (coprimeset.size() < NN) {
-					coprimeset.emplace(this->get_coprime(primeiter));
+			if (this->IterCounter==0) {
+				std::set<Integer> coprimeset;
+				while(coprimeset.size() < NN) {
 					++primeiter;
+					while(this->Builder_.noncoprime(*primeiter) ) {
+						++primeiter;
+						++coprime;
+						if (coprime > maxnoncoprime) {
+							std::cout << "you are running out of primes. " << maxnoncoprime << " coprime primes found";
+							return this->Builder_.result(res);
+						}
+					}
+					coprime =0;
+					coprimeset.insert(*primeiter);
+				}
+				std::vector<Domain> ROUNDdomains; ROUNDdomains.reserve(NN);
+				std::vector<DomainElement> ROUNDresidues(NN);
+				typename std::vector<DomainElement>::iterator resit=ROUNDresidues.begin();
+				for(std::set<Integer>::const_iterator coprimesetiter = coprimeset.begin(); coprimesetiter != coprimeset.end(); ++coprimesetiter,++resit) {
+					// std::cerr << "With prime: " << *coprimesetiter << std::endl;
+					ROUNDdomains.push_back( Domain(*coprimesetiter) );
+					ROUNDdomains.back().init( *resit );
 				}
 
+#pragma omp parallel for
+				for(size_t i=0;i<NN;++i) {
+					Iteration(ROUNDresidues[i], ROUNDdomains[i]);
+				}
+#pragma omp barrier
+				++this->IterCounter;
+				this->Builder_.initialize( ROUNDdomains[0],ROUNDresidues[0]);
+				for(size_t i=1;i<NN;++i) {
+					++this->IterCounter;
+					this->Builder_.progress( ROUNDdomains[i],ROUNDresidues[i]);
+				}
+				// commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
+			}
+
+			while( ! this->Builder_.terminated() ) {
+				//std::cerr << "Computed: " << this->IterCounter << " primes." << std::endl;
+				std::set<Integer> coprimeset;
+				while(coprimeset.size() < NN) {
+					++primeiter;
+					while(this->Builder_.noncoprime(*primeiter) ) {
+						++primeiter;
+						++coprime;
+						if (coprime > maxnoncoprime) {
+							std::cout << "you are running out of primes. " << maxnoncoprime << " coprime primes found";
+							return this->Builder_.result(res);
+						}
+					}
+					coprime =0;
+					coprimeset.insert(*primeiter);
+				}
 				std::vector<Domain> ROUNDdomains; ROUNDdomains.reserve(NN);
 				std::vector<DomainElement> ROUNDresidues(NN);
 				typename std::vector<DomainElement>::iterator resit=ROUNDresidues.begin();
@@ -139,15 +185,16 @@ namespace LinBox
 				std::vector<ElementContainer> ROUNDresidues(NN);
 				typename std::vector<ElementContainer>::iterator resit=ROUNDresidues.begin();
 				for(std::set<Integer>::const_iterator coprimesetiter = coprimeset.begin(); coprimesetiter != coprimeset.end(); ++coprimesetiter,++resit) {
-
 					// std::cerr << "With prime: " << *coprimesetiter << std::endl;
-					ROUNDdomains.emplace_back(*coprimesetiter);
-					ROUNDresidues.emplace_back(CRAResidue<ResultType,Function>::create(ROUNDdomains.back()));
+					ROUNDdomains.push_back( Domain(*coprimesetiter) );
+					//                     for(typename ElementContainer::iterator reselit = resit->begin();
+					//                         reselit != resit->end(); ++reselit)
+					//                         ROUNDdomains.back().init( *reselit );
 				}
                 
 #pragma omp parallel for
 				for(size_t i=0;i<NN;++i) {
-					ROUNDresults[i] = Iteration(ROUNDresidues[i], ROUNDdomains[i]);
+					Iteration(ROUNDresidues[i], ROUNDdomains[i]);
 				}
 #pragma omp barrier
 				++this->IterCounter;
@@ -174,11 +221,16 @@ namespace LinBox
 					}
 					coprime =0;
 					coprimeset.insert(*primeiter);
-
 				}
-				if (anyrestart) {
-					this->nbad_ += this->ngood_;
-					this->ngood_ = 0;
+				std::vector<Domain> ROUNDdomains; ROUNDdomains.reserve(NN);
+				std::vector<ElementContainer> ROUNDresidues(NN);
+				typename std::vector<ElementContainer>::iterator resit=ROUNDresidues.begin();
+				for(std::set<Integer>::const_iterator coprimesetiter = coprimeset.begin(); coprimesetiter != coprimeset.end(); ++coprimesetiter,++resit) {
+					// std::cerr << "With prime: " << *coprimesetiter << std::endl;
+					ROUNDdomains.push_back( Domain(*coprimesetiter) );
+					//                     for(typename ElementContainer::iterator reselit = resit->begin();
+					//                         reselit != resit->end(); ++reselit)
+					//                         ROUNDdomains.back().init( *reselit );
 				}
                 
 #pragma omp parallel for
@@ -257,7 +309,6 @@ namespace LinBox
 					ROUNDdomains.back().init( *resit );
 				}
 
-
 #pragma omp parallel for
 				for(size_t i=0;i<NN;++i) {
 
@@ -311,16 +362,12 @@ namespace LinBox
 				for(size_t i=0;i<NN;++i) {
 					++this->IterCounter;
 					this->Builder_.progress( ROUNDdomains[i],ROUNDresidues[i]);
-
 				}
-				//std::cerr << "Computed: " << iterCount() << " primes." << std::endl;
 			}
-
 			// commentator().stop ("done", NULL, "mmcrait");
-			//std::cerr << "Used: " << this->iterCount() << " primes." << std::endl;
+			//std::cerr << "Used: " << this->IterCounter << " primes." << std::endl;
 			return this->Builder_.result(res);
 		}
-
 
 
 
@@ -463,9 +510,6 @@ namespace LinBox
 #endif   
         
         
-
-
-
 	};
     
     

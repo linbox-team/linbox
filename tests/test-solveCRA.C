@@ -26,7 +26,7 @@
  */
 
 //#define __LINBOX_HAVE_MPI
-
+#define LINBOX_USES_OPENMP
 
 #include <stdlib.h>
 #include <stdio.h>

@@ -41,84 +41,63 @@
 namespace LinBox
 {
 
+	template<class Function, class Field> struct CRATemporaryVectorTrait {
+		typedef BlasVector<Field> Type_t;
+	};
+
+	/** \brief Glorified typedef for the CRA type based on the result type.
+	 *
+	 * Here ResultType should be some kind of vector type whose default constructor
+	 * results in zero-dimensional vectors where no init'ing is required.
+	 */
+	template <typename ResultType>
+	struct CRAResidue {
+		template <typename Domain>
+		using ResidueType = typename ResultType::template rebind<Domain>::other;
+
+		template <typename Domain>
+		static ResidueType<Domain> create(const Domain& d) {
+			return ResidueType<Domain>(d);
+		}
+	};
+
+	/** \brief Glorified typedef for the CRA type based on the result type.
+	 *
+	 * This is the specialization for scalar types (namely Integer) where
+	 * the residue type (such as a Modular element) must be init'ed.
+	 */
+	template <>
+	struct CRAResidue<Integer> {
+		template <typename Domain>
+		using ResidueType = typename Domain::Element;
+
+		template <typename Domain>
+		static ResidueType<Domain> create(const Domain& d) {
+			ResidueType<Domain> r;
+			d.init(r);
+			return r;
+		}
+	};
+
         /// No doc.
         /// @ingroup CRA
 	template<class CRABase>
 	struct ChineseRemainderSeq {
 		typedef typename CRABase::Domain	Domain;
 		typedef typename CRABase::DomainElement	DomainElement;
-
-	public:
-		const int MAXSKIP = 1000;
-		const int MAXNONCOPRIME = 1000;
-
 	protected:
 		CRABase Builder_;
-		int ngood_ = 0;
-		int nbad_ = 0;
-		int nskip_ = 0;
-
-		/** \brief Helper class to sample unique primes.
-		*/
-		template <class PrimeIterator, bool is_unique = PrimeIterator::UniqueSamplingTag::value>
-		struct PrimeSampler {
-			const ChineseRemainderSeq& outer_;
-			PrimeIterator& primeiter_;
-
-			PrimeSampler (const ChineseRemainderSeq& outer, PrimeIterator& primeiter) :
-				outer_(outer), primeiter_(primeiter)
-			{ }
-
-			/*! \brief Returns the next coprime element from the iterator.
-			 */
-			decltype(*primeiter_) operator() () {
-				if (outer_.ngood_ == 0) return *primeiter_;
-				int coprime = 0;
-				while (outer_.Builder_.noncoprime(*primeiter_)) {
-					++primeiter_;
-					++coprime;
-					if (coprime > outer_.MAXNONCOPRIME) {
-						commentator().report(Commentator::LEVEL_ALWAYS,INTERNAL_ERROR) << "you are running out of primes. " << outer_.iterCount() << " used and " << coprime << " coprime primes tried for a new one.";
-						throw LinboxError("LinBox ERROR: ran out of primes in CRA\n");
-					}
-				}
-				return *primeiter_;
-			}
-		};
-
-		/** \brief Call this when a bad prime is skipped.
-		 */
-		void doskip() {
-			commentator().report(Commentator::LEVEL_IMPORTANT,INTERNAL_WARNING) << "bad prime, skipping\n";
-			++nbad_;
-			if (++nskip_ > MAXSKIP) {
-				commentator().report(Commentator::LEVEL_ALWAYS,INTERNAL_ERROR) << "you are running out of GOOD primes. " << ngood_ << " good primes and " << nbad_ << " bad primes with " << nskip_ << " skipped in a row.\n";
-				throw LinboxError("LinBox ERROR: ran out of good primes in CRA\n");
-			}
-		}
-
-		/** \brief Gets a prime from the iterator that is coprime to the curent modulus.
-		 */
-		template <class PrimeIterator>
-		inline auto get_coprime(PrimeIterator& primeiter) const -> decltype(*primeiter) {
-			return PrimeSampler<PrimeIterator>(*this, primeiter)();
-		}
 
 	public:
+		int IterCounter;
+
 		/** \brief Pass-through constructor to create the underlying builder.
 		 */
 		template <typename... Args>
 		ChineseRemainderSeq(Args&&... args) :
-			Builder_(std::forward<Args>(args)...)
+			Builder_(std::forward<Args>(args)...),
+			IterCounter(0)
 		{ }
-
-		/** \brief How many iterations have been performed so far.
-		 *
-		 * (This used to be stored in the public field IterCounter.)
-		 */
-		int iterCount() const {
-			return ngood_ + nbad_;
-		}
 
             /** \brief The \ref CRA loop
              *
@@ -127,21 +106,21 @@ namespace LinBox
              * remainder process on sufficiently many primes to meet the
              * termination condition.
 			 *
+             * @warning  We won't detect bad primes.
+             *
              * \param[out] res  an integer
              *
              * \param Iteration  Function object of two arguments, \c
-             * Iteration(r, F), given prime field \p F it sets \p r
-			 * to the residue(s) and returns an IterationResult
-			 * to indicate how to incorporate the new residue.
-             * This loop may be parallelized.  \p
+             * Iteration(r, F), given prime field \p F it outputs
+             * residue(s) \p r. This loop may be parallelized.  \p
              * Iteration  must be reentrant, thread safe. For example, \p
              * Iteration may be returning the coefficients of the minimal
              * polynomial of a matrix \c mod \p F.
              *
              * \param primeiter  iterator for generating primes.
              */
-		template<class ResultType, class Function, class PrimeIterator>
-		ResultType& operator() (ResultType& res, Function& Iteration, PrimeIterator& primeiter)
+		template<class Iterator, class Function, class PrimeIterator>
+		Iterator& operator() (Iterator& res, Function& Iteration, PrimeIterator& primeiter)
             {
                 commentator().start ("Givaro::Modular iteration", "mmcravit");
 				(*this)(-1, res, Iteration, primeiter);
@@ -160,10 +139,8 @@ namespace LinBox
              * \param[out] res  an integer
              *
              * \param Iteration  Function object of two arguments, \c
-             * Iteration(r, F), given prime field \p F it sets \p r
-			 * to the residue(s) and returns an IterationResult
-			 * to indicate how to incorporate the new residue.
-             * This loop may be parallelized.  \p
+             * Iteration(r, F), given prime field \p F it outputs
+             * residue(s) \p r. This loop may be parallelized.  \p
              * Iteration  must be reentrant, thread safe. For example, \p
              * Iteration may be returning the coefficients of the minimal
              * polynomial of a matrix \c mod \p F.
@@ -173,54 +150,50 @@ namespace LinBox
 		template<class ResultType, class Function, class PrimeIterator>
 		bool operator() (int k, ResultType& res, Function& Iteration, PrimeIterator& primeiter)
             {
-				while (k != 0 && ngood_ == 0) {
-					--k;
-					Domain D(*primeiter);
+                if ((IterCounter ==0) && (k !=0)) {
+                    --k;
+                    ++IterCounter;
+                    Domain D(*primeiter);
                     commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
-					++primeiter;
-					auto r = CRAResidue<ResultType,Function>::create(D);
+                    ++primeiter;
+					auto r = CRAResidue<ResultType>::create(D);
 #ifdef _LB_CRATIMING
                     Timer chrono; chrono.start();
 #endif
-					if (Iteration(r,D) == IterationResult::SKIP) {
-						doskip();
-					}
-					else {
-						++ngood_;
-						Builder_.initialize(D,r);
-					}
+                    Builder_.initialize( D, Iteration(r, D) );
 #ifdef _LB_CRATIMING
                     chrono.stop();
                     std::clog << "1st iter : " << chrono << std::endl;
 #endif
-				}
+                }
+
+                int coprime =0, nbprimes=0;
+                int maxnoncoprime = 1000;
 
 				while (k != 0 && ! Builder_.terminated()) {
 					--k;
-					Domain D(get_coprime(primeiter));
+                    ++IterCounter;
+
+                    while(Builder_.noncoprime(*primeiter) ) {
+                        ++primeiter;
+                        ++coprime;
+                        if (coprime > maxnoncoprime) {
+                            commentator().report(Commentator::LEVEL_ALWAYS,INTERNAL_ERROR) << "you are running out of primes. " << nbprimes << " used and " << maxnoncoprime << " coprime primes tried for a new one.";
+							Builder_.result(res);
+                            return true; // force termination, the error should indicate the result is wrong
+                        }
+                    }
+
+                    coprime =0;
+                    Domain D(*primeiter);
                     commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
-					++primeiter;
-					auto r = CRAResidue<ResultType,Function>::create(D);
+                    ++primeiter; ++nbprimes;
 
-					switch (Iteration(r, D)) {
-					case IterationResult::CONTINUE:
-						++ngood_;
-						Builder_.progress(D, r);
-						break;
-					case IterationResult::SKIP:
-						doskip();
-						break;
-					case IterationResult::RESTART:
-						commentator().report(Commentator::LEVEL_IMPORTANT,INTERNAL_WARNING) << "previous primes were bad; restarting\n";
-						nbad_ += ngood_;
-						ngood_ = 1;
-						Builder_.initialize(D, r);
-						break;
-					}
-				}
-
+					auto r = CRAResidue<ResultType>::create(D);
+                    Builder_.progress( D, Iteration(r, D) );
+                }
                 Builder_.result(res);
-				return ngood_ > 0 && Builder_.terminated();
+				return Builder_.terminated();
             }
 
 		template<class Param>
@@ -268,33 +241,12 @@ namespace LinBox
 #ifdef _LB_CRATIMING
 		inline std::ostream& reportTimes(std::ostream& os)
             {
-                os <<  "Iterations:" << iterCount() << "\n";
+                os <<  "Iterations:" << IterCounter << "\n";
                 Builder_.reportTimes(os);
                 return os;
             }
 #endif
 
-	};
-
-	/** \brief Helper class to sample unique primes.
-	 *
-	 * This is the specialization for prime iterators that are already
-	 * guaranteed to return unique primes (so that no checking is necessary).
-	*/
-	template <class CRABase>
-	template <class PrimeIterator>
-	struct ChineseRemainderSeq<CRABase>::PrimeSampler<PrimeIterator,true> {
-		PrimeIterator& primeiter_;
-
-		PrimeSampler (const ChineseRemainderSeq<CRABase>&, PrimeIterator& primeiter) :
-			primeiter_(primeiter)
-		{ }
-
-		/*! \brief Returns the next coprime element from the iterator.
-			*/
-		decltype(*primeiter_) operator() () {
-			return *primeiter_;
-		}
 	};
 
 #ifdef _LB_CRATIMING
