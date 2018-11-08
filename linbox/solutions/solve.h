@@ -268,34 +268,38 @@ namespace LinBox
         }
         return x;
 #endif
-    }
-        // BlasElimination section ///////////////////
 
-        //! @internal Generic Elimination on Z/pZ (convert A to DenseMatrix)
-    template <class Vector, class BB>
-    Vector& solve(Vector& x, const BB& A, const Vector& b,
-                  const RingCategories::ModularTag & tag,
-                  const Method::BlasElimination& m)
-    {
-        BlasMatrix<typename BB::Field> B(A); // copy A into a BlasMatrix
-        return solve(x, B, b, tag, m);
-    }
+	}
+	// BlasElimination section ///////////////////
 
-        //! @internal Generic Elimination for DenseMatrix on Z/pZ
-    template <class Vector, class Field>
-    Vector& solve(Vector& x, const BlasMatrix<Field>& A, const Vector& b,
-                  const RingCategories::ModularTag & tag,
-                  const Method::BlasElimination& m)
-    {
-        if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
-            throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
+	//! @internal Generic Elimination on Z/pZ (convert A to DenseMatrix)
+	template <class Vector, class BB>
+	Vector& solve(Vector& x, const BB& A, const Vector& b,
+		      const RingCategories::ModularTag & tag,
+		      const Method::BlasElimination& m)
+	{
+		BlasMatrix<typename BB::Field> B(A); // copy A into a BlasMatrix
+		return solve(x, B, b, tag, m);
+	}
 
-        commentator().start ("Solving linear system (FFLAS LQUP)", "LQUP::left_solve");
-            //bool consistent = false;
-        LQUPMatrix<Field> LQUP(A);
-            //FactorizedMatrix<Field> LQUP(A);
+	//! @internal Generic Elimination for DenseMatrix on Z/pZ
+	template <class Vector, class Field>
+	Vector& solve(Vector& x, const BlasMatrix<Field>& A, const Vector& b,
+		      const RingCategories::ModularTag & tag,
+		      const Method::BlasElimination& m)
+	{
+		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
+			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
 
-        LQUP.left_solve(x, b);
+//		commentator().start ("Solving linear system (FFLAS LQUP)", "LQUP::left_solve");
+		//bool consistent = false;
+//std::cerr<<"Thread("<<omp_get_thread_num()<<") >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "<<std::endl;
+		LQUPMatrix<Field> LQUP(A);
+		//FactorizedMatrix<Field> LQUP(A);
+
+		LQUP.left_solve(x, b);
+//std::cerr<<"Thread("<<omp_get_thread_num()<<") <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< "<<std::endl;
+
 
 #if 0
             // this should be implemented directly in left_solve
@@ -304,40 +308,42 @@ namespace LinBox
                 *i = A.field().zero;
         }
 #endif
-        commentator().stop ("done", NULL, "LQUP::left_solve");
 
-        return x;
-    }
+//		commentator().stop ("done", NULL, "LQUP::left_solve");
 
-    template <class Vector, class Field>
-    Vector& solve(Vector& x, const BlasMatrix<Field>& A, const Vector& b,
-                  const RingCategories::ModularTag & tag,
-                  const Method::Dixon & m)
-    {
-        throw LinBoxFailure("You cannot do this");
-    }
+		return x;
+	}
 
-        /* Integer tag Specialization for Dixon method:
-         * 2 interfaces:
-         *   - the output is a common denominator and a vector of numerator (no need of rational number)
-         *   - the output is a vector of rational
-         */
+	template <class Vector, class Field>
+	Vector& solve(Vector& x, const BlasMatrix<Field>& A, const Vector& b,
+		      const RingCategories::ModularTag & tag,
+		      const Method::Dixon & m)
+	{
+		throw LinBoxFailure("You cannot do this");
+	}
+
+	/* Integer tag Specialization for Dixon method:
+	 * 2 interfaces:
+	 *   - the output is a common denominator and a vector of numerator (no need of rational number)
+	 *   - the output is a vector of rational
+	 */
 
 
-        // error handler for bad use of the integer solver API
-        //! @internal Generic Elimination for  Integer matrices
-    template <class Vector, class BB>
-    Vector& solve(Vector& x, const BB& A, const Vector& b,
-                  const RingCategories::IntegerTag & tag,
-                  const Method::BlasElimination& m)
-    {
-        std::cout<<"try to solve system over the integer\n"
-                 <<"the API need either \n"
-                 <<" - a vector of rational as the solution \n"
-                 <<" - or an integer for the common denominator and a vector of integer for the numerators\n\n";
-        throw LinboxError("bad use of integer API solver\n");
+	// error handler for bad use of the integer solver API
+	//! @internal Generic Elimination for  Integer matrices
+	template <class Vector, class BB>
+	Vector& solve(Vector& x, const BB& A, const Vector& b,
+		      const RingCategories::IntegerTag & tag,
+		      const Method::BlasElimination& m)
+	{
+		std::cout<<"try to solve system over the integer\n"
+		<<"the API need either \n"
+		<<" - a vector of rational as the solution \n"
+		<<" - or an integer for the common denominator and a vector of integer for the numerators\n\n";
+		throw LinboxError("bad use of integer API solver\n");
 
-    }
+	}
+
 
 #if 0
     template <class RatVector, class Vector, class BB, class MethodTraits>
@@ -776,82 +782,75 @@ namespace LinBox
 #ifdef __LINBOX_HAVE_MPI
                      ,Communicator   *C = NULL
 #endif
-                     )
-    {
-#ifdef __LINBOX_HAVE_MPI    //MPI parallel version
+			)
+	{
+		Integer den(1);
+#ifdef __LINBOX_HAVE_MPI	//MPI parallel version
+		if(!C || C->rank() == 0){
+#endif 
+			if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
+				throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
+                        commentator().start ("Integer CRA Solve", "Isolve");
+#ifdef __LINBOX_HAVE_MPI
+		}
+#endif         
+		PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205))); //RandomPrimeIterator genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
+//PrimeIterator<LinBox::IteratorCategories::DeterministicTag> genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
+                
+		BlasVector<Givaro::ZRing<Integer>> num(A.field(),A.coldim());
+		IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+#ifdef __LINBOX_HAVE_MPI
+		MPIratChineseRemainder< EarlyMultipRatCRA< Givaro::Modular<double> > > cra(3UL, C);
 
-        Integer den(1);
-        if(!C || C->rank() == 0){ 
-            if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
-                throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
-            commentator().start ("Integer CRA Solve", "Isolve");
-        }
-                
-        RandomPrimeIterator genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
-                
-        BlasVector<Givaro::ZRing<Integer>> num(A.field(),A.coldim());
-                
-        IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
-        MPIratChineseRemainder< EarlyMultipRatCRA< Givaro::Modular<double> > > mpicra(3UL, C);
-                
-        mpicra(num, den, iteration, genprime);
-                
-        if(!C || C->rank() == 0){ 
+#else
+        ChineseRemainderRatOMP< EarlyMultipRatCRA< Givaro::Modular<double> > > cra(3UL); 
+#endif
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        Timer chrono;
+        chrono.start();
+		cra(num, den, iteration, genprime);
+#ifdef __LINBOX_HAVE_MPI
+        chrono.stop();//std::cout << "The process ("<<C->rank()<<") spent total CPU time (seconds) in solveCRA: " << chrono.usertime() << std::endl;
+#else
+        chrono.stop();//std::cout << "Spent CPU time (seconds) in solveCRA: " << chrono.usertime() << std::endl;
+#endif
+
+#ifdef __LINBOX_HAVE_MPI
+		if(!C || C->rank() == 0){ 
+#endif 
             typename Vector::iterator it_x= x.begin();
             typename BlasVector<Givaro::ZRing<Integer>>::const_iterator it_num= num.begin();
-
-                // convert the result
-            for (; it_x != x.end(); ++it_x, ++it_num)
-                A.field().init(*it_x, *it_num); 
-        
-            A.field().init(d, den);
-
-            commentator().stop ("done", NULL, "Isolve");
-            return x;
-        }
-#else   //serial version
-        if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
-            throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
-        commentator().start ("Integer CRA Solve", "Isolve");
-
-
-        PrimeIterator<IteratorCategories::HeuristicTag> genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
-            //         RationalRemainder< Givaro::Modular<double> > rra((double)
-            //                                                  ( A.coldim()/2.0*log((double) A.coldim()) ) );
-
-            // use of integer due to non genericity of rra (PG 2005-09-01)
-        Integer den(1);
-        BlasVector<Givaro::ZRing<Integer>> num(A.field(),A.coldim());
-
-        IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
-        RationalRemainder< EarlyMultipRatCRA< Givaro::Modular<double> > > rra(3UL);
-        rra(num, den, iteration, genprime); //rra(x, d, iteration, genprime);
-        typename Vector::iterator it_x= x.begin();
-        typename BlasVector<Givaro::ZRing<Integer>>::const_iterator it_num= num.begin();
+            
             // convert the result
-        for (; it_x != x.end(); ++it_x, ++it_num)
-            A.field().init(*it_x, *it_num);
-        A.field().init(d, den);
-        commentator().stop ("done", NULL, "Isolve"); 
-        return x;
-#endif      
-    }
+            for (; it_x != x.end(); ++it_x, ++it_num)
+                A.field().init(*it_x, *it_num);	
+            
+			A.field().init(d, den);
+            
+			commentator().stop ("done", NULL, "Isolve");
+			return x;
+#ifdef __LINBOX_HAVE_MPI
+		}
+#endif 
+	}
+    
+    
+    
 
 
+	//BB: How come SparseElimination needs this ?
+	// may throw SolverFailed or InconsistentSystem
+	template <class Vector, class BB, class MyMethod>
+	Vector& solve(Vector& x, typename BB::Field::Element& d, const BB& A, const Vector& b,
+		      const RingCategories::IntegerTag & tag,
+		      const MyMethod& M)
+	{
+                Method::Dixon mDixon(M);
+                return solve(x,d,A,b,tag,mDixon);
+		//return solveCRA(x,d,A,b,tag,M);
+	}
 
-
-
-        //BB: How come SparseElimination needs this ?
-        // may throw SolverFailed or InconsistentSystem
-    template <class Vector, class BB, class MyMethod>
-    Vector& solve(Vector& x, typename BB::Field::Element& d, const BB& A, const Vector& b,
-                  const RingCategories::IntegerTag & tag,
-                  const MyMethod& M)
-    {
-        Method::Dixon mDixon(M);
-        return solve(x,d,A,b,tag,mDixon);
-            //return solveCRA(x,d,A,b,tag,M);
-    }
 
 
 #if 0 /*  not working */
