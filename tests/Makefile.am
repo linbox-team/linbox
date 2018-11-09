@@ -151,7 +151,6 @@ FULLCHECK_TESTS =               \
 	test-permutation			\
 	test-plain-domain			\
 	test-poly-det				\
-	test-poly-dixon				\
 	test-qlup					\
 	test-quad-matrix			\
 	test-randiter-nonzero		\
@@ -181,9 +180,7 @@ FULLCHECK_TESTS =               \
 	test-tutorial				\
 	test-vector-domain			\
 	test-zero-one				\
-	test-weak-popov-form \
-	try-invariant-factors \
-	test-fgemm
+	test-weak-popov-form
 
 # Really just one or two of these would be enough for target check.
 # The rest can be in target fullcheck.
@@ -199,11 +196,11 @@ NTL_TESTS =                     \
 	test-ntl-sylvester          \
 	test-poly-smith-form        \
 	test-smith-form-iliopoulos  \
-	test-weak-popov-form        \
 	test-invariant-factors      \
 	test-frobenius-large        \
 	test-frobenius-small        \
-	test-toeplitz-det
+	test-toeplitz-det	        \
+	test-weak-popov-form
 
 if LINBOX_HAVE_MPI
 MPI_TESTS =         \
@@ -315,6 +312,7 @@ test_ntl_sylvester_SOURCES =            test-ntl-sylvester.C
 test_ntl_toeplitz_SOURCES =             test-ntl-toeplitz.C
 test_ntl_zz_p_SOURCES =                 test-ntl-zz_p.C
 test_nullspace_SOURCES =                test-nullspace.C
+test_one_invariant_factor_SOURCES = 	test-one-invariant-factor.C
 test_opencl_domain_SOURCES =            test-opencl-domain.C
 test_optimization_SOURCES =             test-optimization.C
 test_order_basis_SOURCES =              test-order-basis.C
@@ -322,7 +320,7 @@ test_param_fuzzy_SOURCES =              test-param-fuzzy.C
 test_permutation_SOURCES =              test-permutation.C
 test_plain_domain_SOURCES =             test-plain-domain.C
 test_poly_det_SOURCES =                 test-poly-det.C
-test_poly_dixon_SOURCES =				test-poly-dixon.C
+test_poweroftwomodular_SOURCES =		test-poweroftwomodular.C test-field.h
 test_qlup_SOURCES =                     test-qlup.C
 test_quad_matrix_SOURCES =              test-quad-matrix.C
 test_randiter_nonzero_SOURCES =         test-randiter-nonzero.C
@@ -339,6 +337,7 @@ test_rat_minpoly_SOURCES =              test-rat-minpoly.C test-common.h
 test_rat_solve_SOURCES =                test-rat-solve.C test-common.h
 test_regression_SOURCES =               test-regression.C
 test_scalar_matrix_SOURCES =            test-scalar-matrix.C
+test_serialization_SOURCES = 			test-serialization.C
 test_smith_form_adaptive_SOURCES =      test-smith-form-adaptive.C test-common.h
 test_smith_form_binary_SOURCES =        test-smith-form-binary.C
 test_smith_form_iliopoulos_SOURCES =    test-smith-form-iliopoulos.C
@@ -348,6 +347,7 @@ test_smith_form_SOURCES =               test-smith-form.C
 test_solve_nonsingular_SOURCES =        test-solve-nonsingular.C
 test_solve_SOURCES =                    test-solve.C
 test_sparse_SOURCES =                   test-sparse.C test-common.h
+test_sparse_map_map_SOURCES = 			test-sparse-map-map.C test-blackbox.h
 test_subiterator_SOURCES =              test-subiterator.C test-common.h
 test_submatrix_SOURCES =                test-submatrix.C test-common.h
 test_subvector_SOURCES =                test-subvector.C test-common.h
@@ -362,12 +362,10 @@ test_tutorial_SOURCES =                 test-tutorial.C
 test_vector_domain_SOURCES =            test-vector-domain.C test-vector-domain.h
 test_zero_one_SOURCES =                 test-zero-one.C
 test_polynomial_ring_SOURCES =          test-polynomial-ring.C
-test_invariant_factors_SOURCES =		test-invariant-factors.C
+test_invariant_factors_SOURCES =        test-invariant-factors.C
 test_frobenius_small_SOURCES =          test-frobenius-small.C
 test_frobenius_large_SOURCES =          test-frobenius-large.C
-test_weak_popov_form_SOURCES =			test-weak-popov-form.C
-try_invariant_factors_SOURCES =         try-invariant-factors.C
-test_fgemm_SOURCES =                    test-fgemm.C
+test_weak_popov_form_SOURCES =          test-weak-popov-form.C
 test_mpi_comm_SOURCES =                 test-mpi-comm.C
 
 # Perfpublisher script interaction - AB 2014/12/11
