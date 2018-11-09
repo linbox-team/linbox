@@ -49,34 +49,7 @@
 using namespace LinBox;
 using namespace std;
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template<class T>
-T& myrand (T& r, long size)
-{
-  if (size < 0)
-    return r = T( (lrand48() % (-size-size)) + size );
-  else
-    return r = T(  lrand48() % size ) ;
-};
 
-
-#include <gmp++/gmp++.h>
-#include <string>
-
-std::string gmp_rand ( size_t maxNdigits)
-{ 
-  std::string result, tmpStr;
-  long tmp; 
-  tmpStr = std::to_string(myrand(tmp, 10));
-  while(result.size()+tmpStr.size()<maxNdigits){
-    result+=tmpStr;
-    tmpStr = std::to_string(myrand(tmp, 10));
-  }
-  return result;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <class Field>
 static bool checkResult (const Field  &ZZ,
 			 BlasMatrix<Field> &A,
@@ -121,55 +94,31 @@ static bool checkResult (const Field  &ZZ,
 }
 
 template <class Field>
-bool genData (BlasMatrix<Field> &A, size_t bits){
+void genData (BlasMatrix<Field> &A, size_t bits){
   typename Field::Element ZZ;
   typedef typename Field::RandIter RandIter;    
-  RandIter RI(ZZ) ;
+  RandIter RI(ZZ,bits) ;
   LinBox::RandomDenseMatrix<RandIter,Field>  RDM(ZZ,RI);
   RDM.randomFullRank(A);
 }
 
 template <class Field>
-bool genData (SparseMatrix<Field> &A, size_t bits){
+void genData (SparseMatrix<Field> &A, size_t bits){
   typename Field::Element ZZ;
   typedef typename Field::RandIter RandIter;    
-  RandIter RI(ZZ) ;
+  RandIter RI(ZZ,bits) ;
   LinBox::RandomDenseMatrix<RandIter,Field>  RDM(ZZ,RI);
   RDM.randomFullRank(A);
 }
 
 template <class Field>
-bool genData (BlasVector<Field>  &B, size_t bits){
+void genData (BlasVector<Field>  &B, size_t bits){
   typename Field::Element ZZ;
   typedef typename Field::RandIter RandIter;    
-  RandIter RI(ZZ) ;
-  B.random(RI);
-}
-
-
-template <>
-bool genData (BlasMatrix<Givaro::ZRing<Integer> >  &A, size_t bits){
-  Givaro::ZRing<Integer> ZZ;
-  typedef typename  Givaro::ZRing<Integer> ::RandIter RandIter;    
-  RandIter RI(ZZ,bits) ;
-  LinBox::RandomDenseMatrix<RandIter, Givaro::ZRing<Integer> >  RDM(ZZ,RI);
-  RDM.randomFullRank(A);
-}
-template <>
-bool genData (SparseMatrix<Givaro::ZRing<Integer> >  &A, size_t bits){
-  Givaro::ZRing<Integer> ZZ;
-  typedef typename  Givaro::ZRing<Integer> ::RandIter RandIter;    
-  RandIter RI(ZZ,bits) ;
-  LinBox::RandomDenseMatrix<RandIter, Givaro::ZRing<Integer> >  RDM(ZZ,RI);
-  RDM.randomFullRank(A);
-}
-template <>
-bool genData (DenseVector<Givaro::ZRing<Integer> >  &B, size_t bits){
-  Givaro::ZRing<Integer> ZZ;
-  typedef typename  Givaro::ZRing<Integer> ::RandIter RandIter;    
   RandIter RI(ZZ,bits) ;
   B.random(RI);
 }
+
 
 bool test_set(BlasVector<Givaro::ZRing<Integer> > &X2,
 	      BlasMatrix<Givaro::ZRing<Integer> > &A,
@@ -361,6 +310,7 @@ int main(int argc, char ** argv)
 #ifdef __LINBOX_HAVE_MPI
   MPI_Bcast(&ni, 1, MPI_INT, 0, MPI_COMM_WORLD); 
   MPI_Bcast(&niter, 1, MPI_INT, 0, MPI_COMM_WORLD);
+  MPI_Bcast(&bits, 1, MPI_INT, 0, MPI_COMM_WORLD);
 #else
   srand (time(NULL));
 #endif
@@ -372,43 +322,7 @@ int main(int argc, char ** argv)
   typedef BlasVector<Givaro::ZRing<Integer> > DenseVector;
   DenseVector X(ZZ, A.rowdim()), X2(ZZ, A.rowdim()),  B(ZZ, A.rowdim());
 
-////////////////////////////////////Always//Generates//The//Same//Matrix//////////////////////////////////////////
-#if 1
-size_t r=0;
 
-
-const char * c;
-std::string result;
-
-while(r!=ni){
-
-    for (size_t i = 0; i < ni; ++i)
-      for (size_t j = 0; j < nj; ++j){
-result = gmp_rand(bits);
-c = result.c_str();
-Givaro::Integer res(c);
-A.setEntry(i,j,res);
-result.clear();
-//myfile <<i+1<<" "<<j+1<<" "<<A.getEntry(i,j)<<"\n";
-      }
-
-
-    for (size_t j = 0; j < nj; ++j){
-result = gmp_rand(bits);
-c = result.c_str();
-Givaro::Integer res(c);
-B.setEntry(j,res);
-result.clear();
-//myfile2 <<j+1<< " 1 "<<B.getEntry(j)<<"\n";
-    }
-
-LinBox::rank (r, A);
-}
-
-
-      //LinBox::rank (r, A); std::cout<<"The rank of generated matrix A is:"<<r<<std::endl;
-#endif  
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   for(long j=0;j<(long)niter;j++){  
     
@@ -416,17 +330,17 @@ LinBox::rank (r, A);
     if(0==Cptr->rank()){
 #endif
 
-//      genData (A, bits);
-//      genData (B, bits);
+      genData (A, bits);
+      genData (B, bits);
 
 
-/*      
+    /*  
 	std::cerr << ">>>>Compute with B: " << std::endl;      
-	for(int j=0;j<nj;j++) std::cerr << B.getEntry(j) << std::endl; 
+	for(long j=0;j<(long)nj;j++) std::cerr << B.getEntry(j) << std::endl; 
 	
-	std::cout << "Compute with A: " << A.rowdim() << " by " << A.coldim() << std::endl;
+	std::cout << ">>>>Compute with A: " << A.rowdim() << " by " << A.coldim() << std::endl;
 	if (A.rowdim() <= 20 && A.coldim() <= 20) A.write(std::cout << "A:=",Tag::FileFormat::Maple) << ';' << std::endl;
-*/
+    */
 
 #ifdef __LINBOX_HAVE_MPI 	
     }//End of BLock for process(0)

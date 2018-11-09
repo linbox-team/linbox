@@ -377,7 +377,7 @@ namespace LinBox
 		{
             int Tile = 8;
 			typedef typename CRATemporaryVectorTrait<Function, Domain>::Type_t ElementContainer;
-			size_t NN = Tile*omp_get_max_threads();
+			int NN = Tile*omp_get_max_threads();
 			std::cerr << "Blocs: " << NN << " iterations." << std::endl;
 			// commentator().start ("Parallel OMP Givaro::Modular iteration", "mmcrait");
 			if (omp_get_max_threads() == 1) return Father_t::operator()(res, den,Iteration,primeiter);
@@ -390,7 +390,7 @@ namespace LinBox
                 
                 
 #pragma omp parallel for num_threads(NN/Tile)  
-                for(size_t j=0;j<NN/Tile;j++)
+                for(auto j=0;j<NN/Tile;j++)
                     {
                         
                     
@@ -403,7 +403,7 @@ namespace LinBox
                             LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   m_primeiter( omp_get_thread_num(),NN/Tile); 
       
 
-                            for(int i=0; i<NN; ){
+                            for(auto i=0; i<NN; ){
                                 
                                 
                               ++m_primeiter; while(this->Builder_.noncoprime(*m_primeiter) && coprimeset.find(*m_primeiter)!=coprimeset.end()) ++m_primeiter;
