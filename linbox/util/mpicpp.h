@@ -38,11 +38,19 @@ namespace LinBox {
      */
     class Communicator {
     public:
+        enum class ThreadMode : int {
+            Single = MPI_THREAD_SINGLE,         // Only one thread.
+            Funneled = MPI_THREAD_FUNNELED,     // Only main thread will make the MPI calls.
+            Serialized = MPI_THREAD_SERIALIZED, // Any thread can make MPI calls, but never concurrently.
+            Multiple = MPI_THREAD_MULTIPLE,     // No restriction.
+        };
+
+    public:
         /**
          * Main (boss) communicator.
          * Calls MPI_Init and MPI_Finalize.
          */
-        Communicator(int* argc, char*** argv);
+        Communicator(int* argc, char*** argv, ThreadMode threadMode = ThreadMode::Single);
 
         // Non-boss from already existing communicator.
         Communicator(const Communicator& communicator);

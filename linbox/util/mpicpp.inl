@@ -30,11 +30,15 @@ namespace LinBox {
 
     // ----- Constructors
 
-    Communicator::Communicator(int* argc, char*** argv)
+    Communicator::Communicator(int* argc, char*** argv, ThreadMode threadMode)
         : _comm(MPI_COMM_WORLD)
         , _boss(true)
     {
-        MPI_Init(argc, argv);
+        int effectiveThreadMode = -1;
+        MPI_Init_thread(argc, argv, static_cast<int>(threadMode), &effectiveThreadMode);
+        if (effectiveThreadMode != static_cast<int>(threadMode)) {
+            std::cerr << "Warning: MPI thread mode cannot be set as required." << std::endl;
+        }
 
         MPI_Comm_rank(_comm, &_rank);
         MPI_Comm_size(_comm, &_size);
@@ -57,8 +61,6 @@ namespace LinBox {
     }
 
     // peer to peer communication
-
-    // @fixme What to do about that?
 
     template <class Ptr> void Communicator::send(Ptr b, Ptr e, int dest, int tag)
     {
