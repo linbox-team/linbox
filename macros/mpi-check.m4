@@ -41,8 +41,7 @@ AC_DEFUN([LB_CHECK_MPI], [
     AS_IF([ test "x$with_mpi" == "xyes" ],
         [
             BACKUP_CXX=${CXX}
-            MPI_CXX="mpicxx"
-            CXX="$MPI_CXX"
+            CXX="mpicxx"
 
             AC_TRY_RUN(
                 [
@@ -66,12 +65,9 @@ AC_DEFUN([LB_CHECK_MPI], [
                 ],
                 [
                     AC_MSG_RESULT(no)
+                    CXX=${BACKUP_CXX}
                 ]
             )
-
-            AC_SUBST(MPI_CXX)
-
-            CXX=${BACKUP_CXX}
         ],
         [ AC_MSG_RESULT("no") ]
     )

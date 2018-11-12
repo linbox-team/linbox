@@ -379,10 +379,6 @@ perfpublisher:
 %:%.C
 	$(CXX) $(CXXFLAGS) $(AM_CPPFLAGS)  ${INCLUDES} $(AM_CPPFLAGS) $*.C -o $@ $(LDADD)
 
-# for compilation of non-enumerated programs (mpi)
-test-mpi-%:test-mpi-%.C
-	$(MPI_CXX) $(CXXFLAGS) $(AM_CPPFLAGS)  ${INCLUDES} $(AM_CPPFLAGS) test-mpi-$*.C -o $@ $(LDADD)
-
 fullcheck: checker
 	./checker
 
