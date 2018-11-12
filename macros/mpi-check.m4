@@ -40,7 +40,7 @@ AC_DEFUN([LB_CHECK_MPI], [
 
     AS_IF([ test "x$with_mpi" == "xyes" ],
         [
-            BACKUP_CXX=${LIBS}
+            BACKUP_CXX=${CXX}
             MPI_CXX="mpicxx"
             CXX="$MPI_CXX"
 
