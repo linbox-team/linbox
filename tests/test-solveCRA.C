@@ -134,7 +134,7 @@ bool test_set(BlasVector<Givaro::ZRing<Integer> > &X2,
 #ifdef __LINBOX_HAVE_MPI
   std::cout << "MPI solveCRA" << std::endl;
 #else
-  std::cout << "Sequential solveCRA" << std::endl;
+  std::cout << "OMP solveCRA" << std::endl;
 #endif 
   
   /***********************

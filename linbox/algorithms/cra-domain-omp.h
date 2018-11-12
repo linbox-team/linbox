@@ -371,7 +371,7 @@ namespace LinBox
 
 
 
-#if 1
+#if 1  //./test-solveCRA -t 40 -i 11 -n 2 -b 20 ==> BUG to be fixed as it may step into deadlock
 		template<class Container, class Function, class PrimeIterator>
 		Container& operator()  (Container& res, Integer& den, Function& Iteration, PrimeIterator& primeiter)
 		{
@@ -383,52 +383,50 @@ namespace LinBox
 			if (omp_get_max_threads() == 1) return Father_t::operator()(res, den,Iteration,primeiter);
 
             std::set<int> coprimeset;
+            std::vector<ElementContainer> ROUNDresidues;ROUNDresidues.resize(omp_get_max_threads());
+            std::vector<Domain> ROUNDdomains;ROUNDdomains.resize(omp_get_max_threads());
+            std::vector<LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>> m_primeiters;
 
-            
+            for(auto j=0;j<omp_get_max_threads();j++){
+                LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag> m_primeiter( j,omp_get_max_threads());
+                m_primeiters.push_back(m_primeiter);
+            }
+
 			while( ! this->Builder_.terminated() ) {
                 
-                
-                
-#pragma omp parallel for num_threads(NN/Tile)  
+#pragma omp parallel for num_threads(NN/Tile)
                 for(auto j=0;j<NN/Tile;j++)
                     {
-                        
-                    
+
 #pragma omp task                        
                         {
 
-                            ElementContainer	ROUNDres;
-                            Domain			ROUNDdom;
-
-                            LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   m_primeiter( omp_get_thread_num(),NN/Tile); 
-      
-
                             for(auto i=0; i<NN; ){
-                                
-                                
-                              ++m_primeiter; while(this->Builder_.noncoprime(*m_primeiter) && coprimeset.find(*m_primeiter)!=coprimeset.end()) ++m_primeiter;
 
-                                ROUNDdom = Domain(*m_primeiter);
-                                Iteration(ROUNDres, ROUNDdom);
+                              ++m_primeiters[ omp_get_thread_num()]; while(this->Builder_.noncoprime(*m_primeiters[ omp_get_thread_num()]) && coprimeset.find(*m_primeiters[omp_get_thread_num()])!=coprimeset.end()) ++m_primeiters[ omp_get_thread_num()];
+                              
+
+                                ROUNDdomains[ omp_get_thread_num()] = Domain(*m_primeiters[ omp_get_thread_num()]);
+                                Iteration(ROUNDresidues[ omp_get_thread_num()], ROUNDdomains[ omp_get_thread_num()]);
                                 
                                 
 #pragma omp critical
                                 if(coprimeset.size()>0){
-                                    
-                                        this->Builder_.progress( ROUNDdom, ROUNDres);
-                                        i++;
-                                        coprimeset.insert(*m_primeiter);
-    
+                                    if(coprimeset.find(*m_primeiters[ omp_get_thread_num()])==coprimeset.end()){
+                                        this->Builder_.progress( ROUNDdomains[ omp_get_thread_num()], ROUNDresidues[ omp_get_thread_num()]);
+                                        i++;                                        
+                                        coprimeset.insert(*m_primeiters[ omp_get_thread_num()]);
+                                    }
                                 }else{
                                     
-                                    this->Builder_.initialize( ROUNDdom, ROUNDres);
+                                    this->Builder_.initialize( ROUNDdomains[ omp_get_thread_num()], ROUNDresidues[ omp_get_thread_num()]);
                                     i++;
-                                    coprimeset.insert(*m_primeiter);
+                                    coprimeset.insert(*m_primeiters[ omp_get_thread_num()]);
                                 }
                                 
                             }
                         }
-                        
+
                     }
 
                 
@@ -445,7 +443,7 @@ namespace LinBox
 		{
             int Tile = 8;
 			typedef typename CRATemporaryVectorTrait<Function, Domain>::Type_t ElementContainer;
-			size_t NN = Tile*omp_get_max_threads();
+			auto NN = Tile*omp_get_max_threads();
 			std::cerr << "Blocs: " << NN << " iterations." << std::endl;
 			// commentator().start ("Parallel OMP Givaro::Modular iteration", "mmcrait");
 			if (omp_get_max_threads() == 1) return Father_t::operator()(res, den,Iteration,primeiter);
@@ -458,7 +456,7 @@ namespace LinBox
                 
                 
 #pragma omp parallel for num_threads(NN/Tile) 
-                for(size_t j=0;j<NN/Tile;j++)
+                for(auto j=0;j<NN/Tile;j++)
                     {
                         
                         
@@ -468,7 +466,7 @@ namespace LinBox
                             Domain			ROUNDdom;
                             PrimeIterator m_primeiter; ++m_primeiter;
                             
-                            for(int i=0; i<NN; ){
+                            for(auto i=0; i<NN; ){
                                 
                                 
                                 while(this->Builder_.noncoprime(*m_primeiter) ) ++m_primeiter;
