@@ -16,6 +16,7 @@ tests/test-commentator
 tests/test-cra
 tests/test-det
 tests/test-frobenius
+tests/test-mpi-comm
 tests/test-rank-Int
 tests/test-rank-md
 tests/test-rank-u32
@@ -78,6 +79,7 @@ examples/valence
 examples/benchmatpolymult
 examples/benchfft
 examples/polysmith
+benchmarks/benchmark-solveCRA
 benchmarks/benchmark-example
 libtool
 linbox-config
