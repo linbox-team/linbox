@@ -50,7 +50,8 @@ namespace LinBox {
          * Main (boss) communicator.
          * Calls MPI_Init and MPI_Finalize.
          */
-        Communicator(int* argc, char*** argv, ThreadMode threadMode = ThreadMode::Single);
+        Communicator(int* argc, char*** argv);
+        Communicator(int* argc, char*** argv, ThreadMode threadMode);
 
         // Non-boss from already existing communicator.
         Communicator(const Communicator& communicator);

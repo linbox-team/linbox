@@ -30,6 +30,16 @@ namespace LinBox {
 
     // ----- Constructors
 
+    Communicator::Communicator(int* argc, char*** argv)
+        : _comm(MPI_COMM_WORLD)
+        , _boss(true)
+    {
+        MPI_Init(argc, argv);
+
+        MPI_Comm_rank(_comm, &_rank);
+        MPI_Comm_size(_comm, &_size);
+    }
+
     Communicator::Communicator(int* argc, char*** argv, ThreadMode threadMode)
         : _comm(MPI_COMM_WORLD)
         , _boss(true)
