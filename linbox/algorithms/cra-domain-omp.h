@@ -371,11 +371,11 @@ namespace LinBox
 
 
 
-#if 1  //./test-solveCRA -t 40 -i 11 -n 2 -b 20 ==> BUG to be fixed as it may step into deadlock
+#if 1
 		template<class Container, class Function, class PrimeIterator>
 		Container& operator()  (Container& res, Integer& den, Function& Iteration, PrimeIterator& primeiter)
 		{
-            int Tile = 8;
+            int Tile = 8; //A magic number to boost the performance for unknown reason
 			typedef typename CRATemporaryVectorTrait<Function, Domain>::Type_t ElementContainer;
 			int NN = Tile*omp_get_max_threads();
 			std::cerr << "Blocs: " << NN << " iterations." << std::endl;
@@ -388,7 +388,7 @@ namespace LinBox
             std::vector<LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>> m_primeiters;
 
             for(auto j=0;j<omp_get_max_threads();j++){
-                LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag> m_primeiter( j,omp_get_max_threads());
+                LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag> m_primeiter( j,omp_get_max_threads(),25);
                 m_primeiters.push_back(m_primeiter);
             }
 
@@ -402,33 +402,32 @@ namespace LinBox
                         {
 
                             for(auto i=0; i<NN; ){
-
-                              ++m_primeiters[ omp_get_thread_num()]; while(this->Builder_.noncoprime(*m_primeiters[ omp_get_thread_num()]) && coprimeset.find(*m_primeiters[omp_get_thread_num()])!=coprimeset.end()) ++m_primeiters[ omp_get_thread_num()];
-                              
+                                // Avoid unnecessary computation so as to terminate as early as possible
+                                if( this->Builder_.terminated() ) break; 
+                              ++m_primeiters[ omp_get_thread_num()]; while(this->Builder_.noncoprime(*m_primeiters[ omp_get_thread_num()]) && coprimeset.find(*m_primeiters[omp_get_thread_num()])!=coprimeset.end()) ++m_primeiters[ omp_get_thread_num()];     
 
                                 ROUNDdomains[ omp_get_thread_num()] = Domain(*m_primeiters[ omp_get_thread_num()]);
+                                
                                 Iteration(ROUNDresidues[ omp_get_thread_num()], ROUNDdomains[ omp_get_thread_num()]);
-                                
-                                
+                           
 #pragma omp critical
                                 if(coprimeset.size()>0){
-                                    if(coprimeset.find(*m_primeiters[ omp_get_thread_num()])==coprimeset.end()){
+//                                    if(coprimeset.find(*m_primeiters[ omp_get_thread_num()])==coprimeset.end()){
                                         this->Builder_.progress( ROUNDdomains[ omp_get_thread_num()], ROUNDresidues[ omp_get_thread_num()]);
                                         i++;                                        
                                         coprimeset.insert(*m_primeiters[ omp_get_thread_num()]);
-                                    }
+//                                    }
                                 }else{
                                     
                                     this->Builder_.initialize( ROUNDdomains[ omp_get_thread_num()], ROUNDresidues[ omp_get_thread_num()]);
                                     i++;
                                     coprimeset.insert(*m_primeiters[ omp_get_thread_num()]);
                                 }
-                                
+
                             }
                         }
 
                     }
-
                 
 			}
             
@@ -457,8 +456,7 @@ namespace LinBox
                 
 #pragma omp parallel for num_threads(NN/Tile) 
                 for(auto j=0;j<NN/Tile;j++)
-                    {
-                        
+                    {                        
                         
 #pragma omp task                        
                         {
@@ -467,8 +465,9 @@ namespace LinBox
                             PrimeIterator m_primeiter; ++m_primeiter;
                             
                             for(auto i=0; i<NN; ){
-                                
-                                
+                                // Avoid unnecessary computation so as to terminate as early as possible
+                                if( this->Builder_.terminated() ) break; 
+                                                                
                                 while(this->Builder_.noncoprime(*m_primeiter) ) ++m_primeiter;
                                 ROUNDdom = Domain(*m_primeiter);
                                 Iteration(ROUNDres, ROUNDdom);
@@ -495,8 +494,6 @@ namespace LinBox
                         }
                         
                     }
-                
-
                 
 			}
             

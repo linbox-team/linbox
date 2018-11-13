@@ -294,9 +294,9 @@ int main(int argc, char ** argv)
   Communicator *Cptr = NULL;
   Cptr = new Communicator(&argc, &argv);
 #endif
-  size_t bits,niter,ni,nj,nt;  
+  size_t bits,niter,ni,nj,nt;  //<----Underflow if parsed value is negative !
   
-  bits=10, niter=3, ni=3,nj=3,nt=1; 
+  bits=10, niter=1, ni=3,nj=3,nt=1; 
   
   static Argument args[] = {
     { 'n', "-n N", "Set column and row dimension of test matrices to N.", TYPE_INT,     &ni },
@@ -306,6 +306,9 @@ int main(int argc, char ** argv)
     END_OF_ARGUMENTS
   };	
   parseArguments (argc, argv, args); 
+  //@ All parsed values should be checked to satisfy preconditions
+  
+  
   omp_set_num_threads(nt);
 #ifdef __LINBOX_HAVE_MPI
   MPI_Bcast(&ni, 1, MPI_INT, 0, MPI_COMM_WORLD); 
