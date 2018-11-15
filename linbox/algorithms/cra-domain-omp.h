@@ -369,15 +369,25 @@ namespace LinBox
 			return this->Builder_.result(res);
 		}
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template< class Function, class PrimeIterator, class Domain, class ElementContainer>
+void solve_with_prime(std::vector<PrimeIterator>& m_primeiters, std::set<int>& coprimeset, Function& Iteration, std::vector<Domain>& ROUNDdomains, std::vector<ElementContainer>& ROUNDresidues){
 
+                              ++m_primeiters[ omp_get_thread_num()]; while(this->Builder_.noncoprime(*m_primeiters[ omp_get_thread_num()]) && coprimeset.find(*m_primeiters[omp_get_thread_num()])!=coprimeset.end()) ++m_primeiters[ omp_get_thread_num()];     
 
+                                ROUNDdomains[ omp_get_thread_num()] = Domain(*m_primeiters[ omp_get_thread_num()]);
+                                
+                                Iteration(ROUNDresidues[ omp_get_thread_num()], ROUNDdomains[ omp_get_thread_num()]);
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #if 1
+
 		template<class Container, class Function, class PrimeIterator>
 		Container& operator()  (Container& res, Integer& den, Function& Iteration, PrimeIterator& primeiter)
 		{
             int Tile = 8; //A magic number to boost the performance for unknown reason
 			typedef typename CRATemporaryVectorTrait<Function, Domain>::Type_t ElementContainer;
-			int NN = Tile*omp_get_max_threads();
+			int NN = Tile*omp_get_max_threads();//Maybe replace omp_get_max_threads() with user required number ?
 			std::cerr << "Blocs: " << NN << " iterations." << std::endl;
 			// commentator().start ("Parallel OMP Givaro::Modular iteration", "mmcrait");
 			if (omp_get_max_threads() == 1) return Father_t::operator()(res, den,Iteration,primeiter);
@@ -393,7 +403,8 @@ namespace LinBox
             }
 
 			while( ! this->Builder_.terminated() ) {
-                
+#if 1
+if(omp_get_max_threads()>50){
 #pragma omp parallel for num_threads(NN/Tile)
                 for(auto j=0;j<NN/Tile;j++)
                     {
@@ -401,7 +412,70 @@ namespace LinBox
 #pragma omp task                        
                         {
 
-                            for(auto i=0; i<NN; ){
+                            for(auto i=0; i<Tile; ){
+                                // Avoid unnecessary computation so as to terminate as early as possible
+                                if( this->Builder_.terminated() ) break;
+                                
+                                solve_with_prime(m_primeiters, coprimeset,Iteration, ROUNDdomains, ROUNDresidues);
+                           
+#pragma omp critical
+                                if(coprimeset.size()>0){
+//                                    if(coprimeset.find(*m_primeiters[ omp_get_thread_num()])==coprimeset.end()){
+                                        this->Builder_.progress( ROUNDdomains[ omp_get_thread_num()], ROUNDresidues[ omp_get_thread_num()]);
+                                        i++;                                        
+                                        coprimeset.insert(*m_primeiters[ omp_get_thread_num()]);
+//                                    }
+                                }else{
+                                    
+                                    this->Builder_.initialize( ROUNDdomains[ omp_get_thread_num()], ROUNDresidues[ omp_get_thread_num()]);
+                                    i++;
+                                    coprimeset.insert(*m_primeiters[ omp_get_thread_num()]);
+                                }
+
+                            }
+                        }
+
+                    }
+}else{
+#pragma omp parallel for num_threads(NN/Tile)
+                for(auto j=0;j<NN/Tile;j++)
+                    {
+
+#pragma omp task                        
+                        {
+
+                            for(auto i=0; i<Tile; ){
+                                
+                                solve_with_prime(m_primeiters, coprimeset,Iteration, ROUNDdomains,ROUNDresidues);
+                            
+#pragma omp critical
+                                if(coprimeset.size()>0){
+//                                    if(coprimeset.find(*m_primeiters[ omp_get_thread_num()])==coprimeset.end()){
+                                        this->Builder_.progress( ROUNDdomains[ omp_get_thread_num()], ROUNDresidues[ omp_get_thread_num()]);
+                                        i++;                                        
+                                        coprimeset.insert(*m_primeiters[ omp_get_thread_num()]);
+//                                    }
+                                }else{
+                                    
+                                    this->Builder_.initialize( ROUNDdomains[ omp_get_thread_num()], ROUNDresidues[ omp_get_thread_num()]);
+                                    i++;
+                                    coprimeset.insert(*m_primeiters[ omp_get_thread_num()]);
+                                }
+
+                            }
+                        }
+
+                    }
+}
+#else
+#pragma omp parallel num_threads(NN/Tile)
+//                for(auto j=0;j<NN/Tile;j++)
+                    {
+
+#pragma omp task                        
+                        {
+
+                            for(auto i=0; i<Tile; ){
                                 // Avoid unnecessary computation so as to terminate as early as possible
                                 if( this->Builder_.terminated() ) break; 
                               ++m_primeiters[ omp_get_thread_num()]; while(this->Builder_.noncoprime(*m_primeiters[ omp_get_thread_num()]) && coprimeset.find(*m_primeiters[omp_get_thread_num()])!=coprimeset.end()) ++m_primeiters[ omp_get_thread_num()];     
@@ -428,14 +502,21 @@ namespace LinBox
                         }
 
                     }
+#endif
+
+
                 
 			}
+
+
+
             
 			// commentator().stop ("done", NULL, "mmcrait");
 			//std::cerr << "Used: " << IterCounter << " primes." << std::endl;
 			return this->Builder_.result(res,den);
 		}
-        
+
+  
 #else
 		template<class Container, class Function, class PrimeIterator>
 		Container& operator()  (Container& res, Integer& den, Function& Iteration, PrimeIterator& primeiter)
