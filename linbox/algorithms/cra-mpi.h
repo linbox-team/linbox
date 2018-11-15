@@ -333,6 +333,18 @@ namespace LinBox
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //BEGIN ROI
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        template<class PrimeIterator, class Function, class Domain>
+        void worker_compute(std::unordered_set<int>& prime_used, PrimeIterator& gen, Function& Iteration, BlasVector<Domain> &r)
+        {
+
+                ++gen; while(Builder_.noncoprime(*gen)||prime_used.find(*gen) != prime_used.end()) ++gen;
+                prime_used.insert(*gen);
+
+                Domain D(*gen);
+
+                Iteration(r, D);
+        }
+
         template<class Function>
         void worker_task(Function& Iteration,  BlasVector<Domain> &r)
         {
@@ -348,12 +360,7 @@ namespace LinBox
                 if(pp == 1)
                     break;
 
-                ++gen; while(Builder_.noncoprime(*gen)||prime_used.find(*gen) != prime_used.end()) ++gen;
-                prime_used.insert(*gen);
-
-                Domain D(*gen);
-
-                Iteration(r, D);
+                worker_compute(prime_used, gen, Iteration, r);
 
                 //Add corresponding prime number as the last element in the result vector
                 r.push_back(*gen);
