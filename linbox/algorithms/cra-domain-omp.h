@@ -402,6 +402,8 @@ void solve_with_prime(std::vector<PrimeIterator>& m_primeiters, std::set<int>& c
                 m_primeiters.push_back(m_primeiter);
             }
 
+//<@/> First computation could be done seperately to get the problem size from the element size of ROUNDresidues then adapt to either still small siez or really big size case to accelerate the total computation </@>
+//<@@/>--------------Maybe this code segment could be put into one unique subroutine------------>>
 			while( ! this->Builder_.terminated() ) {
 #if 1
 if(omp_get_max_threads()>50){
@@ -416,7 +418,7 @@ if(omp_get_max_threads()>50){
                                 // Avoid unnecessary computation so as to terminate as early as possible
                                 if( this->Builder_.terminated() ) break;
                                 
-                                solve_with_prime(m_primeiters, coprimeset,Iteration, ROUNDdomains, ROUNDresidues);
+                                solve_with_prime(m_primeiters, coprimeset, Iteration, ROUNDdomains, ROUNDresidues);
                            
 #pragma omp critical
                                 if(coprimeset.size()>0){
@@ -446,7 +448,7 @@ if(omp_get_max_threads()>50){
 
                             for(auto i=0; i<Tile; ){
                                 
-                                solve_with_prime(m_primeiters, coprimeset,Iteration, ROUNDdomains,ROUNDresidues);
+                                solve_with_prime(m_primeiters, coprimeset, Iteration, ROUNDdomains,ROUNDresidues);
                             
 #pragma omp critical
                                 if(coprimeset.size()>0){
@@ -467,6 +469,7 @@ if(omp_get_max_threads()>50){
 
                     }
 }
+//<@@@/>  </@@@>
 #else
 #pragma omp parallel num_threads(NN/Tile)
 //                for(auto j=0;j<NN/Tile;j++)
@@ -507,7 +510,7 @@ if(omp_get_max_threads()>50){
 
                 
 			}
-
+//<<------------Or split into 2 subroutines one for small size and the other for really big size------------</@@>
 
 
             
@@ -532,9 +535,8 @@ if(omp_get_max_threads()>50){
 
             
 			while( ! this->Builder_.terminated() ) {
-                
-                
-                
+
+            
 #pragma omp parallel for num_threads(NN/Tile) 
                 for(auto j=0;j<NN/Tile;j++)
                     {                        
@@ -552,8 +554,8 @@ if(omp_get_max_threads()>50){
                                 while(this->Builder_.noncoprime(*m_primeiter) ) ++m_primeiter;
                                 ROUNDdom = Domain(*m_primeiter);
                                 Iteration(ROUNDres, ROUNDdom);
-                                
-                                
+             
+             
 #pragma omp critical
                                 if(coprimeset.size()>0){
                                     
