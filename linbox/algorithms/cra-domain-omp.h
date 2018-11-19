@@ -272,6 +272,7 @@ namespace LinBox
 		template<class Function, class PrimeIterator>
 		Integer& operator() (Integer& res, Integer& den, Function& Iteration, PrimeIterator& primeiter)
 		{
+#if 0
 			//! @bug why why why ???
 			/** erreur: ‘omp_get_max_threads’ has not been declared
 			 * ../linbox/algorithms/cra-domain-omp.h:152:16: note: suggested alternative:
@@ -364,6 +365,58 @@ namespace LinBox
 					this->Builder_.progress( ROUNDdomains[i],ROUNDresidues[i]);
 				}
 			}
+#endif
+
+            int Tile = 8;
+			typedef typename CRATemporaryVectorTrait<Function, Domain>::Type_t ElementContainer;
+			auto NN = Tile*omp_get_max_threads();
+			std::cerr << "Blocs: " << NN << " iterations." << std::endl;
+			// commentator().start ("Parallel OMP Givaro::Modular iteration", "mmcrait");
+			if (omp_get_max_threads() == 1) return Father_t::operator()(res, den,Iteration,primeiter);
+
+            std::set<int> coprimeset;
+            std::vector<ElementContainer> ROUNDresidues;ROUNDresidues.resize(omp_get_max_threads());
+            std::vector<Domain> ROUNDdomains;ROUNDdomains.resize(omp_get_max_threads());
+            std::vector<LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>> m_primeiters;
+
+            for(auto j=0;j<omp_get_max_threads();j++){
+                LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag> m_primeiter( j,omp_get_max_threads(),25);
+                m_primeiters.push_back(m_primeiter);
+            }
+            
+			while( ! this->Builder_.terminated() ) {
+
+#pragma omp parallel num_threads(NN/Tile)
+//                for(auto j=0;j<NN/Tile;j++)
+                    {
+
+#pragma omp task                        
+                        {
+
+                            for(auto i=0; i<Tile; ){
+                                
+                                solve_with_prime(m_primeiters, coprimeset, Iteration, ROUNDdomains, ROUNDresidues);
+                           
+#pragma omp critical
+                                if(coprimeset.size()>0){
+//                                    if(coprimeset.find(*m_primeiters[ omp_get_thread_num()])==coprimeset.end()){
+                                        this->Builder_.progress( ROUNDdomains[ omp_get_thread_num()], ROUNDresidues[ omp_get_thread_num()]);
+                                        i++;                                        
+                                        coprimeset.insert(*m_primeiters[ omp_get_thread_num()]);
+//                                    }
+                                }else{
+                                    
+                                    this->Builder_.initialize( ROUNDdomains[ omp_get_thread_num()], ROUNDresidues[ omp_get_thread_num()]);
+                                    i++;
+                                    coprimeset.insert(*m_primeiters[ omp_get_thread_num()]);
+                                }
+
+                            }
+                        }
+
+                    }
+              }
+			
 			// commentator().stop ("done", NULL, "mmcrait");
 			//std::cerr << "Used: " << this->IterCounter << " primes." << std::endl;
 			return this->Builder_.result(res);
@@ -379,36 +432,55 @@ void solve_with_prime(std::vector<PrimeIterator>& m_primeiters, std::set<int>& c
                                 
                                 Iteration(ROUNDresidues[ omp_get_thread_num()], ROUNDdomains[ omp_get_thread_num()]);
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#if 1
 
-		template<class Container, class Function, class PrimeIterator>
-		Container& operator()  (Container& res, Integer& den, Function& Iteration, PrimeIterator& primeiter)
-		{
-            int Tile = 8; //A magic number to boost the performance for unknown reason
-			typedef typename CRATemporaryVectorTrait<Function, Domain>::Type_t ElementContainer;
-			int NN = Tile*omp_get_max_threads();//Maybe replace omp_get_max_threads() with user required number ?
-			std::cerr << "Blocs: " << NN << " iterations." << std::endl;
-			// commentator().start ("Parallel OMP Givaro::Modular iteration", "mmcrait");
-			if (omp_get_max_threads() == 1) return Father_t::operator()(res, den,Iteration,primeiter);
 
-            std::set<int> coprimeset;
-            std::vector<ElementContainer> ROUNDresidues;ROUNDresidues.resize(omp_get_max_threads());
-            std::vector<Domain> ROUNDdomains;ROUNDdomains.resize(omp_get_max_threads());
-            std::vector<LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>> m_primeiters;
+template<class pFunc, class Function, class PrimeIterator, class Domain, class ElementContainer>
+void compute_task(pFunc& pF, int NN, int Tile, std::vector<PrimeIterator>& m_primeiters, std::set<int>& coprimeset, Function& Iteration, std::vector<Domain>& ROUNDdomains, std::vector<ElementContainer>& ROUNDresidues)
+{
 
-            for(auto j=0;j<omp_get_max_threads();j++){
-                LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag> m_primeiter( j,omp_get_max_threads(),25);
-                m_primeiters.push_back(m_primeiter);
-            }
-
-//<@/> First computation could be done seperately to get the problem size from the element size of ROUNDresidues then adapt to either still small siez or really big size case to accelerate the total computation </@>
-//<@@/>--------------Maybe this code segment could be put into one unique subroutine------------>>
 			while( ! this->Builder_.terminated() ) {
-#if 1
-if(omp_get_max_threads()>50){
-#pragma omp parallel for num_threads(NN/Tile)
-                for(auto j=0;j<NN/Tile;j++)
+
+#pragma omp parallel num_threads(NN/Tile)
+//                for(auto j=0;j<NN/Tile;j++)
+                    {
+
+#pragma omp task                        
+                        {
+
+                            for(auto i=0; i<Tile; ){
+                                
+                                solve_with_prime(m_primeiters, coprimeset, Iteration, ROUNDdomains, ROUNDresidues);
+                           
+#pragma omp critical
+                                if(coprimeset.size()>0){
+//                                    if(coprimeset.find(*m_primeiters[ omp_get_thread_num()])==coprimeset.end()){
+                                        this->Builder_.progress( ROUNDdomains[ omp_get_thread_num()], ROUNDresidues[ omp_get_thread_num()]);
+                                        i++;                                        
+                                        coprimeset.insert(*m_primeiters[ omp_get_thread_num()]);
+//                                    }
+                                }else{
+                                    
+                                    this->Builder_.initialize( ROUNDdomains[ omp_get_thread_num()], ROUNDresidues[ omp_get_thread_num()]);
+                                    i++;
+                                    coprimeset.insert(*m_primeiters[ omp_get_thread_num()]);
+                                }
+
+                            }
+                        }
+
+                    }
+              }
+
+}
+
+template<class pFunc, class Function, class PrimeIterator, class Domain, class ElementContainer>
+void early_termination_compute_task(pFunc& pF, int NN, int Tile, std::vector<PrimeIterator>& m_primeiters, std::set<int>& coprimeset, Function& Iteration, std::vector<Domain>& ROUNDdomains, std::vector<ElementContainer>& ROUNDresidues)
+{
+
+			while( ! this->Builder_.terminated() ) {
+
+#pragma omp parallel num_threads(NN/Tile)
+//                for(auto j=0;j<NN/Tile;j++)
                     {
 
 #pragma omp task                        
@@ -438,39 +510,44 @@ if(omp_get_max_threads()>50){
                         }
 
                     }
-}else{
-#pragma omp parallel for num_threads(NN/Tile)
-                for(auto j=0;j<NN/Tile;j++)
-                    {
+              }
 
-#pragma omp task                        
-                        {
-
-                            for(auto i=0; i<Tile; ){
-                                
-                                solve_with_prime(m_primeiters, coprimeset, Iteration, ROUNDdomains,ROUNDresidues);
-                            
-#pragma omp critical
-                                if(coprimeset.size()>0){
-//                                    if(coprimeset.find(*m_primeiters[ omp_get_thread_num()])==coprimeset.end()){
-                                        this->Builder_.progress( ROUNDdomains[ omp_get_thread_num()], ROUNDresidues[ omp_get_thread_num()]);
-                                        i++;                                        
-                                        coprimeset.insert(*m_primeiters[ omp_get_thread_num()]);
-//                                    }
-                                }else{
-                                    
-                                    this->Builder_.initialize( ROUNDdomains[ omp_get_thread_num()], ROUNDresidues[ omp_get_thread_num()]);
-                                    i++;
-                                    coprimeset.insert(*m_primeiters[ omp_get_thread_num()]);
-                                }
-
-                            }
-                        }
-
-                    }
 }
-//<@@@/>  </@@@>
-#else
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#if 1
+
+		template<class Container, class Function, class PrimeIterator>
+		Container& operator()  (Container& res, Integer& den, Function& Iteration, PrimeIterator& primeiter)
+		{
+            int Tile = 8; //A magic number to boost the performance for unknown reason
+			typedef typename CRATemporaryVectorTrait<Function, Domain>::Type_t ElementContainer;
+			int NN = Tile*omp_get_max_threads();//Maybe replace omp_get_max_threads() with user required number ?
+			std::cerr << "Blocs: " << NN << " iterations." << std::endl;
+			// commentator().start ("Parallel OMP Givaro::Modular iteration", "mmcrait");
+			if (omp_get_max_threads() == 1) return Father_t::operator()(res, den,Iteration,primeiter);
+
+            std::set<int> coprimeset;
+            std::vector<ElementContainer> ROUNDresidues;ROUNDresidues.resize(omp_get_max_threads());
+            std::vector<Domain> ROUNDdomains;ROUNDdomains.resize(omp_get_max_threads());
+            std::vector<LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>> m_primeiters;
+
+            for(auto j=0;j<omp_get_max_threads();j++){
+                LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag> m_primeiter( j,omp_get_max_threads(),25);
+                m_primeiters.push_back(m_primeiter);
+            }
+
+#if 1
+if(omp_get_max_threads()>50){
+early_termination_compute_task( (this->Builder_), NN,  Tile, m_primeiters, coprimeset, Iteration,  ROUNDdomains, ROUNDresidues);
+
+}else{
+
+ compute_task( (this->Builder_), NN,  Tile, m_primeiters, coprimeset, Iteration,  ROUNDdomains, ROUNDresidues);
+
+}
+
+
+#else // The starting code .... 
 #pragma omp parallel num_threads(NN/Tile)
 //                for(auto j=0;j<NN/Tile;j++)
                     {
@@ -506,11 +583,6 @@ if(omp_get_max_threads()>50){
 
                     }
 #endif
-
-
-                
-			}
-//<<------------Or split into 2 subroutines one for small size and the other for really big size------------</@@>
 
 
             

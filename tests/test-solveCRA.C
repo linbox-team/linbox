@@ -381,6 +381,17 @@ int main(int argc, char ** argv)
 		 )) break;
   }
   
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+  Givaro::ZRing<Integer> A2;
+  Givaro::ZRing<Integer> B2;
+  Givaro::ZRing<Integer> X3;
+
+      genData (A2, bits);
+      genData (B2, bits);
+  test_set(X3, A2, B2);
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+  
+  
 #ifdef __LINBOX_HAVE_MPI
   if(0 == Cptr->rank()){  
 #endif

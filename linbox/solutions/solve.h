@@ -293,12 +293,12 @@ namespace LinBox
 
 //		commentator().start ("Solving linear system (FFLAS LQUP)", "LQUP::left_solve");
 		//bool consistent = false;
-//std::cerr<<"Thread("<<omp_get_thread_num()<<") >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "<<std::endl;
+
 		LQUPMatrix<Field> LQUP(A);
 		//FactorizedMatrix<Field> LQUP(A);
 
 		LQUP.left_solve(x, b);
-//std::cerr<<"Thread("<<omp_get_thread_num()<<") <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< "<<std::endl;
+
 
 
 #if 0
