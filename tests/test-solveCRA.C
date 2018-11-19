@@ -24,7 +24,7 @@
  * @ingroup benchmarks
  * @brief Testing the OMP parallel/serial rational solver
  */
-
+#include <cassert>
 
 
 #include <stdlib.h>
@@ -142,50 +142,62 @@ int main(int argc, char ** argv)
 {
   
 
-  int bits,niter,ni,nj,nt, q;
-  
-  bits=10, niter=1, ni=3,nj=3,nt=1,q=-1; 
+  int bits,bitsize, niter,ni,nj,nt,n, q;
+  bool peak = false, loop=false;
+  bits=10, niter=1, ni=3,nj=3,nt=1, n=3, q=-1; 
   
   static Argument args[] = {
-    { 'n', "-n N", "Set column and row dimension of test matrices to N.", TYPE_INT,     &ni },
-    { 'b', "-b B", "Set the mxaimum number of digits of integers to generate.", TYPE_INT,     &bits },
+    { 'n', "-n N", "Set column and row dimension of test matrices to N.", TYPE_INT,     &n },
+    { 'b', "-b B", "Set the bitsize for input value.", TYPE_INT,     &bitsize },
     { 'i', "-i I", "Set the number of times to do the random unit tests.", TYPE_INT,     &niter },
     { 't', "-t T", "Set the number of threads to run unit tests.", TYPE_INT,     &nt },
     { 'q', "-q Q", "Set negative value for random input or positive value to always generate the same input.", TYPE_INT,     &q },
+    { 'l', "-l L", "Set if the infinte testing loop should be applied.", TYPE_BOOL,     &loop },
     END_OF_ARGUMENTS
   };	
   parseArguments (argc, argv, args); 
-  //@ All parsed values should be checked to satisfy preconditions
   
   
   omp_set_num_threads(nt);
 
-//  srand (time(NULL));
+  nj=n;
+  ni=n;  
 
-  nj=ni;
-    
-  Givaro::ZRing<Integer> ZZ;
-  DenseMatrix<Givaro::ZRing<Integer> > A (ZZ,ni,nj);
-  
+  Givaro::ZRing<Integer> ZZ;  
   typedef BlasVector<Givaro::ZRing<Integer> > DenseVector;
-  DenseVector X(ZZ, A.rowdim()), X2(ZZ, A.rowdim()),  B(ZZ, A.rowdim());
 
 
 
-  for(int j=0;j<niter;j++){  
 
-      genData (ZZ, A, bits, q);
-      genData (ZZ, B, bits, q);
+  for(int j=0;loop || j<niter;j++){  
+            
+
+            std::cout << " Test with dimension: " << ni << " x " << ni << std::endl;
+            std::cout << " Test with bitsize: " << bits << std::endl;
+        {
+          DenseMatrix<Givaro::ZRing<Integer> > A (ZZ,ni,nj);
+          DenseVector X(ZZ, A.coldim()), X2(ZZ, A.coldim()),  B(ZZ, A.coldim());
+          genData (ZZ, A, bits, q);
+          genData (ZZ, B, bits, q);
 
 /*
 	std::cerr << ">>>>Compute with B: " << std::endl;      
 	for(long j=0;j<(long)nj;j++) std::cerr << B.getEntry(j) << std::endl; 
 	
-	std::cout << ">>>>Compute with A: " << A.rowdim() << " by " << A.coldim() << std::endl;
-	if (A.rowdim() <= 20 && A.coldim() <= 20) A.write(std::cout << "A:=",Tag::FileFormat::Maple) << ';' << std::endl;
+	A.write(std::cout << ">>>>Compute with A: " << A.rowdim() << " by " << A.coldim() << "\n"<< "A:=",Tag::FileFormat::Maple) << ';' << std::endl;
 */
     
-    if(!test_set(ZZ, X2, A, B )) break;
+        if(!test_set(ZZ, X2, A, B )) break;
+        }
+            ni = rand() % n + 1;
+            if (ni < n / 2 && ni % 2 == 0 && !peak) ni = 1;
+
+            bits = rand() % bitsize + 1;
+            if (bits < bitsize / 2 && bitsize % 2 == 0 && !peak) bits = 1;
+
+            nj=ni;
+            peak = !peak;
+
   }
 
     return 0;
