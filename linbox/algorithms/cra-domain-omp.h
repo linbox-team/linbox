@@ -363,7 +363,7 @@ namespace LinBox
             
         }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#if 1   // The modularized code using parallel section and task
+// The modularized code using parallel section and task
         
 		template<class Container, class Function, class PrimeIterator>
 		Container& operator()  (Container& res, Integer& den, Function& Iteration, PrimeIterator& primeiter)
@@ -385,7 +385,7 @@ namespace LinBox
                 m_primeiters.push_back(m_primeiter);
             }
             
-#if 1
+
             if(omp_get_max_threads()>50){
                 early_termination_compute_task( (this->Builder_), NN,  Tile, m_primeiters, coprimeset, Iteration,  ROUNDdomains, ROUNDresidues);
                 
@@ -396,115 +396,12 @@ namespace LinBox
             }
             
             
-#else // The starting code using parallel section and task 
-#pragma omp parallel num_threads(NN/Tile)
-            //for(auto j=0;j<NN/Tile;j++)
-            {
-                
-#pragma omp task                        
-                {
-                    
-                    for(auto i=0; i<Tile; ){
-                        // Avoid unnecessary computation so as to terminate as early as possible
-                        if( this->Builder_.terminated() ) break; 
-                        ++m_primeiters[ omp_get_thread_num()]; while(this->Builder_.noncoprime(*m_primeiters[ omp_get_thread_num()]) && coprimeset.find(*m_primeiters[omp_get_thread_num()])!=coprimeset.end()) ++m_primeiters[ omp_get_thread_num()];     
-                        
-                        ROUNDdomains[ omp_get_thread_num()] = Domain(*m_primeiters[ omp_get_thread_num()]);
-                        
-                        Iteration(ROUNDresidues[ omp_get_thread_num()], ROUNDdomains[ omp_get_thread_num()]);
-                        
-#pragma omp critical
-                        if(coprimeset.size()>0){
-                            //if(coprimeset.find(*m_primeiters[ omp_get_thread_num()])==coprimeset.end()){
-                            this->Builder_.progress( ROUNDdomains[ omp_get_thread_num()], ROUNDresidues[ omp_get_thread_num()]);
-                            i++;                                        
-                            coprimeset.insert(*m_primeiters[ omp_get_thread_num()]);
-                            //}
-                        }else{
-                            
-                            this->Builder_.initialize( ROUNDdomains[ omp_get_thread_num()], ROUNDresidues[ omp_get_thread_num()]);
-                            i++;
-                            coprimeset.insert(*m_primeiters[ omp_get_thread_num()]);
-                        }
-                        
-                    }
-                }
-                
-            }
-#endif
-            
-            
-            
 			// commentator().stop ("done", NULL, "mmcrait");
 			//std::cerr << "Used: " << IterCounter << " primes." << std::endl;
 			return this->Builder_.result(res,den);
 		}
         
-        
-#else //Draft implementation to start from//
-		template<class Container, class Function, class PrimeIterator>
-		Container& operator()  (Container& res, Integer& den, Function& Iteration, PrimeIterator& primeiter)
-		{
-            int Tile = 8;
-			typedef typename CRATemporaryVectorTrait<Function, Domain>::Type_t ElementContainer;
-			auto NN = Tile*omp_get_max_threads();
-			std::cerr << "Blocs: " << NN << " iterations." << std::endl;
-			// commentator().start ("Parallel OMP Givaro::Modular iteration", "mmcrait");
-			if (omp_get_max_threads() == 1) return Father_t::operator()(res, den,Iteration,primeiter);
-            
-            std::set<int> coprimeset;
-                        
-			while( ! this->Builder_.terminated() ) {
-                                
-#pragma omp parallel for num_threads(NN/Tile) 
-                for(auto j=0;j<NN/Tile;j++)
-                    {                        
-                        
-#pragma omp task                        
-                        {
-                            ElementContainer	ROUNDres;
-                            Domain			ROUNDdom;
-                            PrimeIterator m_primeiter; ++m_primeiter;
-                            
-                            for(auto i=0; i<NN; ){
-                                // Avoid unnecessary computation so as to terminate as early as possible
-                                if( this->Builder_.terminated() ) break; 
-                                
-                                while(this->Builder_.noncoprime(*m_primeiter) ) ++m_primeiter;
-                                ROUNDdom = Domain(*m_primeiter);
-                                Iteration(ROUNDres, ROUNDdom);
-                                
-                                
-#pragma omp critical
-                                if(coprimeset.size()>0){
-                                    
-                                    if(coprimeset.find(*m_primeiter)==coprimeset.end()){
-                                        this->Builder_.progress( ROUNDdom, ROUNDres);
-                                        i++;
-                                        coprimeset.insert(*m_primeiter);
-                                        
-                                    }
-                                    
-                                }else{
-                                    
-                                    this->Builder_.initialize( ROUNDdom, ROUNDres);
-                                    i++;
-                                    coprimeset.insert(*m_primeiter);
-                                }
-                                
-                            }
-                        }
-                        
-                    }
-                
-			}
-            
-			// commentator().stop ("done", NULL, "mmcrait");
-			//std::cerr << "Used: " << IterCounter << " primes." << std::endl;
-			return this->Builder_.result(res,den);
-		}
-        
-#endif   
+  
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // END FOR ROI
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
