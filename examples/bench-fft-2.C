@@ -121,33 +121,6 @@ bool check_DFT(const Field &fld, size_t kmax, long seed){
 			print_vectors(x, y);
 			break;
 		} 
-
-		fft_algo_nosimd.DIF_sort2(y.data());
-		passed &= !std::equal(x.begin(), x.end(), y.begin());
-		fft_algo_nosimd.DIT_sort2(y.data());
-		FFLAS::fscalin(fld, convolution_size, inv_convolution_size, y.data(), 1);
-
-		passed &= std::equal(x.begin(), x.end(), y.begin());
-
-		std::cout << "size: " << log_convolution_size << " DFT sort2: " << (passed ? "passed" : "error") << std::endl;
-		if(!passed){
-			print_vectors(x, y);
-			break;
-		} 
-
-		fft_algo_nosimd.DIF_sort2_unroll(y.data());
-		passed &= !std::equal(x.begin(), x.end(), y.begin());
-		fft_algo_nosimd.DIT_sort2_unroll(y.data());
-		FFLAS::fscalin(fld, convolution_size, inv_convolution_size, y.data(), 1);
-
-		passed &= std::equal(x.begin(), x.end(), y.begin());
-
-		std::cout << "size: " << log_convolution_size << " DFT sort2 unroll: " << (passed ? "passed" : "error") << std::endl;
-		if(!passed){
-			print_vectors(x, y);
-			break;
-		} 
-		std::cout << std::endl;
 	}
 	return passed;
 }
@@ -203,8 +176,6 @@ void bench_DIF(const Field& fld, size_t kmax, long seed) {
 		using FFT_a = FFT_algorithms<Field,NoSimd<typename Field::Element> >;
 		DFT_performance(fft_algo_nosimd,&FFT_a::DIF, lpts, x, "FFT_algorithms<Field,NoSimd>::DIF");
 		DFT_performance(fft_algo_nosimd, &FFT_a::DIF_sort, lpts, x, "FFT_algorithms<Field, NoSimd>::DIF_sort");
-		DFT_performance(fft_algo_nosimd, &FFT_a::DIF_sort2, lpts, x, "FFT_algorithms<Field, NoSimd>::DIF_sort2");
-		DFT_performance(fft_algo_nosimd, &FFT_a::DIF_sort2_unroll, lpts, x, "FFT_algorithms<Field, NoSimd>::DIF_sort2_unroll");
 
 #if defined(__FFLASFFPACK_HAVE_SSE4_1_INSTRUCTIONS)
 		if (Simd128<typename Field::Element>::vect_size == 4 || Simd128<typename Field::Element>::vect_size == 8){
@@ -225,8 +196,6 @@ void bench_DIF(const Field& fld, size_t kmax, long seed) {
 
 		DFT_performance(fft_algo_nosimd,&FFT_a::DIT, lpts, x, "FFT_algorithms<Field,NoSimd>::DIT");
 		DFT_performance(fft_algo_nosimd, &FFT_a::DIT_sort, lpts, x, "FFT_algorithms<Field, NoSimd>::DIT_sort");
-		DFT_performance(fft_algo_nosimd, &FFT_a::DIT_sort2, lpts, x, "FFT_algorithms<Field, NoSimd>::DIT_sort2");
-		DFT_performance(fft_algo_nosimd, &FFT_a::DIT_sort2_unroll, lpts, x, "FFT_algorithms<Field, NoSimd>::DIT_sort2_unroll");
 
 #if defined(__FFLASFFPACK_HAVE_SSE4_1_INSTRUCTIONS)
 		if (Simd128<typename Field::Element>::vect_size == 4 || Simd128<typename Field::Element>::vect_size == 8){

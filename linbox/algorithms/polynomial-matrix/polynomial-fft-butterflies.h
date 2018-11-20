@@ -92,30 +92,6 @@ namespace LinBox {
 			//std::cout<<A<<" $$ "<<B<<"\n ";
 		}
 
-		inline void CT_butterfly_shoup_lazy(Element &res_x, Element &res_y, Element x, Element y, Element w, typename Field::Compute_t invw, Element p, Element p2) const
-    	{
-        	if (x >= p2)
-        	{
-	            x -= p2;
-    	    }
-        	Element c = (static_cast<Element>(y) * invw) >> (4 * sizeof(typename Field::Compute_t));
-        	Element rr = y * w - c * p;
-        	res_x = x + rr;
-        	res_y = x - rr + p2;
-    	}
-
-    	inline void GS_butterfly_shoup_lazy(Element &res_x, Element &res_y, Element x, Element y, Element w, typename Field::Compute_t invw, Element p, Element p2) const
-    	{
-        	res_x = x + y;
-        	if (res_x >= p2)
-        	{
-            	res_x -= p2;
-        	}
-        	Element temp = x - y + p2;
-        	Element c = (static_cast<typename Field::Compute_t>(temp) * invw) >> (4 * sizeof(typename Field::Compute_t));
-        	res_y = temp * w - c * p;
-    	}
-
 	}; // FFT_butterflies<Field, 1>
 
 	// ATTENTION à tous les uint64_t, SimdComp restants !!!!
