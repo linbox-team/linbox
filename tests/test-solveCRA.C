@@ -118,21 +118,21 @@ bool test_set(const Field  &ZZ, Vector &X2,
 
   Timer chrono;
   chrono.start();
-
+  
   solveCRA (X2, d, A, B, tg, 
 	    Method::BlasElimination()
 	    //Method::Hybrid(*Cptr)
 	    );	
   
   chrono.stop();
-
+  
   //  DenseVector B2(ZZ, A.coldim());
   
-
-    std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl; 
-    
-    tag=checkResult (ZZ, A, B, X2, d);
-
+  
+  std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl; 
+  
+  tag=checkResult (ZZ, A, B, X2, d);
+  
   return tag;
 }
 
@@ -141,7 +141,7 @@ bool test_set(const Field  &ZZ, Vector &X2,
 int main(int argc, char ** argv)
 {
   
-
+  
   int bits,bitsize, niter,ni,nj,nt,n, q;
   bool peak = false, loop=false;
   bits=10, niter=1, ni=3,nj=3,nt=1, n=3, q=-1; 
@@ -156,52 +156,48 @@ int main(int argc, char ** argv)
     END_OF_ARGUMENTS
   };	
   parseArguments (argc, argv, args); 
-  
-  
+    
   omp_set_num_threads(nt);
-
+  
   nj=n;
   ni=n;  
-
+  
   Givaro::ZRing<Integer> ZZ;  
   typedef BlasVector<Givaro::ZRing<Integer> > DenseVector;
-
-
-
-
+  
+  
   for(int j=0;loop || j<niter;j++){  
-            
-
-            std::cout << " Test with dimension: " << ni << " x " << ni << std::endl;
-            std::cout << " Test with bitsize: " << bits << std::endl;
-        {
-          DenseMatrix<Givaro::ZRing<Integer> > A (ZZ,ni,nj);
-          DenseVector X(ZZ, A.coldim()), X2(ZZ, A.coldim()),  B(ZZ, A.coldim());
-          genData (ZZ, A, bits, q);
-          genData (ZZ, B, bits, q);
-
-/*
+    
+    
+    std::cout << " Test with dimension: " << ni << " x " << ni << std::endl;
+    std::cout << " Test with bitsize: " << bits << std::endl;
+    {
+      DenseMatrix<Givaro::ZRing<Integer> > A (ZZ,ni,nj);
+      DenseVector X(ZZ, A.coldim()), X2(ZZ, A.coldim()),  B(ZZ, A.coldim());
+      genData (ZZ, A, bits, q);
+      genData (ZZ, B, bits, q);
+      
+      /*
 	std::cerr << ">>>>Compute with B: " << std::endl;      
 	for(long j=0;j<(long)nj;j++) std::cerr << B.getEntry(j) << std::endl; 
 	
 	A.write(std::cout << ">>>>Compute with A: " << A.rowdim() << " by " << A.coldim() << "\n"<< "A:=",Tag::FileFormat::Maple) << ';' << std::endl;
-*/
+      */
+      
+      if(!test_set(ZZ, X2, A, B )) break;
+    }
+    ni = rand() % n + 1;
+    if (ni < n / 2 && ni % 2 == 0 && !peak) ni = 1;
     
-        if(!test_set(ZZ, X2, A, B )) break;
-        }
-            ni = rand() % n + 1;
-            if (ni < n / 2 && ni % 2 == 0 && !peak) ni = 1;
-
-            bits = rand() % bitsize + 1;
-            if (bits < bitsize / 2 && bitsize % 2 == 0 && !peak) bits = 1;
-
-            nj=ni;
-            peak = !peak;
-
+    bits = rand() % bitsize + 1;
+    if (bits < bitsize / 2 && bitsize % 2 == 0 && !peak) bits = 1;
+    
+    nj=ni;
+    peak = !peak;
+    
   }
-
-    return 0;
-
+  
+  return 0;
   
 }
 
