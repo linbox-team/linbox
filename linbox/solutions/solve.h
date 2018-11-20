@@ -822,13 +822,13 @@ namespace LinBox
 		}
 #endif   
 
-#ifdef __LINBOX_HAVE_MPI
-LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   genprime(C->size(),C->rank(),25);
-#else      
-PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime(25);
+//LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   genprime(C->rank(),C->size(),(unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205))); -----> BUG to use this for computation
+PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
+
 //		PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205))); //RandomPrimeIterator genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
 //PrimeIterator<LinBox::IteratorCategories::DeterministicTag> genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
-#endif
+
+
 		BlasVector<Givaro::ZRing<Integer>> num(A.field(),A.coldim());
 		IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -846,16 +846,20 @@ PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime(25);
 			max=-min;
 		size_t n=A.coldim();
 		double hadamard = n*(Givaro::naturallog(n)+2*Givaro::naturallog(max));//double hadamard = n*(log(double(n))+2*log(double(max)));
-std::cout << " >>>>>>>>>>>>>>>> Hadamard:= " << hadamard << std::endl;
+//std::cout << " >>>>>>>>>>>>>>>> Hadamard:= " << hadamard << std::endl;
+
+
+
 #ifdef __LINBOX_HAVE_MPI
 //		MPIratChineseRemainder< EarlyMultipRatCRA< Givaro::ModularBalanced<double> > > cra(3UL, C);
 		MPIratChineseRemainder< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(hadamard, C);
-
+//		MPIratChineseRemainder< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(3UL, C);
 #else
 
 std::cerr << "Sequential solveCRA" << std::endl;
 //        RationalRemainder< EarlyMultipRatCRA< Givaro::ModularBalanced<double> > > cra(3UL);
         RationalRemainder< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(hadamard);
+//        RationalRemainder< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(3UL);
 #endif
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //        Timer chrono;
@@ -880,10 +884,11 @@ std::cerr << "Sequential solveCRA" << std::endl;
 			A.field().init(d, den);
             
 			commentator().stop ("done", NULL, "Isolve");
-			return x;
 #ifdef __LINBOX_HAVE_MPI
 		}
-#endif 
+#endif
+		return x;
+ 
 	}
     
     

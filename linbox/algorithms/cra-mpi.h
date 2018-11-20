@@ -401,11 +401,11 @@ namespace LinBox
             while(poison_pills_left > 0 ){
 
                 compute_message_comm(primes, r, pp, idle_process, poison_pills_left);
-
-                Domain D(pp);
+                if(!Builder_.terminated()){
+                    Domain D(pp);
                 
-                Builder_.progress(D, r);
-                
+                    Builder_.progress(D, r);
+                }
                 primes[idle_process - 1] = (Builder_.terminated()) ? 1:0;
                 
             } 
@@ -473,7 +473,8 @@ namespace LinBox
                 
                 worker_task(Iteration, r);                
                 
-			}            
+			}
+			return num;         
 		}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
