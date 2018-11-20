@@ -80,7 +80,7 @@ Integer tmp;
 
 
 template <class Field>
-bool genData (BlasMatrix<Field> &A, size_t bits){
+void genData (BlasMatrix<Field> &A, size_t bits){
   typename Field::Element ZZ;
   typedef typename Field::RandIter RandIter;    
   RandIter RI(ZZ,bits,6);//RandIter RI(ZZ) ;
@@ -89,7 +89,7 @@ bool genData (BlasMatrix<Field> &A, size_t bits){
 }
 
 template <class Field>
-bool genData (SparseMatrix<Field> &A, size_t bits){
+void genData (SparseMatrix<Field> &A, size_t bits){
   typename Field::Element ZZ;
   typedef typename Field::RandIter RandIter;    
   RandIter RI(ZZ,bits,7);//RandIter RI(ZZ) ;
@@ -98,7 +98,7 @@ bool genData (SparseMatrix<Field> &A, size_t bits){
 }
 
 template <>
-bool genData (BlasMatrix<Givaro::ZRing<Integer> >  &A, size_t bits){
+void genData (BlasMatrix<Givaro::ZRing<Integer> >  &A, size_t bits){
   Givaro::ZRing<Integer> ZZ;
   typedef typename  Givaro::ZRing<Integer> ::RandIter RandIter;    
   RandIter RI(ZZ,bits,7);//RandIter RI(ZZ,bits) ;
@@ -106,7 +106,7 @@ bool genData (BlasMatrix<Givaro::ZRing<Integer> >  &A, size_t bits){
   RDM.randomFullRank(A);
 }
 template <>
-bool genData (SparseMatrix<Givaro::ZRing<Integer> >  &A, size_t bits){
+void genData (SparseMatrix<Givaro::ZRing<Integer> >  &A, size_t bits){
   Givaro::ZRing<Integer> ZZ;
   typedef typename  Givaro::ZRing<Integer> ::RandIter RandIter;    
   RandIter RI(ZZ,bits,7);//RandIter RI(ZZ,bits) ;
@@ -115,7 +115,7 @@ bool genData (SparseMatrix<Givaro::ZRing<Integer> >  &A, size_t bits){
 }
 
 template <class Field>
-bool genData (BlasVector<Field>  &B, size_t bits){
+void genData (BlasVector<Field>  &B, size_t bits){
   typename Field::Element ZZ;
   typedef typename Field::RandIter RandIter;    
   RandIter RI(ZZ,bits,5);//RandIter RI(ZZ) ;
@@ -124,7 +124,7 @@ bool genData (BlasVector<Field>  &B, size_t bits){
 
 
 template <>
-bool genData (DenseVector<Givaro::ZRing<Integer> >  &B, size_t bits){
+void genData (DenseVector<Givaro::ZRing<Integer> >  &B, size_t bits){
   Givaro::ZRing<Integer> ZZ;
   typedef typename  Givaro::ZRing<Integer> ::RandIter RandIter;    
   RandIter RI(ZZ,bits,5);//RandIter RI(ZZ,bits) ;

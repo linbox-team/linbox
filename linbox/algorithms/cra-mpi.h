@@ -342,8 +342,7 @@ namespace LinBox
             int pp;
             LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   gen(process,procs);  
             
-            //  get a prime, compute, send back start and end
-            //  of heap addresses
+            //A hastable to store all used primes to check for the uniqueness of a new prime number
             std::unordered_set<int> prime_used;
             
             while(true){
@@ -367,8 +366,8 @@ namespace LinBox
         }
 
 
-        
-        void compute_stat_comm(int *primes, BlasVector<Domain> &r, int &pp, int &idle_process, int &poison_pills_left)
+        //Function of message exchaning between the master process and a worker process
+        void compute_message_comm(int *primes, BlasVector<Domain> &r, int &pp, int &idle_process, int &poison_pills_left)
         {
 
                 idle_process = 0;
@@ -391,8 +390,6 @@ namespace LinBox
                 
                 //Restructure the vector like before without added prime number
                 r.resize (r.size()-1); 
-
-                
         }
         
         void master_compute(int *primes, BlasVector<Domain> &r)
@@ -403,7 +400,7 @@ namespace LinBox
             int idle_process = 0;
             while(poison_pills_left > 0 ){
 
-                compute_stat_comm(primes, r, pp, idle_process, poison_pills_left);
+                compute_message_comm(primes, r, pp, idle_process, poison_pills_left);
 
                 Domain D(pp);
                 
@@ -419,20 +416,22 @@ namespace LinBox
         {
 			int procs = _commPtr->size();
             
-            //  for each slave process...
+            //  for each worker process...
             for(int i=1; i<procs; i++){
                 primes[i - 1] = 0;
-                _commPtr->send(primes[i - 1], i);
-                
-            }  
+                _commPtr->send(primes[i - 1], i);                
+            }
+            
             Builder_.initialize( D, Iteration(r, D) );            
         }
         
         template<class Function>
         void master_task(Function& Iteration, Domain &D, BlasVector<Domain> &r)
         {
+            //Vector to store the termination condition test result for each worker process
             int primes[_commPtr->size() - 1];
             
+            //The master process sends tag to every worker process to initialize the computing
             master_init(primes, Iteration, D, r); 
             
             master_compute(primes, r);                
