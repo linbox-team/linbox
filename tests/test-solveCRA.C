@@ -129,7 +129,7 @@ bool test_set(const Field  &ZZ, Vector &X2,
   //  DenseVector B2(ZZ, A.coldim());
   
   
-  std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl; 
+  std::cout << "Real time (seconds): " << chrono.realtime() << std::endl; 
   
   tag=checkResult (ZZ, A, B, X2, d);
   
@@ -141,10 +141,13 @@ bool test_set(const Field  &ZZ, Vector &X2,
 int main(int argc, char ** argv)
 {
   
-  
-  int bits,bitsize, niter,ni,nj,nt,n, q;
-  bool peak = false, loop=false;
-  bits=10, niter=1, ni=3,nj=3,nt=1, n=3, q=-1; 
+    
+    size_t n = 100;
+    size_t bitsize = 10;
+    size_t niter = 3;
+    size_t nt = 1;
+    size_t q = -1;
+    bool peak = false, loop=false;
   
   static Argument args[] = {
     { 'n', "-n N", "Set column and row dimension of test matrices to N.", TYPE_INT,     &n },
@@ -158,21 +161,20 @@ int main(int argc, char ** argv)
   parseArguments (argc, argv, args); 
     
   omp_set_num_threads(nt);
-  
-  nj=n;
-  ni=n;  
-  
-  Givaro::ZRing<Integer> ZZ;  
+
+    Givaro::ZRing<Integer> ZZ;  
   typedef BlasVector<Givaro::ZRing<Integer> > DenseVector;
   
+  size_t ni=n;
+  size_t bits=bitsize;
   
-  for(int j=0;loop || j<niter;j++){  
+  for(size_t j=0;loop || j<niter;j++){  
     
     
     std::cout << " Test with dimension: " << ni << " x " << ni << std::endl;
-    std::cout << " Test with bitsize: " << bits << std::endl;
+    std::cout << " Test with bitsize: " << bitsize << std::endl;
     {
-      DenseMatrix<Givaro::ZRing<Integer> > A (ZZ,ni,nj);
+      DenseMatrix<Givaro::ZRing<Integer> > A (ZZ,ni,ni);
       DenseVector X(ZZ, A.coldim()), X2(ZZ, A.coldim()),  B(ZZ, A.coldim());
       genData (ZZ, A, bits, q);
       genData (ZZ, B, bits, q);
@@ -186,13 +188,12 @@ int main(int argc, char ** argv)
       
       if(!test_set(ZZ, X2, A, B )) break;
     }
-    ni = rand() % n + 1;
+    ni = ( rand() % n ) +1 ;
     if (ni < n / 2 && ni % 2 == 0 && !peak) ni = 1;
     
     bits = rand() % bitsize + 1;
     if (bits < bitsize / 2 && bitsize % 2 == 0 && !peak) bits = 1;
-    
-    nj=ni;
+
     peak = !peak;
     
   }
