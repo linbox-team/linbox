@@ -275,7 +275,10 @@ namespace LinBox
         template< class Function, class PrimeIterator, class Domain, class ElementContainer>
         void solve_with_prime(std::vector<PrimeIterator>& m_primeiters, std::set<int>& coprimeset, Function& Iteration, std::vector<Domain>& ROUNDdomains, std::vector<ElementContainer>& ROUNDresidues){
             
-            ++m_primeiters[ omp_get_thread_num()]; while(this->Builder_.noncoprime(*m_primeiters[ omp_get_thread_num()]) && coprimeset.find(*m_primeiters[omp_get_thread_num()])!=coprimeset.end()) ++m_primeiters[ omp_get_thread_num()];     
+            ++m_primeiters[ omp_get_thread_num()];
+            while(this->Builder_.noncoprime(*m_primeiters[ omp_get_thread_num()]) &&
+                  coprimeset.find(*m_primeiters[omp_get_thread_num()])!=coprimeset.end())
+                ++m_primeiters[ omp_get_thread_num()];
             
             ROUNDdomains[ omp_get_thread_num()] = Domain(*m_primeiters[ omp_get_thread_num()]);
             
@@ -286,16 +289,16 @@ namespace LinBox
         template<class pFunc, class Function, class PrimeIterator, class Domain, class ElementContainer>
         void compute_task(pFunc& pF, int NN, int Tile, std::vector<PrimeIterator>& m_primeiters, std::set<int>& coprimeset, Function& Iteration, std::vector<Domain>& ROUNDdomains, std::vector<ElementContainer>& ROUNDresidues)
         {
-            
+#pragma omp parallel num_threads
+#pragma omp single            
 			while( ! this->Builder_.terminated() ) {
                 
-#pragma omp parallel num_threads(NN/Tile)
                 //for(auto j=0;j<NN/Tile;j++)
                 {
                     
 #pragma omp task                        
                     {
-                        
+                            // std::cout<<"Coucou thread_num = "<<omp_get_thread_num()<<std::endl;
                         for(auto i=0; i<Tile; ){
                             
                             solve_with_prime(m_primeiters, coprimeset, Iteration, ROUNDdomains, ROUNDresidues);
