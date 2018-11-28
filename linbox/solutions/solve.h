@@ -827,21 +827,28 @@ namespace LinBox
 			)
 	{
 		Integer den(1);
+
 #ifdef __LINBOX_HAVE_MPI	//MPI parallel version
 		if(!C || C->rank() == 0){
 #endif
 			if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
 				throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
+
                         commentator().start ("Integer CRA Solve", "Isolve");
+
+
 #ifdef __LINBOX_HAVE_MPI
 		}
 
 #endif
+
+
 		PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205))); //RandomPrimeIterator genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
 //PrimeIterator<LinBox::IteratorCategories::DeterministicTag> genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
 
 		BlasVector<Givaro::ZRing<Integer>> num(A.field(),A.coldim());
 		IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 		typename BB::ConstIterator it = A.Begin();
 		typename BB::ConstIterator it_end = A.End();
@@ -864,17 +871,22 @@ namespace LinBox
 //		MPIratChineseRemainder< EarlyMultipRatCRA< Givaro::ModularBalanced<double> > > cra(3UL, C);
 		MPIratChineseRemainder< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(hadamard, C);
 
+
 #else
 
 std::cerr << "Sequential solveCRA" << std::endl;
 
 //        RationalRemainder< EarlyMultipRatCRA< Givaro::ModularBalanced<double> > > cra(3UL);
         RationalRemainder< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(hadamard);
+
 #endif
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //        Timer chrono;
 //        chrono.start();
+
 		cra(num, den, iteration, genprime); //Repalce genprime with the masked one then every process will have its own generator
+
 #ifdef __LINBOX_HAVE_MPI
 //        chrono.stop();//std::cout << "The process ("<<C->rank()<<") spent total CPU time (seconds) in solveCRA: " << chrono.usertime() << std::endl;
 #else
@@ -884,6 +896,7 @@ std::cerr << "Sequential solveCRA" << std::endl;
 #ifdef __LINBOX_HAVE_MPI
 		if(!C || C->rank() == 0){
 #endif
+
             typename Vector::iterator it_x= x.begin();
             typename BlasVector<Givaro::ZRing<Integer>>::const_iterator it_num= num.begin();
 

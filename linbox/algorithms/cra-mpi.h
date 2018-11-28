@@ -339,7 +339,7 @@ namespace LinBox
 
                 ++gen; while(Builder_.noncoprime(*gen)||prime_used.find(*gen) != prime_used.end()) ++gen;
                 prime_used.insert(*gen);
-
+//std::cout<<"Proc("<<_commPtr->rank()<<"): "<< *gen <<std::endl;
                 Domain D(*gen);
 
                 Iteration(r, D);
@@ -350,7 +350,9 @@ namespace LinBox
         {
             
             int pp;
-            LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   gen(_commPtr->rank(),_commPtr->size());  
+//            LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   gen(_commPtr->rank(),_commPtr->size());
+LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag>   gen(_commPtr->rank(),_commPtr->size());
+
             
 
             std::unordered_set<int> prime_used;
@@ -523,6 +525,7 @@ namespace LinBox
                     r.resize (r.size()-1);
 
                     Domain D(pp);
+
                     Builder_.progress(D, r);
 
                     primes[idle_process - 1] = (Builder_.terminated()) ? 1:0;
@@ -560,6 +563,8 @@ namespace LinBox
 
                     Domain D(*gen);
 
+
+
                     Iteration(r, D
 #ifdef __Detailed_Time_Measurement
 #ifdef __LINBOX_HAVE_MPI
@@ -576,7 +581,7 @@ namespace LinBox
 
 				}
 
-                return num;
+//                return num;
 			}
 
 		}
@@ -605,9 +610,9 @@ namespace LinBox
 
 			//  parent propcess
 			if(process == 0){
-
+//std::cout << " [master]>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> " << std::endl;
                 master_task(Iteration, D, r);
-
+//std::cout << " [master]<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< " << std::endl;
 				return Builder_.result(num,den);
 
 			}
