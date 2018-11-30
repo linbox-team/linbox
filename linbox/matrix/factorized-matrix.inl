@@ -26,7 +26,7 @@
 
 #ifndef __LINBOX_factorized_matrix_INL
 #define __LINBOX_factorized_matrix_INL
-
+#include <mpi.h>
 namespace LinBox
 {
 
@@ -141,9 +141,9 @@ namespace LinBox
 					A.getPointer(), A.getStride(), A.getP().getPointer(), A.getQ().getPointer(),
 					X_v.getPointer(), X_v.getStride(),
 					B_v.getPointer(), B_v.getStride(), &info);
-			if (info > 0)
+			if (info > 0){std::cout << " >>>>>>>>>>>>>>>>>> [1] " <<std::endl;
 				throw LinboxMathInconsistentSystem ("Linear system is inconsistent");
-
+}
 			return X;
 		}
 
@@ -166,9 +166,9 @@ namespace LinBox
 					A.getPointer(), A.getStride(),
 					A.getP().getPointer(), A.getQ().getPointer(),
 					B_v.getPointer(), B_v.getStride(), &info);
-			if (info > 0)
+			if (info > 0){std::cout << " >>>>>>>>>>>>>>>>>> [2] " <<std::endl;
 				throw LinboxMathInconsistentSystem ("Linear system is inconsistent");
-
+}
 			return B;
 		}
 		// end of class FactorizedMatrixLeftSolve
@@ -194,9 +194,9 @@ namespace LinBox
 					A.getP().getPointer(), A.getQ().getPointer(),
 					X_v.getPointer(), X_v.getStride(),
 					B_v.getPointer(), B_v.getStride(), &info);
-			if (info > 0)
+			if (info > 0){std::cout << " >>>>>>>>>>>>>>>>>> [3] " <<std::endl;
 				throw LinboxMathInconsistentSystem ("Linear system is inconsistent");
-
+}
 			return X;
 		}
 
@@ -217,9 +217,9 @@ namespace LinBox
 					A.getPointer(), A.getStride(),
 					A.getP().getPointer(), A.getQ().getPointer(),
 					B_v.getPointer(), B_v.getStride(), &info);
-			if (info > 0)
+			if (info > 0){std::cout << " >>>>>>>>>>>>>>>>>> [4] " <<std::endl;
 				throw LinboxMathInconsistentSystem ("Linear system is inconsistent");
-
+}
 			return B;
 		}
 
@@ -305,9 +305,9 @@ namespace LinBox
 					for (size_t j = 0; j < B.coldim(); ++j)
 						if (!F.isZero (*(Bp + i*ldb + j)))
 							consistent = false;
-				if (!consistent)
+				if (!consistent){std::cout << " >>>>>>>>>>>>>>>>>> [5] " <<std::endl;
 					throw  LinboxMathInconsistentSystem ("Linear system is inconsistent");
-
+}
 				// The last rows of B are now supposed to be 0
 
 				// for (size_t i=0; i < A.getRank(); ++i)
@@ -339,9 +339,9 @@ namespace LinBox
 					for (size_t j = 0; j < B.coldim(); ++j)
 						if (!F.isZero (*(Bp + i*ldb + j)))
 							consistent = false;
-				if (!consistent)
+				if (!consistent){std::cout << " >>>>>>>>>>>>>>>>>> [6] " <<std::endl;
 					throw LinboxMathInconsistentSystem ("Linear system is inconsistent");
-
+}
 				FFLAS::ftrsm (F, FFLAS::FflasLeft, FFLAS::FflasUpper, FFLAS::FflasNoTrans, FFLAS::FflasNonUnit,
 					      A.getRank(), B.coldim(), F.one, A.getPointer(), A.getStride(), Bp, ldb);
 
@@ -401,9 +401,9 @@ namespace LinBox
 							if (!F.areEqual (*(X + i*ldx + j), *(Bp + i*ldb +j)))
 								consistent = false;
 				}
-				if (!consistent)
+				if (!consistent){std::cout << " >>>>>>>>>>>>>>>>>> [7] " <<std::endl;
 					throw  LinboxMathInconsistentSystem ("Linear system is inconsistent");
-
+}
 				for (size_t i = 0; i < X.rowdim(); ++i)
 					for (size_t j = R; j < X.coldim(); ++j)
 						F.assign (*(Xp + i*ldx + j), F.zero);
@@ -434,9 +434,9 @@ namespace LinBox
 					for (size_t j = R; j < B.coldim(); ++j)
 						if (!F.isZero (*(Bp + i*ldb + j)))
 							consistent = false;
-				if (!consistent)
+				if (!consistent){std::cout << " >>>>>>>>>>>>>>>>>> [8] " <<std::endl;
 					throw  LinboxMathInconsistentSystem ("Linear system is inconsistent");
-
+}
 				return B;
 
 			}
@@ -462,9 +462,9 @@ namespace LinBox
 				FFPACK::fgetrs (F, FFLAS::FflasLeft, A.rowdim(), A.coldim(), 1, A.getRank(),
 						A.getPointer(), A.getStride(), A.getP().getPointer(), A.getQ().getPointer(),
 						&x[0], 1, &b[0], 1, &info);
-				if (info > 0)
+				if (info > 0){std::cout << " >>>>>>>>>>>>>>>>>> [9] " <<std::endl;
 					throw LinboxMathInconsistentSystem ("Linear system is inconsistent");
-
+}
 				return x;
 			}
 
@@ -481,9 +481,9 @@ namespace LinBox
 						A.getPointer(), A.getStride(),
 						A.getP().getPointer(), A.getQ().getPointer(),
 						&b[0], 1, &info);
-				if (info > 0)
+				if (info > 0){std::cout << " >>>>>>>>>>>>>>>>>> [10] " <<std::endl;
 					throw LinboxMathInconsistentSystem ("Linear system is inconsistent");
-
+}
 				return b;
 			}
 		}; // end of class FactorizedMatrixLeftSolve
@@ -505,9 +505,9 @@ namespace LinBox
 						A.getPointer(), A.getStride(),
 						A.getP().getPointer(), A.getQ().getPointer(),
 						&x[0], x.size(), &b[0], b.size(), &info);
-				if (info > 0)
+				if (info > 0){std::cout << " >>>>>>>>>>>>>>>>>> [11] " <<std::endl;
 					throw LinboxMathInconsistentSystem ("Linear system is inconsistent");
-
+}
 				return x;
 			}
 
@@ -524,9 +524,9 @@ namespace LinBox
 						A.getPointer(), A.getStride(),
 						A.getP().getPointer(), A.getQ().getPointer(),
 						&b[0], b.size(), &info);
-				if (info > 0)
+				if (info > 0){std::cout << " >>>>>>>>>>>>>>>>>> [12] " <<std::endl;
 					throw LinboxMathInconsistentSystem ("Linear system is inconsistent");
-
+}
 				return b;
 			}
 		}; // end of class FactorizedMatrixRightSolve
@@ -619,9 +619,9 @@ namespace LinBox
 				for (size_t i = A.getRank(); i < b.size(); ++i)
 					if (!F.isZero (b[i]))
 						consistent = false;
-				if (!consistent)
+				if (!consistent){std::cout << " >>>>>>>>>>>>>>>>>> [13] " <<std::endl;
 					throw  LinboxMathInconsistentSystem ("Linear system is inconsistent");
-
+}
 				// The last rows of B are now supposed to be 0
 
 				for (size_t i=0; i < A.getRank(); ++i)
@@ -648,9 +648,9 @@ namespace LinBox
 				for (size_t i = A.getRank(); i < b.size(); ++i)
 					if (!F.isZero (b[i]))
 						consistent = false;
-				if (!consistent)
+				if (!consistent){std::cout << " >>>>>>>>>>>>>>>>>> [14] " <<std::endl;
 					throw  LinboxMathInconsistentSystem ("Linear system is inconsistent");
-
+}
 				FFLAS::ftrsv (F, FFLAS::FflasUpper, FFLAS::FflasNoTrans, FFLAS::FflasNonUnit,
 					      A.getRank(), A.getPointer(), A.getStride(), &b[0], 1);
 
@@ -704,9 +704,9 @@ namespace LinBox
 							consistent = false;
 				}
 
-				if (!consistent)
+				if (!consistent){std::cout << " >>>>>>>>>>>>>>>>>> [15] " <<std::endl;
 					throw  LinboxMathInconsistentSystem ("Linear system is inconsistent");
-
+}
 				for (size_t j = R; j < x.size(); ++j)
 					F.assign (x[j], F.zero);
 				return x;
@@ -733,9 +733,9 @@ namespace LinBox
 				for (size_t j = R; j < b.size(); ++j)
 					if (!F.isZero (b[j]))
 						consistent = false;
-				if (!consistent)
+				if (!consistent){std::cout << " >>>>>>>>>>>>>>>>>> [16] " <<std::endl;
 					throw  LinboxMathInconsistentSystem ("Linear system is inconsistent");
-
+}
 				return b;
 			}
 		}; // end of class FactorizedMatrixRightUSolve
@@ -760,9 +760,9 @@ namespace LinBox
 				FFPACK::fgetrs (F, FFLAS::FflasLeft, A.rowdim(), A.coldim(), 1, A.getRank(),
 						A.getPointer(), A.getStride(), A.getP().getPointer(), A.getQ().getPointer(),
 						&x[0], 1, &b[0], 1, &info);
-				if (info > 0)
+				if (info > 0){std::cout << " >>>>>>>>>>>>>>>>>> [17] " <<std::endl;
 					throw LinboxMathInconsistentSystem ("Linear system is inconsistent");
-
+}
 				return x;
 			}
 
@@ -779,9 +779,9 @@ namespace LinBox
 						A.getPointer(), A.getStride(),
 						A.getP().getPointer(), A.getQ().getPointer(),
 						&b[0], 1, &info);
-				if (info > 0)
+				if (info > 0){std::cout << " >>>>>>>>>>>>>>>>>> [18] " <<std::endl;
 					throw LinboxMathInconsistentSystem ("Linear system is inconsistent");
-
+}
 				return b;
 			}
 		}; // end of class FactorizedMatrixLeftSolve
@@ -803,9 +803,9 @@ namespace LinBox
 						A.getPointer(), A.getStride(),
 						A.getP().getPointer(), A.getQ().getPointer(),
 						&x[0], x.size(), &b[0], b.size(), &info);
-				if (info > 0)
+				if (info > 0){std::cout << " >>>>>>>>>>>>>>>>>> [19] " <<std::endl;
 					throw LinboxMathInconsistentSystem ("Linear system is inconsistent");
-
+}
 				return x;
 			}
 
@@ -822,9 +822,9 @@ namespace LinBox
 						A.getPointer(), A.getStride(),
 						A.getP().getPointer(), A.getQ().getPointer(),
 						&b[0], b.size(), &info);
-				if (info > 0)
+				if (info > 0){std::cout << " >>>>>>>>>>>>>>>>>> [20] " <<std::endl;
 					throw LinboxMathInconsistentSystem ("Linear system is inconsistent");
-
+}
 				return b;
 			}
 		}; // end of class FactorizedMatrixRightSolve
@@ -917,9 +917,9 @@ namespace LinBox
 				for (size_t i = A.getRank(); i < b.size(); ++i)
 					if (!F.isZero (b[i]))
 						consistent = false;
-				if (!consistent)
+				if (!consistent){std::cout << " >>>>>>>>>>>>>>>>>> [21] " <<std::endl;
 					throw  LinboxMathInconsistentSystem ("Linear system is inconsistent");
-
+}
 				// The last rows of B are now supposed to be 0
 
 				for (size_t i=0; i < A.getRank(); ++i)
@@ -946,9 +946,9 @@ namespace LinBox
 				for (size_t i = A.getRank(); i < b.size(); ++i)
 					if (!F.isZero (b[i]))
 						consistent = false;
-				if (!consistent)
+				if (!consistent){std::cout << " >>>>>>>>>>>>>>>>>> [22] " <<std::endl;
 					throw  LinboxMathInconsistentSystem ("Linear system is inconsistent");
-
+}
 				FFLAS::ftrsv (F, FFLAS::FflasUpper, FFLAS::FflasNoTrans, FFLAS::FflasNonUnit,
 					      A.getRank(), A.getPointer(), A.getStride(), &b[0], 1);
 
@@ -1002,9 +1002,9 @@ namespace LinBox
 							consistent = false;
 				}
 
-				if (!consistent)
+				if (!consistent){std::cout << " >>>>>>>>>>>>>>>>>> [23] " <<std::endl;
 					throw  LinboxMathInconsistentSystem ("Linear system is inconsistent");
-
+}
 				for (size_t j = R; j < x.size(); ++j)
 					F.assign (x[j], F.zero);
 				return x;
@@ -1031,9 +1031,9 @@ namespace LinBox
 				for (size_t j = R; j < b.size(); ++j)
 					if (!F.isZero (b[j]))
 						consistent = false;
-				if (!consistent)
+				if (!consistent){std::cout << " >>>>>>>>>>>>>>>>>> [24] " <<std::endl;
 					throw  LinboxMathInconsistentSystem ("Linear system is inconsistent");
-
+}
 				return b;
 			}
 		}; // end of class FactorizedMatrixRightUSolve

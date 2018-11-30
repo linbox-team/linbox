@@ -339,10 +339,11 @@ namespace LinBox
 
                 ++gen; while(Builder_.noncoprime(*gen)||prime_used.find(*gen) != prime_used.end()) ++gen;
                 prime_used.insert(*gen);
-//std::cout<<"Proc("<<_commPtr->rank()<<"): "<< *gen <<std::endl;
+std::cerr<<*gen<<std::endl;//<-------------- 
                 Domain D(*gen);
 
                 Iteration(r, D);
+
         }
 
         template<class Function>
@@ -408,7 +409,6 @@ LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag>   gen(
             int pp;
             int idle_process = 0;
             while(poison_pills_left > 0 ){
-
 
                 compute_stat_comm(primes, r, pp, idle_process, poison_pills_left);
 
@@ -610,9 +610,9 @@ LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag>   gen(
 
 			//  parent propcess
 			if(process == 0){
-//std::cout << " [master]>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> " << std::endl;
+
                 master_task(Iteration, D, r);
-//std::cout << " [master]<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< " << std::endl;
+
 				return Builder_.result(num,den);
 
 			}

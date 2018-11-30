@@ -316,11 +316,13 @@ namespace LinBox
 	Vector& solvein(Vector& x, BlasMatrix<Field>& A, const Vector& b,
 		      const Method::BlasElimination& m)
 	{
+
 		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
 			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
 
 //		commentator().start ("Solving linear system (FFLAS LQUP)", "LQUP::left_solve");
 		LQUPMatrix<Field> LQUP(A);
+
 		LQUP.left_solve(x, b);
 //		commentator().stop ("done", NULL, "LQUP::left_solve");
 
@@ -785,6 +787,7 @@ namespace LinBox
             Timer chrono;
             chrono.start();
 #endif
+
 			FBlackbox Ap(A, F);
 
 			typedef typename Rebind<Vector, Field>::other FVector;
@@ -797,12 +800,13 @@ namespace LinBox
 #endif
             " Modulo "<<chrono.usertime()<<std::endl;
 #endif
-
 			VectorWrapper::ensureDim (x, A.coldim());
 #ifdef __Detailed_Time_Measurement
             chrono.start();
 #endif
+
 			solvein( x, Ap, Bp, M);
+
 #ifdef __Detailed_Time_Measurement
             chrono.stop();
             std::cout<< 

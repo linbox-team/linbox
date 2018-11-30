@@ -28,6 +28,7 @@
 #define __LINBOX_HAVE_MPI
 
 
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>
@@ -50,9 +51,9 @@ using namespace LinBox;
 using namespace std;
 
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-/*
+
 template <class Field, class Matrix>
-static bool checkInput (const Field  &ZZ,
+static bool checkInput (const Field  &F,
 			 Matrix &A, Matrix &A2,
 			 BlasVector<Field> &B,			 
 			 BlasVector<Field> &B2
@@ -60,7 +61,7 @@ static bool checkInput (const Field  &ZZ,
 {
 for (size_t i = 0 ; i < A.rowdim() ; ++i)
   for (size_t j = 0 ; j < A.coldim() ; ++j){
-    if(!ZZ.areEqual(A2.getEntry(i,j),A.getEntry(i,j))){
+    if(!F.areEqual(A2.getEntry(i,j),A.getEntry(i,j))){
       std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
       std::cerr << "               The input matrix is inconsistent                " << std::endl;
       std::cerr << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
@@ -68,7 +69,7 @@ for (size_t i = 0 ; i < A.rowdim() ; ++i)
     }
   }
   for (size_t j = 0 ; j < B.size() ; ++j){
-    if(!ZZ.areEqual(B2.getEntry(j),B.getEntry(j))){
+    if(!F.areEqual(B2.getEntry(j),B.getEntry(j))){
       std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
       std::cerr << "               The input vector is inconsistent                " << std::endl;
       std::cerr << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
@@ -80,7 +81,7 @@ for (size_t i = 0 ; i < A.rowdim() ; ++i)
 
 
 template <class Field>
-static bool checkOutput (const Field  &ZZ,
+static bool checkOutput (const Field  &F,
 			 BlasVector<Field> &X,
 			 BlasVector<Field> &X2
 			 )
@@ -88,7 +89,7 @@ static bool checkOutput (const Field  &ZZ,
 
 
   for (size_t j = 0 ; j < X.size() ; ++j){
-    if(!ZZ.areEqual(X2.getEntry(j),X.getEntry(j))){
+    if(!F.areEqual(X2.getEntry(j),X.getEntry(j))){
       std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
       std::cerr << "               The output vector is inconsistent                " << std::endl;
       std::cerr << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
@@ -98,7 +99,7 @@ static bool checkOutput (const Field  &ZZ,
 
   return true;
 }
-*/
+
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 
@@ -106,24 +107,24 @@ static bool checkOutput (const Field  &ZZ,
 
 
 template <class Field, class Matrix>
-static bool checkResult (const Field  &ZZ,
+static bool checkResult (const Field  &F,
 			 Matrix &A,
 			 BlasVector<Field> &B,
 			 BlasVector<Field> &X,
 			 typename Field::Element &d)
 {
 
-  BlasVector<Field> B2(ZZ, A.coldim());
-  BlasVector<Field> B3(ZZ, A.coldim());
+  BlasVector<Field> B2(F, A.coldim());
+  BlasVector<Field> B3(F, A.coldim());
   A.apply(B2,X);
 
 Integer tmp;
   for (size_t j = 0 ; j < B.size() ; ++j){
-  //tmp=B.getEntry(j);ZZ.mulin(tmp,d);B3.setEntry(j,tmp);
+  //tmp=B.getEntry(j);F.mulin(tmp,d);B3.setEntry(j,tmp);
     B3.setEntry(j,d*B.getEntry(j));
   }
   for (size_t j = 0 ; j < A.coldim() ; ++j){
-    if(!ZZ.areEqual(B2[j],B3[j])){
+    if(!F.areEqual(B2[j],B3[j])){
       std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
       std::cerr << "               The solution of solveCRA is incorrect                " << std::endl;
       std::cerr << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
@@ -141,11 +142,11 @@ Integer tmp;
 
 
 template <class Field, class Matrix>
-void genData (const Field  &ZZ, Matrix  &Mat, size_t bits, int seed){
+void genData (const Field  &F, Matrix  &Mat, size_t bits, int seed){
   typedef typename Field::RandIter RandIter;  
   
-  RandIter RI(ZZ, bits, seed) ;
-  LinBox::RandomDenseMatrix<RandIter,Field>  RDM(ZZ,RI);
+  RandIter RI(F, bits, seed) ;
+  LinBox::RandomDenseMatrix<RandIter,Field>  RDM(F,RI);
   RDM.randomFullRank(Mat);
 
 
@@ -153,10 +154,10 @@ void genData (const Field  &ZZ, Matrix  &Mat, size_t bits, int seed){
 
 
 template <class Field>
-void genData (const Field  &ZZ, BlasVector<Field>  &Vec, size_t bits, int seed){
+void genData (const Field  &F, BlasVector<Field>  &Vec, size_t bits, int seed){
   typedef typename Field::RandIter RandIter; 
       
-  RandIter RI(ZZ, bits, seed);
+  RandIter RI(F, bits, seed);
   Vec.random(RI);
 
 }
@@ -175,7 +176,7 @@ bool test_set_with_field(BlasVector<Field> &X2,
 
 	      ){
   bool tag = false;
-  Givaro::ZRing<Integer> ZZ;
+  Givaro::ZRing<Integer> F;
   Givaro::ZRing<Integer>::Element d;
   std::cerr<<"Computation is done over Q"<<std::endl;
   
@@ -211,7 +212,7 @@ bool test_set_with_field(BlasVector<Field> &X2,
 #ifdef __LINBOX_HAVE_MPI
 if(0 == Cptr->rank())
 #endif
-//  checkOutput (ZZ, X2, X2_cp) ;//<<---------------------------------
+//  checkOutput (F, X2, X2_cp) ;//<<---------------------------------
   
   
 #ifdef __LINBOX_HAVE_MPI
@@ -220,7 +221,7 @@ if(0 == Cptr->rank())
 #else
   end = omp_get_wtime();
 #endif
-  //  DenseVector B2(ZZ, A.coldim());
+  //  DenseVector B2(F, A.coldim());
 
   
 #ifdef __LINBOX_HAVE_MPI
@@ -231,7 +232,7 @@ if(0 == Cptr->rank())
     std::cout << "Total CPU time (seconds): " << end-start << std::endl;
 #endif
 
-    tag=checkResult (ZZ, A, B, X2, d);/*
+    tag=checkResult (F, A, B, X2, d);/*
     if(!tag){
         B.write(std::cout << " >>>> Compute with B:=",Tag::FileFormat::Maple) << ';' << std::endl;
 	    A.write(std::cout << " >>>> Compute with A:=",Tag::FileFormat::Maple) << ';' << std::endl;
@@ -263,7 +264,7 @@ bool test_set(BlasVector<Givaro::ZRing<Integer> > &X2,
 #endif
 	      ){
   bool tag = false;
-  Givaro::ZRing<Integer> ZZ(bits);
+  Givaro::ZRing<Integer> F(bits);
   Givaro::ZRing<Integer>::Element d;
   std::cerr<<"Computation is done over Q"<<std::endl;
   
@@ -304,7 +305,7 @@ bool test_set(BlasVector<Givaro::ZRing<Integer> > &X2,
 #else
   end = omp_get_wtime();
 #endif
-  //  DenseVector B2(ZZ, A.coldim());
+  //  DenseVector B2(F, A.coldim());
 
   
 #ifdef __LINBOX_HAVE_MPI
@@ -315,7 +316,7 @@ bool test_set(BlasVector<Givaro::ZRing<Integer> > &X2,
     std::cout << "Total CPU time (seconds): " << end-start << std::endl;
 #endif
 
-    tag=checkResult (ZZ, A, B, X2, d);/*
+    tag=checkResult (F, A, B, X2, d);/*
     if(!tag){
         B.write(std::cout << " >>>> Compute with B:=",Tag::FileFormat::Maple) << ';' << std::endl;
 	    A.write(std::cout << " >>>> Compute with A:=",Tag::FileFormat::Maple) << ';' << std::endl;
@@ -373,18 +374,19 @@ void prepare_data_with_field(size_t bits, int seed,
 	      , Communicator *Cptr
 #endif
 	      ){
-Field ZZ;
+Field F;
 
+std::cout << " Proc("<<Cptr->rank()<<") <<<<<<<<<<<<<<<<< seed:= "<<seed<<std::endl;
+std::cout << " Proc("<<Cptr->rank()<<") <<<<<<<<<<<<<<<<< n:= "<<A.coldim()<<std::endl;
+std::cout << " Proc("<<Cptr->rank()<<") <<<<<<<<<<<<<<<<< bits:= "<<bits<<std::endl;
 
 #ifdef __LINBOX_HAVE_MPI  
     if(0==Cptr->rank()){
 #endif
     //std::cerr << " seed := "<<seed<<std::endl;
-std::cout << " <<<<<<<<<<<<<<<<< seed:= "<<seed<<std::endl;
-std::cout << " <<<<<<<<<<<<<<<<< n:= "<<A.coldim()<<std::endl;
-std::cout << " <<<<<<<<<<<<<<<<< bits:= "<<bits<<std::endl;
-      genData (ZZ, A, bits, seed);
-      genData (ZZ, B, bits, seed);
+
+      genData (F, A, bits, seed);
+      genData (F, B, bits, seed);
 
 #ifdef __LINBOX_HAVE_MPI 	
     }//End of BLock for process(0)
@@ -421,8 +423,7 @@ std::cout << " <<<<<<<<<<<<<<<<< bits:= "<<bits<<std::endl;
     }
 #endif
 //std::cout << " Proc("<<Cptr->rank()<<") <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< " << std::endl;
-    
-        
+
     
 		     //Check if data are correctly distributed to all processes
 //	B.write(std::cout << " Proc("<<Cptr->rank()<<") <<<< Compute with B:=",Tag::FileFormat::Maple) << ';' << std::endl;
@@ -488,11 +489,11 @@ int main(int argc, char ** argv)
 #endif
 
     
-  Givaro::ZRing<Integer> ZZ(bitsize);
+  Givaro::ZRing<Integer> F(bitsize);
   typedef BlasVector<Givaro::ZRing<Integer> > DenseVector;
 
-  DenseMatrix<Givaro::ZRing<Integer> > A (ZZ,ni,ni);
-  DenseVector X(ZZ, A.rowdim()), X2(ZZ, A.coldim()),  B(ZZ, A.coldim());
+  DenseMatrix<Givaro::ZRing<Integer> > A (F,ni,ni);
+  DenseVector X(F, A.rowdim()), X2(F, A.coldim()),  B(F, A.coldim());
   
   for(long j=0;loop ||j<(long)niter;j++){  
     
@@ -505,8 +506,8 @@ int main(int argc, char ** argv)
     std::cout << " Test with bitsize: " << bitsize << std::endl;
 
 
-      genData (ZZ, A, bitsize, seed);//genData (A, bits);
-      genData (ZZ, B, bitsize, seed);//genData (B, bits);
+      genData (F, A, bitsize, seed);//genData (A, bits);
+      genData (F, B, bitsize, seed);//genData (B, bits);
 
 
 
@@ -571,10 +572,10 @@ int main(int argc, char ** argv)
 
 
     
-  Givaro::ZRing<Integer> ZZ;
+  Givaro::ZRing<Integer> F;
   typedef BlasVector<Givaro::ZRing<Integer> > DenseVector;
 
-//Givaro::ZRing<Integer> ZZ(bits);
+//Givaro::ZRing<Integer> F(bits);
 
     
     
@@ -607,12 +608,11 @@ std::cout << " >>>>>>>>>>>>>>>>>> bits:= "<<bits<<std::endl;
 #endif
 
 
-/*
-    DenseMatrix<Givaro::ZRing<Integer> > A (ZZ,n,n);
-    DenseVector X(ZZ, A.coldim()), X2(ZZ, A.coldim()),  B(ZZ, A.coldim());
 
-    DenseMatrix<Givaro::ZRing<Integer> > A_cp(ZZ,n,n);
-    DenseVector X2_cp(ZZ, A.coldim()),  B_cp(ZZ, A.coldim());	
+    DenseMatrix<Givaro::ZRing<Integer> > A (F,n,n);
+    DenseVector X(F, A.coldim()), X2(F, A.coldim()),  B(F, A.coldim());
+
+
         
  prepare_data_with_field(bits, seed, X2, A, B	      //<-------------------instant modification
 #ifdef __LINBOX_HAVE_MPI
@@ -622,30 +622,31 @@ std::cout << " >>>>>>>>>>>>>>>>>> bits:= "<<bits<<std::endl;
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
+    DenseMatrix<Givaro::ZRing<Integer> > A_cp(F,n,n);
+    DenseVector X2_cp(F, A.coldim()),  B_cp(F, A.coldim());	
 
 
 
-
-      
+    
  prepare_data_with_field(bits, seed, X2_cp, A_cp, B_cp	      //<-------------------instant modification
 #ifdef __LINBOX_HAVE_MPI
 	      , Cptr
 #endif
 	      );
 	      
-checkInput (ZZ, A, A_cp, B, B_cp) ;
+checkInput (F, A, A_cp, B, B_cp) ;
 
 
 test_set_with_field<Givaro::ZRing<Integer>>(X2_cp, A, B, bits
 #ifdef __LINBOX_HAVE_MPI
-		 , Cptr          , X2_cp
+		 , Cptr          //, X2_cp
 #endif
 
 		 );
-*/
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////      
 	      
-	      
+long computtIMES= 0;
 
   for(size_t j=0;loop || j<niter;j++){  
 
@@ -682,8 +683,8 @@ std::cout << " >>>>>>>>>>>>>>>>>> bits:= "<<bits<<std::endl;
   MPI_Bcast(&bits, 1, MPI_INT, 0, MPI_COMM_WORLD);
   MPI_Bcast(&seed, 1, MPI_INT, 0, MPI_COMM_WORLD);
 #endif
-    DenseMatrix<Givaro::ZRing<Integer> > A (ZZ,n,n);
-    DenseVector X(ZZ, A.coldim()), X2(ZZ, A.coldim()),  B(ZZ, A.coldim());
+    DenseMatrix<Givaro::ZRing<Integer> > A (F,n,n);
+    DenseVector X(F, A.coldim()), X2(F, A.coldim()),  B(F, A.coldim());
 
 
         
@@ -692,13 +693,15 @@ std::cout << " >>>>>>>>>>>>>>>>>> bits:= "<<bits<<std::endl;
 	      , Cptr
 #endif
 	      );
-
+	      size_t r;
+std::cout << " A rank:= "<<LinBox::rank(r,A)<<std::endl;
 //<--------------------Coould be wrapped into a tempalted subroutine----------------------	
 	
-//@ Use the templated test function with field as a template at compile time: 	    ok = ok && run_with_field<Modular<int32_t> >(q,b,n,iters,seed)     
+//@FutherImprovement: Use the templated test function with field as a template at compile time: 	    ok = ok && run_with_field<Modular<int32_t> >(q,b,n,iters,seed)     
 
+std::cout << " ################################ Until now computed "<<computtIMES<<" times! "<<std::endl;
 
-//if(!checkInput (ZZ, A, A_cp, B, B_cp)) break;
+if(!checkInput (F, A, A_cp, B, B_cp)) std::cerr<<" Proc("<<Cptr->rank()<<") >>>>>>>>>>>>>>>>>>>>> Input is inconsistent !!!!!!!!!!!!!!!!! "<<std::endl;;
       
     if(!test_set_with_field<Givaro::ZRing<Integer>>(X2, A, B, bits
 #ifdef __LINBOX_HAVE_MPI
@@ -708,7 +711,7 @@ std::cout << " >>>>>>>>>>>>>>>>>> bits:= "<<bits<<std::endl;
 		 )){
 		 break;
 		 }
-
+computtIMES++;
 
 //<-------------------------Coould be wrapped into a tempalted test set subroutine-------------------------
 
