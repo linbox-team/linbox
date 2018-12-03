@@ -127,7 +127,11 @@ bool test_set(const Field  &ZZ, Vector &X2,
   return tag;
 }
 
-
+	uint64_t getSeed(){
+		struct timeval tp;
+		gettimeofday(&tp, 0) ;
+        return static_cast<uint64_t> (tp.tv_usec + tp.tv_sec*1000000);
+	}
 
 int main(int argc, char ** argv)
 {
@@ -166,13 +170,13 @@ int main(int argc, char ** argv)
     
     
     std::cout << " Test with dimension: " << ni << " x " << ni << std::endl;
-    std::cout << " Test with bitsize: " << bitsize << std::endl;
+    std::cout << " Test with bitsize: " << bits << std::endl;
     {
       DenseMatrix<Givaro::ZRing<Integer> > A (ZZ,ni,ni);
       DenseVector X(ZZ, A.coldim()), X2(ZZ, A.coldim()),  B(ZZ, A.coldim());
-      if(q>0){
-          genData (ZZ, A, bits);
-          genData (ZZ, B, bits);
+      if(q<0){
+          genData (ZZ, A, bits, getSeed());
+          genData (ZZ, B, bits, getSeed());
       }else{
           genData (ZZ, A, bits, seed);
           genData (ZZ, B, bits, seed);
