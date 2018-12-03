@@ -378,15 +378,18 @@ namespace LinBox
             std::set<int> coprimeset;
             std::vector<ElementContainer> ROUNDresidues;ROUNDresidues.resize(omp_get_max_threads());
             std::vector<Domain> ROUNDdomains;ROUNDdomains.resize(omp_get_max_threads());
-            std::vector<LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>> m_primeiters;
+            //std::vector<LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>> m_primeiters;
+            std::vector<LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag>> m_primeiters;
             
             for(auto j=0;j<omp_get_max_threads();j++){
-                LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag> m_primeiter( j,omp_get_max_threads(),25);
+                //LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag> m_primeiter( j,omp_get_max_threads());
+                LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag> m_primeiter( j,omp_get_max_threads());
                 m_primeiters.push_back(m_primeiter);
             }
             
 
             if(omp_get_max_threads()>50){
+            
                 early_termination_compute_task( (this->Builder_), NN,  Tile, m_primeiters, coprimeset, Iteration,  ROUNDdomains, ROUNDresidues);
                 
             }else{

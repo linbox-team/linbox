@@ -69,32 +69,23 @@ static bool checkResult (const Field  &ZZ,
 
 
 template <class Field, class Matrix>
-void genData (const Field  &ZZ, Matrix  &Mat, size_t bits, int q){
+void genData (const Field  &ZZ, Matrix  &Mat, size_t bits, int seed=0){
   typedef typename Field::RandIter RandIter;  
-  if(q<0){  
-  RandIter RI(ZZ, bits) ;
+
+  RandIter RI(ZZ, bits, seed);
   LinBox::RandomDenseMatrix<RandIter,Field>  RDM(ZZ,RI);
   RDM.randomFullRank(Mat);
-  }else{
-  RandIter RI(ZZ, bits, q);
-  LinBox::RandomDenseMatrix<RandIter,Field>  RDM(ZZ,RI);
-  RDM.randomFullRank(Mat);
-  }
-  
 
 }
 
 
 template <class Field>
-void genData (const Field  &ZZ, BlasVector<Field>  &Vec, size_t bits, int q){
+void genData (const Field  &ZZ, BlasVector<Field>  &Vec, size_t bits, int seed=0){
   typedef typename Field::RandIter RandIter; 
-  if(q<0){       
-  RandIter RI(ZZ, bits);
+
+  RandIter RI(ZZ, bits, seed);
   Vec.random(RI);
-  }else{
-  RandIter RI(ZZ, bits, q);
-  Vec.random(RI);
-  }
+
 }
 
 
@@ -142,9 +133,9 @@ int main(int argc, char ** argv)
 {
   
   
-  int bits,bitsize, niter,ni,nj,nt,n, q;
+  int bits,bitsize, niter,ni,nj,nt,n, q,seed;
   bool peak = false, loop=false;
-  bits=10, niter=1, ni=3,nj=3,nt=1, n=3, q=-1; 
+  bits=10, niter=1, ni=3,nj=3,nt=1, n=3, q=-1,seed=0; 
   
   static Argument args[] = {
     { 'n', "-n N", "Set column and row dimension of test matrices to N.", TYPE_INT,     &n },
@@ -152,15 +143,17 @@ int main(int argc, char ** argv)
     { 'i', "-i I", "Set the number of times to do the random unit tests.", TYPE_INT,     &niter },
     { 't', "-t T", "Set the number of threads to run unit tests.", TYPE_INT,     &nt },
     { 'q', "-q Q", "Set negative value for random input or positive value to always generate the same input.", TYPE_INT,     &q },
+        { 's', "-s S", "Set the seed to always generate the same input.", TYPE_INT,     &seed },
     { 'l', "-l L", "Set if the infinte testing loop should be applied.", TYPE_BOOL,     &loop },
     END_OF_ARGUMENTS
   };	
   parseArguments (argc, argv, args); 
     
   omp_set_num_threads(nt);
-  
+
   nj=n;
-  ni=n;  
+  ni=n;
+  bits=bitsize;
   
   Givaro::ZRing<Integer> ZZ;  
   typedef BlasVector<Givaro::ZRing<Integer> > DenseVector;
@@ -174,26 +167,32 @@ int main(int argc, char ** argv)
     {
       DenseMatrix<Givaro::ZRing<Integer> > A (ZZ,ni,nj);
       DenseVector X(ZZ, A.coldim()), X2(ZZ, A.coldim()),  B(ZZ, A.coldim());
-      genData (ZZ, A, bits, q);
-      genData (ZZ, B, bits, q);
-      
-      /*
+      if(q<0){
+          genData (ZZ, A, bits);
+          genData (ZZ, B, bits);
+      }else{
+          genData (ZZ, A, bits, seed);
+          genData (ZZ, B, bits, seed);
+      }
+/*
 	std::cerr << ">>>>Compute with B: " << std::endl;      
 	for(long j=0;j<(long)nj;j++) std::cerr << B.getEntry(j) << std::endl; 
 	
 	A.write(std::cout << ">>>>Compute with A: " << A.rowdim() << " by " << A.coldim() << "\n"<< "A:=",Tag::FileFormat::Maple) << ';' << std::endl;
-      */
+*/
       
       if(!test_set(ZZ, X2, A, B )) break;
     }
-    ni = rand() % n + 1;
-    if (ni < n / 2 && ni % 2 == 0 && !peak) ni = 1;
-    
-    bits = rand() % bitsize + 1;
-    if (bits < bitsize / 2 && bitsize % 2 == 0 && !peak) bits = 1;
-    
+    if(q<0){
+        ni = rand() % n + 1;
+        if (ni < n / 2 && ni % 2 == 0 && !peak) ni = 1;
+        
+        bits = rand() % bitsize + 1;
+        if (bits < bitsize / 2 && bitsize % 2 == 0 && !peak) bits = 1;
+    }    
     nj=ni;
     peak = !peak;
+
     
   }
   
