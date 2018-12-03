@@ -337,7 +337,7 @@ bool test_set(BlasVector<Givaro::ZRing<Integer> > &X2,
 #endif
 
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-//@ Use the following subroutine for defaut seed if no user provided seed as parameter
+//subroutine for defaut seed if no user provided seed as parameter
 	uint64_t getSeed(){
 		struct timeval tp;
 		gettimeofday(&tp, 0) ;
@@ -448,7 +448,7 @@ int main(int argc, char ** argv)
   size_t bitsize=10;
   size_t niter=1;
   size_t ni=1;
-//  size_t nt=1;
+
   size_t n=1;
   int q=-1;
   bool peak = false;
@@ -458,15 +458,13 @@ int main(int argc, char ** argv)
     int seed = 0; 
 //@ print out used seed before each test
 
-  
-  
-  static Argument args[] = {
+
+ Argument args[] = {
     { 'n', "-n N", "Set column and row dimension of test matrices to N.", TYPE_INT,     &ni },
     { 'b', "-b B", "Set the bitsize for input value.", TYPE_INT,     &bitsize },
     { 'i', "-i I", "Set the number of times to do the random unit tests.", TYPE_INT,     &niter },
-//    { 't', "-t T", "Set the number of threads to run unit tests.", TYPE_INT,     &nt },
-    { 'q', "-q Q", "Set the field characteristic (-1 for random).",         TYPE_INT , &q },
-    { 'l', "-loop Y/N", "run the test in an infinite loop.", TYPE_BOOL , &loop },
+    { 'q', "-q Q", "Set the randomness of test (<0 for random and >0 for derterministic).",    TYPE_INT , &q },
+    { 'l', "-loop Y/N", "Set if run the test in an infinite loop.", TYPE_BOOL , &loop },
     { 's', "-s S", "Set the seed to fill the input matrices.", TYPE_INT,     &seed },
     END_OF_ARGUMENTS
   };	
@@ -584,20 +582,20 @@ int main(int argc, char ** argv)
     if(0==Cptr->rank()){
 #endif
 
-if(q<0){   
-seed = getSeed();//seed = 1247341449;
-rand_param_vary(n, ni, bits, bitsize, peak);
-}else{
-bits = bitsize;  
-n = ni;
-}
+        if(q<0){   
+            seed = getSeed();//seed = 1247341449;
+            rand_param_vary(n, ni, bits, bitsize, peak);
+        }else{
+            bits = bitsize;  
+            n = ni;
+        }
 
 std::cout << " >>>>>>>>>>>>>>>>>> seed:= "<<seed<<std::endl;
 std::cout << " >>>>>>>>>>>>>>>>>> n:= "<<n<<std::endl;
 std::cout << " >>>>>>>>>>>>>>>>>> bits:= "<<bits<<std::endl;
     
 #ifdef __LINBOX_HAVE_MPI 	
-    }//End of BLock for process(0)
+    }
 #endif    
 
 
@@ -621,7 +619,7 @@ std::cout << " >>>>>>>>>>>>>>>>>> bits:= "<<bits<<std::endl;
 	      );
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////Make a copy to compare at each iteration/////////////////////////////////////////
     DenseMatrix<Givaro::ZRing<Integer> > A_cp(F,n,n);
     DenseVector X2_cp(F, A.coldim()),  B_cp(F, A.coldim());	
 
@@ -644,7 +642,7 @@ test_set_with_field<Givaro::ZRing<Integer>>(X2_cp, A, B, bits
 
 		 );
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////      
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////      
 	      
 long computtIMES= 0;
 
@@ -659,13 +657,13 @@ long computtIMES= 0;
     if(0==Cptr->rank()){
 #endif
 
-if(q<0){   
-seed = getSeed();//seed = 1247341449;
-rand_param_vary(n, ni, bits, bitsize, peak);
-}else{
-bits = bitsize;  
-n = ni;
-}
+        if(q<0){   
+            seed = getSeed();
+            rand_param_vary(n, ni, bits, bitsize, peak);
+        }else{
+            bits = bitsize;  
+            n = ni;
+        }
 
 std::cout << " >>>>>>>>>>>>>>>>>> seed:= "<<seed<<std::endl;
 std::cout << " >>>>>>>>>>>>>>>>>> n:= "<<n<<std::endl;

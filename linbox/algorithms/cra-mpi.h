@@ -336,10 +336,11 @@ namespace LinBox
         template<class PrimeIterator, class Function, class Domain>
         void worker_compute(std::unordered_set<int>& prime_used, PrimeIterator& gen, Function& Iteration, BlasVector<Domain> &r)
         {
-
+                //Process mutual independent prime number generation
                 ++gen; while(Builder_.noncoprime(*gen)||prime_used.find(*gen) != prime_used.end()) ++gen;
                 prime_used.insert(*gen);
-std::cerr<<*gen<<std::endl;//<-------------- 
+std::cerr<<*gen<<std::endl;//<--------------Display each used unique prime number
+
                 Domain D(*gen);
 
                 Iteration(r, D);
@@ -347,12 +348,12 @@ std::cerr<<*gen<<std::endl;//<--------------
         }
 
         template<class Function>
-        void worker_task(Function& Iteration,  BlasVector<Domain> &r)
+        void worker_process_task(Function& Iteration,  BlasVector<Domain> &r)
         {
             
             int pp;
-//            LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   gen(_commPtr->rank(),_commPtr->size());
-LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag>   gen(_commPtr->rank(),_commPtr->size());
+            LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   gen(_commPtr->rank(),_commPtr->size());
+//LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag>   gen(_commPtr->rank(),_commPtr->size());
 
             
 
@@ -381,22 +382,21 @@ LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag>   gen(
                 idle_process = 0;
 
                 r.resize (r.size()+1);
-                //  receive the beginnin and end of a vector in heapspace
+                //receive the beginnin and end of a vector in heapspace
                 _commPtr->recv(r.begin(), r.end(), MPI_ANY_SOURCE, 0);
 
-                //  determine which process sent answer
-                //  and give them a new tag either to continue or to stop
+                //Dind out which process sent the solution and the coresponding prime number
                 idle_process = (_commPtr->get_stat()).MPI_SOURCE;
 
                 poison_pills_left-=primes[idle_process - 1];
 
-                //  send the tag
+                //send the tag to coresponding worker process to signal either a stop or continuation
                 _commPtr->send(primes[idle_process - 1], idle_process);
 
                 //Store the corresponding prime number
                 pp = r[r.size()-1];
 
-                //Restructure the vector like before without added prime number
+                //Restructure the vector without added prime number
                 r.resize (r.size()-1);
 
 
@@ -426,17 +426,18 @@ LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag>   gen(
         {
 			int procs = _commPtr->size();
 
-            //  for each slave process...
+            //Send a start tag for each worker process
             for(int i=1; i<procs; i++){
                 primes[i - 1] = 0;
                 _commPtr->send(primes[i - 1], i);
 
             }
+            //Initialize the buider and the receiver vector r
             Builder_.initialize( D, Iteration(r, D) );
         }
 
         template<class Function>
-        void master_task(Function& Iteration, Domain &D, BlasVector<Domain> &r)
+        void master_process_task(Function& Iteration, Domain &D, BlasVector<Domain> &r)
         {
             int primes[_commPtr->size() - 1];
 
@@ -611,7 +612,7 @@ LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag>   gen(
 			//  parent propcess
 			if(process == 0){
 
-                master_task(Iteration, D, r);
+                master_process_task(Iteration, D, r);
 
 				return Builder_.result(num,den);
 
@@ -619,7 +620,7 @@ LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag>   gen(
 			//  child process
 			else{
 
-                worker_task(Iteration, r);
+                worker_process_task(Iteration, r);
 
 			}
 		}
