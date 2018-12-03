@@ -138,7 +138,7 @@ int main(int argc, char ** argv)
     size_t bitsize = 10;
     size_t niter = 3;
 
-    size_t q = -1;
+    int q = -1;
     bool peak = false, loop=false;
   
   static Argument args[] = {
@@ -170,7 +170,7 @@ int main(int argc, char ** argv)
     {
       DenseMatrix<Givaro::ZRing<Integer> > A (ZZ,ni,ni);
       DenseVector X(ZZ, A.coldim()), X2(ZZ, A.coldim()),  B(ZZ, A.coldim());
-      if(q<0){
+      if(q>0){
           genData (ZZ, A, bits);
           genData (ZZ, B, bits);
       }else{
@@ -179,7 +179,7 @@ int main(int argc, char ** argv)
       }
 /*
 	std::cerr << ">>>>Compute with B: " << std::endl;      
-	for(long j=0;j<(long)nj;j++) std::cerr << B.getEntry(j) << std::endl; 
+	for(long j=0;j<(long)ni;j++) std::cerr << B.getEntry(j) << std::endl; 
 	
 	A.write(std::cout << ">>>>Compute with A: " << A.rowdim() << " by " << A.coldim() << "\n"<< "A:=",Tag::FileFormat::Maple) << ';' << std::endl;
 */
@@ -190,11 +190,11 @@ int main(int argc, char ** argv)
     if(q<0){
         ni = rand() % n + 1;
         if (ni < n / 2 && ni % 2 == 0 && !peak) ni = 1;
-        
+       
         bits = rand() % bitsize + 1;
         if (bits < bitsize / 2 && bitsize % 2 == 0 && !peak) bits = 1;
-    }    
-    
+    } 
+
     peak = !peak;
 
     

@@ -290,7 +290,7 @@ namespace LinBox
         void compute_task(pFunc& pF, int NN, int Tile, std::vector<PrimeIterator>& m_primeiters, std::set<int>& coprimeset, Function& Iteration, std::vector<Domain>& ROUNDdomains, std::vector<ElementContainer>& ROUNDresidues)
         {
         
-#pragma omp parallel num_threads(NN/Tile)         
+#pragma omp parallel num_threads(NN/Tile) 
 			while( ! this->Builder_.terminated() ) {
                 
                 //for(auto j=0;j<NN/Tile;j++)
@@ -391,7 +391,7 @@ namespace LinBox
             }
             
 
-            if(omp_get_max_threads()>50){
+            if(omp_get_max_threads()>1){
             
                 early_termination_compute_task( (this->Builder_), NN,  Tile, m_primeiters, coprimeset, Iteration,  ROUNDdomains, ROUNDresidues);
                 
