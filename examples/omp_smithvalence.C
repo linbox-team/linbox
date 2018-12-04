@@ -125,7 +125,8 @@ std::cout << "Some factors (50000 factoring loop bound): ";
 	std::cout << "num procs: " << omp_get_num_procs() << std::endl;
 	std::cout << "max threads: " << omp_get_max_threads() << std::endl;
 
-#pragma omp parallel    {
+#pragma omp parallel
+    {
 #pragma omp single
         {
             for(size_t j=0; j<Moduli.size(); ++j) {
