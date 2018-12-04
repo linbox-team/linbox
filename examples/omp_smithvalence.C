@@ -164,8 +164,8 @@ std::cout << "Some factors (50000 factoring loop bound): ";
             }
 
             if (effexp < exponents[j]) {
-                    // Reports that we need more powers, try successive doublings
-                    // Over abitrary precision
+                    // Above report shows that more powers are needed, 
+                    // try successive doublings Over abitrary precision
                 for(size_t expo = effexp<<1; ranks.back() < coprimeR; expo<<=1) {
                     if (smith[j].first == 2)
                         PRankIntegerPowerOfTwo(ranks, argv[1], expo, coprimeR);
