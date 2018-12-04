@@ -182,49 +182,12 @@ namespace LinBox { /* BlasVector */
 			// linbox_check(_ptr != NULL);
 		}
 
-// #if 0
-// 		void init(const _Field & F, size_t n = 0)
-// 		{
-// 			_field = &F;
-// 			_size = n;
-// 			_1stride=1 ;
-// 			_rep.resize(n, F.zero);
-// 			_ptr = _rep.data();
-// 		}
-// #endif
 
-// #ifdef __GNUC__
-// #ifndef __x86_64__
-// #if (__GNUC__ == 4 && __GNUC_MINOR__ ==4 && __GNUC_PATCHLEVEL__==5)
-// 		BlasVector (const _Field &F, const long &m, const Element e=Element()) :
-// 			Father_t(),
-// 			_size((uint32_t)m),_1stride(1),_rep(_size, e),_ptr(_rep.data()),_field(&F)
-// 		{
-// 			// Father_t is garbage until then:
-// 			setIterators();
-
-// 			linbox_check(_size==0 || _ptr != NULL);
-// 		}
-// #endif
-// #endif
-// #endif
-
-// #if defined(__APPLE__) || (defined(__s390__) && !defined(__s390x__))
-// 		BlasVector (const _Field &F, const unsigned long &m, const Element e=Element())  :
-// 			Father_t(),
-// 			_size((uint32_t)m),_1stride(1),_rep(_size, e),_ptr(_rep.data()),_field(&F)
-// 		{
-// 			// Father_t is garbage until then:
-// 			setIterators();
-
-// 			linbox_check(_size==0 || _ptr != NULL);
-
-// 			// linbox_check(_size >= this->begin()->_stride); PG -> do not understand
-// 		}
-
-// #endif
-
-		BlasVector (const _Field &F, const size_t &m, const Element e=Element())  :
+            // This constructor is templated because if SizeType was a size_t, then calling it with a signed const litteral 
+            // (e.g. v(F,3)) would fail to launch this constructor, but rather go in the templated one (_Field, VectorBase) 
+            // on OSX where long can not be cast to size_t).
+        template<class SizeType, typename std::enable_if<std::is_arithmetic<SizeType>::value, int>::type=0>
+		BlasVector (const _Field &F, const SizeType &m, const Element e=Element())  :
 			Father_t(),
 			_size(m),_1stride(1),_rep((size_t)_size, e),_ptr(_rep.data()),_field(&F)
 		{
@@ -232,56 +195,6 @@ namespace LinBox { /* BlasVector */
 			setIterators();
 			// linbox_check(_ptr != NULL);
 		}
-
-
-	// 	BlasVector (const _Field &F, const int64_t &m, const Element e=Element())  :
-	// 		Father_t(),
-	// 		_size((size_t)m),_1stride(1),_rep((size_t)_size, e),_ptr(_rep.data()),_field(&F)
-	// 	{
-	// // Father_t is garbage until then:
-	// 		setIterators();
-
-
-	// 		linbox_check(_size==0 || _ptr != NULL);
-	// 	}
-
-
-	// 	BlasVector (const _Field &F, const uint32_t &m, const Element e=Element())  :
-	// 		Father_t(),
-	// 		_size((size_t)m),
-	// 		_1stride(1),
-	// 		_rep((size_t)_size, e),
-	// 		_ptr(_rep.data()),
-	// 		_field(&F)
-	// 	{
-	// // Father_t is garbage until then:
-	// 		setIterators();
-
-
-	// 		linbox_check(_size==0 || _ptr != NULL);
-	// 	}
-
-	// 	BlasVector (const _Field &F, const int32_t &m, const Element e=Element())  :
-	// 		Father_t(),
-	// 		_size((size_t)m),_1stride(1),_rep((size_t)_size, e),_ptr(_rep.data()),_field(&F)
-	// 	{
-	// // Father_t is garbage until then:
-	// 		setIterators();
-
-
-	// 		linbox_check(_size==0 || _ptr != NULL);
-	// 	}
-
-	// 	BlasVector (const _Field &F, const Integer & m, const Element e=Element())  :
-	// 		Father_t(),
-	// 		_size((uint32_t)m),_1stride(1),_rep(_size, e),_ptr(_rep.data()),_field(&F)
-	// 	{
-	// // Father_t is garbage until then:
-	// 		setIterators();
-
-
-	// 		linbox_check(_size==0 || _ptr != NULL);
-	// 	}
 
 		//! @bug be careful with copy constructor. We should ban them and provide copy.
 		BlasVector (const BlasVector<_Field,_blasRep> &V)  :
@@ -301,7 +214,7 @@ namespace LinBox { /* BlasVector */
 		}
 
 		//! @bug F is last for matrix
-		template<class VectorBase>
+		template<class VectorBase, typename std::enable_if<!std::is_arithmetic<VectorBase>::value, int>::type=0>
 		BlasVector (const _Field & F, const VectorBase & V)  :
 			Father_t(), // will be created afterwards...
 			_size(V.size()),_1stride(1),_rep(V.size(), F.zero),_ptr(_rep.data()),_field(&F)
