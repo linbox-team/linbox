@@ -71,7 +71,7 @@ namespace LinBox
 
 		// Pascal Giorgi 16.02.2004
 		//! @bug no need for F
-		BlackboxContainerBase (const Blackbox *BB, const Field &F, unsigned long Size) :
+		BlackboxContainerBase (const Blackbox *BB, const Field &F, size_t Size) :
 			_field (&F), _VD (F), _BB (BB), _size ((long)Size)
 			,casenumber(0)
 			,u(F),v(F)

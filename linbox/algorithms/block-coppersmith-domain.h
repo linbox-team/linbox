@@ -80,18 +80,18 @@ namespace LinBox
     protected:
         Sequence                          *_container;
         const Domain                      *_MD;
-        unsigned long            EARLY_TERM_THRESHOLD;
+        size_t            EARLY_TERM_THRESHOLD;
 
 
     public:
 
         BlockCoppersmithDomain (const BlockCoppersmithDomain<Field,
-Sequence> &Mat, unsigned long ett_default =
+Sequence> &Mat, size_t ett_default =
 DEFAULT_BLOCK_EARLY_TERM_THRESHOLD) :
             _container(Mat._container), _MD(Mat._MD),
             EARLY_TERM_THRESHOLD (ett_default)
         {}
-        BlockCoppersmithDomain (const Domain& MD, Sequence *D, unsigned long ett_default
+        BlockCoppersmithDomain (const Domain& MD, Sequence *D, size_t ett_default
 = DEFAULT_BLOCK_EARLY_TERM_THRESHOLD) :
             _container(D), _MD(&MD),
 EARLY_TERM_THRESHOLD (ett_default)
@@ -330,7 +330,7 @@ EARLY_TERM_THRESHOLD (ett_default)
 			inline const Field &field() const { return domain().field();}
 			//Constructor
 			explicit BM_iterator(BM_Seq& s,
-                                             unsigned long earlyTermThreshold=DEFAULT_BLOCK_EARLY_TERM_THRESHOLD,
+                                             size_t earlyTermThreshold=DEFAULT_BLOCK_EARLY_TERM_THRESHOLD,
                                              typename BM_Seq::size_type elinit=0) :
 				 _MD(&s.domain()),  _seq(s)
 			{
