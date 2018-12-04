@@ -794,19 +794,54 @@ namespace LinBox
 #ifdef __LINBOX_HAVE_MPI
 		}
 #endif    
-        PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime(25);     
-		//PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205))); //RandomPrimeIterator genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
+        //PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime(25);     
+		PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205))); //RandomPrimeIterator genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
 //PrimeIterator<LinBox::IteratorCategories::DeterministicTag> genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
                 
 		BlasVector<Givaro::ZRing<Integer>> num(A.field(),A.coldim());
 		IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+/*
 #ifdef __LINBOX_HAVE_MPI
 		MPIratChineseRemainder< EarlyMultipRatCRA< Givaro::Modular<double> > > cra(3UL, C);
 
 #else
         ChineseRemainderRatOMP< EarlyMultipRatCRA< Givaro::Modular<double> > > cra(3UL); 
 #endif
+*/
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+		typename BB::ConstIterator it = A.Begin();
+		typename BB::ConstIterator it_end = A.End();
+		integer max = 1,min=0;
+		while( it != it_end ){
+			if (max < (*it))
+				max = *it;
+			if ( min > (*it))
+				min = *it;
+			it++;
+		}
+		if (max<-min)
+			max=-min;
+		size_t n=A.coldim();
+
+		double hadamard = n*(Givaro::naturallog(n)+2*Givaro::naturallog(max));//double hadamard = n*(log(double(n))+2*log(double(max)));
+//std::cout << " >>>>>>>>>>>>>>>> Hadamard:= " << hadamard << std::endl;
+
+#ifdef __LINBOX_HAVE_MPI
+//		MPIratChineseRemainder< EarlyMultipRatCRA< Givaro::ModularBalanced<double> > > cra(3UL, C);
+		MPIratChineseRemainder< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(hadamard, C);
+
+
+#else
+
+std::cerr << "OMP solveCRA" << std::endl;
+
+//        RationalRemainder< EarlyMultipRatCRA< Givaro::ModularBalanced<double> > > cra(3UL);
+        ChineseRemainderRatOMP< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(hadamard);
+
+#endif
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
         Timer chrono;
         chrono.start();
