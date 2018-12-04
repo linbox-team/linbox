@@ -857,8 +857,8 @@ namespace LinBox
 				size_t minpoly_degree;
 				minpoly_degree=_MinPoly.size();
 				FPolynomial Poly;
-				unsigned long deg;
-				unsigned long size= (_Ap.rowdim() - _MinPoly.size())<<1 ;
+				size_t deg;
+				size_t size= (_Ap.rowdim() - _MinPoly.size())<<1 ;
 				BlackboxContainer<Field, FMatrix > Sequence(&_Ap,field(),error,size);
 				MasseyDomain<Field,BlackboxContainer<Field, FMatrix > > MD(&Sequence);
 				MD.minpoly(Poly,deg);
@@ -1469,7 +1469,7 @@ namespace LinBox
 		const FMatrix&                       UU;
 		const Permutation<_Field>&           QQ;
 		const Permutation<_Field>&           PP;
-		unsigned long                     _rank;
+		size_t                     _rank;
 		const Field                     *_field;
 		mutable FVector                  _res_p;
 		mutable FVector                _digit_p;
@@ -1487,7 +1487,7 @@ namespace LinBox
 					  const Permutation<_Field>& Q,
 					  const FMatrix&     U,
 					  const Permutation<_Field>& P,
-					  unsigned long   rank,
+					  size_t   rank,
 					  const VectorIn&    b,
 					  const Prime_Type&  p) :
 			LiftingContainerBase<Ring,IMatrix> (R,A,b,p), LL(L),UU(U),QQ(Q), PP(P), _rank(rank),

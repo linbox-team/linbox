@@ -148,8 +148,8 @@ namespace LinBox
 
 		SparseMatrix<Field> *Ap;
 		FPolynomial MinPoly;
-		unsigned long  deg;
-		unsigned long issingular = SINGULARITY_THRESHOLD;
+		size_t  deg;
+		size_t issingular = SINGULARITY_THRESHOLD;
 		static Field *F=NULL;
 		Prime prime = _prime;
 		do {
@@ -237,8 +237,8 @@ namespace LinBox
 
 
 		FPolynomial MinPoly;
-		unsigned long  deg;
-		unsigned long badprecondition = BAD_PRECONTITIONER_THRESHOLD;
+		size_t  deg;
+		size_t badprecondition = BAD_PRECONTITIONER_THRESHOLD;
 		Field *F;
 		Prime prime = _prime;
 		typename Field::Element tmp;
@@ -1484,7 +1484,7 @@ namespace LinBox
 		// compute LQUP Factorization
 		Permutation<Field> P(F,(int)A.coldim()),Q(F,(int)A.rowdim());
 		FMatrix L(F, A.rowdim(), A.rowdim());
-		unsigned long rank;
+		size_t rank;
 		Element_t det;
 
 		GaussDomain<Field> GD(F);
