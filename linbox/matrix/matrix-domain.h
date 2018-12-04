@@ -64,13 +64,13 @@ namespace LinBox {
 	};
 }
 
-#include "matrixdomain/matrix-domain.h" // needed by BlasMatrix
-#include "matrixdomain/blas-matrix-domain.h"
-#include "matrixdomain/matrix-domain-gf2.h"
+#include "linbox/matrix/matrixdomain/matrix-domain.h" // needed by BlasMatrix
+#include "linbox/matrix/matrixdomain/blas-matrix-domain.h"
+#include "linbox/matrix/matrixdomain/matrix-domain-gf2.h"
 // #include "matrixdomain/matrix-domain-m4ri.h"
-#include "matrixdomain/plain-domain.h"
+#include "linbox/matrix/matrixdomain/plain-domain.h"
 
-#include "matrixdomain/opencl-domain.h"
+#include "linbox/matrix/matrixdomain/opencl-domain.h"
 
 
 #endif // __LINBOX_matrix_matrix_domain_H

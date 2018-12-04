@@ -198,7 +198,6 @@ bool runTest(uint64_t n, uint64_t d, long seed){
 
 	bool ok=true;
 	size_t bits= (53-integer(n).bitsize())/2;
-
 	// fourier prime < 2^(53--log(n))/2
 	{
 		RandomFFTPrime Rd(1<<bits,seed);
@@ -230,6 +229,7 @@ bool runTest(uint64_t n, uint64_t d, long seed){
 	 	ok&=launchTest (F2,n,bits,d,seed);
 	
 	 }
+
 	 // over the integer
 	{
 		Givaro::ZRing<integer> F;

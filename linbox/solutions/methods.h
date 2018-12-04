@@ -164,10 +164,10 @@ namespace LinBox
 			_strategy(PIVOT_LINEAR),
 			_shape(SPARSE),
 			_provensuccessprobability( 0.0 )
+			, _checkResult( true )
 #ifdef __LINBOX_HAVE_MPI
 			, _communicatorp( 0 )
 #endif
-			, _checkResult( true )
 			{}
 
 		Specifier (const Specifier& s):
@@ -182,10 +182,10 @@ namespace LinBox
 			_strategy( s._strategy),
 			_shape( s._shape),
 			_provensuccessprobability( s._provensuccessprobability)
+			, _checkResult( s._checkResult )
 #ifdef __LINBOX_HAVE_MPI
 			, _communicatorp(s._communicatorp)
 #endif
-			, _checkResult( s._checkResult )
 			{}
 
 		/** Accessors
