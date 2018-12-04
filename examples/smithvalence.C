@@ -167,7 +167,7 @@ int main (int argc, char **argv)
                     PRank(ranks, effexp, argv[1], sit->first, expo, coprimeR);
                     if (ranks.size() < expo) {
                         if (reporting)
-                        std::cerr << "It seems we need a larger prime power, it will take longer ..." << std::endl;
+                            std::cerr << "It seems we need a larger prime power, it will take longer ..." << std::endl;
                             // break;
                         PRankInteger(ranks, argv[1], sit->first, expo, coprimeR);
                     }
