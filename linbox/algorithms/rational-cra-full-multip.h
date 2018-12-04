@@ -48,8 +48,10 @@ namespace LinBox
         template <class Vect>
 		Vect& result (Vect &num, Integer& den)
 		{
+
             Father_t::result(num, false);
-            
+std::cout<<" ############# BEFORE r/num:"<<std::endl;
+for(int i=0;i<num.size();i++) std::cout<<num[i]<<std::endl;         
 #ifdef __Detailed_Time_Measurement
             Timer chrono;
             chrono.start();
@@ -71,6 +73,8 @@ namespace LinBox
 		    chrono.stop();
             std::cout<<"Process 0 RR "<<chrono.usertime()<<std::endl;
 #endif
+std::cout<<" ############# AFTER  r:num:"<<std::endl;
+for(int i=0;i<num.size();i++) std::cout<<num[i]<<std::endl;   
             return num;
         }
 

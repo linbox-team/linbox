@@ -203,8 +203,10 @@ namespace LinBox
         template <class Vect>
         inline Vect& result(Vect& r, bool normalized=true) const
         {
+
             r.resize(dimension_);
             result_iter(r.begin());
+
             return r;
         }
 
