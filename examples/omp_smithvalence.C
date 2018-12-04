@@ -148,12 +148,15 @@ std::cout << "Some factors (50000 factoring loop bound): ";
             ranks.push_back(smith[j].second);
             size_t effexp;
             if (exponents[j] > 1) {
+                    // See if a not too small, not too large exponent would work
+                    // Usually, closest to word size
                 if (smith[j].first == 2)
                     PRankPowerOfTwo(ranks, effexp, argv[1], exponents[j], coprimeR);
                 else
                     PRank(ranks, effexp, argv[1], smith[j].first, exponents[j], coprimeR);
-            }
-            else {
+            } else {
+                    // Square does not divide valence
+                    // Try first with the smallest possible exponent: 2
                 if (smith[j].first == 2)
                     PRankPowerOfTwo(ranks, effexp, argv[1], 2, coprimeR);
                 else
@@ -161,6 +164,8 @@ std::cout << "Some factors (50000 factoring loop bound): ";
             }
 
             if (effexp < exponents[j]) {
+                    // Reports that we need more powers, try successive doublings
+                    // Over abitrary precision
                 for(size_t expo = effexp<<1; ranks.back() < coprimeR; expo<<=1) {
                     if (smith[j].first == 2)
                         PRankIntegerPowerOfTwo(ranks, argv[1], expo, coprimeR);
@@ -168,7 +173,8 @@ std::cout << "Some factors (50000 factoring loop bound): ";
                         PRankInteger(ranks, argv[1], smith[j].first, expo, coprimeR);
                 }
             } else {
-
+                    // Larger exponents are needed
+                    // Try first small precision, then arbitrary
                 for(size_t expo = (exponents[j])<<1; ranks.back() < coprimeR; expo<<=1) {
                     if (smith[j].first == 2)
                         PRankPowerOfTwo(ranks, effexp, argv[1], expo, coprimeR);
