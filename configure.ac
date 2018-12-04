@@ -268,7 +268,7 @@ LB_CHECK_XML
 LB_DOC
 
 LB_CHECK_OCL
-
+LB_CHECK_MPI
 
 if test ! -d ./benchmarks/data ; then
 	echo "Creating data dir in benchmark" ;
