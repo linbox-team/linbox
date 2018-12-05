@@ -864,7 +864,7 @@ namespace LinBox
 		{}
 #endif
 		inline Commentator (std::ostream& out = std::cerr) :
-			cnull (0)
+            cnull ("/dev/null")
 		{}
 		inline  ~Commentator ()
 	       	{}
