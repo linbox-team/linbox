@@ -21,6 +21,8 @@ namespace LinBox {
 template<class Field, class WordT=unsigned long long int>
 class SlicedField : public Field {
 public:
+	typedef WordT Word_T;
+	typedef typename Field::Element Scalar;
 	SlicedField():Field(3) {}
 	SlicedField(size_t p, size_t e=1) : Field(p)
 	{  if (p != 3 || e != 1) throw LinBoxError("bad field"); }

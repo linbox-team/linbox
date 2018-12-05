@@ -109,7 +109,7 @@ namespace LinBox
 		const Field                           *_field;
 		BlasMatrixDomain<Field>                  _BMD;
 		MatrixDomain<Field>                       _MD;
-		unsigned long            EARLY_TERM_THRESHOLD;
+		size_t            EARLY_TERM_THRESHOLD;
 
 
 	public:
@@ -189,7 +189,7 @@ namespace LinBox
 #endif
 
 
-		BlockMasseyDomain (const BlockMasseyDomain<Field, Sequence> &Mat, unsigned long ett_default = DEFAULT_BLOCK_EARLY_TERM_THRESHOLD) :
+		BlockMasseyDomain (const BlockMasseyDomain<Field, Sequence> &Mat, size_t ett_default = DEFAULT_BLOCK_EARLY_TERM_THRESHOLD) :
 			_container(Mat._container), _field(Mat._field), _BMD(Mat.field()),
 			_MD(Mat.field()),  EARLY_TERM_THRESHOLD (ett_default)
 		{
@@ -199,7 +199,7 @@ namespace LinBox
 
 		}
 
-		BlockMasseyDomain (Sequence *D, unsigned long ett_default = DEFAULT_BLOCK_EARLY_TERM_THRESHOLD) :
+		BlockMasseyDomain (Sequence *D, size_t ett_default = DEFAULT_BLOCK_EARLY_TERM_THRESHOLD) :
 			_container(D), _field(&(D->field ())), _BMD(D->field ()), _MD(D->field ()), EARLY_TERM_THRESHOLD (ett_default)
 		{
 #ifdef _BM_TIMING
@@ -300,7 +300,7 @@ namespace LinBox
 			if (_BMD.rank(*_iter)< min_mn)
 				throw PreconditionFailed (__func__, __LINE__, "Bad random Blocks, abort\n");
 
-			unsigned long early_stop=0;
+			size_t early_stop=0;
 			long NN;
 			for (NN = 0; (NN < (long)length) && (early_stop < EARLY_TERM_THRESHOLD) ; ++NN, ++_iter) {
 

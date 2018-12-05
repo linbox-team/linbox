@@ -92,7 +92,7 @@ namespace LinBox
 	{
 		typedef typename Blackbox::Field Field;
 		typename Field::RandIter i (A.field());
-		unsigned long            deg;
+		size_t            deg;
 
 		commentator().start ("Wiedemann Minimal polynomial", "minpoly");
 
@@ -306,7 +306,7 @@ namespace LinBox
 					    Vector &x,
 					    const Vector &b,
 					    Vector &u,
-					    unsigned long r);
+					    size_t r);
 
 		/*! Get a random solution to a singular system Ax=b of rank r with
 		 * generic rank profile.
