@@ -111,7 +111,7 @@ namespace LinBox
 	// first rank rows of U are upper triangular and full rank
 	template <class _Matrix, class Vector1, class Vector2> Vector1&
 	upperTriangularSparseSolve (Vector1& x,
-				    unsigned long rank,
+				    size_t rank,
 				    const _Matrix  &U,
 				    const Vector2& b)
 	{

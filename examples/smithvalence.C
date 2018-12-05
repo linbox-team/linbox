@@ -127,6 +127,54 @@ int main (int argc, char **argv)
 	std::vector<size_t>::const_iterator eit=exponents.begin();
 	for(std::vector<integer>::const_iterator mit=Moduli.begin();
 	    mit != Moduli.end(); ++mit,++eit)
+<<<<<<< HEAD
+		std::cout << *mit << '^' << *eit << ' ';
+	std::cout << std::endl;
+    smith.resize(Moduli.size());
+
+    unsigned long coprimeR; 
+ 
+	std::cout << "num procs: " << omp_get_num_procs() << std::endl;
+	std::cout << "max threads: " << omp_get_max_threads() << std::endl;
+
+
+#pragma omp parallel 
+    {
+#pragma omp single
+        {
+            for(size_t j=0; j<Moduli.size(); ++j) {
+                smith[j].first = Moduli[j];
+#pragma omp task shared(smith,argv) firstprivate(j)
+                LRank(smith[j].second, argv[1], smith[j].first);
+            }
+            LRank(coprimeR, argv[1], coprimeV);
+        }
+	}
+
+ 
+	std::vector<Givaro::Integer> SmithDiagonal(coprimeR,Givaro::Integer(1));
+
+#pragma omp parallel for shared(SmithDiagonal, smith, exponents)
+	for(size_t j=0; j<Moduli.size(); ++j) {
+        
+        if (smith[j].second != coprimeR) {
+            std::vector<size_t> ranks;
+            ranks.push_back(smith[j].second);
+            size_t effexp;
+            if (exponents[j] > 1) {
+                if (smith[j].first == 2)
+                    PRankPowerOfTwo(ranks, effexp, argv[1], exponents[j], coprimeR);
+                else
+                    PRank(ranks, effexp, argv[1], smith[j].first, exponents[j], coprimeR);
+            }
+            else {
+                if (smith[j].first == 2)
+                    PRankPowerOfTwo(ranks, effexp, argv[1], 2, coprimeR);
+                else
+                    PRank(ranks, effexp, argv[1], smith[j].first, 2, coprimeR);
+            }
+            if (ranks.size() == 1) ranks.push_back(coprimeR);
+=======
 		std::cerr << *mit << '^' << *eit << ' ';
 	std::cerr << std::endl;
 
@@ -142,6 +190,7 @@ int main (int argc, char **argv)
 			SmithDiagonal[i] *= *mit;
 	}
 
+>>>>>>> parent of 33a9f59fc... start putting smith valence in algorithms
 
 	eit=exponents.begin();
 	std::vector<PairIntRk>::const_iterator sit=smith.begin();
@@ -173,6 +222,22 @@ int main (int argc, char **argv)
                 }
             }
 
+<<<<<<< HEAD
+#pragma omp critical
+            {   
+                for(size_t i=smith[j].second; i < coprimeR; ++i) {
+                    SmithDiagonal[i] *= smith[j].first;
+                }
+                
+                std::vector<size_t>::const_iterator rit=ranks.begin();
+                for(++rit; rit!= ranks.end(); ++rit) {
+                    if ((*rit)>= coprimeR) break;
+                    for(size_t i=(*rit); i < coprimeR; ++i)
+                        SmithDiagonal[i] *= smith[j].first;
+                }
+            }
+        }
+=======
 			std::vector<size_t>::const_iterator rit=ranks.begin();
 			// unsigned long modrank = *rit;
 			for(++rit; rit!= ranks.end(); ++rit) {
@@ -182,6 +247,7 @@ int main (int argc, char **argv)
 				// modrank = *rit;
 			}
 		}
+>>>>>>> parent of 33a9f59fc... start putting smith valence in algorithms
 	}
 	chrono.stop();
 
