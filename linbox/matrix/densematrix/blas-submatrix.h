@@ -33,9 +33,6 @@
 #ifndef __LINBOX_densematrix_blas_submatrix_H
 #define __LINBOX_densematrix_blas_submatrix_H
 
-
-#include "linbox/matrix/matrixdomain/apply-domain.h"
-
 namespace LinBox
 {
     /* Blas Submatrix */
@@ -84,9 +81,7 @@ namespace LinBox
         size_t          _col;  //!< col dimension of Submatrix
         size_t       _stride;  //!< stride of the original matrix
         const Field&  _field;
-        applyDomain<matrixType>    _AD;
-        //applyDomain<constMatrixType>    _AD;
-        //VectorDomain<Field>    _VD; 
+
     public:
 
         //////////////////
@@ -234,14 +229,18 @@ namespace LinBox
         template <class Vector1, class Vector2>
         Vector1&  apply (Vector1& y, const Vector2& x) const
         {
-            return _AD.apply(Tag::Transpose::NoTrans,y,field().one,*this,field().zero,x);		
+            FFLAS::fgemv(_field, FFLAS::FflasNoTrans, _row,_col, _field.one, _ptr, _stride,
+                         x.getPointer(), x.getStride(), _field.zero, y.getWritePointer(),y.getStride());
+            return y;
         }
 
         //! @bug use Matrix domain
         template <class Vector1, class Vector2>
         Vector1&  applyTranspose (Vector1& y, const Vector2& x) const
         {
-            return _AD.apply(Tag::Transpose::Trans,y,field().one,*this,field().zero,x);			
+            FFLAS::fgemv(_field, FFLAS::FflasTrans, _row,_col, _field.one, _ptr, _stride,
+                         x.getPointer(), x.getStride(), _field.zero, y.getWritePointer(),y.getStride());
+            return y;
         }
 
         void zero() {
