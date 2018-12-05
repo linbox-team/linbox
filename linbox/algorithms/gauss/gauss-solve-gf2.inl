@@ -37,7 +37,7 @@ namespace LinBox
 
 
 	template <class SparseSeqMatrix, class Perm, class Vector1, class Vector2>
-	Vector1& GaussDomain<GF2>::solve(Vector1& x, Vector1& w, unsigned long Rank,
+	Vector1& GaussDomain<GF2>::solve(Vector1& x, Vector1& w, size_t Rank,
 					 const Perm& Q, const SparseSeqMatrix& L,
 					 const SparseSeqMatrix& U, const Perm& P,
 					 const Vector2& b) const
@@ -62,7 +62,7 @@ namespace LinBox
 	{
 
 		typename GF2::Element Det;
-		unsigned long Rank;
+		size_t Rank;
 		const GF2 F2;
 		SparseSeqMatrix L(F2, A.rowdim(), A.rowdim());
 		Permutation<GF2> Q(F2,(int)A.rowdim());
@@ -86,7 +86,7 @@ namespace LinBox
 	{
 
 		typename GF2::Element Det;
-		unsigned long Rank;
+		size_t Rank;
 		const GF2 F2;
 		SparseSeqMatrix L(F2, A.rowdim(), A.rowdim());
 		Permutation<GF2> Q((int)A.rowdim(),F2);

@@ -38,7 +38,7 @@ namespace LinBox
 
 	template <class _Field>
 	template <class _Matrix, class Perm, class Vector1, class Vector2> inline Vector1&
-	GaussDomain<_Field>::solve(Vector1& x, Vector1& w, unsigned long Rank, const Perm& Q, const _Matrix& L, const _Matrix& U, const Perm& P, const Vector2& b)  const
+	GaussDomain<_Field>::solve(Vector1& x, Vector1& w, size_t Rank, const Perm& Q, const _Matrix& L, const _Matrix& U, const Perm& P, const Vector2& b)  const
 	{
             // Q L U P x = b
 		Vector2 y(U.field(),U.rowdim()), v(U.field(),U.rowdim());
@@ -62,7 +62,7 @@ namespace LinBox
 	{
 
 		typename Field::Element Det;
-		unsigned long Rank;
+		size_t Rank;
 		_Matrix L(field(), A.rowdim(), A.rowdim());
 		Permutation<Field> Q(field(),(int)A.rowdim());
 		Permutation<Field> P(field(),(int)A.coldim());
@@ -99,7 +99,7 @@ namespace LinBox
 	GaussDomain<_Field>::solvein(Vector1& x, _Matrix& A, const Vector2& b, Random& generator)  const
 	{
 		typename Field::Element Det;
-		unsigned long Rank;
+		size_t Rank;
 		_Matrix L(field(), A.rowdim(), A.rowdim());
 		Permutation<Field> Q(field(),(int)A.rowdim());
 		Permutation<Field> P(field(),(int)A.coldim());

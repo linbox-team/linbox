@@ -59,7 +59,7 @@ namespace LinBox
 
 		// Pascal Giorgi 16.02.2004
 		template<class Vector>
-		BlackboxContainer(const Blackbox * D, const Field &F, const Vector &u0, unsigned long size) :
+		BlackboxContainer(const Blackbox * D, const Field &F, const Vector &u0, size_t size) :
 			BlackboxContainerBase<Field, Blackbox> (D, F,size)
 			,w(F)
 		{
