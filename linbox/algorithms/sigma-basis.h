@@ -771,7 +771,7 @@ namespace LinBox
 				throw PreconditionFailed (__func__, __LINE__, "Bad random Blocks, abort\n");
 			}
 
-			unsigned long early_stop=0;
+			size_t early_stop=0;
 			long NN;
 
 			for (NN = 0; (NN < (long)length) && (early_stop < 20) ; ++NN) {
@@ -994,7 +994,7 @@ namespace LinBox
 				throw PreconditionFailed (__func__, __LINE__, "Bad random Blocks, abort\n");
 			}
 
-			unsigned long early_stop=0;
+			size_t early_stop=0;
 			long NN;
 
 			for (NN = 0; (NN < (long)length) && (early_stop < 20) ; ++NN) {

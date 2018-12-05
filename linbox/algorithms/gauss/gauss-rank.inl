@@ -31,11 +31,11 @@
 namespace LinBox
 {
 	template <class _Field>
-	template <class _Matrix> unsigned long&
-	GaussDomain<_Field>::rankin(unsigned long &Rank,
+	template <class _Matrix> size_t&
+	GaussDomain<_Field>::rankin(size_t &Rank,
 				    _Matrix        &A,
-				    unsigned long  Ni,
-				    unsigned long  Nj,
+				    size_t  Ni,
+				    size_t  Nj,
 				    SparseEliminationTraits::PivotStrategy   reord)  const
 	{
 		Element determinant;
@@ -47,8 +47,8 @@ namespace LinBox
 
 
 	template <class _Field>
-	template <class _Matrix> unsigned long&
-	GaussDomain<_Field>::rankin(unsigned long &Rank,
+	template <class _Matrix> size_t&
+	GaussDomain<_Field>::rankin(size_t &Rank,
 				    _Matrix        &A,
 				    SparseEliminationTraits::PivotStrategy   reord)  const
 	{
@@ -58,8 +58,8 @@ namespace LinBox
 
 
 	template <class _Field>
-	template <class _Matrix> unsigned long&
-	GaussDomain<_Field>::rank(unsigned long &rk,
+	template <class _Matrix> size_t&
+	GaussDomain<_Field>::rank(size_t &rk,
 				  const _Matrix        &A,
 				  SparseEliminationTraits::PivotStrategy   reord)  const
 	{
@@ -67,15 +67,15 @@ namespace LinBox
 	}
 
 	template <class _Field>
-	template <class _Matrix> unsigned long&
-	GaussDomain<_Field>::rank(unsigned long &Rank,
+	template <class _Matrix> size_t&
+	GaussDomain<_Field>::rank(size_t &Rank,
 				  const _Matrix        &A,
-				  unsigned long  Ni,
-				  unsigned long  Nj,
+				  size_t  Ni,
+				  size_t  Nj,
 				  SparseEliminationTraits::PivotStrategy   reord)  const
 	{
 		_Matrix CopyA(Ni);
-		for(unsigned long i = 0; i < Ni; ++i)
+		for(size_t i = 0; i < Ni; ++i)
 			CopyA[i] = A[i];
 		return rankin(Rank, CopyA, Ni, Nj, reord);
 	}
