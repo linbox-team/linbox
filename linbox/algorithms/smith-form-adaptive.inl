@@ -67,7 +67,7 @@ namespace LinBox
 		std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 
 		int order = (int)(A. rowdim() < A. coldim() ? A. rowdim() : A. coldim());
-		linbox_check ((s. size() >= (unsigned long)order) && (p > 0) && ( e >= 0));
+		linbox_check ((s. size() >= (size_t)order) && (p > 0) && ( e >= 0));
 		if (e == 0) return;
 
 		if (p == 2) {
@@ -160,7 +160,7 @@ namespace LinBox
 		//std::ostream& report(std::cout);
 		std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		int order = (int)(A. rowdim() < A. coldim() ? A. rowdim() : A. coldim());
-		linbox_check ((s. size() >= (unsigned long) order) && (p > 0) && ( e >= 0));
+		linbox_check ((s. size() >= (size_t) order) && (p > 0) && ( e >= 0));
 		integer T; T = order; T <<= 20; T = pow (T, (int) sqrt((double)order));
 		NTL::ZZ m;  NTL::conv(m, 1); int i = 0; for (i = 0; i < e; ++ i) m *= p;
 		//if (m < T)
@@ -224,7 +224,7 @@ namespace LinBox
 		std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		report << "Computation the k-smooth part of the invariant factors starts(via local and rank):" << std::endl;
 		int order = (int)(A. rowdim() < A. coldim() ? A. rowdim() : A. coldim());
-		linbox_check (s. size() >= (unsigned long)order);
+		linbox_check (s. size() >= (size_t)order);
 		std::vector<int64_t>::const_iterator sev_p; const int64_t* prime_p; BlasVector<Givaro::ZRing<Integer> >::iterator s_p;
 		BlasVector<Givaro::ZRing<Integer> > local(Z,(size_t)order);
 		BlasVector<Givaro::ZRing<Integer> >::iterator local_p;
@@ -273,7 +273,7 @@ namespace LinBox
 		report << "Compuation of the k-rough part f the invariant factors starts(via EGV+ or Iliopolous):\n";
 		int order = (int)(A. rowdim() < A. coldim() ? A. rowdim() : A. coldim());
 		integer T; T = order; T <<= 20; T = pow (T, (int) sqrt((double)order));
-		linbox_check ((s. size() >= (unsigned long)order) && (m > 0));
+		linbox_check ((s. size() >= (size_t)order) && (m > 0));
 		if (m == 1)
 			report << "   Not rough part." << std::endl;
 		else if ( m <=  FieldTraits< PIRModular<int32_t> >::maxModulus() ) {
@@ -341,7 +341,7 @@ namespace LinBox
 		std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		report << "Computation the local smith form at each possible prime:\n";
 		int order = (int)(A. rowdim() < A. coldim() ? A. rowdim() : A. coldim());
-		linbox_check (s. size() >= (unsigned long)order);
+		linbox_check (s. size() >= (size_t)order);
 
 		std::vector<int64_t>::const_iterator sev_p;
 		const int64_t* prime_p;
@@ -404,7 +404,7 @@ namespace LinBox
 		int order = (A. rowdim() < A. coldim()) ? (int)A. rowdim() : (int)A. coldim();
 		report << "Computation of the rank starts:\n";
 		typedef typename Matrix::Field Ring;
-		unsigned long r;
+		size_t r;
 		MatrixRank<Ring, Givaro::Modular<int32_t> > MR;
 		r = MR. rank (A);
 		report << "   Matrix rank over a random prime field: " << r << '\n';
@@ -414,7 +414,7 @@ namespace LinBox
 
 		report <<"   Compute the degree of min poly of AA^T: \n";
 		typedef Givaro::Modular<int32_t> Field;
-		integer Val; Field::Element v; unsigned long degree;
+		integer Val; Field::Element v; size_t degree;
         PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
 		Field F (*genprime);
 		typename MatrixHomTrait<Matrix, Field>::value_type Ap(F, A.rowdim(), A.coldim());
@@ -526,9 +526,9 @@ namespace LinBox
 
 		report << "Computation of the rank starts:" << std::endl;
 		typedef typename BlasMatrix<IRing,_Rep>::Field Ring;
-		unsigned long r;
+		size_t r;
 		MatrixRank<Ring, Givaro::Modular<int32_t> > MR;
-		r = (unsigned long)MR. rank (A);
+		r = (size_t)MR. rank (A);
 		report << "   Matrix rank over a random prime field: " << r << std::endl;
 		report << "Computation of the rank finished.\n";
 		// a hack
@@ -539,7 +539,7 @@ namespace LinBox
 		report <<"   Compute the degree of min poly of AA^T: \n";
 		typedef Givaro::Modular<int32_t> Field;
 		integer Val; Field::Element v; size_t degree;
-		//integer Val; Field::Element v; unsigned long degree;
+		//integer Val; Field::Element v; size_t degree;
         PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
 		Field F (*genprime);
 		typename MatrixHomTrait<BlasMatrix <IRing, _Rep>, Field>::value_type Ap(F,A.rowdim(),A.coldim());

@@ -54,8 +54,6 @@ EXTRA=""
 EXTRA_VAR=""
 IML="--with-iml"
 IML_VAR=""
-SAGE=""
-SAGE_VAR="false"
 DRIV=""
 DRIV_VAR="false"
 OPENBLAS=""
@@ -131,8 +129,6 @@ help() {
     echo "                         Default : disabled. May be \'full\' "
     echo " --enable-optimization : build with compile-time optimization."
     echo "                         Default : enabled."
-    echo " --enable-sage         : build with sage support."
-    echo "                         Default : disabled."
     echo " --enable-drivers      : build with drivers support."
     echo "                         Default : disabled."
     echo 
@@ -241,20 +237,10 @@ for i in "$@" ; do
 	IML="$i "
 	IML_VAR="true"
 	;;
-	"--enable-sage")
-	if	[ "x$SAGE_VAR" = "xfalse" ] ; then  echo "enable-sage or not ?";          help ; exit -1; fi
-	SAGE="$i"
-	SAGE_VAR="true"
-	;;
 	"--enable-drivers")
 	if	[ "x$DRIV_VAR" = "xfalse" ] ; then  echo "enable-drivers or not ?" ;      help ; exit -1; fi
 	DRIV="$i"
 	DRIV_VAR="true"
-	;;
-	"--disable-sage")
-	if	[ "x$SAGE_VAR" = "xtrue" ] ; then  echo "enable-sage or not ?";          help ; exit -1; fi
-	SAGE=""
-	SAGE_VAR="false"
 	;;
 	"--disable-drivers")
 	if	[ "x$DRIV_VAR" = "xtrue" ] ; then  echo "enable-drivers or not ?" ;      help ; exit -1; fi
@@ -377,16 +363,6 @@ for i in "$@" ; do
 		CHECK=$QUI ; CHECK_VAR="true" 
 	    else 
 		CHECK_VAR="false"
-	    fi
-	    ;;
-	    "--enable-sage")
-	    [[ "$QUOI" =~ y|yes|Y|1 ]] && OK=1 || OK=0
-	    if		[ "x$SAGE_VAR" = "xtrue"  -a "OK" = "0"  ] ; then  echo "sage or not sage ?" ;      help ; exit -1; fi
-	    if		[ "x$SAGE_VAR" = "xfalse" -a "OK" = "1"  ] ; then  echo "sage or not sage ?" ;      help ; exit -1; fi
-	    if		[[ "x$OK" = "x1" ]] ; then 
-		SAGE=$QUI ; SAGE_VAR="true" 
-	    else
-		SAGE_VAR="false" 
 	    fi
 	    ;;
 	    "--enable-drivers")
@@ -859,12 +835,12 @@ echo -e " * to ensure you don't get undefined symbols !"| tee -a ./auto-install.
 echo  ""| tee -a ./auto-install.log
 
 if [ -x autogen.sh ] ;  then 
-    echo "./autogen.sh $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $WARNINGS $IML $SAGE $DRIV"| tee -a ./auto-install.log
-    ./autogen.sh "$PREFIX" "$DEBUG" "$OPTIM" "$GMP" "$BLAS" "$NTL" "$WARNINGS" "$IML" "$SAGE" "$DRIV" | tee -a ./auto-install.log|| die
+    echo "./autogen.sh $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $WARNINGS $IML $DRIV"| tee -a ./auto-install.log
+    ./autogen.sh "$PREFIX" "$DEBUG" "$OPTIM" "$GMP" "$BLAS" "$NTL" "$WARNINGS" "$IML" "$DRIV" | tee -a ./auto-install.log|| die
 else
-    echo "./configure $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $WARNINGS $IML $SAGE $DRIV"| tee -a ./auto-install.log
-	# ./configure $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $WARNINGS  $IML $SAGE $DRIV || die
-    ./configure "$PREFIX" "$DEBUG" "$OPTIM" "$GMP" "$BLAS" "$NTL" "$WARNINGS" "$IML" "$SAGE" "$DRIV" | tee -a ./auto-install.log|| die
+    echo "./configure $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $WARNINGS $IML $DRIV"| tee -a ./auto-install.log
+	# ./configure $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $WARNINGS  $IML $DRIV || die
+    ./configure "$PREFIX" "$DEBUG" "$OPTIM" "$GMP" "$BLAS" "$NTL" "$WARNINGS" "$IML" "$DRIV" | tee -a ./auto-install.log|| die
 fi
 
 echo -e "${BEG}building LinBox..."| tee -a ./auto-install.log
