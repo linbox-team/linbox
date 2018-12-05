@@ -189,7 +189,7 @@ namespace LinBox { /* BlasVector */
         template<class SizeType, typename std::enable_if<std::is_arithmetic<SizeType>::value, int>::type=0>
 		BlasVector (const _Field &F, const SizeType &m, const Element e=Element())  :
 			Father_t(),
-			_size(m),_1stride(1),_rep((size_t)_size, e),_ptr(_rep.data()),_field(&F)
+			_size(m),_1stride(1),_rep((size_t)m, e),_ptr(_rep.data()),_field(&F)
 		{
 			// Father_t is garbage until then:
 			setIterators();
