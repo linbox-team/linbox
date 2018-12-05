@@ -1,5 +1,5 @@
 /*
- * examples/smithvalence.h
+ * algorithms/smith-form-valence.h
  * Copyright (c) Linbox
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -20,8 +20,8 @@
  * ========LICENCE========
  */
 
-/**\file examples/smithvalence.h
- * @example  examples/smithvalence.h
+/**\file algorithms/smith-form-valence.h
+ * @example  algorithms/smith-form-valence.h
  \brief Valence of sparse matrix over Z or Zp.
  \ingroup examples
 */
@@ -42,9 +42,9 @@
 #include <linbox/util/timer.h>
 #include <linbox/util/error.h>
 #ifdef SILENT
-bool reporting = false;
+const bool reporting = false;
 #else 
-bool reporting = true;
+const bool reporting = true;
 #endif
 #ifdef NOT_USING_OMP
 #define THREADS 1
@@ -264,6 +264,94 @@ std::vector<size_t>& PRankIntegerPowerOfTwo(std::vector<size_t>& ranks, char * f
 	}
 	return ranks;
 }
+
+
+typedef std::pair<Givaro::Integer,size_t> PairIntRk;
+
+
+std::vector<size_t>& AllPowersRanks(
+    std::vector<size_t>& ranks,
+    const PairIntRk& squarefreeRank,// smith[j]
+    const size_t& exponentBound,	// exponents[j]
+    const size_t& coprimeRank,		// coprimeR
+    char * filename) {				// argv[1]
+    
+    size_t ttt(1);
+    for(size_t iii=0; iii<10000; ++iii)
+    for(size_t kkk=0; kkk<10000; ++kkk)
+        for(size_t jjj=0; jjj<100000; ++jjj)
+            ttt += jjj*kkk+iii;
+    std::cerr << ttt << std::endl;
+   
+    ranks.push_back(squarefreeRank.second);
+    size_t effexp;
+    if (exponentBound > 1) {
+            // See if a not too small, not too large exponent would work
+            // Usually, closest to word size
+        if (squarefreeRank.first == 2)
+            PRankPowerOfTwo(ranks, effexp, filename, exponentBound, coprimeRank);
+        else
+            PRank(ranks, effexp, filename, squarefreeRank.first, exponentBound, coprimeRank);
+    } else {
+            // Square does not divide valence
+            // Try first with the smallest possible exponent: 2
+        if (squarefreeRank.first == 2)
+            PRankPowerOfTwo(ranks, effexp, filename, 2, coprimeRank);
+        else
+            PRank(ranks, effexp, filename, squarefreeRank.first, 2, coprimeRank);
+    }
+
+    if (effexp < exponentBound) {
+            // Above report shows that more powers are needed, 
+            // try successive doublings Over abitrary precision
+        for(size_t expo = effexp<<1; ranks.back() < coprimeRank; expo<<=1) {
+            if (squarefreeRank.first == 2)
+                PRankIntegerPowerOfTwo(ranks, filename, expo, coprimeRank);
+            else
+                PRankInteger(ranks, filename, squarefreeRank.first, expo, coprimeRank);
+        }
+    } else {
+            // Larger exponents are needed
+            // Try first small precision, then arbitrary
+        for(size_t expo = (exponentBound)<<1; ranks.back() < coprimeRank; expo<<=1) {
+            if (squarefreeRank.first == 2)
+                PRankPowerOfTwo(ranks, effexp, filename, expo, coprimeRank);
+            else
+                PRank(ranks, effexp, filename, squarefreeRank.first, expo, coprimeRank);
+            if (ranks.size() < expo) {
+                if (reporting)
+                    std::cerr << "It seems we need a larger prime power, it will take longer ..." << std::endl;
+                    // break;
+                if (squarefreeRank.first == 2)
+                    PRankIntegerPowerOfTwo(ranks, filename, expo, coprimeRank);
+                else
+                    PRankInteger(ranks, filename, squarefreeRank.first, expo, coprimeRank);
+            }
+        }
+    }
+
+    return ranks;
+}
+
+std::vector<Givaro::Integer>& populateSmithForm(
+    std::vector<Givaro::Integer>& SmithDiagonal,
+    const std::vector<size_t>& ranks,
+    const PairIntRk& squarefreeRank,// smith[j]
+    const size_t& coprimeRank) {	// coprimeR
+   
+    for(size_t i=squarefreeRank.second; i < coprimeRank; ++i) {
+        SmithDiagonal[i] *= squarefreeRank.first;
+    }
+    auto rit=ranks.begin(); for(++rit; rit!= ranks.end(); ++rit) {
+        if ((*rit)>= coprimeRank) break;
+        for(size_t i=(*rit); i < coprimeRank; ++i)
+            SmithDiagonal[i] *= squarefreeRank.first;
+    }
+    
+    return SmithDiagonal;
+}
+
+
 
 #undef THREADS
 
