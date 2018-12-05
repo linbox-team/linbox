@@ -47,8 +47,7 @@ namespace LinBox {
         _row (Rowdim),
         _col(Coldim),
 		_stride(M.getStride()),
-        _field(M.field()),
-		_AD(M.field())
+        _field(M.field())
 	{
         linbox_check ( rowbeg  <= M.rowdim() ); // allow for NULL matrix
 		linbox_check ( colbeg  <= M.coldim() );
@@ -62,8 +61,7 @@ namespace LinBox {
         _row (Rowdim),
         _col(Coldim),
 		_stride(M.getStride()),
-        _field(M.field()),
-		_AD(M.field())
+        _field(M.field())
 	{
         linbox_check ( rowbeg  <= M.rowdim() ); // allow for NULL matrix
 		linbox_check ( colbeg  <= M.coldim() );
@@ -77,8 +75,7 @@ namespace LinBox {
         _row (M.rowdim()),
         _col (M.coldim()),
 		_stride(M.getStride()),
-        _field(M.field()),
-		_AD(M.field())
+        _field(M.field())
     {
 
     }
@@ -92,8 +89,7 @@ namespace LinBox {
         _row (Rowdim),
         _col(Coldim),
 		_stride(stride),
-        _field(F),
-		_AD(F)
+        _field(F)
     {
 
     }
@@ -106,7 +102,7 @@ namespace LinBox {
 
     template < class _Matrix >
     void BlasSubmatrix<_Matrix>::setEntry (size_t i, size_t j, const Element &a_ij) {
-        return field().assign(_ptr[i*_stride+j],a_ij);
+        field().assign(_ptr[i*_stride+j],a_ij);
     }
 
     template < class _Matrix >
