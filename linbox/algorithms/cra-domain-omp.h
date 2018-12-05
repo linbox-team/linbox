@@ -281,9 +281,9 @@ namespace LinBox
                 ++m_primeiters[ omp_get_thread_num()];
             
             ROUNDdomains[ omp_get_thread_num()] = Domain(*m_primeiters[ omp_get_thread_num()]);
-std::cout << " Thread("<<omp_get_thread_num()<<") >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "<<std::endl;
+//std::cout << " Thread("<<omp_get_thread_num()<<") >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "<<std::endl;
             Iteration(ROUNDresidues[ omp_get_thread_num()], ROUNDdomains[ omp_get_thread_num()]);
-std::cout << " Thread("<<omp_get_thread_num()<<") <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< "<<std::endl;
+//std::cout << " Thread("<<omp_get_thread_num()<<") <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< "<<std::endl;
         }
         
         
@@ -301,7 +301,7 @@ std::cout << " Thread("<<omp_get_thread_num()<<") <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
                     {
                             // std::cout<<"Coucou thread_num = "<<omp_get_thread_num()<<std::endl;
                         for(auto i=0; i<Tile; ){
-                            
+#pragma omp critical                            
                             solve_with_prime(m_primeiters, coprimeset, Iteration, ROUNDdomains, ROUNDresidues);
                             
 #pragma omp critical
@@ -333,16 +333,16 @@ std::cout << " Thread("<<omp_get_thread_num()<<") <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 			while( ! this->Builder_.terminated() ) {
                 
 #pragma omp parallel num_threads(NN/Tile)
-                for(auto j=0;j<NN/Tile;j++)
+                //for(auto j=0;j<NN/Tile;j++)
                 {
                     
-#pragma omp task                        
+#pragma omp task
                     {
                         
                         for(auto i=0; i<Tile; ){
                             // Avoid unnecessary computation so as to terminate as early as possible
                             if( this->Builder_.terminated() ) break;
-
+#pragma omp critical
                             solve_with_prime(m_primeiters, coprimeset, Iteration, ROUNDdomains, ROUNDresidues);
                             
 #pragma omp critical
@@ -389,6 +389,13 @@ std::cout << " Thread("<<omp_get_thread_num()<<") <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
                 //LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag> m_primeiter( j, omp_get_max_threads());
                 LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag> m_primeiter( j, omp_get_max_threads());
                 m_primeiters.push_back(m_primeiter);
+////////////////////////////////////////////////////////////////////////////////////////////////
+/*
+++m_primeiters[j];
+while(this->Builder_.noncoprime(*m_primeiters[j]) )  ++m_primeiters[j];
+ROUNDdomains[j] = Domain(*m_primeiters[j]);
+*/
+///////////////////////////////////////////////////////////////////////////////////////////////
             }
 
             if(omp_get_max_threads()>1){
