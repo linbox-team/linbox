@@ -33,10 +33,10 @@ namespace LinBox
 	template <class _Field>
 	template <class Vector> inline void
 	GaussDomain<_Field>::permute (Vector              &lignecourante,
-				      const unsigned long &indcol,
+				      const size_t &indcol,
 				      const long &indpermut) const
 	{
-		const unsigned long k = indcol - 1;
+		const size_t k = indcol - 1;
 
 #if 0
 		std::cerr << "B PERMUTE: " << indpermut << " <--> " << k << " of  [";
@@ -121,7 +121,7 @@ namespace LinBox
 	template <class Vector, class D> inline void
 	GaussDomain<_Field>::eliminate (Vector              &lignecourante,
 					const Vector        &lignepivot,
-					const unsigned long &indcol,
+					const size_t &indcol,
 					const long &indpermut,
 					D                   &columns) const
 	{
@@ -129,8 +129,8 @@ namespace LinBox
 		typedef typename Vector::value_type E;
 		typedef typename E::first_type E1;
 
-		unsigned long k = indcol - 1;
-		unsigned long nj = lignecourante.size () ;
+		size_t k = indcol - 1;
+		size_t nj = lignecourante.size () ;
 #if 0
 		std::cerr << "BEGIN ELIMINATE, k: " << k << ", nj: " << nj << ", indpermut: " << indpermut << ", indcol: " << indcol << std::endl;
 		std::cerr << "lignepivot: [";
@@ -146,7 +146,7 @@ namespace LinBox
 		std::cerr << ']' << std::endl;
 #endif
 		if (nj > 0) {
-			unsigned long j_head = 0;
+			size_t j_head = 0;
 
 			for (; j_head < nj; ++j_head) {
 				if (static_cast<long>(lignecourante[(size_t)j_head].first) >= indpermut) break;
@@ -180,14 +180,14 @@ namespace LinBox
 					}
 					// -------------------------------------------
 					// Elimination
-					unsigned long npiv = lignepivot.size ();
+					size_t npiv = lignepivot.size ();
 					Vector construit (nj + npiv);
 
 					// construit : <-- j
 					// courante  : <-- m
 					// pivot     : <-- l
-					unsigned long j = 0;
-					unsigned long m = j_head + 1;
+					size_t j = 0;
+					size_t m = j_head + 1;
 
 					// A[i,k] <-- - A[i,k] / A[k,k]
 					Element headcoeff;
@@ -203,14 +203,14 @@ namespace LinBox
 					}
 
 
-					unsigned long l = 0;
+					size_t l = 0;
 
 					for (; l < npiv; l++)
 						if (lignepivot[l].first > k) break;
 
 					// for all j such that (j>k) and A[k,j]!=0
 					while (l < npiv) {
-					unsigned long j_piv;
+					size_t j_piv;
 						j_piv = lignepivot[l].first;
 
 						// if A[k,j]=0, then A[i,j] <-- A[i,j]
@@ -270,7 +270,7 @@ namespace LinBox
 #endif
 					if (indpermut != static_cast<long>(k)) {
 						if (j_head>0) {
-							unsigned long l = 0;
+							size_t l = 0;
 
 							for (; l < nj; ++l)
 								if (lignecourante[(size_t)l].first >= k) break;
@@ -282,7 +282,7 @@ namespace LinBox
 								++columns[(size_t)indpermut];
 								tmp.first = (E1)indpermut;
 
-								unsigned long bjh = j_head-1;
+								size_t bjh = j_head-1;
 								for (; l < bjh; ++l)
 									lignecourante[(size_t)l] = lignecourante[(size_t)l + 1];
 
@@ -305,7 +305,7 @@ namespace LinBox
 				std::cerr << "----------------------------------------------------------" << std::endl;
 #endif
 				if (indpermut != static_cast<long>(k)) {
-					unsigned long l = 0;
+					size_t l = 0;
 
 					for (; l < nj; ++l)
 						if (lignecourante[(size_t)l].first >= k) break;
@@ -317,7 +317,7 @@ namespace LinBox
 						++columns[(size_t)indpermut];
 						tmp.first = (E1)indpermut;
 
-						unsigned long bjh = nj - 1;
+						size_t bjh = nj - 1;
 						for (; l < bjh; ++l)
 							lignecourante[(size_t)l] = lignecourante[(size_t)l + 1];
 
@@ -352,17 +352,17 @@ namespace LinBox
 	GaussDomain<_Field>::eliminate (Element             &headpivot,
 					Vector              &lignecourante,
 					const Vector        &lignepivot,
-					const unsigned long indcol,
+					const size_t indcol,
 					const long indpermut,
-					const unsigned long npiv,
+					const size_t npiv,
 					D                   &columns) const
 	{
 
 		typedef typename Vector::value_type E;
 		typedef typename E::first_type E1;
 
-		unsigned long k = indcol - 1;
-		unsigned long nj = lignecourante.size () ;
+		size_t k = indcol - 1;
+		size_t nj = lignecourante.size () ;
 #if 0
 		std::cerr << "BEGIN ELIMINATE, k: " << k << ", nj: " << nj << ", indpermut: " << indpermut << ", indcol: " << indcol << std::endl;
 		std::cerr << "lignepivot: [";
@@ -378,7 +378,7 @@ namespace LinBox
 		std::cerr << ']' << std::endl;
 #endif
 		if (nj > 0) {
-			unsigned long j_head = 0;
+			size_t j_head = 0;
 
 			for (; j_head < nj; ++j_head) {
 				if (static_cast<long>(lignecourante[(size_t)j_head].first) >= indpermut) break;
@@ -417,8 +417,8 @@ namespace LinBox
 					// construit : <-- j
 					// courante  : <-- m
 					// pivot     : <-- l
-					unsigned long j = 0;
-					unsigned long m = j_head + 1;
+					size_t j = 0;
+					size_t m = j_head + 1;
 
 					// A[i,k] <-- - A[i,k] / A[k,k]
 					Element headcoeff;
@@ -437,14 +437,14 @@ namespace LinBox
 					}
 
 
-					unsigned long l = 0;
+					size_t l = 0;
 
 					for (; l < npiv; l++)
 						if (lignepivot[l].first > k) break;
 
 					// for all j such that (j>k) and A[k,j]!=0
 					while (l < npiv) {
-						unsigned long j_piv;
+						size_t j_piv;
 						j_piv = lignepivot[l].first;
 
 						// if A[k,j]=0, then A[i,j] <-- A[i,j]
@@ -504,7 +504,7 @@ namespace LinBox
 #endif
 					if (indpermut != static_cast<long>(k)) {
 						if (j_head>0) {
-							unsigned long l = 0;
+							size_t l = 0;
 
 							for (; l < nj; ++l)
 								if (lignecourante[(size_t)l].first >= k) break;
@@ -516,7 +516,7 @@ namespace LinBox
 								++columns[(size_t)indpermut];
 								tmp.first = (E1)indpermut;
 
-								unsigned long bjh = j_head-1;
+								size_t bjh = j_head-1;
 								for (; l < bjh; ++l)
 									lignecourante[(size_t)l] = lignecourante[(size_t)l + 1];
 
@@ -539,7 +539,7 @@ namespace LinBox
 				std::cerr << "----------------------------------------------------------" << std::endl;
 #endif
 				if (indpermut != static_cast<long>(k)) {
-					unsigned long l = 0;
+					size_t l = 0;
 
 					for (; l < nj; ++l)
 						if (lignecourante[(size_t)l].first >= k) break;
@@ -551,7 +551,7 @@ namespace LinBox
 						++columns[(size_t)indpermut];
 						tmp.first = (E1)indpermut;
 
-						unsigned long bjh = nj - 1;
+						size_t bjh = nj - 1;
 						for (; l < bjh; ++l)
 							lignecourante[(size_t)l] = lignecourante[(size_t)l + 1];
 
@@ -585,17 +585,17 @@ namespace LinBox
 	template <class Vector> inline void
 	GaussDomain<_Field>::eliminate (Vector              &lignecourante,
 					const Vector        &lignepivot,
-					const unsigned long &indcol,
+					const size_t &indcol,
 					const long &indpermut) const
 	{
 		typedef typename Vector::value_type E;
 		typedef typename E::first_type E1;
 
-		unsigned long k = indcol - 1;
-		unsigned long nj = lignecourante.size () ;
+		size_t k = indcol - 1;
+		size_t nj = lignecourante.size () ;
 
 		if (nj > 0) {
-			unsigned long j_head = 0;
+			size_t j_head = 0;
 
 			for (; j_head < nj; ++j_head)
 				if (static_cast<long>(lignecourante[(size_t)j_head].first) >= indpermut) break;
@@ -622,13 +622,13 @@ namespace LinBox
 					}
 					// -------------------------------------------
 					// Elimination
-					unsigned long npiv = lignepivot.size ();
+					size_t npiv = lignepivot.size ();
 					Vector construit (nj + npiv);
 					// construit : <-- j
 					// courante  : <-- m
 					// pivot     : <-- l
-					unsigned long j = 0;
-					unsigned long m = j_head + 1;
+					size_t j = 0;
+					size_t m = j_head + 1;
 
 					// A[i,k] <-- - A[i,k] / A[k,k]
 
@@ -642,14 +642,14 @@ namespace LinBox
 						j++;
 					}
 
-					unsigned long l = 0;
+					size_t l = 0;
 
 					for (; l < npiv; l++)
 						if (lignepivot[l].first > k) break;
 
 					// for all j such that (j>k) and A[k,j]!=0
 					while (l < npiv) {
-					unsigned long j_piv;
+					size_t j_piv;
 						j_piv = lignepivot[l].first;
 
 						// if A[k,j]=0, then A[i,j] <-- A[i,j]
@@ -694,7 +694,7 @@ namespace LinBox
 					// Permutation
 					if (indpermut != static_cast<long>(k)) {
 						if (j_head > 0) {
-							unsigned long l = 0;
+							size_t l = 0;
 
 							for (; l < nj; ++l)
 								if (lignecourante[(size_t)l].first >= k) break;
@@ -704,7 +704,7 @@ namespace LinBox
 								E tmp = lignecourante[(size_t)l];
 								tmp.first = (E1) indpermut;
 
-								unsigned long bjh = j_head -1;
+								size_t bjh = j_head -1;
 								for (; l < bjh; l++)
 									lignecourante[(size_t)l] = lignecourante[(size_t)l + 1];
 
@@ -728,7 +728,7 @@ namespace LinBox
 				std::cerr << "----------------------------------------------------------" << std::endl;
 #endif
 				if (indpermut != static_cast<long>(k)) {
-					unsigned long l = 0;
+					size_t l = 0;
 
 					for (; l < nj; ++l)
 						if (lignecourante[(size_t)l].first >= k) break;
@@ -738,7 +738,7 @@ namespace LinBox
 						E tmp = lignecourante[(size_t)l];
 						tmp.first = (E1) indpermut;
 
-						unsigned long bjh = nj - 1;
+						size_t bjh = nj - 1;
 						for (; l < bjh; l++)
 							lignecourante[(size_t)l] = lignecourante[(size_t)l + 1];
 
@@ -759,10 +759,10 @@ namespace LinBox
 template <class _Field>
 template <class Vector>
 void GaussDomain<_Field>::permute (Vector              &lignecourante,
-				   const unsigned long &indcol,
+				   const size_t &indcol,
 				   const long &indpermut)
 {
-	const unsigned long k = indcol - 1;
+	const size_t k = indcol - 1;
 #if 0
 	std::cerr << "B PERMUTE: " << indpermut << " <--> " << k << " of  [";
 	for(typename Vector::const_iterator refs =  lignecourante.begin();
@@ -773,14 +773,14 @@ void GaussDomain<_Field>::permute (Vector              &lignecourante,
 #endif
 
 	// precondition indpermut != k
-	unsigned long nj = lignecourante.size () ;
+	size_t nj = lignecourante.size () ;
 	if (nj > 0) {
 		Element tmp; field().init(tmp);
-		unsigned long kin = 0;
+		size_t kin = 0;
 		for (; kin < nj; ++kin)
 			if (static_cast<long>(lignecourante[kin].first) >= k) break;
 		if (kin < nj) {
-			unsigned long pin = kin;
+			size_t pin = kin;
 			for (; pin < nj; ++pin)
 				if (static_cast<long>(lignecourante[(size_t)pin].first) >= indpermut) break;
 			if ( static_cast<long>(lignecourante[kin].first) == k) {

@@ -34,7 +34,7 @@ namespace LinBox
 	template <class _Field>
 	template <class Vector, class D> inline void
 	GaussDomain<_Field>::SparseFindPivot (Vector        	&lignepivot,
-					      unsigned long 	&indcol,
+					      size_t 	&indcol,
 					      long 		&indpermut,
 					      D             	&columns,
 					      Element		&determinant) const
@@ -108,7 +108,7 @@ namespace LinBox
 	template <class _Field>
 	template <class Vector> inline void
 	GaussDomain<_Field>::SparseFindPivot (Vector &lignepivot,
-					      unsigned long &indcol,
+					      size_t &indcol,
 					      long &indpermut,
 					      Element& determinant) const
 	{
@@ -131,7 +131,7 @@ namespace LinBox
 	template <class _Field>
 	template <class Vector> inline void
 	GaussDomain<_Field>::FindPivot (Vector &lignepivot,
-					unsigned long &k,
+					size_t &k,
 					long &indpermut) const
 	{
 		// Dense lignepivot

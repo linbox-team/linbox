@@ -173,7 +173,7 @@ protected:
 		MasseyDomain<Field, Sequence> WD(&seq, 20);
 		
 		BlasVector<Field> phi(_F);
-		unsigned long deg;
+		size_t deg;
 		WD.minpoly(phi, deg);
 		
 		_R.init(f, phi);
