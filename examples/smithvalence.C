@@ -145,42 +145,42 @@ std::cout << "Some factors (50000 factoring loop bound): ";
 
     std::vector<Givaro::Integer> SmithDiagonal(coprimeR,Givaro::Integer(1));
  
-#pragma omp parallel for shared(SmithDiagonal, smith, exponents)
-	for(size_t j=0; j<Moduli.size(); ++j) {
+// #pragma omp parallel for shared(SmithDiagonal, smith, exponents)
+// 	for(size_t j=0; j<Moduli.size(); ++j) {
         
-        if (smith[j].second != coprimeR) {
-            std::vector<size_t> ranks;
-            const PairIntRk& smithj(smith[j]);
-            const size_t& exponentsj(exponents[j]);
+//         if (smith[j].second != coprimeR) {
+//             std::vector<size_t> ranks;
+//             const PairIntRk& smithj(smith[j]);
+//             const size_t& exponentsj(exponents[j]);
 
-            AllPowersRanks(ranks, smithj, exponentsj, coprimeR, argv[1]);
+//             AllPowersRanks(ranks, smithj, exponentsj, coprimeR, argv[1]);
 
-#pragma omp critical
-            {
-                populateSmithForm(SmithDiagonal, ranks, smithj, coprimeR);
-            }
-        }
-    }
-
+// #pragma omp critical
+//             {
+//                 populateSmithForm(SmithDiagonal, ranks, smithj, coprimeR);
+//             }
+//         }
+//     }
 
 //     std::vector<size_t> * AllRanks = new std::vector<size_t>[Moduli.size()];
 
-//     SYNCH_GROUP(
-//         for(size_t j=0; j<Moduli.size(); ++j) 
+// #pragma omp parallel 
 //     {
-//         if (smith[j].second != coprimeR) {
-//             std::vector<size_t>& ranks(AllRanks[j]);
-//             const PairIntRk& smithj(smith[j]);
-//             const size_t& exponentsj(exponents[j]);
-//             { TASK(MODE(CONSTREFERENCE(smithj, exponentsj, coprimeR) WRITE(AllRanks[j])),
-//             {
-//                 AllPowersRanks(AllRanks[j], smithj, exponentsj, coprimeR, argv[1]);
-//             })}
-            
+//         for(size_t j=0; j<Moduli.size(); ++j) {
+        
+//             if (smith[j].second != coprimeR) {
+// //                 std::vector<size_t>& ranksj(AllRanks[j]);
+//                 const PairIntRk& smithj(smith[j]);
+//                 const size_t& exponentsj(exponents[j]);
+// #pragma omp task depend(out: AllRanks[j]) shared(smithj, exponentsj, coprimeR)
+//                 {
+//                     AllPowersRanks(AllRanks[j], smithj, exponentsj, coprimeR, argv[1]);    
+//                 }
+//             }
 //         }
 //     }
-//         );
-        
+    
+
 //     for(size_t j=0; j<Moduli.size(); ++j) {
 //         if (smith[j].second != coprimeR) {
 //             populateSmithForm(SmithDiagonal, AllRanks[j], smith[j], coprimeR);
@@ -188,6 +188,33 @@ std::cout << "Some factors (50000 factoring loop bound): ";
 //     }
     
 
+
+
+
+
+    std::vector<size_t> * AllRanks = new std::vector<size_t>[Moduli.size()];
+    PAR_BLOCK {
+        for(size_t j=0; j<Moduli.size(); ++j) {
+            if (smith[j].second != coprimeR) {
+//             std::vector<size_t>& ranks(AllRanks[j]);
+                const PairIntRk& smithj(smith[j]);
+                const size_t& exponentsj(exponents[j]);
+                { TASK(MODE(CONSTREFERENCE(smithj, exponentsj, coprimeR) WRITE(AllRanks[j])),
+                {
+                    AllPowersRanks(AllRanks[j], smithj, exponentsj, coprimeR, argv[1]);
+                })}
+            }
+        }
+    }
+    
+    for(size_t j=0; j<Moduli.size(); ++j) {
+        if (smith[j].second != coprimeR) {
+            populateSmithForm(SmithDiagonal, AllRanks[j], smith[j], coprimeR);
+        }
+    }
+    
+    delete [] AllRanks;
+    
 //     SYNCH_GROUP(
 //         FORBLOCK1D(iter, Moduli.size(), SPLITTER(),
 //                    TASK(MODE( 
