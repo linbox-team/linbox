@@ -215,7 +215,7 @@ namespace LinBox
 			commentator().start ("Symmetric Wiedemann Determinant", "sdet");
 			linbox_check (A.coldim () == A.rowdim ());
 			Polynomial               phi(F);
-			unsigned long            deg;
+			size_t            deg;
 			typename Field::RandIter iter (F);
 
 			// Precondition here to separate the eigenvalues, so that
@@ -276,7 +276,7 @@ namespace LinBox
 			linbox_check (A.coldim () == A.rowdim ());
 
 			Polynomial               phi(F);
-			unsigned long            deg;
+			size_t            deg;
 			typename Field::RandIter iter (F);
 
 			// Precondition here to separate the eigenvalues, so that
