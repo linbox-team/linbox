@@ -175,16 +175,16 @@ namespace LinBox { /*  signedness of integers */
 		return false;
 	}
 
-	template<class T>
-	bool isOdd ( const T & p)
+	template<typename IntType>
+	bool isOdd (const IntType& value)
 	{
-		return Givaro::isOdd(p) ;
+		return value & IntType(1);
 	}
 
-	template<class T>
-	bool isEven ( const T & p)
+	template<typename IntType>
+	bool isEven (const IntType& p)
 	{
-		return ! isOdd(p) ;
+		return !isOdd(p);
 	}
 
 }
