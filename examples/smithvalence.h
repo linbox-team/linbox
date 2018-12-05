@@ -1,5 +1,5 @@
 /*
- * algorithms/smith-form-valence.h
+ * examples/smithvalence.h
  * Copyright (c) Linbox
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -20,8 +20,8 @@
  * ========LICENCE========
  */
 
-/**\file algorithms/smith-form-valence.h
- * @example  algorithms/smith-form-valence.h
+/**\file examples/smithvalence.h
+ * @example  examples/smithvalence.h
  \brief Valence of sparse matrix over Z or Zp.
  \ingroup examples
 */
