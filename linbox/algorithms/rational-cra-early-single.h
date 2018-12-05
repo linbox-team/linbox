@@ -44,7 +44,7 @@ namespace LinBox
 
 	public:
 
-		EarlySingleRatCRA(const unsigned long EARLY=DEFAULT_EARLY_TERM_THRESHOLD) :
+		EarlySingleRatCRA(const size_t EARLY=DEFAULT_EARLY_TERM_THRESHOLD) :
 			Father_t(EARLY)
 		{}
 
