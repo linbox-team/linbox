@@ -86,9 +86,7 @@ namespace LinBox
 	}
 
 	Commentator::Commentator () :
-		// cnull (new nullstreambuf)
 		cnull ("/dev/null")
-		// cnull (0) // this is not right (clang/valgrind complain)
 		, _estimationMethod (BEST_ESTIMATE), _format (OUTPUT_CONSOLE),
 		_show_timing (true), _show_progress (true), _show_est_time (true)
 		,_last_line_len(0)
@@ -104,9 +102,7 @@ namespace LinBox
 		registerMessageClass (INTERNAL_DESCRIPTION, _report);
 	}
 	Commentator::Commentator (std::ostream& out) :
-		// cnull (new nullstreambuf)
-// 		cnull ("/dev/null")
-		cnull (0)
+		cnull ("/dev/null")
 		, _estimationMethod (BEST_ESTIMATE), _format (OUTPUT_CONSOLE),
 		_show_timing (true), _show_progress (true), _show_est_time (true)
 		,_last_line_len(0)
