@@ -46,19 +46,15 @@
 #include "linbox/util/matrix-stream.h"
 
 #include "linbox/matrix/densematrix/blas-transposed-matrix.h"
-#include "linbox/matrix/matrix-domain.h"
 #include "linbox/matrix/densematrix/blas-submatrix.h"
 namespace LinBox
 { /*  Blas Matrix */
-    template<class Matrix>
-    class MatrixDomain;
 
         /*! Dense matrix representation.
          * @ingroup matrix
          * A \p BlasMatrix is a matrix of \p _Field::Element, with the structure of BLAS matrices.
          * It is basically a vector of \p _Field::Element.
          * In the Mother model, a \p BlasMatrix is allocated by the user.
-         *@bug why not BlasMatrixDomain ?
          */
     template <class _Field, class _Storage>
     class BlasMatrix {
