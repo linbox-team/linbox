@@ -32,7 +32,7 @@ namespace LinBox
 {
 	template <class Vector, class D> inline void
 	GaussDomain<GF2>::SparseFindPivotBinary (Vector        	&lignepivot,
-						 unsigned long 	&indcol,
+						 size_t 	&indcol,
 						 long 		&indpermut,
 						 D             	&columns,
 						 bool		&) const //determinant
@@ -100,7 +100,7 @@ namespace LinBox
 
 	template <class Vector> inline void
 	GaussDomain<GF2>::SparseFindPivotBinary (Vector &lignepivot,
-						 unsigned long &indcol,
+						 size_t &indcol,
 						 long &indpermut,
 						 bool& ) const // determinant
 	{

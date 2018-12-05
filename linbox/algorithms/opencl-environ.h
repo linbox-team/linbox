@@ -66,9 +66,9 @@ namespace LinBox{
 		cl_int errcode;
 
 		//Memory stats
-		unsigned long memCapacity;
-		unsigned long maxBufferSize;
-		unsigned long memInUse;
+		size_t memCapacity;
+		size_t maxBufferSize;
+		size_t memInUse;
 
 		//Device type flags
 		bool CPU;
@@ -266,7 +266,7 @@ namespace LinBox{
 		/**
 		 * getMemCapacity() accessor for the memory capacity associated with environ
 		 */
-		unsigned long getMemCapacity() const{
+		size_t getMemCapacity() const{
 			return memCapacity;
 		}
 
@@ -274,35 +274,35 @@ namespace LinBox{
 		 * getMaxBufferSize() accessor for the maximum buffer size associated
 		 * with environ
 		 */
-		unsigned long getMaxBufferSize() const{
+		size_t getMaxBufferSize() const{
 			return maxBufferSize;
 		}
 
 		/**
 		 * getMemInUse() accessor for the memory currently in use by the environ
 		 */
-		unsigned long getMemInUse() const{
+		size_t getMemInUse() const{
 			return memInUse;
 		}
 
 		/**
 		 * getMemAvailable() accessor for the memory available in the environ
 		 */
-		unsigned long getMemAvailable() const{
+		size_t getMemAvailable() const{
 			return memCapacity - memInUse;
 		}
 
 		/**
 		 * memAllocated() setter for updating the memory levels
 		 */
-		void memAllocated(unsigned long alloc){
+		void memAllocated(size_t alloc){
 			memInUse += alloc;
 		}
 
 		/**
 		 * memDeallocated() setter for updating the memory levels
 		 */
-		void memDeallocated(unsigned long dealloc){
+		void memDeallocated(size_t dealloc){
 			memInUse -= dealloc;
 		}
 
@@ -342,7 +342,7 @@ namespace LinBox{
 			pthread_mutex_lock(deviceLock);
 #else
 			deviceLock->lock();
-			memInUse = deviceLock->updateLocalValue<unsigned long>("memInUse");
+			memInUse = deviceLock->updateLocalValue<size_t>("memInUse");
 #endif
 		}
 
@@ -353,7 +353,7 @@ namespace LinBox{
 #ifndef __MPI_SHARED
 			pthread_mutex_unlock(deviceLock);
 #else
-			deviceLock->updateGlobalValue<unsigned long>("memInUse", memInUse);
+			deviceLock->updateGlobalValue<size_t>("memInUse", memInUse);
 			deviceLock->unlock();
 #endif
 		}

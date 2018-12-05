@@ -139,7 +139,7 @@ namespace LinBox
 		    return MD.mul(Y, *this, X);
 		}
 
-		Matrix& applyLeft(Matrix& Y, const Matrix& X) const // Y = AX
+		Matrix& applyLeft(Matrix& Y, const Matrix& X) const // Y = XA
 		{   MatrixDomain<Field> MD(field());
 		    return MD.mul(Y, X, *this);
 		}

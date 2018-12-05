@@ -236,6 +236,7 @@ bool runTest(uint64_t n, uint64_t d, long seed){
 	 	ok&=launchTest (F2,n,bits,d,seed);
 	    commentator().stop(MSG_STATUS (ok), (const char *) 0,"Multiprecision generic prime");
 	 }
+
 	 // over the integer
 	{
 		Givaro::ZRing<integer> F;

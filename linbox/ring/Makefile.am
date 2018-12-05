@@ -1,5 +1,3 @@
-# Copyright (c) 2010 the LinBox group
-# ========LICENCE========
 # This file is part of the library LinBox.
 #
 # LinBox is free software: you can redistribute it and/or modify
@@ -33,7 +31,6 @@ BASIC_HDRS =            \
     abstract.h          \
     archetype.h         \
     envelope.h          \
-    poweroftwomodular.h \
     polynomial-local-x.h
 
 NTL_HDRS =              \

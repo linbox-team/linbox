@@ -65,10 +65,10 @@ namespace LinBox
 		BlasVector< Givaro::ZRing<Integer> > vfactor_;
 		BlasVector< Givaro::ZRing<Integer> > vmultip_;
 
-		std::vector< unsigned long > randv;
+		std::vector< size_t > randv;
 		Integer& result(Integer &d) {return d;}; // DON'T TOUCH
 	public:
-		VarPrecEarlyMultipCRA(const unsigned long EARLY = DEFAULT_EARLY_TERM_THRESHOLD, const double b=0.0,
+		VarPrecEarlyMultipCRA(const size_t EARLY = DEFAULT_EARLY_TERM_THRESHOLD, const double b=0.0,
 				      const BlasVector<Givaro::ZRing<Integer> >& vf = BlasVector<Givaro::ZRing<Integer> >(Givaro::ZRing<Integer>()),
 				      const BlasVector<Givaro::ZRing<Integer> >& vm = BlasVector<Givaro::ZRing<Integer> >(Givaro::ZRing<Integer>())) :
 			EarlySingleCRA<Domain>(EARLY), FullMultipCRA<Domain>(b), vfactor_(vf), vmultip_(vm)
@@ -116,8 +116,8 @@ namespace LinBox
 			vmultip_.resize( e.size(),1 );
 			randv. resize ( e.size() );
 
-			for ( std::vector<unsigned long>::iterator int_p = randv. begin(); int_p != randv. end(); ++ int_p)
-				*int_p = ((unsigned long)lrand48()) % 20000 - 10000;
+			for ( std::vector<size_t>::iterator int_p = randv. begin(); int_p != randv. end(); ++ int_p)
+				*int_p = ((size_t)lrand48()) % 20000 - 10000;
 
 			std::vector<Integer> vz(vfactor_.size());
 			inverse(vz,vfactor_,D);
@@ -138,8 +138,8 @@ namespace LinBox
 			vmultip_.resize( e.size(),1 );
 			randv. resize ( e.size() );
 
-			for ( std::vector<unsigned long>::iterator int_p = randv. begin(); int_p != randv. end(); ++ int_p)
-				*int_p = ((unsigned long)lrand48()) % 20000 - 10000;
+			for ( std::vector<size_t>::iterator int_p = randv. begin(); int_p != randv. end(); ++ int_p)
+				*int_p = ((size_t)lrand48()) % 20000 - 10000;
 
 			std::vector<DomainElement> vz(vfactor_.size());
 			inverse(vz,vfactor_,D);
@@ -496,8 +496,8 @@ namespace LinBox
 		}
 
 		bool changeVector() {
-			for ( std::vector<unsigned long>::iterator int_p = randv. begin();int_p != randv. end(); ++ int_p)
-				*int_p = ((unsigned long)lrand48()) % 20000;
+			for ( std::vector<size_t>::iterator int_p = randv. begin();int_p != randv. end(); ++ int_p)
+				*int_p = ((size_t)lrand48()) % 20000;
 			return changePreconditioner(vfactor_,vmultip_);
 		}
 
