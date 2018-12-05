@@ -33,6 +33,8 @@
 #ifndef __LINBOX_densematrix_blas_submatrix_H
 #define __LINBOX_densematrix_blas_submatrix_H
 
+#include "fflas-ffpack/fflas-ffpack.h"
+
 namespace LinBox
 {
     /* Blas Submatrix */

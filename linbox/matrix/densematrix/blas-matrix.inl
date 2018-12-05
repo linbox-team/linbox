@@ -39,7 +39,8 @@
 
 
 #include "linbox/field/hom.h"
-#include "linbox/matrix/matrixdomain/apply-domain.h"
+#include "linbox/vector/vector-domain.h"
+
 #include "fflas-ffpack/fflas/fflas.h"
 
 ///////////////////
