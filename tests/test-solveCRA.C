@@ -710,7 +710,7 @@ if(!checkInput (F, A, A_cp, B, B_cp)) std::cerr<<" Proc("<<Cptr->rank()<<") >>>>
 		 break;
 		 }
 computtIMES++;
-
+MPI_Barrier(MPI_COMM_WORLD);
 //<-------------------------Coould be wrapped into a tempalted test set subroutine-------------------------
 
   }

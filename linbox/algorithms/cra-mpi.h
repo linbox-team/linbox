@@ -355,7 +355,6 @@ namespace LinBox
 //            LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   gen(_commPtr->rank(),_commPtr->size());
 LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag>   gen(_commPtr->rank(),_commPtr->size());
 
-
             std::unordered_set<int> prime_used;
 
             while(true){
@@ -620,7 +619,7 @@ LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag>   gen(
 			else{
 
                 worker_process_task(Iteration, r);
-
+return num;
 			}
 		}
 #endif

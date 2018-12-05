@@ -203,10 +203,12 @@ namespace LinBox
         template <class Vect>
         inline Vect& result(Vect& r, bool normalized=true) const
         {
-
+std::cout<<" ############# BEFORE r:"<<std::endl;
+for(int i=0;i<r.size();i++) std::cout<<r[i]<<std::endl;  
             r.resize(dimension_);
             result_iter(r.begin());
-
+std::cout<<" ############# AFTER  r:"<<std::endl;
+for(int i=0;i<r.size();i++) std::cout<<r[i]<<std::endl; 
             return r;
         }
 
