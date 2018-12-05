@@ -125,17 +125,7 @@ std::cout << "Some factors (50000 factoring loop bound): ";
 	std::cout << "num procs: " << omp_get_num_procs() << std::endl;
 	std::cout << "max threads: " << omp_get_max_threads() << std::endl;
 
-// #pragma omp parallel for shared(smith, Moduli) 
-// 	for(size_t j=0; j<(Moduli.size()+1); ++j) {
-//         if (j >= Moduli.size()) {
-//             LRank(coprimeR, argv[1], coprimeV);
-//             std::cerr << "Integer Rank (mod " << coprimeV << ") is " << coprimeR << " on thread: " << omp_get_thread_num() << std::endl;
-//         } else {            
-//             unsigned long r; LRank(r, argv[1], Moduli[j]);
-//             std::cerr << "Rank mod " << Moduli[j] << " is " << r << " on thread: " << omp_get_thread_num() << std::endl;
-//             smith[j] = PairIntRk( Moduli[j], r);
-//         }
-// 	}
+
 #pragma omp parallel 
     {
 #pragma omp single
@@ -152,16 +142,6 @@ std::cout << "Some factors (50000 factoring loop bound): ";
  
 	std::vector<Givaro::Integer> SmithDiagonal(coprimeR,Givaro::Integer(1));
 
-        /*
-          for(std::vector<Givaro::Integer>::const_iterator mit=Moduli.begin();
-          mit != Moduli.end(); ++mit) {
-          unsigned long r; LRank(r, argv[1], *mit);
-          std::cerr << "Rank mod " << *mit << " is " << r << std::endl;
-          smith.push_back(PairIntRk(*mit, r));
-          for(size_t i=r; i < coprimeR; ++i)
-          SmithDiagonal[i] *= *mit;
-          }
-        */
 #pragma omp parallel for shared(SmithDiagonal, smith, exponents)
 	for(size_t j=0; j<Moduli.size(); ++j) {
         
@@ -215,12 +195,10 @@ std::cout << "Some factors (50000 factoring loop bound): ";
                 }
                 
                 std::vector<size_t>::const_iterator rit=ranks.begin();
-// 			unsigned long modrank = *rit;
                 for(++rit; rit!= ranks.end(); ++rit) {
                     if ((*rit)>= coprimeR) break;
                     for(size_t i=(*rit); i < coprimeR; ++i)
                         SmithDiagonal[i] *= smith[j].first;
-// 				modrank = *rit;
                 }
             }
         }
