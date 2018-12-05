@@ -114,7 +114,7 @@ bool check_DIF(const Field& fld, size_t kmax, long seed) {
 		// compute the correct result
 		fft_algo_nosimd.DIF(y.data());
 
-#if 0 //defined(__FFLASFFPACK_HAVE_SSE4_1_INSTRUCTIONS)
+#if defined(__FFLASFFPACK_HAVE_SSE4_1_INSTRUCTIONS)
 		// check FFT_algorithms::DIF
 		if (Simd128<typename Field::Element>::vect_size == 4 || Simd128<typename Field::Element>::vect_size == 8){
 			FFT_algorithms<Field,Simd128<typename Field::Element> > fft_algo_simd128 (fft_init);
@@ -123,7 +123,7 @@ bool check_DIF(const Field& fld, size_t kmax, long seed) {
 		}
 #endif
 
-#if 0 //defined(__FFLASFFPACK_HAVE_AVX2_INSTRUCTIONS)
+#if defined(__FFLASFFPACK_HAVE_AVX2_INSTRUCTIONS)
 		// check FFT_algorithms::DIF
 		if (Simd256<typename Field::Element>::vect_size == 4 || Simd256<typename Field::Element>::vect_size == 8){
 			FFT_algorithms<Field,Simd256<typename Field::Element> > fft_algo_simd256 (fft_init);
@@ -138,7 +138,7 @@ bool check_DIF(const Field& fld, size_t kmax, long seed) {
 		y=x;
 		fft_algo_nosimd.DIT(y.data());
 
-#if 0 //defined(__FFLASFFPACK_HAVE_SSE4_1_INSTRUCTIONS)
+#if defined(__FFLASFFPACK_HAVE_SSE4_1_INSTRUCTIONS)
 		// check FFT_algorithms::DIT
 		if (Simd128<typename Field::Element>::vect_size == 4 || Simd128<typename Field::Element>::vect_size == 8){
 			FFT_algorithms<Field,Simd128<typename Field::Element> > fft_algo_simd128 (fft_init);
@@ -147,7 +147,7 @@ bool check_DIF(const Field& fld, size_t kmax, long seed) {
 		}
 #endif
 
-#if 0 //defined(__FFLASFFPACK_HAVE_AVX2_INSTRUCTIONS)
+#if defined(__FFLASFFPACK_HAVE_AVX2_INSTRUCTIONS)
 		// check FFT_algorithms::DIT
 		if (Simd256<typename Field::Element>::vect_size == 4 || Simd256<typename Field::Element>::vect_size == 8){
 			FFT_algorithms<Field,Simd256<typename Field::Element> > fft_algo_simd256 (fft_init);
@@ -261,7 +261,7 @@ int main(int argc, char** argv){
 	//	}
 	uint64_t bits = 0; //atoi(argv[1]);
 	long seed=((argc>2)?atoi(argv[2]):time(NULL));
-	size_t l2n = 16; //20;
+	size_t l2n = 20;
 	size_t k = l2n;
 	RandomFFTPrime Rd;
 	uint32_t p;
@@ -269,16 +269,15 @@ int main(int argc, char** argv){
 
 	//Modular<double,double>
 	
-	 bits = 22;
-	 Rd = RandomFFTPrime (1<<bits,seed);
-     cout << "ici" << endl;
-	 p = (double)Rd.randomPrime(l2n);
+	// bits = 22;
+	// Rd = RandomFFTPrime (1<<bits,seed);
+	// p = (double)Rd.randomPrime(l2n);
 
-	 cout<<"prime : "<<p<<endl;
-	 cout<<endl;
+	// cout<<"prime : "<<p<<endl;
+	// cout<<endl;
 
-	 Givaro::Modular<double> Fd(p);
-	 cout << "Test Modular<double,double>: " << ((check_DIF(Fd,k,seed))?"OK":"KO!!!!") << endl;
+	// Givaro::Modular<double> Fd(p);
+	// cout << "Test Modular<double,double>: " << ((check_DIF(Fd,k,seed))?"OK":"KO!!!!") << endl;
 
 	/*
 #ifdef __FFLASFFPACK_HAVE_INT128
