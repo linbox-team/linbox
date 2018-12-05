@@ -243,7 +243,7 @@ namespace LinBox
              * @param j Column number 0...coldim () - 1
              * @param a_ij Element to set
              */
-        const Element& setEntry (size_t i, size_t j, const Element &a_ij)
+        void setEntry (size_t i, size_t j, const Element &a_ij)
             {
                 field().assign(_rep[i*_col+j],a_ij); return _rep[i*_col+j]; // PG: this does not work with BitVector as _rep -> getting a Warning because BitVector operator[] does not return a reference but a boolean constructed on the fly (setEntry must return a reference [why ?])
             }

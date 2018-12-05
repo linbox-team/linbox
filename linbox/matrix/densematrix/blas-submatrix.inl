@@ -105,7 +105,7 @@ namespace LinBox {
     //////////////////
 
     template < class _Matrix >
-    const typename BlasSubmatrix<_Matrix>::Element& BlasSubmatrix<_Matrix>::setEntry (size_t i, size_t j, const Element &a_ij) {
+    void BlasSubmatrix<_Matrix>::setEntry (size_t i, size_t j, const Element &a_ij) {
         return field().assign(_ptr[i*_stride+j],a_ij);
     }
 
