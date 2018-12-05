@@ -19,7 +19,6 @@
 
 
 
-SUBDIRS=driver kaapi maple sage
-
+SUBDIRS=driver kaapi maple
 
 

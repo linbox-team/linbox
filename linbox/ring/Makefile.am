@@ -31,9 +31,6 @@ BASIC_HDRS =            \
     abstract.h          \
     archetype.h         \
     envelope.h          \
-    poweroftwomodular.h \
-	gcd32.h             \
-	gcd64.h             \
     polynomial-local-x.h
 
 NTL_HDRS =              \
