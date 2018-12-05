@@ -199,9 +199,9 @@ namespace LinBox
 		SingularState	singular ()		const { return _singular; }
 		bool		symmetric ()		const { return _symmetric; }
 		bool		certificate ()		const { return _certificate; }
-		unsigned long	maxTries ()		const { return _maxTries; }
-		unsigned long	earlyTermThreshold ()	const { return _ett; }
-		unsigned long	blockingFactor ()	const { return _blockingFactor; }
+		size_t	maxTries ()		const { return _maxTries; }
+		size_t	earlyTermThreshold ()	const { return _ett; }
+		size_t	blockingFactor ()	const { return _blockingFactor; }
 		PivotStrategy	strategy ()		const { return _strategy; }
 		Shape		shape ()		const { return _shape; }
 		double		trustability ()		const { return _provensuccessprobability; }
@@ -223,9 +223,9 @@ namespace LinBox
 		void singular       (SingularState s)  { _singular = s; }
 		void symmetric      (bool s)           { _symmetric = s; }
 		void certificate    (bool s)           { _certificate = s; }
-		void maxTries       (unsigned long n)  { _maxTries = n; }
-		void earlyTermThreshold (unsigned long e) { _ett = e; }
-		void blockingFactor (unsigned long b)  { _blockingFactor = b; }
+		void maxTries       (size_t n)  { _maxTries = n; }
+		void earlyTermThreshold (size_t e) { _ett = e; }
+		void blockingFactor (size_t b)  { _blockingFactor = b; }
 		void strategy (PivotStrategy Strategy) { _strategy = Strategy; }
 		void shape          (Shape s)          { _shape = s; }
 		void trustability   (double p)         { _provensuccessprobability = p; }
@@ -241,9 +241,9 @@ namespace LinBox
 		SingularState  _singular;
 		bool           _symmetric;
 		bool           _certificate;
-		unsigned long  _maxTries;
-		unsigned long  _ett;
-		unsigned long  _blockingFactor;
+		size_t  _maxTries;
+		size_t  _ett;
+		size_t  _blockingFactor;
 		PivotStrategy  _strategy;
 		Shape          _shape;
 		double         _provensuccessprobability;
@@ -318,12 +318,12 @@ namespace LinBox
 		 */
 		WiedemannTraits (
 				 bool           Symmetric      = NON_SYMMETRIC,
-				 unsigned long  Thres          = DEFAULT_EARLY_TERM_THRESHOLD,
+				 size_t  Thres          = DEFAULT_EARLY_TERM_THRESHOLD,
 				 size_t         Rank           = RANK_UNKNOWN,
 				 Preconditioner Precond        = SPARSE,
 				 SingularState  Singular       = SINGULARITY_UNKNOWN,
 				 bool           Certificate    = CERTIFY,
-				 unsigned long  MaxTries       = 100,
+				 size_t  MaxTries       = 100,
 				 bool           CheckResult    = true
 				)
 
@@ -347,12 +347,12 @@ namespace LinBox
 	struct WiedemannExtensionTraits : public WiedemannTraits {
 		WiedemannExtensionTraits (
 					  bool           Symmetric      = NON_SYMMETRIC,
-					  unsigned long  Thres          = DEFAULT_EARLY_TERM_THRESHOLD,
+					  size_t  Thres          = DEFAULT_EARLY_TERM_THRESHOLD,
 					  size_t         Rank           = RANK_UNKNOWN,
 					  Preconditioner Precond        = SPARSE,
 					  SingularState  Singular       = SINGULARITY_UNKNOWN,
 					  bool           Certificate    = CERTIFY,
-					  unsigned long  MaxTries       = 100,
+					  size_t  MaxTries       = 100,
 					  bool           CheckResult    = true
 					 ) :
 			WiedemannTraits(Symmetric,Thres,Rank,Precond,Singular,
@@ -372,7 +372,7 @@ namespace LinBox
 		 * returning a failure; default is 100
 		 */
 		LanczosTraits (Preconditioner Precond  = FULL_DIAGONAL,
-			       unsigned long  MaxTries = 100)
+			       size_t  MaxTries = 100)
 		{
 			Specifier::_preconditioner =(Precond);
 			Specifier::_maxTries =(MaxTries);
@@ -392,12 +392,12 @@ namespace LinBox
 		 * @param blockingFactor Blocking factor to use
 		 */
 		BlockLanczosTraits (Preconditioner Precond        = FULL_DIAGONAL,
-				    unsigned long  MaxTries       = 100,
+				    size_t  MaxTries       = 100,
 				    int            BlockingFactor = 16)
 		{
 			Specifier::_preconditioner = (Precond);
 			Specifier::_maxTries       = (MaxTries);
-			Specifier::_blockingFactor = (unsigned long) (BlockingFactor);
+			Specifier::_blockingFactor = (size_t) (BlockingFactor);
 		}
 
 		BlockLanczosTraits( const Specifier& S) :
@@ -437,7 +437,7 @@ namespace LinBox
 			_solution                  = (Solution);
 			Specifier::_singular       = (Singular);
 			Specifier::_certificate    = (Certificate);
-			Specifier::_maxTries       = (unsigned long) (MaxTries);
+			Specifier::_maxTries       = (size_t) (MaxTries);
 			Specifier::_preconditioner = (Precond);
 			Specifier::_rank           = (Rank);
 		}
@@ -554,7 +554,7 @@ namespace LinBox
 	///
 	struct BlasExtensionTraits : public BlasEliminationTraits {
 		BlasExtensionTraits (bool           //certificate    = CERTIFY
-				     , unsigned long  //maxTries       = 100
+				     , size_t  //maxTries       = 100
 				     , bool         //checkResult    = true
 				    ) :
 			BlasEliminationTraits()

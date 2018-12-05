@@ -91,7 +91,7 @@ namespace LinBox
 
 		unsigned int tries = (unsigned int)_traits.maxTries ();
 
-		unsigned long r = (unsigned long) -1;
+		size_t r = (size_t) -1;
 
 		// Dan Roche 6-21-04 Changed this from UNKNOWN which I think was incorrect
 		if (_traits.rank () != WiedemannTraits::RANK_UNKNOWN)
@@ -144,7 +144,7 @@ namespace LinBox
 
 			case WiedemannTraits::SINGULAR:
 				{
-					if (r == (unsigned long) -1) {
+					if (r == (size_t) -1) {
 						rank (r, A);
 						commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
 						<< "Rank of A = " << r << std::endl;
@@ -156,7 +156,7 @@ namespace LinBox
 						break;
 
 					case FAILED:
-						r = (unsigned long) -1;
+						r = (size_t) -1;
 						break;
 
 					case SINGULAR:
@@ -285,7 +285,7 @@ namespace LinBox
 					       Vector               &x,
 					       const Vector         &b,
 					       Vector               &u,
-					       unsigned long         r)
+					       size_t         r)
 	{
 		commentator().start ("Solving singular system (Wiedemann)", "WiedemannSolver::solveSingular");
 
@@ -500,7 +500,7 @@ namespace LinBox
 
 		RandomDenseStream<Field, Vector> stream (field(), _randiter, A.coldim ());
 
-		unsigned long r = (A.coldim () < A.rowdim ()) ? A.coldim () : A.rowdim ();
+		size_t r = (A.coldim () < A.rowdim ()) ? A.coldim () : A.rowdim ();
 
 		VectorWrapper::ensureDim (v, A.coldim ());
 		VectorWrapper::ensureDim (Av, A.rowdim ());

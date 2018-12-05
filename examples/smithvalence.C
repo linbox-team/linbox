@@ -126,10 +126,11 @@ std::cout << "Some factors (50000 factoring loop bound): ";
 
     size_t coprimeR; 
  
-	std::cout << "num procs: " << NUM_THREADS << std::endl;
+	std::cout << "num procs: " << omp_get_num_procs() << std::endl;
+	std::cout << "num threads: " << NUM_THREADS << std::endl;
 	std::cout << "max threads: " << MAX_THREADS << std::endl;
 
-#pragma omp parallel
+#pragma omp parallel 
     {
 #pragma omp single
         {
@@ -142,35 +143,50 @@ std::cout << "Some factors (50000 factoring loop bound): ";
         }
 	}
 
+    std::vector<Givaro::Integer> SmithDiagonal(coprimeR,Givaro::Integer(1));
  
-	std::vector<Givaro::Integer> SmithDiagonal(coprimeR,Givaro::Integer(1));
-
-
-    std::vector<size_t> * AllRanks = new std::vector<size_t>[Moduli.size()];
-
-    SYNCH_GROUP(
-        for(size_t j=0; j<Moduli.size(); ++j) 
-    {
+#pragma omp parallel for shared(SmithDiagonal, smith, exponents)
+	for(size_t j=0; j<Moduli.size(); ++j) {
+        
         if (smith[j].second != coprimeR) {
-            std::vector<size_t>& ranks(AllRanks[j]);
+            std::vector<size_t> ranks;
             const PairIntRk& smithj(smith[j]);
             const size_t& exponentsj(exponents[j]);
-            { TASK(MODE(CONSTREFERENCE(smithj, exponentsj, coprimeR) WRITE(AllRanks[j])),
+
+            AllPowersRanks(ranks, smithj, exponentsj, coprimeR, argv[1]);
+
+#pragma omp critical
             {
-                AllPowersRanks(AllRanks[j], smithj, exponentsj, coprimeR, argv[1]);
-            })}
-            
-        }
-    }
-        );
-        
-    for(size_t j=0; j<Moduli.size(); ++j) {
-        if (smith[j].second != coprimeR) {
-            populateSmithForm(SmithDiagonal, AllRanks[j], smith[j], coprimeR);
+                populateSmithForm(SmithDiagonal, ranks, smithj, coprimeR);
+            }
         }
     }
     
-    delete[] AllRanks;
+
+//     std::vector<size_t> * AllRanks = new std::vector<size_t>[Moduli.size()];
+
+//     SYNCH_GROUP(
+//         for(size_t j=0; j<Moduli.size(); ++j) 
+//     {
+//         if (smith[j].second != coprimeR) {
+//             std::vector<size_t>& ranks(AllRanks[j]);
+//             const PairIntRk& smithj(smith[j]);
+//             const size_t& exponentsj(exponents[j]);
+//             { TASK(MODE(CONSTREFERENCE(smithj, exponentsj, coprimeR) WRITE(AllRanks[j])),
+//             {
+//                 AllPowersRanks(AllRanks[j], smithj, exponentsj, coprimeR, argv[1]);
+//             })}
+            
+//         }
+//     }
+//         );
+        
+//     for(size_t j=0; j<Moduli.size(); ++j) {
+//         if (smith[j].second != coprimeR) {
+//             populateSmithForm(SmithDiagonal, AllRanks[j], smith[j], coprimeR);
+//         }
+//     }
+    
 
 //     SYNCH_GROUP(
 //         FORBLOCK1D(iter, Moduli.size(), SPLITTER(),

@@ -57,12 +57,12 @@ namespace LinBox
 	protected:
 		// Random coefficients for a linear combination
 		// of the elements to be reconstructed
-		std::vector< unsigned long >      	randv;
+		std::vector< size_t >      	randv;
 
 		Integer& result(Integer &d) { std::cout << "should not be called" << std::endl; return d ;} ; // DON'T TOUCH
 	public:
 
-		EarlyMultipCRA(const unsigned long EARLY=DEFAULT_EARLY_TERM_THRESHOLD) :
+		EarlyMultipCRA(const size_t EARLY=DEFAULT_EARLY_TERM_THRESHOLD) :
 			EarlySingleCRA<Domain>(EARLY), FullMultipCRA<Domain>()
 		{}
 
@@ -90,8 +90,8 @@ namespace LinBox
 		{
 			srand48(BaseTimer::seed());
 			randv. resize ( e.size() );
-			for ( std::vector<unsigned long>::iterator int_p = randv. begin(); int_p != randv. end(); ++ int_p)
-				*int_p = ((unsigned long)lrand48()) % 20000;
+			for ( std::vector<size_t>::iterator int_p = randv. begin(); int_p != randv. end(); ++ int_p)
+				*int_p = ((size_t)lrand48()) % 20000;
 			Integer z;
 			dot(z, D, e, randv);
 			EarlySingleCRA<Domain>::initialize(D, z);
@@ -106,9 +106,9 @@ namespace LinBox
 			// of the elements to be reconstructed
 			srand48(BaseTimer::seed());
 			randv. resize ( e.size() );
-			for ( std::vector<unsigned long>::iterator int_p = randv. begin();
+			for ( std::vector<size_t>::iterator int_p = randv. begin();
 			      int_p != randv. end(); ++ int_p)
-				*int_p = ((unsigned long)lrand48()) % 20000;
+				*int_p = ((size_t)lrand48()) % 20000;
 			DomainElement z;
 			// Could be much faster
 			// - do not compute twice the product of moduli
@@ -125,9 +125,9 @@ namespace LinBox
 			// of the elements to be reconstructed
 			srand48(BaseTimer::seed());
 			randv. resize ( e.size() );
-			for ( std::vector<unsigned long>::iterator int_p = randv. begin();
+			for ( std::vector<size_t>::iterator int_p = randv. begin();
 			      int_p != randv. end(); ++ int_p)
-				*int_p = ((unsigned long)lrand48()) % 20000;
+				*int_p = ((size_t)lrand48()) % 20000;
 			DomainElement z;
 			// Could be much faster
 			// - do not compute twice the product of moduli
@@ -203,8 +203,8 @@ namespace LinBox
 
 		bool changeVector()
 		{
-			for ( std::vector<unsigned long>::iterator int_p = randv. begin();int_p != randv. end(); ++ int_p)
-				*int_p = ((unsigned long)lrand48()) % 20000;
+			for ( std::vector<size_t>::iterator int_p = randv. begin();int_p != randv. end(); ++ int_p)
+				*int_p = ((size_t)lrand48()) % 20000;
 
 			std::vector<Integer> e(randv.size());
 			/* clear CRAEarlySingle; */

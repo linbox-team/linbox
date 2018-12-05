@@ -82,7 +82,6 @@ hide("test-modular-short",  "deprecated");
 //skip("test-modular-balanced-double",  "test and modular-balanced disagree on init/convert");
 //skip("test-moore-penrose", "inf loop");
 skip("test-optimization", "not unit/regression test conforming");
-skip("test-poweroftwomodular", "needs work");
 skip("test-quad-matrix", "depends on out-of-date blackbox/zo.h");
 //skip("test-rational-reconstruction-base", "inf loop");
 skip("test-rat-charpoly", "inf loop");

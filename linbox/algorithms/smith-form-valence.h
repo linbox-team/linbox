@@ -276,13 +276,6 @@ std::vector<size_t>& AllPowersRanks(
     const size_t& coprimeRank,		// coprimeR
     char * filename) {				// argv[1]
     
-    size_t ttt(1);
-    for(size_t iii=0; iii<10000; ++iii)
-    for(size_t kkk=0; kkk<10000; ++kkk)
-        for(size_t jjj=0; jjj<100000; ++jjj)
-            ttt += jjj*kkk+iii;
-    std::cerr << ttt << std::endl;
-   
     ranks.push_back(squarefreeRank.second);
     size_t effexp;
     if (exponentBound > 1) {
