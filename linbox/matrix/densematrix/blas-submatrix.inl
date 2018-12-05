@@ -1071,7 +1071,7 @@ namespace LinBox
 
 	template <class _Matrix>
 	std::ostream &BlasSubmatrix< _Matrix >::write (std::ostream &os,
-						     LINBOX_enum (Tag::FileFormat) f ) const
+						     Tag::FileFormat f ) const
 	{
 
 		ConstRowIterator p;

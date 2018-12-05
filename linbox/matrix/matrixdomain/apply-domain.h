@@ -54,7 +54,7 @@ namespace LinBox {
 	private :
 		// y = a A x + b y
 		template<class _In, class _Out, class Matrix>
-		_Out& _apply( LINBOX_enum(Tag::Transpose) t
+		_Out& _apply( Tag::Transpose t
 			     , _Out& y
 			     , const Element & a
 			     , const Matrix & A
@@ -135,7 +135,7 @@ namespace LinBox {
 		}
 
 	template<class _In, class _Out, class Matrix>
-		_Out& _apply( LINBOX_enum(Tag::Transpose) t
+		_Out& _apply( Tag::Transpose t
 			     , _Out& y
 			     , const Element & a
 			     , const Matrix & A
@@ -167,7 +167,7 @@ namespace LinBox {
 		 * General axpy with x and y vectors or matrices
 		 */
 		template<class _In, class _Out, class Matrix>
-		_Out& apply( LINBOX_enum(Tag::Transpose) t
+		_Out& apply( Tag::Transpose t
 			     , _Out& y
 			     , const Element & a
 			     , const Matrix & A
@@ -188,7 +188,7 @@ namespace LinBox {
 		 *(can overwrite A, uses less memory that \c apply)
 		 */
 		template<class _In, class _Out>
-		_Out& applyIn( LINBOX_enum(Tag::Transpose) t
+		_Out& applyIn( Tag::Transpose t
 			       , _Out& y
 			       , const Element & a
 			       , Matrix & A
@@ -210,7 +210,7 @@ namespace LinBox {
 
 		// y = a A x + b y
 		template<class _In, class _Out, class Matrix>
-		_Out& _apply( LINBOX_enum(Tag::Transpose) t
+		_Out& _apply( Tag::Transpose t
 			     , _Out& y
 			     , const Element & a
 			     , const Matrix & A
@@ -251,7 +251,7 @@ namespace LinBox {
 
 		// y = a A x + b y
 		template<class Matrix>
-		std::vector<Element>& _apply(LINBOX_enum(Tag::Transpose) t
+		std::vector<Element>& _apply(Tag::Transpose t
 		             , std::vector<Element> & y
 		             , const Element & a
 		             , const Matrix & A
@@ -275,7 +275,7 @@ namespace LinBox {
 
 		// y = a A x + b y
 		template<class _In, class _Out, class Matrix>
-		_Out& _apply( LINBOX_enum(Tag::Transpose) t
+		_Out& _apply( Tag::Transpose t
 			     , _Out& y
 			     , const Element & a
 			     , const Matrix & A
@@ -309,7 +309,7 @@ namespace LinBox {
 		 * General axpy with x and y vectors or matrices
 		 */
 		template<class _In, class _Out, class Matrix>
-		_Out& apply( LINBOX_enum(Tag::Transpose) t
+		_Out& apply( Tag::Transpose t
 			     , _Out& y
 			     , const Element & a
 			     , const Matrix & A
@@ -336,7 +336,7 @@ namespace LinBox {
 
 		// y = a A x + b y
 		template<class _In, class _Out, class Matrix>
-		_Out& _apply( LINBOX_enum(Tag::Transpose) t
+		_Out& _apply( Tag::Transpose t
 			     , _Out& y
 			     , const Element & a
 			     , const Matrix & A
@@ -361,7 +361,7 @@ namespace LinBox {
 
 		// y = a A x + b y
 		template<class _In, class _Out, class Matrix>
-		_Out& _apply( LINBOX_enum(Tag::Transpose) t
+		_Out& _apply( Tag::Transpose t
 			     , _Out& y
 			     , const Element & a
 			     , const Matrix & A
@@ -395,7 +395,7 @@ namespace LinBox {
 		 * General axpy with x and y vectors or matrices
 		 */
 		template<class _In, class _Out, class Matrix>
-		_Out& apply( LINBOX_enum(Tag::Transpose) t
+		_Out& apply( Tag::Transpose t
 			     , _Out& y
 			     , const Element & a
 			     , const Matrix & A
