@@ -192,7 +192,7 @@ std::cout << "Some factors (50000 factoring loop bound): ";
 
 
 
-    std::vector<size_t> * AllRanks = new std::vector<size_t>[Moduli.size()];
+    std::vector<std::vector<size_t> > AllRanks(Moduli.size());
     PAR_BLOCK {
         for(size_t j=0; j<Moduli.size(); ++j) {
             if (smith[j].second != coprimeR) {
@@ -213,7 +213,6 @@ std::cout << "Some factors (50000 factoring loop bound): ";
         }
     }
     
-    delete [] AllRanks;
     
 //     SYNCH_GROUP(
 //         FORBLOCK1D(iter, Moduli.size(), SPLITTER(),
