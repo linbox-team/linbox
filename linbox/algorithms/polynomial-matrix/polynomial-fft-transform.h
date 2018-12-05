@@ -108,7 +108,7 @@ namespace LinBox {
 			for (;;) {
 				_gen = rand() % _pl; if (_gen <= 0) continue;
 				z = 1;
-				for (unsigned long i=0; i < _m; ++i) z = z*_gen % _pl;
+				for (size_t i=0; i < _m; ++i) z = z*_gen % _pl;
 				if (z == 1) continue;
 				// _gen^i =/ 1 pour 0 <= i < m
 				_gen = z;

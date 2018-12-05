@@ -57,15 +57,15 @@
 namespace LinBox
 {
     template <class _Field>
-    template <class _Matrix, class Perm> inline unsigned long&
-    GaussDomain<_Field>::QLUPin (unsigned long &Rank,
+    template <class _Matrix, class Perm> inline size_t&
+    GaussDomain<_Field>::QLUPin (size_t &Rank,
                      Element       &determinant,
                      Perm          &Q,
                      _Matrix        &LigneL,
                      _Matrix        &LigneA,
                      Perm          &P,
-                     unsigned long Ni,
-                     unsigned long Nj) const
+                     size_t Ni,
+                     size_t Nj) const
     {
         linbox_check( Q.coldim() == Q.rowdim() );
         linbox_check( P.coldim() == P.rowdim() );
@@ -102,8 +102,8 @@ namespace LinBox
         std::deque<std::pair<size_t,size_t> > invQ;
 
         // assignment of LigneA with the domain object
-        for (unsigned long jj = 0; jj < Ni; ++jj)
-            for (unsigned long k = 0; k < LigneA[(size_t)jj].size (); k++)
+        for (size_t jj = 0; jj < Ni; ++jj)
+            for (size_t k = 0; k < LigneA[(size_t)jj].size (); k++)
                 ++col_density[LigneA[(size_t)jj][k].first];
 
         const long last = (long)Ni - 1;
@@ -283,15 +283,15 @@ namespace LinBox
 
 
     template <class _Field>
-    template <class _Matrix, class Perm> inline unsigned long&
-    GaussDomain<_Field>::SparseContinuation (unsigned long &Rank,
+    template <class _Matrix, class Perm> inline size_t&
+    GaussDomain<_Field>::SparseContinuation (size_t &Rank,
                      Element       &determinant,
                      std::deque<std::pair<size_t,size_t> > &invQ,
                      _Matrix        &LigneL,
                      _Matrix        &LigneA,
                      Perm          &P,
-                     unsigned long Ni,
-                     unsigned long Nj) const
+                     size_t Ni,
+                     size_t Nj) const
     {
         typedef typename _Matrix::Row        Vector;
         typedef typename Vector::value_type E;
@@ -316,16 +316,16 @@ namespace LinBox
     template <class _Field>
     template<class _Matrix, class Perm> 
     struct GaussDomain<_Field>::Continuation<_Matrix,Perm,false> {
-        unsigned long& operator()(
+        size_t& operator()(
             const GaussDomain<_Field>& GD,
-            unsigned long &Rank, 
+            size_t &Rank, 
             typename GaussDomain<_Field>::Element       &determinant,
             std::deque<std::pair<size_t,size_t> > &invQ,
             _Matrix        &LigneL,
             _Matrix        &LigneA,
             Perm          &P,
-            unsigned long Ni,
-            unsigned long Nj,
+            size_t Ni,
+            size_t Nj,
             bool degeneratedense) const 
             {
                 return GD.SparseContinuation(Rank,determinant,invQ,LigneL,LigneA,P,Ni,Nj);
@@ -335,16 +335,16 @@ namespace LinBox
     template <class _Field>
     template <class _Matrix, class Perm> 
     struct GaussDomain<_Field>::Continuation<_Matrix,Perm,true> {
-        unsigned long& operator()(
+        size_t& operator()(
             const GaussDomain<_Field>& GD,
-            unsigned long &Rank,
+            size_t &Rank,
             typename GaussDomain<_Field>::Element       &determinant,
             std::deque<std::pair<size_t,size_t> > &invQ,
             _Matrix        &LigneL,
             _Matrix        &LigneA,
             Perm          &P,
-            unsigned long Ni,
-            unsigned long Nj,
+            size_t Ni,
+            size_t Nj,
             bool degeneratedense) const
             {
                 if (degeneratedense) {
@@ -361,15 +361,15 @@ namespace LinBox
 
 
     template <class _Field>
-    template <class _Matrix, class Perm> inline unsigned long&
-    GaussDomain<_Field>::DenseQLUPin (unsigned long &Rank,
+    template <class _Matrix, class Perm> inline size_t&
+    GaussDomain<_Field>::DenseQLUPin (size_t &Rank,
                      Element       &determinant,
                      std::deque<std::pair<size_t,size_t> > &dinvQ,
                      _Matrix        &dLigneL,
                      _Matrix        &dLigneA,
                      Perm          &dP,
-                     unsigned long Ni,
-                     unsigned long Nj) const
+                     size_t Ni,
+                     size_t Nj) const
     {
         linbox_check( dP.coldim()      == dP.rowdim() );
         linbox_check( dLigneL.coldim() == dLigneL.rowdim() );
@@ -486,12 +486,12 @@ namespace LinBox
     
 
     template <class _Field>
-    template <class _Matrix> inline unsigned long&
-    GaussDomain<_Field>::InPlaceLinearPivoting (unsigned long &Rank,
+    template <class _Matrix> inline size_t&
+    GaussDomain<_Field>::InPlaceLinearPivoting (size_t &Rank,
                             Element        &determinant,
                             _Matrix         &LigneA,
-                            unsigned long   Ni,
-                            unsigned long   Nj) const
+                            size_t   Ni,
+                            size_t   Nj) const
     {
         typedef typename _Matrix::Row        Vector;
 
@@ -515,8 +515,8 @@ namespace LinBox
         std::vector<size_t> col_density (Nj);
 
         // assignment of LigneA with the domain object
-        for (unsigned long jj = 0; jj < Ni; ++jj)
-            for (unsigned long k = 0; k < LigneA[(size_t)jj].size (); k++)
+        for (size_t jj = 0; jj < Ni; ++jj)
+            for (size_t k = 0; k < LigneA[(size_t)jj].size (); k++)
                 ++col_density[LigneA[(size_t)jj][k].first];
 
         const long last = (long)Ni - 1;
@@ -535,7 +535,7 @@ namespace LinBox
 
 #ifdef __LINBOX_FILLIN__
             if ( ! (k % 100) ) {
-                unsigned long l;
+                size_t l;
                 long sl;
                 commentator().progress (k);
                 for (sl = 0, l = 0; l < Ni; ++l)
@@ -555,9 +555,9 @@ namespace LinBox
 #endif
 
             if (s) {
-                unsigned long l;
+                size_t l;
                 // Row permutation for the sparsest row
-                for (l = (unsigned long)k + 1; l < (unsigned long)Ni; ++l) {
+                for (l = (size_t)k + 1; l < (size_t)Ni; ++l) {
                 long sl;
                     if (((sl = (long)LigneA[(size_t)l].size ()) < s) && (sl)) {
                         s = sl;
@@ -577,7 +577,7 @@ namespace LinBox
                 SparseFindPivot (LigneA[(size_t)k], Rank, c, col_density, determinant);
                 //                     LigneA.write(std::cerr << "PIV, k:" << k << ", Rank:" << Rank << ", c:" << c)<<std::endl;
                 if (c != -1) {
-                    for (l = (unsigned long)k + 1; l < (unsigned long)Ni; ++l)
+                    for (l = (size_t)k + 1; l < (size_t)Ni; ++l)
                         eliminate (LigneA[(size_t)l], LigneA[(size_t)k], Rank, c, col_density);
                 }
 
@@ -627,13 +627,13 @@ namespace LinBox
 
 
     template <class _Field>
-    template <class _Matrix, class Perm> inline unsigned long&
-    GaussDomain<_Field>::InPlaceLinearPivoting (unsigned long &Rank,
+    template <class _Matrix, class Perm> inline size_t&
+    GaussDomain<_Field>::InPlaceLinearPivoting (size_t &Rank,
                             Element        &determinant,
                             _Matrix         &LigneA,
                             Perm           &P,
-                            unsigned long   Ni,
-                            unsigned long   Nj) const
+                            size_t   Ni,
+                            size_t   Nj) const
     {
         typedef typename _Matrix::Row        Vector;
 
@@ -655,8 +655,8 @@ namespace LinBox
         std::vector<size_t> col_density (Nj);
 
         // assignment of LigneA with the domain object
-        for (unsigned long jj = 0; jj < Ni; ++jj)
-            for (unsigned long k = 0; k < LigneA[(size_t)jj].size (); k++)
+        for (size_t jj = 0; jj < Ni; ++jj)
+            for (size_t k = 0; k < LigneA[(size_t)jj].size (); k++)
                 ++col_density[LigneA[(size_t)jj][k].first];
 
         const long last = (long)Ni - 1;
@@ -676,7 +676,7 @@ namespace LinBox
 #ifdef __LINBOX_FILLIN__
             if ( ! (k % 100) )
             {
-                unsigned long l;
+                size_t l;
                 long sl;
                 commentator().progress (k);
                 for (sl = 0, l = 0; l < Ni; ++l)
@@ -699,9 +699,9 @@ namespace LinBox
 
 
             if (s) {
-                unsigned long l;
+                size_t l;
                 // Row permutation for the sparsest row
-                for (l = (unsigned long)k + 1; l < (unsigned long)Ni; ++l) {
+                for (l = (size_t)k + 1; l < (size_t)Ni; ++l) {
                 long sl;
                     if (((sl =(long) LigneA[(size_t)l].size ()) < s) && (sl)) {
                         s = sl;
@@ -726,7 +726,7 @@ namespace LinBox
                     for (long ll=0; ll < k ; ++ll)
                         permute( LigneA[(size_t)ll], Rank, c);
 
-                    for (l = (unsigned long)k + 1; l < (unsigned long)Ni; ++l)
+                    for (l = (size_t)k + 1; l < (size_t)Ni; ++l)
                         eliminate (LigneA[(size_t)l], LigneA[(size_t)k], Rank, c, col_density);
                 }
 
@@ -779,12 +779,12 @@ namespace LinBox
     }
 
     template <class _Field>
-    template <class _Matrix> inline unsigned long&
-    GaussDomain<_Field>::NoReordering (unsigned long &res,
+    template <class _Matrix> inline size_t&
+    GaussDomain<_Field>::NoReordering (size_t &res,
                        Element       &determinant,
                        _Matrix        &LigneA,
-                       unsigned long  Ni,
-                       unsigned long  Nj) const
+                       size_t  Ni,
+                       size_t  Nj) const
     {
         // Requirements : SLA is an array of sparse rows
         // IN PLACE.
@@ -808,7 +808,7 @@ namespace LinBox
         field().assign(determinant,field().one);
         const long last = (long)Ni - 1;
         long c;
-        unsigned long indcol (0);
+        size_t indcol (0);
 
         for (long k = 0; k < last; ++k) {
             if (!(k % 1000))
@@ -818,8 +818,8 @@ namespace LinBox
             if (!LigneA[(size_t)k].empty ()) {
                 SparseFindPivot (LigneA[(size_t)k], indcol, c, determinant);
                 if (c !=  -1) {
-                    unsigned long l;
-                    for (l = (unsigned long)k + 1; l < (unsigned long)Ni; ++l)
+                    size_t l;
+                    for (l = (size_t)k + 1; l < (size_t)Ni; ++l)
                         eliminate (LigneA[(size_t)l], LigneA[(size_t)k], indcol, c);
                 }
 
@@ -862,7 +862,7 @@ namespace LinBox
     template<class Vector> inline void
     GaussDomain<_Field>::Upper (Vector        &lignecur,
                     const Vector  &lignepivot,
-                    unsigned long  indcol,
+                    size_t  indcol,
                     long  indpermut) const
     {
 
@@ -891,7 +891,7 @@ namespace LinBox
     template <class Vector> inline void
     GaussDomain<_Field>::LU (Vector        &lignecur,
                  const Vector  &lignepivot,
-                 unsigned long  indcol,
+                 size_t  indcol,
                  long  indpermut) const
     {
         long n = lignecur.size ();
@@ -915,8 +915,8 @@ namespace LinBox
 
 
     template <class _Field>
-    template <class _Matrix> inline unsigned long &
-    GaussDomain<_Field>::upperin (unsigned long &res, _Matrix &A) const
+    template <class _Matrix> inline size_t &
+    GaussDomain<_Field>::upperin (size_t &res, _Matrix &A) const
     {
         // Requirements : A is an array of rows
         // In place (A is modified)
@@ -924,7 +924,7 @@ namespace LinBox
         long Ni = A.rowdim ();
         const long last = Ni - 1;
         long c;
-        unsigned long indcol = 0;
+        size_t indcol = 0;
 
         for (long k = 0; k < last; ++k) {
             FindPivot (A[k], indcol, c);
@@ -938,8 +938,8 @@ namespace LinBox
     }
 
     template <class _Field>
-    template <class _Matrix> inline unsigned long &
-    GaussDomain<_Field>::LUin (unsigned long &res, _Matrix &A) const
+    template <class _Matrix> inline size_t &
+    GaussDomain<_Field>::LUin (size_t &res, _Matrix &A) const
     {
         // Requirements : A is an array of rows
         // In place (A is modified)
@@ -948,7 +948,7 @@ namespace LinBox
         long Ni = A.rowdim ();
         const long last = Ni - 1;
         long c;
-        unsigned long indcol = 0;
+        size_t indcol = 0;
 
         for (long k = 0; k < last; ++k) {
             FindPivot (A[k], indcol, c);
