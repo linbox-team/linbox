@@ -56,13 +56,11 @@ namespace LinBox
     class MatrixEltPointer {
     public:
         typedef typename _Matrix::Field::Element_ptr     pointer;
-        //typedef typename _Matrix::Field::Element*     pointer; // MUST BE MODIFIER WITH FFLAS-FFPACK API (see line above)    
     };
     template <typename _Matrix>
     class MatrixEltPointer <const _Matrix> {
     public:
         typedef typename _Matrix::Field::ConstElement_ptr pointer;
-        //typedef const typename _Matrix::Field::Element*     pointer; // MUST BE MODIFIER WITH FFLAS-FFPACK API (see line above)    
     };
 
     
