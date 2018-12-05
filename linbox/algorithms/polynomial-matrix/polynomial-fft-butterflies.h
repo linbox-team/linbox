@@ -34,9 +34,14 @@
 #include "linbox/algorithms/polynomial-matrix/polynomial-fft-init.h"
 #include "linbox/algorithms/polynomial-matrix/simd-additional-functions.h"
 
+#define IS_INTEGRAL \
+    typename std::enable_if<std::is_integral<typename Field::Element>::value>::type
+#define IS_FLOATING \
+    typename std::enable_if<std::is_floating_point<typename Field::Element>::value>::type
+
 namespace LinBox {
 
-	template<typename Field, typename simd = Simd<typename Field::Element>, uint8_t byn = simd::vect_size>
+	template<typename Field, typename simd = Simd<typename Field::Element>, uint8_t byn = simd::vect_size, typename Enable=void>
 	class FFT_butterflies : public FFT_init<Field> {
 	public:
 		FFT_butterflies(const FFT_init<Field>& f_i) : FFT_init<Field>(f_i) {
@@ -45,7 +50,7 @@ namespace LinBox {
 	}; // FFT_butterflies
 
 	template<typename Field>
-	class FFT_butterflies<Field, NoSimd<typename Field::Element>, 1> : public FFT_init<Field> {
+	class FFT_butterflies<Field, NoSimd<typename Field::Element>, 1, IS_INTEGRAL> : public FFT_init<Field> {
 	public:
 
 		using Element = typename Field::Element;
@@ -97,7 +102,7 @@ namespace LinBox {
 	// ATTENTION à tous les uint64_t, SimdComp restants !!!!
 
 	template<typename Field, typename simd>
-	class FFT_butterflies<Field, simd, 4> : public FFT_init<Field> {
+	class FFT_butterflies<Field, simd, 4, IS_INTEGRAL> : public FFT_init<Field> {
 	public:
 
 		using Element = typename Field::Element;
@@ -265,7 +270,7 @@ namespace LinBox {
 
 
 	template<typename Field, typename simd>
-	class FFT_butterflies<Field, simd, 8> : public FFT_init<Field> {
+	class FFT_butterflies<Field, simd, 8, IS_INTEGRAL> : public FFT_init<Field> {
 	public:
 
 		using Element = typename Field::Element;
@@ -485,7 +490,37 @@ namespace LinBox {
 
 	}; // FFT_butterflies<Field, 8>
 
+    template<typename Field>
+    class FFT_butterflies<Field, NoSimd<typename Field::Element>, 1, IS_FLOATING> : public FFT_init<Field> {
+    public:
+
+        using Element = typename Field::Element;
+
+        FFT_butterflies(const FFT_init<Field>& f_i) : FFT_init<Field>(f_i) {}
+
+        inline void Butterfly_DIF (Element& A, Element& B, const Element& alpha)
+        {
+            Element tmp;
+            this->fld->assign(tmp, A);
+            this->fld->addin(A, B);
+            this->fld->sub(B, tmp, B);
+            this->fld->mulin(B, alpha);
+        }
+
+        inline void Butterfly_DIT (Element& A, Element& B, const Element& alpha)
+        {
+            Element tmp;
+            this->fld->mul(tmp, alpha, B);
+            this->fld->sub(B, A, tmp);
+            this->fld->addin(A, tmp);
+        }
+
+    }; // FFT_butterflies<Field, 1, IS_FLOATING>
+
 }
+
+#undef IS_INTEGRAL
+#undef IS_FLOATING
 
 #endif // __LINBOX_polynomial_fft_butterflies_H
 

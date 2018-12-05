@@ -34,21 +34,26 @@
 #include "linbox/algorithms/polynomial-matrix/polynomial-fft-init.h"
 #include "linbox/algorithms/polynomial-matrix/polynomial-fft-butterflies.h"
 
+#define IS_INTEGRAL \
+    typename std::enable_if<std::is_integral<typename Field::Element>::value>::type
+#define IS_FLOATING \
+    typename std::enable_if<std::is_floating_point<typename Field::Element>::value>::type
+
 namespace LinBox {
 
-	template<typename Field, typename simd = Simd<typename Field::Element>, uint8_t vect_size = simd::vect_size>
+	template<typename Field, typename simd = Simd<typename Field::Element>, uint8_t vect_size = simd::vect_size, typename Enable = void>
 	class FFT_algorithms : public FFT_butterflies<Field, simd, vect_size> {
 	public:
 		using Element = typename Field::Element;
 		FFT_algorithms(const FFT_init<Field>& f_i) : FFT_butterflies<Field, simd, vect_size>(f_i) {}
-		void DIF_mod2p (Element *fft);
-		void DIT_mod4p (Element *fft);
+		//void DIF_mod2p (Element *fft);
+		//void DIT_mod4p (Element *fft);
 		void DIF (Element *fft);
 		void DIT (Element *fft);
 	}; // FFT_algorithms
 
 	template<typename Field>
-	class FFT_algorithms<Field, NoSimd<typename Field::Element>, 1> : public FFT_butterflies<Field, NoSimd<typename Field::Element>, 1> {
+	class FFT_algorithms<Field, NoSimd<typename Field::Element>, 1, IS_INTEGRAL> : public FFT_butterflies<Field, NoSimd<typename Field::Element>, 1> {
 	public:
 		using Element = typename Field::Element;
 
@@ -92,7 +97,7 @@ namespace LinBox {
 	}; // FFT_algorithms<Field, NoSimd<typename Field::Element>, 1>
 
 	template<typename Field, typename simd>
-	class FFT_algorithms<Field, simd, 4> : public FFT_butterflies<Field, simd, 4> {
+	class FFT_algorithms<Field, simd, 4, IS_INTEGRAL> : public FFT_butterflies<Field, simd, 4> {
 	public:
 		using Element = typename Field::Element;
 		using Compute_t = typename Field::Compute_t;
@@ -233,7 +238,7 @@ namespace LinBox {
 	}; // FFT_algorithms<Field, NoSimd<typename Field::Element>, 4>
 
 	template<typename Field, typename simd>
-	class FFT_algorithms<Field, simd, 8> : public FFT_butterflies<Field, simd, 8> {
+	class FFT_algorithms<Field, simd, 8, IS_INTEGRAL> : public FFT_butterflies<Field, simd, 8> {
 	public:
 		using Element = typename Field::Element;
 		using vect_t = typename simd::vect_t;
@@ -394,7 +399,36 @@ namespace LinBox {
 
 	}; // FFT_algorithms<Field, NoSimd<typename Field::Element>, 8>
 
+	template<typename Field>
+	class FFT_algorithms<Field, NoSimd<typename Field::Element>, 1, IS_FLOATING> : public FFT_butterflies<Field, NoSimd<typename Field::Element>, 1> {
+	public:
+		using Element = typename Field::Element;
+
+		FFT_algorithms(const FFT_init<Field>& f_i) : FFT_butterflies<Field, NoSimd<typename Field::Element>, 1>(f_i) {}
+
+		void DIF (Element *fft) {
+			for (size_t w = this->n >> 1, f = 1; w != 0; f <<= 1, w >>= 1){
+				// w : witdh of butterflies
+				// f : # families of butterflies
+				for (size_t i = 0; i < f; i++)
+					for (size_t j = 0; j < w; j++)
+						this->Butterfly_DIF(fft[(i << 1)*w+j], fft[((i << 1)+1)*w+j], (this->pow_w)[j*f]);
+			}
+		}
+
+		void DIT (Element *fft) {
+			for (size_t w = 1, f = this->n >> 1; f >= 1; w <<= 1, f >>= 1)
+				for (size_t i = 0; i < f; i++)
+					for (size_t j = 0; j < w; j++)
+						this->Butterfly_DIT(fft[(i << 1)*w+j], fft[((i << 1)+1)*w+j], (this->pow_w)[j*f]);
+		}
+
+	}; // FFT_algorithms<Field, NoSimd<typename Field::Element>, 1>
+
 }
+
+#undef IS_INTEGRAL
+#undef IS_FLOATING
 
 #endif // __LINBOX_polynomial_fft_algorithms_H
 
