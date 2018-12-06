@@ -60,20 +60,24 @@ namespace LinBox {
 		FFT_algorithms(const FFT_init<Field>& f_i) : FFT_butterflies<Field, NoSimd<typename Field::Element>, 1>(f_i) {}
 
 		void DIF_mod2p (Element *fft) {
-			for (size_t w = this->n >> 1, f = 1; w != 0; f <<= 1, w >>= 1){
+			Element * tab_w = &(this->pow_w) [0];
+			Element * tab_wp= &(this->pow_wp)[0];
+			for (size_t w = this->n >> 1, f = 1; w != 0; tab_w+=w, tab_wp+=w, f <<= 1, w >>= 1){
 				// w : witdh of butterflies
 				// f : # families of butterflies
 				for (size_t i = 0; i < f; i++)
 					for (size_t j = 0; j < w; j++)
-						this->Butterfly_DIF_mod2p(fft[(i << 1)*w+j], fft[((i << 1)+1)*w+j], (this->pow_w)[j*f], (this->pow_wp)[j*f]);
+						this->Butterfly_DIF_mod2p(fft[(i << 1)*w+j], fft[((i << 1)+1)*w+j], tab_w[j],tab_wp[j]);
 			}
 		}
 
 		void DIT_mod4p (Element *fft) {
-			for (size_t w = 1, f = this->n >> 1; f >= 1; w <<= 1, f >>= 1)
+			Element * tab_w = &(this->pow_w) [this->n-2];
+			Element * tab_wp= &(this->pow_wp)[this->n-2];
+			for (size_t w = 1, f = this->n >> 1; f >= 1; w <<= 1, f >>= 1, tab_w-=w, tab_wp-=w)
 				for (size_t i = 0; i < f; i++)
 					for (size_t j = 0; j < w; j++)
-						this->Butterfly_DIT_mod4p(fft[(i << 1)*w+j], fft[((i << 1)+1)*w+j], (this->pow_w)[j*f], (this->pow_wp)[j*f]);
+						this->Butterfly_DIT_mod4p(fft[(i << 1)*w+j], fft[((i << 1)+1)*w+j], tab_w[j], tab_wp[j]);
 		}
 
 		void DIF (Element *fft) {
