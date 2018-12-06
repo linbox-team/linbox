@@ -644,88 +644,88 @@ namespace LinBox
         SolverReturnStatus status = SS_OK;
         status=rsolve.solve(x, d, A, b,(int)m.maxTries());
  
-        commentator().stop("done", NULL, "solving");
+		commentator().stop("done", NULL, "solving");
 
-        if ( status == SS_INCONSISTENT ) {
-            throw LinboxMathInconsistentSystem("Linear system is inconsistent");
-                //          for (typename Vect::iterator i = x.begin(); i != x.end(); ++i) *i = A.field().zero;
-        }
-        return x;
-    }
+		if ( status == SS_INCONSISTENT ) {
+			throw LinboxMathInconsistentSystem("Linear system is inconsistent");
+			// 			for (typename Vect::iterator i = x.begin(); i != x.end(); ++i) *i = A.field().zero;
+		}
+		return x;
+	}
 
-        //@}
+	//@}
 
-        // NonBlasElimination section ////////////////
+	// NonBlasElimination section ////////////////
 
-    template <class Vector, class BB>
-    Vector& solve(Vector& x, const BB& A, const Vector& b,
-                  const RingCategories::ModularTag & tag,
-                  const Method::NonBlasElimination& m)
-    {
-        BlasMatrix<typename BB::Field> B(A); // copy
-        return solve(x, B, b, tag, m);
-    }
+	template <class Vector, class BB>
+	Vector& solve(Vector& x, const BB& A, const Vector& b,
+		      const RingCategories::ModularTag & tag,
+		      const Method::NonBlasElimination& m)
+	{
+		BlasMatrix<typename BB::Field> B(A); // copy
+		return solve(x, B, b, tag, m);
+	}
 
-        // note: no need for NonBlasElimination when RingCategory is integer
+	// note: no need for NonBlasElimination when RingCategory is integer
 
-        // Lanczos ////////////////
-        // may throw SolverFailed or InconsistentSystem
+	// Lanczos ////////////////
+	// may throw SolverFailed or InconsistentSystem
 
-        // Wiedemann section ////////////////
+	// Wiedemann section ////////////////
 
-        // may throw SolverFailed or InconsistentSystem
-    template <class Vector, class BB>
-    Vector& solve(Vector& x, const BB& A, const Vector& b,
-                  const RingCategories::ModularTag & tag,
-                  const Method::Wiedemann& m)
-    {
-        if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
-            throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
+	// may throw SolverFailed or InconsistentSystem
+	template <class Vector, class BB>
+	Vector& solve(Vector& x, const BB& A, const Vector& b,
+		      const RingCategories::ModularTag & tag,
+		      const Method::Wiedemann& m)
+	{
+		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
+			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
 
-            // adapt to earlier signature of wiedemann solver
-        solve(A, x, b, A.field(), m);
-        return x;
-    }
+		// adapt to earlier signature of wiedemann solver
+		solve(A, x, b, A.field(), m);
+		return x;
+	}
 
-        // Only for nonsingular system for now.
-        // may throw SolverFailed or InconsistentSystem
-    template <class Vector, class BB>
-    Vector& solve(Vector& x, const BB& A, const Vector& b,
-                  const RingCategories::ModularTag & tag,
-                  const Method::BlockWiedemann& m)
-    {
-        if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
-            throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
+	// Only for nonsingular system for now.
+	// may throw SolverFailed or InconsistentSystem
+	template <class Vector, class BB>
+	Vector& solve(Vector& x, const BB& A, const Vector& b,
+		      const RingCategories::ModularTag & tag,
+		      const Method::BlockWiedemann& m)
+	{
+		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
+			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
 
-            // adapt to earlier signature of wiedemann solver
-        typedef BlasMatrixDomain<typename BB::Field> Context;
-        Context BMD(A.field());
-        BlockWiedemannSolver<Context> BWS(BMD,m.blockingFactor(), m.blockingFactor()+1);
-            //BWS.solveNonSingular(x, A, b);
+		// adapt to earlier signature of wiedemann solver
+		typedef BlasMatrixDomain<typename BB::Field> Context;
+		Context BMD(A.field());
+		BlockWiedemannSolver<Context> BWS(BMD,m.blockingFactor(), m.blockingFactor()+1);
+		//BWS.solveNonSingular(x, A, b);
         BWS.solve(x, A, b);
-        return x;
-    }
+		return x;
+	}
 
-        // Only for nonsingular system for now.
-        // may throw SolverFailed or InconsistentSystem
-    template <class Vector, class BB>
-    Vector& solve(Vector& x, const BB& A, const Vector& b,
-                  const RingCategories::ModularTag & tag,
-                  const Method::Coppersmith& m)
-    {
-        if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
-            throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
+	// Only for nonsingular system for now.
+	// may throw SolverFailed or InconsistentSystem
+	template <class Vector, class BB>
+	Vector& solve(Vector& x, const BB& A, const Vector& b,
+		      const RingCategories::ModularTag & tag,
+		      const Method::Coppersmith& m)
+	{
+		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
+			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
 
-            // adapt to earlier signature of wiedemann solver
-        CoppersmithSolver<typename BB::Field> cs(A.field());
-        cs.solveNonsingular(x, A, b);
-        return x;
-    }
+		// adapt to earlier signature of wiedemann solver
+		CoppersmithSolver<typename BB::Field> cs(A.field());
+		cs.solveNonsingular(x, A, b);
+		return x;
+	}
 
-        /* remark 1.  I used copy constructors when switching method types.
-           But if the method types are (empty) child classes of a common  parent class containing
-           all the information, then casts can be used in place of copies.
-        */
+	/* remark 1.  I used copy constructors when switching method types.
+	   But if the method types are (empty) child classes of a common  parent class containing
+	   all the information, then casts can be used in place of copies.
+	   */
 
 } // LinBox
 

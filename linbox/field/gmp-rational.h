@@ -85,6 +85,10 @@ namespace LinBox
 		/// element type.
 		typedef GMPRationalElement Element;
 
+		/// pointer to element type.
+		typedef GMPRationalElement* Element_ptr;
+
+        
 		/// Random iterator generator type.
 		typedef GMPRationalRandIter RandIter;
 

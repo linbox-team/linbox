@@ -53,7 +53,8 @@ namespace LinBox
 		 * It must meet the common object interface of elements as given in the
 		 * the archetype ElementArchetype.
 		 */
-		typedef double Element;
+		typedef double      Element;
+        typedef double* Element_ptr;
 
 		/** Random iterator generator type.
 		 * It must meet the common object interface of random element generators

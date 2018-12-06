@@ -166,7 +166,8 @@ applyRight // Y = XA
 		Triple t = data_[k];
 		Matrix Yr(Y,0,t.col,Y.rowdim(),1);
 		// Yr.submatrix(Y,0,t.col,Y.rowdim(),1);
-		typename Matrix::constSubMatrixType Xr(X,0,t.row,X.rowdim(),1);
+        //		typename Matrix::constSubMatrixType Xr(X,0,t.row,X.rowdim(),1);
+        typename Mat2::constSubMatrixType Xr(X,0,t.row,X.rowdim(),1);
 		// Xr.submatrix(X,0,t.row,X.rowdim(),1);
 		MD_.saxpyin(Yr, t.elt, Xr);
 	}
