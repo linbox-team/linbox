@@ -108,7 +108,7 @@ static bool checkOutput (const Field  &F,
 
 template <class Field, class Matrix>
 static bool checkResult (const Field  &F,
-			 Matrix &A,
+			 Matrix &A,	
 			 BlasVector<Field> &B,
 			 BlasVector<Field> &X,
 			 typename Field::Element &d)
@@ -121,14 +121,14 @@ static bool checkResult (const Field  &F,
 Integer tmp;
   for (size_t j = 0 ; j < B.size() ; ++j){
   //tmp=B.getEntry(j);F.mulin(tmp,d);B3.setEntry(j,tmp);
-    B3.setEntry(j,d*B.getEntry(j));
+    B3.setEntry(j,d*B.getEntry	(j));
   }
   for (size_t j = 0 ; j < A.coldim() ; ++j){
     if(!F.areEqual(B2[j],B3[j])){
       std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
       std::cerr << "               The solution of solveCRA is incorrect                " << std::endl;
       std::cerr << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
-      /*
+      /*	
       std::cerr << " B2["<<j<<"] := "<< B2[j] << std::endl;
       std::cerr << " B3["<<j<<"] := "<< B3[j] << std::endl;
       std::cerr << " d*B["<<j<<"] := "<< d*B.getEntry(j) << std::endl;
@@ -589,11 +589,11 @@ int main(int argc, char ** argv)
             bits = bitsize;  
             n = ni;
         }
-
+/*
 std::cout << " >>>>>>>>>>>>>>>>>> seed:= "<<seed<<std::endl;
 std::cout << " >>>>>>>>>>>>>>>>>> n:= "<<n<<std::endl;
 std::cout << " >>>>>>>>>>>>>>>>>> bits:= "<<bits<<std::endl;
-    
+*/  
 #ifdef __LINBOX_HAVE_MPI 	
     }
 #endif    
@@ -664,11 +664,12 @@ long computtIMES= 0;
             bits = bitsize;  
             n = ni;
         }
-
+/*
 std::cout << " >>>>>>>>>>>>>>>>>> seed:= "<<seed<<std::endl;
 std::cout << " >>>>>>>>>>>>>>>>>> n:= "<<n<<std::endl;
 std::cout << " >>>>>>>>>>>>>>>>>> bits:= "<<bits<<std::endl;
-    
+*/
+  
 #ifdef __LINBOX_HAVE_MPI 	
     }//End of BLock for process(0)
 #endif    
@@ -681,9 +682,9 @@ std::cout << " >>>>>>>>>>>>>>>>>> bits:= "<<bits<<std::endl;
   MPI_Bcast(&bits, 1, MPI_INT, 0, MPI_COMM_WORLD);
   MPI_Bcast(&seed, 1, MPI_INT, 0, MPI_COMM_WORLD);
 #endif
-    DenseMatrix<Givaro::ZRing<Integer> > A (F,n,n);
-    DenseVector X(F, A.coldim()), X2(F, A.coldim()),  B(F, A.coldim());
-
+//    DenseMatrix<Givaro::ZRing<Integer> > A (F,n,n);
+//    DenseVector X(F, A.coldim()), X2(F, A.coldim()),  B(F, A.coldim());
+    A.resize(n,n); X.resize(A.coldim()), X2.resize( A.coldim()),  B.resize(A.coldim());
 
         
  prepare_data_with_field(bits, seed, X2, A, B	      //<-------------------instant modification
@@ -691,15 +692,14 @@ std::cout << " >>>>>>>>>>>>>>>>>> bits:= "<<bits<<std::endl;
 	      , Cptr
 #endif
 	      );
-	      size_t r;
-std::cout << " A rank:= "<<LinBox::rank(r,A)<<std::endl;
+//	      size_t r; std::cout << " A rank:= "<<LinBox::rank(r,A)<<std::endl;
 //<--------------------Coould be wrapped into a tempalted subroutine----------------------	
 	
 //@FutherImprovement: Use the templated test function with field as a template at compile time: 	    ok = ok && run_with_field<Modular<int32_t> >(q,b,n,iters,seed)     
 
-std::cout << " ################################ Until now computed "<<computtIMES<<" times! "<<std::endl;
+//std::cout << " ################################ Until now computed "<<computtIMES<<" times! "<<std::endl;
 
-if(!checkInput (F, A, A_cp, B, B_cp)) std::cerr<<" Proc("<<Cptr->rank()<<") >>>>>>>>>>>>>>>>>>>>> Input is inconsistent !!!!!!!!!!!!!!!!! "<<std::endl;;
+//if(!checkInput (F, A, A_cp, B, B_cp)) std::cerr<<" Proc("<<Cptr->rank()<<") >>>>>>>>>>>>>>>>>>>>> Input is inconsistent !!!!!!!!!!!!!!!!! "<<std::endl;;
       
     if(!test_set_with_field<Givaro::ZRing<Integer>>(X2, A, B, bits
 #ifdef __LINBOX_HAVE_MPI

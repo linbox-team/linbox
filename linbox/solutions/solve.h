@@ -774,13 +774,7 @@ namespace LinBox
 
 
 		template<typename Field>
-		typename Rebind<Vector, Field>::other& operator()(typename Rebind<Vector, Field>::other& x, const Field& F
-#ifdef __Detailed_Time_Measurement
-#ifdef __LINBOX_HAVE_MPI
-			,Communicator   *C = NULL
-#endif
-#endif
-		) const
+		typename Rebind<Vector, Field>::other& operator()(typename Rebind<Vector, Field>::other& x, const Field& F) const
 		{
 			typedef typename Blackbox::template rebind<Field>::other FBlackbox;
 #ifdef __Detailed_Time_Measurement
@@ -807,6 +801,33 @@ namespace LinBox
 
 			solvein( x, Ap, Bp, M);
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  typename Field::Element sum;
+  typename Field::Element tmp, tmp2;
+
+  for (size_t i = 0 ; i < Ap.rowdim() ; ++i){
+      sum=0.0;
+      for (size_t j = 0 ; j < Ap.coldim() ; ++j){
+        tmp = Ap.getEntry(i,j);
+        tmp2 = x.getEntry(j);
+        F.mul(tmp, tmp2, tmp);
+        F.add(sum, tmp, sum);
+      } 
+
+/*
+    if(!F.areEqual(Bp.getEntry(i),sum)){
+      std::cerr << "##############################" << std::endl;
+      std::cerr << "   Ap*x is not equal to Bp    " << std::endl;
+      std::cerr << "##############################" << std::endl;
+      break;
+    }
+*/
+    }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 #ifdef __Detailed_Time_Measurement
             chrono.stop();
             std::cout<< 
@@ -830,7 +851,8 @@ namespace LinBox
 #endif
 			)
 	{
-		Integer den(1);
+//		Integer den(1);
+Integer den;
 
 #ifdef __LINBOX_HAVE_MPI	//MPI parallel version
 		if(!C || C->rank() == 0){
