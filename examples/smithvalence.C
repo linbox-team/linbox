@@ -115,148 +115,74 @@ int main (int argc, char **argv)
 		std::cout << "Suppose " << argv[3] << " is coprime with Smith form" << std::endl;
 	}
 
-std::cout << "Some factors (50000 factoring loop bound): ";
-	FTD.set(Moduli, exponents, val_A, 50000);
-	std::vector<size_t>::const_iterator eit=exponents.begin();
-	for(std::vector<Givaro::Integer>::const_iterator mit=Moduli.begin();
-	    mit != Moduli.end(); ++mit,++eit)
-		std::cout << *mit << '^' << *eit << ' ';
+    std::cout << "Some factors (50000 factoring loop bound): ";
+	
+    FTD.set(Moduli, exponents, val_A, 50000);
+
+	auto eit=exponents.begin();
+	for(auto mit: Moduli) std::cout << mit << '^' << *eit << ' ';
 	std::cout << std::endl;
     smith.resize(Moduli.size());
 
-    size_t coprimeR; 
- 
 	std::cout << "num procs: " << omp_get_num_procs() << std::endl;
-	std::cout << "num threads: " << NUM_THREADS << std::endl;
-	std::cout << "max threads: " << MAX_THREADS << std::endl;
+    PAR_BLOCK { 
+        std::cout << "cur threads: " << NUM_THREADS << std::endl;
+        std::cout << "max threads: " << MAX_THREADS << std::endl;
+    }
 
-#pragma omp parallel 
-    {
-#pragma omp single
-        {
+        size_t coprimeR;
+
+        std::vector<Givaro::Integer> SmithDiagonal(coprimeR,Givaro::Integer(1));
+        std::vector<std::vector<size_t> > AllRanks(Moduli.size());
+
+
+    PAR_BLOCK { 
+       SYNCH_GROUP(
             for(size_t j=0; j<Moduli.size(); ++j) {
                 smith[j].first = Moduli[j];
-#pragma omp task shared(smith,argv) firstprivate(j)
-                LRank(smith[j].second, argv[1], smith[j].first);
-            }
-            LRank(coprimeR, argv[1], coprimeV);
-        }
-	}
-
-    std::vector<Givaro::Integer> SmithDiagonal(coprimeR,Givaro::Integer(1));
- 
-// #pragma omp parallel for shared(SmithDiagonal, smith, exponents)
-// 	for(size_t j=0; j<Moduli.size(); ++j) {
-        
-//         if (smith[j].second != coprimeR) {
-//             std::vector<size_t> ranks;
-//             const PairIntRk& smithj(smith[j]);
-//             const size_t& exponentsj(exponents[j]);
-
-//             AllPowersRanks(ranks, smithj, exponentsj, coprimeR, argv[1]);
-
-// #pragma omp critical
-//             {
-//                 populateSmithForm(SmithDiagonal, ranks, smithj, coprimeR);
-//             }
-//         }
-//     }
-
-//     std::vector<size_t> * AllRanks = new std::vector<size_t>[Moduli.size()];
-
-// #pragma omp parallel 
-//     {
-//         for(size_t j=0; j<Moduli.size(); ++j) {
-        
-//             if (smith[j].second != coprimeR) {
-// //                 std::vector<size_t>& ranksj(AllRanks[j]);
-//                 const PairIntRk& smithj(smith[j]);
-//                 const size_t& exponentsj(exponents[j]);
-// #pragma omp task depend(out: AllRanks[j]) shared(smithj, exponentsj, coprimeR)
-//                 {
-//                     AllPowersRanks(AllRanks[j], smithj, exponentsj, coprimeR, argv[1]);    
-//                 }
-//             }
-//         }
-//     }
-    
-
-//     for(size_t j=0; j<Moduli.size(); ++j) {
-//         if (smith[j].second != coprimeR) {
-//             populateSmithForm(SmithDiagonal, AllRanks[j], smith[j], coprimeR);
-//         }
-//     }
-    
-
-
-
-
-
-    std::vector<std::vector<size_t> > AllRanks(Moduli.size());
-    PAR_BLOCK {
-        for(size_t j=0; j<Moduli.size(); ++j) {
-            if (smith[j].second != coprimeR) {
-//             std::vector<size_t>& ranks(AllRanks[j]);
-                const PairIntRk& smithj(smith[j]);
-                const size_t& exponentsj(exponents[j]);
-                { TASK(MODE(CONSTREFERENCE(smithj, exponentsj, coprimeR) WRITE(AllRanks[j])),
+                { TASK(MODE(READ(smith[j].first) WRITE(smith[j].second) VALUE(j)),
                 {
-                    AllPowersRanks(AllRanks[j], smithj, exponentsj, coprimeR, argv[1]);
+                    LRank(smith[j].second, argv[1], smith[j].first);
                 })}
             }
-        }
+        	{ TASK(MODE(READ(coprimeV) WRITE(coprimeR)),
+            {
+                LRank(coprimeR, argv[1], coprimeV);
+            })}
+        )
+
+
+        SmithDiagonal.resize(coprimeR,Givaro::Integer(1));
+
+
+
+        SYNCH_GROUP(
+            for(size_t j=0; j<Moduli.size(); ++j) {
+                if (smith[j].second != coprimeR) {
+                    const PairIntRk& smithj(smith[j]);
+                    const size_t& exponentsj(exponents[j]);
+                    { TASK(MODE(CONSTREFERENCE(smithj, exponentsj, coprimeR) WRITE(AllRanks[j])),
+                    {
+                        AllPowersRanks(AllRanks[j], smithj, exponentsj, coprimeR, argv[1]);
+                    })}
+                }
+            }
+        )
     }
     
     for(size_t j=0; j<Moduli.size(); ++j) {
         if (smith[j].second != coprimeR) {
             populateSmithForm(SmithDiagonal, AllRanks[j], smith[j], coprimeR);
         }
-    }
-    
-    
-//     SYNCH_GROUP(
-//         FORBLOCK1D(iter, Moduli.size(), SPLITTER(),
-//                    TASK(MODE( 
-//                        CONSTREFERENCE(SmithDiagonal, smith, exponents, coprimeR) ),
-//                    {
-//                         for(size_t j=iter.begin(); j != iter.end(); ++j) {                       
-//         if (smith[j].second != coprimeR) {
-//             std::vector<size_t> ranks;
-//             AllPowersRanks(ranks, smith[j], exponents[j], coprimeR, argv[1]);
- 
-// #pragma omp critical
-//             {   
-
-//                 populateSmithForm(SmithDiagonal, ranks, smith[j], coprimeR);
-//             }
-//         }
-// 	}
-//                         })
-//                    );
-//         );
+    }    
     
 	chrono.stop();
 
-    Givaro::Integer si=1;
-	size_t num=0;
 	std::cerr << "Integer Smith Form :" << std::endl;
-    std::cout << '(';
-	for( std::vector<Givaro::Integer>::const_iterator dit=SmithDiagonal.begin();
-	     dit != SmithDiagonal.end(); ++dit) {
-		if (*dit == si) ++num;
-		else {
-			std::cerr << '[' << si << ',' << num << "] ";
-			num=1;
-			si = *dit;
-		}
-	}
-	std::cerr << '[' << si << ',' << num << "] ";
-	num = std::min(A.rowdim(),A.coldim()) - SmithDiagonal.size();
-	si = ZZ.zero;
-	if (num > 0) std::cout << '[' << si << ',' << num << ']';
-	std::cout << ')' << std::endl;
-	std::cerr << chrono << std::endl;
+    compressedSmith(std::cout, SmithDiagonal, A.rowdim(), A.coldim()) << std::endl;
 
+	std::cerr << chrono << std::endl;
+    
 
 	return 0;
 }
