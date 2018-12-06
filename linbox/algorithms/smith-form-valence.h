@@ -276,54 +276,58 @@ typedef std::pair<Givaro::Integer,size_t> PairIntRk;
 
 std::vector<size_t>& AllPowersRanks(
     std::vector<size_t>& ranks,
-    const PairIntRk& squarefreeRank,// smith[j]
+    const Givaro::Integer& squarefreePrime,// smith[j].first
+    const size_t& squarefreeRank,// smith[j].second
     const size_t& exponentBound,	// exponents[j]
     const size_t& coprimeRank,		// coprimeR
     const char * filename) {		// argv[1]
-    
-    ranks.push_back(squarefreeRank.second);
-    size_t effexp;
-    if (exponentBound > 1) {
-            // See if a not too small, not too large exponent would work
-            // Usually, closest to word size
-        if (squarefreeRank.first == 2)
-            PRankPowerOfTwo(ranks, effexp, filename, exponentBound, coprimeRank);
-        else
-            PRank(ranks, effexp, filename, squarefreeRank.first, exponentBound, coprimeRank);
-    } else {
-            // Square does not divide valence
-            // Try first with the smallest possible exponent: 2
-        if (squarefreeRank.first == 2)
-            PRankPowerOfTwo(ranks, effexp, filename, 2, coprimeRank);
-        else
-            PRank(ranks, effexp, filename, squarefreeRank.first, 2, coprimeRank);
-    }
 
-    if (effexp < exponentBound) {
-            // Above report shows that more powers are needed, 
-            // try successive doublings Over abitrary precision
-        for(size_t expo = effexp<<1; ranks.back() < coprimeRank; expo<<=1) {
-            if (squarefreeRank.first == 2)
-                PRankIntegerPowerOfTwo(ranks, filename, expo, coprimeRank);
+    if (squarefreeRank != coprimeRank) {
+
+        ranks.push_back(squarefreeRank);
+        size_t effexp;
+        if (exponentBound > 1) {
+                // See if a not too small, not too large exponent would work
+                // Usually, closest to word size
+            if (squarefreePrime == 2)
+                PRankPowerOfTwo(ranks, effexp, filename, exponentBound, coprimeRank);
             else
-                PRankInteger(ranks, filename, squarefreeRank.first, expo, coprimeRank);
+                PRank(ranks, effexp, filename, squarefreePrime, exponentBound, coprimeRank);
+        } else {
+                // Square does not divide valence
+                // Try first with the smallest possible exponent: 2
+            if (squarefreePrime == 2)
+                PRankPowerOfTwo(ranks, effexp, filename, 2, coprimeRank);
+            else
+                PRank(ranks, effexp, filename, squarefreePrime, 2, coprimeRank);
         }
-    } else {
-            // Larger exponents are needed
-            // Try first small precision, then arbitrary
-        for(size_t expo = (exponentBound)<<1; ranks.back() < coprimeRank; expo<<=1) {
-            if (squarefreeRank.first == 2)
-                PRankPowerOfTwo(ranks, effexp, filename, expo, coprimeRank);
-            else
-                PRank(ranks, effexp, filename, squarefreeRank.first, expo, coprimeRank);
-            if (ranks.size() < expo) {
-                if (reporting)
-                    std::clog << "It seems we need a larger prime power, it will take longer ..." << std::endl;
-                    // break;
-                if (squarefreeRank.first == 2)
+
+        if (effexp < exponentBound) {
+                // Above report shows that more powers are needed,
+                // try successive doublings Over abitrary precision
+            for(size_t expo = effexp<<1; ranks.back() < coprimeRank; expo<<=1) {
+                if (squarefreePrime == 2)
                     PRankIntegerPowerOfTwo(ranks, filename, expo, coprimeRank);
                 else
-                    PRankInteger(ranks, filename, squarefreeRank.first, expo, coprimeRank);
+                    PRankInteger(ranks, filename, squarefreePrime, expo, coprimeRank);
+            }
+        } else {
+                // Larger exponents are needed
+                // Try first small precision, then arbitrary
+            for(size_t expo = (exponentBound)<<1; ranks.back() < coprimeRank; expo<<=1) {
+                if (squarefreePrime == 2)
+                    PRankPowerOfTwo(ranks, effexp, filename, expo, coprimeRank);
+                else
+                    PRank(ranks, effexp, filename, squarefreePrime, expo, coprimeRank);
+                if (ranks.size() < expo) {
+                    if (reporting)
+                        std::clog << "It seems we need a larger prime power, it will take longer ..." << std::endl;
+                        // break;
+                    if (squarefreePrime == 2)
+                        PRankIntegerPowerOfTwo(ranks, filename, expo, coprimeRank);
+                    else
+                        PRankInteger(ranks, filename, squarefreePrime, expo, coprimeRank);
+                }
             }
         }
     }
@@ -334,16 +338,20 @@ std::vector<size_t>& AllPowersRanks(
 std::vector<Givaro::Integer>& populateSmithForm(
     std::vector<Givaro::Integer>& SmithDiagonal,
     const std::vector<size_t>& ranks,
-    const PairIntRk& squarefreeRank,// smith[j]
+    const Givaro::Integer& squarefreePrime,// smith[j].first
+    const size_t& squarefreeRank,// smith[j].second
     const size_t& coprimeRank) {	// coprimeR
    
-    for(size_t i=squarefreeRank.second; i < coprimeRank; ++i) {
-        SmithDiagonal[i] *= squarefreeRank.first;
+
+    SmithDiagonal.resize(coprimeRank, Givaro::Integer(1) );
+
+    for(size_t i=squarefreeRank; i < coprimeRank; ++i) {
+        SmithDiagonal[i] *= squarefreePrime;
     }
     auto rit=ranks.begin(); for(++rit; rit!= ranks.end(); ++rit) {
         if ((*rit)>= coprimeRank) break;
         for(size_t i=(*rit); i < coprimeRank; ++i)
-            SmithDiagonal[i] *= squarefreeRank.first;
+            SmithDiagonal[i] *= squarefreePrime;
     }
     
     return SmithDiagonal;
@@ -360,6 +368,8 @@ std::vector<Givaro::Integer>& smithValence(std::vector<Givaro::Integer>& SmithDi
         // Blackbox provides the Integer matrix rereadable from filename
         // if valence != 0, then the valence is not computed and the parameter is used
         // if coprimeV != 0, then this value is supposed to be coprime with the valence
+
+    std::clog << "sV threads: " << NUM_THREADS << std::endl;
 
     if (valence == 0) {
         squarizeValence(valence, A, method);
@@ -379,7 +389,7 @@ std::vector<Givaro::Integer>& smithValence(std::vector<Givaro::Integer>& SmithDi
 	for(auto mit: Moduli) std::clog << mit << '^' << *eit << ' ';
 	std::clog << std::endl;
 
-	std::vector< PairIntRk > smith(Moduli.size());
+	std::vector< size_t > smith(Moduli.size());
 
     if (coprimeV == 1) {
         coprimeV=2;
@@ -388,54 +398,39 @@ std::vector<Givaro::Integer>& smithValence(std::vector<Givaro::Integer>& SmithDi
         }
     }
 
-	std::clog << "num procs: " << omp_get_num_procs() << std::endl;
-    PAR_BLOCK { 
-        std::clog << "cur threads: " << NUM_THREADS << std::endl;
-        std::clog << "max threads: " << MAX_THREADS << std::endl;
-    }
-
-    std::vector<std::vector<size_t> > AllRanks(Moduli.size());
     size_t coprimeR;
+    std::vector<std::vector<size_t> > AllRanks(Moduli.size());
 
-
-    PAR_BLOCK { 
-       SYNCH_GROUP(
-            for(size_t j=0; j<Moduli.size(); ++j) {
-                smith[j].first = Moduli[j];
-                { TASK(MODE(READ(smith[j].first) WRITE(smith[j].second) VALUE(j)),
-                {
-                    LRank(smith[j].second, filename.c_str(), smith[j].first);
-                })}
-            }
-        	{ TASK(MODE(READ(coprimeV) WRITE(coprimeR)),
-            {
-                LRank(coprimeR, filename.c_str(), coprimeV);
-            })}
-        )
-
-
-        SmithDiagonal.resize(coprimeR,Givaro::Integer(1));
-
-        SYNCH_GROUP(
-            for(size_t j=0; j<Moduli.size(); ++j) {
-                if (smith[j].second != coprimeR) {
-                    const PairIntRk& smithj(smith[j]);
-                    const size_t& exponentsj(exponents[j]);
-                    { TASK(MODE(CONSTREFERENCE(smithj, exponentsj, coprimeR) WRITE(AllRanks[j])),
-                    {
-                        AllPowersRanks(AllRanks[j], smithj, exponentsj, coprimeR, filename.c_str());
-                    })}
-                }
-            }
-        )
+    for(size_t j=0; j<Moduli.size(); ++j) {
+        { TASK(MODE(CONSTREFERENCE(Moduli,smith,filename) WRITE(smith[j]) ),
+        {
+            LRank(smith[j], filename.c_str(), Moduli[j]);
+        })}
     }
+
+//     { TASK(MODE(CONSTREFERENCE(coprimeV,filename) WRITE(coprimeR) ),
+//     {
+        LRank(coprimeR, filename.c_str(), coprimeV);
+//     })}
+
+    BARRIER;
+
+    SYNCH_GROUP(
+        for(size_t j=0; j<Moduli.size(); ++j) {
+            { TASK(MODE(CONSTREFERENCE(smith,Moduli,AllRanks,filename,coprimeR,exponents)
+                        WRITE(AllRanks[j])),
+            {
+                AllPowersRanks(AllRanks[j], Moduli[j], smith[j], exponents[j],
+                               coprimeR, filename.c_str());
+            })}
+        }
+    )
     
     for(size_t j=0; j<Moduli.size(); ++j) {
-        if (smith[j].second != coprimeR) {
-            populateSmithForm(SmithDiagonal, AllRanks[j], smith[j], coprimeR);
+        if (smith[j] != coprimeR) {
+            populateSmithForm(SmithDiagonal, AllRanks[j], Moduli[j], smith[j], coprimeR);
         }
     }
-
 
     return SmithDiagonal;
 }
@@ -443,6 +438,8 @@ std::vector<Givaro::Integer>& smithValence(std::vector<Givaro::Integer>& SmithDi
 std::ostream& compressedSmith(std::ostream& out, 
                               const std::vector<Givaro::Integer>& SmithDiagonal, 
                               const size_t m, const size_t n) {
+    // Output is a list of pairs (integral value, number of repetitions)
+
     out << '(';
 
     Givaro::Integer si=1;

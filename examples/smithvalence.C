@@ -90,8 +90,17 @@ int main (int argc, char **argv)
 
     std::vector<Givaro::Integer> SmithDiagonal;
 
+	std::clog << "num procs: " << omp_get_num_procs() << std::endl;
+    std::clog << "max threads: " << MAX_THREADS << std::endl;
+
+        // Returns the Smith form as a diagonal,
+        // the valence val_A,
+        // the coprimeV used to compute the integral rank
 	LinBox::Timer chrono; chrono.start();
-    smithValence(SmithDiagonal, val_A, A, filename, coprimeV, method);
+    PAR_BLOCK {
+        smithValence(SmithDiagonal, val_A, A, filename, coprimeV, method);
+    }
+
 	chrono.stop();
 
 	std::clog << "Integer Smith Form :" << std::endl;
