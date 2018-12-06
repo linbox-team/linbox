@@ -24,7 +24,7 @@ namespace LinBox{
 
 template<class Ring, class Matrix>
 Matrix& minmat(const Ring& R, Matrix& Mat, size_t n){
-	size_t val;
+	uint64_t val;
 	typename Ring::Element tmp;
 
 	for(size_t i = 0; i < n; ++i){
@@ -40,7 +40,7 @@ Matrix& minmat(const Ring& R, Matrix& Mat, size_t n){
 
 template<class Ring, class Matrix>
 Matrix& maxmat(const Ring& R, Matrix& Mat, size_t n){
-	size_t val;
+	uint64_t val;
 	typename Ring::Element tmp;
 
 	for(size_t i = 0; i < n; ++i){
@@ -56,7 +56,7 @@ Matrix& maxmat(const Ring& R, Matrix& Mat, size_t n){
 
 template<class Ring, class Matrix>
 Matrix& qlehmer(const Ring& R, Matrix& Mat, size_t n){
-	size_t val;
+	uint64_t val;
 	typename Ring::Element tmp, tmp2;
 
 	for(size_t i = 0; i < n; ++i){

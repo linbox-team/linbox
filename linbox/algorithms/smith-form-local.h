@@ -31,7 +31,7 @@
 
 #include <vector>
 #include <list>
-//#include <algorithm>
+#include <algorithm>
 
 // #include "linbox/field/multimod-field.h"
 #include "linbox/matrix/dense-matrix.h"
@@ -89,10 +89,10 @@ namespace LinBox
                 // because this is a local ring, value at which this first happened
                 // also is a unit.
                 if ( p != A.rowBegin() )
-                    swap_ranges(A.rowBegin()->begin(), A.rowBegin()->end(), p->begin());
+                    std::swap_ranges(A.rowBegin()->begin(), A.rowBegin()->end(), p->begin());
                 
                 if ( q != p->begin() )
-                    swap_ranges(A.colBegin()->begin(), A.colBegin()->end(),
+                    std::swap_ranges(A.colBegin()->begin(), A.colBegin()->end(),
                             (A.colBegin() +(int) (q - p->begin()))->begin());
 
                 // eliminate step - crude and for dense only - fix later

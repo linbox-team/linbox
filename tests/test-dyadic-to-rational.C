@@ -49,7 +49,7 @@ When dxa^2 <= denBs, 2 should be returned.
 
 //std::cout << "test1(k " << k << ", dxa " << dxa << ", denBs " << denBs << ")" << std::endl;
 	// k is our denominator
-	Int denB = denBs; // denominator bound
+	Int denB = uint64_t(denBs); // denominator bound
 	// approximate(i*k^2)/k for i = 0..k-1
 	size_t kp = k+2;
 	size_t kp2 = 2*kp;
@@ -72,7 +72,7 @@ When dxa^2 <= denBs, 2 should be returned.
 //std::cout << nx[i] << " " << dx << " " << denB << std::endl;
 		c = dyadicToRational(Z, n[i], d, nx[i], dx, denB);
 //std::cout << " c " << c << " n " << n[i] << " d " << d << " nx " << nx[i] << " dx " << dx << " denB " << denB << std::endl;
-		bool loopclaim = ((c > 0)  && (n[i]*k == ((int(i)-int(kp))*d)));
+		bool loopclaim = ((c > 0)  && (n[i]*int64_t(k) == ((int(i)-int(kp))*d)));
 		if ( c == 2 ) loopclaim = loopclaim && d*denB < dx;
 		if (c < ret) ret = c;
 		if (! loopclaim) ret = 0;

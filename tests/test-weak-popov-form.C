@@ -30,7 +30,7 @@ int main(int argc, char* argv[]) {
 	// text is written to cout iff a command line arg is present	
 	if (argc > 1) writing = true;
 
-	size_t p = 3;
+	uint64_t p = 3;
 	PolynomialRing R(p);
 	PolyMatrixDom MD(R);
 	WeakPopovFormDom PFD(R);

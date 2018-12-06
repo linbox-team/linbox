@@ -302,9 +302,10 @@ static bool testGramMinpoly (Field &F, size_t m, const Meth& M)
 {
 	commentator().start ("Testing gram minpoly", "testGramMinpoly");
 	typedef BlasVector<Field> Polynomial;
-	integer n;
-	F.characteristic(n); n += 1;
-	if (n > 30) n = 2;
+	integer p;
+    size_t n;
+	F.characteristic(p); p += 1;
+	if (p > integer(30)) n = 2;
 	Polynomial phi(F);
 	BlasMatrix<Field> A(F, n, n);
 	for (size_t i = 0; i < n; ++i) for (size_t j = 0; j < n; ++j) A.setEntry(i, j, F.one);
@@ -350,11 +351,11 @@ bool run_with_field(integer q, int e, size_t b, size_t n, int iter, int numVecto
 	while (ok && nbiter)
 	{
 		Field* F;
-                integer card=q;
-                do{
-                        F = FFPACK::chooseField<Field>(q, b, ++seed); // F, characteristic q of b bits
-                        card = F->cardinality();
-                }while (card < 2*n*n && card != 0); // ensures high probability of succes of the probabilistic algorithm
+        integer card=q;
+        do{
+            F = FFPACK::chooseField<Field>(q, b, ++seed); // F, characteristic q of b bits
+            card = F->cardinality();
+        }while (card < 2*uint64_t(n)*uint64_t(n) && card != 0); // ensures high probability of succes of the probabilistic algorithm
 		typename Field::RandIter G(*F, b, seed); //random generator over F
 		typename Field::NonZeroRandIter NzG(G); //non-zero random generator over F
 

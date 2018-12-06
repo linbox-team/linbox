@@ -140,8 +140,8 @@ namespace LinBox { namespace BLAS3 {
 		BlasMatrixDomain<typename _anyMatrix::Field> BMD(A.field());
 		BMD.Magnitude(mA,A);
 		BMD.Magnitude(mB,B);
-		double logC = Givaro::naturallog(mA*mB*A.coldim());
-
+		double logC = Givaro::naturallog(mA*mB*uint64_t(A.coldim()));
+        
 		typedef Givaro::Modular<double> ModularField ;
 
 		{

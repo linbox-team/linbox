@@ -33,9 +33,11 @@
 
 #include "linbox/integer.h"
 #include "linbox/linbox-tags.h"
+#include "linbox/matrix/matrixdomain/matrix-domain.h"
+#include "linbox/vector/vector-domain.h"
 
 namespace LinBox {
-
+    
 	struct applyMethod {
 		struct Sequential {} ;
 		struct OpenMP {} ;
@@ -46,11 +48,12 @@ namespace LinBox {
 	template<class _Matrix/*, class Method = applyMethod::Sequential */>
 	class applyDomain {
 	public:
-		typedef typename     _Matrix::Field Field;
+		typedef typename _Matrix::Field Field;
 		typedef typename Field::Element Element;
 	private :
 		const Field & _field ;
 		MatrixDomain<Field> _MD ;
+        VectorDomain<Field> _VD ;
 	private :
 		// y = a A x + b y
 		template<class _In, class _Out, class Matrix>
@@ -74,7 +77,7 @@ namespace LinBox {
 				typename Matrix::ConstColIterator i = A.colBegin ();
 				typename _Out::iterator j = y.begin ();
 				for (; j != y.end (); ++j, ++i)
-					A._VD.dot (*j, x, *i);
+					_VD.dot (*j, x, *i);
 #else
 				TransposeMatrix<const Matrix> At(A);
 				if (_field.isZero(b)) { /* y = a A x */
@@ -150,7 +153,7 @@ namespace LinBox {
 				typename Matrix::ConstColIterator i = A.colBegin ();
 				typename _Out::iterator j = y.begin ();
 				for (; j != y.end (); ++j, ++i)
-					A._VD.dot (*j, x, *i);
+					_VD.dot (*j, x, *i);
 			}
 			else {
 				_MD.vectorMul(y,A,x);
@@ -161,7 +164,7 @@ namespace LinBox {
 	public:
 		applyDomain(const Field & F) :
 			_field(F)
-			, _MD(F)
+			, _MD(F), _VD(F)
 		{}
 		/*! Operation \f$y gets a A x + b y\f$ or \f$y gets a A^t x + b y\f$ .
 		 * General axpy with x and y vectors or matrices

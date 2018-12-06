@@ -99,7 +99,7 @@ namespace LinBox
 		IterationResult operator()(Int& P, const Field& F) const
 		{
 			typedef typename Blackbox::template rebind<Field>::other FBlackbox;
-			FBlackbox Ap(A, F);
+			FBlackbox Ap(A,F);
 			det (P, Ap, typename FieldTraits<Field>::categoryTag(), M);
 			typename Field::Element e;
 			F.init(e, mul);
@@ -131,9 +131,9 @@ namespace LinBox
 		IterationResult operator()(Int& P, const Field& F) const
 		{
 			typedef typename Blackbox::template rebind<Field>::other FBlackbox;
-			FBlackbox Ap(A, F);
+			FBlackbox Ap(A,F);
 			det( P, Ap, typename FieldTraits<Field>::categoryTag(), M);
-			return IterationResult::CONTINUE;
+            return IterationResult::CONTINUE;
 		}
 	};
 
