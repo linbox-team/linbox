@@ -33,7 +33,7 @@
  */
 
 #include <algorithm>
-
+#include <iomanip>
 // must fix this list...
 #include "linbox/algorithms/gauss.h"
 #include "linbox/algorithms/gauss-gf2.h"
@@ -295,10 +295,9 @@ namespace LinBox
 		//bool consistent = false;
 
 		LQUPMatrix<Field> LQUP(A);
+
 		//FactorizedMatrix<Field> LQUP(A);
-
 		LQUP.left_solve(x, b);
-
 
 
 #if 0
@@ -769,7 +768,11 @@ namespace LinBox
                 FVector Bp(F, B);
 
                 VectorWrapper::ensureDim (x, A.coldim());
-                return solve( x, Ap, Bp, M);
+//                return solve( x, Ap, Bp, M);
+solve( x, Ap, Bp, M);
+
+
+return x;
             }
     };
 

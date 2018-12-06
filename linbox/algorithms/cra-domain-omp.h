@@ -276,14 +276,17 @@ namespace LinBox
         void solve_with_prime(std::vector<PrimeIterator>& m_primeiters, std::set<int>& coprimeset, Function& Iteration, std::vector<Domain>& ROUNDdomains, std::vector<ElementContainer>& ROUNDresidues){
 
             ++m_primeiters[ omp_get_thread_num()];
+
+#pragma omp critical
             while(this->Builder_.noncoprime(*m_primeiters[ omp_get_thread_num()]) &&
                   coprimeset.find(*m_primeiters[omp_get_thread_num()])!=coprimeset.end())
                 ++m_primeiters[ omp_get_thread_num()];
             
             ROUNDdomains[ omp_get_thread_num()] = Domain(*m_primeiters[ omp_get_thread_num()]);
-//std::cout << " Thread("<<omp_get_thread_num()<<") >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "<<std::endl;
+//if(0!=omp_get_thread_num()) std::cout << " Thread("<<omp_get_thread_num()<<") >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "<<std::endl;
+
             Iteration(ROUNDresidues[ omp_get_thread_num()], ROUNDdomains[ omp_get_thread_num()]);
-//std::cout << " Thread("<<omp_get_thread_num()<<") <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< "<<std::endl;
+//if(0!=omp_get_thread_num()) std::cout << " Thread("<<omp_get_thread_num()<<") <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< "<<std::endl;
         }
         
         
@@ -293,7 +296,7 @@ namespace LinBox
         
 
 			while( ! this->Builder_.terminated() ) {
-#pragma omp parallel num_threads(NN/Tile) 
+#pragma omp parallel num_threads(NN/Tile)  
                 //for(auto j=0;j<NN/Tile;j++)
                 {
                     
@@ -301,7 +304,7 @@ namespace LinBox
                     {
                             // std::cout<<"Coucou thread_num = "<<omp_get_thread_num()<<std::endl;
                         for(auto i=0; i<Tile; ){
-#pragma omp critical                            
+                            
                             solve_with_prime(m_primeiters, coprimeset, Iteration, ROUNDdomains, ROUNDresidues);
                             
 #pragma omp critical
@@ -342,7 +345,7 @@ namespace LinBox
                         for(auto i=0; i<Tile; ){
                             // Avoid unnecessary computation so as to terminate as early as possible
                             if( this->Builder_.terminated() ) break;
-#pragma omp critical
+
                             solve_with_prime(m_primeiters, coprimeset, Iteration, ROUNDdomains, ROUNDresidues);
                             
 #pragma omp critical
