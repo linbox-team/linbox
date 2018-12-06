@@ -25,6 +25,7 @@
  * @example  examples/smithvalence.C
   \brief Valence of sparse matrix over Z or Zp.
   \ingroup examples
+  Warning; omp_smithvalence is more recent with better performance even sequentially
   */
 #include <linbox/linbox-config.h>
 
@@ -204,8 +205,6 @@ int main (int argc, char **argv)
 			else {
 				PRank(ranks, effexp, argv[1], sit->first, 2, coprimeR);
 			}
-			if (ranks.size() == 1) ranks.push_back(coprimeR);
-
             if (effexp < *eit) {
                 for(size_t expo = effexp<<1; ranks.back() < coprimeR; expo<<=1) {
                     PRankInteger(ranks, argv[1], sit->first, expo, coprimeR);
@@ -215,7 +214,8 @@ int main (int argc, char **argv)
                 for(size_t expo = (*eit)<<1; ranks.back() < coprimeR; expo<<=1) {
                     PRank(ranks, effexp, argv[1], sit->first, expo, coprimeR);
                     if (ranks.size() < expo) {
-                        std::cerr << "It seems we need a larger prime power, it will take longer ..." << std::endl;
+                        if (reporting)
+                            std::cerr << "It seems we need a larger prime power, it will take longer ..." << std::endl;
                             // break;
                         PRankInteger(ranks, argv[1], sit->first, expo, coprimeR);
                     }

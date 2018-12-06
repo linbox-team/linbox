@@ -125,18 +125,7 @@ std::cout << "Some factors (50000 factoring loop bound): ";
 	std::cout << "num procs: " << omp_get_num_procs() << std::endl;
 	std::cout << "max threads: " << omp_get_max_threads() << std::endl;
 
-// #pragma omp parallel for shared(smith, Moduli) 
-// 	for(size_t j=0; j<(Moduli.size()+1); ++j) {
-//         if (j >= Moduli.size()) {
-//             LRank(coprimeR, argv[1], coprimeV);
-//             std::cerr << "Integer Rank (mod " << coprimeV << ") is " << coprimeR << " on thread: " << omp_get_thread_num() << std::endl;
-//         } else {            
-//             unsigned long r; LRank(r, argv[1], Moduli[j]);
-//             std::cerr << "Rank mod " << Moduli[j] << " is " << r << " on thread: " << omp_get_thread_num() << std::endl;
-//             smith[j] = PairIntRk( Moduli[j], r);
-//         }
-// 	}
-#pragma omp parallel 
+#pragma omp parallel
     {
 #pragma omp single
         {
@@ -152,16 +141,6 @@ std::cout << "Some factors (50000 factoring loop bound): ";
  
 	std::vector<Givaro::Integer> SmithDiagonal(coprimeR,Givaro::Integer(1));
 
-        /*
-          for(std::vector<Givaro::Integer>::const_iterator mit=Moduli.begin();
-          mit != Moduli.end(); ++mit) {
-          unsigned long r; LRank(r, argv[1], *mit);
-          std::cerr << "Rank mod " << *mit << " is " << r << std::endl;
-          smith.push_back(PairIntRk(*mit, r));
-          for(size_t i=r; i < coprimeR; ++i)
-          SmithDiagonal[i] *= *mit;
-          }
-        */
 #pragma omp parallel for shared(SmithDiagonal, smith, exponents)
 	for(size_t j=0; j<Moduli.size(); ++j) {
         
@@ -170,20 +149,24 @@ std::cout << "Some factors (50000 factoring loop bound): ";
             ranks.push_back(smith[j].second);
             size_t effexp;
             if (exponents[j] > 1) {
+                    // See if a not too small, not too large exponent would work
+                    // Usually, closest to word size
                 if (smith[j].first == 2)
                     PRankPowerOfTwo(ranks, effexp, argv[1], exponents[j], coprimeR);
                 else
                     PRank(ranks, effexp, argv[1], smith[j].first, exponents[j], coprimeR);
-            }
-            else {
+            } else {
+                    // Square does not divide valence
+                    // Try first with the smallest possible exponent: 2
                 if (smith[j].first == 2)
                     PRankPowerOfTwo(ranks, effexp, argv[1], 2, coprimeR);
                 else
                     PRank(ranks, effexp, argv[1], smith[j].first, 2, coprimeR);
             }
-            if (ranks.size() == 1) ranks.push_back(coprimeR);
 
             if (effexp < exponents[j]) {
+                    // Above report shows that more powers are needed, 
+                    // try successive doublings Over abitrary precision
                 for(size_t expo = effexp<<1; ranks.back() < coprimeR; expo<<=1) {
                     if (smith[j].first == 2)
                         PRankIntegerPowerOfTwo(ranks, argv[1], expo, coprimeR);
@@ -191,14 +174,16 @@ std::cout << "Some factors (50000 factoring loop bound): ";
                         PRankInteger(ranks, argv[1], smith[j].first, expo, coprimeR);
                 }
             } else {
-
+                    // Larger exponents are needed
+                    // Try first small precision, then arbitrary
                 for(size_t expo = (exponents[j])<<1; ranks.back() < coprimeR; expo<<=1) {
                     if (smith[j].first == 2)
                         PRankPowerOfTwo(ranks, effexp, argv[1], expo, coprimeR);
                     else
                         PRank(ranks, effexp, argv[1], smith[j].first, expo, coprimeR);
                     if (ranks.size() < expo) {
-                        std::cerr << "It seems we need a larger prime power, it will take longer ..." << std::endl;
+                        if (reporting)
+                            std::cerr << "It seems we need a larger prime power, it will take longer ..." << std::endl;
                             // break;
                         if (smith[j].first == 2)
                             PRankIntegerPowerOfTwo(ranks, argv[1], expo, coprimeR);
@@ -215,12 +200,10 @@ std::cout << "Some factors (50000 factoring loop bound): ";
                 }
                 
                 std::vector<size_t>::const_iterator rit=ranks.begin();
-// 			unsigned long modrank = *rit;
                 for(++rit; rit!= ranks.end(); ++rit) {
                     if ((*rit)>= coprimeR) break;
                     for(size_t i=(*rit); i < coprimeR; ++i)
                         SmithDiagonal[i] *= smith[j].first;
-// 				modrank = *rit;
                 }
             }
         }
