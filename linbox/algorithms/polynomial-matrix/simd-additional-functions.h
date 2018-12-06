@@ -451,7 +451,7 @@ namespace LinBox {
 	template <class Simd>
 	INLINE Simd_vect reduce (const Simd_vect& a, const Simd_vect& p) {
 		Simd_vect t = Simd::greater(p,a);
-		return Simd::sub(a, Simd::vandnot(p,t));
+		return Simd::sub(a, Simd::vandnot(t,p));
 	}
 
 	template <class Element, class Simd>
@@ -495,12 +495,11 @@ namespace LinBox {
 	template <class Simd, IS_FLOATING>
 	INLINE Simd_vect mul_mod (const Simd_vect& x, const Simd_vect& y, const Simd_vect& p, const Simd_vect& u) {
 		// u = 1/p
-		// std::cout << "Inputs of mul_mod : a, b, p, q, c, t, c - t\n";
 		Simd_vect h = Simd::mul(x,y);
-		Simd_vect l = Simd::fmsub(x,y,h);
+		Simd_vect l = Simd::fmsub(h,x,y); // Beware of the order!
 		Simd_vect b = Simd::mul(h,u);
 		Simd_vect c = Simd::floor(b);
-		Simd_vect d = Simd::fnmadd(c,p,h);
+		Simd_vect d = Simd::fnmadd(h,c,p); // Beware of the order!
 		Simd_vect g = Simd::add(d,l);
 		Simd_vect t = Simd::sub(g,p);
 		g = Simd::blendv(t,g,t);

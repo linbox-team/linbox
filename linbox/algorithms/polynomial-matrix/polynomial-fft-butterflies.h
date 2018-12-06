@@ -610,6 +610,7 @@ namespace LinBox {
 		}
 
 		inline void Butterfly_DIF (Element* ABCD, Element* EFGH, const Element* alpha, const vect_t& P) {
+
 			vect_t V1,V2,V3,W,U,T;
 			// V1=[A B C D], V2=[E F G H]
 			V1 = MemoryOp<Element,simd>::load(ABCD);
@@ -634,6 +635,7 @@ namespace LinBox {
 
 			MemoryOp<Element,simd>::store(ABCD,V1);
 			MemoryOp<Element,simd>::store(EFGH,V2);
+
 		}
 
 		inline void Butterfly_DIF_laststeps(Element* ABCD, Element* EFGH, const vect_t& W, const vect_t& P) {
