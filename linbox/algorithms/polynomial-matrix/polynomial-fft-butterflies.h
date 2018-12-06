@@ -147,7 +147,7 @@ namespace LinBox {
 													const vect_t& P, const vect_t& P2) {
 			// First 2 steps
 			// First step
-			vect_t V1,V2,V3,V4,T1,T2,T3,T4;
+			vect_t V1,V2,V3,V4,T1,T2,T3; // T4
 			// T1=[A B C D], T2=[E F G H]
 			T1 = MemoryOp<Element,simd>::load(ABCD);
 			T2 = MemoryOp<Element,simd>::load(EFGH);
@@ -163,7 +163,8 @@ namespace LinBox {
 			T1 = simd::sub(V2,P);
 			V4 = simd::sub(V1,T1);
 
-			MemoryOp<Element,simd>::unpacklohi4(V1,V2,V3,V4);
+			//TODO: Useless?
+			//MemoryOp<Element,simd>::unpacklohi4(V1,V2,V3,V4);
 
 			// Second step
 			// T1 = [D D H H]
@@ -219,7 +220,7 @@ namespace LinBox {
 												  const vect_t& W,
 												  const vect_t& Wp,
 												  const vect_t& P, const vect_t& P2) {
-			vect_t V1,V2,V3,V4,V5,V6,V7;
+			vect_t V1,V2,V3,V4,V5,V6; // V7
 			// V1=[A B C D], V2=[E F G H]
 			V1 = MemoryOp<Element,simd>::load(ABCD);
 			V2 = MemoryOp<Element,simd>::load(EFGH);
@@ -516,6 +517,170 @@ namespace LinBox {
         }
 
     }; // FFT_butterflies<Field, 1, IS_FLOATING>
+
+	// ATTENTION à tous les uint64_t, SimdComp restants !!!!
+
+	template<typename Field, typename simd>
+	class FFT_butterflies<Field, simd, 4, IS_FLOATING> : public FFT_init<Field> {
+	public:
+
+		using Element = typename Field::Element;
+		using vect_t = typename simd::vect_t;
+		using SimdComp = typename SimdCompute_t<simd,Field>::Compute_t;
+
+		FFT_butterflies(const FFT_init<Field>& f_i) : FFT_init<Field>(f_i) {
+			linbox_check(simd::vect_size == 4);
+		}
+
+		// TODO include P, P2 in precomp
+		// TODO : Same functions Butterfly_DIT_mod4p Butterfly_DIF_mod2p in FFT_butterflies<Field, 8>
+		inline void Butterfly_DIT (Element* ABCD, Element* EFGH, const Element* alpha, const vect_t& P) {
+			vect_t V1,V2,V3,V4,W,U,T1;
+
+			// V1=[A B C D E F G H], V2=[I J K L M N O P]
+			V1 = MemoryOp<Element,simd>::load(ABCD);
+			V2 = MemoryOp<Element,simd>::load(EFGH);
+			W  = MemoryOp<Element,simd>::load(alpha);
+
+			//TODO : Precompute u = 1.0 / p  
+			Element one[4] = {1.0,1.0,1.0,1.0};
+			V3 = MemoryOp<Element,simd>::load(one);
+			U = simd::div(V3,P);
+
+			//Element tmp;
+            T1 = mul_mod<simd>(W, V2, P, U);
+            V2 = sub_mod<simd>(V1, T1, P);
+            V1 = add_mod<simd>(V1, T1, P);
+
+            // this->fld->mul(tmp, alpha, B);
+            // this->fld->sub(B, A, tmp);
+            // this->fld->addin(A, tmp);
+
+			MemoryOp<Element,simd>::store(ABCD,V1);
+			MemoryOp<Element,simd>::store(EFGH,V2);
+		}
+
+		inline void Butterfly_DIT_firststeps (Element* ABCD, Element* EFGH, const vect_t& W, const vect_t& P) {
+			// First 2 steps
+			// First step
+			vect_t V1,V2,V3,V4,T1,T2,T3,T4;
+			// T1=[A B C D], T2=[E F G H]
+			T1 = MemoryOp<Element,simd>::load(ABCD);
+			T2 = MemoryOp<Element,simd>::load(EFGH);
+
+			//TODO : Precompute u = 1.0 / p  
+			Element one[4] = {1.0,1.0,1.0,1.0};
+			V3 = MemoryOp<Element,simd>::load(one);
+			vect_t U = simd::div(V3,P);
+
+			// V1=[AECG], V2=[BFDH]
+			MemoryOp<Element,simd>::unpacklohi_twice4(V1,V2,T1,T2);
+
+			V3 = add_mod<simd>(V1,V2,P);
+			V4 = sub_mod<simd>(V1,V2,P);
+
+			//TODO: Useless?
+			// V1 = [ABEF], V2= [CDGH]
+			//MemoryOp<Element,simd>::unpacklohi4(V1,V2,V3,V4);
+
+			// Second step
+			//TODO : Instead do [CDGH] * [1 a 1 a] ?
+			// T1 = [D D H H]
+			T1 = MemoryOp<Element,simd>::unpackhi4(V4,V4);
+
+			T2 = mul_mod<simd>(T1, W, P, U);
+
+			T2 = simd::template shuffle<0xDD>(T2);
+
+			//At this point, T2 = [D*Wmodp H*Wmodp D*Wmodp H*Wmodp]
+
+			// At this time I have V3=[A E C G], V4=[B F ? ?], T2=[? ? D H]
+			// V1 = [A B E F], V2 = [C D G H]
+			V1 = MemoryOp<Element,simd>::unpacklo4(V3,V4);
+			V2 = MemoryOp<Element,simd>::unpackhi4(V3,T2);
+
+			T1 = add_mod<simd>(V1,V2,P);
+			T2 = sub_mod<simd>(V1,V2,P);
+
+			MemoryOp<Element,simd>::unpacklohi2(V1,V2,T1,T2);
+
+			// Store
+			MemoryOp<Element,simd>::store(ABCD,V1);
+			MemoryOp<Element,simd>::store(EFGH,V2);
+		}
+
+		inline void Butterfly_DIF (Element* ABCD, Element* EFGH, const Element* alpha, const vect_t& P) {
+			vect_t V1,V2,V3,V4,W,U,T;
+			// V1=[A B C D], V2=[E F G H]
+			V1 = MemoryOp<Element,simd>::load(ABCD);
+			V2 = MemoryOp<Element,simd>::load(EFGH);
+			W  = MemoryOp<Element,simd>::load(alpha);
+
+			//TODO : Precompute u = 1.0 / p  
+			Element one[4] = {1.0,1.0,1.0,1.0};
+			V3 = MemoryOp<Element,simd>::load(one);
+			U = simd::div(V3,P);
+
+			T = V1;
+			V1 = add_mod<simd>(V1, V2, P);
+			V2 = sub_mod<simd>(T, V2, P);
+			V2 = mul_mod<simd>(V2, W, P, U);
+
+            // Element tmp;
+            // this->fld->assign(tmp, A);
+            // this->fld->addin(A, B);
+            // this->fld->sub(B, tmp, B);
+            // this->fld->mulin(B, alpha);
+
+			MemoryOp<Element,simd>::store(ABCD,V1);
+			MemoryOp<Element,simd>::store(EFGH,V2);
+		}
+
+		inline void Butterfly_DIF_laststeps(Element* ABCD, Element* EFGH, const vect_t& W, const vect_t& P) {
+			vect_t V1,V2,V3,V4,V5,V6,V7;
+			// V1=[A B C D], V2=[E F G H]
+			V1 = MemoryOp<Element,simd>::load(ABCD);
+			V2 = MemoryOp<Element,simd>::load(EFGH);
+
+			//TODO : Precompute u = 1.0 / p  
+			Element one[4] = {1.0,1.0,1.0,1.0};
+			V3 = MemoryOp<Element,simd>::load(one);
+			vect_t U = simd::div(V3,P);
+
+			/* 1st step */
+			// V3=[A E B F], V4=[C G D H]
+			MemoryOp<Element,simd>::unpacklohi4(V3,V4,V1,V2);
+
+			V1 = add_mod<simd>(V3,V4,P);
+			V2 = sub_mod<simd>(V3,V4,P);
+
+			// V4 = [D D H H]
+			V4 = MemoryOp<Element,simd>::unpackhi4(V2,V2);
+
+			V3 = mul_mod<simd>(V4, W, P, U);
+
+			//At this point, V3 = [D*Wmodp H*Wmodp D*Wmodp H*Wmodp]
+			V3 = simd::template shuffle<0xDD>(V3);
+			//V3 = simd::template shuffle<0xDD>(V3); // 0xDD = [3 1 3 1]_base4
+
+			// At this time I have V1=[A E B F], V2=[C G ? ?], V3=[? ? D H]
+			// I need V3 = [A C E G], V4 = [B D F H]
+			V4 = MemoryOp<Element,simd>::unpackhi4(V1,V3);
+			V3 = MemoryOp<Element,simd>::unpacklo4(V1,V2);
+
+			/* 2nd step */
+			V1 = add_mod<simd>(V3,V4,P);
+			V2 = sub_mod<simd>(V3,V4,P);
+
+			// Result in V1 = [A C E G]  and V2 = [B D F H]
+			// Transform to V3=[A B C D], V4=[E F G H]
+			MemoryOp<Element,simd>::unpacklohi4(V3,V4,V1,V2);
+			// Store
+			MemoryOp<Element,simd>::store(ABCD,V3);
+			MemoryOp<Element,simd>::store(EFGH,V4);
+		}
+
+	}; // FFT_butterflies<Field, 4>
 
 }
 

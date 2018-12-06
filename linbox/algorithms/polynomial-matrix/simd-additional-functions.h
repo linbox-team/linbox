@@ -265,6 +265,15 @@ namespace LinBox {
 		/********************/
 		static INLINE simd_vect unpacklo2 (const simd_vect& a, const simd_vect& b) {return simd::unpacklo128(a, b); }
 
+		template<typename V = simd_vect, typename std::enable_if<std::is_same<V, __m256d>::value>::type* = nullptr>
+		static INLINE simd_vect unpacklo4 (const simd_vect& a, const simd_vect& b) {
+			using simd256_64 = Simd256<double>;
+			simd_vect a1 = simd256_64::template shuffle<0xD8>(a); // 0xD8 = 3120 base_4
+			simd_vect b1 = simd256_64::template shuffle<0xD8>(b);
+			return simd256_64::unpacklo_twice(a1,b1);
+		}
+
+		template<typename V = simd_vect, typename std::enable_if<std::is_same<V, __m256i>::value>::type* = nullptr>
 		static INLINE simd_vect unpacklo4 (const simd_vect& a, const simd_vect& b) {
 			using simd256_64 = Simd256<uint64_t>;
 			simd_vect a1 = simd256_64::template shuffle<0xD8>(a); // 0xD8 = 3120 base_4
@@ -293,6 +302,15 @@ namespace LinBox {
 		/********************/
 		static INLINE simd_vect unpackhi2 (const simd_vect& a, const simd_vect& b) {return simd::unpackhi128(a, b); }
 
+		template<typename V = simd_vect, typename std::enable_if<std::is_same<V, __m256d>::value>::type* = nullptr>
+		static INLINE simd_vect unpackhi4 (const simd_vect& a, const simd_vect& b) {
+			using simd256_64 = Simd256<double>;
+			simd_vect a1 = simd256_64::template shuffle<0xD8>(a); // 0xD8 = 3120 base_4
+			simd_vect b1 = simd256_64::template shuffle<0xD8>(b);
+			return simd256_64::unpackhi_twice(a1,b1);
+		}
+
+		template<typename V = simd_vect, typename std::enable_if<std::is_same<V, __m256i>::value>::type* = nullptr>
 		static INLINE simd_vect unpackhi4 (const simd_vect& a, const simd_vect& b) {
 			using simd256_64 = Simd256<uint64_t>;
 			simd_vect a1 = simd256_64::template shuffle<0xD8>(a); // 0xD8 = 3120 base_4
@@ -324,8 +342,18 @@ namespace LinBox {
 			s2 = simd::unpackhi128(a, b);
 		}
 
+		template<typename V = simd_vect, typename std::enable_if<std::is_same<V, __m256i>::value>::type* = nullptr>
 		static INLINE void unpacklohi4 (simd_vect& s1, simd_vect& s2, const simd_vect& a, const simd_vect& b) {
 			using simd256_64 = Simd256<uint64_t>;
+			simd_vect a1 = simd256_64::template shuffle<0xD8>(a); // 0xD8 = 3120 base_4
+			simd_vect b1 = simd256_64::template shuffle<0xD8>(b);
+			s1 = simd256_64::unpacklo_twice(a1, b1);
+			s2 = simd256_64::unpackhi_twice(a1, b1);
+		}
+
+		template<typename V = simd_vect, typename std::enable_if<std::is_same<V, __m256d>::value>::type* = nullptr>
+		static INLINE void unpacklohi4 (simd_vect& s1, simd_vect& s2, const simd_vect& a, const simd_vect& b) {
+			using simd256_64 = Simd256<double>;
 			simd_vect a1 = simd256_64::template shuffle<0xD8>(a); // 0xD8 = 3120 base_4
 			simd_vect b1 = simd256_64::template shuffle<0xD8>(b);
 			s1 = simd256_64::unpacklo_twice(a1, b1);
@@ -379,6 +407,14 @@ namespace LinBox {
 			unpacklohi2(s1, s2, a, b);
 		}
 
+		template<typename V = simd_vect, typename std::enable_if<std::is_same<V, __m256d>::value>::type* = nullptr>
+		static INLINE void unpacklohi_twice4 (simd_vect& s1, simd_vect& s2, const simd_vect& a, const simd_vect& b) {
+			using simd256_64 = Simd256<double>;
+			s1 = simd256_64::unpacklo_twice(a, b);
+			s2 = simd256_64::unpackhi_twice(a, b);
+		}
+
+		template<typename V = simd_vect, typename std::enable_if<std::is_same<V, __m256i>::value>::type* = nullptr>
 		static INLINE void unpacklohi_twice4 (simd_vect& s1, simd_vect& s2, const simd_vect& a, const simd_vect& b) {
 			using simd256_64 = Simd256<uint64_t>;
 			s1 = simd256_64::unpacklo_twice(a, b);
@@ -399,6 +435,13 @@ namespace LinBox {
 
 	};// MemoryOp<T, Simd256<T>>
 #endif
+
+
+#define IS_INTEGRAL \
+    typename std::enable_if<std::is_integral<typename Simd::scalar_t>::value>::type* = nullptr
+#define IS_FLOATING \
+    typename std::enable_if<std::is_floating_point<typename Simd::scalar_t>::value>::type* = nullptr
+
 
 #define Simd_vect typename Simd::vect_t
 
@@ -426,6 +469,13 @@ namespace LinBox {
 	}
 
 	template <class Simd>
+	INLINE Simd_vect sub_mod (const Simd_vect& a, const Simd_vect& b, const Simd_vect& p) {
+		Simd_vect c = Simd::sub(p,b);
+		c = Simd::add(a,c);
+		return reduce<Simd>(c, p);
+	}
+
+	template <class Simd, IS_INTEGRAL>
 	INLINE Simd_vect mul_mod (const Simd_vect& a, const Simd_vect& b, const Simd_vect& p, const Simd_vect& bp) {
 		//		std::cout << "Inputs of mul_mod : a, b, p, bp, q, c, t, c - t\n";
 		Simd_vect q = Simd::mulhi(a,bp);
@@ -440,6 +490,22 @@ namespace LinBox {
 		//		FFLAS::print<Simd>(std::cout, t); std::cout << "\n";
 		//		FFLAS::print<Simd>(std::cout, Simd::sub(c,t)); std::cout << "\n\n";
 		return Simd::sub(c,t);
+	}
+
+	template <class Simd, IS_FLOATING>
+	INLINE Simd_vect mul_mod (const Simd_vect& x, const Simd_vect& y, const Simd_vect& p, const Simd_vect& u) {
+		// u = 1/p
+		// std::cout << "Inputs of mul_mod : a, b, p, q, c, t, c - t\n";
+		Simd_vect h = Simd::mul(x,y);
+		Simd_vect l = Simd::fmsub(x,y,h);
+		Simd_vect b = Simd::mul(h,u);
+		Simd_vect c = Simd::floor(b);
+		Simd_vect d = Simd::fnmadd(c,p,h);
+		Simd_vect g = Simd::add(d,l);
+		Simd_vect t = Simd::sub(g,p);
+		g = Simd::blendv(t,g,t);
+		t = Simd::add(g,p);
+		return Simd::blendv(g,t,g);
 	}
 
 	/*
@@ -466,6 +532,10 @@ namespace LinBox {
 	}
 
 #undef Simd_vect
+
+
+#undef IS_INTEGRAL
+#undef IS_FLOATING
 
 }
 
