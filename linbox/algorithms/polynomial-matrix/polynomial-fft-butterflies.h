@@ -534,18 +534,13 @@ namespace LinBox {
 
 		// TODO include P, P2 in precomp
 		// TODO : Same functions Butterfly_DIT_mod4p Butterfly_DIF_mod2p in FFT_butterflies<Field, 8>
-		inline void Butterfly_DIT (Element* ABCD, Element* EFGH, const Element* alpha, const vect_t& P) {
-			vect_t V1,V2,V3,W,U,T1;
+		inline void Butterfly_DIT (Element* ABCD, Element* EFGH, const Element* alpha, const vect_t& P, const vect_t& U) {
+			vect_t V1,V2,W,T1;
 
 			// V1=[A B C D E F G H], V2=[I J K L M N O P]
 			V1 = MemoryOp<Element,simd>::load(ABCD);
 			V2 = MemoryOp<Element,simd>::load(EFGH);
 			W  = MemoryOp<Element,simd>::load(alpha);
-
-			//TODO : Precompute u = 1.0 / p  
-			Element one[4] = {1.0,1.0,1.0,1.0};
-			V3 = MemoryOp<Element,simd>::load(one);
-			U = simd::div(V3,P);
 
 			//Element tmp;
             T1 = mul_mod<simd>(W, V2, P, U);
@@ -560,18 +555,13 @@ namespace LinBox {
 			MemoryOp<Element,simd>::store(EFGH,V2);
 		}
 
-		inline void Butterfly_DIT_firststeps (Element* ABCD, Element* EFGH, const vect_t& W, const vect_t& P) {
+		inline void Butterfly_DIT_firststeps (Element* ABCD, Element* EFGH, const vect_t& W, const vect_t& P, const vect_t& U) {
 			// First 2 steps
 			// First step
 			vect_t V1,V2,V3,V4,T1,T2;
 			// T1=[A B C D], T2=[E F G H]
 			T1 = MemoryOp<Element,simd>::load(ABCD);
 			T2 = MemoryOp<Element,simd>::load(EFGH);
-
-			//TODO : Precompute u = 1.0 / p  
-			Element one[4] = {1.0,1.0,1.0,1.0};
-			V3 = MemoryOp<Element,simd>::load(one);
-			vect_t U = simd::div(V3,P);
 
 			// V1=[AECG], V2=[BFDH]
 			MemoryOp<Element,simd>::unpacklohi_twice4(V1,V2,T1,T2);
@@ -609,18 +599,13 @@ namespace LinBox {
 			MemoryOp<Element,simd>::store(EFGH,V2);
 		}
 
-		inline void Butterfly_DIF (Element* ABCD, Element* EFGH, const Element* alpha, const vect_t& P) {
+		inline void Butterfly_DIF (Element* ABCD, Element* EFGH, const Element* alpha, const vect_t& P, const vect_t& U) {
 
-			vect_t V1,V2,V3,W,U,T;
+			vect_t V1,V2,W,T;
 			// V1=[A B C D], V2=[E F G H]
 			V1 = MemoryOp<Element,simd>::load(ABCD);
 			V2 = MemoryOp<Element,simd>::load(EFGH);
 			W  = MemoryOp<Element,simd>::load(alpha);
-
-			//TODO : Precompute u = 1.0 / p  
-			Element one[4] = {1.0,1.0,1.0,1.0};
-			V3 = MemoryOp<Element,simd>::load(one);
-			U = simd::div(V3,P);
 
 			T = V1;
 			V1 = add_mod<simd>(V1, V2, P);
@@ -638,16 +623,11 @@ namespace LinBox {
 
 		}
 
-		inline void Butterfly_DIF_laststeps(Element* ABCD, Element* EFGH, const vect_t& W, const vect_t& P) {
+		inline void Butterfly_DIF_laststeps(Element* ABCD, Element* EFGH, const vect_t& W, const vect_t& P, const vect_t& U) {
 			vect_t V1,V2,V3,V4;
 			// V1=[A B C D], V2=[E F G H]
 			V1 = MemoryOp<Element,simd>::load(ABCD);
 			V2 = MemoryOp<Element,simd>::load(EFGH);
-
-			//TODO : Precompute u = 1.0 / p  
-			Element one[4] = {1.0,1.0,1.0,1.0};
-			V3 = MemoryOp<Element,simd>::load(one);
-			vect_t U = simd::div(V3,P);
 
 			/* 1st step */
 			// V3=[A E B F], V4=[C G D H]

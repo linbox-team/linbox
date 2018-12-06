@@ -443,11 +443,12 @@ namespace LinBox {
 
 		void DIF (Element *fft) {
 			const uint64_t& n = this->n;
-			const Residu_t& _pl = this->_pl;
+			const Compute_t& _pl = static_cast<Compute_t>(this->_pl);
 
 			vect_t P;
 			P  = simd::set1(_pl);
-			//TODO: Create U = 1/p here
+			Compute_t u = 1.0/_pl;
+			vect_t U = simd::set1(u);
 			Element * tab_w = &(this->pow_w) [0];
 			size_t w, f;
 			for (w = n >> 1, f = 1; w >= 4; tab_w+=w, w >>= 1, f <<= 1){
@@ -458,7 +459,7 @@ namespace LinBox {
 
 #define A0 &fft[0] +  (i << 1)   *w+ j
 #define A4 &fft[0] + ((i << 1)+1)*w+ j
-						this->Butterfly_DIF(A0,A4, tab_w+j,P);
+						this->Butterfly_DIF(A0,A4, tab_w+j,P,U);
 #undef A0
 #undef A4
 				//std::cout<<fft<<std::endl;
@@ -471,7 +472,7 @@ namespace LinBox {
 				for (size_t i = 0; i < f; i+=2)
 #define A0 &fft[0] +  (i << 2)
 #define A4 &fft[0] + ((i << 2)+4)
-					this->Butterfly_DIF_laststeps(A0,A4,W,P);
+					this->Butterfly_DIF_laststeps(A0,A4,W,P,U);
 				//std::cout<<fft<<std::endl;
 #undef A0
 #undef A4
@@ -487,17 +488,20 @@ namespace LinBox {
 
 		void DIT (Element *fft) {
 			const uint64_t& n = this->n;
-			const Residu_t& _pl = this->_pl;
+			const Compute_t& _pl = static_cast<Compute_t>(this->_pl);
 
 			vect_t P;
-			P = simd::set1(_pl);
+			P  = simd::set1(_pl);
+			Compute_t u = 1.0/_pl;
+			vect_t U = simd::set1(u);
+
 			// First two steps
 			if (n >= 8) {
 				vect_t W;
 				W = simd::set1 ((this->pow_w) [n-3]);
 
 				for (size_t i = 0; i < n; i+=8)
-					this->Butterfly_DIT_firststeps(&fft[i],&fft[i+4],W,P);
+					this->Butterfly_DIT_firststeps(&fft[i],&fft[i+4],W,P,U);
 
 				Element * tab_w = &(this->pow_w) [n-8];
 				for (size_t w = 4, f = n >> 3; f >= 1; w <<= 1, f >>= 1, tab_w-=w){
@@ -507,7 +511,7 @@ namespace LinBox {
 						for (size_t j = 0; j < w; j+=4)
 #define A0 &fft[0] +  (i << 1)   *w+ j
 #define A4 &fft[0] + ((i << 1)+1)*w+ j
-							this->Butterfly_DIT(A0,A4, tab_w+j,P);
+							this->Butterfly_DIT(A0,A4, tab_w+j,P,U);
 
 #undef A0
 #undef A4
