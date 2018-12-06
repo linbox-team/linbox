@@ -116,75 +116,43 @@ namespace LinBox { /*  signedness of integers */
 	 * @return \c true iff \c x>=0.
 	 */
 	//@{
-	template<class T>
-	inline bool isPositive( const T & x) {
-		return x>=0 ;
-	}
-	template<>
-	inline bool isPositive(const uint8_t &) {
-		return true ;
-	}
-	template<>
-	inline bool isPositive(const uint16_t &) {
-		return true ;
-	}
-	template<>
-	inline bool isPositive(const uint32_t &) {
-		return true ;
-	}
-#ifdef __APPLE__
-	template<>
-	inline bool isPositive(const unsigned long&) {
-		return true ;
-	}
-#endif
-	template<>
-	inline bool isPositive(const uint64_t &) {
-		return true ;
-	}
-	//@}
+    //
 
-	template<class U>
-	inline bool IsNegative(const U & p)
-	{
-		return (!isPositive<U>(p));
-	}
 
-	//! @todo or use integer_traits<T>::is_unsigned ??
-	template<>
-	inline bool IsNegative(const uint8_t & p)
+    template< class T>
+    inline typename std::enable_if<!std::is_unsigned<T>::value, bool>::value
+    isPositive (const T& t) {
+        return t >= 0;
+    }
+
+    template< class T>
+    inline typename std::enable_if<std::is_unsigned<T>::value, bool>::value
+    isPositive (const T& t) {
+        return true;
+    }
+
+    template<class T>
+    inline typename std::enable_if<!std::is_unsigned<T>::value, bool>::value
+    isNegative (const T& t) {
+        return (!isPositive<T>(t));
+    }
+
+    template<class T>
+    inline typename std::enable_if<std::is_unsigned<T>::value, bool>::value
+    isNegative (const T& t) {
+        return false;
+    }
+
+	template<typename IntType>
+	inline bool isOdd (const IntType& value)
 	{
-		return false;
+		return value & IntType(1);
 	}
 
-	template<>
-	inline bool IsNegative(const uint16_t & p)
+	template<typename IntType>
+	inline bool isEven (const IntType& p)
 	{
-		return false;
-	}
-
-	template<>
-	inline bool IsNegative(const uint32_t & p)
-	{
-		return false;
-	}
-
-	template<>
-	inline bool IsNegative(const uint64_t & p)
-	{
-		return false;
-	}
-
-	template<class T>
-	bool isOdd ( const T & p)
-	{
-		return Givaro::isOdd(p) ;
-	}
-
-	template<class T>
-	bool isEven ( const T & p)
-	{
-		return ! isOdd(p) ;
+		return !isOdd(p);
 	}
 
 }
