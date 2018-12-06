@@ -131,7 +131,7 @@ std::vector<size_t>& PRank(std::vector<size_t>& ranks, size_t& effective_exponen
 		typedef Givaro::Modular<int64_t> Ring;
 		int64_t lp(p);
 		Givaro::Integer q = pow(p,uint64_t(e)); int64_t lq(q);
-		if (q >Givaro::Integer(lq)) {
+		if (q > Ring::maxCardinality()) {
 			if (reporting)
 			std::cerr << "Power rank might need extra large composite (" << p << '^' << e << ")." << std::endl;
 			q = p;
@@ -140,6 +140,15 @@ std::vector<size_t>& PRank(std::vector<size_t>& ranks, size_t& effective_exponen
 			}
 			q/=p; --effective_exponent;
 			lq = (int64_t)q;
+            if (effective_exponent <= 1) {
+                    // Not able to use Modular<int64_t>, 
+                    // modulus is ok, but is already too large when squared
+                    // Return that no prime power was performed
+                if (reporting)
+                    std::cerr << "Exceeding int64_t ... power rank useless, nothing done." << std::endl;
+                effective_exponent=1;
+                return ranks;
+            }
 			if (reporting)
 			std::cerr << "First trying: " << lq << " (=" << p << '^' << effective_exponent << ", without further warning this will be sufficient)." << std::endl;
 		}
@@ -161,11 +170,12 @@ std::vector<size_t>& PRank(std::vector<size_t>& ranks, size_t& effective_exponen
 				std::cerr << *rit << ' ';
 			std::cerr << ' ' << tim <<  " on T" << THREADS << std::endl;
 		}
-	}
-	else {
-		std::cerr << "*** WARNING *** Sorry power rank mod large composite not yet implemented" << std::endl;
-		std::cerr << "*** WARNING *** Assuming integer rank, extra factors in the Smith form could be missing" << std::endl;
-		ranks.resize(0); ranks.push_back(intr);
+	} else {
+            // Not able to use Modular<int64_t>, modulus too large
+            // Return that no prime power was performed
+        if (reporting)
+            std::cerr << "Exceeding int64_t ... even for the prime, nothing done." << std::endl;
+        effective_exponent=1;
 	}
 	return ranks;
 }
