@@ -46,11 +46,16 @@ const bool reporting = false;
 #else 
 const bool reporting = true;
 #endif
+
 #ifdef NOT_USING_OMP
 #define THREADS 1
 #else
 #include <omp.h>
 #define THREADS omp_get_thread_num()
+#endif
+
+#ifndef __VALENCE_FACTOR_LOOPS__
+#define __VALENCE_FACTOR_LOOPS__ 50000
 #endif
 
 template<class Field>
@@ -344,6 +349,96 @@ std::vector<Givaro::Integer>& populateSmithForm(
     return SmithDiagonal;
 }
 
+template<class Blackbox>
+std::vector<Givaro::Integer>& smithValence(std::vector<Givaro::Integer>& SmithDiagonal, 
+                                           Givaro::Integer& valence,
+                                           const Blackbox& A,
+                                           const std::string& filename,
+                                           Givaro::Integer& coprimeV, 
+                                           size_t method=0) {
+        // method for valence squarization: 0 for automatic, 1 for aat, 2 for ata
+        // Blackbox provides the Integer matrix rereadable from filename
+        // if valence != 0, then the valence is not computed and the parameter is used
+        // if coprimeV != 0, then this value is supposed to be coprime with the valence
+
+    if (valence == 0) {
+        squarizeValence(valence, A, method);
+    }
+
+	std::clog << "Valence is " << valence << std::endl;
+
+	std::vector<Givaro::Integer> Moduli;
+	std::vector<size_t> exponents;
+
+    std::clog << "Some factors (" << __VALENCE_FACTOR_LOOPS__ << " factoring loop bound): ";
+	
+ 	Givaro::IntFactorDom<> FTD;
+    FTD.set(Moduli, exponents, valence, __VALENCE_FACTOR_LOOPS__);
+
+	auto eit=exponents.begin();
+	for(auto mit: Moduli) std::clog << mit << '^' << *eit << ' ';
+	std::clog << std::endl;
+
+	std::vector< PairIntRk > smith(Moduli.size());
+
+    if (coprimeV == 1) {
+        coprimeV=2;
+        while ( gcd(valence,coprimeV) > 1 ) {
+            FTD.nextprimein(coprimeV);
+        }
+    }
+
+	std::clog << "num procs: " << omp_get_num_procs() << std::endl;
+    PAR_BLOCK { 
+        std::clog << "cur threads: " << NUM_THREADS << std::endl;
+        std::clog << "max threads: " << MAX_THREADS << std::endl;
+    }
+
+    std::vector<std::vector<size_t> > AllRanks(Moduli.size());
+    size_t coprimeR;
+
+
+    PAR_BLOCK { 
+       SYNCH_GROUP(
+            for(size_t j=0; j<Moduli.size(); ++j) {
+                smith[j].first = Moduli[j];
+                { TASK(MODE(READ(smith[j].first) WRITE(smith[j].second) VALUE(j)),
+                {
+                    LRank(smith[j].second, filename.c_str(), smith[j].first);
+                })}
+            }
+        	{ TASK(MODE(READ(coprimeV) WRITE(coprimeR)),
+            {
+                LRank(coprimeR, filename.c_str(), coprimeV);
+            })}
+        )
+
+
+        SmithDiagonal.resize(coprimeR,Givaro::Integer(1));
+
+        SYNCH_GROUP(
+            for(size_t j=0; j<Moduli.size(); ++j) {
+                if (smith[j].second != coprimeR) {
+                    const PairIntRk& smithj(smith[j]);
+                    const size_t& exponentsj(exponents[j]);
+                    { TASK(MODE(CONSTREFERENCE(smithj, exponentsj, coprimeR) WRITE(AllRanks[j])),
+                    {
+                        AllPowersRanks(AllRanks[j], smithj, exponentsj, coprimeR, filename.c_str());
+                    })}
+                }
+            }
+        )
+    }
+    
+    for(size_t j=0; j<Moduli.size(); ++j) {
+        if (smith[j].second != coprimeR) {
+            populateSmithForm(SmithDiagonal, AllRanks[j], smith[j], coprimeR);
+        }
+    }
+
+
+    return SmithDiagonal;
+}
 
 std::ostream& compressedSmith(std::ostream& out, 
                               const std::vector<Givaro::Integer>& SmithDiagonal, 
