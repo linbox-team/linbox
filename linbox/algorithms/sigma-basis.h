@@ -771,7 +771,7 @@ namespace LinBox
 				throw PreconditionFailed (__func__, __LINE__, "Bad random Blocks, abort\n");
 			}
 
-			unsigned long early_stop=0;
+			size_t early_stop=0;
 			long NN;
 
 			for (NN = 0; (NN < (long)length) && (early_stop < 20) ; ++NN) {
@@ -994,7 +994,7 @@ namespace LinBox
 				throw PreconditionFailed (__func__, __LINE__, "Bad random Blocks, abort\n");
 			}
 
-			unsigned long early_stop=0;
+			size_t early_stop=0;
 			long NN;
 
 			for (NN = 0; (NN < (long)length) && (early_stop < 20) ; ++NN) {
@@ -2083,11 +2083,10 @@ namespace LinBox
 
 #endif //__LINBOX_sigma_basis_H
 
-
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

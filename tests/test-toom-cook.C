@@ -92,7 +92,7 @@ namespace LinBox { namespace Protected {
 			// linbox_check(A.getPointer() == _A_.getPointer());
 		}
 
-		ModularVector& operator()(ModularVector& Cp, const Field& F) const
+		IterationResult operator()(ModularVector& Cp, const Field& F) const
 		{
 			// BlasMatrixDomain<Field>   BMD(F);
 
@@ -136,7 +136,7 @@ namespace LinBox { namespace Protected {
 				Cp.write(cout<< "Cp:=", F, true) << ';' << endl;
 			}
 #endif
-			return Cp;
+                        return IterationResult::CONTINUE;
 		}
 
 
@@ -154,7 +154,6 @@ namespace LinBox { namespace BLAS2 {
 			  const BLAS3::mulMethod::CRA &)
 	{
 
-		size_t PrimeSize = 22; //! @todo pourqoi ?
 
 		integer mA, mB ;
 		mA = A.magnitude();
@@ -168,19 +167,19 @@ namespace LinBox { namespace BLAS2 {
 
 		{
 
-                        RandomPrimeIterator genprime( (unsigned int)PrimeSize );
-			ChineseRemainder< FullMultipBlasMatCRA< ModularField > > cra( std::pair<size_t,double>(C.size(), logC) );
-			Protected::IntegerSparseCraMatMul iteration(A,B);
+            PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<ModularField>::bestBitSize(A.coldim()));
+            ChineseRemainder< FullMultipBlasMatCRA< ModularField > > cra( std::pair<size_t,double>(C.size(), logC) );
+            Protected::IntegerSparseCraMatMul iteration(A,B);
 
-			cra(C, iteration, genprime);
+            cra(C, iteration, genprime);
 
 #ifdef _LB_DEBUG
 #ifdef _LB_MM_TIMING
 #endif
-
-			Integer mC;
-			mC = C.magnitude();
-			report << "C max: " << logtwo(mC) <<  " (" << LinBox::naturallog(mC) << ')' << std::endl;
+                    
+            Integer mC;
+            mC = C.magnitude();
+            report << "C max: " << logtwo(mC) <<  " (" << LinBox::naturallog(mC) << ')' << std::endl;
 #endif
 
 		}
@@ -407,3 +406,11 @@ int main(int ac, char ** av) {
 
 	return 0;
 }
+
+// Local Variables:
+// mode: C++
+// tab-width: 4
+// indent-tabs-mode: nil
+// c-basic-offset: 4
+// End:
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

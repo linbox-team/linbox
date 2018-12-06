@@ -34,11 +34,11 @@ namespace LinBox
 	template <class _Matrix> inline typename GaussDomain<_Field>::Element&
 	GaussDomain<_Field>::detin(Element        &determinant,
 				   _Matrix        &A,
-				   unsigned long  Ni,
-				   unsigned long  Nj,
+				   size_t  Ni,
+				   size_t  Nj,
 				   SparseEliminationTraits::PivotStrategy   reord)  const
 	{
-		unsigned long Rank;
+		size_t Rank;
 		if (reord == SparseEliminationTraits::PIVOT_NONE)
 			NoReordering(Rank, determinant, A,  Ni, Nj);
 		else
@@ -71,12 +71,12 @@ namespace LinBox
 	template <class _Matrix> inline typename GaussDomain<_Field>::Element&
 	GaussDomain<_Field>::det(Element       &determinant,
 				 const _Matrix  &A,
-				 unsigned long  Ni,
-				 unsigned long  Nj,
+				 size_t  Ni,
+				 size_t  Nj,
 				 SparseEliminationTraits::PivotStrategy   reord)  const
 	{
 		_Matrix CopyA(Ni);
-		for(unsigned long i = 0; i < Ni; ++i)
+		for(size_t i = 0; i < Ni; ++i)
 			CopyA[i] = A[i];
 		return detin(determinant, CopyA, Ni, Nj, reord);
 	}
@@ -84,11 +84,10 @@ namespace LinBox
 
 #endif // __LINBOX_gauss_det_INL
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

@@ -29,22 +29,40 @@
  \author bds & zw
 
  Various Smith form algorithms may be used for matrices over the
+<<<<<<< HEAD
  integers or over Z_m.  Moduli greater than 2^32 are not supported.
  Several types of example matrices may be constructed or matrix read from file.
  Run the program with no arguments for a synopsis of the
  command line parameters.
+=======
+ integers or over Z_m.  Moduli greater than 2^32 are not supported here.
+ Several types of example matrices may be constructed or the matrix be read from a file.
+ Run the program with no arguments for a synopsis of the command line parameters.
+>>>>>>> master
 
  For the "adaptive" method, the matrix must be over the integers.
  This is expected to work best for large matrices.
 
+<<<<<<< HEAD
  For the "2local" method, the computaattion is done mod 2^32.
+=======
+ For the "2local" method, the computation is done mod 2^32.
+>>>>>>> master
 
  For the "local" method, the modulus must be a prime power.
 
  For the "ilio" method, the modulus may be arbitrary composite.
+<<<<<<< HEAD
  If the modulus is a multiple of the integer determinant, the intege Smith form is obtained.  Determinant plus ilio may be best for smaller matrices.
 
  This example was used during the design process of the adaptive algorithm.
+=======
+ If the modulus is a multiple of the integer determinant, the integer Smith form is obtained.  
+ Determinant plus ilio may be best for smaller matrices.
+
+ This example was used during the design process of the adaptive algorithm.
+ The matrix example generation code that was here is now in mats.C.
+>>>>>>> master
 */
 
 #include <linbox/linbox-config.h>
@@ -58,58 +76,68 @@ using namespace std;
 
 
 #include <linbox/ring/modular.h>
-#include <linbox/matrix/sparse-matrix.h>
-#include <linbox/algorithms/smith-form-sparseelim-local.h>
 
 #include <linbox/util/timer.h>
 
 #include <linbox/ring/local2_32.h>
-#include <linbox/ring/pir-modular-int32.h>
+// place A: Edit here and at place B for ring change
+//#include <linbox/ring/pir-modular-int32.h>
+#include <linbox/ring/pir-ntl-zz_p.h>
 #include <linbox/algorithms/smith-form-local.h>
 #include <linbox/algorithms/smith-form-iliopoulos.h>
 #include <linbox/algorithms/smith-form-adaptive.h>
 
-using namespace LinBox;
+#include <linbox/algorithms/matrix-hom.h>
 
-// #ifndef BIG
-
-
+<<<<<<< HEAD
 template<class PIR>
 void Mat(DenseMatrix<PIR>& M, PIR& R, int n,
          string src, string file, string format);
+=======
+using namespace LinBox;
+>>>>>>> master
 
 template<class I1, class Lp> void distinct (I1 a, I1 b, Lp& c);
 template <class I> void display(I b, I e);
+template <class PIR> void Mat(DenseMatrix<PIR>& M, string src);
 
 int main(int argc, char* argv[])
 {
-	typedef PIRModular<int32_t> PIR;
+// place B: Edit here and at place A for ring change
+	//typedef PIRModular<int32_t> PIR;
+	typedef PIR_ntl_ZZ_p PIR;
 
-	if (argc < 5) {
+	if (argc < 3 or argc > 4) {
 
-		cout << "usage: " << argv[0] << " alg m n source format \n"  << endl;
+		cout << "\nUsage: " << argv[0] << " alg file [m]\n"  << endl;
 
+<<<<<<< HEAD
 		cout << "alg = `adaptive', `ilio', `local', or `2local', \n"
              << "m is modulus (ignored by 2local, adaptive), "
              << "n is matrix order, \n"
              << "source is `random', `random-rough', `fib', `tref', or a filename \n"
              << "format is `dense' or `sparse' (if matrix from a file)\n"
              << "compile with -DBIG if you want big integers used.\n";
+=======
+		cout << " alg = `adaptive', `ilio', `local', or `2local'," << endl
+			 << " Modulus m is needed for `local' and `ilio'" << endl 
+			 << " m must be a prime power for `local', arbitrary composite for `ilio'." << endl
+			 << " Integer smith form is obtained by `ilio' if m is a multiple of the " 
+			 << " largest invariant, eg. det." << endl
+             << " The matrix is read from file (from cin if file is `-').\n" << endl;
+		cout << " Regardless of file format, internal matrix rep is dense." << endl 
+			<< " For algoritms using sparse matrix rep, see the examples"
+			<< " smithvalence.C, power_rank.C, and poweroftwo_ranks.C." << endl;
+>>>>>>> master
 
 		return 0;
 	}
 
 	string algo = argv[1];
 
-	unsigned long m = atoi(argv[2]);
+	string src = argv[2];
 
-	int n = atoi(argv[3]);
-
-	string src = argv[4];
-
-	string file = src;
-
-	string format = (argc >= 6 ? argv[5] : "");
+	unsigned long m = 1; if (argc == 4) m = atoi(argv[3]);
 
 	UserTimer T;
 
@@ -119,12 +147,16 @@ int main(int argc, char* argv[])
 		Ints Z;
 		DenseMatrix<Ints> M(Z);
 
+<<<<<<< HEAD
 		std::ifstream input (file);
             //MatrixStream<Ints> ms(Z, input);
 		M.read(input);
             //Mat(M, Z, n, src, file, format);
+=======
+		Mat(M, src);
+>>>>>>> master
 
-		DenseVector<Givaro::ZRing<Integer> > v(Z,(size_t)n);
+		DenseVector<Givaro::ZRing<Integer> > v(Z,M.coldim());
 		T.start();
 		SmithFormAdaptive::smithForm(v, M);
 		T.stop();
@@ -132,13 +164,14 @@ int main(int argc, char* argv[])
 
 		distinct(v.begin(), v.end(), p);
 
-		cout << "#";
+		//cout << "#";
 
+		cout << "Integer Smith Form using adaptive alg :\n";
 		display(p.begin(), p.end());
 
-		cout << "# adaptive, Ints, n = " << n << endl;
+		//cout << "# adaptive, Ints, n = " << M.coldim() << endl;
 
-		cout << "T" << n << "adaptive" << m << " := ";
+		cout << "T" << M.coldim() << "adaptive(Ints)" << m << " := ";
 
 	}
 	else if (algo == "ilio") {
@@ -147,11 +180,14 @@ int main(int argc, char* argv[])
 
 		DenseMatrix<PIR> M(R);
 
-		Mat(M, R, n, src, file, format);
+		Mat(M, src);
 
 		T.start();
 
 		SmithFormIliopoulos::smithFormIn (M);
+		//PIR::Element d;
+		//IliopoulosDomain<PIR> ID(R);
+		//ID.smithFormIn (M,d);
 
 		T.stop();
 
@@ -166,17 +202,19 @@ int main(int argc, char* argv[])
 
 		distinct(L.begin(), L.end(), p);
 
-		cout << "#";
+		//cout << "#";
 
+		cout << "Modular Smith Form using ilio alg :\n";
 		display(p.begin(), p.end());
 
-		cout << "# ilio, PIR-Modular-int32_t(" << m << "), n = " << n << endl;
+		//cout << "# ilio, PIR-Modular-int32_t(" << m << "), n = " << M.coldim() << endl;
 
-		cout << "T" << n << "ilio" << m << " := ";
+		cout << "T" << M.coldim() << "ilio(PIR-Modular-int32_t)" << m << " := ";
 	}
 
 	else if (algo == "local") { // m must be a prime power
 
+<<<<<<< HEAD
 		if (format == "sparse" ) {
 			typedef Givaro::Modular<int32_t> Field;
 			Field F(m);
@@ -225,37 +263,45 @@ int main(int argc, char* argv[])
 
 		}
 		else {
+=======
+		PIR R( (int32_t)m);
+>>>>>>> master
 
-			PIR R( (int32_t)m);
+		DenseMatrix<PIR> M(R);
 
-			DenseMatrix<PIR> M(R);
+		Mat(M, src);
 
-			Mat(M, R, n, src, file, format);
+		typedef list< PIR::Element > List;
 
-			typedef list< PIR::Element > List;
+		List L;
 
-			List L;
+		SmithFormLocal<PIR> SmithForm;
 
-			SmithFormLocal<PIR> SmithForm;
+		T.start();
 
-			T.start();
+		SmithForm( L, M, R );
 
-			SmithForm( L, M, R );
+		T.stop();
 
-			T.stop();
+		list<pair<PIR::Element, size_t> > p;
 
-			list<pair<PIR::Element, size_t> > p;
+		distinct(L.begin(), L.end(), p);
 
-			distinct(L.begin(), L.end(), p);
+		//cout << "#";
 
-			cout << "#";
+		PIR::Element x = p.back().first, y;
+		R.neg(y,x);
+		R.gcdin(x,y);
+		if (not R.areEqual(p.back().first, x)) 
+			R.write(R.write (cerr << "x ", x) << ", back ", p.back().first) << endl;;
+		p.back().first = x;
 
-			display(p.begin(), p.end());
+		cout << "Local Smith Form :\n";
+		display(p.begin(), p.end());
 
-			cout << "# local, PIR-Modular-int32_t(" << m << "), n = " << n << endl;
+		//cout << "# local, PIR-Modular-int32_t(" << m << "), n = " << M.coldim() << endl;
 
-		}
-		cout << "T" << n << "local" << m << " := ";
+		cout << "T" << M.coldim() << "local(PIR-Modular-int32_t)" << m << " := ";
 	}
 
 	else if (algo == "2local") {
@@ -263,8 +309,7 @@ int main(int argc, char* argv[])
 		Local2_32 R;
 
 		DenseMatrix<Local2_32> M(R);
-
-		Mat(M, R, n, src, file, format);
+		Mat(M, src);
 
 		typedef list< Local2_32::Element > List;
 
@@ -282,27 +327,25 @@ int main(int argc, char* argv[])
 
 		distinct(L.begin(), L.end(), p);
 
-		cout << "#";
+		//cout << "#";
 
+		cout << "2-Local Smith Form :\n";
 		display(p.begin(), p.end());
 
-		cout << "# 2local, Local2_32, n = " << n << endl;
+		//cout << "# 2local, Local2_32, n = " << M.coldim() << endl;
 
-		cout << "T" << n << "local2_32 := ";
+		cout << "T" << M.coldim() << "local2_32 := ";
 	}
 
-	else {
+	else 
 
-		printf ("Unknown algorithms\n");
+		printf ("Unknown algorithm ");
 
-		exit (-1);
-
-	}
-
-	T.print(cout); cout << ";" << endl;
+	T.print(cout); cout << /*";" << */ endl;
 
 	return 0 ;
 }
+<<<<<<< HEAD
 
 template < class Ring >
 void scramble(DenseMatrix<Ring>& M)
@@ -520,22 +563,16 @@ num& qread(num& Val, pwrlist& M, istream& in)
 	{ int expt; in >> expt;
     return Val = M[expt];
 	};
+=======
+template <class PIR> void Mat(DenseMatrix<PIR>& M, string src) {
+	if (src[0]=='-') M.read(cin);
+	else {
+		ifstream in(src);
+		M.read(in);
+	}
+>>>>>>> master
 }
 
-template <class PIR>
-void KratMat(DenseMatrix<PIR>& M, PIR& R, int q, istream& in)
-{
-	pwrlist pwrs(q);
-	for (unsigned int i = 0; i < M.rowdim(); ++ i)
-
-		for ( unsigned int j = 0; j < M.coldim(); ++ j) {
-			int Val;
-			qread(Val, pwrs, in);
-			R. init (M[(size_t)i][(size_t)j], Val);
-		}
-}
-
-///// end krat ////////////////////////////
 //! @bug this already exists elsewhere
 template<class I1, class Lp>
 void distinct (I1 a, I1 b, Lp& c)
@@ -559,6 +596,7 @@ void distinct (I1 a, I1 b, Lp& c)
 template <class I>
 void display(I b, I e)
 { cout << "(";
+<<<<<<< HEAD
  for (I p = b; p != e; ++p) cout << p->first << " " << p->second << ", ";
  cout << ")" << endl;
 }
@@ -667,10 +705,17 @@ void Mat(DenseMatrix<PIR>& M, PIR& R, int n,
 //@}
 
 // vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+=======
+ for (I p = b; p != e; ++p) cout << "[" << p->first << "," << p->second << "] ";
+ cout << ")" << endl;
+}
+//@}
+
+>>>>>>> master
 // Local Variables:
 // mode: C++
 // tab-width: 4
 // indent-tabs-mode: nil
 // c-basic-offset: 4
 // End:
-
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

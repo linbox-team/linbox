@@ -47,7 +47,6 @@
 #include "linbox/util/timer.h"
 
 //#define RSTIMING
-#define DEFAULT_PRIMESIZE 20
 
 namespace LinBox
 {// LinBox
@@ -267,13 +266,14 @@ namespace LinBox
 		 * @param traits
 		 */
 		RationalSolver (const Ring& r = Ring(),
-				const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE),
+				const RandomPrime& rp = RandomPrime(),
 				const WiedemannTraits& traits=WiedemannTraits()) :
 			_ring(r), _genprime(rp), _traits(traits)
 		{
 
-			_genprime.template setBitsField<Field>();
-			++_genprime; _prime=*_genprime;
+            _genprime.setBits(FieldTraits<Field>::bestBitSize());
+            _prime=*_genprime;
+            ++_genprime; 
 #ifdef RSTIMING
 			clearTimers();
 #endif
@@ -286,10 +286,11 @@ namespace LinBox
 		 * @param traits
 		 */
 		RationalSolver (const Prime& p, const Ring& r = Ring(),
-				const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE),
+				const RandomPrime& rp = RandomPrime(),
 				const WiedemannTraits& traits=WiedemannTraits()) :
 			_ring(r), _genprime(rp), _prime(p), _traits(traits)
 		{
+            _genprime.setBits(FieldTraits<Field>::bestBitSize());
 
 #ifdef RSTIMING
 			clearTimers();
@@ -388,8 +389,8 @@ namespace LinBox
 #endif
 
 		void chooseNewPrime() const {
-			_genprime.template setBitsField<Field>();
-			++_genprime; _prime = *_genprime;
+            _prime = *_genprime;
+            ++_genprime;
 		}
 
 	}; // end of specialization for the class RationalSover with Wiedemann traits
@@ -475,13 +476,14 @@ namespace LinBox
 		 * @param traits
 		 */
 		RationalSolver (const Ring& r = Ring(),
-				const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE),
+				const RandomPrime& rp = RandomPrime(),
 				const BlockWiedemannTraits& traits=BlockWiedemannTraits()) :
 			_ring(r), _genprime(rp), _traits(traits)
 		{
 
-			_genprime.template setBitsField<Field>();
-			++_genprime; _prime=*_genprime;
+            _genprime.setBits(FieldTraits<Field>::bestBitSize());
+			_prime=*_genprime;
+            ++_genprime; 
 #ifdef RSTIMING
 			clearTimers();
 #endif
@@ -494,11 +496,11 @@ namespace LinBox
 		 * @param traits
 		 */
 		RationalSolver (const Prime& p, const Ring& r = Ring(),
-				const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE),
+				const RandomPrime& rp = RandomPrime(),
 				const BlockWiedemannTraits& traits=BlockWiedemannTraits()) :
 			_ring(r), _genprime(rp), _prime(p), _traits(traits)
 		{
-
+            _genprime.setBits(FieldTraits<Field>::bestBitSize());
 #ifdef RSTIMING
 			clearTimers();
 #endif
@@ -670,11 +672,11 @@ namespace LinBox
 		 * @param rp  a RandomPrime generator, set by default
 		 */
 		RationalSolver (const Ring& r = Ring(),
-				const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) :
+				const RandomPrime& rp = RandomPrime()) :
 			lastCertificate(r, 0), _genprime(rp), _ring(r)
 		{
-			_genprime.template setBitsField<Field>();
-			++_genprime; _prime=*_genprime;
+            _genprime.setBits(FieldTraits<Field>::bestBitSize());
+            _prime=*_genprime; ++_genprime; 
 #ifdef RSTIMING
 			clearTimers();
 #endif
@@ -687,9 +689,10 @@ namespace LinBox
 		 * @param rp a RandomPrime generator, set by default
 		 */
 		RationalSolver (const Prime& p, const Ring& r = Ring(),
-				const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) :
+				const RandomPrime& rp = RandomPrime()) :
 			lastCertificate(r, 0), _genprime(rp), _prime(p), _ring(r)
 		{
+            _genprime.setBits(FieldTraits<Field>::bestBitSize());
 #ifdef RSTIMING
 			clearTimers();
 #endif
@@ -818,8 +821,7 @@ namespace LinBox
 
 		void chooseNewPrime() const
 		{
-			_genprime.template setBitsField<Field>();
-			++_genprime;
+            ++_genprime;
 			_prime = *_genprime;
 		}
 
@@ -957,11 +959,12 @@ namespace LinBox
 		 * @param rp  a RandomPrime generator, set by default
 		 */
 		RationalSolver (const Ring& r = Ring(),
-				const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) :
+                        const RandomPrime& rp = RandomPrime()) :
 			_genprime(rp), _ring(r)
 		{
-			_genprime.template setBitsField<Field>();
-			_prime=_genprime.randomPrime();
+			_genprime.setBits(FieldTraits<Field>::bestBitSize());
+			_prime=*_genprime;
+            ++_genprime;
 		}
 
 
@@ -971,9 +974,11 @@ namespace LinBox
 		 * @param rp  a RandomPrime generator, set by default
 		 */
 		RationalSolver (const Prime& p, const Ring& r = Ring(),
-				const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) :
+				const RandomPrime& rp = RandomPrime()) :
 			_genprime(rp), _prime(p), _ring(r)
-		{}
+		{
+			_genprime.setBits(FieldTraits<Field>::bestBitSize());
+        }
 
 
 		// solve non singular system
@@ -1013,11 +1018,12 @@ namespace LinBox
 		 * @param rp  a RandomPrime generator, set by default
 		 */
 		RationalSolver (const Ring& r = Ring(),
-				const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) :
+				const RandomPrime& rp = RandomPrime()) :
 			_genprime(rp), _ring(r)
 		{
-			_genprime.template setBitsField<Field>();
-			_prime=_genprime.randomPrime();
+            _genprime.setBits(FieldTraits<Field>::bestBitSize());
+			_prime=*_genprime;
+            ++_genprime;
 		}
 
 
@@ -1027,16 +1033,16 @@ namespace LinBox
 		 * @param rp  a RandomPrime generator, set by default
 		 */
 		RationalSolver (const Prime& p, const Ring& r = Ring(),
-				const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) :
+				const RandomPrime& rp = RandomPrime()) :
 			_genprime(rp), _prime(p), _ring(r)
 		{}
 
 
 		// solve non singular system
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus solveNonsingular(Vector1& num, Integer& den,
-						    const IMatrix& A, const Vector2& b,
-						    int maxPrimes = DEFAULT_MAXPRIMES) const;
+		SolverReturnStatus solve(Vector1& num, Integer& den,
+                                 const IMatrix& A, const Vector2& b,
+                                 int maxPrimes = DEFAULT_MAXPRIMES) const;
 	};
 
 }
@@ -1046,12 +1052,10 @@ namespace LinBox
 
 #endif //__LINBOX_rational_solver_H
 
-
-
 // Local Variables:
 // mode: C++
 // tab-width: 4
 // indent-tabs-mode: nil
 // c-basic-offset: 4
 // End:
-// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

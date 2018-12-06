@@ -108,7 +108,7 @@ namespace LinBox
 		{}
 
 		template<class Field>
-		BlasVector<Field>&
+		IterationResult
 		operator () (BlasVector<Field>& dd,
 			     const Field& F) const
 		{
@@ -132,7 +132,7 @@ namespace LinBox
 			F.divin (dd[1], s2p);
 			//tim.stop();
 			//std::cerr<<"doubleDetModp took "<<tim.usertime()<<std::endl;
-			return dd;
+			return IterationResult::CONTINUE;
 		}
 	};
 
@@ -240,7 +240,8 @@ namespace LinBox
 		typename BlackBox::Field F = A.field();
 		IntegerDoubleDetIteration<BlackBox> iteration(A, s1, s2);
 		// 0.7213475205 is an upper approximation of 1/(2log(2))
-		RandomPrimeIterator genprime( (unsigned int)(25-(int)ceil(log((double)A.rowdim())*0.7213475205)));
+                typedef Givaro::ModularBalanced<double> Field;
+                PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
 
 		BlasVector<typename BlackBox::Field> dd(A.field());
 		if (proof) {
@@ -264,7 +265,7 @@ namespace LinBox
 
 		}
 		else {
-			ChineseRemainder <EarlyMultipCRA <Givaro::Modular<double> > > cra(4UL);
+			ChineseRemainder <EarlyMultipCRA <Field> >  cra(4UL);
 			cra (dd, iteration, genprime);
 		}
 		F.mul (d1, dd[0], s1);
@@ -329,11 +330,10 @@ namespace LinBox
 
 #endif // __LINBOX_doubledet_H
 
-
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

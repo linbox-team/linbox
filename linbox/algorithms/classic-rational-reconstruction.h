@@ -263,7 +263,7 @@ namespace LinBox
 				Element T = (uint32_t) m.bitsize();
 				int c = 5;	//should be changed here to enhance probability of correctness
 
-				while((a>0) && (r0.bitsize() > T.bitsize() + (unsigned long)c))
+				while((a>0) && (r0.bitsize() > T.bitsize() + (size_t)c))
 				{
 					q = r0;
 					_intRing.divin(q,a);        // r0/num
@@ -272,7 +272,7 @@ namespace LinBox
 						amax = a;
 						bmax = b;
 						qmax = q;
-						if (qmax.bitsize() > T.bitsize() + (unsigned long)c) break;
+						if (qmax.bitsize() > T.bitsize() + (size_t)c) break;
 					}
 
 					u = a;
@@ -307,7 +307,7 @@ namespace LinBox
 				//Element T = m.bitsize();
 				//int c = 20;
 				//T=0;c=0;
-				if (qmax.bitsize() > T.bitsize() + (unsigned long)c) {
+				if (qmax.bitsize() > T.bitsize() + (size_t)c) {
 					return true;
 				}
 				else return false;
@@ -322,8 +322,8 @@ namespace LinBox
 
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

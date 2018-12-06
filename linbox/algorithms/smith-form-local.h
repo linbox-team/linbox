@@ -116,7 +116,8 @@ namespace LinBox
                     }
                 }
 
-                BlasMatrix<LocalPID> Ap(A, 1, 1, A.rowdim() - 1, A.coldim() - 1);
+				// submatrix!
+                BlasSubmatrix<BlasMatrix<LocalPID> > Ap(A, 1, 1, A.rowdim() - 1, A.coldim() - 1);
                 L.push_back(d);
                 return smithStep(L, d, Ap, R);
             } else {
@@ -124,6 +125,8 @@ namespace LinBox
                 for (p_it = A.Begin(); p_it != A.End(); ++p_it) {
                     R.divin(*p_it, g);
                 }
+				typename LocalPID::Element x; R.neg(x, g);
+				R.gcdin(g,x);
                 return smithStep(L, R.mulin(d, g), A, R);
             }
         }
@@ -133,11 +136,10 @@ namespace LinBox
 #include "linbox/algorithms/smith-form-local2.inl"
 #endif // __LINBOX_smith_form_local_H
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

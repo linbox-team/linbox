@@ -40,7 +40,6 @@
 #include <linbox/solutions/methods.h>
 
 using namespace LinBox;
-using namespace std;
 
 int main (int argc, char **argv)
 {
@@ -51,13 +50,13 @@ int main (int argc, char **argv)
 
 
 	if (argc < 2 || argc > 4) {
-		cerr << "Usage: solve <matrix-file-in-supported-format> [<dense-vector-file>] [<p>]" << endl;
+		std::cerr << "Usage: solve <matrix-file-in-supported-format> [<dense-vector-file>] [<p>]" << std::endl;
 		return 0;
 	}
 	srand48( BaseTimer::seed() );
 
 	std::ifstream input (argv[1]);
-	if (!input) { cerr << "Error opening matrix file " << argv[1] << endl; return -1; }
+	if (!input) { std::cerr << "Error opening matrix file " << argv[1] << std::endl; return -1; }
 	std::ifstream invect;
 
 	bool createB = false;
@@ -91,21 +90,21 @@ int main (int argc, char **argv)
 
 
 	if (ModComp) {
-                cout<<"Computation is done over Z/("<<atoi(argv[ModComp])<<")"<<endl;
+        std::cout<<"Computation is done over Z/("<<atoi(argv[ModComp])<<")"<<std::endl;
 		typedef Givaro::Modular<double> Field;
 		double q = atof(argv[ModComp]);
 		typedef DenseVector<Field> DenseVector ;
 		Field F(q);
 		MatrixStream< Field > ms ( F, input );
 		SparseMatrix<Field> A (ms);  // A.write(std::cout);
-		cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
-                if (A.rowdim() <= 20 && A.coldim() <= 20) A.write(std::cerr << "A:=",Tag::FileFormat::Maple) << ';' << std::endl;
+		std::cout << "A is " << A.rowdim() << " by " << A.coldim() << std::endl;
+        if (A.rowdim() <= 20 && A.coldim() <= 20) A.write(std::cerr << "A:=",Tag::FileFormat::Maple) << ';' << std::endl;
 		DenseVector X(F, A.coldim()),B(F, A.rowdim());
 		if (createB) {
-			cerr << "Creating a random {-1,1} vector U, B is AU (to have a consistent system)" << endl;
+			std::cerr << "Creating a random {-1,1} vector U, B is AU (to have a consistent system)" << std::endl;
 			DenseVector U(F, A.coldim() );
 			for(DenseVector::iterator it=U.begin();
-			    it != U.end(); ++it)
+                it != U.end(); ++it)
 				if (drand48() <0.5)
 					F.assign(*it,F.mOne);
 				else
@@ -114,11 +113,11 @@ int main (int argc, char **argv)
 		}
 		else {
 			for(DenseVector::iterator it=B.begin();
-			    it != B.end(); ++it)
+                it != B.end(); ++it)
 				F.read(invect,*it);
 		}
 
-		//         A.write(std::cout << "A: ") << std::endl;
+		// A.write(std::cout << "A: ") << std::endl;
 
 		std::cout << "B is " << B << std::endl;
 
@@ -134,7 +133,7 @@ int main (int argc, char **argv)
 
 		std::cout << "(Sparse Gauss) Solution is [";
 		for(DenseVector::const_iterator it=X.begin();it != X.end(); ++it)
-			F.write(cout, *it) << " ";
+			F.write(std::cout, *it) << " ";
 		std::cout << "]" << std::endl;
 		std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl<<std::endl;;
 
@@ -146,7 +145,7 @@ int main (int argc, char **argv)
 
 		std::cout << "(BlasElimination) Solution is [";
 		for(DenseVector::const_iterator it=X.begin();it != X.end(); ++it)
-			F.write(cout, *it) << " ";
+			F.write(std::cout, *it) << " ";
 		std::cout << "]" << std::endl;
 		std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl<< std::endl;
 
@@ -159,7 +158,7 @@ int main (int argc, char **argv)
 
 		std::cout << "(Wiedemann) Solution is [";
 		for(DenseVector::const_iterator it=X.begin();it != X.end(); ++it)
-			F.write(cout, *it) << " ";
+			F.write(std::cout, *it) << " ";
 		std::cout << "]" << std::endl;
 		std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl<<std::endl;;
 #if 0
@@ -172,7 +171,7 @@ int main (int argc, char **argv)
 
 		std::cout << "(Lanczos) Solution is [";
 		for(DenseVector::const_iterator it=X.begin();it != X.end(); ++it)
-			F.write(cout, *it) << " ";
+			F.write(std::cout, *it) << " ";
 		std::cout << "]" << std::endl;
 		std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl<< std::endl;
 
@@ -188,14 +187,14 @@ int main (int argc, char **argv)
 
 		std::cout << "(Block Lanczos) Solution is [";
 		for(DenseVector::const_iterator it=X.begin();it != X.end(); ++it)
-			F.write(cout, *it) << " ";
+			F.write(std::cout, *it) << " ";
 		std::cout << "]" << std::endl;
 		std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl<< std::endl;
 #endif
 
 	}
 	else {
-                cout<<"Computation is done over Q"<<endl;
+		std::cout<<"Computation is done over Q"<<std::endl;
 		Givaro::ZRing<Integer> ZZ;
 		typedef DenseVector<Givaro::ZRing<Integer> > DenseVector ;
 		MatrixStream< Givaro::ZRing<Integer> > ms( ZZ, input );
@@ -206,7 +205,7 @@ int main (int argc, char **argv)
 		DenseVector X(ZZ, A.coldim()),B(ZZ, A.rowdim());
 
 		if (createB) {
-			cerr << "Creating a random {-1,1} vector U, B is AU" << endl;
+			std::cerr << "Creating a random {-1,1} vector U, B is AU" << std::endl;
 			DenseVector U(ZZ, A.coldim() );
 			for(DenseVector::iterator it=U.begin();
 			    it != U.end(); ++it)
@@ -222,24 +221,21 @@ int main (int argc, char **argv)
 				invect >> *it;
 		}
 
-
 		std::cout << "B is " << B << std::endl;
 
-
 		Timer chrono;
-
 		// BlasElimination
-                std::cout << "BlasElimination" << std::endl;
-                chrono.start();
-                solve (X, d, A, B, Method::BlasElimination());
-                chrono.stop();
+        std::cout << "BlasElimination" << std::endl;
+        chrono.start();
+        solve (X, d, A, B, Method::BlasElimination());
+        chrono.stop();
 
  		std::cout << "(BlasElimination) Solution is [";
-                for(DenseVector::const_iterator it=X.begin();it != X.end(); ++it)
- 			ZZ.write(cout, *it) << " ";
-                std::cout << "] / ";
-                ZZ.write(std::cout, d)<< std::endl;
-                std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
+        for(DenseVector::const_iterator it=X.begin();it != X.end(); ++it)
+ 		ZZ.write(std::cout, *it) << " ";
+        std::cout << "] / ";
+        ZZ.write(std::cout, d)<< std::endl;
+        std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
 
 		// Sparse Elimination
 		std::cout << "Sparse Elimination" << std::endl;
@@ -249,7 +245,7 @@ int main (int argc, char **argv)
 
 		std::cout << "(SparseElimination) Solution is [";
 		for(DenseVector::const_iterator it=X.begin();it != X.end(); ++it)
-			ZZ.write(cout, *it) << " ";
+			ZZ.write(std::cout, *it) << " ";
 		std::cout << "] / ";
 		ZZ.write(std::cout, d)<< std::endl;
 		std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
@@ -262,13 +258,13 @@ int main (int argc, char **argv)
 
 		std::cout << "(Wiedemann) Solution is [";
 		for(DenseVector::const_iterator it=X.begin();it != X.end(); ++it)
-			ZZ.write(cout, *it) << " ";
+			ZZ.write(std::cout, *it) << " ";
 		std::cout << "] / ";
 		ZZ.write(std::cout, d) << std::endl;
 		std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
 
 
-                
+
 #if 0
 		// Lanczos
 		std::cout << "Lanczos" << std::endl;
@@ -278,7 +274,7 @@ int main (int argc, char **argv)
 
 		std::cout << "(Lanczos) Solution is [";
 		for(DenseVector::const_iterator it=X.begin();it != X.end(); ++it)
-			ZZ.write(cout, *it) << " ";
+			ZZ.write(std::cout, *it) << " ";
 		std::cout << "] / ";
 		ZZ.write(std::cout, d) << std::endl;
 		std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
@@ -293,7 +289,7 @@ int main (int argc, char **argv)
 
 		std::cout << "(Block Lanczos) Solution is [";
 		for(DenseVector::const_iterator it=X.begin();it != X.end(); ++it)
-			ZZ.write(cout, *it) << " ";
+			ZZ.write(std::cout, *it) << " ";
 		std::cout << "] / ";
 		ZZ.write(std::cout, d) << std::endl;
 		std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
@@ -305,8 +301,8 @@ int main (int argc, char **argv)
 
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

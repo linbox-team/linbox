@@ -76,7 +76,7 @@ namespace LinBox
 				fieldP(NULL),intP(NULL)
 				,multiplicity(0),dep(NULL)
 			{}
-			FactorMult( FieldPoly* FP, IntPoly* IP, unsigned long m, FactorMult<FieldPoly,IntPoly>*d) :
+			FactorMult( FieldPoly* FP, IntPoly* IP, size_t m, FactorMult<FieldPoly,IntPoly>*d) :
 				fieldP(FP), intP(IP), multiplicity(m), dep(d)
 			{}
 
@@ -116,7 +116,7 @@ namespace LinBox
 
 			FieldPoly                       *fieldP;
 			IntPoly                         *intP;
-			unsigned long                   multiplicity;
+			size_t                   multiplicity;
 			FactorMult<FieldPoly, IntPoly>  *dep;
 
 			std::ostream& write(std::ostream& os)
@@ -163,7 +163,7 @@ namespace LinBox
 			typedef typename PolynomialRing<Field,Givaro::Dense>::Element FieldPoly;
 			// Set of factors-multiplicities sorted by degree
 			typedef FactorMult<FieldPoly,IntPoly> FM;
-			typedef std::multimap<unsigned long,FM*> FactPoly;
+			typedef std::multimap<size_t,FM*> FactPoly;
 			typedef typename FactPoly::iterator FactPolyIterator;
 			std::multimap<FM*,bool> leadingBlocks;
 			//typename std::multimap<FM*,bool>::iterator lead_it;
@@ -186,11 +186,11 @@ namespace LinBox
 			size_t factnum = intFactors.size();
 
 			/* Choose a modular prime field */
-			RandomPrimeIterator primeg (28);
-			++primeg;
+			PrimeIterator<IteratorCategories::HeuristicTag> primeg (FieldTraits<Field>::bestBitSize(n));
 			Field F(*primeg);
+			++primeg;
 
-			/* Building the structure of factors */
+                        /* Building the structure of factors */
 			int goal =(int) n;
 
 			for (size_t i = 0; i < intFactors.size(); ++i) {
@@ -263,7 +263,7 @@ namespace LinBox
 			typedef PolynomialRing<Field, Givaro::Dense> PolyDom;
 			typedef typename PolyDom::Element FieldPoly;
 			// Set of factors-multiplicities sorted by degree
-			typedef std::multimap<unsigned long,FactorMult<FieldPoly>* > FactPoly;
+			typedef std::multimap<size_t,FactorMult<FieldPoly>* > FactPoly;
 			typedef typename FactPoly::iterator FactPolyIterator;
 			std::multimap<FactorMult<FieldPoly>*,bool> leadingBlocks;
 			//typename std::multimap<FactorMult<Polynomial>*,bool>::iterator lead_it;
@@ -367,12 +367,12 @@ namespace LinBox
 
 		template <class BlackBox, class FieldPoly, class IntPoly>
 		static void findMultiplicities( const BlackBox& A,
-					 std::multimap<unsigned long, FactorMult<FieldPoly,IntPoly>* >& factCharPoly,
+					 std::multimap<size_t, FactorMult<FieldPoly,IntPoly>* >& factCharPoly,
 					 std::multimap<FactorMult<FieldPoly,IntPoly>*,bool>& leadingBlocks,
 					 int goal,
 					 const Method::Blackbox &M)
 		{
-			typedef std::multimap<unsigned long, FactorMult<FieldPoly,IntPoly>* > FactPoly;
+			typedef std::multimap<size_t, FactorMult<FieldPoly,IntPoly>* > FactPoly;
 			typedef typename BlackBox::Field Field;
 			typedef PolynomialRing<Field, Givaro::Dense> PolyDom;
 			typename FactPoly::iterator itf = factCharPoly.begin();
@@ -544,11 +544,10 @@ namespace LinBox
 #undef _LB_MAXITER
 #endif // __BBCHARPOLY_H
 
-
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

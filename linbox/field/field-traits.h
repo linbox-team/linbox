@@ -28,6 +28,8 @@
 #include <givaro/givrational.h>
 #include <givaro/zring.h>
 #include <givaro/modular.h>
+#include <givaro/modular-balanced.h>
+#include <givaro/gfq.h>
 
 // Namespace in which all LinBox library code resides
 namespace LinBox {
@@ -69,16 +71,41 @@ namespace LinBox {
         struct ClassifyRing<Givaro::QField<Givaro::Rational>> {
                 typedef RingCategories::RationalTag categoryTag;
         };
-        template<>
-        struct ClassifyRing<Givaro::ZRing<Givaro::Integer>> {
-                typedef RingCategories::IntegerTag categoryTag;
-        };
+        template<class Element>
+        struct ClassifyRing<Givaro::ZRing<Element>> {
+                 typedef RingCategories::IntegerTag categoryTag;
+         };
         template<>
         struct ClassifyRing<Givaro::IntegerDom> {
                 typedef RingCategories::IntegerTag categoryTag;
         };
-  
 
+	using Givaro::Caster;
+
+	template <class Ring>
+	struct ClassifyRing;
+
+	template <class Element, class Compute>
+	struct ClassifyRing<Givaro::Modular<Element,Compute> const>
+	{
+		typedef RingCategories::ModularTag categoryTag;
+	};
+
+	template <class Element, class Compute>
+	struct ClassifyRing<Givaro::Modular<Element,Compute>>
+	{
+		typedef RingCategories::ModularTag categoryTag;
+	};
+
+        template<class Element>
+        struct ClassifyRing<Givaro::ModularBalanced<Element> > {
+                typedef RingCategories::ModularTag categoryTag;
+        };
+
+        template<typename XXX>
+        struct ClassifyRing<Givaro::GFqDom<XXX>> {
+                typedef RingCategories::ModularTag categoryTag;
+        };
 
 	/*! FieldTrait.
 	 */
@@ -86,6 +113,8 @@ namespace LinBox {
 	struct FieldTraits {
 
 		typedef typename ClassifyRing<Field>::categoryTag categoryTag;
+
+        typedef std::is_same<categoryTag,RingCategories::ModularTag> is_modular;
 
 		static integer& maxModulus( integer& i )
 		{
@@ -144,8 +173,29 @@ namespace LinBox {
 				return ( i >= 1 && i <= max );
 		}
 
+                    /* \brief returns the best modulus bitsize to use for e.g. ChineseRemaindering
+                     */
+                static inline uint64_t bestBitSize(){return maxModulus().bitsize()-1;}
+
+                    /* \brief returns the best modulus bitsize to use for e.g. ChineseRemaindering,
+                     * given the dimension of linear algebra operations to be performed.
+                     * Will be specialized for fields with delayed modular reductions.
+                     */
+                static inline uint64_t bestBitSize(size_t n){return bestBitSize();}
 	};
 
+        template<>
+        inline uint64_t FieldTraits<Givaro::Modular<double> >::bestBitSize(size_t n){return std::max (UINT64_C(22), uint64_t(52-log2(n))>>1); }
+        template<>
+        inline uint64_t FieldTraits<Givaro::ModularBalanced<double> >::bestBitSize(size_t n){return std::max (UINT64_C(23), uint64_t(54-log2(n))>>1);}
+        template<>
+        inline uint64_t FieldTraits<Givaro::Modular<float> >::bestBitSize(size_t n){return std::max (UINT64_C(8), uint64_t(24-log2(n))>>1);}
+        template<>
+        inline uint64_t FieldTraits<Givaro::ModularBalanced<float> >::bestBitSize(size_t n){return std::max ( UINT64_C(8), uint64_t(26-log2(n))>>1);}
+        template<>
+        inline uint64_t FieldTraits<Givaro::Modular<int64_t> >::bestBitSize(size_t n){return std::max ( UINT64_C(26), uint64_t(63-log2(n))>>1);}
+        template<>
+        inline uint64_t FieldTraits<Givaro::ModularBalanced<int64_t> >::bestBitSize(size_t n){return std::max ( UINT64_C(27), uint64_t(64-log2(n))>>1);}
 
 } // Namespace LinBox
 
@@ -181,13 +231,10 @@ namespace LinBox { /*  areFieldEqual  */
 
 #endif // __LINBOX_field_traits_H
 
-
-
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
-
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

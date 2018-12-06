@@ -80,26 +80,26 @@ namespace LinBox
 		//@{
 		///
 		///
-		template <class SparseSeqMatrix> unsigned long& rankin(unsigned long &Rank,
+		template <class SparseSeqMatrix> size_t& rankin(size_t &Rank,
 		SparseSeqMatrix        &A,
-		unsigned long  Ni,
-		unsigned long  Nj,
+		size_t  Ni,
+		size_t  Nj,
 		SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const ;
 
 		///
-		template <class SparseSeqMatrix> unsigned long& rankin(unsigned long &Rank,
+		template <class SparseSeqMatrix> size_t& rankin(size_t &Rank,
 		SparseSeqMatrix        &A,
 		SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const;
 
 		///
-		template <class SparseSeqMatrix> unsigned long& rank(unsigned long &rk,
+		template <class SparseSeqMatrix> size_t& rank(size_t &rk,
 		const SparseSeqMatrix        &A,
-		unsigned long  Ni,
-		unsigned long  Nj,
+		size_t  Ni,
+		size_t  Nj,
 		SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const ;
 
 		///
-		template <class SparseSeqMatrix> unsigned long& rank(unsigned long &rk,
+		template <class SparseSeqMatrix> size_t& rank(size_t &rk,
 		const SparseSeqMatrix        &A,
 		SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const ;
 
@@ -120,8 +120,8 @@ namespace LinBox
 		///
 		template <class SparseSeqMatrix> Element& detin(Element &determinant,
 		SparseSeqMatrix        &A,
-		unsigned long  Ni,
-		unsigned long  Nj,
+		size_t  Ni,
+		size_t  Nj,
 		SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const;
 		///
 		template <class SparseSeqMatrix> Element& det(Element &determinant,
@@ -130,8 +130,8 @@ namespace LinBox
 		///
 		template <class SparseSeqMatrix> Element& det(Element &determinant,
 		const SparseSeqMatrix        &A,
-		unsigned long  Ni,
-		unsigned long  Nj,
+		size_t  Ni,
+		size_t  Nj,
 		SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const;
 		//@}
 
@@ -154,17 +154,17 @@ namespace LinBox
 		 * In Ganzha et~al. CASC'2002, pages 47--62.
 		 */
 		template <class SparseSeqMatrix, class Perm>
-		unsigned long& QLUPin(unsigned long &Rank,
+		size_t& QLUPin(size_t &Rank,
 				      Element& determinant,
 				      Perm          &Q,
 				      SparseSeqMatrix	    &L,
 				      SparseSeqMatrix        &U,
 				      Perm	    &P,
-				      unsigned long Ni,
-				      unsigned long Nj) const;
+				      size_t Ni,
+				      size_t Nj) const;
 
 		template <class SparseSeqMatrix, class Perm, class Vector1, class Vector2>
-		Vector1& solve(Vector1& x, Vector1& w, unsigned long Rank, const Perm& Q, const SparseSeqMatrix& L, const SparseSeqMatrix& U, const Perm& P, const Vector2& b) const;
+		Vector1& solve(Vector1& x, Vector1& w, size_t Rank, const Perm& Q, const SparseSeqMatrix& L, const SparseSeqMatrix& U, const Perm& P, const Vector2& b) const;
 
 
 		template <class SparseSeqMatrix, class Vector1, class Vector2>
@@ -179,14 +179,14 @@ namespace LinBox
 
 
 		template <class SparseSeqMatrix, class Perm>
-		unsigned long& InPlaceLinearPivoting(unsigned long &Rank,
+		size_t& InPlaceLinearPivoting(size_t &Rank,
 						     Element& determinant,
 						     SparseSeqMatrix        &A,
 						     Perm                   &P,
-						     unsigned long Ni,
-						     unsigned long Nj) const;
+						     size_t Ni,
+						     size_t Nj) const;
 		template <class SparseSeqMatrix>
-		unsigned long& NoReordering (unsigned long & Rank, Element& , SparseSeqMatrix &, unsigned long , unsigned long ) const
+		size_t& NoReordering (size_t & Rank, Element& , SparseSeqMatrix &, size_t , size_t ) const
 		{
 			std::cerr << "Sparse elimination over GF2 without reordering not implemented" << std::endl;
 			return Rank;
@@ -206,14 +206,14 @@ namespace LinBox
 		void eliminateBinary (Element             & headpivot,
 				      Vector              &lignecourante,
 				      const Vector        &lignepivot,
-				      const unsigned long indcol,
+				      const size_t indcol,
 				      const long indpermut,
-				      const unsigned long npiv,
+				      const size_t npiv,
 				      D                   &columns) const;
 
 		template <class Vector>
 		void permuteBinary (Vector              &lignecourante,
-				    const unsigned long &indcol,
+				    const size_t &indcol,
 				    const long &indpermut) const;
 
 		//------------------------------------------
@@ -224,14 +224,14 @@ namespace LinBox
 		// 2. Column density is minimum for this row
 		//------------------------------------------
 		template <class Vector, class D>
-		void SparseFindPivotBinary (Vector &lignepivot, unsigned long &indcol, long &indpermut, D &columns, Element& determinant) const;
+		void SparseFindPivotBinary (Vector &lignepivot, size_t &indcol, long &indpermut, D &columns, Element& determinant) const;
 
 		//------------------------------------------
 		// Looking for a non-zero pivot in a row
 		// No reordering
 		//------------------------------------------
 		template <class Vector>
-		void SparseFindPivotBinary (Vector &lignepivot, unsigned long &indcol, long &indpermut, Element& determinant) const;
+		void SparseFindPivotBinary (Vector &lignepivot, size_t &indcol, long &indpermut, Element& determinant) const;
 
 	};
 } // namespace LinBox
@@ -245,12 +245,10 @@ namespace LinBox
 
 #endif // __LINBOX_gauss_gf2_H
 
-
-// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 4
 // indent-tabs-mode: nil
 // c-basic-offset: 4
 // End:
-
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

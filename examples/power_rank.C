@@ -51,9 +51,10 @@ int tmain (int argc, char **argv)
     Base p; Givaro::Caster(p,Givaro::Integer(argv[2]));
     Base q; Givaro::Caster(q,Givaro::Integer(argv[3]));
     typedef Givaro::Modular<Base> Field;
+    typedef SparseMatrix<Field, SparseMatrixFormat::SparseSeq > SparseMat;
     Field F(q);
     MatrixStream<Field> ms( F, input );
-    SparseMatrix<Field, SparseMatrixFormat::SparseSeq > B (ms);
+    SparseMat B (ms);
     cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
     if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout,Tag::FileFormat::Maple) << endl;
 
@@ -61,16 +62,47 @@ int tmain (int argc, char **argv)
     PowerGaussDomain< Field > PGD( F );
     std::vector<std::pair<size_t,Base> > local;
     Permutation<Field> Q(F,B.coldim());
+<<<<<<< HEAD
 
     Givaro::Timer tq; tq.clear(); tq.start();
     PGD(local, B, Q, q, p);
+=======
+
+        // 1: StPr |= PRESERVE_UPPER_MATRIX
+        // 2: StPr |= PRIVILEGIATE_REDUCING_FILLIN
+        // 4: StPr |= PRIVILEGIATE_NO_COLUMN_PIVOTING
+    size_t StPr( argc>5? atoi(argv[5]): 0);
+
+    Givaro::Timer tq; tq.clear(); tq.start();
+    if (StPr)
+        PGD(local, B, Q, q, p, StPr);
+    else
+        PGD(local, B, Q, q, p);
+>>>>>>> master
     tq.stop();
 
 
     F.write(std::cout << "Local Smith Form ") << " : " << std::endl << '(';
+<<<<<<< HEAD
     for (auto ip = local.begin(); ip != local.end(); ++ip) 
         std::cout << '[' << ip->first << ',' << ip->second << "] ";
     cout << ")" << endl;
+=======
+	int num = B.rowdim();
+    for (auto ip = local.begin(); ip != local.end(); ++ip) {
+        std::cout << '[' << ip->second << ',' << ip->first << "] ";
+		num -= ip->first;
+	}
+	if (num > 0) std::cout << '[' << F.zero << ',' << num << "] ";
+	std::cout << ")" << std::endl;
+
+        // Reposition Output with empty rows at the end
+    auto newend = std::remove_if(
+        B.rowBegin(), B.rowEnd(),
+        [](typename SparseMat::ConstRow V)->bool { return V.size()==0; });
+    B.refRep().erase(newend, B.rowEnd());
+    B.refRep().resize(B.rowdim());
+>>>>>>> master
 
     if (B.rowdim() <= 20 && B.coldim() <= 20) {
         B.write(cerr,Tag::FileFormat::Maple) << endl;
@@ -83,20 +115,29 @@ int tmain (int argc, char **argv)
 }
 
 int main(int argc, char ** argv) {
+<<<<<<< HEAD
 	if (argc < 4 || argc > 5) {	
         cerr << "Usage: rank <matrix-file-in-supported-format> <prime> <prime-power> [<method>]" << endl;
+=======
+	if (argc < 4 || argc > 6) {
+        cerr << "Usage: power_rank <matrix-file-in-supported-format> <prime> <prime-power> [<method>] [<flag>]" << endl;
+>>>>>>> master
         cerr << "       methods: \
 						0=automatic, \
 						1=int_64_t, \
 						2=Integer, \
 						6-11=ruint" << endl;
         return -1; }
+<<<<<<< HEAD
 
+=======
+>>>>>>> master
+
+    size_t method( argc>4? atoi(argv[4]) : 0);
 
     Givaro::Integer q(argv[3]);
-    size_t method( argc>4? atoi(argv[4]) : 0);
     const size_t logq( (size_t)ceil(logtwo(q)) );
-    
+
     if ( (method == 1) || ( (method==0) && (logq<63) ) ) {
         return tmain<int64_t>(argc,argv);
     } else {
@@ -111,7 +152,10 @@ int main(int argc, char ** argv) {
                 case 9: return tmain<RecInt::ruint<9>>(argc,argv);
                 case 10: return tmain<RecInt::ruint<10>>(argc,argv);
                 case 11: return tmain<RecInt::ruint<11>>(argc,argv);
+<<<<<<< HEAD
 
+=======
+>>>>>>> master
                 default: return tmain<Givaro::Integer>(argc,argv);
             }
         }
@@ -120,11 +164,14 @@ int main(int argc, char ** argv) {
     return 0;
 }
 
-
 // Local Variables:
 // mode: C++
 // tab-width: 4
 // indent-tabs-mode: nil
 // c-basic-offset: 4
 // End:
+<<<<<<< HEAD
 // vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+=======
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+>>>>>>> master

@@ -27,14 +27,16 @@
  */
 
 /*
-// top level test that doesn't use field_subtests.
+// Namespace field_subtests is a collection of tests of field/ring functions and their properties.
+
+// These top level tests don't use the field_subtests.
 bool testRing
 bool testField
 
-// top level test that uses subtest testRandomIteratorStep.
+// This top level test uses field_subtest::testRandomIteratorStep.
 bool testRandomIterator
 
-// top level runBasicRingTests calls these field_subtests.
+// The top level runBasicRingTests calls these field_subtests.
 bool testFieldNegation
 bool testFieldDistributivity
 bool testFieldAssociativity
@@ -44,11 +46,11 @@ bool testRingArithmeticConsistency
 bool testAxpyConsistency
 bool testRanditerBasic
 
-// top level runPIRTests calls these field_subtests after runBasicRingTests.
+// The top level runPIRTests calls these field_subtests after runBasicRingTests.
 bool testFieldCommutativity
 ...
 
-// top level runFieldTests calls these field_subtests after runBasicRingTests.
+// The top level runFieldTests calls these field_subtests after runBasicRingTests.
 bool testFieldInversion
 bool testFieldCommutativity
 bool testInvDivConsistency
@@ -267,6 +269,10 @@ bool testRing (Ring &F, const char *title, bool fieldp = true, bool runInitConve
 
 	if (!F.areEqual (a, f) || !F.areEqual (d, a))
 		part_pass = reportError( "Results of mul incorrect", pass);
+
+	F.mul(a, F.mOne, F.mOne);
+	if (!F.areEqual (a, F.one))
+		part_pass = reportError( "Results of (-1)^2 incorrect", pass);
 
 	F.axpy (a, two, three, two); F.write ( report << "Result of axpy 2*3 + 2: ", a) << endl;
 	F.assign (d, two);
@@ -1237,7 +1243,10 @@ namespace field_subtests {
 
 /* Convenience function to run all of the basic ring tests */
 template <class Ring>
-bool runBasicRingTests (const Ring &F, const char *desc, unsigned int iterations, bool runCharacteristicTest = true, bool runInitConvertIdentity=true)
+bool runBasicRingTests (const Ring &F, const char *desc, 
+		unsigned int iterations = 1, 
+		bool runCharacteristicTest = true, 
+		bool runInitConvertIdentity=true)
 {
 	bool pass = true;
 	ostringstream str;
@@ -1278,7 +1287,50 @@ bool runBasicRingTests (const Ring &F, const char *desc, unsigned int iterations
 	commentator().stop (MSG_STATUS (pass), (const char *) 0, "runBasicRingTests");
 	delete[] st;
 	return pass;
-}
+} // runBasicRingTests
+
+/* Convenience function to run the tests appropriate to a principal ideal ring such as Z, Z_n, F[x], F[x]/<f> (any n or f, not necessarily prime). */
+template <class Ring>
+bool runPIRTests (const Ring &R, const char *desc, 
+		unsigned int iterations = 1, 
+		bool runCharacteristicTest = true, 
+		bool runInitConvertIdentity=true)
+{
+	ostringstream str;
+
+	str << "\t--Testing " << desc << " field" << ends;
+	char * st = new char[str.str().size()];
+	strcpy (st, str.str().c_str());
+	commentator().start (st, "runPIRTests");
+	bool ret =  runBasicRingTests(R, desc, iterations, runCharacteristicTest, runInitConvertIdentity) ;
+	// test gcd, gcd with s,t, and lcm
+	typename Ring::Element a, b, g1, g2, d, s, t, h;
+	R.init(a); R.init(b); R.init(g1); R.init(g2); 
+	R.init(d); R.init(s); R.init(t); R.init(h); 
+	typename Ring::RandIter r (R,4);
+	r.random(a); r.random(b);
+	//R.write(std::cout << "a ", a) << std::endl;
+	//R.write(std::cout << "b ", b) << std::endl;
+	R.gcd(g1,s,t,a,b);
+	R.mul(d,s,a); R.axpyin(d,t,b);
+	if (not R.areEqual(g1,d))
+		reportError("extended gcd: g != sa + tb", ret);
+	R.gcd(g2,a,b);
+	/* specs needed on this
+	if (not R.areEqual(g1, g2))
+		reportError("extended/nonextended gcd inconsistent", ret);
+	if (not ret) {std::cout << "long/short" << std::endl; 
+		R.write(std::cout << "g1 ", g1) << std::endl;
+		R.write(std::cout << "g2 ", g2) << std::endl;
+		exit(-1); }
+		*/
+	R.lcm(h,a,b);
+	if (not R.areEqual(R.mulin(g2,h), R.mulin(a,b)))
+		reportError("gcd(g,a,b)*lcm(h,a,b) != a*b", ret);
+
+	delete[] st;
+	return ret;
+} // runPIRTests
 
 namespace field_subtests {
 	/* Random number test
@@ -1409,8 +1461,11 @@ namespace field_subtests {
 }// namespace field_subtests
 
 template <class Field>
-bool runFieldTests (const Field &F, const char *desc, unsigned int iterations, size_t n, bool runCharacteristicTest = true, bool runInitConvertIdentity=true)
-	// n is not used.
+bool runFieldTests (const Field &F, const char *desc, 
+		unsigned int iterations = 1, 
+		size_t n = 0, // n is not actually used.
+		bool runCharacteristicTest = true, 
+		bool runInitConvertIdentity=true)
 {
 	ostringstream str;
 
@@ -1477,9 +1532,8 @@ bool testRandomIterator (const Field &F, const char *text,
 
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
-
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

@@ -64,22 +64,21 @@ namespace LinBox {
 	};
 }
 
-#include "matrixdomain/matrix-domain.h" // needed by BlasMatrix
-#include "matrixdomain/blas-matrix-domain.h"
-#include "matrixdomain/matrix-domain-gf2.h"
+#include "linbox/matrix/matrixdomain/matrix-domain.h" // needed by BlasMatrix
+#include "linbox/matrix/matrixdomain/blas-matrix-domain.h"
+#include "linbox/matrix/matrixdomain/matrix-domain-gf2.h"
 // #include "matrixdomain/matrix-domain-m4ri.h"
-#include "matrixdomain/plain-domain.h"
+#include "linbox/matrix/matrixdomain/plain-domain.h"
 
-#include "matrixdomain/opencl-domain.h"
+#include "linbox/matrix/matrixdomain/opencl-domain.h"
 
 
 #endif // __LINBOX_matrix_matrix_domain_H
 
-
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/matrix/plain-matrix.h
  * -bds 2013
  * See COPYING for license information
@@ -95,8 +93,8 @@ namespace LinBox
 
 		Entry& getEntry(Entry& x, Index i, Index j) const
 		{ return x = rep_[i*row_stride_ + j]; }
-		void setEntry(Index i, Index j, const Entry& x )
-		{ rep_[i*row_stride_ + j] = x; }
+		const Entry& setEntry(Index i, Index j, const Entry& x )
+		{ return rep_[i*row_stride_ + j] = x; }
 
 		void submatrix(const Self_t & A, Index i, Index j, Index m, Index n)
 		{	rep_ = A.rep_ + i*row_stride_ + j;
@@ -108,11 +106,13 @@ namespace LinBox
 		{	for (Index i = 0; i < rowdim(); ++ i)
 				for (Index j = 0; j < coldim(); ++ j)
 					setEntry(i, j, field().zero);
+			return *this;
 		}
 		Self_t& identity() // set to I, must be square, no shape change
 		{	this->zero();
 			for (Index i = 0; i < rowdim(); ++i)
 				setEntry(i, i, field().one);
+			return *this;
 		}
 		Self_t& random() // set to random entries, no shape change
 		{	Entry x; field().assign(x,field().zero);
@@ -120,6 +120,7 @@ namespace LinBox
 			for (Index i = 0; i < rowdim(); ++ i)
 				for (Index j = 0; j < coldim(); ++ j)
 					setEntry(i, j, r.random(x));
+			return *this;
 		}
 
 		std::istream& read (std::istream &is) // The matrix read must have the same shape.
@@ -201,3 +202,11 @@ namespace LinBox
 	}; //PlainMatrix
 } //LinBox
 #endif //__LINBOX_plain_matrix_h
+
+// Local Variables:
+// mode: C++
+// tab-width: 4
+// indent-tabs-mode: nil
+// c-basic-offset: 4
+// End:
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

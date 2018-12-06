@@ -72,11 +72,11 @@ namespace LinBox
 	 * \return a reference to r.
 	 */
 	template <class Blackbox, class Method, class DomainCategory>
-	inline unsigned long &rank (unsigned long &r, const Blackbox &A, 
+	inline size_t &rank (size_t &r, const Blackbox &A, 
 			const DomainCategory &tag, const Method &M);
 
 	template <class Blackbox, class Method, class DomainCategory>
-	inline unsigned long &rankin (unsigned long &r, const Blackbox &A, 
+	inline size_t &rankin (size_t &r, Blackbox &A, 
 			const DomainCategory &tag, const Method &M);
 
 	/**
@@ -89,7 +89,7 @@ namespace LinBox
 	 * \return     \p r rank of \p A.
 	  */
 	template <class Blackbox>
-	inline unsigned long &rank (unsigned long &r, const Blackbox &A)
+	inline size_t &rank (size_t &r, const Blackbox &A)
 	{
 		return rank(r, A, typename FieldTraits<typename Blackbox::Field>::categoryTag(), Method::Hybrid());
 	}
@@ -106,7 +106,7 @@ namespace LinBox
 	 * @param M method (see ???)
 	 */
 	template <class Blackbox, class Method>
-	inline unsigned long &rank (unsigned long &r, const Blackbox &A,
+	inline size_t &rank (size_t &r, const Blackbox &A,
 				    const Method &M)
 	{
 		return rank(r, A, typename FieldTraits<typename Blackbox::Field>::categoryTag(), M);
@@ -118,7 +118,7 @@ namespace LinBox
 	 * @param r rank
 	*/
 	template <class Blackbox>
-	inline unsigned long &rankin (unsigned long &r, Blackbox &A)
+	inline size_t &rankin (size_t &r, Blackbox &A)
 	{
 		//! @bug there is no Elimination() method there.
 		return rankin(r, A, typename FieldTraits<typename Blackbox::Field>::categoryTag(), Method::SparseElimination());
@@ -132,11 +132,10 @@ namespace LinBox
 
 #endif // __LINBOX_rank_H
 
-
 // Local Variables:
 // mode: C++
 // tab-width: 4
 // indent-tabs-mode: nil
 // c-basic-offset: 4
 // End:
-// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

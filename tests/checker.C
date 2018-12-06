@@ -1,4 +1,3 @@
-
 /*
  * Copyright (c) 2015 LinBox
  * This file is part of the library LinBox. See COPYING for license info.
@@ -66,9 +65,12 @@ int main(int argc, char* argv[]) {
 if (honor_skips) {
 hide("test-block-ring", "non commutative rings not supported");
 //hide("test-ffpack", "testTURBO fails, move to ffpack tests?");
+skip("test-frobenius-small", "not unit/regression test conforming");
+skip("test-frobenius-large", "not unit/regression test conforming");
 hide("test-ftrmm", "should move to attic");
 skip("test-givaro-fields", "may fail on small fields because of supposed non-randomness or failure to find a non trivial element");
 hide("test-image-field", "deprecated");
+skip("test-invariant-factors", "not unit/regression test conforming");
 //skip("test-isposdef", "intermittent inf loop");
 //skip("test-ispossemidef", "intermittent inf loop");
 hide("test-la-block-lanczos", "not maintained. operator >> missing");
@@ -79,7 +81,7 @@ hide("test-modular-short",  "deprecated");
 //skip("test-modular-balanced-int",  "test and modular-balanced disagree on init/convert");
 //skip("test-modular-balanced-double",  "test and modular-balanced disagree on init/convert");
 //skip("test-moore-penrose", "inf loop");
-skip("test-optimization", "not in test form");
+skip("test-optimization", "not unit/regression test conforming");
 skip("test-quad-matrix", "depends on out-of-date blackbox/zo.h");
 //skip("test-rational-reconstruction-base", "inf loop");
 skip("test-rat-charpoly", "inf loop");
@@ -88,7 +90,6 @@ skip("test-rat-solve", "stale test. solns over QQ need fresh tests"); // "infini
 skip("test-poly-det", "incomplete test (if still relevant)");
 skip("test-sparse-map-map", "const issue in givranditer, curious use of nonexistant next() in Extension");
 //Tests requiring further development
-skip("test-tutorial", "incomplete test");
 skip("test-dense-zero-one", "half baked, bds responsible");
 }
 
@@ -106,6 +107,7 @@ warn("test-solve", "most of the tests are commented out");
 warn("test-toom-cook", "one method does not work");
 //warn("test-transpose", "sometimes fails on Sparsematrix/getEntry");
 warn("test-quad-matrix", "half baked, bds responsible");
+skip("test-smith-form-kannan-bachem", "not working anymore");
 
 
 //// optional package dependency section ////
@@ -127,6 +129,13 @@ warn("test-quad-matrix", "half baked, bds responsible");
 	ntl_tests.insert("test-smith-form");
 	ntl_tests.insert("test-smith-form-adaptive");
 	ntl_tests.insert("test-smith-form-iliopoulos");
+	ntl_tests.insert("test-polynomial-local-x");
+	ntl_tests.insert("test-weak-popov-form");
+	ntl_tests.insert("test-frobenius-large");
+	ntl_tests.insert("test-invariant-factors");
+	ntl_tests.insert("test-frobenius-small");
+	ntl_tests.insert("test-poly-smith-form");
+
 	set< string> ocl_tests;
 	ocl_tests.insert("test-opencl-domain");
 
@@ -214,3 +223,11 @@ warn("test-quad-matrix", "half baked, bds responsible");
 
 	return buildfail || runfail ? -1 : 0;
 } // main
+
+// Local Variables:
+// mode: C++
+// tab-width: 4
+// indent-tabs-mode: nil
+// c-basic-offset: 4
+// End:
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

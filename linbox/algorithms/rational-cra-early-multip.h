@@ -40,7 +40,7 @@ namespace LinBox
 	protected:
 		// Random coefficients for a linear combination
 		// of the elements to be reconstructed
-		std::vector< unsigned long >      	randv;
+		std::vector< size_t >      	randv;
 
 		void initialize (const Integer& D, const Integer& e) {return;}; // DON'T TOUCH
 		void progress (const Integer & D, const Integer & e) {return;};
@@ -56,7 +56,7 @@ namespace LinBox
 	public:
 
 
-		EarlyMultipRatCRA(const unsigned long EARLY=DEFAULT_EARLY_TERM_THRESHOLD) :
+		EarlyMultipRatCRA(const size_t EARLY=DEFAULT_EARLY_TERM_THRESHOLD) :
 			EarlySingleRatCRA<Domain>(EARLY), FullMultipRatCRA<Domain>()
 		{ }
 
@@ -68,9 +68,9 @@ namespace LinBox
 			// of the elements to be reconstructed
 			srand48(BaseTimer::seed());
 			randv. resize ( e.size() );
-			for ( std::vector<unsigned long>::iterator int_p = randv. begin();
+			for ( std::vector<size_t>::iterator int_p = randv. begin();
 			      int_p != randv. end(); ++ int_p)
-				*int_p = ((unsigned long)lrand48()) % 20000;
+				*int_p = ((size_t)lrand48()) % 20000;
 
 			DomainElement z;
 			// Could be much faster
@@ -87,9 +87,9 @@ namespace LinBox
 			// of the elements to be reconstructed
 			srand48(BaseTimer::seed());
 			randv. resize ( e.size() );
-			for ( std::vector<unsigned long>::iterator int_p = randv. begin();
+			for ( std::vector<size_t>::iterator int_p = randv. begin();
 			      int_p != randv. end(); ++ int_p)
-				*int_p = ((unsigned long)lrand48()) % 20000;
+				*int_p = ((size_t)lrand48()) % 20000;
 
 			DomainElement z;
 			// Could be much faster
@@ -192,11 +192,10 @@ namespace LinBox
 
 #endif //__LINBOX_rational_early_multip_cra_H
 
-
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

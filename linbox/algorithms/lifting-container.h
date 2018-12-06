@@ -58,7 +58,7 @@ namespace LinBox
 	 * BoundBlackbox: Sets
 	 *      H_col_sqr <- H_col(A)^2,   short_col_sqr <- short_col(A)^2
 	 * where H_col(A) is prod_j sqrt(sum_i a_ij^2)     ('Hadamard column bound')
-	 *   short_col(A) is min_j  sqrt(sum_i a_ij^2)     ('shortest column')
+	 *   short_col(A) is min_j  sqrt(sum_i a_ij^2)     ('shortest nonzero column')
 	 *
 	 * @note H_col is not actually a norm! but it is what we need for lifting bound computation
          * @ note: in the presence of zero columns (happening with underdetermined system)
@@ -74,21 +74,21 @@ namespace LinBox
 		//size_t m, n, col=0;
 		//n=A.coldim();
 		//m=A.rowdim();
-
 		typename ItMatrix::ConstRowIterator row= A.rowBegin();
 		std::vector<Integer_t> tmp(A.coldim(), R.zero);
 		for (; row != A.rowEnd(); ++row){
 			typename ItMatrix::ConstRow::const_iterator elm= row->begin();
-			for (size_t i=0; elm != row->end(); ++elm, ++i)
+			for (size_t i=0; elm != row->end(); ++elm, ++i) {
 				R.axpyin(tmp[i], *elm, *elm);
+            }
 		}
 
 		R.assign(H_col_sqr, R.one);
-		R.assign (short_col_sqr, tmp[0]);
+		R.assign (short_col_sqr, R.zero);
 		for (size_t i=0;i<A.coldim();++i) {
 			if (!R.isZero(tmp[i])){
 				R.mulin(H_col_sqr,tmp[i]);
-				if(short_col_sqr> tmp[i]) short_col_sqr=tmp[i];
+                if (R.isZero(short_col_sqr) || (short_col_sqr > tmp[i])) R.assign(short_col_sqr,tmp[i]);
 			}
 		}
 		// short_col_sqr= *(std::min_element(tmp.begin(),tmp.end()));
@@ -138,14 +138,15 @@ namespace LinBox
 		for(auto indices = A.IndexedBegin(); indices != A.IndexedEnd() ; ++indices )
 			R.axpyin(tmp[indices.colIndex()], indices.value(), indices.value());
 		R.assign (H_col_sqr, R.one);
-		R.assign (short_col_sqr, tmp[0]);
-		for (size_t i=0;i<A.coldim();++i)
+		R.assign (short_col_sqr, R.zero);
+		for (size_t i=0;i<A.coldim();++i) {
 			// Generalization of the Hadamard's bound: product of the norm of all non-zero columns
 			if (!R.isZero(tmp[i])){
 				R.mulin (H_col_sqr,tmp[i]);
-				if (short_col_sqr > tmp[i]) short_col_sqr = tmp[i];
+                if (R.isZero(short_col_sqr) || (short_col_sqr > tmp[i])) R.assign(short_col_sqr,tmp[i]);
 			}
-		//short_col_sqr= *(std::min_element(tmp.begin(),tmp.end()));
+        }
+            //short_col_sqr= *(std::min_element(tmp.begin(),tmp.end()));
 	}
 
 	template < class Ring, class Blackbox>
@@ -172,8 +173,8 @@ namespace LinBox
 				sqsum += (*iter)*(*iter);
 			}
 			R.mulin(H_col_sqr, sqsum);
-			if (i==0 || sqsum < short_col_sqr)
-				short_col_sqr = sqsum;
+			if (i==0 || R.isZero(short_col_sqr) || sqsum < short_col_sqr)
+				R.assign(short_col_sqr,sqsum);
 			e[i]=R.zero;
 		}
 	}
@@ -198,8 +199,8 @@ namespace LinBox
 			for (iter=tmp.begin();iter!=tmp.end();++iter)
 				sqsum += (*iter)*(*iter);
 			R.mulin(H_col_sqr, sqsum);
-			if (i==0 || sqsum < short_col_sqr)
-				short_col_sqr = sqsum;
+			if (i==0 || R.isZero(short_col_sqr) || sqsum < short_col_sqr)
+				R.assign(short_col_sqr,sqsum);
 			e[i]=R.zero;
 		}
 	}
@@ -224,8 +225,8 @@ namespace LinBox
 			for (iter=tmp.begin();iter!=tmp.end();++iter)
 				sqsum += (*iter)*(*iter);
 			R.mulin(H_col_sqr, sqsum);
-			if (i==0 || sqsum < short_col_sqr)
-				short_col_sqr = sqsum;
+			if (i==0 || R.isZero(short_col_sqr) || sqsum < short_col_sqr)
+				R.assign(short_col_sqr,sqsum);
 			e[i]=R.zero;
 		}
 	}
@@ -375,12 +376,8 @@ namespace LinBox
 #endif
 			linbox_check(A.rowdim() == b.size());
 #ifdef DEBUG
-			int n,m;
-			n=(int)A.rowdim();
-			m=(int)A.coldim();
-
 			//assert(m == n); //logic may not work otherwise
-			linbox_check( m == n );
+			//linbox_check( A.rowdim() == A.coldim() );
 #endif
 			// initialise the prime as an Integer_t
 			//this->_intRing.init(_p,p);
@@ -393,7 +390,8 @@ namespace LinBox
 			typename Vector1::const_iterator     b_iter    = b.begin();
 			typename BlasVector<Ring>::iterator  res_iter  = _b.begin() ;
 			for (; b_iter != b.end(); ++res_iter, ++b_iter)
-				this->_intRing.init(*res_iter, int64_t(*b_iter));
+				//this->_intRing.init(*res_iter, int64_t(*b_iter)); --> PG: this is bug the vector b is a multi-precision vector fixed-size cast is allowed here
+                this->_intRing.init(*res_iter, *b_iter);
 
 			Integer_t had_sq, short_sq;
 			BoundBlackbox(this->_intRing, had_sq, short_sq, A);
@@ -418,7 +416,7 @@ namespace LinBox
 			std::cout<<" norms computed, p = "<<_p<<"\n";
 			std::cout<<" N = "<<N<<", D = "<<D<<", length = "<<_length<<"\n";
 			std::cout<<"A:=\n";
-			//_matA.write(std::cout);
+			_matA.write(std::cout);
 			std::cout<<"b:=\n";
 			for (size_t i=0;i<_b.size();++i) std::cout<<_b[i]<<" , ";
 			std::cout<<std::endl;
@@ -457,7 +455,9 @@ namespace LinBox
 			bool next (IVector& digit)
 			{
 
-				linbox_check (digit.size() == _lc._matA.rowdim());
+#ifdef DEBUG_LC
+				linbox_check (digit.size() == _lc._matA.coldim());
+#endif
 				// compute next p-adic digit
 				_lc.nextdigit(digit,_res);
 #ifdef RSTIMING
@@ -857,8 +857,8 @@ namespace LinBox
 				size_t minpoly_degree;
 				minpoly_degree=_MinPoly.size();
 				FPolynomial Poly;
-				unsigned long deg;
-				unsigned long size= (_Ap.rowdim() - _MinPoly.size())<<1 ;
+				size_t deg;
+				size_t size= (_Ap.rowdim() - _MinPoly.size())<<1 ;
 				BlackboxContainer<Field, FMatrix > Sequence(&_Ap,field(),error,size);
 				MasseyDomain<Field,BlackboxContainer<Field, FMatrix > > MD(&Sequence);
 				MD.minpoly(Poly,deg);
@@ -1469,7 +1469,7 @@ namespace LinBox
 		const FMatrix&                       UU;
 		const Permutation<_Field>&           QQ;
 		const Permutation<_Field>&           PP;
-		unsigned long                     _rank;
+		size_t                     _rank;
 		const Field                     *_field;
 		mutable FVector                  _res_p;
 		mutable FVector                _digit_p;
@@ -1487,7 +1487,7 @@ namespace LinBox
 					  const Permutation<_Field>& Q,
 					  const FMatrix&     U,
 					  const Permutation<_Field>& P,
-					  unsigned long   rank,
+					  size_t   rank,
 					  const VectorIn&    b,
 					  const Prime_Type&  p) :
 			LiftingContainerBase<Ring,IMatrix> (R,A,b,p), LL(L),UU(U),QQ(Q), PP(P), _rank(rank),
@@ -1549,4 +1549,4 @@ namespace LinBox
 // indent-tabs-mode: nil
 // c-basic-offset: 4
 // End:
-// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

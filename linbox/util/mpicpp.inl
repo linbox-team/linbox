@@ -1,6 +1,5 @@
-/* Copyright (C) 2010 LinBox
- *
- *
+/* Copyright (C) 2018 The LinBox group
+ * Updated by Hongguang Zhu <zhuhongguang2014@gmail.com>
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -17,188 +16,133 @@
  *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  * ========LICENCE========
  */
 
+#pragma once
 
+#include "./mpicpp.h"
 
-#ifndef __LINBOX_mpicpp_INL
-#define __LINBOX_mpicpp_INL
-//  BRYAN - changed the iterator specific lines to simply
-//  sizeof (int *)'s...  also updated the .h file to not
-//  define these functions as having default parameters,
-//  as mpicxx compiler was having trouble with this
+#include "./serialization.h"
 
-namespace LinBox
-{
+namespace LinBox {
 
-	Communicator::Communicator(MPI_Comm comm = MPI_COMM_NULL) :
-		_mpi_comm(comm), _mpi_boss(false)
-	{}
+    // ----- Constructors
 
-	// MPI_initializing constructor
-	// When this communicator is destroyed MPI is shut down (finalized).
-	Communicator::Communicator(int* ac, char*** av) :
-		_mpi_comm(MPI_COMM_WORLD), _mpi_boss(true)
-	{	MPI_Init(ac, av); }
+    Communicator::Communicator(int* argc, char*** argv)
+        : _comm(MPI_COMM_WORLD)
+        , _boss(true)
+    {
+        MPI_Init(argc, argv);
 
-	// copy constructor
-	Communicator::Communicator(const Communicator& D) :
-		_mpi_comm(D._mpi_comm), _mpi_boss(false), stat(D.stat)
-	{}
+        MPI_Comm_rank(_comm, &_rank);
+        MPI_Comm_size(_comm, &_size);
+    }
 
-	Communicator::~Communicator()
-	{	if (_mpi_boss) MPI_Finalize(); }
+    Communicator::Communicator(int* argc, char*** argv, ThreadMode threadMode)
+        : _comm(MPI_COMM_WORLD)
+        , _boss(true)
+    {
+        int effectiveThreadMode = -1;
+        MPI_Init_thread(argc, argv, static_cast<int>(threadMode), &effectiveThreadMode);
+        if (effectiveThreadMode != static_cast<int>(threadMode)) {
+            std::cerr << "Warning: MPI thread mode cannot be set as required." << std::endl;
+        }
 
-	// accessors
-	int Communicator::size()
-	{	int s; MPI_Comm_size(_mpi_comm, &s); return s; }
+        MPI_Comm_rank(_comm, &_rank);
+        MPI_Comm_size(_comm, &_size);
+    }
 
-	int Communicator::rank()
-	{	int r; MPI_Comm_rank(_mpi_comm, &r); return r; }
+    Communicator::Communicator(const Communicator& communicator)
+        : _comm(communicator._comm)
+        , _status(communicator._status)
+        , _size(communicator._size)
+        , _rank(communicator._rank)
+        , _boss(false)
+    {
+    }
 
-	MPI_Status Communicator::status()
-	{	return stat; }
+    Communicator::~Communicator()
+    {
+        if (_boss) {
+            MPI_Finalize();
+        }
+    }
 
-	MPI_Comm Communicator::mpi_communicator()
-	{	return _mpi_comm; }
+    // peer to peer communication
 
-	// peer to peer communication
-	template < class Ptr >
-	void Communicator::send( Ptr b, Ptr e, int dest, int tag = 0)
-	{
-		MPI_Send( &*b,
-			  (e - b)*sizeof(typename Ptr::value_type),
-			  MPI_BYTE,
-			  dest,
-			  tag,
-			  _mpi_comm);
-	}
+    template <class Ptr> void Communicator::send(Ptr b, Ptr e, int dest, int tag)
+    {
+        MPI_Send(&*b, (e - b) * sizeof(typename Ptr::value_type), MPI_BYTE, dest, tag, _comm);
+    }
 
-	template < class Ptr >
-	void Communicator::ssend( Ptr b, Ptr e, int dest, int tag = 0)
-	{	MPI_Ssend( &b[0],
-			   //(e - b)*sizeof(iterator_traits<Ptr>::value_type),
-			   (e-b)*sizeof(int *),
-			   MPI_BYTE,
-			   dest,
-			   tag,
-			   _mpi_comm);
-	}
+    template <class Ptr> void Communicator::ssend(Ptr b, Ptr e, int dest, int tag)
+    {
+        MPI_Ssend(&b[0], (e - b) * sizeof(int*), MPI_BYTE, dest, tag, _comm);
+    }
 
-	template < class Ptr >
-	void Communicator::recv( Ptr b, Ptr e, int dest, int tag = 0)
-	{
-		MPI_Recv( &b[0],
-			  (e - b)*sizeof(typename Ptr::value_type),
-			  MPI_BYTE,
-			  dest,
-			  tag,
-			  _mpi_comm,
-			  &stat);
-	}
+    template <class Ptr> void Communicator::recv(Ptr b, Ptr e, int dest, int tag)
+    {
+        MPI_Recv(&b[0], (e - b) * sizeof(typename Ptr::value_type), MPI_BYTE, dest, tag, _comm, &_status);
+    }
 
-	template < class X >
-	void Communicator::send( X *b, X *e, int dest, int tag = 0)
-	{
-		MPI_Send( b,
-			  (e - b)*sizeof(X),
-			  MPI_BYTE,
-			  dest,
-			  tag,
-			  _mpi_comm);
-	}
+    template <class X> void Communicator::recv(X* b, X* e, int dest, int tag)
+    {
+        MPI_Recv(b, (e - b) * sizeof(X), MPI_BYTE, dest, tag, _comm, &_status);
+    }
 
+    // whole object communication
 
-	template < class X >
-	void Communicator::recv( X *b, X *e, int dest, int tag = 0)
-	{
-		MPI_Recv( b,
-			  (e - b)*sizeof(X),
-			  MPI_BYTE,
-			  dest,
-			  tag,
-			  _mpi_comm,
-			  &stat);
-	}
+    template <class T> void Communicator::send(const T& value, int dest)
+    {
+        std::vector<uint8_t> bytes;
+        uint64_t length = serialize(bytes, value);
+        MPI_Send(bytes.data(), length, MPI_UINT8_T, dest, 0, _comm);
+    }
 
+    template <class T> void Communicator::ssend(const T& value, int dest)
+    {
+        std::vector<uint8_t> bytes;
+        uint64_t length = serialize(bytes, value);
+        MPI_Ssend(bytes.data(), length, MPI_UINT8_T, dest, 0, _comm);
+    }
 
-	// whole object send and recv
-	template < class X >
-	void Communicator::send( X& b, int dest /*, int tag = 0 */)
-	{	MPI_Send(&b,
-			 sizeof(X),
-			 MPI_BYTE,
-			 dest,
-			 0,
-			 _mpi_comm);
-	}
+    template <class T> void Communicator::recv(T& value, int src)
+    {
+        int length = 0;
+        MPI_Probe(src, 0, _comm, &_status);
+        MPI_Get_count(&_status, MPI_UINT8_T, &length);
 
-	template < class X >
-	void Communicator::ssend( X& b, int dest /*, int tag = 0 */)
-	{	MPI_Ssend(&b,
-			  sizeof(X),
-			  MPI_BYTE,
-			  dest,
-			  0,
-			  _mpi_comm);
-	}
+        std::vector<uint8_t> bytes(length);
+        MPI_Recv(bytes.data(), length, MPI_UINT8_T, src, 0, _comm, &_status);
+        unserialize(value, bytes);
+    }
 
-	template < class X >
-	void Communicator::bsend(X& b, int dest /*, int tag = 0*/)
-	{	MPI_Bsend( &b,
-			   sizeof(X),
-			   MPI_BYTE,
-			   dest,
-			   0,
-			   _mpi_comm);
-	}
+    template <class T> void Communicator::bcast(T& value, int src)
+    {
+        uint64_t length = 0;
+        std::vector<uint8_t> bytes;
 
-	template < class X >
-	void Communicator::recv( X& b, int dest /*, int tag = 0*/)
-	{	MPI_Recv( &b,
-			  sizeof(X),
-			  MPI_BYTE,
-			  dest,
-			  0,
-			  _mpi_comm,
-			  &stat);
-	}
+        if (src == _rank) {
+            length = serialize(bytes, value);
+        }
+        MPI_Bcast(&length, 1, MPI_INT64_T, src, _comm);
+        if (src != _rank) {
+            bytes.resize(length);
+        }
 
-	template < class X >
-	void Communicator::buffer_attach(X b)
-	{
-		MPI_Buffer_attach( malloc(sizeof(X) *  60) ,
-				   sizeof(X) * 60 );
-	}
+        MPI_Bcast(bytes.data(), length, MPI_UINT8_T, src, _comm);
+        if (src != _rank) {
+            unserialize(value, bytes);
+        }
+    }
+}
 
-	template < class X >
-	int Communicator::buffer_detach(X &b, int *size)
-	{  return MPI_Buffer_detach( &b,
-				     size);
-	}
-
-	// collective communication
-	template < class Ptr, class Function_object >
-	void Communicator::reduce( Ptr bloc, Ptr eloc, Ptr bres, Function_object binop, int root)
-	{}
-
-	// member access
-	MPI_Status Communicator::get_stat()
-	{
-		return stat;
-	}
-
-} // namespace LinBox
-#endif // __LINBOX_mpicpp_INL
-
-
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

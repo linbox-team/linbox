@@ -139,7 +139,7 @@ namespace LinBox
 		    return MD.mul(Y, *this, X);
 		}
 
-		Matrix& applyLeft(Matrix& Y, const Matrix& X) const // Y = AX
+		Matrix& applyLeft(Matrix& Y, const Matrix& X) const // Y = XA
 		{   MatrixDomain<Field> MD(field());
 		    return MD.mul(Y, X, *this);
 		}
@@ -171,9 +171,9 @@ namespace LinBox
 		 *
 		 * could throw error if j != i, but now j is ignored.
 		 */
-		void setEntry (size_t i, size_t j, const Element &x)
+		const Element& setEntry (size_t i, size_t j, const Element &x)
 		{
-			_v[i] = x;
+			return _v[i] = x;
 		}
 
 		template<typename _Tp1>
@@ -757,11 +757,10 @@ BlasMatrix<Field>& nullspaceBasisLeft(BlasMatrix<Field>& N) const
 
 #endif // __LINBOX_diagonal_H
 
-
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

@@ -74,7 +74,7 @@ int main(int argc, char** argv)
 		PIR R;
 
 		typedef Givaro::Modular<int64_t> Field;
-		typedef RationalSolver<PIR, Field, LinBox::RandomPrimeIterator> Solver;
+		typedef RationalSolver<PIR, Field, PrimeIterator<IteratorCategories::HeuristicTag> > Solver;
 		typedef LastInvariantFactor<PIR, Solver> LIF;
 		typedef OneInvariantFactor<PIR, LIF, SCompose, RandomMatrix>  OIF;
 		typedef SmithFormBinary<PIR, OIF, MatrixRank<PIR, Field > > SF;
@@ -112,20 +112,21 @@ int main(int argc, char** argv)
 	}
 
 #if 0
-//#ifdef __LINBOX_HAVE_NTL
+#ifdef __LINBOX_HAVE_NTL
 // NTL_ZZ not working here
 	{
 		typedef NTL_ZZ Ring;
 
 		Ring R; Ring::RandIter gen(R);
 
-		report << std::endl << "EGV++ algorithm test suite with NTL_ZZ :\n";
+		commentator().report() << std::endl << "EGV++ algorithm test suite with NTL_ZZ :\n";
 		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 
-		RandomDenseStream<Ring> s1 (R, gen, n, (unsigned int)iterations);
+		//RandomDenseStream<Ring> s1 (R, gen, n, (unsigned int)iterations);
+		RandomDenseStream<Ring> s1 (R, gen, n, 1);
 
 		typedef Givaro::Modular<int32_t> Field;
-		typedef RationalSolver<Ring, Field, LinBox::RandomPrimeIterator> Solver;
+		typedef RationalSolver<Ring, Field, PrimeIterator<IteratorCategories::HeuristicTag> > Solver;
 		typedef LastInvariantFactor<Ring, Solver> LIF;
 		typedef OneInvariantFactor<Ring, LIF, SCompose, RandomMatrix>  OIF;
 		typedef SmithFormBinary<Ring, OIF, MatrixRank<Ring, Field > > SF;
@@ -137,6 +138,7 @@ int main(int argc, char** argv)
 		if (!testRandom(R, sf, s1)) pass = false;
 	}
 #endif
+#endif
 
 	commentator().stop("SmithFormBinary test suite");
 	return pass ? 0 : -1;
@@ -144,8 +146,8 @@ int main(int argc, char** argv)
 
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

@@ -347,9 +347,9 @@ namespace LinBox
 	}
 
 	template < class _Matrix >
-	void BlasSubmatrix<_Matrix>::setEntry (size_t i, size_t j, const Element &a_ij)
+	const typename  LinBox::BlasSubmatrix<_Matrix>::Element & BlasSubmatrix<_Matrix>::setEntry (size_t i, size_t j, const Element &a_ij)
 	{
-		_Mat.setEntry (_r0 + i, _c0 + j, a_ij);
+		return _Mat.setEntry (_r0 + i, _c0 + j, a_ij);
 	}
 
 	template < class _Matrix >
@@ -1229,11 +1229,10 @@ namespace LinBox
 } // LinBox
 #endif // __LINBOX_densematrix_blas_submatrix_INL
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

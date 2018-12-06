@@ -65,25 +65,26 @@ namespace LinBox {
 
 } // LinBox
 
-#include "sparsematrix/read-write-sparse.h"
+#include "linbox/matrix/sparsematrix/read-write-sparse.h"
 
-#include "sparsematrix/sparse-generic.h"
+#include "linbox/matrix/sparsematrix/sparse-generic.h"
 
-#include "sparsematrix/sparse-coo-matrix.h"
-// #include "sparsematrix/sparse-coo-1-matrix.h"
-#include "sparsematrix/sparse-csr-matrix.h"
-// #include "sparsematrix/sparse-csr-1-matrix.h"
-#include "sparsematrix/sparse-ell-matrix.h"
-#include "sparsematrix/sparse-ellr-matrix.h"
-// #include "sparsematrix/sparse-ellr-1-matrix.h"
-// #include "sparsematrix/sparse-bcsr-matrix.h"
-// #include "sparsematrix/sparse-dia-matrix.h"
-// #include "sparsematrix/sparse-hyb-matrix.h"
+#include "linbox/matrix/sparsematrix/sparse-coo-matrix.h"
+// #include "linbox/matrix/sparsematrix/sparse-coo-1-matrix.h"
+#include "linbox/matrix/sparsematrix/sparse-csr-matrix.h"
+// #include "linbox/matrix/sparsematrix/sparse-csr-1-matrix.h"
+#include "linbox/matrix/sparsematrix/sparse-ell-matrix.h"
+#include "linbox/matrix/sparsematrix/sparse-ellr-matrix.h"
+// #include "linbox/matrix/sparsematrix/sparse-ellr-1-matrix.h"
+// #include "linbox/matrix/sparsematrix/sparse-bcsr-matrix.h"
+// #include "linbox/matrix/sparsematrix/sparse-dia-matrix.h"
+// #include "linbox/matrix/sparsematrix/sparse-hyb-matrix.h"
+#include "linbox/matrix/sparsematrix/sparse-map-map-matrix.h"
 
-#include "sparsematrix/sparse-tpl-matrix.h"
+#include "linbox/matrix/sparsematrix/sparse-tpl-matrix.h"
 // #ifdef __LINBOX_USES_OPENMP
 #ifdef _OPENMP
-#include "sparsematrix/sparse-tpl-matrix-omp.h"
+#include "linbox/matrix/sparsematrix/sparse-tpl-matrix-omp.h"
 #endif
 
 namespace LinBox { /*  MatrixContainerTraits */
@@ -277,11 +278,10 @@ namespace LinBox { /* Junk */
 
 #endif // __LINBOX_matrix_sparse_matrix_H
 
-
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

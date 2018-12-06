@@ -104,7 +104,7 @@ namespace Linbox
 		 * @param k Row number 0...rowdim () - 1
 		 * @param a_mk Element to set
 		 */
-		void setEntry (size_t m, size_t k, const MatrixElement &a_mk);
+		const VectorElement& setEntry (size_t m, size_t k, const VectorElement &a_mk);
 		
 	private:
 		/* Get a writeable reference to the m-th matrix-coefficient at the (k) position.
@@ -112,7 +112,7 @@ namespace Linbox
 		 * @param k Row number 0...rowdim () - 1
 		 * @returns Reference to matrix entry
 		 */
-		MatrixElement &refEntry (size_t m, size_t k);
+		VectorElement &refEntry (size_t m, size_t k);
 
 	public:
 		/* Get a read-only reference to the m-th matrix-coefficient at the (k) position.
@@ -120,7 +120,7 @@ namespace Linbox
 		 * @param k Row number 0...rowdim () - 1
 		 * @returns Const reference to matrix entry
 		 */
-		MatrixElement &getEntry (size_t m, size_t k);
+		VectorElement &getEntry (size_t m, size_t k);
 		
 						/////////////////////////////////////
 		                		//functions for matrix-coefficients//
@@ -171,3 +171,11 @@ namespace Linbox
 #include "SlicedPolynomialVector.inl"
 
 #endif
+
+// Local Variables:
+// mode: C++
+// tab-width: 4
+// indent-tabs-mode: nil
+// c-basic-offset: 4
+// End:
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

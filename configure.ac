@@ -21,7 +21,11 @@
 
 AC_PREREQ([2.68])
 
+<<<<<<< HEAD
 AC_INIT([LinBox], [1.5.1],[linbox-use@googlegroups.com],[linbox],
+=======
+AC_INIT([LinBox], [1.5.3],[linbox-use@googlegroups.com],[linbox],
+>>>>>>> master
 		[http://www.linalg.org/])
 
 AC_CONFIG_MACRO_DIR([macros])
@@ -225,7 +229,8 @@ LB_DRIVER
 echo "-----------------------------------------------"
 
 # Now getting GMP and Givaro from FFLAS-FFPACK - AB 2014-12-10
-PKG_CHECK_MODULES([FFLAS_FFPACK], [fflas-ffpack >= 2.3.0])
+PKG_CHECK_MODULES([FFLAS_FFPACK], [fflas-ffpack >= 2.3.1])
+PKG_CHECK_MODULES([GIVARO], [givaro >= 4.0.5])
 
 dnl LB_CHECK_FFLAS_FFPACK(,,[
 dnl echo ''
@@ -257,7 +262,6 @@ LB_CHECK_NTL
 
 LB_CHECK_SACLIB
 LB_CHECK_MAPLE
-LB_CHECK_SAGE
 
 LB_CHECK_EXPAT
 
@@ -267,7 +271,7 @@ LB_CHECK_XML
 LB_DOC
 
 LB_CHECK_OCL
-
+LB_CHECK_MPI
 
 if test ! -d ./benchmarks/data ; then
 	echo "Creating data dir in benchmark" ;
@@ -305,6 +309,7 @@ AC_CONFIG_FILES([
 Makefile
 linbox-config
 examples/Makefile
+examples/data/Makefile
 doc/Makefile
 linbox/Makefile
 linbox/algorithms/Makefile
@@ -336,8 +341,8 @@ interfaces/Makefile
 interfaces/driver/Makefile
 interfaces/maple/Makefile
 interfaces/kaapi/Makefile
-interfaces/sage/Makefile
 macros/Makefile
+macros/CodeChunk/Makefile
 benchmarks/Makefile
 benchmarks/data/Makefile
 benchmarks/matrix/Makefile

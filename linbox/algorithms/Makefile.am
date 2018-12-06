@@ -46,110 +46,120 @@ USE_OCL_HDRS = $(OCL_HDRS)
 
 
 pkgincludesub_HEADERS =            \
+	alt-blackbox-block-container.h     \
+	bbcharpoly.h                       \
+	bbsolve.h                          \
+	bitonic-sort.h                     \
+	blackbox-block-container-base.h    \
+	blackbox-block-container.h         \
+	blackbox-container-base.h          \
 	blackbox-container.h               \
 	blackbox-container-symmetric.h     \
 	blackbox-container-symmetrize.h    \
-	blackbox-container-base.h          \
-	bbsolve.h                          \
-	coppersmith.h                      \
-	double-det.h                       \
-	det-rational.h                     \
-	massey-domain.h                    \
-	wiedemann.h                        \
-	wiedemann.inl                      \
-	lanczos.h                          \
-	lanczos.inl                        \
+	block-coppersmith-domain.h         \
 	block-lanczos.h                    \
 	block-lanczos.inl                  \
-	mg-block-lanczos.h                 \
-	mg-block-lanczos.inl               \
-	la-block-lanczos.h                 \
-	la-block-lanczos.inl               \
+	block-massey-domain.h              \
+	block-wiedemann.h                  \
+	charpoly-rational.h                \
+	cia.h                              \
+	classic-rational-reconstruction.h  \
+	coppersmith.h                      \
+	coppersmith-invariant-factors.h    \
+	cra-domain.h                       \
+	cra-domain-omp.h                   \
+	cra-domain-seq.h                   \
+	cra-early-multip.h                 \
+	cra-full-multip-fixed.h            \
+	cra-full-multip.h                  \
+	cra-givrnsfixed.h                  \
+	cra-kaapi.h                        \
+	cra-mpi.h                          \
+	cra-single.h                       \
+	default.h                          \
+	dense-container.h                  \
+	dense-nullspace.h                  \
+	dense-nullspace.inl                \
+	det-rational.h                     \
+	diophantine-solver.h               \
+	diophantine-solver.inl             \
+	double-det.h                       \
+	dyadic-to-rational.h               \
+	echelon-form.h                     \
 	eliminator.h                       \
 	eliminator.inl                     \
-	gauss.h                            \
-	triangular-solve.h                 \
+	fast-rational-reconstruction.h     \
+	frobenius-large.h                  \
+	frobenius-small.h                  \
 	gauss-gf2.h                        \
-	triangular-solve-gf2.h             \
-	dense-container.h                  \
-	cra-mpi.h                          \
-	cra-kaapi.h                        \
-	cra-domain.h                       \
-	cra-domain-seq.h                   \
-	cra-domain-omp.h                   \
-	cra-early-multip.h                 \
-	cra-early-single.h                 \
-	cra-full-multip.h                  \
-	cra-full-multip-fixed.h            \
-	cra-givrnsfixed.h                  \
+	gauss.h                            \
+	hybrid-det.h                       \
+	invariant-factors.h                \
+	invert-tb.h                        \
+	la-block-lanczos.h                 \
+	la-block-lanczos.inl               \
+	lanczos.h                          \
+	lanczos.inl                        \
+	last-invariant-factor.h            \
+	lattice.h                          \
+	lattice.inl                        \
 	lazy-product.h                     \
-	rational-cra.h                     \
+	lifting-container.h                \
+	massey-domain.h                    \
+	matpoly-mult.h                     \
+	matrix-hom.h                       \
+	matrix-inverse.h                   \
+	matrix-rank.h                      \
+	mg-block-lanczos.h                 \
+	mg-block-lanczos.inl               \
+	minpoly-integer.h                  \
+	minpoly-rational.h                 \
+	numeric-solver-lapack.h            \
+	one-invariant-factor.h             \
+	poly-det.h                         \
+	poly-dixon.h                       \
+	poly-interpolation.h               \
+	poly-smith-form.h                  \
+	poly-smith-form-local-x.h          \
 	rational-cra2.h                    \
 	rational-cra-early-multip.h        \
 	rational-cra-early-single.h        \
 	rational-cra-full-multip.h         \
-	bitonic-sort.h                     \
-	blackbox-block-container-base.h    \
-	blackbox-block-container.h         \
-	block-massey-domain.h              \
-	block-wiedemann.h                  \
-	block-coppersmith-domain.h            \
-	default.h                          \
-	signature.h                        \
-	smith-form-iliopoulos.h            \
-	one-invariant-factor.h             \
-	last-invariant-factor.h            \
-	hybrid-det.h                       \
-	lifting-container.h                \
-	smith-form-local.h                 \
-	smith-form-local2.inl              \
-	smith-form-textbook.h              \
-	smith-form-kannan-bachem.h         \
-	matrix-inverse.h                   \
-	matrix-hom.h                       \
-	matrix-rank.h                      \
-	numeric-solver-lapack.h            \
+	rational-cra.h                     \
+	rational-reconstruction2.h         \
+	rational-reconstruction-base.h     \
+	rational-reconstruction.h          \
+	rational-solver2.h                 \
+	rational-solver-adaptive.h         \
+	rational-solver.h                  \
+	rational-solver.inl                \
 	rational-solver-sn.h               \
 	rational-solver-sn.inl             \
-	dyadic-to-rational.h               \
-	rational-reconstruction.h          \
-	rational-reconstruction-base.h     \
-	classic-rational-reconstruction.h  \
-	fast-rational-reconstruction.h     \
-	rational-solver.h                  \
-	rational-solver2.h                 \
-	rational-solver.inl                \
-	diophantine-solver.h               \
-	diophantine-solver.inl             \
-	smith-form-binary.h                \
-	smith-form-adaptive.h              \
-	smith-form-adaptive.inl            \
-	smith-form-sparseelim-local.h      \
-	smith-form-sparseelim-poweroftwo.h \
-	rational-reconstruction2.h         \
-	rational-solver-adaptive.h         \
-	varprec-cra-early-single.h         \
-	varprec-cra-early-multip.h         \
-	vector-fraction.h                  \
-	whisart_trace.h                    \
-	cia.h                              \
-	lattice.h                          \
-	lattice.inl                        \
-	bbcharpoly.h                       \
-	charpoly-rational.h                \
-	minpoly-integer.h                  \
-	minpoly-rational.h                 \
-	sigma-basis.h                      \
-	matpoly-mult.h                     \
-	echelon-form.h                     \
-	toeplitz-det.h                     \
-	dense-nullspace.h                  \
-	dense-nullspace.inl                \
-	short-vector.h                     \
 	rns.h                              \
 	rns.inl                            \
-	invariant-factors.h                \
-	smith-form-iliopoulos2.h           \
+	short-vector.h                     \
+	sigma-basis.h                      \
+	signature.h                        \
+	smith-form-adaptive.h              \
+	smith-form-adaptive.inl            \
+	smith-form-binary.h                \
+	smith-form-iliopoulos.h            \
+	smith-form-kannan-bachem.h         \
+	smith-form-local2.inl              \
+	smith-form-local.h                 \
+	smith-form-valence.h               \
+	smith-form-sparseelim-local.h      \
+	smith-form-sparseelim-poweroftwo.h \
+	toeplitz-det.h                     \
+	triangular-solve-gf2.h             \
+	triangular-solve.h                 \
+	varprec-cra-early-multip.h         \
+	varprec-cra-early-single.h         \
+	vector-fraction.h                  \
+	weak-popov-form.h                  \
+	whisart_trace.h                    \
+	wiedemann.h                        \
+	wiedemann.inl                      \
 	$(USE_OCL_HDRS)
 
 #  iml.h                              \

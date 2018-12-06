@@ -104,11 +104,18 @@ int main (int argc, char **argv)
 	return pass ? 0 : -1;
 }
 
+<<<<<<< HEAD
 // vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+=======
+>>>>>>> master
 // Local Variables:
 // mode: C++
 // tab-width: 4
 // indent-tabs-mode: nil
 // c-basic-offset: 4
 // End:
+<<<<<<< HEAD
 
+=======
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+>>>>>>> master

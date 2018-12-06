@@ -51,26 +51,6 @@
 #ifndef __LINBOX_ring_modular_H
 #define __LINBOX_ring_modular_H
 
-#include <givaro/modular.h>
-#include <givaro/modular-balanced.h>
-#include <givaro/gfq.h>
-#include <iostream>
-#include <climits>
-#include <cmath>
-
-#include "linbox/integer.h"
-#include "linbox/field/field-interface.h"
-#include "linbox/util/field-axpy.h"
-#include "linbox/util/write-mm.h"
-#include "linbox/vector/vector-traits.h"
-#include "linbox/linbox-config.h"
-#include "linbox/ring/modular-traits.h"
-
-
-// Namespace in which all LinBox code resides
-
-#include "linbox/vector/vector-domain.h"
-
 namespace LinBox {
 	template<class Field>
 	class MVProductDomain ;
@@ -89,12 +69,10 @@ namespace LinBox {
 
 #endif // __LINBOX_field_modular_H
 
-
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
-
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

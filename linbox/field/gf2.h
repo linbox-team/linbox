@@ -143,6 +143,10 @@ namespace LinBox
                 return x = y & 1;
             }
 
+		Element &init (Element &x, const bool &y ) const
+            {
+                return x = y;
+            }
 /*
   Element &init (Element &x, const long &y ) const
   {
@@ -1019,12 +1023,10 @@ namespace LinBox
 
 #endif // __LINBOX_field_gf2_H
 
-
-// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 4
 // indent-tabs-mode: nil
 // c-basic-offset: 4
 // End:
-
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

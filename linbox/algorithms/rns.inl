@@ -1,4 +1,3 @@
-
 /* Copyright (C) 2011 LinBox
  * Written by Brice Boyer (briceboyer) <boyer.brice@gmail.com>
  *
@@ -39,15 +38,15 @@ namespace LinBox
 {
 	/* Constructor */
 	template<bool Unsigned>
-	RNS<Unsigned>::RNS(unsigned long l, unsigned long ps) :
+	RNS<Unsigned>::RNS(size_t l, size_t ps) :
 		_bit_(l),  _ps_(ps)
 	{
-		linbox_check(ps<30); // oupa, mais moins qu'un unsigned long
+		linbox_check(ps<30); // oupa, mais moins qu'un size_t
 		unsigned int nb_primes = (unsigned int) std::ceil(double(l)/double(ps));
 		// integer maxint = Integer::pow(2,l); XXX je veux faire ça !!!!!!
 		integer maxint = pow((integer)2,(Unsigned?l:l+1));
 		_primes_.resize(nb_primes);
-		std::set<unsigned long> primeset ;
+		std::set<size_t> primeset ;
 		size_t lg      = 0 ;
 		int tries      = 0 ;
 		int penalty    = 0 ;
@@ -56,8 +55,8 @@ namespace LinBox
 			while(tries < 3) { // if we fail 3 times to insert, we don't have enough primes to sample.
 				if (curint>maxint)
 					break;
-				RandomPrimeIterator genprimes( (unsigned int) (_ps_+penalty) );
-				unsigned long p = genprimes.randomPrime() ;
+				PrimeIterator<IteratorCategories::HeuristicTag> genprimes( (unsigned int) (_ps_+penalty) );
+				size_t p = genprimes.randomPrime() ;
 				++genprimes;
 				primeset.insert(p);
 				if (lg < primeset.size()) {
@@ -79,7 +78,7 @@ namespace LinBox
 			Integer::div(_midint_,_maxint_,2);
 		_size_   = lg;
 		_primes_.resize(lg);
-		std::set<unsigned long>::iterator pset = primeset.begin();
+		std::set<size_t>::iterator pset = primeset.begin();
 		Fvect::iterator pvec = _primes_.begin();
 		for ( ; pvec != _primes_.end() ; ++pset, ++pvec) { // dumping set to vect
 			*pvec = *pset ;
@@ -165,16 +164,16 @@ namespace LinBox
 {
 	/* Constructor */
 	template<bool Unsigned>
-	RNSfixed<Unsigned>::RNSfixed(unsigned long l, unsigned long ps) :
+	RNSfixed<Unsigned>::RNSfixed(size_t l, size_t ps) :
 		_bit_(l),  _ps_(ps)
 	{
-		linbox_check(ps<30); // oupa, mais moins qu'un unsigned long
+		linbox_check(ps<30); // oupa, mais moins qu'un size_t
 		unsigned int nb_primes = (unsigned int) std::ceil(double(l)/double(ps));
 		// integer maxint = Integer::pow(2,l); XXX je veux faire ça !!!!!!
 		integer maxint = pow((integer)2,(Unsigned?l:l+1));
 		// std::cout << "target max int : " << maxint << std::endl;
 		_primes_.resize(nb_primes);
-		std::set<unsigned long> primeset ;
+		std::set<size_t> primeset ;
 		size_t lg      = 0 ;
 		int tries      = 0 ;
 		int penalty    = 0 ;
@@ -183,8 +182,8 @@ namespace LinBox
 			while(tries < 3) { // if we fail 3 times to insert, we don't have enough primes to sample.
 				if (curint>maxint)
 					break;
-				RandomPrimeIterator genprimes((unsigned int) (_ps_+penalty) );
-				unsigned long p = genprimes.randomPrime() ;
+				PrimeIterator<IteratorCategories::HeuristicTag> genprimes((unsigned int) (_ps_+penalty) );
+				size_t p = genprimes.randomPrime() ;
 				++genprimes;
 				primeset.insert(p);
 				if (lg < primeset.size()) {
@@ -207,7 +206,7 @@ namespace LinBox
 			Integer::div(_midint_,_maxint_,2);
 		_size_ = lg;
 		_primes_.resize(lg);
-		std::set<unsigned long>::iterator pset = primeset.begin();
+		std::set<size_t>::iterator pset = primeset.begin();
 		Fvect::iterator pvec = _primes_.begin();
 		for ( ; pvec != _primes_.end() ; ++pset, ++pvec) { // dumping set to vect
 			*pvec = *pset ;
@@ -290,11 +289,10 @@ namespace LinBox
 
 #endif // __LINBOX_algorithms_rns_INL
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

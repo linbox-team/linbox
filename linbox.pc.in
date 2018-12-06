@@ -8,7 +8,11 @@ Name: linbox
 Description: Exact Linear Algebra library
 URL: http://github.com/linbox-team/linbox
 Version: @VERSION@
+<<<<<<< HEAD
 Requires: fflas-ffpack >= 2.3.1
+=======
+Requires: fflas-ffpack >= 2.3.1, givaro >= 4.0.5
+>>>>>>> master
 Libs: -L${libdir} -llinbox @LINBOXSAGE_LIBS@ @NTL_LIBS@ @MPFR_LIBS@ @FPLLL_LIBS@ @IML_LIBS@ @FLINT_LIBS@ @OCL_LIBS@
 Cflags: @DEFAULT_CFLAGS@ -DDISABLE_COMMENTATOR -I${includedir} @NTL_CFLAGS@ @MPFR_CFLAGS@ @FPLLL_CFLAGS@  @IML_CFLAGS@ @FLINT_CFLAGS@ 
 \-------------------------------------------------------

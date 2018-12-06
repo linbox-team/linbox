@@ -1,4 +1,3 @@
-
 /* tests/test-solve.C
  * Copyright (C) 2001, 2002 Bradford Hovinen
  *
@@ -285,7 +284,7 @@ static bool testSingularConsistentSolve (const Field          &F,
 					 const char           *text,
 					 MethodTraits          method)
 {
-	typedef Diagonal <Field, Vector> Blackbox;
+	typedef Diagonal <Field> Blackbox;
 
 	ostringstream str;
 	str << "Testing singular consistent solve (" << text << ")";
@@ -329,7 +328,7 @@ static bool testSingularConsistentSolve (const Field          &F,
 		VD.write (report, b);
 		report << endl;
 
-		BlasVector<Field> dd(F,d);
+		typename Blackbox::Vector_t dd(F,d);
 		Blackbox D (dd);
 		//Blackbox D (d);
 
@@ -366,7 +365,7 @@ static bool testSingularConsistentSolve (const Field          &F,
 			Report << "ERROR: Inconsistent system exception" << endl;
 
 			Report << "Certificate is: ";
-			VD.write (Report, e.u ()) << endl;
+			VD.write (Report, e.certificate ()) << endl;
 
 			ret = false;
 
@@ -407,7 +406,7 @@ static bool testSingularInconsistentSolve (const Field          &F,
 					   const char           *text,
 					   MethodTraits          method)
 {
-	typedef Diagonal <Field, Vector> Blackbox;
+	typedef Diagonal <Field> Blackbox;
 
 	ostringstream str;
 	str << "Testing singular inconsistent solve (" << text << ")";
@@ -429,7 +428,7 @@ static bool testSingularInconsistentSolve (const Field          &F,
 	VectorWrapper::ensureDim (d1, stream1.dim ());
 
 	MethodTraits traits (method);
-	traits.preconditioner (MethodTraits::NONE);
+	traits.preconditioner (MethodTraits::NO_PRECONDITIONER);
 
 	while (stream1 && stream2) {
 		commentator().startIteration ((unsigned)stream1.j ());
@@ -448,7 +447,7 @@ static bool testSingularInconsistentSolve (const Field          &F,
 		VD.write (report, b);
 		report << endl;
 
-		BlasVector<Field> dd(F,d);
+		typename Blackbox::Vector_t dd(F,d);
 		Blackbox D (dd);
 		//Blackbox D (d);
 
@@ -781,7 +780,7 @@ int main (int argc, char **argv)
         typedef Givaro::Modular<double> Field;
 
 	parseArguments (argc, argv, args);
-	Field F (q); Field::RandIter gen(F);
+	Field F (q); Field::RandIter gen(F); Field::NonZeroRandIter nzgen(gen);
 
 	commentator().start("Solve test suite", "solve");
 
@@ -792,18 +791,20 @@ int main (int argc, char **argv)
 	commentator().getMessageClass (PROGRESS_REPORT).setMaxDepth (5);
 	//commentator().getMessageClass (BRIEF_REPORT).setMaxDepth (4);
 
-	RandomDenseStream<Field> stream1 (F, gen, n, (unsigned int)iterations), stream2 (F, gen, n, (unsigned int)iterations);
+	RandomDenseStream<Field,BlasVector<Field>, Field::NonZeroRandIter> stream1 (F, nzgen, n, (unsigned int)iterations), stream2 (F, nzgen, n, (unsigned int)iterations);
 	RandomDenseStream<Field> stream3 (F, gen, r, (unsigned int)iterations), stream4 (F, gen, r, (unsigned int)iterations);
 	RandomSparseStream<Field> stream6 (F, gen, (double) r / (double) n, n, (unsigned int)iterations);
 	RandomSparseStream<Field> A_stream (F, gen, (double) r / (double) n, n, m);
-
+#if 0
 	Method::Wiedemann WM;
 	if (!testIdentitySolve               (F, stream1, "Wiedemann", WM))
 		pass = false;
 	if (!testNonsingularSolve            (F, stream1, stream2, "Wiedemann", WM))
 		pass = false;
+#endif
 #if 1
 	Method::BlockWiedemann BWM;
+        BWM.blockingFactor (N);
 	if (!testIdentitySolve               (F, stream1, "BlockWiedemann", BWM))
 		pass = false;
 	if (!testNonsingularSolve            (F, stream1, stream2, "BlockWiedemann", BWM))
@@ -851,9 +852,11 @@ int main (int argc, char **argv)
 	if (!testRandomSolve (F, A_stream, stream1, "Block Lanczos", traits2))
 		pass = false;
 #endif
+#if 0
+        
     if ( ! testBasicMethodsSolve (F, n) )
 		pass = false;
-
+#endif
 	commentator().stop("solve test suite");
     //std::cout << (pass ? "passed" : "FAILED" ) << std::endl;
 
@@ -862,8 +865,8 @@ int main (int argc, char **argv)
 
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

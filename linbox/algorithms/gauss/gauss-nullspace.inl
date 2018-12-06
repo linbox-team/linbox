@@ -42,14 +42,14 @@ namespace LinBox
 	// U is supposed full Rank upper triangular
 	template <class _Field>
 	template <class _Matrix, class Perm, class Block> inline Block&
-	GaussDomain<_Field>::nullspacebasis(Block& x, unsigned long Rank, const _Matrix& U, const Perm& P)  const
+	GaussDomain<_Field>::nullspacebasis(Block& x, size_t Rank, const _Matrix& U, const Perm& P)  const
 	{
 		if (Rank == 0) {
 			for(size_t i=0; i<U.coldim(); ++i)
 				x.setEntry(i,i,field().one);
 		}
 		else {
-			unsigned long nullity = U.coldim()-Rank;
+			size_t nullity = U.coldim()-Rank;
 			if (nullity != 0) {
 				// compute U2T s.t. U = [ U1 | -U2T^T ]
 				_Matrix U2T(field(),nullity,Rank);
@@ -99,7 +99,7 @@ namespace LinBox
 	GaussDomain<_Field>::nullspacebasisin(Block& x, _Matrix& A)  const
 	{
 		typename Field::Element Det;
-		unsigned long Rank;
+		size_t Rank;
 		size_t Ni(A.rowdim()),Nj(A.coldim());
 
 		Permutation<Field> P(field(),(int)Nj);
@@ -143,12 +143,10 @@ namespace LinBox
 
 #endif // __LINBOX_gauss_nullspace_INL
 
-
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

@@ -33,13 +33,14 @@
 
 #include "linbox/util/timer.h"
 
-#include "givaro/givtimer.h"
 #if defined(__LINBOX_USE_OPENMP) and defined(__GIVARO_USE_OPENMP)
 #include <omp.h>
+#include "givaro/givomptimer.h"
 namespace LinBox {
     typedef Givaro::OMPTimer CTimer;
 }
 #else
+#include "givaro/givtimer.h"
 namespace LinBox {
     typedef Givaro::Timer CTimer;
 }
@@ -79,18 +80,18 @@ namespace LinBox
     protected:
         Sequence                          *_container;
         const Domain                      *_MD;
-        unsigned long            EARLY_TERM_THRESHOLD;
+        size_t            EARLY_TERM_THRESHOLD;
 
 
     public:
 
         BlockCoppersmithDomain (const BlockCoppersmithDomain<Field,
-Sequence> &Mat, unsigned long ett_default =
+Sequence> &Mat, size_t ett_default =
 DEFAULT_BLOCK_EARLY_TERM_THRESHOLD) :
             _container(Mat._container), _MD(Mat._MD),
             EARLY_TERM_THRESHOLD (ett_default)
         {}
-        BlockCoppersmithDomain (const Domain& MD, Sequence *D, unsigned long ett_default
+        BlockCoppersmithDomain (const Domain& MD, Sequence *D, size_t ett_default
 = DEFAULT_BLOCK_EARLY_TERM_THRESHOLD) :
             _container(D), _MD(&MD),
 EARLY_TERM_THRESHOLD (ett_default)
@@ -329,7 +330,7 @@ EARLY_TERM_THRESHOLD (ett_default)
 			inline const Field &field() const { return domain().field();}
 			//Constructor
 			explicit BM_iterator(BM_Seq& s,
-                                             unsigned long earlyTermThreshold=DEFAULT_BLOCK_EARLY_TERM_THRESHOLD,
+                                             size_t earlyTermThreshold=DEFAULT_BLOCK_EARLY_TERM_THRESHOLD,
                                              typename BM_Seq::size_type elinit=0) :
 				 _MD(&s.domain()),  _seq(s)
 			{
@@ -865,11 +866,10 @@ EARLY_TERM_THRESHOLD (ett_default)
 
 #endif // __LINBOX_coppersmith_block_domain_H
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

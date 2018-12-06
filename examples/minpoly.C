@@ -1,4 +1,3 @@
-
 /*
  * examples/minpoly.C
  *
@@ -43,6 +42,7 @@ void printPolynomial (const Field &F, const Polynomial &v)
 
 #include <linbox/ring/modular.h>
 #include <linbox/matrix/sparse-matrix.h>
+#include <linbox/blackbox/compose.h>
 #include <linbox/solutions/minpoly.h>
 
 using namespace LinBox;
@@ -78,15 +78,19 @@ int main (int argc, char **argv)
 #endif
 
 		Givaro::ZRing<Integer> ZZ;
-		SparseMatrix<Givaro::ZRing<Integer>> A (ZZ);
-		A.read (input);
-		/*
 		typedef SparseMatrix<Givaro::ZRing<Integer>> SpMat;
+		/*
+		SpMat A (ZZ);
+		A.read (input);
+		*/
 		SpMat B (ZZ);
 		B.read (input);
-		Transpose<SpMat> BT(B);
-		Compose<SpMat, Transpose<SpMat> > A(B,BT);
-		*/
+		typedef Transpose<SpMat> BB2;
+		BB2 BT(B);
+//		typedef DenseMatrix<Givaro::ZRing<Integer> > BB2;
+//		BB2 BT(ZZ, B.coldim(), B.rowdim());
+//		BT.random();
+		Compose<SpMat, BB2 > A(B,BT);
 
 		if(process == 0)
 			cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
@@ -132,8 +136,8 @@ int main (int argc, char **argv)
 
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
 /*
  * Copyright (C) 2015  Pascal Giorgi
  *
@@ -75,7 +74,7 @@ namespace LinBox{
 			_field(&F), _maxnorm(maxnorm) {}
 
 		template<typename PMatrix1, typename PMatrix2, typename PMatrix3>
-		void mul (PMatrix1 &c, const PMatrix2 &a, const PMatrix3 &b, size_t max_rowdeg=0) {
+		void mul (PMatrix1 &c, const PMatrix2 &a, const PMatrix3 &b, size_t max_rowdeg=0) const {
 			//compute a bound on the entry of the input matrix a and b
 			FFT_PROFILE_START(2);
 			integer maxA,maxB;
@@ -94,7 +93,7 @@ namespace LinBox{
 
 		template<typename PMatrix1, typename PMatrix2, typename PMatrix3>
 		void midproduct (PMatrix1 &c, const PMatrix2 &a, const PMatrix3 &b,
-						 bool smallLeft=true, size_t n0=0, size_t n1=0) {
+						 bool smallLeft=true, size_t n0=0, size_t n1=0) const {
 			//compute a bound on the entry of the input matrix a and b
 			FFT_PROFILE_START(2);
 			integer maxA,maxB;
@@ -121,7 +120,7 @@ namespace LinBox{
 		// outputsize -> its the size of the output if known in advance and less than a.size()+b.size()-1
 		template< typename PMatrix1,typename PMatrix2, typename PMatrix3>
 		void mul_crtla(PMatrix1 &c, const PMatrix2 &a, const PMatrix3 &b,
-					   const integer& maxA, const integer& maxB, const integer& bound, size_t max_rowdeg=0) {
+					   const integer& maxA, const integer& maxB, const integer& bound, size_t max_rowdeg=0) const {
 			//std::cout<<"MUL CRT LA STARTING: "<<STR_MEMINFO<<std::endl;      
 			FFT_PROFILE_START(2);
 			linbox_check(a.coldim() == b.rowdim());
@@ -190,7 +189,7 @@ namespace LinBox{
 					integer bound=integer(RNS._basis[l]-1)*integer(RNS._basis[l]-1)
 						*integer((uint64_t) k)*integer((uint64_t)std::min(a.size(),b.size()));
 #ifdef CHECK_MATPOL_MUL
-					MatrixP_F copy_a_i(f, m, k, pts),copy_b_i(f, k, n, pts);
+					Matrixp_F copy_a_i(f, m, k, pts),copy_b_i(f, k, n, pts);
 					copy_a_i.copy(a_i);
 					copy_b_i.copy(b_i);
 #endif		 
@@ -334,7 +333,7 @@ namespace LinBox{
 		template< typename PMatrix1,typename PMatrix2, typename PMatrix3>
 		void midproduct_crtla(PMatrix1 &c, const PMatrix2 &a, const PMatrix3 &b,
 							  const integer& maxA, const integer& maxB, const integer& bound,
-							  bool smallLeft=true, size_t n0=0, size_t n1=0) {
+							  bool smallLeft=true, size_t n0=0, size_t n1=0) const {
 			// void midproduct_crtla(MatrixP_I &c, const MatrixP_I &a, const MatrixP_I &b,
 			// 			  const integer& maxA, const integer& maxB, const integer& bound,
 			// 			  bool smallLeft=true, size_t n0=0, size_t n1=0) {
@@ -621,7 +620,7 @@ namespace LinBox{
 		}
 
 		template<typename Matrix1, typename Matrix2, typename Matrix3>
-		void mul (Matrix1 &c, const Matrix2 &a, const Matrix3 &b, size_t max_rowdeg=0) {
+		void mul (Matrix1 &c, const Matrix2 &a, const Matrix3 &b, size_t max_rowdeg=0) const {
 			FFT_PROFILE_START(2);
 			MatrixP_F a2(field(),a.rowdim(),a.coldim(),a.size());
 			MatrixP_F b2(field(),b.rowdim(),b.coldim(),b.size());
@@ -637,7 +636,7 @@ namespace LinBox{
 		}
     
 		// Matrix with polynomials  
-		void mul (MatrixP_F &c, const MatrixP_F &a, const MatrixP_F &b, size_t max_rowdeg=0) {
+		void mul (MatrixP_F &c, const MatrixP_F &a, const MatrixP_F &b, size_t max_rowdeg=0) const {
 			FFT_PROFILE_START(2);
 			IntField Z;
 			Givaro::Integer pp(_p);
@@ -654,7 +653,7 @@ namespace LinBox{
 
 		template<typename Matrix1, typename Matrix2, typename Matrix3>
 		void midproduct (Matrix1 &c, const Matrix2 &a, const Matrix3 &b,
-						 bool smallLeft=true, size_t n0=0, size_t n1=0) {
+						 bool smallLeft=true, size_t n0=0, size_t n1=0) const {
 
 			MatrixP_F a2(field(),a.rowdim(),a.coldim(),a.size());
 			MatrixP_F b2(field(),b.rowdim(),b.coldim(),b.size());
@@ -666,7 +665,7 @@ namespace LinBox{
 		} 
 
 		void midproduct (MatrixP_F &c, const MatrixP_F &a, const MatrixP_F &b,
-						 bool smallLeft=true, size_t n0=0, size_t n1=0) {
+						 bool smallLeft=true, size_t n0=0, size_t n1=0) const {
 			FFT_PROFILE_START(2);
 			IntField Z;
 			Givaro::Integer pp(_p);
@@ -695,3 +694,11 @@ namespace LinBox{
 } // end of namespace LinBox
 
 #endif // __LINBOX_matpoly_mult_ftt_multiprecision_INL
+
+// Local Variables:
+// mode: C++
+// tab-width: 4
+// indent-tabs-mode: nil
+// c-basic-offset: 4
+// End:
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

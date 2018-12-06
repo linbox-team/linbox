@@ -31,11 +31,11 @@
 namespace LinBox
 {
 	template <class _Field>
-	template <class _Matrix> unsigned long&
-	GaussDomain<_Field>::rankin(unsigned long &Rank,
+	template <class _Matrix> size_t&
+	GaussDomain<_Field>::rankin(size_t &Rank,
 				    _Matrix        &A,
-				    unsigned long  Ni,
-				    unsigned long  Nj,
+				    size_t  Ni,
+				    size_t  Nj,
 				    SparseEliminationTraits::PivotStrategy   reord)  const
 	{
 		Element determinant;
@@ -47,8 +47,8 @@ namespace LinBox
 
 
 	template <class _Field>
-	template <class _Matrix> unsigned long&
-	GaussDomain<_Field>::rankin(unsigned long &Rank,
+	template <class _Matrix> size_t&
+	GaussDomain<_Field>::rankin(size_t &Rank,
 				    _Matrix        &A,
 				    SparseEliminationTraits::PivotStrategy   reord)  const
 	{
@@ -58,8 +58,8 @@ namespace LinBox
 
 
 	template <class _Field>
-	template <class _Matrix> unsigned long&
-	GaussDomain<_Field>::rank(unsigned long &rk,
+	template <class _Matrix> size_t&
+	GaussDomain<_Field>::rank(size_t &rk,
 				  const _Matrix        &A,
 				  SparseEliminationTraits::PivotStrategy   reord)  const
 	{
@@ -67,15 +67,15 @@ namespace LinBox
 	}
 
 	template <class _Field>
-	template <class _Matrix> unsigned long&
-	GaussDomain<_Field>::rank(unsigned long &Rank,
+	template <class _Matrix> size_t&
+	GaussDomain<_Field>::rank(size_t &Rank,
 				  const _Matrix        &A,
-				  unsigned long  Ni,
-				  unsigned long  Nj,
+				  size_t  Ni,
+				  size_t  Nj,
 				  SparseEliminationTraits::PivotStrategy   reord)  const
 	{
 		_Matrix CopyA(Ni);
-		for(unsigned long i = 0; i < Ni; ++i)
+		for(size_t i = 0; i < Ni; ++i)
 			CopyA[i] = A[i];
 		return rankin(Rank, CopyA, Ni, Nj, reord);
 	}
@@ -83,11 +83,10 @@ namespace LinBox
 
 #endif // __LINBOX_gauss_rank_INL
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

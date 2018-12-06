@@ -233,9 +233,9 @@ namespace Linbox
 						/////////////////////////
 		
         template < class _Field, class _Rep, class _VectorElement >
-	void SlicedPolynomialVector< _Field, _Rep, _VectorElement >::setEntry (size_t m, size_t k, const VectorElement &a_mk)
+	const VectorElement& SlicedPolynomialVector< _Field, _Rep, _VectorElement >::setEntry (size_t m, size_t k, const VectorElement &a_mk)
 	{
-		V[m].setEntry(k, a_mk);
+		return V[m].setEntry(k, a_mk);
 	}
 
 	template < class _Field, class _Rep, class _VectorElement >
@@ -327,3 +327,11 @@ namespace Linbox
 }
 
 #endif
+
+// Local Variables:
+// mode: C++
+// tab-width: 4
+// indent-tabs-mode: nil
+// c-basic-offset: 4
+// End:
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

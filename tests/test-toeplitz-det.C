@@ -68,7 +68,7 @@ int main(int argc, char* argv[])
 	bool pass = true;
 #ifdef __LINBOX_HAVE_NTL
 	srand((unsigned)time(0));
-	RandomPrimeIterator rp;
+	PrimeIterator<IteratorCategories::HeuristicTag> rp(FieldTraits<NTL_zz_p>::bestBitSize());
 	NTL_zz_p CF( *rp ); NTL_zz_p::RandIter randit(CF);
 	NTL_zz_pX PF(CF);
 	
@@ -147,11 +147,10 @@ int main(int argc, char* argv[])
 #endif
 }
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

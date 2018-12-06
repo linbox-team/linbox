@@ -91,7 +91,7 @@ namespace LinBox
 		}
 
 		template<typename Field>
-		typename Field::Element& operator()(typename Field::Element& d, const Field& F)
+		IterationResult operator()(typename Field::Element& d, const Field& F)
 		{
 
 			if (beta > 1) {
@@ -104,7 +104,8 @@ namespace LinBox
 					D.init(current_moduli, moduli[iter_count2]);
 					D.div(kbeta, current_moduli,pbeta);
 					++this->iter_count2;
-					return d=kbeta;
+					d=kbeta;
+					return IterationResult::CONTINUE;
 				}
 			}
 
@@ -123,7 +124,7 @@ namespace LinBox
 			}
 			++this->iter_count;
 
-			return d;
+			return IterationResult::CONTINUE;
 		}
 
 		void Beta(Integer& b) { beta = b; iter_count2=0;}
@@ -154,7 +155,7 @@ namespace LinBox
 							 const MyMethod                            &M)
 	{
 		//commentator().setReportStream(std::cout);
-		typedef Givaro::Modular<double> mymodular;
+		typedef Givaro::ModularBalanced<double> mymodular;
 		typedef typename Blackbox::Field Integers;
 		typedef typename Integers::Element Integer_t;
 
@@ -169,9 +170,7 @@ namespace LinBox
 		Integer_t beta = 1;
 		d=1;
 
-		double p_size = 26-(int)ceil(log((double)A.rowdim())*0.7213475205);
-
-		RandomPrimeIterator genprime( (Integer_t)p_size );
+		PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<mymodular>::bestBitSize(A.coldim()));
 		//cout << "prime size: " << p_size << "\n";
 		EarlySingleCRA<mymodular> cra(4UL);
 		IntegerModularDetReduced<Blackbox,MyMethod> iteration(A, M, beta,myfactor);
@@ -198,7 +197,8 @@ namespace LinBox
 			iteration.primes[early_counter] = *genprime;
 			mymodular::Element r;
 			D.assign(r,D.zero);
-			cra.initialize( D, iteration(r, D));
+			iteration(r, D);
+			cra.initialize( D, r);
 			++early_counter;
 		}
 
@@ -210,7 +210,8 @@ namespace LinBox
 			// prime(p, early_counter);
 			mymodular::Element r;
 			D.assign(r,D.zero);
-			cra.progress( D, iteration(r, D));
+			iteration(r,D);
+			cra.progress( D, r);
 			++early_counter;
 		}
 
@@ -240,7 +241,8 @@ namespace LinBox
 				//		prime(p, early_counter);
 				mymodular::Element r;
 				D.assign(r,D.zero);
-				cra.progress( D, iteration(r, D));
+				iteration(r, D);
+				cra.progress( D, r);
 				++early_counter;
 			}
 			commentator().stop ( "zero step", NULL, "det");
@@ -249,15 +251,16 @@ namespace LinBox
 			return d;
 		}
 
-		RandomPrime genprime1( 26-(int)ceil(log((double)A.rowdim())*0.7213475205));
+		PrimeIterator<IteratorCategories::HeuristicTag> genprime1(FieldTraits<mymodular>::bestBitSize(A.coldim()));
+                
 		Integers ZZ;
-		RationalSolver < Integers , mymodular, RandomPrime, DixonTraits > RSolver(A. field(), genprime);
+		RationalSolver < Integers , mymodular, PrimeIterator<IteratorCategories::HeuristicTag>, DixonTraits > RSolver(A. field(), genprime);
 #endif
-		RationalSolver < Integers , mymodular, RandomPrimeIterator, DixonTraits > RSolver;
+		RationalSolver < Integers , mymodular, PrimeIterator<IteratorCategories::HeuristicTag>, DixonTraits > RSolver;
 
 		BlasVector<Integers> r_num1 (A.field(),A. coldim());
 
-		LastInvariantFactor < Integers ,RationalSolver < Integers, mymodular, RandomPrimeIterator, DixonTraits > >  LIF(RSolver);
+		LastInvariantFactor < Integers ,RationalSolver < Integers, mymodular, PrimeIterator<IteratorCategories::HeuristicTag>, DixonTraits > >  LIF(RSolver);
 #ifdef _LB_H_DET_TIMING
 		BT.start();
 #endif
@@ -295,8 +298,7 @@ namespace LinBox
 		beta = lif*bonus;
 		iteration.Beta(beta);
 
-		//RandomPrime genprime2( 26-(int)ceil(log((double)A.rowdim())*0.7213475205));
-		EarlySingleCRA< Givaro::Modular<double> > cra2(4UL);
+		EarlySingleCRA<mymodular> cra2(4UL);
 		Integer_t k = 1;
 
 		early_counter = 0;
@@ -304,7 +306,8 @@ namespace LinBox
 			mymodular D(iteration.primes[early_counter]);
 			mymodular::Element r;
 			D.assign(r,D.zero);
-			cra2.progress( D, iteration(r, D) );
+			iteration(r,D);
+			cra2.progress( D, r );
 			++early_counter;
 		}
 
@@ -333,14 +336,15 @@ namespace LinBox
 				//iteration.Moduli(moduli);
 				//iteration.Primes(primes);
 				k=1;
-				EarlySingleCRA< Givaro::Modular<double> > cra3(4UL);
+				EarlySingleCRA<mymodular> cra3(4UL);
 
 				early_counter = 0;
 				while ( (early_counter < myfactor) && (!cra3.terminated() )) {
 					mymodular D(iteration.primes[early_counter]);
 					mymodular::Element r;
 					D.assign(r,D.zero);
-					cra3.progress( D, iteration(r, D));
+					iteration(r,D);
+					cra3.progress( D, r);
 					++early_counter;
 					//iteration.Inc();
 				}
@@ -363,7 +367,8 @@ namespace LinBox
 						mymodular D(*genprime);
 						mymodular::Element r;
 						D.assign(r,D.zero);
-						cra3.progress( D, iteration(r, D));
+						iteration(r,D);
+						cra3.progress( D, r);
 					}
 					cra3.result(k);
 					commentator().stop ("third step, bonus > 1", NULL, "det");
@@ -380,7 +385,8 @@ namespace LinBox
 					mymodular D(*genprime);
 					mymodular::Element r;
 					D.assign(r,D.zero);
-					cra2.progress( D, iteration(r, D));
+					iteration(r,D);
+					cra2.progress( D, r);
 				}
 				cra2.result(k);
 				commentator().stop ("third step, bonus = 1", NULL, "det");
@@ -395,7 +401,8 @@ namespace LinBox
 				mymodular D(*genprime);
 				mymodular::Element r;
 				D.assign(r,D.zero);
-				cra2.progress( D, iteration(r, D));
+				iteration(r,D);
+				cra2.progress( D, r);
 			}
 			cra2.result(k);
 			commentator().stop ("second step+", NULL, "det");
@@ -436,7 +443,7 @@ namespace LinBox
 	{
 
 		//commentator().setReportStream(std::cout);
-		typedef Givaro::Modular<double> mymodular;
+		typedef Givaro::ModularBalanced<double> mymodular;
 		//typedef Givaro::ZRing<Integer> Integers;
 		typedef typename Integers::Element Integer;
 
@@ -451,9 +458,8 @@ namespace LinBox
 		Integer beta = 1;
 		d=1;
 
-		double p_size = 26-(int)ceil(log((double)A.rowdim())*0.7213475205);
+                PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<mymodular>::bestBitSize(A.coldim()));
 
-		RandomPrime genprime( (Integer)p_size );
 		commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION) << "prime size: " << p_size << "\n";
 		ChineseRemainder< mymodular > cra(3UL);
 		IntegerModularDetReduced<SparseMatrix<Integers >,MyMethod> iteration(A, M, beta,myfactor);
@@ -478,7 +484,8 @@ namespace LinBox
                 iteration.primes[early_counter] = p;
                 mymodular::Element r;
                 D.assign(r,D.zero);
-                cra.initialize( D, iteration(r, D));
+		iteration(r,D);
+                cra.initialize( D, r);
                 ++early_counter;
 
 		while ( early_counter < myfactor && !cra.terminated() ) {
@@ -489,7 +496,8 @@ namespace LinBox
 			//          prime(p, early_counter);
 			mymodular::Element r;
 			D.assign(r,D.zero);
-			cra.progress( D, iteration(r, D));
+			iteration(r,D);
+			cra.progress( D,r);
 			++early_counter;
 		}
 
@@ -516,7 +524,8 @@ namespace LinBox
 				//          prime(p, early_counter);
 				mymodular::Element r;
 				D.assign(r,D.zero);
-				cra.progress( D, iteration(r, D));
+				iteration(r,D);
+				cra.progress( D, r);
 				++early_counter;
 			}
 			commentator().stop ( "zero step", NULL, "det");
@@ -525,10 +534,10 @@ namespace LinBox
 			return d;
 		}
 
-		RandomPrime genprime1( 26-(int)ceil(log((double)A.rowdim())*0.7213475205));
-		Integers ZZ;
+                PrimeIterator<IteratorCategories::HeuristicTag> genprime1(FieldTraits<mymodular>::bestBitSize(A.coldim()));
+                Integers ZZ;
 #endif
-		typedef RationalSolver < Integers , mymodular, RandomPrime, BlockHankelTraits > Solver;
+		typedef RationalSolver < Integers , mymodular, PrimeIterator<IteratorCategories::HeuristicTag>, BlockHankelTraits > Solver;
 		Solver RSolver(A. field(), genprime);
 
 		typename Vector<Integers>:: Dense r_num1 (A. coldim());
@@ -566,7 +575,6 @@ namespace LinBox
 		beta = lif*bonus;
 		iteration.Beta(beta);
 
-		//RandomPrime genprime2( 26-(int)ceil(log((double)A.rowdim())*0.7213475205));
 		ChineseRemainder< Givaro::Modular<double> > cra2(3UL);
 		Integer k = 1;
 
@@ -575,7 +583,8 @@ namespace LinBox
 			mymodular D(iteration.primes[early_counter]);
 			mymodular::Element r;
 			D.assign(r,D.zero);
-			cra2.progress( D, iteration(r, D));
+			iteration(r,D);
+			cra2.progress( D, r);
 			++early_counter;
 		}
 
@@ -611,7 +620,8 @@ namespace LinBox
 					mymodular D(iteration.primes[early_counter]);
 					mymodular::Element r;
 					D.assign(r,D.zero);
-					cra3.progress( D, iteration(r, D));
+					iteration(r,D);
+					cra3.progress( D, r);
 					++early_counter;
 					//iteration.Inc();
 				}
@@ -634,7 +644,8 @@ namespace LinBox
 						mymodular D(p);
 						mymodular::Element r;
 						D.assign(r,D.zero);
-						cra3.progress( D, iteration(r, D));
+						iteration(r,D);
+						cra3.progress( D, r);
 					}
 					cra3.result(k);
 					commentator().stop ("third step, bonus > 1", NULL, "det");
@@ -651,7 +662,8 @@ namespace LinBox
 					mymodular D(p);
 					mymodular::Element r;
 					D.assign(r,D.zero);
-					cra2.progress( D, iteration(r, D));
+					iteration(r,D);
+					cra2.progress( D, r);
 				}
 				cra2.result(k);
 				commentator().stop ("third step, bonus = 1", NULL, "det");
@@ -666,7 +678,8 @@ namespace LinBox
 				mymodular D(p);
 				mymodular::Element r;
 				D.assign(r,D.zero);
-				cra2.progress( D, iteration(r, D));
+				iteration(r,D);
+				cra2.progress( D, r);
 			}
 			cra2.result(k);
 			commentator().stop ("second step+", NULL, "det");
@@ -703,15 +716,10 @@ namespace LinBox
 
 #endif // __LINBOX_hybrid_det_H
 
-
-
-
-
-
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

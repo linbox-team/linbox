@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
-// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /*
  * Copyright (C) 2013  Pascal Giorgi
  *
@@ -271,15 +269,16 @@ int main(int argc, char** argv){
 
 	//Modular<double,double>
 	
-	bits = 22;
-	Rd = RandomFFTPrime (1<<bits,seed);
-	p = (double)Rd.randomPrime(l2n);
+	// bits = 22;
+	// Rd = RandomFFTPrime (1<<bits,seed);
+	// p = (double)Rd.randomPrime(l2n);
 
-	cout<<"prime : "<<p<<endl;
-	cout<<endl;
+	// cout<<"prime : "<<p<<endl;
+	// cout<<endl;
 
-	Givaro::Modular<double> Fd(p);
-	cout << "Test Modular<double,double>: " << ((check_DIF(Fd,k,seed))?"OK":"KO!!!!") << endl;
+	// Givaro::Modular<double> Fd(p);
+	// cout << "Test Modular<double,double>: " << ((check_DIF(Fd,k,seed))?"OK":"KO!!!!") << endl;
+
 	/*
 #ifdef __FFLASFFPACK_HAVE_INT128
 	//Modular<int64_t,uint128_t>
@@ -329,4 +328,10 @@ int main(int argc, char** argv){
 	return 0;
 }
 
-
+// Local Variables:
+// mode: C++
+// tab-width: 4
+// indent-tabs-mode: nil
+// c-basic-offset: 4
+// End:
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

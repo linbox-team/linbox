@@ -23,31 +23,30 @@ pkgincludesubdir=$(pkgincludedir)/matrix/sparsematrix
 
 
 pkgincludesub_HEADERS =         \
-	sparse-domain.h         \
+	sparse-associative-vector.h      \
+	sparse-associative-vector.inl    \
 	sparse-coo-matrix.h     \
 	sparse-coo-implicit-matrix.h     \
 	sparse-csr-matrix.h     \
+	sparse-domain.h         \
 	sparse-ell-matrix.h     \
 	sparse-ellr-matrix.h    \
+	sparse-generic.h \
+	sparse-generic.inl \
 	sparse-hyb-matrix.h     \
+	sparse-map-map-matrix.h \
+	sparse-map-map-matrix.inl \
+	sparse-parallel-vector.h         \
+	sparse-parallel-vector.inl       \
+	sparse-sequence-vector.h         \
+	sparse-sequence-vector.inl       \
 	sparse-tpl-matrix.h     \
 	sparse-tpl-matrix.inl   \
 	sparse-tpl-matrix-omp.h  \
 	sparse-tpl-matrix-omp.inl  \
-	sparse-generic.h \
-	sparse-generic.inl \
-	sparse-associative-vector.h      \
-	sparse-associative-vector.inl    \
-        sparse-parallel-vector.h         \
-        sparse-parallel-vector.inl       \
-        sparse-sequence-vector.h         \
-	triples-coord.h  \
 	read-write-sparse.h \
-	read-write-sparse.inl \
-        sparse-sequence-vector.inl
-
-
-
+	triples-coord.h  \
+	read-write-sparse.inl
 
 #  sparse-coo-1-matrix.h     \
 #  sparse-csr-1-matrix.h     \

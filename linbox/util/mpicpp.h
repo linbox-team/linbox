@@ -1,6 +1,5 @@
-/* Copyright (C) 2010 LinBox
- *
- *
+/* Copyright (C) 2018 The LinBox group
+ * Updated by Hongguang Zhu <zhuhongguang2014@gmail.com>
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -25,113 +24,76 @@
 #define __LINBOX_mpicpp_H
 
 #ifndef __LINBOX_HAVE_MPI
-typedef int Communicator;
+namespace LinBox {
+    // Dummy declaration.
+    using Communicator = int;
+}
 #else
-#include <iterator>
 
-// problem of mpi(ch2) in C++
-#undef SEEK_SET
-#undef SEEK_CUR
-#undef SEEK_END
 #include <mpi.h>
 
+namespace LinBox {
+    /**
+     * MPI-based communicator to send/receive LinBox data (like matrices).
+     */
+    class Communicator {
+    public:
+        enum class ThreadMode : int {
+            Single = MPI_THREAD_SINGLE,         // Only one thread.
+            Funneled = MPI_THREAD_FUNNELED,     // Only main thread will make the MPI calls.
+            Serialized = MPI_THREAD_SERIALIZED, // Any thread can make MPI calls, but never concurrently.
+            Multiple = MPI_THREAD_MULTIPLE,     // No restriction.
+        };
 
-namespace LinBox
-{
-	/* Idea:  Only use ssend for send.
-	*/
-	class Communicator {
-	public:
-		// constructors and destructor
+    public:
+        /**
+         * Main (boss) communicator.
+         * Calls MPI_Init and MPI_Finalize.
+         */
+        Communicator(int* argc, char*** argv);
+        Communicator(int* argc, char*** argv, ThreadMode threadMode);
 
-		// constructor from existing communicator
-		//`Communicator(MPI_Comm comm = MPI_COMM_NULL);
-		Communicator(MPI_Comm comm);
-		// MPI_initializing constructor
-		// When this communicator is destroyed MPI is shut down (finalized).
-		Communicator(int* ac, char*** av);
+        // Non-boss from already existing communicator.
+        Communicator(const Communicator& communicator);
 
-		// copy constructor
-		Communicator(const Communicator& D);
+        ~Communicator();
 
-		~Communicator();
+        // Accessors
+        int size() const { return _size; }
+        int rank() const { return _rank; }
+        MPI_Status status() const { return _status; }
+        MPI_Comm comm() const { return _comm; }
 
-		// accessors
-		int size();
+        // peer to peer communication
+        template <class Ptr> void send(Ptr begin, Ptr end, int dest, int tag);
+        template <class Ptr> void ssend(Ptr begin, Ptr end, int dest, int tag);
+        template <class Ptr> void recv(Ptr begin, Ptr end, int dest, int tag);
+        template <class X> void recv(X* begin, X* end, int dest, int tag);
 
-		int rank();
+        // whole object communication
+        template <class T> void send(const T& value, int dest);
+        template <class T> void ssend(const T& value, int dest);
+        template <class T> void recv(T& value, int src);
+        template <class T> void bcast(T& value, int src);
 
-		MPI_Status status();
-
-		MPI_Comm mpi_communicator();
-
-		// peer to peer communication
-		template < class Ptr >
-		void send( Ptr b, Ptr e, int dest, int tag);
-
-		template < class Ptr >
-		void ssend( Ptr b, Ptr e, int dest, int tag);
-
-		template < class Ptr >
-		void recv( Ptr b, Ptr e, int dest, int tag);
-
-		template < class X >
-		void send( X *b, X *e, int dest, int tag);
-
-		template < class X >
-		void recv( X *b, X *e, int dest, int tag);
-
-		// whole object send and recv
-		template < class X >
-		void send( X& b, int dest /*, int tag = 0 */);
-
-		template < class X >
-		void ssend( X& b, int dest /*, int tag = 0 */);
-
-		template < class X >
-		void bsend( X& b, int dest);
-
-		template < class X >
-		void recv( X& b, int dest /*, int tag = 0*/);
-		/*
-		   template < vector < class X > >
-		   void send( X& b, int dest );
-		   */
-
-		template < class X >
-		void buffer_attach( X b);
-
-		template < class X >
-		int buffer_detach( X &b, int *size);
-
-
-		// collective communication
-		template < class Ptr, class Function_object >
-		void reduce( Ptr bloc, Ptr eloc, Ptr bres, Function_object binop, int root);
-
-		// member access
-		MPI_Status get_stat();
-
-	protected:
-		MPI_Comm _mpi_comm; // MPI's handle for the communicator
-		bool _mpi_boss; // true of an MPI initializing communicator
-		// There is at most one initializing communicator.
-		MPI_Status stat; // status from most recent receive
-
-	};
-}// namespace LinBox
+    protected:
+        MPI_Comm _comm;       // MPI's handle for the communicator
+        MPI_Status _status;   // status from most recent receive
+        int _size = 0;
+        int _rank = 0;
+        bool _boss = false;   // Whether it's a MPI initializing communicator
+    };
+}
 
 #include "mpicpp.inl"
 
-#endif // __LINBOX_HAVE_MPI
-#endif // __LINBOX_mpicpp_H
+#endif
+#endif
 
-
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

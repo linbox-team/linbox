@@ -34,7 +34,7 @@ namespace LinBox
 	template <class _Field>
 	template <class Vector, class D> inline void
 	GaussDomain<_Field>::SparseFindPivot (Vector        	&lignepivot,
-					      unsigned long 	&indcol,
+					      size_t 	&indcol,
 					      long 		&indpermut,
 					      D             	&columns,
 					      Element		&determinant) const
@@ -108,7 +108,7 @@ namespace LinBox
 	template <class _Field>
 	template <class Vector> inline void
 	GaussDomain<_Field>::SparseFindPivot (Vector &lignepivot,
-					      unsigned long &indcol,
+					      size_t &indcol,
 					      long &indpermut,
 					      Element& determinant) const
 	{
@@ -131,7 +131,7 @@ namespace LinBox
 	template <class _Field>
 	template <class Vector> inline void
 	GaussDomain<_Field>::FindPivot (Vector &lignepivot,
-					unsigned long &k,
+					size_t &k,
 					long &indpermut) const
 	{
 		// Dense lignepivot
@@ -159,12 +159,10 @@ namespace LinBox
 
 #endif // __LINBOX_gauss_pivot_INL
 
-
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

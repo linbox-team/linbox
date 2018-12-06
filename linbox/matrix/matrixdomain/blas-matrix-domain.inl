@@ -31,7 +31,7 @@
 
 #ifndef __LINBOX_matrix_matrixdomain_blas_matrix_domain_INL
 #define __LINBOX_matrix_matrixdomain_blas_matrix_domain_INL
-#include "linbox/polynomial/dense-polynomial.h"
+
 namespace LinBox { namespace Protected {
 
 	/*
@@ -1175,7 +1175,7 @@ namespace LinBox
 		{
 			if (B.isIdentity()) return A ;
                         //linbox_check( A.size() == B.getSize() );
-                        linbox_check( A.size() == B.getOrder() );
+                        linbox_check( A.size() >= B.getSize() );
 			FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasNoTrans,
 				       1, 0,(int) B.getOrder(), &A[0], 1, B.getPointer() );
 			return A;
@@ -1187,7 +1187,7 @@ namespace LinBox
 		{
 			if (B.isIdentity()) return A ;
 			//linbox_check( A.size() >= B.getSize() );
-                        linbox_check( A.size() == B.getOrder() );
+                        linbox_check( A.size() >= B.getSize() );
 			FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasNoTrans,
 				       1, 0,(int) B.getOrder(), &A[0], 1, B.getPointer() );
 			return A;
@@ -1203,7 +1203,7 @@ namespace LinBox
 						 const BlasPermutation<size_t>& B) const
 		{
 			if (B.isIdentity()) return A ;
-			linbox_check( A.size() == B.getSize() );
+			linbox_check( A.size() >= B.getSize() );
 			FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasNoTrans,
 				       1, 0,(int) B.getOrder(), A.getPointer(), 1, B.getPointer() );
 			return A;
@@ -2040,50 +2040,31 @@ namespace LinBox
 		return P;
 	}
 
+	template<class Field, class Polynomial, class Matrix>
+	Polynomial &
+	BlasMatrixDomainCharpoly<Field,Polynomial,Matrix>::operator() ( 
+        const Field    &F, Polynomial    &P, const Matrix   &A) const
+	{
+		size_t n = A.coldim();
+		P.clear();
+		linbox_check( n == A.rowdim());
+		typedef typename Matrix::constSubMatrixType constSubMatrixType ;
+		constSubMatrixType A_v(A);
 
-
-        template<class Field, class Polynomial, class Matrix>
-        Polynomial &
-        BlasMatrixDomainCharpoly<Field,Polynomial,Matrix>::operator() ( const Field    &F,
-                                                                        Polynomial     &P,
-                                                                        const Matrix   &A) const
-        {
-            DensePolynomial<Field> PP(F);
-            BlasMatrixDomainCharpoly<Field,LinBox::DensePolynomial<Field> ,Matrix>()(F,PP,A);
-            P.resize(PP.size());
-            for(size_t i=0;i<PP.size();i++)
-                F.assign(P[i],PP[i]);
-            return P;
-        }
-
-        template<class Field, class Matrix>
-        class BlasMatrixDomainCharpoly<Field, DensePolynomial<Field>, Matrix> {
-        public:
-            DensePolynomial<Field> & operator() ( const Field    &F,
-                                                  DensePolynomial<Field>     &P,
-                                                  const Matrix   &A) const
-            {
-                size_t n = A.coldim();
-                P.clear();
-                linbox_check( n == A.rowdim());
-                typedef typename Matrix::constSubMatrixType constSubMatrixType ;
-                constSubMatrixType A_v(A);
-
-                typename DensePolynomial<Field>::Domain_t PolDom(F);
-                FFPACK::CharPoly (PolDom, P, n, A_v.getPointer(), A_v.getStride(),FFPACK::FfpackLUK);
-                return P;
-            }
-        };
+        typename Field::RandIter G(F);
+        typename Givaro::Poly1Dom<Field> PolDom(F);
+        FFPACK::CharPoly (PolDom, P, n, A_v.getPointer(), A_v.getStride(), G);
+		return P;
+	}
 
 } //end of namespace LinBox
 
 #endif // __LINBOX_matrix_matrixdomain_blas_matrix_domain_INL
 
-
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

@@ -47,13 +47,13 @@ namespace LinBox
 {
 	// Specialization over GF2
 	template <class SparseSeqMatrix, class Perm>
-	inline unsigned long&
-	GaussDomain<GF2>::InPlaceLinearPivoting (unsigned long &Rank,
+	inline size_t&
+	GaussDomain<GF2>::InPlaceLinearPivoting (size_t &Rank,
 						 bool          &determinant,
 						 SparseSeqMatrix        &LigneA,
 						 Perm           &P,
-						 unsigned long Ni,
-						 unsigned long Nj) const
+						 size_t Ni,
+						 size_t Nj) const
 	{
 		// Requirements : LigneA is an array of sparse rows
 		// In place (LigneA is modified)
@@ -74,8 +74,8 @@ namespace LinBox
 
 
 		// assignment of LigneA with the domain object
-		for (unsigned long jj = 0; jj < Ni; ++jj)
-			for (unsigned long k = 0; k < LigneA[jj].size (); k++)
+		for (size_t jj = 0; jj < Ni; ++jj)
+			for (size_t k = 0; k < LigneA[jj].size (); k++)
 				++col_density[LigneA[jj][(size_t)k]];
 
 		long last = (long)Ni - 1;
@@ -209,15 +209,15 @@ namespace LinBox
 	}
 
 	// Specialization over GF2
-	template <class SparseSeqMatrix, class Perm> inline unsigned long&
-	GaussDomain<GF2>::QLUPin (unsigned long &Rank,
+	template <class SparseSeqMatrix, class Perm> inline size_t&
+	GaussDomain<GF2>::QLUPin (size_t &Rank,
 				  bool          &determinant,
 				  Perm          &Q,
 				  SparseSeqMatrix        &LigneL,
 				  SparseSeqMatrix        &LigneA,
 				  Perm          &P,
-				  unsigned long Ni,
-				  unsigned long Nj) const
+				  size_t Ni,
+				  size_t Nj) const
 	{
 		linbox_check( Q.coldim() == Q.rowdim() );
 		linbox_check( P.coldim() == P.rowdim() );
@@ -251,8 +251,8 @@ namespace LinBox
 		std::deque<std::pair<size_t,size_t> > invQ;
 
 		// assignment of LigneA with the domain object
-		for (unsigned long jj = 0; jj < Ni; ++jj)
-			for (unsigned long k = 0; k < LigneA[jj].size (); k++)
+		for (size_t jj = 0; jj < Ni; ++jj)
+			for (size_t k = 0; k < LigneA[jj].size (); k++)
 				++col_density[LigneA[jj][(size_t)k]];
 
 		long last = (long)Ni - 1;
@@ -410,4 +410,4 @@ namespace LinBox
 // indent-tabs-mode: nil
 // c-basic-offset: 4
 // End:
-// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

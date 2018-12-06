@@ -36,7 +36,7 @@
 #include <vector>
 #include <utility>
 
-#include "linbox/algorithms/cra-early-single.h"
+#include "linbox/algorithms/cra-single.h"
 #include "linbox/algorithms/cra-full-multip.h"
 
 
@@ -57,12 +57,12 @@ namespace LinBox
 	protected:
 		// Random coefficients for a linear combination
 		// of the elements to be reconstructed
-		std::vector< unsigned long >      	randv;
+		std::vector< size_t >      	randv;
 
 		Integer& result(Integer &d) { std::cout << "should not be called" << std::endl; return d ;} ; // DON'T TOUCH
 	public:
 
-		EarlyMultipCRA(const unsigned long EARLY=DEFAULT_EARLY_TERM_THRESHOLD) :
+		EarlyMultipCRA(const size_t EARLY=DEFAULT_EARLY_TERM_THRESHOLD) :
 			EarlySingleCRA<Domain>(EARLY), FullMultipCRA<Domain>()
 		{}
 
@@ -90,8 +90,8 @@ namespace LinBox
 		{
 			srand48(BaseTimer::seed());
 			randv. resize ( e.size() );
-			for ( std::vector<unsigned long>::iterator int_p = randv. begin(); int_p != randv. end(); ++ int_p)
-				*int_p = ((unsigned long)lrand48()) % 20000;
+			for ( std::vector<size_t>::iterator int_p = randv. begin(); int_p != randv. end(); ++ int_p)
+				*int_p = ((size_t)lrand48()) % 20000;
 			Integer z;
 			dot(z, D, e, randv);
 			EarlySingleCRA<Domain>::initialize(D, z);
@@ -106,9 +106,9 @@ namespace LinBox
 			// of the elements to be reconstructed
 			srand48(BaseTimer::seed());
 			randv. resize ( e.size() );
-			for ( std::vector<unsigned long>::iterator int_p = randv. begin();
+			for ( std::vector<size_t>::iterator int_p = randv. begin();
 			      int_p != randv. end(); ++ int_p)
-				*int_p = ((unsigned long)lrand48()) % 20000;
+				*int_p = ((size_t)lrand48()) % 20000;
 			DomainElement z;
 			// Could be much faster
 			// - do not compute twice the product of moduli
@@ -125,9 +125,9 @@ namespace LinBox
 			// of the elements to be reconstructed
 			srand48(BaseTimer::seed());
 			randv. resize ( e.size() );
-			for ( std::vector<unsigned long>::iterator int_p = randv. begin();
+			for ( std::vector<size_t>::iterator int_p = randv. begin();
 			      int_p != randv. end(); ++ int_p)
-				*int_p = ((unsigned long)lrand48()) % 20000;
+				*int_p = ((size_t)lrand48()) % 20000;
 			DomainElement z;
 			// Could be much faster
 			// - do not compute twice the product of moduli
@@ -203,8 +203,8 @@ namespace LinBox
 
 		bool changeVector()
 		{
-			for ( std::vector<unsigned long>::iterator int_p = randv. begin();int_p != randv. end(); ++ int_p)
-				*int_p = ((unsigned long)lrand48()) % 20000;
+			for ( std::vector<size_t>::iterator int_p = randv. begin();int_p != randv. end(); ++ int_p)
+				*int_p = ((size_t)lrand48()) % 20000;
 
 			std::vector<Integer> e(randv.size());
 			/* clear CRAEarlySingle; */
@@ -214,27 +214,24 @@ namespace LinBox
 			EarlySingleCRA<Domain>::residue_ = 0;
 
 			/* Computation of residue_ */
-			std::vector< LazyProduct >::iterator _mod_it = FullMultipCRA<Domain>::RadixPrimeProd_.begin();// list of prime products
-			std::vector< std::vector<Integer> >::iterator _tab_it = FullMultipCRA<Domain>::RadixResidues_.begin();// list of residues as vectors of size 1
-			std::vector< bool >::iterator    _occ_it = FullMultipCRA<Domain>::RadixOccupancy_.begin();//flags of occupied fields
-			int prev_shelf=0, shelf = 0;
-			for (;_occ_it != FullMultipCRA<Domain>::RadixOccupancy_.end(); ++_mod_it, ++_tab_it, ++_occ_it ) {
-				++shelf;
-				if (*_occ_it) {
-					Integer D = _mod_it->operator()();
+            for (auto it = FullMultipCRA<Domain>::shelves_begin();
+                 it != FullMultipCRA<Domain>::shelves_end();
+                 ++it)
+            {
+                if (it->occupied) {
+					Integer D = it->mod();
 					std::vector<Integer> e_v(randv.size());
-					e_v = *_tab_it;
+					e_v = it->residue;
 					Integer z;
 					dot(z,D, e_v, randv);
 					Integer prev_residue_ = EarlySingleCRA<Domain>::residue_;
 					EarlySingleCRA<Domain>::progress(D,z);
 					if (prev_residue_ == EarlySingleCRA<Domain>::residue_ )
-						EarlySingleCRA<Domain>::occurency_ = EarlySingleCRA<Domain>::occurency_ +  (shelf - prev_shelf);
+						EarlySingleCRA<Domain>::occurency_ += it->count;
 					if ( EarlySingleCRA<Domain>::terminated() ) {
 						return true;
 					}
-					prev_shelf = shelf;
-				}
+                }
 			}
 			return false;
 		}
@@ -299,11 +296,10 @@ namespace LinBox
 }
 #endif //__LINBOX_cra_early_multip_H
 
-
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

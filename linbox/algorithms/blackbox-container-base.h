@@ -71,7 +71,7 @@ namespace LinBox
 
 		// Pascal Giorgi 16.02.2004
 		//! @bug no need for F
-		BlackboxContainerBase (const Blackbox *BB, const Field &F, unsigned long Size) :
+		BlackboxContainerBase (const Blackbox *BB, const Field &F, size_t Size) :
 			_field (&F), _VD (F), _BB (BB), _size ((long)Size)
 			,casenumber(0)
 			,u(F),v(F)
@@ -178,11 +178,10 @@ namespace LinBox
 
 #endif // __LINBOX_blackbox_container_base_H
 
-
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

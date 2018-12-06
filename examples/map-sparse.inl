@@ -139,7 +139,7 @@ bool MapSparse<Field_>::verify()
 }
 
 template<class Field_>
-void MapSparse<Field_>::setEntry(Index i, Index j, const Element& e)
+const typename Field_::Element& MapSparse<Field_>::setEntry(Index i, Index j, const Element& e)
 {
 	VectorIt it=rowMap_[i].find(j);
 	if (it != rowMap_[i].end()) {
@@ -154,6 +154,7 @@ void MapSparse<Field_>::setEntry(Index i, Index j, const Element& e)
 		rowMap_[i][j]=e;
 		colMap_[j][i]=e;
 	}
+    return e;
 }
 
 template<class Field_> const typename MapSparse<Field_>::Element&
@@ -587,8 +588,8 @@ int MapSparse<Field>::randRange(int start, int end)
 
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

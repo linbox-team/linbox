@@ -28,7 +28,7 @@
 
 #include <cmath>
 #include <vector>
-#include <givaro/modular-int32.h>
+#include <givaro/modular-integral.h>
 
 #include "linbox/linbox-config.h"
 #include "linbox/integer.h"
@@ -63,10 +63,11 @@ namespace LinBox
 	template <class Matrix>
 	void SmithFormAdaptive::compute_local_long (BlasVector<Givaro::ZRing<Integer> >& s, const Matrix& A, int64_t p, int64_t e)
 	{
+		//std::ostream& report(std::cout);
 		std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 
 		int order = (int)(A. rowdim() < A. coldim() ? A. rowdim() : A. coldim());
-		linbox_check ((s. size() >= (unsigned long)order) && (p > 0) && ( e >= 0));
+		linbox_check ((s. size() >= (size_t)order) && (p > 0) && ( e >= 0));
 		if (e == 0) return;
 
 		if (p == 2) {
@@ -79,8 +80,10 @@ namespace LinBox
 			SF (l, A_local, R);
 			std::list <Local2_32::Element>::iterator l_p;
 			BlasVector<Givaro::ZRing<Integer> >::iterator s_p;
-			for (s_p = s. begin(), l_p = l. begin(); s_p != s. begin() +(ptrdiff_t) order; ++ s_p, ++ l_p)
+			for (s_p = s. begin(), l_p = l. begin(); s_p != s. begin() +(ptrdiff_t) order; ++ s_p, ++ l_p) {
 				*s_p = *l_p;
+				/* deb */report << '[' << *s_p << ',' << *l_p << ']';
+			}
 			report << "     Done\n";
 		}
 		else if (e == 1) {
@@ -154,9 +157,10 @@ namespace LinBox
 	void SmithFormAdaptive::compute_local_big (BlasVector<Givaro::ZRing<Integer> >& s, const Matrix& A, int64_t p, int64_t e)
 	{
 
+		//std::ostream& report(std::cout);
 		std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		int order = (int)(A. rowdim() < A. coldim() ? A. rowdim() : A. coldim());
-		linbox_check ((s. size() >= (unsigned long) order) && (p > 0) && ( e >= 0));
+		linbox_check ((s. size() >= (size_t) order) && (p > 0) && ( e >= 0));
 		integer T; T = order; T <<= 20; T = pow (T, (int) sqrt((double)order));
 		NTL::ZZ m;  NTL::conv(m, 1); int i = 0; for (i = 0; i < e; ++ i) m *= p;
 		//if (m < T)
@@ -216,11 +220,11 @@ namespace LinBox
 	void SmithFormAdaptive::smithFormSmooth (BlasVector<Givaro::ZRing<Integer> >& s, const Matrix& A, long r, const std::vector<int64_t>& sev)
 	{
 		Givaro::ZRing<Integer> Z;
-		//....
+		//std::ostream& report(std::cout);
 		std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		report << "Computation the k-smooth part of the invariant factors starts(via local and rank):" << std::endl;
 		int order = (int)(A. rowdim() < A. coldim() ? A. rowdim() : A. coldim());
-		linbox_check (s. size() >= (unsigned long)order);
+		linbox_check (s. size() >= (size_t)order);
 		std::vector<int64_t>::const_iterator sev_p; const int64_t* prime_p; BlasVector<Givaro::ZRing<Integer> >::iterator s_p;
 		BlasVector<Givaro::ZRing<Integer> > local(Z,(size_t)order);
 		BlasVector<Givaro::ZRing<Integer> >::iterator local_p;
@@ -237,6 +241,7 @@ namespace LinBox
 
 				if ((*prime_p == 2) && (*sev_p < 32))
 					extra =  32 -(int) *sev_p;
+				// put in a warning if over 2^32
 				integer m = 1;
 				for (int i = 0; i < *sev_p + extra; ++ i) m *= * prime_p;
 				report << "   Compute the local smith form mod " << *prime_p <<"^" << *sev_p + extra << std::endl;
@@ -263,11 +268,12 @@ namespace LinBox
 	void SmithFormAdaptive::smithFormRough  (BlasVector<Givaro::ZRing<Integer> >& s, const Matrix& A, integer m)
 	{
 
+		//std::ostream& report(std::cout);
 		std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		report << "Compuation of the k-rough part f the invariant factors starts(via EGV+ or Iliopolous):\n";
 		int order = (int)(A. rowdim() < A. coldim() ? A. rowdim() : A. coldim());
 		integer T; T = order; T <<= 20; T = pow (T, (int) sqrt((double)order));
-		linbox_check ((s. size() >= (unsigned long)order) && (m > 0));
+		linbox_check ((s. size() >= (size_t)order) && (m > 0));
 		if (m == 1)
 			report << "   Not rough part." << std::endl;
 		else if ( m <=  FieldTraits< PIRModular<int32_t> >::maxModulus() ) {
@@ -331,10 +337,11 @@ namespace LinBox
 	{
 		//....
 		Givaro::ZRing<Integer> Z;
+		//std::ostream& report(std::cout);
 		std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		report << "Computation the local smith form at each possible prime:\n";
 		int order = (int)(A. rowdim() < A. coldim() ? A. rowdim() : A. coldim());
-		linbox_check (s. size() >= (unsigned long)order);
+		linbox_check (s. size() >= (size_t)order);
 
 		std::vector<int64_t>::const_iterator sev_p;
 		const int64_t* prime_p;
@@ -389,6 +396,7 @@ namespace LinBox
 	{
 		//commentator().start ("Smith Form starts", "Smithform");
 
+		//std::ostream& report(std::cout);
 		std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		report << "Computation of the invariant factors starts (via an adaptive alg):" << std::endl;
 
@@ -396,7 +404,7 @@ namespace LinBox
 		int order = (A. rowdim() < A. coldim()) ? (int)A. rowdim() : (int)A. coldim();
 		report << "Computation of the rank starts:\n";
 		typedef typename Matrix::Field Ring;
-		unsigned long r;
+		size_t r;
 		MatrixRank<Ring, Givaro::Modular<int32_t> > MR;
 		r = MR. rank (A);
 		report << "   Matrix rank over a random prime field: " << r << '\n';
@@ -406,9 +414,9 @@ namespace LinBox
 
 		report <<"   Compute the degree of min poly of AA^T: \n";
 		typedef Givaro::Modular<int32_t> Field;
-		integer Val; Field::Element v; unsigned long degree;
-		RandomPrimeIterator rg; rg.template setBitsField<Field>();
-		Field F (*rg);
+		integer Val; Field::Element v; size_t degree;
+        PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
+		Field F (*genprime);
 		typename MatrixHomTrait<Matrix, Field>::value_type Ap(F, A.rowdim(), A.coldim());
 		MatrixHom::map (Ap, A);
 		Valence::one_valence (v, degree, Ap);
@@ -418,7 +426,7 @@ namespace LinBox
 			report << "   Computation of the valence starts:\n";
 			Valence::valence (Val, degree, A);
 			report << "      Valence = " << Val << std::endl;
-			report << "   Computation of the valence of ends.\n";
+			report << "   Computation of the valence ends.\n";
 			Val = abs (Val);
 			//Factor the k-smooth part of Val
 			for (prime_p = prime, e_p = e. begin(); e_p != e. end(); ++ prime_p, ++ e_p) {
@@ -431,7 +439,6 @@ namespace LinBox
 			if (Val == 1) {
 				smithFormVal (s, A, r, e);
 				report << "Computation of the invariant factors ends." << std::endl;
-				//cerr << "Computation of the invariant factors ends." << std::endl;
 				return;
 			}
 			else
@@ -510,18 +517,18 @@ namespace LinBox
 		//commentator().start ("Smith Form starts", "Smithform");
 		Givaro::ZRing<Integer> Z;
 
+		//std::ostream& report(std::cout);
 		std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		report << "Computation of the invariant factors starts (via an adaptive alg):" << std::endl;
-		//cerr << "Computation of the invariant factors starts (via an adaptive alg):" << std::endl;
 
 		// compute the rank over a random prime field.
 		const size_t order = (A. rowdim() < A. coldim() ? A. rowdim() : A. coldim());
 
 		report << "Computation of the rank starts:" << std::endl;
 		typedef typename BlasMatrix<IRing,_Rep>::Field Ring;
-		unsigned long r;
+		size_t r;
 		MatrixRank<Ring, Givaro::Modular<int32_t> > MR;
-		r = (unsigned long)MR. rank (A);
+		r = (size_t)MR. rank (A);
 		report << "   Matrix rank over a random prime field: " << r << std::endl;
 		report << "Computation of the rank finished.\n";
 		// a hack
@@ -532,19 +539,25 @@ namespace LinBox
 		report <<"   Compute the degree of min poly of AA^T: \n";
 		typedef Givaro::Modular<int32_t> Field;
 		integer Val; Field::Element v; size_t degree;
-		//integer Val; Field::Element v; unsigned long degree;
-		RandomPrimeIterator rg; rg.template setBitsField<Field>();
-		Field F (*rg);
+		//integer Val; Field::Element v; size_t degree;
+        PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
+		Field F (*genprime);
 		typename MatrixHomTrait<BlasMatrix <IRing, _Rep>, Field>::value_type Ap(F,A.rowdim(),A.coldim());
 		MatrixHom::map (Ap, A);
 		Valence::one_valence (v, degree, Ap);
-		report <<"   Degree of minial polynomial of AA^T = " << degree << '\n';
+		//valence (v, Ap);
+		report <<"   Degree of one_valence minpol of AA^T = " << degree << '\n';
+		report <<"   value of one_valence minpol of AA^T = " << v << '\n';
 		// if degree is small
 		if (degree < sqrt(double(order))) {
 			report << "   Computation of the valence starts:\n";
+			//valence (Val, A);
 			Valence::valence (Val, degree, A);
 			report << "      Valence = " << Val << std::endl;
-			report << "   Computation of the valence of ends.\n";
+		report <<"   degree of minpol of AA^T = " << degree << '\n';
+			if (Val == 0) valence (Val, A);
+			report << " Corrected valence = " << Val << std::endl;
+			report << "   Computation of the valence ends.\n";
 			Val = abs (Val);
 			//Factor the k-smooth part of Val
 			for (prime_p = prime, e_p = e. begin(); e_p != e. end(); ++ prime_p, ++ e_p) {
@@ -590,8 +603,11 @@ namespace LinBox
 		// bonus assigns to its rough part
 		bonus = gcd (bonus, r_mod);
 		BlasVector<Givaro::ZRing<Integer> > smooth (Z,order), rough (Z,order);
+		report << "Computation of smooth part begins.\n";
 		smithFormSmooth (smooth, A, (long)r, e);
+		report << "Computation of rough part begins.\n";
 		smithFormRough (rough, A, bonus);
+		report << "Computation of rough/smooth parts finished.\n";
 		// fixed the rough largest invariant factor
 		if (r > 0) rough[r-1] = r_mod;
 
@@ -622,11 +638,10 @@ namespace LinBox
 
 #endif //__LINBOX_smith_form_adaptive_INL
 
-
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

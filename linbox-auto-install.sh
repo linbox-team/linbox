@@ -18,10 +18,18 @@
 ## Only for stable fetching 
 #############################
 #### stable .tar.gz 
+<<<<<<< HEAD
 STABLE_LB=1.5.1
 STABLE_FFLAS=2.3.1
 STABLE_GIVARO=4.0.4
 STABLE_OPENBLAS=0.2.20
+=======
+STABLE_LB=1.5.2
+STABLE_FFLAS=2.3.2
+STABLE_GIVARO=4.0.4
+STABLE_OPENBLAS=0.3.0
+STABLE_BLIS=0.3.2
+>>>>>>> master
 MD5SUFF=md5
 #############################
 
@@ -53,12 +61,12 @@ EXTRA=""
 EXTRA_VAR=""
 IML="--with-iml"
 IML_VAR=""
-SAGE=""
-SAGE_VAR="false"
 DRIV=""
 DRIV_VAR="false"
 OPENBLAS=""
 OPENBLAS_VAR="false"
+BLIS=""
+BLIS_VAR="false"
 MAKEOPT= 
 MAKE_VAR=""
 
@@ -118,6 +126,8 @@ help() {
     echo
     echo " --enable-openblas     : fetch openblas."
     echo "                         Default : disabled (use local blas)."
+    echo " --enable-blis         : fetch flame/blis."
+    echo "                         Default : disabled (use local blas)."
     echo " --enable-debug        : build in debugging mode."
     echo "                         Default : disabled."
     echo " --enable-check        : run make check."
@@ -126,8 +136,6 @@ help() {
     echo "                         Default : disabled. May be \'full\' "
     echo " --enable-optimization : build with compile-time optimization."
     echo "                         Default : enabled."
-    echo " --enable-sage         : build with sage support."
-    echo "                         Default : disabled."
     echo " --enable-drivers      : build with drivers support."
     echo "                         Default : disabled."
     echo 
@@ -192,6 +200,11 @@ for i in "$@" ; do
 	OPENBLAS="$i";
 	OPENBLAS_VAR="true";
 	;;
+	"--enable-blis")
+	if [ "x$BLIS_VAR" = "xfalse" ]  ; then  echo "enable-blis or not ?" ;        help ; exit -1 ; fi
+	BLIS="$i";
+	BLIS_VAR="true";
+	;;
 	"--disable-debug")
 	if [ "x$DEBUG_VAR" = "xtrue" ]  ; then  echo "enable-debug or not ?" ;        help ; exit -1 ; fi
 	DEBUG_VAR="false";
@@ -212,6 +225,10 @@ for i in "$@" ; do
 	if [ "x$OPENBLAS_VAR" = "xtrue" ]  ; then  echo "enable-openblas or not ?" ;        help ; exit -1 ; fi
 	OPENBLAS_VAR="false";
 	;;
+	"--disable-blis")
+	if [ "x$BLIS_VAR" = "xtrue" ]  ; then  echo "enable-blis or not ?" ;        help ; exit -1 ; fi
+	BLIS_VAR="false";
+	;;
 	"--with-ntl")
 	if	[ "x$NTL_VAR" = "xfalse" ] ; then   echo "with-ntl or not ?";            help ; exit -1; fi
 	NTL="$i";
@@ -227,20 +244,10 @@ for i in "$@" ; do
 	IML="$i "
 	IML_VAR="true"
 	;;
-	"--enable-sage")
-	if	[ "x$SAGE_VAR" = "xfalse" ] ; then  echo "enable-sage or not ?";          help ; exit -1; fi
-	SAGE="$i"
-	SAGE_VAR="true"
-	;;
 	"--enable-drivers")
 	if	[ "x$DRIV_VAR" = "xfalse" ] ; then  echo "enable-drivers or not ?" ;      help ; exit -1; fi
 	DRIV="$i"
 	DRIV_VAR="true"
-	;;
-	"--disable-sage")
-	if	[ "x$SAGE_VAR" = "xtrue" ] ; then  echo "enable-sage or not ?";          help ; exit -1; fi
-	SAGE=""
-	SAGE_VAR="false"
 	;;
 	"--disable-drivers")
 	if	[ "x$DRIV_VAR" = "xtrue" ] ; then  echo "enable-drivers or not ?" ;      help ; exit -1; fi
@@ -308,7 +315,7 @@ for i in "$@" ; do
 	    [[ "$QUOI" =~ y|yes|Y|1 ]] && OK=1 || OK=0
 	    if		[ "x$OPTIM_VAR" = "xtrue"  -a "OK" = "0" ] ; then  echo "optim or not optim ?" ;      help ; exit -1; fi
 	    if		[ "x$OPTIM_VAR" = "xfalse" -a "OK" = "1" ] ; then  echo "optim or not optim ?" ;      help ; exit -1; fi
-	    if	[[ "x$OK" = "x1" ]] ; then  
+	    if	[[ "x$OK" = "x1" ]] ; then
 		OPTIM=$QUI ; OPTIM_VAR="true" ;
 	    else
 		OPTIM_VAR="false" ;
@@ -322,6 +329,16 @@ for i in "$@" ; do
 		OPENBLAS=$QUI ; OPENBLAS_VAR="true" ;
 	    else
 		OPENBLAS_VAR="false" ;
+	    fi
+	    ;;
+	    "--enable-blis")
+	    [[ "$QUOI" =~ y|yes|Y|1 ]] && OK=1 || OK=0
+	    if		[ "x$BLIS_VAR" = "xtrue"  -a "OK" = "0" ] ; then  echo "blis or not blis ?" ;      help ; exit -1; fi
+	    if		[ "x$BLIS_VAR" = "xfalse" -a "OK" = "1" ] ; then  echo "blis or not blis ?" ;      help ; exit -1; fi
+	    if	[[ "x$OK" = "x1" ]] ; then
+		BLIS=$QUI ; BLIS_VAR="true" ;
+	    else
+		BLIS_VAR="false" ;
 	    fi
 	    ;;
 	    "--enable-warnings")
@@ -353,16 +370,6 @@ for i in "$@" ; do
 		CHECK=$QUI ; CHECK_VAR="true" 
 	    else 
 		CHECK_VAR="false"
-	    fi
-	    ;;
-	    "--enable-sage")
-	    [[ "$QUOI" =~ y|yes|Y|1 ]] && OK=1 || OK=0
-	    if		[ "x$SAGE_VAR" = "xtrue"  -a "OK" = "0"  ] ; then  echo "sage or not sage ?" ;      help ; exit -1; fi
-	    if		[ "x$SAGE_VAR" = "xfalse" -a "OK" = "1"  ] ; then  echo "sage or not sage ?" ;      help ; exit -1; fi
-	    if		[[ "x$OK" = "x1" ]] ; then 
-		SAGE=$QUI ; SAGE_VAR="true" 
-	    else
-		SAGE_VAR="false" 
 	    fi
 	    ;;
 	    "--enable-drivers")
@@ -534,6 +541,23 @@ if [ "$OPENBLAS_VAR" = "true" ]; then
     fi
 fi
 
+### flame/blis ###
+if [ "$BLIS_VAR" = "true" ]; then
+    echo -en "${BEG}fetching FLAME/Blis..."| tee -a ../auto-install.log
+    if [ "$STABLE_VAR" = "true" ]; then
+	if [ -f ${STABLE_BLIS}.tar.gz ] ; then
+	    echo -ne " already there!\n"
+	else
+	    wget --no-check-certificate https://github.com/flame/blis/archive/${STABLE_BLIS}.tar.gz >/dev/null 2>&1 || die
+	    [ -f ${STABLE_BLIS}.tar.gz ] &&  cool || die
+	fi
+    else
+	OK=0 ;
+	git clone --depth=1 https://github.com/flame/blis.git 2>&1 >/dev/null && OK=1
+	[ "$OK" = "1" ] &&  cool | tee -a ../auto-install.log || die
+    fi
+fi
+
 #####################
 #  extract sources  #
 #####################
@@ -563,6 +587,17 @@ if [ "$OPENBLAS_VAR" = "true" ]; then
     if [ "$STABLE_VAR" = "true" ]; then
 	echo -en "${BEG}extracting OpenBlas..."| tee -a ../auto-install.log
 	decompress v${STABLE_OPENBLAS}.tar.gz  && OK=1
+	[ "$OK" = "1" ] &&  cool | tee -a ../auto-install.log  || die
+    fi
+fi
+
+### BLIS ###
+
+if [ "$BLIS_VAR" = "true" ]; then
+    OK=0
+    if [ "$STABLE_VAR" = "true" ]; then
+	echo -en "${BEG}extracting Blis..."| tee -a ../auto-install.log
+	decompress ${STABLE_BLIS}.tar.gz  && OK=1
 	[ "$OK" = "1" ] &&  cool | tee -a ../auto-install.log  || die
     fi
 fi
@@ -671,6 +706,59 @@ if [ "$OPENBLAS_VAR" = "true" ]; then
 fi
 
 
+######################
+#  install Blis      #
+######################
+
+if [ "$BLIS_VAR" = "true" ]; then
+
+    if [ "$STABLE_VAR" = "true" ]; then
+	cd blis-${STABLE_BLIS} || die
+    else
+	cd blis/ || die
+    fi
+
+    if [ -f Makefile ] ; then
+	echo -e "${BEG}cleaning Blis..."| tee -a ../../auto-install.log
+	${MAKEPROG} clean | tee -a ../../auto-install.log|| die
+	${MAKEPROG} distclean | tee -a ../../auto-install.log|| die
+	# ${MAKEPROG} unistall || die
+	cool
+    fi
+
+    echo -e "${BEG}configuring Blis..."
+
+    echo "./configure  $PREFIX $DEBUG $WARNINGS --enable-cblas auto"
+    echo "./configure  $PREFIX $DEBUG $WARNINGS --enable-cblas auto " > configure.blis.exe
+    chmod +x configure.blis.exe
+    ./configure.blis.exe | tee -a ../../auto-install.log
+    rm -rf configure.blis.exe
+
+    echo -e "${BEG}building Blis..."| tee -a ../../auto-install.log
+    BLIS_FLAGS=""
+
+    echo "${MAKEPROG} ${BLIS_FLAGS} CXXFLAGS+=\"$EXTRA\" LDFLAGS+=\"-Wl,-rpath,$PREFIX_LOC\""| tee -a ../../auto-install.log
+    if [ -n "$EXTRA" ] ; then
+	${MAKEPROG} ${BLIS_FLAGS} "CXXFLAGS+=\"$EXTRA\" LDFLAGS+=\"-Wl,-rpath,$PREFIX_LOC\"" | tee -a ../../auto-install.log|| die
+    else
+	${MAKEPROG} ${BLIS_FLAGS} | tee -a ../../auto-install.log|| die
+    fi
+
+    echo -e "${BEG}installing Blis..."| tee -a ../../auto-install.log
+    ${MAKEPROG} ${BLIS_FLAGS} install | tee -a ../../auto-install.log|| die
+
+#return in build
+    cd ..
+
+    cool| tee -a ../auto-install.log
+
+    if [ "$BLAS_VAR" = "false" ]; then
+	BLAS="--with-blas-libs="\""-L${PREFIX_LOC}/lib -lblis -lpthread"\"
+	BLAS_VAR=true
+    fi
+fi
+
+
 ##########################
 #  install fflas-ffpack  #
 ##########################
@@ -754,12 +842,12 @@ echo -e " * to ensure you don't get undefined symbols !"| tee -a ./auto-install.
 echo  ""| tee -a ./auto-install.log
 
 if [ -x autogen.sh ] ;  then 
-    echo "./autogen.sh $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $WARNINGS $IML $SAGE $DRIV"| tee -a ./auto-install.log
-    ./autogen.sh "$PREFIX" "$DEBUG" "$OPTIM" "$GMP" "$BLAS" "$NTL" "$WARNINGS" "$IML" "$SAGE" "$DRIV" | tee -a ./auto-install.log|| die
+    echo "./autogen.sh $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $WARNINGS $IML $DRIV"| tee -a ./auto-install.log
+    ./autogen.sh "$PREFIX" "$DEBUG" "$OPTIM" "$GMP" "$BLAS" "$NTL" "$WARNINGS" "$IML" "$DRIV" | tee -a ./auto-install.log|| die
 else
-    echo "./configure $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $WARNINGS $IML $SAGE $DRIV"| tee -a ./auto-install.log
-	# ./configure $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $WARNINGS  $IML $SAGE $DRIV || die
-    ./configure "$PREFIX" "$DEBUG" "$OPTIM" "$GMP" "$BLAS" "$NTL" "$WARNINGS" "$IML" "$SAGE" "$DRIV" | tee -a ./auto-install.log|| die
+    echo "./configure $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $WARNINGS $IML $DRIV"| tee -a ./auto-install.log
+	# ./configure $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $WARNINGS  $IML $DRIV || die
+    ./configure "$PREFIX" "$DEBUG" "$OPTIM" "$GMP" "$BLAS" "$NTL" "$WARNINGS" "$IML" "$DRIV" | tee -a ./auto-install.log|| die
 fi
 
 echo -e "${BEG}building LinBox..."| tee -a ./auto-install.log

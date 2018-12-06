@@ -1,6 +1,6 @@
 /* Copyright 2013 (C) the LinBox group
  *
- * Written by :
+ * updated in 2018 by bds
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -28,37 +28,54 @@
  *
  * @test no doc.
  */
+#include <fstream>
+struct NullBuffer : public std::streambuf
+{ int overflow(int c) { return c; } };
+NullBuffer null_buffer;
 
+std::ostream nullout(&null_buffer);
+std::ifstream smsin("data/sms.matrix"); 
 
-#include <cstdlib>
-#include <stdio.h>
+/* Each time the tutorial is changed, this test of it should be updated by 
+   including the tutorial example below (the include's and all of main).
+   Make two changes:
 
-int main(){
-	bool pass = true;
-	int d;
-	FILE * infile = fopen("tutorial-1.in", "w");
-	fprintf(infile, "2 2\n");
-	fprintf(infile, "3 1\n");
-	fprintf(infile, "1 2\n");
-	fclose(infile);
+   2. replace "std::cin" with "smsin".
+   2. replace "std::cout" with "nullout"
+*/
 
-	system("./tutorial-1 <tutorial-1.in >tutorial-1.out");
+// Begin inclusion of tutorial 
+#include <givaro/modular.h>
+#include <linbox/matrix/dense-matrix.h>
+#include <linbox/solutions/det.h>
 
-	FILE * outfile = fopen("tutorial-1.out", "r");
-	fscanf(outfile, "the determinant is %d", &d);
-	fclose(outfile);
+using namespace LinBox;
 
-	system("rm tutorial-1.in tutorial-1.out");
+int main()
+{
+	typedef Givaro::Modular<double> Field;
+	Field F(101);
 
-	pass = pass and d == 5;
-	return pass? 0 : -1;
+	SparseMatrix<Field> A(F);
+	//A.read(std::cin);
+	A.read(smsin);
+
+	Field::Element d;
+	Method::SparseElimination M;
+
+	det(d, A, M);
+
+	//F.write(std::cout << "the determinant is ", d) << std::endl;
+	F.write(nullout << "the determinant is ", d) << std::endl;
+	return 0; // if it runs, it passes.
 }
+// End inclusion of tutorial 
+   
 
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
-
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

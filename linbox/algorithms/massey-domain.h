@@ -83,7 +83,7 @@ namespace LinBox
 		Sequence            *_container;
 		const Field                *_field;
 		VectorDomain<Field>  _VD;
-		unsigned long         EARLY_TERM_THRESHOLD;
+		size_t         EARLY_TERM_THRESHOLD;
 
 #ifdef INCLUDE_TIMING
 		// Timings
@@ -95,28 +95,28 @@ namespace LinBox
 		typedef typename Field::Element Element;
 
 		//-- Constructors
-		MasseyDomain (unsigned long ett_default = DEFAULT_EARLY_TERM_THRESHOLD) :
+		MasseyDomain (size_t ett_default = DEFAULT_EARLY_TERM_THRESHOLD) :
 			_container           (),
 			_field                   (),
 			_VD                  (),
 			EARLY_TERM_THRESHOLD (ett_default)
 		{}
 
-		MasseyDomain (const MasseyDomain<Field, Sequence> &Mat, unsigned long ett_default = DEFAULT_EARLY_TERM_THRESHOLD) :
+		MasseyDomain (const MasseyDomain<Field, Sequence> &Mat, size_t ett_default = DEFAULT_EARLY_TERM_THRESHOLD) :
 			_container           (Mat._container),
 			_field                   (Mat._field),
 			_VD                  (Mat.field()),
 			EARLY_TERM_THRESHOLD (ett_default)
 		{}
 
-		MasseyDomain (Sequence *D, unsigned long ett_default = DEFAULT_EARLY_TERM_THRESHOLD) :
+		MasseyDomain (Sequence *D, size_t ett_default = DEFAULT_EARLY_TERM_THRESHOLD) :
 			_container           (D),
 			_field                   (&(D->field ())),
 			_VD                  (D->field ()),
 			EARLY_TERM_THRESHOLD (ett_default)
 		{}
 
-		MasseyDomain (Sequence *MD, const Field &F, unsigned long ett_default = DEFAULT_EARLY_TERM_THRESHOLD) :
+		MasseyDomain (Sequence *MD, const Field &F, size_t ett_default = DEFAULT_EARLY_TERM_THRESHOLD) :
 			_container           (MD),
 			_field                   (&F),
 			_VD                  (F),
@@ -356,14 +356,14 @@ namespace LinBox
 		// ---------------------------------------------
 		// Massey
 		//
-		void pseudo_rank (unsigned long &rank)
+		void pseudo_rank (size_t &rank)
 		{
 			BlasVector<Field> phi(field());
 			massey (phi, 0);
 			rank = v_degree (phi) - v_val (phi);
 		}
 
-		void valence (Element &Valence, unsigned long &rank)
+		void valence (Element &Valence, size_t &rank)
 		{
 			commentator().start ("Valence", "LinBox::MasseyDomain::valence");
 
@@ -376,11 +376,11 @@ namespace LinBox
 		}
 
 		template<class Polynomial>
-		unsigned long pseudo_minpoly (Polynomial &phi, unsigned long &rank, bool full_poly = true)
+		size_t pseudo_minpoly (Polynomial &phi, size_t &rank, bool full_poly = true)
 		{
-			unsigned long L = (unsigned long)massey (phi, full_poly);
+			size_t L = (size_t)massey (phi, full_poly);
 			long dp = v_degree(phi);
-			rank = (unsigned long) (dp - v_val (phi));
+			rank = (size_t) (dp - v_val (phi));
 			if (phi.size()) {
 				for(long i = dp >> 1;i > 0; --i) {
 					phi[0] = phi[(size_t)i];
@@ -394,10 +394,10 @@ namespace LinBox
 		}
 
 		template<class Polynomial>
-		void minpoly (Polynomial &phi, unsigned long &rank, bool full_poly = true)
+		void minpoly (Polynomial &phi, size_t &rank, bool full_poly = true)
 		{
 			long dp = massey (phi, full_poly);
-			rank = (unsigned long) (v_degree(phi) - v_val (phi));
+			rank = (size_t) (v_degree(phi) - v_val (phi));
 			if (phi.size () > 0) {
 				phi.resize ((size_t)dp+1);
 				for (long i = dp >> 1; i > 0; --i)
@@ -413,11 +413,10 @@ namespace LinBox
 
 #endif // __LINBOX_massey_domain_H
 
-
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

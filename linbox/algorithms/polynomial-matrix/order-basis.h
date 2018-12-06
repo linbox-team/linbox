@@ -25,7 +25,8 @@
 
 
 
-
+#ifndef __LINBOX_ORDER_BASIS
+#define __LINBOX_ORDER_BASIS
 
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/matrix/polynomial-matrix.h"
@@ -613,7 +614,7 @@ namespace LinBox {
                         k=serie.coldim();
 
                         // log of the order
-                        size_t log_order=integer(order).bitsize();
+                        size_t log_order=integer(uint64_t(order)).bitsize();
 
                         //  leaf size of the recursive PM_Basis algorithm (must be a power of 2)
                         size_t log_ord = MBASIS_THRESHOLD_LOG;
@@ -882,10 +883,11 @@ namespace LinBox {
         
 } // end of namespace LinBox
 
+#endif
 // Local Variables:
-// mode: C++ 
-// tab-width: 8
+// mode: C++
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

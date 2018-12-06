@@ -615,7 +615,7 @@ namespace LinBox
 		 * @warning if this is used to build a matrix and this matrix is "well formed",
 		 * it can be sped up (no checking that the entry already exists).
 		 */
-		void setEntry(const size_t &i, const size_t &j, const Element& e
+		const Element& setEntry(const size_t &i, const size_t &j, const Element& e
 			     )
 		{
 			linbox_check(i<_rownb);
@@ -624,7 +624,8 @@ namespace LinBox
 			linbox_check(consistent());
 
 			if (field().isZero(e)) {
-				return clearEntry(i,j);
+				clearEntry(i,j);
+                return e;
 			}
 
 			size_t * beg = &_colid[i*_maxc];
@@ -658,6 +659,7 @@ namespace LinBox
 			if (!found) {
 				insert(i,_maxc,j,e);
 			}
+			return e;
 		}
 
 #if 0
@@ -1535,8 +1537,8 @@ namespace LinBox
 
 // Local Variables:
 // mode: C++
-// tab-width: 8
+// tab-width: 4
 // indent-tabs-mode: nil
-// c-basic-offset: 8
+// c-basic-offset: 4
 // End:
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

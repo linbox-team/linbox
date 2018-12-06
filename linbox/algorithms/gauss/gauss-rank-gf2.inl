@@ -33,11 +33,11 @@
 
 namespace LinBox
 {
-	template <class SparseSeqMatrix> unsigned long&
-	GaussDomain<GF2>::rankin(unsigned long &Rank,
+	template <class SparseSeqMatrix> size_t&
+	GaussDomain<GF2>::rankin(size_t &Rank,
 				 SparseSeqMatrix        &A,
-				 unsigned long  Ni,
-				 unsigned long  Nj,
+				 size_t  Ni,
+				 size_t  Nj,
 				 SparseEliminationTraits::PivotStrategy   reord)  const
 	{
 		Element determinant;
@@ -51,8 +51,8 @@ namespace LinBox
 	}
 
 
-	template <class SparseSeqMatrix> unsigned long&
-	GaussDomain<GF2>::rankin(unsigned long &Rank,
+	template <class SparseSeqMatrix> size_t&
+	GaussDomain<GF2>::rankin(size_t &Rank,
 				 SparseSeqMatrix        &A,
 				 SparseEliminationTraits::PivotStrategy   reord)  const
 	{
@@ -61,23 +61,23 @@ namespace LinBox
 
 
 
-	template <class SparseSeqMatrix> unsigned long&
-	GaussDomain<GF2>::rank(unsigned long &rk,
+	template <class SparseSeqMatrix> size_t&
+	GaussDomain<GF2>::rank(size_t &rk,
 			       const SparseSeqMatrix        &A,
 			       SparseEliminationTraits::PivotStrategy   reord)  const
 	{
 		return rank(rk, A,  A.rowdim (), A.coldim (), reord);
 	}
 
-	template <class SparseSeqMatrix> unsigned long&
-	GaussDomain<GF2>::rank(unsigned long &Rank,
+	template <class SparseSeqMatrix> size_t&
+	GaussDomain<GF2>::rank(size_t &Rank,
 			       const SparseSeqMatrix        &A,
-			       unsigned long  Ni,
-			       unsigned long  Nj,
+			       size_t  Ni,
+			       size_t  Nj,
 			       SparseEliminationTraits::PivotStrategy   reord)  const
 	{
 		SparseSeqMatrix CopyA(Ni);
-		for(unsigned long i = 0; i < Ni; ++i)
+		for(size_t i = 0; i < Ni; ++i)
 			CopyA[i] = A[i];
 		return rankin(Rank, CopyA, Ni, Nj, reord);
 	}
@@ -85,11 +85,10 @@ namespace LinBox
 
 #endif // __LINBOX_gauss_rank_gf2_INL
 
-// vim:sts=4:sw=4:ts=4:noet:sr:cino=>s,f0,{0,g0,(0,:0,t0,+0,=s
 // Local Variables:
 // mode: C++
 // tab-width: 4
 // indent-tabs-mode: nil
 // c-basic-offset: 4
 // End:
-
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
