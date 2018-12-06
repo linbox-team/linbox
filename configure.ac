@@ -258,7 +258,6 @@ LB_CHECK_NTL
 
 LB_CHECK_SACLIB
 LB_CHECK_MAPLE
-LB_CHECK_SAGE
 
 LB_CHECK_EXPAT
 
@@ -338,7 +337,6 @@ interfaces/Makefile
 interfaces/driver/Makefile
 interfaces/maple/Makefile
 interfaces/kaapi/Makefile
-interfaces/sage/Makefile
 macros/Makefile
 macros/CodeChunk/Makefile
 benchmarks/Makefile
