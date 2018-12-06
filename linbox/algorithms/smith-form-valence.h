@@ -54,7 +54,7 @@ const bool reporting = true;
 #endif
 
 template<class Field>
-unsigned long& TempLRank(unsigned long& r, char * filename, const Field& F)
+unsigned long& TempLRank(unsigned long& r, const char * filename, const Field& F)
 {
 	std::ifstream input(filename);
 	LinBox::MatrixStream< Field > msf( F, input );
@@ -68,7 +68,7 @@ unsigned long& TempLRank(unsigned long& r, char * filename, const Field& F)
 	return r;
 }
 
-unsigned long& TempLRank(unsigned long& r, char * filename, const LinBox::GF2& F2)
+unsigned long& TempLRank(unsigned long& r, const char * filename, const LinBox::GF2& F2)
 {
 	std::ifstream input(filename);
 	LinBox::ZeroOne<LinBox::GF2> A;
@@ -83,7 +83,7 @@ unsigned long& TempLRank(unsigned long& r, char * filename, const LinBox::GF2& F
 	return r;
 }
 
-unsigned long& LRank(unsigned long& r, char * filename,Givaro::Integer p)
+unsigned long& LRank(unsigned long& r, const char * filename,Givaro::Integer p)
 {
 
 	Givaro::Integer maxmod16; LinBox::FieldTraits<Givaro::Modular<int16_t> >::maxModulus(maxmod16);
@@ -122,7 +122,7 @@ unsigned long& LRank(unsigned long& r, char * filename,Givaro::Integer p)
 	return r;
 }
 
-std::vector<size_t>& PRank(std::vector<size_t>& ranks, size_t& effective_exponent, char * filename,Givaro::Integer p, size_t e, size_t intr)
+std::vector<size_t>& PRank(std::vector<size_t>& ranks, size_t& effective_exponent, const char * filename,Givaro::Integer p, size_t e, size_t intr)
 {
 	effective_exponent = e;
 	Givaro::Integer maxmod;
@@ -184,7 +184,7 @@ std::vector<size_t>& PRank(std::vector<size_t>& ranks, size_t& effective_exponen
 #include <linbox/algorithms/smith-form-sparseelim-poweroftwo.h>
 
 
-std::vector<size_t>& PRankPowerOfTwo(std::vector<size_t>& ranks, size_t& effective_exponent, char * filename, size_t e, size_t intr)
+std::vector<size_t>& PRankPowerOfTwo(std::vector<size_t>& ranks, size_t& effective_exponent, const char * filename, size_t e, size_t intr)
 {
 	effective_exponent = e;
 	if (e > 63) {
@@ -218,7 +218,7 @@ std::vector<size_t>& PRankPowerOfTwo(std::vector<size_t>& ranks, size_t& effecti
 	return ranks;
 }
 
-std::vector<size_t>& PRankInteger(std::vector<size_t>& ranks, char * filename,Givaro::Integer p, size_t e, size_t intr)
+std::vector<size_t>& PRankInteger(std::vector<size_t>& ranks, const char * filename,Givaro::Integer p, size_t e, size_t intr)
 {
 	typedef Givaro::Modular<Givaro::Integer> Ring;
 	Givaro::Integer q = pow(p,uint64_t(e));
@@ -242,7 +242,7 @@ std::vector<size_t>& PRankInteger(std::vector<size_t>& ranks, char * filename,Gi
 	return ranks;
 }
 
-std::vector<size_t>& PRankIntegerPowerOfTwo(std::vector<size_t>& ranks, char * filename, size_t e, size_t intr)
+std::vector<size_t>& PRankIntegerPowerOfTwo(std::vector<size_t>& ranks, const char * filename, size_t e, size_t intr)
 {
 	typedef Givaro::ZRing<Givaro::Integer> Ring;
 	Ring ZZ;
@@ -274,7 +274,7 @@ std::vector<size_t>& AllPowersRanks(
     const PairIntRk& squarefreeRank,// smith[j]
     const size_t& exponentBound,	// exponents[j]
     const size_t& coprimeRank,		// coprimeR
-    char * filename) {				// argv[1]
+    const char * filename) {		// argv[1]
     
     ranks.push_back(squarefreeRank.second);
     size_t effexp;

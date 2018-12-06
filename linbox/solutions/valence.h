@@ -158,6 +158,39 @@ namespace LinBox
 	}
 
 
+    template<class Blackbox>
+    typename Blackbox::Field::Element &squarizeValence(
+        typename Blackbox::Field::Element	&val_A,
+        const Blackbox						&A,
+        size_t method=0) {
+            // method:	0 is automatic
+            // 			1 is aat
+            // 			2 is ata
+
+        if (A.rowdim() == A.coldim()) {
+            return valence(val_A, A);
+        } else {
+            if (! method) {
+                if (A.rowdim() > A.coldim())
+                    method=2;
+                else
+                    method=1;
+            }
+            Transpose<Blackbox> T(&A);
+            if (method==2) {
+                Compose< Transpose<Blackbox>, Blackbox > C (&T, &A);
+                std::clog << "A^T A is " << C.rowdim() << " by " << C.coldim() << std::endl;
+                return valence(val_A, C);
+            } else {
+                Compose< Blackbox, Transpose<Blackbox> > C (&A, &T);
+                std::clog << "A A^T is " << C.rowdim() << " by " << C.coldim() << std::endl;
+                return valence(val_A, C);
+            }
+        }
+    }
+    
+
+
 } //End of LinBox
 
 
