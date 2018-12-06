@@ -425,6 +425,102 @@ namespace LinBox {
 
 	}; // FFT_algorithms<Field, NoSimd<typename Field::Element>, 1>
 
+	template<typename Field, typename simd>
+	class FFT_algorithms<Field, simd, 4, IS_FLOATING> : public FFT_butterflies<Field, simd, 4> {
+	public:
+		using Element = typename Field::Element;
+		using Compute_t = typename Field::Compute_t;
+		using Residu_t = typename Field::Residu_t;
+		using vect_t = typename simd::vect_t;
+
+		FFT_algorithms(const FFT_init<Field>& f_i) : FFT_butterflies<Field, simd, 4>(f_i) {
+			linbox_check(simd::vect_size == 4);
+		}
+
+		void DIF (Element *fft) {
+			const uint64_t& n = this->n;
+			const Residu_t& _pl = this->_pl;
+
+			vect_t P;
+			P  = simd::set1(_pl);
+			//TODO: Create U = 1/p here
+			Element * tab_w = &(this->pow_w) [0];
+			size_t w, f;
+			for (w = n >> 1, f = 1; w >= 4; tab_w+=w, w >>= 1, f <<= 1){
+				// w : witdh of butterflies
+				// f : # families of butterflies
+				for (size_t i = 0; i < f; i++)
+					for (size_t j = 0; j < w; j+=4)
+
+#define A0 &fft[0] +  (i << 1)   *w+ j
+#define A4 &fft[0] + ((i << 1)+1)*w+ j
+						this->Butterfly_DIF(A0,A4, tab_w+j,P);
+#undef A0
+#undef A4
+				//std::cout<<fft<<std::endl;
+			}
+			// Last two steps
+			if (n >= 8) {
+				vect_t W,Wp;
+				W = simd::set1 (tab_w [1]);
+
+				for (size_t i = 0; i < f; i+=2)
+#define A0 &fft[0] +  (i << 2)
+#define A4 &fft[0] + ((i << 2)+4)
+					this->Butterfly_DIF_laststeps(A0,A4,W,P);
+				//std::cout<<fft<<std::endl;
+#undef A0
+#undef A4
+			} else {
+				FFT_algorithms<Field, NoSimd<Element>, 1> fft_algo_1 (FFT_init<Field> (this->field(),this->ln,this->getRoot()));
+
+				for (; w >= 1; tab_w+=w, w >>= 1, f <<= 1)
+					for (size_t i = 0; i < f; i++)
+						for (size_t j = 0; j < w; j++)
+							fft_algo_1.Butterfly_DIF(fft[(i << 1)*w+j], fft[((i << 1)+1)*w+j], (this->pow_w)[j*f]);
+			}
+		}
+
+		void DIT (Element *fft) {
+			const uint64_t& n = this->n;
+			const Residu_t& _pl = this->_pl;
+
+			vect_t P;
+			P = simd::set1(_pl);
+			// First two steps
+			if (n >= 8) {
+				vect_t W;
+				W = simd::set1 ((this->pow_w) [n-3]);
+
+				for (size_t i = 0; i < n; i+=8)
+					this->Butterfly_DIT_firststeps(&fft[i],&fft[i+4],W,P);
+
+				Element * tab_w = &(this->pow_w) [n-8];
+				for (size_t w = 4, f = n >> 3; f >= 1; w <<= 1, f >>= 1, tab_w-=w){
+					// w : witdh of butterflies
+					// f : # families of butterflies
+					for (size_t i = 0; i < f; i++)
+						for (size_t j = 0; j < w; j+=4)
+#define A0 &fft[0] +  (i << 1)   *w+ j
+#define A4 &fft[0] + ((i << 1)+1)*w+ j
+							this->Butterfly_DIT(A0,A4, tab_w+j,P);
+
+#undef A0
+#undef A4
+
+				}
+			} else {
+				FFT_algorithms<Field, NoSimd<Element>, 1> fft_algo_1 (FFT_init<Field> (this->field(),this->ln,this->getRoot()));
+
+				Element * tab_w = &(this->pow_w) [n-2];
+				for (size_t w = 1, f = n >> 1; f >= 1; w <<= 1, f >>= 1, tab_w-=w)
+					for (size_t i = 0; i < f; i++)
+						for (size_t j = 0; j < w; j++)
+							fft_algo_1.Butterfly_DIT(fft[(i << 1)*w+j], fft[((i << 1)+1)*w+j], tab_w[j]);
+			}
+		}
+
+	}; // FFT_algorithms<Field, NoSimd<typename Field::Element>, 4>
 }
 
 #undef IS_INTEGRAL

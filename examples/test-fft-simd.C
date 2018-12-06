@@ -69,14 +69,16 @@ Vec test_fft(const Field & F, const Vec & a, uint64_t l2n, typename Field::Eleme
 
 int main(int argc, char** argv){
 
-	using Field = Givaro::Modular<uint32_t, uint64_t>;
+	// using Field = Givaro::Modular<uint32_t, uint64_t>; // Simd256 -> Simd128
+	using Field = Givaro::Modular<double,double>;
 	using Element  = typename Field::Element;
 
 	uint64_t l2n = 3;
 	uint64_t n = 1_ui64 << l2n;
 	Element w = 0;
 	
-	Field F(36175873); // 25bits prime generate with LinBox::RandomFFTPrime
+	// Field F(36175873); // 25bits prime generate with LinBox::RandomFFTPrime
+	Field F(1048609); // 25bits prime generate with LinBox::RandomFFTPrime
 
 	std::vector<Element, Allocator<Element>> a(n), d(n);
 
@@ -98,7 +100,7 @@ int main(int argc, char** argv){
 	std::cout << "FFT NoSimd: " << ((ok)?"OK":"KO") << std::endl;
 	//	std::cout << "c : " << c << std::endl << std::endl << std::endl;
 
-	c = test_fft<Simd128<Element>>(F, a, l2n, w);
+	c = test_fft<Simd256<Element>>(F, a, l2n, w);
 
 	ok = true;
 	for(uint64_t i = 0 ; i < n ; ++i){
@@ -107,7 +109,7 @@ int main(int argc, char** argv){
 		}
 	}
 
-	std::cout << "FFT Simd128: " << ((ok)?"OK":"KO") << std::endl;
+	std::cout << "FFT Simd256: " << ((ok)?"OK":"KO") << std::endl;
 	//	std::cout << "c : " << c << std::endl << std::endl << std::endl;
 
 	return EXIT_SUCCESS;
