@@ -461,7 +461,7 @@ namespace LinBox {
 			}
 			// Last two steps
 			if (n >= 8) {
-				vect_t W,Wp;
+				vect_t W;
 				W = simd::set1 (tab_w [1]);
 
 				for (size_t i = 0; i < f; i+=2)
