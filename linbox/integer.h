@@ -144,13 +144,13 @@ namespace LinBox { /*  signedness of integers */
     }
 
 	template<typename IntType>
-	bool isOdd (const IntType& value)
+	inline bool isOdd (const IntType& value)
 	{
 		return value & IntType(1);
 	}
 
 	template<typename IntType>
-	bool isEven (const IntType& p)
+	inline bool isEven (const IntType& p)
 	{
 		return !isOdd(p);
 	}
