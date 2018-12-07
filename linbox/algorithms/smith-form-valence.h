@@ -413,7 +413,7 @@ std::vector<Givaro::Integer>& smithValence(std::vector<Givaro::Integer>& SmithDi
         LRank(coprimeR, filename.c_str(), coprimeV);
 //     })}
 
-    BARRIER;
+    WAIT;
 
     SYNCH_GROUP(
         for(size_t j=0; j<Moduli.size(); ++j) {
