@@ -801,33 +801,6 @@ namespace LinBox
 
 			solvein( x, Ap, Bp, M);
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-  typename Field::Element sum;
-  typename Field::Element tmp, tmp2;
-
-  for (size_t i = 0 ; i < Ap.rowdim() ; ++i){
-      sum=0.0;
-      for (size_t j = 0 ; j < Ap.coldim() ; ++j){
-        tmp = Ap.getEntry(i,j);
-        tmp2 = x.getEntry(j);
-        F.mul(tmp, tmp2, tmp);
-        F.add(sum, tmp, sum);
-      } 
-
-/*
-    if(!F.areEqual(Bp.getEntry(i),sum)){
-      std::cerr << "##############################" << std::endl;
-      std::cerr << "   Ap*x is not equal to Bp    " << std::endl;
-      std::cerr << "##############################" << std::endl;
-      break;
-    }
-*/
-    }
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
 #ifdef __Detailed_Time_Measurement
             chrono.stop();
             std::cout<< 
@@ -851,8 +824,7 @@ namespace LinBox
 #endif
 			)
 	{
-//		Integer den(1);
-Integer den;
+		Integer den;//Integer den(1);
 
 #ifdef __LINBOX_HAVE_MPI	//MPI parallel version
 		if(!C || C->rank() == 0){
@@ -860,8 +832,7 @@ Integer den;
 			if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
 				throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
 
-                        commentator().start ("Integer CRA Solve", "Isolve");
-
+            commentator().start ("Integer CRA Solve", "Isolve");
 
 #ifdef __LINBOX_HAVE_MPI
 		}
@@ -891,18 +862,11 @@ Integer den;
 		size_t n=A.coldim();
 
 		double hadamard = n*(Givaro::naturallog(n)+2*Givaro::naturallog(max));//double hadamard = n*(log(double(n))+2*log(double(max)));
-//std::cout << " >>>>>>>>>>>>>>>> Hadamard:= " << hadamard << std::endl;
 
 #ifdef __LINBOX_HAVE_MPI
-//		MPIratChineseRemainder< EarlyMultipRatCRA< Givaro::ModularBalanced<double> > > cra(3UL, C);
 		MPIratChineseRemainder< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(hadamard, C);
-
-
 #else
-
-std::cerr << "Sequential solveCRA" << std::endl;
-
-//        RationalRemainder< EarlyMultipRatCRA< Givaro::ModularBalanced<double> > > cra(3UL);
+        std::cerr << "Sequential solveCRA" << std::endl;
         RationalRemainder< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(hadamard);
 
 #endif

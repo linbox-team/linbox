@@ -48,36 +48,29 @@ namespace LinBox
         template <class Vect>
 		Vect& result (Vect &num, Integer& den)
 		{
-
-int rank; MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-//std::cout << " Proc("<<rank<<") >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "<<std::endl;
             Father_t::result(num, false);
 
 #ifdef __Detailed_Time_Measurement
             Timer chrono;
             chrono.start();
 #endif
-//            den = 1;
+
             const auto& mod = Father_t::getModulus();
-//std::cout << " Proc("<<rank<<") >>>>>>> mod: "<<mod<<std::endl;
             Integer s, nd;
             _ZZ.sqrt(s, mod);
             for (auto num_it = num.begin(); num_it != num.end(); ++num_it) {
                 iterativeratrecon(*num_it, nd, den, mod, s);
-//std::cout << " Proc("<<rank<<") ############################################################# den: "<<den<<std::endl;
                 if (nd > 1) {
                     for (auto t02 = num.begin(); t02 != num_it; ++t02)
                         *t02 *= nd;
                     den *= nd;
                 }
             }
-//std::cout << " Proc("<<rank<<") <<<<<<< den: "<<den<<std::endl;
+
 #ifdef __Detailed_Time_Measurement
 		    chrono.stop();
             std::cout<<"Process 0 RR "<<chrono.usertime()<<std::endl;
 #endif
-  
-//std::cout << " Proc("<<rank<<") <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< "<<std::endl;
 
             return num;
         }

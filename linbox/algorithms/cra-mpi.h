@@ -339,12 +339,8 @@ namespace LinBox
                 //Process mutual independent prime number generation
                 ++gen; while(Builder_.noncoprime(*gen)||prime_used.find(*gen) != prime_used.end()) ++gen;
                 prime_used.insert(*gen);
-//std::cerr<<*gen<<std::endl;//<--------------Display each used unique prime number
-
                 Domain D(*gen);
-
                 Iteration(r, D);
-
         }
 
         template<class Function>
@@ -352,8 +348,7 @@ namespace LinBox
         {
             
             int pp;
-//            LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   gen(_commPtr->rank(),_commPtr->size());
-LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag>   gen(_commPtr->rank(),_commPtr->size());
+            LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   gen(_commPtr->rank(),_commPtr->size());
 
             std::unordered_set<int> prime_used;
 
@@ -619,7 +614,7 @@ LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag>   gen(
 			else{
 
                 worker_process_task(Iteration, r);
-return num;
+                return num;
 			}
 		}
 #endif
