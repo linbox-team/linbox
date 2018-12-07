@@ -243,6 +243,7 @@ namespace LinBox
 			return norm;
 		}
 
+        // @fixme Remove?
 		integer &hadamardBound(integer &res){
 			res = 1L;
 			integer tmp;

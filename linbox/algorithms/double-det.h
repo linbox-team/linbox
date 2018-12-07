@@ -143,6 +143,7 @@ namespace LinBox
 	 *
 	 */
 	// should use multiprec floating pt arith, wait, maybe not!
+    // @fixme Remove
 	template<class BlackBox>
 	integer& HadamardBound (integer& hadamarBound, const BlackBox& A)
 	{
@@ -176,42 +177,6 @@ namespace LinBox
 
 		return hadamarBound = MIN(res1, res2);
 	}
-
-#if 0
-	template<class BlackBox>
-	double& HadamardBound (double& hadamarBound, const BlackBox& A)
-	{
-
-
-		double res1 = 0;
-		double res2 = 0;
-		integer temp;
-
-		typename BlackBox::ConstRowIterator rowIt;
-		typename BlackBox::ConstRow::const_iterator col;
-
-		for( rowIt = A.rowBegin(); rowIt != A.rowEnd(); ++rowIt ) {
-			temp = 0;
-			for( col = rowIt->begin(); col != rowIt->end(); ++col )
-				temp += static_cast<integer>((*col)) * (*col);
-			res1 += log ((double)temp);
-		}
-		res1 = res1/2;
-
-		typename BlackBox::ConstColIterator colIt;
-		typename BlackBox::ConstCol::const_iterator row;
-
-		for( colIt = A.colBegin(); colIt != A.colEnd(); ++colIt ) {
-			temp = 0;
-			for( row = colIt->begin(); row != colIt->end(); ++row )
-				temp += static_cast<integer>((*row)) * (*row);
-			res2 += log((double)temp);
-		}
-		res2 = res2/2;
-
-		return hadamarBound = MIN(res1, res2);
-	}
-#endif
 
 	/* Given a (N+1) x N full rank matrix
 	 * [ A ]

@@ -85,6 +85,7 @@ namespace LinBox
 			return res;
 		}
 
+        // @fixme Remove?
 		double hadamardBound(double& res) const {
 			typename QMatrix::ConstRowIterator r;
 			typename QMatrix::ConstRow::const_iterator c;
