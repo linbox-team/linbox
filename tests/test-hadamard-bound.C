@@ -20,9 +20,11 @@
  */
 
 #include "linbox/matrix/densematrix/blas-matrix.h"
+#include "linbox/matrix/random-matrix.h"
+#include "linbox/solutions/det.h"
+#include "linbox/solutions/solve.h"
 #include "linbox/solutions/hadamard-bound.h"
 #include "linbox/util/commentator.h"
-#include "linbox/matrix/random-matrix.h"
 
 #include <iostream>
 
@@ -35,27 +37,56 @@ void test(size_t n)
     Field F;
     BlasMatrix<Field> A(F, n, n);
 
+    // Generate a full rank matrix
     Field::RandIter randIter(F, 10); // @fixme bits
     RandomDenseMatrix<Field::RandIter, Field> RDM(F, randIter);
     RDM.randomFullRank(A);
 
-    std::cout << HadamardBound(A) << std::endl;
-    std::cout << FastHadamardBound(A) << std::endl;
+    // ---- Determinant
 
-    // @fixme Generate full rank matrices and test that the bound does
+    // Compute the bounds
+    auto hb = HadamardBound(A);
+    auto fastHB = HadamardBound(A);
+
+    // Compute the effective determinant
+    Integer detA;
+    det(detA, A);
+    std::cout << "Det: " << Givaro::logtwo(detA) << std::endl;
+
+    if (fastHB < hb) {
+        std::cerr << "Fast Hadamard bound is somehow better than the precise one." << std::endl;
+        exit(-1);
+    }
+
+    if (Givaro::logtwo(detA) > hb) {
+        std::cerr << "The Hadamard bound does not bound the determinant." << std::endl;
+        exit(-2);
+    }
 
     // ---- Rational solve
 
     BlasVector<Field> b(F, n);
 
-    auto hadamardBound = RationalSolveHadamardBound(A, b);
-    std::cout << hadamardBound.numBoundBitSize << " " << hadamardBound.denBoundBitSize << std::endl;
+    // Compute the bounds
+    auto rationalSolveHB = RationalSolveHadamardBound(A, b);
+
+    // Compute the effective solution
+    BlasVector<Field> num(F, n);
+    Field::Element den;
+    solve(num, den, A, b);
+
+    std::cout << num[0] << " " << den << std::endl;
+    std::cout << Givaro::logtwo(num[0]) << " " << Givaro::logtwo(den) << std::endl;
+    std::cout << rationalSolveHB.numBoundBitSize << " " << rationalSolveHB.denBoundBitSize << std::endl;
 }
 
 int main(int argc, char** argv)
 {
     static size_t n = 10;
     static int iterations = 1;
+
+    // @fixme seed
+    // @fixme bitsize
 
     static Argument args[] = {{'n', "-n N", "Set dimension of test objects to NxN.", TYPE_INT, &n},
                               {'i', "-i I", "Perform each test for I iterations.", TYPE_INT, &iterations},
