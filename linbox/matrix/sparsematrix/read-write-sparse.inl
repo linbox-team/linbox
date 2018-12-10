@@ -454,7 +454,7 @@ namespace LinBox {
 	template<class Matrix>
 	std::istream &SparseMatrixReadHelper<Matrix> ::read (Matrix &A
 							     , std::istream &is
-							     , LINBOX_enum(Tag::FileFormat) format
+							     , Tag::FileFormat format
 							    )
 	{
 		char buf[80];
@@ -518,7 +518,7 @@ namespace LinBox {
 	template<class Matrix>
 	std::ostream &SparseMatrixWriteHelper<Matrix> ::write (const Matrix &A
 							       , std::ostream &os
-							       , LINBOX_enum(Tag::FileFormat) format
+							       , Tag::FileFormat format
 							       )
 	{
 		// Avoid massive unneeded overhead in the case that this
