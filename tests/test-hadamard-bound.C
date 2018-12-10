@@ -46,19 +46,20 @@ void test(size_t n)
 
     // Compute the bounds
     auto hb = HadamardBound(A);
-    auto fastHB = HadamardBound(A);
+    auto fastHB = FastHadamardBound(A);
 
     // Compute the effective determinant
     Integer detA;
     det(detA, A);
-    std::cout << "Det: " << Givaro::logtwo(detA) << std::endl;
+    std::cout << "Det: " << detA << " (" << Givaro::logtwo(Givaro::abs(detA)) << ")" << std::endl;
+    std::cout << "bounds: " << fastHB << " " << hb << std::endl;
 
     if (fastHB < hb) {
         std::cerr << "Fast Hadamard bound is somehow better than the precise one." << std::endl;
         exit(-1);
     }
 
-    if (Givaro::logtwo(detA) > hb) {
+    if (Givaro::logtwo(Givaro::abs(detA)) > hb) {
         std::cerr << "The Hadamard bound does not bound the determinant." << std::endl;
         exit(-2);
     }
@@ -66,6 +67,7 @@ void test(size_t n)
     // ---- Rational solve
 
     BlasVector<Field> b(F, n);
+    b.random();
 
     // Compute the bounds
     auto rationalSolveHB = RationalSolveHadamardBound(A, b);
@@ -75,9 +77,21 @@ void test(size_t n)
     Field::Element den;
     solve(num, den, A, b);
 
-    std::cout << num[0] << " " << den << std::endl;
-    std::cout << Givaro::logtwo(num[0]) << " " << Givaro::logtwo(den) << std::endl;
-    std::cout << rationalSolveHB.numBoundBitSize << " " << rationalSolveHB.denBoundBitSize << std::endl;
+    std::cout << "num[0]: " << num[0] << " (" << Givaro::logtwo(Givaro::abs(num[0])) << ")" << std::endl;
+    std::cout << "den: " << den << " (" << Givaro::logtwo(den) << ")" << std::endl;
+    std::cout << "bounds: " << rationalSolveHB.numBoundBitSize << " " << rationalSolveHB.denBoundBitSize << std::endl;
+
+    for (size_t i = 0u; i < n; ++i) {
+        if (Givaro::logtwo(Givaro::abs(num[i])) > rationalSolveHB.numBoundBitSize) {
+            std::cerr << "The rational solve Hadamard bound does not bound the numerator." << std::endl;
+            exit(-3);
+        }
+    }
+
+    if (Givaro::logtwo(Givaro::abs(den)) > rationalSolveHB.denBoundBitSize) {
+        std::cerr << "The rational solve Hadamard bound does not bound the denominator." << std::endl;
+        exit(-3);
+    }
 }
 
 int main(int argc, char** argv)
@@ -87,6 +101,8 @@ int main(int argc, char** argv)
 
     // @fixme seed
     // @fixme bitsize
+
+    // @fixme print seed on failure
 
     static Argument args[] = {{'n', "-n N", "Set dimension of test objects to NxN.", TYPE_INT, &n},
                               {'i', "-i I", "Perform each test for I iterations.", TYPE_INT, &iterations},

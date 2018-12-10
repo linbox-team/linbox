@@ -55,9 +55,9 @@ namespace LinBox {
      * The result is expressed as bit size.
      */
     template <class BlackBox>
-    size_t DetailedHadamardRowBound(const BlackBox& A, Integer& minNorm)
+    size_t DetailedHadamardRowBound(const BlackBox& A, size_t& minNormBitSize)
     {
-        minNorm = -1;
+        minNormBitSize = -1u;
         size_t normBitSize = 0;
 
         typename BlackBox::ConstRowIterator rowIt;
@@ -67,10 +67,12 @@ namespace LinBox {
             for (col = rowIt->begin(); col != rowIt->end(); ++col) {
                 norm += static_cast<Integer>((*col)) * (*col);
             }
-            if (norm < minNorm) {
-                minNorm = norm;
+
+            size_t rowNormBitSize = 1 + Givaro::logtwo(norm);
+            if (rowNormBitSize < minNormBitSize) {
+                minNormBitSize = rowNormBitSize;
             }
-            normBitSize += Givaro::logtwo(norm);
+            normBitSize += rowNormBitSize;
         }
 
         return (normBitSize + 1) / 2;
@@ -83,9 +85,9 @@ namespace LinBox {
      * The result is expressed as bit size.
      */
     template <class BlackBox>
-    size_t DetailedHadamardColBound(const BlackBox& A, Integer& minNorm)
+    size_t DetailedHadamardColBound(const BlackBox& A, size_t& minNormBitSize)
     {
-        minNorm = -1;
+        minNormBitSize = -1u;
         size_t normBitSize = 0;
 
         typename BlackBox::ConstColIterator colIt;
@@ -95,10 +97,12 @@ namespace LinBox {
             for (row = colIt->begin(); row != colIt->end(); ++row) {
                 norm += static_cast<Integer>((*row)) * (*row);
             }
-            if (norm < minNorm) {
-                minNorm = norm;
+
+            size_t colNormBitSize = 1 + Givaro::logtwo(norm);
+            if (colNormBitSize < minNormBitSize) {
+                minNormBitSize = colNormBitSize;
             }
-            normBitSize += Givaro::logtwo(norm);
+            normBitSize += colNormBitSize;
         }
 
         return (normBitSize + 1) / 2;
@@ -113,13 +117,13 @@ namespace LinBox {
     template <class BlackBox>
     DetailedHadamardBoundData DetailedHadamardBound(const BlackBox& A)
     {
-        Integer minRowNorm = -1;
-        size_t rowBoundBitSize = DetailedHadamardRowBound(A, minRowNorm);
-        size_t boundOnRowNormBitSize = rowBoundBitSize - Givaro::logtwo(minRowNorm + 1);
+        size_t minRowNormBitSize = 0;
+        size_t rowBoundBitSize = DetailedHadamardRowBound(A, minRowNormBitSize);
+        size_t boundOnRowNormBitSize = rowBoundBitSize - minRowNormBitSize;
 
-        Integer minColNorm = -1;
-        size_t colBoundBitSize = DetailedHadamardColBound(A, minColNorm);
-        size_t boundOnColNormBitSize = colBoundBitSize - Givaro::logtwo(minColNorm + 1);
+        size_t minColNormBitSize = 0;
+        size_t colBoundBitSize = DetailedHadamardColBound(A, minColNormBitSize);
+        size_t boundOnColNormBitSize = colBoundBitSize - minColNormBitSize;
 
         DetailedHadamardBoundData data;
         data.boundBitSize = std::min(rowBoundBitSize, colBoundBitSize);
@@ -154,7 +158,7 @@ namespace LinBox {
 
         // @fixme With SparseMatrix, do we iterate over all zeros?
         // Find a better way.
-        Integer max = 1;
+        Integer max = 0;
         for (auto it = A.Begin(); it != A.End(); ++it) {
             Integer ai = *it;
             if (max < ai)
@@ -190,10 +194,15 @@ namespace LinBox {
 
         auto hadamardBound = DetailedHadamardBound(A);
 
-        data.numBoundBitSize = hadamardBound.boundBitSize;
-        // @fixme Missing b
-        data.denBoundBitSize = hadamardBound.boundOnMinNormBitSize;
+        // Compute the vector norm
+        Integer bNorm = 0;
+        for (auto bIt = b.begin(); bIt != b.end(); ++bIt) {
+            bNorm += static_cast<Integer>((*bIt)) * (*bIt);
+        }
+        size_t bNormBitSize = 1 + Givaro::logtwo(bNorm) / 2;
 
+        data.numBoundBitSize = hadamardBound.boundOnMinNormBitSize + bNormBitSize;
+        data.denBoundBitSize = hadamardBound.boundBitSize;
         return data;
     }
 }
