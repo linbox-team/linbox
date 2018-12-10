@@ -151,7 +151,7 @@ namespace LinBox
 		return is;
 	}
 
-	inline std::ostream& ZeroOne<GF2>::write (std::ostream& out, LINBOX_enum(Tag::FileFormat) format) const
+	inline std::ostream& ZeroOne<GF2>::write (std::ostream& out, Tag::FileFormat format) const
 	{
 		if (format == Tag::FileFormat::Guillaume) {
 			out << _rowdim << ' ' << _coldim << " M\n";
@@ -410,7 +410,7 @@ namespace LinBox
     {
         this->augment(A);
     }
-    
+
     template<>
     struct ZeroOne<GF2>::rebind<GF2> {
         typedef ZeroOne<GF2> other;
