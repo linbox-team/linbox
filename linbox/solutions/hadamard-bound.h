@@ -62,20 +62,20 @@ namespace LinBox {
 
         typename BlackBox::ConstRowIterator rowIt;
         for (rowIt = A.rowBegin(); rowIt != A.rowEnd(); ++rowIt) {
-            Integer norm = 1;
+            Integer norm = 0;
             typename BlackBox::ConstRow::const_iterator col;
             for (col = rowIt->begin(); col != rowIt->end(); ++col) {
                 norm += static_cast<Integer>((*col)) * (*col);
             }
 
-            size_t rowNormBitSize = 1 + Givaro::logtwo(norm);
+            size_t rowNormBitSize = std::ceil(Givaro::logtwo(norm) / 2.0);
             if (rowNormBitSize < minNormBitSize) {
                 minNormBitSize = rowNormBitSize;
             }
             normBitSize += rowNormBitSize;
         }
 
-        return (normBitSize + 1) / 2;
+        return normBitSize;
     }
 
     /**
@@ -92,20 +92,20 @@ namespace LinBox {
 
         typename BlackBox::ConstColIterator colIt;
         for (colIt = A.colBegin(); colIt != A.colEnd(); ++colIt) {
-            Integer norm = 1;
+            Integer norm = 0;
             typename BlackBox::ConstCol::const_iterator row;
             for (row = colIt->begin(); row != colIt->end(); ++row) {
                 norm += static_cast<Integer>((*row)) * (*row);
             }
 
-            size_t colNormBitSize = 1 + Givaro::logtwo(norm);
+            size_t colNormBitSize = std::ceil(Givaro::logtwo(norm) / 2.0);
             if (colNormBitSize < minNormBitSize) {
                 minNormBitSize = colNormBitSize;
             }
             normBitSize += colNormBitSize;
         }
 
-        return (normBitSize + 1) / 2;
+        return normBitSize;
     }
 
     /**
@@ -119,11 +119,11 @@ namespace LinBox {
     {
         size_t minRowNormBitSize = 0;
         size_t rowBoundBitSize = DetailedHadamardRowBound(A, minRowNormBitSize);
-        size_t boundOnRowNormBitSize = rowBoundBitSize - minRowNormBitSize;
+        size_t boundOnRowNormBitSize = rowBoundBitSize - minRowNormBitSize + 1;
 
         size_t minColNormBitSize = 0;
         size_t colBoundBitSize = DetailedHadamardColBound(A, minColNormBitSize);
-        size_t boundOnColNormBitSize = colBoundBitSize - minColNormBitSize;
+        size_t boundOnColNormBitSize = colBoundBitSize - minColNormBitSize + 1;
 
         DetailedHadamardBoundData data;
         data.boundBitSize = std::min(rowBoundBitSize, colBoundBitSize);
@@ -199,7 +199,7 @@ namespace LinBox {
         for (auto bIt = b.begin(); bIt != b.end(); ++bIt) {
             bNorm += static_cast<Integer>((*bIt)) * (*bIt);
         }
-        size_t bNormBitSize = 1 + Givaro::logtwo(bNorm) / 2;
+        size_t bNormBitSize = std::ceil(Givaro::logtwo(bNorm) / 2.0);
 
         data.numBoundBitSize = hadamardBound.boundOnMinNormBitSize + bNormBitSize;
         data.denBoundBitSize = hadamardBound.boundBitSize;

@@ -51,8 +51,6 @@ void test(size_t n)
     // Compute the effective determinant
     Integer detA;
     det(detA, A);
-    std::cout << "Det: " << detA << " (" << Givaro::logtwo(Givaro::abs(detA)) << ")" << std::endl;
-    std::cout << "bounds: " << fastHB << " " << hb << std::endl;
 
     if (fastHB < hb) {
         std::cerr << "Fast Hadamard bound is somehow better than the precise one." << std::endl;
@@ -77,20 +75,18 @@ void test(size_t n)
     Field::Element den;
     solve(num, den, A, b);
 
-    std::cout << "num[0]: " << num[0] << " (" << Givaro::logtwo(Givaro::abs(num[0])) << ")" << std::endl;
-    std::cout << "den: " << den << " (" << Givaro::logtwo(den) << ")" << std::endl;
-    std::cout << "bounds: " << rationalSolveHB.numBoundBitSize << " " << rationalSolveHB.denBoundBitSize << std::endl;
-
     for (size_t i = 0u; i < n; ++i) {
         if (Givaro::logtwo(Givaro::abs(num[i])) > rationalSolveHB.numBoundBitSize) {
             std::cerr << "The rational solve Hadamard bound does not bound the numerator." << std::endl;
+            std::cout << "num[i]: " << Givaro::logtwo(Givaro::abs(num[i])) << " > " << rationalSolveHB.numBoundBitSize << std::endl;
             exit(-3);
         }
     }
 
     if (Givaro::logtwo(Givaro::abs(den)) > rationalSolveHB.denBoundBitSize) {
         std::cerr << "The rational solve Hadamard bound does not bound the denominator." << std::endl;
-        exit(-3);
+        std::cout << "den: " << Givaro::logtwo(den) << " > " << rationalSolveHB.denBoundBitSize << std::endl;
+        exit(-4);
     }
 }
 
