@@ -119,11 +119,11 @@ namespace LinBox {
     {
         size_t minRowNormBitSize = 0;
         size_t rowBoundBitSize = DetailedHadamardRowBound(A, minRowNormBitSize);
-        size_t boundOnRowNormBitSize = rowBoundBitSize - minRowNormBitSize + 1;
+        size_t boundOnRowNormBitSize = rowBoundBitSize - minRowNormBitSize;
 
         size_t minColNormBitSize = 0;
         size_t colBoundBitSize = DetailedHadamardColBound(A, minColNormBitSize);
-        size_t boundOnColNormBitSize = colBoundBitSize - minColNormBitSize + 1;
+        size_t boundOnColNormBitSize = colBoundBitSize - minColNormBitSize;
 
         DetailedHadamardBoundData data;
         data.boundBitSize = std::min(rowBoundBitSize, colBoundBitSize);
