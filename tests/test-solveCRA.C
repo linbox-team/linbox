@@ -127,11 +127,11 @@ bool test_set(const Field  &ZZ, Vector &X2,
   return tag;
 }
 
-	uint64_t getSeed(){
-		struct timeval tp;
-		gettimeofday(&tp, 0) ;
-        return static_cast<uint64_t> (tp.tv_usec + tp.tv_sec*1000000);
-	}
+uint64_t getSeed(){
+	struct timeval tp;
+	gettimeofday(&tp, 0) ;
+    return static_cast<uint64_t> (tp.tv_usec + tp.tv_sec*1000000);
+}
 
 int main(int argc, char ** argv)
 {
@@ -187,7 +187,7 @@ int main(int argc, char ** argv)
 	
 	A.write(std::cout << ">>>>Compute with A: " << A.rowdim() << " by " << A.coldim() << "\n"<< "A:=",Tag::FileFormat::Maple) << ';' << std::endl;
 */
-      
+    
       if(!test_set(ZZ, X2, A, B )) break;
     }
 

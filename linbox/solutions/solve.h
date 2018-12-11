@@ -803,16 +803,7 @@ return x;
                 
 		BlasVector<Givaro::ZRing<Integer>> num(A.field(),A.coldim());
 		IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
-/*
-#ifdef __LINBOX_HAVE_MPI
-		MPIratChineseRemainder< EarlyMultipRatCRA< Givaro::Modular<double> > > cra(3UL, C);
 
-#else
-        ChineseRemainderRatOMP< EarlyMultipRatCRA< Givaro::Modular<double> > > cra(3UL); 
-#endif
-*/
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
 		typename BB::ConstIterator it = A.Begin();
 		typename BB::ConstIterator it_end = A.End();
 		integer max = 1,min=0;
@@ -840,12 +831,11 @@ return x;
 std::cerr << "OMP solveCRA" << std::endl;
 
 //        RationalRemainder< EarlyMultipRatCRA< Givaro::ModularBalanced<double> > > cra(3UL);
-        ChineseRemainderRatOMP< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(hadamard);
+        ChineseRemainderOMP< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(hadamard);//ChineseRemainderRatOMP< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(hadamard);
 
 #endif
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
         Timer chrono;
         chrono.start();
 		cra(num, den, iteration, genprime);

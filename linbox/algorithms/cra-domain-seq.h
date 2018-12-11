@@ -127,6 +127,46 @@ namespace LinBox
                 commentator().stop ("done", NULL, "mmcravit");
 				return res;
             }
+            
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		template<class Function, class RandPrimeIterator>
+		Integer & operator() (Integer& num, Integer& den, Function& Iteration, RandPrimeIterator& genprime)
+		{
+			++genprime;
+			{
+				Domain D(*genprime);
+				DomainElement r; D.init(r);
+				Builder_.initialize( D, Iteration(r, D) );
+			}
+			while( ! Builder_.terminated() ) {
+				++genprime; while(Builder_.noncoprime(*genprime) ) ++genprime;
+				Domain D(*genprime);
+				DomainElement r; D.init(r);
+				Builder_.progress( D, Iteration(r, D) );
+			}
+			return Builder_.result(num, den);
+		}
+
+
+
+		template<class Function, class RandPrimeIterator>
+		BlasVector<Givaro::ZRing<Integer> > & operator() ( BlasVector<Givaro::ZRing<Integer> >& num, Integer& den, Function& Iteration, RandPrimeIterator& genprime)
+		{
+			++genprime;
+			{
+				Domain D(*genprime);
+				BlasVector<Domain > r(D);
+				Builder_.initialize( D, Iteration(r, D) );
+			}
+			while( ! Builder_.terminated() ) {
+				++genprime; while(Builder_.noncoprime(*genprime) ) ++genprime;
+				Domain D(*genprime);
+				BlasVector<Domain > r(D);
+				Builder_.progress( D, Iteration(r, D) );
+			}
+			return Builder_.result(num, den);
+		}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
             /** \brief Run the CRA loop a certain number of times.
 			 *
