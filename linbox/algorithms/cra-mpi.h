@@ -49,7 +49,7 @@
 
 namespace LinBox
 {
-
+    
 	template<class CRABase>
 	struct MPIChineseRemainder  {
 		typedef typename CRABase::Domain	Domain;
@@ -58,13 +58,13 @@ namespace LinBox
 		CRABase Builder_;
 		Communicator* _commPtr;
 		unsigned int _numprocs;
-
+        
 	public:
 		template<class Param>
 		MPIChineseRemainder(const Param& b, Communicator *c) :
 			Builder_(b), _commPtr(c), _numprocs(c->size())
 		{}
-
+        
 		/** \brief The CRA loop.
 		 *
 		 * termination condition.
@@ -88,10 +88,10 @@ namespace LinBox
 				ChineseRemainder< CRABase > sequential(Builder_);
 				return sequential(res, Iteration, primeg);
 			}
-
+            
 			int procs = _commPtr->size();
 			int process = _commPtr->rank();
-
+            
 			//  parent process
 			if(process == 0 ){
 
@@ -233,25 +233,6 @@ namespace LinBox
 				return res;
 			}
 		}
-	};
-
-
-
-
-	template<class RatCRABase>
-	struct MPIratChineseRemainder  {
-		typedef typename RatCRABase::Domain	Domain;
-		typedef typename RatCRABase::DomainElement	DomainElement;
-	protected:
-		RatCRABase Builder_;
-		Communicator* _commPtr;
-		unsigned int _numprocs;
-
-	public:
-		template<class Param>
-		MPIratChineseRemainder(const Param& b, Communicator *c) :
-			Builder_(b), _commPtr(c), _numprocs(c->size())
-		{}
 
 		template<class Function, class PrimeIterator>
 		Integer & operator() (Integer& num, Integer& den, Function& Iteration, PrimeIterator& primeg)
@@ -259,7 +240,7 @@ namespace LinBox
 
 			//  defer to standard CRA loop if no parallel usage is desired
 			if(_commPtr == 0 || _commPtr->size() == 1) {
-				RationalRemainder< RatCRABase > sequential(Builder_);
+				RationalRemainder< CRABase > sequential(Builder_);
 				return sequential(num, den, Iteration, primeg);
 			}
 
@@ -330,300 +311,152 @@ namespace LinBox
 			}
 		}
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//BEGIN ROI
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
         template<class PrimeIterator, class Function, class Domain>
         void worker_compute(std::unordered_set<int>& prime_used, PrimeIterator& gen, Function& Iteration, BlasVector<Domain> &r)
         {
-                //Process mutual independent prime number generation
-                ++gen; while(Builder_.noncoprime(*gen)||prime_used.find(*gen) != prime_used.end()) ++gen;
-                prime_used.insert(*gen);
-                Domain D(*gen);
-                Iteration(r, D);
+            //Process mutual independent prime number generation
+            ++gen; while(Builder_.noncoprime(*gen)||prime_used.find(*gen) != prime_used.end()) ++gen;
+            prime_used.insert(*gen);
+            Domain D(*gen);
+            Iteration(r, D);
         }
-
+        
         template<class Function>
         void worker_process_task(Function& Iteration,  BlasVector<Domain> &r)
         {
             
             int pp;
             LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   gen(_commPtr->rank(),_commPtr->size());
-
+            
             std::unordered_set<int> prime_used;
-
+            
             while(true){
                 _commPtr->recv(pp, 0);
                 if(pp == 1)
                     break;
-
+                
                 worker_compute(prime_used, gen, Iteration, r);
-
+                
                 //Add corresponding prime number as the last element in the result vector
                 r.push_back(*gen);
-
+                
                 _commPtr->send(r.begin(), r.end(), 0, 0);
 
             }
         }
 
-
-
+        
         void compute_stat_comm(int *primes, BlasVector<Domain> &r, int &pp, int &idle_process, int &poison_pills_left)
         {
-
-                idle_process = 0;
-
-                r.resize (r.size()+1);
-                //receive the beginnin and end of a vector in heapspace
-                _commPtr->recv(r.begin(), r.end(), MPI_ANY_SOURCE, 0);
-
-                //Dind out which process sent the solution and the coresponding prime number
-                idle_process = (_commPtr->get_stat()).MPI_SOURCE;
-
-                poison_pills_left-=primes[idle_process - 1];
-
-                //send the tag to coresponding worker process to signal either a stop or continuation
-                _commPtr->send(primes[idle_process - 1], idle_process);
-
-                //Store the corresponding prime number
-                pp = r[r.size()-1];
-
-                //Restructure the vector without added prime number
-                r.resize (r.size()-1);
-
-
+            
+            idle_process = 0;
+            
+            r.resize (r.size()+1);
+            //receive the beginnin and end of a vector in heapspace
+            _commPtr->recv(r.begin(), r.end(), MPI_ANY_SOURCE, 0);
+            
+            //Dind out which process sent the solution and the coresponding prime number
+            idle_process = (_commPtr->get_stat()).MPI_SOURCE;
+            
+            poison_pills_left-=primes[idle_process - 1];
+            
+            //send the tag to coresponding worker process to signal either a stop or continuation
+            _commPtr->send(primes[idle_process - 1], idle_process);
+            
+            //Store the corresponding prime number
+            pp = r[r.size()-1];
+            
+            //Restructure the vector without added prime number
+            r.resize (r.size()-1);
+            
+            
         }
-
+        
         void master_compute(int *primes, BlasVector<Domain> &r)
         {
-
+            
             int poison_pills_left = _commPtr->size() - 1;
             int pp;
             int idle_process = 0;
             while(poison_pills_left > 0 ){
-
+                
                 compute_stat_comm(primes, r, pp, idle_process, poison_pills_left);
-
+                
                 Domain D(pp);
-
+                
                 Builder_.progress(D, r);
-
+                
                 primes[idle_process - 1] = (Builder_.terminated()) ? 1:0;
 
             }
         }
-
+        
         template<class Function>
         void master_init(int *primes, Function& Iteration, Domain &D, BlasVector<Domain> &r)
         {
 			int procs = _commPtr->size();
-
+            
             //Send a start tag for each worker process
             for(int i=1; i<procs; i++){
                 primes[i - 1] = 0;
                 _commPtr->send(primes[i - 1], i);
-
+                
             }
             //Initialize the buider and the receiver vector r
             Builder_.initialize( D, Iteration(r, D) );
         }
-
+        
         template<class Function>
         void master_process_task(Function& Iteration, Domain &D, BlasVector<Domain> &r)
         {
             int primes[_commPtr->size() - 1];
-
+            
             master_init(primes, Iteration, D, r);
-
+            
             master_compute(primes, r);
-
+            
         }
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#if 0
-
+        
 		template<class Function, class PrimeIterator>
 		BlasVector<Givaro::ZRing<Integer> > & operator() ( BlasVector<Givaro::ZRing<Integer> > & num, Integer& den, Function& Iteration, PrimeIterator& primeg)
 		{
-
+            
             //Using news prime number generation function to reduce MPI communication between manager and workers
-
+            
 			//  if there is no communicator or if there is only one process,
 			//  then proceed normally (without parallel)
 			if(_commPtr == 0 || _commPtr->size() == 1) {
 
-                RationalRemainder< RatCRABase > sequential(Builder_);
+                RationalRemainder< CRABase > sequential(Builder_);
 				return sequential(num, den, Iteration, primeg);
-
+                
 			}
-
-			int procs = _commPtr->size();
+            
 			int process = _commPtr->rank();
-
-            Domain D(*primeg);
-            BlasVector<Domain> r(D);
-#ifdef __Detailed_Time_Measurement
-            Timer chrono;
-            double MasterTime=0.0;
-#endif
-			//  parent propcess
-			if(process == 0){
-
-				int primes[procs - 1];
-
-				//  for each slave process...
-				for(int i=1; i<procs; i++){
-					primes[i - 1] = 0;
-					_commPtr->send(primes[i - 1], i);
-
-				}
-
-
-				Builder_.initialize( D, Iteration(r, D
-#ifdef __Detailed_Time_Measurement
-#ifdef __LINBOX_HAVE_MPI
-				,_commPtr
-#endif
-#endif
-				) );
-
-				int poison_pills_left = procs - 1;
-                int pp;
-
-				while(poison_pills_left > 0 ){
-/////All timing inside Master process need just to be summed up for one final display
-					int idle_process = 0;
-                    r.resize (r.size()+1);
-
-					//  receive the beginnin and end of a vector in heapspace
-					_commPtr->recv(r.begin(), r.end(), MPI_ANY_SOURCE, 0);
-
-#ifdef __Detailed_Time_Measurement
-                    chrono.start();
-#endif
-
-					//  determine which process sent answer
-					//  and give them a new tag either to continue or to stop
-					idle_process = (_commPtr->get_stat()).MPI_SOURCE;
-
-                    poison_pills_left-=primes[idle_process - 1];
-
-					//  send the tag
-					_commPtr->send(primes[idle_process - 1], idle_process);
-
-                    //Store the corresponding prime number
-                    pp = r[r.size()-1];
-
-                    //Restructure the vector like before without added prime number
-                    r.resize (r.size()-1);
-
-                    Domain D(pp);
-
-                    Builder_.progress(D, r);
-
-                    primes[idle_process - 1] = (Builder_.terminated()) ? 1:0;
-#ifdef __Detailed_Time_Measurement
-                    chrono.stop();
-                    MasterTime+=chrono.usertime();
-#endif
-
-				}
-#ifdef __Detailed_Time_Measurement
-                    std::cout<<"Process "<<process<<" CRT "<<MasterTime<<std::endl;
-#endif
-				return Builder_.result(num,den);
-
-			}
-			//  child process
-			else{
-
-				int pp;
-                LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   gen(process,procs);
-
-				//  get a prime, compute, send back start and end
-				//  of heap addresses
-                std::unordered_set<int> prime_used;
-
-				while(true){
-
-					_commPtr->recv(pp, 0);
-
-					if(pp == 1)
-						break;
-
-                    ++gen; while(Builder_.noncoprime(*gen)||prime_used.find(*gen) != prime_used.end()) ++gen;
-                    prime_used.insert(*gen);
-
-                    Domain D(*gen);
-
-
-
-                    Iteration(r, D
-#ifdef __Detailed_Time_Measurement
-#ifdef __LINBOX_HAVE_MPI
-,_commPtr
-#endif
-#endif
-                    );
-
-
-                    //Add corresponding prime number as the last element in the result vector
-                    r.push_back(*gen);
-
-					_commPtr->send(r.begin(), r.end(), 0, 0);
-
-				}
-
-//                return num;
-			}
-
-		}
-
-#else
-		template<class Function, class PrimeIterator>
-		BlasVector<Givaro::ZRing<Integer> > & operator() ( BlasVector<Givaro::ZRing<Integer> > & num, Integer& den, Function& Iteration, PrimeIterator& primeg)
-		{
-
-            //Using news prime number generation function to reduce MPI communication between manager and workers
-
-			//  if there is no communicator or if there is only one process,
-			//  then proceed normally (without parallel)
-			if(_commPtr == 0 || _commPtr->size() == 1) {
-
-                RationalRemainder< RatCRABase > sequential(Builder_);
-				return sequential(num, den, Iteration, primeg);
-
-			}
-
-			int process = _commPtr->rank();
-
+            
             Domain D(*primeg);
             BlasVector<Domain> r(D);
             Timer chrono;
-
+            
 			//  parent propcess
 			if(process == 0){
-
+                
                 master_process_task(Iteration, D, r);
-
+                
 				return Builder_.result(num,den);
-
+                
 			}
 			//  child process
 			else{
-
+                
                 worker_process_task(Iteration, r);
                 return num;
 			}
 		}
-#endif
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//END ROI
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+        
     };
-
+    
 }
 
 #undef MPICH_IGNORE_CXX_SEEK

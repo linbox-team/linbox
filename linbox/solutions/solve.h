@@ -864,7 +864,7 @@ namespace LinBox
 		double hadamard = n*(Givaro::naturallog(n)+2*Givaro::naturallog(max));//double hadamard = n*(log(double(n))+2*log(double(max)));
 
 #ifdef __LINBOX_HAVE_MPI
-		MPIratChineseRemainder< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(hadamard, C);
+		MPIChineseRemainder< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(hadamard, C); //MPIratChineseRemainder< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(hadamard, C);
 #else
         std::cerr << "Sequential solveCRA" << std::endl;
         RationalRemainder< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(hadamard);
