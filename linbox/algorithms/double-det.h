@@ -35,6 +35,7 @@
 #include "linbox/randiter/random-prime.h"
 #include "linbox/solutions/solve.h"
 #include "linbox/solutions/methods.h"
+#include "linbox/solutions/hadamard-bound.h"
 
 namespace LinBox
 {
@@ -136,48 +137,6 @@ namespace LinBox
 		}
 	};
 
-	/* Computes the actual Hadamard bound of the matrix A by taking the minimum
-	 * of the column-wise and the row-wise euclidean norm.
-	 *
-	 * A is supposed to be over integers.
-	 *
-	 */
-	// should use multiprec floating pt arith, wait, maybe not!
-    // @fixme Remove
-	template<class BlackBox>
-	integer& HadamardBound (integer& hadamarBound, const BlackBox& A)
-	{
-
-
-		integer res1 = 1;
-		integer res2 = 1;
-		integer temp;
-
-		typename BlackBox::ConstRowIterator rowIt;
-		typename BlackBox::ConstRow::const_iterator col;
-
-		for( rowIt = A.rowBegin(); rowIt != A.rowEnd(); ++rowIt ) {
-			temp = 0;
-			for( col = rowIt->begin(); col != rowIt->end(); ++col )
-				temp += static_cast<integer>((*col)) * (*col);
-			res1 *= temp;
-		}
-		res1 = sqrt(res1);
-
-		typename BlackBox::ConstColIterator colIt;
-		typename BlackBox::ConstCol::const_iterator row;
-
-		for( colIt = A.colBegin(); colIt != A.colEnd(); ++colIt ) {
-			temp = 0;
-			for( row = colIt->begin(); row != colIt->end(); ++row )
-				temp += static_cast<integer>((*row)) * (*row);
-			res2 *= temp;
-		}
-		res2 = sqrt(res2);
-
-		return hadamarBound = MIN(res1, res2);
-	}
-
 	/* Given a (N+1) x N full rank matrix
 	 * [ A ]
 	 * [ b ]
@@ -210,13 +169,12 @@ namespace LinBox
 
 		BlasVector<typename BlackBox::Field> dd(A.field());
 		if (proof) {
-			integer bound;
 			double logbound;
 			//Timer t_hd,t_cra;
 			//t_hd.clear();
 			//t_hd.start();
-			HadamardBound (bound, A);
-			logbound = (logtwo (bound) - logtwo (MIN(abs(s1),abs(s2))))*0.693147180559945;
+			size_t bound = HadamardBound(A);
+			logbound = (bound - logtwo (MIN(abs(s1),abs(s2))))*0.693147180559945;
 			//t_hd.stop();
 			//std::cerr<<"Hadamard bound = : "<<logbound<<" in "<<t_hd.usertime()<<"s"<<std::endl;
 
