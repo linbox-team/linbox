@@ -246,15 +246,16 @@ namespace LinBox
 	public:
 		typedef _Blackbox Blackbox;
 
-		typedef typename _Blackbox::Field Field;
+		typedef typename _Blackbox::Field     Field;
 		typedef typename _Blackbox::Element Element;
+        typedef BlasVector<Field>            Vector;
 
 
 		Compose (const Blackbox& A, const Blackbox& B) {
 			_BlackboxL.push_back(&A);
 			_BlackboxL.push_back(&B);
 
-			_zl.resize(1);
+			_zl.resize(1,Vector(A.field()));
 
 			_zl.front().resize (A.coldim());
 		}
@@ -263,7 +264,7 @@ namespace LinBox
 			_BlackboxL.push_back(Ap);
 			_BlackboxL.push_back(Bp);
 
-			_zl.resize(1);
+            _zl.resize(1,Vector(Ap ->field()));
 
 			_zl.front().resize (Ap ->coldim());
 		}
@@ -278,9 +279,10 @@ namespace LinBox
 		{
 
 			linbox_check(v.size() > 0);
-			_zl.resize(v.size() - 1);
+            _zl.resize(v.size() - 1);
+            //_zl.resize(v.size() - 1,Vector(v.front().field()));
 			typename std::vector<const Blackbox*>::iterator b_p;
-			typename std::vector<std::vector<Element> >::iterator z_p;
+			typename std::vector<Vector>::iterator z_p;
 			// it would be good to use just 2 vectors and flip/flop.
 			for ( b_p = _BlackboxL.begin(), z_p = _zl.begin();
 			      z_p != _zl.end(); ++ b_p, ++ z_p)
@@ -292,23 +294,16 @@ namespace LinBox
 		template <class OutVector, class InVector>
 		inline OutVector& apply (OutVector& y, const InVector& x) const
 		{
-
-			typename std::vector<const Blackbox*>::const_reverse_iterator b_p;
-			typename std::vector<std::vector<Element> >::reverse_iterator z_p, pz_p;
-			b_p = _BlackboxL.rbegin();
-			pz_p = z_p = _zl.rbegin();
-			typedef BlasSubvector<BlasVector<Field, typename Vector<Field>::Dense> > BSub;
-			BSub pz_p_vec(field(),*pz_p);
-
-			(*b_p) -> apply(pz_p_vec, x);
+			auto b_p = _BlackboxL.rbegin();
+			auto pz_p = _zl.rbegin();
+            auto z_p  = _zl.rbegin();
+		    (*b_p) -> apply(*pz_p, x);            
 			++ b_p;  ++ z_p;
 
 			for (; z_p != _zl.rend(); ++ b_p, ++ z_p, ++ pz_p) {
-				 BSub z_p_vec(field(),*z_p);
-				(*b_p) -> apply (z_p_vec,pz_p_vec);
+                (*b_p) -> apply (*z_p,*pz_p);
 			}
-
-			(*b_p) -> apply(y, pz_p_vec);
+		    (*b_p) -> apply(y, *pz_p);
 
 			return y;
 		}
@@ -325,14 +320,14 @@ namespace LinBox
 		template <class OutVector, class InVector>
 		inline OutVector& applyTranspose (OutVector& y, const InVector& x) const
 		{
-			typename std::vector<const Blackbox*>::reverse_iterator b_p;
-			typename std::vector<std::vector<Element> >::reverse_iterator z_p, nz_p;
+			//typename std::vector<const Blackbox*>::reverse_iterator b_p;
+			//typename std::vector<Vector>::reverse_iterator z_p, nz_p;
 
-			b_p = _BlackboxL.rbegin();
-			z_p = nz_p = _zl.rbegin();
-
+			auto b_p = _BlackboxL.rbegin();
+			auto z_p  =  _zl.rbegin();
+            auto nz_p =  _zl.rbegin();
+            
 			(*b_p) -> applyTranspose (*z_p, x);
-
 			++ b_p; ++ nz_p;
 
 			for (; nz_p != _zl.rend(); ++ z_p, ++ nz_p, ++ b_p)
@@ -396,7 +391,8 @@ namespace LinBox
 		std::vector<const Blackbox*> _BlackboxL;
 
 		// local intermediate vector
-		mutable std::vector<std::vector<Element> > _zl;
+		//mutable std::vector<std::vector<Element> > _zl;
+        mutable std::vector<BlasVector<Field> > _zl;
 	};
 
 	//@}
