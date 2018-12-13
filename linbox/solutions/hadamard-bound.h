@@ -22,10 +22,28 @@
 
 #pragma once
 
+#include <linbox/matrix/matrix-category.h>
 #include <linbox/field/field-traits.h>
 #include <linbox/integer.h>
 
 namespace LinBox {
+
+    // ----- Vector norm
+
+    // @fixme Specialize for Rationals
+    template <class ConstIterator>
+    size_t vectorNormBitSize(const ConstIterator& begin, const ConstIterator& end)
+    {
+        Integer norm = 0;
+        for (ConstIterator it = begin; it != end; ++it) {
+            // Whatever field element it is,
+            // it should be able to store the square without
+            // loss of information.
+            norm += (*it) * (*it);
+        }
+
+        return std::ceil(Givaro::logtwo(norm) / 2.0);
+    }
 
     // ----- Detailed Hadamard bound
 
@@ -54,28 +72,45 @@ namespace LinBox {
      *
      * The result is expressed as bit size.
      */
-    template <class BlackBox>
-    size_t DetailedHadamardRowBound(const BlackBox& A, size_t& minNormBitSize)
+    template <class IMatrix>
+    void DetailedHadamardRowBound(size_t& boundBitSize, size_t& minNormBitSize, const IMatrix& A)
     {
+        typename MatrixTraits<IMatrix>::MatrixCategory tag;
+        DetailedHadamardRowBound(boundBitSize, minNormBitSize, A, tag);
+    }
+
+    template <class IMatrix>
+    void DetailedHadamardRowBound(size_t& boundBitSize, size_t& minNormBitSize, const IMatrix& A, const MatrixCategories::RowColMatrixTag& tag)
+    {
+        boundBitSize = 0;
         minNormBitSize = -1u;
-        size_t normBitSize = 0;
 
-        typename BlackBox::ConstRowIterator rowIt;
-        for (rowIt = A.rowBegin(); rowIt != A.rowEnd(); ++rowIt) {
-            Integer norm = 0;
-            typename BlackBox::ConstRow::const_iterator col;
-            for (col = rowIt->begin(); col != rowIt->end(); ++col) {
-                norm += static_cast<Integer>((*col)) * (*col);
-            }
-
-            size_t rowNormBitSize = std::ceil(Givaro::logtwo(norm) / 2.0);
+        for (auto rowIt = A.rowBegin(); rowIt != A.rowEnd(); ++rowIt) {
+            size_t rowNormBitSize = vectorNormBitSize(rowIt->begin(), rowIt->end());
             if (rowNormBitSize < minNormBitSize) {
                 minNormBitSize = rowNormBitSize;
             }
-            normBitSize += rowNormBitSize;
+            boundBitSize += rowNormBitSize;
         }
+    }
 
-        return normBitSize;
+    template <class IMatrix>
+    void DetailedHadamardRowBound(size_t& boundBitSize, size_t& minNormBitSize, const IMatrix& A, const MatrixCategories::RowMatrixTag& tag)
+    {
+        boundBitSize = 0;
+        minNormBitSize = -1u;
+
+        // @fixme Could be mergeable with above if vectorNormBitSize takes a tag
+        for (auto rowIt = A.rowBegin(); rowIt != A.rowEnd(); ++rowIt) {
+            Integer norm = 0;
+            for (const auto& pair : *rowIt) {
+                norm += (pair.second) * (pair.second);
+            }
+            if (boundBitSize < minNormBitSize) {
+                minNormBitSize = boundBitSize;
+            }
+            boundBitSize += boundBitSize;
+        }
     }
 
     /**
@@ -84,21 +119,15 @@ namespace LinBox {
      *
      * The result is expressed as bit size.
      */
-    template <class BlackBox>
-    size_t DetailedHadamardColBound(const BlackBox& A, size_t& minNormBitSize)
+    template <class IMatrix>
+    size_t DetailedHadamardColBound(const IMatrix& A, size_t& minNormBitSize)
     {
         minNormBitSize = -1u;
         size_t normBitSize = 0;
 
-        typename BlackBox::ConstColIterator colIt;
+        typename IMatrix::ConstColIterator colIt;
         for (colIt = A.colBegin(); colIt != A.colEnd(); ++colIt) {
-            Integer norm = 0;
-            typename BlackBox::ConstCol::const_iterator row;
-            for (row = colIt->begin(); row != colIt->end(); ++row) {
-                norm += static_cast<Integer>((*row)) * (*row);
-            }
-
-            size_t colNormBitSize = std::ceil(Givaro::logtwo(norm) / 2.0);
+            size_t colNormBitSize = vectorNormBitSize(colIt->begin(), colIt->end());
             if (colNormBitSize < minNormBitSize) {
                 minNormBitSize = colNormBitSize;
             }
@@ -108,17 +137,24 @@ namespace LinBox {
         return normBitSize;
     }
 
+    template <class Field>
+    size_t DetailedHadamardColBound(const SparseMatrix<Field>& A, size_t& minNormBitSize)
+    {
+        return 0;
+    }
+
     /**
      * Precise Hadamard bound (bound on determinant) by taking the minimum
      * of the column-wise and the row-wise euclidean norm.
      *
      * The results are expressed as bit size.
      */
-    template <class BlackBox>
-    DetailedHadamardBoundData DetailedHadamardBound(const BlackBox& A)
+    template <class IMatrix>
+    DetailedHadamardBoundData DetailedHadamardBound(const IMatrix& A)
     {
+        size_t rowBoundBitSize = 0;
         size_t minRowNormBitSize = 0;
-        size_t rowBoundBitSize = DetailedHadamardRowBound(A, minRowNormBitSize);
+        DetailedHadamardRowBound(rowBoundBitSize, minRowNormBitSize, A);
         size_t boundOnRowNormBitSize = rowBoundBitSize - minRowNormBitSize;
 
         size_t minColNormBitSize = 0;
@@ -139,8 +175,8 @@ namespace LinBox {
      *
      * The result is expressed as bit size.
      */
-    template <class BlackBox>
-    size_t HadamardBound(const BlackBox& A)
+    template <class IMatrix>
+    size_t HadamardBound(const IMatrix& A)
     {
         return DetailedHadamardBound(A).boundBitSize;
     }
@@ -151,8 +187,8 @@ namespace LinBox {
      * Returns the bit size of the Hadamard bound.
      * This is a larger estimation but faster to compute.
      */
-    template <class BlackBox>
-    size_t FastHadamardBound(const BlackBox& A)
+    template <class IMatrix>
+    size_t FastHadamardBound(const IMatrix& A)
     {
         size_t hadamardBitSize;
 
@@ -187,19 +223,13 @@ namespace LinBox {
      *
      * @note Matrix and Vector should be over Integer.
      */
-    template <class BlackBox, class Vector>
-    RationalSolveHadamardBoundData RationalSolveHadamardBound(const BlackBox& A, const Vector& b)
+    template <class IMatrix, class Vector>
+    RationalSolveHadamardBoundData RationalSolveHadamardBound(const IMatrix& A, const Vector& b)
     {
         RationalSolveHadamardBoundData data;
 
         auto hadamardBound = DetailedHadamardBound(A);
-
-        // Compute the vector norm
-        Integer bNorm = 0;
-        for (auto bIt = b.begin(); bIt != b.end(); ++bIt) {
-            bNorm += static_cast<Integer>((*bIt)) * (*bIt);
-        }
-        size_t bNormBitSize = std::ceil(Givaro::logtwo(bNorm) / 2.0);
+        size_t bNormBitSize = vectorNormBitSize(b.begin(), b.end());
 
         data.numBoundBitSize = hadamardBound.boundOnMinNormBitSize + bNormBitSize;
         data.denBoundBitSize = hadamardBound.boundBitSize;

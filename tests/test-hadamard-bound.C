@@ -20,10 +20,11 @@
  */
 
 #include "linbox/matrix/densematrix/blas-matrix.h"
+#include "linbox/matrix/sparse-matrix.h"
 #include "linbox/matrix/random-matrix.h"
 #include "linbox/solutions/det.h"
-#include "linbox/solutions/solve.h"
 #include "linbox/solutions/hadamard-bound.h"
+#include "linbox/solutions/solve.h"
 #include "linbox/util/commentator.h"
 
 #include <iostream>
@@ -32,10 +33,11 @@ using namespace LinBox;
 
 using Field = Givaro::ZRing<Integer>;
 
-void test(size_t n)
+template <class TMatrix, class TVector>
+void test_with_matrix_vector(size_t n)
 {
     Field F;
-    BlasMatrix<Field> A(F, n, n);
+    TMatrix A(F, n, n);
 
     // Generate a full rank matrix
     Field::RandIter randIter(F, 10); // @fixme bits
@@ -64,21 +66,22 @@ void test(size_t n)
 
     // ---- Rational solve
 
-    BlasVector<Field> b(F, n);
+    TVector b(F, n);
     b.random();
 
     // Compute the bounds
     auto rationalSolveHB = RationalSolveHadamardBound(A, b);
 
     // Compute the effective solution
-    BlasVector<Field> num(F, n);
+    TVector num(F, n);
     Field::Element den;
     solve(num, den, A, b);
 
     for (size_t i = 0u; i < n; ++i) {
         if (Givaro::logtwo(Givaro::abs(num[i])) > rationalSolveHB.numBoundBitSize) {
             std::cerr << "The rational solve Hadamard bound does not bound the numerator." << std::endl;
-            std::cout << "num[i]: " << Givaro::logtwo(Givaro::abs(num[i])) << " > " << rationalSolveHB.numBoundBitSize << std::endl;
+            std::cout << "num[i]: " << Givaro::logtwo(Givaro::abs(num[i])) << " > " << rationalSolveHB.numBoundBitSize
+                      << std::endl;
             exit(-3);
         }
     }
@@ -92,24 +95,29 @@ void test(size_t n)
 
 int main(int argc, char** argv)
 {
-    static size_t n = 10;
-    static int iterations = 1;
+    size_t n = 10;
+    int iterations = 1;
+    bool loop = false;
 
     // @fixme seed
     // @fixme bitsize
 
     // @fixme print seed on failure
 
+    // @fixme Test rationals
+
     static Argument args[] = {{'n', "-n N", "Set dimension of test objects to NxN.", TYPE_INT, &n},
                               {'i', "-i I", "Perform each test for I iterations.", TYPE_INT, &iterations},
+                              {'l', "-l", "Infinite testing.", TYPE_BOOL, &loop},
                               END_OF_ARGUMENTS};
 
     parseArguments(argc, argv, args);
 
     bool ok = true;
 
-    for (auto i = 0; i < iterations; ++i) {
-        test(n);
+    for (auto i = 0; loop || i < iterations; ++i) {
+        test_with_matrix_vector<BlasMatrix<Field>, BlasVector<Field>>(n);
+        test_with_matrix_vector<SparseMatrix<Field>, BlasVector<Field>>(n); // @fixme SparseVector?
     }
 
     return ok ? 0 : -1;
