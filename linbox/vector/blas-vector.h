@@ -30,10 +30,6 @@
  * <code>_Field::Element</code>s.
  *
  */
-#define NEWBLASVECTOR
-#ifdef NEWBLASVECTOR
-#include "new-blas-vector.h"
-#else
 
 #ifndef __LINBOX_vector_blas_vector_H
 #define __LINBOX_vector_blas_vector_H
@@ -901,8 +897,6 @@ namespace LinBox { /*  traits */
 
 #endif // __LINBOX_vector_blas_vector_H
 
-
-#endif  // switch for new blas vector
 // Local Variables:
 // mode: C++
 // tab-width: 4

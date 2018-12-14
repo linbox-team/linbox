@@ -283,7 +283,7 @@ namespace LinBox
     }
 
 
-    //! @bug other Storage
+    //! @bug other rep
     template < class _Field, class _Storage >
     template<typename _Tp1>
     struct BlasMatrix< _Field, _Storage >::rebind {
