@@ -307,7 +307,6 @@ bool testSparseRationalSolver() {
     A.setEntry(0,2,2);
     QQ.assign(B[0],1);
 
-
         // Directly solve of Q
     solve(X,A,B,Method::SparseElimination());
 
@@ -337,7 +336,7 @@ bool testDixonRectangularSolver(const Specifier& m) {
     Matrix_t A (ZZ,1,3);
     RVector X(ZZ, A.coldim()),B(ZZ, A.rowdim()),L(ZZ, A.rowdim());
     ZRingInts::Element d;
-    A.setEntry(0,0,0);
+    
     A.setEntry(0,1,1);
     A.setEntry(0,2,2);
     ZZ.assign(B[0],1);

@@ -210,8 +210,7 @@ static bool testNonsingularSolve (const Field          &F,
 		VD.write (report, b);
 		report << endl;
 
-		//BlasVector<Field> dd(F,d); -> PG: old version enforces specifying F while it is already given in vector d, -> replace with copy constructor
-        BlasVector<Field> dd(d);
+		BlasVector<Field> dd(F,d);
 		Blackbox D (dd);
 
 		try {
