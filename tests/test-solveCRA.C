@@ -71,7 +71,7 @@ static bool checkResult (const Field  &ZZ,
 template <class Field, class Matrix>
 void genData (const Field  &ZZ, Matrix  &Mat, size_t bits, int seed=0){
   typedef typename Field::RandIter RandIter;  
-
+std::cout << " Test with seed: " << seed << std::endl;
   RandIter RI(ZZ, bits, seed);
   LinBox::RandomDenseMatrix<RandIter,Field>  RDM(ZZ,RI);
   RDM.randomFullRank(Mat);
@@ -95,8 +95,8 @@ bool test_set(const Field  &ZZ, Vector &X2,
 	      Matrix &A, Vector &B
 	      ){
   bool tag = false;
-//  Givaro::ZRing<Integer> ZZ;
-  Integer d;//  Givaro::ZRing<Integer>::Element d;
+//Givaro::ZRing<Integer> ZZ;
+  Integer d(1);//  Givaro::ZRing<Integer>::Element d;
   std::cout<<"Computation is done over Q"<<std::endl;
   std::cout << "OMP solveCRA" << std::endl;
 
@@ -151,7 +151,7 @@ int main(int argc, char ** argv)
     { 'i', "-i I", "Set the number of times to do the random unit tests.", TYPE_INT,     &niter },
     { 't', "-t T", "Set the number of threads to run unit tests.", TYPE_INT,     &nt },
     { 'q', "-q Q", "Set negative value for random input or positive value to always generate the same input.", TYPE_INT,     &q },
-        { 's', "-s S", "Set the seed to always generate the same input.", TYPE_INT,     &seed },
+    { 's', "-s S", "Set the seed to always generate the same input.", TYPE_INT,     &seed },
     { 'l', "-l L", "Set if the infinte testing loop should be applied.", TYPE_BOOL,     &loop },
     END_OF_ARGUMENTS
   };	

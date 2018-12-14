@@ -176,8 +176,8 @@ namespace LinBox
 #pragma omp parallel num_threads(NN/Tile)  
                 //for(auto j=0;j<NN/Tile;j++)
                 {
-                    
-#pragma omp task                        
+  
+//#pragma omp task                        
                     {
                             // std::cout<<"Coucou thread_num = "<<omp_get_thread_num()<<std::endl;
                         for(auto i=0; i<Tile; ){
@@ -200,8 +200,9 @@ namespace LinBox
                             
                         }
                     }
-                    
+
                 }
+
             }
             
         }

@@ -787,7 +787,7 @@ return x;
 #endif
 			)
 	{
-		Integer den(1);
+//		Integer den(1); //<----------------------maybe init with thread/process ID-------------------------------
 #ifdef __LINBOX_HAVE_MPI	//MPI parallel version
 		if(!C || C->rank() == 0){
 #endif 
@@ -838,7 +838,7 @@ std::cerr << "OMP solveCRA" << std::endl;
 
         Timer chrono;
         chrono.start();
-		cra(num, den, iteration, genprime);
+		cra(num, d, iteration, genprime); //<--------------------d instead of den---------------------------------
 #ifdef __LINBOX_HAVE_MPI
         chrono.stop();//std::cout << "The process ("<<C->rank()<<") spent total CPU time (seconds) in solveCRA: " << chrono.usertime() << std::endl;
 #else
@@ -855,7 +855,7 @@ std::cerr << "OMP solveCRA" << std::endl;
             for (; it_x != x.end(); ++it_x, ++it_num)
                 A.field().init(*it_x, *it_num);	
             
-			A.field().init(d, den);
+			A.field().init(d, d); //<---------------------(d,d) instead of (d,den)--------------------------------
             
 			commentator().stop ("done", NULL, "Isolve");
 			return x;
