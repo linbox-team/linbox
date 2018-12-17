@@ -50,6 +50,8 @@
 #ifdef __LINBOX_HAVE_MPI
 #include "linbox/algorithms/cra-mpi.h"
 #endif
+#include "linbox/solutions/hadamard-bound.h"
+
 #include "linbox/algorithms/rational-cra2.h"
 
 #include "linbox/algorithms/varprec-cra-early-multip.h"
@@ -824,7 +826,8 @@ namespace LinBox
 #endif
 			)
 	{
-		Integer den;//Integer den(1);
+
+Integer den(0);
 
 #ifdef __LINBOX_HAVE_MPI	//MPI parallel version
 		if(!C || C->rank() == 0){
@@ -847,6 +850,7 @@ namespace LinBox
 		IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 		typename BB::ConstIterator it = A.Begin();
 		typename BB::ConstIterator it_end = A.End();
 		integer max = 1,min=0;
@@ -863,6 +867,11 @@ namespace LinBox
 
 		double hadamard = n*(Givaro::naturallog(n)+2*Givaro::naturallog(max));//double hadamard = n*(log(double(n))+2*log(double(max)));
 
+/*
+auto rationalSolveHB = RationalSolveHadamardBound(A, b);
+double hadamard = 4*(rationalSolveHB.numBoundBitSize + rationalSolveHB.denBoundBitSize+1);
+*/
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #ifdef __LINBOX_HAVE_MPI
 		MPIChineseRemainder< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(hadamard, C); //MPIratChineseRemainder< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(hadamard, C);
 #else

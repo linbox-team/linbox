@@ -147,7 +147,13 @@ bool test_with_field(BlasVector<Field> &X2,
   std::cout << "Total CPU time (seconds): " << end-start << std::endl;
 #endif
 
+#ifdef __LINBOX_HAVE_MPI
+  if(0 == Cptr->rank()) {
+#endif
   tag=checkResult (F, A, B, X2, d);
+#ifdef __LINBOX_HAVE_MPI
+  }
+#endif
   
 #ifdef __LINBOX_HAVE_MPI
   MPI_Bcast(&tag, 1, MPI_C_BOOL, 0, MPI_COMM_WORLD);
@@ -317,9 +323,18 @@ void get_input_param_ready(int& seed, int& q, size_t& n, size_t& ni, size_t& bit
 }
 /////////////////////////////////////////////////////
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+		Integer& iterativeratrecon(Integer& u1, Integer& new_den, const Integer& old_den, const Integer& m1, const Integer& s)
+		{Givaro::ZRing<Integer> _ZZ;
+			Integer a;
+			_ZZ.reconstructRational(a, new_den, u1*=old_den, m1, s);
+			return u1=a;
+		}
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int main(int argc, char ** argv)
 {
-  
+
 #ifdef __LINBOX_HAVE_MPI
   Communicator *Cptr = NULL;
   Cptr = new Communicator(&argc, &argv);
@@ -387,6 +402,7 @@ int main(int argc, char ** argv)
 #ifdef __LINBOX_HAVE_MPI
   delete Cptr;  
 #endif
+
   return 0;
   
 }

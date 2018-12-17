@@ -48,6 +48,7 @@ namespace LinBox
         template <class Vect>
 		Vect& result (Vect &num, Integer& den)
 		{
+
             Father_t::result(num, false);
 
 #ifdef __Detailed_Time_Measurement
