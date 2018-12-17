@@ -228,6 +228,7 @@ namespace LinBox
         ///////////////////
 
         //!@bug every vector we use here should have a stride/be blas vectors so it's not really templated by Vector1 Vector2 in general
+        //!@bug since removal of ApplyDomain this does not handle the case where Field if Givaro::Extension needed for charpoly computation
         template <class Vector1, class Vector2>
         Vector1&  apply (Vector1& y, const Vector2& x) const
         {
@@ -237,6 +238,7 @@ namespace LinBox
         }
 
         //! @bug use Matrix domain
+        //!@bug since removal of ApplyDomain this does not handle the case where Field if Givaro::Extension needed for charpoly computation
         template <class Vector1, class Vector2>
         Vector1&  applyTranspose (Vector1& y, const Vector2& x) const
         {
