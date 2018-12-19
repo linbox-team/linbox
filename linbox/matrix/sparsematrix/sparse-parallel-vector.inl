@@ -132,7 +132,7 @@ namespace LinBox {
 	std::ostream &SparseMatrixWriteHelper<Protected::SparseMatrixGeneric<Field, Row,
 	VectorCategories::SparseParallelVectorTag > >::write (const Protected::SparseMatrixGeneric<Field, Row> &A
 							      , std::ostream &os
-							      , LINBOX_enum(Tag::FileFormat) format)
+							      , Tag::FileFormat format)
 	{
 
 		// Avoid massive unneeded overhead in the case that this

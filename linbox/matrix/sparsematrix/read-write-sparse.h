@@ -84,7 +84,7 @@ namespace LinBox {
 	public:
 		static std::ostream &write (const Matrix &A
 					    , std::ostream &os
-					    , LINBOX_enum(Tag::FileFormat) format);
+					    , Tag::FileFormat format);
 	};
 
 	//! Read helper
@@ -135,7 +135,7 @@ namespace LinBox {
 	public:
 		static std::istream &read (Matrix &A
 					   , std::istream &is
-					   , LINBOX_enum(Tag::FileFormat) format)
+					   , Tag::FileFormat format)
 		;
 			// return read(A,is,format, typename MatrixTraits<Matrix>::MatrixCategory ());
 	};

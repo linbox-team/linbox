@@ -28,14 +28,14 @@
 #include "linbox/linbox-config.h"
 #include "linbox/linbox-tags.h"
 #include "linbox/matrix/dense-matrix.h"
-#include "linbox/matrix/matrix-domain.h" 
+#include "linbox/matrix/matrix-domain.h"
 #include "linbox/randiter/mersenne-twister.h"
 #include "linbox/blackbox/fibb.h"
 
 namespace LinBox
 {
 
-	/** \brief 
+	/** \brief
 
 	  \ingroup blackbox
 	 */
@@ -86,25 +86,25 @@ namespace LinBox
 		// Destructor
 		~TriangularFIBB (void) {}
 
-		Matrix& applyRight(Matrix& B, const Matrix& A) const 
+		Matrix& applyRight(Matrix& B, const Matrix& A) const
 		{	return applyMatrix(B, A, FFLAS::FflasLeft);   }
 
-		Matrix& applyLeft(Matrix& B, const Matrix& A) const 
+		Matrix& applyLeft(Matrix& B, const Matrix& A) const
 		{	return applyMatrix(B, A, FFLAS::FflasRight);   }
 
 		Matrix& applyMatrix(Matrix& B, const Matrix& A, const FFLAS::FFLAS_SIDE side) const {
 			B.copy(A);
-			FFLAS::ftrmm<Field> (field(), 
+			FFLAS::ftrmm<Field> (field(),
 				side,
 				FFLAS::FFLAS_UPLO(rep_->getUpLo()), //const FFLAS_UPLO Uplo,
 		    	FFLAS::FflasNoTrans, //const FFLAS_TRANSPOSE TransA,
 				FFLAS::FFLAS_DIAG(rep_->getDiag()), //const FFLAS_DIAG Diag,
-				B.rowdim(), //const size_t M, 
+				B.rowdim(), //const size_t M,
 				B.coldim(), //const size_t N,
 				field().one, //const typename Field::Element alpha,
-				rep_->getPointer(), //typename Field::Element_ptr A, 
+				rep_->getPointer(), //typename Field::Element_ptr A,
 				rep_->getStride(), //const size_t lda,
-				B.getPointer(), //typename Field::Element_ptr B, 
+				B.getPointer(), //typename Field::Element_ptr B,
 				B.getStride() //const size_t ldb)
 			);
 			return B;
@@ -129,7 +129,7 @@ namespace LinBox
 				Yrow.copy(Xrow); // right kind of copy?
 			}
 		*/
-			return Y; 
+			return Y;
 		}
 		Matrix& applyLeft(Matrix& Y, const Matrix& X) const
 		{
@@ -144,25 +144,25 @@ namespace LinBox
 			{
 				Matrix Ycol(Y, 0, rep_->_indices[i], Y.rowdim(), 1);
 				Matrix Xcol(X, 0, i, X.rowdim(), 1);
-				Ycol.copy(Xcol); 
+				Ycol.copy(Xcol);
 		*/
-			return Y; 
+			return Y;
 		}
 #endif
 		/* FIBB functions */
 
 		BBType bbTag() const { return triangular; }
 
-		size_t& rank(size_t& r) const 
+		size_t& rank(size_t& r) const
 		{	size_t m = rowdim(), n = coldim();
 			size_t k = m < n ? m : n;
 			if (rep_->getDiag() == Tag::Diag::Unit) {
 				r = k;
 			} else {
-				// assume trapezoid for now, later fix to allow echelon 
+				// assume trapezoid for now, later fix to allow echelon
 				Element x;
 				r = 0;
-				while (r < k and not field().isZero(rep_->getEntry(x,r,r))) 
+				while (r < k and not field().isZero(rep_->getEntry(x,r,r)))
 					++r;
 			}
 			return r;
@@ -177,7 +177,7 @@ namespace LinBox
 			} else {
 				Element x;
 				field().assign(d, field().one);
-				for (size_t i = 0; i < m; ++i) 
+				for (size_t i = 0; i < m; ++i)
 					field().mulin(d,rep_->getEntry(x,i,i));
 			}
 			return d;
@@ -189,19 +189,19 @@ namespace LinBox
 		Matrix& solveLeft(Matrix& B, const Matrix& A) const
 		{	return solveMatrix(B, A, Tag::Side::Right);	}
 
-		Matrix& solveMatrix(Matrix& B, const Matrix& A, const Tag::Side side) const 
+		Matrix& solveMatrix(Matrix& B, const Matrix& A, const Tag::Side side) const
 		{
 			B.copy(A);
 			FFLAS::ftrsm<Field> (field(), FFLAS::FFLAS_SIDE(side),
 				FFLAS::FFLAS_UPLO(rep_->getUpLo()), //const FFLAS_UPLO Uplo,
 		    	FFLAS::FflasNoTrans, //const FFLAS_TRANSPOSE TransA,
 				FFLAS::FFLAS_DIAG(rep_->getDiag()), //const FFLAS_DIAG Diag,
-				B.rowdim(), //const size_t M, 
+				B.rowdim(), //const size_t M,
 				B.coldim(), //const size_t N,
 				field().one, //const typename Field::Element alpha,
-				rep_->getPointer(), //typename Field::Element_ptr A, 
+				rep_->getPointer(), //typename Field::Element_ptr A,
 				rep_->getStride(), //const size_t lda,
-				B.getPointer(), //typename Field::Element_ptr B, 
+				B.getPointer(), //typename Field::Element_ptr B,
 				B.getStride() //const size_t ldb)
 			);
 			return B;
@@ -220,10 +220,10 @@ namespace LinBox
 			{
 				Matrix Yrow(Y, rep_->_indices[i], 0, 1, Y.coldim());
 				Matrix Xrow(X, i, 0, 1, X.coldim());
-				Yrow.copy(Xrow); 
+				Yrow.copy(Xrow);
 			}
 		*/
-			return Y; 
+			return Y;
 		}
 		Matrix& solveLeft(Matrix& Y, const Matrix& X) const
 		{	Element x; field().init(x);
@@ -237,15 +237,15 @@ namespace LinBox
 			{
 				Matrix Ycol(Y, 0, i, Y.rowdim(), 1);
 				Matrix Xcol(X, 0, rep_->_indices[i], X.rowdim(), 1);
-				Ycol.copy(Xcol); 
+				Ycol.copy(Xcol);
 			}
 		*/
-			return Y; 
+			return Y;
 		}
 #endif
-		Matrix& nullspaceRandomRight(Matrix& N) const 
+		Matrix& nullspaceRandomRight(Matrix& N) const
 		{	N.zero(); return N; }
-		Matrix& nullspaceRandomLeft(Matrix& N) const 
+		Matrix& nullspaceRandomLeft(Matrix& N) const
 		{	N.zero(); return N; }
 		BlasMatrix<Field>& nullspaceBasisRight(BlasMatrix<Field>& N) const
 		{	N.resize(rowdim(), 0); return N; }
@@ -291,15 +291,15 @@ namespace LinBox
 		std::ostream &write(std::ostream &os) const
 		{ return rep_->write(os, Tag::FileFormat::Plain); }
 
-		std::ostream &write(std::ostream &os, LINBOX_enum(Tag::FileFormat) format) const
+		std::ostream &write(std::ostream &os, Tag::FileFormat format) const
 		{ return rep_->write(os, format); }
 
 		//!@bug there is no read here. (needed by test-blackbox.h)
-		std::istream &read(std::istream &is) 
+		std::istream &read(std::istream &is)
 		{ return is; }
 		std::istream &read(std::istream &is) const
 		{ return is; }
-		std::istream &read(std::istream &is, LINBOX_enum(Tag::FileFormat) format) const
+		std::istream &read(std::istream &is, Tag::FileFormat format) const
 		{
 			throw NotImplementedYet();
 			return is ;
