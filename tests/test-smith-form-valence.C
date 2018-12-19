@@ -38,7 +38,7 @@ using namespace LinBox;
 typedef Givaro::ZRing<Integer> PIR;
 typedef SparseMatrix<PIR>  Blackbox;
 
-static bool testValenceSmith() {
+static bool testValenceSmith(const char * name) {
     const std::string filename("data/sms.matrix");
 	std::ifstream input (filename);
 	PIR ZZ;
@@ -63,8 +63,12 @@ static bool testValenceSmith() {
 
 int main(int argc, char** argv)
 {
+    bool pass(true);
+    
+    pass &= testValenceSmith("data/sms.matrix");
+    pass &= testValenceSmith("data/fib25.sms");
 
-	return testValenceSmith();
+	return pass;
 }
 
 
