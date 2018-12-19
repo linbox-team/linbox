@@ -34,14 +34,6 @@
 #include <fflas-ffpack/fflas/fflas_enum.h>
 #include "linbox/linbox-config.h"
 
-#define LINBOX_enum(name) name
-
-#if HAVE_CXX11
-#define SCOPED(name) struct name : int32_t
-#else
-#define SCOPED(name) name 
-#endif
-
 namespace LinBox
 {
 
@@ -58,14 +50,14 @@ namespace LinBox
 	 */
 	namespace Tag {
 		//! Left/Right Tag
-		enum SCOPED(Side)
+		enum struct Side : int32_t
 			{
 				Left  = FFLAS::FflasLeft, //!< Left
 				Right = FFLAS::FflasRight  //!< Right
 			};
 
 					   //! (No)Transpose Tag
-		enum SCOPED(Transpose)
+		enum struct Transpose : int32_t
 		{
 
 			NoTrans = FFLAS::FflasNoTrans,
@@ -73,7 +65,7 @@ namespace LinBox
 		};
 
 		//! (Upp/Low)er Tag
-		enum SCOPED(UpLo)
+		enum struct UpLo : int32_t
 		{
 			Upper = FFLAS::FflasUpper,
 			Lower = FFLAS::FflasLower
@@ -82,14 +74,14 @@ namespace LinBox
 		using Shape = UpLo;
 
 		//! (Non)Unit Diagonal Tag
-		enum SCOPED(Diag)
+		enum struct Diag : int32_t
 		{
 			NonUnit = FFLAS::FflasNonUnit,
 			Unit    = FFLAS::FflasUnit
 		} ;
 
 		//! Dense format (table) output Tag
-		enum SCOPED(FileFormat)
+		enum struct FileFormat : int32_t
 		{
 			Plain = 0,
 			Maple = 1,
@@ -108,13 +100,13 @@ namespace LinBox
 
 
 
-		enum SCOPED(Direction)
+		enum struct Direction : int32_t
 		{
 			Row = 10 ,
 			Col = 11
 		} ;
 
-		enum SCOPED(Sign)
+		enum struct Sign : int32_t
 		{
 			Positive    = 500 , //! is  >0 (strictement positif)
 			Negative    = 501 , //! is  <0 (strictement négatif)
