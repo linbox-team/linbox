@@ -2,7 +2,7 @@
  * Copyright (C) 1999-2010 The LinBox group
  *
  * Naive parallel chinese remaindering
- * Launch NN iterations in parallel, where NN=omp_get_max_threads()
+ * Launch NN iterations in parallel, where NN=omp_get_num_threads()
  * Then synchronization and termintation test.
  * Time-stamp: <13 Mar 12 13:49:58 Jean-Guillaume.Dumas@imag.fr>
  *
@@ -64,15 +64,17 @@ namespace LinBox
 		Integer& operator() (Integer& res, Function& Iteration, PrimeIterator& primeiter)
 		{
 			//! @bug why why why ???
-			/** erreur: ‘omp_get_max_threads’ has not been declared
+			/** erreur: ‘omp_get_num_threads’ has not been declared
 			 * ../linbox/algorithms/cra-domain-omp.h:152:16: note: suggested alternative:
-			 * /usr/lib/gcc/x86_64-linux-gnu/4.6/include/omp.h:64:12: note:   ‘Givaro::omp_get_max_threads’
+			 * /usr/lib/gcc/x86_64-linux-gnu/4.6/include/omp.h:64:12: note:   ‘Givaro::omp_get_num_threads’
 			 */
             int Tile = 8; //A magic number to boost the performance for unknown reason
-			size_t NN = omp_get_max_threads();
+			size_t NN;
+#pragma omp parallel
+			NN = Tile*omp_get_num_threads();
 			//std::cerr << "Blocs: " << NN << " iterations." << std::endl;
 			// commentator().start ("Parallel OMP Givaro::Modular iteration", "mmcrait");
-			if (NN == 1) return Father_t::operator()(res,Iteration,primeiter);
+			if (NN/Tile == 1) return Father_t::operator()(res,Iteration,primeiter);
 
             this->para_compute(Tile,NN,Iteration);
 
@@ -85,11 +87,12 @@ namespace LinBox
 		Container& operator() (Container& res, Function& Iteration, PrimeIterator& primeiter)
 		{
             int Tile = 8; //A magic number to boost the performance for unknown reason
-
-			size_t NN = omp_get_max_threads();
+			size_t NN;
+#pragma omp parallel
+			NN = Tile*omp_get_num_threads();
 			//std::cerr << "Blocs: " << NN << " iterations." << std::endl;
 			// commentator().start ("Parallel OMP Givaro::Modular iteration", "mmcrait");
-			if (NN == 1) return Father_t::operator()(res,Iteration,primeiter);
+			if (NN/Tile == 1) return Father_t::operator()(res,Iteration,primeiter);
 
             this->para_compute(Tile,NN,Iteration);
             
@@ -102,19 +105,19 @@ namespace LinBox
         void para_compute(int Tile, int NN, Function Iteration){ 			
                     typedef typename CRATemporaryVectorTrait<Function, Domain>::Type_t ElementContainer;
                     std::set<int> coprimeset;
-                    std::vector<ElementContainer> ROUNDresidues;ROUNDresidues.resize(omp_get_max_threads());
-                    std::vector<Domain> ROUNDdomains;ROUNDdomains.resize(omp_get_max_threads());
+                    std::vector<ElementContainer> ROUNDresidues;ROUNDresidues.resize(NN/Tile);
+                    std::vector<Domain> ROUNDdomains;ROUNDdomains.resize(NN/Tile);
                     std::vector<LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>> m_primeiters;
                     //std::vector<LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag>> m_primeiters;
-                    
-                    for(auto j=0;j<omp_get_max_threads();j++){
-                        LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag> m_primeiter( j, omp_get_max_threads());
-                        //LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag> m_primeiter( j, omp_get_max_threads());
+ 
+                    for(auto j=0;j<NN/Tile;j++){
+                        LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag> m_primeiter( j, NN/Tile);
+                        //LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag> m_primeiter( j, omp_get_num_threads());
                         m_primeiters.push_back(m_primeiter);
 
                     }
 
-                    if(omp_get_max_threads()>50){
+                    if(NN/Tile>50){
 
                         early_termination_compute_task( (this->Builder_), NN,  Tile, m_primeiters, coprimeset, Iteration,  ROUNDdomains, ROUNDresidues);
                     
@@ -129,15 +132,17 @@ namespace LinBox
 		Integer& operator() (Integer& res, Integer& den, Function& Iteration, PrimeIterator& primeiter)
 		{
 			//! @bug why why why ???
-			/** erreur: ‘omp_get_max_threads’ has not been declared
+			/** erreur: ‘omp_get_num_threads’ has not been declared
 			 * ../linbox/algorithms/cra-domain-omp.h:152:16: note: suggested alternative:
-			 * /usr/lib/gcc/x86_64-linux-gnu/4.6/include/omp.h:64:12: note:   ‘Givaro::omp_get_max_threads’
+			 * /usr/lib/gcc/x86_64-linux-gnu/4.6/include/omp.h:64:12: note:   ‘Givaro::omp_get_num_threads’
 			 */
             int Tile = 8; //A magic number to boost the performance for unknown reason
-			size_t NN = omp_get_max_threads();
+			size_t NN;
+#pragma omp parallel
+			NN = Tile*omp_get_num_threads();
 			//std::cerr << "Blocs: " << NN << " iterations." << std::endl;
 			// commentator().start ("Parallel OMP Givaro::Modular iteration", "mmcrait");
-			if (NN == 1) return Father_t::operator()(res, den, Iteration,primeiter);
+			if (NN/Tile == 1) return Father_t::operator()(res, den, Iteration,primeiter);
 
 			int coprime =0;
 			int maxnoncoprime = 1000;
@@ -253,11 +258,12 @@ namespace LinBox
 		Container& operator()  (Container& res, Integer& den, Function& Iteration, PrimeIterator& primeiter)
 		{
             int Tile = 8; //A magic number to boost the performance for unknown reason
-
-			int NN = Tile*omp_get_max_threads();//Maybe replace omp_get_max_threads() with user required number ?
+			size_t NN;
+#pragma omp parallel
+			NN = Tile*omp_get_num_threads();//Maybe replace omp_get_num_threads() with user required number ?
 			std::cerr << "Blocs: " << NN << " iterations." << std::endl;
 			// commentator().start ("Parallel OMP Givaro::Modular iteration", "mmcrait");
-			if (omp_get_max_threads() == 1) return Father_t::operator()(res, den, Iteration,primeiter);
+			if (NN/Tile == 1) return Father_t::operator()(res, den, Iteration,primeiter);
             
             this->para_compute(Tile,NN,Iteration);
             
