@@ -816,6 +816,7 @@ namespace LinBox
 	};
 
 
+
 	//BB: How come I have to change the name so it works when directly called ?
 	template <class Vector, class BB, class MyMethod>
 	Vector& solveCRA(Vector& x, typename BB::Field::Element& d, const BB& A, const Vector& b,
@@ -829,7 +830,7 @@ namespace LinBox
 
 Integer den(0);
 
-#ifdef __LINBOX_HAVE_MPI	//MPI parallel version
+#ifdef __LINBOX_HAVE_MPI
 		if(!C || C->rank() == 0){
 #endif
 			if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
@@ -846,50 +847,35 @@ Integer den(0);
 		PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205))); //RandomPrimeIterator genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
 //PrimeIterator<LinBox::IteratorCategories::DeterministicTag> genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
 
-		BlasVector<Givaro::ZRing<Integer>> num(A.field(),A.coldim());
+		Vector num(A.field(),A.coldim());
 		IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
+        auto rationalSolveHB = RationalSolveHadamardBound(A, b);
+        double hadamard = (rationalSolveHB.numBoundBitSize + rationalSolveHB.denBoundBitSize + 1);
 
-		typename BB::ConstIterator it = A.Begin();
-		typename BB::ConstIterator it_end = A.End();
-		integer max = 1,min=0;
-		while( it != it_end ){
-			if (max < (*it))
-				max = *it;
-			if ( min > (*it))
-				min = *it;
-			it++;
-		}
-		if (max<-min)
-			max=-min;
-		size_t n=A.coldim();
-
-		double hadamard = n*(Givaro::naturallog(n)+2*Givaro::naturallog(max));//double hadamard = n*(log(double(n))+2*log(double(max)));
-
-/*
-auto rationalSolveHB = RationalSolveHadamardBound(A, b);
-double hadamard = 4*(rationalSolveHB.numBoundBitSize + rationalSolveHB.denBoundBitSize+1);
-*/
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #ifdef __LINBOX_HAVE_MPI
-		MPIChineseRemainder< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(hadamard, C); //MPIratChineseRemainder< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(hadamard, C);
+		MPIChineseRemainder< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(hadamard, C);
 #else
         std::cerr << "Sequential solveCRA" << std::endl;
         RationalRemainder< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(hadamard);
-
 #endif
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//        Timer chrono;
-//        chrono.start();
+#ifdef __Detailed_Time_Measurement
+        Timer chrono;
+        chrono.start();
+#endif
 
-		cra(num, den, iteration, genprime); //Repalce genprime with the masked one then every process will have its own generator
+		cra(num, den, iteration, genprime); 
 
+#ifdef __Detailed_Time_Measurement
 #ifdef __LINBOX_HAVE_MPI
-//        chrono.stop();//std::cout << "The process ("<<C->rank()<<") spent total CPU time (seconds) in solveCRA: " << chrono.usertime() << std::endl;
+        chrono.stop();
+        std::cout << "The process ("<<C->rank()<<") spent total CPU time (seconds) in solveCRA: " << chrono.usertime() << std::endl;
+
 #else
- //       chrono.stop();//std::cout << "Spent CPU time (seconds) in solveCRA: " << chrono.usertime() << std::endl;
+        chrono.stop();
+        std::cout << "Spent CPU time (seconds) in solveCRA: " << chrono.usertime() << std::endl;
+#endif
 #endif
 
 #ifdef __LINBOX_HAVE_MPI
@@ -906,13 +892,13 @@ double hadamard = 4*(rationalSolveHB.numBoundBitSize + rationalSolveHB.denBoundB
 			A.field().init(d, den);
 
 			commentator().stop ("done", NULL, "Isolve");
+			
 #ifdef __LINBOX_HAVE_MPI
 		}
 #endif
 
         return x;
 	}
-
 
 
 
@@ -924,8 +910,8 @@ double hadamard = 4*(rationalSolveHB.numBoundBitSize + rationalSolveHB.denBoundB
 		      const RingCategories::IntegerTag & tag,
 		      const MyMethod& M)
 	{
-                Method::Dixon mDixon(M);
-                return solve(x,d,A,b,tag,mDixon);
+          Method::Dixon mDixon(M);
+          return solve(x,d,A,b,tag,mDixon);
 		//return solveCRA(x,d,A,b,tag,M);
 	}
 

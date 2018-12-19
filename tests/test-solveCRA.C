@@ -202,7 +202,7 @@ void prepare_data_with_field(size_t bits, int seed,
 #ifdef __LINBOX_HAVE_MPI  
   if(0==Cptr->rank()){
 #endif
-    //std::cerr << " seed := "<<seed<<std::endl;
+    std::cerr << " Test with seed: "<<seed<<std::endl;
     
     genData (F, A, bits, seed);
     genData (F, B, bits, seed);
@@ -323,15 +323,7 @@ void get_input_param_ready(int& seed, int& q, size_t& n, size_t& ni, size_t& bit
 }
 /////////////////////////////////////////////////////
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-		Integer& iterativeratrecon(Integer& u1, Integer& new_den, const Integer& old_den, const Integer& m1, const Integer& s)
-		{Givaro::ZRing<Integer> _ZZ;
-			Integer a;
-			_ZZ.reconstructRational(a, new_den, u1*=old_den, m1, s);
-			return u1=a;
-		}
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int main(int argc, char ** argv)
 {
 
@@ -375,7 +367,8 @@ int main(int argc, char ** argv)
   
   DenseMatrix<Givaro::ZRing<Integer> > A (F,n,n);
   DenseVector X(F, A.coldim()), X2(F, A.coldim()),  B(F, A.coldim()); 
-  
+
+
   
   for(size_t j=0;loop || j<niter;j++){  
     
@@ -394,7 +387,7 @@ int main(int argc, char ** argv)
 						)){
       break;
     }
-    
+
     
   }
   

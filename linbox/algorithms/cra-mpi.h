@@ -269,8 +269,8 @@ namespace LinBox
         {
             
             int pp;
-//            LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   gen(_commPtr->rank(),_commPtr->size());
-LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag>   gen(_commPtr->rank(),_commPtr->size());            
+            LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   gen(_commPtr->rank(),_commPtr->size());
+            //LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag>   gen(_commPtr->rank(),_commPtr->size());            
             std::unordered_set<int> prime_used;
             
             while(true){
@@ -301,6 +301,7 @@ LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag>   gen(
             //Dind out which process sent the solution and the coresponding prime number
             idle_process = (_commPtr->get_stat()).MPI_SOURCE;
             
+            //Update the number of iterations for the next step
             poison_pills_left-=primes[idle_process - 1];
             
             //send the tag to coresponding worker process to signal either a stop or continuation
