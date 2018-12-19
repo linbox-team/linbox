@@ -382,7 +382,7 @@ namespace LinBox
 		 *
 		 * @param	EARLY how many unchanging iterations until termination.
 		 */
-		EarlySingleCRA(const unsigned long EARLY=DEFAULT_EARLY_TERM_THRESHOLD) :
+		EarlySingleCRA(const size_t EARLY=DEFAULT_EARLY_TERM_THRESHOLD) :
 			EARLY_TERM_THRESHOLD((unsigned)EARLY-1),
 			occurency_(0U)
 		{ }

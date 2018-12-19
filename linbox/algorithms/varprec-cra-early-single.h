@@ -62,7 +62,7 @@ namespace LinBox
 		Integer factor_;
 		Integer multip_;
 
-		VarPrecEarlySingleCRA(const unsigned long EARLY = DEFAULT_EARLY_TERM_THRESHOLD
+		VarPrecEarlySingleCRA(const size_t EARLY = DEFAULT_EARLY_TERM_THRESHOLD
 				      , const double b=0.0
 				      , const Integer& f=Integer(1)
 				      , const Integer& m=Integer(1)) :

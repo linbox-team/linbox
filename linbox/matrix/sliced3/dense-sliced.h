@@ -140,6 +140,12 @@ public:
 		return *this;
 	}
 
+	SlicedBase & random(){ // needs fix: not uniform, not full.
+		b0 = rand();
+		b1 = rand()|b0;
+		return *this;
+	}
+
 //protected:
 	T b0;
 	T b1;

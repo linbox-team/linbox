@@ -49,16 +49,16 @@ namespace LinBox
 	template<bool Unsigned>
 	class RNS {
 	private:
-		typedef std::vector<unsigned long>  Fvect ;
+		typedef std::vector<size_t>  Fvect ;
 		typedef std::vector<integer>        Ivect ;
 		typedef Givaro::Modular<double>             Field ;
 
 		Fvect               _primes_; //!< vector of integers, pairwise coprime (or pairwise different primes)
-		unsigned long         _size_; //!< number of primes
-		unsigned long          _bit_; //!< max number of bit reachable. @todo why not max int reachable to save maybe a couple primes ? bof.
+		size_t         _size_; //!< number of primes
+		size_t          _bit_; //!< max number of bit reachable. @todo why not max int reachable to save maybe a couple primes ? bof.
 		integer             _maxint_; //!< max reachable integer.
 		integer             _midint_; //!< in signed case, the mid one.
-		unsigned long           _ps_; //!< prime size (minimum)
+		size_t           _ps_; //!< prime size (minimum)
 
 
 		typedef Givaro::RNSsystem<Integer, Field >      CRTSystem;
@@ -78,18 +78,18 @@ namespace LinBox
 		 * @param l  max recoverable bits
 		 * @param ps bitsize of the primes (defaulting to 21 because...)
 		 */
-		RNS(unsigned long l, unsigned long ps=21) ;
+		RNS(size_t l, size_t ps=21) ;
 		/*x Create a RNS with given primes.
 		 * @param primes given basis of primes
 		 * @param l      recoverable bits. If not given or 0, then it is computed. Giving it will reduce initialization time.
 		 * @warning both \c l and \c primes 'integrity' are not checked. Use \c checkRNS() member to perform the check.
 		 *
 		 */
-		// RNS(Ivect & primes, unsigned long l = 0) ;
+		// RNS(Ivect & primes, size_t l = 0) ;
 
 		// void addPrime( double prime);
 
-		// void addPrime( unsigned long newl);
+		// void addPrime( size_t newl);
 
 		// bool checkRNS() ;
 
@@ -125,16 +125,16 @@ namespace LinBox
 	template<bool Unsigned>
 	class RNSfixed {
 	private:
-		typedef std::vector<unsigned long>  Fvect ;
+		typedef std::vector<size_t>  Fvect ;
 		typedef std::vector<integer>        Ivect ;
 		typedef Givaro::Modular<double>             Field ;
 
 		Fvect               _primes_; //!< vector of integers, pairwise coprime (or pairwise different primes)
-		unsigned long         _size_; //!< number of primes
-		unsigned long          _bit_; //!< max number of bit reachable. @todo why not max int reachable to save maybe a couple primes ? bof.
+		size_t         _size_; //!< number of primes
+		size_t          _bit_; //!< max number of bit reachable. @todo why not max int reachable to save maybe a couple primes ? bof.
 		integer             _maxint_; //!< max reachable integer.
 		integer             _midint_; //!< in signed case, the mid one.
-		unsigned long           _ps_; //!< prime size (minimum)
+		size_t           _ps_; //!< prime size (minimum)
 
 
 		typedef Givaro::RNSsystemFixed<Integer>       CRTSystemFixed;
@@ -154,18 +154,18 @@ namespace LinBox
 		 * @param l  max recoverable bits
 		 * @param ps bitsize of the primes (defaulting to 21 because...)
 		 */
-		RNSfixed(unsigned long l, unsigned long ps=21) ;
+		RNSfixed(size_t l, size_t ps=21) ;
 		/*x Create a RNSfixed with given primes.
 		 * @param primes given basis of primes
 		 * @param l      recoverable bits. If not given or 0, then it is computed. Giving it will reduce initialization time.
 		 * @warning both \c l and \c primes 'integrity' are not checked. Use \c checkRNSfixed() member to perform the check.
 		 *
 		 */
-		// RNSfixed(Ivect & primes, unsigned long l = 0) ;
+		// RNSfixed(Ivect & primes, size_t l = 0) ;
 
 		// void addPrime( double prime);
 
-		// void addPrime( unsigned long newl);
+		// void addPrime( size_t newl);
 
 		// bool checkRNSfixed() ;
 

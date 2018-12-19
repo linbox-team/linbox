@@ -1,5 +1,5 @@
 /*
- * examples/smithvalence.h
+ * algorithms/smith-form-valence.h
  * Copyright (c) Linbox
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -20,8 +20,8 @@
  * ========LICENCE========
  */
 
-/**\file examples/smithvalence.h
- * @example  examples/smithvalence.h
+/**\file algorithms/smith-form-valence.h
+ * @example  algorithms/smith-form-valence.h
  \brief Valence of sparse matrix over Z or Zp.
  \ingroup examples
 */
@@ -42,9 +42,9 @@
 #include <linbox/util/timer.h>
 #include <linbox/util/error.h>
 #ifdef SILENT
-bool reporting = false;
+const bool reporting = false;
 #else 
-bool reporting = true;
+const bool reporting = true;
 #endif
 #ifdef NOT_USING_OMP
 #define THREADS 1
@@ -64,7 +64,7 @@ unsigned long& TempLRank(unsigned long& r, char * filename, const Field& F)
 	LinBox::rankin(r, FA);
 	tim.stop();
 	if (reporting)
-	F.write(std::cerr << "Rank over ") << " is " << r << ' ' << tim <<  " on T" << THREADS << std::endl;
+	F.write(std::clog << "Rank over ") << " is " << r << ' ' << tim <<  " on T" << THREADS << std::endl;
 	return r;
 }
 
@@ -79,7 +79,7 @@ unsigned long& TempLRank(unsigned long& r, char * filename, const LinBox::GF2& F
 	LinBox::rankin(r, A, LinBox::Method::SparseElimination() );
 	tim.stop();
 	if (reporting)
-	F2.write(std::cerr << "Rank over ") << " is " << r << ' ' << tim <<  " on T" << THREADS << std::endl;
+	F2.write(std::clog << "Rank over ") << " is " << r << ' ' << tim <<  " on T" << THREADS << std::endl;
 	return r;
 }
 
@@ -133,7 +133,7 @@ std::vector<size_t>& PRank(std::vector<size_t>& ranks, size_t& effective_exponen
 		Givaro::Integer q = pow(p,uint64_t(e)); int64_t lq(q);
 		if (q > Ring::maxCardinality()) {
 			if (reporting)
-			std::cerr << "Power rank might need extra large composite (" << p << '^' << e << ")." << std::endl;
+			std::clog << "Power rank might need extra large composite (" << p << '^' << e << ")." << std::endl;
 			q = p;
 			for(effective_exponent=1; q <= Ring::maxCardinality(); ++effective_exponent) {
 				q *= p;
@@ -145,12 +145,12 @@ std::vector<size_t>& PRank(std::vector<size_t>& ranks, size_t& effective_exponen
                     // modulus is ok, but is already too large when squared
                     // Return that no prime power was performed
                 if (reporting)
-                    std::cerr << "Exceeding int64_t ... power rank useless, nothing done." << std::endl;
+                    std::clog << "Exceeding int64_t ... power rank useless, nothing done." << std::endl;
                 effective_exponent=1;
                 return ranks;
             }
 			if (reporting)
-			std::cerr << "First trying: " << lq << " (=" << p << '^' << effective_exponent << ", without further warning this will be sufficient)." << std::endl;
+			std::clog << "First trying: " << lq << " (=" << p << '^' << effective_exponent << ", without further warning this will be sufficient)." << std::endl;
 		}
 		Ring F(lq);
 		std::ifstream input(filename);
@@ -165,16 +165,16 @@ std::vector<size_t>& PRank(std::vector<size_t>& ranks, size_t& effective_exponen
 		PGD.prime_power_rankin( lq, lp, ranks, A, Q, A.rowdim(), A.coldim(), std::vector<size_t>());
 		tim.stop();
 		if (reporting) {
-			F.write(std::cerr << "Ranks over ") << " are " ;
+			F.write(std::clog << "Ranks over ") << " are " ;
 			for(std::vector<size_t>::const_iterator rit=ranks.begin(); rit != ranks.end(); ++rit)
-				std::cerr << *rit << ' ';
-			std::cerr << ' ' << tim <<  " on T" << THREADS << std::endl;
+				std::clog << *rit << ' ';
+			std::clog << ' ' << tim <<  " on T" << THREADS << std::endl;
 		}
 	} else {
             // Not able to use Modular<int64_t>, modulus too large
             // Return that no prime power was performed
         if (reporting)
-            std::cerr << "Exceeding int64_t ... even for the prime, nothing done." << std::endl;
+            std::clog << "Exceeding int64_t ... even for the prime, nothing done." << std::endl;
         effective_exponent=1;
 	}
 	return ranks;
@@ -189,9 +189,9 @@ std::vector<size_t>& PRankPowerOfTwo(std::vector<size_t>& ranks, size_t& effecti
 	effective_exponent = e;
 	if (e > 63) {
 		if (reporting)
-		std::cerr << "Power rank power of two might need extra large composite (2^" << e << ")." << std::endl;
+		std::clog << "Power rank power of two might need extra large composite (2^" << e << ")." << std::endl;
 		if (reporting)
-		std::cerr << "First trying: 63, without further warning this will be sufficient)." << std::endl;
+		std::clog << "First trying: 63, without further warning this will be sufficient)." << std::endl;
 		effective_exponent = 63;
 	}
 
@@ -210,10 +210,10 @@ std::vector<size_t>& PRankPowerOfTwo(std::vector<size_t>& ranks, size_t& effecti
 	PGD.prime_power_rankin( effective_exponent, ranks, A, Q, A.rowdim(), A.coldim(), std::vector<size_t>());
 	tim.stop();
 	if (reporting) {
-		F.write(std::cerr << "Ranks over ") << " modulo 2^" << effective_exponent << " are " ;
+		F.write(std::clog << "Ranks over ") << " modulo 2^" << effective_exponent << " are " ;
 		for(std::vector<size_t>::const_iterator rit=ranks.begin(); rit != ranks.end(); ++rit)
-			std::cerr << *rit << ' ';
-		std::cerr << ' ' << tim <<  " on T" << THREADS << std::endl;
+			std::clog << *rit << ' ';
+		std::clog << ' ' << tim <<  " on T" << THREADS << std::endl;
 	}
 	return ranks;
 }
@@ -234,10 +234,10 @@ std::vector<size_t>& PRankInteger(std::vector<size_t>& ranks, char * filename,Gi
 	PGD.prime_power_rankin( q, p, ranks, A, Q, A.rowdim(), A.coldim(), std::vector<size_t>());
 	tim.stop();
 	if (reporting){
-		F.write(std::cerr << "Ranks over ") << " are " ;
+		F.write(std::clog << "Ranks over ") << " are " ;
 		for(std::vector<size_t>::const_iterator rit=ranks.begin(); rit != ranks.end(); ++rit)
-			std::cerr << *rit << ' ';
-		std::cerr << ' ' << tim << std::endl;
+			std::clog << *rit << ' ';
+		std::clog << ' ' << tim << std::endl;
 	}
 	return ranks;
 }
@@ -257,13 +257,120 @@ std::vector<size_t>& PRankIntegerPowerOfTwo(std::vector<size_t>& ranks, char * f
 	PGD.prime_power_rankin( e, ranks, A, Q, A.rowdim(), A.coldim(), std::vector<size_t>());
 	tim.stop();
 	if (reporting) {
-		ZZ.write(std::cerr << "Ranks over ") << " modulo 2^" << e << " are " ;
+		ZZ.write(std::clog << "Ranks over ") << " modulo 2^" << e << " are " ;
 		for(std::vector<size_t>::const_iterator rit=ranks.begin(); rit != ranks.end(); ++rit)
-			std::cerr << *rit << ' ';
-		std::cerr << ' ' << tim << std::endl;
+			std::clog << *rit << ' ';
+		std::clog << ' ' << tim << std::endl;
 	}
 	return ranks;
 }
+
+
+typedef std::pair<Givaro::Integer,size_t> PairIntRk;
+
+
+std::vector<size_t>& AllPowersRanks(
+    std::vector<size_t>& ranks,
+    const PairIntRk& squarefreeRank,// smith[j]
+    const size_t& exponentBound,	// exponents[j]
+    const size_t& coprimeRank,		// coprimeR
+    char * filename) {				// argv[1]
+    
+    ranks.push_back(squarefreeRank.second);
+    size_t effexp;
+    if (exponentBound > 1) {
+            // See if a not too small, not too large exponent would work
+            // Usually, closest to word size
+        if (squarefreeRank.first == 2)
+            PRankPowerOfTwo(ranks, effexp, filename, exponentBound, coprimeRank);
+        else
+            PRank(ranks, effexp, filename, squarefreeRank.first, exponentBound, coprimeRank);
+    } else {
+            // Square does not divide valence
+            // Try first with the smallest possible exponent: 2
+        if (squarefreeRank.first == 2)
+            PRankPowerOfTwo(ranks, effexp, filename, 2, coprimeRank);
+        else
+            PRank(ranks, effexp, filename, squarefreeRank.first, 2, coprimeRank);
+    }
+
+    if (effexp < exponentBound) {
+            // Above report shows that more powers are needed, 
+            // try successive doublings Over abitrary precision
+        for(size_t expo = effexp<<1; ranks.back() < coprimeRank; expo<<=1) {
+            if (squarefreeRank.first == 2)
+                PRankIntegerPowerOfTwo(ranks, filename, expo, coprimeRank);
+            else
+                PRankInteger(ranks, filename, squarefreeRank.first, expo, coprimeRank);
+        }
+    } else {
+            // Larger exponents are needed
+            // Try first small precision, then arbitrary
+        for(size_t expo = (exponentBound)<<1; ranks.back() < coprimeRank; expo<<=1) {
+            if (squarefreeRank.first == 2)
+                PRankPowerOfTwo(ranks, effexp, filename, expo, coprimeRank);
+            else
+                PRank(ranks, effexp, filename, squarefreeRank.first, expo, coprimeRank);
+            if (ranks.size() < expo) {
+                if (reporting)
+                    std::clog << "It seems we need a larger prime power, it will take longer ..." << std::endl;
+                    // break;
+                if (squarefreeRank.first == 2)
+                    PRankIntegerPowerOfTwo(ranks, filename, expo, coprimeRank);
+                else
+                    PRankInteger(ranks, filename, squarefreeRank.first, expo, coprimeRank);
+            }
+        }
+    }
+
+    return ranks;
+}
+
+std::vector<Givaro::Integer>& populateSmithForm(
+    std::vector<Givaro::Integer>& SmithDiagonal,
+    const std::vector<size_t>& ranks,
+    const PairIntRk& squarefreeRank,// smith[j]
+    const size_t& coprimeRank) {	// coprimeR
+   
+    for(size_t i=squarefreeRank.second; i < coprimeRank; ++i) {
+        SmithDiagonal[i] *= squarefreeRank.first;
+    }
+    auto rit=ranks.begin(); for(++rit; rit!= ranks.end(); ++rit) {
+        if ((*rit)>= coprimeRank) break;
+        for(size_t i=(*rit); i < coprimeRank; ++i)
+            SmithDiagonal[i] *= squarefreeRank.first;
+    }
+    
+    return SmithDiagonal;
+}
+
+
+std::ostream& compressedSmith(std::ostream& out, 
+                              const std::vector<Givaro::Integer>& SmithDiagonal, 
+                              const size_t m, const size_t n) {
+    out << '(';
+
+    Givaro::Integer si=1;
+	size_t num=0;
+	for( auto dit : SmithDiagonal ) {
+		if (dit == si) ++num;
+		else {
+			out << '[' << si << ',' << num << "] ";
+			num=1;
+			si = dit;
+		}
+	}
+	out << '[' << si << ',' << num << "] ";
+
+	num = std::min(m,n) - SmithDiagonal.size();
+	typedef Givaro::ZRing<Givaro::Integer> Ring;
+	Ring ZZ;
+	si = ZZ.zero;
+	if (num > 0) out << '[' << si << ',' << num << ']';
+	return out << ')';
+}
+
+
 
 #undef THREADS
 

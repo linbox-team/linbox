@@ -169,16 +169,6 @@ namespace LinBox
 		// accessors to the blackboxes
 		const Blackbox* getPtr() const {return  _A_ptr;}
 
-		Element& getEntry(Element& x, size_t i, size_t j) const
-		{
-			return _A_ptr->getEntry(x, j, i);
-		}
-
-		const Element& setEntry(size_t i, size_t j, const Element& x)
-		{
-			return const_cast<Blackbox_t*>(_A_ptr)->setEntry( j, i, x);
-		}
-
 		std::ostream &write(std::ostream & os) const {
 			return _A_ptr->write(os << "transpose of:");
 		}

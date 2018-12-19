@@ -79,7 +79,7 @@ namespace LinBox
 
 			rp.setBits(FieldTraits<Field>::bestBitSize(A.coldim()));
 
-			Field F ((unsigned long)*rp);
+			Field F ((size_t)*rp);
 
 			BlasMatrix<Field> Ap(F, A.rowdim(), A.coldim());
 
@@ -232,7 +232,7 @@ namespace LinBox
 		long rankIn(SparseMatrix<Field, Row>& A) const
 		{
 
-			unsigned long result;
+			size_t result;
 
 			LinBox::rank(result, A, A.field());
 

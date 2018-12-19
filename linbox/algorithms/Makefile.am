@@ -147,6 +147,7 @@ pkgincludesub_HEADERS =            \
 	smith-form-kannan-bachem.h         \
 	smith-form-local2.inl              \
 	smith-form-local.h                 \
+	smith-form-valence.h               \
 	smith-form-sparseelim-local.h      \
 	smith-form-sparseelim-poweroftwo.h \
 	toeplitz-det.h                     \

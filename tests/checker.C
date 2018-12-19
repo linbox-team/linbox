@@ -82,7 +82,6 @@ hide("test-modular-short",  "deprecated");
 //skip("test-modular-balanced-double",  "test and modular-balanced disagree on init/convert");
 //skip("test-moore-penrose", "inf loop");
 skip("test-optimization", "not unit/regression test conforming");
-skip("test-poweroftwomodular", "needs work");
 skip("test-quad-matrix", "depends on out-of-date blackbox/zo.h");
 //skip("test-rational-reconstruction-base", "inf loop");
 skip("test-rat-charpoly", "inf loop");
@@ -136,10 +135,12 @@ skip("test-smith-form-kannan-bachem", "not working anymore");
 	ntl_tests.insert("test-invariant-factors");
 	ntl_tests.insert("test-frobenius-small");
 	ntl_tests.insert("test-poly-smith-form");
-
+    
 	set< string> ocl_tests;
 	ocl_tests.insert("test-opencl-domain");
-
+    
+    set<string> mpi_tests;
+    mpi_tests.insert("test-mpi-comm");
 //// Things are automatic from here onward. ////
 
 	// process optional dependencies 
@@ -150,6 +151,10 @@ skip("test-smith-form-kannan-bachem", "not working anymore");
 	#ifndef __LINBOX_HAVE_NTL
     for (set< string>::iterator i = ntl_tests.begin(); i != ntl_tests.end(); ++i) 
 		skip(*i, "NTL not present");
+	#endif
+	#ifndef LINBOX_HAVE_MPI
+    for (set< string>::iterator i = mpi_tests.begin(); i != mpi_tests.end(); ++i) 
+		skip(*i, "MPI not present");
 	#endif
 // build and run the tests section
 	string t, cmd;
