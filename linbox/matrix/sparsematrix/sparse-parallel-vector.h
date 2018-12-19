@@ -90,7 +90,7 @@ namespace LinBox {
 	public:
 
 		static std::ostream &write (const Matrix &A, std::ostream &os
-					    , LINBOX_enum(Tag::FileFormat) format);
+					    , Tag::FileFormat format);
 	};
 
 } // LinBox
@@ -215,14 +215,14 @@ namespace LinBox { namespace Protected {
 		}
 
 		std::istream &read (std::istream &is
-				    , LINBOX_enum(Tag::FileFormat) format  = Tag::FileFormat::Detect )
+				    , Tag::FileFormat format  = Tag::FileFormat::Detect )
 		{
 			return SparseMatrixReadHelper<Self_t>::read (*this, is , format);
 		}
 
 
 		std::ostream &write (std::ostream &os
-				     , LINBOX_enum(Tag::FileFormat) format = Tag::FileFormat::MatrixMarket ) const
+				     , Tag::FileFormat format = Tag::FileFormat::MatrixMarket ) const
 		{
 			return SparseMatrixWriteHelper<Self_t>::write (*this, os, format);
 		}

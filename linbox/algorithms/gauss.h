@@ -105,24 +105,24 @@ namespace LinBox
 		  */
 		//@{
 		///
-		template <class _Matrix> unsigned long& rankin(unsigned long &rank,
+		template <class _Matrix> size_t& rankin(size_t &rank,
 							      _Matrix        &A,
 							      SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const;
 		///
-		template <class _Matrix> unsigned long& rankin(unsigned long &rank,
+		template <class _Matrix> size_t& rankin(size_t &rank,
 		_Matrix        &A,
-		unsigned long  Ni,
-		unsigned long  Nj,
+		size_t  Ni,
+		size_t  Nj,
 		SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const;
 		///
-		template <class _Matrix> unsigned long& rank(unsigned long &rank,
+		template <class _Matrix> size_t& rank(size_t &rank,
 		const _Matrix        &A,
 		SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const;
 		///
-		template <class _Matrix> unsigned long& rank(unsigned long &rank,
+		template <class _Matrix> size_t& rank(size_t &rank,
 		const _Matrix        &A,
-		unsigned long  Ni,
-		unsigned long  Nj,
+		size_t  Ni,
+		size_t  Nj,
 		SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const;
 		//@}
 
@@ -141,8 +141,8 @@ namespace LinBox
 		///
 		template <class _Matrix> Element& detin(Element &determinant,
 		_Matrix        &A,
-		unsigned long  Ni,
-		unsigned long  Nj,
+		size_t  Ni,
+		size_t  Nj,
 		SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const;
 		///
 		template <class _Matrix> Element& det(Element &determinant,
@@ -151,8 +151,8 @@ namespace LinBox
 		///
 		template <class _Matrix> Element& det(Element &determinant,
 		const _Matrix        &A,
-		unsigned long  Ni,
-		unsigned long  Nj,
+		size_t  Ni,
+		size_t  Nj,
 		SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const;
 		//@}
 
@@ -175,27 +175,27 @@ namespace LinBox
 		 * In Ganzha et~al. CASC'2002, pages 47--62.
 		 */
 		template <class _Matrix, class Perm>
-		unsigned long& QLUPin(unsigned long &rank,
+		size_t& QLUPin(size_t &rank,
 				      Element& determinant,
 				      Perm          &Q,
 				      _Matrix	    &L,
 				      _Matrix        &U,
 				      Perm	    &P,
-				      unsigned long Ni,
-				      unsigned long Nj) const;
+				      size_t Ni,
+				      size_t Nj) const;
 
 		template <class _Matrix, class Perm>
-		unsigned long& DenseQLUPin(unsigned long &rank,
+		size_t& DenseQLUPin(size_t &rank,
 				      Element& determinant,
 				      std::deque<std::pair<size_t,size_t> > &invQ,
 				      _Matrix	    &L,
 				      _Matrix        &U,
 				      Perm	    &P,
-				      unsigned long Ni,
-				      unsigned long Nj) const;
+				      size_t Ni,
+				      size_t Nj) const;
 
 		template <class _Matrix, class Perm, class Vector1, class Vector2>
-		Vector1& solve(Vector1& x, Vector1& w, unsigned long rank, const Perm& Q, const _Matrix& L, const _Matrix& U, const Perm& P, const Vector2& b)  const;
+		Vector1& solve(Vector1& x, Vector1& w, size_t rank, const Perm& Q, const _Matrix& L, const _Matrix& U, const Perm& P, const Vector2& b)  const;
 
 
 		template <class _Matrix, class Vector1, class Vector2>
@@ -211,7 +211,7 @@ namespace LinBox
 
 		template <class _Matrix, class Perm, class Block>
 		Block& nullspacebasis(Block& x,
-				      unsigned long rank,
+				      size_t rank,
 				      const _Matrix& U,
 				      const Perm& P)  const ;
 
@@ -225,22 +225,22 @@ namespace LinBox
 		// Sparsest method
 		//   erases elements while computing rank/det.
 		template <class _Matrix>
-		unsigned long& InPlaceLinearPivoting(unsigned long &rank,
+		size_t& InPlaceLinearPivoting(size_t &rank,
 						     Element& determinant,
 						     _Matrix        &A,
-						     unsigned long Ni,
-						     unsigned long Nj) const;
+						     size_t Ni,
+						     size_t Nj) const;
 
 		// Same as the latter but keeps trace
 		//   of column permutations
 		//   of remaining elements in the matrix
 		template <class _Matrix,class Perm>
-		unsigned long& InPlaceLinearPivoting(unsigned long &rank,
+		size_t& InPlaceLinearPivoting(size_t &rank,
 						     Element& determinant,
 						     _Matrix        &A,
 						     Perm          &P,
-						     unsigned long Ni,
-						     unsigned long Nj) const;
+						     size_t Ni,
+						     size_t Nj) const;
 
 
 		/** \brief Sparse Gaussian elimination without reordering.
@@ -255,14 +255,14 @@ Without reordering (Pivot is first non-zero in row)
 
 */
 		template <class _Matrix>
-		unsigned long& NoReordering (unsigned long &rank, Element& determinant, _Matrix &LigneA, unsigned long Ni, unsigned long Nj) const;
+		size_t& NoReordering (size_t &rank, Element& determinant, _Matrix &LigneA, size_t Ni, size_t Nj) const;
 
 		/** \brief Dense in place LU factorization without reordering
 
 Using : FindPivot and LU
 */
 		template <class _Matrix>
-		unsigned long &LUin (unsigned long &rank, _Matrix &A) const;
+		size_t &LUin (size_t &rank, _Matrix &A) const;
 
 
 		/** \brief Dense in place Gaussian elimination without reordering
@@ -270,7 +270,7 @@ Using : FindPivot and LU
 Using : FindPivot and LU
 */
 		template <class _Matrix>
-		unsigned long &upperin (unsigned long &rank, _Matrix &A) const;
+		size_t &upperin (size_t &rank, _Matrix &A) const;
 
 
 
@@ -287,21 +287,21 @@ Using : FindPivot and LU
 		void eliminate (Element             & headpivot,
 				Vector              &lignecourante,
 				const Vector        &lignepivot,
-				const unsigned long indcol,
+				const size_t indcol,
 				const long indpermut,
-				const unsigned long npiv,
+				const size_t npiv,
 				D                   &columns) const;
 
 		template <class Vector, class D>
 		void eliminate (Vector              &lignecourante,
 				const Vector        &lignepivot,
-				const unsigned long &indcol,
+				const size_t &indcol,
 				const long &indpermut,
 				D                   &columns) const;
 
 		template <class Vector>
 		void permute (Vector              &lignecourante,
-			      const unsigned long &indcol,
+			      const size_t &indcol,
 			      const long &indpermut) const;
 		//-----------------------------------------
 		// Sparse elimination using a pivot row :
@@ -312,7 +312,7 @@ Using : FindPivot and LU
 		template <class Vector>
 		void eliminate (Vector              &lignecourante,
 				const Vector        &lignepivot,
-				const unsigned long &indcol,
+				const size_t &indcol,
 				const long &indpermut) const;
 
 		//-----------------------------------------
@@ -323,7 +323,7 @@ Using : FindPivot and LU
 		template<class Vector>
 		void Upper (Vector       &lignecur,
 			    const Vector &lignepivot,
-			    unsigned long indcol,
+			    size_t indcol,
 			    long indpermut) const;
 
 		//-----------------------------------------
@@ -333,7 +333,7 @@ Using : FindPivot and LU
 		template <class Vector>
 		void LU (Vector       &lignecur,
 			 const Vector &lignepivot,
-			 unsigned long indcol,
+			 size_t indcol,
 			 long indpermut) const;
 
 		//------------------------------------------
@@ -344,44 +344,44 @@ Using : FindPivot and LU
 		// 2. Column density is minimum for this row
 		//------------------------------------------
 		template <class Vector, class D>
-		void SparseFindPivot (Vector &lignepivot, unsigned long &indcol, long &indpermut, D &columns, Element& determinant) const;
+		void SparseFindPivot (Vector &lignepivot, size_t &indcol, long &indpermut, D &columns, Element& determinant) const;
 
 		//------------------------------------------
 		// Looking for a non-zero pivot in a row
 		// No reordering
 		//------------------------------------------
 		template <class Vector>
-		void SparseFindPivot (Vector &lignepivot, unsigned long &indcol, long &indpermut, Element& determinant) const;
+		void SparseFindPivot (Vector &lignepivot, size_t &indcol, long &indpermut, Element& determinant) const;
 
 		//------------------------------------------
 		// Looking for a non-zero pivot in a row
 		// Dense search
 		//------------------------------------------
 		template <class Vector>
-		void FindPivot (Vector &lignepivot, unsigned long &k, long &indpermut) const;
+		void FindPivot (Vector &lignepivot, size_t &k, long &indpermut) const;
 
 		template <class _Matrix, class Perm>
-		unsigned long& SparseContinuation(unsigned long &rank,
+		size_t& SparseContinuation(size_t &rank,
 				      Element& determinant,
 				      std::deque<std::pair<size_t,size_t> > &invQ,
 				      _Matrix	&L,
 				      _Matrix	&U,
 				      Perm	    &P,
-				      unsigned long Ni,
-				      unsigned long Nj) const;
+				      size_t Ni,
+				      size_t Nj) const;
 
         
 		template <class _Matrix, class Perm, bool hasFFLAS>
         struct Continuation {
-            unsigned long& operator()(
-                unsigned long &rank,
+            size_t& operator()(
+                size_t &rank,
                 Element& determinant,
                 std::deque<std::pair<size_t,size_t> > &invQ,
                 _Matrix	    &L,
                 _Matrix		&U,
                 Perm	    &P,
-                unsigned long Ni,
-                unsigned long Nj, bool) const;
+                size_t Ni,
+                size_t Nj, bool) const;
         };
 	};
 

@@ -93,7 +93,7 @@ public:
 		MasseyDomain<Field, Sequence> MasseyDom(&seq, 20);
 		
 		BlasVector<Field> phi(_F);
-		unsigned long deg;
+		size_t deg;
 		MasseyDom.minpoly(phi, deg);
 		
 		_R.init(g, phi);

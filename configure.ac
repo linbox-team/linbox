@@ -258,7 +258,6 @@ LB_CHECK_NTL
 
 LB_CHECK_SACLIB
 LB_CHECK_MAPLE
-LB_CHECK_SAGE
 
 LB_CHECK_EXPAT
 
@@ -268,7 +267,7 @@ LB_CHECK_XML
 LB_DOC
 
 LB_CHECK_OCL
-
+LB_CHECK_MPI
 
 if test ! -d ./benchmarks/data ; then
 	echo "Creating data dir in benchmark" ;
@@ -338,7 +337,6 @@ interfaces/Makefile
 interfaces/driver/Makefile
 interfaces/maple/Makefile
 interfaces/kaapi/Makefile
-interfaces/sage/Makefile
 macros/Makefile
 macros/CodeChunk/Makefile
 benchmarks/Makefile
