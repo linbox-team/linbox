@@ -34,6 +34,7 @@
 #include <iostream>
 #include <givaro/givintfactor.h>
 #include <fflas-ffpack/paladin/parallel.h>
+#include <linbox/solutions/smith-form.h>
 #include <linbox/algorithms/smith-form-valence.h>
 #include <vector>
 
@@ -104,7 +105,7 @@ int main (int argc, char **argv)
 	chrono.stop();
 
 	std::clog << "Integer Smith Form :" << std::endl;
-    compressedSmith(std::cout, SmithDiagonal, A.rowdim(), A.coldim()) << std::endl;
+    writeCompressedSmith(std::cout, SmithDiagonal, ZZ, A.rowdim(), A.coldim()) << std::endl;
 
 	std::clog << chrono << std::endl;
     

@@ -37,15 +37,12 @@
 #include <linbox/matrix/sparse-matrix.h>
 #include <linbox/solutions/rank.h>
 #include <linbox/solutions/valence.h>
+#include <linbox/solutions/smith-form.h>
+#include <linbox/solutions/valence.h>
 #include <linbox/algorithms/smith-form-sparseelim-local.h>
 #include <linbox/util/matrix-stream.h>
 #include <linbox/util/timer.h>
 #include <linbox/util/error.h>
-#ifdef SILENT
-const bool reporting = false;
-#else 
-const bool reporting = true;
-#endif
 
 #ifdef NOT_USING_OMP
 #define THREADS 1
@@ -58,30 +55,37 @@ const bool reporting = true;
 #define __VALENCE_FACTOR_LOOPS__ 50000
 #endif
 
+namespace LinBox {
+#ifdef SILENT
+const bool reporting = false;
+#else 
+const bool reporting = true;
+#endif
+
 template<class Field>
 unsigned long& TempLRank(unsigned long& r, const char * filename, const Field& F)
 {
 	std::ifstream input(filename);
-	LinBox::MatrixStream< Field > msf( F, input );
-	LinBox::SparseMatrix<Field,LinBox::SparseMatrixFormat::SparseSeq> FA(msf);
+	MatrixStream< Field > msf( F, input );
+	SparseMatrix<Field,SparseMatrixFormat::SparseSeq> FA(msf);
 	input.close();
-	LinBox::Timer tim; tim.start();
-	LinBox::rankin(r, FA);
+	Timer tim; tim.start();
+	rankin(r, FA);
 	tim.stop();
 	if (reporting)
 	F.write(std::clog << "Rank over ") << " is " << r << ' ' << tim <<  " on T" << THREADS << std::endl;
 	return r;
 }
 
-unsigned long& TempLRank(unsigned long& r, const char * filename, const LinBox::GF2& F2)
+unsigned long& TempLRank(unsigned long& r, const char * filename, const GF2& F2)
 {
 	std::ifstream input(filename);
-	LinBox::ZeroOne<LinBox::GF2> A;
+	ZeroOne<GF2> A;
 	A.read(input);
 	input.close();
 
-	LinBox::Timer tim; tim.start();
-	LinBox::rankin(r, A, LinBox::Method::SparseElimination() );
+	Timer tim; tim.start();
+	rankin(r, A, Method::SparseElimination() );
 	tim.stop();
 	if (reporting)
 	F2.write(std::clog << "Rank over ") << " is " << r << ' ' << tim <<  " on T" << THREADS << std::endl;
@@ -91,12 +95,12 @@ unsigned long& TempLRank(unsigned long& r, const char * filename, const LinBox::
 unsigned long& LRank(unsigned long& r, const char * filename,Givaro::Integer p)
 {
 
-	Givaro::Integer maxmod16; LinBox::FieldTraits<Givaro::Modular<int16_t> >::maxModulus(maxmod16);
-	Givaro::Integer maxmod32; LinBox::FieldTraits<Givaro::Modular<int32_t> >::maxModulus(maxmod32);
-	Givaro::Integer maxmod53; LinBox::FieldTraits<Givaro::Modular<double> >::maxModulus(maxmod53);
-	Givaro::Integer maxmod64; LinBox::FieldTraits<Givaro::Modular<int64_t> >::maxModulus(maxmod64);
+	Givaro::Integer maxmod16; FieldTraits<Givaro::Modular<int16_t> >::maxModulus(maxmod16);
+	Givaro::Integer maxmod32; FieldTraits<Givaro::Modular<int32_t> >::maxModulus(maxmod32);
+	Givaro::Integer maxmod53; FieldTraits<Givaro::Modular<double> >::maxModulus(maxmod53);
+	Givaro::Integer maxmod64; FieldTraits<Givaro::Modular<int64_t> >::maxModulus(maxmod64);
 	if (p == 2) {
-		LinBox::GF2 F2;
+		GF2 F2;
 		return TempLRank(r, filename, F2);
 	}
 	else if (p <= maxmod16) {
@@ -131,7 +135,7 @@ std::vector<size_t>& PRank(std::vector<size_t>& ranks, size_t& effective_exponen
 {
 	effective_exponent = e;
 	Givaro::Integer maxmod;
-	LinBox::FieldTraits<Givaro::Modular<int64_t> >::maxModulus(maxmod);
+	FieldTraits<Givaro::Modular<int64_t> >::maxModulus(maxmod);
 	if (p <= maxmod) {
 		typedef Givaro::Modular<int64_t> Ring;
 		int64_t lp(p);
@@ -159,14 +163,14 @@ std::vector<size_t>& PRank(std::vector<size_t>& ranks, size_t& effective_exponen
 		}
 		Ring F(lq);
 		std::ifstream input(filename);
-		LinBox::MatrixStream<Ring> ms( F, input );
-		LinBox::SparseMatrix<Ring,LinBox::SparseMatrixFormat::SparseSeq > A (ms);
+		MatrixStream<Ring> ms( F, input );
+		SparseMatrix<Ring,SparseMatrixFormat::SparseSeq > A (ms);
 		input.close();
 
-		LinBox::PowerGaussDomain< Ring > PGD( F );
-        LinBox::Permutation<Ring> Q(F,A.coldim());
+		PowerGaussDomain< Ring > PGD( F );
+        Permutation<Ring> Q(F,A.coldim());
 
-		LinBox::Timer tim; tim.clear(); tim.start();
+		Timer tim; tim.clear(); tim.start();
 		PGD.prime_power_rankin( lq, lp, ranks, A, Q, A.rowdim(), A.coldim(), std::vector<size_t>());
 		tim.stop();
 		if (reporting) {
@@ -184,10 +188,12 @@ std::vector<size_t>& PRank(std::vector<size_t>& ranks, size_t& effective_exponen
 	}
 	return ranks;
 }
+}
 
 #include <linbox/field/gf2.h>
 #include <linbox/algorithms/smith-form-sparseelim-poweroftwo.h>
 
+namespace LinBox {
 
 std::vector<size_t>& PRankPowerOfTwo(std::vector<size_t>& ranks, size_t& effective_exponent, const char * filename, size_t e, size_t intr)
 {
@@ -204,14 +210,14 @@ std::vector<size_t>& PRankPowerOfTwo(std::vector<size_t>& ranks, size_t& effecti
 	typedef Givaro::ZRing<int64_t> Ring;
 	Ring F;
 	std::ifstream input(filename);
-	LinBox::MatrixStream<Ring> ms( F, input );
-	LinBox::SparseMatrix<Ring,LinBox::SparseMatrixFormat::SparseSeq > A (ms);
+	MatrixStream<Ring> ms( F, input );
+	SparseMatrix<Ring,SparseMatrixFormat::SparseSeq > A (ms);
 	input.close();
-	LinBox::PowerGaussDomainPowerOfTwo< uint64_t > PGD;
-    LinBox::GF2 F2;
-    LinBox::Permutation<LinBox::GF2> Q(F2,A.coldim());
+	PowerGaussDomainPowerOfTwo< uint64_t > PGD;
+    GF2 F2;
+    Permutation<GF2> Q(F2,A.coldim());
 
-	LinBox::Timer tim; tim.clear(); tim.start();
+	Timer tim; tim.clear(); tim.start();
 	PGD.prime_power_rankin( effective_exponent, ranks, A, Q, A.rowdim(), A.coldim(), std::vector<size_t>());
 	tim.stop();
 	if (reporting) {
@@ -229,13 +235,13 @@ std::vector<size_t>& PRankInteger(std::vector<size_t>& ranks, const char * filen
 	Givaro::Integer q = pow(p,uint64_t(e));
 	Ring F(q);
 	std::ifstream input(filename);
-	LinBox::MatrixStream<Ring> ms( F, input );
-	LinBox::SparseMatrix<Ring,LinBox::SparseMatrixFormat::SparseSeq > A (ms);
+	MatrixStream<Ring> ms( F, input );
+	SparseMatrix<Ring,SparseMatrixFormat::SparseSeq > A (ms);
 	input.close();
-	LinBox::PowerGaussDomain< Ring > PGD( F );
-    LinBox::Permutation<Ring> Q(F,A.coldim());
+	PowerGaussDomain< Ring > PGD( F );
+    Permutation<Ring> Q(F,A.coldim());
 
-	LinBox::Timer tim; tim.clear(); tim.start();
+	Timer tim; tim.clear(); tim.start();
 	PGD.prime_power_rankin( q, p, ranks, A, Q, A.rowdim(), A.coldim(), std::vector<size_t>());
 	tim.stop();
 	if (reporting){
@@ -252,13 +258,13 @@ std::vector<size_t>& PRankIntegerPowerOfTwo(std::vector<size_t>& ranks, const ch
 	typedef Givaro::ZRing<Givaro::Integer> Ring;
 	Ring ZZ;
 	std::ifstream input(filename);
-	LinBox::MatrixStream<Ring> ms( ZZ, input );
-	LinBox::SparseMatrix<Ring,LinBox::SparseMatrixFormat::SparseSeq > A (ms);
+	MatrixStream<Ring> ms( ZZ, input );
+	SparseMatrix<Ring,SparseMatrixFormat::SparseSeq > A (ms);
 	input.close();
-	LinBox::PowerGaussDomainPowerOfTwo< Givaro::Integer > PGD;
-    LinBox::Permutation<Ring> Q(ZZ, A.coldim());
+	PowerGaussDomainPowerOfTwo< Givaro::Integer > PGD;
+    Permutation<Ring> Q(ZZ, A.coldim());
 
-	LinBox::Timer tim; tim.clear(); tim.start();
+	Timer tim; tim.clear(); tim.start();
 	PGD.prime_power_rankin( e, ranks, A, Q, A.rowdim(), A.coldim(), std::vector<size_t>());
 	tim.stop();
 	if (reporting) {
@@ -364,10 +370,13 @@ std::vector<Givaro::Integer>& smithValence(std::vector<Givaro::Integer>& SmithDi
                                            const std::string& filename,
                                            Givaro::Integer& coprimeV, 
                                            size_t method=0) {
-        // method for valence squarization: 0 for automatic, 1 for aat, 2 for ata
+        // method for valence squarization:
+		//	0 for automatic, 1 for aat, 2 for ata
         // Blackbox provides the Integer matrix rereadable from filename
-        // if valence != 0, then the valence is not computed and the parameter is used
-        // if coprimeV != 0, then this value is supposed to be coprime with the valence
+        // if valence != 0:
+		//	then the valence is not computed and the parameter is used
+        // if coprimeV != 1:
+		//  then this value is supposed to be coprime with the valence
 
     std::clog << "sV threads: " << NUM_THREADS << std::endl;
 
@@ -435,36 +444,39 @@ std::vector<Givaro::Integer>& smithValence(std::vector<Givaro::Integer>& SmithDi
     return SmithDiagonal;
 }
 
-std::ostream& compressedSmith(std::ostream& out, 
-                              const std::vector<Givaro::Integer>& SmithDiagonal, 
+template<class Blackbox>
+std::vector<Givaro::Integer>& smithValence(
+    std::vector<Givaro::Integer>& SmithDiagonal,
+    const Blackbox& A,
+    const std::string& filename,
+    size_t method=0)
+{
+    Givaro::Integer valence(0);
+    Givaro::Integer coprimeV(1);
+    return smithValence(SmithDiagonal, valence, A, filename, coprimeV, method);
+}
+
+
+
+std::ostream& writeCompressedSmith(std::ostream& out,
+                              const std::vector<Givaro::Integer>& SmithDiagonal,
+                              const Givaro::ZRing<Givaro::Integer>& ZZ,
                               const size_t m, const size_t n) {
     // Output is a list of pairs (integral value, number of repetitions)
 
+    std::list<PairIntRk> SmithList;
+    compressedSmith(SmithList, SmithDiagonal, ZZ, m, n);
     out << '(';
-
-    Givaro::Integer si=1;
-	size_t num=0;
-	for( auto dit : SmithDiagonal ) {
-		if (dit == si) ++num;
-		else {
-			out << '[' << si << ',' << num << "] ";
-			num=1;
-			si = dit;
-		}
-	}
-	out << '[' << si << ',' << num << "] ";
-
-	num = std::min(m,n) - SmithDiagonal.size();
-	typedef Givaro::ZRing<Givaro::Integer> Ring;
-	Ring ZZ;
-	si = ZZ.zero;
-	if (num > 0) out << '[' << si << ',' << num << ']';
+	for( auto sit : SmithList )
+        out << '[' << sit.first << ',' << sit.second << "] ";
 	return out << ')';
 }
 
 
 
 #undef THREADS
+}
+
 
 // Local Variables:
 // mode: C++
