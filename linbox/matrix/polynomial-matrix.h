@@ -28,6 +28,7 @@
 #include <vector>
 #include "linbox/vector/subvector.h"
 #include "linbox/matrix/dense-matrix.h"
+#include "linbox/matrix/matrix-domain.h"
 #include "linbox/field/hom.h"
 #include "fflas-ffpack/utils/align-allocator.h"
 #include "givaro/modular.h"
