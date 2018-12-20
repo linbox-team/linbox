@@ -46,19 +46,15 @@
 #include "linbox/util/matrix-stream.h"
 
 #include "linbox/matrix/densematrix/blas-transposed-matrix.h"
-#include "linbox/matrix/matrix-domain.h"
 #include "linbox/matrix/densematrix/blas-submatrix.h"
 namespace LinBox
 { /*  Blas Matrix */
-    template<class Matrix>
-    class MatrixDomain;
 
         /*! Dense matrix representation.
          * @ingroup matrix
          * A \p BlasMatrix is a matrix of \p _Field::Element, with the structure of BLAS matrices.
          * It is basically a vector of \p _Field::Element.
          * In the Mother model, a \p BlasMatrix is allocated by the user.
-         *@bug why not BlasMatrixDomain ?
          */
     template <class _Field, class _Storage>
     class BlasMatrix {
@@ -245,7 +241,7 @@ namespace LinBox
              */
         void setEntry (size_t i, size_t j, const Element &a_ij)
             {
-                field().assign(_rep[i*_col+j],a_ij); //return _rep[i*_col+j]; // PG: this does not work with BitVector as _rep -> getting a Warning because BitVector operator[] does not return a reference but a boolean constructed on the fly (setEntry must return a reference [why ?])
+                field().assign(_rep[i*_col+j],a_ij);
             }
 
             /** Get a writeable reference to the entry in the (i, j) position.
