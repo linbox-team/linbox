@@ -81,7 +81,7 @@ bool testRankMethods(const typename BlackBox::Field & F, size_t n, size_t m, uns
 	bool ret = true, equalRank = true;
 	unsigned int i;
 
-	unsigned long rank_blackbox, rank_elimination;
+	size_t rank_blackbox, rank_elimination;
 
 	typename Field::RandIter ri (F);
 
@@ -116,7 +116,7 @@ bool testRankMethods(const typename BlackBox::Field & F, size_t n, size_t m, uns
 		equalRank = equalRank and rank_hybrid == rank_elimination;
 #endif
 #if 0
-		unsigned long rank_Wiedemann;
+		size_t rank_Wiedemann;
 		Method::Wiedemann MW;  // rank soln needs fixing for this.
 		LinBox::rank (rank_Wiedemann, A, MW);
 		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
@@ -124,7 +124,7 @@ bool testRankMethods(const typename BlackBox::Field & F, size_t n, size_t m, uns
 		equalRank = equalRank and rank_Wiedemann == rank_elimination;
 #endif
 
-		unsigned long rank_blas_elimination ;
+		size_t rank_blas_elimination ;
 		if (F.characteristic() < LinBox::BlasBound 
 				and
 			F.characteristic() == F.cardinality()
@@ -172,7 +172,7 @@ bool testRankMethodsGF2(const GF2& F2, size_t n, unsigned int iterations, double
 	bool ret = true;
 	unsigned int i;
 
-	unsigned long rank_blackbox, rank_elimination, rank_sparselimination, rank_sparse;
+	size_t rank_blackbox, rank_elimination, rank_sparselimination, rank_sparse;
 
 	GF2::RandIter ri (F2);
 
@@ -245,7 +245,7 @@ bool testZeroAndIdentRank (const Field &F, size_t n, unsigned int iterations = 1
 	bool ret = true;
 	unsigned int i;
 
-	unsigned long r; // rank
+	size_t r; // rank
 
 	for (i = 0; i < iterations; ++i) {
 		commentator().startIteration (i);

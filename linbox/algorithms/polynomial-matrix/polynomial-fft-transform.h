@@ -46,7 +46,7 @@
 
 #include "fflas-ffpack/utils/align-allocator.h"
 
-#ifdef __LINBOX_HAVE_SSE4_1_INSTRUCTIONS
+#if defined (__LINBOX_HAVE_SSE4_1_INSTRUCTIONS) and defined (__x86_64__)
 
 //#include "linbox/algorithms/polynomial-matrix/simd.h"
 
@@ -239,7 +239,7 @@ namespace LinBox {
 
 		
 		void FFT_DIF_Harvey (uint32_t *fft) {
-#ifdef __LINBOX_HAVE_SSE4_1_INSTRUCTIONS
+#if defined (__LINBOX_HAVE_SSE4_1_INSTRUCTIONS) and defined (__x86_64__)
 #ifdef __LINBOX_HAVE_AVX2_INSTRUCTIONS
 			FFT_DIF_Harvey_mod2p_iterative8x1_AVX(fft);
 			if (n>=8){
@@ -272,7 +272,7 @@ namespace LinBox {
 		}
 		
 		void FFT_DIT_Harvey (uint32_t *fft) {
-#ifdef __LINBOX_HAVE_SSE4_1_INSTRUCTIONS
+#if defined (__LINBOX_HAVE_SSE4_1_INSTRUCTIONS) and defined (__x86_64__)
 #ifdef __LINBOX_HAVE_AVX2_INSTRUCTIONS
 			FFT_DIT_Harvey_mod4p_iterative8x1_AVX(fft);
 			if (n>=8){
@@ -411,7 +411,7 @@ namespace LinBox {
 } // end of namespace LinBox
 
 #include "linbox/algorithms/polynomial-matrix/polynomial-fft-transform.inl"
-#ifdef __LINBOX_HAVE_SSE4_1_INSTRUCTIONS
+#if defined (__LINBOX_HAVE_SSE4_1_INSTRUCTIONS) and defined (__x86_64__)
 #include "linbox/algorithms/polynomial-matrix/polynomial-fft-transform-simd.inl"
 #endif
 #endif // __LINBOX_FFT_H
