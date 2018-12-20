@@ -388,7 +388,7 @@ namespace LinBox
 				lead_it = leadingBlocks.find(itf->second);
 				if ( lead_it != leadingBlocks.end())
 					lead_it->second = true;
-				long unsigned int r;
+				size_t r;
 
 				/* The matrix Pi (A) */
 				if (F.isZero (itf->second->fieldP->operator[](0))){
@@ -413,7 +413,7 @@ namespace LinBox
 					lead_it->second = true;
 
 				PolynomialBB<BlackBox, FieldPoly > PA (A, *itf->second->fieldP);
-				long unsigned int r;
+				size_t r;
 				rank (r, PA,  M);
 
 				itf->second->multiplicity =(size_t)r;
@@ -441,7 +441,7 @@ namespace LinBox
 
 						// Need one more computation:
 						PolynomialBB<BlackBox, FieldPoly > PA (A, *currFFM->fieldP);
-						long unsigned int r;
+						size_t r;
 						rank (r, PA, M) ;
 						//std::cerr<<"extra factor : "<<*currFFM->fieldP<<" --> "<<r<<std::endl;
 
