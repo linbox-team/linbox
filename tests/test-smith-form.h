@@ -183,7 +183,7 @@ bool checkSNFExample( const LinBox::SmithList<PIR>& d, const LinBox::SmithList<P
     for(auto const & sit: d) std::clog << '{' << sit.first << ',' << sit.second << '}';
     std::clog << '}' << std::endl;
 
-	report << "Computed Smith form SL:" << '{';
+	report << "Computed Smith form SL: " << '{';
     for(auto const & sit: x) std::clog << '{' << sit.first << ',' << sit.second << '}';
     std::clog << '}' << std::endl;
 
