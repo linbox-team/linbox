@@ -447,7 +447,7 @@ bool testBigScalarCharPoly(){
     return PR.areEqual(P,Q);
 }
 
-/*
+
 template<typename Matrix_t=SparseMatrix<ZRingInts>>
 bool testInconsistent (const Specifier& m){
         // creating LinBox matrices and vectors
@@ -474,7 +474,6 @@ bool testInconsistent (const Specifier& m){
 
     return true;
 }
-*/
 
 
 bool testLocalSmith(){
@@ -579,11 +578,11 @@ int main (int argc, char **argv)
     pass &= testZeroDimensionalMinPoly ();
     pass &= testBigScalarCharPoly ();
     pass &= testLocalSmith ();
-    /*
+    
     pass &= testInconsistent<> (Method::BlasElimination());
     pass &= testInconsistent<> (Method::SparseElimination());
     pass &= testInconsistent<> (Method::Wiedemann());
-    */
+    
 
     return pass ? 0 : -1;
 }

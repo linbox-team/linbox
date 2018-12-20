@@ -85,7 +85,7 @@ int main(int argc, char** argv)
     const SmithList<PIR> thirtySL{{1,22},{2,1},{66,2},{198,1},{15444,1},{0,3}};
     pass &= testValenceSmith("data/30_30_27.sms", thirtySL);
 
-	return pass;
+    return pass ? 0 : -1;
 }
 
 
