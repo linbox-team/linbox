@@ -66,7 +66,7 @@
 namespace LinBox {
 
 template<class Field>
-unsigned long& TempLRank(unsigned long& r, const char * filename, const Field& F)
+size_t& TempLRank(size_t& r, const char * filename, const Field& F)
 {
 	std::ifstream input(filename);
 	MatrixStream< Field > msf( F, input );
@@ -80,7 +80,7 @@ unsigned long& TempLRank(unsigned long& r, const char * filename, const Field& F
 	return r;
 }
 
-unsigned long& TempLRank(unsigned long& r, const char * filename, const GF2& F2)
+size_t& TempLRank(size_t& r, const char * filename, const GF2& F2)
 {
 	std::ifstream input(filename);
 	ZeroOne<GF2> A;
@@ -95,7 +95,7 @@ unsigned long& TempLRank(unsigned long& r, const char * filename, const GF2& F2)
 	return r;
 }
 
-unsigned long& LRank(unsigned long& r, const char * filename,Givaro::Integer p)
+size_t& LRank(size_t& r, const char * filename,Givaro::Integer p)
 {
 
 	Givaro::Integer maxmod16; FieldTraits<Givaro::Modular<int16_t> >::maxModulus(maxmod16);
