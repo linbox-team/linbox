@@ -789,7 +789,7 @@ return x;
 #endif
 			)
 	{
-		Integer den(1);
+		Integer den;
 
 #ifdef __LINBOX_HAVE_MPI	//MPI parallel version
 		if(!C || C->rank() == 0){
@@ -807,7 +807,7 @@ return x;
 		BlasVector<Givaro::ZRing<Integer>> num(A.field(),A.coldim());
 		IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/*
+
 		typename BB::ConstIterator it = A.Begin();
 		typename BB::ConstIterator it_end = A.End();
 		integer max = 1,min=0;
@@ -820,15 +820,15 @@ return x;
 		}
 		if (max<-min)
 			max=-min;
-        if (max < 3) max = 3;
+
+typename Vector::iterator it_b= b.begin();
+for (; it_b != b.end(); ++it_b) if(*it_b>max) max=*it_b;
+if (max < 3) max = 3;
 		size_t n=A.coldim();
 
 		double hadamard = n*(Givaro::naturallog(n)+2*Givaro::naturallog(max));
 //std::cout<< " >>>>>>>>>>>>>>>> hadamard := " << hadamard << std::endl;
-*/
-    auto hadamardBound = RationalSolveHadamardBound(A, b);
-    double hadamard = hadamardBound.numBoundBitSize + hadamardBound.denBoundBitSize + 1;
-    
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -851,7 +851,7 @@ std::cerr << "OMP solveCRA" << std::endl;
 //        chrono.start();
 
 		cra(num, den, iteration, genprime); 
-		
+
 #ifdef __LINBOX_HAVE_MPI
 //        chrono.stop();//std::cout << "The process ("<<C->rank()<<") spent total CPU time (seconds) in solveCRA: " << chrono.usertime() << std::endl;
 #else

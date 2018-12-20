@@ -136,8 +136,8 @@ uint64_t getSeed(){
 int main(int argc, char ** argv)
 {
   
-  int seed=0; 
-   size_t nt = 1;
+    int seed=1; // This value should be other than 0 if not the generated input will always be random
+    size_t nt = 1;
     size_t n = 100;
     size_t bitsize = 10;
     size_t niter = 3;
@@ -162,7 +162,8 @@ int main(int argc, char ** argv)
   Givaro::ZRing<Integer> ZZ;  
 
   typedef BlasVector<Givaro::ZRing<Integer> > DenseVector;
-  
+      DenseMatrix<Givaro::ZRing<Integer> > A (ZZ,n,n);
+      DenseVector X(ZZ, A.coldim()), X2(ZZ, A.coldim()),  B(ZZ, A.coldim());
   size_t ni=n;
   size_t bits=bitsize;
   

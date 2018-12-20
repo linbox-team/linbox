@@ -49,7 +49,6 @@ namespace LinBox
 		Vect& result (Vect &num, Integer& den)
 		{
             Father_t::result(num, false);
-            den = 1;
             const auto& mod = Father_t::getModulus();
             Integer s, nd;
             _ZZ.sqrt(s, mod);
