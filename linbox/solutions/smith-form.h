@@ -44,10 +44,34 @@ namespace LinBox
 #define EC(Elt) std::pair<typename Elt, size_t>
 	// EC_LIST: list of such pairs, compact form of invariant list.
 #define EC_LIST(Elt) std::list<EC(Elt) > 
+
+	template<class Ring, class Vector>
+	EC_LIST(Ring::Element) &
+	compressedSmith(EC_LIST(Ring::Element) & c,
+                    const Vector& SmithDiagonal, const Ring& R,
+                    const size_t m, const size_t n)
+    {
+        typename Ring::Element si(R.one);
+        size_t num=0;
+        for( auto dit : SmithDiagonal ) {
+            if (R.areEqual(dit,si)) ++num;
+            else {
+                c.push_back(EC(Ring::Element)(si,num));                
+                num=1;
+                R.assign(si,dit);
+            }
+        }
+        if (num>0) c.push_back(EC(Ring::Element)(si,num));
+        num = std::min(m,n) - SmithDiagonal.size();
+        R.assign(si,R.zero);
+        if (num>0) c.push_back(EC(Ring::Element)(si,num));
+        return c;
+    }
+
 	// Convert from vector of invariants (with repeats) to EC_LIST form.
 	template<class Ring>
 	EC_LIST(Ring::Element) & 
-	distinct(EC_LIST(Ring::Element) & c, const BlasVector<Ring>& v) 
+	compressedSmith(EC_LIST(Ring::Element) & c, const BlasVector<Ring>& v)
 	{
 		typename Ring::Element e;
 		size_t count = 0;
@@ -66,6 +90,8 @@ namespace LinBox
 		c.push_back(EC(Ring::Element)(e, count));
 		return c;
 	}
+
+
 
 
 	/** Compute the Smith form of A.
@@ -171,7 +197,7 @@ namespace LinBox
 				List L;
 				LocalSmith<Local2_32> SmithForm;
 				SmithForm( L, M, R );
-				distinct(L.begin(), L.end(), S);
+				compressedSmith(L.begin(), L.end(), S);
 
 			}
 			//  if (a odd prime power) call local-smith
@@ -181,7 +207,7 @@ namespace LinBox
 				typedef std::list< PIR::Element > List;
 				List L;
 				for (size_t i = 0; i < M.rowdim(); ++i) L.push_back(M[i][i]);
-				distinct(L.begin(), L.end(), S);
+				compressedSmith(L.begin(), L.end(), S);
 			}
 		}
 
@@ -205,7 +231,7 @@ namespace LinBox
 		BlasVector<Givaro::ZRing<Integer> > v (Z,A.rowdim() < A.coldim() ? A.rowdim() : A.coldim());
 		SmithFormAdaptive::smithForm(v, A);
 		//distinct(v.begin(), v.end(), S);
-		return distinct(S,v);
+		return compressedSmith(S,v);
 	}
 	BlasVector<typename Givaro::ZRing<Integer> > &
 	smithForm(BlasVector<typename Givaro::ZRing<Integer> > & V,
