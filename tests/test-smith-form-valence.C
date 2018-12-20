@@ -38,12 +38,14 @@ using namespace LinBox;
 typedef Givaro::ZRing<Integer> PIR;
 typedef SparseMatrix<PIR>  Blackbox;
 
-static bool testValenceSmith(const char * name) {
-    const std::string filename("data/sms.matrix");
+static bool testValenceSmith(const char * name,
+                             const SmithList<PIR>& correctSL)
+{
+    const std::string filename(name);
 	std::ifstream input (filename);
 	PIR ZZ;
 	MatrixStream< PIR > ms( ZZ, input );
-	Blackbox A (ms);
+	const Blackbox A (ms);
 	input.close();
     std::vector<Givaro::Integer> SmithDiagonal;
 
@@ -51,22 +53,37 @@ static bool testValenceSmith(const char * name) {
         smithValence(SmithDiagonal, A, filename);
     }
     
-	const size_t k = std::min(A.rowdim(),A.coldim());
-	BlasVector<PIR> x(ZZ,k);
-    smithForm(x,A);
-    
-    BlasVector<PIR> sdz(ZZ, SmithDiagonal);
+    SmithList<PIR> valenceSL;
+    compressedSmith(valenceSL, SmithDiagonal, ZZ, A.rowdim(),A.coldim());
 
-    return checkSNFExample(sdz,x);
+    bool pass( checkSNFExample(correctSL, valenceSL, ZZ) );
+    
+#ifdef __LINBOX_HAVE_NTL
+	const size_t k = std::min(A.rowdim(),A.coldim());
+	BlasVector<PIR> sfa(ZZ,k);
+    smithForm(sfa,A);
+    BlasVector<PIR> sdz(ZZ, SmithDiagonal);
+    sfa.resize(k);
+    sdz.resize(k);
+
+    pass &= checkSNFExample(sfa,sdz);
+#endif
+
+    return pass;
 }
 
 
 int main(int argc, char** argv)
 {
     bool pass(true);
-    
-    pass &= testValenceSmith("data/sms.matrix");
-    pass &= testValenceSmith("data/fib25.sms");
+    const SmithList<PIR> smsSL{ {1,8},{1440000,1},{0,2} };
+    pass &= testValenceSmith("data/sms.matrix", smsSL);
+
+    const SmithList<PIR> fibSL{ {1,23},{10,1},{1560,1} };
+    pass &= testValenceSmith("data/fib25.sms", fibSL);
+
+    const SmithList<PIR> thirtySL{{1,22},{2,1},{66,2},{198,1},{15444,1},{0,3}};
+    pass &= testValenceSmith("data/30_30_27.sms", thirtySL);
 
 	return pass;
 }
