@@ -44,23 +44,26 @@
 #include <linbox/util/timer.h>
 #include <linbox/util/error.h>
 
-#ifdef __LINBOX_USE_OPENMP 
-#include <omp.h>
-#define THREADS omp_get_thread_num()
-#else
-#define THREADS 1
-#endif
-
 #ifndef __VALENCE_FACTOR_LOOPS__
 #define __VALENCE_FACTOR_LOOPS__ 50000
 #endif
 
-namespace LinBox {
-#ifdef SILENT
-const bool reporting = false;
-#else 
-const bool reporting = true;
+#ifndef __VALENCE_REPORTING__
+# ifdef _LB_DEBUG
+#  define __VALENCE_REPORTING__ 1
+# else
+#  define __VALENCE_REPORTING__ 0
+# endif
 #endif
+
+#ifdef __LINBOX_USE_OPENMP 
+#include <omp.h>
+#define THREAD_NUM omp_get_thread_num()
+#else
+#define THREAD_NUM 1
+#endif
+
+namespace LinBox {
 
 template<class Field>
 unsigned long& TempLRank(unsigned long& r, const char * filename, const Field& F)
@@ -72,8 +75,8 @@ unsigned long& TempLRank(unsigned long& r, const char * filename, const Field& F
 	Timer tim; tim.start();
 	rankin(r, FA);
 	tim.stop();
-	if (reporting)
-        F.write(std::clog << "Rank over ") << " is " << r << ' ' << tim <<  " on T" << THREADS << std::endl;
+	if (__VALENCE_REPORTING__)
+        F.write(std::clog << "Rank over ") << " is " << r << ' ' << tim <<  " on T" << THREAD_NUM << std::endl;
 	return r;
 }
 
@@ -87,8 +90,8 @@ unsigned long& TempLRank(unsigned long& r, const char * filename, const GF2& F2)
 	Timer tim; tim.start();
 	rankin(r, A, Method::SparseElimination() );
 	tim.stop();
-	if (reporting)
-        F2.write(std::clog << "Rank over ") << " is " << r << ' ' << tim <<  " on T" << THREADS << std::endl;
+	if (__VALENCE_REPORTING__)
+        F2.write(std::clog << "Rank over ") << " is " << r << ' ' << tim <<  " on T" << THREAD_NUM << std::endl;
 	return r;
 }
 
@@ -141,7 +144,7 @@ std::vector<size_t>& PRank(std::vector<size_t>& ranks, size_t& effective_exponen
 		int64_t lp(p);
 		Givaro::Integer q = pow(p,uint64_t(e)); int64_t lq(q);
 		if (q > Ring::maxCardinality()) {
-			if (reporting)
+			if (__VALENCE_REPORTING__)
                 std::clog << "Power rank might need extra large composite (" << p << '^' << e << ")." << std::endl;
 			q = p;
 			for(effective_exponent=1; q <= Ring::maxCardinality(); ++effective_exponent) {
@@ -153,13 +156,13 @@ std::vector<size_t>& PRank(std::vector<size_t>& ranks, size_t& effective_exponen
                     // Not able to use Modular<int64_t>, 
                     // modulus is ok, but is already too large when squared
                     // Return that no prime power was performed
-                if (reporting)
+                if (__VALENCE_REPORTING__)
                     std::clog << "Exceeding int64_t ... power rank useless, nothing done." << std::endl;
                 effective_exponent=1;
                 return ranks;
             }
-			if (reporting)
-			std::clog << "First trying: " << lq << " (=" << p << '^' << effective_exponent << ", without further warning this will be sufficient)." << std::endl;
+			if (__VALENCE_REPORTING__)
+                std::clog << "First trying: " << lq << " (=" << p << '^' << effective_exponent << ", without further warning this will be sufficient)." << std::endl;
 		}
 		Ring F(lq);
 		std::ifstream input(filename);
@@ -173,16 +176,15 @@ std::vector<size_t>& PRank(std::vector<size_t>& ranks, size_t& effective_exponen
 		Timer tim; tim.clear(); tim.start();
 		PGD.prime_power_rankin( lq, lp, ranks, A, Q, A.rowdim(), A.coldim(), std::vector<size_t>());
 		tim.stop();
-		if (reporting) {
+		if (__VALENCE_REPORTING__) {
 			F.write(std::clog << "Ranks over ") << " are " ;
-			for(std::vector<size_t>::const_iterator rit=ranks.begin(); rit != ranks.end(); ++rit)
-				std::clog << *rit << ' ';
-			std::clog << ' ' << tim <<  " on T" << THREADS << std::endl;
+			for(auto const & rit:ranks) std::clog << rit << ' ';
+			std::clog << ' ' << tim <<  " on T" << THREAD_NUM << std::endl;
 		}
 	} else {
             // Not able to use Modular<int64_t>, modulus too large
             // Return that no prime power was performed
-        if (reporting)
+        if (__VALENCE_REPORTING__)
             std::clog << "Exceeding int64_t ... even for the prime, nothing done." << std::endl;
         effective_exponent=1;
 	}
@@ -199,9 +201,9 @@ std::vector<size_t>& PRankPowerOfTwo(std::vector<size_t>& ranks, size_t& effecti
 {
 	effective_exponent = e;
 	if (e > 63) {
-		if (reporting)
+		if (__VALENCE_REPORTING__)
             std::clog << "Power rank power of two might need extra large composite (2^" << e << ")." << std::endl;
-		if (reporting)
+		if (__VALENCE_REPORTING__)
             std::clog << "First trying: 63, without further warning this will be sufficient)." << std::endl;
 		effective_exponent = 63;
 	}
@@ -220,11 +222,10 @@ std::vector<size_t>& PRankPowerOfTwo(std::vector<size_t>& ranks, size_t& effecti
 	Timer tim; tim.clear(); tim.start();
 	PGD.prime_power_rankin( effective_exponent, ranks, A, Q, A.rowdim(), A.coldim(), std::vector<size_t>());
 	tim.stop();
-	if (reporting) {
+	if (__VALENCE_REPORTING__) {
 		F.write(std::clog << "Ranks over ") << " modulo 2^" << effective_exponent << " are " ;
-		for(std::vector<size_t>::const_iterator rit=ranks.begin(); rit != ranks.end(); ++rit)
-			std::clog << *rit << ' ';
-		std::clog << ' ' << tim <<  " on T" << THREADS << std::endl;
+		for(auto const& rit: ranks) std::clog << rit << ' ';
+		std::clog << ' ' << tim <<  " on T" << THREAD_NUM << std::endl;
 	}
 	return ranks;
 }
@@ -244,10 +245,9 @@ std::vector<size_t>& PRankInteger(std::vector<size_t>& ranks, const char * filen
 	Timer tim; tim.clear(); tim.start();
 	PGD.prime_power_rankin( q, p, ranks, A, Q, A.rowdim(), A.coldim(), std::vector<size_t>());
 	tim.stop();
-	if (reporting){
+	if (__VALENCE_REPORTING__) {
 		F.write(std::clog << "Ranks over ") << " are " ;
-		for(std::vector<size_t>::const_iterator rit=ranks.begin(); rit != ranks.end(); ++rit)
-			std::clog << *rit << ' ';
+		for(auto const & rit: ranks) std::clog << rit << ' ';
 		std::clog << ' ' << tim << std::endl;
 	}
 	return ranks;
@@ -267,10 +267,9 @@ std::vector<size_t>& PRankIntegerPowerOfTwo(std::vector<size_t>& ranks, const ch
 	Timer tim; tim.clear(); tim.start();
 	PGD.prime_power_rankin( e, ranks, A, Q, A.rowdim(), A.coldim(), std::vector<size_t>());
 	tim.stop();
-	if (reporting) {
+	if (__VALENCE_REPORTING__) {
 		ZZ.write(std::clog << "Ranks over ") << " modulo 2^" << e << " are " ;
-		for(std::vector<size_t>::const_iterator rit=ranks.begin(); rit != ranks.end(); ++rit)
-			std::clog << *rit << ' ';
+		for(auto const& rit: ranks) std::clog << rit << ' ';
 		std::clog << ' ' << tim << std::endl;
 	}
 	return ranks;
@@ -326,7 +325,7 @@ std::vector<size_t>& AllPowersRanks(
                 else
                     PRank(ranks, effexp, filename, squarefreePrime, expo, coprimeRank);
                 if (ranks.size() < expo) {
-                    if (reporting)
+                    if (__VALENCE_REPORTING__)
                         std::clog << "It seems we need a larger prime power, it will take longer ..." << std::endl;
                         // break;
                     if (squarefreePrime == 2)
@@ -378,25 +377,30 @@ std::vector<Givaro::Integer>& smithValence(std::vector<Givaro::Integer>& SmithDi
         // if coprimeV != 1:
 		//  then this value is supposed to be coprime with the valence
 
-    std::clog << "sV threads: " << NUM_THREADS << std::endl;
+    if (__VALENCE_REPORTING__)
+        std::clog << "sV threads: " << NUM_THREADS << std::endl;
 
     if (valence == 0) {
         squarizeValence(valence, A, method);
     }
 
-	std::clog << "Valence is " << valence << std::endl;
+    if (__VALENCE_REPORTING__)
+        std::clog << "Valence is " << valence << std::endl;
 
-	std::vector<Givaro::Integer> Moduli;
+    std::vector<Givaro::Integer> Moduli;
 	std::vector<size_t> exponents;
 
-    std::clog << "Some factors (" << __VALENCE_FACTOR_LOOPS__ << " factoring loop bound): ";
+    if (__VALENCE_REPORTING__)
+        std::clog << "Some factors (" << __VALENCE_FACTOR_LOOPS__ << " factoring loop bound): ";
 	
- 	Givaro::IntFactorDom<> FTD;
+    Givaro::IntFactorDom<> FTD;
     FTD.set(Moduli, exponents, valence, __VALENCE_FACTOR_LOOPS__);
 
 	auto eit=exponents.begin();
-	for(auto mit: Moduli) std::clog << mit << '^' << *eit << ' ';
-	std::clog << std::endl;
+    if (__VALENCE_REPORTING__) {
+        for(auto mit: Moduli) std::clog << mit << '^' << *eit << ' ';
+        std::clog << std::endl;
+    }
 
 	std::vector< size_t > smith(Moduli.size());
 
