@@ -146,7 +146,6 @@ namespace LinBox
             const integer& Dval = mod_to_integer(D);
             double logD = Givaro::naturallog(Dval);
             auto cur = getShelf(logD);
-
             totalsize_ += logD;
 
             ensureShelf(cur, shelves_, dimension_);

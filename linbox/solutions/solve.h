@@ -52,6 +52,8 @@
 #endif
 #include "linbox/algorithms/rational-cra2.h"
 
+ #include "linbox/solutions/hadamard-bound.h"
+
 #include "linbox/algorithms/varprec-cra-early-multip.h"
 #include "linbox/algorithms/block-wiedemann.h"
 #include "linbox/algorithms/coppersmith.h"
@@ -787,7 +789,8 @@ return x;
 #endif
 			)
 	{
-//		Integer den(1); //<----------------------maybe init with thread/process ID-------------------------------
+		Integer den(1);
+
 #ifdef __LINBOX_HAVE_MPI	//MPI parallel version
 		if(!C || C->rank() == 0){
 #endif 
@@ -797,13 +800,14 @@ return x;
 #ifdef __LINBOX_HAVE_MPI
 		}
 #endif    
-        //PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime(25);     
+
 		PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205))); //RandomPrimeIterator genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
 //PrimeIterator<LinBox::IteratorCategories::DeterministicTag> genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
                 
 		BlasVector<Givaro::ZRing<Integer>> num(A.field(),A.coldim());
 		IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
-
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/*
 		typename BB::ConstIterator it = A.Begin();
 		typename BB::ConstIterator it_end = A.End();
 		integer max = 1,min=0;
@@ -816,10 +820,17 @@ return x;
 		}
 		if (max<-min)
 			max=-min;
+        if (max < 3) max = 3;
 		size_t n=A.coldim();
 
-		double hadamard = n*(Givaro::naturallog(n)+2*Givaro::naturallog(max));//double hadamard = n*(log(double(n))+2*log(double(max)));
-//std::cout << " >>>>>>>>>>>>>>>> Hadamard:= " << hadamard << std::endl;
+		double hadamard = n*(Givaro::naturallog(n)+2*Givaro::naturallog(max));
+//std::cout<< " >>>>>>>>>>>>>>>> hadamard := " << hadamard << std::endl;
+*/
+    auto hadamardBound = RationalSolveHadamardBound(A, b);
+    double hadamard = hadamardBound.numBoundBitSize + hadamardBound.denBoundBitSize + 1;
+    
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef __LINBOX_HAVE_MPI
 //		MPIratChineseRemainder< EarlyMultipRatCRA< Givaro::ModularBalanced<double> > > cra(3UL, C);
@@ -831,18 +842,20 @@ return x;
 std::cerr << "OMP solveCRA" << std::endl;
 
 //        RationalRemainder< EarlyMultipRatCRA< Givaro::ModularBalanced<double> > > cra(3UL);
-        ChineseRemainderOMP< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(hadamard);//ChineseRemainderRatOMP< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(hadamard);
+        ChineseRemainderOMP< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(hadamard);
 
 #endif
 
 
-        Timer chrono;
-        chrono.start();
-		cra(num, d, iteration, genprime); //<--------------------d instead of den---------------------------------
+//        Timer chrono;
+//        chrono.start();
+
+		cra(num, den, iteration, genprime); 
+		
 #ifdef __LINBOX_HAVE_MPI
-        chrono.stop();//std::cout << "The process ("<<C->rank()<<") spent total CPU time (seconds) in solveCRA: " << chrono.usertime() << std::endl;
+//        chrono.stop();//std::cout << "The process ("<<C->rank()<<") spent total CPU time (seconds) in solveCRA: " << chrono.usertime() << std::endl;
 #else
-        chrono.stop();//std::cout << "Spent CPU time (seconds) in solveCRA: " << chrono.usertime() << std::endl;
+//        chrono.stop();//std::cout << "Spent CPU time (seconds) in solveCRA: " << chrono.usertime() << std::endl;
 #endif
 
 #ifdef __LINBOX_HAVE_MPI
@@ -855,7 +868,7 @@ std::cerr << "OMP solveCRA" << std::endl;
             for (; it_x != x.end(); ++it_x, ++it_num)
                 A.field().init(*it_x, *it_num);	
             
-			A.field().init(d, d); //<---------------------(d,d) instead of (d,den)--------------------------------
+			A.field().init(d, den);
             
 			commentator().stop ("done", NULL, "Isolve");
 			return x;

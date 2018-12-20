@@ -51,9 +51,11 @@ namespace LinBox
 		typedef typename CRABase::DomainElement	DomainElement;
 		typedef ChineseRemainderSeq<CRABase>    Father_t;
 
+        double B;
+        
 		template<class Param>
 		ChineseRemainderOMP(const Param& b) :
-			Father_t(b)
+			Father_t(b), B(b)
 		{}
 
 		ChineseRemainderOMP(const CRABase& b) :
@@ -159,10 +161,11 @@ namespace LinBox
         void solve_with_prime(std::vector<PrimeIterator>& m_primeiters, std::set<int>& coprimeset, Function& Iteration, std::vector<Domain>& ROUNDdomains, std::vector<ElementContainer>& ROUNDresidues){
 
             ++m_primeiters[ omp_get_thread_num()];
-
+//std::cout<< " "<<*m_primeiters[ omp_get_thread_num()] <<  " has "<< m_primeiters[ omp_get_thread_num()].getBits()<< std::endl;
 #pragma omp critical
-            while(this->Builder_.noncoprime(*m_primeiters[ omp_get_thread_num()]) &&
-                  coprimeset.find(*m_primeiters[omp_get_thread_num()])!=coprimeset.end())
+            while(this->Builder_.noncoprime(*m_primeiters[ omp_get_thread_num()]) 
+            /*&& coprimeset.find(*m_primeiters[omp_get_thread_num()])!=coprimeset.end()*/
+                  )
                 ++m_primeiters[ omp_get_thread_num()];
             
             ROUNDdomains[ omp_get_thread_num()] = Domain(*m_primeiters[ omp_get_thread_num()]);
@@ -176,13 +179,52 @@ namespace LinBox
         void compute_task(pFunc& pF, int NN, int Tile, std::vector<PrimeIterator>& m_primeiters, std::set<int>& coprimeset, Function& Iteration, std::vector<Domain>& ROUNDdomains, std::vector<ElementContainer>& ROUNDresidues)
         {
         
+#if 1   //Replace while loop with estimated Niter ===============================================================
+
+std::cout<< " >>>>>>>>>>>>>>>> B := " << B << std::endl;
+std::cout<< " >>>>>>>>>>>>>>>> m_primeiters[0].getBits() := " << m_primeiters[0].getBits()<< std::endl;
+std::cout<< " >>>>>>>>>>>>>>>> B/m_primeiters[0].getBits() := " << std::ceil(B/(double)m_primeiters[0].getBits())<< std::endl;
+int Niter=std::ceil(1.442695040889*B/(double)(m_primeiters[0].getBits()-1));
+#pragma omp parallel for num_threads(NN/Tile)  
+                for(auto j=0;j<Niter;j++)
+                {
+
+//#pragma omp task                 
+                    {
+
+                            solve_with_prime(m_primeiters, coprimeset, Iteration, ROUNDdomains, ROUNDresidues);
+                            
+#pragma omp critical
+                            if(coprimeset.size()>0){
+                                this->Builder_.progress( ROUNDdomains[ omp_get_thread_num()], ROUNDresidues[ omp_get_thread_num()]);
+
+                                coprimeset.insert(*m_primeiters[ omp_get_thread_num()]);
+
+                            }else{
+                                
+                                this->Builder_.initialize( ROUNDdomains[ omp_get_thread_num()], ROUNDresidues[ omp_get_thread_num()]);
+
+                                coprimeset.insert(*m_primeiters[ omp_get_thread_num()]);
+                            }
+                            
+
+                    }
+
+                }
+if(!this->Builder_.terminated()){
+std::cout<< " ############################################################################################ "<< std::endl;
+}else {
+std::cout<< " ******************************************************************************************** "<< std::endl;
+}
+
+#else   //Previous implementation as reference ==================================================================
 
 			while( ! this->Builder_.terminated() ) {
 #pragma omp parallel num_threads(NN/Tile)  
                 //for(auto j=0;j<NN/Tile;j++)
                 {
   
-//#pragma omp task                        
+#pragma omp task                        
                     {
                             // std::cout<<"Coucou thread_num = "<<omp_get_thread_num()<<std::endl;
                         for(auto i=0; i<Tile; ){
@@ -193,7 +235,7 @@ namespace LinBox
                             if(coprimeset.size()>0){
                                 //if(coprimeset.find(*m_primeiters[ omp_get_thread_num()])==coprimeset.end()){
                                 this->Builder_.progress( ROUNDdomains[ omp_get_thread_num()], ROUNDresidues[ omp_get_thread_num()]);
-                                i++;                                        
+                                i++;                            
                                 coprimeset.insert(*m_primeiters[ omp_get_thread_num()]);
                                 //}
                             }else{
@@ -209,7 +251,8 @@ namespace LinBox
                 }
 
             }
-            
+#endif
+  
         }
         
         template<class pFunc, class Function, class PrimeIterator, class Domain, class ElementContainer>
