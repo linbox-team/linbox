@@ -44,11 +44,11 @@
 #include <linbox/util/timer.h>
 #include <linbox/util/error.h>
 
-#ifdef NOT_USING_OMP
-#define THREADS 1
-#else
+#ifdef __LINBOX_USE_OPENMP 
 #include <omp.h>
 #define THREADS omp_get_thread_num()
+#else
+#define THREADS 1
 #endif
 
 #ifndef __VALENCE_FACTOR_LOOPS__
@@ -73,7 +73,7 @@ unsigned long& TempLRank(unsigned long& r, const char * filename, const Field& F
 	rankin(r, FA);
 	tim.stop();
 	if (reporting)
-	F.write(std::clog << "Rank over ") << " is " << r << ' ' << tim <<  " on T" << THREADS << std::endl;
+        F.write(std::clog << "Rank over ") << " is " << r << ' ' << tim <<  " on T" << THREADS << std::endl;
 	return r;
 }
 
@@ -88,7 +88,7 @@ unsigned long& TempLRank(unsigned long& r, const char * filename, const GF2& F2)
 	rankin(r, A, Method::SparseElimination() );
 	tim.stop();
 	if (reporting)
-	F2.write(std::clog << "Rank over ") << " is " << r << ' ' << tim <<  " on T" << THREADS << std::endl;
+        F2.write(std::clog << "Rank over ") << " is " << r << ' ' << tim <<  " on T" << THREADS << std::endl;
 	return r;
 }
 
@@ -142,7 +142,7 @@ std::vector<size_t>& PRank(std::vector<size_t>& ranks, size_t& effective_exponen
 		Givaro::Integer q = pow(p,uint64_t(e)); int64_t lq(q);
 		if (q > Ring::maxCardinality()) {
 			if (reporting)
-			std::clog << "Power rank might need extra large composite (" << p << '^' << e << ")." << std::endl;
+                std::clog << "Power rank might need extra large composite (" << p << '^' << e << ")." << std::endl;
 			q = p;
 			for(effective_exponent=1; q <= Ring::maxCardinality(); ++effective_exponent) {
 				q *= p;
@@ -200,9 +200,9 @@ std::vector<size_t>& PRankPowerOfTwo(std::vector<size_t>& ranks, size_t& effecti
 	effective_exponent = e;
 	if (e > 63) {
 		if (reporting)
-		std::clog << "Power rank power of two might need extra large composite (2^" << e << ")." << std::endl;
+            std::clog << "Power rank power of two might need extra large composite (2^" << e << ")." << std::endl;
 		if (reporting)
-		std::clog << "First trying: 63, without further warning this will be sufficient)." << std::endl;
+            std::clog << "First trying: 63, without further warning this will be sufficient)." << std::endl;
 		effective_exponent = 63;
 	}
 
@@ -472,9 +472,6 @@ std::ostream& writeCompressedSmith(std::ostream& out,
 	return out << ')';
 }
 
-
-
-#undef THREADS
 }
 
 
