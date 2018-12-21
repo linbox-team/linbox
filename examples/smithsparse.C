@@ -207,7 +207,7 @@ int main(int argc, char* argv[])
 	
 		for(vector<integer>::const_iterator mit=Moduli.begin();
 		    mit != Moduli.end(); ++mit) {
-			unsigned long r; LRank(r, argv[1], *mit);
+			size_t r; LRank(r, argv[1], *mit);
 			//             cerr << "Rank mod " << *mit << " is " << r << endl;
 			smith.push_back(PairIntRk(*mit, r));
 			for(size_t i=r; i < coprimeR; ++i)
@@ -247,7 +247,7 @@ int main(int argc, char* argv[])
 	            }
 	
 				vector<size_t>::const_iterator rit=ranks.begin();
-				// unsigned long modrank = *rit;
+				// size_t modrank = *rit;
 				for(++rit; rit!= ranks.end(); ++rit) {
 					if ((*rit)>= coprimeR) break;
 					for(size_t i=(*rit); i < coprimeR; ++i)

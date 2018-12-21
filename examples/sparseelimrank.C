@@ -58,7 +58,7 @@ int main (int argc, char **argv)
 	ifstream input (argv[1]);
 	if (!input) { cerr << "Error opening matrix file: " << argv[1] << endl; return -1; }
 
-	long unsigned int r;
+	size_t r;
 
 	if (argc == 2) { // rank over the integers.
 
