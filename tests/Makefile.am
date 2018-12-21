@@ -195,7 +195,6 @@ NTL_TESTS =                     \
 	test-ntl-toeplitz           \
 	test-ntl-hankel             \
 	test-ntl-sylvester          \
-	test-poly-smith-form        \
 	test-smith-form-iliopoulos  \
 	test-invariant-factors      \
 	test-frobenius-large        \
@@ -321,7 +320,7 @@ test_param_fuzzy_SOURCES =              test-param-fuzzy.C
 test_permutation_SOURCES =              test-permutation.C
 test_plain_domain_SOURCES =             test-plain-domain.C
 test_poly_det_SOURCES =                 test-poly-det.C
-test_poweroftwomodular_SOURCES =		test-poweroftwomodular.C test-field.h
+test_poweroftwomodular_SOURCES =	test-poweroftwomodular.C test-field.h
 test_qlup_SOURCES =                     test-qlup.C
 test_quad_matrix_SOURCES =              test-quad-matrix.C
 test_randiter_nonzero_SOURCES =         test-randiter-nonzero.C
