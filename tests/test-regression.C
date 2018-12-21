@@ -465,16 +465,12 @@ bool testInconsistent (const Specifier& m){
     ZZ.assign(B[0],ZZ.one);
 
         // solving via Dixon Lifting
-    solve (A, D, M, B, m);
+    try{
+        solve (A, D, M, B, m);
+    }
+    catch (LinBox::LinboxMathInconsistentSystem& e){return true;}
 
-    if (!ZZ.areEqual(A[0],ZZ.zero) || !ZZ.areEqual(D,ZZ.one)) {
-        if (writing) std::cerr<<"A = "<<A<<" D = "<<D<<std::endl;
-        if (writing) std::cerr<<"**** ERROR **** Fail solving an inconsistent system  over QQ via Dixon Lifting"<<std::endl;
-        return false;
-    } else
-        if (writing) std::cout << "TICS: PASSED" << std::endl;
-
-    return true;
+    return false;
 }
 
 
@@ -579,14 +575,11 @@ int main (int argc, char **argv)
     pass &= testZeroDimensionalMinPoly ();
     pass &= testBigScalarCharPoly ();
     pass &= testLocalSmith ();
-    
-      // Still failing: see https://github.com/linbox-team/linbox/issues/105
-      /*
-        pass &= testInconsistent<> (Method::BlasElimination());
-        pass &= testInconsistent<> (Method::SparseElimination());
-        pass &= testInconsistent<> (Method::Wiedemann());
-      */
-    
+    pass &= testInconsistent<DenseMatrix<ZRingInts>> (Method::BlasElimination());
+
+        // Still failing: see https://github.com/linbox-team/linbox/issues/105
+        //pass &= testInconsistent<> (Method::SparseElimination());
+        //pass &= testInconsistent<> (Method::Wiedemann());
 
     return pass ? 0 : -1;
 }
