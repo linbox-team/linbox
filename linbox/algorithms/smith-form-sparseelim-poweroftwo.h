@@ -1,7 +1,7 @@
 /* algorithms/smith-form-sparseelim-poweroftwo.h
  * Copyright (C) LinBox
  * Written by JG Dumas
- * Time-stamp: <28 Dec 17 12:50:03 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <21 Dec 18 09:43:04 Jean-Guillaume.Dumas@imag.fr>
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
@@ -549,7 +549,7 @@ namespace LinBox
 
 
         template<class Matrix, class Perm, template<class, class> class Container, template<class> class Alloc>
-        Container<std::pair<size_t,UInt_t>, Alloc<std::pair<size_t,UInt_t> > >& operator()(Container<std::pair<size_t,UInt_t>, Alloc<std::pair<size_t,UInt_t> > >& L, Matrix& A, Perm& Q, size_t EXPONENT, int StaticParameters=PRIVILEGIATE_NO_COLUMN_PIVOTING) {
+        Container<std::pair<UInt_t,size_t>, Alloc<std::pair<UInt_t,size_t> > >& operator()(Container<std::pair<UInt_t,size_t>, Alloc<std::pair<UInt_t,size_t> > >& L, Matrix& A, Perm& Q, size_t EXPONENT, int StaticParameters=PRIVILEGIATE_NO_COLUMN_PIVOTING) {
             Container<size_t, Alloc<size_t> > ranks;
             prime_power_rankin( EXPONENT, ranks, A, Q, A.rowdim(), A.coldim(), std::vector<size_t>(),StaticParameters);
             L.resize( 0 ) ;
@@ -557,7 +557,7 @@ namespace LinBox
             size_t num = 0;
             for( typename Container<size_t, Alloc<size_t> >::const_iterator it = ranks.begin(); it != ranks.end(); ++it) {
                 size_t diff = *it-num;
-                if (diff > 0) L.emplace_back(diff,MOD);
+                if (diff > 0) L.emplace_back(MOD,diff);
                 MOD <<= 1;
                 num = *it;
             }

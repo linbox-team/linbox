@@ -176,16 +176,16 @@ bool checkSNFExample( const LinBox::SmithList<PIR>& d, const LinBox::SmithList<P
 #ifndef DISABLE_COMMENTATOR
         commentator().report()
 #else
-        std::cerr
+        std::clog
 #endif
 ;
 	report << "Expected smith form SL: " << '{';
-    for(auto const & sit: d) std::clog << '{' << sit.first << ',' << sit.second << '}';
-    std::clog << '}' << std::endl;
+    for(auto const & sit: d) report << '{' << sit.first << ',' << sit.second << '}';
+    report << '}' << std::endl;
 
 	report << "Computed Smith form SL: " << '{';
-    for(auto const & sit: x) std::clog << '{' << sit.first << ',' << sit.second << '}';
-    std::clog << '}' << std::endl;
+    for(auto const & sit: x) report << '{' << sit.first << ',' << sit.second << '}';
+    report << '}' << std::endl;
 
 
     auto dit=d.begin();
