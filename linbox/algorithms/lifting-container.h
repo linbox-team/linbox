@@ -408,9 +408,13 @@ namespace LinBox
 			this->_intRing.convert(normb_sqi, normb_sq);
 			this->_intRing.convert(Prime,_p);
 			D = sqrt(had_sqi) + 1;
-			N = sqrt(had_sqi * normb_sqi / short_sqi) + 1;
+            if (short_sqi == 0){
+                N = 1;
+            } else {
+                N = sqrt(had_sqi * normb_sqi / short_sqi) + 1;
+            }
 			L = N * D * 2;
-                            //std::cerr<<"had_sqi = "<<had_sqi<<" normb_sqi = "<<normb_sqi<<" short_sqi = "<<short_sqi<<" N = "<<N<<" D = "<<D<<std::endl;
+                //std::cerr<<"had_sqi = "<<had_sqi<<" normb_sqi = "<<normb_sqi<<" short_sqi = "<<short_sqi<<" N = "<<N<<" D = "<<D<<std::endl;
 			_length = (size_t)logp(L,Prime) + 1;   // round up instead of down
 #ifdef DEBUG_LC
 			std::cout<<" norms computed, p = "<<_p<<"\n";
