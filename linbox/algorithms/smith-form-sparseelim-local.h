@@ -28,6 +28,7 @@
 
 #include <map>
 #include <givaro/givconfig.h> // for Signed_Trait
+#include "linbox/solutions/smith-form.h"
 #include "linbox/algorithms/gauss.h"
 
 #ifdef DEBUG
@@ -581,7 +582,7 @@ namespace LinBox
 
 
 		template<class Modulo, class Matrix, class Perm, template<class, class> class Container, template<class> class Alloc>
-		Container<std::pair<size_t,Modulo>, Alloc<std::pair<size_t,Modulo> > >& operator()(Container<std::pair<size_t,Modulo>, Alloc<std::pair<size_t,Modulo> > >& L, Matrix& A, Perm& Q, Modulo FMOD, Modulo PRIME, int StaticParameters=PRIVILEGIATE_NO_COLUMN_PIVOTING)
+		Container<std::pair<Modulo,size_t>, Alloc<std::pair<Modulo,size_t> > >& operator()(Container<std::pair<Modulo,size_t>, Alloc<std::pair<Modulo,size_t> > >& L, Matrix& A, Perm& Q, Modulo FMOD, Modulo PRIME, int StaticParameters=PRIVILEGIATE_NO_COLUMN_PIVOTING)
             {
                 Container<size_t, Alloc<size_t> > ranks;
                 prime_power_rankin( FMOD, PRIME, ranks, A, Q, A.rowdim(), A.coldim(), std::vector<size_t>(), StaticParameters);
@@ -591,7 +592,7 @@ namespace LinBox
                 for( typename Container<size_t, Alloc<size_t> >::const_iterator it = ranks.begin(); it != ranks.end(); ++it) {
                     size_t diff(*it-num);
                     if (diff > 0)
-                        L.emplace_back(diff,MOD);
+                        L.emplace_back(MOD,diff);
                     MOD *= PRIME;
                     num = *it;
                 }

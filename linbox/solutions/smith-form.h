@@ -55,15 +55,15 @@ namespace LinBox
         for( auto dit : SmithDiagonal ) {
             if (R.areEqual(dit,si)) ++num;
             else {
-                c.push_back(SmithPair<Ring>(si,num));
+                c.emplace_back(si,num);
                 num=1;
                 R.assign(si,dit);
             }
         }
-        if (num>0) c.push_back(SmithPair<Ring>(si,num));
+        if (num>0) c.emplace_back(si,num);
         num = std::min(m,n) - SmithDiagonal.size();
         R.assign(si,R.zero);
-        if (num>0) c.push_back(SmithPair<Ring>(si,num));
+        if (num>0) c.emplace_back(si,num);
         return c;
     }
 
@@ -82,11 +82,11 @@ namespace LinBox
 		{	if (R.areEqual(v[i], e))
 				++count;
 			else
-			{	c.push_back(SmithPair<Ring>(e, count));
+			{	c.emplace_back(e, count);
 				R.assign(e, v[i]); count = 1;
 			}
 		}
-		c.push_back(SmithPair<Ring>(e, count));
+		c.emplace_back(e, count);
 		return c;
 	}
 
@@ -183,8 +183,8 @@ namespace LinBox
 		{	size_t r; rank(r, A);
 			S.resize(0);
 			size_t n = (A.rowdim() > A.coldim() ? A.coldim() : A.rowdim())-r;
-			if (r > 0) S.push_back( std::pair<size_t, integer>(r, 1) );
-			if (n > 0) S.push_back( std::pair<size_t, integer>(n, 0) );
+			if (r > 0) S.emplace_back(r, 1);
+			if (n > 0) S.emplace_back(n, 0);
 		}
 		else
 		{
