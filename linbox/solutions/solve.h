@@ -2,6 +2,8 @@
  * Copyright(C) LinBox
  *  Evolved from an earlier one by Bradford Hovinen <hovinen@cis.udel.edu>
  *
+ * Updated by Hongguang Zhu <zhuhongguang2014@gmail.com>
+ *
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -779,7 +781,8 @@ return x;
     };
 
 
-        //BB: How come I have to change the name so it works when directly called ?
+
+    //BB: How come I have to change the name so it works when directly called ?
     template <class Vector, class BB, class MyMethod>
     Vector& solveCRA(Vector& x, typename BB::Field::Element& d, const BB& A, const Vector& b,
                      const RingCategories::IntegerTag & tag,
@@ -787,30 +790,28 @@ return x;
 #ifdef __LINBOX_HAVE_MPI
                      ,Communicator   *C = NULL
 #endif
-			)
+                     )
 	{
-		Integer den;
-
+		typename BB::Field::Element den;
+        
 #ifdef __LINBOX_HAVE_MPI	//MPI parallel version
 		if(!C || C->rank() == 0){
 #endif 
 			if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
 				throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
-                        commentator().start ("Integer CRA Solve", "Isolve");
+            commentator().start ("Integer CRA Solve", "Isolve");
 #ifdef __LINBOX_HAVE_MPI
 		}
 #endif    
-
-		PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205))); //RandomPrimeIterator genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
-//PrimeIterator<LinBox::IteratorCategories::DeterministicTag> genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
-                
-		BlasVector<Givaro::ZRing<Integer>> num(A.field(),A.coldim());
+        
+		PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205))); 
+        
+		Vector num(A.field(),A.coldim());
 		IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+        
 		typename BB::ConstIterator it = A.Begin();
 		typename BB::ConstIterator it_end = A.End();
-		integer max = 1,min=0;
+		typename BB::Field::Element max = 1,min=0;
 		while( it != it_end ){
 			if (max < (*it))
 				max = *it;
@@ -820,49 +821,41 @@ return x;
 		}
 		if (max<-min)
 			max=-min;
-
-typename Vector::iterator it_b= b.begin();
-for (; it_b != b.end(); ++it_b) if(*it_b>max) max=*it_b;
-if (max < 3) max = 3;
+        
+        typename Vector::iterator it_b= b.begin();
+        for (; it_b != b.end(); ++it_b) if(*it_b>max) max=*it_b;
+        if (max < 3) max = 3;
 		size_t n=A.coldim();
-
+        
 		double hadamard = n*(Givaro::naturallog(n)+2*Givaro::naturallog(max));
-//std::cout<< " >>>>>>>>>>>>>>>> hadamard := " << hadamard << std::endl;
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+        
 #ifdef __LINBOX_HAVE_MPI
-//		MPIratChineseRemainder< EarlyMultipRatCRA< Givaro::ModularBalanced<double> > > cra(3UL, C);
+        //		MPIratChineseRemainder< EarlyMultipRatCRA< Givaro::ModularBalanced<double> > > cra(3UL, C);
 		MPIratChineseRemainder< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(hadamard, C);
-
-
 #else
-
-std::cerr << "OMP solveCRA" << std::endl;
-
-//        RationalRemainder< EarlyMultipRatCRA< Givaro::ModularBalanced<double> > > cra(3UL);
+        
+        std::cerr << "OMP solveCRA" << std::endl;
+        
+        //        RationalRemainder< EarlyMultipRatCRA< Givaro::ModularBalanced<double> > > cra(3UL);
         ChineseRemainderOMP< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(hadamard);
-
+        
 #endif
-
-
-//        Timer chrono;
-//        chrono.start();
-
+        //        Timer chrono;
+        //        chrono.start();
+        
 		cra(num, den, iteration, genprime); 
-
+        
 #ifdef __LINBOX_HAVE_MPI
-//        chrono.stop();//std::cout << "The process ("<<C->rank()<<") spent total CPU time (seconds) in solveCRA: " << chrono.usertime() << std::endl;
+        //        chrono.stop();//std::cout << "The process ("<<C->rank()<<") spent total CPU time (seconds) in solveCRA: " << chrono.usertime() << std::endl;
 #else
-//        chrono.stop();//std::cout << "Spent CPU time (seconds) in solveCRA: " << chrono.usertime() << std::endl;
+        //        chrono.stop();//std::cout << "Spent CPU time (seconds) in solveCRA: " << chrono.usertime() << std::endl;
 #endif
-
+        
 #ifdef __LINBOX_HAVE_MPI
 		if(!C || C->rank() == 0){ 
 #endif 
             typename Vector::iterator it_x= x.begin();
-            typename BlasVector<Givaro::ZRing<Integer>>::const_iterator it_num= num.begin();
+            typename Vector::const_iterator it_num= num.begin();
             
             // convert the result
             for (; it_x != x.end(); ++it_x, ++it_num)
@@ -876,9 +869,6 @@ std::cerr << "OMP solveCRA" << std::endl;
 		}
 #endif 
 	}
-    
-    
-    
 
 
 	//BB: How come SparseElimination needs this ?

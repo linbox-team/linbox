@@ -1,4 +1,5 @@
 /* Copyright (C) 2018 The LinBox group
+ *
  * Written by Hongguang Zhu <zhuhongguang2014@gmail.com>
  *
  * ========LICENCE========
@@ -46,19 +47,20 @@ using namespace std;
 
 
 template <class Field, class Matrix, class Vector>
-static bool checkResult (const Field  &ZZ,
+static bool checkResult (const Field  &F,
 			 Matrix &A,
 			 Vector &B,
 			 Vector &X,
-			 Integer &d)
+			 typename Field::Element &d
+			 )
 {
-  Vector B2(ZZ, A.coldim());
-  Vector B3(ZZ, A.coldim());
+  Vector B2(F, A.coldim());
+  Vector B3(F, A.coldim());
   A.apply(B2,X);
   for (size_t j = 0 ; j < B.size() ; ++j) B3.setEntry(j,d*B.getEntry(j));
   
   for (size_t j = 0 ; j < A.coldim() ; ++j)
-    if(!ZZ.areEqual(B2[j],B3[j])){
+    if(!F.areEqual(B2[j],B3[j])){
       std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
       std::cerr << "               The solution of solveCRA is incorrect                " << std::endl;
       std::cerr << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
@@ -69,34 +71,32 @@ static bool checkResult (const Field  &ZZ,
 
 
 template <class Field, class Matrix>
-void genData (const Field  &ZZ, Matrix  &Mat, size_t bits, int seed=0){
+void genData (const Field  &F, Matrix  &Mat, size_t bits, int seed=0){
   typedef typename Field::RandIter RandIter;  
 std::cout << " Test with seed: " << seed << std::endl;
-  RandIter RI(ZZ, bits, seed);
-  LinBox::RandomDenseMatrix<RandIter,Field>  RDM(ZZ,RI);
+  RandIter RI(F, bits, seed);
+  LinBox::RandomDenseMatrix<RandIter,Field>  RDM(F,RI);
   RDM.randomFullRank(Mat);
 
 }
 
 
 template <class Field>
-void genData (const Field  &ZZ, BlasVector<Field>  &Vec, size_t bits, int seed=0){
+void genData (const Field  &F, BlasVector<Field>  &Vec, size_t bits, int seed=0){
   typedef typename Field::RandIter RandIter; 
 
-  RandIter RI(ZZ, bits, seed);
+  RandIter RI(F, bits, seed);
   Vec.random(RI);
 
 }
 
 
-
 template <class Field, class Matrix, class Vector>
-bool test_set(const Field  &ZZ, Vector &X2,
+bool test_set(const Field  &F, Vector &X2,
 	      Matrix &A, Vector &B
 	      ){
   bool tag = false;
-//Givaro::ZRing<Integer> ZZ;
-  Integer d(1);//  Givaro::ZRing<Integer>::Element d;
+  typename Field::Element d;
   std::cout<<"Computation is done over Q"<<std::endl;
   std::cout << "OMP solveCRA" << std::endl;
 
@@ -104,7 +104,7 @@ bool test_set(const Field  &ZZ, Vector &X2,
   /***********************
     Results verification 
   ***********************/
-  RingCategories::IntegerTag tg;
+ typename ClassifyRing<Field>::categoryTag tg;//RingCategories::IntegerTag tg;
   
 
   Timer chrono;
@@ -117,12 +117,12 @@ bool test_set(const Field  &ZZ, Vector &X2,
   
   chrono.stop();
   
-  //  DenseVector B2(ZZ, A.coldim());
+  //  DenseVector B2(F, A.coldim());
   
   
   std::cout << "Real time (seconds): " << chrono.realtime() << std::endl; 
   
-  tag=checkResult (ZZ, A, B, X2, d);
+  tag=checkResult (F, A, B, X2, d);
   
   return tag;
 }
@@ -159,38 +159,43 @@ int main(int argc, char ** argv)
     
   omp_set_num_threads(nt);
  
-  Givaro::ZRing<Integer> ZZ;  
-
-  typedef BlasVector<Givaro::ZRing<Integer> > DenseVector;
-      DenseMatrix<Givaro::ZRing<Integer> > A (ZZ,n,n);
-      DenseVector X(ZZ, A.coldim()), X2(ZZ, A.coldim()),  B(ZZ, A.coldim());
+  Givaro::ZRing<Integer> F;  
+  
+  typedef Givaro::ZRing<Integer> TF;
+  
+  
+  typedef BlasVector<TF> DenseVector;
+  DenseMatrix< TF > A (F,n,n);
+  DenseVector X2(F, A.coldim()),  B(F, A.coldim());
   size_t ni=n;
   size_t bits=bitsize;
-  
+
   for(size_t j=0;loop || j<niter;j++){  
     
     
     std::cout << " Test with dimension: " << ni << " x " << ni << std::endl;
     std::cout << " Test with bitsize: " << bits << std::endl;
-    {
-      DenseMatrix<Givaro::ZRing<Integer> > A (ZZ,ni,ni);
-      DenseVector X(ZZ, A.coldim()), X2(ZZ, A.coldim()),  B(ZZ, A.coldim());
-      if(q<0){
-          genData (ZZ, A, bits, getSeed());
-          genData (ZZ, B, bits, getSeed());
-      }else{
-          genData (ZZ, A, bits, seed);
-          genData (ZZ, B, bits, seed);
-      }
-/*
+
+    A.resize(ni,ni);
+    B.resize(ni,ni);
+    X2.resize(ni);
+    if(q<0){
+        genData (F, A, bits, getSeed());
+        genData (F, B, bits, getSeed());
+
+    }else{
+        genData (F, A, bits, seed);
+        genData (F, B, bits, seed);
+
+    }
+   /*
 	std::cerr << ">>>>Compute with B: " << std::endl;      
 	for(long j=0;j<(long)ni;j++) std::cerr << B.getEntry(j) << std::endl; 
 	
 	A.write(std::cout << ">>>>Compute with A: " << A.rowdim() << " by " << A.coldim() << "\n"<< "A:=",Tag::FileFormat::Maple) << ';' << std::endl;
-*/
+   */
     
-      if(!test_set(ZZ, X2, A, B )) break;
-    }
+   if(!test_set(F, X2, A, B )) break;
 
     if(q<0){
         ni = rand() % n + 1;
@@ -202,7 +207,6 @@ int main(int argc, char ** argv)
 
     peak = !peak;
 
-    
   }
   
   return 0;
