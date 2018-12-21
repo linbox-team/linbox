@@ -39,15 +39,14 @@
 
 namespace LinBox
 {
-
-	// EC: pair(e,c) denotes c repetitions of element e.
-#define EC(Elt) std::pair<typename Elt, size_t>
-	// EC_LIST: list of such pairs, compact form of invariant list.
-#define EC_LIST(Elt) std::list<EC(Elt) > 
+    template <typename PIR>
+    using SmithPair=std::pair<typename PIR::Element,size_t>;
+    template <typename PIR>
+    using SmithList=std::list<SmithPair<PIR>>;
 
 	template<class Ring, class Vector>
-	EC_LIST(Ring::Element) &
-	compressedSmith(EC_LIST(Ring::Element) & c,
+	SmithList<Ring> &
+	compressedSmith(SmithList<Ring> & c,
                     const Vector& SmithDiagonal, const Ring& R,
                     const size_t m, const size_t n)
     {
@@ -56,22 +55,22 @@ namespace LinBox
         for( auto dit : SmithDiagonal ) {
             if (R.areEqual(dit,si)) ++num;
             else {
-                c.push_back(EC(Ring::Element)(si,num));                
+                c.emplace_back(si,num);
                 num=1;
                 R.assign(si,dit);
             }
         }
-        if (num>0) c.push_back(EC(Ring::Element)(si,num));
+        if (num>0) c.emplace_back(si,num);
         num = std::min(m,n) - SmithDiagonal.size();
         R.assign(si,R.zero);
-        if (num>0) c.push_back(EC(Ring::Element)(si,num));
+        if (num>0) c.emplace_back(si,num);
         return c;
     }
 
 	// Convert from vector of invariants (with repeats) to EC_LIST form.
 	template<class Ring>
-	EC_LIST(Ring::Element) & 
-	compressedSmith(EC_LIST(Ring::Element) & c, const BlasVector<Ring>& v)
+	SmithList<Ring> &
+	compressedSmith(SmithList<Ring> & c, const BlasVector<Ring>& v)
 	{
 		typename Ring::Element e;
 		size_t count = 0;
@@ -83,11 +82,11 @@ namespace LinBox
 		{	if (R.areEqual(v[i], e))
 				++count;
 			else
-			{	c.push_back(EC(Ring::Element)(e, count));
+			{	c.emplace_back(e, count);
 				R.assign(e, v[i]); count = 1;
 			}
 		}
-		c.push_back(EC(Ring::Element)(e, count));
+		c.emplace_back(e, count);
 		return c;
 	}
 
@@ -122,8 +121,8 @@ namespace LinBox
 	*/
 
 	template <class Blackbox, class Method>
-	EC_LIST(Blackbox::Field::Element) & 
-	smithForm(EC_LIST(Blackbox::Field::Element) & S,
+	SmithList<typename Blackbox::Field> &
+    smithForm(SmithList<typename Blackbox::Field> & S,
 			  const Blackbox                     & A,
 			  const Method                     & M)
 	{
@@ -131,7 +130,7 @@ namespace LinBox
 		return S;
 	}
 	template <class Blackbox, class Method>
-	BlasVector<typename Blackbox::Field> & 
+	BlasVector<typename Blackbox::Field> &
 	smithForm(BlasVector<typename Blackbox::Field> & V,
 			  const Blackbox                     & A,
 			  const Method                     & M)
@@ -154,15 +153,15 @@ namespace LinBox
 #endif
 	// The smithForm with default Method
 	template<class Blackbox>
-	EC_LIST(Blackbox::Field::Element) & 
-	smithForm(EC_LIST(Blackbox::Field::Element) & S,
+	SmithList<typename Blackbox::Field> &
+	smithForm(SmithList<typename Blackbox::Field> & S,
 			  const Blackbox& A)
 	{
 		smithForm(S, A, Method::Hybrid());
 		return S;
 	}
 	template<class Blackbox>
-	BlasVector<typename Blackbox::Field> & 
+	BlasVector<typename Blackbox::Field> &
 	smithForm(BlasVector<typename Blackbox::Field> & V,
 			  const Blackbox& A)
 	{
@@ -184,8 +183,8 @@ namespace LinBox
 		{	size_t r; rank(r, A);
 			S.resize(0);
 			size_t n = (A.rowdim() > A.coldim() ? A.coldim() : A.rowdim())-r;
-			if (r > 0) S.push_back( std::pair<size_t, integer>(r, 1) );
-			if (n > 0) S.push_back( std::pair<size_t, integer>(n, 0) );
+			if (r > 0) S.emplace_back(r, 1);
+			if (n > 0) S.emplace_back(n, 0);
 		}
 		else
 		{
@@ -221,8 +220,8 @@ namespace LinBox
 	std::list<std::pair<integer, size_t> > &
 	smithForm(std::list<std::pair<integer, size_t> >& S,
 	*/
-	EC_LIST(Givaro::ZRing<Integer>::Element) &
-	smithForm(EC_LIST(Givaro::ZRing<Integer>::Element) & S,
+	SmithList<Givaro::ZRing<Integer>> &
+	smithForm(SmithList<Givaro::ZRing<Integer>> & S,
 		  const BlasMatrix<Givaro::ZRing<Integer> > 	&A,
 		  const RingCategories::IntegerTag      &tag,
 		  const Method::Hybrid			& M)
@@ -257,9 +256,6 @@ namespace LinBox
 		// this will be binary search smith form (EGV')
 	}
 #endif
-
-#undef EC 
-#undef EC_LIST
 
 } // end of LinBox namespace
 #endif // __LINBOX_smith_form_H

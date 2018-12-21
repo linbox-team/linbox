@@ -396,9 +396,9 @@ std::vector<Givaro::Integer>& smithValence(std::vector<Givaro::Integer>& SmithDi
     Givaro::IntFactorDom<> FTD;
     FTD.set(Moduli, exponents, valence, __VALENCE_FACTOR_LOOPS__);
 
-	auto eit=exponents.begin();
     if (__VALENCE_REPORTING__) {
-        for(auto mit: Moduli) std::clog << mit << '^' << *eit << ' ';
+        auto eit=exponents.begin();
+        for(auto const &mit: Moduli) std::clog << mit << '^' << *eit++ << ' ';
         std::clog << std::endl;
     }
 
@@ -461,17 +461,18 @@ std::vector<Givaro::Integer>& smithValence(
 }
 
 
+template<class PIR>
+std::ostream& writeCompressedSmith(
+    std::ostream& out,
+    const std::vector<typename PIR::Element>& SmithDiagonal,
+    const PIR& ZZ,
+    const size_t m, const size_t n) {
+        // Output is a list of pairs (integral value, number of repetitions)
 
-std::ostream& writeCompressedSmith(std::ostream& out,
-                              const std::vector<Givaro::Integer>& SmithDiagonal,
-                              const Givaro::ZRing<Givaro::Integer>& ZZ,
-                              const size_t m, const size_t n) {
-    // Output is a list of pairs (integral value, number of repetitions)
-
-    std::list<PairIntRk> SmithList;
-    compressedSmith(SmithList, SmithDiagonal, ZZ, m, n);
+    SmithList<PIR> tempSL;
+    compressedSmith(tempSL, SmithDiagonal, ZZ, m, n);
     out << '(';
-	for( auto sit : SmithList )
+	for( auto sit : tempSL )
         out << '[' << sit.first << ',' << sit.second << "] ";
 	return out << ')';
 }
