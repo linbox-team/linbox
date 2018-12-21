@@ -46,6 +46,7 @@
 #include <linbox/algorithms/smith-form-sparseelim-local.h>
 #include <linbox/algorithms/smith-form-sparseelim-poweroftwo.h>
 #include <linbox/solutions/rank.h>
+#include <linbox/solutions/smith-form.h>
 #include <recint/rint.h>
 #include <recint/ruint.h>
 #include <linbox/util/commentator.h>
@@ -65,7 +66,7 @@ using namespace LinBox;
  */
 
 template<typename Base>
-bool check_ranks(const std::vector<std::pair<size_t,Base> >& local,
+bool check_ranks(const std::vector<std::pair<Base,size_t> >& local,
                  const std::map<int, size_t>& map_values,
                  const Base& p) {
     bool pass(true);
@@ -73,12 +74,12 @@ bool check_ranks(const std::vector<std::pair<size_t,Base> >& local,
     auto li(local.begin());
     auto mi(map_values.begin());
     for (; li != local.end(); ++li, ++mi) {
-        if ( (li->first != mi->second) ||
-             (li->second != Givaro::power(p,mi->first)) ) {
+        if ( (li->second != mi->second) ||
+             (li->first != Givaro::power(p,mi->first)) ) {
             std::cerr << "*** ERROR *** (" <<
                 li->first << ',' << li->second << ')' 
                       << " ---->---- (" <<
-                mi->second << ',' << mi->first << ')' 
+                mi->first << ',' << mi->second << ')'
                       << std::endl;
             return pass = false;
         }
@@ -95,7 +96,7 @@ bool sparse_local_smith(SparseMat& B,
                         const std::map<int, size_t>& map_values) {
     typedef typename std::remove_reference<decltype(B.field())>::type ModRing;
     PowerGaussDomain< ModRing > PGD( B.field() );
-    std::vector<std::pair<size_t,Base> > local;
+    std::vector<std::pair<Base,size_t> > local;
     Permutation<ModRing> Q(B.field(),B.coldim());
     PGD(local, B, Q, Givaro::power(p,exp), p, PRESERVE_UPPER_MATRIX);
 
@@ -132,7 +133,7 @@ bool sparse_local_smith_poweroftwo(SparseMat& B,
     LinBox::PowerGaussDomainPowerOfTwo< Base > PGD;
     LinBox::GF2 F2;
     Permutation<GF2> Q(F2,B.coldim());
-    std::vector<std::pair<size_t,Base> > local;
+    std::vector<std::pair<Base,size_t> > local;
     PGD(local, B, Q, exp, PRESERVE_UPPER_MATRIX);
 
 	std::ostream &report = commentator().report();
