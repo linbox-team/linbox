@@ -76,6 +76,7 @@ namespace LinBox
             
 			size_t NN;
 #pragma omp parallel
+#pragma omp single
 			NN = omp_get_num_threads();
 
 			// commentator().start ("Parallel OMP Givaro::Modular iteration", "mmcrait");
@@ -94,6 +95,7 @@ namespace LinBox
             
 			size_t NN;
 #pragma omp parallel
+#pragma omp single
 			NN = omp_get_num_threads();
 
 			// commentator().start ("Parallel OMP Givaro::Modular iteration", "mmcrait");
@@ -110,6 +112,7 @@ namespace LinBox
         void para_compute(Function Iteration){
 			size_t NN;
 #pragma omp parallel
+#pragma omp single
 			NN = omp_get_num_threads();
             typedef typename CRATemporaryVectorTrait<Function, Domain>::Type_t ElementContainer;
             std::set<int> coprimeset;
@@ -191,12 +194,13 @@ namespace LinBox
             
 			size_t NN;
 #pragma omp parallel
+#pragma omp single
 			NN = omp_get_num_threads();
             long Niter=std::ceil(1.442695040889*B/(double)(m_primeiters[0].getBits()-1));
-#pragma omp parallel for num_threads(NN)  schedule(dynamic)
+                        
+#pragma omp parallel for num_threads(NN) schedule(dynamic,1)
             for(auto j=0;j<Niter;j++)
                 {
-                    
                     
                     solve_with_prime(m_primeiters, coprimeset, Iteration, ROUNDdomains, ROUNDresidues, vBuilders);
                     
@@ -215,7 +219,7 @@ namespace LinBox
                         coprimeset.insert(*m_primeiters[ omp_get_thread_num()]);
                         
                     }
-                    
+
                 }
             
         }
@@ -227,6 +231,7 @@ namespace LinBox
             
 			size_t NN;
 #pragma omp parallel
+#pragma omp single
 			NN = omp_get_num_threads();
 			// commentator().start ("Parallel OMP Givaro::Modular iteration", "mmcrait");
 			if (NN == 1) return Father_t::operator()(res, den, Iteration,primeiter);
