@@ -131,6 +131,8 @@ namespace LinBox
 			linbox_check(bits >1);
 			generatePrime();
 		}
+
+        uint64_t getBits() const {return _bits;}
 	};
 
     template<>
