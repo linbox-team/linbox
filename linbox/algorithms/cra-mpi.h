@@ -58,11 +58,13 @@ namespace LinBox
 		CRABase Builder_;
 		Communicator* _commPtr;
 		unsigned int _numprocs;
+		double B;//hadamard bound
         
 	public:
 		template<class Param>
 		MPIChineseRemainder(const Param& b, Communicator *c) :
 			Builder_(b), _commPtr(c), _numprocs(c->size())
+			, B(b)//Init with hadamard bound
 		{}
         
 		/** \brief The CRA loop.
@@ -238,19 +240,20 @@ namespace LinBox
             Domain D(*primeg);
             BlasVector<Domain> r(D);
             Timer chrono;
-            
+
 			//  parent propcess
 			if(_commPtr->rank() == 0){
-                
+               
                 master_process_task(Iteration, D, r);
-                
+
 			}
 			//  child process
 			else{
-                
+
                 worker_process_task(Iteration, r);
 
 			}
+
 		}
 		
 	
@@ -267,18 +270,16 @@ namespace LinBox
         template<class Vect, class Function>
         void worker_process_task(Function& Iteration,  Vect &r)
         {
-            
-            int pp;
+           
+            int pp=0;
             LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   gen(_commPtr->rank(),_commPtr->size());
-            //LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag>   gen(_commPtr->rank(),_commPtr->size());            
-            gen.getBits();
+            //LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag>   gen(_commPtr->rank(),_commPtr->size());
             std::unordered_set<int> prime_used;
-            
-            while(true){
-                _commPtr->recv(pp, 0);
-                if(pp == 1)
-                    break;
-                
+
+
+            _commPtr->recv(pp, 0);
+
+            for(long i=0; i<pp; i++){
                 worker_compute(prime_used, gen, Iteration, r);
                 
                 //Add corresponding prime number as the last element in the result vector
@@ -286,7 +287,10 @@ namespace LinBox
                 
                 _commPtr->send(r.begin(), r.end(), 0, 0);
 
-            }
+             }
+
+
+
         }
 
         template<class Vect>
@@ -296,6 +300,7 @@ namespace LinBox
             idle_process = 0;
             
             r.resize (r.size()+1);
+
             //receive the beginnin and end of a vector in heapspace
             _commPtr->recv(r.begin(), r.end(), MPI_ANY_SOURCE, 0);
             
@@ -303,10 +308,10 @@ namespace LinBox
             idle_process = (_commPtr->get_stat()).MPI_SOURCE;
             
             //Update the number of iterations for the next step
-            poison_pills_left-=primes[idle_process - 1];
+            poison_pills_left--;//poison_pills_left-=primes[idle_process - 1];
             
             //send the tag to coresponding worker process to signal either a stop or continuation
-            _commPtr->send(primes[idle_process - 1], idle_process);
+            //_commPtr->send(primes[idle_process - 1], idle_process);//<--------------------- No need
             
             //Store the corresponding prime number
             pp = r[r.size()-1];
@@ -317,12 +322,13 @@ namespace LinBox
             
         }
         template<class Vect>
-        void master_compute(int *primes, Vect &r)
+        void master_compute(int *primes, Vect &r, int Niter)
         {
-            
-            int poison_pills_left = _commPtr->size() - 1;
+
+            int poison_pills_left = Niter;//int poison_pills_left = _commPtr->size() - 1;
             int pp;
             int idle_process = 0;
+
             while(poison_pills_left > 0 ){
                 
                 compute_state_comm(primes, r, pp, idle_process, poison_pills_left);
@@ -331,22 +337,31 @@ namespace LinBox
                 
                 Builder_.progress(D, r);
                 
-                primes[idle_process - 1] = (Builder_.terminated()) ? 1:0;
+                //primes[idle_process - 1] = (Builder_.terminated()) ? 1:0;
 
             }
+
         }
         
         template<class Vect, class Function>
-        void master_init(int *primes, Function& Iteration, Domain &D, Vect &r)
+        void master_init(int *primes, Function& Iteration, Domain &D, Vect &r, int &Niter)
         {
 			int procs = _commPtr->size();
-            
-            //Send a start tag for each worker process
-            for(int i=1; i<procs; i++){
-                primes[i - 1] = 0;
+			//-----------------> could be put into a dubroutine for possible task dispatch with different strategies
+			LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   gen(_commPtr->rank(),_commPtr->size());
+            Niter=std::ceil(1.442695040889*B/(double)(gen.getBits()-1));
+
+            //Compute nb of tasks ought to be realized for each process
+            for(long i=1; i<Niter%(procs-1)+1; i++){
+                primes[i - 1] = Niter/(procs-1)+1;
                 _commPtr->send(primes[i - 1], i);
-                
             }
+            for(long i=Niter%(procs-1)+1; i<procs; i++){
+                primes[i - 1] = Niter/(procs-1);
+                _commPtr->send(primes[i - 1], i);             
+            }
+            //<----------------- could be put into a dubroutine for possible task dispatch with different strategies
+            
             //Initialize the buider and the receiver vector r
             Builder_.initialize( D, Iteration(r, D) );
         }
@@ -355,11 +370,11 @@ namespace LinBox
         void master_process_task(Function& Iteration, Domain &D, Vect &r)
         {
             int primes[_commPtr->size() - 1];
+            int Niter = 0;
+            master_init(primes, Iteration, D, r, Niter);
             
-            master_init(primes, Iteration, D, r);
-            
-            master_compute(primes, r);
-            
+            master_compute(primes, r, Niter);
+   
         }
 
 

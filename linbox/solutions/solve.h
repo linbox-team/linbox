@@ -849,9 +849,30 @@ Integer den(0);
 
 		Vector num(A.field(),A.coldim());
 		IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
-
+/*
         auto rationalSolveHB = RationalSolveHadamardBound(A, b);
         double hadamard = (rationalSolveHB.numBoundBitSize + rationalSolveHB.denBoundBitSize + 1);
+*/
+		typename BB::ConstIterator it = A.Begin();
+		typename BB::ConstIterator it_end = A.End();
+		typename BB::Field::Element max = 1,min=0;
+		while( it != it_end ){
+			if (max < (*it))
+				max = *it;
+			if ( min > (*it))
+				min = *it;
+			it++;
+		}
+		if (max<-min)
+			max=-min;
+        
+        typename Vector::iterator it_b= b.begin();
+        for (; it_b != b.end(); ++it_b) if(*it_b>max) max=*it_b;
+        if (max < 3) max = 3;
+		size_t n=A.coldim();
+        
+		double hadamard = n*(Givaro::naturallog(n)+2*Givaro::naturallog(max));
+
 
 #ifdef __LINBOX_HAVE_MPI
 		MPIChineseRemainder< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(hadamard, C);
