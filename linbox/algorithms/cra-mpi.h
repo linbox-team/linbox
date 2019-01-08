@@ -1,6 +1,6 @@
 /* Copyright (C) 2007 LinBox
- * Written by bds and zw
  * Updated by Hongguang ZHU
+ * Written by bds and zw
  * author: B. David Saunders and Zhendong Wan
  * parallelized for BOINC computing by Bryan Youse
  *
@@ -261,7 +261,7 @@ namespace LinBox
         void worker_compute(std::unordered_set<int>& prime_used, PrimeIterator& gen, Function& Iteration, Vect &r)
         {
             //Process mutual independent prime number generation
-            ++gen; while(Builder_.noncoprime(*gen)||prime_used.find(*gen) != prime_used.end()) ++gen;
+            ++gen; while(Builder_.noncoprime(*gen)/*||prime_used.find(*gen) != prime_used.end()*/) ++gen;
             prime_used.insert(*gen);
             Domain D(*gen);
             Iteration(r, D);
@@ -274,22 +274,23 @@ namespace LinBox
             int pp=0;
             LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   gen(_commPtr->rank(),_commPtr->size());
             //LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag>   gen(_commPtr->rank(),_commPtr->size());
-            std::unordered_set<int> prime_used;
-
 
             _commPtr->recv(pp, 0);
 
-            for(long i=0; i<pp; i++){
-                worker_compute(prime_used, gen, Iteration, r);
-                
-                //Add corresponding prime number as the last element in the result vector
-                r.push_back(*gen);
-                
-                _commPtr->send(r.begin(), r.end(), 0, 0);
+            if(pp!=0){
+                std::unordered_set<int> prime_used;
 
-             }
+                for(long i=0; i<pp; i++){
+                    worker_compute(prime_used, gen, Iteration, r);
+                    
+                    //Add corresponding prime number as the last element in the result vector
+                    r.push_back(*gen);
+                    
+                    _commPtr->send(r.begin(), r.end(), 0, 0);
 
+                 }
 
+            };
 
         }
 
@@ -310,9 +311,7 @@ namespace LinBox
             //Update the number of iterations for the next step
             poison_pills_left--;//poison_pills_left-=primes[idle_process - 1];
             
-            //send the tag to coresponding worker process to signal either a stop or continuation
-            //_commPtr->send(primes[idle_process - 1], idle_process);//<--------------------- No need
-            
+           
             //Store the corresponding prime number
             pp = r[r.size()-1];
             
@@ -347,20 +346,37 @@ namespace LinBox
         void master_init(int *primes, Function& Iteration, Domain &D, Vect &r, int &Niter)
         {
 			int procs = _commPtr->size();
-			//-----------------> could be put into a dubroutine for possible task dispatch with different strategies
+
 			LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   gen(_commPtr->rank(),_commPtr->size());
             Niter=std::ceil(1.442695040889*B/(double)(gen.getBits()-1));
 
             //Compute nb of tasks ought to be realized for each process
-            for(long i=1; i<Niter%(procs-1)+1; i++){
-                primes[i - 1] = Niter/(procs-1)+1;
-                _commPtr->send(primes[i - 1], i);
+
+            if(Niter<(procs-1)){
+
+                for(long i=1; i<Niter+1; i++){
+                    primes[i - 1] = 1;
+                    _commPtr->send(primes[i - 1], i);             
+
+                }
+                for(long i=Niter+1; i<procs; i++){
+                    primes[i - 1] = 0;
+                    _commPtr->send(primes[i - 1], i);
+
+                }
+
+                }else{
+                for(long i=1; i<Niter%(procs-1)+1; i++){
+                    primes[i - 1] = Niter/(procs-1)+1;
+                    _commPtr->send(primes[i - 1], i);
+
+                }
+                for(long i=Niter%(procs-1)+1; i<procs; i++){
+                    primes[i - 1] = Niter/(procs-1);
+                    _commPtr->send(primes[i - 1], i);
+         
+                }
             }
-            for(long i=Niter%(procs-1)+1; i<procs; i++){
-                primes[i - 1] = Niter/(procs-1);
-                _commPtr->send(primes[i - 1], i);             
-            }
-            //<----------------- could be put into a dubroutine for possible task dispatch with different strategies
             
             //Initialize the buider and the receiver vector r
             Builder_.initialize( D, Iteration(r, D) );
