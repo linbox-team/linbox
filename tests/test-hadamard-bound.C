@@ -34,7 +34,7 @@ using namespace LinBox;
 using Field = Givaro::ZRing<Integer>;
 
 template <class TMatrix, class TVector>
-void test_with_matrix_vector(size_t n)
+bool test_with_matrix_vector(size_t n)
 {
     Field F;
     TMatrix A(F, n, n);
@@ -48,20 +48,23 @@ void test_with_matrix_vector(size_t n)
 
     // Compute the bounds
     auto hb = HadamardBound(A);
-    auto fastHB = FastHadamardBound(A);
+    auto fastHb = FastHadamardBound(A);
 
     // Compute the effective determinant
     Integer detA;
     det(detA, A);
 
-    if (fastHB < hb) {
+    std::cout << "det hb fastHb : " << Givaro::logtwo(Givaro::abs(detA)) << " " << hb << " " << fastHb << std::endl;
+
+    if (fastHb < hb) {
         std::cerr << "Fast Hadamard bound is somehow better than the precise one." << std::endl;
-        exit(-1);
+        return false;
     }
 
     if (Givaro::logtwo(Givaro::abs(detA)) > hb) {
         std::cerr << "The Hadamard bound does not bound the determinant." << std::endl;
-        exit(-2);
+        std::cerr << "den: " << Givaro::logtwo(Givaro::abs(detA)) << " > " << hb << std::endl;
+        return false;
     }
 
     // ---- Rational solve
@@ -70,7 +73,7 @@ void test_with_matrix_vector(size_t n)
     b.random();
 
     // Compute the bounds
-    auto rationalSolveHB = RationalSolveHadamardBound(A, b);
+    auto rationalSolveHb = RationalSolveHadamardBound(A, b);
 
     // Compute the effective solution
     TVector num(F, n);
@@ -78,19 +81,21 @@ void test_with_matrix_vector(size_t n)
     solve(num, den, A, b);
 
     for (size_t i = 0u; i < n; ++i) {
-        if (Givaro::logtwo(Givaro::abs(num[i])) > rationalSolveHB.numBoundBitSize) {
+        if (Givaro::logtwo(Givaro::abs(num[i])) > rationalSolveHb.numBoundBitSize) {
             std::cerr << "The rational solve Hadamard bound does not bound the numerator." << std::endl;
-            std::cout << "num[i]: " << Givaro::logtwo(Givaro::abs(num[i])) << " > " << rationalSolveHB.numBoundBitSize
+            std::cerr << "num[i]: " << Givaro::logtwo(Givaro::abs(num[i])) << " > " << rationalSolveHb.numBoundBitSize
                       << std::endl;
-            exit(-3);
+            return false;
         }
     }
 
-    if (Givaro::logtwo(Givaro::abs(den)) > rationalSolveHB.denBoundBitSize) {
+    if (Givaro::logtwo(Givaro::abs(den)) > rationalSolveHb.denBoundBitSize) {
         std::cerr << "The rational solve Hadamard bound does not bound the denominator." << std::endl;
-        std::cout << "den: " << Givaro::logtwo(den) << " > " << rationalSolveHB.denBoundBitSize << std::endl;
-        exit(-4);
+        std::cerr << "den: " << Givaro::logtwo(den) << " > " << rationalSolveHb.denBoundBitSize << std::endl;
+        return false;
     }
+
+    return true;
 }
 
 int main(int argc, char** argv)
@@ -99,26 +104,30 @@ int main(int argc, char** argv)
     int iterations = 1;
     bool loop = false;
 
-    // @fixme seed
-    // @fixme bitsize
-
-    // @fixme print seed on failure
-
-    // @fixme Test rationals
-
     static Argument args[] = {{'n', "-n N", "Set dimension of test objects to NxN.", TYPE_INT, &n},
                               {'i', "-i I", "Perform each test for I iterations.", TYPE_INT, &iterations},
                               {'l', "-l", "Infinite testing.", TYPE_BOOL, &loop},
                               END_OF_ARGUMENTS};
 
+    // @fixme seed
+    // @fixme bitsize
+
+    // @todo Test rational matrices,
+    // and, if so, specialize vectorNormBitSize for it
+
     parseArguments(argc, argv, args);
 
     bool ok = true;
 
-    for (auto i = 0; loop || i < iterations; ++i) {
-        test_with_matrix_vector<BlasMatrix<Field>, BlasVector<Field>>(n);
-        test_with_matrix_vector<SparseMatrix<Field>, BlasVector<Field>>(n); // @fixme SparseVector?
+    for (auto i = 0; ok && (loop || i < iterations); ++i) {
+        ok = ok && test_with_matrix_vector<BlasMatrix<Field>, BlasVector<Field>>(n);
+        ok = ok && test_with_matrix_vector<SparseMatrix<Field>, BlasVector<Field>>(n); // @fixme SparseVector?
     }
+
+    // @fixme print seed on failure
+    // if (!ok) {
+    //     std::cerr << "Failed with seed: " << seed << std::endl;
+    // }
 
     return ok ? 0 : -1;
 }
