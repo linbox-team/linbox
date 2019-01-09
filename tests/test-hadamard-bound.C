@@ -56,7 +56,7 @@ bool test_with_matrix_vector(size_t n)
 
     std::cout << "det hb fastHb : " << Givaro::logtwo(Givaro::abs(detA)) << " " << hb << " " << fastHb << std::endl;
 
-    if (fastHb < hb) {
+    if (fastHb + 1 < hb) {
         std::cerr << "Fast Hadamard bound is somehow better than the precise one." << std::endl;
         return false;
     }

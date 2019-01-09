@@ -231,7 +231,7 @@ namespace LinBox {
         // Find a better way.
         Integer max = 0;
         for (auto it = A.Begin(); it != A.End(); ++it) {
-            Integer ai = *it;
+            const Integer& ai = *it;
             if (max < ai)
                 max = ai;
             else if (max < -ai)
@@ -266,7 +266,7 @@ namespace LinBox {
         auto hadamardBound = DetailedHadamardBound(A);
         size_t bNormBitSize = vectorNormBitSize(b.begin(), b.end());
 
-        data.numBoundBitSize = hadamardBound.boundOnMinNormBitSize + bNormBitSize;
+        data.numBoundBitSize = hadamardBound.boundOnMinNormBitSize + bNormBitSize + 1;
         data.denBoundBitSize = hadamardBound.boundBitSize;
         return data;
     }
