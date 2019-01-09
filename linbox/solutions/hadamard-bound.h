@@ -30,7 +30,7 @@ namespace LinBox {
 
     // ----- Vector norm
 
-    // @fixme Specialize for Rationals
+    // @todo Specialize for Rationals
     template <class ConstIterator>
     size_t vectorNormBitSize(const ConstIterator& begin, const ConstIterator& end)
     {
@@ -40,6 +40,10 @@ namespace LinBox {
             // it should be able to store the square without
             // loss of information.
             norm += (*it) * (*it);
+        }
+
+        if (norm == 0) {
+            return 0;
         }
 
         return std::ceil(Givaro::logtwo(norm) / 2.0);
