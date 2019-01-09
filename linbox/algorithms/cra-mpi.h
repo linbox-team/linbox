@@ -256,7 +256,7 @@ namespace LinBox
 
 		}
 		
-	
+//<----------------------------------------Need to be multithreaded------------------------------------------	
         template<class Vect, class PrimeIterator, class Function>
         void worker_compute(std::unordered_set<int>& prime_used, PrimeIterator& gen, Function& Iteration, Vect &r)
         {
@@ -266,7 +266,103 @@ namespace LinBox
             Domain D(*gen);
             Iteration(r, D);
         }
-        
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#if 0
+			size_t NN = 8*omp_get_max_threads();
+			std::cerr << "Blocs: " << NN << " iterations." << std::endl;
+			// commentator().start ("Parallel OMP Givaro::Modular iteration", "mmcrait");
+			if (omp_get_max_threads() == 1) return Father_t::operator()(res, den,Iteration,primeiter);
+
+			int coprime =0;
+
+			long IterCounter=0;
+
+			if (IterCounter==0) {
+				std::set<Integer> coprimeset;
+				while(coprimeset.size() < NN) {
+					++primeiter;
+					while(this->Builder_.noncoprime(*primeiter) ) {
+						++primeiter;
+						++coprime;
+
+					}
+					coprime =0;
+					coprimeset.insert(*primeiter);
+				}
+				std::vector<Domain> ROUNDdomains; ROUNDdomains.reserve(NN);
+
+				std::vector<DomainElement> ROUNDresidues(NN);
+//				typename std::vector<DomainElement>::iterator resit=ROUNDresidues.begin();
+
+				for(std::set<Integer>::const_iterator coprimesetiter = coprimeset.begin(); coprimesetiter != coprimeset.end(); ++coprimesetiter) {
+
+					ROUNDdomains.push_back( Domain(*coprimesetiter) );
+				}
+
+
+Iteration(ROUNDresidues[0], ROUNDdomains[0]);
+				++IterCounter;
+				this->Builder_.initialize( ROUNDdomains[0],ROUNDresidues[0]);
+#pragma omp parallel for schedule(dynamic)
+				for(size_t i=1;i<NN;++i) {
+
+					Iteration(ROUNDresidues[i], ROUNDdomains[i]);
+//					++IterCounter;
+#pragma omp critical(ROUNDresidues)
+					this->Builder_.progress( ROUNDdomains[i],ROUNDresidues[i]);
+				}
+
+				// commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
+			}
+
+
+
+			while( ! this->Builder_.terminated() ) {
+
+				std::set<Integer> coprimeset;
+				while(coprimeset.size() < NN) {
+					++primeiter;
+					while(this->Builder_.noncoprime(*primeiter) ) {
+						++primeiter;
+						++coprime;
+					}
+
+					coprime = 0;
+					coprimeset.insert(*primeiter);
+				}
+
+				std::vector<Domain> ROUNDdomains; ROUNDdomains.reserve(NN);
+				std::vector<DomainElement> ROUNDresidues(NN);
+//				typename std::vector<DomainElement>::iterator resit=ROUNDresidues.begin();
+
+				for(std::set<Integer>::const_iterator coprimesetiter = coprimeset.begin(); coprimesetiter != coprimeset.end(); ++coprimesetiter) {
+
+					ROUNDdomains.push_back( Domain(*coprimesetiter) );
+
+				}
+
+
+
+#pragma omp parallel for schedule(dynamic)
+		 		for(size_t i=0;i<NN;++i) {
+
+					Iteration(ROUNDresidues[i], ROUNDdomains[i]);
+
+#pragma omp critical(ROUNDresidues)
+					this->Builder_.progress( ROUNDdomains[i],ROUNDresidues[i]);
+
+
+				}
+
+
+
+
+
+
+
+			}
+#endif
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         template<class Vect, class Function>
         void worker_process_task(Function& Iteration,  Vect &r)
         {
@@ -293,6 +389,7 @@ namespace LinBox
             };
 
         }
+//----------------------------------------Need to be multithreaded------------------------------------------>
 
         template<class Vect>
         void compute_state_comm(int *primes, Vect &r, int &pp, int &idle_process, int &poison_pills_left)
