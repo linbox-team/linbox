@@ -267,102 +267,49 @@ namespace LinBox
             Iteration(r, D);
         }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#if 0
-			size_t NN = 8*omp_get_max_threads();
-			std::cerr << "Blocs: " << NN << " iterations." << std::endl;
-			// commentator().start ("Parallel OMP Givaro::Modular iteration", "mmcrait");
-			if (omp_get_max_threads() == 1) return Father_t::operator()(res, den,Iteration,primeiter);
+        
+        template< class Function, class PrimeIterator, class Domain, class ElementContainer>
+        void solve_with_prime(std::vector<PrimeIterator>& m_primeiters, std::set<int>& coprimeset,
+                              Function& Iteration, std::vector<Domain>& ROUNDdomains,
+                              std::vector<ElementContainer>& ROUNDresidues, 
+                              std::vector<CRABase>& vBuilders)
+        {
+            
+            ++m_primeiters[ omp_get_thread_num()];
 
-			int coprime =0;
+            while(vBuilders[ omp_get_thread_num()].noncoprime(*m_primeiters[ omp_get_thread_num()]) )
+                ++m_primeiters[ omp_get_thread_num()];
 
-			long IterCounter=0;
+            
+            ROUNDdomains[ omp_get_thread_num()] = Domain(*m_primeiters[ omp_get_thread_num()]);
+            
+            Iteration(ROUNDresidues[ omp_get_thread_num()], ROUNDdomains[ omp_get_thread_num()]);
+ std::cout<<" Worker("<<_commPtr->rank()<<") is inserting "<< *m_primeiters[ omp_get_thread_num()] << std::endl;
+            ROUNDresidues[ omp_get_thread_num()].push_back(*m_primeiters[ omp_get_thread_num()]);//<------------------------
+            
+        }
+        
+        
+        template<class pFunc, class Function, class PrimeIterator, class Domain, class ElementContainer>
+        void compute_task(pFunc& pF, std::vector<PrimeIterator>& m_primeiters, std::set<int>& coprimeset,
+                          Function& Iteration, std::vector<Domain>& ROUNDdomains,
+                          std::vector<ElementContainer>& ROUNDresidues, std::vector<CRABase>& vBuilders, size_t Niter)
+        {
+            
+			size_t NN = Niter;//<=================Later modif required-------------
+std::cout<<" Worker("<<_commPtr->rank()<<") found "<<omp_get_num_procs()<<" cores"<< std::endl;
+                        
+//#pragma omp parallel for num_threads(NN) schedule(dynamic,1)
+            for(auto j=0;j<Niter;j++)
+                {
+  
+                    solve_with_prime(m_primeiters, coprimeset, Iteration, ROUNDdomains, ROUNDresidues, vBuilders);
+ 
+                }
+            
+        }
 
-			if (IterCounter==0) {
-				std::set<Integer> coprimeset;
-				while(coprimeset.size() < NN) {
-					++primeiter;
-					while(this->Builder_.noncoprime(*primeiter) ) {
-						++primeiter;
-						++coprime;
-
-					}
-					coprime =0;
-					coprimeset.insert(*primeiter);
-				}
-				std::vector<Domain> ROUNDdomains; ROUNDdomains.reserve(NN);
-
-				std::vector<DomainElement> ROUNDresidues(NN);
-//				typename std::vector<DomainElement>::iterator resit=ROUNDresidues.begin();
-
-				for(std::set<Integer>::const_iterator coprimesetiter = coprimeset.begin(); coprimesetiter != coprimeset.end(); ++coprimesetiter) {
-
-					ROUNDdomains.push_back( Domain(*coprimesetiter) );
-				}
-
-
-Iteration(ROUNDresidues[0], ROUNDdomains[0]);
-				++IterCounter;
-				this->Builder_.initialize( ROUNDdomains[0],ROUNDresidues[0]);
-#pragma omp parallel for schedule(dynamic)
-				for(size_t i=1;i<NN;++i) {
-
-					Iteration(ROUNDresidues[i], ROUNDdomains[i]);
-//					++IterCounter;
-#pragma omp critical(ROUNDresidues)
-					this->Builder_.progress( ROUNDdomains[i],ROUNDresidues[i]);
-				}
-
-				// commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
-			}
-
-
-
-			while( ! this->Builder_.terminated() ) {
-
-				std::set<Integer> coprimeset;
-				while(coprimeset.size() < NN) {
-					++primeiter;
-					while(this->Builder_.noncoprime(*primeiter) ) {
-						++primeiter;
-						++coprime;
-					}
-
-					coprime = 0;
-					coprimeset.insert(*primeiter);
-				}
-
-				std::vector<Domain> ROUNDdomains; ROUNDdomains.reserve(NN);
-				std::vector<DomainElement> ROUNDresidues(NN);
-//				typename std::vector<DomainElement>::iterator resit=ROUNDresidues.begin();
-
-				for(std::set<Integer>::const_iterator coprimesetiter = coprimeset.begin(); coprimesetiter != coprimeset.end(); ++coprimesetiter) {
-
-					ROUNDdomains.push_back( Domain(*coprimesetiter) );
-
-				}
-
-
-
-#pragma omp parallel for schedule(dynamic)
-		 		for(size_t i=0;i<NN;++i) {
-
-					Iteration(ROUNDresidues[i], ROUNDdomains[i]);
-
-#pragma omp critical(ROUNDresidues)
-					this->Builder_.progress( ROUNDdomains[i],ROUNDresidues[i]);
-
-
-				}
-
-
-
-
-
-
-
-			}
-#endif
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         template<class Vect, class Function>
         void worker_process_task(Function& Iteration,  Vect &r)
         {
@@ -375,18 +322,53 @@ Iteration(ROUNDresidues[0], ROUNDdomains[0]);
 
             if(pp!=0){
                 std::unordered_set<int> prime_used;
+std::cout<<" Worker("<<_commPtr->rank()<<") received Niter:="<<pp<< std::endl;
+//<------------------------------could be replaced with OpenMP impl---------------------------
+#if 1 //===============================En cours=================================
+			size_t NN = pp;//<=================Later modif required-------------
+            
+            std::set<int> coprimeset;
+            std::vector<BlasVector<Domain>> ROUNDresidues;ROUNDresidues.resize(NN);
+            std::vector<Domain> ROUNDdomains;ROUNDdomains.resize(NN);
+            std::vector<LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>> m_primeiters;
+            std::vector<CRABase> vBuilders;vBuilders.resize(NN);
+            
+            for(auto j=0u;j<NN;j++){
+                LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag> m_primeiter( j, NN);
+                
+                CRABase Builder_(HB);vBuilders.push_back(Builder_);
+                
+                m_primeiters.push_back(m_primeiter);
+                
+            }
+          
+            compute_task( (this->Builder_), m_primeiters, coprimeset, Iteration,  ROUNDdomains,
+                          ROUNDresidues, vBuilders, pp);	
 
+
+                for(long i=0; i<pp; i++){
+  
+std::cout<<" #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> " << std::endl; 
+//std::cout<<" Worker("<<_commPtr->rank()<<") is sending "<<ROUNDresidues[i][ROUNDresidues[i].size()-1]<<" to Proc(0)"<< std::endl;
+std::cout<<" >>>>>>>>>>>>> i:="<<i <<"  and sending r:="<< ROUNDresidues[i] << std::endl;
+
+                    _commPtr->send(ROUNDresidues[i].begin(), ROUNDresidues[i].end(), 0, 0);
+std::cout<<" #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< " << std::endl;
+                 }
+#else //===============================Defualt=================================
                 for(long i=0; i<pp; i++){
                     worker_compute(prime_used, gen, Iteration, r);
                     
                     //Add corresponding prime number as the last element in the result vector
                     r.push_back(*gen);
-                    
+
                     _commPtr->send(r.begin(), r.end(), 0, 0);
 
                  }
+#endif
+//------------------------------could be replaced with OpenMP impl--------------------------->
 
-            };
+            };std::cout<<" Worker("<<_commPtr->rank()<<") Finished !!!!! "<< std::endl;
 
         }
 //----------------------------------------Need to be multithreaded------------------------------------------>
@@ -398,10 +380,10 @@ Iteration(ROUNDresidues[0], ROUNDdomains[0]);
             idle_process = 0;
             
             r.resize (r.size()+1);
-
+std::cout<<" >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> " << std::endl;
             //receive the beginnin and end of a vector in heapspace
             _commPtr->recv(r.begin(), r.end(), MPI_ANY_SOURCE, 0);
-            
+std::cout<<" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< " << std::endl;            
             //Dind out which process sent the solution and the coresponding prime number
             idle_process = (_commPtr->get_stat()).MPI_SOURCE;
             
@@ -411,7 +393,7 @@ Iteration(ROUNDresidues[0], ROUNDdomains[0]);
            
             //Store the corresponding prime number
             pp = r[r.size()-1];
-            
+std::cout<<" Proc(0) received "<< pp << std::endl;
             //Restructure the vector without added prime number
             r.resize (r.size()-1);
             
@@ -426,9 +408,9 @@ Iteration(ROUNDresidues[0], ROUNDdomains[0]);
             int idle_process = 0;
 
             while(poison_pills_left > 0 ){
-                
+               
                 compute_state_comm(primes, r, pp, idle_process, poison_pills_left);
-                
+
                 Domain D(pp);
                 
                 Builder_.progress(D, r);
@@ -446,7 +428,7 @@ Iteration(ROUNDresidues[0], ROUNDdomains[0]);
 
 			LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   gen(_commPtr->rank(),_commPtr->size());
             Niter=std::ceil(1.442695040889*HB/(double)(gen.getBits()-1));
-
+std::cout<<" >>>>>>>>>>>>> Niter:="<< Niter << std::endl;
             //Compute nb of tasks ought to be realized for each process
 
             if(Niter<(procs-1)){
