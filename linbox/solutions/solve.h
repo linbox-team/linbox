@@ -849,10 +849,7 @@ Integer den(0);
 
 		Vector num(A.field(),A.coldim());
 		IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
-/*
-        auto rationalSolveHB = RationalSolveHadamardBound(A, b);
-        double hadamard = (rationalSolveHB.numBoundBitSize + rationalSolveHB.denBoundBitSize + 1);
-*/
+
 		typename BB::ConstIterator it = A.Begin();
 		typename BB::ConstIterator it_end = A.End();
 		typename BB::Field::Element max = 1,min=0;

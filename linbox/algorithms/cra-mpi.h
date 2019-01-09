@@ -58,13 +58,13 @@ namespace LinBox
 		CRABase Builder_;
 		Communicator* _commPtr;
 		unsigned int _numprocs;
-		double B;//hadamard bound
+		double HB;//hadamard bound
         
 	public:
 		template<class Param>
 		MPIChineseRemainder(const Param& b, Communicator *c) :
 			Builder_(b), _commPtr(c), _numprocs(c->size())
-			, B(b)//Init with hadamard bound
+			, HB(b)//Init with hadamard bound
 		{}
         
 		/** \brief The CRA loop.
@@ -348,7 +348,7 @@ namespace LinBox
 			int procs = _commPtr->size();
 
 			LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   gen(_commPtr->rank(),_commPtr->size());
-            Niter=std::ceil(1.442695040889*B/(double)(gen.getBits()-1));
+            Niter=std::ceil(1.442695040889*HB/(double)(gen.getBits()-1));
 
             //Compute nb of tasks ought to be realized for each process
 

@@ -162,7 +162,7 @@ namespace LinBox
 			 * /usr/lib/gcc/x86_64-linux-gnu/4.6/include/omp.h:64:12: note:   ‘Givaro::omp_get_max_threads’
 			 */
 			size_t NN = omp_get_max_threads();
-			//std::cerr << "Blocs: " << NN << " iterations." << std::endl;
+
 			// commentator().start ("Parallel OMP Givaro::Modular iteration", "mmcrait");
 			if (NN == 1) return Father_t::operator()(res,Iteration,primeiter);
 
@@ -338,18 +338,10 @@ Iteration(ROUNDresidues[0], ROUNDdomains[0]);
 		 		for(size_t i=0;i<NN;++i) {
 
 					Iteration(ROUNDresidues[i], ROUNDdomains[i]);
-					//++IterCounter;
-/*
-if(omp_in_parallel())  std::cerr << "Thread("<<omp_get_thread_num()<<")Begin parallel executing >>>>>>>>>>> ("<<i<<")"<< std::endl;
-else std::cerr << "Thread("<<omp_get_thread_num()<<") >>>>>>>>>>> ("<<i<<")"<< std::endl;
-*/
+
 #pragma omp critical(ROUNDresidues)
 					this->Builder_.progress( ROUNDdomains[i],ROUNDresidues[i]);
 
-/*
-if(omp_in_parallel())  std::cerr << "Thread("<<omp_get_thread_num()<<")end parallel executing <<<<<<<<<<<<< ("<<i<<")"<< std::endl;
-else std::cerr << "Thread("<<omp_get_thread_num()<<") <<<<<<<<<<<<< ("<<i<<")"<< std::endl;
-*/
 
 				}
 
