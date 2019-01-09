@@ -401,8 +401,10 @@ namespace LinBox
             while(poison_pills_left > 0 ){
 
                 compute_message_comm(primes, r, pp, idle_process, poison_pills_left);
+
                 if(!Builder_.terminated()){
                     Domain D(pp);
+
                 
                     Builder_.progress(D, r);
                 }

@@ -109,6 +109,7 @@ void genData (const Field  &ZZ, BlasVector<Field>  &Vec, size_t bits, int q){
   RandIter RI(ZZ, bits, q);
   Vec.random(RI);
   }
+
 }
 
 
