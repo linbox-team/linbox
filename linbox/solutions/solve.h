@@ -50,6 +50,8 @@
 #ifdef __LINBOX_HAVE_MPI
 #include "linbox/algorithms/cra-mpi.h"
 #endif
+#include "linbox/solutions/hadamard-bound.h"
+
 #include "linbox/algorithms/rational-cra2.h"
 
 #include "linbox/algorithms/varprec-cra-early-multip.h"
@@ -292,12 +294,12 @@ namespace LinBox
 
 //		commentator().start ("Solving linear system (FFLAS LQUP)", "LQUP::left_solve");
 		//bool consistent = false;
-//std::cerr<<"Thread("<<omp_get_thread_num()<<") >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "<<std::endl;
+
 		LQUPMatrix<Field> LQUP(A);
 		//FactorizedMatrix<Field> LQUP(A);
 
 		LQUP.left_solve(x, b);
-//std::cerr<<"Thread("<<omp_get_thread_num()<<") <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< "<<std::endl;
+
 
 #if 0
 		// this should be implemented directly in left_solve
@@ -306,6 +308,24 @@ namespace LinBox
 				*i = A.field().zero;
 		}
 #endif
+//		commentator().stop ("done", NULL, "LQUP::left_solve");
+
+		return x;
+	}
+
+    //! @internal  Elimination for DenseMatrix on Z/pZ. Matrix A can be overwritten.
+	template <class Vector, class Field>
+	Vector& solvein(Vector& x, BlasMatrix<Field>& A, const Vector& b,
+		      const Method::BlasElimination& m)
+	{
+
+		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
+			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
+
+//		commentator().start ("Solving linear system (FFLAS LQUP)", "LQUP::left_solve");
+		LQUPMatrix<Field> LQUP(A);
+
+		LQUP.left_solve(x, b);
 //		commentator().stop ("done", NULL, "LQUP::left_solve");
 
 		return x;
@@ -645,7 +665,7 @@ namespace LinBox
 		RationalSolver<Ring, Field, PrimeIterator<IteratorCategories::HeuristicTag>, SparseEliminationTraits> rsolve(A.field(), genprime);
 		SolverReturnStatus status = SS_OK;
 		status=rsolve.solve(x, d, A, b,(int)m.maxTries());
- 
+
 		commentator().stop("done", NULL, "solving");
 
 		if ( status == SS_INCONSISTENT ) {
@@ -756,19 +776,14 @@ namespace LinBox
 
 
 		template<typename Field>
-		typename Rebind<Vector, Field>::other& operator()(typename Rebind<Vector, Field>::other& x, const Field& F
-#ifdef __Detailed_Time_Measurement
-#ifdef __LINBOX_HAVE_MPI
-			,Communicator   *C = NULL
-#endif
-#endif
-		) const
+		typename Rebind<Vector, Field>::other& operator()(typename Rebind<Vector, Field>::other& x, const Field& F) const
 		{
 			typedef typename Blackbox::template rebind<Field>::other FBlackbox;
 #ifdef __Detailed_Time_Measurement
             Timer chrono;
             chrono.start();
 #endif
+
 			FBlackbox Ap(A, F);
 
 			typedef typename Rebind<Vector, Field>::other FVector;
@@ -781,13 +796,13 @@ namespace LinBox
 #endif
             " Modulo "<<chrono.usertime()<<std::endl;
 #endif
-
 			VectorWrapper::ensureDim (x, A.coldim());
-			//return solve( x, Ap, Bp, M);
 #ifdef __Detailed_Time_Measurement
             chrono.start();
 #endif
-			solve( x, Ap, Bp, M);
+
+			solvein( x, Ap, Bp, M);
+
 #ifdef __Detailed_Time_Measurement
             chrono.stop();
             std::cout<< 
@@ -801,6 +816,7 @@ namespace LinBox
 	};
 
 
+
 	//BB: How come I have to change the name so it works when directly called ?
 	template <class Vector, class BB, class MyMethod>
 	Vector& solveCRA(Vector& x, typename BB::Field::Element& d, const BB& A, const Vector& b,
@@ -811,30 +827,34 @@ namespace LinBox
 #endif
 			)
 	{
-		Integer den(1);
-#ifdef __LINBOX_HAVE_MPI	//MPI parallel version
+
+Integer den(0);
+
+#ifdef __LINBOX_HAVE_MPI
 		if(!C || C->rank() == 0){
-#endif 
+#endif
 			if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
 				throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
-                        commentator().start ("Integer CRA Solve", "Isolve");
+
+            commentator().start ("Integer CRA Solve", "Isolve");
+
 #ifdef __LINBOX_HAVE_MPI
 		}
-#endif   
 
-//LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   genprime(C->rank(),C->size(),(unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205))); -----> BUG to use this for computation
-PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
 
-//		PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205))); //RandomPrimeIterator genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
+#endif
+
+
+		PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205))); //RandomPrimeIterator genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
 //PrimeIterator<LinBox::IteratorCategories::DeterministicTag> genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
 
+		Vector num(A.field(),A.coldim());
 
-		BlasVector<Givaro::ZRing<Integer>> num(A.field(),A.coldim());
 		IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 		typename BB::ConstIterator it = A.Begin();
 		typename BB::ConstIterator it_end = A.End();
-		integer max = 1,min=0;
+		typename BB::Field::Element max = 1,min=0;
 		while( it != it_end ){
 			if (max < (*it))
 				max = *it;
@@ -844,55 +864,68 @@ PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime((unsigned int)(
 		}
 		if (max<-min)
 			max=-min;
+        
+        typename Vector::iterator it_b= b.begin();
+        for (; it_b != b.end(); ++it_b) if(*it_b>max) max=*it_b;
+        if (max < 3) max = 3;
 		size_t n=A.coldim();
-		double hadamard = n*(Givaro::naturallog(n)+2*Givaro::naturallog(max));//double hadamard = n*(log(double(n))+2*log(double(max)));
-//std::cout << " >>>>>>>>>>>>>>>> Hadamard:= " << hadamard << std::endl;
+
+        
+		double hadamard = n*(Givaro::naturallog(n)+2*Givaro::naturallog(max));
 
 
 
 #ifdef __LINBOX_HAVE_MPI
-//		MPIratChineseRemainder< EarlyMultipRatCRA< Givaro::ModularBalanced<double> > > cra(3UL, C);
-		MPIratChineseRemainder< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(hadamard, C);
-//		MPIratChineseRemainder< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(3UL, C);
+		MPIChineseRemainder< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(hadamard, C);
 #else
-
-std::cerr << "Sequential solveCRA" << std::endl;
-//        RationalRemainder< EarlyMultipRatCRA< Givaro::ModularBalanced<double> > > cra(3UL);
+        std::cerr << "Sequential solveCRA" << std::endl;
         RationalRemainder< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(hadamard);
 //        RationalRemainder< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(3UL);
 #endif
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//        Timer chrono;
-//        chrono.start();
-		cra(num, den, iteration, genprime); //Repalce genprime with the masked one then every process will have its own generator
+
+#ifdef __Detailed_Time_Measurement
+        Timer chrono;
+        chrono.start();
+#endif
+
+		cra(num, den, iteration, genprime); 
+
+#ifdef __Detailed_Time_Measurement
 #ifdef __LINBOX_HAVE_MPI
-//        chrono.stop();//std::cout << "The process ("<<C->rank()<<") spent total CPU time (seconds) in solveCRA: " << chrono.usertime() << std::endl;
+        chrono.stop();
+        std::cout << "The process ("<<C->rank()<<") spent total CPU time (seconds) in solveCRA: " << chrono.usertime() << std::endl;
+
 #else
- //       chrono.stop();//std::cout << "Spent CPU time (seconds) in solveCRA: " << chrono.usertime() << std::endl;
+        chrono.stop();
+        std::cout << "Spent CPU time (seconds) in solveCRA: " << chrono.usertime() << std::endl;
+#endif
 #endif
 
 #ifdef __LINBOX_HAVE_MPI
-		if(!C || C->rank() == 0){ 
-#endif 
+		if(!C || C->rank() == 0){
+#endif
+
             typename Vector::iterator it_x= x.begin();
             typename BlasVector<Givaro::ZRing<Integer>>::const_iterator it_num= num.begin();
-            
+
             // convert the result
             for (; it_x != x.end(); ++it_x, ++it_num)
-                A.field().init(*it_x, *it_num);	
-            
+                A.field().init(*it_x, *it_num);
+
 			A.field().init(d, den);
-            
+
 			commentator().stop ("done", NULL, "Isolve");
+
+			
 #ifdef __LINBOX_HAVE_MPI
 		}
 #endif
-		return x;
- 
+
+        return x;
+
 	}
-    
-    
-    
+
+
 
 
 	//BB: How come SparseElimination needs this ?
@@ -902,8 +935,8 @@ std::cerr << "Sequential solveCRA" << std::endl;
 		      const RingCategories::IntegerTag & tag,
 		      const MyMethod& M)
 	{
-                Method::Dixon mDixon(M);
-                return solve(x,d,A,b,tag,mDixon);
+          Method::Dixon mDixon(M);
+          return solve(x,d,A,b,tag,mDixon);
 		//return solveCRA(x,d,A,b,tag,M);
 	}
 
@@ -1100,7 +1133,7 @@ std::cerr << "Sequential solveCRA" << std::endl;
             ++it_x;
 		}
 		commentator().stop ("done", NULL, "Rsolve");
- 
+
 		return x;
 	}
 

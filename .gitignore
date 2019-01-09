@@ -21,6 +21,7 @@ tests/test-rank-md
 tests/test-rank-u32
 tests/test-rational-solver
 tests/test-rational-solver-adaptive
+tests/test-serialization
 tests/test-smith-form-binary
 tests/test-solve
 tests/test-solveCRA
@@ -44,6 +45,7 @@ tests/checker
 tests/checker.dSYM/
 tests/temp2
 
+.vscode/
 INSTALL
 _configs.sed
 aclocal.m4
@@ -78,6 +80,7 @@ examples/benchmatpolymult
 examples/benchfft
 examples/polysmith
 benchmarks/benchmark-solveCRA
+benchmarks/benchmark-mpi-solveCRA
 benchmarks/benchmark-example
 libtool
 linbox-config

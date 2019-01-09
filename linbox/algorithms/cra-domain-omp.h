@@ -32,8 +32,12 @@
 
 #ifndef __LINBOX_omp_cra_H
 #define __LINBOX_omp_cra_H
+
 // commentator is not thread safe
+#ifndef DISABLE_COMMENTATOR
 #define DISABLE_COMMENTATOR
+#endif
+
 #include <omp.h>
 #include <set>
 #include "linbox/algorithms/cra-domain-seq.h"
@@ -158,7 +162,7 @@ namespace LinBox
 			 * /usr/lib/gcc/x86_64-linux-gnu/4.6/include/omp.h:64:12: note:   ‘Givaro::omp_get_max_threads’
 			 */
 			size_t NN = omp_get_max_threads();
-			//std::cerr << "Blocs: " << NN << " iterations." << std::endl;
+
 			// commentator().start ("Parallel OMP Givaro::Modular iteration", "mmcrait");
 			if (NN == 1) return Father_t::operator()(res,Iteration,primeiter);
 
@@ -231,7 +235,7 @@ namespace LinBox
 					ROUNDdomains.back().init( *resit );
 				}
 
-#pragma omp parallel for 
+#pragma omp parallel for
 				for(size_t i=0;i<NN;++i) {
 
 //#pragma omp critical
@@ -278,7 +282,7 @@ namespace LinBox
 				}
 				std::vector<Domain> ROUNDdomains; ROUNDdomains.reserve(NN);
 
-				std::vector<DomainElement> ROUNDresidues(NN); 
+				std::vector<DomainElement> ROUNDresidues(NN);
 //				typename std::vector<DomainElement>::iterator resit=ROUNDresidues.begin();
 
 				for(std::set<Integer>::const_iterator coprimesetiter = coprimeset.begin(); coprimesetiter != coprimeset.end(); ++coprimesetiter) {
@@ -319,7 +323,7 @@ Iteration(ROUNDresidues[0], ROUNDdomains[0]);
 				}
 
 				std::vector<Domain> ROUNDdomains; ROUNDdomains.reserve(NN);
-				std::vector<DomainElement> ROUNDresidues(NN); 
+				std::vector<DomainElement> ROUNDresidues(NN);
 //				typename std::vector<DomainElement>::iterator resit=ROUNDresidues.begin();
 
 				for(std::set<Integer>::const_iterator coprimesetiter = coprimeset.begin(); coprimesetiter != coprimeset.end(); ++coprimesetiter) {
@@ -334,18 +338,10 @@ Iteration(ROUNDresidues[0], ROUNDdomains[0]);
 		 		for(size_t i=0;i<NN;++i) {
 
 					Iteration(ROUNDresidues[i], ROUNDdomains[i]);
-					//++IterCounter;
-/*
-if(omp_in_parallel())  std::cerr << "Thread("<<omp_get_thread_num()<<")Begin parallel executing >>>>>>>>>>> ("<<i<<")"<< std::endl;
-else std::cerr << "Thread("<<omp_get_thread_num()<<") >>>>>>>>>>> ("<<i<<")"<< std::endl;
-*/
+
 #pragma omp critical(ROUNDresidues)
 					this->Builder_.progress( ROUNDdomains[i],ROUNDresidues[i]);
 
-/*
-if(omp_in_parallel())  std::cerr << "Thread("<<omp_get_thread_num()<<")end parallel executing <<<<<<<<<<<<< ("<<i<<")"<< std::endl;
-else std::cerr << "Thread("<<omp_get_thread_num()<<") <<<<<<<<<<<<< ("<<i<<")"<< std::endl;
-*/
 
 				}
 
@@ -443,7 +439,7 @@ else std::cerr << "Thread("<<omp_get_thread_num()<<") <<<<<<<<<<<<< ("<<i<<")"<<
 
 
 
- 
+
 
 
 

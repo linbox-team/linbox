@@ -48,29 +48,31 @@ namespace LinBox
         template <class Vect>
 		Vect& result (Vect &num, Integer& den)
 		{
+
             Father_t::result(num, false);
-            
+
 #ifdef __Detailed_Time_Measurement
             Timer chrono;
             chrono.start();
 #endif
-            den = 1;
+
             const auto& mod = Father_t::getModulus();
             Integer s, nd;
             _ZZ.sqrt(s, mod);
             for (auto num_it = num.begin(); num_it != num.end(); ++num_it) {
                 iterativeratrecon(*num_it, nd, den, mod, s);
-
                 if (nd > 1) {
                     for (auto t02 = num.begin(); t02 != num_it; ++t02)
                         *t02 *= nd;
                     den *= nd;
                 }
             }
+
 #ifdef __Detailed_Time_Measurement
 		    chrono.stop();
             std::cout<<"Process 0 RR "<<chrono.usertime()<<std::endl;
 #endif
+
             return num;
         }
 
