@@ -295,7 +295,7 @@ void update_input(BlasMatrix<Field>& A, BlasVector<Field>& B, BlasVector<Field>&
 }
 /////////////////////////////////////////////////////
 
-void get_input_param_ready(int& seed, int& q, size_t& n, size_t& ni, size_t& bits, size_t& bitsize, bool& peak, bool& loop
+void get_input_param_ready(int& seed, int& q, size_t& n, size_t& ni, size_t& bits, size_t& bitsize, bool& peak, bool& loop, size_t& nt
 #ifdef __LINBOX_HAVE_MPI
 			   , Communicator *Cptr
 #endif
@@ -306,6 +306,7 @@ void get_input_param_ready(int& seed, int& q, size_t& n, size_t& ni, size_t& bit
   MPI_Bcast(&bitsize, 1, MPI_INT, 0, MPI_COMM_WORLD);
   MPI_Bcast(&seed, 1, MPI_INT, 0, MPI_COMM_WORLD);
   MPI_Bcast(&q, 1, MPI_INT, 0, MPI_COMM_WORLD);
+  MPI_Bcast(&nt, 1, MPI_INT, 0, MPI_COMM_WORLD);
 #endif
   
   
@@ -347,6 +348,7 @@ int main(int argc, char ** argv)
   size_t bitsize=10;
   size_t niter=1;
   size_t ni=1;
+  size_t nt=1;
   
   size_t n=1;
   int q=-1;
@@ -362,6 +364,7 @@ int main(int argc, char ** argv)
     { 'q', "-q Q", "Set the randomness of test (<0 for random and >0 for derterministic).",    TYPE_INT , &q },
     { 'l', "-loop Y/N", "Set if run the test in an infinite loop.", TYPE_BOOL , &loop },
     { 's', "-s S", "Set the seed to fill the input matrices.", TYPE_INT,     &seed },
+    { 't', "-t T", "Set the number of threads per process.", TYPE_INT,     &nt },
     END_OF_ARGUMENTS
   };	
   parseArguments (argc, argv, args); 
@@ -371,7 +374,7 @@ int main(int argc, char ** argv)
   typedef BlasVector<Givaro::ZRing<Integer> > DenseVector;
   
   
-  get_input_param_ready(seed,  q,  n,  ni,  bits,  bitsize,  peak, loop
+  get_input_param_ready(seed,  q,  n,  ni,  bits,  bitsize,  peak, loop, nt
 #ifdef __LINBOX_HAVE_MPI
 			,  Cptr
 #endif
@@ -392,7 +395,7 @@ int main(int argc, char ** argv)
 #endif
 		 );
     
-
+    omp_set_num_threads(nt);
     if(!test_with_field<Givaro::ZRing<Integer>>(X2, A, B, bits
 
 #ifdef __LINBOX_HAVE_MPI

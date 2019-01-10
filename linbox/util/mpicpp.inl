@@ -194,7 +194,18 @@ namespace LinBox
 	// When this communicator is destroyed MPI is shut down (finalized).
 	Communicator::Communicator(int* ac, char*** av) :
 		_mpi_comm(MPI_COMM_WORLD), _mpi_boss(true)
-	{ MPI_Init(ac, av); }
+//	{ MPI_Init(ac, av); }
+{
+    int provided, claimed;
+ 
+    MPI_Init_thread( 0, 0, MPI_THREAD_MULTIPLE, &provided );
+ 
+    MPI_Query_thread( &claimed );
+    if (claimed != provided) {
+        printf( "Query thread gave thread level %d but Init_thread gave %d\n", claimed, provided );fflush(stdout);
+    }
+
+}
     
 	// copy constructor
 	Communicator::Communicator(const Communicator& D) :
