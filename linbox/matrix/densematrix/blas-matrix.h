@@ -713,7 +713,7 @@ namespace LinBox
 		template <class Vector>
 		Vector &columnDensity (Vector &v) const ;
 
-		size_t size()
+		size_t size() const
 		{
 			return _row * _col;
 		}

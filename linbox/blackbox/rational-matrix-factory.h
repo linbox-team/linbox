@@ -24,7 +24,6 @@
 #ifndef __LINBOX_rational_dense_factory_H
 #define __LINBOX_rational_dense_factory_H
 
-#include "linbox/blackbox/factory.h"
 //#include "linbox/field/gmp-rational.h"
 #include "givaro/zring.h"
 
@@ -37,7 +36,7 @@ namespace LinBox
 	 * aniau@astronet.pl 06/2009
 	 * Given rational matrix _matA, computes parameters needed to found best (usually integer) representation:
 	 * See: denominator, rationalNorm, normAtilde, normAprim, getOmega
-	 * See others: maxNorm, hadamard
+	 * See others: maxNorm
 	 * Computes the representation
 	 * See: makeAtilde, makeAprim
 	 * Works with dense matrices, needs sparse spcialization (due to use of row::iterator)
@@ -82,28 +81,6 @@ namespace LinBox
 				tmp = abs( (double)(n)/(double)(d) );
 				if( res < tmp ) res = tmp;
 			}
-			return res;
-		}
-
-		double hadamardBound(double& res) const {
-			typename QMatrix::ConstRowIterator r;
-			typename QMatrix::ConstRow::const_iterator c;
-
-			res = 1.0;
-
-			for( r = _matA->rowBegin(); r != _matA->rowEnd(); ++r ) {
-			double temp;
-				temp = 0.0;
-				for( c = r->begin(); c != r->end(); ++c ) {
-					Integer d,n;
-					_ratField.get_den(d,*c);
-					_ratField.get_num(n,*c);
-					double a = (double) n / (double) d;
-					temp = temp + (a* a);
-				}
-				res *= temp;
-			}
-			res = sqrt(res);
 			return res;
 		}
 
