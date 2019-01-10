@@ -149,8 +149,8 @@ namespace LinBox
 				//this->_intRing.init(*res_iter, int64_t(*b_iter)); --> PG: this is bug the vector b is a multi-precision vector fixed-size cast is allowed here
                 this->_intRing.init(*res_iter, *b_iter);
 
-			Integer N, D, L, Prime;
-			this->_intRing.convert(Prime,_p);
+            Integer N, D, L, Prime;
+            this->_intRing.convert(Prime,_p);
 
             auto hadamardBound = RationalSolveHadamardBound(A, b);
             N = Givaro::pow(Integer(2), hadamardBound.numBoundBitSize);

@@ -227,8 +227,6 @@ namespace LinBox {
     {
         size_t hadamardBitSize;
 
-        // @fixme With SparseMatrix, do we iterate over all zeros?
-        // Find a better way.
         Integer max = 0;
         for (auto it = A.Begin(); it != A.End(); ++it) {
             const Integer& ai = *it;
@@ -236,6 +234,10 @@ namespace LinBox {
                 max = ai;
             else if (max < -ai)
                 max = -ai;
+        }
+
+        if (max == 0) {
+            return 0;
         }
 
         auto n = std::max(A.rowdim(), A.coldim());

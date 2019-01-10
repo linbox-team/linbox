@@ -34,13 +34,16 @@ using namespace LinBox;
 using Field = Givaro::ZRing<Integer>;
 
 template <class TMatrix, class TVector>
-bool test_with_matrix_vector(size_t n)
+bool test_with_matrix_vector(size_t n, size_t bitSize, int* seed)
 {
     Field F;
     TMatrix A(F, n, n);
 
+    *seed += 1;
+    srand(*seed);
+    Field::RandIter randIter(F, bitSize, *seed);
+
     // Generate a full rank matrix
-    Field::RandIter randIter(F, 10); // @fixme bits
     RandomDenseMatrix<Field::RandIter, Field> RDM(F, randIter);
     RDM.randomFullRank(A);
 
@@ -54,7 +57,7 @@ bool test_with_matrix_vector(size_t n)
     Integer detA;
     det(detA, A);
 
-    std::cout << "det hb fastHb : " << Givaro::logtwo(Givaro::abs(detA)) << " " << hb << " " << fastHb << std::endl;
+    // std::cout << "det hb fastHb : " << Givaro::logtwo(Givaro::abs(detA)) << " " << hb << " " << fastHb << std::endl;
 
     if (fastHb + 1 < hb) {
         std::cerr << "Fast Hadamard bound is somehow better than the precise one." << std::endl;
@@ -69,30 +72,32 @@ bool test_with_matrix_vector(size_t n)
 
     // ---- Rational solve
 
-    TVector b(F, n);
-    b.random();
+    if (detA > 0) {
+        TVector b(F, n);
+        b.random(randIter);
 
-    // Compute the bounds
-    auto rationalSolveHb = RationalSolveHadamardBound(A, b);
+        // Compute the bounds
+        auto rationalSolveHb = RationalSolveHadamardBound(A, b);
 
-    // Compute the effective solution
-    TVector num(F, n);
-    Field::Element den;
-    solve(num, den, A, b);
+        // Compute the effective solution
+        TVector num(F, n);
+        Field::Element den;
+        solve(num, den, A, b);
 
-    for (size_t i = 0u; i < n; ++i) {
-        if (Givaro::logtwo(Givaro::abs(num[i])) > rationalSolveHb.numBoundBitSize) {
-            std::cerr << "The rational solve Hadamard bound does not bound the numerator." << std::endl;
-            std::cerr << "num[i]: " << Givaro::logtwo(Givaro::abs(num[i])) << " > " << rationalSolveHb.numBoundBitSize
-                      << std::endl;
+        for (size_t i = 0u; i < n; ++i) {
+            if (Givaro::logtwo(Givaro::abs(num[i])) > rationalSolveHb.numBoundBitSize) {
+                std::cerr << "The rational solve Hadamard bound does not bound the numerator." << std::endl;
+                std::cerr << "num[i]: " << Givaro::logtwo(Givaro::abs(num[i])) << " > " << rationalSolveHb.numBoundBitSize
+                        << std::endl;
+                return false;
+            }
+        }
+
+        if (Givaro::logtwo(Givaro::abs(den)) > rationalSolveHb.denBoundBitSize) {
+            std::cerr << "The rational solve Hadamard bound does not bound the denominator." << std::endl;
+            std::cerr << "den: " << Givaro::logtwo(den) << " > " << rationalSolveHb.denBoundBitSize << std::endl;
             return false;
         }
-    }
-
-    if (Givaro::logtwo(Givaro::abs(den)) > rationalSolveHb.denBoundBitSize) {
-        std::cerr << "The rational solve Hadamard bound does not bound the denominator." << std::endl;
-        std::cerr << "den: " << Givaro::logtwo(den) << " > " << rationalSolveHb.denBoundBitSize << std::endl;
-        return false;
     }
 
     return true;
@@ -101,16 +106,17 @@ bool test_with_matrix_vector(size_t n)
 int main(int argc, char** argv)
 {
     size_t n = 10;
+    size_t bitSize = 10;
     int iterations = 1;
+    int seed = time(NULL);
     bool loop = false;
 
     static Argument args[] = {{'n', "-n N", "Set dimension of test objects to NxN.", TYPE_INT, &n},
                               {'i', "-i I", "Perform each test for I iterations.", TYPE_INT, &iterations},
                               {'l', "-l", "Infinite testing.", TYPE_BOOL, &loop},
+                              {'s', "-s", "Seed for randomness.", TYPE_INT, &seed},
+                              {'b', "-b", "Bit size of integers.", TYPE_INT, &bitSize},
                               END_OF_ARGUMENTS};
-
-    // @fixme seed
-    // @fixme bitsize
 
     // @todo Test rational matrices,
     // and, if so, specialize vectorNormBitSize for it
@@ -119,15 +125,16 @@ int main(int argc, char** argv)
 
     bool ok = true;
 
+    int startingSeed;
     for (auto i = 0; ok && (loop || i < iterations); ++i) {
-        ok = ok && test_with_matrix_vector<BlasMatrix<Field>, BlasVector<Field>>(n);
-        ok = ok && test_with_matrix_vector<SparseMatrix<Field>, BlasVector<Field>>(n); // @fixme SparseVector?
+        startingSeed = seed;
+        ok = ok && test_with_matrix_vector<BlasMatrix<Field>, BlasVector<Field>>(n, bitSize, &seed);
+        ok = ok && test_with_matrix_vector<SparseMatrix<Field>, BlasVector<Field>>(n, bitSize, &seed);
     }
 
-    // @fixme print seed on failure
-    // if (!ok) {
-    //     std::cerr << "Failed with seed: " << seed << std::endl;
-    // }
+    if (!ok) {
+        std::cerr << "Failed with seed: " << startingSeed << std::endl;
+    }
 
     return ok ? 0 : -1;
 }
