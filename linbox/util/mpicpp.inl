@@ -198,7 +198,7 @@ namespace LinBox
 {
     int provided, claimed;
  
-    MPI_Init_thread( ac, av, MPI_THREAD_MULTIPLE, &provided );
+    MPI_Init_thread( ac, av, MPI_THREAD_SERIALIZED, &provided );
  
     MPI_Query_thread( &claimed );
     if (claimed != provided) {
