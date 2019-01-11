@@ -48,7 +48,7 @@
 #include "linbox/algorithms/bbsolve.h"
 
 #ifdef __LINBOX_HAVE_MPI
-#include "linbox/algorithms/cra-mpi.h"
+#include "linbox/algorithms/cra-hybrid.h" //#include "linbox/algorithms/cra-mpi.h"
 #endif
 #include "linbox/solutions/hadamard-bound.h"
 
@@ -876,7 +876,7 @@ Integer den(0);
 
 
 #ifdef __LINBOX_HAVE_MPI
-		MPIChineseRemainder< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(hadamard, C);
+		HybridChineseRemainder< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(hadamard, C);
 #else
         std::cerr << "Sequential solveCRA" << std::endl;
         RationalRemainder< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(hadamard);

@@ -25,8 +25,8 @@
  */
 
 
-#ifndef __LINBOX_cra_mpi_H
-#define __LINBOX_cra_mpi_H
+#ifndef __LINBOX_cra_hybrid_H
+#define __LINBOX_cra_hybrid_H
 
 #define MPICH_IGNORE_CXX_SEEK //BB: ???
 #include "linbox/util/timer.h"
@@ -51,7 +51,7 @@ namespace LinBox
 {
     
 	template<class CRABase>
-	struct MPIChineseRemainder  {
+	struct HybridChineseRemainder  {
 		typedef typename CRABase::Domain	Domain;
 		typedef typename CRABase::DomainElement	DomainElement;
 	protected:
@@ -62,7 +62,7 @@ namespace LinBox
         
 	public:
 		template<class Param>
-		MPIChineseRemainder(const Param& b, Communicator *c) :
+		HybridChineseRemainder(const Param& b, Communicator *c) :
 			Builder_(b), _commPtr(c), _numprocs(c->size())
 			, HB(b)//Init with hadamard bound
 		{}
@@ -259,26 +259,29 @@ namespace LinBox
 ///////////////////////////////////////////////////////////<-----------------Need to be multithreaded----------------
         
         template< class Function, class PrimeIterator, class Domain, class ElementContainer>
-        void solve_with_prime(int m_primeiters,//std::vector<PrimeIterator>& m_primeiters, 
-                              std::set<int>& coprimeset,
+        void solve_with_prime(std::vector<PrimeIterator>& m_primeiters, std::set<int>& coprimeset,
                               Function& Iteration, std::vector<Domain>& ROUNDdomains,
                               ElementContainer& ROUNDresidues, //std::vector<ElementContainer>& ROUNDresidues, 
                               std::vector<CRABase>& vBuilders)
         {
-                     
-            ROUNDdomains[ omp_get_thread_num()] = Domain(m_primeiters);
+            
+            ++m_primeiters[ omp_get_thread_num()];
+
+            while(vBuilders[ omp_get_thread_num()].noncoprime(*m_primeiters[ omp_get_thread_num()]) )
+                ++m_primeiters[ omp_get_thread_num()];
+
+            
+            ROUNDdomains[ omp_get_thread_num()] = Domain(*m_primeiters[ omp_get_thread_num()]);
             
             Iteration(ROUNDresidues, ROUNDdomains[ omp_get_thread_num()]);
 // std::cout<<" Thread("<<omp_get_thread_num()<<") : Worker("<<_commPtr->rank()<<") is inserting "<< *m_primeiters[ omp_get_thread_num()] << std::endl;
-            ROUNDresidues.push_back(m_primeiters);//<------------------------
+            ROUNDresidues.push_back(*m_primeiters[ omp_get_thread_num()]);//<------------------------
             
         }
         
         
         template<class pFunc, class Function, class PrimeIterator, class Domain, class ElementContainer>
-        void compute_task(pFunc& pF, 
-         std::vector<int>& m_primeiters,//std::vector<PrimeIterator>& m_primeiters, 
-        std::set<int>& coprimeset,
+        void compute_task(pFunc& pF, std::vector<PrimeIterator>& m_primeiters, std::set<int>& coprimeset,
                           Function& Iteration, std::vector<Domain>& ROUNDdomains,
                           std::vector<ElementContainer>& ROUNDresidues, std::vector<CRABase>& vBuilders, size_t Niter)
         {
@@ -297,7 +300,7 @@ std::cout<<" Worker("<<_commPtr->rank()<<") has "<<NN<<" threads"<< std::endl;
             for(auto j=0;j<Niter;j++)
                 {
   
-                    solve_with_prime(m_primeiters[j], coprimeset, Iteration, ROUNDdomains, ROUNDresidues[j], vBuilders);
+                    solve_with_prime(m_primeiters, coprimeset, Iteration, ROUNDdomains, ROUNDresidues[j], vBuilders);
 
                 }
  
@@ -311,7 +314,6 @@ std::cout<<" Worker("<<_commPtr->rank()<<") has "<<NN<<" threads"<< std::endl;
            
             int pp=0;
             LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   gen(_commPtr->rank(),_commPtr->size());
-            ++gen;
             //LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag>   gen(_commPtr->rank(),_commPtr->size());
 
             _commPtr->recv(pp, 0);
@@ -329,16 +331,15 @@ NN=omp_get_num_threads();
             std::set<int> coprimeset;
             std::vector<BlasVector<Domain>> ROUNDresidues;ROUNDresidues.resize(pp);//<---------Niter dependant----------
             std::vector<Domain> ROUNDdomains;ROUNDdomains.resize(NN);
-            std::vector<int> m_primeiters;
+            std::vector<LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>> m_primeiters;//<---------to be replace with generated primes from masked generator for a given process, no longer thread dependant which may cause duplication of some primes --------------------------------------------------------------------------------------------------
             std::vector<CRABase> vBuilders;vBuilders.resize(NN);
             
             for(auto j=0u;j<NN;j++){
                 LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag> m_primeiter( j, NN);
                 
                 CRABase Builder_(HB);vBuilders.push_back(Builder_);
-                while(vBuilders[ j ].noncoprime(*gen) )
-                    ++gen;
-                m_primeiters.push_back(*gen);
+                
+                m_primeiters.push_back(m_primeiter);
                 
             }
           
