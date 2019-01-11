@@ -152,12 +152,15 @@ namespace LinBox
             Integer N, D, L, Prime;
             this->_intRing.convert(Prime,_p);
 
-            auto hadamardBound = RationalSolveHadamardBound(A, b);
-            N = Givaro::pow(Integer(2), static_cast<size_t>(std::ceil(hadamardBound.numLogBound)));
-            D = Givaro::pow(Integer(2), static_cast<size_t>(std::ceil(hadamardBound.denLogBound)));
-			L = N * D * 2;
+            auto hb = RationalSolveHadamardBound(A, b);
+            N = Givaro::pow(Integer(2), static_cast<size_t>(std::ceil(hb.numLogBound)));
+            D = Givaro::pow(Integer(2), static_cast<size_t>(std::ceil(hb.denLogBound)));
 
-			_length = (size_t)logp(L,Prime) + 1;   // round up instead of down
+            // L = N * D * 2
+            // _length = logp(L, Prime) = log2(L) * ln(2) / ln(Prime)
+            double primeLog = Givaro::naturallog(Prime);
+            constexpr const double log2 = 0.69314718055994531;
+            _length = std::ceil((1 + hb.numLogBound + hb.denLogBound) * log2 / primeLog); // round up instead of down
 #ifdef DEBUG_LC
 			std::cout<<" norms computed, p = "<<_p<<"\n";
 			std::cout<<" N = "<<N<<", D = "<<D<<", length = "<<_length<<"\n";

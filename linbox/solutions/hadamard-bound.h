@@ -115,6 +115,11 @@ namespace LinBox {
             for (const auto& pair : *rowIt) {
                 normSquared += (pair.second) * (pair.second);
             }
+            if (normSquared == 0) {
+                logBound = 0.0;
+                minLogNorm = 0.0;
+                return;
+            }
 
             double logNormSquared = Givaro::logtwo(normSquared);
             if (logNormSquared < minLogNorm) {
@@ -174,6 +179,11 @@ namespace LinBox {
         // All the norms have been computed, we check which one is the smallest
         // and compute the product (aka sum bitsize-wise) of them to make the logBound.
         for (const Integer& normSquared : columnsNormsSquared) {
+            if (normSquared == 0) {
+                logBound = 0.0;
+                minLogNorm = 0.0;
+                return;
+            }
             double logNormSquared = Givaro::logtwo(normSquared);
             if (logNormSquared < minLogNorm) {
                 minLogNorm = logNormSquared;
