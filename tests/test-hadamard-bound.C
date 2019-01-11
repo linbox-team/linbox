@@ -50,23 +50,23 @@ bool test_with_matrix_vector(size_t n, size_t bitSize, int* seed)
     // ---- Determinant
 
     // Compute the bounds
-    auto hb = HadamardBound(A);
-    auto fastHb = FastHadamardBound(A);
+    double hb = HadamardBound(A);
+    double fastHb = FastHadamardBound(A);
 
     // Compute the effective determinant
     Integer detA;
     det(detA, A);
 
-    // std::cout << "det hb fastHb : " << Givaro::logtwo(Givaro::abs(detA)) << " " << hb << " " << fastHb << std::endl;
+    // std::cout << "det hb fastHb : " << std::setprecision(100) << Givaro::logtwo(Givaro::abs(detA)) << " " << hb << " " << fastHb << std::endl;
 
-    if (fastHb + 1 < hb) {
+    if (fastHb < hb) {
         std::cerr << "Fast Hadamard bound is somehow better than the precise one." << std::endl;
         return false;
     }
 
     if (Givaro::logtwo(Givaro::abs(detA)) > hb) {
         std::cerr << "The Hadamard bound does not bound the determinant." << std::endl;
-        std::cerr << "den: " << Givaro::logtwo(Givaro::abs(detA)) << " > " << hb << std::endl;
+        std::cerr << "det: " << Givaro::logtwo(Givaro::abs(detA)) << " > " << hb << std::endl;
         return false;
     }
 
@@ -85,17 +85,17 @@ bool test_with_matrix_vector(size_t n, size_t bitSize, int* seed)
         solve(num, den, A, b);
 
         for (size_t i = 0u; i < n; ++i) {
-            if (Givaro::logtwo(Givaro::abs(num[i])) > rationalSolveHb.numBoundBitSize) {
+            if (Givaro::logtwo(Givaro::abs(num[i])) > rationalSolveHb.numLogBound) {
                 std::cerr << "The rational solve Hadamard bound does not bound the numerator." << std::endl;
-                std::cerr << "num[i]: " << Givaro::logtwo(Givaro::abs(num[i])) << " > " << rationalSolveHb.numBoundBitSize
+                std::cerr << "num[i]: " << Givaro::logtwo(Givaro::abs(num[i])) << " > " << rationalSolveHb.numLogBound
                         << std::endl;
                 return false;
             }
         }
 
-        if (Givaro::logtwo(Givaro::abs(den)) > rationalSolveHb.denBoundBitSize) {
+        if (Givaro::logtwo(Givaro::abs(den)) > rationalSolveHb.denLogBound) {
             std::cerr << "The rational solve Hadamard bound does not bound the denominator." << std::endl;
-            std::cerr << "den: " << Givaro::logtwo(den) << " > " << rationalSolveHb.denBoundBitSize << std::endl;
+            std::cerr << "den: " << Givaro::logtwo(den) << " > " << rationalSolveHb.denLogBound << std::endl;
             return false;
         }
     }

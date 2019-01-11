@@ -153,8 +153,8 @@ namespace LinBox
             this->_intRing.convert(Prime,_p);
 
             auto hadamardBound = RationalSolveHadamardBound(A, b);
-            N = Givaro::pow(Integer(2), hadamardBound.numBoundBitSize);
-            D = Givaro::pow(Integer(2), hadamardBound.denBoundBitSize);
+            N = Givaro::pow(Integer(2), static_cast<size_t>(std::ceil(hadamardBound.numLogBound)));
+            D = Givaro::pow(Integer(2), static_cast<size_t>(std::ceil(hadamardBound.denLogBound)));
 			L = N * D * 2;
 
 			_length = (size_t)logp(L,Prime) + 1;   // round up instead of down
