@@ -153,8 +153,8 @@ namespace LinBox
             this->_intRing.convert(Prime,_p);
 
             auto hb = RationalSolveHadamardBound(A, b);
-            N = Integer(2) << static_cast<size_t>(std::ceil(hb.numLogBound));
-            D = Integer(2) << static_cast<size_t>(std::ceil(hb.denLogBound));
+            N = Integer(1) << static_cast<size_t>(std::ceil(hb.numLogBound));
+            D = Integer(1) << static_cast<size_t>(std::ceil(hb.denLogBound));
 
             // L = N * D * 2
             // _length = logp(L, Prime) = log2(L) * ln(2) / ln(Prime)
