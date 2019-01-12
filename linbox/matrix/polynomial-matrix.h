@@ -277,20 +277,6 @@ namespace LinBox{
 		size_t rowdim()  const {return _row;}
 		size_t coldim()  const {return _col;}
 		size_t degree()  const {return _size-1;}
-		inline size_t real_degree() const {
-			size_t d = _size - 1;
-			while (d > 0) {
-				for (size_t i = 0; i < rowdim(); i++) {
-					for (size_t j = 0; j < coldim(); j++) {
-						if (!field().isZero(get(i, j, d))) {
-							return d;
-						}
-					}
-				}
-				d--;
-			}
-			return d;
-		}
 		size_t size()    const {return _size;}
 		size_t storage() const {return _store;}
 		const Field& field()  const {return *_fld;}
@@ -316,7 +302,7 @@ namespace LinBox{
                                 b= ((int) ceil (log ((double) _size) / M_LN10));
                                 wid*=10*(b*(b-1)/2.);
                         }
-			os <<"Matrix([" <<std::endl;
+			std::cout<<"Matrix([";
                         for (size_t i = 0; i< _row;++i) {
                                 os << "  [ ";
                                 for (size_t j = 0;j<_col;++j){
@@ -334,7 +320,7 @@ namespace LinBox{
                                 }
 				os << (i<_row-1?"],":"]" )<< std::endl;
                         }
-			os <<"]);";
+			std::cout<<"]);";
 		
                 	return os;
                 }
@@ -559,7 +545,7 @@ namespace LinBox{
 
 			b= ((int) ceil (log ((double) (deg_max-deg_min+1)) / M_LN10));
 			wid*=10*(b*(b-1)/2.);
-			os <<"Matrix([" << std::endl;
+			std::cout<<"Matrix([";
 			for (size_t i = 0; i< _row;++i) {
                                 os << "  [ ";
                                 for (size_t j = 0;j<_col;++j){
@@ -577,7 +563,7 @@ namespace LinBox{
                                 }
                                 os << (i<_row-1?"],":"]" )<< std::endl;
                         }
-			os << "]);";
+			std::cout<<"]);";
 			return os;
                 }
 

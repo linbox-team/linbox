@@ -155,6 +155,12 @@ namespace LinBox
 		 	init(const_cast<Element &>(one), 1);
 		 	init(const_cast<Element &>(mOne), p-1);
         }
+        
+        NTL_zz_pE(const NTL_zz_pE &F) :
+        	NTL_zz_pE_Initialiser(F.modulus()), Father_t(),
+        	zero(NTL::to_zz_pE(0)), one(NTL::to_zz_pE(1)), mOne(-one)
+		{
+        }
 
 		Element& random (Element& x) const
             {
@@ -358,6 +364,16 @@ namespace LinBox
                 x=NTL::to_zz_pE(tmp);
                 return is;
             }
+            
+		std::ostream& write( std::ostream& os ) const
+            {
+                return os << "Polynomial quotient ring using NTL::zz_pE";
+            }
+            
+		std::ostream& write( std::ostream& os, const Element& x) const {
+			os << x;
+			return os;
+		}
 	}; // end of class NTL_zz_pE
 
 

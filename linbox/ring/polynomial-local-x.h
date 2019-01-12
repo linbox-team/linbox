@@ -593,6 +593,214 @@ namespace LinBox
 		}
 	}; // end of class PolynomialLocalX<NTL_zz_px>
 	
+	template<>
+	class PolynomialLocalX<NTL_zz_pEX> {
+	public:
+		typedef NTL_zz_pEX Field;
+		
+		typedef typename Field::Element Polynomial;
+		typedef typename Field::CoeffField CoeffField;
+		typedef typename Field::Coeff Coeff;
+		
+		// f(x) * x^e ; x does not divide f(x)
+		typedef typename Field::Element Element;
+		
+		// typedef UnparametricRandIter<Element> RandIter;
+
+		const Field _F;
+		const Element zero, one, mOne;
+		size_t exp;
+
+		PolynomialLocalX(const Field &F, size_t exponent) : _F(F),
+			zero(_F.zero), one(_F.one), mOne(_F.mOne), exp(exponent)
+			{}
+			
+		PolynomialLocalX(const PolynomialLocalX &P) : _F(P._F), zero(P.zero),
+			one(P.one), mOne(P.mOne), exp(P.exp) {}
+			
+		void setExponent(size_t exponent) {
+			exp = exponent;
+		}
+		
+		size_t getExponent() const {
+			return exp;
+		}
+			
+		const CoeffField &getCoeffField() const {
+			return _F.getCoeffField();
+		}
+		
+		size_t firstNonZeroCoeff(const Element &a) const {
+			size_t i = 0;
+			for (; i <= _F.deg(a) && NTL::coeff(a, i) == 0; i++);
+			return i;
+		}
+		
+		Element &assign(Element &a, const Element &b) const {
+			return _F.assign(a, b);
+		}
+		
+		Element &normalize(Element &a, const Polynomial &b) const {
+			return assign(a, b);
+		}
+		
+		Polynomial &denormalize(Polynomial &a, const Element &b) const {			
+			return assign(a, b);
+		}
+		
+		Element &init(Element &p) const {
+			return assign(p, zero);
+		}
+		
+		Element &init(Element &p, const std::vector<integer> &v) const {
+			return _F.init(p, v);
+		}
+		
+		Element &init(Element &a, const Polynomial &b) const {
+			return assign(a, b);
+		}
+		
+		integer &convert(integer &a, const Element &b) const {
+			return _F.convert(a, b);
+		}
+
+		std::ostream& write(std::ostream& os) const {
+			os << "Polynomial local ring at X^" << exp << " using ";
+			_F.write(os);
+			return os;
+		}
+		
+		std::ostream& write(std::ostream& os, const Element &p) const {
+			Polynomial tmp;
+			_F.write(os, denormalize(tmp, p));
+			return os;
+		}
+		
+		std::ostream& writeNormalized(std::ostream& os, const Element &p) const {
+			return write(os, p);
+		}
+		
+		bool isZero(const Element &a) const {
+			return _F.isZero(a);
+		}
+		
+		bool isOne(const Element &a) const {
+			return _F.isOne(a);
+		}
+		
+		bool isMOne(const Element &a) const {
+			return _F.isMOne(a);
+		}
+		
+		bool areEqual(const Element &a, const Element &b) const {
+			return _F.areEqual(a, b);
+		}
+		
+		bool isUnit(const Element &a) const {
+			Coeff coeff;
+			return _F.getCoeff(coeff, a, 0) != 0;
+		}
+		
+		size_t deg(const Element &p) const {
+			return _F.deg(p);
+		}
+		
+		Coeff &getCoeff(Coeff &c, const Element &a, size_t e) const {
+			return _F.getCoeff(c, a, e);
+		}
+		
+		Coeff &leadCoeff(Coeff &c, const Element &a) const {
+			return _F.leadCoeff(c, a);
+		}
+		
+		Element &monic(Element &m, const Element &a) const {
+			return _F.monic(m, a);
+		}
+		
+		/// returns true if b divides a evenly
+		bool isDivisor(const Element &a, const Element &b) const {
+			if (isZero(b)) {
+				return false;
+			}
+			
+			if (isZero(a)) {
+				return true;
+			}
+			
+			return firstNonZeroCoeff(a) >= firstNonZeroCoeff(b);
+		}
+		
+		// b = a * x^e
+		Element &leftShift(Element &b, const Element &a, size_t e) const {
+			if (firstNonZeroCoeff(a) + e >= exp) {
+				return b = zero;
+			}
+			
+			return b = NTL::trunc(a << e, exp);
+		}
+		
+		Element &leftShiftIn(Element &b, size_t e) const {
+			if (firstNonZeroCoeff(b) + e >= exp) {
+				return b = zero;
+			}
+			
+			return b = NTL::trunc(b << e, exp);
+		}
+		
+		// b = a / x^e
+		Element &rightShift(Element &b, const Element &a, size_t e) const {
+			return b = a >> e;
+		}
+		
+		Element &rightShiftIn(Element &b, size_t e) const {
+			return b = b >> e;
+		}
+		
+		Element &mul(Element &c, const Element &a, const Element &b) const {
+			return c = NTL::MulTrunc(a, b, exp);
+		}
+		
+		Element &mulin(Element &a, const Element &b) const {
+			Element tmp;
+			assign(tmp, a);
+			return mul(a, b, tmp);
+		}
+		
+		Element &add(Element &c, const Element &a, const Element &b) const {
+			return _F.add(c, a, b);
+		}
+		
+		Element &addin(Element &a, const Element &b) const {
+			return _F.addin(a, b);
+		}
+		
+		Element &neg(Element &a, const Element &b) const {
+			return _F.neg(a, b);
+		}
+		
+		Element &negin(Element &a) const {
+			return _F.negin(a);
+		}
+		
+		// r = a*x + y
+		Element &axpy(Element &r, const Element &a, const Element &x, const Element &y) const {
+			mul(r, a, x);			
+			return addin(r, y);
+		}
+		
+		// r += a * x
+		Element &axpyin(Element &r, const Element &a, const Element &x) const {
+			Element tmp;
+			assign(tmp, r);
+			
+			return axpy(r, a, x, tmp);
+		}
+		
+		Element &inv(Element &r, const Element &a) const {			
+			return r = NTL::InvTrunc(a, exp);
+		}
+	}; // end of class PolynomialLocalX<NTL_zz_px>
+	
 	template<class PolynomialRing>
 	class Hom<PolynomialRing, PolynomialLocalX<PolynomialRing>> {
 	public:
@@ -619,7 +827,6 @@ namespace LinBox
 		const Source& _source;
 		const Target& _target;
 	}; // end Hom<PolynomialRing, PolynomialLocalX>
-
 } // end of namespace LinBox
 
 #endif // __LINBOX_polynomial_local_x_H

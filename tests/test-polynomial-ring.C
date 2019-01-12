@@ -37,8 +37,7 @@
 #include <iostream>
 
 
-//#include "linbox/ring/polynomial-ring.h"
-#include <givaro/givpoly1factor.h>
+#include "linbox/ring/polynomial-ring.h"
 #include "linbox/ring/modular.h"
 #include <givaro/givquotientdomain.h>
 
@@ -63,7 +62,6 @@ int main (int argc, char **argv)
 	bool pass = true;
 
 	typedef Givaro::Modular<float> BaseDom;
-
 	typedef PolynomialRing<BaseDom> PolyDom;
 	typedef PolynomialRing<PolyDom> Bivariate;
 	
