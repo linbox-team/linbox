@@ -26,13 +26,14 @@
 #include <linbox/field/field-traits.h>
 #include <linbox/integer.h>
 
+#include <limits>
+
 namespace LinBox {
 
     // ----- Vector norm
 
-    // @todo Specialize for Rationals
     template <class ConstIterator>
-    size_t vectorNormBitSize(const ConstIterator& begin, const ConstIterator& end)
+    double vectorLogNorm(const ConstIterator& begin, const ConstIterator& end)
     {
         Integer normSquared = 0;
         for (ConstIterator it = begin; it != end; ++it) {
@@ -43,22 +44,22 @@ namespace LinBox {
         }
 
         if (normSquared == 0) {
-            return 0;
+            return 0.0;
         }
 
-        return std::ceil(Givaro::logtwo(normSquared) / 2.0);
+        return Givaro::logtwo(normSquared) / 2.0;
     }
 
     // ----- Detailed Hadamard bound
 
-    struct DetailedHadamardBoundData {
+    struct HadamardLogBoundDetails {
         /**
          * Bit size of the minimal hadamard bound
          * between the row-wise and the col-wise ones.
          *
          * min { HadamardRow(A), HadamardCol(A) }
          */
-        size_t boundBitSize;
+        double logBound;
         /**
          * Bit size of the minimal hadamard bound
          * divided by the min of the norm vectors
@@ -67,7 +68,7 @@ namespace LinBox {
          * min { HadamardRow(A) / min || Ai,* ||,
          *       HadamardCol(A) / min || A*,j ||  }
          */
-        size_t boundOnMinNormBitSize;
+        double logBoundOverMinNorm;
     };
 
     /**
@@ -77,50 +78,59 @@ namespace LinBox {
      * The result is expressed as bit size.
      */
     template <class IMatrix>
-    void DetailedHadamardRowBound(size_t& boundBitSize, size_t& minNormBitSize, const IMatrix& A)
+    void HadamardRowLogBound(double& logBound, double& minLogNorm, const IMatrix& A)
     {
         typename MatrixTraits<IMatrix>::MatrixCategory tag;
-        DetailedHadamardRowBound(boundBitSize, minNormBitSize, A, tag);
+        HadamardRowLogBound(logBound, minLogNorm, A, tag);
     }
 
     template <class IMatrix>
-    void DetailedHadamardRowBound(size_t& boundBitSize, size_t& minNormBitSize, const IMatrix& A, const MatrixCategories::RowColMatrixTag& tag)
+    void HadamardRowLogBound(double& logBound, double& minLogNorm, const IMatrix& A, const MatrixCategories::RowColMatrixTag& tag)
     {
-        boundBitSize = 0;
-        minNormBitSize = -1u;
+        logBound = 0.0;
+        minLogNorm = std::numeric_limits<double>::infinity();
 
         for (auto rowIt = A.rowBegin(); rowIt != A.rowEnd(); ++rowIt) {
-            size_t rowNormBitSize = vectorNormBitSize(rowIt->begin(), rowIt->end());
-            if (rowNormBitSize == 0) {
-                boundBitSize = 0;
-                minNormBitSize = 0;
+            double rowLogNorm = vectorLogNorm(rowIt->begin(), rowIt->end());
+            if (rowLogNorm == 0.0) {
+                logBound = 0.0;
+                minLogNorm = 0.0;
                 return;
             }
-            else if (rowNormBitSize < minNormBitSize) {
-                minNormBitSize = rowNormBitSize;
+            else if (rowLogNorm < minLogNorm) {
+                minLogNorm = rowLogNorm;
             }
-            boundBitSize += rowNormBitSize;
+            logBound += rowLogNorm;
         }
     }
 
     template <class IMatrix>
-    void DetailedHadamardRowBound(size_t& boundBitSize, size_t& minNormBitSize, const IMatrix& A, const MatrixCategories::RowMatrixTag& tag)
+    void HadamardRowLogBound(double& logBound, double& minLogNorm, const IMatrix& A, const MatrixCategories::RowMatrixTag& tag)
     {
-        boundBitSize = 0;
-        minNormBitSize = -1u;
+        logBound = 0.0;
+        minLogNorm = std::numeric_limits<double>::infinity();
 
         for (auto rowIt = A.rowBegin(); rowIt != A.rowEnd(); ++rowIt) {
             Integer normSquared = 0;
             for (const auto& pair : *rowIt) {
                 normSquared += (pair.second) * (pair.second);
             }
-
-            size_t normBitSize = std::ceil(Givaro::logtwo(normSquared) / 2.0);
-            if (normBitSize < minNormBitSize) {
-                minNormBitSize = normBitSize;
+            if (normSquared == 0) {
+                logBound = 0.0;
+                minLogNorm = 0.0;
+                return;
             }
-            boundBitSize += normBitSize;
+
+            double logNormSquared = Givaro::logtwo(normSquared);
+            if (logNormSquared < minLogNorm) {
+                minLogNorm = logNormSquared;
+            }
+            logBound += logNormSquared;
         }
+
+        // Square-root
+        logBound /= 2.0;
+        minLogNorm /= 2.0;
     }
 
     /**
@@ -130,33 +140,33 @@ namespace LinBox {
      * The result is expressed as bit size.
      */
     template <class IMatrix>
-    void DetailedHadamardColBound(size_t& boundBitSize, size_t& minNormBitSize, const IMatrix& A)
+    void HadamardColLogBound(double& logBound, double& minLogNorm, const IMatrix& A)
     {
         typename MatrixTraits<IMatrix>::MatrixCategory tag;
-        DetailedHadamardColBound(boundBitSize, minNormBitSize, A, tag);
+        HadamardColLogBound(logBound, minLogNorm, A, tag);
     }
 
     template <class IMatrix>
-    void DetailedHadamardColBound(size_t& boundBitSize, size_t& minNormBitSize, const IMatrix& A, const MatrixCategories::RowColMatrixTag& tag)
+    void HadamardColLogBound(double& logBound, double& minLogNorm, const IMatrix& A, const MatrixCategories::RowColMatrixTag& tag)
     {
-        boundBitSize = 0;
-        minNormBitSize = -1u;
+        logBound = 0.0;
+        minLogNorm = std::numeric_limits<double>::infinity();
 
         typename IMatrix::ConstColIterator colIt;
         for (colIt = A.colBegin(); colIt != A.colEnd(); ++colIt) {
-            size_t colNormBitSize = vectorNormBitSize(colIt->begin(), colIt->end());
-            if (colNormBitSize < minNormBitSize) {
-                minNormBitSize = colNormBitSize;
+            double colLogNorm = vectorLogNorm(colIt->begin(), colIt->end());
+            if (colLogNorm < minLogNorm) {
+                minLogNorm = colLogNorm;
             }
-            boundBitSize += colNormBitSize;
+            logBound += colLogNorm;
         }
     }
 
     template <class IMatrix>
-    void DetailedHadamardColBound(size_t& boundBitSize, size_t& minNormBitSize, const IMatrix& A, const MatrixCategories::RowMatrixTag& tag)
+    void HadamardColLogBound(double& logBound, double& minLogNorm, const IMatrix& A, const MatrixCategories::RowMatrixTag& tag)
     {
-        boundBitSize = 0;
-        minNormBitSize = -1;
+        logBound = 0.0;
+        minLogNorm = std::numeric_limits<double>::infinity();
 
         // This vector contains the norm squared for each columns.
         std::vector<Integer> columnsNormsSquared(A.coldim());
@@ -167,14 +177,23 @@ namespace LinBox {
         }
 
         // All the norms have been computed, we check which one is the smallest
-        // and compute the product (aka sum bitsize-wise) of them to make the boundBitSize.
-        for (const auto& normSquared : columnsNormsSquared) {
-            size_t normBitSize = std::ceil(Givaro::logtwo(normSquared) / 2.0);
-            if (normBitSize < minNormBitSize) {
-                minNormBitSize = normBitSize;
+        // and compute the product (aka sum bitsize-wise) of them to make the logBound.
+        for (const Integer& normSquared : columnsNormsSquared) {
+            if (normSquared == 0) {
+                logBound = 0.0;
+                minLogNorm = 0.0;
+                return;
             }
-            boundBitSize += normBitSize;
+            double logNormSquared = Givaro::logtwo(normSquared);
+            if (logNormSquared < minLogNorm) {
+                minLogNorm = logNormSquared;
+            }
+            logBound += logNormSquared;
         }
+
+        // Square-root
+        logBound /= 2.0;
+        minLogNorm /= 2.0;
     }
 
     /**
@@ -184,21 +203,21 @@ namespace LinBox {
      * The results are expressed as bit size.
      */
     template <class IMatrix>
-    DetailedHadamardBoundData DetailedHadamardBound(const IMatrix& A)
+    HadamardLogBoundDetails DetailedHadamardBound(const IMatrix& A)
     {
-        size_t rowBoundBitSize = 0;
-        size_t minRowNormBitSize = 0;
-        DetailedHadamardRowBound(rowBoundBitSize, minRowNormBitSize, A);
-        size_t boundOnRowNormBitSize = rowBoundBitSize - minRowNormBitSize;
+        double rowLogBound = 0;
+        double rowMinLogNorm = 0;
+        HadamardRowLogBound(rowLogBound, rowMinLogNorm, A);
+        double rowLogBoundOverMinNorm = rowLogBound - rowMinLogNorm;
 
-        size_t colBoundBitSize = 0;
-        size_t minColNormBitSize = 0;
-        DetailedHadamardColBound(colBoundBitSize, minColNormBitSize, A);
-        size_t boundOnColNormBitSize = colBoundBitSize - minColNormBitSize;
+        double colLogBound = 0;
+        double colMinLogNorm = 0;
+        HadamardColLogBound(colLogBound, colMinLogNorm, A);
+        double colLogBoundOverMinNorm = colLogBound - colMinLogNorm;
 
-        DetailedHadamardBoundData data;
-        data.boundBitSize = std::min(rowBoundBitSize, colBoundBitSize);
-        data.boundOnMinNormBitSize = std::min(boundOnRowNormBitSize, boundOnColNormBitSize);
+        HadamardLogBoundDetails data;
+        data.logBound = std::min(rowLogBound, colLogBound) + 0.01;
+        data.logBoundOverMinNorm = std::min(rowLogBoundOverMinNorm, colLogBoundOverMinNorm) + 0.01;
         return data;
     }
 
@@ -211,9 +230,9 @@ namespace LinBox {
      * The result is expressed as bit size.
      */
     template <class IMatrix>
-    size_t HadamardBound(const IMatrix& A)
+    double HadamardBound(const IMatrix& A)
     {
-        return DetailedHadamardBound(A).boundBitSize;
+        return DetailedHadamardBound(A).logBound;
     }
 
     // ----- Fast Hadamard bound
@@ -223,10 +242,8 @@ namespace LinBox {
      * This is a larger estimation but faster to compute.
      */
     template <class IMatrix>
-    size_t FastHadamardBound(const IMatrix& A)
+    double FastHadamardBound(const IMatrix& A)
     {
-        size_t hadamardBitSize;
-
         Integer max = 0;
         for (auto it = A.Begin(); it != A.End(); ++it) {
             const Integer& ai = *it;
@@ -241,16 +258,16 @@ namespace LinBox {
         }
 
         auto n = std::max(A.rowdim(), A.coldim());
-        hadamardBitSize = 1 + n * (Givaro::logtwo(n) / 2 + Givaro::logtwo(max));
+        double logBound = static_cast<double>(n) * (Givaro::logtwo(n) / 2.0 + Givaro::logtwo(max));
 
-        return hadamardBitSize;
+        return logBound;
     }
 
     // ----- Rational solve bound
 
     struct RationalSolveHadamardBoundData {
-        size_t numBoundBitSize;
-        size_t denBoundBitSize;
+        double numLogBound;
+        double denLogBound;
     };
 
     /**
@@ -266,10 +283,10 @@ namespace LinBox {
         RationalSolveHadamardBoundData data;
 
         auto hadamardBound = DetailedHadamardBound(A);
-        size_t bNormBitSize = vectorNormBitSize(b.begin(), b.end());
+        double bLogNorm = vectorLogNorm(b.begin(), b.end());
 
-        data.numBoundBitSize = hadamardBound.boundOnMinNormBitSize + bNormBitSize + 1;
-        data.denBoundBitSize = hadamardBound.boundBitSize;
+        data.numLogBound = hadamardBound.logBoundOverMinNorm + bLogNorm + 1;
+        data.denLogBound = hadamardBound.logBound;
         return data;
     }
 }
