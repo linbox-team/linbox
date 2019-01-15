@@ -32,6 +32,7 @@
 #include <linbox/field/field-traits.h>
 #include <linbox/iterators/rebinder-solver.h>
 #include <linbox/randiter/random-prime.h>
+#include <linbox/solutions/hadamard-bound.h>
 #include <linbox/solutions/methods.h>
 #include <linbox/util/debug.h> // NotImplementedYet
 #include <linbox/vector/mdr-vector.h>
@@ -91,35 +92,52 @@ namespace LinBox {
         return solve(x, A, b, Method::Hybrid());
     }
 
+    // @fixme Split to files
+
+    //
+    // solve_cra
+    //
+
+    namespace {
+        template <class Vector, class Element, class Iteration, class PrimeGenerator, class DispatchType>
+        inline void solve_cra(Vector& num, Element& den, double hadamardLogBound, Iteration& iteration,
+                              PrimeGenerator& primeGenerator, const DispatchType& dispatch)
+        {
+            throw NotImplementedYet("Integer CRA Solve with specified dispatch type is not implemented yet.");
+        }
+
+        template <class Vector, class Element, class Iteration, class PrimeGenerator>
+        inline void solve_cra(Vector& num, Element& den, double hadamardLogBound, Iteration& iteration,
+                              PrimeGenerator& primeGenerator, const Dispatch::None& dispatch)
+        {
+            using CraAlgorithm = FullMultipRatCRA<Givaro::ModularBalanced<double>>;
+            RationalRemainder<CraAlgorithm> cra(hadamardLogBound);
+            cra(num, den, iteration, primeGenerator);
+        }
+
+        template <class Vector, class Element, class Iteration, class PrimeGenerator>
+        inline void solve_cra(Vector& num, Element& den, double hadamardLogBound, Iteration& iteration,
+                              PrimeGenerator& primeGenerator, const Dispatch::Distributed& dispatch)
+        {
+            using CraAlgorithm = FullMultipRatCRA<Givaro::ModularBalanced<double>>;
+            // @fixme Rename RationalRemainderDistributed
+            MPIratChineseRemainder<CraAlgorithm> cra(hadamardLogBound, dispatch.communicator);
+            cra(num, den, iteration, primeGenerator);
+        }
+    }
+
     /**
      * \brief Solve specialization with Chinese Remainder Algorithm method for an Integer ring.
      */
-    template <class Matrix, class Vector, class IterationMethod>
+    template <class Matrix, class Vector, class IterationMethod, class DispatchType>
     inline MdrVector<Vector>& solve(MdrVector<Vector>& x, const Matrix& A, const Vector& b, const RingCategories::IntegerTag& tag,
-                                    const Method::CRAWIP<IterationMethod>& m)
+                                    const Method::CRAWIP<IterationMethod, DispatchType>& m)
     {
-#if __LINBOX_HAVE_MPI
-        // User has MPI enabled in config, but not specified if it wanted to use it,
-        // we enable it with default communicator.
-        Communicator communicator;
-        if (m.dispatch.type == DispatchType::Unknown) {
-            m.dispatch.type = DispatchType::Distributed;
-            m.dispatch.communicator = &communicator;
-        }
-#endif
-
-        if (!m.dispatch.communicator || m.dispatch.communicator->rank() == 0) {
+        if (m.dispatch.master()) {
             commentator().start("Solve Integer CRA", "solve.integer.cra");
             solve_precheck(x, A, b);
         }
 
-        // Unspecified method, use default dispatch
-        if (m.dispatch.type == DispatchType::Unknown) {
-            // @fixme Should we use threaded by default?
-            m.dispatch.type = DispatchType::None;
-        }
-
-        // @fixme Implement
         const typename Matrix::Field& F = A.field();
         unsigned int bits = 26 - (int)ceil(log(A.rowdim() * 0.7213475205));
         PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime(bits);
@@ -128,41 +146,56 @@ namespace LinBox {
         RebinderSolver<Matrix, Vector, IterationMethod> iteration(A, b, m.iterationMethod);
 
         auto hb = RationalSolveHadamardBound(A, b);
-        double hadamard = 1.0 + hb.numLogBound + hb.denLogBound; // = ln2(2 * N * D)
+        double hadamardLogBound = 1.0 + hb.numLogBound + hb.denLogBound; // = ln2(2 * N * D)
 
-        // @fixme Use templates to prevent that if?
-        using CraAlgorithm = FullMultipRatCRA<Givaro::ModularBalanced<double>>;
-        if (m.dispatch.type == DispatchType::None) {
-            RationalRemainder<CraAlgorithm> cra(hadamard);
-            // @fixme This could take a MdrVector, right?
-            cra(num, den, iteration, genprime);
-        }
-        else if (m.dispatch.type == DispatchType::Distributed) {
-            // @fixme Rename RationalRemainderDistributed
-            MPIChineseRemainder<CraAlgorithm> cra(hadamard, m.dispatch.communicator);
-            cra(num, den, iteration, genprime);
-        }
-        else {
-            throw NotImplementedYet("Integer CRA Solve with specified dispatch type is not implemented yet.");
-        }
+        // @fixme This could take a MdrVector, right?
+        solve_cra(num, den, hadamardLogBound, iteration, genprime, m.dispatch);
 
         // @note We need to convert because the storage might be some fixed-size integer types.
-        if (!m.dispatch.communicator || m.dispatch.communicator->rank() == 0) {
+        if (m.dispatch.master()) {
             auto it_x = x.num.begin();
             auto it_num = num.begin();
 
             // Convert the result back to, what??
-            for (; it_x != x.end(); ++it_x, ++it_num) {
+            for (; it_x != x.num.end(); ++it_x, ++it_num) {
                 F.init(*it_x, *it_num);
             }
             F.init(x.den, den);
 
+            // @fixme Should we synchronize x on all nodes?
+
             commentator().stop("solve.integer.cra");
         }
+
+        return x;
+    }
+
+    /**
+     * \brief Solve specialization with Chinese Remainder Algorithm method for an Integer ring, when dispatch is automated.
+     */
+    template <class Matrix, class Vector, class IterationMethod>
+    inline MdrVector<Vector>& solve(MdrVector<Vector>& x, const Matrix& A, const Vector& b, const RingCategories::IntegerTag& tag,
+                                    const Method::CRAWIP<IterationMethod, Dispatch::Auto>& m)
+    {
+#if __LINBOX_HAVE_MPI
+        // User has MPI enabled in config, but not specified if it wanted to use it,
+        // we enable it with default communicator.
+        Communicator communicator(nullptr, 0);
+
+        Method::CRAWIP<IterationMethod, Dispatch::Distributed> newM;
+        newM.iterationMethod = m.iterationMethod;
+        newM.dispatch.communicator = &communicator;
+#else
+        // @fixme Should we use Dispatch::Threaded by default?
+        Method::CRAWIP<IterationMethod, Dispatch::None> newM;
+        newM.iterationMethod = m.iterationMethod;
+#endif
+
+        return solve(x, A, b, tag, newM);
     }
 
     //
-    // solve_in
+    // solvein
     //
     // Solve that can modify the input matrix
     //
@@ -176,9 +209,9 @@ namespace LinBox {
      * See comment for `solve`.
      */
     template <class ResultVector, class Matrix, class Vector, class CategoryTag, class SolveMethod>
-    inline ResultVector& solve_in(ResultVector& x, Matrix& A, const Vector& b, const CategoryTag& tag, const SolveMethod& m)
+    inline ResultVector& solvein(ResultVector& x, Matrix& A, const Vector& b, const CategoryTag& tag, const SolveMethod& m)
     {
-        // @fixme Should solve_in be the entry point for everything and solve just copy the matrix before executing?
+        // @fixme Should solvein be the entry point for everything and solve just copy the matrix before executing?
 
         // Here, we just fallback to non in-place solve
         return solve(x, A, b, tag, m);
@@ -188,8 +221,8 @@ namespace LinBox {
     // Precheck
     //
 
-    template <class ResultVector, class Matrix, class Vector, class CategoryTag, class SolveMethod>
-    inline bool solve_precheck(const ResultVector& x, const Matrix& A, const Vector& b)
+    template <class ResultVector, class Matrix, class Vector>
+    inline void solve_precheck(const ResultVector& x, const Matrix& A, const Vector& b)
     {
         if ((A.coldim() != x.size()) || (A.rowdim() != b.size())) {
             throw LinboxError("Incompatible dimensions of data in 'solve'.");

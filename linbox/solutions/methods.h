@@ -641,7 +641,7 @@ namespace LinBox
 
 	struct CRATraits ;
 
-    template <class IterationMethod>
+    template <class IterationMethod, class Dispatch>
     struct CRATraitsWIP ;
 
     /// Method specifiers for controlling algorithm choice
@@ -650,8 +650,8 @@ namespace LinBox
         typedef BlackboxSpecifier           Blackbox;                   //!< Method::Blackbox : no doc
         typedef EliminationSpecifier        Elimination;                //!< Method::Elimination : no doc
         typedef CRATraits                   CRA;                        //!< Use CRA for solving Integer systems.
-        template <class IterationMethod>
-        using CRAWIP = CRATraitsWIP<IterationMethod>;                           //!< @fixme Should replace CRA
+        template <class IterationMethod, class DispatchType>
+        using CRAWIP = CRATraitsWIP<IterationMethod, DispatchType>;     //!< @fixme Should replace CRA
         typedef WiedemannTraits             Wiedemann;                  //!< Method::Wiedemann : no doc
         typedef WiedemannExtensionTraits    ExtensionWiedemann;         //!< Method::ExtensionWiedemann :  no doc
         typedef BlockWiedemannTraits        BlockWiedemann;             //!< Method::BlockWiedemann : no doc
@@ -671,25 +671,53 @@ namespace LinBox
         Method() {}
     };
 
-    enum class DispatchType {
-        Unknown,        //!< Non-initialized.
-        None,           //!< All sub-computations are done sequentially.
-        Threaded,       //!< Use Paladin to thread sub-computations.
-        Distributed,    //!< Use MPI to distribute sub-computations accross nodes.
-        Combined,       //!< Use MPI then Paladin on each node.
+    /// Let implementation decides what to use.
+    struct AutoDispatch {};
+
+    /// All sub-computations are done sequentially.
+    struct NoneDispatch {
+        bool master() const { return true; }
     };
 
-    struct DispatchData {
-        DispatchType type = DispatchType::Unknown;
-        Communicator* communicator = nullptr;       //!< Used when type is Distributed or Combined.
+    /// Use Paladin to thread sub-computations.
+    struct ThreadedDispatch {
+        // @fixme Could store thread info (is there any?)
+
+        bool master() const { return true; }
     };
 
-	/// Solve using CRA (iterations uses IterationMethod)
-    // @fixme Make it <IterationMethod, Dispatch>?
-	template <class IterationMethod>
+    /// Use MPI to distribute sub-computations accross nodes.
+    struct DistributedDispatch {
+        Communicator* communicator = nullptr;
+
+        bool master() const { return communicator->rank() == 0; }
+    };
+
+    /// Use MPI then Paladin on each node.
+    struct CombinedDispatch : public DistributedDispatch, public ThreadedDispatch {
+        using DistributedDispatch::master;
+    };
+
+    /// How to dispatch sub-computations for CRA.
+    struct Dispatch {
+        using Auto = AutoDispatch;
+        using None = NoneDispatch;
+        using Threaded = ThreadedDispatch;
+        using Distributed = DistributedDispatch;
+        using Combined = CombinedDispatch;
+    };
+
+	/**
+     * Used for solve using CRA.
+     *
+     * Iterations for solve uses IterationMethod.
+     * The dispatch decides how the computation will be shared
+     * between nodes or such.
+     */
+	template <class IterationMethod, class DispatchType>
     struct CRATraitsWIP {
-        IterationMethod method;
-        DispatchData dispatch;
+        IterationMethod iterationMethod;
+        DispatchType dispatch;
 	};
 
 	/// Solve using CRA (iterations uses SolveMethod)
