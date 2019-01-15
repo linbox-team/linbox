@@ -28,6 +28,9 @@
 
 #include "givaro/zring.h"
 
+#include "linbox/integer.h"
+#include "linbox/vector/blas-vector.h"
+
 namespace LinBox
 {
 

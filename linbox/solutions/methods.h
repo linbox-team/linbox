@@ -641,12 +641,17 @@ namespace LinBox
 
 	struct CRATraits ;
 
+    template <class IterationMethod>
+    struct CRATraitsWIP ;
+
     /// Method specifiers for controlling algorithm choice
     struct Method {
         typedef HybridSpecifier             Hybrid;                     //!< Method::Hybrid : no doc
         typedef BlackboxSpecifier           Blackbox;                   //!< Method::Blackbox : no doc
         typedef EliminationSpecifier        Elimination;                //!< Method::Elimination : no doc
         typedef CRATraits                   CRA;                        //!< Use CRA for solving Integer systems.
+        template <class IterationMethod>
+        using CRAWIP = CRATraitsWIP<IterationMethod>;                           //!< @fixme Should replace CRA
         typedef WiedemannTraits             Wiedemann;                  //!< Method::Wiedemann : no doc
         typedef WiedemannExtensionTraits    ExtensionWiedemann;         //!< Method::ExtensionWiedemann :  no doc
         typedef BlockWiedemannTraits        BlockWiedemann;             //!< Method::BlockWiedemann : no doc
@@ -667,6 +672,7 @@ namespace LinBox
     };
 
     enum class DispatchType {
+        Unknown,        //!< Non-initialized.
         None,           //!< All sub-computations are done sequentially.
         Threaded,       //!< Use Paladin to thread sub-computations.
         Distributed,    //!< Use MPI to distribute sub-computations accross nodes.
@@ -674,15 +680,22 @@ namespace LinBox
     };
 
     struct DispatchData {
-        DispatchType type;
-        Communicator* communicator; //!< Used when type is Distributed or Combined.
+        DispatchType type = DispatchType::Unknown;
+        Communicator* communicator = nullptr;       //!< Used when type is Distributed or Combined.
     };
+
+	/// Solve using CRA (iterations uses IterationMethod)
+    // @fixme Make it <IterationMethod, Dispatch>?
+	template <class IterationMethod>
+    struct CRATraitsWIP {
+        IterationMethod method;
+        DispatchData dispatch;
+	};
 
 	/// Solve using CRA (iterations uses SolveMethod)
 	struct CRATraits {
 	protected:
 		Specifier& _solveMethod; //!< Method used to solve sub-computations.
-        DispatchData _dispatchData;
 
 	public:
 		CRATraits( Specifier & m) :
