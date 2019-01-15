@@ -22,9 +22,10 @@
 
 #pragma once
 
-#include <linbox/matrix/matrix-category.h>
 #include <linbox/field/field-traits.h>
 #include <linbox/integer.h>
+#include <linbox/matrix/matrix-category.h>
+#include <linbox/matrix/matrix-traits.h>
 
 #include <limits>
 
