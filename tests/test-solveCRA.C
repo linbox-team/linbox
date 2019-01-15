@@ -341,7 +341,7 @@ int main(int argc, char ** argv)
 
 #ifdef __LINBOX_HAVE_MPI
   Communicator *Cptr = NULL;
-  Cptr = new Communicator(&argc, &argv);
+  Cptr = new Communicator(&argc, &argv, MPI_THREAD_SERIALIZED);//Cptr = new Communicator(&argc, &argv);
 #endif
 
   size_t bits=10;

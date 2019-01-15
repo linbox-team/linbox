@@ -45,6 +45,7 @@ namespace LinBox
 		// MPI_initializing constructor
 		// When this communicator is destroyed MPI is shut down (finalized).
 		Communicator(int* ac, char*** av);
+		Communicator(int* ac, char*** av, int required);
 
 		// copy constructor
 		Communicator(const Communicator& D);

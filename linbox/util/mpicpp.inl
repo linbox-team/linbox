@@ -192,20 +192,24 @@ namespace LinBox
     
 	// MPI_initializing constructor
 	// When this communicator is destroyed MPI is shut down (finalized).
+	Communicator::Communicator(int* ac, char*** av, int required) :
+		_mpi_comm(MPI_COMM_WORLD), _mpi_boss(true)
+    {
+        int provided, claimed;
+ 
+        MPI_Init_thread( ac, av, required, &provided ); 
+        MPI_Query_thread( &claimed );
+        if (required != provided) {
+            std::cerr<<"Required thread level "<< required <<" but Init_thread gave " << provided <<std::endl;
+            if (provided != claimed) std::cerr<<"Query thread gave thread level "<< claimed <<" but Init_thread gave " << provided <<std::endl;
+            MPI_Abort(MPI_COMM_WORLD, 1);
+        }
+
+    }
 	Communicator::Communicator(int* ac, char*** av) :
 		_mpi_comm(MPI_COMM_WORLD), _mpi_boss(true)
-//	{ MPI_Init(ac, av); }
-{
-    int provided, claimed;
- 
-    MPI_Init_thread( ac, av, MPI_THREAD_SERIALIZED, &provided );
- 
-    MPI_Query_thread( &claimed );
-    if (claimed != provided) {
-        printf( "Query thread gave thread level %d but Init_thread gave %d\n", claimed, provided );fflush(stdout);
-    }
+	{ MPI_Init(ac, av); }
 
-}
     
 	// copy constructor
 	Communicator::Communicator(const Communicator& D) :
