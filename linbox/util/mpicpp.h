@@ -26,7 +26,14 @@
 #ifndef __LINBOX_HAVE_MPI
 namespace LinBox {
     // Dummy declaration.
-    using Communicator = int;
+    class Communicator {
+    public:
+        Communicator(int* argc, char*** argv) {}
+
+        inline int size() const { return 1; }
+        inline int rank() const { return 0; }
+        inline bool master() const { return true; }
+    };
 }
 #else
 
@@ -61,6 +68,7 @@ namespace LinBox {
         // Accessors
         int size() const { return _size; }
         int rank() const { return _rank; }
+        bool master() const { return _rank == 0; }
         MPI_Status status() const { return _status; }
         MPI_Comm comm() const { return _comm; }
 
