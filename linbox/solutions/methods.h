@@ -55,9 +55,7 @@
 #  define DEFAULT_EARLY_TERM_THRESHOLD 20
 #endif
 
-#ifdef __LINBOX_HAVE_MPI
 #include "linbox/util/mpicpp.h"
-#endif
 
 #ifndef LINBOX_USE_BLACKBOX_THRESHOLD
 #define LINBOX_USE_BLACKBOX_THRESHOLD 1000
@@ -690,7 +688,7 @@ namespace LinBox
     struct DistributedDispatch {
         Communicator* communicator = nullptr;
 
-        bool master() const { return communicator->rank() == 0; }
+        bool master() const { return communicator != nullptr && communicator->master(); }
     };
 
     /// Use MPI then Paladin on each node.

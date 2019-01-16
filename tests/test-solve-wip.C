@@ -1,5 +1,6 @@
 // @fixme LICENCE
 
+#include <linbox/matrix/densematrix/blas-matrix.h>
 #include <linbox/solutions/solve-wip.h> // @fixme Just testing it compiles for now
 
 using namespace LinBox;

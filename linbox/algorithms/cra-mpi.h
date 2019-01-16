@@ -28,6 +28,8 @@
 #ifndef __LINBOX_cra_mpi_H
 #define __LINBOX_cra_mpi_H
 
+#if defined(__LINBOX_HAVE_MPI)
+
 #define MPICH_IGNORE_CXX_SEEK //BB: ???
 #include "linbox/util/timer.h"
 #include <stdlib.h>
@@ -588,6 +590,7 @@ namespace LinBox
 }
 
 #undef MPICH_IGNORE_CXX_SEEK
+#endif // __LINBOX_HAVE_MPI
 #endif // __LINBOX_cra_mpi_H
 
 // Local Variables:

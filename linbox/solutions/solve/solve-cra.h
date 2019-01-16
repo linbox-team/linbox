@@ -38,6 +38,7 @@
 #include <linbox/iterators/rebinder-solver.h>
 #include <linbox/randiter/random-prime.h>
 #include <linbox/solutions/hadamard-bound.h>
+#include <linbox/util/commentator.h>
 
 namespace {
     /**
@@ -59,6 +60,7 @@ namespace {
         cra(num, den, iteration, primeGenerator);
     }
 
+#if defined(__LINBOX_HAVE_MPI) // @fixme Is this useful?
     template <class Vector, class Element, class Iteration, class PrimeGenerator>
     inline void solve_from_dispatch(Vector& num, Element& den, double hadamardLogBound, Iteration& iteration,
                                     PrimeGenerator& primeGenerator, const LinBox::Dispatch::Distributed& dispatch)
@@ -68,6 +70,7 @@ namespace {
         LinBox::MPIratChineseRemainder<CraAlgorithm> cra(hadamardLogBound, dispatch.communicator);
         cra(num, den, iteration, primeGenerator);
     }
+#endif
 }
 
 namespace LinBox {
