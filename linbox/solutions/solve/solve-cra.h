@@ -35,10 +35,11 @@
 #include <linbox/algorithms/cra-mpi.h> // @fixme Rename this file rational-remainder-distributed
 #include <linbox/algorithms/rational-cra-full-multip.h>
 #include <linbox/algorithms/rational-cra.h> // @fixme Rename this file rational-remainder
-#include <linbox/iterators/rebinder-solver.h>
+#include <linbox/field/rebind.h>
 #include <linbox/randiter/random-prime.h>
 #include <linbox/solutions/hadamard-bound.h>
 #include <linbox/util/commentator.h>
+#include <linbox/vector/vector-traits.h>
 
 namespace {
     /**
@@ -71,6 +72,46 @@ namespace {
         cra(num, den, iteration, primeGenerator);
     }
 #endif
+
+    /**
+     * Initialized with a matrix A, vector b and a solve method,
+     * returns x such that Ax = b (if any).
+     *
+     * The parentheses operator excepts the computation to take place
+     * in a rebinded environment, with another field.
+     *
+     * This is used as a proxy within solve integer CRA
+     * to provide each solve operations mod p.
+     */
+    template <class Matrix, class Vector, class SolveMethod>
+    struct CraRebinderSolver {
+        const Matrix& A;
+        const Vector& b;
+        const SolveMethod& m;
+
+        CraRebinderSolver(const Matrix& _A, const Vector& _b, const SolveMethod& _m)
+            : A(_A)
+            , b(_b)
+            , m(_m)
+        {
+        }
+
+        template <typename Field>
+        typename LinBox::Rebind<Vector, Field>::other& operator()(typename LinBox::Rebind<Vector, Field>::other& x, const Field& F) const
+        {
+            using FMatrix = typename Matrix::template rebind<Field>::other;
+            using FVector = typename LinBox::Rebind<Vector, Field>::other;
+
+            FMatrix FA(A, F);
+
+            // @fixme Why is the convention reversed here?
+            // Above it's (-, Field) whereas here is (Field, -).
+            FVector Fb(F, b);
+
+            LinBox::VectorWrapper::ensureDim(x, A.coldim());
+            return solve(x, FA, Fb, m);
+        }
+    };
 }
 
 namespace LinBox {
@@ -91,7 +132,7 @@ namespace LinBox {
         PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime(bits);
         BlasVector<Givaro::ZRing<Integer>> num(F, A.coldim());
         Integer den(1);
-        RebinderSolver<Matrix, Vector, IterationMethod> iteration(A, b, m.iterationMethod);
+        CraRebinderSolver<Matrix, Vector, IterationMethod> iteration(A, b, m.iterationMethod);
 
         auto hb = RationalSolveHadamardBound(A, b);
         double hadamardLogBound = 1.0 + hb.numLogBound + hb.denLogBound; // = ln2(2 * N * D)
