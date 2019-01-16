@@ -39,7 +39,7 @@
 template <class Simd>
 inline Simd_vect reduce (const Simd_vect a, const Simd_vect p) {
 	Simd_vect t = Simd::greater(p,a);
-	return Simd::sub(a, Simd::vandnot(p,t));
+	return Simd::sub(a, Simd::vandnot(t,p));
 }
 
 template <class Simd>
