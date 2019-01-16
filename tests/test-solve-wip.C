@@ -14,9 +14,8 @@ int main(void)
     BlasVector<Field> b(F, 2);
     BlasMatrix<Field> A(F, 2, 2);
 
-    Method::CRAWIP<Method::Hybrid, Dispatch::Auto> m;
-
-    solve(x, A, b, m);
+    // @note Defaults to Method::CRAWIP<Method::Hybrid, Dispatch::Auto> m;
+    solve(x, A, b, Method::CRAWIP<>());
 
     return 0;
 }

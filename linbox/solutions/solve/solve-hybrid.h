@@ -23,5 +23,13 @@
 #pragma once
 
 namespace LinBox {
-    // @fixme Implement
+    /**
+     * \brief Solve specialisation for Hybrid.
+     */
+    template <class ResultVector, class Matrix, class Vector, class CategoryTag>
+    ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag, const Method::Hybrid& m)
+    {
+        // @fixme useBB(), as the hybrid should go according to sparse or so
+        return solve(x, A, b, tag, Method::BlasElimination());
+    }
 }

@@ -637,38 +637,6 @@ namespace LinBox
 		unsigned int nullcol() const { return _nullcol ; }
 		} ;
 
-	struct CRATraits ;
-
-    template <class IterationMethod, class Dispatch>
-    struct CRATraitsWIP ;
-
-    /// Method specifiers for controlling algorithm choice
-    struct Method {
-        typedef HybridSpecifier             Hybrid;                     //!< Method::Hybrid : no doc
-        typedef BlackboxSpecifier           Blackbox;                   //!< Method::Blackbox : no doc
-        typedef EliminationSpecifier        Elimination;                //!< Method::Elimination : no doc
-        typedef CRATraits                   CRA;                        //!< Use CRA for solving Integer systems.
-        template <class IterationMethod, class DispatchType>
-        using CRAWIP = CRATraitsWIP<IterationMethod, DispatchType>;     //!< @fixme Should replace CRA
-        typedef WiedemannTraits             Wiedemann;                  //!< Method::Wiedemann : no doc
-        typedef WiedemannExtensionTraits    ExtensionWiedemann;         //!< Method::ExtensionWiedemann :  no doc
-        typedef BlockWiedemannTraits        BlockWiedemann;             //!< Method::BlockWiedemann : no doc
-        typedef CoppersmithTraits           Coppersmith;                //!< Method::Coppersmith : no doc
-        typedef LanczosTraits               Lanczos;                    //!< Method::Lanczos : no doc.
-        typedef BlockLanczosTraits          BlockLanczos;               //!< Method::BlockLanczos : no doc.
-        typedef SparseEliminationTraits     SparseElimination;          //!< Method::SparseElimination : no doc
-        typedef NumSymOverlapTraits         NumSymOverlap;              //!< Method::NumSymOverlap : Use Youse's overlap-based numeric/symbolic iteration for Rational solving of dense integer systems
-        typedef NumSymNormTraits            NumSymNorm;                 //!< Method::NumSymNorm : Use Wan's (older) norm-based numeric/symbolic iteration for Rational solving of dense integer systems
-        typedef AdaptiveSolverTraits        Adaptive;                   //!< Method::Adaptive: Use NumSymOverlap if it works.  If it fails, switch to IML probably.
-        typedef BlasEliminationTraits       BlasElimination;            //!< Method::BlasElimination : no doc
-        typedef BlasExtensionTraits         ExtensionBlasElimination;   //!< Method::ExtensionBlasElimination : no doc
-        typedef NonBlasEliminationTraits    NonBlasElimination;         //!< Method::NonBlasElimination : no doc.
-        typedef DixonTraits                 Dixon;                      //!< Method::Dixon : no doc
-        typedef BlockHankelTraits           BlockHankel;                //!< Method::BlockHankel : no doc
-        typedef IMLTraits                   IML;                        //!< Use IML for solving Dense Integer systems.
-        Method() {}
-    };
-
     /// Let implementation decides what to use.
     struct AutoDispatch {};
 
@@ -703,6 +671,38 @@ namespace LinBox
         using Threaded = ThreadedDispatch;
         using Distributed = DistributedDispatch;
         using Combined = CombinedDispatch;
+    };
+
+	struct CRATraits ;
+
+    template <class IterationMethod, class Dispatch>
+    struct CRATraitsWIP ;
+
+    /// Method specifiers for controlling algorithm choice
+    struct Method {
+        typedef HybridSpecifier             Hybrid;                     //!< Method::Hybrid : no doc
+        typedef BlackboxSpecifier           Blackbox;                   //!< Method::Blackbox : no doc
+        typedef EliminationSpecifier        Elimination;                //!< Method::Elimination : no doc
+        typedef CRATraits                   CRA;                        //!< Use CRA for solving Integer systems.
+        template <class IterationMethod = Method::Hybrid, class DispatchType = Dispatch::Auto>
+        using CRAWIP = CRATraitsWIP<IterationMethod, DispatchType>;     //!< @fixme Should replace CRA
+        typedef WiedemannTraits             Wiedemann;                  //!< Method::Wiedemann : no doc
+        typedef WiedemannExtensionTraits    ExtensionWiedemann;         //!< Method::ExtensionWiedemann :  no doc
+        typedef BlockWiedemannTraits        BlockWiedemann;             //!< Method::BlockWiedemann : no doc
+        typedef CoppersmithTraits           Coppersmith;                //!< Method::Coppersmith : no doc
+        typedef LanczosTraits               Lanczos;                    //!< Method::Lanczos : no doc.
+        typedef BlockLanczosTraits          BlockLanczos;               //!< Method::BlockLanczos : no doc.
+        typedef SparseEliminationTraits     SparseElimination;          //!< Method::SparseElimination : no doc
+        typedef NumSymOverlapTraits         NumSymOverlap;              //!< Method::NumSymOverlap : Use Youse's overlap-based numeric/symbolic iteration for Rational solving of dense integer systems
+        typedef NumSymNormTraits            NumSymNorm;                 //!< Method::NumSymNorm : Use Wan's (older) norm-based numeric/symbolic iteration for Rational solving of dense integer systems
+        typedef AdaptiveSolverTraits        Adaptive;                   //!< Method::Adaptive: Use NumSymOverlap if it works.  If it fails, switch to IML probably.
+        typedef BlasEliminationTraits       BlasElimination;            //!< Method::BlasElimination : no doc
+        typedef BlasExtensionTraits         ExtensionBlasElimination;   //!< Method::ExtensionBlasElimination : no doc
+        typedef NonBlasEliminationTraits    NonBlasElimination;         //!< Method::NonBlasElimination : no doc.
+        typedef DixonTraits                 Dixon;                      //!< Method::Dixon : no doc
+        typedef BlockHankelTraits           BlockHankel;                //!< Method::BlockHankel : no doc
+        typedef IMLTraits                   IML;                        //!< Use IML for solving Dense Integer systems.
+        Method() {}
     };
 
 	/**
