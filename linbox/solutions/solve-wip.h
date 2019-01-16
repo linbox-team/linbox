@@ -88,8 +88,10 @@ namespace LinBox {
 
 #include "./solve/solve-utils.h"
 
-#include "./solve/solve-hybrid.h"
+#include "./solve/solve-blas-elimination.h"
 #include "./solve/solve-cra.h"
+#include "./solve/solve-dixon.h"
+#include "./solve/solve-hybrid.h"
 // @fixme Include other files for solve grouped by method
 
 #include "./solve/solvein.h"
