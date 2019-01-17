@@ -314,7 +314,7 @@ namespace LinBox {
 													const vect_t& beta ,const vect_t& betap,
 													const vect_t& P    ,const vect_t& P2) {
 			// First 3 steps
-			vect_t V1,V2,V3,V4,V5,V6,V7,Q;
+			vect_t V1,V2,V3,V4,V5,V6,V7;
 			// V1=[A B C D E F G H], V2=[I J K L M N O P]
 			V1 = MemoryOp<Element,simd>::load(ABCDEFGH);
 			V2 = MemoryOp<Element,simd>::load(IJKLMNOP);
@@ -415,7 +415,7 @@ namespace LinBox {
 												  const vect_t& beta ,const vect_t& betap,
 												  const vect_t& P, const vect_t& P2) {
 			// Last 3 steps
-			vect_t V1,V2,V3,V4,V5,V6,V7,Q;
+			vect_t V1,V2,V3,V4,V5,V6,V7;
 
 			// V1=[A B C D E F G H], V2=[I J K L M N O P]
 			V1 = MemoryOp<Element,simd>::load(ABCDEFGH);
