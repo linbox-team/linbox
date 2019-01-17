@@ -68,11 +68,6 @@ namespace LinBox
 		template<class Function, class PrimeIterator>
 		Integer& operator() (Integer& res, Function& Iteration, PrimeIterator& primeiter)
 		{
-			//! @bug why why why ???
-			/** erreur: ‘omp_get_num_threads’ has not been declared
-			 * ../linbox/algorithms/cra-domain-omp.h:152:16: note: suggested alternative:
-			 * /usr/lib/gcc/x86_64-linux-gnu/4.6/include/omp.h:64:12: note:   ‘Givaro::omp_get_num_threads’
-			 */
             
 			size_t NN;
 #pragma omp parallel
@@ -108,33 +103,6 @@ namespace LinBox
 			return this->Builder_.result(res);
 		}
         
-        template<class Function>
-        void para_compute(Function Iteration){
-			size_t NN;
-#pragma omp parallel
-#pragma omp single
-			NN = omp_get_num_threads();
-            typedef typename CRATemporaryVectorTrait<Function, Domain>::Type_t ElementContainer;
-            std::set<int> coprimeset;
-            std::vector<ElementContainer> ROUNDresidues;ROUNDresidues.resize(NN);
-            std::vector<Domain> ROUNDdomains;ROUNDdomains.resize(NN);
-            std::vector<LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>> m_primeiters;
-            std::vector<CRABase> vBuilders;vBuilders.resize(NN);
-            
-            for(auto j=0u;j<NN;j++){
-                LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag> m_primeiter( j, NN);
-                
-                CRABase Builder_(B);vBuilders.push_back(Builder_);
-                
-                m_primeiters.push_back(m_primeiter);
-                
-            }
-            
-            compute_task( (this->Builder_), m_primeiters, coprimeset, Iteration,  ROUNDdomains,
-                          ROUNDresidues, vBuilders);
-            
-            
-        }
         
 		template<class Function, class PrimeIterator>
 		Integer& operator() (Integer& res, Integer& den, Function& Iteration, PrimeIterator& primeiter)
@@ -158,7 +126,39 @@ namespace LinBox
 			return this->Builder_.result(res,den);
 		}
 		
-        
+
+        template<class Function>
+        void para_compute(Function Iteration){
+			size_t NN;
+#pragma omp parallel
+#pragma omp single
+			NN = omp_get_num_threads();
+
+
+            typedef typename CRATemporaryVectorTrait<Function, Domain>::Type_t ElementContainer;
+            std::set<int> coprimeset;
+            std::vector<ElementContainer> ROUNDresidues;ROUNDresidues.resize(NN);
+            std::vector<Domain> ROUNDdomains;ROUNDdomains.resize(NN);
+            std::vector<LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>> m_primeiters;m_primeiters.reserve(NN);
+
+            std::vector<CRABase> vBuilders;vBuilders.reserve(NN);
+            
+
+            for(auto j=0u;j<NN;j++){
+                LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag> m_primeiter( j, NN);
+                ++m_primeiter; m_primeiters.push_back(m_primeiter);
+                
+                CRABase Builder_(B);vBuilders.push_back(Builder_);
+                
+            }
+            
+            compute_task( (this->Builder_), m_primeiters, coprimeset, Iteration,  ROUNDdomains,
+                          ROUNDresidues, vBuilders);
+            
+            
+        }
+
+
         template< class Function, class PrimeIterator, class Domain, class ElementContainer>
         void solve_with_prime(std::vector<PrimeIterator>& m_primeiters, std::set<int>& coprimeset,
                               Function& Iteration, std::vector<Domain>& ROUNDdomains,
@@ -166,26 +166,18 @@ namespace LinBox
         {
             
             ++m_primeiters[ omp_get_thread_num()];
-#if 1
+
             while(vBuilders[ omp_get_thread_num()].noncoprime(*m_primeiters[ omp_get_thread_num()]) )
                 ++m_primeiters[ omp_get_thread_num()];
             
-#else
-#pragma omp critical
-            while(this->Builder_.noncoprime(*m_primeiters[ omp_get_thread_num()]) 
-                  && coprimeset.find(*m_primeiters[omp_get_thread_num()])!=coprimeset.end()
-                  )
-                ++m_primeiters[ omp_get_thread_num()];
-            
-#endif
             
             ROUNDdomains[ omp_get_thread_num()] = Domain(*m_primeiters[ omp_get_thread_num()]);
             
             Iteration(ROUNDresidues[ omp_get_thread_num()], ROUNDdomains[ omp_get_thread_num()]);
             
         }
-        
-        
+
+
         template<class pFunc, class Function, class PrimeIterator, class Domain, class ElementContainer>
         void compute_task(pFunc& pF, std::vector<PrimeIterator>& m_primeiters, std::set<int>& coprimeset,
                           Function& Iteration, std::vector<Domain>& ROUNDdomains,
@@ -197,7 +189,7 @@ namespace LinBox
 #pragma omp single
 			NN = omp_get_num_threads();
             long Niter=std::ceil(1.442695040889*B/(double)(m_primeiters[0].getBits()-1));
-                        
+
 #pragma omp parallel for num_threads(NN) schedule(dynamic,1)
             for(auto j=0;j<Niter;j++)
                 {
@@ -223,7 +215,7 @@ namespace LinBox
                 }
             
         }
-        
+      
         
 		template<class Container, class Function, class PrimeIterator>
 		Container& operator()  (Container& res, Integer& den, Function& Iteration, PrimeIterator& primeiter)
