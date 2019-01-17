@@ -160,7 +160,6 @@ namespace LinBox
 		}
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         
         template< class Function, class Domain, class ElementContainer>
         void solve_with_prime(int m_primeiter, 
@@ -248,95 +247,7 @@ namespace LinBox
 
         }
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#if 0
-	template<class Vect, class Function, class PrimeIterator>
-		void  para_compute( Vect& num, Function& Iteration, PrimeIterator& primeg)
-		{    
-            
-            Domain D(*primeg);
-            BlasVector<Domain> r(D);
-            Timer chrono;
 
-			//  parent propcess
-			if(_commPtr->rank() == 0){
-               
-                master_process_task(Iteration, D, r);
-
-			}
-			//  child process
-			else{
-
-                worker_process_task(Iteration, r);
-
-			}
-
-		}
-		
-        template<class Vect>
-        void master_recv_residues(Vect &r, int &pp, int &Niter)
-        {
-            
-#pragma omp master
-{            
-            r.resize (r.size()+1);
-
-            //receive the beginnin and end of a vector in heapspace
-            _commPtr->recv(r.begin(), r.end(), MPI_ANY_SOURCE, 0);
-
-            
-            //Update the number of iterations for the next step
-            Niter--;
-
-            //Store the corresponding prime number
-            pp = r[r.size()-1];
-
-            //Restructure the vector without added prime number
-            r.resize (r.size()-1);            
-}
-
-        }
-
-        template<class Vect>
-        void master_compute(Domain &D, Vect &r, int Niter)
-        {
-
-            int pp;
-BlasVector<Domain> pr(D);
-            int Nthread = Niter;
-#pragma omp parallel 
-#pragma omp single
-            Nthread=omp_get_num_threads();
-
-#pragma omp parallel for num_threads(Nthread) schedule(dynamic,1) //private(pp,pr) shared(Niter)
-            for(auto i=0; i<Niter;i++ ){
-
-                master_recv_residues(r, pp, Niter);
-
-#pragma omp critical
-{
-                Domain D(pp);
-                
-                Builder_.progress(D, r);
-}
-               
-            }
-
-        }
-        
-        template<class Vect, class Function>
-        void master_process_task(Function& Iteration, Domain &D, Vect &r)
-        {
-            int vNtask_per_proc[_commPtr->size() - 1];
-            int Niter = 0;
-            master_init(vNtask_per_proc, Iteration, D, r, Niter);
-            
-            master_compute(D, r, Niter);
-   
-        }
-        
-        
-#else
 	template<class Vect, class Function, class PrimeIterator>
 		void  para_compute( Vect& num, Function& Iteration, PrimeIterator& primeg)
 		{    
@@ -411,7 +322,6 @@ BlasVector<Domain> pr(D);
    
         }
 
-#endif
         
         template<class Vect, class Function>
         void master_init(int *vNtask_per_proc, Function& Iteration, Domain &D, Vect &r, int &Niter)
