@@ -171,7 +171,7 @@ namespace LinBox
                               ElementContainer& VECTORresidues
                               )
         {
-            
+
             VECTORdomains[ omp_get_thread_num()] = Domain(m_primeiter);
             
             Iteration(VECTORresidues, VECTORdomains[ omp_get_thread_num()]);
@@ -208,7 +208,10 @@ namespace LinBox
         template<class Vect, class Function>
         void worker_process_task(Function& Iteration,  Vect &r)
         {
-           
+char name[MPI_MAX_PROCESSOR_NAME];int len;MPI_Get_processor_name(name, &len);
+std::cout<<" <<<<< proc("<<_commPtr->rank()<<")  on node("<<name<<")"<<std::endl;
+
+  
             int Ntask=0;
             LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   gen(_commPtr->rank(),_commPtr->size());
             //LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag>   gen(_commPtr->rank(),_commPtr->size());
@@ -219,9 +222,12 @@ namespace LinBox
                 std::unordered_set<int> prime_used;
 
 			size_t Nthread = Ntask;
-#pragma omp parallel 
+#pragma omp parallel
+{
+std::cout<<"Thread("<<omp_get_thread_num()<<") for proc("<<_commPtr->rank()<<")  on node("<<name<<")"<<std::endl;
 #pragma omp single
             Nthread=omp_get_num_threads();
+}
 
             std::vector<BlasVector<Domain>> VECTORresidues;VECTORresidues.resize(Ntask);
             std::vector<Domain> VECTORdomains;VECTORdomains.resize(Nthread);
@@ -330,6 +336,10 @@ namespace LinBox
         template<class Vect, class Function>
         void master_init(int *vNtask_per_proc, Function& Iteration, Domain &D, Vect &r)
         {
+char name[MPI_MAX_PROCESSOR_NAME];int len;MPI_Get_processor_name(name, &len);
+std::cout<<" >>>>> proc("<<_commPtr->rank()<<")  on node("<<name<<")"<<std::endl;
+
+
 			int procs = _commPtr->size();
 
             int Niter=this->getNiter();
