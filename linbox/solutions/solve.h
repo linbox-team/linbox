@@ -844,9 +844,9 @@ Integer den(0);
 
 #endif
 
+        typedef Givaro::ModularBalanced<double> Field2proj;
 
-		PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205))); //RandomPrimeIterator genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
-//PrimeIterator<LinBox::IteratorCategories::DeterministicTag> genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
+        PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime(FieldTraits<Field2proj>::bestBitSize()); 
 
 		Vector num(A.field(),A.coldim());
 
@@ -876,11 +876,10 @@ Integer den(0);
 
 
 #ifdef __LINBOX_HAVE_MPI
-		HybridChineseRemainder< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(hadamard, C);
+		HybridChineseRemainder< FullMultipRatCRA< Field2proj > > cra(hadamard, C);
 #else
         std::cerr << "Sequential solveCRA" << std::endl;
-        RationalRemainder< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(hadamard);
-//        RationalRemainder< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(3UL);
+        RationalRemainder< FullMultipRatCRA< Field2proj > > cra(hadamard);
 #endif
 
 #ifdef __Detailed_Time_Measurement

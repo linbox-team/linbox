@@ -191,9 +191,6 @@ void rand_param_vary(size_t &n, size_t &ni, size_t &bits, size_t &bitsize, bool 
   
   peak = !peak;
   
-  std::cout << " Test with dimension: " << n << " x " << n << std::endl;
-  std::cout << " Test with bitsize: " << bits << std::endl;
-  
 }
 /////////////////////////////////////////////////////
 template <class Field>
@@ -273,7 +270,8 @@ void update_input(BlasMatrix<Field>& A, BlasVector<Field>& B, BlasVector<Field>&
       bits = bitsize;  
       n = ni;
     }
-    
+  std::cout << " Test with dimension: " << n << " x " << n << std::endl;
+  std::cout << " Test with bitsize: " << bits << std::endl;
 #ifdef __LINBOX_HAVE_MPI 	
   }
 #endif    

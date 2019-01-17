@@ -66,6 +66,10 @@ namespace LinBox
 			Builder_(b), _commPtr(c), _numprocs(c->size())
 			, HB(b)//Init with hadamard bound
 		{}
+		
+		int getNiter(){
+		    return std::ceil(1.442695040889*HB/(double)(LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>(0,_commPtr->size()).getBits()-1));
+		}
         
 		/** \brief The CRA loop.
 		 *
@@ -180,17 +184,17 @@ namespace LinBox
         template<class pFunc, class Function,  class Domain, class ElementContainer>
         void compute_task(pFunc& pF, std::vector<int>& m_primeiters, 
                           Function& Iteration, std::vector<Domain>& VECTORdomains,
-                          std::vector<ElementContainer>& VECTORresidues, size_t Niter)
+                          std::vector<ElementContainer>& VECTORresidues, size_t Ntask)
         {
             
-            int Nthread = Niter;
+            int Nthread = Ntask;
 
 #pragma omp parallel 
 #pragma omp single
             Nthread=omp_get_num_threads();
 
 #pragma omp parallel for simd num_threads(Nthread) schedule(dynamic,1)
-            for(auto j=0u;j<Niter;j++)
+            for(auto j=0u;j<Ntask;j++)
                 {
   
                     solve_with_prime(m_primeiters[j], Iteration, VECTORdomains, VECTORresidues[j]);
@@ -232,8 +236,7 @@ namespace LinBox
                 }
  
           
-            compute_task( (this->Builder_), m_primeiters, Iteration,  VECTORdomains,
-                          VECTORresidues, Ntask);	
+            compute_task( (this->Builder_), m_primeiters, Iteration,  VECTORdomains, VECTORresidues, Ntask);	
 
 
                 for(long i=0; i<Ntask; i++){
@@ -272,7 +275,7 @@ namespace LinBox
 		}
 		
         template<class Vect>
-        void master_recv_residues(Vect &r, int &pp, int &Niter)
+        void master_recv_residues(Vect &r, int &pp, int &Nrecv)
         {           
             r.resize (r.size()+1);
 
@@ -280,7 +283,7 @@ namespace LinBox
             _commPtr->recv(r.begin(), r.end(), MPI_ANY_SOURCE, 0);
             
             //Update the number of iterations for the next step
-            Niter--;
+            Nrecv--;
 
            
             //Store the corresponding prime number
@@ -292,15 +295,16 @@ namespace LinBox
         }
         
         template<class Vect>
-        void master_compute(Vect &r, int Niter)
+        void master_compute(Vect &r)
         {
 
             int pp;
 
+            int Nrecv=this->getNiter();
 
-            while(Niter > 0 ){
+            while(Nrecv > 0 ){
                
-                master_recv_residues(r, pp, Niter);
+                master_recv_residues(r, pp, Nrecv);
 
                 Domain D(pp);
                 
@@ -315,21 +319,20 @@ namespace LinBox
         void master_process_task(Function& Iteration, Domain &D, Vect &r)
         {
             int vNtask_per_proc[_commPtr->size() - 1];
-            int Niter = 0;
-            master_init(vNtask_per_proc, Iteration, D, r, Niter);
             
-            master_compute(r, Niter);
+            master_init(vNtask_per_proc, Iteration, D, r);
+            
+            master_compute(r);
    
         }
 
         
         template<class Vect, class Function>
-        void master_init(int *vNtask_per_proc, Function& Iteration, Domain &D, Vect &r, int &Niter)
+        void master_init(int *vNtask_per_proc, Function& Iteration, Domain &D, Vect &r)
         {
 			int procs = _commPtr->size();
 
-			LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   gen(_commPtr->rank(),_commPtr->size());
-            Niter=std::ceil(1.442695040889*HB/(double)(gen.getBits()-1));
+            int Niter=this->getNiter();
 
             //Compute nb of tasks ought to be realized for each process
             if(Niter<(procs-1)){
