@@ -33,7 +33,7 @@
 #ifndef __LINBOX_polynomial_H
 #define __LINBOX_polynomial_H
 
-
+#include "givaro/givpoly1.h"
 #include "givaro/givpoly1dense.h"
 #include "linbox/field/hom.h"
 namespace LinBox {
