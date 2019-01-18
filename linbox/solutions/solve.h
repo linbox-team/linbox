@@ -770,13 +770,21 @@ namespace LinBox
 		const Vector &B;
 		const MyMethod &M;
 
-		IntegerModularSolve(const Blackbox& b, const Vector& v, const MyMethod& n) :
+		IntegerModularSolve(const Blackbox& b, const Vector& v, const MyMethod& n
+#ifdef __LINBOX_HAVE_MPI
+                        ,Communicator   *C
+#endif
+) :
 			A(b), B(v), M(n)
 		{}
 
 
 		template<typename Field>
-		typename Rebind<Vector, Field>::other& operator()(typename Rebind<Vector, Field>::other& x, const Field& F) const
+		typename Rebind<Vector, Field>::other& operator()(typename Rebind<Vector, Field>::other& x, const Field& F
+#ifdef __LINBOX_HAVE_MPI
+                        ,Communicator   *C = NULL
+#endif
+) const
 		{
 			typedef typename Blackbox::template rebind<Field>::other FBlackbox;
 #ifdef __Detailed_Time_Measurement
@@ -792,7 +800,7 @@ namespace LinBox
             chrono.stop();
             std::cout<<
 #ifdef __LINBOX_HAVE_MPI
-            "Process "<<C->rank()<< 
+            "Process "<<C->rank()<<
 #endif
             " Modulo "<<chrono.usertime()<<std::endl;
 #endif
@@ -850,7 +858,12 @@ Integer den(0);
 
 		Vector num(A.field(),A.coldim());
 
-		IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
+		IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M
+#ifdef __LINBOX_HAVE_MPI
+                        ,C
+#endif
+
+);
 
 		typename BB::ConstIterator it = A.Begin();
 		typename BB::ConstIterator it_end = A.End();

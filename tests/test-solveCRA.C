@@ -339,7 +339,7 @@ int main(int argc, char ** argv)
 
 #ifdef __LINBOX_HAVE_MPI
   Communicator *Cptr = NULL;
-  Cptr = new Communicator(&argc, &argv, MPI_THREAD_SERIALIZED);//Cptr = new Communicator(&argc, &argv);
+  Cptr = new Communicator(&argc, &argv, MPI_THREAD_MULTIPLE);//Cptr = new Communicator(&argc, &argv);
 #endif
 
   size_t bits=10;
@@ -364,7 +364,7 @@ int main(int argc, char ** argv)
     { 's', "-s S", "Set the seed to fill the input matrices.", TYPE_INT,     &seed },
     { 't', "-t T", "Set the number of threads per process.", TYPE_INT,     &nt },
     END_OF_ARGUMENTS
-  };	
+  };
   parseArguments (argc, argv, args); 
   
   
