@@ -47,7 +47,7 @@ namespace LinBox
 	 */
 	template < class Polynomial, class Blackbox >
 	Polynomial& cia (Polynomial & P, const Blackbox & A,
-			 const Method::BlasElimination  & M)
+			 const Method::DenseElimination  & M)
 	{
 		commentator().start ("Integer Givaro::Dense Charpoly ", "CIA");
 
