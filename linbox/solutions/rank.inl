@@ -65,9 +65,9 @@ namespace LinBox
 		const Field& F = A.field();
 		integer a, b; F.characteristic(a); F.cardinality(b);
 		if (a == b && a < LinBox::BlasBound)
-			return rank(r, A, tag, Method::BlasElimination(m));
+			return rank(r, A, tag, Method::DenseElimination(m));
 		else
-			return rank(r, A, tag, Method::NonBlasElimination( m ));
+			return rank(r, A, tag, Method::SparseElimination( m ));
 	}
 
 	template <class Field, class Vector>
@@ -78,28 +78,6 @@ namespace LinBox
 	{
 		return rank(r, A, tag, Method::SparseElimination(m));
 	}
-
-
-	// specialization of NonBlas for SparseMatrix
-	template <class Blackbox>
-	inline size_t &rank (size_t                       &r,
-				    const Blackbox                      &A,
-				    const   RingCategories::ModularTag  &tag,
-				    const Method::NonBlasElimination    & m)
-	{
-		return rank(r, A, tag, Method::SparseElimination(m));
-	}
-
-	// specialization of NonBlas for SparseMatrix
-	template <class Blackbox>
-	inline size_t &rankin (size_t                       &r,
-				    Blackbox                      &A,
-				    const   RingCategories::ModularTag  &tag,
-				    const Method::NonBlasElimination    & m)
-	{
-		return rankin(r, A, tag, Method::SparseElimination(m));
-	}
-
 
 	template <class Blackbox>
 	inline size_t &rank (size_t                     &r,
@@ -429,12 +407,12 @@ namespace LinBox
 		return rankin(r, copyA, tag, M);
 	}
 
-	// M may be <code>Method::BlasElimination()</code>.
+	// M may be <code>Method::DenseElimination()</code>.
 	template <class Blackbox>
 	inline size_t &rank (size_t                      &r,
 				    const Blackbox                     &A,
 				    const RingCategories::ModularTag   &tag,
-				    const Method::BlasElimination      &M)
+				    const Method::DenseElimination      &M)
 	{
 
 		commentator().start ("Blas Rank", "blasrank");
@@ -465,7 +443,7 @@ namespace LinBox
 
 // 		FBlackbox Ap(Fp, A.rowdim(), A.coldim() );
 //         typename Blackbox::template rebind<projField>()(Ap,A);
-        
+
 
 		commentator().report (Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION) << "Integer Rank is done modulo " << *genprime << std::endl;
 
@@ -631,7 +609,7 @@ namespace LinBox { /*  rankin */
 	inline size_t &rankin (size_t                     &r,
 				      BlasMatrix<Field>               &A,
 				      const RingCategories::ModularTag  &tag,
-				      const Method::BlasElimination     &M)
+				      const Method::DenseElimination     &M)
 	{
 
 		commentator().start ("BlasBB Rank", "blasbbrank");
@@ -648,7 +626,7 @@ namespace LinBox { /*  rankin */
 				    const RingCategories::ModularTag  &tag,
 				    const Method::Elimination         &m)
 	{
-			return rankin(r, A, tag, Method::BlasElimination(m));
+			return rankin(r, A, tag, Method::DenseElimination(m));
 	}
 
 
@@ -660,7 +638,7 @@ namespace LinBox { /*  rankin */
 				    Blackbox                   &A,
 				    const RingCategories::ModularTag &tag,
 				    const Method::Hybrid             &m)
-	{ 
+	{
         return rankin(r, A, tag, Method::Elimination( m ));
 	}
 

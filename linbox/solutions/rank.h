@@ -64,26 +64,26 @@ namespace LinBox
 	 * For very large and/or very sparse matrices the Wiedemann method will be faster
 	 * (and it is memory efficient).
 	 * For some sparse matrices SparseElimination may outperform Wiedemann.
-	 * For small or dense matrices BlasElimination will be faster.
+	 * For small or dense matrices DenseElimination will be faster.
 	 * \param[out] r  output rank of A.
 	 * \param[in]  A linear transform, member of any blackbox class.
-	 * \param[in]  M may be a \p Method::Hybrid (the default), a \p Method::Wiedemann, a  \p Method::BlasElimination, or a \p Method::SparseElimination..
+	 * \param[in]  M may be a \p Method::Hybrid (the default), a \p Method::Wiedemann, a  \p Method::DenseElimination, or a \p Method::SparseElimination..
 	 * \param      tag UNDOC
 	 * \return a reference to r.
 	 */
 	template <class Blackbox, class Method, class DomainCategory>
-	inline size_t &rank (size_t &r, const Blackbox &A, 
+	inline size_t &rank (size_t &r, const Blackbox &A,
 			const DomainCategory &tag, const Method &M);
 
 	template <class Blackbox, class Method, class DomainCategory>
-	inline size_t &rankin (size_t &r, Blackbox &A, 
+	inline size_t &rankin (size_t &r, Blackbox &A,
 			const DomainCategory &tag, const Method &M);
 
 	/**
 	 * Compute the rank of a linear transform A over a field.
 	 * \ingroup solutions
 	 * The default method is Wiedemann(), using diagonal preconditioning and
-	 * the minpoly.  For small or dense matrices BlasElimination will be faster.
+	 * the minpoly.  For small or dense matrices DenseElimination will be faster.
 	 * \param      A linear transform, member of any blackbox class.
 	 * \param[out] r rank of \p A
 	 * \return     \p r rank of \p A.
@@ -99,7 +99,7 @@ namespace LinBox
 	 * \ingroup solutions
 	 *
 	 * The default method is \p Wiedemann(), using diagonal preconditioning and
-	 * the minpoly.  For small or dense matrices \p BlasElimination will be faster.
+	 * the minpoly.  For small or dense matrices \p DenseElimination will be faster.
 	 * \return \p r rank of \p A.
 	 * \param A linear transform, member of any blackbox class.
 	 * @param[out] r rank of \p A

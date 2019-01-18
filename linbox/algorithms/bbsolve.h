@@ -225,7 +225,7 @@ namespace LinBox
 		       Vector                           &x,
 		       const Vector                     &b,
 		       const Field                      &F,
-		       const BlasEliminationTraits &traits)
+		       const Method::DenseElimination &traits)
 	{
 		// N.B. This is a place holder; I am intending to fix this very shortly
 		throw LinboxError ("Elimination-based solver not implemented");
