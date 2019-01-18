@@ -142,14 +142,9 @@ namespace LinBox
         integer c, p;
         A.field().cardinality(c);
         A.field().characteristic(p);
-            //if ( p == 0 || (c == p && inBlasRange(p)) )
         return solve(x, A, b,
                      typename FieldTraits<typename BB::Field>::categoryTag(),
                      Method::BlasElimination(m));
-            //else
-            //  return solve(x, A, b,
-            //          typename FieldTraits<typename BB::Field>::categoryTag(),
-            //          Method::NonBlasElimination(m));
     }
 
         //! @internal inplace Sparse Elimination.
@@ -654,19 +649,6 @@ namespace LinBox
     }
 
         //@}
-
-        // NonBlasElimination section ////////////////
-
-    template <class Vector, class BB>
-    Vector& solve(Vector& x, const BB& A, const Vector& b,
-                  const RingCategories::ModularTag & tag,
-                  const Method::NonBlasElimination& m)
-    {
-        BlasMatrix<typename BB::Field> B(A); // copy
-        return solve(x, B, b, tag, m);
-    }
-
-        // note: no need for NonBlasElimination when RingCategory is integer
 
         // Lanczos ////////////////
         // may throw SolverFailed or InconsistentSystem
