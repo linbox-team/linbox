@@ -45,16 +45,17 @@ namespace {
     /**
      * Simple function to switch to a different algorithm according to the dispatch type.
      */
-    template <class Vector, class Element, class Iteration, class PrimeGenerator, class DispatchType>
-    inline void solve_from_dispatch(Vector& num, Element& den, double hadamardLogBound, Iteration& iteration,
-                                    PrimeGenerator& primeGenerator, const DispatchType& dispatch)
+    template <class Vector, class Iteration, class PrimeGenerator, class DispatchType>
+    inline void solve_from_dispatch(Vector& num, typename Vector::Field::Element& den, double hadamardLogBound,
+                                    Iteration& iteration, PrimeGenerator& primeGenerator, const DispatchType& dispatch)
     {
         throw LinBox::NotImplementedYet("Integer CRA Solve with specified dispatch type is not implemented yet.");
     }
 
-    template <class Vector, class Element, class Iteration, class PrimeGenerator>
-    inline void solve_from_dispatch(Vector& num, Element& den, double hadamardLogBound, Iteration& iteration,
-                                    PrimeGenerator& primeGenerator, const LinBox::Dispatch::None& dispatch)
+    template <class Vector, class Iteration, class PrimeGenerator>
+    inline void solve_from_dispatch(Vector& num, typename Vector::Field::Element& den, double hadamardLogBound,
+                                    Iteration& iteration, PrimeGenerator& primeGenerator,
+                                    const LinBox::Dispatch::Sequential& dispatch)
     {
         using CraAlgorithm = LinBox::FullMultipRatCRA<Givaro::ModularBalanced<double>>;
         LinBox::RationalRemainder<CraAlgorithm> cra(hadamardLogBound);
@@ -62,9 +63,10 @@ namespace {
     }
 
 #if defined(__LINBOX_HAVE_MPI) // @fixme Is this useful?
-    template <class Vector, class Element, class Iteration, class PrimeGenerator>
-    inline void solve_from_dispatch(Vector& num, Element& den, double hadamardLogBound, Iteration& iteration,
-                                    PrimeGenerator& primeGenerator, const LinBox::Dispatch::Distributed& dispatch)
+    template <class Vector, class Iteration, class PrimeGenerator>
+    inline void solve_from_dispatch(Vector& num, typename Vector::Field::Element& den, double hadamardLogBound,
+                                    Iteration& iteration, PrimeGenerator& primeGenerator,
+                                    const LinBox::Dispatch::Distributed& dispatch)
     {
         using CraAlgorithm = LinBox::FullMultipRatCRA<Givaro::ModularBalanced<double>>;
         // @fixme Rename RationalRemainderDistributed
@@ -179,8 +181,8 @@ namespace LinBox {
         newM.iterationMethod = m.iterationMethod;
         newM.dispatch.communicator = &communicator;
 #else
-        // @fixme Should we use Dispatch::Threaded by default?
-        Method::CRAWIP<IterationMethod, Dispatch::None> newM;
+        // @fixme Should we use Dispatch::Smp by default?
+        Method::CRAWIP<IterationMethod, Dispatch::Sequential> newM;
         newM.iterationMethod = m.iterationMethod;
 #endif
 
