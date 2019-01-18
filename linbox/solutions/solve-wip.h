@@ -28,7 +28,6 @@
 #include <linbox/field/field-traits.h>
 #include <linbox/solutions/methods.h>
 #include <linbox/util/debug.h> // NotImplementedYet
-#include <linbox/vector/mdr-vector.h>
 
 namespace LinBox {
 
@@ -62,7 +61,7 @@ namespace LinBox {
      * @return reference to \p x
      */
     template <class ResultVector, class Matrix, class Vector, class CategoryTag, class SolveMethod>
-    ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag, const SolveMethod& m)
+    inline ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag, const SolveMethod& m)
     {
         throw NotImplementedYet("Solve specialisation is not implemented yet.");
     }
@@ -83,6 +82,44 @@ namespace LinBox {
     inline ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b)
     {
         return solve(x, A, b, Method::Hybrid());
+    }
+
+    /**
+     * \brief Rational solve Ax = b, for x expressed as xNum/xDen.
+     *
+     * Second interface for solving, only valid for RingCategories::IntegerTag.
+     *
+     * Solve with this interface will usually go for CRA or Dixon lifting,
+     * as non-modular elimination would snowball elements to very big values.
+     */
+    template <class Matrix, class Vector, class CategoryTag, class SolveMethod>
+    inline void solve(Vector& xNum, typename Vector::Field::Element& xDen, const Matrix& A, const Vector& b, const CategoryTag& tag, const SolveMethod& m)
+    {
+        throw LinBoxError("Rational solve is only valid for RingCategories::IntegerTag.");
+    }
+
+    template <class Matrix, class Vector, class CategoryTag, class SolveMethod>
+    inline void solve(Vector& xNum, typename Vector::Field::Element& xDen, const Matrix& A, const Vector& b, const RingCategories::IntegerTag& tag, const SolveMethod& m)
+    {
+        throw NotImplementedYet("Rational solve specialisation is not implemented yet.");
+    }
+
+    /**
+     * \brief Solve dispatcher for automated category tag.
+     */
+    template <class Matrix, class Vector, class SolveMethod>
+    inline void solve(Vector& xNum, typename Vector::Field::Element& xDen, const Matrix& A, const Vector& b, const SolveMethod& m)
+    {
+        return solve(xNum, xDen, A, b, typename FieldTraits<typename Matrix::Field>::categoryTag(), m);
+    }
+
+    /**
+     * \brief Solve dispatcher for automated solve method.
+     */
+    template <class Matrix, class Vector>
+    inline void solve(Vector& xNum, typename Vector::Field::Element& xDen, const Matrix& A, const Vector& b)
+    {
+        return solve(xNum, xDen, A, b, Method::Hybrid());
     }
 }
 
