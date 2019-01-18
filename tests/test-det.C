@@ -123,8 +123,8 @@ static bool testDiagonalDet1 (Field &F, size_t n, int iterations)
         det (phi_symm_wied, D,  WiedemannChoice);
         F.write (report << "Computed determinant (Symmetric Wiedemann) : ", phi_symm_wied) << endl;
 
-        det (phi_blas_elimination, D,  Method::BlasElimination ());
-        F.write (report << "Computed determinant (BlasElimination) : ", phi_blas_elimination) << endl;
+        det (phi_blas_elimination, D,  Method::DenseElimination ());
+        F.write (report << "Computed determinant (DenseElimination) : ", phi_blas_elimination) << endl;
 
         det (phi_sparseelim, D,  Method::SparseElimination ());
         F.write (report << "Computed determinant (SparseElimination) : ", phi_sparseelim) << endl;
@@ -211,8 +211,8 @@ static bool testDiagonalDet2 (Field &F, size_t n, int iterations)
         F.write (report, phi_symm_wied);
         report << endl;
 
-        det (phi_blas_elimination, D,  Method::BlasElimination ());
-        report << "Computed determinant (BlasElimination) : ";
+        det (phi_blas_elimination, D,  Method::DenseElimination ());
+        report << "Computed determinant (DenseElimination) : ";
         F.write (report, phi_blas_elimination);
         report << endl;
 
@@ -289,8 +289,8 @@ static bool testSingularDiagonalDet (Field &F, size_t n, int iterations)
         F.write (report, phi_symm_wied);
         report << endl;
 
-        det (phi_blas_elimination, D,  Method::BlasElimination ());
-        report << "Computed determinant (BlasElimination) : ";
+        det (phi_blas_elimination, D,  Method::DenseElimination ());
+        report << "Computed determinant (DenseElimination) : ";
         F.write (report, phi_blas_elimination);
         report << endl;
 
@@ -373,8 +373,8 @@ bool testIntegerDet (size_t n, int iterations)
         det (det_A_symm_wied, A, WiedemannChoice);
         report << "Computed integer determinant (Symmetric Wiedemann): " << det_A_symm_wied << endl;
 
-        det (det_A_blas_elimination, A, Method::BlasElimination());
-        report << "Computed integer determinant (BlasElimination): " << det_A_blas_elimination << endl;
+        det (det_A_blas_elimination, A, Method::DenseElimination());
+        report << "Computed integer determinant (DenseElimination): " << det_A_blas_elimination << endl;
 
 
         if ((det_A_wiedemann != pi)||(det_A_blas_elimination != pi)||(det_A_symm_wied != pi))  {
@@ -579,7 +579,7 @@ bool testRationalDetGen (size_t n, int iterations)
         }
 
         det (det_B_E, BB, Method::Elimination());
-        report << "Computed rational determinant (BlasElimination): "; Q.write(report, det_A_E); report << endl;
+        report << "Computed rational determinant (DenseElimination): "; Q.write(report, det_A_E); report << endl;
         if (!Q.areEqual(det_B_E ,pi)){
             commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
                 << "ERROR: (Dense) Elimination Computed determinant is incorrect" << endl;

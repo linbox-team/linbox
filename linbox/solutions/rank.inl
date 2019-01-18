@@ -65,7 +65,7 @@ namespace LinBox
 		const Field& F = A.field();
 		integer a, b; F.characteristic(a); F.cardinality(b);
 		if (a == b && a < LinBox::BlasBound)
-			return rank(r, A, tag, Method::BlasElimination(m));
+			return rank(r, A, tag, Method::DenseElimination(m));
 		else
 			return rank(r, A, tag, Method::SparseElimination( m ));
 	}
@@ -407,12 +407,12 @@ namespace LinBox
 		return rankin(r, copyA, tag, M);
 	}
 
-	// M may be <code>Method::BlasElimination()</code>.
+	// M may be <code>Method::DenseElimination()</code>.
 	template <class Blackbox>
 	inline size_t &rank (size_t                      &r,
 				    const Blackbox                     &A,
 				    const RingCategories::ModularTag   &tag,
-				    const Method::BlasElimination      &M)
+				    const Method::DenseElimination      &M)
 	{
 
 		commentator().start ("Blas Rank", "blasrank");
@@ -609,7 +609,7 @@ namespace LinBox { /*  rankin */
 	inline size_t &rankin (size_t                     &r,
 				      BlasMatrix<Field>               &A,
 				      const RingCategories::ModularTag  &tag,
-				      const Method::BlasElimination     &M)
+				      const Method::DenseElimination     &M)
 	{
 
 		commentator().start ("BlasBB Rank", "blasbbrank");
@@ -626,7 +626,7 @@ namespace LinBox { /*  rankin */
 				    const RingCategories::ModularTag  &tag,
 				    const Method::Elimination         &m)
 	{
-			return rankin(r, A, tag, Method::BlasElimination(m));
+			return rankin(r, A, tag, Method::DenseElimination(m));
 	}
 
 
