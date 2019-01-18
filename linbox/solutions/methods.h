@@ -543,34 +543,25 @@ namespace LinBox
 	};
 
 	///
-	struct BlasEliminationTraits : public Specifier {
-		BlasEliminationTraits() {}
-		BlasEliminationTraits( const Specifier& S) :
+	struct DenseEliminationTraits : public Specifier {
+		DenseEliminationTraits() {}
+		DenseEliminationTraits( const Specifier& S) :
 		       	Specifier(S)
 	       	{}
 
 	};
 
 	///
-	struct BlasExtensionTraits : public BlasEliminationTraits {
+	struct BlasExtensionTraits : public DenseEliminationTraits {
 		BlasExtensionTraits (bool           //certificate    = CERTIFY
 				     , size_t  //maxTries       = 100
 				     , bool         //checkResult    = true
 				    ) :
-			BlasEliminationTraits()
+			DenseEliminationTraits()
 		{}
 		BlasExtensionTraits( const Specifier& S) :
-		       	BlasEliminationTraits(S)
+		       	DenseEliminationTraits(S)
 	       	{}
-	};
-
-	///
-	struct NonBlasEliminationTraits : public Specifier {
-		NonBlasEliminationTraits() {}
-		NonBlasEliminationTraits( const Specifier& S) :
-		       	Specifier(S)
-	       	{}
-
 	};
 
 	struct IMLNonSing {} ;
@@ -657,9 +648,8 @@ namespace LinBox
 		typedef NumSymOverlapTraits		 NumSymOverlap;               //!< Method::NumSymOverlap : Use Youse's overlap-based numeric/symbolic iteration for Rational solving of dense integer systems
 		typedef NumSymNormTraits		 NumSymNorm;            //!< Method::NumSymNorm : Use Wan's (older) norm-based numeric/symbolic iteration for Rational solving of dense integer systems
 		typedef AdaptiveSolverTraits		 Adaptive;            //!< Method::Adaptive: Use NumSymOverlap if it works.  If it fails, switch to IML probably.
-		typedef BlasEliminationTraits 	 BlasElimination;         //!< Method::BlasElimination : no doc
+		typedef DenseEliminationTraits 	 DenseElimination;         //!< Method::DenseElimination : no doc
 		typedef BlasExtensionTraits      ExtensionBlasElimination;//!< Method::ExtensionBlasElimination : no doc
-		typedef NonBlasEliminationTraits NonBlasElimination;      //!< Method::NonBlasElimination : no doc.
 		typedef DixonTraits              Dixon;                   //!< Method::Dixon : no doc
 		typedef BlockHankelTraits        BlockHankel;             //!< Method::BlockHankel : no doc
 		typedef IMLTraits                IML;                     //!< Use IML for solving Dense Integer systems.

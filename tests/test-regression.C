@@ -64,10 +64,10 @@ bool testSolveSparse(){
     A.setEntry(2,2, 1);
     for (int i=0;i<3;i++)
         F.assign(b[i],i+1);
-    
+
     Matrix B(A);
-    
-    solve(x,B,b,  Method::BlasElimination());
+
+    solve(x,B,b,  Method::DenseElimination());
 
     if (!F.areEqual (x[0],73)) return false;
     if (!F.areEqual (x[1],76)) return false;
@@ -79,9 +79,9 @@ bool testSolveSparse(){
 }
 
 #if __LINBOX_HAVE_SAGE
-// CP: Include the .C file instead of linking to the linboxsage lib: 
+// CP: Include the .C file instead of linking to the linboxsage lib:
 // avoid requiring to make install before make check.
-#include "interfaces/sage/linbox-sage.C" 
+#include "interfaces/sage/linbox-sage.C"
 bool testSolveSparseSage(){
     size_t p = 127;
     c_vector_modint_linbox * A = new c_vector_modint_linbox[3];
@@ -93,7 +93,7 @@ bool testSolveSparseSage(){
         for (int j=0;j<3;j++)
             A[i].positions[j]=j;
         A[i].p = p;
-    }        
+    }
     b.entries = new int[3];
     b.positions = new size_t[3];
     for (int j=0;j<3;j++)
@@ -120,7 +120,7 @@ bool testSolveSparseSage(){
     if (x[0] != 73) return false;
     if (x[1] != 76) return false;
     if (x[2] != 10) return false;
-    
+
 	if (writing) std::cout << "TSSS: PASSED" << std::endl;
 
     return true;
@@ -285,9 +285,9 @@ bool testDixonSolverWithMPrhs (){
 
     A.setEntry(0,0,Integer("12345678901234567890"));
     ZZ.assign(B[0],Integer("12345678901234567890"));
-    
-    // solving via Dixon lifting 
-    solve (X, D, A, B, Method::BlasElimination());
+
+    // solving via Dixon lifting
+    solve (X, D, A, B, Method::DenseElimination());
 
     if (!ZZ.areEqual(X[0],ZZ.one) ||  !ZZ.areEqual(D,ZZ.one)) {
         if (writing) std::cerr<<"**** ERROR **** Fail solving a system over QQ with a DenseMatrix and a MP rhs"<<std::endl;
@@ -338,17 +338,17 @@ bool testDixonRectangularSolver(const Specifier& m) {
     Matrix_t A (ZZ,1,3);
     RVector X(ZZ, A.coldim()),B(ZZ, A.rowdim()),L(ZZ, A.rowdim());
     ZRingInts::Element d;
-    
+
     A.setEntry(0,1,1);
     A.setEntry(0,2,2);
     ZZ.assign(B[0],1);
 
-        // Dixon Lifting 
+        // Dixon Lifting
     solve(X,d,A,B,m);
 
     bool pass=true;
 
-    if (ZZ.isZero(d)) 
+    if (ZZ.isZero(d))
         pass = false;
     else{
         MatrixDomain<ZRingInts> MD(ZZ);
@@ -361,7 +361,7 @@ bool testDixonRectangularSolver(const Specifier& m) {
             pass = false;
         }
     }
-    
+
     if (! pass) {
         if (writing) A.write(std::cerr << "A:=", LinBox::Tag::FileFormat::Maple) << ';' << std::endl;
         if (writing) std::cerr<<"X:= "<< X << ';' << std::endl;
@@ -551,22 +551,22 @@ int main (int argc, char **argv)
     pass &= testFlatDixonSolver (Method::SparseElimination());
     pass &= testFlatDixonSolver2 (Method::SparseElimination());
     pass &= testTallDixonSolver (Method::SparseElimination());
-    pass &= testFlatDixonSolver (Method::BlasElimination());
-    pass &= testFlatDixonSolver2 (Method::BlasElimination());
-    pass &= testTallDixonSolver (Method::BlasElimination());
+    pass &= testFlatDixonSolver (Method::DenseElimination());
+    pass &= testFlatDixonSolver2 (Method::DenseElimination());
+    pass &= testTallDixonSolver (Method::DenseElimination());
     pass &= testFlatDixonSolver (Method::Wiedemann());
     pass &= testFlatDixonSolver2 (Method::Wiedemann());
     pass &= testTallDixonSolver (Method::Wiedemann());
     pass &= testSingularDixonSolver (Method::SparseElimination());
     pass &= testZeroDixonSolver (Method::SparseElimination());
-    pass &= testSingularDixonSolver (Method::BlasElimination());
-    pass &= testZeroDixonSolver (Method::BlasElimination());
+    pass &= testSingularDixonSolver (Method::DenseElimination());
+    pass &= testZeroDixonSolver (Method::DenseElimination());
     pass &= testDixonSolverWithMPrhs ();
     pass &= testSparseRationalSolver ();
-    pass &= testDixonRectangularSolver<> (Method::BlasElimination());
+    pass &= testDixonRectangularSolver<> (Method::DenseElimination());
     pass &= testDixonRectangularSolver<> (Method::SparseElimination());
     pass &= testDixonRectangularSolver<> (Method::Wiedemann());
-    pass &= testDixonRectangularSolver<DenseMatrix<ZRingInts>> (Method::BlasElimination());
+    pass &= testDixonRectangularSolver<DenseMatrix<ZRingInts>> (Method::DenseElimination());
     pass &= testDixonRectangularSolver<DenseMatrix<ZRingInts>> (Method::SparseElimination());
     pass &= testDixonRectangularSolver<DenseMatrix<ZRingInts>> (Method::Wiedemann());
     pass &= testSparse1x1Det(1<<26);
@@ -575,7 +575,7 @@ int main (int argc, char **argv)
     pass &= testZeroDimensionalMinPoly ();
     pass &= testBigScalarCharPoly ();
     pass &= testLocalSmith ();
-    pass &= testInconsistent<DenseMatrix<ZRingInts>> (Method::BlasElimination());
+    pass &= testInconsistent<DenseMatrix<ZRingInts>> (Method::DenseElimination());
 
         // Still failing: see https://github.com/linbox-team/linbox/issues/105
         //pass &= testInconsistent<> (Method::SparseElimination());
