@@ -174,7 +174,11 @@ namespace LinBox
 
             VECTORdomains[ omp_get_thread_num()] = Domain(m_primeiter);
             
-            Iteration(VECTORresidues, VECTORdomains[ omp_get_thread_num()]);
+            Iteration(VECTORresidues, VECTORdomains[ omp_get_thread_num()]
+#ifdef __LINBOX_HAVE_MPI
+,_commPtr
+#endif
+            );
 
             VECTORresidues.push_back(m_primeiter);
             
@@ -263,12 +267,10 @@ namespace LinBox
             
             Domain D(*primeg);
             BlasVector<Domain> r(D);
-#ifdef __Detailed_Time_Measurement
-            Timer chrono;
-#endif
+
 			//  parent propcess
 			if(_commPtr->rank() == 0){
-               
+              
                 master_process_task(Iteration, D, r);
 
 			}
@@ -306,6 +308,7 @@ namespace LinBox
         {
 
             int pp;
+
 #ifdef __Detailed_Time_Measurement
             Timer chrono;
 #endif
@@ -316,6 +319,7 @@ namespace LinBox
                 master_recv_residues(r, pp, Nrecv);
 
                 Domain D(pp);
+
 #ifdef __Detailed_Time_Measurement
 		chrono.start();
 #endif
@@ -333,9 +337,9 @@ namespace LinBox
         void master_process_task(Function& Iteration, Domain &D, Vect &r)
         {
             int vNtask_per_proc[_commPtr->size() - 1];
-            
+
             master_init(vNtask_per_proc, Iteration, D, r);
-            
+
             master_compute(r);
    
         }
@@ -347,7 +351,7 @@ namespace LinBox
 //char name[MPI_MAX_PROCESSOR_NAME];int len;MPI_Get_processor_name(name, &len);
 //std::cout<<" >>>>> proc("<<_commPtr->rank()<<")  on node("<<name<<")"<<std::endl;
 
-
+std::cout<<" >>>>> proc(0)  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "<<std::endl; 
 			int procs = _commPtr->size();
 
             int Niter=this->getNiter();
@@ -378,10 +382,14 @@ namespace LinBox
          
                 }
             }
-
+std::cout<<" <<<<< proc(0)  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< "<<std::endl;
             
             //Initialize the buider and the receiver vector r
-            Builder_.initialize( D, Iteration(r, D) );
+            Builder_.initialize( D, Iteration(r, D
+#ifdef __LINBOX_HAVE_MPI
+,_commPtr
+#endif
+            ) );
         }
 
 
