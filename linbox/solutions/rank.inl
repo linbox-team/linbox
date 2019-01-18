@@ -68,7 +68,7 @@ namespace LinBox
 		if (a == b && a < LinBox::BlasBound)
 			return rank(r, A, tag, Method::BlasElimination(m));
 		else
-			return rank(r, A, tag, Method::NonBlasElimination( m ));
+			return rank(r, A, tag, Method::SparseElimination( m ));
 	}
 
 	template <class Field, class Vector>
@@ -79,28 +79,6 @@ namespace LinBox
 	{
 		return rank(r, A, tag, Method::SparseElimination(m));
 	}
-
-
-	// specialization of NonBlas for SparseMatrix
-	template <class Blackbox>
-	inline size_t &rank (size_t                       &r,
-				    const Blackbox                      &A,
-				    const   RingCategories::ModularTag  &tag,
-				    const Method::NonBlasElimination    & m)
-	{
-		return rank(r, A, tag, Method::SparseElimination(m));
-	}
-
-	// specialization of NonBlas for SparseMatrix
-	template <class Blackbox>
-	inline size_t &rankin (size_t                       &r,
-				    Blackbox                      &A,
-				    const   RingCategories::ModularTag  &tag,
-				    const Method::NonBlasElimination    & m)
-	{
-		return rankin(r, A, tag, Method::SparseElimination(m));
-	}
-
 
 	template <class Blackbox>
 	inline size_t &rank (size_t                     &r,
