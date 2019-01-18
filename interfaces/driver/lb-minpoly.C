@@ -39,7 +39,7 @@ extern VectorTable   vector_hashtable;
  * Mininal Polynomial Functor *
  ******************************/
 
-template<typename Method = LinBox::Method::Hybrid>
+template<typename Method = LinBox::Method::Auto>
 class MinpolyFunctor{
 protected:
 	Method meth;

@@ -44,8 +44,9 @@ namespace LinBox
 	inline size_t &rank (size_t                    &r,
 				    const Blackbox                   &A,
 				    const RingCategories::ModularTag &tag,
-				    const Method::Hybrid             &m)
-	{ // this should become a BB/Blas hybrid in the style of Duran/Saunders/Wan.
+				    const Method::Auto             &m)
+	{
+		// we need a BB/Blas hybrid in the style of Duran/Saunders/Wan.
 		//! @bug choose (benchmark) better cuttoff (size, nbnz, sparse rep)
 		if (useBB(A)) {
 			return rank(r, A, tag, Method::Blackbox(m ));
@@ -637,7 +638,7 @@ namespace LinBox { /*  rankin */
 	inline size_t &rankin (size_t                    &r,
 				    Blackbox                   &A,
 				    const RingCategories::ModularTag &tag,
-				    const Method::Hybrid             &m)
+				    const Method::Auto             &m)
 	{
         return rankin(r, A, tag, Method::Elimination( m ));
 	}

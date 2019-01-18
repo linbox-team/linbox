@@ -67,7 +67,7 @@ namespace LinBox
 	 * For small or dense matrices DenseElimination will be faster.
 	 * \param[out] r  output rank of A.
 	 * \param[in]  A linear transform, member of any blackbox class.
-	 * \param[in]  M may be a \p Method::Hybrid (the default), a \p Method::Wiedemann, a  \p Method::DenseElimination, or a \p Method::SparseElimination..
+	 * \param[in]  M may be a \p Method::Auto (the default), a \p Method::Wiedemann, a  \p Method::DenseElimination, or a \p Method::SparseElimination..
 	 * \param      tag UNDOC
 	 * \return a reference to r.
 	 */
@@ -91,7 +91,7 @@ namespace LinBox
 	template <class Blackbox>
 	inline size_t &rank (size_t &r, const Blackbox &A)
 	{
-		return rank(r, A, typename FieldTraits<typename Blackbox::Field>::categoryTag(), Method::Hybrid());
+		return rank(r, A, typename FieldTraits<typename Blackbox::Field>::categoryTag(), Method::Auto());
 	}
 
 	/**
