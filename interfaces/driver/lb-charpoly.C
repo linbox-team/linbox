@@ -42,7 +42,7 @@ extern VectorTable   vector_hashtable;
  * Characteristic Polynomial Functor *
  *************************************/
 
-template<typename Method = LinBox::Method::Hybrid>
+template<typename Method = LinBox::Method::Auto>
 class CharpolyFunctor{
 protected:
 	Method meth;
@@ -53,7 +53,7 @@ public:
 	void operator() (Result &res, Blackbox *B) const {
 		typedef typename Blackbox::Field Field;
 		typedef typename Field::Element Element;
-		
+
 		// use givpolynomial du to non genericity of charpoly over integer
 		typename LinBox::GivPolynomialRing<Field, Givaro::Dense>::Element pol;
 		LinBox::charpoly(pol, *B, meth);

@@ -25,13 +25,13 @@
 /*! @file  tests/test-rank.h
  * @ingroup tests
  * @brief  no doc
- * @test 
+ * @test
 bool testSparseRank(const Field &F, const size_t & n, size_t m, const size_t & iterations, const double & sparsity)
- * @test 
+ * @test
 bool testRankMethods(const typename BlackBox::Field & F, size_t n, size_t m, unsigned int iterations, double sparsity = 0.05)
- * @test 
+ * @test
 //bool testRankMethodsGF2(const GF2& F2, size_t n, unsigned int iterations, double sparsity = 0.05)
- * @test 
+ * @test
 bool testZeroAndIdentRank (const Field &F, size_t n, unsigned int iterations = 1)
  */
 
@@ -109,7 +109,7 @@ bool testRankMethods(const typename BlackBox::Field & F, size_t n, size_t m, uns
 #endif
 
 #if 0
-		Method::Hybrid MH;
+		Method::Auto MH;
 		LinBox::rank (rank_hybrid, A, MH);
 		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "hybrid rank " << rank_hybrid << endl;
@@ -125,7 +125,7 @@ bool testRankMethods(const typename BlackBox::Field & F, size_t n, size_t m, uns
 #endif
 
 		size_t rank_blas_elimination ;
-		if (F.characteristic() < LinBox::BlasBound 
+		if (F.characteristic() < LinBox::BlasBound
 				and
 			F.characteristic() == F.cardinality()
 				and
@@ -327,7 +327,7 @@ bool testSparseRank(const Field &F, const size_t & n, size_t m, const size_t & i
 		if (!testRankMethods<Blackbox> (F, n, m, (unsigned int)iterations, sparsity)) pass = false;
 	}
 #endif //
-#if 1 // 
+#if 1 //
 	{
 		commentator().report() << "CSR " << endl;
 		typedef SparseMatrix<Field,SparseMatrixFormat::CSR> Blackbox; // inf loop
@@ -356,7 +356,7 @@ bool testSparseRank(const Field &F, const size_t & n, size_t m, const size_t & i
 	}
 #endif
 #if 0
-	{	
+	{
 		commentator().report() << "TPL " << endl;
 		typedef SparseMatrix<Field,SparseMatrixFormat::TPL> Blackbox;
 		if (!testRankMethods<Blackbox> (F, n, m, (unsigned int)iterations, sparsity)) pass = false;
