@@ -129,16 +129,16 @@ namespace LinBox
 			     const RingCategories::ModularTag & tag,
 			     const Method::Elimination        & M)
 	{
-		return minpoly(P, A, tag, Method::BlasElimination(M));
+		return minpoly(P, A, tag, Method::DenseElimination(M));
 	}
 
-	//! @internal The minpoly with BlasElimination Method
+	//! @internal The minpoly with DenseElimination Method
 	template<class Polynomial, class Blackbox>
 	Polynomial &minpoly (
 			     Polynomial                       & P,
 			     const Blackbox                   & A,
 			     const RingCategories::ModularTag & tag,
-			     const Method::BlasElimination    & M)
+			     const Method::DenseElimination    & M)
 	{
 		commentator().start ("Convertion to BLAS Minimal polynomial", "blasconvert");
 

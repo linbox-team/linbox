@@ -95,11 +95,11 @@ namespace LinBox
 				     const RingCategories::IntegerTag          &tag,
 				     const Method::Elimination& M)
 	{
-		// this can be a hybrid of EliminationMinpoly and BlasElimination (which means use LU here)
+		// this can be a hybrid of EliminationMinpoly and DenseElimination (which means use LU here)
 		// It will be faster to do EliminationMinpoly when deg(m_A) is low.
 
-		// right now it is just BlasElimination
-		return isPositiveSemiDefinite(A, tag, Method::BlasElimination(M));
+		// right now it is just DenseElimination
+		return isPositiveSemiDefinite(A, tag, Method::DenseElimination(M));
 	}
 
 	// The isPositiveSemiDefinite with BlackBox Method
@@ -129,9 +129,9 @@ namespace LinBox
 	bool isPositiveSemiDefinite (
 				     const Blackbox                      &A,
 				     const RingCategories::IntegerTag    &tag,
-				     const Method::BlasElimination       &M)
+				     const Method::DenseElimination       &M)
 	{
-		// call BlasElimination code
+		// call DenseElimination code
 		BlasMatrix<typename Blackbox::Field> DA(A.field(), A.rowdim(), A.coldim());
 		MatrixHom::map(DA, A); //! @warning this is a copy
 		return Signature::isPosSemiDef(DA, Signature::BLAS_LPM_Method() );
@@ -142,9 +142,9 @@ namespace LinBox
 	bool isPositiveSemiDefinite (
 				     const BlasMatrix<Ring> &A,
 				     const RingCategories::IntegerTag    &tag,
-				     const Method::BlasElimination       &M)
+				     const Method::DenseElimination       &M)
 	{
-		// call BlasElimination code
+		// call DenseElimination code
 		return Signature::isPosSemiDef(A, Signature::BLAS_LPM_Method() );
 	}
 

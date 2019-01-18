@@ -77,7 +77,7 @@ int main (int argc, char **argv)
         typedef Givaro::QField<Givaro::Rational> Rats;
         Rats QQ;
         typedef DenseVector<Rats> RVector;
-        
+
         MatrixStream<Rats> ms( QQ, input );
         DenseMatrix<Rats> A ( ms );
 		std::cout << "A is " << A.rowdim() << " by " << A.coldim() << std::endl;
@@ -95,20 +95,20 @@ int main (int argc, char **argv)
 			for(auto&& it:B) invect >> it;
             invect.close();
 		}
-        
+
 		std::cout << "B is [";
 		for(auto it:B) QQ.write(cout, it) << ' ';
 		std::cout << ']' << std::endl;
 
 		Timer chrono;
 
-            // BlasElimination dense
-		std::cout << "BlasElimination" << std::endl;
+            // DenseElimination dense
+		std::cout << "DenseElimination" << std::endl;
 		chrono.start();
-		solve (X, A, B, Method::BlasElimination());
+		solve (X, A, B, Method::DenseElimination());
 		chrono.stop();
 
-		std::cout << "(BlasElimination) Solution is [";
+		std::cout << "(DenseElimination) Solution is [";
 		for(auto it:X) QQ.write(cout, it) << " ";
 		std::cout << ']' << std::endl;
 
