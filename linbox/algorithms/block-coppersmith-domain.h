@@ -49,15 +49,11 @@ namespace LinBox {
 #include "linbox/util/commentator.h"
 
 #define DEFAULT_BLOCK_EARLY_TERM_THRESHOLD 10
-//Preprocessor variables for the state of BM_iterators
-#define DeltaExceeded  4
-#define SequenceExceeded  3
-#define GeneratorFound  2
-#define GeneratorUnconfirmed  1
 
 namespace LinBox
 {
 	double g_time1=0.0,g_time2=0.0,g_time3=0.0,g_time4=0.0;
+
     /** Compute the linear generator of a sequence of matrices.
      *
      * This class encapsulates the functionality required for computing
@@ -76,6 +72,9 @@ namespace LinBox
         typedef typename Domain::OwnMatrix    Coefficient;
         typedef typename Domain::Matrix         Sub;
 
+		// Enumeration that tells the state of the Berlekamp/Massey algoithm iterator.
+		enum TerminationState { GeneratorUnconfirmed, GeneratorFound, 
+								SequenceExceeded, DeltaExceeded };
 
     protected:
         Sequence                          *_container;
@@ -262,47 +261,6 @@ EARLY_TERM_THRESHOLD (ett_default)
 			size_t _row, _col;
 			size_t _ett;
 			size_t _etc;
-
-		public:
-			// This is an enumeration class that tells what state the berlekamp/massey algoithm iterator is in.
-			// The four states are:
-			// DeltaExceeded = 4
-			// SequenceExceeded = 3
-			// GeneratorFound = 2
-			// GeneratorUnconfirmed = 1
-			class TerminationState{
-			private:
-
-				int _state;
-				friend class BM_iterator;
-				TerminationState() : _state(GeneratorUnconfirmed) {}
-				TerminationState(int m) : _state(m) {}
-			public:
-				TerminationState(const TerminationState& t) : _state(t._state) {}
-				TerminationState & operator=(const TerminationState & t){
-					if(this != &t){
-						(*this)._state = t._state;
-					}
-					return *this;
-				}
-				bool IsGeneratorUnconfirmed(){
-					return _state==GeneratorUnconfirmed;
-				}
-				bool IsGeneratorFound()
-				{
-					return _state==GeneratorFound;
-				}
-				bool IsSequenceExceeded()
-				{
-					return _state==SequenceExceeded;
-				}
-				bool IsDeltaExceeded()
-				{
-					return _state==DeltaExceeded;
-				}
-			}; // TerminationState
-
-		private:
 			TerminationState _state;
 		public:
 			TerminationState state() const
@@ -312,17 +270,17 @@ EARLY_TERM_THRESHOLD (ett_default)
 			void setDelta(int d)
 			{
 				_delta=d;
-				if((/*  _delta < 0 ||*/ _beta < _delta - _sigma + _mu +1) && _state._state!=3){
+				if((/*  _delta < 0 ||*/ _beta < _delta - _sigma + _mu +1) && _state!=3){
 					if(_sigma <= _delta /*|| _delta < 0*/)
-						_state._state = GeneratorUnconfirmed;
+						_state = GeneratorUnconfirmed;
 					else
-						_state._state = DeltaExceeded;
+						_state = DeltaExceeded;
 				}
 				else{
 					if(_sigma > _delta)
-						_state._state = DeltaExceeded;
+						_state = DeltaExceeded;
 					else
-						_state._state = GeneratorFound;
+						_state = GeneratorFound;
 				}
 			}
 			//field and matrix domain functions
@@ -351,7 +309,7 @@ EARLY_TERM_THRESHOLD (ett_default)
 				_gen.push_back(gen1);
 				_gensize = 1;
 				if(_size==0 || _t==_size)
-					_state._state = SequenceExceeded;
+					_state = SequenceExceeded;
 				_sigma = 0;
 				_mu = 0;
 				_beta = 1;
@@ -401,7 +359,7 @@ EARLY_TERM_THRESHOLD (ett_default)
 				bool test1 = (_seq==it._seq);
 				bool test2 = (_t==it._t);
 				bool test3 = _delta==it._delta;
-				bool test4 = (_state._state == check._state && _state.IsSequenceExceeded());
+				bool test4 = (_state == check && _state == SequenceExceeded);
 				return (test1  && test2  && (test3 || test4));
 			}
 
@@ -641,22 +599,22 @@ EARLY_TERM_THRESHOLD (ett_default)
 				//Update the state
 				if(/*  _delta < 0 || */_beta < _delta - _sigma + _mu +1){
 					if(_t == _size)
-						_state._state = SequenceExceeded;
+						_state = SequenceExceeded;
 					else{
 						if(_sigma > _delta /*  && _delta >= 0*/)
-							_state._state = DeltaExceeded;
+							_state = DeltaExceeded;
 						else
-							_state._state = GeneratorUnconfirmed;
+							_state = GeneratorUnconfirmed;
 					}
 				}
 				else{
 					if(_sigma > _delta)
-						_state._state = DeltaExceeded;
+						_state = DeltaExceeded;
 					else
-						_state._state = GeneratorFound;
+						_state = GeneratorFound;
 				}
 				if (_etc==0) {
-					_state._state=GeneratorFound;
+					_state=GeneratorFound;
 				}
 
 				return *this;
@@ -737,19 +695,19 @@ EARLY_TERM_THRESHOLD (ett_default)
 				//Update the state
 				if(/*  _delta < 0 || */ _beta < _delta - _sigma + _mu +1){
 					if(_t == _size)
-						_state._state = SequenceExceeded;
+						_state = SequenceExceeded;
 					else{
 						if(_sigma > _delta /* && _delta >= 0 */)
-							_state._state = DeltaExceeded;
+							_state = DeltaExceeded;
 						else
-							_state._state = GeneratorUnconfirmed;
+							_state = GeneratorUnconfirmed;
 					}
 				}
 				else{
 					if(_sigma > _delta)
-						_state._state = DeltaExceeded;
+						_state = DeltaExceeded;
 					else
-						_state._state = GeneratorFound;
+						_state = GeneratorFound;
 				}
 
 				return temp;
@@ -843,11 +801,11 @@ EARLY_TERM_THRESHOLD (ett_default)
 	    //Create the BM_Seq iterator whose incrementation performs a step of the generator
 	    typename BM_Seq::BM_iterator bmit(seq.BM_begin(EARLY_TERM_THRESHOLD));
 	    bmit.setDelta((int)(2*_container->getBB()->rowdim()+1));
-	    typename BM_Seq::BM_iterator::TerminationState check = bmit.state();
-	    while(!check.IsGeneratorFound() ){
+		TerminationState check = bmit.state();
+	    while(check != GeneratorFound ){
 		    ++bmit;
 		    check = bmit.state();
-		    if(check.IsSequenceExceeded()){
+		    if(check == SequenceExceeded){
 			    CTimer start; start.start();
 			    ++contiter;
                             start.stop();
