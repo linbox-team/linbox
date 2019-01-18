@@ -564,15 +564,6 @@ namespace LinBox
 	       	{}
 	};
 
-	///
-	struct NonBlasEliminationTraits : public Specifier {
-		NonBlasEliminationTraits() {}
-		NonBlasEliminationTraits( const Specifier& S) :
-		       	Specifier(S)
-	       	{}
-
-	};
-
 	struct IMLNonSing {} ;
 	struct IMLCertSolv {} ;
 	/*! IML wrapper.
@@ -659,7 +650,6 @@ namespace LinBox
 		typedef AdaptiveSolverTraits		 Adaptive;            //!< Method::Adaptive: Use NumSymOverlap if it works.  If it fails, switch to IML probably.
 		typedef BlasEliminationTraits 	 BlasElimination;         //!< Method::BlasElimination : no doc
 		typedef BlasExtensionTraits      ExtensionBlasElimination;//!< Method::ExtensionBlasElimination : no doc
-		typedef NonBlasEliminationTraits NonBlasElimination;      //!< Method::NonBlasElimination : no doc.
 		typedef DixonTraits              Dixon;                   //!< Method::Dixon : no doc
 		typedef BlockHankelTraits        BlockHankel;             //!< Method::BlockHankel : no doc
 		typedef IMLTraits                IML;                     //!< Use IML for solving Dense Integer systems.
