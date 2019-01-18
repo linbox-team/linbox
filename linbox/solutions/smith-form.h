@@ -78,7 +78,7 @@ namespace LinBox
 		size_t n = v.size();
 		if (n > 0) R.assign(e, v[0]); else return c;
 		count = 1;
-		for (size_t i = 1; i < v.size(); ++i) 
+		for (size_t i = 1; i < v.size(); ++i)
 		{	if (R.areEqual(v[i], e))
 				++count;
 			else
@@ -101,7 +101,7 @@ namespace LinBox
 	 *
 	 * @param[out] S a list of invariant/repcount pairs.
 	 * @param A Matrix of which to compute the Smith form
-	 * @param M may be a \p Method::Hybrid (default), which uses the
+	 * @param M may be a \p Method::Auto (default), which uses the
 	 algorithms/smith-form-adaptive.
 	 @todo Other methods will be provided later.
 	 For now see the examples/smith.C
@@ -112,12 +112,12 @@ namespace LinBox
 	PL means EC_list (list of value repcount pairs)
 	VL means diag of smith form as a BlasVector.
 	SNF function forms:
-	template<BB> smithForm(PL, BB) -> add Hybrid
-	template<BB> smithForm(VL, BB) -> add Hybrid
+	template<BB> smithForm(PL, BB) -> add Auto
+	template<BB> smithForm(VL, BB) -> add Auto
 	template<BB,Meth> smithForm(PL, BB, Meth) -> add IntegerTag
 	template<BB,Meth> smithForm(VL, BB, Meth) -> add IntegerTag
-	smithForm(PL, BB, IntegerTag, Hybrid) -> call adaptive
-	smithForm(VL, BB, IntegerTag, Hybrid) -> call adaptive
+	smithForm(PL, BB, IntegerTag, Auto) -> call adaptive
+	smithForm(VL, BB, IntegerTag, Auto) -> call adaptive
 	*/
 
 	template <class Blackbox, class Method>
@@ -157,7 +157,7 @@ namespace LinBox
 	smithForm(SmithList<typename Blackbox::Field> & S,
 			  const Blackbox& A)
 	{
-		smithForm(S, A, Method::Hybrid());
+		smithForm(S, A, Method::Auto());
 		return S;
 	}
 	template<class Blackbox>
@@ -165,7 +165,7 @@ namespace LinBox
 	smithForm(BlasVector<typename Blackbox::Field> & V,
 			  const Blackbox& A)
 	{
-		smithForm(V, A, Method::Hybrid());
+		smithForm(V, A, Method::Auto());
 		return V;
 	}
 
@@ -224,7 +224,7 @@ namespace LinBox
 	smithForm(SmithList<Givaro::ZRing<Integer>> & S,
 		  const BlasMatrix<Givaro::ZRing<Integer> > 	&A,
 		  const RingCategories::IntegerTag      &tag,
-		  const Method::Hybrid			& M)
+		  const Method::Auto			& M)
 	{
 		Givaro::ZRing<Integer> Z;
 		BlasVector<Givaro::ZRing<Integer> > v (Z,A.rowdim() < A.coldim() ? A.rowdim() : A.coldim());
@@ -236,7 +236,7 @@ namespace LinBox
 	smithForm(BlasVector<typename Givaro::ZRing<Integer> > & V,
 		  const BlasMatrix<Givaro::ZRing<Integer> > 	&A,
 		  const RingCategories::IntegerTag      &tag,
-		  const Method::Hybrid			& M)
+		  const Method::Auto			& M)
 	{
 		Givaro::ZRing<Integer> Z;
 		SmithFormAdaptive::smithForm(V, A);

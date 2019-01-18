@@ -42,7 +42,7 @@ namespace LinBox
 	 * black box, is computed over the ring or field of A.
 	 *
 	 * @param A Black box of which to compute the isPositiveDefinite
-	 * @param M may be a Method::Hybrid (default), Method::Blackbox, Method::Elimination, or of other method type.
+	 * @param M may be a Method::Auto (default), Method::Blackbox, Method::Elimination, or of other method type.
 	 \ingroup isPositiveDefinites
 	 */
 	template <class Blackbox, class MyMethod>
@@ -58,7 +58,7 @@ namespace LinBox
 	bool isPositiveDefinite ( const Blackbox  &A)
 	{
 		return isPositiveDefinite(A,
-					  Method::Hybrid());
+					  Method::Auto());
 	}
 
 	// The isPositiveDefinite for ModularTag (is nonsense)
@@ -73,12 +73,12 @@ namespace LinBox
 		return false;
 	}
 
-	// The isPositiveDefinite with Hybrid Method
+	// The isPositiveDefinite with Auto Method
 	template<class Blackbox>
 	bool isPositiveDefinite (
 				 const Blackbox 			&A,
 				 const RingCategories::IntegerTag          &tag,
-				 const Method::Hybrid& M)
+				 const Method::Auto& M)
 	{
 		//! @bug should try a modular minpoly and decide on the degree of that...
 		if (A.rowdim() != A.coldim())

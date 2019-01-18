@@ -440,11 +440,11 @@ bool testIntegerDetGen (size_t n, int iterations)
             ret = false;
         }
 
-        det (det_A_H, A, Method::Hybrid());
-        report << "Computed integer determinant (Hybrid): " << det_A_H << endl;
+        det (det_A_H, A, Method::Auto());
+        report << "Computed integer determinant (Auto): " << det_A_H << endl;
         if (det_A_H != pi){
             commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-                << "ERROR: Hybrid Computed determinant is incorrect" << endl;
+                << "ERROR: Auto Computed determinant is incorrect" << endl;
             ret = false;
         }
 
@@ -531,11 +531,11 @@ bool testRationalDetGen (size_t n, int iterations)
             ret = false;
         }
 
-        det (det_A_H, A, Method::Hybrid());
-        report << "Computed rational determinant (Hybrid): "; Q.write(report, det_A_H); report << endl;
+        det (det_A_H, A, Method::Auto());
+        report << "Computed rational determinant (Auto): "; Q.write(report, det_A_H); report << endl;
         if (!Q.areEqual(det_A_H ,pi)){
             commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-                << "ERROR: Hybrid Computed determinant is incorrect" << endl;
+                << "ERROR: Auto Computed determinant is incorrect" << endl;
             ret = false;
         }
 
@@ -563,11 +563,11 @@ bool testRationalDetGen (size_t n, int iterations)
             ret = false;
         }
 
-        det (det_B_H, BB, Method::Hybrid());
-        report << "Computed rational determinant (Hybrid): "; Q.write(report, det_A_H); report << endl;
+        det (det_B_H, BB, Method::Auto());
+        report << "Computed rational determinant (Auto): "; Q.write(report, det_A_H); report << endl;
         if (!Q.areEqual(det_B_H ,pi)){
             commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-                << "ERROR: (Dense) Hybrid Computed determinant is incorrect" << endl;
+                << "ERROR: (Dense) Auto Computed determinant is incorrect" << endl;
             ret = false;
         }
         det (det_B_B, BB, Method::Blackbox());

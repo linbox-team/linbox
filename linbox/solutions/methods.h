@@ -253,14 +253,14 @@ namespace LinBox
 #endif
 	};
 
-	/// HybridSpecifier
-	struct HybridSpecifier : public Specifier {
-		HybridSpecifier(){};
-		HybridSpecifier (const Specifier& m) :
+	/// AutoSpecifier
+	struct AutoSpecifier : public Specifier {
+		AutoSpecifier(){};
+		AutoSpecifier (const Specifier& m) :
 		       	Specifier(m)
 		{};
 #ifdef __LINBOX_HAVE_MPI
-		HybridSpecifier (Communicator& C) :
+		AutoSpecifier (Communicator& C) :
 		       	Specifier()
 		{ _communicatorp = &C; };
 #endif
@@ -643,7 +643,7 @@ namespace LinBox
 
 	/// Method specifiers for controlling algorithm choice
 	struct Method {
-		typedef HybridSpecifier		 Hybrid;                  //!< Method::Hybrid : no doc
+		typedef AutoSpecifier		 Auto;                  //!< Method::Auto : no doc
 		typedef BlackboxSpecifier	 Blackbox;                //!< Method::Blackbox : no doc
 		typedef EliminationSpecifier	 Elimination;             //!< Method::Elimination : no doc
 		typedef CRATraits                CRA ;                    //!< Use CRA for solving Integer systems.
