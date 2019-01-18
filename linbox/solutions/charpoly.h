@@ -50,7 +50,7 @@ namespace LinBox
 		Polynomial &charpoly (Polynomial& P,
 		const Blackbox& A,
 		const RingCategories::RationalTag& tag,
-		const Method::Hybrid& M)
+		const Method::Auto& M)
 		{
 		throw LinboxError("LinBox ERROR: charpoly is not yet defined over a rational domain");
 		}
@@ -64,7 +64,7 @@ namespace LinBox
 	  Optional \param M - the method object.  Generally, the default
 	  object suffices and the algorithm used is determined by the class of M.
 	  Basic methods are Method::Blackbox, Method::Elimination, and
-	  Method::Hybrid (the default).
+	  Method::Auto (the default).
 	  See methods.h for more options.
 	  \return a reference to P.
 	  */
@@ -81,43 +81,38 @@ namespace LinBox
 	Polynomial& charpoly (Polynomial        & P,
                               const Blackbox    & A)
 	{
-		return charpoly (P, A, Method::Hybrid());
+		return charpoly (P, A, Method::Auto());
 	}
 
-	// The charpoly with Hybrid Method
-	//! @bug not Hybrid at all
+	// The charpoly with Auto Method
 	template <class Blackbox, class Polynomial>
 	Polynomial& charpoly (Polynomial                       & P,
                               const Blackbox                   & A,
                               const RingCategories::ModularTag & tag,
-                              const Method::Hybrid             & M)
+                              const Method::Auto             & M)
 	{
-		// not yet a hybrid
 		//return charpoly(P, A, tag, Method::Blackbox(M));
 		return charpoly(P, A, tag, Method::DenseElimination(M));
 	}
 
-	// The charpoly with Hybrid Method
-	//! @bug not Hybrid at all
+	// The charpoly with Auto Method
 	template <class Domain, class Polynomial>
 	Polynomial& charpoly (Polynomial                       & P,
 			      const SparseMatrix<Domain>       & A,
 			      const RingCategories::ModularTag & tag,
-			      const Method::Hybrid             & M)
+			      const Method::Auto             & M)
 	{
-		// not yet a hybrid
                 // bb method broken, default to dense method
 		return charpoly(P, A, tag, Method::DenseElimination(M));
 //		return charpoly(P, A, tag, Method::Blackbox(M));
 	}
 
-	// The charpoly with Hybrid Method
-	//! @bug not Hybrid at all
+	// The charpoly with Auto Method
 	template<class Domain, class Polynomial>
 	Polynomial& charpoly (Polynomial                       & P,
 			      const BlasMatrix<Domain>         & A,
 			      const RingCategories::ModularTag & tag,
-			      const Method::Hybrid             & M)
+			      const Method::Auto             & M)
 	{
 		// not yet a hybrid
 		return charpoly(P, A, tag, Method::DenseElimination(M));
@@ -198,7 +193,7 @@ namespace LinBox
 	Polynomial& charpoly (Polynomial                       & P,
 						  const Blackbox                   & A,
 						  const RingCategories::IntegerTag & tag,
-						  const Method::Hybrid	       & M)
+						  const Method::Auto	       & M)
 	{
 		commentator().start ("Integer Charpoly", "Icharpoly");
 		// bb method broken, default to dense method
@@ -220,14 +215,13 @@ namespace LinBox
 {
 #if 0
 
-	// The charpoly with Hybrid Method
+	// The charpoly with Auto Method
 	template<class Blackbox, class Polynomial>
 	Polynomial& charpoly (Polynomial                        &P,
 			      const Blackbox                    &A,
 			      const RingCategories::IntegerTag  &tag,
-			      const Method::Hybrid              &M)
+			      const Method::Auto              &M)
 	{
-		// not yet a hybrid
                     // bb method broken, default to dense method
                 return charpoly(P, A, tag, Method::DenseElimination(M));
 //		return charpoly(P, A, tag, Method::Blackbox(M));
@@ -238,7 +232,7 @@ namespace LinBox
                    Polynomial& charpoly (Polynomial                       & P,
 			      const BlasMatrix<IntRing>         & A,
 			      const RingCategories::IntegerTag & tag,
-			      const Method::Hybrid             & M)
+			      const Method::Auto             & M)
 	{
 		commentator().start ("BlasMatrix Integer Charpoly", "Icharpoly");
 		charpoly(P, A, tag, Method::DenseElimination(M) );
@@ -252,7 +246,7 @@ namespace LinBox
 	Polynomial& charpoly (Polynomial                       & P,
 			      const BlasMatrix<IntRing>         & A,
 			      const RingCategories::IntegerTag & tag,
-			      const Method::Hybrid             & M)
+			      const Method::Auto             & M)
 	{
 		commentator().start ("BlasMatrix Integer Charpoly", "Icharpoly");
 		charpoly(P, A, tag, Method::DenseElimination(M) );

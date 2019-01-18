@@ -109,7 +109,7 @@ bool testRankMethods(const typename BlackBox::Field & F, size_t n, size_t m, uns
 #endif
 
 #if 0
-		Method::Hybrid MH;
+		Method::Auto MH;
 		LinBox::rank (rank_hybrid, A, MH);
 		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "hybrid rank " << rank_hybrid << endl;

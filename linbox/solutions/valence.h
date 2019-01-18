@@ -71,7 +71,7 @@ namespace LinBox
 	typename Blackbox::Field::Element &valence (typename Blackbox::Field::Element         &v,
 						    const Blackbox                               &A)
 	{
-		return valence(v, A, Method::Hybrid());
+		return valence(v, A, Method::Auto());
 	}
 
 	template<class Blackbox, class MyMethod>
@@ -188,7 +188,7 @@ namespace LinBox
             }
         }
     }
-    
+
 
 
 } //End of LinBox

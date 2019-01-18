@@ -162,7 +162,7 @@ namespace LinBox
 	template <class Rationals, class MyMethod >
 	typename Rationals::Element& rational_det (typename Rationals::Element    &d,
 						   const BlasMatrix<Rationals > &A,
-						   const MyMethod                 &Met=  Method::Hybrid())
+						   const MyMethod                 &Met=  Method::Auto())
 	{
 
 // 		typedef typename Rationals::Element Quotient;
