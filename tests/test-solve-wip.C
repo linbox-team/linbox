@@ -10,12 +10,14 @@ int main(void)
     using Field = Givaro::ZRing<Integer>;
     Field F;
 
-    MdrVector<BlasVector<Field>> x(F, 2);
     BlasVector<Field> b(F, 2);
     BlasMatrix<Field> A(F, 2, 2);
 
+    BlasVector<Field> xNum(F, 2);
+    Field::Element xDen(1);
+
     // @note Defaults to Method::CRAWIP<Method::Hybrid, Dispatch::Auto> m;
-    solve(x, A, b, Method::CRAWIP<>());
+    solve(xNum, xDen, A, b, Method::CRAWIP<>());
 
     return 0;
 }

@@ -97,7 +97,8 @@ namespace {
         }
 
         template <typename Field>
-        typename LinBox::Rebind<Vector, Field>::other& operator()(typename LinBox::Rebind<Vector, Field>::other& x, const Field& F) const
+        typename LinBox::Rebind<Vector, Field>::other& operator()(typename LinBox::Rebind<Vector, Field>::other& x,
+                                                                  const Field& F) const
         {
             using FMatrix = typename Matrix::template rebind<Field>::other;
             using FVector = typename LinBox::Rebind<Vector, Field>::other;
@@ -117,54 +118,57 @@ namespace {
 namespace LinBox {
     /**
      * \brief Solve specialization with Chinese Remainder Algorithm method for an Integer ring.
+     *
+     * This one has a different signature (num, den) because of the IntegerTag implying a rational result.
      */
     template <class Matrix, class Vector, class IterationMethod, class DispatchType>
-    inline MdrVector<Vector>& solve(MdrVector<Vector>& x, const Matrix& A, const Vector& b, const RingCategories::IntegerTag& tag,
-                                    const Method::CRAWIP<IterationMethod, DispatchType>& m)
+    inline void solve(Vector& xNum, typename Vector::Field::Element& xDen, const Matrix& A, const Vector& b,
+                      const RingCategories::IntegerTag& tag, const Method::CRAWIP<IterationMethod, DispatchType>& m)
     {
         if (m.dispatch.master()) {
             commentator().start("Solve Integer CRA", "solve.integer.cra");
-            solve_precheck(x, A, b);
+            solve_precheck(xNum, A, b);
         }
 
         const typename Matrix::Field& F = A.field();
         unsigned int bits = 26 - (int)ceil(log(A.rowdim() * 0.7213475205));
         PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime(bits);
+        CraRebinderSolver<Matrix, Vector, IterationMethod> iteration(A, b, m.iterationMethod);
+
+        // @note The result is stored to Integers, and will be converted
+        // later back.
         BlasVector<Givaro::ZRing<Integer>> num(F, A.coldim());
         Integer den(1);
-        CraRebinderSolver<Matrix, Vector, IterationMethod> iteration(A, b, m.iterationMethod);
 
         auto hb = RationalSolveHadamardBound(A, b);
         double hadamardLogBound = 1.0 + hb.numLogBound + hb.denLogBound; // = ln2(2 * N * D)
 
-        // @fixme This could take a MdrVector, right?
         solve_from_dispatch(num, den, hadamardLogBound, iteration, genprime, m.dispatch);
 
         // @note We need to convert because the storage might be some fixed-size integer types.
+        // @fixme Specialize so that this copy isn't needed
         if (m.dispatch.master()) {
-            auto it_x = x.num.begin();
+            auto it_x = xNum.begin();
             auto it_num = num.begin();
 
             // Convert the result back to, what??
-            for (; it_x != x.num.end(); ++it_x, ++it_num) {
+            for (; it_x != xNum.end(); ++it_x, ++it_num) {
                 F.init(*it_x, *it_num);
             }
-            F.init(x.den, den);
+            F.init(xDen, den);
 
             // @fixme Should we synchronize x on all nodes?
 
             commentator().stop("solve.integer.cra");
         }
-
-        return x;
     }
 
     /**
      * \brief Solve specialization with Chinese Remainder Algorithm method for an Integer ring, when dispatch is automated.
      */
     template <class Matrix, class Vector, class IterationMethod>
-    inline MdrVector<Vector>& solve(MdrVector<Vector>& x, const Matrix& A, const Vector& b, const RingCategories::IntegerTag& tag,
-                                    const Method::CRAWIP<IterationMethod, Dispatch::Auto>& m)
+    inline void solve(Vector& xNum, typename Vector::Field::Element& xDen, const Matrix& A, const Vector& b,
+                      const RingCategories::IntegerTag& tag, const Method::CRAWIP<IterationMethod, Dispatch::Auto>& m)
     {
 #if __LINBOX_HAVE_MPI
         // User has MPI enabled in config, but not specified if it wanted to use it,
@@ -180,6 +184,6 @@ namespace LinBox {
         newM.iterationMethod = m.iterationMethod;
 #endif
 
-        return solve(x, A, b, tag, newM);
+        solve(xNum, xDen, A, b, tag, newM);
     }
 }
