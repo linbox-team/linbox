@@ -142,7 +142,7 @@ int main (int argc, char **argv)
 	for (size_t i = 0; i < n; ++i) S.setEntry(i, n-1, d[i]); // last col
 	S.finalize(); // companion matrix of d
 
-#if 0
+#if 1
 // RCS is Yuhasz' Matrix Berlekamp Massey method.
 	CoppersmithSolver< MatrixDomain<Field> > RCS(MD,blocking);
 
