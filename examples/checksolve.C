@@ -73,9 +73,9 @@ int main (int argc, char **argv)
 
 	std::cout << "B is [ "<<B<< "]" << std::endl;
 
-	solve (X, A, B, Method::BlasElimination());
+	solve (X, A, B, Method::DenseElimination());
 
-	std::cout << "(BlasElimination) Solution is [ "<<X<< "]" << std::endl;
+	std::cout << "(DenseElimination) Solution is [ "<<X<< "]" << std::endl;
 	DenseVector<Field> r(F, A.rowdim());
 	BlasMatrixDomain<Field> BMD(F);
 	BMD.mul(r, static_cast<DenseMatrix<Field>& >(A), X);
