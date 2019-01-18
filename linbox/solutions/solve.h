@@ -105,7 +105,7 @@ namespace LinBox
     template< class Vector, class Blackbox>
     Vector& solve(Vector& x, const Blackbox& A, const Vector& b)
     {
-        return solve(x, A, b, Method::Hybrid());
+        return solve(x, A, b, Method::Auto());
     }
 
         // in methods.h FoobarMethod and Method::Foobar are the same class.
@@ -114,7 +114,7 @@ namespace LinBox
         //! @internal specialize this on blackboxes which have local methods
     template <class Vector, class BB>
     Vector& solve(Vector& x, const BB& A, const Vector& b,
-                  const Method::Hybrid& m)
+                  const Method::Auto& m)
     {
         if (useBB(A)) return solve(x, A, b, Method::Blackbox(m));
         else return solve(x, A, b, Method::Elimination(m));
@@ -395,10 +395,10 @@ namespace LinBox
         return solve(x, A, b, Method::BlasElimination());
     }
 
-        // API with Hybrid method
+        // API with Auto method
     template<class RatVector, class Vector, class BB>
     RatVector& solve(RatVector& x, const BB &A, const Vector &b,
-                     const Method::Hybrid &m)
+                     const Method::Auto &m)
     {
         if (useBB(A))
             return solve(x, A, b, Method::Blackbox(m));

@@ -48,8 +48,9 @@ namespace LinBox {
      * CategoryTag is defaulted to FieldTraits<Matrix::Field>::categoryTag().
      *
      * SolveMethod is expected to be one of the following:
+     * - Method::Auto
      * - Method::CRA
-     * - Method::Hybrid
+     * - Method::Dixon
      * - Method::Elimination
      * - Method::SparseElimination
      *
@@ -81,7 +82,7 @@ namespace LinBox {
     template <class ResultVector, class Matrix, class Vector>
     inline ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b)
     {
-        return solve(x, A, b, Method::Hybrid());
+        return solve(x, A, b, Method::Auto());
     }
 
     /**
@@ -93,13 +94,15 @@ namespace LinBox {
      * as non-modular elimination would snowball elements to very big values.
      */
     template <class Matrix, class Vector, class CategoryTag, class SolveMethod>
-    inline void solve(Vector& xNum, typename Vector::Field::Element& xDen, const Matrix& A, const Vector& b, const CategoryTag& tag, const SolveMethod& m)
+    inline void solve(Vector& xNum, typename Vector::Field::Element& xDen, const Matrix& A, const Vector& b,
+                      const CategoryTag& tag, const SolveMethod& m)
     {
         throw LinBoxError("Rational solve is only valid for RingCategories::IntegerTag.");
     }
 
     template <class Matrix, class Vector, class CategoryTag, class SolveMethod>
-    inline void solve(Vector& xNum, typename Vector::Field::Element& xDen, const Matrix& A, const Vector& b, const RingCategories::IntegerTag& tag, const SolveMethod& m)
+    inline void solve(Vector& xNum, typename Vector::Field::Element& xDen, const Matrix& A, const Vector& b,
+                      const RingCategories::IntegerTag& tag, const SolveMethod& m)
     {
         throw NotImplementedYet("Rational solve specialisation is not implemented yet.");
     }
@@ -119,16 +122,16 @@ namespace LinBox {
     template <class Matrix, class Vector>
     inline void solve(Vector& xNum, typename Vector::Field::Element& xDen, const Matrix& A, const Vector& b)
     {
-        return solve(xNum, xDen, A, b, Method::Hybrid());
+        return solve(xNum, xDen, A, b, Method::Auto());
     }
 }
 
 #include "./solve/solve-utils.h"
 
+#include "./solve/solve-auto.h"
 #include "./solve/solve-blas-elimination.h"
 #include "./solve/solve-cra.h"
 #include "./solve/solve-dixon.h"
-#include "./solve/solve-hybrid.h"
 // @fixme Include other files for solve grouped by method
 
 #include "./solve/solvein.h"

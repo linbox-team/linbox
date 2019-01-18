@@ -371,13 +371,13 @@ bool run_with_field(integer q, int e, size_t b, size_t n, int iter, int numVecto
 		cout<<" ... ";
 		*/
 
-		ok &= testZeroMinpoly  	   (*F, n, Method::Hybrid());
+		ok &= testZeroMinpoly  	   (*F, n, Method::Auto());
 		ok &= testZeroMinpoly  	   (*F, n, Method::Elimination());
 		ok &= testZeroMinpoly  	   (*F, n, Method::Blackbox());
-                ok &= testIdentityMinpoly  (*F, n, Method::Hybrid());
+                ok &= testIdentityMinpoly  (*F, n, Method::Auto());
                 ok &= testIdentityMinpoly  (*F, n, Method::Elimination());
                 ok &= testIdentityMinpoly  (*F, n, Method::Blackbox());
-                ok &= testNilpotentMinpoly (*F, n, Method::Hybrid());
+                ok &= testNilpotentMinpoly (*F, n, Method::Auto());
                  ok &= testNilpotentMinpoly (*F, n, Method::Elimination());
                  ok &= testNilpotentMinpoly (*F, n, Method::Blackbox());
                 typedef typename SparseMatrix<Field>::Row SparseVector;
@@ -385,11 +385,11 @@ bool run_with_field(integer q, int e, size_t b, size_t n, int iter, int numVecto
                 typedef BlasVector<Field> DenseVector;
                 RandomDenseStream<Field, DenseVector, typename Field::NonZeroRandIter> zv_stream (*F, NzG, n, numVectors);
                 RandomSparseStream<Field, SparseVector, typename Field::NonZeroRandIter > zA_stream (*F, NzG, (double) k / (double) n, n, n);
-                ok &= testRandomMinpoly    (*F, n, zA_stream, zv_stream, Method::Hybrid());
+                ok &= testRandomMinpoly    (*F, n, zA_stream, zv_stream, Method::Auto());
                 ok &= testRandomMinpoly    (*F, n, zA_stream, zv_stream, Method::Elimination());
                 ok &= testRandomMinpoly    (*F, n, zA_stream, zv_stream, Method::Blackbox());
                 if (card>0){
-                        ok &= testGramMinpoly      (*F, n, Method::Hybrid());
+                        ok &= testGramMinpoly      (*F, n, Method::Auto());
                         ok &= testGramMinpoly      (*F, n, Method::Elimination());
                         ok &= testGramMinpoly      (*F, n, Method::Blackbox());
                 }

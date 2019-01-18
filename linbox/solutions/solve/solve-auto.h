@@ -24,10 +24,10 @@
 
 namespace LinBox {
     /**
-     * \brief Solve specialisation for Hybrid.
+     * \brief Solve specialisation for Auto.
      */
     template <class ResultVector, class Matrix, class Vector, class CategoryTag>
-    ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag, const Method::Hybrid& m)
+    ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag, const Method::Auto& m)
     {
         // @fixme useBB(), as the hybrid should go according to sparse or so
         return solve(x, A, b, tag, Method::BlasElimination());

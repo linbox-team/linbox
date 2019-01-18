@@ -43,7 +43,7 @@ namespace LinBox
 	 * black box, is computed over the ring or field (characteristic 0) of A.
 	 *
 	 * @param A Black box of which to compute the isPositiveSemiDefinite
-	 * @param M may be a Method::Hybrid (SemiDefault), Method::Blackbox, Method::Elimination, or of other method type.
+	 * @param M may be a Method::Auto (SemiDefault), Method::Blackbox, Method::Elimination, or of other method type.
 	 \ingroup isPositiveSemiDefinites
 	 */
 	template <class Blackbox, class MyMethod>
@@ -59,7 +59,7 @@ namespace LinBox
 	bool isPositiveSemiDefinite ( const Blackbox  &A)
 	{
 		return isPositiveSemiDefinite(A,
-					      Method::Hybrid());
+					      Method::Auto());
 	}
 
 	// The isPositiveSemiDefinite for ModularTag (is nonsense)
@@ -74,12 +74,12 @@ namespace LinBox
 		return false;
 	}
 
-	// The isPositiveSemiDefinite with Hybrid Method
+	// The isPositiveSemiDefinite with Auto Method
 	template<class Blackbox>
 	bool isPositiveSemiDefinite (
 				     const Blackbox 			&A,
 				     const RingCategories::IntegerTag          &tag,
-				     const Method::Hybrid& M)
+				     const Method::Auto& M)
 	{
 		// should try a modular minpoly and decide on the degree of that...
 		if (A.rowdim() != A.coldim()) return false;

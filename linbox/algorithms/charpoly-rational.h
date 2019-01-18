@@ -160,7 +160,7 @@ namespace LinBox
 	template <class Rationals, template <class> class Vector, class MyMethod >
 	Vector<typename Rationals::Element>& rational_charpoly (Vector<typename Rationals::Element> &p,
 								const BlasMatrix<Rationals > &A,
-								const MyMethod &Met=  Method::Hybrid())
+								const MyMethod &Met=  Method::Auto())
 	{
 
 		typedef typename Rationals::Element Quotient;

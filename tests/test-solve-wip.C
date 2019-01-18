@@ -16,7 +16,7 @@ int main(void)
     BlasVector<Field> xNum(F, 2);
     Field::Element xDen(1);
 
-    // @note Defaults to Method::CRAWIP<Method::Hybrid, Dispatch::Auto> m;
+    // @note Defaults to Method::CRAWIP<Method::Auto, Dispatch::Auto> m;
     solve(xNum, xDen, A, b, Method::CRAWIP<>());
 
     return 0;

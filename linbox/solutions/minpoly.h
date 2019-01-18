@@ -75,7 +75,7 @@ namespace LinBox
 	 * \param A  a blackbox matrix
 	 * \param M  the method object.  Generally, the default
 	 * object suffices and the algorithm used is determined by the class of M.
-	 * Basic methods are Method::Blackbox, Method::Elimination, and Method::Hybrid
+	 * Basic methods are Method::Blackbox, Method::Elimination, and Method::Auto
 	 * (the default).
 	 * See methods.h for more options.
 	 * \return a reference to P.
@@ -93,30 +93,29 @@ namespace LinBox
 	Polynomial &minpoly (Polynomial     &P,
 			     const Blackbox &A)
 	{
-		return minpoly (P, A, Method::Hybrid());
+		return minpoly (P, A, Method::Auto());
 	}
 
 
 
-	//! @internal The minpoly with Hybrid Method
+	//! @internal The minpoly with Auto Method
 	template<class Polynomial, class Blackbox>
 	Polynomial &minpoly (
 			     Polynomial                       & P,
 			     const Blackbox                   & A,
 			     const RingCategories::ModularTag & tag,
-			     const Method::Hybrid             & M)
+			     const Method::Auto             & M)
 	{
-		// not yet a hybrid
 		return minpoly(P, A, tag, Method::Blackbox(M));
 	}
 
-	//! @internal The minpoly with Hybrid Method on BlasMatrix
+	//! @internal The minpoly with Auto Method on BlasMatrix
 	template<class Polynomial, class Field>
 	Polynomial &minpoly (
 			     Polynomial                       & P,
 			     const BlasMatrix<Field>          & A,
 			     const RingCategories::ModularTag & tag,
-			     const Method::Hybrid             & M)
+			     const Method::Auto             & M)
 	{
 		return minpoly(P, A, tag, Method::Elimination(M));
 	}

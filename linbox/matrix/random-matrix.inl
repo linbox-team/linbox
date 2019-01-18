@@ -348,7 +348,7 @@ namespace LinBox
 		b=m<n?m:n;
 		do {
 			random(A);
-		} while(LinBox::rank(r,A,Method::Hybrid()) < b);
+		} while(LinBox::rank(r,A,Method::Auto()) < b);
 		return A;
 	}
 

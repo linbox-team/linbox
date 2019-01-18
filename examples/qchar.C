@@ -216,7 +216,7 @@ int main (int argc, char** argv)
 
 	PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(M.coldim()));
 	ChineseRemainder< EarlyMultipCRA<Field  > > cra(3UL);
-	typedef Method::Hybrid MyMethod;
+	typedef Method::Auto MyMethod;
 	MyMethod Met;
 	//PrecRationalModularCharpoly <RBlackbox  ,MyMethod> iteration (detPrec, M, Met);
 	PrecRationalModularMinpoly< RBlackbox  ,MyMethod> iteration(V, M, Met);

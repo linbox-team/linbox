@@ -46,7 +46,7 @@ const char* lb_determinant_methods();
  * Determinant Functor *
  ***********************/
 
-template<typename Method = LinBox::Method::Hybrid>
+template<typename Method = LinBox::Method::Auto>
 class DeterminantFunctor{
 private:
 	Method meth;
