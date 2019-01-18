@@ -132,7 +132,7 @@ bool testRankMethods(const typename BlackBox::Field & F, size_t n, size_t m, uns
 			numeric_limits<typename Field::Element>::is_signed
 		   )
 		{
-			Method::BlasElimination MBE;
+			Method::DenseElimination MBE;
 			LinBox::rank (rank_blas_elimination, A, MBE);
 			commentator().report ()//Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 			<< endl << "Blas elimination rank " << rank_blas_elimination << endl;
@@ -199,7 +199,7 @@ bool testRankMethodsGF2(const GF2& F2, size_t n, unsigned int iterations, double
 			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "blackbox rank " << rank_blackbox << endl;
 
-			LinBox::rank (rank_elimination, B, Method::BlasElimination());
+			LinBox::rank (rank_elimination, B, Method::DenseElimination());
 		if (rank_blackbox != rank_elimination) {
 			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: blackbox rank != BLAS elimination rank " << rank_elimination << endl;

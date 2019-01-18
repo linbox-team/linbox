@@ -103,7 +103,7 @@ int main (int argc, char **argv)
 			printPolynomial (ZZ, m_A);
 		}
 
-		//            minpoly (m_A, A, Method::BlasElimination() );
+		//            minpoly (m_A, A, Method::DenseElimination() );
 
 		//            if(process == 0){
 		//                cout << "Minimal Polynomial is ";
@@ -125,7 +125,7 @@ int main (int argc, char **argv)
 		cout << "Minimal Polynomial is ";
 		printPolynomial (F, m_B);
 
-		//                 minpoly (m_A, A, Method::BlasElimination() );
+		//                 minpoly (m_A, A, Method::DenseElimination() );
 		//  		cout << "Minimal Polynomial is ";
 		// 		printPolynomial (F, m_B);
 
