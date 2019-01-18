@@ -125,8 +125,8 @@ int main (int argc, char **argv)
 
 	Givaro::ZRing<Integer> R;
 
-	Method::Hybrid MH;
-	pass = pass and testIsPosDef(R, n, iterations, MH, "Method::Hybrid", sparsity);
+	Method::Auto MH;
+	pass = pass and testIsPosDef(R, n, iterations, MH, "Method::Auto", sparsity);
 	Method::Elimination ME;
 	pass = pass and testIsPosDef(R, n, iterations, MH, "Method::Elimination", sparsity);
 	Method::Blackbox MB;

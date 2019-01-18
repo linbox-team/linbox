@@ -77,7 +77,7 @@ int main (int argc, char **argv)
 		Integers::Element det_A;
 
 		//  call parallel det with cra
-		cra_det(det_A, A, RingCategories::IntegerTag(), Method::Hybrid(*Cptr), Cptr);
+		cra_det(det_A, A, RingCategories::IntegerTag(), Method::Auto(*Cptr), Cptr);
 
 		//  if parent process, report the determinant
 		if(!Cptr->rank()){
