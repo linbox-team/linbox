@@ -27,45 +27,45 @@
 
 namespace LinBox {
     /**
-     * \brief Solve specialisation for BlasElimination.
+     * \brief Solve specialisation for DenseElimination.
      */
     template <class ResultVector, class Matrix, class Vector, class CategoryTag>
     ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag,
-                        const Method::BlasElimination& m)
+                        const Method::DenseElimination& m)
     {
-        // @fixme Original code would copy the sparse or other to a BlasMatrix
-        throw NotImplementedYet("Blas eliminating.");
+        // @fixme Original code would copy the sparse or other to a DenseMatrix
+        throw NotImplementedYet("Dense eliminating.");
     }
     /**
-     * \brief Solve specialisation for BlasElimination on dense matrices with ModularTag.
+     * \brief Solve specialisation for DenseElimination on dense matrices with ModularTag.
      */
     template <class Field, class Vector>
-    Vector& solve(Vector& x, const BlasMatrix<Field>& A, const Vector& b, const RingCategories::ModularTag& tag,
-                        const Method::BlasElimination& m)
+    Vector& solve(Vector& x, const DenseMatrix<Field>& A, const Vector& b, const RingCategories::ModularTag& tag,
+                        const Method::DenseElimination& m)
     {
         solve_precheck(x, A, b);
 
-        commentator().start("Solve Modular BlasElimination for BlasMatrix", "solve.modular.blas-elimination.dense");
+        commentator().start("Solve Modular DenseElimination for DenseMatrix", "solve.modular.dense-elimination.dense");
 
         LQUPMatrix<Field> LQUP(A);
         LQUP.left_solve(x, b);
 
-        commentator().stop("solve.modular.blas-elimination.dense");
+        commentator().stop("solve.modular.dense-elimination.dense");
 
         return x;
     }
 
     /**
-     * \brief Solve specialisation for BlasElimination on dense matrices with IntegerTag.
+     * \brief Solve specialisation for DenseElimination on dense matrices with IntegerTag.
      */
     template <class ResultVector, class Field, class Vector>
-    ResultVector& solve(ResultVector& x, const BlasMatrix<Field>& A, const Vector& b, const RingCategories::IntegerTag& tag,
-                        const Method::BlasElimination& m)
+    ResultVector& solve(ResultVector& x, const DenseMatrix<Field>& A, const Vector& b, const RingCategories::IntegerTag& tag,
+                        const Method::DenseElimination& m)
     {
         // @fixme This is the original code for this case... but it goes for a Dixon!
         // Is that really what we want?
 
-        // @fixme By the way, what is Method::NonBlasElimination?
+        // @fixme By the way, what is Method::NonDenseElimination?
         return solve(x, A, b, tag, Method::Dixon(m));
     }
 }

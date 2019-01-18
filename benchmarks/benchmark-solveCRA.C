@@ -147,7 +147,7 @@ B.random(RI);
   Timer chrono;
   double starttime, endtime;
   starttime = MPI_Wtime();
-  solveCRA (X2, d, A, B, tg, Method::BlasElimination() /* Method::Auto(*Cptr)*/,Cptr);
+  solveCRA (X2, d, A, B, tg, Method::DenseElimination() /* Method::Auto(*Cptr)*/,Cptr);
   endtime   = MPI_Wtime();
 
   MPI_Barrier(MPI_COMM_WORLD);
@@ -264,7 +264,7 @@ B.random(RI);
   std::cout << "Sequential solveCRA" << std::endl;
   RingCategories::IntegerTag tg;
   chrono.start();
-  solveCRA (X2, d, A, B, tg, Method::BlasElimination());
+  solveCRA (X2, d, A, B, tg, Method::DenseElimination());
   chrono.stop();
   /*
     std::cout << "Sequential CRA Solution is  [";
@@ -292,7 +292,7 @@ B.random(RI);
   for (long j = 0 ; j < nj ; ++j){
     if(!ZZ.areEqual(B3[j],B2[j])){
       std::cerr << "\033[1;31m>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\033[0m" << std::endl;
-      std::cerr << "\033[1;31m       The solution of solveCRA using BlasElimination is incorrect       \033[0m" << std::endl;
+      std::cerr << "\033[1;31m       The solution of solveCRA using DenseElimination is incorrect       \033[0m" << std::endl;
       std::cerr << "\033[1;31m<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\033[0m" << std::endl;
       break;
     }

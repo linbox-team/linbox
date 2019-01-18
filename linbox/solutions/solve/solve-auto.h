@@ -29,7 +29,7 @@ namespace LinBox {
     template <class ResultVector, class Matrix, class Vector, class CategoryTag>
     ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag, const Method::Auto& m)
     {
-        // @fixme useBB(), as the hybrid should go according to sparse or so
-        return solve(x, A, b, tag, Method::BlasElimination());
+        // @fixme useBB(), as the auto should go according to sparse or so
+        return solve(x, A, b, tag, Method::DenseElimination());
     }
 }

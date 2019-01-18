@@ -129,7 +129,7 @@ namespace LinBox {
 #include "./solve/solve-utils.h"
 
 #include "./solve/solve-auto.h"
-#include "./solve/solve-blas-elimination.h"
+#include "./solve/solve-dense-elimination.h"
 #include "./solve/solve-cra.h"
 #include "./solve/solve-dixon.h"
 // @fixme Include other files for solve grouped by method

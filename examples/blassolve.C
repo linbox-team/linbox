@@ -42,7 +42,7 @@ int main (int argc, char **argv) {
     std::ifstream input (argv[1]);
     if (!input) { std::cerr << "Error opening matrix file " << argv[1] << std::endl; return -1; }
 
-    
+
     std::ifstream invect;
     bool createB = false;
     if (argc == 2) {
@@ -50,33 +50,33 @@ int main (int argc, char **argv) {
     }
     if (argc == 3) {
         invect.open (argv[2], std::ifstream::in);
-        if (!invect) { 
+        if (!invect) {
             createB = true;
         } else {
             createB = false;
         }
-    }       
-    
+    }
+
         // Read Integral matrix from File
     Ints ZZ;
     MatrixStream< Ints > ms( ZZ, input );
     DenseMatrix<Ints> A (ms);
     Ints::Element d;
     std::cout << "A is " << A.rowdim() << " by " << A.coldim() << std::endl;
-    
+
     {
             // Print Matrix
-        
+
             // Matrix Market
             // std::cout << "A is " << A << std::endl;
-        
+
             // Maple
         A.write(std::cout << "Pretty A is ", Tag::FileFormat::Maple) << std::endl;
     }
-    
+
         // Vectors
     ZVector X(ZZ, A.coldim()),B(ZZ, A.rowdim());
-    
+
     if (createB) {
         std::cerr << "Creating a random {-1,1} vector " << std::endl;
         srand48( BaseTimer::seed() );
@@ -91,21 +91,21 @@ int main (int argc, char **argv) {
             it != B.end(); ++it)
             invect >> *it;
     }
-    
+
     {
             // Print RHS
-        
+
         std::cout << "B is [";
         for(auto it:B) ZZ.write(std::cout, it) << " ";
         std::cout << "]" << std::endl;
     }
-    
-    std::cout << "B is " << B.size() << "x1" << std::endl;
-    
-    Timer chrono; 
 
-        // BlasElimination
-    Method::BlasElimination M;
+    std::cout << "B is " << B.size() << "x1" << std::endl;
+
+    Timer chrono;
+
+        // DenseElimination
+    Method::DenseElimination M;
     //M.singular(Specifier::NONSINGULAR);
 
     chrono.start();
@@ -113,9 +113,9 @@ int main (int argc, char **argv) {
     chrono.stop();
 
     std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
-    
+
     {
-            // Solution size 
+            // Solution size
 
         std::cout<<"Reduced solution: \n";
         size_t maxbits=0;
@@ -123,10 +123,10 @@ int main (int argc, char **argv) {
             maxbits=(maxbits > X[i].bitsize() ? maxbits: X[i].bitsize());
         }
         std::cout<<" numerators of size   "<<maxbits<<" bits" << std::endl
-                 <<" denominators hold over "<<d.bitsize()<<" bits\n";	
+                 <<" denominators hold over "<<d.bitsize()<<" bits\n";
     }
-    
-    
+
+
     {
 			// Check Solution
 
@@ -145,16 +145,16 @@ int main (int argc, char **argv) {
                 std::cout << "Ax=b : No" << std::endl;
         }
     }
-    
+
     {
             // Print Solution
-        
-        std::cout << "(BlasElimination) Solution is [";
+
+        std::cout << "(DenseElimination) Solution is [";
         for(auto it:X) ZZ.write(std::cout, it) << " ";
         std::cout << "] / ";
-        ZZ.write(std::cout, d)<< std::endl;		
+        ZZ.write(std::cout, d)<< std::endl;
     }
-    
+
     return 0;
 }
 
