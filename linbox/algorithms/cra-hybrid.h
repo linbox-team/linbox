@@ -351,7 +351,7 @@ namespace LinBox
 //char name[MPI_MAX_PROCESSOR_NAME];int len;MPI_Get_processor_name(name, &len);
 //std::cout<<" >>>>> proc("<<_commPtr->rank()<<")  on node("<<name<<")"<<std::endl;
 
-std::cout<<" >>>>> proc(0)  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "<<std::endl; 
+
 			int procs = _commPtr->size();
 
             int Niter=this->getNiter();
@@ -382,7 +382,7 @@ std::cout<<" >>>>> proc(0)  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "<<std::endl;
          
                 }
             }
-std::cout<<" <<<<< proc(0)  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< "<<std::endl;
+
             
             //Initialize the buider and the receiver vector r
             Builder_.initialize( D, Iteration(r, D

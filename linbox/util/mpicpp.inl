@@ -202,7 +202,7 @@ namespace LinBox
         if (required != provided) {
             std::cerr<<"Required thread level "<< required <<" but Init_thread gave " << provided <<std::endl;
             if (provided != claimed) std::cerr<<"Query thread gave thread level "<< claimed <<" but Init_thread gave " << provided <<std::endl;
-            //MPI_Abort(MPI_COMM_WORLD, 1);
+            MPI_Abort(MPI_COMM_WORLD, 1);
         }
 
     }
