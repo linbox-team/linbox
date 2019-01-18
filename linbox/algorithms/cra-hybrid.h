@@ -208,8 +208,8 @@ namespace LinBox
         template<class Vect, class Function>
         void worker_process_task(Function& Iteration,  Vect &r)
         {
-char name[MPI_MAX_PROCESSOR_NAME];int len;MPI_Get_processor_name(name, &len);
-std::cout<<" <<<<< proc("<<_commPtr->rank()<<")  on node("<<name<<")"<<std::endl;
+//char name[MPI_MAX_PROCESSOR_NAME];int len;MPI_Get_processor_name(name, &len);
+//std::cout<<" <<<<< proc("<<_commPtr->rank()<<")  on node("<<name<<")"<<std::endl;
 
   
             int Ntask=0;
@@ -224,7 +224,7 @@ std::cout<<" <<<<< proc("<<_commPtr->rank()<<")  on node("<<name<<")"<<std::endl
 			size_t Nthread = Ntask;
 #pragma omp parallel
 {
-std::cout<<"Thread("<<omp_get_thread_num()<<") for proc("<<_commPtr->rank()<<")  on node("<<name<<")"<<std::endl;
+//std::cout<<"Thread("<<omp_get_thread_num()<<") for proc("<<_commPtr->rank()<<")  on node("<<name<<")"<<std::endl;
 #pragma omp single
             Nthread=omp_get_num_threads();
 }
@@ -263,8 +263,9 @@ std::cout<<"Thread("<<omp_get_thread_num()<<") for proc("<<_commPtr->rank()<<") 
             
             Domain D(*primeg);
             BlasVector<Domain> r(D);
+#ifdef __Detailed_Time_Measurement
             Timer chrono;
-
+#endif
 			//  parent propcess
 			if(_commPtr->rank() == 0){
                
@@ -305,7 +306,9 @@ std::cout<<"Thread("<<omp_get_thread_num()<<") for proc("<<_commPtr->rank()<<") 
         {
 
             int pp;
-
+#ifdef __Detailed_Time_Measurement
+            Timer chrono;
+#endif
             int Nrecv=this->getNiter();
 
             while(Nrecv > 0 ){
@@ -313,9 +316,14 @@ std::cout<<"Thread("<<omp_get_thread_num()<<") for proc("<<_commPtr->rank()<<") 
                 master_recv_residues(r, pp, Nrecv);
 
                 Domain D(pp);
-                
+#ifdef __Detailed_Time_Measurement
+		chrono.start();
+#endif
                 Builder_.progress(D, r);
-                
+#ifdef __Detailed_Time_Measurement
+		chrono.stop();
+		std::cout<<"Builder_.progress(D, r) in the manager process used CPU time (seconds): " <<chrono.usertime()<<std::endl;
+#endif
             }
 
         }
@@ -336,8 +344,8 @@ std::cout<<"Thread("<<omp_get_thread_num()<<") for proc("<<_commPtr->rank()<<") 
         template<class Vect, class Function>
         void master_init(int *vNtask_per_proc, Function& Iteration, Domain &D, Vect &r)
         {
-char name[MPI_MAX_PROCESSOR_NAME];int len;MPI_Get_processor_name(name, &len);
-std::cout<<" >>>>> proc("<<_commPtr->rank()<<")  on node("<<name<<")"<<std::endl;
+//char name[MPI_MAX_PROCESSOR_NAME];int len;MPI_Get_processor_name(name, &len);
+//std::cout<<" >>>>> proc("<<_commPtr->rank()<<")  on node("<<name<<")"<<std::endl;
 
 
 			int procs = _commPtr->size();

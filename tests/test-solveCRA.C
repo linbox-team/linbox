@@ -26,7 +26,7 @@
  */
 //#define __Detailed_Time_Measurement
 #define __LINBOX_HAVE_MPI
-
+#define __Detailed_Time_Measurement
 
 
 
@@ -180,17 +180,17 @@ uint64_t getSeed(){
 
 
 void rand_param_vary(size_t &n, size_t &ni, size_t &bits, size_t &bitsize, bool &peak){
-  
+
   n = ni;
-  
+
   n = rand() % ni + 1;
   if (n < ni / 2 && n % 2 == 0 && !peak) n = 1;
-  
+
   bits = rand() % bitsize + 1;
   if (bits < bitsize / 2 && bitsize % 2 == 0 && !peak) bits = 1;
-  
+
   peak = !peak;
-  
+
 }
 /////////////////////////////////////////////////////
 template <class Field>
@@ -198,23 +198,23 @@ void prepare_data_with_field(size_t bits, int seed,
 			     BlasVector<Field> &X2,
 			     BlasMatrix<Field> &A,
 			     BlasVector<Field> &B
-			     
+
 #ifdef __LINBOX_HAVE_MPI
 			     , Communicator *Cptr
 #endif
 			     ){
   Field F;
-  
-#ifdef __LINBOX_HAVE_MPI  
+
+#ifdef __LINBOX_HAVE_MPI
   if(0==Cptr->rank()){
 #endif
 
     std::cerr << " Test with seed: "<<seed<<std::endl;
-    
+
     genData (F, A, bits, seed);
     genData (F, B, bits, seed);
-    
-#ifdef __LINBOX_HAVE_MPI 	
+
+#ifdef __LINBOX_HAVE_MPI
   }//End of BLock for process(0)
 #endif   
   
