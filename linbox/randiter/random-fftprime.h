@@ -73,7 +73,7 @@ namespace LinBox
 			linbox_check(b<_bits);
 			size_t tresh;
 			do {
-				size_t cbits= (size_t)rand() %(_bits-b);
+				size_t cbits= (size_t) integer::random() % (_bits-b);
 				tresh = 1<<(cbits);
 				uint64_t p = 1<<((size_t)_bits-cbits);
 				do {
