@@ -22,6 +22,8 @@
 
 #pragma once
 
+#include <linbox/solutions/methods.h>
+
 namespace LinBox {
     /**
      * \brief Solve specialisation for Auto.
@@ -30,6 +32,16 @@ namespace LinBox {
     ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag, const Method::Auto& m)
     {
         // @fixme useBB(), as the auto should go according to sparse or so
-        return solve(x, A, b, tag, Method::DenseElimination());
+        return solve(x, A, b, tag, Method::Elimination());
+    }
+
+    /**
+     * \brief Solve specialisation for Auto and IntegerTag.
+     */
+    template <class ResultVector, class Matrix, class Vector>
+    ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const RingCategories::IntegerTag& tag,
+                        const Method::Auto& m)
+    {
+        return solve(x, A, b, tag, Method::Dixon());
     }
 }

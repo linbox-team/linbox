@@ -47,12 +47,16 @@ namespace LinBox {
      *
      * CategoryTag is defaulted to FieldTraits<Matrix::Field>::categoryTag().
      *
-     * SolveMethod is expected to be one of the following:
-     * - Method::Auto
-     * - Method::CRA
-     * - Method::Dixon
+     * SolveMethod determines which algorithm will be used.
+     * Using Method::Auto chooses the Method according to Matrix and Ring information:
+     * - RingCategories::IntegerTag         => Method::Dixon @fixme Requires correct interface
+     * - RingCategories::<Other>            => Method::Elimination
      * - Method::Elimination
-     * - Method::SparseElimination
+     *      - Matrix == DenseMatrix         => Method::DenseElimination
+     *      - Matrix == SparseMatrix        => Method::SparseElimination
+     *      - Matrix == <Other>             => Method::Blackbox
+     * - Method::BlackBox
+     *      - Matrix == <Other>             => Method::Wiedemann @fixme
      *
      * @param [out] x solution, can be a rational solution (vector of numerators and one denominator)
      * @param [in]  A matrix
@@ -129,11 +133,13 @@ namespace LinBox {
 #include "./solve/solve-utils.h"
 
 #include "./solve/solve-auto.h"
-#include "./solve/solve-dense-elimination.h"
 #include "./solve/solve-cra.h"
 #include "./solve/solve-dixon.h"
-// @fixme Include other files for solve grouped by method
 
-#include "./solve/solvein.h"
+#include "./solve/solve-dense-elimination.h"
+#include "./solve/solve-elimination.h"
+#include "./solve/solve-sparse-elimination.h"
+
+#include "./solve/solvein.h" // @fixme
 
 #endif
