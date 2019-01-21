@@ -22,11 +22,16 @@
 
 #pragma once
 
-#include <linbox/algorithms/rational-solver.h>
+#include <linbox/algorithms/diophantine-solver.h>
+#include <linbox/algorithms/rational-solver.h> // @fixme Rename dixon-rational-solver?
 #include <linbox/matrix/densematrix/blas-matrix.h>
 #include <linbox/matrix/sparse-matrix.h>
 
 namespace LinBox {
+    // @fixme TBR when RationalSolver is renamed
+    template <class... Args>
+    using DixonRationalSolver = RationalSolver<Args...>;
+
     /**
      * \brief Solve specialisation for Dixon.
      */
@@ -40,21 +45,31 @@ namespace LinBox {
      * \brief Solve specialisation for Dixon.
      */
     template <class ResultVector, class Matrix, class Vector>
-    ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const RingCategories::ModularTag& tag,
+    ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const RingCategories::IntegerTag& tag,
                         const Method::Dixon& m)
     {
-        throw LinBoxFailure("Cannot solve with Dixon method and Modular category tag.");
+        throw LinBoxFailure("Solve with Method::Dixon expects the rational result interface to be used.");
+    }
+
+    /**
+     * \brief Solve specialisation for Dixon on dense matrices.
+     */
+    template <class Matrix, class Vector, class CategoryTag>
+    void solve(Vector& xNum, typename Vector::Field::Element& xDen, const Matrix& A, const Vector& b, const CategoryTag& tag,
+               const Method::Dixon& m)
+    {
+        throw LinBoxFailure("Solve with Method::Dixon expects RingCategories::IntegerTag.");
     }
 
     /**
      * \brief Solve specialisation for Dixon on dense matrices.
      */
     // @fixme Method::Dixon should be templated with IterationMethod too!
-    template <class ResultVector, class MatrixField, class Vector>
-    ResultVector& solve(ResultVector& x, const BlasMatrix<MatrixField>& A, const Vector& b, const RingCategories::IntegerTag& tag,
-                        const Method::Dixon& m)
+    template <class MatrixField, class Vector>
+    void solve(Vector& xNum, typename Vector::Field::Element& xDen, const BlasMatrix<MatrixField>& A, const Vector& b,
+               const RingCategories::IntegerTag& tag, const Method::Dixon& m)
     {
-        solve_precheck(x, A, b);
+        solve_precheck(xNum, A, b);
 
         // @fixme This is the original code solve.h:534 for this case... and it's ugly!
         commentator().start("Solve Integer Dixon for BlasMatrix", "solve.integer.dixon.dense");
@@ -63,81 +78,41 @@ namespace LinBox {
         using PrimeGenerator = PrimeIterator<IteratorCategories::HeuristicTag>;
         PrimeGenerator primeGenerator(FieldTraits<Field>::bestBitSize(A.coldim()));
 
-        // @fixme This RationalSolver should be called something with Dixon in it...
-        RationalSolver<MatrixField, Field, PrimeGenerator, DixonTraits> dixonSolve(A.field(), primeGenerator);
+        // @fixme Which method is used to solve each one?
+        using Solver = DixonRationalSolver<MatrixField, Field, PrimeGenerator, Method::Dixon>;
+        Solver dixonSolve(A.field(), primeGenerator);
 
         // Do we know anything about A singularity?
-        // @fixme implement
+        bool singular = (m.singular() == Specifier::SINGULAR) || (A.rowdim() != A.coldim());
 
-        // SolverReturnStatus status = SS_OK;
-        // if singularity unknown and matrix is square, we try nonsingular solver
-        // switch (m.singular()) {
-        // case Specifier::SINGULARITY_UNKNOWN:
-        //     switch (A.rowdim() == A.coldim() ? status = dixonSolve.solveNonsingular(x, d, A, b, false, (int)m.maxTries())
-        //                                      : SS_SINGULAR) {
+        // Either A is known to be non-singular, or we just don't know yet.
+        if (!singular) {
+            auto status = dixonSolve.solveNonsingular(xNum, xDen, A, b, false, (int)m.maxTries());
+            singular = (status != SS_OK);
+        }
 
-        //     case SS_OK: m.singular(Specifier::NONSINGULAR); break;
-        //     case SS_SINGULAR:
-        //         switch (m.solution()) {
-        //         case DixonTraits::DETERMINIST:
-        //             status = dixonSolve.monolithicSolve(x, d, A, b, false, false, (int)m.maxTries(),
-        //                                                 (m.certificate() ? SL_LASVEGAS : SL_MONTECARLO));
-        //             break;
-        //         case DixonTraits::RANDOM:
-        //             status = dixonSolve.monolithicSolve(x, d, A, b, false, true, (int)m.maxTries(),
-        //                                                 (m.certificate() ? SL_LASVEGAS : SL_MONTECARLO));
-        //             break;
-        //         case DixonTraits::DIOPHANTINE: {
-        //             DiophantineSolver<RationalSolver<Ring, Field, PrimeIterator<IteratorCategories::HeuristicTag>,
-        //             DixonTraits>>
-        //                 dsolve(dixonSolve);
-        //             status =
-        //                 dsolve.diophantineSolve(x, d, A, b, (int)m.maxTries(), (m.certificate() ? SL_LASVEGAS :
-        //                 SL_MONTECARLO));
-        //         } break;
-        //         default: break;
-        //         }
-        //         break;
-        //     default: break;
+        // Either A is known to be singular, or we just failed trying to solve it as non-singular.
+        if (singular) {
+            SolverLevel level = (m.certificate() ? SL_LASVEGAS : SL_MONTECARLO);
 
-        //     }
-        //     break;
-
-        // case Specifier::NONSINGULAR: dixonSolve.solveNonsingular(x, d, A, b, false, (int)m.maxTries()); break;
-
-        // case Specifier::SINGULAR:
-        //     switch (m.solution()) {
-        //     case DixonTraits::DETERMINIST:
-        //         status = dixonSolve.monolithicSolve(x, d, A, b, false, false, (int)m.maxTries(),
-        //                                             (m.certificate() ? SL_LASVEGAS : SL_MONTECARLO));
-        //         break;
-
-        //     case DixonTraits::RANDOM:
-        //         status = dixonSolve.monolithicSolve(x, d, A, b, false, true, (int)m.maxTries(),
-        //                                             (m.certificate() ? SL_LASVEGAS : SL_MONTECARLO));
-        //         break;
-
-        //     case DixonTraits::DIOPHANTINE: {
-        //         DiophantineSolver<RationalSolver<Ring, Field, PrimeIterator<IteratorCategories::HeuristicTag>, DixonTraits>>
-        //             dsolve(rsolve);
-        //         status = dsolve.diophantineSolve(x, d, A, b, (int)m.maxTries(), (m.certificate() ? SL_LASVEGAS :
-        //         SL_MONTECARLO));
-        //     } break;
-
-        //         // default:
-        //         //  break;
-        //     }
-        // default: break;
-        // }
+            // @fixme solution() is not a meaningful name
+            if (m.solution() == DixonTraits::DIOPHANTINE) {
+                DiophantineSolver<Solver> diophantineSolve(dixonSolve);
+                diophantineSolve.diophantineSolve(xNum, xDen, A, b, (int)m.maxTries(), level);
+            }
+            else {
+                bool randomSolutionType = (m.solution() == DixonTraits::RANDOM);
+                dixonSolve.monolithicSolve(xNum, xDen, A, b, false, randomSolutionType, (int)m.maxTries(), level);
+            }
+        }
 
         commentator().stop("solve.integer.dixon.dense");
 
+        // @fixme Tests should check conformance to that
         // if (status == SS_INCONSISTENT) {
         //     // @fixme The solve specification says we return a zero vector in that case...
         //     // But we throw instead, update spec.
         //     throw LinboxMathInconsistentSystem("Solve with Dixon method is impossible.");
         // }
-
-        return x;
     }
 }

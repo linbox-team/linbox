@@ -97,7 +97,7 @@ namespace LinBox {
     inline void solve(Vector& xNum, typename Vector::Field::Element& xDen, const Matrix& A, const Vector& b,
                       const CategoryTag& tag, const SolveMethod& m)
     {
-        throw LinBoxError("Rational solve is only valid for RingCategories::IntegerTag.");
+        throw LinBoxError("Rational solve is only valid for RingCategories::IntegerTag and Method::Cra or Method::Dixon.");
     }
 
     template <class Matrix, class Vector, class CategoryTag, class SolveMethod>

@@ -32,9 +32,9 @@
 
 #pragma once
 
-#include <linbox/algorithms/cra-mpi.h> // @fixme Rename this file rational-remainder-distributed
+#include <linbox/algorithms/cra-mpi.h> // @fixme Rename this file cra-rational-solver-distributed
 #include <linbox/algorithms/rational-cra-full-multip.h>
-#include <linbox/algorithms/rational-cra.h> // @fixme Rename this file rational-remainder
+#include <linbox/algorithms/rational-cra.h> // @fixme Rename this file cra-rational-solver
 #include <linbox/field/rebind.h>
 #include <linbox/randiter/random-prime.h>
 #include <linbox/solutions/hadamard-bound.h>
