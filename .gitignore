@@ -39,6 +39,7 @@ tests/test-rational-reconstruction-base
 tests/test-serialization
 tests/test-smith-form-kannan-bachem
 tests/test-solve-nonsingular
+tests/test-fft-new
 
 tests/.tmp-tests
 tests/checker
