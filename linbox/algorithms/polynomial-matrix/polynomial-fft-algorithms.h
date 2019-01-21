@@ -209,7 +209,7 @@ namespace LinBox {
 			if (this->n >= 4) {
 				vect_t P;
 				P  = simd::set1(this->_pl);
-				for (uint64_t i = 0; i < this->n; i += 8)
+				for (uint64_t i = 0; i < this->n; i += 4)
 					reduce<Element,simd>(&fft[i],P);
 				return;
 			} else {
@@ -225,7 +225,7 @@ namespace LinBox {
 				vect_t P,P2;
 				P  = simd::set1(this->_pl);
 				P2 = simd::set1(this->_dpl);
-				for (uint64_t i = 0; i < this->n; i += 8){
+				for (uint64_t i = 0; i < this->n; i += 4){
 					reduce<Element,simd>(&fft[i],P2);
 					reduce<Element,simd>(&fft[i],P);
 				}
