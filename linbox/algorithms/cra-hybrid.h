@@ -267,7 +267,7 @@ namespace LinBox
             
             Domain D(*primeg);
             BlasVector<Domain> r(D);
-
+Timer chrono;
 			//  parent propcess
 			if(_commPtr->rank() == 0){
               
@@ -276,9 +276,10 @@ namespace LinBox
 			}
 			//  child process
 			else{
-
+chrono.start();
                 worker_process_task(Iteration, r);
-
+chrono.stop();
+std::cout<<" process("<<_commPtr->rank()<<") used total CPU time (seconds): " <<chrono.usertime()<<std::endl;
 			}
 
 		}
