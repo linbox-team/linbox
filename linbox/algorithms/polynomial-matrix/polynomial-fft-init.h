@@ -122,12 +122,11 @@ namespace LinBox {
 		Element find_gen (Residu_t _m, uint64_t _val2p) {
 			// find a primitive 2^k root of unity where
 			// _p - 1 = 2^val2p * m
-			srand((unsigned int) time(NULL));
 			Element y,z;
 			uint64_t j;
 			Element _gen;
-			for (;;) {
-				fld->init(_gen,rand());
+			for (Element t = 2; ; t++) {
+				_gen = t;
 				fld->init(z, 1);
 				for (Residu_t i=0; i < _m; ++i) fld->mulin(z,_gen); // z = z*_gen;
 				if (z == 1) continue;
