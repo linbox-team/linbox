@@ -106,6 +106,7 @@ FULLCHECK_TESTS =               \
 	test-echelon-form			\
 	test-polynomial-ring		\
 	test-ffpack					\
+	test-fft-new					\
 	test-fibb					\
 	test-ftrmm					\
 	test-getentry				\
@@ -270,6 +271,7 @@ test_direct_sum_SOURCES =               test-direct-sum.C
 test_dyadic_to_rational_SOURCES =       test-dyadic-to-rational.C
 test_echelon_form_SOURCES =             test-echelon-form.C
 test_ffpack_SOURCES =                   test-ffpack.C
+test_fft_new_SOURCES =                  test-fft-new.C
 test_fibb_SOURCES =                     test-fibb.C
 test_frobenius_SOURCES =                test-frobenius.C
 test_ftrmm_SOURCES =                    test-ftrmm.C
