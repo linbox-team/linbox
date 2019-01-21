@@ -71,7 +71,6 @@ namespace LinBox {
     {
         solve_precheck(xNum, A, b);
 
-        // @fixme This is the original code solve.h:534 for this case... and it's ugly!
         commentator().start("Solve Integer Dixon for BlasMatrix", "solve.integer.dixon.dense");
 
         using Field = Givaro::Modular<double>;
@@ -82,10 +81,8 @@ namespace LinBox {
         using Solver = DixonRationalSolver<MatrixField, Field, PrimeGenerator, Method::Dixon>;
         Solver dixonSolve(A.field(), primeGenerator);
 
-        // Do we know anything about A singularity?
-        bool singular = (m.singular() == Specifier::SINGULAR) || (A.rowdim() != A.coldim());
-
         // Either A is known to be non-singular, or we just don't know yet.
+        bool singular = (m.singular() == Specifier::SINGULAR) || (A.rowdim() != A.coldim());
         if (!singular) {
             auto status = dixonSolve.solveNonsingular(xNum, xDen, A, b, false, (int)m.maxTries());
             singular = (status != SS_OK);

@@ -22,8 +22,9 @@
 
 #pragma once
 
-#include <linbox/matrix/densematrix/blas-matrix.h>
+#include <linbox/matrix/dense-matrix.h>
 #include <linbox/matrix/sparse-matrix.h>
+#include <linbox/solutions/methods.h>
 
 namespace LinBox {
     /**
@@ -36,6 +37,7 @@ namespace LinBox {
         // @fixme Original code would copy the sparse or other to a DenseMatrix
         throw NotImplementedYet("Dense eliminating.");
     }
+
     /**
      * \brief Solve specialisation for DenseElimination on dense matrices with ModularTag.
      */
@@ -64,8 +66,6 @@ namespace LinBox {
     {
         // @fixme This is the original code for this case... but it goes for a Dixon!
         // Is that really what we want?
-
-        // @fixme By the way, what is Method::NonDenseElimination?
         return solve(x, A, b, tag, Method::Dixon(m));
     }
 }
