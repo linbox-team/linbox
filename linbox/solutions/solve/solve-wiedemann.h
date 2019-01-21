@@ -23,6 +23,7 @@
 #pragma once
 
 #include <linbox/algorithms/block-wiedemann.h>
+#include <linbox/algorithms/coppersmith.h>
 #include <linbox/solutions/methods.h>
 
 namespace LinBox {
@@ -51,9 +52,26 @@ namespace LinBox {
         // @fixme This does not work
 
         // using Context = BlasMatrixDomain<typename Matrix::Field>;
-        // Context BMD(A.field());
-        // BlockWiedemannSolver<Context> BWS(BMD, m.blockingFactor(), m.blockingFactor() + 1);
-        // BWS.solve(x, A, b);
+        // Context domain(A.field());
+        // BlockWiedemannSolver<Context> blockWiedemannSolver(domain, m.blockingFactor(), m.blockingFactor() + 1);
+        // blockWiedemannSolver.solve(x, A, b);
+
+        return x;
+    }
+
+    /**
+     * \brief Solve specialisation for Coppersmith.
+     */
+    template <class ResultVector, class Matrix, class Vector, class CategoryTag>
+    ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag,
+                        const Method::Coppersmith& m)
+    {
+        solve_precheck(x, A, b);
+
+        // @fixme This does not work
+
+        // CoppersmithSolver<typename Matrix::Field> coppersmithSolver(A.field());
+        // coppersmithSolver.solveNonsingular(x, A, b);
 
         return x;
     }
