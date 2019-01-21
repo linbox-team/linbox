@@ -135,6 +135,7 @@ namespace LinBox {
 #include "./solve/solve-auto.h"
 #include "./solve/solve-cra.h"
 #include "./solve/solve-dixon.h"
+#include "./solve/solve-wiedemann.h"
 
 #include "./solve/solve-dense-elimination.h"
 #include "./solve/solve-elimination.h"
