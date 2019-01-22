@@ -55,7 +55,6 @@
 #  define DEFAULT_EARLY_TERM_THRESHOLD 20
 #endif
 
-#include "linbox/solutions/dispatch.h"
 #include "linbox/util/mpicpp.h"
 
 #ifndef LINBOX_USE_BLACKBOX_THRESHOLD
@@ -627,9 +626,6 @@ namespace LinBox
         typedef BlackboxSpecifier           Blackbox;                   //!< Method::Blackbox : no doc
         typedef EliminationSpecifier        Elimination;                //!< Method::Elimination : no doc
         typedef CRATraits                   CRA;                        //!< Use CRA for solving Integer systems.
-        template <class IterationMethod, class DispatchType>
-        using CRAWIP = CRATraitsWIP<IterationMethod, DispatchType>;     //!< @fixme Should replace CRA
-        using Cra = CRAWIP<Method::Auto, Dispatch::Auto>;
         typedef WiedemannTraits             Wiedemann;                  //!< Method::Wiedemann : no doc
         typedef WiedemannExtensionTraits    ExtensionWiedemann;         //!< Method::ExtensionWiedemann :  no doc
         typedef BlockWiedemannTraits        BlockWiedemann;             //!< Method::BlockWiedemann : no doc

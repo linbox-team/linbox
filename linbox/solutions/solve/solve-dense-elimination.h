@@ -24,7 +24,7 @@
 
 #include <linbox/matrix/dense-matrix.h>
 #include <linbox/matrix/sparse-matrix.h>
-#include <linbox/solutions/methods.h>
+#include <linbox/solutions/methods-wip.h>
 
 namespace LinBox {
     /**
@@ -32,7 +32,7 @@ namespace LinBox {
      */
     template <class ResultVector, class Matrix, class Vector, class CategoryTag>
     ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag,
-                        const Method::DenseElimination& m)
+                        const MethodWIP::DenseElimination& m)
     {
         // @fixme Original code would copy the sparse or other to a DenseMatrix
         throw NotImplementedYet("Dense eliminating.");
@@ -43,7 +43,7 @@ namespace LinBox {
      */
     template <class Field, class Vector>
     Vector& solve(Vector& x, const DenseMatrix<Field>& A, const Vector& b, const RingCategories::ModularTag& tag,
-                        const Method::DenseElimination& m)
+                        const MethodWIP::DenseElimination& m)
     {
         solve_precheck(x, A, b);
 
@@ -62,10 +62,10 @@ namespace LinBox {
      */
     template <class ResultVector, class Field, class Vector>
     ResultVector& solve(ResultVector& x, const DenseMatrix<Field>& A, const Vector& b, const RingCategories::IntegerTag& tag,
-                        const Method::DenseElimination& m)
+                        const MethodWIP::DenseElimination& m)
     {
         // @fixme This is the original code for this case... but it goes for a Dixon!
         // Is that really what we want?
-        return solve(x, A, b, tag, Method::Dixon(m));
+        return solve(x, A, b, tag, MethodWIP::Dixon(m));
     }
 }

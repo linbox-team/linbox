@@ -1,11 +1,11 @@
 // @fixme LICENCE
 
-#include <linbox/matrix/densematrix/blas-matrix.h>
+#include <linbox/matrix/dense-matrix.h>
 #include <linbox/solutions/solve-wip.h> // @fixme Just testing it compiles for now
 
 using namespace LinBox;
 
-template <class Field, class SolveMethod>
+template <class Field, class Method>
 void run_rational_2x2() {
     Field F;
 
@@ -22,7 +22,7 @@ void run_rational_2x2() {
     BlasVector<Field> xNum(F, 2);
     typename Field::Element xDen(1);
 
-    solve(xNum, xDen, A, b, SolveMethod());
+    solve(xNum, xDen, A, b, Method());
 
     std::cout << "---------------" << std::endl;
     A.write(std::cout << "A: ", Tag::FileFormat::Maple) << std::endl;
@@ -34,7 +34,7 @@ void run_rational_2x2() {
     }
 }
 
-template <class Field, class SolveMethod>
+template <class Field, class Method>
 void run_2x2() {
     Field F(101);
 
@@ -50,7 +50,7 @@ void run_2x2() {
 
     BlasVector<Field> x(F, 2);
 
-    solve(x, A, b, SolveMethod());
+    solve(x, A, b, Method());
 
     std::cout << "---------------" << std::endl;
     A.write(std::cout << "A: ", Tag::FileFormat::Maple) << std::endl;
@@ -67,15 +67,14 @@ int main(void)
     // @fixme Test high-level? Auto, Elimination, Blackbox
 
     // @fixme Test Cra with different underlying Method
-    // @note Alias to Method::CRAWIP<Method::Auto, Dispatch::Auto> m;
-    run_rational_2x2<Givaro::ZRing<Integer>, Method::Cra>();
-    run_rational_2x2<Givaro::ZRing<Integer>, Method::Dixon>();
+    run_rational_2x2<Givaro::ZRing<Integer>, MethodWIP::Cra>();
+    run_rational_2x2<Givaro::ZRing<Integer>, MethodWIP::Dixon>();
 
-    run_2x2<Givaro::Modular<float>, Method::DenseElimination>();
-    run_2x2<Givaro::Modular<float>, Method::SparseElimination>();
-    run_2x2<Givaro::Modular<float>, Method::Wiedemann>();
-    run_2x2<Givaro::Modular<float>, Method::BlockWiedemann>();
-    run_2x2<Givaro::Modular<float>, Method::Coppersmith>();
+    run_2x2<Givaro::Modular<float>, MethodWIP::DenseElimination>();
+    run_2x2<Givaro::Modular<float>, MethodWIP::SparseElimination>();
+    run_2x2<Givaro::Modular<float>, MethodWIP::Wiedemann>();
+    run_2x2<Givaro::Modular<float>, MethodWIP::BlockWiedemann>();
+    run_2x2<Givaro::Modular<float>, MethodWIP::Coppersmith>();
 
     return 0;
 }

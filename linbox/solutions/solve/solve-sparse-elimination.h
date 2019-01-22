@@ -22,8 +22,9 @@
 
 #pragma once
 
+#include <linbox/algorithms/matrix-hom.h>
 #include <linbox/matrix/sparse-matrix.h>
-#include <linbox/solutions/methods.h>
+#include <linbox/solutions/methods-wip.h>
 
 namespace LinBox {
     /**
@@ -31,7 +32,7 @@ namespace LinBox {
      */
     template <class ResultVector, class Matrix, class Vector, class CategoryTag>
     ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag,
-                        const Method::SparseElimination& m)
+                        const MethodWIP::SparseElimination& m)
     {
         // @fixme Emit warning about conversion to sparse
 
@@ -49,7 +50,7 @@ namespace LinBox {
      */
     template <class ResultVector, class... MatrixArgs, class Vector, class CategoryTag>
     ResultVector& solve(ResultVector& x, const SparseMatrix<MatrixArgs...>& A, const Vector& b, const CategoryTag& tag,
-                        const Method::SparseElimination& m)
+                        const MethodWIP::SparseElimination& m)
     {
         solve_precheck(x, A, b);
 

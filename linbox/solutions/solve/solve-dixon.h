@@ -36,7 +36,7 @@ namespace LinBox {
      * \brief Solve specialisation for Dixon.
      */
     template <class ResultVector, class Matrix, class Vector, class CategoryTag>
-    ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag, const Method::Dixon& m)
+    ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag, const MethodWIP::Dixon& m)
     {
         throw NotImplementedYet("Dixon solving.");
     }
@@ -46,9 +46,9 @@ namespace LinBox {
      */
     template <class ResultVector, class Matrix, class Vector>
     ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const RingCategories::IntegerTag& tag,
-                        const Method::Dixon& m)
+                        const MethodWIP::Dixon& m)
     {
-        throw LinBoxFailure("Solve with Method::Dixon expects the rational result interface to be used.");
+        throw LinBoxFailure("Solve with MethodWIP::Dixon expects the rational result interface to be used.");
     }
 
     /**
@@ -56,18 +56,18 @@ namespace LinBox {
      */
     template <class Matrix, class Vector, class CategoryTag>
     void solve(Vector& xNum, typename Vector::Field::Element& xDen, const Matrix& A, const Vector& b, const CategoryTag& tag,
-               const Method::Dixon& m)
+               const MethodWIP::Dixon& m)
     {
-        throw LinBoxFailure("Solve with Method::Dixon expects RingCategories::IntegerTag.");
+        throw LinBoxFailure("Solve with MethodWIP::Dixon expects RingCategories::IntegerTag.");
     }
 
     /**
      * \brief Solve specialisation for Dixon on dense matrices.
      */
-    // @fixme Method::Dixon should be templated with IterationMethod too!
+    // @fixme MethodWIP::Dixon should be templated with IterationMethod too!
     template <class MatrixField, class Vector>
     void solve(Vector& xNum, typename Vector::Field::Element& xDen, const BlasMatrix<MatrixField>& A, const Vector& b,
-               const RingCategories::IntegerTag& tag, const Method::Dixon& m)
+               const RingCategories::IntegerTag& tag, const MethodWIP::Dixon& m)
     {
         solve_precheck(xNum, A, b);
 
@@ -82,24 +82,24 @@ namespace LinBox {
         Solver dixonSolve(A.field(), primeGenerator);
 
         // Either A is known to be non-singular, or we just don't know yet.
-        bool singular = (m.singular() == Specifier::SINGULAR) || (A.rowdim() != A.coldim());
+        int maxTries = m.trialsBeforeThrowing;
+        bool singular = (m.singularity == Singularity::Singular) || (A.rowdim() != A.coldim());
         if (!singular) {
-            auto status = dixonSolve.solveNonsingular(xNum, xDen, A, b, false, (int)m.maxTries());
+            auto status = dixonSolve.solveNonsingular(xNum, xDen, A, b, false, maxTries);
             singular = (status != SS_OK);
         }
 
         // Either A is known to be singular, or we just failed trying to solve it as non-singular.
         if (singular) {
-            SolverLevel level = (m.certificate() ? SL_LASVEGAS : SL_MONTECARLO);
+            SolverLevel level = (m.findInconsistencyCertificate ? SL_LASVEGAS : SL_MONTECARLO);
 
-            // @fixme solution() is not a meaningful name
-            if (m.solution() == DixonTraits::DIOPHANTINE) {
+            if (m.solutionType == MethodWIP::Dixon::SolutionType::Diophantine) {
                 DiophantineSolver<Solver> diophantineSolve(dixonSolve);
-                diophantineSolve.diophantineSolve(xNum, xDen, A, b, (int)m.maxTries(), level);
+                diophantineSolve.diophantineSolve(xNum, xDen, A, b, maxTries, level);
             }
             else {
-                bool randomSolutionType = (m.solution() == DixonTraits::RANDOM);
-                dixonSolve.monolithicSolve(xNum, xDen, A, b, false, randomSolutionType, (int)m.maxTries(), level);
+                bool randomSolutionType = (m.solutionType == MethodWIP::Dixon::SolutionType::Random);
+                dixonSolve.monolithicSolve(xNum, xDen, A, b, false, randomSolutionType, maxTries, level);
             }
         }
 

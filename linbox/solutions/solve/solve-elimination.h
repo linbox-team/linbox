@@ -24,16 +24,16 @@
 
 #include <linbox/matrix/dense-matrix.h>
 #include <linbox/matrix/sparse-matrix.h>
-#include <linbox/solutions/methods.h>
+#include <linbox/solutions/methods-wip.h>
 
 namespace LinBox {
     /**
      * \brief Solve specialisation for Elimination.
      */
     template <class ResultVector, class Matrix, class Vector, class CategoryTag>
-    ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag, const Method::Elimination& m)
+    ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag, const MethodWIP::Elimination& m)
     {
-        return solve(x, A, b, tag, Method::Blackbox(m));
+        return solve(x, A, b, tag, MethodWIP::Blackbox(m));
     }
 
     /**
@@ -41,9 +41,9 @@ namespace LinBox {
      */
     template <class ResultVector, class MatrixField, class Vector, class CategoryTag>
     ResultVector& solve(ResultVector& x, const DenseMatrix<MatrixField>& A, const Vector& b, const CategoryTag& tag,
-                        const Method::Elimination& m)
+                        const MethodWIP::Elimination& m)
     {
-        return solve(x, A, b, tag, Method::DenseElimination(m));
+        return solve(x, A, b, tag, MethodWIP::DenseElimination(m));
     }
 
     /**
@@ -51,8 +51,8 @@ namespace LinBox {
      */
     template <class ResultVector, class MatrixField, class Vector, class CategoryTag>
     ResultVector& solve(ResultVector& x, const SparseMatrix<MatrixField>& A, const Vector& b, const CategoryTag& tag,
-                        const Method::Elimination& m)
+                        const MethodWIP::Elimination& m)
     {
-        return solve(x, A, b, tag, Method::SparseElimination(m));
+        return solve(x, A, b, tag, MethodWIP::SparseElimination(m));
     }
 }

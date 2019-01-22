@@ -38,6 +38,10 @@ namespace LinBox
 	class LinboxError {
 		static const size_t max_error_string = 256;
 	public:
+		LinboxError(const std::string& msg)
+			: LinboxError(msg.c_str())
+		{}
+
 		LinboxError (const char* msg = "\0") {
 			std::strncpy(strg, msg, max_error_string);
 			strg[max_error_string-1] = 0;
