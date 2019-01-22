@@ -22,28 +22,18 @@
  * ========LICENCE========
  */
 
-#include <linbox/linbox-config.h>
+#include "linbox/linbox-config.h"
+
+#include "linbox/algorithms/polynomial-matrix/polynomial-fft-algorithms.h"
+#include "linbox/randiter/random-fftprime.h"
+#include "linbox/ring/modular.h"
 
 #include <functional>
 #include <iostream>
 #include <string>
 #include <vector>
 
-#include <givaro/modular.h>
-#include <givaro/givranditer.h>
-
 using namespace std; 
-
-#include "linbox/algorithms/polynomial-matrix/polynomial-fft-butterflies.h"
-#include "linbox/algorithms/polynomial-matrix/polynomial-fft-algorithms.h"
-#include "linbox/polynomial/dense-polynomial.h"
-
-#include "linbox/algorithms/polynomial-matrix/polynomial-fft-transform.h"
-#include "linbox/randiter/random-fftprime.h"
-#include "linbox/ring/modular.h"
-
-#include "fflas-ffpack/utils/align-allocator.h"
-
 using namespace LinBox;
 
 /* For pretty printing type */
