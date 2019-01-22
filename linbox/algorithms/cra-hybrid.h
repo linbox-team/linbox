@@ -267,7 +267,10 @@ namespace LinBox
             
             Domain D(*primeg);
             BlasVector<Domain> r(D);
-Timer chrono;
+
+  double starttime;
+  double endtime;
+
 			//  parent propcess
 			if(_commPtr->rank() == 0){
               
@@ -276,10 +279,10 @@ Timer chrono;
 			}
 			//  child process
 			else{
-chrono.start();
+starttime = omp_get_wtime();
                 worker_process_task(Iteration, r);
-chrono.stop();
-std::cout<<" process("<<_commPtr->rank()<<") used total CPU time (seconds): " <<chrono.usertime()<<std::endl;
+endtime   = MPI_Wtime();
+std::cout<<" process("<<_commPtr->rank()<<") used total CPU time (seconds): " << endtime-starttime<<std::endl;
 			}
 
 		}
