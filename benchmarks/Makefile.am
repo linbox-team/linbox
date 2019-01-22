@@ -48,6 +48,7 @@ PERFPUBLISHERFILE=benchmarks-report.xml
 BENCH_BASIC=               \
 		benchmark-example\
 		benchmark-order-basis\
+		benchmark-fft-new\
 		benchmark-fft-old
 
 FAILS=    \
@@ -103,6 +104,7 @@ benchmarks: ${EXTRA_PROGRAMS}
 
 benchmark_example_SOURCES       = benchmark-example.C
 benchmark_order_basis_SOURCES       = benchmark-order-basis.C
+benchmark_fft_new_SOURCES       = benchmark-fft-new.C
 benchmark_fft_old_SOURCES       = benchmark-fft-old.C
 
 #  benchmark_matmul_SOURCES         = benchmark-matmul.C
