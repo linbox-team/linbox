@@ -68,26 +68,6 @@ struct Benchs {
 	Benchs (const Field& F, size_t k) : _F(F), _k(k), _n(1<<k), _fft(F,k) {
 	}
 
-	/* compute r = P evaluated at x using Horner method */
-	void horner_eval (Elt& r, EltVector& P, Elt& x) {
-		_F.assign (r, _F.zero);
-		for (auto ptr = P.rbegin(); ptr != P.rend(); ptr++ ) {
-			_F.mulin (r, x);
-			_F.addin (r, *ptr);
-		}
-	}
-
-	/* return i with its first _k bits reversed */
-	size_t bitreversed (size_t i) {
-		size_t r = 0;
-		for (size_t j = 0; j < _k; j++, i>>=1)
-		{
-			r <<= 1;
-			r |= i & 1;
-		}
-		return r;
-	}
-
 	/* draw random vector and bench DIF and DIT for all available SIMD implem */
 	void bench (unsigned long seed) {
 		EltVector in(_n), v(_n);
@@ -181,11 +161,23 @@ int main (int argc, char *argv[]) {
 
 	parseArguments (argc, argv, args);
 
+	cout << "# command: ";
+	FFLAS::writeCommandString (cout, args, "benchmark-fft-old") << endl;
+
+	if (k >= bits) {
+		cerr << "Error, k=" << k << " must be smaller than nbits=" << bits;
+		cerr << endl;
+		return 1;
+	}
+
+	if (bits > 27) {
+		cerr << "Error, nbits=" << bits << "must be smaller or equal to 27";
+		cerr << endl;
+		return 1;
+	}
+
 	/* Bench with Modular<uint32_t, uint64_t>, */
 	bench_one_modular_implem<uint32_t, uint64_t> (bits, k, seed);
-
-	cout << endl << "# command: ";
-	FFLAS::writeCommandString (cout, args, "benchmark-fft-old") << endl;
 
 	return 0;
 }
