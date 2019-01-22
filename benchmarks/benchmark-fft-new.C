@@ -79,7 +79,7 @@ struct Benchs {
 		EltVector v(_n);
 		string s;
 		s.append ("<"); s.append (TypeName<SimdType>()); s.append ("> ");
-		s.append (string (80-(s.size()+30), '.'));
+		s.append (string (80-(s.size()+36), '.'));
 
 		/* DIF */
 		v = in;
