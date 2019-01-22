@@ -40,6 +40,7 @@ tests/test-serialization
 tests/test-smith-form-kannan-bachem
 tests/test-solve-nonsingular
 tests/test-fft-new
+tests/test-fft-old
 
 tests/.tmp-tests
 tests/checker
