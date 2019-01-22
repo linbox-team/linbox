@@ -79,10 +79,10 @@ examples/sparseelimdet
 examples/sparseelimrank
 examples/valence
 examples/benchmatpolymult
-examples/benchfft
 examples/polysmith
 benchmarks/benchmark-solveCRA
 benchmarks/benchmark-example
+benchmarks/benchmark-fft-old
 libtool
 linbox-config
 linbox/config.h
