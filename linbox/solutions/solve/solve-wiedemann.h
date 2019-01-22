@@ -24,14 +24,14 @@
 
 #include <linbox/algorithms/block-wiedemann.h>
 #include <linbox/algorithms/coppersmith.h>
-#include <linbox/solutions/methods.h>
+#include <linbox/solutions/methods-wip.h>
 
 namespace LinBox {
     /**
      * \brief Solve specialisation for Wiedemann.
      */
     template <class ResultVector, class Matrix, class Vector, class CategoryTag>
-    ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag, const Method::Wiedemann& m)
+    ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag, const MethodWIP::Wiedemann& m)
     {
         solve_precheck(x, A, b);
 
@@ -45,7 +45,7 @@ namespace LinBox {
      */
     template <class ResultVector, class Matrix, class Vector, class CategoryTag>
     ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag,
-                        const Method::BlockWiedemann& m)
+                        const MethodWIP::BlockWiedemann& m)
     {
         solve_precheck(x, A, b);
 
@@ -64,7 +64,7 @@ namespace LinBox {
      */
     template <class ResultVector, class Matrix, class Vector, class CategoryTag>
     ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag,
-                        const Method::Coppersmith& m)
+                        const MethodWIP::Coppersmith& m)
     {
         solve_precheck(x, A, b);
 

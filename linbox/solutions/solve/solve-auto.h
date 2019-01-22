@@ -22,17 +22,17 @@
 
 #pragma once
 
-#include <linbox/solutions/methods.h>
+#include <linbox/solutions/methods-wip.h>
 
 namespace LinBox {
     /**
      * \brief Solve specialisation for Auto.
      */
     template <class ResultVector, class Matrix, class Vector, class CategoryTag>
-    ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag, const Method::Auto& m)
+    ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag, const MethodWIP::Auto& m)
     {
         // @fixme useBB(), as the auto should go according to sparse or so
-        return solve(x, A, b, tag, Method::Elimination());
+        return solve(x, A, b, tag, MethodWIP::Elimination(m));
     }
 
     /**
@@ -40,8 +40,23 @@ namespace LinBox {
      */
     template <class ResultVector, class Matrix, class Vector>
     ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const RingCategories::IntegerTag& tag,
-                        const Method::Auto& m)
+                        const MethodWIP::Auto& m)
     {
-        return solve(x, A, b, tag, Method::Dixon());
+        // @fixme Does not have Dixon only a rational interface, so far?
+        return solve(x, A, b, tag, MethodWIP::Dixon(m));
+    }
+
+    //
+    // Rational API.
+    //
+
+    /**
+     * \brief Solve specialization for Auto and IntegerTag.
+     */
+    template <class Matrix, class Vector>
+    inline void solve(Vector& xNum, typename Vector::Field::Element& xDen, const Matrix& A, const Vector& b,
+                      const RingCategories::IntegerTag& tag, const MethodWIP::Auto& m)
+    {
+        solve(xNum, xDen, A, b, tag, MethodWIP::Dixon(m));
     }
 }

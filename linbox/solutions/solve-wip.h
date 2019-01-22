@@ -26,7 +26,7 @@
 #include <iostream> // @fixme This is needed for givaro ring-interface to compile
 
 #include <linbox/field/field-traits.h>
-#include <linbox/solutions/methods.h>
+#include <linbox/solutions/methods-wip.h>
 #include <linbox/util/debug.h> // NotImplementedYet
 
 namespace LinBox {
@@ -47,16 +47,12 @@ namespace LinBox {
      *
      * CategoryTag is defaulted to FieldTraits<Matrix::Field>::categoryTag().
      *
-     * SolveMethod determines which algorithm will be used.
-     * Using Method::Auto chooses the Method according to Matrix and Ring information:
-     * - RingCategories::IntegerTag         => Method::Dixon @fixme Requires correct interface
-     * - RingCategories::<Other>            => Method::Elimination
+     * SolveMethod is expected to be one of the following:
+     * - Method::Auto
+     * - Method::CRA
+     * - Method::Dixon
      * - Method::Elimination
-     *      - Matrix == DenseMatrix         => Method::DenseElimination
-     *      - Matrix == SparseMatrix        => Method::SparseElimination
-     *      - Matrix == <Other>             => Method::Blackbox
-     * - Method::BlackBox
-     *      - Matrix == <Other>             => Method::Wiedemann @fixme
+     * - Method::SparseElimination
      *
      * @param [out] x solution, can be a rational solution (vector of numerators and one denominator)
      * @param [in]  A matrix
@@ -68,7 +64,7 @@ namespace LinBox {
     template <class ResultVector, class Matrix, class Vector, class CategoryTag, class SolveMethod>
     inline ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag, const SolveMethod& m)
     {
-        throw NotImplementedYet("Solve specialisation is not implemented yet.");
+        throw LinBoxError("solve<" + CategoryTag::name() + ", " + SolveMethod::name() + "> does not exists.");
     }
 
     /**
@@ -86,7 +82,7 @@ namespace LinBox {
     template <class ResultVector, class Matrix, class Vector>
     inline ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b)
     {
-        return solve(x, A, b, Method::Auto());
+        return solve(x, A, b, MethodWIP::Auto());
     }
 
     /**
@@ -101,14 +97,14 @@ namespace LinBox {
     inline void solve(Vector& xNum, typename Vector::Field::Element& xDen, const Matrix& A, const Vector& b,
                       const CategoryTag& tag, const SolveMethod& m)
     {
-        throw LinBoxError("Rational solve is only valid for RingCategories::IntegerTag and Method::Cra or Method::Dixon.");
+        throw LinBoxError("Rational solve is only valid for RingCategories::IntegerTag.");
     }
 
-    template <class Matrix, class Vector, class CategoryTag, class SolveMethod>
+    template <class Matrix, class Vector, class SolveMethod>
     inline void solve(Vector& xNum, typename Vector::Field::Element& xDen, const Matrix& A, const Vector& b,
                       const RingCategories::IntegerTag& tag, const SolveMethod& m)
     {
-        throw NotImplementedYet("Rational solve specialisation is not implemented yet.");
+        throw LinBoxError("Rational solve<RingCategories::IntegerTag, " + SolveMethod::name() + "> does not exists.");
     }
 
     /**
@@ -126,21 +122,27 @@ namespace LinBox {
     template <class Matrix, class Vector>
     inline void solve(Vector& xNum, typename Vector::Field::Element& xDen, const Matrix& A, const Vector& b)
     {
-        return solve(xNum, xDen, A, b, Method::Auto());
+        return solve(xNum, xDen, A, b, MethodWIP::Auto());
     }
 }
 
 #include "./solve/solve-utils.h"
 
 #include "./solve/solve-auto.h"
-#include "./solve/solve-cra.h"
-#include "./solve/solve-dixon.h"
-#include "./solve/solve-wiedemann.h"
+// #include "./solve/solve-blackbox.h"
 
-#include "./solve/solve-dense-elimination.h"
+// Elimination
 #include "./solve/solve-elimination.h"
+#include "./solve/solve-dense-elimination.h"
 #include "./solve/solve-sparse-elimination.h"
 
-#include "./solve/solvein.h" // @fixme
+// Integer-based
+#include "./solve/solve-cra.h"
+#include "./solve/solve-dixon.h"
+
+// @fixme What are those for?
+#include "./solve/solve-wiedemann.h"
+
+// #include "./solve/solvein.h" @fixme
 
 #endif

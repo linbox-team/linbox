@@ -43,39 +43,6 @@
 
 namespace {
     /**
-     * Simple function to switch to a different algorithm according to the dispatch type.
-     */
-    template <class Vector, class Iteration, class PrimeGenerator, class DispatchType>
-    inline void solve_from_dispatch(Vector& num, typename Vector::Field::Element& den, double hadamardLogBound,
-                                    Iteration& iteration, PrimeGenerator& primeGenerator, const DispatchType& dispatch)
-    {
-        throw LinBox::NotImplementedYet("Integer CRA Solve with specified dispatch type is not implemented yet.");
-    }
-
-    template <class Vector, class Iteration, class PrimeGenerator>
-    inline void solve_from_dispatch(Vector& num, typename Vector::Field::Element& den, double hadamardLogBound,
-                                    Iteration& iteration, PrimeGenerator& primeGenerator,
-                                    const LinBox::Dispatch::Sequential& dispatch)
-    {
-        using CraAlgorithm = LinBox::FullMultipRatCRA<Givaro::ModularBalanced<double>>;
-        LinBox::RationalRemainder<CraAlgorithm> cra(hadamardLogBound);
-        cra(num, den, iteration, primeGenerator);
-    }
-
-#if defined(__LINBOX_HAVE_MPI) // @fixme Is this useful?
-    template <class Vector, class Iteration, class PrimeGenerator>
-    inline void solve_from_dispatch(Vector& num, typename Vector::Field::Element& den, double hadamardLogBound,
-                                    Iteration& iteration, PrimeGenerator& primeGenerator,
-                                    const LinBox::Dispatch::Distributed& dispatch)
-    {
-        using CraAlgorithm = LinBox::FullMultipRatCRA<Givaro::ModularBalanced<double>>;
-        // @fixme Rename RationalRemainderDistributed
-        LinBox::MPIratChineseRemainder<CraAlgorithm> cra(hadamardLogBound, dispatch.communicator);
-        cra(num, den, iteration, primeGenerator);
-    }
-#endif
-
-    /**
      * Initialized with a matrix A, vector b and a solve method,
      * returns x such that Ax = b (if any).
      *
@@ -120,21 +87,60 @@ namespace {
 namespace LinBox {
     /**
      * \brief Solve specialization with Chinese Remainder Algorithm method for an Integer ring.
+     */
+    template <class Matrix, class Vector, class CategoryTag, class IterationMethod>
+    inline void solve(Vector& xNum, typename Vector::Field::Element& xDen, const Matrix& A, const Vector& b,
+                      const CategoryTag& tag, const MethodWIP::CraCustom<IterationMethod>& m)
+    {
+        throw LinboxError("Rational solve with MethodWIP::Cra can only be used with RingCategories::IntegerTag.");
+    }
+
+    /**
+     * \brief Solve specialization with Chinese Remainder Algorithm method for an Integer ring.
      *
      * This one has a different signature (num, den) because of the IntegerTag implying a rational result.
      */
-    template <class Matrix, class Vector, class IterationMethod, class DispatchType>
+    template <class Matrix, class Vector, class IterationMethod>
     inline void solve(Vector& xNum, typename Vector::Field::Element& xDen, const Matrix& A, const Vector& b,
-                      const RingCategories::IntegerTag& tag, const Method::CRAWIP<IterationMethod, DispatchType>& m)
+                      const RingCategories::IntegerTag& tag, const MethodWIP::CraCustom<IterationMethod>& m)
     {
-        if (m.dispatch.master()) {
+        //
+        // Handle auto-dispatch.
+        //
+
+        Dispatch dispatch = m.dispatch;
+        if (dispatch == Dispatch::Auto) {
+            MethodWIP::CraCustom<IterationMethod> newM(m);
+
+#if __LINBOX_HAVE_MPI
+            // User has MPI enabled in config, but not specified if it wanted to use it,
+            // we enable it with default communicator if needed.
+            // @fixme This is wrong if we don't provide argc, argv, right?
+            newM.dispatch = Dispatch::Distributed;
+            Communicator communicator(nullptr, 0);
+            if (newM.pCommunicator == nullptr) {
+                newM.pCommunicator = &communicator;
+            }
+#else
+            // @fixme Should we use Dispatch::Smp by default?
+            newM.dispatch = Dispatch::Sequential;
+#endif
+
+            return solve(xNum, xDen, A, b, tag, newM);
+        }
+
+        //
+        // Init all (Hadamard bound, prime generator).
+        //
+
+        if (m.master()) {
             commentator().start("Solve Integer CRA", "solve.integer.cra");
             solve_precheck(xNum, A, b);
         }
 
         const typename Matrix::Field& F = A.field();
         unsigned int bits = 26 - (int)ceil(log(A.rowdim() * 0.7213475205));
-        PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime(bits);
+        PrimeIterator<LinBox::IteratorCategories::HeuristicTag> primeGenerator(bits);
         CraRebinderSolver<Matrix, Vector, IterationMethod> iteration(A, b, m.iterationMethod);
 
         // @note The result is stored to Integers, and will be converted
@@ -145,11 +151,33 @@ namespace LinBox {
         auto hb = RationalSolveHadamardBound(A, b);
         double hadamardLogBound = 1.0 + hb.numLogBound + hb.denLogBound; // = ln2(2 * N * D)
 
-        solve_from_dispatch(num, den, hadamardLogBound, iteration, genprime, m.dispatch);
+        //
+        // Calling the right solver
+        //
+
+        using CraAlgorithm = LinBox::FullMultipRatCRA<Givaro::ModularBalanced<double>>;
+        if (dispatch == Dispatch::Sequential) {
+            LinBox::RationalRemainder<CraAlgorithm> cra(hadamardLogBound);
+            cra(num, den, iteration, primeGenerator);
+        }
+#if defined(__LINBOX_HAVE_MPI)
+        else if (dispatch == Dispatch::Distributed) {
+            // @fixme Rename RationalRemainderDistributed
+            LinBox::MPIratChineseRemainder<CraAlgorithm> cra(hadamardLogBound, dispatch.communicator);
+            cra(num, den, iteration, primeGenerator);
+        }
+#endif
+        else {
+            throw LinBox::NotImplementedYet("Integer CRA Solve with specified dispatch type is not implemented yet.");
+        }
+
+        //
+        // Post-solve conversion.
+        //
 
         // @note We need to convert because the storage might be some fixed-size integer types.
         // @fixme Specialize so that this copy isn't needed
-        if (m.dispatch.master()) {
+        if (m.master()) {
             auto it_x = xNum.begin();
             auto it_num = num.begin();
 
@@ -163,29 +191,5 @@ namespace LinBox {
 
             commentator().stop("solve.integer.cra");
         }
-    }
-
-    /**
-     * \brief Solve specialization with Chinese Remainder Algorithm method for an Integer ring, when dispatch is automated.
-     */
-    template <class Matrix, class Vector, class IterationMethod>
-    inline void solve(Vector& xNum, typename Vector::Field::Element& xDen, const Matrix& A, const Vector& b,
-                      const RingCategories::IntegerTag& tag, const Method::CRAWIP<IterationMethod, Dispatch::Auto>& m)
-    {
-#if __LINBOX_HAVE_MPI
-        // User has MPI enabled in config, but not specified if it wanted to use it,
-        // we enable it with default communicator.
-        Communicator communicator(nullptr, 0);
-
-        Method::CRAWIP<IterationMethod, Dispatch::Distributed> newM;
-        newM.iterationMethod = m.iterationMethod;
-        newM.dispatch.communicator = &communicator;
-#else
-        // @fixme Should we use Dispatch::Smp by default?
-        Method::CRAWIP<IterationMethod, Dispatch::Sequential> newM;
-        newM.iterationMethod = m.iterationMethod;
-#endif
-
-        solve(xNum, xDen, A, b, tag, newM);
     }
 }
