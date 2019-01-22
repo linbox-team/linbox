@@ -201,7 +201,7 @@ int main (int argc, char *argv[]) {
 
 	parseArguments (argc, argv, args);
 
-	cout << "# To rerun this test: test-fft-new -s " << seed << endl;
+	cout << "# To rerun this test: test-fft-old -s " << seed << endl;
 	cout << "# seed = " << seed << endl;
 
 	/* Test with Modular<uint32_t, uint64_t>, and 27-bit prime and k=10 */
