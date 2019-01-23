@@ -170,8 +170,8 @@ int main (int argc, char *argv[]) {
 		return 1;
 	}
 
-	if (bits > 27) {
-		cerr << "Error, nbits=" << bits << "must be smaller or equal to 27";
+	if (bits > 32) {
+		cerr << "Error, nbits=" << bits << " must be smaller or equal to 32";
 		cerr << endl;
 		return 1;
 	}
