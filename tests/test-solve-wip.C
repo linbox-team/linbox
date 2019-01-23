@@ -24,7 +24,7 @@ void run_rational_2x2() {
 
     solve(xNum, xDen, A, b, Method());
 
-    std::cout << "---------------" << std::endl;
+    std::cout << "--------------- " << Method::name() << std::endl;
     A.write(std::cout << "A: ", Tag::FileFormat::Maple) << std::endl;
     std::cout << "b: " << b << std::endl;
     std::cout << "x: " << xNum << "/" << xDen << std::endl;
@@ -52,7 +52,7 @@ void run_2x2() {
 
     solve(x, A, b, Method());
 
-    std::cout << "---------------" << std::endl;
+    std::cout << "--------------- " << Method::name() << std::endl;
     A.write(std::cout << "A: ", Tag::FileFormat::Maple) << std::endl;
     std::cout << "b: " << b << std::endl;
     std::cout << "x: " << x << std::endl;
