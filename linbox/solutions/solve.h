@@ -50,6 +50,8 @@
 #ifdef __LINBOX_HAVE_MPI
 #include "linbox/algorithms/cra-mpi.h"
 #endif
+#include "linbox/solutions/hadamard-bound.h"
+
 #include "linbox/algorithms/rational-cra2.h"
 
 #include "linbox/algorithms/varprec-cra-early-multip.h"
@@ -750,77 +752,45 @@ namespace LinBox
     };
 
 
-        //BB: How come I have to change the name so it works when directly called ?
+    //BB: How come I have to change the name so it works when directly called ?
     template <class Vector, class BB, class MyMethod>
     Vector& solveCRA(Vector& x, typename BB::Field::Element& d, const BB& A, const Vector& b,
-                     const RingCategories::IntegerTag & tag,
-                     const MyMethod& M
-#ifdef __LINBOX_HAVE_MPI
-                     ,Communicator   *C = NULL
-#endif
-                     )
+                     const RingCategories::IntegerTag & tag, const MyMethod& M, Communicator* C)
     {
-#ifdef __LINBOX_HAVE_MPI    //MPI parallel version
-
-        Integer den(1);
-        if(!C || C->rank() == 0){
-            if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
+        if (!C || C->master()){
+            if ((A.coldim() != x.size()) || (A.rowdim() != b.size())) {
                 throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
-            commentator().start ("Integer CRA Solve", "Isolve");
+            }
         }
 
-        RandomPrimeIterator genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
-
-        BlasVector<Givaro::ZRing<Integer>> num(A.field(),A.coldim());
-
+        using Field = Givaro::ModularBalanced<double>;
+        PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize());
         IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
-        MPIratChineseRemainder< EarlyMultipRatCRA< Givaro::Modular<double> > > mpicra(3UL, C);
+        Vector num(A.field(),A.coldim());
+        Integer den(1);
 
-        mpicra(num, den, iteration, genprime);
+        auto rationalHadamard = RationalSolveHadamardBound(A, b);
+        double hadamard = 1.0 + rationalHadamard.numLogBound + rationalHadamard.denLogBound; // log2(2 * N * D)
 
-        if(!C || C->rank() == 0){
-            typename Vector::iterator it_x= x.begin();
-            typename BlasVector<Givaro::ZRing<Integer>>::const_iterator it_num= num.begin();
+#ifdef __LINBOX_HAVE_MPI
+        MPIChineseRemainder<FullMultipRatCRA<Field>> cra(hadamard, C);
+#else
+        RationalRemainder<FullMultipRatCRA<Field>> cra(hadamard);
+#endif
 
-                // convert the result
-            for (; it_x != x.end(); ++it_x, ++it_num)
+        cra(num, den, iteration, genprime);
+
+        if(!C || C->master()){
+            // Convert the result
+            auto it_num = num.begin();
+            for (auto it_x = x.begin(); it_x != x.end(); ++it_x, ++it_num)
                 A.field().init(*it_x, *it_num);
 
             A.field().init(d, den);
-
-            commentator().stop ("done", NULL, "Isolve");
-            return x;
         }
-#else   //serial version
-        if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
-            throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
-        commentator().start ("Integer CRA Solve", "Isolve");
 
-
-        PrimeIterator<IteratorCategories::HeuristicTag> genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
-            //         RationalRemainder< Givaro::Modular<double> > rra((double)
-            //                                                  ( A.coldim()/2.0*log((double) A.coldim()) ) );
-
-            // use of integer due to non genericity of rra (PG 2005-09-01)
-        Integer den(1);
-        BlasVector<Givaro::ZRing<Integer>> num(A.field(),A.coldim());
-
-        IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
-        RationalRemainder< EarlyMultipRatCRA< Givaro::Modular<double> > > rra(3UL);
-        rra(num, den, iteration, genprime); //rra(x, d, iteration, genprime);
-        typename Vector::iterator it_x= x.begin();
-        typename BlasVector<Givaro::ZRing<Integer>>::const_iterator it_num= num.begin();
-            // convert the result
-        for (; it_x != x.end(); ++it_x, ++it_num)
-            A.field().init(*it_x, *it_num);
-        A.field().init(d, den);
-        commentator().stop ("done", NULL, "Isolve");
         return x;
-#endif
     }
-
-
-
 
 
         //BB: How come SparseElimination needs this ?
