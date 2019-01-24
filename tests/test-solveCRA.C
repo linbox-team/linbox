@@ -156,9 +156,7 @@ int main(int argc, char ** argv)
     END_OF_ARGUMENTS
   };	
   parseArguments (argc, argv, args); 
-    
-  omp_set_num_threads(nt);
- 
+  
   Givaro::ZRing<Integer> F;  
   
   typedef Givaro::ZRing<Integer> TF;
@@ -169,13 +167,15 @@ int main(int argc, char ** argv)
   DenseVector X2(F, A.coldim()),  B(F, A.coldim());
   size_t ni=n;
   size_t bits=bitsize;
+  size_t nbt=nt;
 
   for(size_t j=0;loop || j<niter;j++){  
     
     
     std::cout << " Test with dimension: " << ni << " x " << ni << std::endl;
     std::cout << " Test with bitsize: " << bits << std::endl;
-
+    std::cout << " Test with number of threads: " << nbt << std::endl;
+    
     A.resize(ni,ni);
     B.resize(ni,ni);
     X2.resize(ni);
@@ -194,7 +194,9 @@ int main(int argc, char ** argv)
 	
 	A.write(std::cout << ">>>>Compute with A: " << A.rowdim() << " by " << A.coldim() << "\n"<< "A:=",Tag::FileFormat::Maple) << ';' << std::endl;
    */
-    
+     
+   omp_set_num_threads(nbt);
+   
    if(!test_set(F, X2, A, B )) break;
 
     if(q<0){
@@ -203,9 +205,13 @@ int main(int argc, char ** argv)
        
         bits = rand() % bitsize + 1;
         if (bits < bitsize / 2 && bitsize % 2 == 0 && !peak) bits = 1;
+        
+        nbt=rand() % nt + 1; 
+        
+        peak = !peak;
     } 
 
-    peak = !peak;
+    
 
   }
   
