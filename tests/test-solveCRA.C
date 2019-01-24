@@ -156,8 +156,6 @@ int main(int argc, char ** argv)
     END_OF_ARGUMENTS
   };	
   parseArguments (argc, argv, args); 
-    
-  omp_set_num_threads(nt);
  
   Givaro::ZRing<Integer> F;  
   
@@ -194,7 +192,8 @@ int main(int argc, char ** argv)
 	
 	A.write(std::cout << ">>>>Compute with A: " << A.rowdim() << " by " << A.coldim() << "\n"<< "A:=",Tag::FileFormat::Maple) << ';' << std::endl;
    */
-    
+   
+   //omp_set_num_threads(nt);
    if(!test_set(F, X2, A, B )) break;
 
     if(q<0){

@@ -74,10 +74,8 @@ namespace LinBox
 			 * /usr/lib/gcc/x86_64-linux-gnu/4.6/include/omp.h:64:12: note:   ‘Givaro::omp_get_num_threads’
 			 */
             
-			size_t NN;
-#pragma omp parallel
-#pragma omp single
-			NN = omp_get_num_threads();
+            int NN;
+            PAR_BLOCK{ NN=NUM_THREADS; } 
 
 			// commentator().start ("Parallel OMP Givaro::Modular iteration", "mmcrait");
 			if (NN == 1) return Father_t::operator()(res,Iteration,primeiter);
@@ -93,10 +91,8 @@ namespace LinBox
 		Container& operator() (Container& res, Function& Iteration, PrimeIterator& primeiter)
 		{
             
-			size_t NN;
-#pragma omp parallel
-#pragma omp single
-			NN = omp_get_num_threads();
+            int NN;
+            PAR_BLOCK{ NN=NUM_THREADS; } 
 
 			// commentator().start ("Parallel OMP Givaro::Modular iteration", "mmcrait");
 			if (NN == 1) return Father_t::operator()(res,Iteration,primeiter);
@@ -117,9 +113,8 @@ namespace LinBox
 			 * ../linbox/algorithms/cra-domain-omp.h:152:16: note: suggested alternative:
 			 * /usr/lib/gcc/x86_64-linux-gnu/4.6/include/omp.h:64:12: note:   ‘Givaro::omp_get_num_threads’
 			 */
-			size_t NN;
-#pragma omp parallel
-			NN = omp_get_num_threads();
+            int NN;
+            PAR_BLOCK{ NN=NUM_THREADS; } 
 
 			// commentator().start ("Parallel OMP Givaro::Modular iteration", "mmcrait");
 			if (NN == 1) return Father_t::operator()(res, den, Iteration,primeiter);
@@ -131,17 +126,11 @@ namespace LinBox
 			return this->Builder_.result(res,den);
 		}
 		
-        
-
-        
-#if 1   //without critical section
-////////////////////////////////////////////////////////////////////////
-#if 1   //with Paladin
         template<class Function>
         void para_compute(Function Iteration){
 
-            size_t NN;
-PAR_BLOCK{ NN=NUM_THREADS; }
+            int NN;
+            PAR_BLOCK{ NN=NUM_THREADS; }
 
             typedef typename CRATemporaryVectorTrait<Function, Domain>::Type_t ElementContainer;
             std::vector<LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>> m_primeiters;
@@ -150,7 +139,7 @@ PAR_BLOCK{ NN=NUM_THREADS; }
             vBuilders.reserve(NN);
 
 
-            for(auto j=0u;j<NN;j++){
+            for(auto j=0;j<NN;j++){
                 LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag> m_primeiter( j, NN);
                 m_primeiters.push_back(m_primeiter);
                 
@@ -173,18 +162,18 @@ PAR_BLOCK{ NN=NUM_THREADS; }
 
 
         template< class Function, class PrimeIterator, class Domain, class ElementContainer>
-        void solve_with_prime(std::vector<PrimeIterator>& m_primeiters,
+        void solve_with_prime(PrimeIterator& m_primeiters,
                               Function& Iteration, Domain& ROUNDdomains,
-                              ElementContainer& ROUNDresidues, std::vector<CRABase>& vBuilders)
+                              ElementContainer& ROUNDresidues, CRABase& vBuilders)
         {
             
-            ++m_primeiters[ omp_get_thread_num()];
+            ++m_primeiters;
 
-            while(vBuilders[ omp_get_thread_num()].noncoprime(*m_primeiters[ omp_get_thread_num()]) )
-                ++m_primeiters[ omp_get_thread_num()];
+            while(vBuilders.noncoprime(*m_primeiters) )
+                ++m_primeiters;
 
             
-            ROUNDdomains = Domain(*m_primeiters[ omp_get_thread_num()]);
+            ROUNDdomains = Domain(*m_primeiters);
             
             Iteration(ROUNDresidues, ROUNDdomains);
             
@@ -197,16 +186,30 @@ PAR_BLOCK{ NN=NUM_THREADS; }
         {
             
             long Niter=std::ceil(1.442695040889*B/(double)(m_primeiters[0].getBits()-1));
-            size_t NN;
-PAR_BLOCK{ NN=NUM_THREADS; }  
+            int NN;
+            PAR_BLOCK{ NN=NUM_THREADS; } 
+            
+            FFLAS::ParSeqHelper::Parallel<FFLAS::CuttingStrategy::Single,FFLAS::StrategyParameter::Grain> H;
+            if(NN>Niter){
 
-#pragma omp parallel for num_threads(NN) schedule(dynamic,1)
-            for(auto j=0;j<Niter;j++)
-                {
+	            PARFORBLOCK1D(k,Niter,H,
+                    solve_with_prime(m_primeiters[k], Iteration, ROUNDdomains[k], ROUNDresidues[k], vBuilders[k]);
+                );
 
-                    solve_with_prime(m_primeiters, Iteration, ROUNDdomains[j], ROUNDresidues[j], vBuilders);
+            }else{
 
+	            PARFORBLOCK1D(k,NN,H,
+	                for(auto j=k*(Niter/NN);j<(k+1)*(Niter/NN);j++)
+                        solve_with_prime(m_primeiters[k], Iteration, ROUNDdomains[j], ROUNDresidues[j], vBuilders[k]);
+                );
+                if(Niter%NN>0){
+	                PARFORBLOCK1D(k,Niter%NN,H,
+                        solve_with_prime(m_primeiters[k], Iteration, ROUNDdomains[k+NN*(Niter/NN)], ROUNDresidues[k+NN*(Niter/NN)], vBuilders[k]);
+                    );
                 }
+
+            }
+
 
             this->Builder_.initialize( ROUNDdomains[0], ROUNDresidues[0]);
 
@@ -218,184 +221,15 @@ PAR_BLOCK{ NN=NUM_THREADS; }
                 }
            
         }
-#else   ////OpenMP without Paladin 
-        template<class Function>
-        void para_compute(Function Iteration){
-			size_t NN;
-#pragma omp parallel
-#pragma omp single
-			NN = omp_get_num_threads();
-            typedef typename CRATemporaryVectorTrait<Function, Domain>::Type_t ElementContainer;
-            std::vector<LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>> m_primeiters;
-            std::vector<CRABase> vBuilders;vBuilders.resize(NN);
-            for(auto j=0u;j<NN;j++){
-                LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag> m_primeiter( j, NN);
-                m_primeiters.push_back(m_primeiter);
-                
-                CRABase Builder_(B);
-                vBuilders.push_back(Builder_);
-                
-            }
-                        
-            long Niter=std::ceil(1.442695040889*B/(double)(m_primeiters[0].getBits()-1));
-            
-            std::vector<ElementContainer> ROUNDresidues;ROUNDresidues.resize(Niter);
-            std::vector<Domain> ROUNDdomains;ROUNDdomains.resize(Niter);
 
-            compute_task( (this->Builder_), m_primeiters, Iteration,  ROUNDdomains,
-                          ROUNDresidues, vBuilders);
-            
-            
-        }
-
-
-        template< class Function, class PrimeIterator, class Domain, class ElementContainer>
-        void solve_with_prime(std::vector<PrimeIterator>& m_primeiters,
-                              Function& Iteration, Domain& ROUNDdomains,
-                              ElementContainer& ROUNDresidues, std::vector<CRABase>& vBuilders)
-        {
-            
-            ++m_primeiters[ omp_get_thread_num()];
-
-            while(vBuilders[ omp_get_thread_num()].noncoprime(*m_primeiters[ omp_get_thread_num()]) )
-                ++m_primeiters[ omp_get_thread_num()];
-
-            
-            ROUNDdomains = Domain(*m_primeiters[ omp_get_thread_num()]);
-            
-            Iteration(ROUNDresidues, ROUNDdomains);
-            
-        }
-
-        template<class pFunc, class Function, class PrimeIterator, class Domain, class ElementContainer>
-        void compute_task(pFunc& pF, std::vector<PrimeIterator>& m_primeiters,
-                          Function& Iteration, std::vector<Domain>& ROUNDdomains,
-                          std::vector<ElementContainer>& ROUNDresidues, std::vector<CRABase>& vBuilders)
-        {
-            
-			size_t NN;
-#pragma omp parallel
-#pragma omp single
-			NN = omp_get_num_threads();
-            long Niter=std::ceil(1.442695040889*B/(double)(m_primeiters[0].getBits()-1));
-               
-
-#pragma omp parallel for num_threads(NN) schedule(dynamic,1)
-            for(auto j=0;j<Niter;j++)
-                {
-
-                    solve_with_prime(m_primeiters, Iteration, ROUNDdomains[j], ROUNDresidues[j], vBuilders);
-
-                }
-
-            this->Builder_.initialize( ROUNDdomains[0], ROUNDresidues[0]);
-
-            for(auto j=0;j<Niter;j++)
-                {
-
-                        this->Builder_.progress( ROUNDdomains[j], ROUNDresidues[j]);
-
-                }
-           
-        }
-#endif
-//////////////////////////////////////////////////////////////////////////////////
-#else   //With critical section
-        template<class Function>
-        void para_compute(Function Iteration){
-			size_t NN;
-#pragma omp parallel
-#pragma omp single
-			NN = omp_get_num_threads();
-            typedef typename CRATemporaryVectorTrait<Function, Domain>::Type_t ElementContainer;
-            std::set<int> coprimeset;
-            std::vector<ElementContainer> ROUNDresidues;ROUNDresidues.resize(NN);
-            std::vector<Domain> ROUNDdomains;ROUNDdomains.resize(NN);
-            std::vector<LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>> m_primeiters;
-            std::vector<CRABase> vBuilders;vBuilders.resize(NN);
-            
-            for(auto j=0u;j<NN;j++){
-                LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag> m_primeiter( j, NN);
-                
-                CRABase Builder_(B);vBuilders.push_back(Builder_);
-                
-                m_primeiters.push_back(m_primeiter);
-                
-            }
-            
-            compute_task( (this->Builder_), m_primeiters, coprimeset, Iteration,  ROUNDdomains,
-                          ROUNDresidues, vBuilders);
-            
-            
-        }
-
-
-        template< class Function, class PrimeIterator, class Domain, class ElementContainer>
-        void solve_with_prime(std::vector<PrimeIterator>& m_primeiters, 
-                              Function& Iteration, std::vector<Domain>& ROUNDdomains,
-                              std::vector<ElementContainer>& ROUNDresidues, std::vector<CRABase>& vBuilders)
-        {
-            
-            ++m_primeiters[ omp_get_thread_num()];
-
-            while(vBuilders[ omp_get_thread_num()].noncoprime(*m_primeiters[ omp_get_thread_num()]) )
-                ++m_primeiters[ omp_get_thread_num()];
-
-            
-            ROUNDdomains[ omp_get_thread_num()] = Domain(*m_primeiters[ omp_get_thread_num()]);
-            
-            Iteration(ROUNDresidues[ omp_get_thread_num()], ROUNDdomains[ omp_get_thread_num()]);
-            
-        }
-
-        template<class pFunc, class Function, class PrimeIterator, class Domain, class ElementContainer>
-        void compute_task(pFunc& pF, std::vector<PrimeIterator>& m_primeiters, std::set<int>& coprimeset,
-                          Function& Iteration, std::vector<Domain>& ROUNDdomains,
-                          std::vector<ElementContainer>& ROUNDresidues, std::vector<CRABase>& vBuilders)
-        {
-            
-			size_t NN;
-#pragma omp parallel
-#pragma omp single
-			NN = omp_get_num_threads();
-            long Niter=std::ceil(1.442695040889*B/(double)(m_primeiters[0].getBits()-1));
-                        
-#pragma omp parallel for num_threads(NN) schedule(dynamic,1)
-            for(auto j=0;j<Niter;j++)
-                {
-                    
-                    solve_with_prime(m_primeiters, Iteration, ROUNDdomains, ROUNDresidues, vBuilders);
-                    
-#pragma omp critical
-                    if(coprimeset.size()>0){
-                        
-                        this->Builder_.progress( ROUNDdomains[ omp_get_thread_num()], ROUNDresidues[ omp_get_thread_num()]);
-                        
-//                                coprimeset.insert(*m_primeiters[ omp_get_thread_num()]);
-                                
-                    }else{
-                        
-                        this->Builder_.initialize( ROUNDdomains[ omp_get_thread_num()], ROUNDresidues[ omp_get_thread_num()]);
-//                        vBuilders[ omp_get_thread_num()].initialize( ROUNDdomains[ omp_get_thread_num()], ROUNDresidues[ omp_get_thread_num()]);
-                        
-                        coprimeset.insert(*m_primeiters[ omp_get_thread_num()]);
-                        
-                    }
-
-                }
-            
-        }
-#endif
    
         
 		template<class Container, class Function, class PrimeIterator>
 		Container& operator()  (Container& res, Integer& den, Function& Iteration, PrimeIterator& primeiter)
 		{
             
-			size_t NN;
-#pragma omp parallel
-#pragma omp single
-			NN = omp_get_num_threads();
+            int NN;
+            PAR_BLOCK{ NN=NUM_THREADS; } 
 			// commentator().start ("Parallel OMP Givaro::Modular iteration", "mmcrait");
 			if (NN == 1) return Father_t::operator()(res, den, Iteration,primeiter);
             
