@@ -62,7 +62,7 @@ int main (int argc, char **argv)
 		return -1;
 	}
 
-	long unsigned int r;
+	size_t r;
 
 	Givaro::QField<Givaro::Rational> ZZ;
 	LinBox::Timer tim ; tim.clear() ; tim.start();

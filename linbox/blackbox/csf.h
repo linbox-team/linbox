@@ -243,23 +243,6 @@ namespace LinBox
 			return norm;
 		}
 
-		integer &hadamardBound(integer &res){
-			res = 1L;
-			integer tmp;
-
-			//  product of ||A_i||_2 norms for rows A_i
-			for(Index i = _ptrs[0]; (size_t)i < _ptrs.size()-1; ++i) {
-				tmp = 0;
-				for(Index j = _ptrs[i]; j < _ptrs[i+1]; ++j) {
-					tmp += static_cast<integer>(_vals[j]) * _vals[j];
-				}
-				res *= tmp;
-			}
-
-			res = sqrt (res);
-			return res;
-		}
-
 		/** Read the matrix from a matrix stream
 		 *  @param ms Stream from which to read the matrix
 		 */
