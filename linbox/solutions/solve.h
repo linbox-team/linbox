@@ -803,12 +803,17 @@ return x;
 #ifdef __LINBOX_HAVE_MPI
 		}
 #endif    
-        
-		PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205))); 
-        
+
+
+
+        typedef Givaro::ModularBalanced<double> Field2proj;
+
+        PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime(FieldTraits<Field2proj>::bestBitSize()); 
+
 		Vector num(A.field(),A.coldim());
+
 		IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
-        
+
 		typename BB::ConstIterator it = A.Begin();
 		typename BB::ConstIterator it_end = A.End();
 		typename BB::Field::Element max = 1,min=0;
@@ -826,20 +831,18 @@ return x;
         for (; it_b != b.end(); ++it_b) if(*it_b>max) max=*it_b;
         if (max < 3) max = 3;
 		size_t n=A.coldim();
+
         
 		double hadamard = n*(Givaro::naturallog(n)+2*Givaro::naturallog(max));
-        
+
+
 #ifdef __LINBOX_HAVE_MPI
-        //		MPIratChineseRemainder< EarlyMultipRatCRA< Givaro::ModularBalanced<double> > > cra(3UL, C);
-		MPIratChineseRemainder< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(hadamard, C);
+		ChineseRemainderOMP< FullMultipRatCRA< Field2proj > > cra(hadamard, C);
 #else
-        
-        std::cerr << "OMP solveCRA" << std::endl;
-        
-        //        RationalRemainder< EarlyMultipRatCRA< Givaro::ModularBalanced<double> > > cra(3UL);
-        ChineseRemainderOMP< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(hadamard);
-        
+        std::cerr << "Sequential solveCRA" << std::endl;
+        RationalRemainder< FullMultipRatCRA< Field2proj > > cra(hadamard);
 #endif
+
         //        Timer chrono;
         //        chrono.start();
         
