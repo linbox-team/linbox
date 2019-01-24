@@ -154,9 +154,9 @@ int main(int argc, char ** argv)
     { 's', "-s S", "Set the seed to always generate the same input.", TYPE_INT,     &seed },
     { 'l', "-l L", "Set if the infinte testing loop should be applied.", TYPE_BOOL,     &loop },
     END_OF_ARGUMENTS
-  };	
+  };
+
   parseArguments (argc, argv, args); 
- 
   Givaro::ZRing<Integer> F;  
   
   typedef Givaro::ZRing<Integer> TF;
