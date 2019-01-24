@@ -32,7 +32,6 @@
 #include <stdio.h>
 #include <iostream>
 #include "linbox/linbox-config.h"
-#include <fflas-ffpack/paladin/parallel.h>
 #include "givaro/modular.h"
 #include "givaro/zring.h"
 #include "linbox/matrix/sparse-matrix.h"
@@ -195,8 +194,6 @@ int main(int argc, char ** argv)
    */
    
    //omp_set_num_threads(nt);
-   PAR_BLOCK{ std::cout << "Threads: " << NUM_THREADS << ", max: " << MAX_THREADS << std::endl; }
-   std::cerr << "OMP: " << __FFLASFFPACK_USE_OPENMP << ", max " << omp_get_max_threads() << std::endl;
    if(!test_set(F, X2, A, B )) break;
 
     if(q<0){

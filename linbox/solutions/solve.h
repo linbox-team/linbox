@@ -837,10 +837,9 @@ return x;
 
 
 #ifdef __LINBOX_HAVE_MPI
-		ChineseRemainderOMP< FullMultipRatCRA< Field2proj > > cra(hadamard, C);
+	MPIChineseRemainder< FullMultipRatCRA< Field2proj > > cra(hadamard, C);
 #else
-        std::cerr << "Sequential solveCRA" << std::endl;
-        RationalRemainder< FullMultipRatCRA< Field2proj > > cra(hadamard);
+        ChineseRemainderOMP< FullMultipRatCRA< Field2proj > > cra(hadamard);
 #endif
 
         //        Timer chrono;

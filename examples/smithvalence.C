@@ -28,7 +28,7 @@
 #ifndef DISABLE_COMMENTATOR
 #define DISABLE_COMMENTATOR
 #endif
-
+#include <cassert>
 #include <linbox/linbox-config.h>
 
 #include <iostream>
