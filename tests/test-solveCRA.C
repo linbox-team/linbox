@@ -207,7 +207,7 @@ int main(int argc, char ** argv)
         if (bits < bitsize / 2 && bitsize % 2 == 0 && !peak) bits = 1;
         
         nbt=rand() % nt + 1; 
-        
+        if(ni > n/2 && bits> bitsize/2) nbt = nt;
         peak = !peak;
     } 
 
