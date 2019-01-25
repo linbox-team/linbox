@@ -119,9 +119,8 @@ namespace LinBox {
 			size_t k = a.coldim();
 			size_t n = b.coldim();
 			uint64_t prime_max=maxFFTPrimeValue(k,pts); // CAREFUL: only for Modular<double>;
-			RandomFFTPrime RdFFT(prime_max);
 			std::vector<integer> bas;
-			if (!RdFFT.generatePrimes(lpts,bound,bas)){
+			if (!RandomFFTPrime::generatePrimes (bas, prime_max, bound, lpts)){
 				std::cout<<"COULD NOT FIND ENOUGH FFT PRIME in MatPoly 3-Primes FFT MUL exiting..."<<std::endl;
 				std::cout<<"Parameters : ("<<m<<"x"<<k<<") ("<<k<<"x"<<n<<") with "<<pts<<" points with prime= "<<_p<<std::endl; 
 				throw LinboxError("LinBox ERROR: not enough FFT Prime\n");
@@ -257,12 +256,8 @@ namespace LinBox {
 			//uint64_t prime_max= std::min(uint64_t(std::sqrt( (1ULL<<53) / k)+1), uint64_t(Givaro::Modular<double>::maxCardinality())) 
 			uint64_t prime_max=maxFFTPrimeValue(k,pts); // CAREFUL: only for Modular<double>;
 			
-			RandomFFTPrime RdFFT(prime_max);
-
 			std::vector<integer> bas;
-
-			
-			if (!RdFFT.generatePrimes(lpts,bound,bas)){
+			if (!RandomFFTPrime::generatePrimes (bas, prime_max, bound, lpts)){
 				std::cout<<"COULD NOT FIND ENOUGH FFT PRIME  in MatPoly 3-Primes FFT MIDP exiting..."<<std::endl;
 				std::cout<<"Parameters : ("<<m<<"x"<<k<<") ("<<k<<"x"<<n<<") with "<<pts<<" points with prime= "<<_p<<std::endl; 
 				throw LinboxError("LinBox ERROR: not enough FFT Prime\n");
