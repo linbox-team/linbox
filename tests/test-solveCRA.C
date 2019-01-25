@@ -194,7 +194,7 @@ int main(int argc, char ** argv)
 	
 	A.write(std::cout << ">>>>Compute with A: " << A.rowdim() << " by " << A.coldim() << "\n"<< "A:=",Tag::FileFormat::Maple) << ';' << std::endl;
    */
-    
+omp_set_num_threads(nt);    
    if(!test_set(F, X2, A, B )) break;
 
     if(q<0){
