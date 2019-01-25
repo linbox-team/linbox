@@ -27,7 +27,6 @@
  */
 #include <cassert>
 
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>
@@ -110,12 +109,12 @@ bool test_set(const Field  &F, Vector &X2,
 
   Timer chrono;
   chrono.start();
-  
+
   solveCRA (X2, d, A, B, tg, 
 	    Method::BlasElimination()
 	    //Method::Hybrid(*Cptr)
 	    );	
-  
+
   chrono.stop();
   
   //  DenseVector B2(F, A.coldim());
@@ -145,7 +144,7 @@ int main(int argc, char ** argv)
 
     int q = -1;
     bool peak = false, loop=false;
-  
+
   static Argument args[] = {
     { 'n', "-n N", "Set column and row dimension of test matrices to N.", TYPE_INT,     &n },
     { 'b', "-b B", "Set the bitsize for input value.", TYPE_INT,     &bitsize },
@@ -155,9 +154,9 @@ int main(int argc, char ** argv)
     { 's', "-s S", "Set the seed to always generate the same input.", TYPE_INT,     &seed },
     { 'l', "-l L", "Set if the infinte testing loop should be applied.", TYPE_BOOL,     &loop },
     END_OF_ARGUMENTS
-  };	
+  };
+
   parseArguments (argc, argv, args); 
- 
   Givaro::ZRing<Integer> F;  
   
   typedef Givaro::ZRing<Integer> TF;
@@ -190,16 +189,16 @@ int main(int argc, char ** argv)
    /*
 	std::cerr << ">>>>Compute with B: " << std::endl;      
 	for(long j=0;j<(long)ni;j++) std::cerr << B.getEntry(j) << std::endl; 
-	
+
 	A.write(std::cout << ">>>>Compute with A: " << A.rowdim() << " by " << A.coldim() << "\n"<< "A:=",Tag::FileFormat::Maple) << ';' << std::endl;
    */
-   
+
    //omp_set_num_threads(nt);
-   PAR_BLOCK{ std::cout << "Threads: " << NUM_THREADS << ", max: " << MAX_THREADS << std::endl; }
-   std::cerr << "OMP: " << __FFLASFFPACK_USE_OPENMP << ", max " << omp_get_max_threads() << std::endl;
+   PAR_BLOCK{ std::cout << "Threads: " << NUM_THREADS << ", max: " << MAX_THREADS << std::endl;
+   std::cerr << "OMP: " << __FFLASFFPACK_USE_OPENMP << ", max " << omp_get_max_threads() << std::endl;}
    if(!test_set(F, X2, A, B )) break;
 
-    if(q<0){
+   if(q<0){
         ni = rand() % n + 1;
         if (ni < n / 2 && ni % 2 == 0 && !peak) ni = 1;
        

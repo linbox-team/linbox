@@ -37,6 +37,8 @@
 #include "linbox/solutions/solve.h"
 #include "linbox/solutions/charpoly.h"
 #include "linbox/algorithms/smith-form-sparseelim-poweroftwo.h"
+#include "test-smith-form.h"
+
 using namespace LinBox;
 typedef Givaro::ZRing<Givaro::Integer> ZRingInts;
 
@@ -447,7 +449,7 @@ bool testBigScalarCharPoly(){
     return PR.areEqual(P,Q);
 }
 
-/*
+
 template<typename Matrix_t=SparseMatrix<ZRingInts>>
 bool testInconsistent (const Specifier& m){
         // creating LinBox matrices and vectors
@@ -463,27 +465,21 @@ bool testInconsistent (const Specifier& m){
     ZZ.assign(B[0],ZZ.one);
 
         // solving via Dixon Lifting
-    solve (A, D, M, B, m);
+    try{
+        solve (A, D, M, B, m);
+    }
+    catch (LinBox::LinboxMathInconsistentSystem& e){return true;}
 
-    if (!ZZ.areEqual(A[0],ZZ.zero) || !ZZ.areEqual(D,ZZ.one)) {
-        if (writing) std::cerr<<"A = "<<A<<" D = "<<D<<std::endl;
-        if (writing) std::cerr<<"**** ERROR **** Fail solving an inconsistent system  over QQ via Dixon Lifting"<<std::endl;
-        return false;
-    } else
-        if (writing) std::cout << "TICS: PASSED" << std::endl;
-
-    return true;
+    return false;
 }
-*/
 
 
 bool testLocalSmith(){
-    typedef Givaro::ZRing<int64_t> Ring;
-    typedef std::vector<std::pair<size_t,uint64_t> > Smith_t;
+    typedef Givaro::ZRing<uint64_t> Ring; // characteristic 2
     typedef LinBox::SparseMatrix<Ring,
         LinBox::SparseMatrixFormat::SparseSeq > SparseMat;
 
-    Smith_t local;
+    SmithList<Ring> local;
     Ring R;
     SparseMat A(R,2,3);
     A.setEntry(0,0, 2);
@@ -496,23 +492,22 @@ bool testLocalSmith(){
 
     PGD(local, A, Q, 5, PRESERVE_UPPER_MATRIX|PRIVILEGIATE_NO_COLUMN_PIVOTING);
 
-    if (writing) std::cerr << "Local Smith: {";
-    for(auto const& it:local) if (writing) std::cerr << it.first << ':' << it.second << ' ';
-    if (writing) std::cerr << '}';
+    if (writing) {
+        std::clog << "Local Smith: {";
+        for(auto const& it:local) std::clog << '{' << it.first << ',' << it.second << '}';
+        std::clog << '}';
+    }
 
 // > ([1,1] [1,2] )
 // > [[1, 2, 0 ], [0, 1, 0 ]]
 // > [[0,0,1], [1,0,0], [0,1,0]]
 
         // Smith form
-    bool success =
-        (local.size() == 2U) &&
-        (local[0].first == 1U) &&
-        (local[0].second == 1U) &&
-        (local[1].first == 1U) &&
-        (local[1].second == 2U) ;
+    SmithList<Ring> correctSL{ {1U,1U},{2U,1U} };
+    bool success( checkSNFExample(correctSL, local, R) );
 
-    if (writing) A.write(std::cerr << ", A:=", LinBox::Tag::FileFormat::Maple) << ';';
+    if (writing)
+        A.write(std::clog << ", A:=", LinBox::Tag::FileFormat::Maple) << ';';
 
         // Upper triangular
     success &=
@@ -525,7 +520,8 @@ bool testLocalSmith(){
         (A[1][0].first == 1U) &&
         (A[1][0].second == 1U);
 
-    if (writing) Q.write(std::cerr << ", Q:=", LinBox::Tag::FileFormat::Maple) << ';';
+    if (writing)
+        Q.write(std::clog << ", Q:=", LinBox::Tag::FileFormat::Maple) << ';';
 
         // Permutation
     success &=
@@ -534,11 +530,11 @@ bool testLocalSmith(){
         (Q[2] == 1);
 
     if (!success) {
-        if (writing) std::cerr<<"**** ERROR **** Fail Local Smith" <<std::endl;
+        if (writing) std::clog<<"**** ERROR **** Fail Local Smith" <<std::endl;
         return false;
     } else
         if (writing) std::cout << "TSLS: PASSED" << std::endl;
-     return success;
+    return success;
 }
 
 
@@ -547,7 +543,7 @@ int main (int argc, char **argv)
 {
     bool pass = true;
 
-	// text is written to cerr/cout iff a command line argument is present.
+	// text is written to clog/cerr/cout iff a command line argument is present.
 	if (argc > 1) writing = true;
 
     pass &= testSolveSparse  ();
@@ -579,11 +575,11 @@ int main (int argc, char **argv)
     pass &= testZeroDimensionalMinPoly ();
     pass &= testBigScalarCharPoly ();
     pass &= testLocalSmith ();
-    /*
-    pass &= testInconsistent<> (Method::BlasElimination());
-    pass &= testInconsistent<> (Method::SparseElimination());
-    pass &= testInconsistent<> (Method::Wiedemann());
-    */
+    pass &= testInconsistent<DenseMatrix<ZRingInts>> (Method::BlasElimination());
+
+        // Still failing: see https://github.com/linbox-team/linbox/issues/105
+        //pass &= testInconsistent<> (Method::SparseElimination());
+        //pass &= testInconsistent<> (Method::Wiedemann());
 
     return pass ? 0 : -1;
 }

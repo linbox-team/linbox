@@ -652,7 +652,7 @@ namespace LinBox
         RationalSolver<Ring, Field, PrimeIterator<IteratorCategories::HeuristicTag>, SparseEliminationTraits> rsolve(A.field(), genprime);
         SolverReturnStatus status = SS_OK;
         status=rsolve.solve(x, d, A, b,(int)m.maxTries());
- 
+
         commentator().stop("done", NULL, "solving");
 
         if ( status == SS_INCONSISTENT ) {
@@ -806,13 +806,16 @@ return x;
 
 
 
+
         typedef Givaro::ModularBalanced<double> Field2proj;
 
         PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime(FieldTraits<Field2proj>::bestBitSize()); 
 
 		Vector num(A.field(),A.coldim());
 
+
 		IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
+
 
 		typename BB::ConstIterator it = A.Begin();
 		typename BB::ConstIterator it_end = A.End();
@@ -837,7 +840,9 @@ return x;
 
 
 #ifdef __LINBOX_HAVE_MPI
+
 	MPIChineseRemainder< FullMultipRatCRA< Field2proj > > cra(hadamard, C);
+
 #else
         ChineseRemainderOMP< FullMultipRatCRA< Field2proj > > cra(hadamard);
 #endif
@@ -1079,7 +1084,7 @@ return x;
             ++it_x;
         }
         commentator().stop ("done", NULL, "Rsolve");
- 
+
         return x;
     }
 
