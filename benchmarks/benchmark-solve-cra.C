@@ -42,6 +42,12 @@ using namespace LinBox;
 
 using Field = Givaro::ZRing<Integer>;
 
+#if defined(__LINBOX_HAVE_MPI)
+#define getWTime(...) MPI_Wtime(__VA_ARGS__);
+#else
+#define getWTime(...) omp_get_wtime(__VA_ARGS__);
+#endif
+
 template <class Field, class Matrix>
 static bool checkResult(const Field& ZZ, Matrix& A, BlasVector<Field>& B, BlasVector<Field>& X, Integer& d)
 {
@@ -67,7 +73,7 @@ static bool checkResult(const Field& ZZ, Matrix& A, BlasVector<Field>& B, BlasVe
 template <class Field, class Matrix>
 void genData(Field& F, Matrix& A, size_t bits, int seed)
 {
-    using RandIter = typename Field::RandIter ;
+    using RandIter = typename Field::RandIter;
     RandIter RI(F, bits, seed);
     LinBox::RandomDenseMatrix<RandIter, Field> RDM(F, RI);
     RDM.randomFullRank(A);
@@ -76,26 +82,24 @@ void genData(Field& F, Matrix& A, size_t bits, int seed)
 template <class Field>
 void genData(Field& F, BlasVector<Field>& B, size_t bits, int seed)
 {
-    using RandIter = typename Field::RandIter ;
+    using RandIter = typename Field::RandIter;
     RandIter RI(F, bits, seed);
     B.random(RI);
 }
 
-bool benchmark(BlasVector<Field>& X2, BlasMatrix<Field>& A, BlasVector<Field>& B, Communicator* Cptr)
+bool benchmark(BlasVector<Field>& x, BlasMatrix<Field>& A, BlasVector<Field>& B, Communicator* Cptr)
 {
     Field ZZ;
     Field::Element d;
 
-    MPI_Timer timer;
-    double startTime = timer.usertime();
-
-    solveCRA(X2, d, A, B, RingCategories::IntegerTag(), Method::DenseElimination(), Cptr);
+    double startTime = getWTime();
+    solveCRA(x, d, A, B, RingCategories::IntegerTag(), Method::DenseElimination(), Cptr);
 
     bool ok = false;
     if (Cptr->master()) {
-        double endTime = timer.usertime();
+        double endTime = getWTime();
         std::cout << "Total CPU time (seconds): " << endTime - startTime << std::endl;
-        ok = checkResult(ZZ, A, B, X2, d);
+        ok = checkResult(ZZ, A, B, x, d);
     }
 
 #ifdef __LINBOX_HAVE_MPI
@@ -138,30 +142,31 @@ int main(int argc, char** argv)
 
     Field ZZ;
     DenseMatrix<Field> A(ZZ, n, n);
-
-    using DenseVector = BlasVector<Field>;
-    DenseVector X(ZZ, A.rowdim()), X2(ZZ, A.coldim()), B(ZZ, A.coldim());
+    BlasVector<Field> b(ZZ, A.coldim());
+    BlasVector<Field> x(ZZ, A.coldim());
 
     bool ok = true;
     for (size_t j = 0u; loop || j < niter; j++) {
         if (communicator.master()) {
             genData(ZZ, A, bits, seed);
-            genData(ZZ, B, bits, seed);
+            genData(ZZ, b, bits, seed);
         }
 
 #ifdef __LINBOX_HAVE_MPI
         communicator.bcast(A, 0);
-        communicator.bcast(B, 0);
+        communicator.bcast(b, 0);
 #endif
 
-        ok = benchmark(X2, A, B, &communicator);
+        ok = benchmark(x, A, b, &communicator);
         if (!ok) break;
 
         ++seed;
     }
 
     if (!ok) {
-        std::cerr << "Failed with seed: " << seed << std::endl;
+        if (communicator.master()) {
+            std::cerr << "Failed with seed: " << seed << std::endl;
+        }
         return 1;
     }
 
