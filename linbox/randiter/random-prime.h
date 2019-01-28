@@ -50,7 +50,7 @@ namespace LinBox
             //! Iterator sampling randomly (no distribution guaranteed whatsoever) from all primes of given bitsize
         struct HeuristicTag{};
     };
-        
+
         /*! \brief Whether a prime generator generates a sequence with non repeating
          * numbers
          */
@@ -62,12 +62,12 @@ namespace LinBox
     struct UniqueSamplingTrait<IteratorCategories::DeterministicTag>
 		:public std::true_type { };
 
-        
+
         /*!  @brief  Prime Iterator.
          * @ingroup primes
          * @ingroup randiter
          *
-         * Generates prime of specified length using a heuristically random distribution 
+         * Generates prime of specified length using a heuristically random distribution
          * (no guarantee whatsoever).
          * @internal
          * It is given by <code>nextprime(2^_bits-p)</code> where <code>size(p) < _bits</code>.

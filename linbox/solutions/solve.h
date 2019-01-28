@@ -755,32 +755,32 @@ namespace LinBox
     //BB: How come I have to change the name so it works when directly called ?
     template <class Vector, class BB, class MyMethod>
     Vector& solveCRA(Vector& x, typename BB::Field::Element& d, const BB& A, const Vector& b,
-                     const RingCategories::IntegerTag & tag, const MyMethod& M, Communicator* C)
+                     const RingCategories::IntegerTag & tag, const MyMethod& M, Communicator* communicator)
     {
-        if (!C || C->master()){
+        if (!communicator || communicator->master()){
             if ((A.coldim() != x.size()) || (A.rowdim() != b.size())) {
                 throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
             }
         }
 
         using Field = Givaro::ModularBalanced<double>;
-        PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize());
+        PrimeIterator<LinBox::IteratorCategories::HeuristicTag> primeGenerator(FieldTraits<Field>::bestBitSize());
         IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
         Vector num(A.field(),A.coldim());
         Integer den(1);
 
         auto rationalHadamard = RationalSolveHadamardBound(A, b);
-        double hadamard = 1.0 + rationalHadamard.numLogBound + rationalHadamard.denLogBound; // log2(2 * N * D)
+        double hadamard = (1.0 + rationalHadamard.numLogBound + rationalHadamard.denLogBound); // log2(2 * N * D)
 
 #ifdef __LINBOX_HAVE_MPI
-        MPIChineseRemainder<FullMultipRatCRA<Field>> cra(hadamard, C);
+        MPIChineseRemainder<FullMultipRatCRA<Field>> cra(hadamard, communicator);
 #else
         RationalRemainder<FullMultipRatCRA<Field>> cra(hadamard);
 #endif
 
-        cra(num, den, iteration, genprime);
+        cra(num, den, iteration, primeGenerator);
 
-        if(!C || C->master()){
+        if(!communicator || communicator->master()){
             // Convert the result
             auto it_num = num.begin();
             for (auto it_x = x.begin(); it_x != x.end(); ++it_x, ++it_num)
