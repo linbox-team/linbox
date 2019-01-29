@@ -138,8 +138,9 @@ namespace LinBox {
             solve_precheck(xNum, A, b);
         }
 
+        using CraField = Givaro::ModularBalanced<double>;
         const typename Matrix::Field& F = A.field();
-        unsigned int bits = 26 - (int)ceil(log(A.rowdim() * 0.7213475205));
+        unsigned int bits = FieldTraits<CraField>::bestBitSize(A.coldim());
         PrimeIterator<LinBox::IteratorCategories::HeuristicTag> primeGenerator(bits);
         CraRebinderSolver<Matrix, Vector, IterationMethod> iteration(A, b, m.iterationMethod);
 
@@ -155,7 +156,7 @@ namespace LinBox {
         // Calling the right solver
         //
 
-        using CraAlgorithm = LinBox::FullMultipRatCRA<Givaro::ModularBalanced<double>>;
+        using CraAlgorithm = LinBox::FullMultipRatCRA<CraField>;
         if (dispatch == Dispatch::Sequential) {
             LinBox::RationalRemainder<CraAlgorithm> cra(hadamardLogBound);
             cra(num, den, iteration, primeGenerator);
@@ -163,7 +164,7 @@ namespace LinBox {
 #if defined(__LINBOX_HAVE_MPI)
         else if (dispatch == Dispatch::Distributed) {
             // @fixme Rename RationalRemainderDistributed
-            LinBox::MPIratChineseRemainder<CraAlgorithm> cra(hadamardLogBound, dispatch.communicator);
+            LinBox::MPIratChineseRemainder<CraAlgorithm> cra(hadamardLogBound, m.pCommunicator);
             cra(num, den, iteration, primeGenerator);
         }
 #endif

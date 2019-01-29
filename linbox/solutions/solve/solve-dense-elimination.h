@@ -66,6 +66,6 @@ namespace LinBox {
     {
         // @fixme This is the original code for this case... but it goes for a Dixon!
         // Is that really what we want?
-        return solve(x, A, b, tag, MethodWIP::Dixon(m));
+        return solve(x, A, b, tag, reinterpret_cast<const MethodWIP::Dixon&>(m));
     }
 }

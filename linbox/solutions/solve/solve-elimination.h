@@ -33,7 +33,7 @@ namespace LinBox {
     template <class ResultVector, class Matrix, class Vector, class CategoryTag>
     ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag, const MethodWIP::Elimination& m)
     {
-        return solve(x, A, b, tag, MethodWIP::Blackbox(m));
+        return solve(x, A, b, tag, reinterpret_cast<const MethodWIP::Blackbox&>(m));
     }
 
     /**
@@ -43,7 +43,7 @@ namespace LinBox {
     ResultVector& solve(ResultVector& x, const DenseMatrix<MatrixField>& A, const Vector& b, const CategoryTag& tag,
                         const MethodWIP::Elimination& m)
     {
-        return solve(x, A, b, tag, MethodWIP::DenseElimination(m));
+        return solve(x, A, b, tag, reinterpret_cast<const MethodWIP::DenseElimination&>(m));
     }
 
     /**
@@ -53,6 +53,6 @@ namespace LinBox {
     ResultVector& solve(ResultVector& x, const SparseMatrix<MatrixField>& A, const Vector& b, const CategoryTag& tag,
                         const MethodWIP::Elimination& m)
     {
-        return solve(x, A, b, tag, MethodWIP::SparseElimination(m));
+        return solve(x, A, b, tag, reinterpret_cast<const MethodWIP::SparseElimination&>(m));
     }
 }

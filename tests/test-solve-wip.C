@@ -9,17 +9,17 @@ template <class Field, class Method>
 void run_rational_2x2() {
     Field F;
 
-    BlasVector<Field> b(F, 2);
+    BlasVector<Field> b(F, 3);
     b.setEntry(0, 4);
     b.setEntry(1, 6);
 
-    BlasMatrix<Field> A(F, 2, 2);
+    BlasMatrix<Field> A(F, 3, 3);
     A.setEntry(0, 0, 4);
     A.setEntry(0, 1, 0);
     A.setEntry(1, 0, 0);
     A.setEntry(1, 1, 4);
 
-    BlasVector<Field> xNum(F, 2);
+    BlasVector<Field> xNum(F, 3);
     typename Field::Element xDen(1);
 
     solve(xNum, xDen, A, b, Method());
