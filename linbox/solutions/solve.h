@@ -854,7 +854,8 @@ Integer den(0);
 
         typedef Givaro::ModularBalanced<double> Field2proj;
 
-        PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime(FieldTraits<Field2proj>::bestBitSize()); 
+        //PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime(FieldTraits<Field2proj>::bestBitSize());
+        PrimeIterator<LinBox::IteratorCategories::DeterministicTag> genprime(FieldTraits<Field2proj>::bestBitSize());
 
 		Vector num(A.field(),A.coldim());
 

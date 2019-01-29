@@ -351,7 +351,7 @@ int main(int argc, char ** argv)
   int q=-1;
   bool peak = false;
   bool loop=false;
-  int seed = 0; 
+  int seed = 1; 
 
   
   Argument args[] = {
