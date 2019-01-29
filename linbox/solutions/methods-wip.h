@@ -63,6 +63,13 @@ namespace LinBox {
         Combined,    //!< Use MPI then Paladin on each node.
     };
 
+    // @fixme DOC
+    enum class SolutionType {
+        Determinist,
+        Random,
+        Diophantine,
+    };
+
     /**
      * Holds everything a method needs to know about the problem.
      */
@@ -76,6 +83,9 @@ namespace LinBox {
         Communicator* pCommunicator = nullptr;
         bool master() const { return (pCommunicator == nullptr) || pCommunicator->master(); }
 
+        // For Dixon method
+        SolutionType solutionType = SolutionType::Determinist;
+
         // For random-based systems.
         size_t trialsBeforeThrowing = 100;        //!< Maximum number of trials before giving up.
         bool findInconsistencyCertificate = true; //!< Whether the solver should attempt to find a certificate of inconsistency if
@@ -85,18 +95,6 @@ namespace LinBox {
     //
     // Integer-based methods.
     //
-
-    struct DixonMethod : public MethodBase {
-        enum class SolutionType {
-            Determinist,
-            Random,
-            Diophantine,
-        };
-
-        SolutionType solutionType = SolutionType::Determinist;
-
-        DEFINE_METHOD_CONTENT(DixonMethod, "Dixon");
-    };
 
     template <class IterationMethod>
     struct CraCustomMethod : public MethodBase {
@@ -118,7 +116,7 @@ namespace LinBox {
         DEFINE_METHOD(SparseElimination);
 
         // Integer-based methods
-        using Dixon = DixonMethod;
+        DEFINE_METHOD(Dixon);
         template <class IterationMethod>
         using CraCustom = CraCustomMethod<IterationMethod>;
         using Cra = CraCustom<MethodWIP::Auto>;

@@ -32,7 +32,7 @@ namespace LinBox {
     ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag, const MethodWIP::Auto& m)
     {
         // @fixme useBB(), as the auto should go according to sparse or so
-        return solve(x, A, b, tag, MethodWIP::Elimination(m));
+        return solve(x, A, b, tag, reinterpret_cast<const MethodWIP::Elimination&>(m));
     }
 
     /**
@@ -43,7 +43,7 @@ namespace LinBox {
                         const MethodWIP::Auto& m)
     {
         // @fixme Does not have Dixon only a rational interface, so far?
-        return solve(x, A, b, tag, MethodWIP::Dixon(m));
+        return solve(x, A, b, tag, reinterpret_cast<const MethodWIP::Dixon&>(m));
     }
 
     //
@@ -57,6 +57,6 @@ namespace LinBox {
     inline void solve(Vector& xNum, typename Vector::Field::Element& xDen, const Matrix& A, const Vector& b,
                       const RingCategories::IntegerTag& tag, const MethodWIP::Auto& m)
     {
-        solve(xNum, xDen, A, b, tag, MethodWIP::Dixon(m));
+        solve(xNum, xDen, A, b, tag, reinterpret_cast<const MethodWIP::Dixon&>(m));
     }
 }
