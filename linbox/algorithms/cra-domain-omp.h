@@ -133,14 +133,17 @@ namespace LinBox
             PAR_BLOCK{ NN=NUM_THREADS; }
 
             typedef typename CRATemporaryVectorTrait<Function, Domain>::Type_t ElementContainer;
-            std::vector<LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>> m_primeiters;
+            //std::vector<LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>> m_primeiters;
+            std::vector<LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag>> m_primeiters;
+           
             m_primeiters.reserve(NN);
             std::vector<CRABase> vBuilders;
             vBuilders.reserve(NN);
 
 
             for(auto j=0;j<NN;j++){
-                LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag> m_primeiter( j, NN);
+                //LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag> m_primeiter( j, NN);
+                LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag> m_primeiter( j, NN);
                 m_primeiters.push_back(m_primeiter);
                 
                 CRABase Builder_(B);
