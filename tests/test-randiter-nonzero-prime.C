@@ -199,12 +199,6 @@ int main (int argc, char **argv)
 
 	commentator().start("Nonzero&Prime random iterator test suite", "Givaro::GeneralRingNonZeroRandIter");
 
-// 	commentator().setBriefReportParameters (Commentator::OUTPUT_CONSOLE, false, false, false);
-	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
-	commentator().getMessageClass (INTERNAL_ERROR).setMaxDepth (100000);
-    commentator().setMaxDetailLevel( 100000 );
-    commentator().setMaxDepth( 100000 );
-
 	if (!testNonzeroRandom (F, iterations)) pass = false;
 
 	pass &= testPrimeIterators< PrimeIterator<IteratorCategories::HeuristicTag> > (size, iterations);
