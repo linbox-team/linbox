@@ -288,7 +288,6 @@ namespace LinBox
 
     template<>
     void MaskedPrimeIterator<IteratorCategories::DeterministicTag>::generatePrime(){
-        _prime -= (1<<_shift);
         while(! _IPD.isprime(_prime) )
             _prime -= (1<<_shift);
     }
