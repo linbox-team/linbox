@@ -68,10 +68,11 @@ static bool checkResult (const Field  &F,
       std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
       std::cerr << "               The solution of solveCRA is incorrect                " << std::endl;
       std::cerr << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
+      /*
       std::cerr << " B2["<<j<<"] := "<< B2[j] << std::endl;
       std::cerr << " B3["<<j<<"] := "<< B3[j] << std::endl;
       std::cerr << " d*B["<<j<<"] := "<< d*B.getEntry(j) << std::endl;
-      
+      */
       return false;
     }
   }
@@ -212,6 +213,7 @@ void prepare_data_with_field(size_t bits, int seed,
 
     genData (F, A, bits, seed);
     genData (F, B, bits, seed);
+
 
 #ifdef __LINBOX_HAVE_MPI
   }//End of BLock for process(0)
