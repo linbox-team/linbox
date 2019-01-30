@@ -183,6 +183,7 @@ namespace LinBox
             
         }
 
+
 #if 0 //Paladin impl
         template<class pFunc, class Function, class PrimeIterator, class Domain, class ElementContainer>
         void compute_task(pFunc& pF, std::vector<PrimeIterator>& m_primeiters,
@@ -243,12 +244,13 @@ namespace LinBox
 #pragma omp parallel for schedule(dynamic,1) num_threads(NN)
 	        for(auto j=0;j<Niter;j++){
                 solve_with_prime(m_primeiters[omp_get_thread_num()], Iteration, ROUNDdomains[j], ROUNDresidues[j], vBuilders[omp_get_thread_num()]);
+                
                 }
 
 
             this->Builder_.initialize( ROUNDdomains[0], ROUNDresidues[0]);
 
-            for(auto j=0;j<Niter;j++)
+            for(auto j=1;j<Niter;j++)
                 {
 
                         this->Builder_.progress( ROUNDdomains[j], ROUNDresidues[j]);

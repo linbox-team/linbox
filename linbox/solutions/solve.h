@@ -792,7 +792,7 @@ return x;
 #endif
                      )
 	{
-		Integer den(1);//typename BB::Field::Element den;
+		typename BB::Field::Element den(1);
        
 #ifdef __LINBOX_HAVE_MPI	//MPI parallel version
 		if(!C || C->rank() == 0){

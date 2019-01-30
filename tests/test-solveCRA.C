@@ -103,7 +103,7 @@ bool test_set(const Field  &F, Vector &X2,
 	      Matrix &A, Vector &B
 	      ){
   bool tag = false;
-  typename Field::Element d;
+  typename Field::Element d(1);
   std::cout<<"Computation is done over Q"<<std::endl;
   std::cout << "OMP solveCRA" << std::endl;
 
