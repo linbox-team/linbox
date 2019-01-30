@@ -288,8 +288,12 @@ namespace LinBox
 
     template<>
     void MaskedPrimeIterator<IteratorCategories::DeterministicTag>::generatePrime(){
-        while(! _IPD.isprime(_prime) )
+        do {
             _prime -= (1<<_shift);
+			if (_prime < 2) {
+				throw LinboxError("LinBox ERROR: Ran out of primes in Masked Deterministic Prime Iterator.\n");
+			}
+        } while(! _IPD.isprime(_prime) );
     }
 
 
