@@ -24,7 +24,7 @@
  * @ingroup test
  * @brief Testing the MPI parallel/serial rational solver
  */
-#define __Detailed_Time_Measurement
+//#define __Detailed_Time_Measurement
 #define __LINBOX_HAVE_MPI
 
 

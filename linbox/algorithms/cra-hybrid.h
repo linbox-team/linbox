@@ -197,13 +197,13 @@ namespace LinBox
 #pragma omp parallel 
 #pragma omp single
             Nthread=omp_get_num_threads();
-
+  
 #pragma omp parallel for simd num_threads(Nthread) schedule(dynamic,1)
             for(auto j=0u;j<Ntask;j++)
                 {
-  
+ 
                     solve_with_prime(m_primeiters[j], Iteration, VECTORdomains, VECTORresidues[j]);
-
+ 
                 }
  
             
@@ -234,28 +234,31 @@ namespace LinBox
             Nthread=omp_get_num_threads();
 }
 
-            std::vector<BlasVector<Domain>> VECTORresidues;VECTORresidues.resize(Ntask);
+            std::vector<BlasVector<Domain>> VECTORresidues;VECTORresidues.reserve(Ntask);
             std::vector<Domain> VECTORdomains;VECTORdomains.resize(Nthread);
             std::vector<int> m_primeiters;m_primeiters.reserve(Ntask);
-     
+      
                 for(auto j=0;j<Ntask;j++){
 
                     while(this->Builder_.noncoprime(*gen) )
                         ++gen;
                     m_primeiters.push_back(*gen);
-                    
+                    Domain D(*gen);
+                    BlasVector<Domain>  r(D);
+                    VECTORresidues.push_back(r);
+
                 }
  
-          
+
             compute_task( (this->Builder_), m_primeiters, Iteration,  VECTORdomains, VECTORresidues, Ntask);	
 
 
                 for(long i=0; i<Ntask; i++){
 
+std::cout << " sent r: " << std::endl;for(auto j=0;j<VECTORresidues[i].size();j++) std::cout<<VECTORresidues[i][j]<<std::endl; 
                     _commPtr->send(VECTORresidues[i].begin(), VECTORresidues[i].end(), 0, 0);
 
                  }
-
 
             };
 
@@ -267,7 +270,7 @@ namespace LinBox
 		{    
             
             Domain D(*primeg);
-            BlasVector<Domain> r(D);
+            BlasVector<Domain> r(D);r.resize(num.size());
 
 			//  parent propcess
 			if(_commPtr->rank() == 0){
@@ -287,11 +290,12 @@ namespace LinBox
         template<class Vect>
         void master_recv_residues(Vect &r, int &pp, int &Nrecv)
         {           
+
             r.resize (r.size()+1);
 
            //receive the beginnin and end of a vector in heapspace
             _commPtr->recv(r.begin(), r.end(), MPI_ANY_SOURCE, 0);
-            
+         
             //Update the number of iterations for the next step
             Nrecv--;
 
@@ -304,8 +308,8 @@ namespace LinBox
             
         }
         
-        template<class Vect>
-        void master_compute(Vect &r)
+        template<class Vect, class Function>
+        void master_compute(Vect &r, Function& Iteration)
         {
 
             int pp;
@@ -315,10 +319,21 @@ namespace LinBox
 #endif
             int Nrecv=this->getNiter();
 
+
+
+            //Initialize the buider and the receiver vector r
+            master_recv_residues(r, pp, Nrecv);
+
+            Domain D(pp);
+            Builder_.initialize( D, r);
+            Nrecv-=1;
+std::cout << " recv r: " << std::endl;for(auto j=0;j<r.size();j++) std::cout<<r[j]<<std::endl; 
+
+
             while(Nrecv > 0 ){
                
                 master_recv_residues(r, pp, Nrecv);
-
+std::cout << " recv r: " << std::endl;for(auto j=0;j<r.size();j++) std::cout<<r[j]<<std::endl; 
                 Domain D(pp);
 
 #ifdef __Detailed_Time_Measurement
@@ -341,7 +356,7 @@ namespace LinBox
 
             master_init(vNtask_per_proc, Iteration, D, r);
 
-            master_compute(r);
+            master_compute(r,Iteration);
    
         }
 
@@ -385,12 +400,7 @@ namespace LinBox
             }
 
             
-            //Initialize the buider and the receiver vector r
-            Builder_.initialize( D, Iteration(r, D
-#ifdef __LINBOX_HAVE_MPI
-,_commPtr
-#endif
-            ) );
+
         }
 
 
