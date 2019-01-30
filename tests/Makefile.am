@@ -80,6 +80,7 @@ BASIC_TESTS =					\
 	test-frobenius              \
 	test-rational-solver        \
 	test-rational-solver-adaptive \
+	test-randiter-nonzero-prime		\
 	test-cra					\
 	test-blas-matrix			\
 	test-charpoly			\
@@ -154,7 +155,6 @@ FULLCHECK_TESTS =               \
 	test-poly-det				\
 	test-qlup					\
 	test-quad-matrix			\
-	test-randiter-nonzero-prime		\
 	test-random-matrix			\
 	test-rat-charpoly			\
 	test-rational-matrix-factory \
