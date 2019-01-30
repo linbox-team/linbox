@@ -154,7 +154,7 @@ FULLCHECK_TESTS =               \
 	test-poly-det				\
 	test-qlup					\
 	test-quad-matrix			\
-	test-randiter-nonzero		\
+	test-randiter-nonzero-prime		\
 	test-random-matrix			\
 	test-rat-charpoly			\
 	test-rational-matrix-factory \
@@ -325,7 +325,7 @@ test_poly_det_SOURCES =                 test-poly-det.C
 test_poweroftwomodular_SOURCES =		test-poweroftwomodular.C test-field.h
 test_qlup_SOURCES =                     test-qlup.C
 test_quad_matrix_SOURCES =              test-quad-matrix.C
-test_randiter_nonzero_SOURCES =         test-randiter-nonzero.C
+test_randiter_nonzero_prime_SOURCES =   test-randiter-nonzero-prime.C
 test_random_matrix_SOURCES =            test-random-matrix.C
 test_rank_Int_SOURCES =                 test-rank-Int.C test-rank.h
 test_rank_md_SOURCES =                  test-rank-md.C test-rank.h
