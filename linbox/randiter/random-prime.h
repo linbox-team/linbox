@@ -243,7 +243,6 @@ namespace LinBox
     template<class Trait = IteratorCategories::HeuristicTag>
     class MaskedPrimeIterator : public PrimeIterator<Trait> {
     private:
-        const uint32_t	_mask;
         const uint32_t  _shift;
         const uint32_t	_ffff;
         const uint32_t	_nmask;
@@ -259,19 +258,19 @@ namespace LinBox
                 return *this;
             }
 
+            // Makes mask odd: double and add 1
         MaskedPrimeIterator(uint32_t mask, uint32_t max, uint64_t bits = 23, uint64_t seed = 0) :
                 Father_t(bits,seed),
-                _mask( (mask<<1) | 0x1 ),
                 _shift( MultiplyDeBruijnHighestBit(max) + 2),
                 _ffff((1U<<_shift)-1),
-                _nmask( ~(_mask) & _ffff )
+                _nmask( ~((mask<<1) | 0x1) & _ffff )
             {
                 this->_prime |= _ffff;  // set lowest bits to 11111
                 this->_prime ^= _nmask; // set lowest bits to _mask
                 generatePrime();
             }
 
-        const uint32_t getMask() const { return _mask; }
+        const uint32_t getMask() const { return  ( ~(_nmask) & _ffff ); }
         const uint32_t getShift() const { return _shift; }
     };
 
