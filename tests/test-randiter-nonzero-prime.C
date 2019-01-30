@@ -183,11 +183,13 @@ int main (int argc, char **argv)
 	static unsigned int iterations = 1000;
 	static size_t size= 23;
 	static size_t maxprocs= 10;
+    static int rseed = (int)time(NULL);
 
 	static Argument args[] = {
 		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
 		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
-		{ 's', "-s S", "bitsize is S.", TYPE_INT,     &size },
+		{ 'r', "-r R", "bitsize is R.", TYPE_INT,     &size },
+        { 's', "-s S", "Random generator seed.", TYPE_INT,     &rseed }	,
 		{ 'm', "-m M", "Maximum number of masked generators.", TYPE_INT,     &maxprocs },
 		END_OF_ARGUMENTS
 	};
@@ -195,7 +197,7 @@ int main (int argc, char **argv)
 	parseArguments (argc, argv, args);
 	Givaro::Modular<uint32_t> F (q);
 
-	srand ((unsigned)time (NULL));
+	std::srand(rseed);
 
 	commentator().start("Nonzero&Prime random iterator test suite", "Givaro::GeneralRingNonZeroRandIter");
 
