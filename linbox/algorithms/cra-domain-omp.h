@@ -124,6 +124,7 @@ namespace LinBox
 			// commentator().stop ("done", NULL, "mmcrait");
             
 			return this->Builder_.result(res,den);
+
 		}
 		
         template<class Function>
@@ -193,7 +194,8 @@ namespace LinBox
             int NN;
             PAR_BLOCK{ NN=NUM_THREADS; } 
             
-            FFLAS::ParSeqHelper::Parallel<FFLAS::CuttingStrategy::Single,FFLAS::StrategyParameter::Grain> H;
+            FFLAS::ParSeqHelper::Parallel<FFLAS::CuttingStrategy::Row,FFLAS::StrategyParameter::Grain> H;
+
             if(NN>Niter){
 
 	            PARFORBLOCK1D(k,Niter,H,
@@ -271,7 +273,10 @@ namespace LinBox
             
 			// commentator().stop ("done", NULL, "mmcrait");
             
-			return this->Builder_.result(res,den);
+			//return this->Builder_.result(res,den);
+this->Builder_.result(res,den);
+std::cerr << ">>>>res: " << std::endl; for(long j=0;j<res.size();j++) std::cerr << res.getEntry(j) << std::endl; 
+return res;
             
 		}
         

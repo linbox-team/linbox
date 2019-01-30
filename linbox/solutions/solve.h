@@ -792,8 +792,8 @@ return x;
 #endif
                      )
 	{
-		typename BB::Field::Element den(1);
-        
+		Integer den(1);//typename BB::Field::Element den;
+       
 #ifdef __LINBOX_HAVE_MPI	//MPI parallel version
 		if(!C || C->rank() == 0){
 #endif 
@@ -803,7 +803,6 @@ return x;
 #ifdef __LINBOX_HAVE_MPI
 		}
 #endif    
-
 
 
 
@@ -850,7 +849,7 @@ return x;
         //        chrono.start();
         
 		cra(num, den, iteration, genprime); 
-        
+
 #ifdef __LINBOX_HAVE_MPI
         //        chrono.stop();//std::cout << "The process ("<<C->rank()<<") spent total CPU time (seconds) in solveCRA: " << chrono.usertime() << std::endl;
 #else
@@ -866,9 +865,9 @@ return x;
             // convert the result
             for (; it_x != x.end(); ++it_x, ++it_num)
                 A.field().init(*it_x, *it_num);	
-            
+
 			A.field().init(d, den);
-            
+
 			commentator().stop ("done", NULL, "Isolve");
 			return x;
 #ifdef __LINBOX_HAVE_MPI

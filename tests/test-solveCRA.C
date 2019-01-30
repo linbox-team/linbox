@@ -54,16 +54,23 @@ static bool checkResult (const Field  &F,
 			 typename Field::Element &d
 			 )
 {
+  
   Vector B2(F, A.coldim());
   Vector B3(F, A.coldim());
-  A.apply(B2,X);
-  for (size_t j = 0 ; j < B.size() ; ++j) B3.setEntry(j,d*B.getEntry(j));
   
+std::cerr << ">>>>found X: " << std::endl; for(long j=0;j<X.size();j++) std::cerr << X.getEntry(j) << std::endl; 
+  A.apply(B2,X);
+std::cerr << ">>>> AX=B: " << std::endl; for(long j=0;j<B2.size();j++) std::cerr << B2.getEntry(j) << std::endl;
+
+
+  for (size_t j = 0 ; j < B.size() ; ++j) B3.setEntry(j,d*B.getEntry(j));
+std::cerr << ">>>> B: " << std::endl; for(long j=0;j<B3.size();j++) std::cerr << B3.getEntry(j) << std::endl;
   for (size_t j = 0 ; j < A.coldim() ; ++j)
     if(!F.areEqual(B2[j],B3[j])){
       std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
       std::cerr << "               The solution of solveCRA is incorrect                " << std::endl;
       std::cerr << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
+std::cerr << "B2["<<j<<"]:"<<B2[j] <<"=!="<<"B3["<<j<<"]:"<<B3[j]<< std::endl;
       return false;
     }
   return true;
@@ -96,7 +103,7 @@ bool test_set(const Field  &F, Vector &X2,
 	      Matrix &A, Vector &B
 	      ){
   bool tag = false;
-  typename Field::Element d(1);
+  typename Field::Element d;
   std::cout<<"Computation is done over Q"<<std::endl;
   std::cout << "OMP solveCRA" << std::endl;
 
@@ -114,9 +121,9 @@ bool test_set(const Field  &F, Vector &X2,
 	    Method::BlasElimination()
 	    //Method::Hybrid(*Cptr)
 	    );	
-  
+ 
   chrono.stop();
-  
+
   //  DenseVector B2(F, A.coldim());
   
   
@@ -175,8 +182,12 @@ int main(int argc, char ** argv)
     std::cout << " Test with bitsize: " << bits << std::endl;
 
     A.resize(ni,ni);
-    B.resize(ni,ni);
+    B.resize(ni);
     X2.resize(ni);
+
+   //omp_set_num_threads(nt);
+   PAR_BLOCK{ std::cout << "Threads: " << NUM_THREADS << ", max: " << MAX_THREADS << std::endl;
+   std::cerr << "OMP: " << __FFLASFFPACK_USE_OPENMP << ", max " << omp_get_max_threads() << std::endl;}
     PAR_BLOCK{
         if(q<0){
             genData (F, A, bits, getSeed());
@@ -188,12 +199,12 @@ int main(int argc, char ** argv)
 
         }
     }
-   /*
+   
 	std::cerr << ">>>>Compute with B: " << std::endl;      
 	for(long j=0;j<(long)ni;j++) std::cerr << B.getEntry(j) << std::endl; 
 	
 	A.write(std::cout << ">>>>Compute with A: " << A.rowdim() << " by " << A.coldim() << "\n"<< "A:=",Tag::FileFormat::Maple) << ';' << std::endl;
-   */
+   
    
    if(!test_set(F, X2, A, B )) break;
 
