@@ -96,7 +96,7 @@ bool test_set(const Field  &F, Vector &X2,
 	      Matrix &A, Vector &B
 	      ){
   bool tag = false;
-  typename Field::Element d;
+  typename Field::Element d(1);
   std::cout<<"Computation is done over Q"<<std::endl;
   std::cout << "OMP solveCRA" << std::endl;
 
@@ -177,14 +177,16 @@ int main(int argc, char ** argv)
     A.resize(ni,ni);
     B.resize(ni,ni);
     X2.resize(ni);
-    if(q<0){
-        genData (F, A, bits, getSeed());
-        genData (F, B, bits, getSeed());
+    PAR_BLOCK{
+        if(q<0){
+            genData (F, A, bits, getSeed());
+            genData (F, B, bits, getSeed());
 
-    }else{
-        genData (F, A, bits, seed);
-        genData (F, B, bits, seed);
+        }else{
+            genData (F, A, bits, seed);
+            genData (F, B, bits, seed);
 
+        }
     }
    /*
 	std::cerr << ">>>>Compute with B: " << std::endl;      
@@ -193,9 +195,11 @@ int main(int argc, char ** argv)
 	A.write(std::cout << ">>>>Compute with A: " << A.rowdim() << " by " << A.coldim() << "\n"<< "A:=",Tag::FileFormat::Maple) << ';' << std::endl;
    */
 
+
    //omp_set_num_threads(nt);
    PAR_BLOCK{ std::cout << "Threads: " << NUM_THREADS << ", max: " << MAX_THREADS << std::endl;
    std::cerr << "OMP: " << __FFLASFFPACK_USE_OPENMP << ", max " << omp_get_max_threads() << std::endl;}
+
    if(!test_set(F, X2, A, B )) break;
 
    if(q<0){

@@ -133,14 +133,17 @@ namespace LinBox
             PAR_BLOCK{ NN=NUM_THREADS; }
 
             typedef typename CRATemporaryVectorTrait<Function, Domain>::Type_t ElementContainer;
-            std::vector<LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>> m_primeiters;
+            //std::vector<LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>> m_primeiters;
+            std::vector<LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag>> m_primeiters;
+           
             m_primeiters.reserve(NN);
             std::vector<CRABase> vBuilders;
             vBuilders.reserve(NN);
 
 
             for(auto j=0;j<NN;j++){
-                LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag> m_primeiter( j, NN);
+                //LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag> m_primeiter( j, NN);
+                LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag> m_primeiter( j, NN);
                 m_primeiters.push_back(m_primeiter);
                 
                 CRABase Builder_(B);
@@ -179,6 +182,7 @@ namespace LinBox
             
         }
 
+#if 0 //Paladin impl
         template<class pFunc, class Function, class PrimeIterator, class Domain, class ElementContainer>
         void compute_task(pFunc& pF, std::vector<PrimeIterator>& m_primeiters,
                           Function& Iteration, std::vector<Domain>& ROUNDdomains,
@@ -225,7 +229,37 @@ SYNCH_GROUP(
                 }
            
         }
+#else //OMP impl
+        template<class pFunc, class Function, class PrimeIterator, class Domain, class ElementContainer>
+        void compute_task(pFunc& pF, std::vector<PrimeIterator>& m_primeiters,
+                          Function& Iteration, std::vector<Domain>& ROUNDdomains,
+                          std::vector<ElementContainer>& ROUNDresidues, std::vector<CRABase>& vBuilders)
+        {
+            
+            long Niter=std::ceil(1.442695040889*B/(double)(m_primeiters[0].getBits()-1));
+            int NN;
+#pragma omp parallel
+#pragma omp single 
+            NN=NUM_THREADS;
+            
+#pragma omp parallel for schedule(dynamic,1) num_threads(NN)
+	        for(auto j=0;j<Niter;j++){
+                solve_with_prime(m_primeiters[omp_get_thread_num()], Iteration, ROUNDdomains[j], ROUNDresidues[j], vBuilders[omp_get_thread_num()]);
+                }
 
+
+            this->Builder_.initialize( ROUNDdomains[0], ROUNDresidues[0]);
+
+            for(auto j=0;j<Niter;j++)
+                {
+
+                        this->Builder_.progress( ROUNDdomains[j], ROUNDresidues[j]);
+
+                }
+           
+        }
+
+#endif
    
         
 		template<class Container, class Function, class PrimeIterator>
