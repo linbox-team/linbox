@@ -1,7 +1,5 @@
-/* tests/test-randiter-nonzero.C
- * Copyright (C) 2001, 2002 Bradford Hovinen
- *
- * Written by Bradford Hovinen <hovinen@cis.udel.edu>
+/* tests/test-randiter-nonzero-prime.C
+ * Copyright (C) 2001-2019 the LinBox group
  *
  * ------------------------------------
  *
@@ -27,7 +25,7 @@
  */
 
 
-/*! @file  tests/test-randiter-nonzero.C
+/*! @file  tests/test-randiter-nonzero-prime.C
  * @ingroup tests
  * @brief  no doc
  * @test no doc.
