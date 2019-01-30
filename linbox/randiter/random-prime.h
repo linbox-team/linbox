@@ -244,7 +244,7 @@ namespace LinBox
     class MaskedPrimeIterator : public PrimeIterator<Trait> {
     private:
         const uint32_t  _shift;
-        const uint32_t	_ffff;
+        const uint32_t	_fffff;
         const uint32_t	_nmask;
 
     public:
@@ -258,19 +258,19 @@ namespace LinBox
                 return *this;
             }
 
-            // Makes mask odd: double and add 1
+            // Makes mask odd: implicit _mask=2*mask+1
         MaskedPrimeIterator(uint32_t mask, uint32_t max, uint64_t bits = 23, uint64_t seed = 0) :
                 Father_t(bits,seed),
                 _shift( MultiplyDeBruijnHighestBit(max) + 2),
-                _ffff((1U<<_shift)-1),
-                _nmask( ~((mask<<1) | 0x1) & _ffff )
+                _fffff((1U<<_shift)-1),
+                _nmask( ~((mask<<1) | 0x1) & _fffff ) // NOT _mask
             {
-                this->_prime |= _ffff;  // set lowest bits to 11111
+                this->_prime |= _fffff; // set lowest bits to 11111
                 this->_prime ^= _nmask; // set lowest bits to _mask
                 generatePrime();
             }
 
-        const uint32_t getMask() const { return  ( ~(_nmask) & _ffff ); }
+        const uint32_t getMask() const { return  ( ~(_nmask) & _fffff ); }
         const uint32_t getShift() const { return _shift; }
     };
 
@@ -278,7 +278,7 @@ namespace LinBox
     void MaskedPrimeIterator<IteratorCategories::HeuristicTag>::generatePrime(){
         integer::random_exact_2exp(_prime,_bits);
 
-        _prime |= _ffff;  // set lowest bits to 11111
+        _prime |= _fffff; // set lowest bits to 11111
         _prime ^= _nmask; // set lowest bits to _mask
 
         while(! _IPD.isprime(_prime) ) {
@@ -305,7 +305,7 @@ namespace LinBox
                 case 3: _prime+=2; break;
             }
 
-            _prime |= _ffff;  // set lowest bits to 11111
+            _prime |= _fffff; // set lowest bits to 11111
             _prime ^= _nmask; // set lowest bits to _mask
 
         } while(!_IPD.isprime(_prime));
