@@ -70,6 +70,7 @@ static bool checkResult (const Field  &F,
       std::cerr << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;      
       return false;
     }
+//    std::cerr << "d*B["<<j <<"]="<<B3[j]<<" : "<< "A["<<j<<"]*X["<<j <<"]="<<B2[j]<< std::endl;  
   }
   return true;
 }
