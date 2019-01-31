@@ -24,10 +24,9 @@
  * @ingroup test
  * @brief Testing the MPI parallel/serial rational solver
  */
-//#define __Detailed_Time_Measurement
+
+// #define __Detailed_Time_Measurement
 #define __LINBOX_HAVE_MPI
-
-
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -39,7 +38,7 @@
 
 #ifdef __LINBOX_HAVE_MPI
 #include <mpi.h>
-#include "linbox/util/mpicpp.h"	
+#include "linbox/util/mpicpp.h"
 #endif
 #include "linbox/solutions/methods.h"
 #include "linbox/solutions/solve.h"
@@ -50,7 +49,7 @@ using namespace std;
 
 template <class Field, class Matrix>
 static bool checkResult (const Field  &F,
-			 Matrix &A,	
+			 Matrix &A,
 			 BlasVector<Field> &B,
 			 BlasVector<Field> &X,
 			 typename Field::Element &d)
@@ -59,7 +58,14 @@ static bool checkResult (const Field  &F,
   BlasVector<Field> B2(F, A.coldim());
   BlasVector<Field> B3(F, A.coldim());
   A.apply(B2,X);
-  
+
+  if (F.isZero(d)) {
+      std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+      std::cerr << "                      Denominator is zero                           " << std::endl;
+      std::cerr << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
+      return false;
+  }
+
   for (size_t j = 0 ; j < B.size() ; ++j){
     B3.setEntry(j,d*B.getEntry	(j));
   }
@@ -67,10 +73,10 @@ static bool checkResult (const Field  &F,
     if(!F.areEqual(B2[j],B3[j])){
       std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
       std::cerr << "               The solution of solveCRA is incorrect                " << std::endl;
-      std::cerr << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;      
+      std::cerr << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
       return false;
     }
-//    std::cerr << "d*B["<<j <<"]="<<B3[j]<<" : "<< "A["<<j<<"]*X["<<j <<"]="<<B2[j]<< std::endl;  
+//    std::cerr << "d*B["<<j <<"]="<<B3[j]<<" : "<< "A["<<j<<"]*X["<<j <<"]="<<B2[j]<< std::endl;
   }
   return true;
 }
@@ -78,21 +84,21 @@ static bool checkResult (const Field  &F,
 /////////////////////////////////////////////////////
 template <class Field, class Matrix>
 void genData (const Field  &F, Matrix  &Mat, size_t bits, int seed){
-  typedef typename Field::RandIter RandIter;  
-  
+  typedef typename Field::RandIter RandIter;
+
   RandIter RI(F, bits, seed) ;
   LinBox::RandomDenseMatrix<RandIter,Field>  RDM(F,RI);
   RDM.randomFullRank(Mat);
-  
+
 }
 /////////////////////////////////////////////////////
 template <class Field>
 void genData (const Field  &F, BlasVector<Field>  &Vec, size_t bits, int seed){
-  typedef typename Field::RandIter RandIter; 
-  
+  typedef typename Field::RandIter RandIter;
+
   RandIter RI(F, bits, seed);
   Vec.random(RI);
-  
+
 }
 /////////////////////////////////////////////////////
 template <class Field>
@@ -104,48 +110,48 @@ bool test_with_field(BlasVector<Field> &X2,
 #ifdef __LINBOX_HAVE_MPI
 		     , Communicator *Cptr
 #endif
-		     
+
 		     ){
   bool tag = false;
   Givaro::ZRing<Integer> F;
   Givaro::ZRing<Integer>::Element d;
   std::cerr<<"Computation is done over Q"<<std::endl;
-  
+
 #ifdef __LINBOX_HAVE_MPI
   std::cerr << "MPI solveCRA" << std::endl;
-#endif 
+#endif
 
-  
-  
-  
+
+
+
 
   /***********************
-    Results verification 
+    Results verification
   ***********************/
   RingCategories::IntegerTag tg;
-  
+
 #ifdef __LINBOX_HAVE_MPI
   double starttime, endtime;
-  starttime = MPI_Wtime(); 
+  starttime = MPI_Wtime();
 #else
   //Timer chrono;
   double start;
   double end;
-  
+
   start = omp_get_wtime();
 #endif
-  solveCRA (X2, d, A, B, tg, 
+  solveCRA (X2, d, A, B, tg,
 	    Method::BlasElimination()
 	    //Method::Hybrid(*Cptr)
 #ifdef __LINBOX_HAVE_MPI
 	    ,Cptr
 #endif
-	    );	
-  
+	    );
+
 #ifdef __LINBOX_HAVE_MPI
   endtime   = MPI_Wtime();
   MPI_Barrier(MPI_COMM_WORLD);
-  
+
   if(0 == Cptr->rank())  std::cout << "Total CPU time (seconds): " << endtime-starttime << std::endl;
 #else
   end = omp_get_wtime();
@@ -159,12 +165,12 @@ bool test_with_field(BlasVector<Field> &X2,
 #ifdef __LINBOX_HAVE_MPI
   }
 #endif
-  
+
 #ifdef __LINBOX_HAVE_MPI
   MPI_Bcast(&tag, 1, MPI_C_BOOL, 0, MPI_COMM_WORLD);
 #endif
 
-  return tag;	      
+  return tag;
 }
 /////////////////////////////////////////////////////
 //subroutine for defaut seed if no user provided seed as parameter
@@ -213,40 +219,40 @@ void prepare_data_with_field(size_t bits, int seed,
 
 #ifdef __LINBOX_HAVE_MPI
   }//End of BLock for process(0)
-#endif   
-  
+#endif
+
   //	B.write(std::cout << " Proc("<<Cptr->rank()<<") >>>> Compute with B:=",Tag::FileFormat::Maple) << ';' << std::endl;
   //	A.write(std::cout << " Proc("<<Cptr->rank()<<") >>>> Compute with A:=",Tag::FileFormat::Maple) << ';' << std::endl;
-  
+
 
 #ifdef __LINBOX_HAVE_MPI
   //distribute big integer compatible data
   {
-    
+
 #ifdef __Detailed_Time_Measurement
-    double starttime, endtime; 
+    double starttime, endtime;
     MPI_Barrier(MPI_COMM_WORLD);
     starttime = MPI_Wtime();
 #endif
-    
+
     //MPI data distribution for Integer type value
     Cptr->bcast(A,0);
     Cptr->bcast(B,0);
-    
+
 #ifdef __Detailed_Time_Measurement
     MPI_Barrier(MPI_COMM_WORLD);
-    endtime   = MPI_Wtime(); 
+    endtime   = MPI_Wtime();
     std::cout<<"In Proc("<<Cptr->rank()<<") MPI data distribution used CPU time (seconds): " <<endtime-starttime<<std::endl;
 #endif
-    
+
   }
 #endif
-  
+
   //Check if data are correctly distributed to all processes
   //	B.write(std::cout << " Proc("<<Cptr->rank()<<") <<<< Compute with B:=",Tag::FileFormat::Maple) << ';' << std::endl;
   //	A.write(std::cout << " Proc("<<Cptr->rank()<<") <<<< Compute with A:=",Tag::FileFormat::Maple) << ';' << std::endl;
-  
-  
+
+
 }
 /////////////////////////////////////////////////////
 template <class Field>
@@ -259,19 +265,19 @@ void update_input(BlasMatrix<Field>& A, BlasVector<Field>& B, BlasVector<Field>&
 #ifdef __LINBOX_HAVE_MPI
   if(0==Cptr->rank()){
 #endif
-    
-    if(q<0){   
+
+    if(q<0){
       seed = getSeed();
       rand_param_vary(n, ni, bits, bitsize, peak);
     }else{
-      bits = bitsize;  
+      bits = bitsize;
       n = ni;
     }
   std::cout << " Test with dimension: " << n << " x " << n << std::endl;
   std::cout << " Test with bitsize: " << bits << std::endl;
-#ifdef __LINBOX_HAVE_MPI 	
+#ifdef __LINBOX_HAVE_MPI
   }
-#endif    
+#endif
 
 
 #ifdef __LINBOX_HAVE_MPI
@@ -281,8 +287,8 @@ void update_input(BlasMatrix<Field>& A, BlasVector<Field>& B, BlasVector<Field>&
 #endif
 
   A.resize(n,n);  X2.resize( A.coldim()),  B.resize(A.coldim());
-        
-  prepare_data_with_field(bits, seed, X2, A, B	     
+
+  prepare_data_with_field(bits, seed, X2, A, B
 #ifdef __LINBOX_HAVE_MPI
 			  , Cptr
 #endif
@@ -297,31 +303,31 @@ void get_input_param_ready(int& seed, int& q, size_t& n, size_t& ni, size_t& bit
 			   ){
 #ifdef __LINBOX_HAVE_MPI
   MPI_Bcast(&loop, 1, MPI_C_BOOL, 0, MPI_COMM_WORLD);
-  MPI_Bcast(&ni, 1, MPI_INT, 0, MPI_COMM_WORLD); 
+  MPI_Bcast(&ni, 1, MPI_INT, 0, MPI_COMM_WORLD);
   MPI_Bcast(&bitsize, 1, MPI_INT, 0, MPI_COMM_WORLD);
   MPI_Bcast(&seed, 1, MPI_INT, 0, MPI_COMM_WORLD);
   MPI_Bcast(&q, 1, MPI_INT, 0, MPI_COMM_WORLD);
   MPI_Bcast(&nt, 1, MPI_INT, 0, MPI_COMM_WORLD);
 #endif
-  
-  
+
+
 #ifdef __LINBOX_HAVE_MPI
   if(0==Cptr->rank()){
 #endif
-    
-    if(q<0){   
+
+    if(q<0){
       seed = getSeed();
       rand_param_vary(n, ni, bits, bitsize, peak);
     }else{
-      bits = bitsize;  
+      bits = bitsize;
       n = ni;
     }
-    
-#ifdef __LINBOX_HAVE_MPI 	
+
+#ifdef __LINBOX_HAVE_MPI
   }
-#endif    
-  
-  
+#endif
+
+
 #ifdef __LINBOX_HAVE_MPI
   MPI_Bcast(&n, 1, MPI_INT, 0, MPI_COMM_WORLD);
   MPI_Bcast(&bits, 1, MPI_INT, 0, MPI_COMM_WORLD);
@@ -344,14 +350,14 @@ int main(int argc, char ** argv)
   size_t niter=1;
   size_t ni=1;
   size_t nt=1;
-  
+
   size_t n=1;
   int q=-1;
   bool peak = false;
   bool loop=false;
-  int seed = 1; 
+  int seed = 1;
 
-  
+
   Argument args[] = {
     { 'n', "-n N", "Set column and row dimension of test matrices to N.", TYPE_INT,     &ni },
     { 'b', "-b B", "Set the bitsize for input value.", TYPE_INT,     &bitsize },
@@ -362,54 +368,54 @@ int main(int argc, char ** argv)
     { 't', "-t T", "Set the number of threads per process.", TYPE_INT,     &nt },
     END_OF_ARGUMENTS
   };
-  parseArguments (argc, argv, args); 
-  
-  
+  parseArguments (argc, argv, args);
+
+
   Givaro::ZRing<Integer> F;
   typedef BlasVector<Givaro::ZRing<Integer> > DenseVector;
-  
-  
+
+
   get_input_param_ready(seed,  q,  n,  ni,  bits,  bitsize,  peak, loop, nt
 #ifdef __LINBOX_HAVE_MPI
 			,  Cptr
 #endif
 			);
-  
-  
+
+
   DenseMatrix<Givaro::ZRing<Integer> > A (F,n,n);
-  DenseVector X(F, A.coldim()), X2(F, A.coldim()),  B(F, A.coldim()); 
+  DenseVector X(F, A.coldim()), X2(F, A.coldim()),  B(F, A.coldim());
 
 
 
-  
-  for(size_t j=0;loop || j<niter;j++){  
-    
+
+  for(size_t j=0;loop || j<niter;j++){
+
     update_input(A, B, X2, seed, q, n, ni, bits, bitsize, peak
 #ifdef __LINBOX_HAVE_MPI
 		 , Cptr
 #endif
 		 );
-    
+
     omp_set_num_threads(nt);
     if(!test_with_field<Givaro::ZRing<Integer>>(X2, A, B, bits
 
 #ifdef __LINBOX_HAVE_MPI
 						, Cptr
 #endif
-						
+
 						)){
       break;
     }
 
-    
+
   }
-  
-  
+
+
 #ifdef __LINBOX_HAVE_MPI
-  delete Cptr;  
+  delete Cptr;
 #endif
 
   return 0;
-  
+
 }
 
