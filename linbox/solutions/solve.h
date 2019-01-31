@@ -902,7 +902,6 @@ Integer den(1);
 #endif
 
 		cra(num, den, iteration, genprime); 
-//if(!C || C->rank() == 0){std::cout << " found num: " << std::endl;for(auto j=0;j<num.size();j++) std::cout<<num[j]<<std::endl; }
 
 #ifdef __Detailed_Time_Measurement
 #ifdef __LINBOX_HAVE_MPI
@@ -927,8 +926,6 @@ Integer den(1);
                 A.field().init(*it_x, *it_num);
 
 			A.field().init(d, den);
-
-//if(!C || C->rank() == 0)std::cout << " found d: " <<d<< std::endl;
  
 			commentator().stop ("done", NULL, "Isolve");
 

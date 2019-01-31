@@ -67,12 +67,7 @@ static bool checkResult (const Field  &F,
     if(!F.areEqual(B2[j],B3[j])){
       std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
       std::cerr << "               The solution of solveCRA is incorrect                " << std::endl;
-      std::cerr << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
-      /*
-      std::cerr << " B2["<<j<<"] := "<< B2[j] << std::endl;
-      std::cerr << " B3["<<j<<"] := "<< B3[j] << std::endl;
-      std::cerr << " d*B["<<j<<"] := "<< d*B.getEntry(j) << std::endl;
-      */
+      std::cerr << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;      
       return false;
     }
   }

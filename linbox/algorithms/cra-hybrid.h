@@ -185,12 +185,6 @@ namespace LinBox
             );
 
             VECTORresidues.push_back(m_primeiter);
-/*
-std::cout << " ==============================Residues===================================>> " << std::endl;
-for(auto j=0;j<VECTORresidues.size();j++) std::cout<<VECTORresidues[j]<<std::endl;
-std::cout << " <<============================Residues===================================== " << std::endl;
-*/
-
         }
         
         
@@ -213,12 +207,6 @@ std::cout << " <<============================Residues===========================
                     solve_with_prime(m_primeiters[j], Iteration, VECTORdomains, VECTORresidues[j]);
  
                 }
-
-/*
-for(long i=0; i<Ntask; i++){
-std::cout << " VECTORresidues["<<i<<"]:" << std::endl;
-for(auto j=0;j<VECTORresidues[i].size();j++) std::cout<<VECTORresidues[i][j]<<std::endl; 
-}*/
             
         }
 
@@ -231,11 +219,11 @@ for(auto j=0;j<VECTORresidues[i].size();j++) std::cout<<VECTORresidues[i][j]<<st
 
   
             int Ntask=0;
-            //LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   gen(_commPtr->rank(),_commPtr->size());
+
             LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag>   gen(_commPtr->rank(),_commPtr->size());
             ++gen;++gen;
             _commPtr->recv(Ntask, 0);
-std::set<int> used_primes;
+
             if(Ntask!=0){
                 std::unordered_set<int> prime_used;
 
@@ -252,21 +240,16 @@ std::set<int> used_primes;
             std::vector<int> m_primeiters;m_primeiters.reserve(Ntask);
       
                 for(auto j=0;j<Ntask;j++){
-
-                    while( Builder_.noncoprime(*gen) || used_primes.find(*gen)!=used_primes.end()) ++gen; used_primes.insert(*gen);
+                    ++gen;while( Builder_.noncoprime(*gen) ) ++gen;
+                    
                     m_primeiters.push_back(*gen);
                     Domain D(*gen);
                     BlasVector<Domain>  r(D);
                     VECTORresidues.push_back(r);
 
                 }
-/*
-std::cout << " =============================Primes====================================>> " << std::endl;
-for(auto j=0;j<Ntask;j++) std::cout<<m_primeiters[j]<<std::endl;
-std::cout << " <<===========================Primes====================================== " << std::endl;
-*/
 
-            compute_task( (this->Builder_), m_primeiters, Iteration,  VECTORdomains, VECTORresidues, Ntask);	
+                compute_task( (this->Builder_), m_primeiters, Iteration,  VECTORdomains, VECTORresidues, Ntask);	
 
 
 
@@ -292,7 +275,7 @@ std::cout << " <<===========================Primes==============================
 			if(_commPtr->rank() == 0){
               
                 master_process_task(Iteration, D, r);
-//std::cout << " found num: " << std::endl;for(auto j=0;j<num.size();j++) std::cout<<num[j]<<std::endl;
+
 			}
 			//  child process
 			else{
@@ -343,13 +326,10 @@ std::cout << " <<===========================Primes==============================
             Domain D(pp);
             Builder_.initialize( D, r);
 
-//std::cout << " recv r: " << std::endl;for(auto j=0;j<r.size();j++) std::cout<<r[j]<<std::endl; 
-
-
             while(Nrecv > 0 ){
 
                 master_recv_residues(r, pp, Nrecv);
-//std::cout << " recv r: " << std::endl;for(auto j=0;j<r.size();j++) std::cout<<r[j]<<std::endl; 
+
                 Domain D(pp);
 
 #ifdef __Detailed_Time_Measurement
@@ -361,7 +341,7 @@ std::cout << " <<===========================Primes==============================
 		std::cout<<"Builder_.progress(D, r) in the manager process used CPU time (seconds): " <<chrono.usertime()<<std::endl;
 #endif
             }
-if(!Builder_.terminated())std::cout<<" ########################################### " <<std::endl;
+
         }
 
 
