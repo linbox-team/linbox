@@ -148,10 +148,18 @@ namespace LinBox {
             // Main parallel loop
             //
 
-            #pragma omp parallel for num_threads(_threadsCount) schedule(dynamic, 1)
-            for (uint64_t j = 0; j < taskCount; j++) {
-                Iteration(residues[j], domains[j], _pCommunicator);
-                residues[j].push_back(domains[j].characteristic());
+            #pragma omp parallel num_threads(_threadsCount)
+            #pragma omp single
+            {
+                // #pragma omp parallel for num_threads(_threadsCount) schedule(dynamic, 1)
+                for (uint64_t j = 0; j < taskCount; j++) {
+                    std::cout << _pCommunicator->rank() << " " << j << std::endl;
+                    #pragma omp task
+                    {
+                        Iteration(residues[j], domains[j], _pCommunicator);
+                        residues[j].push_back(domains[j].characteristic());
+                    }
+                }
             }
 
             //
