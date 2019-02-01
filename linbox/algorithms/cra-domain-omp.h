@@ -220,7 +220,7 @@ namespace LinBox
 
             this->Builder_.initialize( ROUNDdomains[0], ROUNDresidues[0]);
 
-            for(auto j=0;j<Niter;j++)
+            for(auto j=1;j<Niter;j++)
                 {
 
                         this->Builder_.progress( ROUNDdomains[j], ROUNDresidues[j]);
@@ -240,15 +240,18 @@ namespace LinBox
 #pragma omp parallel
 #pragma omp single 
             NN=NUM_THREADS;
-            
+
+solve_with_prime(m_primeiters[0], Iteration, ROUNDdomains[0], ROUNDresidues[0], vBuilders[0]);
+this->Builder_.initialize( ROUNDdomains[0], ROUNDresidues[0]);
+
 #pragma omp parallel for schedule(dynamic,1) num_threads(NN)
-	        for(auto j=0;j<Niter;j++){
+	        for(auto j=1;j<Niter;j++){
                 solve_with_prime(m_primeiters[omp_get_thread_num()], Iteration, ROUNDdomains[j], ROUNDresidues[j], vBuilders[omp_get_thread_num()]);
                 
                 }
 
 
-            this->Builder_.initialize( ROUNDdomains[0], ROUNDresidues[0]);
+//            this->Builder_.initialize( ROUNDdomains[0], ROUNDresidues[0]);
 
             for(auto j=1;j<Niter;j++)
                 {
@@ -258,6 +261,7 @@ namespace LinBox
                 }
            
         }
+        
 
 #endif
    
@@ -277,7 +281,7 @@ namespace LinBox
             
 			//return this->Builder_.result(res,den);
 this->Builder_.result(res,den);
-std::cerr << ">>>>res: " << std::endl; for(long j=0;j<res.size();j++) std::cerr << res.getEntry(j) << std::endl; 
+//std::cerr << ">>>>res: " << std::endl; for(long j=0;j<res.size();j++) std::cerr << res.getEntry(j) << std::endl; 
 return res;
             
 		}

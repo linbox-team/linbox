@@ -58,13 +58,13 @@ static bool checkResult (const Field  &F,
   Vector B2(F, A.coldim());
   Vector B3(F, A.coldim());
   
-std::cerr << ">>>>found X: " << std::endl; for(long j=0;j<X.size();j++) std::cerr << X.getEntry(j) << std::endl; 
+//std::cerr << ">>>>found X: " << std::endl; for(long j=0;j<X.size();j++) std::cerr << X.getEntry(j) << std::endl; 
   A.apply(B2,X);
-std::cerr << ">>>> AX=B: " << std::endl; for(long j=0;j<B2.size();j++) std::cerr << B2.getEntry(j) << std::endl;
+//std::cerr << ">>>> AX=B: " << std::endl; for(long j=0;j<B2.size();j++) std::cerr << B2.getEntry(j) << std::endl;
 
 
   for (size_t j = 0 ; j < B.size() ; ++j) B3.setEntry(j,d*B.getEntry(j));
-std::cerr << ">>>> B: " << std::endl; for(long j=0;j<B3.size();j++) std::cerr << B3.getEntry(j) << std::endl;
+//std::cerr << ">>>> B: " << std::endl; for(long j=0;j<B3.size();j++) std::cerr << B3.getEntry(j) << std::endl;
   for (size_t j = 0 ; j < A.coldim() ; ++j)
     if(!F.areEqual(B2[j],B3[j])){
       std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
@@ -199,12 +199,12 @@ int main(int argc, char ** argv)
 
         }
     }
-   
+   /*
 	std::cerr << ">>>>Compute with B: " << std::endl;      
 	for(long j=0;j<(long)ni;j++) std::cerr << B.getEntry(j) << std::endl; 
 	
 	A.write(std::cout << ">>>>Compute with A: " << A.rowdim() << " by " << A.coldim() << "\n"<< "A:=",Tag::FileFormat::Maple) << ';' << std::endl;
-   
+   */
    
    if(!test_set(F, X2, A, B )) break;
 
