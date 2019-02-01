@@ -31,6 +31,7 @@
 
 #define __VALENCE_REPORTING__ 1
 
+
 #include <linbox/linbox-config.h>
 
 #include <iostream>

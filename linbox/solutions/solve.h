@@ -792,8 +792,10 @@ return x;
 #endif
                      )
 	{
+
 		typename BB::Field::Element den(1);
        
+
 #ifdef __LINBOX_HAVE_MPI	//MPI parallel version
 		if(!C || C->rank() == 0){
 #endif 
@@ -840,7 +842,9 @@ return x;
 
 
 #ifdef __LINBOX_HAVE_MPI
-		MPIChineseRemainder< FullMultipRatCRA< Field2proj > > cra(hadamard, C);
+
+	MPIChineseRemainder< FullMultipRatCRA< Field2proj > > cra(hadamard, C);
+
 #else
         ChineseRemainderOMP< FullMultipRatCRA< Field2proj > > cra(hadamard);
 #endif

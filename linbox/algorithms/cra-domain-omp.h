@@ -198,21 +198,25 @@ namespace LinBox
             FFLAS::ParSeqHelper::Parallel<FFLAS::CuttingStrategy::Row,FFLAS::StrategyParameter::Grain> H;
 
             if(NN>Niter){
-
+SYNCH_GROUP(
 	            PARFORBLOCK1D(k,Niter,H,
                     solve_with_prime(m_primeiters[k], Iteration, ROUNDdomains[k], ROUNDresidues[k], vBuilders[k]);
                 );
+)
 
             }else{
-
+SYNCH_GROUP(
 	            PARFORBLOCK1D(k,NN,H,
 	                for(auto j=k*(Niter/NN);j<(k+1)*(Niter/NN);j++)
                         solve_with_prime(m_primeiters[k], Iteration, ROUNDdomains[j], ROUNDresidues[j], vBuilders[k]);
                 );
+)
                 if(Niter%NN>0){
+SYNCH_GROUP(
 	                PARFORBLOCK1D(k,Niter%NN,H,
                         solve_with_prime(m_primeiters[k], Iteration, ROUNDdomains[k+NN*(Niter/NN)], ROUNDresidues[k+NN*(Niter/NN)], vBuilders[k]);
                     );
+)
                 }
 
             }
