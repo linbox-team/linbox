@@ -140,7 +140,6 @@ namespace LinBox {
             }
 
             uint64_t taskCount = domains.size();
-            std::cout << "worker taskCount " << taskCount << std::endl;
 
             _pCommunicator->send(taskCount, 0);
 
@@ -153,7 +152,6 @@ namespace LinBox {
             {
                 // #pragma omp parallel for num_threads(_threadsCount) schedule(dynamic, 1)
                 for (uint64_t j = 0; j < taskCount; j++) {
-                    std::cout << _pCommunicator->rank() << " " << j << std::endl;
                     #pragma omp task
                     {
                         Iteration(residues[j], domains[j], _pCommunicator);
