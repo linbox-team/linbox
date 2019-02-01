@@ -813,9 +813,9 @@ namespace LinBox
 
 #ifdef __Detailed_Time_Measurement
             chrono.stop();
-            std::cout<< 
+            std::cout<<
 #ifdef __LINBOX_HAVE_MPI
-            "Process "<<C->rank()<< 
+            "Process "<<C->rank()<<
 #endif
             " Solve "<<chrono.usertime()<<std::endl;
 #endif
@@ -866,28 +866,8 @@ Integer den(1);
 
 );
 
-		typename BB::ConstIterator it = A.Begin();
-		typename BB::ConstIterator it_end = A.End();
-		typename BB::Field::Element max = 1,min=0;
-		while( it != it_end ){
-			if (max < (*it))
-				max = *it;
-			if ( min > (*it))
-				min = *it;
-			it++;
-		}
-		if (max<-min)
-			max=-min;
-        
-        typename Vector::iterator it_b= b.begin();
-        for (; it_b != b.end(); ++it_b) if(*it_b>max) max=*it_b;
-        if (max < 3) max = 3;
-		size_t n=A.coldim();
-
-        
-		double hadamard = n*(Givaro::naturallog(n)+2*Givaro::naturallog(max));
-
-
+        auto hb = RationalSolveHadamardBound(A, b);
+        double hadamard = (1.0 + hb.numLogBound + hb.denLogBound); // log2(2 * N * D)
 
 #ifdef __LINBOX_HAVE_MPI
 		HybridChineseRemainder< FullMultipRatCRA< Field2proj > > cra(hadamard, C);
@@ -901,7 +881,7 @@ Integer den(1);
         chrono.start();
 #endif
 
-		cra(num, den, iteration, genprime); 
+		cra(num, den, iteration, genprime);
 
 #ifdef __Detailed_Time_Measurement
 #ifdef __LINBOX_HAVE_MPI
@@ -926,7 +906,7 @@ Integer den(1);
                 A.field().init(*it_x, *it_num);
 
 			A.field().init(d, den);
- 
+
 			commentator().stop ("done", NULL, "Isolve");
 
 #ifdef __LINBOX_HAVE_MPI
