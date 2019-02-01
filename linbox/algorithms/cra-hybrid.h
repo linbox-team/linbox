@@ -170,7 +170,10 @@ namespace LinBox {
                 master_process_task(Iteration, num.size());
             }
             else {
+                double starttime = omp_get_wtime();
                 worker_process_task(Iteration, num.size());
+                double endtime = omp_get_wtime();
+                std::cout << " process(" << _pCommunicator->rank() << ") used total CPU time (seconds): " << endtime - starttime << std::endl;
             }
         }
 
