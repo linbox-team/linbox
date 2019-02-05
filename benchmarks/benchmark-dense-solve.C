@@ -99,7 +99,7 @@ int main (int argc, char **argv)
 
             // DenseElimination
         chrono.start();		
-        PAR_BLOCK { solve (X, A, B, Method::DenseElimination()); }
+        solve (X, A, B, Method::DenseElimination());
         chrono.stop();
 
 #ifdef _BENCHMARKS_DEBUG_
