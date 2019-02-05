@@ -303,6 +303,93 @@ void get_input_param_ready(int& seed, int& q, size_t& n, size_t& ni, size_t& bit
     MPI_Bcast(&nt, 1, MPI_INT, 0, MPI_COMM_WORLD);
 #endif
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+int globalRank, localRank;
+MPI_Comm nodeComm, masterComm;
+
+MPI_Comm_rank( MPI_COMM_WORLD, &globalRank);
+//Creates new communicators(nodeComm) based on split types(MPI_COMM_TYPE_SHARED) and keys(globalRank)
+MPI_Comm_split_type( MPI_COMM_WORLD, MPI_COMM_TYPE_SHARED, globalRank, MPI_INFO_NULL, &nodeComm );
+MPI_Comm_rank( nodeComm, &localRank);
+//Creates new communicators based on colors==localRank and keys==globalRank
+MPI_Comm_split( MPI_COMM_WORLD, localRank==0, globalRank, &masterComm );
+
+int val = 0;
+MPI_Bcast(&val, 1, MPI_INT, 0, masterComm);
+
+if ( localRank == 0 )
+ {
+ 
+    // Now, each process of masterComm is on a different node
+    // so you can play with them to do what you want
+    int mRank, mSize;
+    MPI_Comm_rank( masterComm, &mRank );std::cerr << " masterComm->mRank:=" << mRank <<" : globalRank:="<<globalRank << std::endl;
+    MPI_Comm_size( masterComm, &mSize );std::cerr << " masterComm->mSize:=" << mSize << std::endl;
+    // do something here
+}
+
+
+
+
+MPI_Comm evenComm, oddComm;
+//Creates new communicators based on colors==localRank and keys==globalRank
+MPI_Comm_split( nodeComm, localRank%2==0, localRank, &evenComm );
+//Creates new communicators based on colors==localRank and keys==globalRank
+MPI_Comm_split( nodeComm, localRank%2!=0, localRank, &oddComm );
+
+
+   MPI_Group odd_grp, even_grp,global_grp;
+
+   MPI_Comm_group(MPI_COMM_WORLD, &global_grp);
+   MPI_Comm_group(evenComm, &even_grp);
+   MPI_Comm_group(oddComm, &odd_grp);
+
+   int odd_grp_size,even_grp_size,global_grp_size;
+
+   MPI_Group_size(global_grp, &global_grp_size);
+   MPI_Group_size(odd_grp, &odd_grp_size);
+   MPI_Group_size(even_grp, &even_grp_size);
+
+   std::vector<int> global_ranks; global_ranks.resize(global_grp_size);
+   std::vector<int> even_ranks; even_ranks.resize(even_grp_size);
+   std::vector<int> odd_ranks; odd_ranks.resize(odd_grp_size);
+
+
+   for (int i = 0; i < odd_grp_size; i++)
+      odd_ranks[i] = i;
+      
+   for (int i = 0; i < even_grp_size; i++)
+      even_ranks[i] = i;
+
+if(localRank%2==0){
+   MPI_Group_translate_ranks(odd_grp, odd_grp_size, &odd_ranks[0], global_grp, &global_ranks[0]);
+   if(localRank==0) val = 2;
+   for (int i = 0; i < odd_grp_size; i++)
+      std::cout<<"Odd comm["<<i<<"] has world rank "<<global_ranks[i]<<std::endl;
+}else{
+   MPI_Group_translate_ranks(even_grp, even_grp_size, &even_ranks[0], global_grp, &global_ranks[0]);
+   if(localRank==1) val = 11;
+   for (int i = 0; i < even_grp_size; i++)
+      std::cout<<"Even comm["<<i<<"] has world rank "<<global_ranks[i]<<std::endl;
+}
+MPI_Bcast(&val, 1, MPI_INT, 0, evenComm);MPI_Bcast(&val, 1, MPI_INT, 0, oddComm);
+std::cout<<" >>>>>>>>>>>>>>>>> Proc["<<globalRank<<"] has final reception for val:= "<<val<<std::endl;
+
+   MPI_Group_free(&even_grp);
+   MPI_Group_free(&odd_grp);
+   MPI_Group_free(&global_grp);
+
+
+
+MPI_Comm_free( &evenComm );MPI_Comm_free( &oddComm );
+
+
+
+
+MPI_Comm_free( &nodeComm );
+MPI_Comm_free( &masterComm );
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 #ifdef __LINBOX_HAVE_MPI
     if (0 == Cptr->rank()) {
 #endif
