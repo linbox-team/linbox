@@ -170,7 +170,7 @@ namespace LinBox
                               Function& Iteration, Domain& ROUNDdomains,
                               ElementContainer& ROUNDresidues, CRABase& vBuilders)
         {
-            
+
             ++m_primeiters;
 
             while(vBuilders.noncoprime(*m_primeiters) )
@@ -178,13 +178,126 @@ namespace LinBox
 
             
             ROUNDdomains = Domain(*m_primeiters);
-            
+
             Iteration(ROUNDresidues, ROUNDdomains);
             
         }
 
+#if 1 //=============================================Task based ===========================================
+#if 0 // ---------------------------- Paladin impl ----------------------------
+/*
+#define TASK(M, I)                             \
+    PRAGMA_OMP_IMPL(omp task M)           \
+    {I;}
 
-#if 0 //Paladin impl
+#define FORBLOCK1D(iter, m, Helper, Args...)                                       \
+    { FFLAS::ForStrategy1D<std::remove_const<decltype(m)>::type, typename decltype(Helper)::Cut, typename  decltype(Helper)::Param > iter(m, Helper); \
+      for(iter.initialize(); !iter.isTerminated(); ++iter){ {Args;}  } }
+
+#define FOR1D(i, m, Helper, Args...)                             \
+    FORBLOCK1D(_internal_iterator, m, Helper,                           \
+        TASK( , \
+             {for(auto i=_internal_iterator.begin(); i!=_internal_iterator.end(); ++i) \
+                 { Args; } });)                                         \
+        WAIT;
+        
+// overload of SPLITTER
+#define splitting_0() FFLAS::ParSeqHelper::Parallel<FFLAS::CuttingStrategy::Block,FFLAS::StrategyParameter::Threads>()
+#define splitting_1(a) FFLAS::ParSeqHelper::Parallel<FFLAS::CuttingStrategy::Block,FFLAS::StrategyParameter::Threads>(a)
+#define splitting_2(a,c) FFLAS::ParSeqHelper::Parallel<FFLAS::CuttingStrategy::Block,c>(a)
+#define splitting_3(a,b,c) FFLAS::ParSeqHelper::Parallel<b,c>(a)
+
+// parallel region
+#define PAR_BLOCK  PRAGMA_OMP_IMPL(omp parallel)   \
+    PRAGMA_OMP_IMPL(omp single)
+*/
+
+        template<class pFunc, class Function, class PrimeIterator, class Domain, class ElementContainer>
+        void compute_task(pFunc& pF, std::vector<PrimeIterator>& m_primeiters,
+                          Function& Iteration, std::vector<Domain>& ROUNDdomains,
+                          std::vector<ElementContainer>& ROUNDresidues, std::vector<CRABase>& vBuilders)
+        {
+            
+            long Niter=std::ceil(1.442695040889*B/(double)(m_primeiters[0].getBits()-1));
+            
+std::cout<<"============================= Niter:= "<<Niter<<" ================================"<<std::endl;
+solve_with_prime(m_primeiters[0], Iteration, ROUNDdomains[0], ROUNDresidues[0], vBuilders[0]);
+this->Builder_.initialize( ROUNDdomains[0], ROUNDresidues[0]);
+
+            int NN;
+            PAR_BLOCK{ NN=NUM_THREADS; } 
+            
+            FFLAS::ParSeqHelper::Parallel<FFLAS::CuttingStrategy::Row,FFLAS::StrategyParameter::Grain> H;
+
+
+                PAR_BLOCK{
+
+	                FOR1D(i,Niter,H,
+{
+std::cout<<"i = "<<i<<" == "<<"  _internal_iterator.blockindex()  : "<<"_internal_iterator.blockindex()%NN = "<<_internal_iterator.blockindex()%NN<<std::endl;
+                      solve_with_prime(
+                            m_primeiters[_internal_iterator.blockindex()%NN],
+                            Iteration,
+                            ROUNDdomains[i],
+                            ROUNDresidues[i],
+                            vBuilders[_internal_iterator.blockindex()%NN]
+                        );
+}
+                    )
+
+                }
+
+
+
+//            this->Builder_.initialize( ROUNDdomains[0], ROUNDresidues[0]);
+
+            for(auto j=0;j<Niter;j++)
+                {
+
+                        this->Builder_.progress( ROUNDdomains[j], ROUNDresidues[j]);
+
+                }
+           
+        }
+#else // ---------------------------- OMP impl ----------------------------
+        template<class pFunc, class Function, class PrimeIterator, class Domain, class ElementContainer>
+        void compute_task(pFunc& pF, std::vector<PrimeIterator>& m_primeiters,
+                          Function& Iteration, std::vector<Domain>& ROUNDdomains,
+                          std::vector<ElementContainer>& ROUNDresidues, std::vector<CRABase>& vBuilders)
+        {
+            
+            long Niter=std::ceil(1.442695040889*B/(double)(m_primeiters[0].getBits()-1));
+            int NN;
+#pragma omp parallel
+#pragma omp single 
+            NN=NUM_THREADS;
+
+solve_with_prime(m_primeiters[0], Iteration, ROUNDdomains[0], ROUNDresidues[0], vBuilders[0]);
+this->Builder_.initialize( ROUNDdomains[0], ROUNDresidues[0]);
+
+#pragma omp parallel num_threads(NN)
+#pragma omp single
+	        for(auto j=1;j<Niter;j++){
+#pragma omp task
+                solve_with_prime(m_primeiters[omp_get_thread_num()], Iteration, ROUNDdomains[j], ROUNDresidues[j], vBuilders[omp_get_thread_num()]);
+                
+                }
+
+
+//            this->Builder_.initialize( ROUNDdomains[0], ROUNDresidues[0]);
+
+            for(auto j=1;j<Niter;j++)
+                {
+
+                        this->Builder_.progress( ROUNDdomains[j], ROUNDresidues[j]);
+
+                }
+           
+        }
+#endif  // --------------------------------------------------------------------------
+
+#else   //=============================================For loop based ===========================================
+#if 0   // ---------------------------- Paladin impl ----------------------------
         template<class pFunc, class Function, class PrimeIterator, class Domain, class ElementContainer>
         void compute_task(pFunc& pF, std::vector<PrimeIterator>& m_primeiters,
                           Function& Iteration, std::vector<Domain>& ROUNDdomains,
@@ -232,7 +345,7 @@ SYNCH_GROUP(
                 }
            
         }
-#else //OMP impl
+#else   // ---------------------------- OMP impl ----------------------------
         template<class pFunc, class Function, class PrimeIterator, class Domain, class ElementContainer>
         void compute_task(pFunc& pF, std::vector<PrimeIterator>& m_primeiters,
                           Function& Iteration, std::vector<Domain>& ROUNDdomains,
@@ -267,8 +380,8 @@ this->Builder_.initialize( ROUNDdomains[0], ROUNDresidues[0]);
         }
         
 
-#endif
-   
+#endif  // ---------------------------------------------------------------
+#endif  //=============================================================================================
         
 		template<class Container, class Function, class PrimeIterator>
 		Container& operator()  (Container& res, Integer& den, Function& Iteration, PrimeIterator& primeiter)
