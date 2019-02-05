@@ -51,26 +51,22 @@ namespace LinBox {
 
     protected:
         CRABase Builder_;
-        Communicator* _communicator;
+        Communicator* _pCommunicator;
         double _hadamardLogBound;
+        double _workerHadamardLogBound = 0.0; //!< Each worker will compute primes until this is hit.
 
     public:
         MPIChineseRemainder(double b, Communicator* c)
             : Builder_(b)
-            , _communicator(c)
+            , _pCommunicator(c)
             , _hadamardLogBound(b)
         {
-        }
-
-        int iterationCount()
-        {
-            auto bits = MaskedPrimeGenerator(0, _communicator->size()).getBits();
-            return std::ceil(_hadamardLogBound / (double)(bits - 1));
+            if (c->size() > 0) {
+                _workerHadamardLogBound = _hadamardLogBound / (c->size() - 1);
+            }
         }
 
         /** \brief The CRA loop.
-         *
-         * termination condition.
          *
          * \param Iteration  Function object of two arguments, \c
          * Iteration(r, p), given prime \c p it outputs residue(s) \c
@@ -78,7 +74,8 @@ namespace LinBox {
          * reentrant, thread safe.  For example, \p Iteration may be
          * returning the coefficients of the minimal polynomial of a
          * matrix \c mod \p p.
-         @warning  we won't detect bad primes.
+         *
+         * @warning  we won't detect bad primes.
          *
          * \param primeGenerator  RandIter object for generating primes.
          * \param[out] res an integer
@@ -87,14 +84,14 @@ namespace LinBox {
         Vect& operator()(Vect& num, Integer& den, Function& Iteration, PrimeIterator& primeGenerator)
         {
             // Defer to standard CRA loop if no parallel usage is desired
-            if (_communicator == 0 || _communicator->size() == 1) {
+            if (_pCommunicator == 0 || _pCommunicator->size() == 1) {
                 RationalRemainder<CRABase> sequential(Builder_);
                 return sequential(num, den, Iteration, primeGenerator);
             }
 
             para_compute(num, Iteration, primeGenerator);
 
-            if (_communicator->master()) {
+            if (_pCommunicator->master()) {
                 return Builder_.result(num, den);
             }
             else {
@@ -106,14 +103,14 @@ namespace LinBox {
         Any& operator()(Any& res, Function& Iteration, PrimeIterator& primeGenerator)
         {
             // Defer to standard CRA loop if no parallel usage is desired
-            if (_communicator == 0 || _communicator->size() == 1) {
+            if (_pCommunicator == 0 || _pCommunicator->size() == 1) {
                 ChineseRemainder<CRABase> sequential(Builder_);
                 return sequential(res, Iteration, primeGenerator);
             }
 
             para_compute(res, Iteration, primeGenerator);
 
-            if (_communicator->master()) {
+            if (_pCommunicator->master()) {
                 return Builder_.result(res);
             }
             else {
@@ -126,7 +123,7 @@ namespace LinBox {
             Domain D(*primeGenerator);
             typename Domain::Element r;
 
-            if (_communicator->master()) {
+            if (_pCommunicator->master()) {
                 master_process_task(Iteration, D, r);
             }
             else {
@@ -140,7 +137,7 @@ namespace LinBox {
             Domain D(*primeGenerator);
             BlasVector<Domain> r(D);
 
-            if (_communicator->master()) {
+            if (_pCommunicator->master()) {
                 master_process_task(Iteration, D, r);
             }
             else {
@@ -164,28 +161,21 @@ namespace LinBox {
         template <class Vect, class Function>
         void worker_process_task(Function& Iteration, Vect& r)
         {
-            // Identify how many tasks we need
-            int iterations = iterationCount();
-            int procs = _communicator->size() - 1; // We don't count master
+            MaskedPrimeGenerator gen(_pCommunicator->rank() - 1, _pCommunicator->size() - 1);
 
-            int Ntask = 0;
-            if ((iterations % procs) >= _communicator->rank()) {
-                Ntask = (int)std::ceil((double)iterations / (double)procs);
-            }
-            else {
-                Ntask = (int)std::floor((double)iterations / (double)procs);
-            }
-
-            // Ok, just go compute them
-            MaskedPrimeGenerator gen(_communicator->rank(), _communicator->size());
-
-            for (long i = 0; i < Ntask; i++) {
+            // Each worker will work until _workerHadamardLogBound is hit
+            double primesLogSum = 0.0;
+            while (primesLogSum < _workerHadamardLogBound) {
                 worker_compute(gen, Iteration, r);
 
                 uint64_t p = *gen;
-                _communicator->send(p, 0);
-                _communicator->send(r, 0);
+                primesLogSum += Givaro::logtwo(p);
+                _pCommunicator->send(p, 0);
+                _pCommunicator->send(r.begin(), r.end(), 0, 0);
             }
+
+            uint64_t poisonPill = 0;
+            _pCommunicator->send(poisonPill, 0);
         }
 
         template <class Vect, class Function>
@@ -194,15 +184,18 @@ namespace LinBox {
             Iteration(r, D);
             Builder_.initialize(D, r);
 
-            int Nrecv = iterationCount();
-            while (Nrecv > 0) {
-                // Receive the prime and a result vector
+            uint32_t workersDone = _pCommunicator->size() - 1;
+            while (workersDone > 0) {
+                // Receive the prime
                 uint64_t p;
-                _communicator->recv(p, MPI_ANY_SOURCE);
-                _communicator->recv(r, _communicator->status().MPI_SOURCE);
+                _pCommunicator->recv(p, MPI_ANY_SOURCE);
+                if (p == 0) {
+                    workersDone -= 1;
+                    continue;
+                }
 
-                // Update the number of iterations for the next step
-                Nrecv--;
+                // Receive result vector and update builder
+                _pCommunicator->recv(r.begin(), r.end(), _pCommunicator->status().MPI_SOURCE, 0);
 
                 Domain D(p);
                 Builder_.progress(D, r);
