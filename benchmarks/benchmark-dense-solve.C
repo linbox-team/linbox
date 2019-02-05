@@ -48,14 +48,14 @@ int main (int argc, char **argv)
 {
     Givaro::Integer q = -1 ;
     size_t n = 500 ;
-    size_t p = 0;
     size_t bits = 10;
+//     size_t p = 0;
 
     Argument as[] = {
         { 'q', "-q Q", "Set the field characteristic (-1 for rationals).", TYPE_INTEGER , &q },
         { 'n', "-n N", "Set the matrix dimension.",      TYPE_INT , &n },
-        { 'p', "-p P", "0 for sequential, 1 for 2D iterative, 2 for 2D rec, 3 for 2D rec adaptive, 4 for 3D rec in-place, 5 for 3D rec, 6 for 3D rec adaptive.", TYPE_INT , &p },
         { 'b', "-b B", "bit size", TYPE_INT , &bits },
+//         { 'p', "-p P", "0 for sequential, 1 for 2D iterative, 2 for 2D rec, 3 for 2D rec adaptive, 4 for 3D rec in-place, 5 for 3D rec, 6 for 3D rec adaptive.", TYPE_INT , &p },
         END_OF_ARGUMENTS
     };
 
@@ -82,6 +82,7 @@ int main (int argc, char **argv)
         chrono.stop();
 #ifdef _BENCHMARKS_DEBUG_
         std::clog << "... A is " << A.rowdim() << " by " << A.coldim() << ", " << chrono << std::endl;
+	if (A.rowdim() <= 20 && A.coldim() <= 20) A.write(std::clog <<"A:=",Tag::FileFormat::Maple) << ';' << std::endl;
 #endif            
         DenseVector<Field> X(F, A.coldim()),B(F, A.rowdim());
 	for(auto it=B.begin(); it != B.end(); ++it)
@@ -91,68 +92,71 @@ int main (int argc, char **argv)
 			F.assign(*it,F.one);
 #ifdef _BENCHMARKS_DEBUG_
         std::clog << "B is [";
-        for(DenseVector<Field>::const_iterator it=B.begin();it != B.end(); ++it)
-            F.write(std::clog, *it) << " ";
-        std::clog << "]" << std::endl;
+	for(const auto& it: B)
+            F.write(std::clog, it) << ' ';
+        std::clog << ']' << std::endl;
 #endif
 
-            // BlasElimination
+            // DenseElimination
         chrono.start();		
         PAR_BLOCK { solve (X, A, B, Method::DenseElimination()); }
         chrono.stop();
 
 #ifdef _BENCHMARKS_DEBUG_
-        std::clog << "(BlasElimination) Solution is [";
-        for(DenseVector<Field>::const_iterator it=X.begin();it != X.end(); ++it)
-            F.write(std::cout, *it) << " ";
-        std::clog << "]" << std::endl;		
+        std::clog << "(DenseElimination) Solution is [";
+        for(const auto& it: X)
+            F.write(std::clog, it) << ' ';
+        std::clog << ']' << std::endl;		
 #endif
-        std::cout << "Time: " << chrono.usertime() ;
+        std::cout << "Time: " << chrono.usertime()
+		  << " Bitsize: " << Givaro::logtwo(GIVMAX(X.front(), 1));
 	FFLAS::writeCommandString(std::cout, as) << std::endl;
     } else { 
 
         typedef Ints Integers;
         Integers ZZ;
-        std::cerr << "Reading A ... " << std::endl;
+	Integers::RandIter G(ZZ,bits);
+#ifdef _BENCHMARKS_DEBUG_
+        std::clog << "Reading A ... " << std::endl;
         chrono.start();		
-        size_t n=atoi(argv[1]);
+#endif
         DenseMatrix<Integers> A(ZZ, n, n);
-        DenseMatrix<Integers>::Iterator ait = A.Begin();
-        for( ; ait != A.End(); ++ait) {
-            double d = drand48()*3;
-            if (d < 1)
-                *ait = -1;
-            else if (d>2)
-                *ait = 1;
-        }
-        chrono.stop();
-        std::cerr << "... A is " << A.rowdim() << " by " << A.coldim() << ", " << chrono << std::endl;
-            
+	PAR_BLOCK { FFLAS::pfrand(ZZ,G, n,n,A.getPointer(),n); }   
+#ifdef _BENCHMARKS_DEBUG_
+	chrono.stop();
+        std::clog << "... A is " << A.rowdim() << " by " << A.coldim() << ", " << chrono << std::endl;
+	if (A.rowdim() <= 20 && A.coldim() <= 20) A.write(std::clog <<"A:=",Tag::FileFormat::Maple) << ';' << std::endl;
+#endif    
         Givaro::IntegerDom::Element d;
 
         DenseVector<Integers> X(ZZ, A.coldim()),B(ZZ, A.rowdim());
 
-        for(DenseVector<Integers>::iterator it=B.begin();
-            it != B.end(); ++it)
-            if (drand48() <0.5)
-                *it = -1;
-            else
-                *it = 1;
-
-        std::cout << "B is ["; for(DenseVector<Integers>::const_iterator it=B.begin(); it != B.end(); ++it) ZZ.write(std::cout, *it) << " ]" << std::endl;
-                
+	for(auto it=B.begin(); it != B.end(); ++it)
+		if (drand48() <0.5)
+			ZZ.assign(*it,ZZ.mOne);
+                else
+			ZZ.assign(*it,ZZ.one);
+#ifdef _BENCHMARKS_DEBUG_
+        std::clog << "B is [";
+	for(const auto& it: B)
+            ZZ.write(std::clog, it) << ' ';
+        std::clog << ']' << std::endl;
+#endif
 	
-            // BlasElimination
+            // DenseElimination
         chrono.start();
         solve (X, d, A, B, RingCategories::IntegerTag(), Method::DenseElimination());
         chrono.stop();
 
-        std::cerr << "(BlasElimination) Solution is [";
-        for(DenseVector<Integers>::const_iterator it=X.begin();it != X.end(); ++it) ZZ.write(std::cout, *it) << " ";
-        ZZ.write(std::cerr << "] / ", d)<< std::endl;
-        std::cerr << "CPU time (seconds): " << chrono.usertime() << std::endl;
+#ifdef _BENCHMARKS_DEBUG_
+        std::clog << "(DenseElimination) Solution is [";
+        for(const auto& it: X) ZZ.write(std::clog, it) << ' ';
+        ZZ.write(std::clog << "] / ", d)<< std::endl;
+#endif
 
-        std::cerr << "Size in bits: " << Givaro::logtwo(d) << std::endl;
+        std::cout << "Time: " << chrono.usertime()
+		  << " Bitsize: " << Givaro::logtwo(d);
+	FFLAS::writeCommandString(std::cout, as) << std::endl;
     }
 
     return 0;
