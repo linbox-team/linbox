@@ -769,7 +769,7 @@ namespace LinBox
             commentator().start ("Integer CRA Solve", "Isolve");
         }
 
-        RandomPrimeIterator genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
+        PrimeIterator<IteratorCategories::HeuristicTag> genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
 
         BlasVector<Givaro::ZRing<Integer>> num(A.field(),A.coldim());
 
