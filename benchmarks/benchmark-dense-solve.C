@@ -89,11 +89,7 @@ int main (int argc, char **argv)
             if (A.rowdim() <= 20 && A.coldim() <= 20) A.write(std::clog <<"A:=",Tag::FileFormat::Maple) << ';' << std::endl;
 #endif            
             DenseVector<Field> X(F, A.coldim()),B(F, A.rowdim());
-            for(auto it=B.begin(); it != B.end(); ++it)
-                if (drand48() <0.5)
-                    F.assign(*it,F.mOne);
-                else
-                    F.assign(*it,F.one);
+            PAR_BLOCK { FFLAS::pfrand(F,G, n,1,B.getPointer(),1); }
 #ifdef _BENCHMARKS_DEBUG_
             std::clog << "B is [";
             for(const auto& it: B)
@@ -132,12 +128,8 @@ int main (int argc, char **argv)
             Givaro::IntegerDom::Element d;
 
             DenseVector<Integers> X(ZZ, A.coldim()),B(ZZ, A.rowdim());
+            PAR_BLOCK { FFLAS::pfrand(ZZ,G, n,1,B.getPointer(),1); }
 
-            for(auto it=B.begin(); it != B.end(); ++it)
-                if (drand48() <0.5)
-                    ZZ.assign(*it,ZZ.mOne);
-                else
-                    ZZ.assign(*it,ZZ.one);
 #ifdef _BENCHMARKS_DEBUG_
             std::clog << "B is [";
             for(const auto& it: B)
