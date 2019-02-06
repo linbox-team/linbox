@@ -756,14 +756,23 @@ namespace LinBox
         const Blackbox &A;
         const Vector &B;
         const MyMethod &M;
-        bool foundInconsistentSystem = false;
 
         IntegerModularSolve(const Blackbox& b, const Vector& v, const MyMethod& n) :
                 A(b), B(v), M(n)
             {}
 
         template<typename Field>
-        typename Rebind<Vector, Field>::other& operator()(typename Rebind<Vector, Field>::other& x, const Field& F)
+        typename Rebind<Vector, Field>::other& operator()(typename Rebind<Vector, Field>::other& x, const Field& F) {
+            bool foundInconsistentSystem = false;
+            (*this)(x, F, foundInconsistentSystem);
+            if (foundInconsistentSystem) {
+                throw LinboxMathInconsistentSystem("IntegerModularSolve.");
+            }
+            return x;
+        }
+
+        template<typename Field>
+        typename Rebind<Vector, Field>::other& operator()(typename Rebind<Vector, Field>::other& x, const Field& F, bool& foundInconsistentSystem)
         {
             typedef typename Blackbox::template rebind<Field>::other FBlackbox;
             FBlackbox Ap(A, F);

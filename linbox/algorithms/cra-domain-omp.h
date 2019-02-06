@@ -183,12 +183,12 @@ namespace LinBox {
 
 #if 1 //----------------------------------task based paladin--------------------------------------------
         template <class Function, class Domain, class ElementContainer>
-        void solve_with_prime(int m_primeiters, Function& Iteration, Domain& ROUNDdomains, ElementContainer& ROUNDresidues)
+        void solve_with_prime(int m_primeiters, Function& Iteration, Domain& ROUNDdomains, ElementContainer& ROUNDresidues, bool& foundInconsistentSystem)
         {
 
             ROUNDdomains = Domain(m_primeiters);
 
-            Iteration(ROUNDresidues, ROUNDdomains);
+            Iteration(ROUNDresidues, ROUNDdomains, foundInconsistentSystem);
         }
 #else
         template <class Function, class PrimeIterator, class Domain, class ElementContainer>
@@ -262,9 +262,10 @@ namespace LinBox {
                     // = "<<_internal_iterator.blockindex()%NN<<std::endl;
                     //    std::cout << "Threads: " << NUM_THREADS << ", max: " << MAX_THREADS << std::endl;
                     //    std::cerr << "OMP: " << __FFLASFFPACK_USE_OPENMP << ", max " << omp_get_max_threads() << std::endl;
-                    solve_with_prime(m_primeiters[i], Iteration, ROUNDdomains[i], ROUNDresidues[i]);
+                    bool foundInconsistentSystem = false;
+                    solve_with_prime(m_primeiters[i], Iteration, ROUNDdomains[i], ROUNDresidues[i], foundInconsistentSystem);
 
-                    if (Iteration.foundInconsistentSystem) {
+                    if (foundInconsistentSystem) {
                         std::cout << "foundInconsistentSystem" << std::endl;
                         failedPrimesIndices.push_back(i);
                     }
@@ -277,8 +278,9 @@ namespace LinBox {
                     ++gen;
                 m_primeiters[i] = *gen;
 
-                solve_with_prime(m_primeiters[i], Iteration, ROUNDdomains[i], ROUNDresidues[i]);
-                if (Iteration.foundInconsistentSystem) {
+                bool foundInconsistentSystem = false;
+                solve_with_prime(m_primeiters[i], Iteration, ROUNDdomains[i], ROUNDresidues[i], foundInconsistentSystem);
+                if (foundInconsistentSystem) {
                     // Couldn't solve it the second time, we crash
                     throw LinboxMathInconsistentSystem("Solve Paladin.");
                 }
