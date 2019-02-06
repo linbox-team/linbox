@@ -756,28 +756,33 @@ namespace LinBox
         const Blackbox &A;
         const Vector &B;
         const MyMethod &M;
+        bool foundInconsistentSystem = false;
 
         IntegerModularSolve(const Blackbox& b, const Vector& v, const MyMethod& n) :
                 A(b), B(v), M(n)
             {}
 
-
         template<typename Field>
-        typename Rebind<Vector, Field>::other& operator()(typename Rebind<Vector, Field>::other& x, const Field& F) const
-            {
-                typedef typename Blackbox::template rebind<Field>::other FBlackbox;
-                FBlackbox Ap(A, F);
+        typename Rebind<Vector, Field>::other& operator()(typename Rebind<Vector, Field>::other& x, const Field& F)
+        {
+            typedef typename Blackbox::template rebind<Field>::other FBlackbox;
+            FBlackbox Ap(A, F);
 
-                typedef typename Rebind<Vector, Field>::other FVector;
-                FVector Bp(F, B);
+            typedef typename Rebind<Vector, Field>::other FVector;
+            FVector Bp(F, B);
 
-                VectorWrapper::ensureDim (x, A.coldim());
-//                return solve( x, Ap, Bp, M);
-solve( x, Ap, Bp, M);
+            VectorWrapper::ensureDim (x, A.coldim());
+            foundInconsistentSystem = false;
 
-
-return x;
+            try {
+                solve( x, Ap, Bp, M);
             }
+            catch (LinboxMathInconsistentSystem& e) {
+                foundInconsistentSystem = true;
+            }
+
+            return x;
+        }
     };
 
 
@@ -794,23 +799,23 @@ return x;
 	{
 
 		typename BB::Field::Element den(1);
-       
+
 
 #ifdef __LINBOX_HAVE_MPI	//MPI parallel version
 		if(!C || C->rank() == 0){
-#endif 
+#endif
 			if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
 				throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
             commentator().start ("Integer CRA Solve", "Isolve");
 #ifdef __LINBOX_HAVE_MPI
 		}
-#endif    
+#endif
 
 
 
         typedef Givaro::ModularBalanced<double> Field2proj;
 
-        //PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime(FieldTraits<Field2proj>::bestBitSize()); 
+        //PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime(FieldTraits<Field2proj>::bestBitSize());
         PrimeIterator<LinBox::IteratorCategories::DeterministicTag> genprime(FieldTraits<Field2proj>::bestBitSize());
 
 
@@ -832,13 +837,13 @@ return x;
 		}
 		if (max<-min)
 			max=-min;
-        
+
         typename Vector::iterator it_b= b.begin();
         for (; it_b != b.end(); ++it_b) if(*it_b>max) max=*it_b;
         if (max < 3) max = 3;
 		size_t n=A.coldim();
 
-        
+
 		double hadamard = n*(Givaro::naturallog(n)+2*Givaro::naturallog(max));
 
 
@@ -852,24 +857,24 @@ return x;
 
         //        Timer chrono;
         //        chrono.start();
-        
-		cra(num, den, iteration, genprime); 
+
+		cra(num, den, iteration, genprime);
 
 #ifdef __LINBOX_HAVE_MPI
         //        chrono.stop();//std::cout << "The process ("<<C->rank()<<") spent total CPU time (seconds) in solveCRA: " << chrono.usertime() << std::endl;
 #else
         //        chrono.stop();//std::cout << "Spent CPU time (seconds) in solveCRA: " << chrono.usertime() << std::endl;
 #endif
-        
+
 #ifdef __LINBOX_HAVE_MPI
-		if(!C || C->rank() == 0){ 
-#endif 
+		if(!C || C->rank() == 0){
+#endif
             typename Vector::iterator it_x= x.begin();
             typename Vector::const_iterator it_num= num.begin();
-            
+
             // convert the result
             for (; it_x != x.end(); ++it_x, ++it_num)
-                A.field().init(*it_x, *it_num);	
+                A.field().init(*it_x, *it_num);
 
 			A.field().init(d, den);
 
@@ -877,7 +882,7 @@ return x;
 			return x;
 #ifdef __LINBOX_HAVE_MPI
 		}
-#endif 
+#endif
 	}
 
 
