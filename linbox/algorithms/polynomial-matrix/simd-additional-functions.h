@@ -36,15 +36,7 @@
 #define INLINE inline
 #endif
 
-#if defined(__GNUC__) || defined(__clang__) || defined(__INTEL_COMPILER)
-#define CONST __attribute__((const))
-#else
-#define CONST
-#endif
-
-
 namespace LinBox {
-
 
 	template <typename simd, typename Field>
 	struct SimdCompute_t {};
@@ -437,104 +429,94 @@ namespace LinBox {
 #endif
 
 
-#define IS_INTEGRAL \
-    typename std::enable_if<std::is_integral<typename Simd::scalar_t>::value>::type* = nullptr
-#define IS_FLOATING \
-    typename std::enable_if<std::is_floating_point<typename Simd::scalar_t>::value>::type* = nullptr
+    template<class Field, class Simd>
+    struct SimdModular {
+        using Element = typename Field::Element;
+        using vect_t = typename Simd::vect_t;
+        //TODO use compute type if possible
+        //using Compute = typename Field::Compute;
 
+        /* Reduce from [0..2p[ to [0..p[ */
+        static INLINE vect_t
+        reduce (const vect_t& a, const vect_t& p) {
+            vect_t t = Simd::greater(p,a);
+            return Simd::sub(a, Simd::vandnot(t,p));
+        }
 
-#define Simd_vect typename Simd::vect_t
+        /* Reduce from [0..2p[ to [0..p[ */
+        static INLINE void
+        reduce (Element* a, const vect_t& p) {
+            vect_t V1;
+            V1 = MemoryOp<Element, Simd>::load(a);
+            V1 = reduce(V1, p);
+            MemoryOp<Element, Simd>::store(a,V1);
+        }
 
-	/*
-	 * Generic arithmetic operation
-	 */
-	template <class Simd>
-	INLINE Simd_vect reduce (const Simd_vect& a, const Simd_vect& p) {
-		Simd_vect t = Simd::greater(p,a);
-		return Simd::sub(a, Simd::vandnot(t,p));
-	}
+        static INLINE vect_t
+        add_mod (const vect_t& a, const vect_t& b, const vect_t& p) {
+            vect_t c = Simd::add(a,b);
+            return reduce(c, p);
+        }
 
-	template <class Element, class Simd>
-	INLINE void reduce (Element* a, const Simd_vect& p) {
-		Simd_vect V1;
-		V1 = MemoryOp<Element, Simd>::load(a);
-		V1 = reduce<Simd>(V1, p);
-		MemoryOp<Element, Simd>::store(a,V1);
-	}
+        static INLINE vect_t
+        sub_mod (const vect_t& a, const vect_t& b, const vect_t& p) {
+            vect_t c = Simd::sub(p,b);
+            c = Simd::add(a,c);
+            return reduce(c, p);
+        }
 
-	template <class Simd>
-	INLINE Simd_vect add_mod (const Simd_vect& a, const Simd_vect& b, const Simd_vect& p) {
-		Simd_vect c = Simd::add(a,b);
-		return reduce<Simd>(c, p);
-	}
+        /* mul mod for integral type */
+        template <class T=vect_t>
+        static INLINE typename std::enable_if<std::is_integral<typename Simd::scalar_t>::value, T>::type
+        mul_mod (const vect_t& a, const vect_t& b, const vect_t& p,
+                 const vect_t& bp) {
+            vect_t q = Simd::mulhi(a,bp);
+            vect_t c = Simd::mullo(a,b);
+            vect_t t = Simd::mullo(q,p);
+            return Simd::sub(c,t);
+        }
 
-	template <class Simd>
-	INLINE Simd_vect sub_mod (const Simd_vect& a, const Simd_vect& b, const Simd_vect& p) {
-		Simd_vect c = Simd::sub(p,b);
-		c = Simd::add(a,c);
-		return reduce<Simd>(c, p);
-	}
+        /* mul mod for floating type */
+        template <class T=vect_t>
+        static INLINE typename std::enable_if<std::is_floating_point<typename Simd::scalar_t>::value, T>::type
+        mul_mod (const vect_t& x, const vect_t& y, const vect_t& p,
+                 const vect_t& u) {
+            // u = 1/p
+            vect_t h = Simd::mul(x,y);
+            vect_t l = Simd::fmsub(h,x,y); // Beware of the order!
+            vect_t b = Simd::mul(h,u);
+            vect_t c = Simd::floor(b);
+            vect_t d = Simd::fnmadd(h,c,p); // Beware of the order!
+            vect_t g = Simd::add(d,l);
+            vect_t t = Simd::sub(g,p);
+            g = Simd::blendv(t,g,t);
+            t = Simd::add(g,p);
+            return Simd::blendv(g,t,g);
+        }
 
-	template <class Simd, IS_INTEGRAL>
-	INLINE Simd_vect mul_mod (const Simd_vect& a, const Simd_vect& b, const Simd_vect& p, const Simd_vect& bp) {
-		//		std::cout << "Inputs of mul_mod : a, b, p, bp, q, c, t, c - t\n";
-		Simd_vect q = Simd::mulhi(a,bp);
-		Simd_vect c = Simd::mullo(a,b);
-		Simd_vect t = Simd::mullo(q,p);
-		//		FFLAS::print<Simd>(std::cout, a); std::cout << "\n";
-		//		FFLAS::print<Simd>(std::cout, b); std::cout << "\n";
-		//		FFLAS::print<Simd>(std::cout, p); std::cout << "\n";
-		//		FFLAS::print<Simd>(std::cout, bp); std::cout << "\n";
-		//		FFLAS::print<Simd>(std::cout, q); std::cout << "\n";
-		//		FFLAS::print<Simd>(std::cout, c); std::cout << "\n";
-		//		FFLAS::print<Simd>(std::cout, t); std::cout << "\n";
-		//		FFLAS::print<Simd>(std::cout, Simd::sub(c,t)); std::cout << "\n\n";
-		return Simd::sub(c,t);
-	}
-
-	template <class Simd, IS_FLOATING>
-	INLINE Simd_vect mul_mod (const Simd_vect& x, const Simd_vect& y, const Simd_vect& p, const Simd_vect& u) {
-		// u = 1/p
-		Simd_vect h = Simd::mul(x,y);
-		Simd_vect l = Simd::fmsub(h,x,y); // Beware of the order!
-		Simd_vect b = Simd::mul(h,u);
-		Simd_vect c = Simd::floor(b);
-		Simd_vect d = Simd::fnmadd(h,c,p); // Beware of the order!
-		Simd_vect g = Simd::add(d,l);
-		Simd_vect t = Simd::sub(g,p);
-		g = Simd::blendv(t,g,t);
-		t = Simd::add(g,p);
-		return Simd::blendv(g,t,g);
-	}
-
-	/*
-	 * a = [a0, a0, a2, a2, ...]
-	* b = [?, b0, ?, b2, ...] with bp its shoup mul_mod precomputation [b0p ? b2p ?, ... ]
-	* Return [?, (a0*b0) mod p, ?, (a2*b2) mod p, ... ]
-	*/
-	template <class Simd, class SimdCompute_t>
-	INLINE Simd_vect mul_mod_half (const Simd_vect& a, const Simd_vect& b, const Simd_vect& p, const Simd_vect& bp) {
-#if 1
-		return mul_mod<Simd>(a, b , p, bp);
-#else
-		// TODO : DO SOMETHING IF Modular<uint64, uint128> and no mulx exits
-
-		// T2 = a * bp mod 2^64 (for Modular<Element = uint32, Compute_t = uint64>)
-		// bp = [b0p ? b2p ?, ... ] is enough
-		Simd_vect T2 = SimdCompute_t::mulx(a,bp);
-		Simd_vect T3 = Simd::mullo(T2,p);
-		// At this point T3= [? quo(D)*p ? quo(H)*p] mod 2^32
-		// T4 = [D D H H] * [?, b0, ?, b2] mod 2^32
-		T2 = Simd::mullo(a,b);
-		return Simd::sub(T2,T3);
+        /*
+         * a = [a0, a0, a2, a2, ...]
+         * b = [?, b0, ?, b2, ...]
+         * bp = [b0p ? b2p ?, ... ], the Shoup mul_mod precomputation of b
+         * Return [?, (a0*b0) mod p, ?, (a2*b2) mod p, ... ]
+         */
+        static INLINE vect_t
+        mul_mod_half (const vect_t& a, const vect_t& b, const vect_t& p,
+                      const vect_t& bp) {
+            return mul_mod (a, b , p, bp);
+#if 0
+            // TODO : DO SOMETHING IF Modular<uint64, uint128> and no mulx exits
+            // T2 = a * bp mod 2^64 (for Modular<Element = uint32, Compute_t = uint64>)
+            // bp = [b0p ? b2p ?, ... ] is enough
+            Simd_vect T2 = SimdCompute_t::mulx(a,bp);
+            Simd_vect T3 = Simd::mullo(T2,p);
+            // At this point T3= [? quo(D)*p ? quo(H)*p] mod 2^32
+            // T4 = [D D H H] * [?, b0, ?, b2] mod 2^32
+            T2 = Simd::mullo(a,b);
+            return Simd::sub(T2,T3);
 #endif
-	}
-
-#undef Simd_vect
-
-
-#undef IS_INTEGRAL
-#undef IS_FLOATING
+        }
+    };
 
 }
 

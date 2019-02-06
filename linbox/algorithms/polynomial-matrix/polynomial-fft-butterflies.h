@@ -99,15 +99,15 @@ namespace LinBox {
 
 	}; // FFT_butterflies<Field, 1>
 
-	// ATTENTION à tous les uint64_t, SimdComp restants !!!!
+	// ATTENTION à tous les uint64_t !!!!
 
 	template<typename Field, typename simd>
 	class FFT_butterflies<Field, simd, 4, IS_INTEGRAL> : public FFT_init<Field> {
 	public:
 
 		using Element = typename Field::Element;
+		using SimdMod = SimdModular<Field, simd>;
 		using vect_t = typename simd::vect_t;
-		using SimdComp = typename SimdCompute_t<simd,Field>::Compute_t;
 
 		FFT_butterflies(const FFT_init<Field>& f_i) : FFT_init<Field>(f_i) {
 			linbox_check(simd::vect_size == 4);
@@ -126,10 +126,10 @@ namespace LinBox {
 			Wp = MemoryOp<Element,simd>::load(alphap);
 
 			// V3 = V1 mod 2P
-			V3 = reduce<simd>(V1, P2);
+			V3 = SimdMod::reduce (V1, P2);
 
 			// V4 = V2 * W mod P
-			V4 = mul_mod<simd>(V2,W,P,Wp);
+			V4 = SimdMod::mul_mod (V2,W,P,Wp);
 
 			// V1 = V3 + V4
 			V1 = simd::add(V3,V4);
@@ -170,7 +170,7 @@ namespace LinBox {
 			// T1 = [D D H H]
 			T1 = MemoryOp<Element,simd>::unpackhi4(V4,V4);
 
-			T2 = mul_mod_half<simd, SimdComp>(T1, W, P, Wp);
+			T2 = SimdMod::mul_mod_half (T1, W, P, Wp);
 
 			T2 = simd::template shuffle<0xDD>(T2);
 			//T2 = simd::template shuffle<0xDD>(T2);
@@ -206,13 +206,13 @@ namespace LinBox {
 			W  = MemoryOp<Element,simd>::load(alpha);
 			Wp = MemoryOp<Element,simd>::load(alphap);
 			// V3 = V1 + V2 mod
-			V3 = add_mod<simd >(V1,V2,P2);
+			V3 = SimdMod::add_mod (V1,V2,P2);
 			MemoryOp<Element,simd>::store(ABCD,V3);
 			// V4 = (V1+(2P-V2))alpha mod 2P
 			T = simd::sub(V2,P2);
 			V4 = simd::sub(V1,T);
 
-			T = mul_mod<simd >(V4,W,P,Wp);// T is the result
+			T = SimdMod::mul_mod (V4,W,P,Wp);// T is the result
 			MemoryOp<Element,simd>::store(EFGH,T);
 		}
 
@@ -231,16 +231,16 @@ namespace LinBox {
 
 			// V1 = V3 + V4 mod 2P
 			// P2 = [2p 2p 2p 2p]
-			V1 = add_mod<simd >(V3,V4,P2);
+			V1 = SimdMod::add_mod (V3,V4,P2);
 			// V2 = (V3+(2P-V4))alpha mod 2P
 			V5 = simd::sub(V4,P2);
 			V6 = simd::sub(V3,V5);
-			V2 = reduce<simd >(V6, P2);
+			V2 = SimdMod::reduce (V6, P2);
 			// V4 = [D D H H]
 			V4 = MemoryOp<Element,simd>::unpackhi4(V2,V2);
 
 			// V3 = [* D * H]
-			V3 = mul_mod_half<simd, SimdComp>(V4, W, P, Wp);
+			V3 = SimdMod::mul_mod_half (V4, W, P, Wp);
 
 			//At this point, V3 = [D*Wmodp H*Wmodp D*Wmodp H*Wmodp]
 			V3 = simd::template shuffle<0xDD>(V3);
@@ -254,11 +254,11 @@ namespace LinBox {
 
 			/* 2nd step */
 			// V1 = V3 + V4 mod 2P
-			V1 = add_mod<simd >(V3,V4,P2);
+			V1 = SimdMod::add_mod (V3,V4,P2);
 			// V2 = V3 + (2P - V4) mod 2P
 			V5 = simd::sub(V4,P2);
 			V6 = simd::sub(V3,V5);
-			V2 = reduce<simd >(V6, P2);
+			V2 = SimdMod::reduce (V6, P2);
 			// Result in V1 = [A C E G]  and V2 = [B D F H]
 			// Transform to V3=[A B C D], V4=[E F G H]
 			MemoryOp<Element,simd>::unpacklohi4(V3,V4,V1,V2);
@@ -275,8 +275,8 @@ namespace LinBox {
 	public:
 
 		using Element = typename Field::Element;
+		using SimdMod = SimdModular<Field, simd>;
 		using vect_t = typename simd::vect_t;
-		using SimdComp = typename SimdCompute_t<simd,Field>::Compute_t;
 
 		FFT_butterflies(const FFT_init<Field>& f_i) : FFT_init<Field>(f_i) {
 			linbox_check(simd::vect_size == 8);
@@ -294,10 +294,10 @@ namespace LinBox {
 			Wp = MemoryOp<Element,simd>::load(alphap);
 
 			// V3 = V1 mod 2P
-			V3 = reduce<simd>(V1, P2);
+			V3 = SimdMod::reduce (V1, P2);
 
 			// V4 = V2 * W mod P
-			V4 = mul_mod<simd>(V2,W,P,Wp);
+			V4 = SimdMod::mul_mod (V2,W,P,Wp);
 
 			// V1 = V3 + V4
 			V1 = simd::add(V3,V4);
@@ -342,7 +342,7 @@ namespace LinBox {
 			V5 = MemoryOp<Element,simd>::unpackhi_twice8(V2,V2);
 
 			// V3 = [* D * L * H * P]
-			V3 = mul_mod_half<simd,SimdComp>(V5,alpha,P,alphap);
+			V3 = SimdMod::mul_mod_half (V5,alpha,P,alphap);
 
 			// V7 = [D L D L H P H P]
 			V7 = MemoryOp<Element,simd>::shuffletwice8_DD(V3);
@@ -366,10 +366,10 @@ namespace LinBox {
 			MemoryOp<Element,simd>::unpacklohi2(V3,V4,V6,V7);
 
 			// V6= V3 mod 2P
-			V6 = reduce<simd >(V3, P2);
+			V6 = SimdMod::reduce (V3, P2);
 
 			// V7= V4.beta mod p
-			V7 = mul_mod<simd >(V4,beta,P,betap);
+			V7 = SimdMod::mul_mod (V4,beta,P,betap);
 
 			// V1 = V6+V7
 			V1 = simd::add(V6,V7);
@@ -399,14 +399,14 @@ namespace LinBox {
 
 			// V3 = V1 + V2 mod
 
-			V3 = add_mod<simd >(V1,V2,P2);
+			V3 = SimdMod::add_mod (V1,V2,P2);
 
 			MemoryOp<Element,simd>::store(ABCDEFGH,V3);
 
 			// V4 = (V1+(2P-V2))alpha mod 2P
 			T = simd::sub(V2,P2);
 			V4 = simd::sub(V1,T);
-			T = mul_mod<simd >(V4,W,P,Wp);// T is the result
+			T = SimdMod::mul_mod (V4,W,P,Wp);// T is the result
 			MemoryOp<Element,simd>::store(IJKLMNOP,T);
 		}
 
@@ -427,13 +427,13 @@ namespace LinBox {
 
 			// V1 = V3 + V4 mod 2P
 			// P2 = [2p 2p 2p 2p]
-			V1 = add_mod<simd >(V3,V4,P2);
+			V1 = SimdMod::add_mod (V3,V4,P2);
 
 			// V2 = (V3+(2P-V4))alpha mod 2P
 			V5 = simd::sub(V4,P2);
 			V6 = simd::sub(V3,V5);
-			V7 = reduce<simd >(V6, P2);
-			V2 = mul_mod<simd >(V7,alpha,P,alphap);
+			V7 = SimdMod::reduce (V6, P2);
+			V2 = SimdMod::mul_mod (V7,alpha,P,alphap);
 
 			/* 2nd step */
 
@@ -442,19 +442,19 @@ namespace LinBox {
 
 			// V1 = V3 + V4 mod 2P
 			// P2 = [2p 2p 2p 2p]
-			V1 = add_mod<simd >(V3,V4,P2);
+			V1 = SimdMod::add_mod (V3,V4,P2);
 
 			// V2 = (V3+(2P-V4))alpha mod 2P
 			// V7 =  (V3+(2P-V4)) mod 2P
 			V5 = simd::sub(V4,P2);
 			V6 = simd::sub(V3,V5);
-			V7 = reduce<simd >(V6, P2);
+			V7 = SimdMod::reduce (V6, P2);
 
 			// V4 = [D D H H L L P P ]
 			V4 = MemoryOp<Element,simd>::unpackhi_twice8(V7,V7);
 
 			// V3 = [ * D * H * L * P]
-			V3 = mul_mod_half<simd,SimdComp>(V4,beta,P,betap);
+			V3 = SimdMod::mul_mod_half (V4,beta,P,betap);
 
 			// V2=[D H D H L P L P] but only [* * D H * * L P] matters
 			V2 = MemoryOp<Element,simd>::shuffletwice8_DD(V3);
@@ -467,12 +467,12 @@ namespace LinBox {
 			V4 = MemoryOp<Element,simd>::unpackhi_twice8(V1,V2);
 
 			// V1 = V3 + V4 mod 2P
-			V1 = add_mod<simd >(V3,V4,P2);
+			V1 = SimdMod::add_mod (V3,V4,P2);
 
 			// V2 = V3 + (2P - V4) mod 2P
 			V5 = simd::sub(V4,P2);
 			V6 = simd::sub(V3,V5);
-			V2 = reduce<simd >(V6, P2);
+			V2 = SimdMod::reduce (V6, P2);
 
 			// Result in    V1=[A C E G I K M O] V2=[B D F H J L N P]
 			// Transform to V3=[A B C D I J K L],V4=[E F G H M N O P]
@@ -518,15 +518,15 @@ namespace LinBox {
 
     }; // FFT_butterflies<Field, 1, IS_FLOATING>
 
-	// ATTENTION à tous les uint64_t, SimdComp restants !!!!
+	// ATTENTION à tous les uint64_t !!!!
 
 	template<typename Field, typename simd>
 	class FFT_butterflies<Field, simd, 4, IS_FLOATING> : public FFT_init<Field> {
 	public:
 
 		using Element = typename Field::Element;
+		using SimdMod = SimdModular<Field, simd>;
 		using vect_t = typename simd::vect_t;
-		using SimdComp = typename SimdCompute_t<simd,Field>::Compute_t;
 
 		FFT_butterflies(const FFT_init<Field>& f_i) : FFT_init<Field>(f_i) {
 			linbox_check(simd::vect_size == 4);
@@ -543,9 +543,9 @@ namespace LinBox {
 			W  = MemoryOp<Element,simd>::load(alpha);
 
 			//Element tmp;
-            T1 = mul_mod<simd>(W, V2, P, U);
-            V2 = sub_mod<simd>(V1, T1, P);
-            V1 = add_mod<simd>(V1, T1, P);
+			T1 = SimdMod::mul_mod (W, V2, P, U);
+			V2 = SimdMod::sub_mod (V1, T1, P);
+			V1 = SimdMod::add_mod (V1, T1, P);
 
             // this->fld->mul(tmp, alpha, B);
             // this->fld->sub(B, A, tmp);
@@ -566,8 +566,8 @@ namespace LinBox {
 			// V1=[AECG], V2=[BFDH]
 			MemoryOp<Element,simd>::unpacklohi_twice4(V1,V2,T1,T2);
 
-			V3 = add_mod<simd>(V1,V2,P);
-			V4 = sub_mod<simd>(V1,V2,P);
+			V3 = SimdMod::add_mod (V1,V2,P);
+			V4 = SimdMod::sub_mod (V1,V2,P);
 
 			//TODO: Useless?
 			// V1 = [ABEF], V2= [CDGH]
@@ -578,7 +578,7 @@ namespace LinBox {
 			// T1 = [D D H H]
 			T1 = MemoryOp<Element,simd>::unpackhi4(V4,V4);
 
-			T2 = mul_mod<simd>(T1, W, P, U);
+			T2 = SimdMod::mul_mod (T1, W, P, U);
 
 			T2 = simd::template shuffle<0xDD>(T2);
 
@@ -589,8 +589,8 @@ namespace LinBox {
 			V1 = MemoryOp<Element,simd>::unpacklo4(V3,V4);
 			V2 = MemoryOp<Element,simd>::unpackhi4(V3,T2);
 
-			T1 = add_mod<simd>(V1,V2,P);
-			T2 = sub_mod<simd>(V1,V2,P);
+			T1 = SimdMod::add_mod (V1,V2,P);
+			T2 = SimdMod::sub_mod (V1,V2,P);
 
 			MemoryOp<Element,simd>::unpacklohi2(V1,V2,T1,T2);
 
@@ -608,9 +608,9 @@ namespace LinBox {
 			W  = MemoryOp<Element,simd>::load(alpha);
 
 			T = V1;
-			V1 = add_mod<simd>(V1, V2, P);
-			V2 = sub_mod<simd>(T, V2, P);
-			V2 = mul_mod<simd>(V2, W, P, U);
+			V1 = SimdMod::add_mod (V1, V2, P);
+			V2 = SimdMod::sub_mod (T, V2, P);
+			V2 = SimdMod::mul_mod (V2, W, P, U);
 
             // Element tmp;
             // this->fld->assign(tmp, A);
@@ -633,13 +633,13 @@ namespace LinBox {
 			// V3=[A E B F], V4=[C G D H]
 			MemoryOp<Element,simd>::unpacklohi4(V3,V4,V1,V2);
 
-			V1 = add_mod<simd>(V3,V4,P);
-			V2 = sub_mod<simd>(V3,V4,P);
+			V1 = SimdMod::add_mod (V3,V4,P);
+			V2 = SimdMod::sub_mod (V3,V4,P);
 
 			// V4 = [D D H H]
 			V4 = MemoryOp<Element,simd>::unpackhi4(V2,V2);
 
-			V3 = mul_mod<simd>(V4, W, P, U);
+			V3 = SimdMod::mul_mod (V4, W, P, U);
 
 			//At this point, V3 = [D*Wmodp H*Wmodp D*Wmodp H*Wmodp]
 			V3 = simd::template shuffle<0xDD>(V3);
@@ -651,8 +651,8 @@ namespace LinBox {
 			V3 = MemoryOp<Element,simd>::unpacklo4(V1,V2);
 
 			/* 2nd step */
-			V1 = add_mod<simd>(V3,V4,P);
-			V2 = sub_mod<simd>(V3,V4,P);
+			V1 = SimdMod::add_mod (V3,V4,P);
+			V2 = SimdMod::sub_mod (V3,V4,P);
 
 			// Result in V1 = [A C E G]  and V2 = [B D F H]
 			// Transform to V3=[A B C D], V4=[E F G H]
