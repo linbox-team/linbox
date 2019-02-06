@@ -106,6 +106,7 @@ namespace LinBox {
 		using Element = typename Field::Element;
 		using Compute_t = typename Field::Compute_t;
 		using Residu_t = typename Field::Residu_t;
+		using SimdMod = SimdModular<Field, simd>;
 		using vect_t = typename simd::vect_t;
 
 		FFT_algorithms(const FFT_init<Field>& f_i) : FFT_butterflies<Field, simd, 4>(f_i) {
@@ -210,7 +211,7 @@ namespace LinBox {
 				vect_t P;
 				P  = simd::set1(this->_pl);
 				for (uint64_t i = 0; i < this->n; i += 4)
-					reduce<Element,simd>(&fft[i],P);
+					SimdMod::reduce (&fft[i],P);
 				return;
 			} else {
 				for (uint64_t i = 0; i < this->n; i++)
@@ -226,8 +227,8 @@ namespace LinBox {
 				P  = simd::set1(this->_pl);
 				P2 = simd::set1(this->_dpl);
 				for (uint64_t i = 0; i < this->n; i += 4){
-					reduce<Element,simd>(&fft[i],P2);
-					reduce<Element,simd>(&fft[i],P);
+					SimdMod::reduce (&fft[i],P2);
+					SimdMod::reduce (&fft[i],P);
 				}
 				return;
 
@@ -245,6 +246,7 @@ namespace LinBox {
 	class FFT_algorithms<Field, simd, 8, IS_INTEGRAL> : public FFT_butterflies<Field, simd, 8> {
 	public:
 		using Element = typename Field::Element;
+		using SimdMod = SimdModular<Field, simd>;
 		using vect_t = typename simd::vect_t;
 
 		FFT_algorithms(const FFT_init<Field>& f_i) : FFT_butterflies<Field, simd, 8>(f_i) {
@@ -370,7 +372,7 @@ namespace LinBox {
 				vect_t P;
 				P  = simd::set1(this->_pl);
 				for (uint64_t i = 0; i < this->n; i += 8){
-					reduce<Element,simd>(&fft[i],P);
+					SimdMod::reduce (&fft[i],P);
 				}
 				return;
 
@@ -388,8 +390,8 @@ namespace LinBox {
 				P  = simd::set1(this->_pl);
 				P2 = simd::set1(this->_dpl);
 				for (uint64_t i = 0; i < this->n; i += 8){
-					reduce<Element,simd>(&fft[i],P2);
-					reduce<Element,simd>(&fft[i],P);
+					SimdMod::reduce (&fft[i],P2);
+					SimdMod::reduce (&fft[i],P);
 				}
 				return;
 
