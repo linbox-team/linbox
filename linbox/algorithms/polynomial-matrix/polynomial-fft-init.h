@@ -32,6 +32,7 @@
 #include "linbox/linbox-config.h"
 #include "linbox/util/debug.h"
 #include "givaro/givinteger.h"
+#include "givaro/givpower.h"
 #include <fflas-ffpack/fflas/fflas_simd.h>
 
 #ifndef ROUND_DOWN
@@ -126,12 +127,10 @@ namespace LinBox {
 			uint64_t j;
 			Element _gen;
 			for (Element t = 2; ; t++) {
-				_gen = t;
-				fld->init(z, 1);
-				for (Residu_t i=0; i < _m; ++i) fld->mulin(z,_gen); // z = z*_gen;
-				if (z == 1) continue;
+				Givaro::dom_power (_gen, t, _m, *fld); /* _gen <- t^_m */
+				if (_gen == 1) continue;
 				// _gen^i =/ 1 pour 0 <= i < m
-				_gen = z;
+				z = _gen;
 				j = 0;
 				do {
 					y = z;
