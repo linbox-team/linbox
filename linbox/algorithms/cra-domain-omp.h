@@ -133,6 +133,31 @@ namespace LinBox
             int NN;
             PAR_BLOCK{ NN=NUM_THREADS; }
 
+#if 1       //----------------------------------task based paladin--------------------------------------------
+            typedef typename CRATemporaryVectorTrait<Function, Domain>::Type_t ElementContainer;
+            //std::vector<LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>> m_primeiters;
+            std::vector<int> m_primeiters;
+            LinBox::PrimeIterator<LinBox::IteratorCategories::DeterministicTag> gen;
+            long Niter=std::ceil(1.442695040889*B/(double)(gen.getBits()-1));
+            m_primeiters.reserve(Niter);
+            std::vector<CRABase> vBuilders;
+            vBuilders.reserve(NN);
+            for(auto j=0;j<Niter;j++){
+                ++gen;
+                while(this->Builder_.noncoprime(*gen) )
+                    ++gen;
+
+                m_primeiters.push_back(*gen);
+                
+            }
+
+            for(auto j=0;j<NN;j++){
+               
+                CRABase Builder_(B);
+                vBuilders.push_back(Builder_);
+                
+            }
+#else
             typedef typename CRATemporaryVectorTrait<Function, Domain>::Type_t ElementContainer;
             //std::vector<LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>> m_primeiters;
             std::vector<LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag>> m_primeiters;
@@ -151,9 +176,10 @@ namespace LinBox
                 vBuilders.push_back(Builder_);
                 
             }
-
-
             long Niter=std::ceil(1.442695040889*B/(double)(m_primeiters[0].getBits()-1));
+#endif
+
+            
             
             std::vector<ElementContainer> ROUNDresidues;ROUNDresidues.resize(Niter);
             std::vector<Domain> ROUNDdomains;ROUNDdomains.resize(Niter);
@@ -165,6 +191,19 @@ namespace LinBox
         }
 
 
+#if 1       //----------------------------------task based paladin--------------------------------------------
+        template< class Function, class Domain, class ElementContainer>
+        void solve_with_prime(int m_primeiters,
+                              Function& Iteration, Domain& ROUNDdomains,
+                              ElementContainer& ROUNDresidues, CRABase& vBuilders)
+        {
+            
+            ROUNDdomains = Domain(m_primeiters);
+
+            Iteration(ROUNDresidues, ROUNDdomains);
+            
+        }
+#else
         template< class Function, class PrimeIterator, class Domain, class ElementContainer>
         void solve_with_prime(PrimeIterator& m_primeiters,
                               Function& Iteration, Domain& ROUNDdomains,
@@ -182,9 +221,12 @@ namespace LinBox
             Iteration(ROUNDresidues, ROUNDdomains);
             
         }
+#endif
+
+
 
 #if 1 //=============================================Task based ===========================================
-#if 0 // ---------------------------- Paladin impl ----------------------------
+#if 1 // ---------------------------- Paladin impl ----------------------------
 /*
 #define TASK(M, I)                             \
     PRAGMA_OMP_IMPL(omp task M)           \
@@ -212,31 +254,37 @@ namespace LinBox
     PRAGMA_OMP_IMPL(omp single)
 */
 
-        template<class pFunc, class Function, class PrimeIterator, class Domain, class ElementContainer>
-        void compute_task(pFunc& pF, std::vector<PrimeIterator>& m_primeiters,
+        template<class pFunc, class Function, class Domain, class ElementContainer>
+        void compute_task(pFunc& pF, std::vector<int>& m_primeiters,
                           Function& Iteration, std::vector<Domain>& ROUNDdomains,
                           std::vector<ElementContainer>& ROUNDresidues, std::vector<CRABase>& vBuilders)
         {
             
-            long Niter=std::ceil(1.442695040889*B/(double)(m_primeiters[0].getBits()-1));
+            LinBox::PrimeIterator<LinBox::IteratorCategories::DeterministicTag> gen;
+            long Niter=std::ceil(1.442695040889*B/(double)(gen.getBits()-1));
             
-std::cout<<"============================= Niter:= "<<Niter<<" ================================"<<std::endl;
-solve_with_prime(m_primeiters[0], Iteration, ROUNDdomains[0], ROUNDresidues[0], vBuilders[0]);
-this->Builder_.initialize( ROUNDdomains[0], ROUNDresidues[0]);
+//std::cout<<"============================= Niter:= "<<Niter<<" ================================"<<std::endl;
+/*@Try PlanB as follows:
+*  As the Niter is known then first generate Niter prime numbers and put them into a vector then start paladin impl
+*/
+
 
             int NN;
             PAR_BLOCK{ NN=NUM_THREADS; } 
             
-            FFLAS::ParSeqHelper::Parallel<FFLAS::CuttingStrategy::Row,FFLAS::StrategyParameter::Grain> H;
+//            FFLAS::ParSeqHelper::Parallel<FFLAS::CuttingStrategy::Row,FFLAS::StrategyParameter::Grain> H;
+splitting_3(H,FFLAS::CuttingStrategy::Block,FFLAS::StrategyParameter::Grain);
 
 
                 PAR_BLOCK{
 
 	                FOR1D(i,Niter,H,
 {
-std::cout<<"i = "<<i<<" == "<<"  _internal_iterator.blockindex()  : "<<"_internal_iterator.blockindex()%NN = "<<_internal_iterator.blockindex()%NN<<std::endl;
+//std::cout<<"i = "<<i<<" == "<<"  _internal_iterator.blockindex()  : "<<"_internal_iterator.blockindex()%NN = "<<_internal_iterator.blockindex()%NN<<std::endl;
+   std::cout << "Threads: " << NUM_THREADS << ", max: " << MAX_THREADS << std::endl;
+   std::cerr << "OMP: " << __FFLASFFPACK_USE_OPENMP << ", max " << omp_get_max_threads() << std::endl;
                       solve_with_prime(
-                            m_primeiters[_internal_iterator.blockindex()%NN],
+                            m_primeiters[i],
                             Iteration,
                             ROUNDdomains[i],
                             ROUNDresidues[i],
@@ -249,9 +297,9 @@ std::cout<<"i = "<<i<<" == "<<"  _internal_iterator.blockindex()  : "<<"_interna
 
 
 
-//            this->Builder_.initialize( ROUNDdomains[0], ROUNDresidues[0]);
+            this->Builder_.initialize( ROUNDdomains[0], ROUNDresidues[0]);
 
-            for(auto j=0;j<Niter;j++)
+            for(auto j=1;j<Niter;j++)
                 {
 
                         this->Builder_.progress( ROUNDdomains[j], ROUNDresidues[j]);
