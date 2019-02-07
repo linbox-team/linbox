@@ -53,9 +53,10 @@ static bool checkResult(const Field& F, Matrix& A, Vector& B, Vector& X, typenam
     Vector B2(F, A.coldim());
     Vector B3(F, A.coldim());
 
-    // std::cerr << ">>>>found X: " << std::endl; for(long j=0;j<X.size();j++) std::cerr << X.getEntry(j) << std::endl;
+//    std::cerr << ">>>>found X: " << std::endl; for(long j=0;j<X.size();j++) std::cerr << X.getEntry(j) << std::endl;
     A.apply(B2, X);
-    // std::cerr << ">>>> AX=B: " << std::endl; for(long j=0;j<B2.size();j++) std::cerr << B2.getEntry(j) << std::endl;
+//    std::cerr << ">>>> AX=B: " << std::endl; for(long j=0;j<B2.size();j++) std::cerr << B2.getEntry(j) << std::endl;
+//std::cerr << ">>>> d:= "<<d << std::endl; 
 
     size_t NofZeros = 0;
     for (size_t j = 0; j < B.size(); ++j) {
@@ -68,12 +69,14 @@ static bool checkResult(const Field& F, Matrix& A, Vector& B, Vector& X, typenam
         std::cerr << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
         return false;
     }
-    // std::cerr << ">>>> B: " << std::endl; for(long j=0;j<B3.size();j++) std::cerr << B3.getEntry(j) << std::endl;
+//    std::cerr << ">>>> B: " << std::endl; for(long j=0;j<B.size();j++) std::cerr << B.getEntry(j) << std::endl;
     for (size_t j = 0; j < A.coldim(); ++j)
         if (!F.areEqual(B2[j], B3[j])) {
             std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
             std::cerr << "               The solution of solveCRA is incorrect                " << std::endl;
             std::cerr << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
+//            std::cerr << "B2["<<j<<"] : "<<B2[j] <<"\n =!= \n B3["<<j<<"] : "<<B3[j]<< std::endl;
+
             return false;
         }
     return true;
@@ -195,18 +198,20 @@ int main(int argc, char** argv)
                 genData(F, B, bits, getSeed());
             }
             else {
+
                 genData(F, A, bits, seed);
                 genData(F, B, bits, seed);
+
             }
         // }
 
-        /*
+        
              std::cerr << ">>>>Compute with B: " << std::endl;
              for(long j=0;j<(long)ni;j++) std::cerr << B.getEntry(j) << std::endl;
 
              A.write(std::cout << ">>>>Compute with A: " << A.rowdim() << " by " << A.coldim() << "\n"<<
            "A:=",Tag::FileFormat::Maple) << ';' << std::endl;
-        */
+        
 
         // omp_set_num_threads(nt);
         // PAR_BLOCK
@@ -214,6 +219,7 @@ int main(int argc, char** argv)
             // std::cout << "Threads: " << NUM_THREADS << ", max: " << MAX_THREADS << std::endl;
             // std::cerr << "OMP: " << __FFLASFFPACK_USE_OPENMP << ", max " << omp_get_max_threads() << std::endl;
         // }
+
         bool ok = test_set(F, X2, A, B);
         if (!ok) break;
 

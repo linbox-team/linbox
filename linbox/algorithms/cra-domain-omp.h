@@ -124,6 +124,7 @@ namespace LinBox {
             // commentator().stop ("done", NULL, "mmcrait");
 
             return this->Builder_.result(res, den);
+
         }
 
         template <class Function>
@@ -136,42 +137,30 @@ namespace LinBox {
             typedef typename CRATemporaryVectorTrait<Function, Domain>::Type_t ElementContainer;
             // std::vector<LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>> m_primeiters;
             std::vector<int> m_primeiters;
-            LinBox::PrimeIterator<LinBox::IteratorCategories::DeterministicTag> gen;
+            LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag> gen( 1, NN);;
+//            LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag> gen;
             long Niter = std::ceil(1.442695040889 * B / (double)(gen.getBits() - 1));
             m_primeiters.reserve(Niter);
             std::vector<CRABase> vBuilders;
             vBuilders.reserve(NN);
+
+
+Givaro::IntPrimeDom _IPD; //!< empty struct dealing with primality.
             for (auto j = 0; j < Niter; j++) {
                 ++gen;
                 while (this->Builder_.noncoprime(*gen)) ++gen;
 
+if(!_IPD.isprime(*gen)) std::cerr<<*gen<<" is not a prime number ! ********************* "<<std::endl;
+std::cout<<*gen<<std::endl;
                 m_primeiters.push_back(*gen);
             }
 
+
             for (auto j = 0; j < NN; j++) {
 
                 CRABase Builder_(B);
                 vBuilders.push_back(Builder_);
             }
-#else
-            typedef typename CRATemporaryVectorTrait<Function, Domain>::Type_t ElementContainer;
-            // std::vector<LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>> m_primeiters;
-            std::vector<LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag>> m_primeiters;
-
-            m_primeiters.reserve(NN);
-            std::vector<CRABase> vBuilders;
-            vBuilders.reserve(NN);
-
-            for (auto j = 0; j < NN; j++) {
-                // LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag> m_primeiter( j, NN);
-                LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag> m_primeiter(j, NN);
-                m_primeiters.push_back(m_primeiter);
-
-                CRABase Builder_(B);
-                vBuilders.push_back(Builder_);
-            }
-            long Niter = std::ceil(1.442695040889 * B / (double)(m_primeiters[0].getBits() - 1));
-#endif
 
             std::vector<ElementContainer> ROUNDresidues;
             ROUNDresidues.resize(Niter);
@@ -179,6 +168,35 @@ namespace LinBox {
             ROUNDdomains.resize(Niter);
 
             compute_task((this->Builder_), m_primeiters, Iteration, ROUNDdomains, ROUNDresidues, gen);
+#else
+            typedef typename CRATemporaryVectorTrait<Function, Domain>::Type_t ElementContainer;
+            std::vector<LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>> m_primeiters;
+            //std::vector<LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag>> m_primeiters;
+
+            m_primeiters.reserve(NN);
+            std::vector<CRABase> vBuilders;
+            vBuilders.reserve(NN);
+
+            for (auto j = 0; j < NN; j++) {
+                LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag> m_primeiter( j, NN);
+                //LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag> m_primeiter(j, NN);
+                m_primeiters.push_back(m_primeiter);
+
+                CRABase Builder_(B);
+                vBuilders.push_back(Builder_);
+            }
+
+            long Niter = std::ceil(1.442695040889 * B / (double)(m_primeiters[0].getBits() - 1));
+
+            std::vector<ElementContainer> ROUNDresidues;
+            ROUNDresidues.resize(Niter);
+            std::vector<Domain> ROUNDdomains;
+            ROUNDdomains.resize(Niter);
+
+            compute_task((this->Builder_), m_primeiters, Iteration, ROUNDdomains, ROUNDresidues,vBuilders);
+#endif
+
+
         }
 
 #if 1 //----------------------------------task based paladin--------------------------------------------
@@ -197,9 +215,9 @@ namespace LinBox {
         {
 
             ++m_primeiters;
-
+Givaro::IntPrimeDom _IPD; //!< empty struct dealing with primality.
             while (vBuilders.noncoprime(*m_primeiters)) ++m_primeiters;
-
+if(!_IPD.isprime(*m_primeiters)) std::cerr<<*m_primeiters<<" is not a prime number ! ********************* "<<std::endl;
             ROUNDdomains = Domain(*m_primeiters);
 
             Iteration(ROUNDresidues, ROUNDdomains);
@@ -322,7 +340,9 @@ namespace LinBox {
             for (auto j = 1; j < Niter; j++) {
 
                 this->Builder_.progress(ROUNDdomains[j], ROUNDresidues[j]);
+
             }
+
         }
 #endif // --------------------------------------------------------------------------
 
@@ -422,8 +442,12 @@ SYNCH_GROUP(
             // commentator().stop ("done", NULL, "mmcrait");
 
             // return this->Builder_.result(res,den);
-            this->Builder_.result(res, den);
-            // std::cerr << ">>>>res: " << std::endl; for(long j=0;j<res.size();j++) std::cerr << res.getEntry(j) << std::endl;
+this->Builder_.result(res, den);
+//if(res.getEntry(0).bitsize() > primeiter.getBits()) std::cerr << res.getEntry(res.size()) << std::endl;
+std::cerr << ">>>>res: " << std::endl; 
+for(long j=0;j<res.size();j++) std::cerr <<">>>>"<< res.getEntry(j) << std::endl;
+std::cerr << " >>>>>>>>>>>>> den:= "<< den <<" <<<<<<<<<<<<<<<"<< std::endl; 
+
             return res;
         }
     };

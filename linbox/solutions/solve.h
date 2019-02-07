@@ -824,7 +824,7 @@ namespace LinBox
 
         typedef Givaro::ModularBalanced<double> Field2proj;
 
-        //PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime(FieldTraits<Field2proj>::bestBitSize());
+//        PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime(FieldTraits<Field2proj>::bestBitSize());
         PrimeIterator<LinBox::IteratorCategories::DeterministicTag> genprime(FieldTraits<Field2proj>::bestBitSize());
 
 
@@ -886,7 +886,7 @@ namespace LinBox
                 A.field().init(*it_x, *it_num);
 
 			A.field().init(d, den);
-
+//std::cerr << " >>>>>>>>>>>>> d:= "<< d <<" <<<<<<<<<<<<<<<"<< std::endl; 
 			commentator().stop ("done", NULL, "Isolve");
 			return x;
 #ifdef __LINBOX_HAVE_MPI
