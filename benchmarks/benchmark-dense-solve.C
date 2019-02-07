@@ -108,7 +108,7 @@ int main (int argc, char **argv)
                 F.write(std::clog, it) << ' ';
             std::clog << ']' << std::endl;
 #endif
-            timebits[iter].second=Givaro::logtwo(GIVMAX(X.front(), 1));
+            timebits[iter].second=Givaro::logtwo(q);
         } else {
 
             typedef Ints Integers;
