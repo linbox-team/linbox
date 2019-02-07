@@ -75,10 +75,10 @@ namespace LinBox
 			do {
 				size_t cbits= (size_t) integer::random() % (_bits-b);
 				tresh = 1<<(cbits);
-				uint64_t p = 1<<((size_t)_bits-cbits);
+				uint64_t p = integer(1)<<((size_t)_bits-cbits);
 				do {
 					integer::random(t,cbits);
-					t = t*integer(p)+1;
+					t = t*p+1;
 					tresh--;
 				} while (!Givaro::Protected::probab_prime(t,25) && (tresh));
 			}
