@@ -125,7 +125,7 @@ namespace LinBox {
 			using simd128_16 = Simd128<uint16_t>;
 			using simd128_64 = Simd128<uint64_t>;
 			//			std::cout << "Test shuffletwice8_DD :\n"; FFLAS::print<simd128_16>(std::cout,s1);
-			simd_vect s2 = simd128_64::sll(s1,16);
+			simd_vect s2 = simd128_64::sll<16>(s1);
 			//			std::cout << "\n"; FFLAS::print<simd128_16>(std::cout,s2);
 			//			std::cout << "\n"; FFLAS::print<simd128_16>(std::cout,simd128_16::template blend<0x44>(s1,s2)); std::cout << "\n\n";
 			return simd128_16::template blend<0x44>(s1,s2); // 0x44 = [0 1 0 0 0 1 0 0]_base2
