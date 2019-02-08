@@ -39,9 +39,7 @@ namespace LinBox {
         using Field = typename Matrix::Field;
         SparseMatrix<Field> ASparse(A.field(), A.rowdim(), A.coldim());
 
-        // @fixme Isn't that old syntax?
         MatrixHom::map(ASparse, A);
-
         return solve(x, ASparse, b, tag, m);
     }
 
