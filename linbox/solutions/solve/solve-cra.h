@@ -112,20 +112,25 @@ namespace LinBox {
         if (dispatch == Dispatch::Auto) {
             MethodWIP::CraCustom<IterationMethod> newM(m);
 
-#if __LINBOX_HAVE_MPI
             // User has MPI enabled in config, but not specified if it wanted to use it,
             // we enable it with default communicator if needed.
-            // @fixme This is wrong if we don't provide argc, argv, right?
+#if __LINBOX_HAVE_MPI
             newM.dispatch = Dispatch::Distributed;
-            Communicator communicator(nullptr, 0);
-            if (newM.pCommunicator == nullptr) {
-                newM.pCommunicator = &communicator;
-            }
 #else
-            // @fixme Should we use Dispatch::Smp by default?
-            newM.dispatch = Dispatch::Sequential;
+            newM.dispatch = Dispatch::Sequential; // @fixme Should we use Dispatch::Smp by default?
 #endif
 
+            return solve(xNum, xDen, A, b, tag, newM);
+        }
+
+        //
+        // Declare communicator if none was yet.
+        //
+
+        if (m.dispatch == Dispatch::Distributed && m.pCommunicator == nullptr) {
+            MethodWIP::CraCustom<IterationMethod> newM(m);
+            Communicator communicator(nullptr, 0);
+            newM.pCommunicator = &communicator;
             return solve(xNum, xDen, A, b, tag, newM);
         }
 

@@ -43,16 +43,47 @@ namespace LinBox {
      *          The method parameter can contain an hint that an
      *          arbitrary element of the solution space is acceptable instead,
      *          which can be faster to compute if one doesn't expect a result in that case.
-     *      - Inconsistent system: zero vector is returned.
+     *      - Inconsistent system: zero vector is returned. @fixme Not always true...
      *
      * CategoryTag is defaulted to FieldTraits<Matrix::Field>::categoryTag().
      *
-     * SolveMethod is expected to be one of the following:
      * - Method::Auto
-     * - Method::CRA
-     * - Method::Dixon
+     *      - DenseMatrix   > Method::Elimination
+     *      - Otherwise     > Method::Blackbox (or Elimination given the size of the matrix)
+     *      - @fixme Why don't use Elimination if sparseMatrix?
      * - Method::Elimination
+     *      - SparseMatrix  > Method::DenseElimination @fixme THIS IS CURRENT BEHAVIOR (solve.h:256)
+     *      - Otherwise     > Method::DenseElimination
+     * - Method::DenseElimination
+     *      - DenseMatrix
+     *      |   - ModularTag > `LQUPMatrix<Field>::left_solve`
+     *      |   - IntegerTag
+     *      |   |   - RatVector > Method::Dixon
+     *      |   |   - Otherwise > Error
+     *      |   - Otherwise > @fixme NIY
+     *      - Otherwise > Method::DenseElimination but copy to a DenseMatrix first
      * - Method::SparseElimination
+     *      - SparseMatrix
+     *          - IntegerTag > Method::Dixon
+     *          - Otherwise > @fixme NO SPARSEELIMINATION ON SPARSEMATRIX YET?
+     *      - GaussDomain<GF2>::Matrix  > `GaussDomain<GF2>::solvein`
+     *      - Otherwise                 > Method::SparseElimination but copy to SparseMatrix first
+     * - Method::Cra
+     *      - IntegerTag
+     *      |   - Dispatch::Distributed > `MPIratChineseRemainder`
+     *      |   - Otherwise             > `RationalRemainder`
+     *      - Otherwise > Error
+     * - Method::Dixon
+     *      - IntegerTag
+     *      |   - DenseMatrix   > `RationalSolver<..., Method::Dixon>`
+     *      |   - SparseMatrix  > `RationalSolver<..., Method::SparseElimination>`
+     *      |   - Otherwise     > @fixme NIY Does dixon need to read the matrix?
+     *      - Otherwise > Error
+     * - Method::Blackbox       > Method::Wiedemann
+     * - Method::Wiedemann      > `WiedemannSolver`
+     * - Method::BlockWiedemann > `BlockWiedemannSolver`
+     * - Method::Coppersmith    > `CoppersmithSolver` (@fixme what's the difference with BlockWiedemann?)
+     * - @fixme Lanczos and others...
      *
      * @param [out] x solution, can be a rational solution (vector of numerators and one denominator)
      * @param [in]  A matrix

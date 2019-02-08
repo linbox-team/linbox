@@ -77,15 +77,15 @@ namespace LinBox {
         using PrimeGenerator = PrimeIterator<IteratorCategories::HeuristicTag>;
         PrimeGenerator primeGenerator(FieldTraits<Field>::bestBitSize(A.coldim()));
 
-        // @fixme Which method is used to solve each one?
+        // @fixme Why can't I use Method::Auto here?
         using Solver = DixonRationalSolver<MatrixField, Field, PrimeGenerator, Method::Dixon>;
         Solver dixonSolve(A.field(), primeGenerator);
 
         // Either A is known to be non-singular, or we just don't know yet.
-        int maxTries = m.trialsBeforeThrowing;
+        int maxTrials = m.trialsBeforeThrowing;
         bool singular = (m.singularity == Singularity::Singular) || (A.rowdim() != A.coldim());
         if (!singular) {
-            auto status = dixonSolve.solveNonsingular(xNum, xDen, A, b, false, maxTries);
+            auto status = dixonSolve.solveNonsingular(xNum, xDen, A, b, false, maxTrials);
             singular = (status != SS_OK);
         }
 
@@ -95,11 +95,11 @@ namespace LinBox {
 
             if (m.solutionType == SolutionType::Diophantine) {
                 DiophantineSolver<Solver> diophantineSolve(dixonSolve);
-                diophantineSolve.diophantineSolve(xNum, xDen, A, b, maxTries, level);
+                diophantineSolve.diophantineSolve(xNum, xDen, A, b, maxTrials, level);
             }
             else {
                 bool randomSolutionType = (m.solutionType == SolutionType::Random);
-                dixonSolve.monolithicSolve(xNum, xDen, A, b, false, randomSolutionType, maxTries, level);
+                dixonSolve.monolithicSolve(xNum, xDen, A, b, false, randomSolutionType, maxTrials, level);
             }
         }
 

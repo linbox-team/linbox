@@ -108,7 +108,6 @@ namespace LinBox {
      */
     struct MethodWIP {
         DEFINE_METHOD(Auto);
-        DEFINE_METHOD(Blackbox);
 
         // Elimination methods
         DEFINE_METHOD(Elimination);
@@ -121,7 +120,8 @@ namespace LinBox {
         using CraCustom = CraCustomMethod<IterationMethod>;
         using Cra = CraCustom<MethodWIP::Auto>;
 
-        // @fixme What are those for?
+        // Blackbox methods
+        DEFINE_METHOD(Blackbox);
         DEFINE_METHOD(Wiedemann);
         DEFINE_METHOD(BlockWiedemann);
         DEFINE_METHOD(Coppersmith);
