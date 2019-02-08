@@ -90,7 +90,7 @@ int main (int argc, char **argv)
 
 		// using Sparse Elimination with reordering
 		SE.strategy(Specifier::PIVOT_LINEAR);
-		detin (d, B, SE);
+		detInPlace (d, B, SE);
 		if (B.rowdim() <= 20 && B.coldim() <= 20)
 			B.write(cout) << endl;
 		F.write(cout << "Determinant is ", d) << endl;

@@ -41,7 +41,7 @@ pkgincludesub_HEADERS=          \
     valence.h			\
     solution-tags.h
 
-#    rankin.h
+#    rankInPlace.h
 #    wiedemann-rank.h
 
 EXTRA_DIST =                \
