@@ -406,7 +406,7 @@ bool CheckMulAdd(const Field& Zp, const Integer & alpha ,
 }
 
 // tests MulAdd for various parameters alpha and beta.
-// This test ignores Field F.  It tests only integer matrices.  
+// This test ignores Field F.  It tests only integer matrices.
 // It should not really be included in launch_tests<Field>.
 // For now we'll call it when characteristic is zero.
 template <class Field>
@@ -754,7 +754,7 @@ static bool testRank (const Field& F,size_t n, int iterations)
                 BMD.write(commentator().report(), A) << std::endl;
 
 		// compute the rank of A
-		unsigned int rank= BMD.rankin(A);
+		unsigned int rank= BMD.rankInPlace(A);
 		commentator().report() << "Rank " << rank << " should be " << r << std::endl;
 
 		if (rank!=r)
@@ -819,7 +819,7 @@ static bool testDet (const Field& F,size_t n, int iterations)
 		BMD.mul(A,L,S);
 
 		// compute the determinant of A
-		Element det= BMD.detin(A);
+		Element det= BMD.detInPlace(A);
 
 		if (!F.areEqual(det,d))
 			ret=false;
@@ -858,7 +858,7 @@ static bool testInv (const Field& F,size_t n, int iterations)
 	for (size_t i=0;i<n;++i)
 		Id.setEntry(i,i,F.one);
 
-	if (n < 10) 
+	if (n < 10)
 		Id.write(mycommentator().report() << "Id" << std::endl) << std::endl;
 	for (int k=0;k<iterations;++k) {
 
@@ -888,25 +888,25 @@ static bool testInv (const Field& F,size_t n, int iterations)
 		//for (size_t i=0;i<n;++i){A.setEntry(i,i,F.one); }
 		//A.setEntry(0, n-1, F.mOne);
 
-	if (n < 10) 
+	if (n < 10)
 		A.write(mycommentator().report() << "A") << std::endl;
 
 		// compute the inverse of A
 		Matrix invA(A);
-	if (n < 10) 
+	if (n < 10)
 		invA.write(mycommentator().report() << "before inversion, invA") << std::endl;
 	//int nullity;
 	//FFPACK::Invert2 (F, invA.rowdim(), A.getPointer(), A.getStride(), invA.getPointer(), invA.getStride(), nullity);
 		BMD.invin(invA);
-	if (n < 10) 
+	if (n < 10)
 		invA.write(mycommentator().report() << "invA") << std::endl;
 
 		// compute Ainv*A and A*Ainv
 		BMD.mul(L,invA,A);
-	if (n < 10) 
+	if (n < 10)
 		L.write(mycommentator().report() << "invA*A") << std::endl;
 		BMD.mul(S,A,invA);
-	if (n < 10) 
+	if (n < 10)
 		S.write(mycommentator().report() << "A*invA") << std::endl;
 
 		if (!BMD.areEqual(L,Id) || !BMD.areEqual(S,Id))
