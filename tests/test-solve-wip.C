@@ -27,6 +27,7 @@ void run_rational(Communicator& communicator, size_t dimension) {
     // @fixme Dixon fails with dimension = 3
     // solution type is kept default (that is to say Determinist)
     method.solutionType = SolutionType::Diophantine;
+    // method.blockingFactor = 1;
     solve(xNum, xDen, A, b, method);
 
     std::cout << "--------------- " << Method::name() << " (" << dimension << ")" << std::endl;
@@ -71,8 +72,6 @@ int main(void)
 {
     Communicator communicator(0, nullptr);
 
-    // @fixme Test high-level? Auto, Elimination, Blackbox
-
     // @fixme Test Cra with different underlying Method
     run_rational<Givaro::ZRing<Integer>, MethodWIP::Cra>(communicator, 2);
     run_rational<Givaro::ZRing<Integer>, MethodWIP::Cra>(communicator, 3);
@@ -81,9 +80,9 @@ int main(void)
 
     run_2x2<Givaro::Modular<float>, MethodWIP::DenseElimination>();
     run_2x2<Givaro::Modular<float>, MethodWIP::SparseElimination>();
-    // run_2x2<Givaro::Modular<float>, MethodWIP::Wiedemann>();
-    // run_2x2<Givaro::Modular<float>, MethodWIP::BlockWiedemann>();
-    // run_2x2<Givaro::Modular<float>, MethodWIP::Coppersmith>();
+    // run_2x2<Givaro::Modular<float>, MethodWIP::Wiedemann>(); @fixme Can't compile
+    run_2x2<Givaro::Modular<float>, MethodWIP::BlockWiedemann>();
+    run_2x2<Givaro::Modular<float>, MethodWIP::Coppersmith>(); // @fixme Can't compile
 
     return 0;
 }

@@ -47,6 +47,7 @@ namespace LinBox
 			strg[max_error_string-1] = 0;
 		};
 
+		const char* what() const { return strg; }
 
 		// -- virtual print of the error message
 		virtual std::ostream &print (std::ostream &o) const

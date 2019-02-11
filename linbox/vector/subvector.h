@@ -112,6 +112,10 @@ namespace LinBox
 
 		// Iterators
 
+        pointer getPointer(void) const { return &(*_begin); }
+        pointer getWritePointer(void) { return &(*_begin); }
+        size_t getStride(void) const { return &(*(_begin + 1)) - &(*_begin); } // @fixme Unsure
+
 		iterator               begin  (void)       { return _begin; }
 		const_iterator         begin  (void) const { return _begin; }
 		iterator               end    (void)       { return _end; }
@@ -216,6 +220,11 @@ std::cerr << "_end-_begin: " << (int)(_end-_begin) << std::endl;
 	template <typename Iterator, typename ConstIterator>
 	struct VectorTraits<Subvector<Iterator, ConstIterator> > {
 		typedef VectorCategories::DenseVectorTag VectorCategory;
+	};
+
+	template <typename Iterator, typename ConstIterator>
+	struct ContainerTraits<Subvector<Iterator, ConstIterator> > {
+		typedef ContainerCategories::Vector ContainerCategory ;
 	};
 
 	/* Equality and unequality operators may be desirable, both for raw

@@ -82,7 +82,9 @@ namespace LinBox {
      * - Method::Blackbox       > Method::Wiedemann
      * - Method::Wiedemann      > `WiedemannSolver`
      * - Method::BlockWiedemann > `BlockWiedemannSolver`
-     * - Method::Coppersmith    > `CoppersmithSolver` (@fixme what's the difference with BlockWiedemann?)
+     * - Method::Coppersmith
+     *      - ModularTag > `CoppersmithSolver` (@fixme what's the difference with BlockWiedemann?)
+     *      - Otherwise > @fixme NIY
      * - @fixme Lanczos and others...
      *
      * @param [out] x solution, can be a rational solution (vector of numerators and one denominator)
