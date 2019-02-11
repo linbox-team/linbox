@@ -24,21 +24,58 @@
 
 #include <linbox/algorithms/block-wiedemann.h>
 #include <linbox/algorithms/coppersmith.h>
+#include <linbox/algorithms/wiedemann.h>
 #include <linbox/solutions/methods-wip.h>
 
 namespace LinBox {
+    //
+    // Wiedemann
+    //
+
     /**
      * \brief Solve specialisation for Wiedemann.
      */
     template <class ResultVector, class Matrix, class Vector, class CategoryTag>
-    ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag, const MethodWIP::Wiedemann& m)
+    ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag,
+                        const MethodWIP::Wiedemann& m)
+    {
+        throw LinboxError("MethodWIP::Wiedemann can only be used with RingCategories::ModularTag.");
+    }
+
+    /**
+     * \brief Solve specialisation for Wiedemann with ModularTag.
+     */
+    template <class ResultVector, class Matrix, class Vector>
+    ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const RingCategories::ModularTag& tag,
+                        const MethodWIP::Wiedemann& m)
     {
         solve_precheck(x, A, b);
 
-        // @fixme Well, it did not existed before...
+        using Solver = WiedemannSolver<typename Matrix::Field>;
+        // @fixme Just pass m here, when everything is forwarded correctly
+        Method::Wiedemann newM;
+        Solver solver(A.field(), newM);
+
+        // @todo Getting certificateOfInconsistency is a design error,
+        // we should give a pointer to that to be allowed to pass nullptr.
+        Vector certificateOfInconsistency(A.field());
+        VectorWrapper::ensureDim(certificateOfInconsistency, A.rowdim());
+        auto solverResult = solver.solve(A, x, b, certificateOfInconsistency);
+
+        switch (solverResult) {
+        case Solver::OK: break;
+        case Solver::FAILED: /* @fixme Consistently decide what to do. */ break;
+        case Solver::SINGULAR: /* @fixme Consistently decide what to do. */ break;
+        case Solver::INCONSISTENT: /* @fixme Consistently decide what to do. */ break;
+        default: /* @fixme Consistently decide what to do. */ break;
+        }
 
         return x;
     }
+
+    //
+    // BlockWiedemann
+    //
 
     /**
      * \brief Solve specialisation for BlockWiedemann.
@@ -47,17 +84,31 @@ namespace LinBox {
     ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag,
                         const MethodWIP::BlockWiedemann& m)
     {
+        throw LinboxError("MethodWIP::BlockWiedemann can only be used with RingCategories::ModularTag.");
+    }
+
+    /**
+     * \brief Solve specialisation for BlockWiedemann with ModularTag.
+     */
+    template <class ResultVector, class Matrix, class Vector>
+    ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const RingCategories::ModularTag& tag,
+                        const MethodWIP::BlockWiedemann& m)
+    {
         solve_precheck(x, A, b);
 
-        // @fixme This does not work
+        using Context = BlasMatrixDomain<typename Matrix::Field>; // @fixme BlasMatrixDomain, really? How can we be sure?
+        Context domain(A.field());
 
-        // using Context = BlasMatrixDomain<typename Matrix::Field>;
-        // Context domain(A.field());
-        // BlockWiedemannSolver<Context> blockWiedemannSolver(domain, m.blockingFactor(), m.blockingFactor() + 1);
-        // blockWiedemannSolver.solve(x, A, b);
+        using Solver = BlockWiedemannSolver<Context>;
+        Solver solver(domain, m.blockingFactor, m.blockingFactor + 1);
+        solver.solve(x, A, b);
 
         return x;
     }
+
+    //
+    // Coppersmith
+    //
 
     /**
      * \brief Solve specialisation for Coppersmith.
@@ -66,12 +117,23 @@ namespace LinBox {
     ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag,
                         const MethodWIP::Coppersmith& m)
     {
+        throw LinboxError("MethodWIP::Coppersmith can only be used with RingCategories::ModularTag.");
+    }
+
+    /**
+     * \brief Solve specialisation for Coppersmith on ModularTag.
+     */
+    template <class ResultVector, class Matrix, class Vector>
+    ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const RingCategories::ModularTag& tag,
+                        const MethodWIP::Coppersmith& m)
+    {
         solve_precheck(x, A, b);
 
         // @fixme This does not work
-
-        // CoppersmithSolver<typename Matrix::Field> coppersmithSolver(A.field());
-        // coppersmithSolver.solveNonsingular(x, A, b);
+        // using Domain = MatrixDomain<typename Matrix::Field>;
+        // Domain domain(A.field());
+        // CoppersmithSolver<Domain> coppersmithSolver(domain);
+        // coppersmithSolver.solveNonSingular(x, A, b);
 
         return x;
     }

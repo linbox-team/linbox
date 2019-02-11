@@ -83,13 +83,16 @@ namespace LinBox {
         Communicator* pCommunicator = nullptr;
         bool master() const { return (pCommunicator == nullptr) || pCommunicator->master(); }
 
-        // For Dixon method
+        // For Dixon method.
         SolutionType solutionType = SolutionType::Determinist;
 
         // For random-based systems.
         size_t trialsBeforeThrowing = 100;        //!< Maximum number of trials before giving up.
         bool findInconsistencyCertificate = true; //!< Whether the solver should attempt to find a certificate of inconsistency if
                                                   //!  it suspects the system to be inconsistent.
+
+        // For block-based methods.
+        size_t blockingFactor = 16; //!< @fixme CHECK Size of blocks.
     };
 
     //
