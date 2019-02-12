@@ -34,7 +34,8 @@ namespace LinBox {
     ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag,
                         const MethodWIP::SparseElimination& m)
     {
-        // @fixme Emit warning about conversion to sparse
+        commentator().report(Commentator::LEVEL_UNIMPORTANT,
+                             "Warning: Solve implicitly convert to a sparse matrix because of MethodWIP::SparseElimination.");
 
         using Field = typename Matrix::Field;
         SparseMatrix<Field> ASparse(A.field(), A.rowdim(), A.coldim());
@@ -50,16 +51,15 @@ namespace LinBox {
     ResultVector& solve(ResultVector& x, const SparseMatrix<MatrixArgs...>& A, const Vector& b, const CategoryTag& tag,
                         const MethodWIP::SparseElimination& m)
     {
-        solve_precheck(x, A, b);
-
-        commentator().start("Solve SparseElimination for SparseMatrix", "solve.any.sparse-elimination.sparse");
+        commentator().start("solve.sparse-elimination.any.sparse");
+        linbox_check((A.coldim() != x.size()) || (A.rowdim() != b.size()));
 
         // @fixme...
         // using Field = typename SparseMatrix<MatrixArgs...>::Field;
         // GaussDomain<Field> gaussDomain(A.field());
         // gaussDomain.solvein(x, A, b, generator);
 
-        commentator().stop("solve.any.sparse-elimination.sparse");
+        commentator().stop("solve.sparse-elimination.any.sparse");
 
         return x;
     }

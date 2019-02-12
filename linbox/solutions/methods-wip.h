@@ -63,7 +63,10 @@ namespace LinBox {
         Combined,    //!< Use MPI then Paladin on each node.
     };
 
-    // @fixme DOC
+    /**
+     * For Dixon method, which solution type to use.
+     * @fixme Replace with HeuristicTag and such?
+     */
     enum class SolutionType {
         Determinist,
         Random,
@@ -106,6 +109,13 @@ namespace LinBox {
         DEFINE_METHOD_CONTENT(CraCustomMethod<IterationMethod>, "Cra<" + IterationMethod::name() + ">");
     };
 
+    template <class IterationMethod>
+    struct DixonCustomMethod : public MethodBase {
+        IterationMethod iterationMethod;
+
+        DEFINE_METHOD_CONTENT(DixonCustomMethod<IterationMethod>, "Dixon<" + IterationMethod::name() + ">");
+    };
+
     /**
      * Define which method to use when working on a system.
      */
@@ -118,7 +128,9 @@ namespace LinBox {
         DEFINE_METHOD(SparseElimination);
 
         // Integer-based methods
-        DEFINE_METHOD(Dixon);
+        template <class IterationMethod>
+        using DixonCustom = DixonCustomMethod<IterationMethod>;
+        using Dixon = DixonCustom<MethodWIP::Auto>;
         template <class IterationMethod>
         using CraCustom = CraCustomMethod<IterationMethod>;
         using Cra = CraCustom<MethodWIP::Auto>;
