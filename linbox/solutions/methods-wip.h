@@ -25,8 +25,7 @@
 #include <linbox/util/mpicpp.h>
 #include <string>
 
-#define DEFINE_METHOD_CONTENT(MethodName, MethodNameString)                                                                      \
-    static std::string name() { return std::string("Method::") + MethodNameString; }                                             \
+#define DEFINE_METHOD_CONTENT(MethodName)                                                                                        \
     MethodName() = default;                                                                                                      \
     MethodName(const MethodName&) = default;                                                                                     \
     MethodName(const MethodBase& methodBase)                                                                                     \
@@ -35,8 +34,19 @@
     }
 #define DEFINE_METHOD(MethodName)                                                                                                \
     struct MethodName : public MethodBase {                                                                                      \
-        DEFINE_METHOD_CONTENT(MethodName, #MethodName)                                                                           \
+        using CategoryTag = void;                                                                                                \
+        static std::string name() { return std::string("Method::") + #MethodName; }                                              \
+        DEFINE_METHOD_CONTENT(MethodName)                                                                                        \
     };
+#define DEFINE_INTEGER_METHOD(MethodName)                                                                                        \
+    template <class IterationMethod>                                                                                             \
+    struct MethodName : public MethodBase {                                                                                      \
+        using CategoryTag = RingCategories::IntegerTag;                                                                          \
+        IterationMethod iterationMethod;                                                                                         \
+        static std::string name() { return std::string("Method::") + #MethodName "<" + IterationMethod::name() + ">"; }          \
+        DEFINE_METHOD_CONTENT(MethodName)                                                                                        \
+    };                                                                                                                           \
+    using MethodName##Auto = MethodName<MethodWIP::Auto>;
 
 namespace LinBox {
 
@@ -98,24 +108,6 @@ namespace LinBox {
         size_t blockingFactor = 16; //!< @fixme CHECK Size of blocks.
     };
 
-    //
-    // Integer-based methods.
-    //
-
-    template <class IterationMethod>
-    struct CraCustomMethod : public MethodBase {
-        IterationMethod iterationMethod;
-
-        DEFINE_METHOD_CONTENT(CraCustomMethod<IterationMethod>, "Cra<" + IterationMethod::name() + ">");
-    };
-
-    template <class IterationMethod>
-    struct DixonCustomMethod : public MethodBase {
-        IterationMethod iterationMethod;
-
-        DEFINE_METHOD_CONTENT(DixonCustomMethod<IterationMethod>, "Dixon<" + IterationMethod::name() + ">");
-    };
-
     /**
      * Define which method to use when working on a system.
      */
@@ -128,12 +120,8 @@ namespace LinBox {
         DEFINE_METHOD(SparseElimination);
 
         // Integer-based methods
-        template <class IterationMethod>
-        using DixonCustom = DixonCustomMethod<IterationMethod>;
-        using Dixon = DixonCustom<MethodWIP::Auto>;
-        template <class IterationMethod>
-        using CraCustom = CraCustomMethod<IterationMethod>;
-        using Cra = CraCustom<MethodWIP::Auto>;
+        DEFINE_INTEGER_METHOD(Dixon);
+        DEFINE_INTEGER_METHOD(Cra);
 
         // Blackbox methods
         DEFINE_METHOD(Blackbox);
