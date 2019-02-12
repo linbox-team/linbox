@@ -87,22 +87,12 @@ namespace {
 namespace LinBox {
     /**
      * \brief Solve specialization with Chinese Remainder Algorithm method for an Integer ring.
-     */
-    template <class Matrix, class Vector, class CategoryTag, class IterationMethod>
-    inline void solve(Vector& xNum, typename Vector::Field::Element& xDen, const Matrix& A, const Vector& b,
-                      const CategoryTag& tag, const MethodWIP::CraCustom<IterationMethod>& m)
-    {
-        throw LinboxError("Rational solve with MethodWIP::Cra can only be used with RingCategories::IntegerTag.");
-    }
-
-    /**
-     * \brief Solve specialization with Chinese Remainder Algorithm method for an Integer ring.
      *
      * This one has a different signature (num, den) because of the IntegerTag implying a rational result.
      */
     template <class Matrix, class Vector, class IterationMethod>
     inline void solve(Vector& xNum, typename Vector::Field::Element& xDen, const Matrix& A, const Vector& b,
-                      const RingCategories::IntegerTag& tag, const MethodWIP::CraCustom<IterationMethod>& m)
+                      const RingCategories::IntegerTag& tag, const MethodWIP::Cra<IterationMethod>& m)
     {
         //
         // Handle auto-dispatch.
@@ -110,7 +100,7 @@ namespace LinBox {
 
         Dispatch dispatch = m.dispatch;
         if (dispatch == Dispatch::Auto) {
-            MethodWIP::CraCustom<IterationMethod> newM(m);
+            MethodWIP::Cra<IterationMethod> newM(m);
 
             // User has MPI enabled in config, but not specified if it wanted to use it,
             // we enable it with default communicator if needed.
@@ -128,7 +118,7 @@ namespace LinBox {
         //
 
         if (m.dispatch == Dispatch::Distributed && m.pCommunicator == nullptr) {
-            MethodWIP::CraCustom<IterationMethod> newM(m);
+            MethodWIP::Cra<IterationMethod> newM(m);
             Communicator communicator(nullptr, 0);
             newM.pCommunicator = &communicator;
             return solve(xNum, xDen, A, b, tag, newM);

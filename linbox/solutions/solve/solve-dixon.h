@@ -33,41 +33,11 @@ namespace LinBox {
     using DixonRationalSolver = RationalSolver<Args...>;
 
     /**
-     * \brief Solve specialisation for Dixon.
-     */
-    template <class ResultVector, class Matrix, class Vector, class CategoryTag>
-    ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag, const MethodWIP::Dixon& m)
-    {
-        throw NotImplementedYet("Dixon solving.");
-    }
-
-    /**
-     * \brief Solve specialisation for Dixon.
-     */
-    template <class ResultVector, class Matrix, class Vector, class IterationMethod>
-    ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const RingCategories::IntegerTag& tag,
-                        const MethodWIP::DixonCustom<IterationMethod>& m)
-    {
-        throw LinBoxFailure("Solve with MethodWIP::Dixon expects the rational result interface to be used.");
-    }
-
-    /**
      * \brief Solve specialisation for Dixon on dense matrices.
      */
-    template <class Matrix, class Vector, class CategoryTag, class IterationMethod>
-    void solve(Vector& xNum, typename Vector::Field::Element& xDen, const Matrix& A, const Vector& b, const CategoryTag& tag,
-               const MethodWIP::DixonCustom<IterationMethod>& m)
-    {
-        throw LinBoxFailure("Solve with MethodWIP::Dixon expects RingCategories::IntegerTag.");
-    }
-
-    /**
-     * \brief Solve specialisation for Dixon on dense matrices.
-     */
-    // @fixme MethodWIP::Dixon should be templated with IterationMethod too!
     template <class MatrixField, class Vector, class IterationMethod>
     void solve(Vector& xNum, typename Vector::Field::Element& xDen, const BlasMatrix<MatrixField>& A, const Vector& b,
-               const RingCategories::IntegerTag& tag, const MethodWIP::DixonCustom<IterationMethod>& m)
+               const RingCategories::IntegerTag& tag, const MethodWIP::Dixon<IterationMethod>& m)
     {
         commentator().start("solve.dixon.integer.dense");
         linbox_check((A.coldim() != xNum.size()) || (A.rowdim() != b.size()));

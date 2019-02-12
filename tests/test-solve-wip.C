@@ -19,24 +19,43 @@ void run_rational(Communicator& communicator, size_t dimension) {
     A.setEntry(1, 0, 0);
     A.setEntry(1, 1, 4);
 
-    BlasVector<Field> xNum(F, dimension);
-    typename Field::Element xDen(1);
-
-    std::cout << "--------------- " << Method::name() << " (" << dimension << ")" << std::endl;
-
     Method method;
     method.pCommunicator = &communicator;
     // @fixme Dixon fails with dimension = 3
     // when solution type is kept default (that is to say Determinist)
     method.solutionType = SolutionType::Diophantine;
-    // method.blockingFactor = 1;
-    solve(xNum, xDen, A, b, method);
 
-    if (xDen != 2 || xNum[0] != 2 || xNum[1] != 3) {
-        A.write(std::cout << "A: ", Tag::FileFormat::Maple) << std::endl;
-        std::cout << "b: " << b << std::endl;
-        std::cout << "x: " << xNum << "/" << xDen << std::endl;
-        std::cerr << "===> OUCH" << std::endl;
+    // (num, den) interface
+    {
+        std::cout << "--------------- " << Method::name() << " (" << dimension << ") [(num, den) API]" << std::endl;
+
+        BlasVector<Field> xNum(F, dimension);
+        typename Field::Element xDen(1);
+        solve(xNum, xDen, A, b, method);
+
+        if (xDen != 2 || xNum[0] != 2 || xNum[1] != 3) {
+            A.write(std::cout << "A: ", Tag::FileFormat::Maple) << std::endl;
+            std::cout << "b: " << b << std::endl;
+            std::cout << "x: " << xNum << "/" << xDen << std::endl;
+            std::cerr << "===> OUCH" << std::endl;
+        }
+    }
+
+    // Rational vector interface
+    {
+        Givaro::ZRing<Givaro::Rational> F;
+        BlasVector<Givaro::ZRing<Givaro::Rational>> x(F, dimension);
+
+        std::cout << "--------------- " << Method::name() << " (" << dimension << ") [Rational vector API]" << std::endl;
+
+        solve(x, A, b, method);
+
+        if (x[0].nume() != 1 || x[0].deno() != 1 || x[1].nume() != 3 || x[1].deno() != 2) {
+            A.write(std::cout << "A: ", Tag::FileFormat::Maple) << std::endl;
+            std::cout << "b: " << b << std::endl;
+            std::cout << "x: " << x << std::endl;
+            std::cerr << "===> OUCH" << std::endl;
+        }
     }
 }
 
@@ -54,11 +73,13 @@ void run_2x2() {
     A.setEntry(1, 0, 0);
     A.setEntry(1, 1, 4);
 
-    BlasVector<Field> x(F, 2);
+    Method method;
+    method.blockingFactor = 1;
 
     std::cout << "--------------- " << Method::name() << std::endl;
 
-    solve(x, A, b, Method());
+    BlasVector<Field> x(F, 2);
+    solve(x, A, b, method);
 
     if (x[0] != 1 || x[1] != 52) {
         A.write(std::cout << "A: ", Tag::FileFormat::Maple) << std::endl;
@@ -77,16 +98,17 @@ int main(void)
     commentator().setReportStream(std::cout);
 
     run_rational<Givaro::ZRing<Integer>, MethodWIP::Auto>(communicator, 2);
-    run_rational<Givaro::ZRing<Integer>, MethodWIP::Cra>(communicator, 2);
-    run_rational<Givaro::ZRing<Integer>, MethodWIP::Cra>(communicator, 3);
-    run_rational<Givaro::ZRing<Integer>, MethodWIP::Dixon>(communicator, 2);
-    run_rational<Givaro::ZRing<Integer>, MethodWIP::Dixon>(communicator, 3);
+    run_rational<Givaro::ZRing<Integer>, MethodWIP::CraAuto>(communicator, 2);
+    run_rational<Givaro::ZRing<Integer>, MethodWIP::CraAuto>(communicator, 3);
+    run_rational<Givaro::ZRing<Integer>, MethodWIP::DixonAuto>(communicator, 2);
+    run_rational<Givaro::ZRing<Integer>, MethodWIP::DixonAuto>(communicator, 3);
 
+    run_2x2<Givaro::Modular<float>, MethodWIP::Auto>();
     run_2x2<Givaro::Modular<float>, MethodWIP::DenseElimination>();
     run_2x2<Givaro::Modular<float>, MethodWIP::SparseElimination>();
     // run_2x2<Givaro::Modular<float>, MethodWIP::Wiedemann>(); @fixme Can't compile
     run_2x2<Givaro::Modular<float>, MethodWIP::BlockWiedemann>();
-    run_2x2<Givaro::Modular<float>, MethodWIP::Coppersmith>(); // @fixme Can't compile
+    run_2x2<Givaro::Modular<float>, MethodWIP::Coppersmith>();
 
     return 0;
 }

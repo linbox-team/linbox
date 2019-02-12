@@ -85,7 +85,7 @@ namespace LinBox {
      * - Method::Coppersmith
      *      - ModularTag > `CoppersmithSolver` (@fixme what's the difference with BlockWiedemann?)
      *      - Otherwise > @fixme NIY
-     * - @fixme Lanczos and others...
+     * - @fixme Lanczos and others... (from bbsolve.h)
      *
      * @param [out] x solution, can be a rational solution (vector of numerators and one denominator)
      * @param [in]  A matrix
@@ -116,6 +116,35 @@ namespace LinBox {
     inline ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b)
     {
         return solve(x, A, b, MethodWIP::Auto());
+    }
+
+    /**
+     * \brief Solve specialisation on IntegerTag.
+     *
+     * This forward to the rational interface (num, den).
+     * But will only work if the ResultVector if a vector of some Rational type.
+     */
+    template <class ResultVector, class Matrix, class Vector, class SolveMethod>
+    typename std::enable_if<std::is_same<typename SolveMethod::CategoryTag, RingCategories::IntegerTag>::value,
+                            ResultVector&>::type
+    solve(ResultVector& x, const Matrix& A, const Vector& b, const RingCategories::IntegerTag& tag, const SolveMethod& m)
+    {
+        using Ring = typename Vector::Field;
+        using Element = typename Ring::Element;
+
+        BlasVector<Ring> xNum(x.field(), x.size());
+        Element xDen;
+
+        solve(xNum, xDen, A, b, tag, m);
+
+        // Copy result back to ResultVector
+        auto iXNum = xNum.begin();
+        for (auto iX = x.begin(); iX != x.end(); ++iX) {
+            *iX = typename ResultVector::value_type(*iXNum, xDen);
+            ++iXNum;
+        }
+
+        return x;
     }
 
     /**
@@ -163,8 +192,8 @@ namespace LinBox {
 // #include "./solve/solve-blackbox.h"
 
 // Elimination
-#include "./solve/solve-elimination.h"
 #include "./solve/solve-dense-elimination.h"
+#include "./solve/solve-elimination.h"
 #include "./solve/solve-sparse-elimination.h"
 
 // Integer-based

@@ -23,6 +23,26 @@
 #pragma once
 
 #include <linbox/solutions/methods-wip.h>
+#include <linbox/matrix/dense-matrix.h>
+
+namespace {
+// @fixme This should be configured with autotune or something.
+#ifndef LINBOX_USE_BLACKBOX_THRESHOLD
+#define LINBOX_USE_BLACKBOX_THRESHOLD 1000
+#endif
+
+    template <class Matrix>
+    bool useBlackboxMethod(const Matrix& A)
+    {
+        return (A.coldim() > LINBOX_USE_BLACKBOX_THRESHOLD) && (A.rowdim() > LINBOX_USE_BLACKBOX_THRESHOLD);
+    }
+
+    template <class Field>
+    bool useBlackboxMethod(const LinBox::DenseMatrix<Field>& A)
+    {
+        return false;
+    }
+}
 
 namespace LinBox {
     /**
@@ -31,8 +51,12 @@ namespace LinBox {
     template <class ResultVector, class Matrix, class Vector, class CategoryTag>
     ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag, const MethodWIP::Auto& m)
     {
-        // @fixme useBB(), as the auto should go according to sparse or so
-        return solve(x, A, b, tag, reinterpret_cast<const MethodWIP::Elimination&>(m));
+        if (useBlackboxMethod(A)) {
+            return solve(x, A, b, tag, reinterpret_cast<const MethodWIP::Blackbox&>(m));
+        }
+        else {
+            return solve(x, A, b, tag, reinterpret_cast<const MethodWIP::Elimination&>(m));
+        }
     }
 
     /**
@@ -42,8 +66,9 @@ namespace LinBox {
     ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const RingCategories::IntegerTag& tag,
                         const MethodWIP::Auto& m)
     {
-        // @fixme Does not have Dixon only a rational interface, so far?
-        return solve(x, A, b, tag, reinterpret_cast<const MethodWIP::Dixon&>(m));
+        MethodWIP::DixonAuto method(m);
+        method.iterationMethod = m;
+        return solve(x, A, b, tag, method);
     }
 
     //
@@ -57,6 +82,8 @@ namespace LinBox {
     inline void solve(Vector& xNum, typename Vector::Field::Element& xDen, const Matrix& A, const Vector& b,
                       const RingCategories::IntegerTag& tag, const MethodWIP::Auto& m)
     {
-        solve(xNum, xDen, A, b, tag, reinterpret_cast<const MethodWIP::Dixon&>(m));
+        MethodWIP::DixonAuto method(m);
+        method.iterationMethod = m;
+        solve(xNum, xDen, A, b, tag, method);
     }
 }
