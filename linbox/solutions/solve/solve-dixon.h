@@ -44,9 +44,9 @@ namespace LinBox {
     /**
      * \brief Solve specialisation for Dixon.
      */
-    template <class ResultVector, class Matrix, class Vector>
+    template <class ResultVector, class Matrix, class Vector, class IterationMethod>
     ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const RingCategories::IntegerTag& tag,
-                        const MethodWIP::Dixon& m)
+                        const MethodWIP::DixonCustom<IterationMethod>& m)
     {
         throw LinBoxFailure("Solve with MethodWIP::Dixon expects the rational result interface to be used.");
     }
@@ -54,9 +54,9 @@ namespace LinBox {
     /**
      * \brief Solve specialisation for Dixon on dense matrices.
      */
-    template <class Matrix, class Vector, class CategoryTag>
+    template <class Matrix, class Vector, class CategoryTag, class IterationMethod>
     void solve(Vector& xNum, typename Vector::Field::Element& xDen, const Matrix& A, const Vector& b, const CategoryTag& tag,
-               const MethodWIP::Dixon& m)
+               const MethodWIP::DixonCustom<IterationMethod>& m)
     {
         throw LinBoxFailure("Solve with MethodWIP::Dixon expects RingCategories::IntegerTag.");
     }
@@ -65,13 +65,12 @@ namespace LinBox {
      * \brief Solve specialisation for Dixon on dense matrices.
      */
     // @fixme MethodWIP::Dixon should be templated with IterationMethod too!
-    template <class MatrixField, class Vector>
+    template <class MatrixField, class Vector, class IterationMethod>
     void solve(Vector& xNum, typename Vector::Field::Element& xDen, const BlasMatrix<MatrixField>& A, const Vector& b,
-               const RingCategories::IntegerTag& tag, const MethodWIP::Dixon& m)
+               const RingCategories::IntegerTag& tag, const MethodWIP::DixonCustom<IterationMethod>& m)
     {
-        solve_precheck(xNum, A, b);
-
-        commentator().start("Solve Integer Dixon for BlasMatrix", "solve.integer.dixon.dense");
+        commentator().start("solve.dixon.integer.dense");
+        linbox_check((A.coldim() != xNum.size()) || (A.rowdim() != b.size()));
 
         using Field = Givaro::Modular<double>;
         using PrimeGenerator = PrimeIterator<IteratorCategories::HeuristicTag>;
@@ -103,7 +102,7 @@ namespace LinBox {
             }
         }
 
-        commentator().stop("solve.integer.dixon.dense");
+        commentator().stop("solve.dixon.integer.dense");
 
         // @fixme Tests should check conformance to that
         // if (status == SS_INCONSISTENT) {

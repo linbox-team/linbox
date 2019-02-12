@@ -49,7 +49,8 @@ namespace LinBox {
     ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const RingCategories::ModularTag& tag,
                         const MethodWIP::Wiedemann& m)
     {
-        solve_precheck(x, A, b);
+        commentator().start("solve.wiedemann.modular");
+        linbox_check((A.coldim() != x.size()) || (A.rowdim() != b.size()));
 
         using Solver = WiedemannSolver<typename Matrix::Field>;
         // @fixme Just pass m here, when everything is forwarded correctly
@@ -69,6 +70,8 @@ namespace LinBox {
         case Solver::INCONSISTENT: /* @fixme Consistently decide what to do. */ break;
         default: /* @fixme Consistently decide what to do. */ break;
         }
+
+        commentator().stop("solve.wiedemann.modular");
 
         return x;
     }
@@ -94,7 +97,8 @@ namespace LinBox {
     ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const RingCategories::ModularTag& tag,
                         const MethodWIP::BlockWiedemann& m)
     {
-        solve_precheck(x, A, b);
+        commentator().start("solve.block-wiedemann.modular");
+        linbox_check((A.coldim() != x.size()) || (A.rowdim() != b.size()));
 
         using Context = BlasMatrixDomain<typename Matrix::Field>; // @fixme BlasMatrixDomain, really? How can we be sure?
         Context domain(A.field());
@@ -102,6 +106,8 @@ namespace LinBox {
         using Solver = BlockWiedemannSolver<Context>;
         Solver solver(domain, m.blockingFactor, m.blockingFactor + 1);
         solver.solve(x, A, b);
+
+        commentator().stop("solve.block-wiedemann.modular");
 
         return x;
     }
@@ -127,13 +133,16 @@ namespace LinBox {
     ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const RingCategories::ModularTag& tag,
                         const MethodWIP::Coppersmith& m)
     {
-        solve_precheck(x, A, b);
+        commentator().start("solve.coppersmith.modular");
+        linbox_check((A.coldim() != x.size()) || (A.rowdim() != b.size()));
 
         // @fixme This does not work
         // using Domain = MatrixDomain<typename Matrix::Field>;
         // Domain domain(A.field());
         // CoppersmithSolver<Domain> coppersmithSolver(domain);
         // coppersmithSolver.solveNonSingular(x, A, b);
+
+        commentator().stop("solve.coppersmith.modular");
 
         return x;
     }

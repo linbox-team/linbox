@@ -139,8 +139,8 @@ namespace LinBox {
         //
 
         if (m.master()) {
-            commentator().start("Solve Integer CRA", "solve.integer.cra");
-            solve_precheck(xNum, A, b);
+            commentator().start("solve.cra.integer");
+            linbox_check((A.coldim() != xNum.size()) || (A.rowdim() != b.size()));
         }
 
         using CraField = Givaro::ModularBalanced<double>;
@@ -195,7 +195,7 @@ namespace LinBox {
 
             // @fixme Should we synchronize x on all nodes?
 
-            commentator().stop("solve.integer.cra");
+            commentator().stop("solve.cra.integer");
         }
     }
 }

@@ -23,7 +23,7 @@
 #ifndef __LINBOX_solve_H
 #define __LINBOX_solve_H
 
-#include <iostream> // @fixme This is needed for givaro ring-interface to compile
+#include <iostream> // @note Needed for givaro/ring-interface to compile
 
 #include <linbox/field/field-traits.h>
 #include <linbox/solutions/methods-wip.h>
@@ -158,8 +158,6 @@ namespace LinBox {
         return solve(xNum, xDen, A, b, MethodWIP::Auto());
     }
 }
-
-#include "./solve/solve-utils.h"
 
 #include "./solve/solve-auto.h"
 // #include "./solve/solve-blackbox.h"

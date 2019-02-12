@@ -45,14 +45,14 @@ namespace LinBox {
     Vector& solve(Vector& x, const DenseMatrix<Field>& A, const Vector& b, const RingCategories::ModularTag& tag,
                         const MethodWIP::DenseElimination& m)
     {
-        solve_precheck(x, A, b);
+        linbox_check((A.coldim() != x.size()) || (A.rowdim() != b.size()));
 
-        commentator().start("Solve Modular DenseElimination for DenseMatrix", "solve.modular.dense-elimination.dense");
+        commentator().start("solve.dense-elimination.modular.dense");
 
         LQUPMatrix<Field> LQUP(A);
         LQUP.left_solve(x, b);
 
-        commentator().stop("solve.modular.dense-elimination.dense");
+        commentator().stop("solve.dense-elimination.modular.dense");
 
         return x;
     }
@@ -64,8 +64,6 @@ namespace LinBox {
     ResultVector& solve(ResultVector& x, const DenseMatrix<Field>& A, const Vector& b, const RingCategories::IntegerTag& tag,
                         const MethodWIP::DenseElimination& m)
     {
-        // @fixme This is the original code for this case... but it goes for a Dixon!
-        // Is that really what we want?
         return solve(x, A, b, tag, reinterpret_cast<const MethodWIP::Dixon&>(m));
     }
 }
