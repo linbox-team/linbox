@@ -24,447 +24,412 @@
  * ========LICENCE========
  */
 
+#pragma once
 
-#ifndef __LINBOX_cra_hybrid_H
-#define __LINBOX_cra_hybrid_H
-
-#define MPICH_IGNORE_CXX_SEEK //BB: ???
-#include "linbox/util/timer.h"
-#include <stdlib.h>
+#include "linbox/algorithms/cra-domain.h"
+#include "linbox/algorithms/rational-cra.h"
+#include "linbox/algorithms/rational-cra2.h"
 #include "linbox/integer.h"
 #include "linbox/solutions/methods.h"
-#include <vector>
-#include <utility>
-#include "linbox/algorithms/cra-domain.h"
-#include "linbox/algorithms/rational-cra2.h"
-#include "linbox/algorithms/rational-cra.h"
 #include "linbox/util/mpicpp.h"
+#include "linbox/util/timer.h"
+#include <stdlib.h>
+#include <utility>
+#include <vector>
 
-
-#include <unordered_set>
 #include "linbox/randiter/random-prime.h"
+#include <unordered_set>
 
 #include "linbox/algorithms/cra-domain-omp.h"
 
+namespace LinBox {
 
-namespace LinBox
-{
-    
-	template<class CRABase>
-	struct HybridChineseRemainder  {
-		typedef typename CRABase::Domain	Domain;
-		typedef typename CRABase::DomainElement	DomainElement;
-	protected:
-		CRABase Builder_;
-		Communicator* _commPtr;
-		unsigned int _numprocs;
-		double HB;//hadamard bound
-        
-	public:
-		template<class Param>
-		HybridChineseRemainder(const Param& b, Communicator *c) :
-			Builder_(b), _commPtr(c), _numprocs(c->size())
-			, HB(b)//Init with hadamard bound
-		{}
-        
-		/** \brief The CRA loop.
-		 *
-		 * termination condition.
-		 *
-		 * \param Iteration  Function object of two arguments, \c
-		 * Iteration(r, p), given prime \c p it outputs residue(s) \c
-		 * r.  This loop may be parallelized.  \p Iteration must be
-		 * reentrant, thread safe.  For example, \p Iteration may be
-		 * returning the coefficients of the minimal polynomial of a
-		 * matrix \c mod \p p.
-		 @warning  we won't detect bad primes.
-		 *
-		 * \param primeg  RandIter object for generating primes.
-		 * \param[out] res an integer
-		 */
-		template<class Function, class PrimeIterator>
-		Integer & operator() (Integer& res, Function& Iteration, PrimeIterator& primeg)
-		{
-			//  defer to standard CRA loop if no parallel usage is desired
-			if(_commPtr == 0 || _commPtr->size() == 1) {
-				ChineseRemainder< CRABase > sequential(Builder_);
-				return sequential(res, Iteration, primeg);
-			}
-			
-			para_compute(res, Iteration, primeg);
-			if(_commPtr->rank() == 0){
-				return Builder_.result(res);
-			}
-			else{
-                return res;
-			}
-		}
-		
-		template<class Function, class PrimeIterator>
-		Integer & operator() (Integer& num, Integer& den, Function& Iteration, PrimeIterator& primeg)
-		{
+    template <class CRABase>
+    struct HybridChineseRemainder {
+        typedef typename CRABase::Domain Domain;
+        typedef typename CRABase::DomainElement DomainElement;
+        using MaskedPrimedGenerator = LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag>;
 
-			//  defer to standard CRA loop if no parallel usage is desired
-			if(_commPtr == 0 || _commPtr->size() == 1) {
-				RationalRemainder< CRABase > sequential(Builder_);
-				return sequential(num, den, Iteration, primeg);
-			}
-			para_compute(num, Iteration, primeg);
-			if(_commPtr->rank() == 0){
-				return Builder_.result(num,den);
-			}
-			else{
-                return num;
-			}
-		}
+    protected:
+        CRABase _builder;
+        Communicator* _pCommunicator;
+        double _hadamardBound;       // hadamard bound
+        double _workerHadamardBound; // Local Hadamard bound
+        bool _builderInitialized = false;
+        int _threadsCount = 1;
 
-
-		template<class Vect, class Function, class PrimeIterator>
-		Vect & operator() (Vect& num,  Integer& den, Function& Iteration, PrimeIterator& primeg)
-		{
-			//  if there is no communicator or if there is only one process,
-			//  then proceed normally (without parallel)
-			if(_commPtr == 0 || _commPtr->size() == 1) {
-
-                RationalRemainder< CRABase > sequential(Builder_);
-				return sequential(num, den, Iteration, primeg);
-                
-			}
-            para_compute(num, Iteration, primeg);
-			if(_commPtr->rank() == 0){
-				return Builder_.result(num,den);
-			}
-			else{
-                return num;
-			}
-		}
-		
-		template<class Vect, class Function, class PrimeIterator>
-		Vect & operator() (Vect& num, Function& Iteration, PrimeIterator& primeg)
-		{
-			//  if there is no communicator or if there is only one process,
-			//  then proceed normally (without parallel)
-			if(_commPtr == 0 || _commPtr->size() == 1) {
-
-                ChineseRemainder< CRABase > sequential(Builder_);
-				return sequential(num, Iteration, primeg);
-                
-			}
-            para_compute(num, Iteration, primeg);
-			if(_commPtr->rank() == 0){
-				return Builder_.result(num);
-			}
-			else{
-                return num;
-			}
-		}
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        
-        template< class Function, class Domain, class ElementContainer>
-        void solve_with_prime(int m_primeiter, 
-                              Function& Iteration, std::vector<Domain>& VECTORdomains,
-                              ElementContainer& VECTORresidues
-                              )
+    public:
+        template <class Param>
+        HybridChineseRemainder(const Param& b, Communicator* c)
+            : _builder(b)
+            , _pCommunicator(c)
+            , _hadamardBound(b) // Init with hadamard bound
         {
-            
-            VECTORdomains[ omp_get_thread_num()] = Domain(m_primeiter);
-            
-            Iteration(VECTORresidues, VECTORdomains[ omp_get_thread_num()]);
+            // @fixme _threadsCount should be available through some parameters...
+            #pragma omp parallel
+            #pragma omp single
+            _threadsCount = omp_get_num_threads();
 
-            VECTORresidues.push_back(m_primeiter);
-            
-        }
-        
-        
-        template<class pFunc, class Function,  class Domain, class ElementContainer>
-        void compute_task(pFunc& pF, std::vector<int>& m_primeiters, 
-                          Function& Iteration, std::vector<Domain>& VECTORdomains,
-                          std::vector<ElementContainer>& VECTORresidues, size_t Niter)
-        {
-            
-            int Nthread = Niter;
-
-#pragma omp parallel 
-#pragma omp single
-            Nthread=omp_get_num_threads();
-
-#pragma omp parallel for simd num_threads(Nthread) schedule(dynamic,1)
-            for(auto j=0u;j<Niter;j++)
-                {
-  
-                    solve_with_prime(m_primeiters[j], Iteration, VECTORdomains, VECTORresidues[j]);
-
-                }
- 
-            
+            // Each (MPI) worker will sum up primes until this is hit
+            _workerHadamardBound = _hadamardBound / (_pCommunicator->size() - 1);
         }
 
-
-        template<class Vect, class Function>
-        void worker_process_task(Function& Iteration,  Vect &r)
+        /** \brief The CRA loop.
+         *
+         * termination condition.
+         *
+         * \param Iteration  Function object of two arguments, \c
+         * Iteration(r, p), given prime \c p it outputs residue(s) \c
+         * r.  This loop may be parallelized.  \p Iteration must be
+         * reentrant, thread safe.  For example, \p Iteration may be
+         * returning the coefficients of the minimal polynomial of a
+         * matrix \c mod \p p.
+         @warning  we won't detect bad primes.
+         *
+         * \param primeg  RandIter object for generating primes.
+         * \param[out] res an integer
+         */
+        template <class Vect, class Function, class PrimeIterator>
+        Vect& operator()(Vect& num, Integer& den, Function& Iteration, PrimeIterator& primeg)
         {
-           
-            int Ntask=0;
-            LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   gen(_commPtr->rank(),_commPtr->size());
-            //LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag>   gen(_commPtr->rank(),_commPtr->size());
+            //  if there is no communicator or if there is only one process,
+            //  then proceed normally (without parallel)
+            if (_pCommunicator == 0 || _pCommunicator->size() == 1) {
+                RationalRemainder<CRABase> sequential(_builder);
+                return sequential(num, den, Iteration, primeg);
+            }
+
+            para_compute(num, Iteration, primeg);
+
+            if (_pCommunicator->rank() == 0) {
+                return _builder.result(num, den);
+            }
+            else {
+                return num;
+            }
+        }
+
+#if 1
+        template <class Function>
+        void worker_process_task(Function& Iteration, size_t vectorSize)
+        {
+            MaskedPrimedGenerator gen(_pCommunicator->rank() - 1, _pCommunicator->size() - 1);
             ++gen;
-            _commPtr->recv(Ntask, 0);
 
-            if(Ntask!=0){
-                std::unordered_set<int> prime_used;
+            //
+            // Resource allocation and tasks evaluations
+            //
 
-			size_t Nthread = Ntask;
-#pragma omp parallel 
-#pragma omp single
-            Nthread=omp_get_num_threads();
+            std::vector<BlasVector<Domain>> residues;
+            std::vector<Domain> domains;
 
-            std::vector<BlasVector<Domain>> VECTORresidues;VECTORresidues.resize(Ntask);
-            std::vector<Domain> VECTORdomains;VECTORdomains.resize(Nthread);
-            std::vector<int> m_primeiters;m_primeiters.reserve(Ntask);
-     
-                for(auto j=0;j<Ntask;j++){
 
-                    while(this->Builder_.noncoprime(*gen) )
-                        ++gen;
-                    m_primeiters.push_back(*gen);
-                    
+
+            // Pre-reserve with some estimation
+            size_t maxIterations = std::ceil(1.442695040889 * _hadamardBound / (gen.getBits() - 1));
+            residues.reserve(maxIterations);
+            domains.reserve(maxIterations);
+
+            uint64_t taskCount;
+
+
+//            uint64_t taskCount = domains.size();
+//            _pCommunicator->send(taskCount, 0);
+            
+
+
+//@Potential Bug if _pCommunicator->size()-1==2 ! <=> local communicator size == 2
+
+//@Potential Bug if _pCommunicator->size()-1==1 ! <=> local communicator size == 1
+
+if(_pCommunicator->rank()==1){
+BlasVector<Domain> residue;
+residue.resize(vectorSize+1);
+std::unordered_set<int> used_primes;
+            double primeLogSize = 0.0;
+            while (primeLogSize < _hadamardBound) {
+                do {
+                    ++gen;
+                } while (_builder.noncoprime(*gen)||used_primes.find(*gen)!=used_primes.end());
+                int prime = *gen;used_primes.insert(prime);
+
+                primeLogSize += Givaro::logtwo(prime);
+                domains.emplace_back(prime);
+                residues.emplace_back(domains.back(), vectorSize + 1);
+            }
+            taskCount = domains.size();
+_pCommunicator->send(taskCount, 0);
+            //
+            // Main parallel loop
+            //
+
+            #pragma omp parallel num_threads(_threadsCount)
+            #pragma omp single
+            {
+                // #pragma omp parallel for num_threads(_threadsCount) schedule(dynamic, 1)
+                for (uint64_t j = 0; j < taskCount; j++) {
+                    #pragma omp task
+                    {
+                        Iteration(residues[j], domains[j], _pCommunicator);
+                        residues[j].push_back(domains[j].characteristic());
+                    }
                 }
- 
-          
-            compute_task( (this->Builder_), m_primeiters, Iteration,  VECTORdomains,
-                          VECTORresidues, Ntask);	
-
-
-                for(long i=0; i<Ntask; i++){
-
-                    _commPtr->send(VECTORresidues[i].begin(), VECTORresidues[i].end(), 0, 0);
-
-                 }
-
-
-            };
-
-        }
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#if 0
-	template<class Vect, class Function, class PrimeIterator>
-		void  para_compute( Vect& num, Function& Iteration, PrimeIterator& primeg)
-		{    
-            
-            Domain D(*primeg);
-            BlasVector<Domain> r(D);
-            Timer chrono;
-
-			//  parent propcess
-			if(_commPtr->rank() == 0){
-               
-                master_process_task(Iteration, D, r);
-
-			}
-			//  child process
-			else{
-
-                worker_process_task(Iteration, r);
-
-			}
-
-		}
-		
-        template<class Vect>
-        void master_recv_residues(Vect &r, int &pp, int &Niter)
-        {
-            
-#pragma omp master
-{            
-            r.resize (r.size()+1);
-
-            //receive the beginnin and end of a vector in heapspace
-            _commPtr->recv(r.begin(), r.end(), MPI_ANY_SOURCE, 0);
-
-            
-            //Update the number of iterations for the next step
-            Niter--;
-
-            //Store the corresponding prime number
-            pp = r[r.size()-1];
-
-            //Restructure the vector without added prime number
-            r.resize (r.size()-1);            
-}
-
-        }
-
-        template<class Vect>
-        void master_compute(Domain &D, Vect &r, int Niter)
-        {
-
-            int pp;
-BlasVector<Domain> pr(D);
-            int Nthread = Niter;
-#pragma omp parallel 
-#pragma omp single
-            Nthread=omp_get_num_threads();
-
-#pragma omp parallel for num_threads(Nthread) schedule(dynamic,1) //private(pp,pr) shared(Niter)
-            for(auto i=0; i<Niter;i++ ){
-
-                master_recv_residues(r, pp, Niter);
-
-#pragma omp critical
-{
-                Domain D(pp);
-                
-                Builder_.progress(D, r);
-}
-               
             }
 
-        }
-        
-        template<class Vect, class Function>
-        void master_process_task(Function& Iteration, Domain &D, Vect &r)
-        {
-            int vNtask_per_proc[_commPtr->size() - 1];
-            int Niter = 0;
-            master_init(vNtask_per_proc, Iteration, D, r, Niter);
-            
-            master_compute(D, r, Niter);
-   
-        }
-        
-        
-#else
-	template<class Vect, class Function, class PrimeIterator>
-		void  para_compute( Vect& num, Function& Iteration, PrimeIterator& primeg)
-		{    
-            
-            Domain D(*primeg);
-            BlasVector<Domain> r(D);
-            Timer chrono;
 
-			//  parent propcess
-			if(_commPtr->rank() == 0){
-               
-                master_process_task(Iteration, D, r);
-
-			}
-			//  child process
-			else{
-
-                worker_process_task(Iteration, r);
-
-			}
-
-		}
-		
-        template<class Vect>
-        void master_recv_residues(Vect &r, int &pp, int &Niter)
-        {           
-            r.resize (r.size()+1);
-
-           //receive the beginnin and end of a vector in heapspace
-            _commPtr->recv(r.begin(), r.end(), MPI_ANY_SOURCE, 0);
-            
-            //Update the number of iterations for the next step
-            Niter--;
-
-           
-            //Store the corresponding prime number
-            pp = r[r.size()-1];
-
-            //Restructure the vector without added prime number
-            r.resize (r.size()-1);            
-            
-        }
-        
-        template<class Vect>
-        void master_compute(Vect &r, int Niter)
-        {
-
-            int pp;
-
-
-            while(Niter > 0 ){
-               
-                master_recv_residues(r, pp, Niter);
-
-                Domain D(pp);
-                
-                Builder_.progress(D, r);
-                
+            //
+            // Send from worker(1) to other worker processes with dynamic dispatching
+            //         
+if(_pCommunicator->size()-2 < taskCount){
+uint64_t j;
+            for ( j = 0; j < _pCommunicator->size()-2; j++) {
+std::cout<<"First  Sent prime: "<<(int)residues[j][residues[j].size()-1]<<" to proc("<<j+2<<")"<<std::endl;
+                _pCommunicator->send(residues[j].begin(), residues[j].end(), j+2, 0);
             }
 
+
+long index= j;
+int toto;
+            while (index<taskCount) {
+std::cout<<"  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> index:="<<index<<std::endl;            
+_pCommunicator->recv(toto, MPI_ANY_SOURCE);
+std::cout<<"  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< index:="<<index<<std::endl;
+
+                _pCommunicator->send(residues[index].begin(), residues[index].end(), (_pCommunicator->status()).MPI_SOURCE, 0);
+                std::cout<<"  Sent prime: "<<(int)residues[index][residues[index].size()-1]<<std::endl;
+
+
+                index+=1;
+            }
+
+//std::cout<<" Proc("<<_pCommunicator->rank()<<") >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "<<std::endl;
+            for (uint64_t j = 0; j < _pCommunicator->size()-2; j++) {
+                residues[0][residues[0].size()-1]=0;
+                std::cout<<"  Sent prime: "<<(int)residues[0][residues[0].size()-1]<<" to proc("<<j+2<<")"<<std::endl;
+                _pCommunicator->send(residues[0].begin(), residues[0].end(), j+2, 0);
+            }
+//std::cout<<" Proc("<<_pCommunicator->rank()<<") <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< "<<std::endl;
+}else{  // ========================== _pCommunicator->size()-2>taskCount ===============================
+
+            for (uint64_t j = 0; j < taskCount; j++) {
+std::cout<<" <> First Sent prime: "<<(int)residues[j][residues[j].size()-1]<<" to proc("<<j+2<<")"<<std::endl;
+                _pCommunicator->send(residues[j].begin(), residues[j].end(), j+2, 0);
+            }
+
+            for (uint64_t j = 0; j < _pCommunicator->size()-2; j++) {
+                residues[0][residues[0].size()-1]=0;
+                std::cout<<"  <> Sent prime: "<<(int)residues[0][residues[0].size()-1]<<" to proc("<<j+2<<")"<<std::endl;
+                _pCommunicator->send(residues[0].begin(), residues[0].end(), j+2, 0);
+            }
+
+
+}
+
+}else{
+BlasVector<Domain> residue;
+residue.resize(vectorSize+1);
+
+int toto;
+            //
+            // Send from each worker other than worker(1) to the master once receive one residue and the last element != 0
+            //
+//std::cout<<" Proc("<<_pCommunicator->rank()<<") >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "<<std::endl;
+            while (true) {
+
+                _pCommunicator->recv(residue.begin(), residue.end(), 1, 0);
+                if(residue[residue.size()-1]==0) break;
+std::cout<<"  >>>>>>>>>>>> prime: "<<(int)residue[residue.size()-1]<<" from proc(1)"<<std::endl;
+                _pCommunicator->send(residue.begin(), residue.end(), 0, 0);
+std::cout<<"  <<<<<<<<<<<< prime: "<<(int)residue[residue.size()-1]<<" from proc(1)"<<std::endl;
+                _pCommunicator->send(toto, 1);
+std::cout<<" ##################################### " <<std::endl;
+            }
+//std::cout<<" Proc("<<_pCommunicator->rank()<<") <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< "<<std::endl;
+
+}
         }
-
-
-        template<class Vect, class Function>
-        void master_process_task(Function& Iteration, Domain &D, Vect &r)
+        
+        template <class Function>
+        void master_process_task(Function& Iteration, size_t vectorSize)
         {
-            int vNtask_per_proc[_commPtr->size() - 1];
-            int Niter = 0;
-            master_init(vNtask_per_proc, Iteration, D, r, Niter);
-            
-            master_compute(r, Niter);
-   
-        }
+            uint64_t taskCount = 0;
 
+                uint64_t workerTaskCount;
+                _pCommunicator->recv(workerTaskCount, 1);
+                taskCount += workerTaskCount;
+
+
+
+            std::cout << "Total task count: " << taskCount << std::endl;
+
+            //
+            // Main master loop waiting for results
+            //
+
+            int pp;
+            Domain D(101);
+            BlasVector<Domain> residue(D, vectorSize);
+
+            while (taskCount > 0) {
+
+                master_recv_residue(residue, pp, taskCount);
+
+#ifdef __Detailed_Time_Measurement
+                Timer chrono;
+                chrono.start();
 #endif
+std::cout << "Received prime: " << pp << std::endl;
+
+                Domain D(pp);
+                if (!_builderInitialized) {
+                    _builder.initialize(D, residue);
+                    _builderInitialized = true;
+                }
+                else {
+                    _builder.progress(D, residue);
+                }
+
+#ifdef __Detailed_Time_Measurement
+                chrono.stop();
+                std::cout << "CRT time (seconds): " << chrono.usertime() << std::endl;
+#endif
+            }
+        }        
         
-        template<class Vect, class Function>
-        void master_init(int *vNtask_per_proc, Function& Iteration, Domain &D, Vect &r, int &Niter)
+#else /////////////////////////////////////////////////////////////////////////////////////////////////////////
+        template <class Function>
+        void worker_process_task(Function& Iteration, size_t vectorSize)
         {
-			int procs = _commPtr->size();
+            MaskedPrimedGenerator gen(_pCommunicator->rank() - 1, _pCommunicator->size() - 1);
+            ++gen;
 
-			LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   gen(_commPtr->rank(),_commPtr->size());
-            Niter=std::ceil(1.442695040889*HB/(double)(gen.getBits()-1));
+            //
+            // Resource allocation and tasks evaluations
+            //
 
-            //Compute nb of tasks ought to be realized for each process
-            if(Niter<(procs-1)){
+            std::vector<BlasVector<Domain>> residues;
+            std::vector<Domain> domains;
 
-                for(long i=1; i<Niter+1; i++){
-                    vNtask_per_proc[i - 1] = 1;
-                    _commPtr->send(vNtask_per_proc[i - 1], i);             
+            // Pre-reserve with some estimation
+            size_t maxIterations = std::ceil(1.442695040889 * _workerHadamardBound / (gen.getBits() - 1));
+            residues.reserve(maxIterations);
+            domains.reserve(maxIterations);
 
-                }
-                for(long i=Niter+1; i<procs; i++){
-                    vNtask_per_proc[i - 1] = 0;
-                    _commPtr->send(vNtask_per_proc[i - 1], i);
+            double primeLogSize = 0.0;
+            while (primeLogSize < _workerHadamardBound) {
+                do {
+                    ++gen;
+                } while (_builder.noncoprime(*gen));
+                int prime = *gen;
 
-                }
+                primeLogSize += Givaro::logtwo(prime);
+                domains.emplace_back(prime);
+                residues.emplace_back(domains.back(), vectorSize + 1);
+            }
 
-                }else{
-                for(long i=1; i<Niter%(procs-1)+1; i++){
-                    vNtask_per_proc[i - 1] = Niter/(procs-1)+1;
-                    _commPtr->send(vNtask_per_proc[i - 1], i);
+            uint64_t taskCount = domains.size();
 
-                }
-                for(long i=Niter%(procs-1)+1; i<procs; i++){
-                    vNtask_per_proc[i - 1] = Niter/(procs-1);
-                    _commPtr->send(vNtask_per_proc[i - 1], i);
-         
+            _pCommunicator->send(taskCount, 0);
+
+            //
+            // Main parallel loop
+            //
+
+            #pragma omp parallel num_threads(_threadsCount)
+            #pragma omp single
+            {
+                // #pragma omp parallel for num_threads(_threadsCount) schedule(dynamic, 1)
+                for (uint64_t j = 0; j < taskCount; j++) {
+                    #pragma omp task
+                    {
+                        Iteration(residues[j], domains[j], _pCommunicator);
+                        residues[j].push_back(domains[j].characteristic());
+                    }
                 }
             }
 
-            
-            //Initialize the buider and the receiver vector r
-            Builder_.initialize( D, Iteration(r, D) );
+            //
+            // Send back result to master
+            //
+
+            for (uint64_t j = 0; j < taskCount; j++) {
+                _pCommunicator->send(residues[j].begin(), residues[j].end(), 0, 0);
+            }
+
+        }
+        
+        template <class Function>
+        void master_process_task(Function& Iteration, size_t vectorSize)
+        {
+            uint64_t taskCount = 0;
+            for (auto workerId = 1; workerId <= _pCommunicator->size() - 1; ++workerId) {
+                uint64_t workerTaskCount;
+                _pCommunicator->recv(workerTaskCount, workerId);
+                taskCount += workerTaskCount;
+            }
+
+            std::cout << "Total task count: " << taskCount << std::endl;
+
+            //
+            // Main master loop waiting for results
+            //
+
+            int pp;
+            Domain D(101);
+            BlasVector<Domain> residue(D, vectorSize);
+
+            while (taskCount > 0) {
+
+                master_recv_residue(residue, pp, taskCount);
+
+#ifdef __Detailed_Time_Measurement
+                Timer chrono;
+                chrono.start();
+#endif
+
+                Domain D(pp);
+                if (!_builderInitialized) {
+                    _builder.initialize(D, residue);
+                    _builderInitialized = true;
+                }
+                else {
+                    _builder.progress(D, residue);
+                }
+
+#ifdef __Detailed_Time_Measurement
+                chrono.stop();
+                std::cout << "CRT time (seconds): " << chrono.usertime() << std::endl;
+#endif
+            }
+        }
+        
+#endif
+
+        template <class Vect, class Function, class PrimeIterator>
+        void para_compute(Vect& num, Function& Iteration, PrimeIterator& primeGenerator)
+        {
+            if (_pCommunicator->rank() == 0) {
+                master_process_task(Iteration, num.size());
+            }
+            else {
+                double starttime = omp_get_wtime();
+                worker_process_task(Iteration, num.size());
+                double endtime = omp_get_wtime();
+//                std::cout << " process(" << _pCommunicator->rank() << ") used total CPU time (seconds): " << endtime - starttime << std::endl;
+            }
         }
 
+        void master_recv_residue(BlasVector<Domain>& residue, int& pp, size_t& taskCount)
+        {
+            residue.resize(residue.size() + 1);
+std::cout<<" Proc("<<_pCommunicator->rank()<<") >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "<<std::endl;
+            _pCommunicator->recv(residue.begin(), residue.end(), MPI_ANY_SOURCE, 0);
+std::cout<<" Proc("<<_pCommunicator->rank()<<") <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< "<<std::endl;
+            pp = residue.back();
+            residue.resize(residue.size() - 1);
+            taskCount -= 1;
+        }
 
 
     };
-    
 }
-
-#undef MPICH_IGNORE_CXX_SEEK
-#endif // __LINBOX_cra_mpi_H
-// Local Variables:
-// mode: C++
-// tab-width: 4
-// indent-tabs-mode: nil
-// c-basic-offset: 4
-// End:
-// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
