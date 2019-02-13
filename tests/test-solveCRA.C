@@ -70,9 +70,12 @@ static bool checkResult(const Field& F, Matrix& A, BlasVector<Field>& B, BlasVec
             std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
             std::cerr << "               The solution of solveCRA is incorrect                " << std::endl;
             std::cerr << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
+std::cerr << "d*B["<<j <<"]="<<B3[j]<<" \n!=\n "<< "A["<<j<<"]*X["<<j <<"]="<<B2[j]<< std::endl;
+std::cerr << "d:="<<d<< std::endl;
+      
             return false;
         }
-        //    std::cerr << "d*B["<<j <<"]="<<B3[j]<<" : "<< "A["<<j<<"]*X["<<j <<"]="<<B2[j]<< std::endl;
+//          std::cerr << "d*B["<<j <<"]="<<B3[j]<<" : "<< "A["<<j<<"]*X["<<j <<"]="<<B2[j]<< std::endl;
     }
     return true;
 }
@@ -304,6 +307,7 @@ void get_input_param_ready(int& seed, int& q, size_t& n, size_t& ni, size_t& bit
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#if 0
 int globalRank, localRank;
 MPI_Comm nodeComm, masterComm;
 
@@ -388,6 +392,7 @@ MPI_Comm_free( &evenComm );MPI_Comm_free( &oddComm );
 
 MPI_Comm_free( &nodeComm );
 MPI_Comm_free( &masterComm );
+#endif
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef __LINBOX_HAVE_MPI
@@ -420,7 +425,7 @@ int main(int argc, char** argv)
 
 #ifdef __LINBOX_HAVE_MPI
     Communicator* Cptr = NULL;
-    Cptr = new Communicator(&argc, &argv, Communicator::ThreadMode::Multiple);
+    Cptr = new Communicator(&argc, &argv, Communicator::ThreadMode::Funneled );
 #endif
 
     size_t bits = 10;
