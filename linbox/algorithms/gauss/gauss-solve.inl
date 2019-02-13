@@ -58,7 +58,7 @@ namespace LinBox
 
 	template <class _Field>
 	template <class _Matrix, class Vector1, class Vector2> inline Vector1&
-	GaussDomain<_Field>::solvein(Vector1& x, _Matrix& A, const Vector2& b)  const
+	GaussDomain<_Field>::solveInPlace(Vector1& x, _Matrix& A, const Vector2& b)  const
 	{
 
 		typename Field::Element Det;
@@ -96,7 +96,7 @@ namespace LinBox
 
 	template <class _Field>
 	template <class _Matrix, class Vector1, class Vector2, class Random> inline Vector1&
-	GaussDomain<_Field>::solvein(Vector1& x, _Matrix& A, const Vector2& b, Random& generator)  const
+	GaussDomain<_Field>::solveInPlace(Vector1& x, _Matrix& A, const Vector2& b, Random& generator)  const
 	{
 		typename Field::Element Det;
 		size_t Rank;

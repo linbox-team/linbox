@@ -25,7 +25,7 @@
  \brief Valence of sparse matrix over Z or Zp.
  \ingroup examples
 */
- 
+
 #include <string>
 #include <givaro/modular.h>
 #include <givaro/givintnumtheo.h>
@@ -56,7 +56,7 @@
 # endif
 #endif
 
-#ifdef __LINBOX_USE_OPENMP 
+#ifdef __LINBOX_USE_OPENMP
 #include <omp.h>
 #define THREAD_NUM omp_get_thread_num()
 #else
@@ -73,7 +73,7 @@ size_t& TempLRank(size_t& r, const char * filename, const Field& F)
 	SparseMatrix<Field,SparseMatrixFormat::SparseSeq> FA(msf);
 	input.close();
 	Timer tim; tim.start();
-	rankin(r, FA);
+	rankInPlace(r, FA);
 	tim.stop();
 	if (__VALENCE_REPORTING__)
         F.write(std::clog << "Rank over ") << " is " << r << ' ' << tim <<  " on T" << THREAD_NUM << std::endl;
@@ -88,7 +88,7 @@ size_t& TempLRank(size_t& r, const char * filename, const GF2& F2)
 	input.close();
 
 	Timer tim; tim.start();
-	rankin(r, A, Method::SparseElimination() );
+	rankInPlace(r, A, Method::SparseElimination() );
 	tim.stop();
 	if (__VALENCE_REPORTING__)
         F2.write(std::clog << "Rank over ") << " is " << r << ' ' << tim <<  " on T" << THREAD_NUM << std::endl;
@@ -153,7 +153,7 @@ std::vector<size_t>& PRank(std::vector<size_t>& ranks, size_t& effective_exponen
 			q/=p; --effective_exponent;
 			lq = (int64_t)q;
             if (effective_exponent <= 1) {
-                    // Not able to use Modular<int64_t>, 
+                    // Not able to use Modular<int64_t>,
                     // modulus is ok, but is already too large when squared
                     // Return that no prime power was performed
                 if (__VALENCE_REPORTING__)
@@ -346,7 +346,7 @@ std::vector<Givaro::Integer>& populateSmithForm(
     const Givaro::Integer& squarefreePrime,// smith[j].first
     const size_t& squarefreeRank,// smith[j].second
     const size_t& coprimeRank) {	// coprimeR
-   
+
 
     SmithDiagonal.resize(coprimeRank, Givaro::Integer(1) );
 
@@ -358,16 +358,16 @@ std::vector<Givaro::Integer>& populateSmithForm(
         for(size_t i=(*rit); i < coprimeRank; ++i)
             SmithDiagonal[i] *= squarefreePrime;
     }
-    
+
     return SmithDiagonal;
 }
 
 template<class Blackbox>
-std::vector<Givaro::Integer>& smithValence(std::vector<Givaro::Integer>& SmithDiagonal, 
+std::vector<Givaro::Integer>& smithValence(std::vector<Givaro::Integer>& SmithDiagonal,
                                            Givaro::Integer& valence,
                                            const Blackbox& A,
                                            const std::string& filename,
-                                           Givaro::Integer& coprimeV, 
+                                           Givaro::Integer& coprimeV,
                                            size_t method=0) {
         // method for valence squarization:
 		//	0 for automatic, 1 for aat, 2 for ata
@@ -392,7 +392,7 @@ std::vector<Givaro::Integer>& smithValence(std::vector<Givaro::Integer>& SmithDi
 
     if (__VALENCE_REPORTING__)
         std::clog << "Some factors (" << __VALENCE_FACTOR_LOOPS__ << " factoring loop bound): ";
-	
+
     Givaro::IntFactorDom<> FTD;
     FTD.set(Moduli, exponents, valence, __VALENCE_FACTOR_LOOPS__);
 
@@ -438,7 +438,7 @@ std::vector<Givaro::Integer>& smithValence(std::vector<Givaro::Integer>& SmithDi
             })}
         }
     )
-    
+
     for(size_t j=0; j<Moduli.size(); ++j) {
         if (smith[j] != coprimeR) {
             populateSmithForm(SmithDiagonal, AllRanks[j], Moduli[j], smith[j], coprimeR);

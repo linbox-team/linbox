@@ -107,8 +107,10 @@ int main(void)
     run_2x2<Givaro::Modular<float>, MethodWIP::DenseElimination>();
     run_2x2<Givaro::Modular<float>, MethodWIP::SparseElimination>();
     // run_2x2<Givaro::Modular<float>, MethodWIP::Wiedemann>(); @fixme Can't compile
-    run_2x2<Givaro::Modular<float>, MethodWIP::BlockWiedemann>();
-    run_2x2<Givaro::Modular<float>, MethodWIP::Coppersmith>();
+
+    // @deprecated These do not compile anymore
+    // run_2x2<Givaro::Modular<float>, MethodWIP::BlockWiedemann>();
+    // run_2x2<Givaro::Modular<float>, MethodWIP::Coppersmith>();
 
     return 0;
 }

@@ -65,9 +65,8 @@ namespace LinBox {
      * - Method::SparseElimination
      *      - SparseMatrix
      *          - IntegerTag > Method::Dixon
-     *          - Otherwise > @fixme NO SPARSEELIMINATION ON SPARSEMATRIX YET?
-     *      - GaussDomain<GF2>::Matrix  > `GaussDomain<GF2>::solvein` @fixme Do GaussDomain<Whatever> -> solvein
-     *      - Otherwise                 > Method::SparseElimination but copy to SparseMatrix first
+     *          - Otherwise > `GaussDomain<GF2>::solveInPlace`
+     *      - Otherwise > Method::SparseElimination but copy to SparseMatrix first
      * - Method::Cra
      *      - IntegerTag
      *      |   - Dispatch::Distributed > `MPIratChineseRemainder`

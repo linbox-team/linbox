@@ -74,7 +74,7 @@ namespace LinBox
 	// The det where A can be modified in place
 	// Default is to use the generic det (might copy)
 	template< class Blackbox, class DetMethod, class DomainCategory>
-	typename Blackbox::Field::Element &detin (typename Blackbox::Field::Element	&d,
+	typename Blackbox::Field::Element &detInPlace (typename Blackbox::Field::Element	&d,
 						  Blackbox                             	&A,
 						  const DomainCategory			&tag,
 						  const DetMethod			&Meth)
@@ -92,10 +92,10 @@ namespace LinBox
 
 	// The det where A can be modified in place
 	template<class Blackbox>
-	typename Blackbox::Field::Element &detin (typename Blackbox::Field::Element	&d,
+	typename Blackbox::Field::Element &detInPlace (typename Blackbox::Field::Element	&d,
 						  Blackbox				&A)
 	{
-		return detin(d, A, Method::Auto());
+		return detInPlace(d, A, Method::Auto());
 	}
 
 	// The det with category specializer
@@ -109,11 +109,11 @@ namespace LinBox
 
 	// The in place det with category specializer
 	template <class Blackbox, class MyMethod>
-	typename Blackbox::Field::Element &detin (typename Blackbox::Field::Element     &d,
+	typename Blackbox::Field::Element &detInPlace (typename Blackbox::Field::Element     &d,
 						  Blackbox                              &A,
 						  const MyMethod                        &Meth)
 	{
-		return detin(d, A, typename FieldTraits<typename Blackbox::Field>::categoryTag(), Meth);
+		return detInPlace(d, A, typename FieldTraits<typename Blackbox::Field>::categoryTag(), Meth);
 	}
 
 	// The det with Auto Method
@@ -130,7 +130,7 @@ namespace LinBox
 			return det(d, A, tag, Method::Elimination(Meth));
 	}
 	template<class Blackbox>
-	typename Blackbox::Field::Element &detin (typename Blackbox::Field::Element	&d,
+	typename Blackbox::Field::Element &detInPlace (typename Blackbox::Field::Element	&d,
 						  Blackbox				&A,
 						  const RingCategories::ModularTag	&tag,
 						  const Method::Auto			&Meth)
@@ -140,7 +140,7 @@ namespace LinBox
 		   return det(d, A, tag, Method::Blackbox(Meth));
 		   else
 		   */
-		return detin(d, A, tag, Method::Elimination(Meth));
+		return detInPlace(d, A, tag, Method::Elimination(Meth));
 	}
 
 	// The det with Auto Method on BlasMatrix
@@ -154,12 +154,12 @@ namespace LinBox
 	}
 
 	template<class Field>
-	typename Field::Element &detin (typename Field::Element         	&d,
+	typename Field::Element &detInPlace (typename Field::Element         	&d,
 					BlasMatrix<Field>			&A,
 					const RingCategories::ModularTag	&tag,
 					const Method::Auto			&Meth)
 	{
-		return detin(d, A, tag, Method::Elimination(Meth));
+		return detInPlace(d, A, tag, Method::Elimination(Meth));
 	}
 
 	// Forward declaration saves us from including blackbox/toeplitz.h
@@ -175,7 +175,7 @@ namespace LinBox
 		return A.det(res);
 	}
 	template<class CField, class PField >
-	typename CField::Element& detin(typename CField::Element	& res,
+	typename CField::Element& detInPlace(typename CField::Element	& res,
 					Toeplitz<CField,PField>		& A )
 	{
 		if (A.coldim() != A.rowdim())
@@ -338,7 +338,7 @@ namespace LinBox
 
 		BlasMatrix<Field> B(A);
 		BlasMatrixDomain<Field> BMD(F);
-		d= BMD.detin(B);
+		d= BMD.detInPlace(B);
 		commentator().stop ("done", NULL, "blasdet");
 
 		return d;
@@ -362,7 +362,7 @@ namespace LinBox
 			for(size_t j = 0; j < A.coldim(); ++j)
 				A1.setEntry(i,j,getEntry(tmp, A, i, j));
 		GaussDomain<Field> GD ( A1.field() );
-		GD.detin (d, A1, Meth.strategy ());
+		GD.detInPlace (d, A1, Meth.strategy ());
 		commentator().stop ("done", NULL, "SEDet");
 		return d;
 
@@ -381,13 +381,13 @@ namespace LinBox
 		// We make a copy as these data will be destroyed
 		SparseMatrix<Field, SparseMatrixFormat::SparseSeq> A1 (A);
 		GaussDomain<Field> GD ( A.field() );
-		GD.detin (d, A1, Meth.strategy ());
+		GD.detInPlace (d, A1, Meth.strategy ());
 		commentator().stop ("done", NULL, "SEdet");
 		return d;
 	}
 
 	template <class Field>
-	typename Field::Element &detin (typename Field::Element         	&d,
+	typename Field::Element &detInPlace (typename Field::Element         	&d,
 					SparseMatrix<Field, SparseMatrixFormat::SparseSeq>  &A,
 					const RingCategories::ModularTag  	&tag,
 					const Method::SparseElimination     	&Meth)
@@ -396,7 +396,7 @@ namespace LinBox
 			throw LinboxError("LinBox ERROR: matrix must be square for determinant computation\n");
 		commentator().start ("Sparse Elimination Determinant in place", "SEDetin");
 		GaussDomain<Field> GD ( A.field() );
-		GD.detin (d, A, Meth.strategy ());
+		GD.detInPlace (d, A, Meth.strategy ());
 		commentator().stop ("done", NULL, "SEdetin");
 		return d;
 	}
@@ -414,16 +414,16 @@ namespace LinBox
 
 
 	template <class Field>
-	typename Field::Element &detin (typename Field::Element         	&d,
+	typename Field::Element &detInPlace (typename Field::Element         	&d,
 					SparseMatrix<Field, SparseMatrixFormat::SparseSeq>  &A,
 					const RingCategories::ModularTag  	&tag,
 					const Method::Elimination     		&Meth)
 	{
-		return detin(d, A, tag, Method::SparseElimination(Meth));
+		return detInPlace(d, A, tag, Method::SparseElimination(Meth));
 	}
 
 	template<class Field, class Vector>
-	typename Field::Element &detin (typename Field::Element			&d,
+	typename Field::Element &detInPlace (typename Field::Element			&d,
 					SparseMatrix<Field, Vector> 		&A,
 					const RingCategories::ModularTag      	&tag,
 					const Method::Elimination		&Meth)
@@ -453,7 +453,7 @@ namespace LinBox
 
 
 	template<class Blackbox>
-	typename Blackbox::Field::Element &detin (typename Blackbox::Field::Element	&d,
+	typename Blackbox::Field::Element &detInPlace (typename Blackbox::Field::Element	&d,
 						  Blackbox                            	&A,
 						  const RingCategories::ModularTag      &tag,
 						  const Method::Elimination		&Meth)
@@ -465,21 +465,21 @@ namespace LinBox
 	}
 
 	template<class Field>
-	typename Field::Element &detin (typename Field::Element			&d,
+	typename Field::Element &detInPlace (typename Field::Element			&d,
                                         BlasMatrix<Field>			&A,
                                         const RingCategories::ModularTag	&tag,
 					const Method::Elimination		&Meth)
 	{
-		return detin(d, A);
+		return detInPlace(d, A);
 	}
 
 	template<class Field>
-	typename Field::Element &detin (typename Field::Element			&d,
+	typename Field::Element &detInPlace (typename Field::Element			&d,
                                         BlasMatrix<Field>			&A,
                                         const RingCategories::ModularTag	&tag,
 					const Method::DenseElimination		&Meth)
 	{
-		return detin(d, A);
+		return detInPlace(d, A);
 	}
 
 
@@ -493,7 +493,7 @@ namespace LinBox
 	  * \return \p d
 	  */
 	template <class Field>
-	typename Field::Element &detin (typename Field::Element             &d,
+	typename Field::Element &detInPlace (typename Field::Element             &d,
 					BlasMatrix<Field>                  &A)
 	{
 		if (A.coldim() != A.rowdim())
@@ -501,12 +501,12 @@ namespace LinBox
 
 		Field F = A.field();
 
-		commentator().start ("Determinant", "detin");
+		commentator().start ("Determinant", "detInPlace");
 		linbox_check (A.coldim () == A.rowdim ());
 
 		BlasMatrixDomain<Field> BMD(F);
-		d= BMD.detin(static_cast<BlasMatrix<Field>& > (A));
-		commentator().stop ("done", NULL, "detin");
+		d= BMD.detInPlace(static_cast<BlasMatrix<Field>& > (A));
+		commentator().stop ("done", NULL, "detInPlace");
 
 		return d;
 	}
@@ -547,7 +547,7 @@ namespace LinBox
 		{
 			typedef typename Blackbox::template rebind<Field>::other FBlackbox;
 			FBlackbox Ap(A, F);
-			detin( d, Ap, RingCategories::ModularTag(), M);
+			detInPlace( d, Ap, RingCategories::ModularTag(), M);
 			return IterationResult::CONTINUE;
 		}
 	};
