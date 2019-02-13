@@ -185,17 +185,17 @@ namespace LinBox {
 	};
 
         template<>
-        inline uint64_t FieldTraits<Givaro::Modular<double> >::bestBitSize(size_t n){return std::max (UINT64_C(22), uint64_t(52-log2(n?n:1))>>1); }
+        inline uint64_t FieldTraits<Givaro::Modular<double> >::bestBitSize(size_t n){return std::max (UINT64_C(22), uint64_t(52-(n?log2(n):0))>>1); }
         template<>
-        inline uint64_t FieldTraits<Givaro::ModularBalanced<double> >::bestBitSize(size_t n){return std::max (UINT64_C(23), uint64_t(54-log2(n?n:1))>>1);}
+        inline uint64_t FieldTraits<Givaro::ModularBalanced<double> >::bestBitSize(size_t n){return std::max (UINT64_C(23), uint64_t(54-(n?log2(n):0))>>1);}
         template<>
-        inline uint64_t FieldTraits<Givaro::Modular<float> >::bestBitSize(size_t n){return std::max (UINT64_C(8), uint64_t(24-log2(n?n:1))>>1);}
+        inline uint64_t FieldTraits<Givaro::Modular<float> >::bestBitSize(size_t n){return std::max (UINT64_C(8), uint64_t(24-(n?log2(n):0))>>1);}
         template<>
-        inline uint64_t FieldTraits<Givaro::ModularBalanced<float> >::bestBitSize(size_t n){return std::max ( UINT64_C(8), uint64_t(26-log2(n?n:1))>>1);}
+        inline uint64_t FieldTraits<Givaro::ModularBalanced<float> >::bestBitSize(size_t n){return std::max ( UINT64_C(8), uint64_t(26-(n?log2(n):0))>>1);}
         template<>
-        inline uint64_t FieldTraits<Givaro::Modular<int64_t> >::bestBitSize(size_t n){return std::max ( UINT64_C(26), uint64_t(63-log2(n?n:1))>>1);}
+        inline uint64_t FieldTraits<Givaro::Modular<int64_t> >::bestBitSize(size_t n){return std::max ( UINT64_C(26), uint64_t(63-(n?log2(n):0))>>1);}
         template<>
-        inline uint64_t FieldTraits<Givaro::ModularBalanced<int64_t> >::bestBitSize(size_t n){return std::max ( UINT64_C(27), uint64_t(64-log2(n?n:1))>>1);}
+        inline uint64_t FieldTraits<Givaro::ModularBalanced<int64_t> >::bestBitSize(size_t n){return std::max ( UINT64_C(27), uint64_t(64-(n?log2(n):0))>>1);}
 
 } // Namespace LinBox
 
