@@ -63,7 +63,7 @@ namespace LinBox {
 
         using Field = typename SparseMatrix<MatrixArgs...>::Field;
         GaussDomain<Field> gaussDomain(ACopy.field());
-        gaussDomain.solvein(x, ACopy, b);
+        gaussDomain.solveInPlace(x, ACopy, b);
 
         commentator().stop("solve.sparse-elimination.any.sparse");
 
