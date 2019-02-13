@@ -22,6 +22,7 @@
 
 #pragma once
 
+#include <linbox/algorithms/gauss.h>
 #include <linbox/algorithms/matrix-hom.h>
 #include <linbox/matrix/sparse-matrix.h>
 #include <linbox/solutions/methods-wip.h>
@@ -44,6 +45,8 @@ namespace LinBox {
         return solve(x, ASparse, b, tag, m);
     }
 
+    // @fixme SparseElimination on IntegerTag should go to Method::Dixon
+
     /**
      * \brief Solve specialisation for SparseElimination with SparseMatrix.
      */
@@ -54,10 +57,13 @@ namespace LinBox {
         commentator().start("solve.sparse-elimination.any.sparse");
         linbox_check((A.coldim() != x.size()) || (A.rowdim() != b.size()));
 
-        // @fixme...
-        // using Field = typename SparseMatrix<MatrixArgs...>::Field;
-        // GaussDomain<Field> gaussDomain(A.field());
-        // gaussDomain.solvein(x, A, b, generator);
+        // @fixme We should call solvein, that way the specialization above
+        // would do the same and don't double copy the matrix.
+        SparseMatrix<MatrixArgs...> ACopy(A);
+
+        using Field = typename SparseMatrix<MatrixArgs...>::Field;
+        GaussDomain<Field> gaussDomain(ACopy.field());
+        gaussDomain.solvein(x, ACopy, b);
 
         commentator().stop("solve.sparse-elimination.any.sparse");
 
