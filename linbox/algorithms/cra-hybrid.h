@@ -109,194 +109,7 @@ namespace LinBox {
             }
         }
 
-#if 1
-        template <class Function>
-        void worker_process_task(Function& Iteration, size_t vectorSize)
-        {
-            MaskedPrimedGenerator gen(_pCommunicator->rank() - 1, _pCommunicator->size() - 1);
-            ++gen;
 
-            //
-            // Resource allocation and tasks evaluations
-            //
-
-            std::vector<BlasVector<Domain>> residues;
-            std::vector<Domain> domains;
-
-
-
-            // Pre-reserve with some estimation
-            size_t maxIterations = std::ceil(1.442695040889 * _hadamardBound / (gen.getBits() - 1));
-            residues.reserve(maxIterations);
-            domains.reserve(maxIterations);
-
-            uint64_t taskCount;
-
-
-//            uint64_t taskCount = domains.size();
-//            _pCommunicator->send(taskCount, 0);
-            
-
-
-//@Potential Bug if _pCommunicator->size()-1==2 ! <=> local communicator size == 2
-
-//@Potential Bug if _pCommunicator->size()-1==1 ! <=> local communicator size == 1
-
-if(_pCommunicator->rank()==1){
-BlasVector<Domain> residue;
-residue.resize(vectorSize+1);
-std::unordered_set<int> used_primes;
-            double primeLogSize = 0.0;
-            while (primeLogSize < _hadamardBound) {
-                do {
-                    ++gen;
-                } while (_builder.noncoprime(*gen)||used_primes.find(*gen)!=used_primes.end());
-                int prime = *gen;used_primes.insert(prime);
-
-                primeLogSize += Givaro::logtwo(prime);
-                domains.emplace_back(prime);
-                residues.emplace_back(domains.back(), vectorSize + 1);
-            }
-            taskCount = domains.size();
-_pCommunicator->send(taskCount, 0);
-            //
-            // Main parallel loop
-            //
-
-            #pragma omp parallel num_threads(_threadsCount)
-            #pragma omp single
-            {
-                // #pragma omp parallel for num_threads(_threadsCount) schedule(dynamic, 1)
-                for (uint64_t j = 0; j < taskCount; j++) {
-                    #pragma omp task
-                    {
-                        Iteration(residues[j], domains[j], _pCommunicator);
-                        residues[j].push_back(domains[j].characteristic());
-                    }
-                }
-            }
-
-
-            //
-            // Send from worker(1) to other worker processes with dynamic dispatching
-            //         
-if(_pCommunicator->size()-2 < taskCount){
-uint64_t j;
-            for ( j = 0; j < _pCommunicator->size()-2; j++) {
-std::cout<<"First  Sent prime: "<<(int)residues[j][residues[j].size()-1]<<" to proc("<<j+2<<")"<<std::endl;
-                _pCommunicator->send(residues[j].begin(), residues[j].end(), j+2, 0);
-            }
-
-
-long index= j;
-int toto;
-            while (index<taskCount) {
-std::cout<<"  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> index:="<<index<<std::endl;            
-_pCommunicator->recv(toto, MPI_ANY_SOURCE);
-std::cout<<"  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< index:="<<index<<std::endl;
-
-                _pCommunicator->send(residues[index].begin(), residues[index].end(), (_pCommunicator->status()).MPI_SOURCE, 0);
-                std::cout<<"  Sent prime: "<<(int)residues[index][residues[index].size()-1]<<std::endl;
-
-
-                index+=1;
-            }
-
-//std::cout<<" Proc("<<_pCommunicator->rank()<<") >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "<<std::endl;
-            for (uint64_t j = 0; j < _pCommunicator->size()-2; j++) {
-                residues[0][residues[0].size()-1]=0;
-                std::cout<<"  Sent prime: "<<(int)residues[0][residues[0].size()-1]<<" to proc("<<j+2<<")"<<std::endl;
-                _pCommunicator->send(residues[0].begin(), residues[0].end(), j+2, 0);
-            }
-//std::cout<<" Proc("<<_pCommunicator->rank()<<") <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< "<<std::endl;
-}else{  // ========================== _pCommunicator->size()-2>taskCount ===============================
-
-            for (uint64_t j = 0; j < taskCount; j++) {
-std::cout<<" <> First Sent prime: "<<(int)residues[j][residues[j].size()-1]<<" to proc("<<j+2<<")"<<std::endl;
-                _pCommunicator->send(residues[j].begin(), residues[j].end(), j+2, 0);
-            }
-
-            for (uint64_t j = 0; j < _pCommunicator->size()-2; j++) {
-                residues[0][residues[0].size()-1]=0;
-                std::cout<<"  <> Sent prime: "<<(int)residues[0][residues[0].size()-1]<<" to proc("<<j+2<<")"<<std::endl;
-                _pCommunicator->send(residues[0].begin(), residues[0].end(), j+2, 0);
-            }
-
-
-}
-
-}else{
-BlasVector<Domain> residue;
-residue.resize(vectorSize+1);
-
-int toto;
-            //
-            // Send from each worker other than worker(1) to the master once receive one residue and the last element != 0
-            //
-//std::cout<<" Proc("<<_pCommunicator->rank()<<") >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "<<std::endl;
-            while (true) {
-
-                _pCommunicator->recv(residue.begin(), residue.end(), 1, 0);
-                if(residue[residue.size()-1]==0) break;
-std::cout<<"  >>>>>>>>>>>> prime: "<<(int)residue[residue.size()-1]<<" from proc(1)"<<std::endl;
-                _pCommunicator->send(residue.begin(), residue.end(), 0, 0);
-std::cout<<"  <<<<<<<<<<<< prime: "<<(int)residue[residue.size()-1]<<" from proc(1)"<<std::endl;
-                _pCommunicator->send(toto, 1);
-std::cout<<" ##################################### " <<std::endl;
-            }
-//std::cout<<" Proc("<<_pCommunicator->rank()<<") <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< "<<std::endl;
-
-}
-        }
-        
-        template <class Function>
-        void master_process_task(Function& Iteration, size_t vectorSize)
-        {
-            uint64_t taskCount = 0;
-
-                uint64_t workerTaskCount;
-                _pCommunicator->recv(workerTaskCount, 1);
-                taskCount += workerTaskCount;
-
-
-
-            std::cout << "Total task count: " << taskCount << std::endl;
-
-            //
-            // Main master loop waiting for results
-            //
-
-            int pp;
-            Domain D(101);
-            BlasVector<Domain> residue(D, vectorSize);
-
-            while (taskCount > 0) {
-
-                master_recv_residue(residue, pp, taskCount);
-
-#ifdef __Detailed_Time_Measurement
-                Timer chrono;
-                chrono.start();
-#endif
-std::cout << "Received prime: " << pp << std::endl;
-
-                Domain D(pp);
-                if (!_builderInitialized) {
-                    _builder.initialize(D, residue);
-                    _builderInitialized = true;
-                }
-                else {
-                    _builder.progress(D, residue);
-                }
-
-#ifdef __Detailed_Time_Measurement
-                chrono.stop();
-                std::cout << "CRT time (seconds): " << chrono.usertime() << std::endl;
-#endif
-            }
-        }        
-        
-#else /////////////////////////////////////////////////////////////////////////////////////////////////////////
         template <class Function>
         void worker_process_task(Function& Iteration, size_t vectorSize)
         {
@@ -403,7 +216,6 @@ std::cout << "Received prime: " << pp << std::endl;
             }
         }
         
-#endif
 
         template <class Vect, class Function, class PrimeIterator>
         void para_compute(Vect& num, Function& Iteration, PrimeIterator& primeGenerator)
@@ -415,16 +227,16 @@ std::cout << "Received prime: " << pp << std::endl;
                 double starttime = omp_get_wtime();
                 worker_process_task(Iteration, num.size());
                 double endtime = omp_get_wtime();
-//                std::cout << " process(" << _pCommunicator->rank() << ") used total CPU time (seconds): " << endtime - starttime << std::endl;
+                std::cout << " process(" << _pCommunicator->rank() << ") used total CPU time (seconds): " << endtime - starttime << std::endl;
             }
         }
 
         void master_recv_residue(BlasVector<Domain>& residue, int& pp, size_t& taskCount)
         {
             residue.resize(residue.size() + 1);
-std::cout<<" Proc("<<_pCommunicator->rank()<<") >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "<<std::endl;
+
             _pCommunicator->recv(residue.begin(), residue.end(), MPI_ANY_SOURCE, 0);
-std::cout<<" Proc("<<_pCommunicator->rank()<<") <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< "<<std::endl;
+
             pp = residue.back();
             residue.resize(residue.size() - 1);
             taskCount -= 1;
