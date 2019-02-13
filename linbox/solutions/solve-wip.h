@@ -52,7 +52,7 @@ namespace LinBox {
      *      - Otherwise     > Method::Blackbox (or Elimination given the size of the matrix)
      *      - @fixme Why don't use Elimination if sparseMatrix?
      * - Method::Elimination
-     *      - SparseMatrix  > Method::DenseElimination @fixme THIS IS CURRENT BEHAVIOR (solve.h:256)
+     *      - SparseMatrix  > Method::SparseElimination
      *      - Otherwise     > Method::DenseElimination
      * - Method::DenseElimination
      *      - DenseMatrix
@@ -66,7 +66,7 @@ namespace LinBox {
      *      - SparseMatrix
      *          - IntegerTag > Method::Dixon
      *          - Otherwise > @fixme NO SPARSEELIMINATION ON SPARSEMATRIX YET?
-     *      - GaussDomain<GF2>::Matrix  > `GaussDomain<GF2>::solvein`
+     *      - GaussDomain<GF2>::Matrix  > `GaussDomain<GF2>::solvein` @fixme Do GaussDomain<Whatever> -> solvein
      *      - Otherwise                 > Method::SparseElimination but copy to SparseMatrix first
      * - Method::Cra
      *      - IntegerTag
@@ -79,12 +79,16 @@ namespace LinBox {
      *      |   - SparseMatrix  > `RationalSolver<..., Method::SparseElimination>`
      *      |   - Otherwise     > @fixme NIY Does dixon need to read the matrix?
      *      - Otherwise > Error
-     * - Method::Blackbox       > Method::Wiedemann
-     * - Method::Wiedemann      > `WiedemannSolver`
-     * - Method::BlockWiedemann > `BlockWiedemannSolver`
-     * - Method::Coppersmith
-     *      - ModularTag > `CoppersmithSolver` (@fixme what's the difference with BlockWiedemann?)
-     *      - Otherwise > @fixme NIY
+     * - Method::Blackbox > Method::Wiedemann
+     * - Method::Wiedemann
+     *      - ModularTag > `WiedemannSolver`
+     *      - Otherwise > Error
+     * - Method::BlockWiedemann [@deprecated, not tested]
+     *      - ModularTag > `BlockWiedemannSolver`
+     *      - Otherwise > Error
+     * - Method::Coppersmith [@deprecated, not tested]
+     *      - ModularTag > `CoppersmithSolver`
+     *      - Otherwise > Error
      * - @fixme Lanczos and others... (from bbsolve.h)
      *
      * @param [out] x solution, can be a rational solution (vector of numerators and one denominator)
