@@ -59,7 +59,7 @@ namespace LinBox
 	 * @param d    Field element into which to store the result
 	 * @param A    Black box of which to compute the determinant
 	 * @param tag  optional tag.  Specifies Integer, Rational or modular ring/field
-	 * @param M    optional method.  The default is Method::Hybrid(), Other options
+	 * @param M    optional method.  The default is Method::Auto(), Other options
 	 include Blackbox, Elimination, Wiedemann, BlasElimination and SparseElimination.
 	 Sometimes it helps to 	 indicate properties of the matrix in the method object
 	 (for instance symmetry). See class Method for details.
@@ -87,7 +87,7 @@ namespace LinBox
 	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element	&d,
 						const Blackbox				&A)
 	{
-		return det(d, A, Method::Hybrid());
+		return det(d, A, Method::Auto());
 	}
 
 	// The det where A can be modified in place
@@ -95,7 +95,7 @@ namespace LinBox
 	typename Blackbox::Field::Element &detin (typename Blackbox::Field::Element	&d,
 						  Blackbox				&A)
 	{
-		return detin(d, A, Method::Hybrid());
+		return detin(d, A, Method::Auto());
 	}
 
 	// The det with category specializer
@@ -116,15 +116,13 @@ namespace LinBox
 		return detin(d, A, typename FieldTraits<typename Blackbox::Field>::categoryTag(), Meth);
 	}
 
-	// The det with Hybrid Method
+	// The det with Auto Method
 	template<class Blackbox>
 	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element	&d,
 						const Blackbox				&A,
 						const RingCategories::ModularTag	&tag,
-						const Method::Hybrid			&Meth)
+						const Method::Auto			&Meth)
 	{
-		// not yet a hybrid
-
 		if (useBB(A))
 			return det(d, A, tag, Method::Blackbox(Meth));
 		else
@@ -135,9 +133,8 @@ namespace LinBox
 	typename Blackbox::Field::Element &detin (typename Blackbox::Field::Element	&d,
 						  Blackbox				&A,
 						  const RingCategories::ModularTag	&tag,
-						  const Method::Hybrid			&Meth)
+						  const Method::Auto			&Meth)
 	{
-		// not yet a hybrid
 		/*
 		   if (useBB(A))
 		   return det(d, A, tag, Method::Blackbox(Meth));
@@ -146,12 +143,12 @@ namespace LinBox
 		return detin(d, A, tag, Method::Elimination(Meth));
 	}
 
-	// The det with Hybrid Method on BlasMatrix
+	// The det with Auto Method on BlasMatrix
 	template<class Field>
 	typename Field::Element &det (typename Field::Element         	&d,
 				      const BlasMatrix<Field>		&A,
 				      const RingCategories::ModularTag	&tag,
-				      const Method::Hybrid		&Meth)
+				      const Method::Auto		&Meth)
 	{
 		return det(d, A, tag, Method::Elimination(Meth));
 	}
@@ -160,7 +157,7 @@ namespace LinBox
 	typename Field::Element &detin (typename Field::Element         	&d,
 					BlasMatrix<Field>			&A,
 					const RingCategories::ModularTag	&tag,
-					const Method::Hybrid			&Meth)
+					const Method::Auto			&Meth)
 	{
 		return detin(d, A, tag, Method::Elimination(Meth));
 	}
@@ -327,7 +324,7 @@ namespace LinBox
 	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element       &d,
 						const Blackbox                          &A,
 						const RingCategories::ModularTag        &tag,
-						const Method::BlasElimination           &Meth)
+						const Method::DenseElimination           &Meth)
 	{
 		if (A.coldim() != A.rowdim())
 			throw LinboxError("LinBox ERROR: matrix must be square for determinant computation\n");
@@ -436,7 +433,7 @@ namespace LinBox
 		const Field& F = A.field();
 		integer c; F.characteristic(c);
 		if ((c < LinBox::BlasBound) && ((A.rowdim() < 300) || (A.coldim() < 300) || (A.size() > (A.coldim()*A.rowdim()/100))))
-			return det(d, A, tag, Method::BlasElimination(Meth));
+			return det(d, A, tag, Method::DenseElimination(Meth));
 		else
 			return det(d, A, tag, Method::SparseElimination(Meth));
 	}
@@ -451,7 +448,7 @@ namespace LinBox
 	{
 		// Matrix is not of type SparseMatrix otherwise previous specialization would occur
 		// will copy A into BlasMatrix
-		return det(d, A, tag, Method::BlasElimination(Meth));
+		return det(d, A, tag, Method::DenseElimination(Meth));
 	}
 
 
@@ -464,7 +461,7 @@ namespace LinBox
 		// Matrix is not of type SparseMatrix not of type BlasMatrix
                 // otherwise previous specialization would occur
 		// will copy A into BlasMatrix
-		return det(d, A, tag, Method::BlasElimination(Meth));
+		return det(d, A, tag, Method::DenseElimination(Meth));
 	}
 
 	template<class Field>
@@ -480,7 +477,7 @@ namespace LinBox
 	typename Field::Element &detin (typename Field::Element			&d,
                                         BlasMatrix<Field>			&A,
                                         const RingCategories::ModularTag	&tag,
-					const Method::BlasElimination		&Meth)
+					const Method::DenseElimination		&Meth)
 	{
 		return detin(d, A);
 	}
@@ -677,7 +674,7 @@ namespace LinBox
 						const Blackbox                          &A,
 						/*const*/ Communicator			&C)
 	{
-		return det(d, A, Method::Hybrid(C));
+		return det(d, A, Method::Auto(C));
 	}
 }
 #endif //__LINBOX_HAVE_MPI

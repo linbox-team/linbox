@@ -20,7 +20,7 @@ bool testPrimeField(int p, int n, int m)
 	long unsigned r;
 
 	RDM.randomFullRank(M);
-	rank(r,M,Method::BlasElimination());
+	rank(r,M,Method::DenseElimination());
 
 	return r==(long unsigned)(n<m?n:m);
 }

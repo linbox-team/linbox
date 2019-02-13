@@ -70,7 +70,7 @@ struct  cra_det_task {
 		Util::logfile() << "matrix created" << std::endl;
 		Givaro::ZRing<Integer>::Element det_A;
 		try {
-			cra_det(det_A, sparseMatrix, RingCategories::IntegerTag(), Method::Hybrid() );
+			cra_det(det_A, sparseMatrix, RingCategories::IntegerTag(), Method::Auto() );
 		}
 		catch ( LinBox::LinboxError & err ) {
 			std::cerr << err << std::endl;

@@ -105,7 +105,7 @@ namespace LinBox
     template< class Vector, class Blackbox>
     Vector& solve(Vector& x, const Blackbox& A, const Vector& b)
     {
-        return solve(x, A, b, Method::Hybrid());
+        return solve(x, A, b, Method::Auto());
     }
 
         // in methods.h FoobarMethod and Method::Foobar are the same class.
@@ -114,7 +114,7 @@ namespace LinBox
         //! @internal specialize this on blackboxes which have local methods
     template <class Vector, class BB>
     Vector& solve(Vector& x, const BB& A, const Vector& b,
-                  const Method::Hybrid& m)
+                  const Method::Auto& m)
     {
         if (useBB(A)) return solve(x, A, b, Method::Blackbox(m));
         else return solve(x, A, b, Method::Elimination(m));
@@ -142,14 +142,9 @@ namespace LinBox
         integer c, p;
         A.field().cardinality(c);
         A.field().characteristic(p);
-            //if ( p == 0 || (c == p && inBlasRange(p)) )
         return solve(x, A, b,
                      typename FieldTraits<typename BB::Field>::categoryTag(),
-                     Method::BlasElimination(m));
-            //else
-            //  return solve(x, A, b,
-            //          typename FieldTraits<typename BB::Field>::categoryTag(),
-            //          Method::NonBlasElimination(m));
+                     Method::DenseElimination(m));
     }
 
         //! @internal inplace Sparse Elimination.
@@ -260,7 +255,7 @@ namespace LinBox
 
         return solve(x, A, b,
                      typename FieldTraits<typename SparseMatrix<Field>::Field>::categoryTag(),
-                     Method::BlasElimination(m));
+                     Method::DenseElimination(m));
 
 #if 0
         if ( ! consistent ) {  // we will return the zero vector
@@ -269,13 +264,13 @@ namespace LinBox
         return x;
 #endif
     }
-        // BlasElimination section ///////////////////
+        // DenseElimination section ///////////////////
 
         //! @internal Generic Elimination on Z/pZ (convert A to DenseMatrix)
     template <class Vector, class BB>
     Vector& solve(Vector& x, const BB& A, const Vector& b,
                   const RingCategories::ModularTag & tag,
-                  const Method::BlasElimination& m)
+                  const Method::DenseElimination& m)
     {
         BlasMatrix<typename BB::Field> B(A); // copy A into a BlasMatrix
         return solve(x, B, b, tag, m);
@@ -285,7 +280,7 @@ namespace LinBox
     template <class Vector, class Field>
     Vector& solve(Vector& x, const BlasMatrix<Field>& A, const Vector& b,
                   const RingCategories::ModularTag & tag,
-                  const Method::BlasElimination& m)
+                  const Method::DenseElimination& m)
     {
         if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
             throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
@@ -329,7 +324,7 @@ namespace LinBox
     template <class Vector, class BB>
     Vector& solve(Vector& x, const BB& A, const Vector& b,
                   const RingCategories::IntegerTag & tag,
-                  const Method::BlasElimination& m)
+                  const Method::DenseElimination& m)
     {
         std::cout<<"try to solve system over the integer\n"
                  <<"the API need either \n"
@@ -388,17 +383,17 @@ namespace LinBox
          * RatVector is assumed to be the type of a vector of rational number
         */
 
-        // default API (method is BlasElimination)
+        // default API (method is DenseElimination)
     template<class RatVector, class Vector, class BB>
     RatVector& solve(RatVector& x, const BB &A, const Vector &b)
     {
-        return solve(x, A, b, Method::BlasElimination());
+        return solve(x, A, b, Method::DenseElimination());
     }
 
-        // API with Hybrid method
+        // API with Auto method
     template<class RatVector, class Vector, class BB>
     RatVector& solve(RatVector& x, const BB &A, const Vector &b,
-                     const Method::Hybrid &m)
+                     const Method::Auto &m)
     {
         if (useBB(A))
             return solve(x, A, b, Method::Blackbox(m));
@@ -417,7 +412,7 @@ namespace LinBox
     template<class RatVector, class Vector, class BB>
     RatVector& solve(RatVector& x, const BB &A, const Vector &b, const Method::Elimination &m)
     {
-        return solve(x, A, b,  Method::BlasElimination(m));
+        return solve(x, A, b,  Method::DenseElimination(m));
     }
 
 
@@ -429,14 +424,14 @@ namespace LinBox
     }
 
 
-        /* Specializations for BlasElimination over the integers
+        /* Specializations for DenseElimination over the integers
          */
 
         // input matrix is generic (copying it into a BlasMatrix)
     template <class RatVector, class Vector, class BB>
     RatVector& solve(RatVector& x, const BB& A, const Vector& b,
                      const RingCategories::IntegerTag & tag,
-                     const Method::BlasElimination& m)
+                     const Method::DenseElimination& m)
     {
         BlasMatrix<typename BB::Field> B(A); // copy A into a BlasMatrix
         return solve(x, B, b, tag, m);
@@ -446,7 +441,7 @@ namespace LinBox
     template <class RatVector, class Vector, class Ring>
     RatVector& solve(RatVector& x, const BlasMatrix<Ring>& A, const Vector& b,
                      const RingCategories::IntegerTag & tag,
-                     const Method::BlasElimination& m)
+                     const Method::DenseElimination& m)
     {
 
         Method::Dixon mDixon(m);
@@ -475,11 +470,11 @@ namespace LinBox
 
         //@{
 
-        // default API (method is BlasElimination)
+        // default API (method is DenseElimination)
     template< class Vector, class BB>
     Vector& solve(Vector &x, typename BB::Field::Element &d, const BB &A, const Vector &b)
     {
-        return solve(x, d, A, b, typename FieldTraits<typename BB::Field>::categoryTag(),  Method::BlasElimination());
+        return solve(x, d, A, b, typename FieldTraits<typename BB::Field>::categoryTag(),  Method::DenseElimination());
     }
 
         // launcher of specialized solver depending on the MethodTraits
@@ -489,14 +484,14 @@ namespace LinBox
         return solve(x, d, A, b, typename FieldTraits<typename BB::Field>::categoryTag(), m);
     }
 
-        /* Specialization for BlasElimination over the integers
+        /* Specialization for DenseElimination over the integers
          */
 
         // input matrix is generic (copying it into a BlasMatrix)
     template <class Vector, class BB>
     Vector& solve(Vector& x, typename BB::Field::Element &d, const BB& A, const Vector& b,
                   const RingCategories::IntegerTag & tag,
-                  const Method::BlasElimination& m)
+                  const Method::DenseElimination& m)
     {
         BlasMatrix<typename BB::Field> B(A); // copy A into a BlasMatrix
         return solve(x, d, B, b, tag, m);
@@ -507,7 +502,7 @@ namespace LinBox
     Vector& solve(Vector& x, typename Ring::Element &d,
                   const BlasMatrix<Ring>& A, const Vector& b,
                   const RingCategories::IntegerTag & tag,
-                  const Method::BlasElimination& m)
+                  const Method::DenseElimination& m)
     {
             //!@bug check we don't copy
         Method::Dixon mDixon(m);
@@ -643,7 +638,7 @@ namespace LinBox
         RationalSolver<Ring, Field, PrimeIterator<IteratorCategories::HeuristicTag>, SparseEliminationTraits> rsolve(A.field(), genprime);
         SolverReturnStatus status = SS_OK;
         status=rsolve.solve(x, d, A, b,(int)m.maxTries());
- 
+
         commentator().stop("done", NULL, "solving");
 
         if ( status == SS_INCONSISTENT ) {
@@ -654,19 +649,6 @@ namespace LinBox
     }
 
         //@}
-
-        // NonBlasElimination section ////////////////
-
-    template <class Vector, class BB>
-    Vector& solve(Vector& x, const BB& A, const Vector& b,
-                  const RingCategories::ModularTag & tag,
-                  const Method::NonBlasElimination& m)
-    {
-        BlasMatrix<typename BB::Field> B(A); // copy
-        return solve(x, B, b, tag, m);
-    }
-
-        // note: no need for NonBlasElimination when RingCategory is integer
 
         // Lanczos ////////////////
         // may throw SolverFailed or InconsistentSystem
@@ -781,29 +763,29 @@ namespace LinBox
 #ifdef __LINBOX_HAVE_MPI    //MPI parallel version
 
         Integer den(1);
-        if(!C || C->rank() == 0){ 
+        if(!C || C->rank() == 0){
             if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
                 throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
             commentator().start ("Integer CRA Solve", "Isolve");
         }
-                
-        RandomPrimeIterator genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
-                
+
+        PrimeIterator<IteratorCategories::HeuristicTag> genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
+
         BlasVector<Givaro::ZRing<Integer>> num(A.field(),A.coldim());
-                
+
         IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
         MPIratChineseRemainder< EarlyMultipRatCRA< Givaro::Modular<double> > > mpicra(3UL, C);
-                
+
         mpicra(num, den, iteration, genprime);
-                
-        if(!C || C->rank() == 0){ 
+
+        if(!C || C->rank() == 0){
             typename Vector::iterator it_x= x.begin();
             typename BlasVector<Givaro::ZRing<Integer>>::const_iterator it_num= num.begin();
 
                 // convert the result
             for (; it_x != x.end(); ++it_x, ++it_num)
-                A.field().init(*it_x, *it_num); 
-        
+                A.field().init(*it_x, *it_num);
+
             A.field().init(d, den);
 
             commentator().stop ("done", NULL, "Isolve");
@@ -832,9 +814,9 @@ namespace LinBox
         for (; it_x != x.end(); ++it_x, ++it_num)
             A.field().init(*it_x, *it_num);
         A.field().init(d, den);
-        commentator().stop ("done", NULL, "Isolve"); 
+        commentator().stop ("done", NULL, "Isolve");
         return x;
-#endif      
+#endif
     }
 
 
@@ -1046,7 +1028,7 @@ namespace LinBox
             ++it_x;
         }
         commentator().stop ("done", NULL, "Rsolve");
- 
+
         return x;
     }
 
