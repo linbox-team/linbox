@@ -60,7 +60,7 @@ EXTRA_PROGRAMS= $(EXAMPLES) $(USE_GIVARONTL_EXAMPLES)
 
 CLEANFILES=$(EXTRA_PROGRAMS)
 
-EXTRA_DIST = examples.doxy smithvalence.h test.sh
+EXTRA_DIST = examples.doxy test.sh
 #map-sparse.h map-sparse.inl
 
 examples:  ${EXTRA_PROGRAMS}
