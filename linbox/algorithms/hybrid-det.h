@@ -111,7 +111,7 @@ namespace LinBox
 
 			typedef typename Blackbox::template rebind<Field>::other FBlackbox;
 			FBlackbox Ap(A,F);
-			detin( d, Ap, M);
+			detInPlace( d, Ap, M);
 
 			if (beta > 1) {
 				typename Field::Element y;

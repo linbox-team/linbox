@@ -69,7 +69,7 @@ int main (int argc, char **argv)
         typedef Givaro::QField<Givaro::Rational> Rats;
         Rats QQ;
         typedef DenseVector<Rats> RVector;
-        
+
         MatrixStream<Rats> ms( QQ, input );
         SparseMatrix<Rats> A ( ms );
 		std::cout << "A is " << A.rowdim() << " by " << A.coldim() << std::endl;
@@ -87,7 +87,7 @@ int main (int argc, char **argv)
 			for(auto&& it:B) invect >> it;
             invect.close();
 		}
-        
+
 		std::cout << "B is [";
 		for(auto it:B) QQ.write(cout, it) << ' ';
 		std::cout << ']' << std::endl;
@@ -101,7 +101,7 @@ int main (int argc, char **argv)
 
 		std::cout << "Sparse Elimination" << std::endl;
 		chrono.start();
-		solvein (X, A, B, Method::SparseElimination(), generator);
+		solveInPlace (X, A, B, Method::SparseElimination(), generator);
 		chrono.stop();
 
 		std::cout << "(SparseElimination) Solution is [";
