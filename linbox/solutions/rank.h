@@ -76,7 +76,7 @@ namespace LinBox
 			const DomainCategory &tag, const Method &M);
 
 	template <class Blackbox, class Method, class DomainCategory>
-	inline size_t &rankin (size_t &r, Blackbox &A,
+	inline size_t &rankInPlace (size_t &r, Blackbox &A,
 			const DomainCategory &tag, const Method &M);
 
 	/**
@@ -118,10 +118,10 @@ namespace LinBox
 	 * @param r rank
 	*/
 	template <class Blackbox>
-	inline size_t &rankin (size_t &r, Blackbox &A)
+	inline size_t &rankInPlace (size_t &r, Blackbox &A)
 	{
 		//! @bug there is no Elimination() method there.
-		return rankin(r, A, typename FieldTraits<typename Blackbox::Field>::categoryTag(), Method::SparseElimination());
+		return rankInPlace(r, A, typename FieldTraits<typename Blackbox::Field>::categoryTag(), Method::SparseElimination());
 	}
 
 

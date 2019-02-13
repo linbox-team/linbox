@@ -373,13 +373,13 @@ namespace LinBox
 	}
 
 	template <class Field>
-	inline size_t &rankin (
+	inline size_t &rankInPlace (
         size_t       &r,
         SparseMatrix<Field, SparseMatrixFormat::SparseSeq>  &A,
         const RingCategories::ModularTag  &tag,
         const Method::Elimination         &m)
 	{
-        return rankin(r, A, tag, Method::SparseElimination( m ));
+        return rankInPlace(r, A, tag, Method::SparseElimination( m ));
 	}
 
 
@@ -392,7 +392,7 @@ namespace LinBox
 	{
 		// We make a copy as these data will be destroyed
 		SparseMatrix<Field, SparseMatrixFormat::SparseSeq> A1 (A);
-		return rankin(r, A1, tag, M);
+		return rankInPlace(r, A1, tag, M);
 	}
 
 	// Change of representation to be able to call the sparse elimination
@@ -405,7 +405,7 @@ namespace LinBox
 //         typename GaussDomain<typename Blackbox::Field>::Matrix copyA(A);
         typename GaussDomain<typename Blackbox::Field>::Matrix copyA(A.field(),A.rowdim(), A.coldim());
         MatrixHom::map(copyA, A);
-		return rankin(r, copyA, tag, M);
+		return rankInPlace(r, copyA, tag, M);
 	}
 
 	// M may be <code>Method::DenseElimination()</code>.
@@ -424,7 +424,7 @@ namespace LinBox
 		linbox_check( a < LinBox::BlasBound);
 		BlasMatrix<Field> B(A);
 		BlasMatrixDomain<Field> D(F);
-		r = D.rankin(B);
+		r = D.rankInPlace(B);
 		commentator().stop ("done", NULL, "blasrank");
 		return r;
 	}
@@ -448,7 +448,7 @@ namespace LinBox
 
 		commentator().report (Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION) << "Integer Rank is done modulo " << *genprime << std::endl;
 
-		rankin(r, Ap, RingCategories::ModularTag(), M);
+		rankInPlace(r, Ap, RingCategories::ModularTag(), M);
 		commentator().stop ("done", NULL, "iirank");
 		return r;
 	}
@@ -554,19 +554,19 @@ namespace LinBox
 	}
 }*/
 
-namespace LinBox { /*  rankin */
+namespace LinBox { /*  rankInPlace */
 
 	template <class Field, class Method>
-	inline size_t &rankin (size_t                   &r,
+	inline size_t &rankInPlace (size_t                   &r,
 				      SparseMatrix<Field, SparseMatrixFormat::SparseSeq>  &A,
 				      const Method                    &M)
 	{
-		return rankin(r, A, typename FieldTraits<Field>::categoryTag(), M);
+		return rankInPlace(r, A, typename FieldTraits<Field>::categoryTag(), M);
 	}
 
 
 	template <class Blackbox, class Ring>
-	inline size_t &rankin (size_t                       &r,
+	inline size_t &rankInPlace (size_t                       &r,
 				      Blackbox                            &A,
 				      const RingCategories::IntegerTag    &tag,
 				      const Method::SparseElimination     &M)
@@ -578,36 +578,36 @@ namespace LinBox { /*  rankin */
 		const Field Fp(*genprime);
 		FBlackbox Ap(A, Fp);
 		commentator().report (Commentator::LEVEL_ALWAYS,INTERNAL_WARNING) << "Integer Rank is done modulo " << *genprime << std::endl;
-		rankin(r, Ap, RingCategories::ModularTag(), M);
+		rankInPlace(r, Ap, RingCategories::ModularTag(), M);
 		commentator().stop ("done", NULL, "irank");
 		return r;
 	}
 
 	/// specialization to \f$ \mathbf{F}_2 \f$
-	inline size_t &rankin (size_t                       &r,
+	inline size_t &rankInPlace (size_t                       &r,
 				      GaussDomain<GF2>::Matrix            &A,
 				      const Method::SparseElimination     &)//M
 	{
 		commentator().start ("Sparse Elimination Rank over GF2", "serankmod2");
 		GaussDomain<GF2> GD ( A.field() );
-		GD.rankin (r, A, Specifier::PIVOT_LINEAR);
+		GD.rankInPlace (r, A, Specifier::PIVOT_LINEAR);
 		commentator().stop ("done", NULL, "serankmod2");
 		return r;
 	}
 
 	/// specialization to \f$ \mathbf{F}_2 \f$
-	inline size_t &rankin (size_t                       &r,
+	inline size_t &rankInPlace (size_t                       &r,
 				      GaussDomain<GF2>::Matrix            &A,
 				      const RingCategories::ModularTag    &,//tag
 				      const Method::SparseElimination     &M)
 	{
-		return rankin(r, A, M);
+		return rankInPlace(r, A, M);
 	}
 
 
 	/// A is modified.
 	template <class Field>
-	inline size_t &rankin (size_t                     &r,
+	inline size_t &rankInPlace (size_t                     &r,
 				      BlasMatrix<Field>               &A,
 				      const RingCategories::ModularTag  &tag,
 				      const Method::DenseElimination     &M)
@@ -616,18 +616,18 @@ namespace LinBox { /*  rankin */
 		commentator().start ("BlasBB Rank", "blasbbrank");
 		const Field F = A.field();
 		BlasMatrixDomain<Field> D(F);
-		r = D.rankin(static_cast< BlasMatrix<Field>& >(A));
+		r = D.rankInPlace(static_cast< BlasMatrix<Field>& >(A));
 		commentator().stop ("done", NULL, "blasbbrank");
 		return r;
 	}
 
 	template <class Field>
-	inline size_t &rankin (size_t       &r,
+	inline size_t &rankInPlace (size_t       &r,
 				      BlasMatrix<Field>               &A,
 				    const RingCategories::ModularTag  &tag,
 				    const Method::Elimination         &m)
 	{
-			return rankin(r, A, tag, Method::DenseElimination(m));
+			return rankInPlace(r, A, tag, Method::DenseElimination(m));
 	}
 
 
@@ -635,25 +635,25 @@ namespace LinBox { /*  rankin */
 
 
 	template <class Blackbox>
-	inline size_t &rankin (size_t                    &r,
+	inline size_t &rankInPlace (size_t                    &r,
 				    Blackbox                   &A,
 				    const RingCategories::ModularTag &tag,
 				    const Method::Auto             &m)
 	{
-        return rankin(r, A, tag, Method::Elimination( m ));
+        return rankInPlace(r, A, tag, Method::Elimination( m ));
 	}
 
 
 	// A is modified.
 	template <class Blackbox>
-	inline size_t &rankin (size_t                      &r,
+	inline size_t &rankInPlace (size_t                      &r,
 				      Blackbox                             &A,
 				      const RingCategories::ModularTag   &tag,
 				      const Method::SparseElimination    &M)
 	{
 		commentator().start ("Sparse Elimination Rank", "serank");
 		GaussDomain<typename Blackbox::Field> GD (A.field());
-		GD.rankin( r, A, M.strategy ());
+		GD.rankInPlace( r, A, M.strategy ());
 		commentator().stop ("done", NULL, "serank");
 		return r;
 	}
