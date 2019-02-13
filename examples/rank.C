@@ -64,10 +64,9 @@ int main (int argc, char **argv)
 
 	size_t r;
 
-        //Givaro::QField<Givaro::Rational> ZZ;
-	Givaro::ZRing<Givaro::Integer> ZZ;
+	Givaro::QField<Givaro::Integer> QQ;
 	LinBox::Timer tim ; tim.clear() ; tim.start();
-	MatrixStream<Givaro::QField<Givaro::Rational>> ms( ZZ, input );
+	MatrixStream<Givaro::QField<Givaro::Rational>> ms (QQ, input);
 	SparseMatrix<Givaro::QField<Givaro::Rational>, SP_STOR> A ( ms );
 
 	tim.stop();
@@ -100,7 +99,10 @@ int main (int argc, char **argv)
 
 		SparseMatrix<Field, SP_STOR > B (F, A.rowdim(), A.coldim());// modular image of A
 		MatrixHom::map(B, A);
-		std::cout << "matrix is " << B.rowdim() << " by " << B.coldim() << std::endl;
+        tim.stop();
+		std::cout << "matrix is " << B.rowdim() << " by " << B.coldim() <<" (time for map: "<< tim << ")" << std::endl;
+
+        tim.clear();tim.start();
 		//if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(std::cout) << std::endl;
 
 		// Using the adaptive LinBox Solution
