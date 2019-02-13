@@ -145,7 +145,7 @@ namespace LinBox
 	 * @param d Field element into which to store the result
 	 * @param A Black box of which to compute the determinant
 	 * @param tag explicit over the integers
-	 * @param M may be a Method::BlasElimination (default) or a Method::Wiedemann.
+	 * @param M may be a Method::DenseElimination (default) or a Method::Wiedemann.
 	 \ingroup solutions
 	 */
 	template <class Blackbox, class MyMethod>
@@ -252,7 +252,7 @@ namespace LinBox
 		}
 
 		PrimeIterator<IteratorCategories::HeuristicTag> genprime1(FieldTraits<mymodular>::bestBitSize(A.coldim()));
-                
+
 		Integers ZZ;
 		RationalSolver < Integers , mymodular, PrimeIterator<IteratorCategories::HeuristicTag>, DixonTraits > RSolver(A. field(), genprime);
 #endif

@@ -137,13 +137,13 @@ int main (int argc, char **argv)
 		std::cout << "]" << std::endl;
 		std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl<<std::endl;;
 
-		// BlasElimination
-		std::cout << "BlasElimination" << std::endl;
+		// DenseElimination
+		std::cout << "DenseElimination" << std::endl;
 		chrono.start();
-		solve (X, A, B, Method::BlasElimination());
+		solve (X, A, B, Method::DenseElimination());
 		chrono.stop();
 
-		std::cout << "(BlasElimination) Solution is [";
+		std::cout << "(DenseElimination) Solution is [";
 		for(DenseVector::const_iterator it=X.begin();it != X.end(); ++it)
 			F.write(std::cout, *it) << " ";
 		std::cout << "]" << std::endl;
@@ -224,13 +224,13 @@ int main (int argc, char **argv)
 		std::cout << "B is " << B << std::endl;
 
 		Timer chrono;
-		// BlasElimination
-        std::cout << "BlasElimination" << std::endl;
+		// DenseElimination
+        std::cout << "DenseElimination" << std::endl;
         chrono.start();
-        solve (X, d, A, B, Method::BlasElimination());
+        solve (X, d, A, B, Method::DenseElimination());
         chrono.stop();
 
- 		std::cout << "(BlasElimination) Solution is [";
+ 		std::cout << "(DenseElimination) Solution is [";
         for(DenseVector::const_iterator it=X.begin();it != X.end(); ++it)
  		ZZ.write(std::cout, *it) << " ";
         std::cout << "] / ";

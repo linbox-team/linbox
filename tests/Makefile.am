@@ -80,6 +80,7 @@ BASIC_TESTS =					\
 	test-frobenius              \
 	test-rational-solver        \
 	test-rational-solver-adaptive \
+	test-randiter-nonzero-prime		\
 	test-cra					\
 	test-blas-matrix			\
 	test-charpoly			\
@@ -154,7 +155,6 @@ FULLCHECK_TESTS =               \
 	test-poly-det				\
 	test-qlup					\
 	test-quad-matrix			\
-	test-randiter-nonzero		\
 	test-random-matrix			\
 	test-rat-charpoly			\
 	test-rational-matrix-factory \
@@ -279,6 +279,7 @@ test_givaropoly_SOURCES =               test-givaropoly.C
 test_givaro_zpz_SOURCES =               test-givaro-zpz.C
 test_givaro_zpzuns_SOURCES =            test-givaro-zpzuns.C
 test_gmp_rational_SOURCES =             test-gmp-rational.C
+test_hadamard_bound_SOURCES =           test-hadamard-bound.C
 test_hilbert_SOURCES =                  test-hilbert.C
 test_hom_SOURCES =                      test-hom.C
 test_image_field_SOURCES =              test-image-field.C
@@ -323,7 +324,7 @@ test_poly_det_SOURCES =                 test-poly-det.C
 test_poweroftwomodular_SOURCES =	test-poweroftwomodular.C test-field.h
 test_qlup_SOURCES =                     test-qlup.C
 test_quad_matrix_SOURCES =              test-quad-matrix.C
-test_randiter_nonzero_SOURCES =         test-randiter-nonzero.C
+test_randiter_nonzero_prime_SOURCES =   test-randiter-nonzero-prime.C
 test_random_matrix_SOURCES =            test-random-matrix.C
 test_rank_Int_SOURCES =                 test-rank-Int.C test-rank.h
 test_rank_md_SOURCES =                  test-rank-md.C test-rank.h

@@ -724,7 +724,7 @@ static bool testRandomSolve (const Field                  &F,
 template <class Field>
 static bool testBasicMethodsSolve (const Field &F, size_t n)
 {
-	// tests of Hybrid, Blackbox, Elimination methods
+	// tests of Auto, Blackbox, Elimination methods
 	bool ret;
 	commentator().start ("Testing Basic Methods Solve");
 	ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
@@ -740,7 +740,7 @@ static bool testBasicMethodsSolve (const Field &F, size_t n)
 	solve(xd, A, b);
 	VD.write(report<<"xd ", xd) << endl;
 
-	solve(xh, A, b, Method::Hybrid());
+	solve(xh, A, b, Method::Auto());
 	VD.write(report<<"xh ", xh) << endl;
 
 	solve(xb, A, b, Method::Blackbox());
@@ -853,7 +853,7 @@ int main (int argc, char **argv)
 		pass = false;
 #endif
 #if 0
-        
+
     if ( ! testBasicMethodsSolve (F, n) )
 		pass = false;
 #endif

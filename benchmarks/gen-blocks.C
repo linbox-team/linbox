@@ -67,7 +67,7 @@ void randomNonSingular(Block& block, Field& field, int q, int m, int n)
   long unsigned r;
   long unsigned b=(long unsigned)(m<n?m:n);
   std::cerr << "starting" << std::endl;
-  while (LinBox::rank(r,block,Method::BlasElimination()) < b) {
+  while (LinBox::rank(r,block,Method::DenseElimination()) < b) {
     randomBlock(block,field,q,m,n);
     std::cerr << "loop" << std::endl;
   }
