@@ -770,13 +770,21 @@ namespace LinBox
 		const Vector &B;
 		const MyMethod &M;
 
-		IntegerModularSolve(const Blackbox& b, const Vector& v, const MyMethod& n) :
+		IntegerModularSolve(const Blackbox& b, const Vector& v, const MyMethod& n
+#ifdef __LINBOX_HAVE_MPI
+                        ,Communicator   *C
+#endif
+) :
 			A(b), B(v), M(n)
 		{}
 
 
 		template<typename Field>
-		typename Rebind<Vector, Field>::other& operator()(typename Rebind<Vector, Field>::other& x, const Field& F) const
+		typename Rebind<Vector, Field>::other& operator()(typename Rebind<Vector, Field>::other& x, const Field& F
+#ifdef __LINBOX_HAVE_MPI
+                        ,Communicator   *C = NULL
+#endif
+) const
 		{
 			typedef typename Blackbox::template rebind<Field>::other FBlackbox;
 #ifdef __Detailed_Time_Measurement
@@ -792,7 +800,7 @@ namespace LinBox
             chrono.stop();
             std::cout<<
 #ifdef __LINBOX_HAVE_MPI
-            "Process "<<C->rank()<< 
+            "Process "<<C->rank()<<
 #endif
             " Modulo "<<chrono.usertime()<<std::endl;
 #endif
@@ -805,9 +813,9 @@ namespace LinBox
 
 #ifdef __Detailed_Time_Measurement
             chrono.stop();
-            std::cout<< 
+            std::cout<<
 #ifdef __LINBOX_HAVE_MPI
-            "Process "<<C->rank()<< 
+            "Process "<<C->rank()<<
 #endif
             " Solve "<<chrono.usertime()<<std::endl;
 #endif
@@ -828,7 +836,7 @@ namespace LinBox
 			)
 	{
 
-Integer den(0);
+Integer den(1);
 
 #ifdef __LINBOX_HAVE_MPI
 		if(!C || C->rank() == 0){
@@ -844,43 +852,28 @@ Integer den(0);
 
 #endif
 
+        typedef Givaro::ModularBalanced<double> Field2proj;
 
-		PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205))); //RandomPrimeIterator genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
-//PrimeIterator<LinBox::IteratorCategories::DeterministicTag> genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
+        //PrimeIterator<LinBox::IteratorCategories::HeuristicTag> genprime(FieldTraits<Field2proj>::bestBitSize());
+        PrimeIterator<LinBox::IteratorCategories::DeterministicTag> genprime(FieldTraits<Field2proj>::bestBitSize());
 
 		Vector num(A.field(),A.coldim());
 
-		IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
+		IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M
+#ifdef __LINBOX_HAVE_MPI
+                        ,C
+#endif
 
-		typename BB::ConstIterator it = A.Begin();
-		typename BB::ConstIterator it_end = A.End();
-		typename BB::Field::Element max = 1,min=0;
-		while( it != it_end ){
-			if (max < (*it))
-				max = *it;
-			if ( min > (*it))
-				min = *it;
-			it++;
-		}
-		if (max<-min)
-			max=-min;
-        
-        typename Vector::iterator it_b= b.begin();
-        for (; it_b != b.end(); ++it_b) if(*it_b>max) max=*it_b;
-        if (max < 3) max = 3;
-		size_t n=A.coldim();
+);
 
-        
-		double hadamard = n*(Givaro::naturallog(n)+2*Givaro::naturallog(max));
-
-
+        auto hb = RationalSolveHadamardBound(A, b);
+        double hadamard = (1.0 + hb.numLogBound + hb.denLogBound); // log2(2 * N * D)
 
 #ifdef __LINBOX_HAVE_MPI
-		HybridChineseRemainder< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(hadamard, C);
+		HybridChineseRemainder< FullMultipRatCRA< Field2proj > > cra(hadamard, C);
 #else
         std::cerr << "Sequential solveCRA" << std::endl;
-        RationalRemainder< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(hadamard);
-//        RationalRemainder< FullMultipRatCRA< Givaro::ModularBalanced<double> > > cra(3UL);
+        RationalRemainder< FullMultipRatCRA< Field2proj > > cra(hadamard);
 #endif
 
 #ifdef __Detailed_Time_Measurement
@@ -888,7 +881,7 @@ Integer den(0);
         chrono.start();
 #endif
 
-		cra(num, den, iteration, genprime); 
+		cra(num, den, iteration, genprime);
 
 #ifdef __Detailed_Time_Measurement
 #ifdef __LINBOX_HAVE_MPI
@@ -916,7 +909,6 @@ Integer den(0);
 
 			commentator().stop ("done", NULL, "Isolve");
 
-			
 #ifdef __LINBOX_HAVE_MPI
 		}
 #endif

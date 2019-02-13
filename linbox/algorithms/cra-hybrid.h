@@ -109,7 +109,9 @@ namespace LinBox {
             }
         }
 
-#if 1
+
+#if 0
+
         template <class Function>
         void worker_process_task(Function& Iteration, size_t vectorSize)
         {
@@ -183,7 +185,7 @@ _pCommunicator->send(taskCount, 0);
 if(_pCommunicator->size()-2 < taskCount){
 uint64_t j;
             for ( j = 0; j < _pCommunicator->size()-2; j++) {
-std::cout<<"First  Sent prime: "<<(int)residues[j][residues[j].size()-1]<<" to proc("<<j+2<<")"<<std::endl;
+//std::cout<<"First  Sent prime: "<<(int)residues[j][residues[j].size()-1]<<" to proc("<<j+2<<")"<<std::endl;
                 _pCommunicator->send(residues[j].begin(), residues[j].end(), j+2, 0);
             }
 
@@ -191,12 +193,12 @@ std::cout<<"First  Sent prime: "<<(int)residues[j][residues[j].size()-1]<<" to p
 long index= j;
 int toto;
             while (index<taskCount) {
-std::cout<<"  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> index:="<<index<<std::endl;            
+//std::cout<<"  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> index:="<<index<<std::endl;            
 _pCommunicator->recv(toto, MPI_ANY_SOURCE);
-std::cout<<"  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< index:="<<index<<std::endl;
+//std::cout<<"  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< index:="<<index<<std::endl;
 
                 _pCommunicator->send(residues[index].begin(), residues[index].end(), (_pCommunicator->status()).MPI_SOURCE, 0);
-                std::cout<<"  Sent prime: "<<(int)residues[index][residues[index].size()-1]<<std::endl;
+//std::cout<<"  Sent prime: "<<(int)residues[index][residues[index].size()-1]<<std::endl;
 
 
                 index+=1;
@@ -205,20 +207,20 @@ std::cout<<"  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< index:="<<index<
 //std::cout<<" Proc("<<_pCommunicator->rank()<<") >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "<<std::endl;
             for (uint64_t j = 0; j < _pCommunicator->size()-2; j++) {
                 residues[0][residues[0].size()-1]=0;
-                std::cout<<"  Sent prime: "<<(int)residues[0][residues[0].size()-1]<<" to proc("<<j+2<<")"<<std::endl;
+//std::cout<<"  Sent prime: "<<(int)residues[0][residues[0].size()-1]<<" to proc("<<j+2<<")"<<std::endl;
                 _pCommunicator->send(residues[0].begin(), residues[0].end(), j+2, 0);
             }
 //std::cout<<" Proc("<<_pCommunicator->rank()<<") <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< "<<std::endl;
 }else{  // ========================== _pCommunicator->size()-2>taskCount ===============================
 
             for (uint64_t j = 0; j < taskCount; j++) {
-std::cout<<" <> First Sent prime: "<<(int)residues[j][residues[j].size()-1]<<" to proc("<<j+2<<")"<<std::endl;
+//std::cout<<" <> First Sent prime: "<<(int)residues[j][residues[j].size()-1]<<" to proc("<<j+2<<")"<<std::endl;
                 _pCommunicator->send(residues[j].begin(), residues[j].end(), j+2, 0);
             }
 
             for (uint64_t j = 0; j < _pCommunicator->size()-2; j++) {
                 residues[0][residues[0].size()-1]=0;
-                std::cout<<"  <> Sent prime: "<<(int)residues[0][residues[0].size()-1]<<" to proc("<<j+2<<")"<<std::endl;
+//std::cout<<"  <> Sent prime: "<<(int)residues[0][residues[0].size()-1]<<" to proc("<<j+2<<")"<<std::endl;
                 _pCommunicator->send(residues[0].begin(), residues[0].end(), j+2, 0);
             }
 
@@ -238,11 +240,12 @@ int toto;
 
                 _pCommunicator->recv(residue.begin(), residue.end(), 1, 0);
                 if(residue[residue.size()-1]==0) break;
-std::cout<<"  >>>>>>>>>>>> prime: "<<(int)residue[residue.size()-1]<<" from proc(1)"<<std::endl;
+//std::cout<<"  >>>>>>>>>>>> prime: "<<(int)residue[residue.size()-1]<<" from proc(1)"<<std::endl;
                 _pCommunicator->send(residue.begin(), residue.end(), 0, 0);
-std::cout<<"  <<<<<<<<<<<< prime: "<<(int)residue[residue.size()-1]<<" from proc(1)"<<std::endl;
+//std::cout<<"  <<<<<<<<<<<< prime: "<<(int)residue[residue.size()-1]<<" from proc(1)"<<std::endl;
                 _pCommunicator->send(toto, 1);
-std::cout<<" ##################################### " <<std::endl;
+//std::cout<<" ##################################### " <<std::endl;
+
             }
 //std::cout<<" Proc("<<_pCommunicator->rank()<<") <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< "<<std::endl;
 
@@ -278,7 +281,7 @@ std::cout<<" ##################################### " <<std::endl;
                 Timer chrono;
                 chrono.start();
 #endif
-std::cout << "Received prime: " << pp << std::endl;
+//std::cout << "Received prime: " << pp << std::endl;
 
                 Domain D(pp);
                 if (!_builderInitialized) {
@@ -417,19 +420,19 @@ std::cout << "Received prime: " << pp << std::endl;
                 double endtime = omp_get_wtime();
 //                std::cout << " process(" << _pCommunicator->rank() << ") used total CPU time (seconds): " << endtime - starttime << std::endl;
             }
+
         }
 
         void master_recv_residue(BlasVector<Domain>& residue, int& pp, size_t& taskCount)
         {
             residue.resize(residue.size() + 1);
-std::cout<<" Proc("<<_pCommunicator->rank()<<") >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "<<std::endl;
+//std::cout<<" Proc("<<_pCommunicator->rank()<<") >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "<<std::endl;
             _pCommunicator->recv(residue.begin(), residue.end(), MPI_ANY_SOURCE, 0);
-std::cout<<" Proc("<<_pCommunicator->rank()<<") <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< "<<std::endl;
+//std::cout<<" Proc("<<_pCommunicator->rank()<<") <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< "<<std::endl;
             pp = residue.back();
             residue.resize(residue.size() - 1);
             taskCount -= 1;
         }
-
 
     };
 }
