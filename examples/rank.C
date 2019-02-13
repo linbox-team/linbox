@@ -64,7 +64,8 @@ int main (int argc, char **argv)
 
 	size_t r;
 
-	Givaro::QField<Givaro::Rational> ZZ;
+        //Givaro::QField<Givaro::Rational> ZZ;
+	Givaro::ZRing<Givaro::Integer> ZZ;
 	LinBox::Timer tim ; tim.clear() ; tim.start();
 	MatrixStream<Givaro::QField<Givaro::Rational>> ms( ZZ, input );
 	SparseMatrix<Givaro::QField<Givaro::Rational>, SP_STOR> A ( ms );
