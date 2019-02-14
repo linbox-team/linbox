@@ -93,7 +93,10 @@ namespace LinBox {
      * - Method::Lanczos
      *      - ModularTag > `LanczosSolver`
      *      - Otherwise  > Error
-     * - @fixme Lanczos and others... (from bbsolve.h)
+     * - Method::BlockLanczos
+     *      - ModularTag > `MGBlockLanczosSolver`
+     *      - Otherwise  > Error
+     * - @fixme NumSym and others... (from solve.h?)
      *
      * @param [out] x solution, can be a rational solution (vector of numerators and one denominator)
      * @param [in]  A matrix

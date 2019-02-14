@@ -127,6 +127,7 @@ namespace LinBox {
         DEFINE_METHOD(Blackbox);
         DEFINE_METHOD(Wiedemann);
         DEFINE_METHOD(Lanczos);
+        DEFINE_METHOD(BlockLanczos);
 
         // @deprecated Blackbox methods, kept but not tested.
         DEFINE_METHOD(BlockWiedemann);

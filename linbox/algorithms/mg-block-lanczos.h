@@ -76,7 +76,8 @@ namespace LinBox
 		 */
 		MGBlockLanczosSolver (const Field &F, const BlockLanczosTraits &traits) :
 			_traits (traits), _field (&F), _VD (F), _MD (F), _randiter (F)
-			,_AV(F)
+			,_AV(F), _VTAV(F), _AVTAVSST_VTAV(F), _matT(F), _DEF(F)
+            , _x(F), _y(F), _b(F), _tmp(F), _tmp1(F), _matM(F)
 			, _block (traits.blockingFactor ())
 		{
 			init_temps ();
@@ -90,7 +91,8 @@ namespace LinBox
 		 */
 		MGBlockLanczosSolver (const Field &F, const BlockLanczosTraits &traits, typename Field::RandIter r) :
 			_traits (traits), _field (&F), _VD (F), _MD (F), _randiter (r)
-			,_AV(F)
+			,_AV(F), _VTAV(F), _AVTAVSST_VTAV(F), _matT(F), _DEF(F)
+            , _x(F), _y(F), _b(F), _tmp(F), _tmp1(F), _matM(F)
 			, _block (traits.blockingFactor ())
 		{
 			init_temps ();

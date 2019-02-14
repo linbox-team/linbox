@@ -137,11 +137,10 @@ namespace LinBox {
         commentator().start("solve.coppersmith.modular");
         linbox_check((A.coldim() != x.size()) || (A.rowdim() != b.size()));
 
-        // @fixme This does not work
-        // using Domain = MatrixDomain<typename Matrix::Field>;
-        // Domain domain(A.field());
-        // CoppersmithSolver<Domain> coppersmithSolver(domain);
-        // coppersmithSolver.solveNonSingular(x, A, b);
+        using Domain = MatrixDomain<typename Matrix::Field>;
+        Domain domain(A.field());
+        CoppersmithSolver<Domain> coppersmithSolver(domain);
+        coppersmithSolver.solveNonSingular(x, A, b);
 
         commentator().stop("solve.coppersmith.modular");
 
