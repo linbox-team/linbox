@@ -21,6 +21,7 @@
  */
 
 #include <linbox/algorithms/lanczos.h>
+#include <linbox/algorithms/mg-block-lanczos.h>
 
 namespace LinBox {
     //
@@ -50,5 +51,40 @@ namespace LinBox {
         Solver solver(A.field(), newM);
 
         return solver.solve(A, x, b);
+    }
+
+    //
+    // BlockLanczos
+    //
+
+    /**
+     * \brief Solve specialisation for BlockLanczos.
+     */
+    template <class ResultVector, class Matrix, class Vector, class CategoryTag>
+    ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag,
+                        const MethodWIP::BlockLanczos& m)
+    {
+        throw LinboxError("MethodWIP::BlockLanczos can only be used with RingCategories::ModularTag.");
+    }
+
+    /**
+     * \brief Solve specialisation for BlockLanczos with ModularTag.
+     */
+    template <class ResultVector, class Matrix, class Vector>
+    ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const RingCategories::ModularTag& tag,
+                        const MethodWIP::BlockLanczos& m)
+    {
+        using Solver = MGBlockLanczosSolver<typename Matrix::Field>;
+        // @fixme Just pass m here, when everything is forwarded correctly
+        Method::BlockLanczos newM;
+        Solver solver(A.field(), newM);
+
+        bool solveResult = solver.solve(A, x, b);
+
+        if (!solveResult) {
+            /* @fixme Decide what to do consistently */
+        }
+
+        return x;
     }
 }
