@@ -22,8 +22,8 @@
 
 #pragma once
 
-#include <linbox/solutions/methods-wip.h>
 #include <linbox/matrix/dense-matrix.h>
+#include <linbox/solutions/methods-wip.h>
 
 namespace {
 // @fixme This should be configured with autotune or something.
@@ -69,6 +69,26 @@ namespace LinBox {
         MethodWIP::DixonAuto method(m);
         method.iterationMethod = m;
         return solve(x, A, b, tag, method);
+    }
+
+    /**
+     * \brief Solve specialisation for Auto with DenseMatrix and non-IntegerTag.
+     */
+    template <class ResultVector, class Field, class Vector, class CategoryTag>
+    typename std::enable_if<!std::is_same<CategoryTag, RingCategories::IntegerTag>::value, ResultVector&>::type solve(
+        ResultVector& x, const DenseMatrix<Field>& A, const Vector& b, const CategoryTag& tag, const MethodWIP::Auto& m)
+    {
+        return solve(x, A, b, tag, reinterpret_cast<const MethodWIP::DenseElimination&>(m));
+    }
+
+    /**
+     * \brief Solve specialisation for Auto with SparseMatrix and non-IntegerTag.
+     */
+    template <class ResultVector, class... MatrixArgs, class Vector, class CategoryTag>
+    typename std::enable_if<!std::is_same<CategoryTag, RingCategories::IntegerTag>::value, ResultVector&>::type solve(
+        ResultVector& x, const SparseMatrix<MatrixArgs...>& A, const Vector& b, const CategoryTag& tag, const MethodWIP::Auto& m)
+    {
+        return solve(x, A, b, tag, reinterpret_cast<const MethodWIP::SparseElimination&>(m));
     }
 
     //
