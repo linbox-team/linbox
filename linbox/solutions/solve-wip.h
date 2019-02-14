@@ -83,13 +83,16 @@ namespace LinBox {
      * - Method::Blackbox > Method::Wiedemann
      * - Method::Wiedemann
      *      - ModularTag > `WiedemannSolver`
-     *      - Otherwise > Error
+     *      - Otherwise  > Error
      * - Method::BlockWiedemann [@deprecated, not tested]
      *      - ModularTag > `BlockWiedemannSolver`
-     *      - Otherwise > Error
+     *      - Otherwise  > Error
      * - Method::Coppersmith [@deprecated, not tested]
      *      - ModularTag > `CoppersmithSolver`
-     *      - Otherwise > Error
+     *      - Otherwise  > Error
+     * - Method::Lanczos
+     *      - ModularTag > `LanczosSolver`
+     *      - Otherwise  > Error
      * - @fixme Lanczos and others... (from bbsolve.h)
      *
      * @param [out] x solution, can be a rational solution (vector of numerators and one denominator)
@@ -205,8 +208,9 @@ namespace LinBox {
 #include "./solve/solve-cra.h"
 #include "./solve/solve-dixon.h"
 
-// @fixme What are those for?
+// Blackbox
 #include "./solve/solve-wiedemann.h"
+#include "./solve/solve-lanczos.h"
 
 // #include "./solve/solvein.h" @fixme
 

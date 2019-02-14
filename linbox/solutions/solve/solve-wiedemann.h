@@ -59,8 +59,7 @@ namespace LinBox {
 
         // @todo Getting certificateOfInconsistency is a design error,
         // we should give a pointer to that to be allowed to pass nullptr.
-        Vector certificateOfInconsistency(A.field());
-        VectorWrapper::ensureDim(certificateOfInconsistency, A.rowdim());
+        Vector certificateOfInconsistency(A.field(), A.rowdim());
         auto solverResult = solver.solve(A, x, b, certificateOfInconsistency);
 
         switch (solverResult) {
@@ -78,6 +77,7 @@ namespace LinBox {
 
     //
     // BlockWiedemann
+    // @deprecated Kept but not tested.
     //
 
     /**
@@ -114,6 +114,7 @@ namespace LinBox {
 
     //
     // Coppersmith
+    // @deprecated Kept but not tested.
     //
 
     /**
