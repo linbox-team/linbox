@@ -5,20 +5,20 @@
  *
  * ------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -117,7 +117,7 @@ namespace LinBox
 					VectorWrapper::ensureDim (y, A.coldim ());
 
 					stream >> d1;
-					Diagonal<Field, typename VectorTraits<LVector>::VectorCategory> D (field(), d1);
+					Diagonal<Field, typename VectorTraits<LVector>::VectorCategory> D (d1);
 					Compose<Blackbox, Diagonal<Field, typename VectorTraits<LVector>::VectorCategory> > B (&A, &D);
 
 					report << "Random D: ";
@@ -136,7 +136,7 @@ namespace LinBox
 					VectorWrapper::ensureDim (bp, A.coldim ());
 
 					stream >> d1;
-					Diagonal<Field, typename VectorTraits<LVector>::VectorCategory> D (field(), d1);
+					Diagonal<Field, typename VectorTraits<LVector>::VectorCategory> D (d1);
 					Transpose<Blackbox> AT (&A);
 					Compose<Diagonal<Field, typename VectorTraits<LVector>::VectorCategory>, Blackbox> B1 (&D, &A);
 					Compose<Transpose<Blackbox>, Compose<Diagonal<Field, typename VectorTraits<LVector>::VectorCategory>, Blackbox> > B (&AT, &B1);
@@ -162,8 +162,8 @@ namespace LinBox
 					VectorWrapper::ensureDim (y, A.coldim ());
 
 					stream >> d1 >> d2;
-					Diagonal<Field, typename VectorTraits<LVector>::VectorCategory> D1 (field(), d1);
-					Diagonal<Field, typename VectorTraits<LVector>::VectorCategory> D2 (field(), d2);
+					Diagonal<Field, typename VectorTraits<LVector>::VectorCategory> D1 (d1);
+					Diagonal<Field, typename VectorTraits<LVector>::VectorCategory> D2 (d2);
 					Transpose<Blackbox> AT (&A);
 
 					Compose<Blackbox,

@@ -13,7 +13,7 @@ void run_integer(Communicator& communicator, size_t dimension) {
     b.setEntry(0, 4);
     b.setEntry(1, 6);
 
-    BlasMatrix<Field> A(F, dimension, dimension);
+    DenseMatrix<Field> A(F, dimension, dimension);
     A.setEntry(0, 0, 4);
     A.setEntry(0, 1, 0);
     A.setEntry(1, 0, 0);
@@ -105,15 +105,17 @@ int main(void)
     run_integer<Givaro::ZRing<Integer>, MethodWIP::DixonAuto>(communicator, 2);
     run_integer<Givaro::ZRing<Integer>, MethodWIP::DixonAuto>(communicator, 3);
 
-    run_modular<BlasMatrix<Givaro::Modular<double>>, MethodWIP::Auto>();
-    run_modular<BlasMatrix<Givaro::Modular<double>>, MethodWIP::DenseElimination>();
-    run_modular<BlasMatrix<Givaro::Modular<double>>, MethodWIP::SparseElimination>();
-    // run_modular<BlasMatrix<Givaro::Modular<double>>, MethodWIP::Wiedemann>(); // @fixme Can't compile
+    run_modular<DenseMatrix<Givaro::Modular<double>>, MethodWIP::Auto>();
+    run_modular<DenseMatrix<Givaro::Modular<double>>, MethodWIP::DenseElimination>();
+    run_modular<DenseMatrix<Givaro::Modular<double>>, MethodWIP::SparseElimination>();
+    // run_modular<DenseMatrix<Givaro::Modular<double>>, MethodWIP::Wiedemann>(); // @fixme Can't compile
     run_modular<SparseMatrix<Givaro::Modular<double>>, MethodWIP::Wiedemann>();
+    // run_modular<DenseMatrix<Givaro::Modular<double>>, MethodWIP::Lanczos>(); // @fixme Segmentation fault
+    // run_modular<SparseMatrix<Givaro::Modular<double>>, MethodWIP::Lanczos>(); // @fixme Segmentation fault
 
     // @deprecated These do not compile anymore
-    // run_modular<BlasMatrix<Givaro::Modular<double>>, MethodWIP::BlockWiedemann>();
-    // run_modular<BlasMatrix<Givaro::Modular<double>>, MethodWIP::Coppersmith>();
+    // run_modular<DenseMatrix<Givaro::Modular<double>>, MethodWIP::BlockWiedemann>();
+    // run_modular<DenseMatrix<Givaro::Modular<double>>, MethodWIP::Coppersmith>();
 
     return 0;
 }
