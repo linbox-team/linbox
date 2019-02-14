@@ -48,9 +48,11 @@ namespace LinBox {
      * CategoryTag is defaulted to FieldTraits<Matrix::Field>::categoryTag().
      *
      * - Method::Auto
-     *      - DenseMatrix   > Method::Elimination
-     *      - Otherwise     > Method::Blackbox (or Elimination given the size of the matrix)
-     *      - @fixme Why don't use Elimination if sparseMatrix?
+     *      - DenseMatrix   > Method::DenseElimination
+     *      - SparseMatrix  > Method::SparseElimination
+     *      - Otherwise
+     *      |   - Row or column dimension < LINBOX_USE_BLACKBOX_THRESHOLD > Method::Elimination
+     *      |   - Otherwise                                               > Method::Blackbox
      * - Method::Elimination
      *      - SparseMatrix  > Method::SparseElimination
      *      - Otherwise     > Method::DenseElimination
@@ -60,12 +62,12 @@ namespace LinBox {
      *      |   - IntegerTag
      *      |   |   - RatVector > Method::Dixon
      *      |   |   - Otherwise > Error
-     *      |   - Otherwise > @fixme NIY
+     *      |   - Otherwise > Error (Not implemented)
      *      - Otherwise > Method::DenseElimination but copy to a DenseMatrix first
      * - Method::SparseElimination
      *      - SparseMatrix
-     *          - IntegerTag > Method::Dixon
-     *          - Otherwise > `GaussDomain<GF2>::solveInPlace`
+     *      |   - IntegerTag > Method::Dixon
+     *      |   - Otherwise > `GaussDomain<GF2>::solveInPlace`
      *      - Otherwise > Method::SparseElimination but copy to SparseMatrix first
      * - Method::Cra
      *      - IntegerTag

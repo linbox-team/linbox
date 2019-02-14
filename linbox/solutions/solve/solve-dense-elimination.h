@@ -30,12 +30,18 @@ namespace LinBox {
     /**
      * \brief Solve specialisation for DenseElimination.
      */
-    template <class ResultVector, class Matrix, class Vector, class CategoryTag>
-    ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag,
+    template <class ResultVector, class Matrix, class Vector>
+    ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const RingCategories::ModularTag& tag,
                         const MethodWIP::DenseElimination& m)
     {
-        // @fixme Original code would copy the sparse or other to a DenseMatrix
-        throw NotImplementedYet("Dense eliminating.");
+        commentator().report(Commentator::LEVEL_UNIMPORTANT,
+                             "Warning: Solve implicitly convert to a dense matrix because of MethodWIP::DenseElimination."
+                             "This is usually expected behavior for small-size blackboxes.");
+
+        // Copy the matrix into a dense one.
+        DenseMatrix<typename Matrix::Field> ACopy(A);
+
+        return solve(x, ACopy, b, tag, m);
     }
 
     /**
