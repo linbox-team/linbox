@@ -95,7 +95,6 @@ BASIC_TESTS =					\
 FULLCHECK_TESTS =               \
 	test-bitonic-sort           \
     test-one-invariant-factor   \
-    test-poweroftwomodular      \
 	test-blackbox-block-container \
     test-sparse-map-map         \
 	test-blas-domain            \
@@ -327,7 +326,6 @@ test_param_fuzzy_SOURCES =              test-param-fuzzy.C
 test_permutation_SOURCES =              test-permutation.C
 test_plain_domain_SOURCES =             test-plain-domain.C
 test_poly_det_SOURCES =                 test-poly-det.C
-test_poweroftwomodular_SOURCES =	test-poweroftwomodular.C test-field.h
 test_qlup_SOURCES =                     test-qlup.C
 test_quad_matrix_SOURCES =              test-quad-matrix.C
 test_randiter_nonzero_prime_SOURCES =   test-randiter-nonzero-prime.C
