@@ -6,7 +6,7 @@
 using namespace LinBox;
 
 template <class Field, class Method>
-void run_rational(Communicator& communicator, size_t dimension) {
+void run_integer(Communicator& communicator, size_t dimension) {
     Field F;
 
     BlasVector<Field> b(F, dimension);
@@ -59,15 +59,17 @@ void run_rational(Communicator& communicator, size_t dimension) {
     }
 }
 
-template <class Field, class Method>
-void run_2x2() {
+template <class Matrix, class Method>
+void run_modular() {
+    using Field = typename Matrix::Field;
+
     Field F(101);
 
     BlasVector<Field> b(F, 2);
     b.setEntry(0, 4);
     b.setEntry(1, 6);
 
-    BlasMatrix<Field> A(F, 2, 2);
+    Matrix A(F, 2, 2);
     A.setEntry(0, 0, 4);
     A.setEntry(0, 1, 0);
     A.setEntry(1, 0, 0);
@@ -97,20 +99,21 @@ int main(void)
 
     commentator().setReportStream(std::cout);
 
-    run_rational<Givaro::ZRing<Integer>, MethodWIP::Auto>(communicator, 2);
-    run_rational<Givaro::ZRing<Integer>, MethodWIP::CraAuto>(communicator, 2);
-    run_rational<Givaro::ZRing<Integer>, MethodWIP::CraAuto>(communicator, 3);
-    run_rational<Givaro::ZRing<Integer>, MethodWIP::DixonAuto>(communicator, 2);
-    run_rational<Givaro::ZRing<Integer>, MethodWIP::DixonAuto>(communicator, 3);
+    run_integer<Givaro::ZRing<Integer>, MethodWIP::Auto>(communicator, 2);
+    run_integer<Givaro::ZRing<Integer>, MethodWIP::CraAuto>(communicator, 2);
+    run_integer<Givaro::ZRing<Integer>, MethodWIP::CraAuto>(communicator, 3);
+    run_integer<Givaro::ZRing<Integer>, MethodWIP::DixonAuto>(communicator, 2);
+    run_integer<Givaro::ZRing<Integer>, MethodWIP::DixonAuto>(communicator, 3);
 
-    run_2x2<Givaro::Modular<float>, MethodWIP::Auto>();
-    run_2x2<Givaro::Modular<float>, MethodWIP::DenseElimination>();
-    run_2x2<Givaro::Modular<float>, MethodWIP::SparseElimination>();
-    // run_2x2<Givaro::Modular<float>, MethodWIP::Wiedemann>(); @fixme Can't compile
+    run_modular<BlasMatrix<Givaro::Modular<double>>, MethodWIP::Auto>();
+    run_modular<BlasMatrix<Givaro::Modular<double>>, MethodWIP::DenseElimination>();
+    run_modular<BlasMatrix<Givaro::Modular<double>>, MethodWIP::SparseElimination>();
+    // run_modular<BlasMatrix<Givaro::Modular<double>>, MethodWIP::Wiedemann>(); // @fixme Can't compile
+    run_modular<SparseMatrix<Givaro::Modular<double>>, MethodWIP::Wiedemann>();
 
     // @deprecated These do not compile anymore
-    // run_2x2<Givaro::Modular<float>, MethodWIP::BlockWiedemann>();
-    // run_2x2<Givaro::Modular<float>, MethodWIP::Coppersmith>();
+    // run_modular<BlasMatrix<Givaro::Modular<double>>, MethodWIP::BlockWiedemann>();
+    // run_modular<BlasMatrix<Givaro::Modular<double>>, MethodWIP::Coppersmith>();
 
     return 0;
 }
