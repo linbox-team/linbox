@@ -96,7 +96,14 @@ namespace LinBox {
      * - Method::BlockLanczos
      *      - ModularTag > `MGBlockLanczosSolver`
      *      - Otherwise  > Error
-     * - @fixme NumSym and others... (from solve.h?)
+     * - Method::NumericSymbolicOverlap
+     *      - IntegerTag
+     *      |   - DenseMatrix > `RationalSolverSN<Ring, LPS<FMatrix>>`
+     *      |   - Otherwise   > Error
+     *      - Otherwise  > Error
+     * - Method::NumericSymbolicNorm
+     *      - IntegerTag > `` @fixme
+     *      - Otherwise  > Error
      *
      * @param [out] x solution, can be a rational solution (vector of numerators and one denominator)
      * @param [in]  A matrix
@@ -143,10 +150,15 @@ namespace LinBox {
         using Ring = typename Vector::Field;
         using Element = typename Ring::Element;
 
-        BlasVector<Ring> xNum(x.field(), x.size());
+        BlasVector<Ring> xNum(b.field(), x.size());
         Element xDen;
 
         solve(xNum, xDen, A, b, tag, m);
+
+        // @fixme What to do when denominator is zero? (Computation failure)
+        if (b.field().isZero(xDen)) {
+            b.field().assign(xDen, b.field().one);
+        }
 
         // Copy result back to ResultVector
         auto iXNum = xNum.begin();
@@ -210,6 +222,7 @@ namespace LinBox {
 // Integer-based
 #include "./solve/solve-cra.h"
 #include "./solve/solve-dixon.h"
+#include "./solve/solve-numeric-symbolic.h"
 
 // Blackbox
 #include "./solve/solve-wiedemann.h"
