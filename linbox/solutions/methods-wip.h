@@ -141,7 +141,7 @@ namespace LinBox {
 
         // MethodWIP::Dixon uses Dixon's p-adic lifting.
         // (Numerische Mathematik - Dixon 1982)
-        DEFINE_COMPOUND_METHOD(Dixon, RingCategories::IntegerTag);
+        DEFINE_METHOD(Dixon, RingCategories::IntegerTag);
 
         // MethodWIP::Cra uses the chinese remainder algorithm
         // to solve the problem on multiple modular domains,
@@ -152,14 +152,15 @@ namespace LinBox {
         // (Numeric symbolic overlap iteration - Saunders, Wood, Youse ISSAC 2011)
         DEFINE_METHOD(NumericSymbolicOverlap, RingCategories::IntegerTag);
 
+        // MethodWIP::NumericSymbolicNorm uses Wan's (older) norm-based numeric/symbolic iteration.
         // (Numeric symbolic norm iteration - Saunders, Wan ISSAC 2004)
-        // @fixme Add NumericSymbolicNorm
+        DEFINE_METHOD(NumericSymbolicNorm, RingCategories::IntegerTag);
 
         //
         // Blackbox methods
         //
 
-        // MethodsWIP::Blackbox
+        // MethodsWIP::Blackbox uses the best available Blackbox method below.
         DEFINE_METHOD(Blackbox, void);
 
         // MethodWIP::Wiedemann uses a blackbox algorithm
@@ -171,7 +172,7 @@ namespace LinBox {
         // (On Randomized Lanczos Algorithms - Kaltofel Eberly ISAAC 1997)
         DEFINE_METHOD(Lanczos, void);
 
-        // (Linear algebra and its applications - Coppersmith 1993)
+        // (Linear Algebra and its Applications - Coppersmith 1993)
         DEFINE_METHOD(BlockLanczos, void);
 
         //

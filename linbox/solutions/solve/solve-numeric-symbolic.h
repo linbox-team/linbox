@@ -32,7 +32,7 @@
 namespace LinBox {
     //
     // Numeric Symbolic Overlap
-    // Youse's variant.
+    // Youse's variant of Numeric Symbolic rational solve.
     //
 
     template <class Matrix, class Vector>
@@ -46,7 +46,7 @@ namespace LinBox {
      * \brief Solve specialisation for NumericSymbolicOverlap with IntegerTag on DenseMatrix.
      */
     template <class Ring, class Vector>
-    inline void solve(Vector& xNum, typename Vector::Field::Element& xDen, const DenseMatrix<Ring>& A, const Vector& b,
+    inline void solve(Vector& xNum, typename Ring::Element& xDen, const DenseMatrix<Ring>& A, const Vector& b,
                       const RingCategories::IntegerTag& tag, const MethodWIP::NumericSymbolicOverlap& m)
     {
         commentator().start("solve.numeric-symbolic-overlap.integer");
@@ -66,5 +66,40 @@ namespace LinBox {
         }
 
         commentator().stop("solve.numeric-symbolic-overlap.integer");
+    }
+
+    //
+    // Numeric Symbolic Norm
+    // Wan's variant of Numeric Symbolic rational solve.
+    //
+
+    template <class Matrix, class Vector>
+    inline void solve(Vector& xNum, typename Vector::Field::Element& xDen, const Matrix& A, const Vector& b,
+                      const RingCategories::IntegerTag& tag, const MethodWIP::NumericSymbolicNorm& m)
+    {
+        throw LinBoxError("Rational solve with MethodWIP::NumericSymbolicNorm only works with DenseMatrix.");
+    }
+
+    /**
+     * \brief Solve specialisation for NumericSymbolicNorm with IntegerTag on DenseMatrix.
+     */
+    template <class Ring, class Vector>
+    inline void solve(Vector& xNum, typename Ring::Element& xDen, const DenseMatrix<Ring>& A, const Vector& b,
+                      const RingCategories::IntegerTag& tag, const MethodWIP::NumericSymbolicNorm& m)
+    {
+        commentator().start("solve.numeric-symbolic-norm.integer");
+        linbox_check((A.coldim() != x.size()) || (A.rowdim() != b.size()));
+
+        using Field = Givaro::Modular<int32_t>; // @fixme Why not double?
+        using PrimeGenerator = PrimeIterator<IteratorCategories::HeuristicTag>;
+
+        RationalSolver<Ring, Field, PrimeGenerator, Method::NumSymNorm> rsolver(b.field());
+
+        int status = rsolver.solve(xNum, xDen, A, b);
+        if (status) {
+            /* @fixme Consistently decide what to do */
+        }
+
+        commentator().stop("solve.numeric-symbolic-norm.integer");
     }
 }

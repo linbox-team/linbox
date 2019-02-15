@@ -70,8 +70,6 @@ namespace LinBox {
     ResultVector& solve(ResultVector& x, const DenseMatrix<Field>& A, const Vector& b, const RingCategories::IntegerTag& tag,
                         const MethodWIP::DenseElimination& m)
     {
-        MethodWIP::Dixon<MethodWIP::DenseElimination> method(m);
-        method.iterationMethod = m;
-        return solve(x, A, b, tag, method);
+        return solve(x, A, b, tag, reinterpret_cast<const MethodWIP::Dixon&>(m));
     }
 }
