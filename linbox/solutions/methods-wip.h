@@ -32,21 +32,23 @@
         : MethodBase(methodBase)                                                                                                 \
     {                                                                                                                            \
     }
-#define DEFINE_METHOD(MethodName)                                                                                                \
-    struct MethodName : public MethodBase {                                                                                      \
-        using CategoryTag = void;                                                                                                \
-        static std::string name() { return std::string("Method::") + #MethodName; }                                              \
-        DEFINE_METHOD_CONTENT(MethodName)                                                                                        \
+
+#define DEFINE_METHOD(_MethodName, _CategoryTag)                                                                                 \
+    struct _MethodName : public MethodBase {                                                                                     \
+        using CategoryTag = _CategoryTag;                                                                                        \
+        static std::string name() { return std::string("Method::") + #_MethodName; }                                             \
+        DEFINE_METHOD_CONTENT(_MethodName)                                                                                       \
     };
-#define DEFINE_INTEGER_METHOD(MethodName)                                                                                        \
+
+#define DEFINE_COMPOUND_METHOD(_MethodName, _CategoryTag)                                                                        \
     template <class IterationMethod>                                                                                             \
-    struct MethodName : public MethodBase {                                                                                      \
-        using CategoryTag = RingCategories::IntegerTag;                                                                          \
+    struct _MethodName : public MethodBase {                                                                                     \
+        using CategoryTag = _CategoryTag;                                                                                        \
         IterationMethod iterationMethod;                                                                                         \
-        static std::string name() { return std::string("Method::") + #MethodName "<" + IterationMethod::name() + ">"; }          \
-        DEFINE_METHOD_CONTENT(MethodName)                                                                                        \
+        static std::string name() { return std::string("Method::") + #_MethodName "<" + IterationMethod::name() + ">"; }         \
+        DEFINE_METHOD_CONTENT(_MethodName)                                                                                       \
     };                                                                                                                           \
-    using MethodName##Auto = MethodName<MethodWIP::Auto>;
+    using _MethodName##Auto = _MethodName<MethodWIP::Auto>;
 
 namespace LinBox {
 
@@ -112,26 +114,28 @@ namespace LinBox {
      * Define which method to use when working on a system.
      */
     struct MethodWIP {
-        DEFINE_METHOD(Auto);
+        DEFINE_METHOD(Auto, void);
 
         // Elimination methods
-        DEFINE_METHOD(Elimination);
-        DEFINE_METHOD(DenseElimination);
-        DEFINE_METHOD(SparseElimination);
+        DEFINE_METHOD(Elimination, void);
+        DEFINE_METHOD(DenseElimination, void);
+        DEFINE_METHOD(SparseElimination, void);
 
         // Integer-based methods
-        DEFINE_INTEGER_METHOD(Dixon);
-        DEFINE_INTEGER_METHOD(Cra);
+        DEFINE_COMPOUND_METHOD(Dixon, RingCategories::IntegerTag);
+        DEFINE_COMPOUND_METHOD(Cra, RingCategories::IntegerTag);
+        DEFINE_METHOD(NumericSymbolicOverlap, RingCategories::IntegerTag); // Youse's overlap-based numeric/symbolic iteration.
+        // @fixme Add NumericSymbolicNorm
 
         // Blackbox methods
-        DEFINE_METHOD(Blackbox);
-        DEFINE_METHOD(Wiedemann);
-        DEFINE_METHOD(Lanczos);
-        DEFINE_METHOD(BlockLanczos);
+        DEFINE_METHOD(Blackbox, void);
+        DEFINE_METHOD(Wiedemann, void);
+        DEFINE_METHOD(Lanczos, void);
+        DEFINE_METHOD(BlockLanczos, void);
 
         // @deprecated Blackbox methods, kept but not tested.
-        DEFINE_METHOD(BlockWiedemann);
-        DEFINE_METHOD(Coppersmith);
+        DEFINE_METHOD(BlockWiedemann, void);
+        DEFINE_METHOD(Coppersmith, void);
     };
 }
 
