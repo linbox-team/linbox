@@ -86,13 +86,18 @@ BASIC_TESTS =					\
 	test-charpoly			\
 	test-commentator			\
 	test-isposdef				\
-	test-ispossemidef
+	test-ispossemidef           \
+    test-hadamard-bound         \
+    test-serialization
 
 # All other tests.
 # The checker.C determines which of these are built and run in "make fullcheck".
 FULLCHECK_TESTS =               \
 	test-bitonic-sort           \
+    test-one-invariant-factor   \
+    test-poweroftwomodular      \
 	test-blackbox-block-container \
+    test-sparse-map-map         \
 	test-blas-domain            \
 	test-block-ring				\
 	test-block-wiedemann		\
@@ -181,7 +186,8 @@ FULLCHECK_TESTS =               \
 	test-tutorial				\
 	test-vector-domain			\
 	test-zero-one				\
-	test-weak-popov-form
+	test-weak-popov-form        \
+    test-mpi-comm
 
 # Really just one or two of these would be enough for target check.
 # The rest can be in target fullcheck.
