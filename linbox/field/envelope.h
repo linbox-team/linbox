@@ -1,9 +1,7 @@
 /* linbox/field/envelope.h
- * Copyright (C) 1999-2001 William J Turner,
- *               2001 Bradford Hovinen
+ * Copyright (C) The LinBox group
  *
- * Written by William J Turner <wjturner@math.ncsu.edu>,
- *            Bradford Hovinen <hovinen@cis.udel.edu>
+ * Written by Jean-Guillaume Dumas
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -23,11 +21,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  * ========LICENCE========
  *
- * ------------------------------------
- * 2002-05-14 William J. Turner <wjturner@acm.org>
- *
- * changed randIter to RandIter.
- * ------------------------------------
  */
 
 #ifndef __LINBOX_field_envelope_H
