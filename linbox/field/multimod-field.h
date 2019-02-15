@@ -39,7 +39,7 @@
 #include <givaro/modular.h>
 
 #include "linbox/vector/vector-domain.h"
-#include "linbox/field/field-interface.h"
+#include "linbox/field/field-documentation.h"
 #include "linbox/field/field-traits.h"
 #include "linbox/util/field-axpy.h"
 #include <cmath>
@@ -63,7 +63,7 @@ namespace LinBox
 		typedef RingCategories::ModularTag categoryTag;
 	};
 
-	class MultiModDouble : public FieldInterface {
+	class MultiModDouble : public FieldDocumentation {
 
 	protected:
 
