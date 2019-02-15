@@ -114,27 +114,74 @@ namespace LinBox {
      * Define which method to use when working on a system.
      */
     struct MethodWIP {
+        // MethodWIP::Auto chooses between all following methods,
+        // given the types and the dimensions of the problem.
         DEFINE_METHOD(Auto, void);
 
+        //
         // Elimination methods
+        //
+
+        // MethodWIP::Elimination forwards to MethodWIP::DenseElimination or MethodWIP::SparseElimination.
         DEFINE_METHOD(Elimination, void);
+
+        // MethodWIP::DenseElimination converts the matrix to dense one if necessary
+        // and is using a pivot to solve the system.
+        // (Gauss algorithm - Dumas, Giorgi, Pernet ISSAC 2004)
         DEFINE_METHOD(DenseElimination, void);
+
+        // MethodWIP::SparseElimination converts the matrix to sparse one if necessary
+        // and is using a pivot to solve the system.
+        // (Sparse gauss algorithm - Dumas, Villard CASC 2002)
         DEFINE_METHOD(SparseElimination, void);
 
+        //
         // Integer-based methods
+        //
+
+        // MethodWIP::Dixon uses Dixon's p-adic lifting.
+        // (Numerische Mathematik - Dixon 1982)
         DEFINE_COMPOUND_METHOD(Dixon, RingCategories::IntegerTag);
+
+        // MethodWIP::Cra uses the chinese remainder algorithm
+        // to solve the problem on multiple modular domains,
+        // and finally reconstruct the solution.
         DEFINE_COMPOUND_METHOD(Cra, RingCategories::IntegerTag);
-        DEFINE_METHOD(NumericSymbolicOverlap, RingCategories::IntegerTag); // Youse's overlap-based numeric/symbolic iteration.
+
+        // MethodWIP::NumericSymbolicOverlap uses Youse's overlap-based numeric/symbolic iteration.
+        // (Numeric symbolic overlap iteration - Saunders, Wood, Youse ISSAC 2011)
+        DEFINE_METHOD(NumericSymbolicOverlap, RingCategories::IntegerTag);
+
+        // (Numeric symbolic norm iteration - Saunders, Wan ISSAC 2004)
         // @fixme Add NumericSymbolicNorm
 
+        //
         // Blackbox methods
+        //
+
+        // MethodsWIP::Blackbox
         DEFINE_METHOD(Blackbox, void);
+
+        // MethodWIP::Wiedemann uses a blackbox algorithm
+        // that projects random vectors on the both sides of the matrix
+        // to find out the minpoly.
+        // (IEEE Transactions on Information Theory - Wiedemann 1986)
         DEFINE_METHOD(Wiedemann, void);
+
+        // (On Randomized Lanczos Algorithms - Kaltofel Eberly ISAAC 1997)
         DEFINE_METHOD(Lanczos, void);
+
+        // (Linear algebra and its applications - Coppersmith 1993)
         DEFINE_METHOD(BlockLanczos, void);
 
+        //
         // @deprecated Blackbox methods, kept but not tested.
+        //
+
+        // (Mathematics of Computations - Coppersmith 1994)
         DEFINE_METHOD(BlockWiedemann, void);
+
+        // (Mathematics of Computations - Coppersmith 1994)
         DEFINE_METHOD(Coppersmith, void);
     };
 }
