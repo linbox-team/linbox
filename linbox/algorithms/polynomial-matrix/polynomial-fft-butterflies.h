@@ -34,6 +34,7 @@
 #include "linbox/algorithms/polynomial-matrix/polynomial-fft-init.h"
 #include "linbox/algorithms/polynomial-matrix/simd-additional-functions.h"
 
+
 #define IS_INTEGRAL \
     typename std::enable_if<std::is_integral<typename Field::Element>::value>::type
 #define IS_FLOATING \
@@ -58,27 +59,20 @@ namespace LinBox {
 		FFT_butterflies(const FFT_init<Field>& f_i) : FFT_init<Field>(f_i) {}
 
 		inline void Butterfly_DIT_mod4p (Element& A, Element& B, const Element& alpha, const Element& alphap) {
-			using Compute_t = typename Field::Compute_t;
 			// Harvey's algorithm
 			// 0 <= A,B < 4*p, p < 2^32 / 4
 			// alphap = Floor(alpha * 2^ 32 / p])
 
-			// TODO : replace by substract if greater
 			if (A >= this->_dpl) A -= this->_dpl;
 
-			// TODO : replace by mul_mod_shoup
-			Element tmp = ((Element) alphap * (Compute_t)B) >> (8*sizeof(Element));
-			tmp = alpha * B - tmp * this->_pl;
+			Element tmp;
+			this->fld->mul_precomp_b (tmp, B, alpha, alphap);
 
-			// TODO : replace by add_r and sub_r
 			B = A + (this->_dpl - tmp);
-			//        B &= 0XFFFFFFFF;
 			A += tmp;
 		}
 
 		inline void Butterfly_DIF_mod2p (Element& A, Element& B, const Element& alpha, const Element& alphap) {
-			//std::cout<<A<<" $$ "<<B<<"("<<alpha<<","<<alphap<<" ) -> ";
-			using Compute_t = typename Field::Compute_t;
 			// Harvey's algorithm
 			// 0 <= A,B < 2*p, p < 2^32 / 4
 			// alphap = Floor(alpha * 2^ 32 / p])
@@ -91,10 +85,7 @@ namespace LinBox {
 
 			B = tmp + (this->_dpl - B);
 
-			tmp = ((Element) alphap * (Compute_t) B) >> (8*sizeof(Element));
-			B = alpha * B - tmp * this->_pl;
-			//B &= 0xFFFFFFFF;
-			//std::cout<<A<<" $$ "<<B<<"\n ";
+			this->fld->mul_precomp_b (B, B, alpha, alphap);
 		}
 
 	}; // FFT_butterflies<Field, 1>
