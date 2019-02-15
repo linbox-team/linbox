@@ -37,7 +37,7 @@ namespace LinBox {
      */
     template <class MatrixField, class Vector, class IterationMethod>
     void solve(Vector& xNum, typename Vector::Field::Element& xDen, const BlasMatrix<MatrixField>& A, const Vector& b,
-               const RingCategories::IntegerTag& tag, const MethodWIP::Dixon<IterationMethod>& m)
+               const RingCategories::IntegerTag& tag, const MethodWIP::Dixon& m)
     {
         commentator().start("solve.dixon.integer.dense");
         linbox_check((A.coldim() != xNum.size()) || (A.rowdim() != b.size()));

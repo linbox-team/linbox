@@ -66,9 +66,7 @@ namespace LinBox {
     ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const RingCategories::IntegerTag& tag,
                         const MethodWIP::Auto& m)
     {
-        MethodWIP::DixonAuto method(m);
-        method.iterationMethod = m;
-        return solve(x, A, b, tag, method);
+        return solve(x, A, b, tag, reinterpret_cast<const MethodWIP::Dixon&>(m));
     }
 
     /**
@@ -102,8 +100,6 @@ namespace LinBox {
     inline void solve(Vector& xNum, typename Vector::Field::Element& xDen, const Matrix& A, const Vector& b,
                       const RingCategories::IntegerTag& tag, const MethodWIP::Auto& m)
     {
-        MethodWIP::DixonAuto method(m);
-        method.iterationMethod = m;
-        solve(xNum, xDen, A, b, tag, method);
+        solve(xNum, xDen, A, b, tag, reinterpret_cast<const MethodWIP::Dixon&>(m));
     }
 }

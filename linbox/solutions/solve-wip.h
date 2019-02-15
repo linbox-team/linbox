@@ -45,7 +45,7 @@ namespace LinBox {
      *          which can be faster to compute if one doesn't expect a result in that case.
      *      - Inconsistent system: zero vector is returned. @fixme Not always true...
      *
-     * CategoryTag is defaulted to FieldTraits<Matrix::Field>::categoryTag().
+     * CategoryTag is defaulted to `FieldTraits<Matrix::Field>::categoryTag()` when omitted.
      *
      * - Method::Auto
      *      - DenseMatrix   > Method::DenseElimination
@@ -67,7 +67,7 @@ namespace LinBox {
      * - Method::SparseElimination
      *      - SparseMatrix
      *      |   - IntegerTag > Method::Dixon
-     *      |   - Otherwise > `GaussDomain<GF2>::solveInPlace`
+     *      |   - Otherwise > `GaussDomain<Field>::solveInPlace`
      *      - Otherwise > Method::SparseElimination but copy to SparseMatrix first
      * - Method::Cra
      *      - IntegerTag
@@ -102,7 +102,7 @@ namespace LinBox {
      *      |   - Otherwise   > Error
      *      - Otherwise  > Error
      * - Method::NumericSymbolicNorm
-     *      - IntegerTag > `` @fixme
+     *      - IntegerTag > `RationalSolver<..., Method::NumSymNorm>`
      *      - Otherwise  > Error
      *
      * @param [out] x solution, can be a rational solution (vector of numerators and one denominator)
