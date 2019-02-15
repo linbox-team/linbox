@@ -115,7 +115,7 @@ int main (int argc, char **argv)
     pass &= test_archetype<ModularExtended<float>>(101);
     pass &= test_archetype<ModularExtended<double>>(101);
     pass &= test_mongt<int32_t>(101);
-//     pass &= test_mongt<RecInt::ruint<7>>(101);
+    pass &= test_mongt<RecInt::ruint<7>>(101);
 
     return pass ? 0 : -1;
 }
