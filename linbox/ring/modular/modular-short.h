@@ -35,7 +35,6 @@
 #include "linbox/integer.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/ring/modular.h"
-#include "linbox/field/field-interface.h"
 #include "linbox/util/debug.h"
 #include "linbox/field/field-traits.h"
 
