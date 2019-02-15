@@ -1,7 +1,7 @@
-/* tests/test-givaro-zpz.C
- * Copyright (C) 2002 Pascal Giorgi
+/* tests/test-givaro-interfaces.C
+ * Copyright (C) 2019 The LinBox group
  *
- * Written by Pascal Giorgi  <pascal.giorgi@ens-lyon.fr>
+ * Written by Jean-Guillaume Dumas
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -13,7 +13,7 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.     See the GNU
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
@@ -23,7 +23,7 @@
  */
 
 
-/*! @file  tests/test-givaro-zpz.C
+/*! @file  tests/test-givaro-interfaces.C
  * @ingroup tests
  * @brief  no doc
  * @test NO DOC
@@ -51,15 +51,15 @@ using namespace LinBox;
 
 template<typename Inttype, typename FField>
 bool test_type_archetype(const Inttype& q) {
-	bool pass(true);
+    bool pass(true);
     FField * K = new FField(q);
-	FieldArchetype FA(K);
+    FieldArchetype FA(K);
     std::string str("Testing archetype with envelope of ");
     str += typeid(*K).name();
     str += " field";    
-	if (!testField<FieldArchetype> (FA, str.c_str()) )
-		pass = false;
-	delete K;
+    if (!testField<FieldArchetype> (FA, str.c_str()) )
+        pass = false;
+    delete K;
     return pass;
 }
 
@@ -77,24 +77,11 @@ bool test_mongt(const integer& q) {
 
 int main (int argc, char **argv)
 {
-    static integer q = 10733;
-	static size_t n = 10000;
-	static int iterations = 10;
-	static int e = 3;
-	static int trials = 10000;
-	static int categories = 1000;
-	static int hist_level = 10;
-
+    static integer q = 101;
     
     static Argument args[] = {
         { 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
-        { 'e', "-e E", "Use GF(q^e) for the extension field [1].",  TYPE_INT,     &e },
-		{ 'n', "-n N", "Set dimension of test vectors to NxN.", TYPE_INT,     &n },
-		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
-		{ 't', "-t T", "Number of trials for the random iterator test.", TYPE_INT, &trials },
-		{ 'c', "-c C", "Number of categories for the random iterator test.", TYPE_INT, &categories },
-		{ 'H', "-H H", "History level for random iterator test.", TYPE_INT, &hist_level },
-		END_OF_ARGUMENTS
+        END_OF_ARGUMENTS
     };
     
     parseArguments (argc, argv, args);
@@ -102,28 +89,23 @@ int main (int argc, char **argv)
 
     bool pass(true);
     
-    pass &= test_archetype<Modular< uint16_t>>(101);
-    pass &= test_archetype<Modular< uint32_t>>(101);
-	pass &= test_archetype<Modular< Givaro::Log16>>(101);
-	pass &= test_archetype<GFqDom<int64_t>>(101);
-    pass &= test_archetype<Modular< int16_t>> (101);
-	pass &= test_archetype<Modular< int32_t>>(101);
-    pass &= test_archetype<ModularBalanced<float>>(101);
-    pass &= test_archetype<ModularBalanced<double>>(101);
-    pass &= test_archetype<ModularBalanced<int32_t>>(101);
-    pass &= test_archetype<ModularBalanced<int64_t>>(101);
-    pass &= test_archetype<ModularExtended<float>>(101);
-    pass &= test_archetype<ModularExtended<double>>(101);
-    pass &= test_mongt<int32_t>(101);
-    pass &= test_mongt<RecInt::ruint<7>>(101);
+    pass &= test_archetype<Modular< uint16_t>>(q);
+    pass &= test_archetype<Modular< uint32_t>>(q);
+    pass &= test_archetype<Modular< Givaro::Log16>>(q);
+    pass &= test_archetype<GFqDom<int64_t>>(q);
+    pass &= test_archetype<Modular< int16_t>> (q);
+    pass &= test_archetype<Modular< int32_t>>(q);
+    pass &= test_archetype<ModularBalanced<float>>(q);
+    pass &= test_archetype<ModularBalanced<double>>(q);
+    pass &= test_archetype<ModularBalanced<int32_t>>(q);
+    pass &= test_archetype<ModularBalanced<int64_t>>(q);
+    pass &= test_archetype<ModularExtended<float>>(q);
+    pass &= test_archetype<ModularExtended<double>>(q);
+    pass &= test_mongt<int32_t>(q);
+    pass &= test_mongt<RecInt::ruint<7>>(q);
 
     return pass ? 0 : -1;
 }
 
-// Local Variables:
-// mode: C++
-// tab-width: 4
-// indent-tabs-mode: nil
-// c-basic-offset: 4
-// End:
+/* -*- mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 // vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
