@@ -52,9 +52,6 @@ REGISTER_TYPE_NAME(uint16_t);
 REGISTER_TYPE_NAME(uint32_t);
 REGISTER_TYPE_NAME(uint64_t);
 REGISTER_TYPE_NAME(uint128_t);
-REGISTER_TYPE_NAME(NoSimd);
-REGISTER_TYPE_NAME(Simd128);
-REGISTER_TYPE_NAME(Simd256);
 REGISTER_TYPE_NAME(Modular);
 REGISTER_TYPE_NAME(ModularExtended);
 
@@ -101,7 +98,7 @@ struct Checker {
         FFT_algorithms<Field, SimdType<Elt>> fft_algo (_fft);
         EltVector v(_n);
         string s;
-        s.append ("<"); s.append (TypeName<SimdType>()); s.append ("> ");
+        s.append ("<"); s.append (SimdType<Elt>::type_name); s.append ("> ");
         s.append (string (80-(s.size()+16), '.'));
 
         /* DIF : natural order => bitreversed order */
