@@ -48,9 +48,6 @@ REGISTER_TYPE_NAME(uint16_t);
 REGISTER_TYPE_NAME(uint32_t);
 REGISTER_TYPE_NAME(uint64_t);
 REGISTER_TYPE_NAME(uint128_t);
-REGISTER_TYPE_NAME(NoSimd);
-REGISTER_TYPE_NAME(Simd128);
-REGISTER_TYPE_NAME(Simd256);
 
 /******************************************************************************/
 template<typename Field>
