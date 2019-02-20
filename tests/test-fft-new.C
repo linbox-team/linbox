@@ -98,7 +98,7 @@ struct Checker {
         FFT_algorithms<Field, SimdType<Elt>> fft_algo (_fft);
         EltVector v(_n);
         string s;
-        s.append ("<"); s.append (SimdType<Elt>::type_name); s.append ("> ");
+        s.append ("<"); s.append(SimdType<Elt>::type_string()); s.append ("> ");
         s.append (string (80-(s.size()+16), '.'));
 
         /* DIF : natural order => bitreversed order */
