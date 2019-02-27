@@ -22,7 +22,7 @@
  * ========LICENCE========
  */
 
-/*! @file algorithms/cra-single.h
+/*! @file algorithms/cra-builder-single.h
  * @ingroup algorithms
  * @brief Chinese remaindering of a single value
  */
@@ -36,7 +36,7 @@
 #include "linbox/integer.h"
 #include "linbox/solutions/methods.h"
 #include "linbox/algorithms/cra-domain.h"
-#include "linbox/algorithms/cra-full-multip.h"
+#include "linbox/algorithms/cra-builder-full-multip.h"
 #include <vector>
 #include <array>
 #include <utility>
@@ -76,10 +76,10 @@ namespace LinBox
 	 *
 	 */
 	template<class Domain_Type>
-	struct SingleCRABase {
+	struct CraBuilderSingleBase {
 		typedef Domain_Type			Domain;
 		typedef typename Domain::Element DomainElement;
-		typedef SingleCRABase<Domain> Self_t;
+		typedef CraBuilderSingleBase<Domain> Self_t;
 
 	protected:
 		// PrimeProd*nextM_ is the modulus
@@ -198,7 +198,7 @@ namespace LinBox
 
 	public:
 
-		SingleCRABase() :
+		CraBuilderSingleBase() :
 			primeProd_(1U),
 			nextM_(1U)
 #ifdef _LB_CRATIMING
@@ -311,7 +311,7 @@ namespace LinBox
 			return primeProd_.bitsize() + nextM_.bitsize() - 1;
 		}
 
-		virtual ~SingleCRABase() {}
+		virtual ~CraBuilderSingleBase() {}
 
 #ifdef _LB_CRATIMING
 		void clearTimers() const
@@ -365,11 +365,11 @@ namespace LinBox
 	 *
 	 */
 	template<class Domain_Type>
-	struct EarlySingleCRA :public SingleCRABase<Domain_Type> {
-		typedef SingleCRABase<Domain_Type>	Base;
+	struct CraBuilderEarlySingle :public CraBuilderSingleBase<Domain_Type> {
+		typedef CraBuilderSingleBase<Domain_Type>	Base;
 		typedef Domain_Type			Domain;
 		typedef typename Domain::Element DomainElement;
-		typedef EarlySingleCRA<Domain> Self_t;
+		typedef CraBuilderEarlySingle<Domain> Self_t;
 
 		const unsigned int    EARLY_TERM_THRESHOLD;
 
@@ -382,7 +382,7 @@ namespace LinBox
 		 *
 		 * @param	EARLY how many unchanging iterations until termination.
 		 */
-		EarlySingleCRA(const size_t EARLY=DEFAULT_EARLY_TERM_THRESHOLD) :
+		CraBuilderEarlySingle(const size_t EARLY=DEFAULT_EARLY_TERM_THRESHOLD) :
 			EARLY_TERM_THRESHOLD((unsigned)EARLY-1),
 			occurency_(0U)
 		{ }
@@ -452,11 +452,11 @@ namespace LinBox
 	 *
 	 */
 	template<class Domain_Type>
-	struct ProbSingleCRA :public SingleCRABase<Domain_Type> {
-		typedef SingleCRABase<Domain_Type>	Base;
+	struct CraBuilderProbSingle :public CraBuilderSingleBase<Domain_Type> {
+		typedef CraBuilderSingleBase<Domain_Type>	Base;
 		typedef Domain_Type			Domain;
 		typedef typename Domain::Element DomainElement;
-		typedef ProbSingleCRA<Domain> Self_t;
+		typedef CraBuilderProbSingle<Domain> Self_t;
 
 	protected:
 		const size_t bitbound_;
@@ -478,7 +478,7 @@ namespace LinBox
 		 * @param	bitbound  An upper bound on the number of bits in the result.
 		 * @param	failprob  An upper bound on the probability of failure.
 		 */
-		ProbSingleCRA(const size_t bitbound, const double failprob = 0.001) :
+		CraBuilderProbSingle(const size_t bitbound, const double failprob = 0.001) :
 			bitbound_(bitbound),
 			failbound_(failprob),
 			curfailprob_(-1.)
@@ -561,12 +561,12 @@ namespace LinBox
 	 *
 	 */
 	template<class Domain_Type>
-	struct FullSingleCRA :public FullMultipCRA<Domain_Type>{
-		typedef SingleCRABase<Domain_Type>	Base;
+	struct CraBuilderFullSingle :public CraBuilderFullMultip<Domain_Type>{
+		typedef CraBuilderSingleBase<Domain_Type>	Base;
 		typedef Domain_Type			Domain;
 		typedef typename Domain::Element DomainElement;
-		typedef FullSingleCRA<Domain> Self_t;
-        using MultiParent = FullMultipCRA<Domain>;
+		typedef CraBuilderFullSingle<Domain> Self_t;
+        using MultiParent = CraBuilderFullMultip<Domain>;
 
 	public:
 		/** @brief Creates a new deterministic CRA object.
@@ -574,7 +574,7 @@ namespace LinBox
 		 * @param	bitbound  An upper bound on the number of bits in the result.
 		 * @param	failprob  An upper bound on the probability of failure.
 		 */
-		FullSingleCRA(const size_t bitbound) :
+		CraBuilderFullSingle(const size_t bitbound) :
             MultiParent(((double)bitbound) * log(2.0))
 		{
 		}

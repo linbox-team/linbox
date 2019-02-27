@@ -32,9 +32,9 @@
 
 #pragma once
 
-#include <linbox/algorithms/cra-mpi.h> // @fixme Rename this file cra-rational-solver-distributed
-#include <linbox/algorithms/rational-cra-full-multip.h>
-#include <linbox/algorithms/rational-cra.h> // @fixme Rename this file cra-rational-solver
+#include <linbox/algorithms/cra-distributed.h>
+#include <linbox/algorithms/rational-cra-builder-full-multip.h>
+#include <linbox/algorithms/rational-cra.h>
 #include <linbox/field/rebind.h>
 #include <linbox/randiter/random-prime.h>
 #include <linbox/solutions/hadamard-bound.h>
@@ -151,15 +151,14 @@ namespace LinBox {
         // Calling the right solver
         //
 
-        using CraAlgorithm = LinBox::FullMultipRatCRA<CraField>;
+        using CraAlgorithm = LinBox::RationalCraBuilderFullMultip<CraField>;
         if (dispatch == Dispatch::Sequential) {
-            LinBox::RationalRemainder<CraAlgorithm> cra(hadamardLogBound);
+            LinBox::RationalCra<CraAlgorithm> cra(hadamardLogBound);
             cra(num, den, iteration, primeGenerator);
         }
 #if defined(__LINBOX_HAVE_MPI)
         else if (dispatch == Dispatch::Distributed) {
-            // @fixme Rename RationalRemainderDistributed
-            LinBox::MPIratChineseRemainder<CraAlgorithm> cra(hadamardLogBound, m.pCommunicator);
+            LinBox::RationalCraDistributed<CraAlgorithm> cra(hadamardLogBound, m.pCommunicator);
             cra(num, den, iteration, primeGenerator);
         }
 #endif

@@ -36,23 +36,23 @@
 #define DISABLE_COMMENTATOR
 #include <omp.h>
 #include <set>
-#include "linbox/algorithms/cra-domain-seq.h"
+#include "linbox/algorithms/cra-domain-sequential.h"
 
 namespace LinBox
 {
 
 	template<class CRABase>
-	struct ChineseRemainderOMP : public ChineseRemainderSeq<CRABase> {
+	struct CraDomainOmp : public CraDomainSequential<CRABase> {
 		typedef typename CRABase::Domain	Domain;
 		typedef typename CRABase::DomainElement	DomainElement;
-		typedef ChineseRemainderSeq<CRABase>    Father_t;
+		typedef CraDomainSequential<CRABase>    Father_t;
 
 		template<class Param>
-		ChineseRemainderOMP(const Param& b) :
+		CraDomainOmp(const Param& b) :
 			Father_t(b)
 		{}
 
-		ChineseRemainderOMP(const CRABase& b) :
+		CraDomainOmp(const CRABase& b) :
 			Father_t(b)
 		{}
 

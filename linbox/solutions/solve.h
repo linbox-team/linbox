@@ -48,11 +48,11 @@
 #include "linbox/algorithms/bbsolve.h"
 
 #ifdef __LINBOX_HAVE_MPI
-#include "linbox/algorithms/cra-mpi.h"
+#include "linbox/algorithms/cra-distributed.h"
 #endif
 #include "linbox/algorithms/rational-cra2.h"
 
-#include "linbox/algorithms/varprec-cra-early-multip.h"
+#include "linbox/algorithms/varprec-cra-builder-early-multip.h"
 #include "linbox/algorithms/block-wiedemann.h"
 #include "linbox/algorithms/coppersmith.h"
 
@@ -347,7 +347,7 @@ namespace LinBox
         typedef Givaro::Modular<double> Field;
         PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
 
-        RationalRemainder2< VarPrecEarlyMultipCRA<Field> > rra(3UL);//using default RR method
+        RationalRemainder2< VarprecCraBuilderEarlyMultip<Field> > rra(3UL);//using default RR method
         IntegerModularSolve<BB,Vector,MethodTraits > iteration(A, b, m);
         integer den;
         BlasVector<Givaro::ZRing<Integer> > num(A.field(),A.coldim());
@@ -715,7 +715,7 @@ namespace LinBox
 
 #include "linbox/ring/modular.h"
 #include "linbox/algorithms/rational-cra.h"
-#include "linbox/algorithms/rational-cra-early-multip.h"
+#include "linbox/algorithms/rational-cra-builder-early-multip.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/matrix-hom.h"
 #include "linbox/vector/vector-traits.h"
@@ -774,7 +774,7 @@ namespace LinBox
         BlasVector<Givaro::ZRing<Integer>> num(A.field(),A.coldim());
 
         IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
-        MPIratChineseRemainder< EarlyMultipRatCRA< Givaro::Modular<double> > > mpicra(3UL, C);
+        RationalCraDistributed< RationalCraBuilderEarlyMultip< Givaro::Modular<double> > > mpicra(3UL, C);
 
         mpicra(num, den, iteration, genprime);
 
@@ -798,7 +798,7 @@ namespace LinBox
 
 
         PrimeIterator<IteratorCategories::HeuristicTag> genprime((unsigned int)( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)));
-            //         RationalRemainder< Givaro::Modular<double> > rra((double)
+            //         RationalCra< Givaro::Modular<double> > rra((double)
             //                                                  ( A.coldim()/2.0*log((double) A.coldim()) ) );
 
             // use of integer due to non genericity of rra (PG 2005-09-01)
@@ -806,7 +806,7 @@ namespace LinBox
         BlasVector<Givaro::ZRing<Integer>> num(A.field(),A.coldim());
 
         IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
-        RationalRemainder< EarlyMultipRatCRA< Givaro::Modular<double> > > rra(3UL);
+        RationalCra< RationalCraBuilderEarlyMultip< Givaro::Modular<double> > > rra(3UL);
         rra(num, den, iteration, genprime); //rra(x, d, iteration, genprime);
         typename Vector::iterator it_x= x.begin();
         typename BlasVector<Givaro::ZRing<Integer>>::const_iterator it_num= num.begin();
@@ -986,7 +986,7 @@ namespace LinBox
         commentator().start ("Rational CRA Solve", "Rsolve");
         size_t bits = (size_t)(26 -(int)ceil(log((double)A.rowdim())*0.7213475205));
         PrimeIterator<IteratorCategories::HeuristicTag> genprime( (unsigned) bits);
-        RationalRemainder< EarlyMultipRatCRA< Givaro::Modular<double> > > rra(3UL);
+        RationalCra< RationalCraBuilderEarlyMultip< Givaro::Modular<double> > > rra(3UL);
         IntegerModularSolve<BB,Vector,MethodTraits > iteration(A, b, m);
         Integer den;
         Givaro::ZRing<Integer> Z ;
@@ -1014,7 +1014,7 @@ namespace LinBox
         commentator().start ("Rational CRA Solve", "Rsolve");
         size_t bits = (size_t)(26 -(int)ceil(log((double)A.rowdim())*0.7213475205));
         PrimeIterator<IteratorCategories::HeuristicTag> genprime((unsigned) bits);
-        RationalRemainder< EarlyMultipRatCRA< Givaro::Modular<double> > > rra(3UL);
+        RationalCra< RationalCraBuilderEarlyMultip< Givaro::Modular<double> > > rra(3UL);
         IntegerModularSolve<BB,RatVector,MethodTraits > iteration(A, b, m);
         Integer den;
         Givaro::ZRing<Integer> Z;

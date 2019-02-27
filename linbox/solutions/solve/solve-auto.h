@@ -23,6 +23,7 @@
 #pragma once
 
 #include <linbox/matrix/dense-matrix.h>
+#include <linbox/matrix/sparse-matrix.h>
 #include <linbox/solutions/methods-wip.h>
 
 namespace {

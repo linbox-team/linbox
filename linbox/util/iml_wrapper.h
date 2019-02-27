@@ -64,7 +64,7 @@ namespace IML {
 		basisProd (const long len, const FiniteField *basis, mpz_t mp_prod) ;
 
 		void
-		ChineseRemainder (const long len, const mpz_t mp_prod, \
+		Cra (const long len, const mpz_t mp_prod, \
 				  const FiniteField *basis, const FiniteField *cmbasis, \
 				  const FiniteField *bdcoeff, Double *Ac, mpz_t mp_Ac);
 		void
