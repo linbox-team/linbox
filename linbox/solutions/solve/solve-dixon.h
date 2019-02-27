@@ -23,38 +23,56 @@
 #pragma once
 
 #include <linbox/algorithms/diophantine-solver.h>
-#include <linbox/algorithms/rational-solver.h> // @fixme Rename dixon-rational-solver?
+#include <linbox/algorithms/rational-solver.h> // @todo Rename dixon-rational-solver?
 #include <linbox/matrix/densematrix/blas-matrix.h>
 #include <linbox/matrix/sparse-matrix.h>
 
 namespace LinBox {
-    // @fixme TBR when RationalSolver is renamed
-    template <class... Args>
-    using DixonRationalSolver = RationalSolver<Args...>;
+    namespace {
+        // @fixme TBR when RationalSolver is renamed
+        template <class... Args>
+        using DixonRationalSolver = RationalSolver<Args...>;
+
+        template <class Matrix>
+        struct MethodForMatrix {
+        };
+
+        template <class Ring>
+        struct MethodForMatrix<DenseMatrix<Ring>> {
+            using type = Method::Dixon;
+        };
+
+        template <class Ring>
+        struct MethodForMatrix<SparseMatrix<Ring>> {
+            using type = Method::SparseElimination;
+        };
+    }
 
     /**
      * \brief Solve specialisation for Dixon on dense matrices.
      */
-    template <class MatrixField, class Vector, class IterationMethod>
-    void solve(Vector& xNum, typename Vector::Field::Element& xDen, const BlasMatrix<MatrixField>& A, const Vector& b,
+    template <class Matrix, class Vector>
+    void solve(Vector& xNum, typename Vector::Field::Element& xDen, const Matrix& A, const Vector& b,
                const RingCategories::IntegerTag& tag, const MethodWIP::Dixon& m)
     {
         commentator().start("solve.dixon.integer.dense");
         linbox_check((A.coldim() != xNum.size()) || (A.rowdim() != b.size()));
 
+        using Ring = typename Matrix::Field;
         using Field = Givaro::Modular<double>;
         using PrimeGenerator = PrimeIterator<IteratorCategories::HeuristicTag>;
         PrimeGenerator primeGenerator(FieldTraits<Field>::bestBitSize(A.coldim()));
 
-        // @fixme Why can't I use Method::Auto here?
-        using Solver = DixonRationalSolver<MatrixField, Field, PrimeGenerator, Method::Dixon>;
+        // @note The template argument Method::Dixon means that we want to use a dense algorithm.
+        using Solver = DixonRationalSolver<Ring, Field, PrimeGenerator, typename MethodForMatrix<Matrix>::type>;
         Solver dixonSolve(A.field(), primeGenerator);
 
         // Either A is known to be non-singular, or we just don't know yet.
         int maxTrials = m.trialsBeforeThrowing;
         bool singular = (m.singularity == Singularity::Singular) || (A.rowdim() != A.coldim());
+        SolverReturnStatus status = SS_OK;
         if (!singular) {
-            auto status = dixonSolve.solveNonsingular(xNum, xDen, A, b, false, maxTrials);
+            status = dixonSolve.solveNonsingular(xNum, xDen, A, b, false, maxTrials);
             singular = (status != SS_OK);
         }
 
@@ -64,21 +82,18 @@ namespace LinBox {
 
             if (m.solutionType == SolutionType::Diophantine) {
                 DiophantineSolver<Solver> diophantineSolve(dixonSolve);
-                diophantineSolve.diophantineSolve(xNum, xDen, A, b, maxTrials, level);
+                status = diophantineSolve.diophantineSolve(xNum, xDen, A, b, maxTrials, level);
             }
             else {
                 bool randomSolutionType = (m.solutionType == SolutionType::Random);
-                dixonSolve.monolithicSolve(xNum, xDen, A, b, false, randomSolutionType, maxTrials, level);
+                status = dixonSolve.monolithicSolve(xNum, xDen, A, b, false, randomSolutionType, maxTrials, level);
             }
         }
 
         commentator().stop("solve.dixon.integer.dense");
 
-        // @fixme Tests should check conformance to that
-        // if (status == SS_INCONSISTENT) {
-        //     // @fixme The solve specification says we return a zero vector in that case...
-        //     // But we throw instead, update spec.
-        //     throw LinboxMathInconsistentSystem("Solve with Dixon method is impossible.");
-        // }
+        if (status == SS_INCONSISTENT) {
+            throw LinboxMathInconsistentSystem("From Dixon method.");
+        }
     }
 }

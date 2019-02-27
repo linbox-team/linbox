@@ -66,8 +66,7 @@ namespace LinBox {
         case Solver::OK: break;
         case Solver::FAILED: /* @fixme Consistently decide what to do. */ break;
         case Solver::SINGULAR: /* @fixme Consistently decide what to do. */ break;
-        case Solver::INCONSISTENT: /* @fixme Consistently decide what to do. */ break;
-        default: /* @fixme Consistently decide what to do. */ break;
+        default: throw LinboxMathInconsistentSystem("From Wiedemann solve.");
         }
 
         commentator().stop("solve.wiedemann.modular");

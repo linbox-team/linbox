@@ -82,7 +82,7 @@ namespace LinBox {
         bool solveResult = solver.solve(A, x, b);
 
         if (!solveResult) {
-            /* @fixme Decide what to do consistently */
+            throw LinboxMathInconsistentSystem("From BlockLanczos solve.");
         }
 
         return x;

@@ -73,9 +73,6 @@ namespace {
             using FVector = typename LinBox::Rebind<Vector, Field>::other;
 
             FMatrix FA(A, F);
-
-            // @fixme Why is the convention reversed here?
-            // Above it's (-, Field) whereas here is (Field, -).
             FVector Fb(F, b);
 
             LinBox::VectorWrapper::ensureDim(x, A.coldim());
@@ -102,12 +99,14 @@ namespace LinBox {
         if (dispatch == Dispatch::Auto) {
             MethodWIP::Cra<IterationMethod> newM(m);
 
+#if __LINBOX_HAVE_MPI
             // User has MPI enabled in config, but not specified if it wanted to use it,
             // we enable it with default communicator if needed.
-#if __LINBOX_HAVE_MPI
             newM.dispatch = Dispatch::Distributed;
 #else
-            newM.dispatch = Dispatch::Sequential; // @fixme Should we use Dispatch::Smp by default?
+            // @note Currently, Sequential = Smp if OpenMP is active on
+            // the machine, as Cra -> CraDomainSequential or CraDomainOmp in cra-domain.h
+            newM.dispatch = Dispatch::Sequential;
 #endif
 
             return solve(xNum, xDen, A, b, tag, newM);
@@ -171,12 +170,11 @@ namespace LinBox {
         //
 
         // @note We need to convert because the storage might be some fixed-size integer types.
-        // @fixme Specialize so that this copy isn't needed
         if (m.master()) {
             auto it_x = xNum.begin();
             auto it_num = num.begin();
 
-            // Convert the result back to, what??
+            // Convert the result back
             for (; it_x != xNum.end(); ++it_x, ++it_num) {
                 F.init(*it_x, *it_num);
             }

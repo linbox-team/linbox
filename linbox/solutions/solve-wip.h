@@ -43,7 +43,7 @@ namespace LinBox {
      *          The method parameter can contain an hint that an
      *          arbitrary element of the solution space is acceptable instead,
      *          which can be faster to compute if one doesn't expect a result in that case.
-     *      - Inconsistent system: zero vector is returned. @fixme Not always true...
+     *      - Inconsistent system: LinboxMathInconsistentSystem is thrown. @fixme Not always true...
      *
      * CategoryTag is defaulted to `FieldTraits<Matrix::Field>::categoryTag()` when omitted.
      *
@@ -150,7 +150,7 @@ namespace LinBox {
         using Ring = typename Vector::Field;
         using Element = typename Ring::Element;
 
-        BlasVector<Ring> xNum(b.field(), x.size());
+        Vector xNum(b.field(), x.size());
         Element xDen;
 
         solve(xNum, xDen, A, b, tag, m);

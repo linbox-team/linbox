@@ -45,8 +45,6 @@ namespace LinBox {
         return solve(x, ASparse, b, tag, m);
     }
 
-    // @fixme SparseElimination on IntegerTag should go to Method::Dixon
-
     /**
      * \brief Solve specialisation for SparseElimination with SparseMatrix.
      */
@@ -68,5 +66,15 @@ namespace LinBox {
         commentator().stop("solve.sparse-elimination.any.sparse");
 
         return x;
+    }
+
+    /**
+     * \brief Solve specialisation for SparseElimination with SparseMatrix on IntegerTag.
+     */
+    template <class ResultVector, class... MatrixArgs, class Vector>
+    ResultVector& solve(ResultVector& x, const SparseMatrix<MatrixArgs...>& A, const Vector& b,
+                        const RingCategories::IntegerTag& tag, const MethodWIP::SparseElimination& m)
+    {
+        return solve(x, A, b, tag, reinterpret_cast<const MethodWIP::Dixon&>(m));
     }
 }
