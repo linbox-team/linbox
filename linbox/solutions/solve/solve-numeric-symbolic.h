@@ -61,8 +61,8 @@ namespace LinBox {
         RationalSolverSN<Ring, NumericSolver> rsolver(b.field(), numSolver, e);
 
         int status = rsolver.solve(xNum, xDen, A, b);
-        if (status) {
-            /* @fixme Consistently decide what to do */
+        if (status) { // @fixme SNSolverReturnStatus is more precise than that
+            throw LinboxMathInconsistentSystem("From NumericSymbolicOverlap solve.");
         }
 
         commentator().stop("solve.numeric-symbolic-overlap.integer");
@@ -97,7 +97,7 @@ namespace LinBox {
 
         int status = rsolver.solve(xNum, xDen, A, b);
         if (status) {
-            /* @fixme Consistently decide what to do */
+            throw LinboxMathInconsistentSystem("From NumericSymbolicNorm solve.");
         }
 
         commentator().stop("solve.numeric-symbolic-norm.integer");
