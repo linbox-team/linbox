@@ -172,7 +172,7 @@ namespace LinBox
 
 		PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<mymodular>::bestBitSize(A.coldim()));
 		//cout << "prime size: " << p_size << "\n";
-		EarlySingleCRA<mymodular> cra(4UL);
+		CraBuilderEarlySingle<mymodular> cra(4UL);
 		IntegerModularDetReduced<Blackbox,MyMethod> iteration(A, M, beta,myfactor);
 
 #if 0
@@ -298,7 +298,7 @@ namespace LinBox
 		beta = lif*bonus;
 		iteration.Beta(beta);
 
-		EarlySingleCRA<mymodular> cra2(4UL);
+		CraBuilderEarlySingle<mymodular> cra2(4UL);
 		Integer_t k = 1;
 
 		early_counter = 0;
@@ -336,7 +336,7 @@ namespace LinBox
 				//iteration.Moduli(moduli);
 				//iteration.Primes(primes);
 				k=1;
-				EarlySingleCRA<mymodular> cra3(4UL);
+				CraBuilderEarlySingle<mymodular> cra3(4UL);
 
 				early_counter = 0;
 				while ( (early_counter < myfactor) && (!cra3.terminated() )) {
@@ -461,7 +461,7 @@ namespace LinBox
                 PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<mymodular>::bestBitSize(A.coldim()));
 
 		commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION) << "prime size: " << p_size << "\n";
-		ChineseRemainder< mymodular > cra(3UL);
+		Cra< mymodular > cra(3UL);
 		IntegerModularDetReduced<SparseMatrix<Integers >,MyMethod> iteration(A, M, beta,myfactor);
 #if 0
 		if (A.rowdim() < 200 ) {
@@ -575,7 +575,7 @@ namespace LinBox
 		beta = lif*bonus;
 		iteration.Beta(beta);
 
-		ChineseRemainder< Givaro::Modular<double> > cra2(3UL);
+		Cra< Givaro::Modular<double> > cra2(3UL);
 		Integer k = 1;
 
 		early_counter = 0;
@@ -613,7 +613,7 @@ namespace LinBox
 				//iteration.Moduli(moduli);
 				//iteration.Primes(primes);
 				k=1;
-				ChineseRemainder< Givaro::Modular<double> > cra3(3UL);
+				Cra< Givaro::Modular<double> > cra3(3UL);
 
 				early_counter = 0;
 				while ( (early_counter < myfactor) && (!cra3.terminated() )) {

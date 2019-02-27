@@ -215,7 +215,7 @@ int main (int argc, char** argv)
 	cout << "had2" << (Integer)hadamarcp*detPrec << "\n";
 
 	PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(M.coldim()));
-	ChineseRemainder< EarlyMultipCRA<Field  > > cra(3UL);
+	Cra< CraBuilderEarlyMultip<Field  > > cra(3UL);
 	typedef Method::Auto MyMethod;
 	MyMethod Met;
 	//PrecRationalModularCharpoly <RBlackbox  ,MyMethod> iteration (detPrec, M, Met);

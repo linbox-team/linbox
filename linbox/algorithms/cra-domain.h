@@ -1,7 +1,7 @@
 /* linbox/algorithms/cra-domain.h
  * Copyright (C) 1999-2010 The LinBox group
  *
- * Selector for ChineseRemainder
+ * Selector for Cra
  * Parallel versions are transparent to the user
  * Time-stamp: <30 Mar 10 15:11:42 Jean-Guillaume.Dumas@imag.fr>
  *
@@ -27,12 +27,12 @@
 #define __LINBOX_cra_domain_H
 
 /*! @file algorithms/cra-domain.h
- * @brief Wrapper around OMP/SEQ version of ChineseRemainder.
+ * @brief Wrapper around OMP/SEQ version of Cra.
  * @ingroup algorithms
  * @ingroup CRA
  *
- * If LINBOX_USES_OPENMP is defined, the we use ChineseRemainderOMP, else
- * we fall back to ChineseRemainderSeq
+ * If LINBOX_USES_OPENMP is defined, the we use CraDomainOmp, else
+ * we fall back to CraDomainSequential
  */
 
 #include "linbox/integer.h"
@@ -43,7 +43,7 @@ namespace LinBox
 {
 	/*! @brief Return type for CRA iteration.
 	 *
-	 * The function object passed to the ChineseRemainder operators
+	 * The function object passed to the Cra operators
 	 * should return one of these values on each iteration.
 	 */
 	enum struct IterationResult {
@@ -110,31 +110,31 @@ namespace LinBox
 	/*! @brief Wrapper around OMP/SEQ version of ChineseRemainderXXX<CRABase>.
 	 * \ingroup CRA
 	 *
-	 * If LINBOX_USES_OPENMP is defined, the we use ChineseRemainderOMP, else
-	 * we fall back to ChineseRemainderSeq
+	 * If LINBOX_USES_OPENMP is defined, the we use CraDomainOmp, else
+	 * we fall back to CraDomainSequential
 	 *
 	 * This is the OMP version
 	 */
 
 	template<class CRABase>
-        using ChineseRemainder = ChineseRemainderOMP<CRABase>;
+        using Cra = CraDomainOmp<CRABase>;
 }
 
 #else
 
-#include "linbox/algorithms/cra-domain-seq.h"
+#include "linbox/algorithms/cra-domain-sequential.h"
 namespace LinBox
 {
 	/*! @brief Wrapper around OMP/SEQ version of ChineseRemainderXXX<CRABase>.
 	 * \ingroup CRA
 	 *
-	 * If LINBOX_USES_OPENMP is defined, the we use ChineseRemainderOMP, else
-	 * we fall back to ChineseRemainderSeq
+	 * If LINBOX_USES_OPENMP is defined, the we use CraDomainOmp, else
+	 * we fall back to CraDomainSequential
 	 *
 	 * This is the SEQ version
 	 */
 	template<class CRABase>
-        using ChineseRemainder = ChineseRemainderSeq<CRABase>;
+        using Cra = CraDomainSequential<CRABase>;
 }
 
 #endif

@@ -27,7 +27,7 @@
 
 #include "linbox/ring/modular.h"
 #include "linbox/algorithms/cra-domain.h"
-#include "linbox/algorithms/cra-early-multip.h"
+#include "linbox/algorithms/cra-builder-early-multip.h"
 #include <fflas-ffpack/ffpack/ffpack.h>
 #include "linbox/randiter/random-prime.h"
 #include "linbox/matrix/dense-matrix.h"
@@ -231,7 +231,7 @@ namespace LinBox
             {
                 typedef Givaro::Modular<double> Field;
 
-				ChineseRemainder<EarlyMultipCRA<Field>> cra(3UL);
+				Cra<CraBuilderEarlyMultip<Field>> cra(3UL);
 				SemiDIteration<Matrix,Field> iter(M);
 				PrimeIterator<IteratorCategories::HeuristicTag> primes(FieldTraits<Field>::bestBitSize(M.coldim()));
 				return cra(out, iter, primes);
@@ -344,7 +344,7 @@ namespace LinBox
                     // get a prime.
                     // Compute the rank mod that prime. Accumulate into v with CRA.
                 PrimeIterator<IteratorCategories::HeuristicTag> primeg(FieldTraits<Field>::bestBitSize(n));
-                
+
 
                 Field K(*primeg);
 

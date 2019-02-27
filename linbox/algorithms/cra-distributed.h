@@ -47,7 +47,7 @@ namespace LinBox
 {
 
 	template<class CRABase>
-	struct MPIChineseRemainder  {
+	struct CraDistributed  {
 		typedef typename CRABase::Domain	Domain;
 		typedef typename CRABase::DomainElement	DomainElement;
 	protected:
@@ -57,7 +57,7 @@ namespace LinBox
 
 	public:
 		template<class Param>
-		MPIChineseRemainder(const Param& b, Communicator *c) :
+		CraDistributed(const Param& b, Communicator *c) :
 			Builder_(b), _commPtr(c), _numprocs(c->size())
 		{}
 
@@ -81,7 +81,7 @@ namespace LinBox
 		{
 			//  defer to standard CRA loop if no parallel usage is desired
 			if(_commPtr == 0 || _commPtr->size() == 1) {
-				ChineseRemainder< CRABase > sequential(Builder_);
+				Cra< CRABase > sequential(Builder_);
 				return sequential(res, Iteration, primeg);
 			}
 
@@ -160,7 +160,7 @@ namespace LinBox
 			//  if there is no communicator or if there is only one process,
 			//  then proceed normally (without parallel)
 			if(_commPtr == 0 || _commPtr->size() == 1) {
-				ChineseRemainder< CRABase > sequential(Builder_);
+				Cra< CRABase > sequential(Builder_);
 				return sequential(res, Iteration, primeg);
 			}
 
@@ -231,7 +231,7 @@ namespace LinBox
 
 
 	template<class RatCRABase>
-	struct MPIratChineseRemainder  {
+	struct RationalCraDistributed  {
 		typedef typename RatCRABase::Domain	Domain;
 		typedef typename RatCRABase::DomainElement	DomainElement;
 	protected:
@@ -241,7 +241,7 @@ namespace LinBox
 
 	public:
 		template<class Param>
-		MPIratChineseRemainder(const Param& b, Communicator *c) :
+		RationalCraDistributed(const Param& b, Communicator *c) :
 			Builder_(b), _commPtr(c), _numprocs(c->size())
 		{}
 
@@ -250,7 +250,7 @@ namespace LinBox
 		{
 			//  defer to standard CRA loop if no parallel usage is desired
 			if(_commPtr == 0 || _commPtr->size() == 1) {
-				RationalRemainder< RatCRABase > sequential(Builder_);
+				RationalCra< RatCRABase > sequential(Builder_);
 				return sequential(num, den, Iteration, primeg);
 			}
 
@@ -330,7 +330,7 @@ namespace LinBox
 			//  if there is no communicator or if there is only one process,
 			//  then proceed normally (without parallel)
 			if(_commPtr == 0 || _commPtr->size() == 1) {
-				RationalRemainder< RatCRABase > sequential(Builder_);
+				RationalCra< RatCRABase > sequential(Builder_);
 				return sequential(num, den, Iteration, primeg);
 			}
 
@@ -417,7 +417,7 @@ namespace LinBox
 #else
 
 			if(_commPtr == 0) {
-				RationalRemainder< RatCRABase > sequential(Builder_);
+				RationalCra< RatCRABase > sequential(Builder_);
 				return sequential(num, den, Iteration, primeg);
 			}
 

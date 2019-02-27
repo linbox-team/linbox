@@ -31,7 +31,7 @@
 
 //#include "linbox/field/gmp-rational.h"
 #include "linbox/blackbox/rational-matrix-factory.h"
-#include "linbox/algorithms/cra-early-multip.h"
+#include "linbox/algorithms/cra-builder-early-multip.h"
 #include "linbox/algorithms/cra-domain.h"
 //#include "linbox/algorithms/rational-cra.h"
 #include "linbox/algorithms/rational-reconstruction-base.h"
@@ -193,7 +193,7 @@ namespace LinBox
 		BlasMatrix<Givaro::ZRing<Integer> > Atilde(Z,A.rowdim(), A.coldim());
 		FA.makeAtilde(Atilde);
 
-		ChineseRemainder< EarlyMultipCRA<Field> > cra(4UL);
+		Cra< CraBuilderEarlyMultip<Field> > cra(4UL);
 		MyRationalModularCharpoly<BlasMatrix<Rationals > , MyMethod> iteration1(A, Met, M);
 		MyIntegerModularCharpoly<BlasMatrix<Givaro::ZRing<Integer> >, MyMethod> iteration2(Atilde, Met, Di, M);
 		MyModularCharpoly<MyRationalModularCharpoly<BlasMatrix<Rationals > , MyMethod>,

@@ -30,8 +30,8 @@
 #include "fflas-ffpack/ffpack/ffpack.h"
 #include "linbox/algorithms/matrix-hom.h"
 #include "linbox/algorithms/cra-domain.h"
-#include "linbox/algorithms/cra-full-multip.h"
-#include "linbox/algorithms/cra-early-multip.h"
+#include "linbox/algorithms/cra-builder-full-multip.h"
+#include "linbox/algorithms/cra-builder-early-multip.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/solutions/solve.h"
 #include "linbox/solutions/methods.h"
@@ -178,7 +178,7 @@ namespace LinBox
 			//t_hd.stop();
 			//std::cerr<<"Hadamard bound = : "<<logbound<<" in "<<t_hd.usertime()<<"s"<<std::endl;
 
-			ChineseRemainder <FullMultipCRA <Givaro::Modular <double> > > cra(logbound);
+			Cra <CraBuilderFullMultip <Givaro::Modular <double> > > cra(logbound);
 
 			//t_hd.clear();
 			//t_cra.start();
@@ -188,7 +188,7 @@ namespace LinBox
 
 		}
 		else {
-			ChineseRemainder <EarlyMultipCRA <Field> >  cra(4UL);
+			Cra <CraBuilderEarlyMultip <Field> >  cra(4UL);
 			cra (dd, iteration, genprime);
 		}
 		F.mul (d1, dd[0], s1);

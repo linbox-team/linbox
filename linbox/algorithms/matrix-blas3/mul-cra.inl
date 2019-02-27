@@ -26,7 +26,7 @@
 #define __LINBOX_matrix_blas3_mul_cra_INL
 
 #include "linbox/algorithms/cra-domain.h"
-#include "linbox/algorithms/cra-full-multip-fixed.h"
+#include "linbox/algorithms/cra-builder-full-multip-fixed.h"
 
 #include "givaro/random-integer.h"
 #include "linbox/randiter/random-prime.h"
@@ -147,7 +147,7 @@ namespace LinBox { namespace BLAS3 {
 		{
 
                         PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<ModularField>::bestBitSize(A.coldim()));
-			ChineseRemainder< FullMultipBlasMatCRA< ModularField > > cra( std::pair<size_t,double>(C.rowdim()*C.coldim(), logC) );
+			Cra< CraBuilderFullMultipMatrix< ModularField > > cra( std::pair<size_t,double>(C.rowdim()*C.coldim(), logC) );
 			Protected::IntegerCraMatMul iteration(A,B);
 
 			cra(C, iteration, genprime);

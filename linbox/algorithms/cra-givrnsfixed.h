@@ -1,4 +1,4 @@
-/* linbox/algorithms/cra-full-multip.h
+/* linbox/algorithms/cra-builder-full-multip.h
  * Copyright (C) 1999-2010 The LinBox group
  *
  * Time-stamp: <29 May 13 09:57:18 Jean-Guillaume.Dumas@imag.fr>

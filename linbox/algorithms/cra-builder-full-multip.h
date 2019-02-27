@@ -1,4 +1,4 @@
-/* linbox/algorithms/cra-full-multip.h
+/* linbox/algorithms/cra-builder-full-multip.h
  * Copyright (C) 1999-2010 The LinBox group
  *
  * Time-stamp: <15 Dec 10 15:54:00 Jean-Guillaume.Dumas@imag.fr>
@@ -22,7 +22,7 @@
  * ========LICENCE========
  */
 
-/*!@file algorithms/cra-full-multip.h
+/*!@file algorithms/cra-builder-full-multip.h
  * @ingroup algorithms
  * @brief NO DOC
  */
@@ -57,10 +57,10 @@ namespace LinBox
      * to another shelf, recursively.
 	 */
 	template<class Domain_Type>
-	struct FullMultipCRA {
+	struct CraBuilderFullMultip {
 		typedef Domain_Type			Domain;
 		typedef typename Domain::Element DomainElement;
-		typedef FullMultipCRA<Domain> 		Self_t;
+		typedef CraBuilderFullMultip<Domain> 		Self_t;
 
     public:
         struct Shelf {
@@ -88,7 +88,7 @@ namespace LinBox
          * @param bnd  upper bound on the natural logarithm of the result
          * @param dim  dimension of the vector to be reconstructed
          */
-		FullMultipCRA(const double bnd=0.0, size_t dim=0) :
+		CraBuilderFullMultip(const double bnd=0.0, size_t dim=0) :
 			LOGARITHMIC_UPPER_BOUND(bnd), dimension_(dim)
 		{}
 
