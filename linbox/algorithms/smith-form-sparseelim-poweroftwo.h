@@ -1,7 +1,7 @@
 /* algorithms/smith-form-sparseelim-poweroftwo.h
  * Copyright (C) LinBox
  * Written by JG Dumas
- * Time-stamp: <21 Dec 18 09:43:04 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <28 Feb 19 15:11:18 Jean-Guillaume.Dumas@imag.fr>
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
@@ -90,10 +90,10 @@ namespace LinBox
             return (!(b%a));
         }
 
-            // [On Newton-Raphson iteration for multiplicative 
-            //  inverses modulo prime powers. J-G. Dumas. 
-            //  IEEE Transactions on Computers, 2013]  
-            // http://doi.ieeecomputersociety.org/10.1109/TC.2013.94
+            // [On Newton-Raphson iteration for multiplicative
+            //  inverses modulo prime powers. J-G. Dumas.
+            //  IEEE Trans. on Computers, 63(8), pp 2106-2109, 2014]
+            // http://doi.org/10.1109/TC.2013.94
         UInt_t& MY_Zpz_inv (UInt_t& u1, const UInt_t& a, const size_t exponent, const UInt_t& TWOTOEXPMONE) const {
             static const UInt_t ttep2(TWOTOEXPMONE+3U);
             if (this->isOne(a)) return u1=this->one;
