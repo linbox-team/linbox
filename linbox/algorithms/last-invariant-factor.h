@@ -191,6 +191,10 @@ namespace LinBox
 				// try to solve Ax = b1, b2 over Ring
 				tmp1 = solver. solveNonsingular(r1_num, r1_den, A, b1);
 				tmp2 = solver. solveNonsingular(r2_num, r2_den, A, b2);
+std::clog << "solve1:" << tmp1 << " (" << SS_OK << ')' << std::endl;
+std::clog << "solve2:" << tmp2 << " (" << SS_OK << ')' << std::endl;
+                
+
 				// If no solution found
 				if ((tmp1 != SS_OK) || (tmp2 != SS_OK)){
 					r.assign (lif, r.zero);

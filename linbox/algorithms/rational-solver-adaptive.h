@@ -48,7 +48,10 @@ namespace LinBox
 			RationalSolver<IRing, Field, PrimeIterator<IteratorCategories::HeuristicTag>, NumSymNormTraits> numerical_solver;
 			//RationalSolver<IRing, Field, PrimeIterator<IteratorCategories::HeuristicTag>, NumSymOverlapTraits> numerical_solver;
 			SolverReturnStatus ret;
+
+            M.write(std::cerr << "M:") << " and " << b << std::endl;
 			ret = numerical_solver. solve(num, den, M, b);
+            std::cerr << "SOLVE num:" << num << ", res: " << den << std::endl;
 
 			if (ret != SS_OK) {
 				RationalSolver<IRing, Field, PrimeIterator<IteratorCategories::HeuristicTag>> solver;

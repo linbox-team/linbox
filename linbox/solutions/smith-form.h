@@ -238,7 +238,6 @@ namespace LinBox
 		  const RingCategories::IntegerTag      &tag,
 		  const Method::Auto			& M)
 	{
-		Givaro::ZRing<Integer> Z;
 		SmithFormAdaptive::smithForm(V, A);
 		return V;
 	}

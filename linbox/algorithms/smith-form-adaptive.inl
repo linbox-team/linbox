@@ -63,8 +63,8 @@ namespace LinBox
 	template <class Matrix>
 	void SmithFormAdaptive::compute_local_long (BlasVector<Givaro::ZRing<Integer> >& s, const Matrix& A, int64_t p, int64_t e)
 	{
-		//std::ostream& report(std::cout);
-		std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
+		std::ostream& report(std::clog);
+		//std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 
 		int order = (int)(A. rowdim() < A. coldim() ? A. rowdim() : A. coldim());
 		linbox_check ((s. size() >= (size_t)order) && (p > 0) && ( e >= 0));
@@ -157,8 +157,8 @@ namespace LinBox
 	void SmithFormAdaptive::compute_local_big (BlasVector<Givaro::ZRing<Integer> >& s, const Matrix& A, int64_t p, int64_t e)
 	{
 
-		//std::ostream& report(std::cout);
-		std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
+		std::ostream& report(std::clog);
+		//std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		int order = (int)(A. rowdim() < A. coldim() ? A. rowdim() : A. coldim());
 		linbox_check ((s. size() >= (size_t) order) && (p > 0) && ( e >= 0));
 		integer T; T = order; T <<= 20; T = pow (T, (int) sqrt((double)order));
@@ -220,8 +220,8 @@ namespace LinBox
 	void SmithFormAdaptive::smithFormSmooth (BlasVector<Givaro::ZRing<Integer> >& s, const Matrix& A, long r, const std::vector<int64_t>& sev)
 	{
 		Givaro::ZRing<Integer> Z;
-		//std::ostream& report(std::cout);
-		std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
+		std::ostream& report(std::clog);
+            //std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		report << "Computation the k-smooth part of the invariant factors starts(via local and rank):" << std::endl;
 		int order = (int)(A. rowdim() < A. coldim() ? A. rowdim() : A. coldim());
 		linbox_check (s. size() >= (size_t)order);
@@ -396,8 +396,8 @@ namespace LinBox
 	{
 		//commentator().start ("Smith Form starts", "Smithform");
 
-		//std::ostream& report(std::cout);
-		std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
+		std::ostream& report(std::clog);
+            //std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		report << "Computation of the invariant factors starts (via an adaptive alg):" << std::endl;
 
 		// compute the rank over a random prime field.
@@ -517,8 +517,8 @@ namespace LinBox
 		//commentator().start ("Smith Form starts", "Smithform");
 		Givaro::ZRing<Integer> Z;
 
-		//std::ostream& report(std::cout);
-		std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
+		std::ostream& report(std::clog);
+            //std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		report << "Computation of the invariant factors starts (via an adaptive alg):" << std::endl;
 
 		// compute the rank over a random prime field.
@@ -546,8 +546,8 @@ namespace LinBox
 		MatrixHom::map (Ap, A);
 		Valence::one_valence (v, degree, Ap);
 		//valence (v, Ap);
-		report <<"   Degree of one_valence minpol of AA^T = " << degree << '\n';
-		report <<"   value of one_valence minpol of AA^T = " << v << '\n';
+		report <<"   Degree of one_valence minpol of A = " << degree << '\n';
+		F.write(report <<"   value of one_valence minpol of A, modulo " << *genprime << " = ", v) << '\n';
 		// if degree is small
 		if (degree < sqrt(double(order))) {
 			report << "   Computation of the valence starts:\n";
@@ -587,8 +587,8 @@ namespace LinBox
 			oif. oneInvariantFactor_Bonus (_lif, _bonus, A, (int)r);
 			A. field(). convert (lif, _lif); A. field(). convert (bonus, _bonus);
 			//oif. oneInvariantFactor (bonus, A, (int)r);
-			report << "   The largest invariant factor: " << lif << std::endl;
-			report << "   Bonus (previous one): " << bonus << std::endl;
+			report << "   The largest invariant factor: " << lif << " (" << _lif << ')' << std::endl;
+			report << "   Bonus (previous one): " << bonus << " (" << _bonus << ')' << std::endl;
 		} while (lif == 0);
 		report << "Computation of the largest invariant factor with bonus finished.\n";
 		// bonus = smooth * rough;
