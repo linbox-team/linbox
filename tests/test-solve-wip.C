@@ -23,7 +23,7 @@ void run_integer(Communicator& communicator, size_t dimension) {
     method.pCommunicator = &communicator;
     // @fixme Dixon fails with dimension = 3
     // when solution type is kept default (that is to say Determinist)
-    method.solutionType = SolutionType::Diophantine;
+    method.singularSolutionType = SingularSolutionType::Diophantine;
 
     // Rational vector interface will call (num, den) one
     Givaro::QField<Givaro::Rational> F;
@@ -31,7 +31,12 @@ void run_integer(Communicator& communicator, size_t dimension) {
 
     std::cout << "--------------- " << Method::name() << " (" << dimension << ")" << std::endl;
 
-    solve(x, A, b, method);
+    try {
+        solve(x, A, b, method);
+    } catch (...) {
+        std::cout << "===> OUCH: Throwing error" << std::endl;
+        return;
+    }
 
     if (x[0].nume() != 1 || x[0].deno() != 1 || x[1].nume() != 3 || x[1].deno() != 2) {
         A.write(std::cout << "A: ", Tag::FileFormat::Maple) << std::endl;
@@ -63,7 +68,13 @@ void run_modular() {
     std::cout << "--------------- " << Method::name() << std::endl;
 
     BlasVector<Field> x(F, 2);
-    solve(x, A, b, method);
+
+    try {
+        solve(x, A, b, method);
+    } catch (...) {
+        std::cout << "===> OUCH: Throwing error" << std::endl;
+        return;
+    }
 
     if (x[0] != 1 || x[1] != 52) {
         A.write(std::cout << "A: ", Tag::FileFormat::Maple) << std::endl;
@@ -87,11 +98,9 @@ int main(void)
     run_integer<Givaro::ZRing<Integer>, MethodWIP::Dixon>(communicator, 2);
     run_integer<Givaro::ZRing<Integer>, MethodWIP::Dixon>(communicator, 3);
     run_integer<Givaro::ZRing<Integer>, MethodWIP::NumericSymbolicOverlap>(communicator, 2);
-    // run_integer<Givaro::ZRing<Integer>, MethodWIP::NumericSymbolicOverlap>(communicator, 3); // @fixme Believes inconsistent
-
-    // @fixme A way to say that we except these tests to fail
-    // run_integer<Givaro::ZRing<Integer>, MethodWIP::NumericSymbolicNorm>(communicator, 2); // @fixme Believes inconsistent
-    // run_integer<Givaro::ZRing<Integer>, MethodWIP::NumericSymbolicNorm>(communicator, 3); // @fixme Believes inconsistent
+    run_integer<Givaro::ZRing<Integer>, MethodWIP::NumericSymbolicOverlap>(communicator, 3); // @fixme Fails
+    run_integer<Givaro::ZRing<Integer>, MethodWIP::NumericSymbolicNorm>(communicator, 2); // @fixme Fails
+    run_integer<Givaro::ZRing<Integer>, MethodWIP::NumericSymbolicNorm>(communicator, 3); // @fixme Fails
 
     run_modular<DenseMatrix<Givaro::Modular<double>>, MethodWIP::Auto>();
     run_modular<SparseMatrix<Givaro::Modular<double>>, MethodWIP::Auto>();
@@ -109,6 +118,8 @@ int main(void)
     // @deprecated These do not compile anymore
     // run_modular<DenseMatrix<Givaro::Modular<double>>, MethodWIP::BlockWiedemann>();
     // run_modular<DenseMatrix<Givaro::Modular<double>>, MethodWIP::Coppersmith>();
+
+    // @fixme Test rectangular matrices...
 
     return 0;
 }

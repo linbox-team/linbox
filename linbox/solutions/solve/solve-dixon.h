@@ -80,12 +80,12 @@ namespace LinBox {
         if (singular) {
             SolverLevel level = (m.findInconsistencyCertificate ? SL_LASVEGAS : SL_MONTECARLO);
 
-            if (m.solutionType == SolutionType::Diophantine) {
+            if (m.singularSolutionType == SingularSolutionType::Diophantine) {
                 DiophantineSolver<Solver> diophantineSolve(dixonSolve);
                 status = diophantineSolve.diophantineSolve(xNum, xDen, A, b, maxTrials, level);
             }
             else {
-                bool randomSolutionType = (m.solutionType == SolutionType::Random);
+                bool randomSolutionType = (m.singularSolutionType == SingularSolutionType::Random);
                 status = dixonSolve.monolithicSolve(xNum, xDen, A, b, false, randomSolutionType, maxTrials, level);
             }
         }
