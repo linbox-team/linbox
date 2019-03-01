@@ -76,13 +76,12 @@ namespace LinBox {
     };
 
     /**
-     * For Dixon method, which solution type to use.
-     * @fixme Replace with HeuristicTag and such?
+     * For Dixon method, which solution type to get when the system is singular.
      */
-    enum class SolutionType {
-        Determinist,
-        Random,
-        Diophantine,
+    enum class SingularSolutionType {
+        Determinist,    //!< The solution should be the easiest to compute and always the same.
+        Random,         //!< The solution should be random and different at each call.
+        Diophantine,    //!< The solution is given over the integers.
     };
 
     /**
@@ -99,7 +98,7 @@ namespace LinBox {
         bool master() const { return (pCommunicator == nullptr) || pCommunicator->master(); }
 
         // For Dixon method.
-        SolutionType solutionType = SolutionType::Determinist;
+        SingularSolutionType singularSolutionType = SingularSolutionType::Determinist;
 
         // For random-based systems.
         size_t trialsBeforeThrowing = 100;        //!< Maximum number of trials before giving up.
