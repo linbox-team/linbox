@@ -640,10 +640,10 @@ namespace LinBox
 #ifdef DEBUG_DIXON
 			//std::cout << "_prime: "<<_prime<<"\n";
 			std::cout<<"A:=\n";
-			A.write(std::cout);
-			std::cout<<"b:=\n";
+			A.write(std::cout, Tag::FileFormat::Maple);
+			std::cout<<"b:=[\n";
 			for (size_t i=0;i<b.size();++i) std::cout<<b[i]<<" , ";
-			std::cout<<std::endl;
+			std::cout<<']'<<std::endl;
 #endif
 #ifdef RSTIMING
 			tNonsingularSetup.start();
@@ -684,9 +684,9 @@ namespace LinBox
 
 #ifdef DEBUG_DIXON
 				std::cout<< "p = ";
-				F->write(std::cout);
-				std::cout<<" A mod p :=\n";
-				FMP->write(std::cout);
+				F->write(std::cout) << std::endl;
+				std::cout<<" Ap:=";
+				FMP->write(std::cout, Tag::FileFormat::Maple) << std::endl;
 #endif
 
 				if (!checkBlasPrime(_prime)){
@@ -728,8 +728,8 @@ namespace LinBox
 		} while (notfr);
 
 #ifdef DEBUG_DIXON
-		std::cout<<"A^-1 mod p :=\n";
-		FMP->write(std::cout);
+		std::cout<<"Ainvmodp:=";
+		FMP->write(std::cout, Tag::FileFormat::Maple)<<std::endl;
 #endif
 
 		typedef DixonLiftingContainer<Ring,Field,IMatrix,BlasMatrix<Field> > LiftingContainer;
@@ -807,7 +807,7 @@ namespace LinBox
 			if (trials != 0) chooseNewPrime();
 			++trials;
 #ifdef DEBUG_DIXON
-			std::cout << "_prime: "<<_prime<<"\n";
+			std::cout << "_prime:= "<<_prime<<";\n";
 #endif
 #ifdef RSTIMING
 			tSetup.start();
