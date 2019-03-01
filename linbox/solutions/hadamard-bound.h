@@ -22,19 +22,19 @@
 
 #pragma once
 
-#include <linbox/matrix/matrix-category.h>
 #include <linbox/field/field-traits.h>
 #include <linbox/integer.h>
+#include <linbox/matrix/matrix-category.h>
 
 #include <limits>
 
 namespace LinBox {
 
     // ----- Vector norm
-    
+
     // Returns false if the vector is null, true otherwise
     template <class ConstIterator>
-    bool vectorLogNorm(double& lognorm, const ConstIterator& begin, const ConstIterator& end)
+    bool vectorLogNorm(double& logNorm, const ConstIterator& begin, const ConstIterator& end)
     {
         Integer normSquared = 0;
         for (ConstIterator it = begin; it != end; ++it) {
@@ -45,15 +45,14 @@ namespace LinBox {
         }
 
         if (normSquared == 0) {
-            lognorm = 0.0;
+            logNorm = 0.0;
             return false; // Vector is zero
-            
         }
-#ifdef DEBUG_HB
+#ifdef DEBUG_HADAMARD_BOUND
         std::clog << "normSquared:=" << normSquared << ';' << std::endl;
         std::clog << "vectorLogNorm:=" << (Givaro::logtwo(normSquared) / 2.0) << ';' << std::endl;
 #endif
-        lognorm = Givaro::logtwo(normSquared) / 2.0;
+        logNorm = Givaro::logtwo(normSquared) / 2.0;
         return true;
     }
 
@@ -99,11 +98,12 @@ namespace LinBox {
 
         for (auto rowIt = A.rowBegin(); rowIt != A.rowEnd(); ++rowIt) {
             double rowLogNorm;
-            if(vectorLogNorm(rowLogNorm,rowIt->begin(), rowIt->end()) ) {
+            if (vectorLogNorm(rowLogNorm, rowIt->begin(), rowIt->end())) {
                 if (rowLogNorm < minLogNorm) {
                     minLogNorm = rowLogNorm;
                 }
-            } else {
+            }
+            else {
                 logBound = 0.0;
                 minLogNorm = 0.0;
                 return;
@@ -163,11 +163,12 @@ namespace LinBox {
         typename IMatrix::ConstColIterator colIt;
         for (colIt = A.colBegin(); colIt != A.colEnd(); ++colIt) {
             double colLogNorm;
-            if(vectorLogNorm(colLogNorm, colIt->begin(), colIt->end()) ) {
+            if (vectorLogNorm(colLogNorm, colIt->begin(), colIt->end())) {
                 if (colLogNorm < minLogNorm) {
                     minLogNorm = colLogNorm;
                 }
-            } else {
+            }
+            else {
                 logBound = 0.0;
                 minLogNorm = 0.0;
                 return;
@@ -219,33 +220,34 @@ namespace LinBox {
     template <class IMatrix>
     HadamardLogBoundDetails DetailedHadamardBound(const IMatrix& A)
     {
-        double rowLogBound = 0;
-        double rowMinLogNorm = 0;
+        double rowLogBound = 0.0;
+        double rowMinLogNorm = 0.0;
         HadamardRowLogBound(rowLogBound, rowMinLogNorm, A);
         double rowLogBoundOverMinNorm = rowLogBound - rowMinLogNorm;
-#ifdef DEBUG_HB
+#ifdef DEBUG_HADAMARD_BOUND
         std::clog << "rowLogBound:=" << rowLogBound << ';' << std::endl;
         std::clog << "rowMinLogNorm:=" << rowMinLogNorm << ';' << std::endl;
         std::clog << "rowLogBoundOverMinNorm:=" << rowLogBoundOverMinNorm << ';' << std::endl;
 #endif
 
-        double colLogBound = 0;
-        double colMinLogNorm = 0;
+        double colLogBound = 0.0;
+        double colMinLogNorm = 0.0;
         HadamardColLogBound(colLogBound, colMinLogNorm, A);
         double colLogBoundOverMinNorm = colLogBound - colMinLogNorm;
-#ifdef DEBUG_HB
+#ifdef DEBUG_HADAMARD_BOUND
         std::clog << "colLogBound:=" << colLogBound << ';' << std::endl;
         std::clog << "colMinLogNorm:=" << colMinLogNorm << ';' << std::endl;
         std::clog << "colLogBoundOverMinNorm:=" << colLogBoundOverMinNorm << ';' << std::endl;
 #endif
 
         HadamardLogBoundDetails data;
-        data.logBound = std::min(rowLogBound, colLogBound) + 0.01;
-        data.logBoundOverMinNorm = std::min(rowLogBoundOverMinNorm, colLogBoundOverMinNorm) + 0.01;
-#ifdef DEBUG_HB
+        data.logBound = std::min(rowLogBound, colLogBound);
+        data.logBoundOverMinNorm = std::min(rowLogBoundOverMinNorm, colLogBoundOverMinNorm);
+#ifdef DEBUG_HADAMARD_BOUND
         std::clog << "logBound:=" << data.logBound << ';' << std::endl;
         std::clog << "logBoundOverMinNorm:=" << data.logBoundOverMinNorm << ';' << std::endl;
 #endif
+
         return data;
     }
 
@@ -282,12 +284,11 @@ namespace LinBox {
         }
 
         if (max == 0) {
-            return 0;
+            return 0.0;
         }
 
         auto n = std::max(A.rowdim(), A.coldim());
         double logBound = static_cast<double>(n) * (Givaro::logtwo(n) / 2.0 + Givaro::logtwo(max));
-
         return logBound;
     }
 
@@ -311,11 +312,12 @@ namespace LinBox {
         RationalSolveHadamardBoundData data;
 
         auto hadamardBound = DetailedHadamardBound(A);
-        double bLogNorm; vectorLogNorm(bLogNorm, b.begin(), b.end());
+        double bLogNorm;
+        vectorLogNorm(bLogNorm, b.begin(), b.end());
 
         data.numLogBound = hadamardBound.logBoundOverMinNorm + bLogNorm + 1;
         data.denLogBound = hadamardBound.logBound;
-#ifdef DEBUG_HB
+#ifdef DEBUG_HADAMARD_BOUND
         std::clog << "numLogBound:=" << data.numLogBound << ';' << std::endl;
         std::clog << "denLogBound:=" << data.denLogBound << ';' << std::endl;
 #endif
