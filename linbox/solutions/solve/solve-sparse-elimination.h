@@ -28,6 +28,10 @@
 #include <linbox/solutions/methods-wip.h>
 
 namespace LinBox {
+    //
+    // solve
+    //
+
     /**
      * \brief Solve specialisation for SparseElimination.
      */
@@ -40,9 +44,8 @@ namespace LinBox {
 
         using Field = typename Matrix::Field;
         SparseMatrix<Field> ASparse(A.field(), A.rowdim(), A.coldim());
-
         MatrixHom::map(ASparse, A);
-        return solve(x, ASparse, b, tag, m);
+        return solveInPlace(x, ASparse, b, tag, m);
     }
 
     /**
@@ -52,20 +55,8 @@ namespace LinBox {
     ResultVector& solve(ResultVector& x, const SparseMatrix<MatrixArgs...>& A, const Vector& b, const CategoryTag& tag,
                         const MethodWIP::SparseElimination& m)
     {
-        commentator().start("solve.sparse-elimination.any.sparse");
-        linbox_check((A.coldim() != x.size()) || (A.rowdim() != b.size()));
-
-        // @fixme We should call solveInPlace, that way the specialization above
-        // would do the same and don't double copy the matrix.
         SparseMatrix<MatrixArgs...> ACopy(A);
-
-        using Field = typename SparseMatrix<MatrixArgs...>::Field;
-        GaussDomain<Field> gaussDomain(ACopy.field());
-        gaussDomain.solveInPlace(x, ACopy, b);
-
-        commentator().stop("solve.sparse-elimination.any.sparse");
-
-        return x;
+        return solveInPlace(x, ACopy, b, tag, m);
     }
 
     /**
@@ -76,5 +67,28 @@ namespace LinBox {
                         const RingCategories::IntegerTag& tag, const MethodWIP::SparseElimination& m)
     {
         return solve(x, A, b, tag, reinterpret_cast<const MethodWIP::Dixon&>(m));
+    }
+
+    //
+    // solveInPlace
+    //
+
+    /**
+     * \brief Solve in place specialisation for SparseElimination with SparseMatrix.
+     */
+    template <class ResultVector, class... MatrixArgs, class Vector, class CategoryTag>
+    ResultVector& solveInPlace(ResultVector& x, SparseMatrix<MatrixArgs...>& A, const Vector& b, const CategoryTag& tag,
+                               const MethodWIP::SparseElimination& m)
+    {
+        commentator().start("solve-in-place.sparse-elimination.any.sparse");
+        linbox_check((A.coldim() != x.size()) || (A.rowdim() != b.size()));
+
+        using Field = typename SparseMatrix<MatrixArgs...>::Field;
+        GaussDomain<Field> gaussDomain(A.field());
+        gaussDomain.solveInPlace(x, A, b);
+
+        commentator().stop("solve-in-place.sparse-elimination.any.sparse");
+
+        return x;
     }
 }
