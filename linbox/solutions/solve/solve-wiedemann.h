@@ -64,7 +64,7 @@ namespace LinBox {
 
         switch (solverResult) {
         case Solver::OK: break;
-        case Solver::FAILED: /* @fixme Consistently decide what to do. */ break;
+        case Solver::FAILED: throw LinboxError("Solving failed with Wiedemann.");
         case Solver::SINGULAR: /* @fixme Consistently decide what to do. */ break;
         default: throw LinboxMathInconsistentSystem("From Wiedemann solve.");
         }

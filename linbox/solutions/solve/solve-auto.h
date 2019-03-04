@@ -27,7 +27,7 @@
 #include <linbox/solutions/methods-wip.h>
 
 namespace {
-// @fixme This should be configured with autotune or something.
+// @todo This should be configured with autotune or something.
 #ifndef LINBOX_USE_BLACKBOX_THRESHOLD
 #define LINBOX_USE_BLACKBOX_THRESHOLD 1000
 #endif

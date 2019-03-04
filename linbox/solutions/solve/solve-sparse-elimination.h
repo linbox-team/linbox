@@ -55,7 +55,7 @@ namespace LinBox {
         commentator().start("solve.sparse-elimination.any.sparse");
         linbox_check((A.coldim() != x.size()) || (A.rowdim() != b.size()));
 
-        // @fixme We should call solvein, that way the specialization above
+        // @fixme We should call solveInPlace, that way the specialization above
         // would do the same and don't double copy the matrix.
         SparseMatrix<MatrixArgs...> ACopy(A);
 

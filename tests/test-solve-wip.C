@@ -92,28 +92,28 @@ int main(void)
 
     commentator().setReportStream(std::cout);
 
-    run_integer<Givaro::ZRing<Integer>, MethodWIP::Auto>(communicator, 2);
-    run_integer<Givaro::ZRing<Integer>, MethodWIP::CraAuto>(communicator, 2);
-    run_integer<Givaro::ZRing<Integer>, MethodWIP::CraAuto>(communicator, 3);
-    run_integer<Givaro::ZRing<Integer>, MethodWIP::Dixon>(communicator, 2);
-    run_integer<Givaro::ZRing<Integer>, MethodWIP::Dixon>(communicator, 3);
-    run_integer<Givaro::ZRing<Integer>, MethodWIP::NumericSymbolicOverlap>(communicator, 2);
-    run_integer<Givaro::ZRing<Integer>, MethodWIP::NumericSymbolicOverlap>(communicator, 3); // @fixme Fails
-    run_integer<Givaro::ZRing<Integer>, MethodWIP::NumericSymbolicNorm>(communicator, 2); // @fixme Fails
-    run_integer<Givaro::ZRing<Integer>, MethodWIP::NumericSymbolicNorm>(communicator, 3); // @fixme Fails
+    // run_integer<Givaro::ZRing<Integer>, MethodWIP::Auto>(communicator, 2);
+    // run_integer<Givaro::ZRing<Integer>, MethodWIP::CraAuto>(communicator, 2);
+    // run_integer<Givaro::ZRing<Integer>, MethodWIP::CraAuto>(communicator, 3);
+    // run_integer<Givaro::ZRing<Integer>, MethodWIP::Dixon>(communicator, 2);
+    // run_integer<Givaro::ZRing<Integer>, MethodWIP::Dixon>(communicator, 3);
+    // run_integer<Givaro::ZRing<Integer>, MethodWIP::NumericSymbolicOverlap>(communicator, 2);
+    // run_integer<Givaro::ZRing<Integer>, MethodWIP::NumericSymbolicOverlap>(communicator, 3); // @fixme Fails
+    // run_integer<Givaro::ZRing<Integer>, MethodWIP::NumericSymbolicNorm>(communicator, 2); // @fixme Fails
+    // run_integer<Givaro::ZRing<Integer>, MethodWIP::NumericSymbolicNorm>(communicator, 3); // @fixme Fails
 
-    run_modular<DenseMatrix<Givaro::Modular<double>>, MethodWIP::Auto>();
-    run_modular<SparseMatrix<Givaro::Modular<double>>, MethodWIP::Auto>();
-    run_modular<DenseMatrix<Givaro::Modular<double>>, MethodWIP::DenseElimination>();
-    run_modular<SparseMatrix<Givaro::Modular<double>>, MethodWIP::DenseElimination>();
-    run_modular<DenseMatrix<Givaro::Modular<double>>, MethodWIP::SparseElimination>();
-    run_modular<SparseMatrix<Givaro::Modular<double>>, MethodWIP::SparseElimination>();
-    // run_modular<DenseMatrix<Givaro::Modular<double>>, MethodWIP::Wiedemann>(); // @fixme Can't compile
-    run_modular<SparseMatrix<Givaro::Modular<double>>, MethodWIP::Wiedemann>();
-    // run_modular<DenseMatrix<Givaro::Modular<double>>, MethodWIP::Lanczos>(); // @fixme Segmentation fault
-    // run_modular<SparseMatrix<Givaro::Modular<double>>, MethodWIP::Lanczos>(); // @fixme Segmentation fault
-    // run_modular<DenseMatrix<Givaro::Modular<double>>, MethodWIP::BlockLanczos>(); // @fixme Can't compile
-    // run_modular<SparseMatrix<Givaro::Modular<double>>, MethodWIP::BlockLanczos>(); // @fixme Segmentation fault
+    // run_modular<DenseMatrix<Givaro::Modular<double>>, MethodWIP::Auto>();
+    // run_modular<SparseMatrix<Givaro::Modular<double>>, MethodWIP::Auto>();
+    // run_modular<DenseMatrix<Givaro::Modular<double>>, MethodWIP::DenseElimination>();
+    // run_modular<SparseMatrix<Givaro::Modular<double>>, MethodWIP::DenseElimination>();
+    // run_modular<DenseMatrix<Givaro::Modular<double>>, MethodWIP::SparseElimination>();
+    // run_modular<SparseMatrix<Givaro::Modular<double>>, MethodWIP::SparseElimination>();
+    // // run_modular<DenseMatrix<Givaro::Modular<double>>, MethodWIP::Wiedemann>(); // @fixme Can't compile
+    // run_modular<SparseMatrix<Givaro::Modular<double>>, MethodWIP::Wiedemann>();
+    run_modular<DenseMatrix<Givaro::Modular<double>>, MethodWIP::Lanczos>(); // @fixme Segmentation fault
+    // // run_modular<SparseMatrix<Givaro::Modular<double>>, MethodWIP::Lanczos>(); // @fixme Segmentation fault
+    // // run_modular<DenseMatrix<Givaro::Modular<double>>, MethodWIP::BlockLanczos>(); // @fixme Can't compile
+    // // run_modular<SparseMatrix<Givaro::Modular<double>>, MethodWIP::BlockLanczos>(); // @fixme Segmentation fault
 
     // @deprecated These do not compile anymore
     // run_modular<DenseMatrix<Givaro::Modular<double>>, MethodWIP::BlockWiedemann>();

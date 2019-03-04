@@ -39,6 +39,7 @@
 #include <linbox/randiter/random-prime.h>
 #include <linbox/solutions/hadamard-bound.h>
 #include <linbox/util/commentator.h>
+#include <linbox/util/debug.h> // NotImplementedYet
 #include <linbox/vector/vector-traits.h>
 
 namespace {
@@ -85,7 +86,7 @@ namespace LinBox {
     /**
      * \brief Solve specialization with Chinese Remainder Algorithm method for an Integer ring.
      *
-     * This one has a different signature (num, den) because of the IntegerTag implying a rational result.
+     * If a Dispatch::Distributed is used, please note that the result will only be set on the master node.
      */
     template <class Matrix, class Vector, class IterationMethod>
     inline void solve(Vector& xNum, typename Vector::Field::Element& xDen, const Matrix& A, const Vector& b,
@@ -180,7 +181,8 @@ namespace LinBox {
             }
             F.init(xDen, den);
 
-            // @fixme Should we synchronize x on all nodes?
+            // @note During Dispatch::Distributed, we do not dispatch the result to all other nodes,
+            // to prevent unnecessary broadcast, as the doc says.
 
             commentator().stop("solve.cra.integer");
         }

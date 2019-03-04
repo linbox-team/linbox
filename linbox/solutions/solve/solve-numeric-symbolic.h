@@ -56,9 +56,8 @@ namespace LinBox {
         using FMatrix = BlasMatrix<Field>;
         using NumericSolver = LPS<FMatrix>;
 
-        bool e = false; // @fixme Useless?
         NumericSolver numSolver;
-        RationalSolverSN<Ring, NumericSolver> rsolver(b.field(), numSolver, e);
+        RationalSolverSN<Ring, NumericSolver> rsolver(b.field(), numSolver, false);
 
         SNSolverReturnStatus status = rsolver.solve(xNum, xDen, A, b);
 
