@@ -27,7 +27,6 @@
 
 #include <linbox/field/field-traits.h>
 #include <linbox/solutions/methods-wip.h>
-#include <linbox/util/debug.h> // NotImplementedYet
 
 namespace LinBox {
 
@@ -43,7 +42,8 @@ namespace LinBox {
      *          The method parameter can contain an hint that an
      *          arbitrary element of the solution space is acceptable instead,
      *          which can be faster to compute if one doesn't expect a result in that case.
-     *      - Inconsistent system: LinboxMathInconsistentSystem is thrown. @fixme Not always true...
+     *      - Inconsistent system: LinboxMathInconsistentSystem is thrown.
+     *      - Internal failure: LinboxError is thrown.
      *
      * CategoryTag is defaulted to `FieldTraits<Matrix::Field>::categoryTag()` when omitted.
      *
@@ -155,9 +155,9 @@ namespace LinBox {
 
         solve(xNum, xDen, A, b, tag, m);
 
-        // @fixme What to do when denominator is zero? (Computation failure)
+        // The denominator being zero means computation failure
         if (b.field().isZero(xDen)) {
-            b.field().assign(xDen, b.field().one);
+            throw LinboxError("Rational solve failed.");
         }
 
         // Copy result back to ResultVector
@@ -185,6 +185,9 @@ namespace LinBox {
         throw LinBoxError("Rational solve is only valid for RingCategories::IntegerTag.");
     }
 
+    /**
+     * \brief Rational solve dispatcher for unimplemented methods.
+     */
     template <class Matrix, class Vector, class SolveMethod>
     inline void solve(Vector& xNum, typename Vector::Field::Element& xDen, const Matrix& A, const Vector& b,
                       const RingCategories::IntegerTag& tag, const SolveMethod& m)
@@ -193,21 +196,21 @@ namespace LinBox {
     }
 
     /**
-     * \brief Solve dispatcher for automated category tag.
+     * \brief Rational solve dispatcher for automated category tag.
      */
     template <class Matrix, class Vector, class SolveMethod>
     inline void solve(Vector& xNum, typename Vector::Field::Element& xDen, const Matrix& A, const Vector& b, const SolveMethod& m)
     {
-        return solve(xNum, xDen, A, b, typename FieldTraits<typename Matrix::Field>::categoryTag(), m);
+        solve(xNum, xDen, A, b, typename FieldTraits<typename Matrix::Field>::categoryTag(), m);
     }
 
     /**
-     * \brief Solve dispatcher for automated solve method.
+     * \brief Rational solve dispatcher for automated solve method.
      */
     template <class Matrix, class Vector>
     inline void solve(Vector& xNum, typename Vector::Field::Element& xDen, const Matrix& A, const Vector& b)
     {
-        return solve(xNum, xDen, A, b, MethodWIP::Auto());
+        solve(xNum, xDen, A, b, MethodWIP::Auto());
     }
 }
 
