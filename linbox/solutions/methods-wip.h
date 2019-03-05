@@ -79,9 +79,24 @@ namespace LinBox {
      * For Dixon method, which solution type to get when the system is singular.
      */
     enum class SingularSolutionType {
-        Determinist,    //!< The solution should be the easiest to compute and always the same.
-        Random,         //!< The solution should be random and different at each call.
-        Diophantine,    //!< The solution is given over the integers.
+        Determinist, //!< The solution should be the easiest to compute and always the same.
+        Random,      //!< The solution should be random and different at each call.
+        Diophantine, //!< The solution is given over the integers.
+    };
+
+    /**
+     * Preconditioner to ensure generic rank profile.
+     */
+    enum class Preconditioner {
+        None,                      //!< Do not use any preconditioner.
+        Butterfly,                 //!< Use a butterfly network, see @ref Butterfly.
+        Sparse,                    //!< Use a sparse preconditioner, c.f. (Mulders 2000).
+        Toeplitz,                  //!< Use a Toeplitz preconditioner, c.f. (Kaltofen and Saunders 1991).
+        Symmetrize,                //!< Use At A (used by Lanczos).
+        PartialDiagonal,           //!< Use A D, where D is a random non-singular diagonal matrix (used by Lanczos).
+        PartialDiagonalSymmetrize, //!< Use At D A (used by Lanczos).
+        FullDiagonal,              //!< Use D1 At D2 A D1 (used by Lanczos).
+        Dense,                     //!< @fixme Missing doc (used by Dixon).
     };
 
     /**
@@ -92,6 +107,10 @@ namespace LinBox {
         Singularity singularity = Singularity::Unknown;
         size_t rank = 0; //!< Rank of the system. 0 means unknown.
 
+        // Generic options.
+        Preconditioner preconditioner = Preconditioner::None;
+        bool checkResult = false; //!< Ensure that solving worked by checking Ax = b (might not be implemented by all methods).
+
         // For Integer-based systems.
         Dispatch dispatch = Dispatch::Auto;
         Communicator* pCommunicator = nullptr;
@@ -101,7 +120,7 @@ namespace LinBox {
         SingularSolutionType singularSolutionType = SingularSolutionType::Determinist;
 
         // For random-based systems.
-        size_t trialsBeforeThrowing = 100;        //!< Maximum number of trials before giving up.
+        size_t trialsBeforeFailure = 100;         //!< Maximum number of trials before giving up.
         bool findInconsistencyCertificate = true; //!< Whether the solver should attempt to find a certificate of inconsistency if
                                                   //!  it suspects the system to be inconsistent.
 

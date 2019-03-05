@@ -37,7 +37,7 @@
 #include "linbox/blackbox/transpose.h"
 #include "linbox/util/debug.h"
 #include "linbox/vector/vector-domain.h"
-#include "linbox/solutions/methods.h"
+#include "linbox/solutions/methods-wip.h"
 
 namespace LinBox
 {
@@ -89,15 +89,15 @@ namespace LinBox
 		Givaro::GeneralRingNonZeroRandIter<Field> real_ri (_randiter);
 		RandomDenseStream<Field, LVector, Givaro::GeneralRingNonZeroRandIter<Field> > stream (field(), real_ri, A.coldim ());
 
-		for (unsigned int i = 0; !success && i < _traits.maxTries (); ++i) {
+		for (unsigned int i = 0; !success && i < _traits.trialsBeforeFailure; ++i) {
 			std::ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
-			switch (_traits.preconditioner ()) {
-			case LanczosTraits::NO_PRECONDITIONER:
+			switch (_traits.preconditioner ) {
+			case Preconditioner::None:
 				success = iterate (A, x, b);
 				break;
 
-			case LanczosTraits::SYMMETRIZE:
+			case Preconditioner::Symmetrize:
 				{
 					VectorWrapper::ensureDim (bp, A.coldim ());
 
@@ -111,7 +111,7 @@ namespace LinBox
 					break;
 				}
 
-			case LanczosTraits::PARTIAL_DIAGONAL:
+			case Preconditioner::PartialDiagonal:
 				{
 					VectorWrapper::ensureDim (d1, A.coldim ());
 					VectorWrapper::ensureDim (y, A.coldim ());
@@ -129,7 +129,7 @@ namespace LinBox
 					break;
 				}
 
-			case LanczosTraits::PARTIAL_DIAGONAL_SYMMETRIZE:
+			case Preconditioner::PartialDiagonalSymmetrize:
 				{
 					VectorWrapper::ensureDim (d1, A.rowdim ());
 					VectorWrapper::ensureDim (b1, A.rowdim ());
@@ -152,7 +152,7 @@ namespace LinBox
 					break;
 				}
 
-			case LanczosTraits::FULL_DIAGONAL:
+			case Preconditioner::FullDiagonal:
 				{
 					VectorWrapper::ensureDim (d1, A.coldim ());
 					VectorWrapper::ensureDim (d2, A.rowdim ());
@@ -202,17 +202,16 @@ namespace LinBox
 
 			default:
 				throw PreconditionFailed (__func__, __LINE__,
-							  "preconditioner is NO_PRECONDITIONER, SYMMETRIZE, PARTIAL_DIAGONAL_SYMMETRIZE, "
-							  "PARTIAL_DIAGONAL, or FULL_DIAGONAL");
+							  "preconditioner should be None, Symmetrize, PartialDiagonal,"
+							  "PartialDiagonalSymmetrize, or FullDiagonal");
 			}
 
-			if (success && _traits.checkResult ()) {
+			if (success && _traits.checkResult) {
 				VectorWrapper::ensureDim (Ax, A.rowdim ());
 
-				if (_traits.checkResult () &&
-				    ((_traits.preconditioner () == LanczosTraits::SYMMETRIZE) ||
-				     (_traits.preconditioner () == LanczosTraits::PARTIAL_DIAGONAL_SYMMETRIZE) ||
-				     (_traits.preconditioner () == LanczosTraits::FULL_DIAGONAL)))
+				if ((_traits.preconditioner == Preconditioner::Symmetrize) ||
+				    (_traits.preconditioner == Preconditioner::PartialDiagonalSymmetrize) ||
+				    (_traits.preconditioner == Preconditioner::FullDiagonal))
 				{
 					VectorWrapper::ensureDim (ATAx, A.coldim ());
 					VectorWrapper::ensureDim (ATb, A.coldim ());
@@ -230,7 +229,7 @@ namespace LinBox
 						success = false;
 					}
 				}
-				else if (_traits.checkResult ()) {
+				else {
 					commentator().start ("Checking whether Ax=b");
 
 					A.apply (Ax, x);
