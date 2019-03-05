@@ -81,7 +81,7 @@ namespace LinBox {
      *      - IntegerTag
      *      |   - DenseMatrix   > `RationalSolver<..., Method::Dixon>`
      *      |   - SparseMatrix  > `RationalSolver<..., Method::SparseElimination>`
-     *      |   - Otherwise     > @fixme NIY Does dixon need to read the matrix?
+     *      |   - Otherwise     >  Error
      *      - Otherwise > Error
      * - Method::Blackbox > Method::Wiedemann
      * - Method::Wiedemann
@@ -298,7 +298,6 @@ namespace LinBox {
 //
 
 #include "./solve/solve-auto.h"
-// #include "./solve/solve-blackbox.h" @fixme Implement
 
 // Elimination
 #include "./solve/solve-dense-elimination.h"
@@ -311,7 +310,8 @@ namespace LinBox {
 #include "./solve/solve-numeric-symbolic.h"
 
 // Blackbox
-#include "./solve/solve-wiedemann.h"
+#include "./solve/solve-blackbox.h"
 #include "./solve/solve-lanczos.h"
+#include "./solve/solve-wiedemann.h"
 
 #endif

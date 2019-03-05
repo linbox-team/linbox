@@ -27,10 +27,7 @@
 #include <linbox/solutions/methods-wip.h>
 
 namespace {
-// @todo This should be configured with autotune or something.
-#ifndef LINBOX_USE_BLACKBOX_THRESHOLD
-#define LINBOX_USE_BLACKBOX_THRESHOLD 1000
-#endif
+    constexpr const uint32_t LINBOX_USE_BLACKBOX_THRESHOLD = 1000u;
 
     template <class Matrix>
     bool useBlackboxMethod(const Matrix& A)
@@ -46,6 +43,10 @@ namespace {
 }
 
 namespace LinBox {
+    //
+    // solve
+    //
+
     /**
      * \brief Solve specialisation for Auto.
      */
@@ -91,7 +92,7 @@ namespace LinBox {
     }
 
     //
-    // Rational API.
+    // solve Rational API
     //
 
     /**
@@ -102,5 +103,67 @@ namespace LinBox {
                       const RingCategories::IntegerTag& tag, const MethodWIP::Auto& m)
     {
         solve(xNum, xDen, A, b, tag, reinterpret_cast<const MethodWIP::Dixon&>(m));
+    }
+
+    //
+    // solveInPlace
+    //
+
+    /**
+     * \brief Solve in place specialisation for Auto.
+     */
+    template <class ResultVector, class Matrix, class Vector, class CategoryTag>
+    ResultVector& solveInPlace(ResultVector& x, Matrix& A, const Vector& b, const CategoryTag& tag, const MethodWIP::Auto& m)
+    {
+        if (useBlackboxMethod(A)) {
+            return solve(x, A, b, tag, reinterpret_cast<const MethodWIP::Blackbox&>(m));
+        }
+        else {
+            return solve(x, A, b, tag, reinterpret_cast<const MethodWIP::Elimination&>(m));
+        }
+    }
+
+    /**
+     * \brief Solve in place specialisation for Auto and IntegerTag.
+     */
+    template <class ResultVector, class Matrix, class Vector>
+    ResultVector& solveInPlace(ResultVector& x, Matrix& A, const Vector& b, const RingCategories::IntegerTag& tag,
+                               const MethodWIP::Auto& m)
+    {
+        return solveInPlace(x, A, b, tag, reinterpret_cast<const MethodWIP::Dixon&>(m));
+    }
+
+    /**
+     * \brief Solve in place specialisation for Auto with DenseMatrix and non-IntegerTag.
+     */
+    template <class ResultVector, class Field, class Vector, class CategoryTag>
+    typename std::enable_if<!std::is_same<CategoryTag, RingCategories::IntegerTag>::value, ResultVector&>::type solveInPlace(
+        ResultVector& x, DenseMatrix<Field>& A, const Vector& b, const CategoryTag& tag, const MethodWIP::Auto& m)
+    {
+        return solveInPlace(x, A, b, tag, reinterpret_cast<const MethodWIP::DenseElimination&>(m));
+    }
+
+    /**
+     * \brief Solve in place specialisation for Auto with SparseMatrix and non-IntegerTag.
+     */
+    template <class ResultVector, class... MatrixArgs, class Vector, class CategoryTag>
+    typename std::enable_if<!std::is_same<CategoryTag, RingCategories::IntegerTag>::value, ResultVector&>::type solveInPlace(
+        ResultVector& x, SparseMatrix<MatrixArgs...>& A, const Vector& b, const CategoryTag& tag, const MethodWIP::Auto& m)
+    {
+        return solveInPlace(x, A, b, tag, reinterpret_cast<const MethodWIP::SparseElimination&>(m));
+    }
+
+    //
+    // solveInPlace Rational API
+    //
+
+    /**
+     * \brief Solve in place specialization for Auto and IntegerTag.
+     */
+    template <class Matrix, class Vector>
+    inline void solveInPlace(Vector& xNum, typename Vector::Field::Element& xDen, Matrix& A, const Vector& b,
+                             const RingCategories::IntegerTag& tag, const MethodWIP::Auto& m)
+    {
+        solveInPlace(xNum, xDen, A, b, tag, reinterpret_cast<const MethodWIP::Dixon&>(m));
     }
 }
