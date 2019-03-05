@@ -37,7 +37,7 @@
 #include "linbox/field/archetype.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/blackbox/archetype.h"
-#include "linbox/solutions/methods.h"
+#include "linbox/solutions/methods-wip.h"
 #include "linbox/matrix/dense-matrix.h"
 
 // I'm putting everything inside the LinBox namespace so that I can drop all of
@@ -74,11 +74,11 @@ namespace LinBox
 		 * @param traits @ref SolverTraits  structure describing user
 		 *               options for the solver
 		 */
-		MGBlockLanczosSolver (const Field &F, const BlockLanczosTraits &traits) :
+		MGBlockLanczosSolver (const Field &F, const MethodWIP::BlockLanczos &traits) :
 			_traits (traits), _field (&F), _VD (F), _MD (F), _randiter (F)
 			,_AV(F), _VTAV(F), _AVTAVSST_VTAV(F), _matT(F), _DEF(F)
             , _x(F), _y(F), _b(F), _tmp(F), _tmp1(F), _matM(F)
-			, _block (traits.blockingFactor ())
+			, _block (traits.blockingFactor)
 		{
 			init_temps ();
 		}
@@ -89,11 +89,11 @@ namespace LinBox
 		 *               options for the solver
 		 * @param r Random iterator to use for randomization
 		 */
-		MGBlockLanczosSolver (const Field &F, const BlockLanczosTraits &traits, typename Field::RandIter r) :
+		MGBlockLanczosSolver (const Field &F, const MethodWIP::BlockLanczos &traits, typename Field::RandIter r) :
 			_traits (traits), _field (&F), _VD (F), _MD (F), _randiter (r)
 			,_AV(F), _VTAV(F), _AVTAVSST_VTAV(F), _matT(F), _DEF(F)
             , _x(F), _y(F), _b(F), _tmp(F), _tmp1(F), _matM(F)
-			, _block (traits.blockingFactor ())
+			, _block (traits.blockingFactor)
 		{
 			init_temps ();
 		}
@@ -228,7 +228,7 @@ namespace LinBox
 
 		// Private variables
 
-		const BlockLanczosTraits _traits;
+		const MethodWIP::BlockLanczos _traits;
 		const Field              *_field;
 		VectorDomain<Field>       _VD;
 		MatrixDomain<Field>       _MD;

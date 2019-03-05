@@ -37,7 +37,6 @@
 #include "linbox/blackbox/transpose.h"
 #include "linbox/util/debug.h"
 #include "linbox/vector/vector-domain.h"
-#include "linbox/solutions/methods-wip.h"
 
 namespace LinBox
 {
