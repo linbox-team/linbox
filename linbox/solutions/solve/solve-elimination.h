@@ -27,11 +27,16 @@
 #include <linbox/solutions/methods-wip.h>
 
 namespace LinBox {
+    //
+    // solve
+    //
+
     /**
      * \brief Solve specialisation for Elimination.
      */
     template <class ResultVector, class Matrix, class Vector, class CategoryTag>
-    ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag, const MethodWIP::Elimination& m)
+    ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag,
+                        const MethodWIP::Elimination& m)
     {
         return solve(x, A, b, tag, reinterpret_cast<const MethodWIP::Blackbox&>(m));
     }
@@ -54,5 +59,39 @@ namespace LinBox {
                         const MethodWIP::Elimination& m)
     {
         return solve(x, A, b, tag, reinterpret_cast<const MethodWIP::SparseElimination&>(m));
+    }
+
+    //
+    // solveInPlace
+    //
+
+    /**
+     * \brief Solve in place specialisation for Elimination.
+     */
+    template <class ResultVector, class Matrix, class Vector, class CategoryTag>
+    ResultVector& solveInPlace(ResultVector& x, Matrix& A, const Vector& b, const CategoryTag& tag,
+                               const MethodWIP::Elimination& m)
+    {
+        return solveInPlace(x, A, b, tag, reinterpret_cast<const MethodWIP::Blackbox&>(m));
+    }
+
+    /**
+     * \brief Solve in place specialisation for Elimination with DenseMatrix.
+     */
+    template <class ResultVector, class MatrixField, class Vector, class CategoryTag>
+    ResultVector& solveInPlace(ResultVector& x, DenseMatrix<MatrixField>& A, const Vector& b, const CategoryTag& tag,
+                               const MethodWIP::Elimination& m)
+    {
+        return solveInPlace(x, A, b, tag, reinterpret_cast<const MethodWIP::DenseElimination&>(m));
+    }
+
+    /**
+     * \brief Solve in place specialisation for Elimination with SparseMatrix.
+     */
+    template <class ResultVector, class MatrixField, class Vector, class CategoryTag>
+    ResultVector& solveInPlace(ResultVector& x, SparseMatrix<MatrixField>& A, const Vector& b, const CategoryTag& tag,
+                               const MethodWIP::Elimination& m)
+    {
+        return solveInPlace(x, A, b, tag, reinterpret_cast<const MethodWIP::SparseElimination&>(m));
     }
 }
