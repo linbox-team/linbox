@@ -68,7 +68,7 @@ namespace LinBox {
         Solver dixonSolve(A.field(), primeGenerator);
 
         // Either A is known to be non-singular, or we just don't know yet.
-        int maxTrials = m.trialsBeforeThrowing;
+        int maxTrials = m.trialsBeforeFailure;
         bool singular = (m.singularity == Singularity::Singular) || (A.rowdim() != A.coldim());
         SolverReturnStatus status = SS_OK;
         if (!singular) {
