@@ -33,7 +33,6 @@
 #include <iostream>
 
 #include "linbox/util/debug.h"
-#include "linbox/solutions/methods.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/compose.h"
 #include "linbox/blackbox/transpose.h"
@@ -153,18 +152,18 @@ namespace LinBox
         Givaro::GeneralRingNonZeroRandIter<Field> real_ri (_randiter);
 		RandomDenseStream<Field, Vector, Givaro::GeneralRingNonZeroRandIter<Field> > stream (field(), real_ri, A.coldim ());
 
-		for (unsigned int i = 0; !success && i < _traits.maxTries (); ++i) {
+		for (unsigned int i = 0; !success && i < _traits.trialsBeforeFailure; ++i) {
 			std::ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 			report << "In try: " << i << std::endl;
 
-			switch (_traits.preconditioner ()) {
-			case BlockLanczosTraits::NO_PRECONDITIONER:
+			switch (_traits.preconditioner) {
+			case Preconditioner::None:
 				_VD.copy (*(_b.colBegin ()), b);
 				success = iterate (A);
 				_VD.copy (x, *(_x.colBegin ()));
 				break;
 
-			case BlockLanczosTraits::SYMMETRIZE:
+			case Preconditioner::Symmetrize:
 				{
 					VectorWrapper::ensureDim (bp, A.coldim ());
 
@@ -182,7 +181,7 @@ namespace LinBox
 					break;
 				}
 
-			case BlockLanczosTraits::PARTIAL_DIAGONAL:
+			case Preconditioner::PartialDiagonal:
 				{
 					VectorWrapper::ensureDim (d1, A.coldim ());
 					VectorWrapper::ensureDim (y, A.coldim ());
@@ -203,7 +202,7 @@ namespace LinBox
 					break;
 				}
 
-			case BlockLanczosTraits::PARTIAL_DIAGONAL_SYMMETRIZE:
+			case Preconditioner::PartialDiagonalSymmetrize:
 				{
 					VectorWrapper::ensureDim (d1, A.rowdim ());
 					VectorWrapper::ensureDim (b1, A.rowdim ());
@@ -233,7 +232,7 @@ namespace LinBox
 					break;
 				}
 
-			case BlockLanczosTraits::FULL_DIAGONAL:
+			case Preconditioner::FullDiagonal:
 				{
 					VectorWrapper::ensureDim (d1, A.coldim ());
 					VectorWrapper::ensureDim (d2, A.rowdim ());
@@ -277,17 +276,16 @@ namespace LinBox
 
 			default:
 				throw PreconditionFailed (__func__, __LINE__,
-							  "preconditioner is NO_PRECONDITIONER, SYMMETRIZE, PARTIAL_DIAGONAL_SYMMETRIZE, "
-							  "PARTIAL_DIAGONAL, or FULL_DIAGONAL");
+							  "preconditioner should be None, Symmetrize, PartialDiagonal,"
+							  "PartialDiagonalSymmetrize, or FullDiagonal");
 			}
 
-			if (_traits.checkResult ()) {
+			if (_traits.checkResult) {
 				VectorWrapper::ensureDim (Ax, A.rowdim ());
 
-				if (_traits.checkResult () &&
-				    ((_traits.preconditioner () == BlockLanczosTraits::SYMMETRIZE) ||
-				     (_traits.preconditioner () == BlockLanczosTraits::PARTIAL_DIAGONAL_SYMMETRIZE) ||
-				     (_traits.preconditioner () == BlockLanczosTraits::FULL_DIAGONAL)))
+				if ((_traits.preconditioner == Preconditioner::Symmetrize) ||
+				    (_traits.preconditioner == Preconditioner::PartialDiagonalSymmetrize) ||
+				    (_traits.preconditioner == Preconditioner::FullDiagonal))
 				{
 					VectorWrapper::ensureDim (ATAx, A.coldim ());
 					VectorWrapper::ensureDim (ATb, A.coldim ());
@@ -307,7 +305,7 @@ namespace LinBox
 						success = false;
 					}
 				}
-				else if (_traits.checkResult ()) {
+				else {
 					commentator().start ("Checking whether Ax=b");
 
 					A.apply (Ax, x);
@@ -363,7 +361,7 @@ namespace LinBox
 		TransposeMatrix<Matrix> bT (_b);
 		TransposeMatrix<Matrix> xT (_x);
 
-		for ( unsigned int i = 0; number < x.coldim () && i < _traits.maxTries (); ++i) {
+		for ( unsigned int i = 0; number < x.coldim () && i < _traits.trialsBeforeFailure; ++i) {
 			// bool success;
 			std::ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 			report << "in try: " << i << std::endl;
@@ -379,12 +377,12 @@ namespace LinBox
 			_MD.blackboxMulLeft (_b, A, _y);
 
 			switch (_traits.preconditioner ()) {
-			case BlockLanczosTraits::NO_PRECONDITIONER:
+			case Preconditioner::None:
 				// success =
 					iterate (A);
 				break;
 
-			case BlockLanczosTraits::SYMMETRIZE:
+			case Preconditioner::Symmetrize:
 				{
 					Transpose<Blackbox> AT (&A);
 					Compose<Transpose<Blackbox>, Blackbox> B (&AT, &A);
@@ -397,7 +395,7 @@ namespace LinBox
 					break;
 				}
 
-			case BlockLanczosTraits::PARTIAL_DIAGONAL:
+			case Preconditioner::PartialDiagonal:
 				{
 					VectorWrapper::ensureDim (d1, A.coldim ());
 
@@ -417,7 +415,7 @@ namespace LinBox
 					break;
 				}
 
-			case BlockLanczosTraits::PARTIAL_DIAGONAL_SYMMETRIZE:
+			case Preconditioner::PartialDiagonalSymmetrize:
 				{
 					VectorWrapper::ensureDim (d1, A.rowdim ());
 
@@ -444,7 +442,7 @@ namespace LinBox
 					break;
 				}
 
-			case BlockLanczosTraits::FULL_DIAGONAL:
+			case Preconditioner::FullDiagonal:
 				{
 					VectorWrapper::ensureDim (d1, A.coldim ());
 					VectorWrapper::ensureDim (d2, A.rowdim ());
@@ -487,8 +485,8 @@ namespace LinBox
 
 			default:
 				throw PreconditionFailed (__func__, __LINE__,
-							  "preconditioner is NO_PRECONDITIONER, SYMMETRIZE, PARTIAL_DIAGONAL_SYMMETRIZE, "
-							  "PARTIAL_DIAGONAL, or FULL_DIAGONAL");
+							  "preconditioner should be None, Symmetrize, PartialDiagonal,"
+							  "PartialDiagonalSymmetrize, or FullDiagonal");
 			}
 
 			// Obtain the candidate nullspace vectors
@@ -530,7 +528,7 @@ namespace LinBox
 		bool      ret = true, done = false;
 
 		// How many iterations between each progress update
-		unsigned int progress_interval = (unsigned int) (A.rowdim () / _traits.blockingFactor () / 100);
+		unsigned int progress_interval = (unsigned int) (A.rowdim () / _block / 100);
 
 		// Make sure there are a minimum of ten
 		if (progress_interval == 0)
@@ -1025,7 +1023,7 @@ namespace LinBox
 		typename Vector<Field>::Dense::iterator k;
 		std::vector<bool>::const_iterator l;
 
-		typename LinBox::Vector<Field>::Dense tmp (_traits.blockingFactor ());
+		typename LinBox::Vector<Field>::Dense tmp (_block);
 
 		for (i = A.rowBegin (); i != A.rowEnd (); ++i) {
 			for (j = B.colBegin (), k = tmp.begin (), l = S.begin ();

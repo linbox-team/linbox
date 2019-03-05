@@ -73,9 +73,7 @@ namespace LinBox {
                         const MethodWIP::BlockLanczos& m)
     {
         using Solver = MGBlockLanczosSolver<typename Matrix::Field>;
-        // @fixme Just pass m here, when everything is forwarded correctly
-        Method::BlockLanczos newM;
-        Solver solver(A.field(), newM);
+        Solver solver(A.field(), m);
 
         bool solveResult = solver.solve(A, x, b);
 

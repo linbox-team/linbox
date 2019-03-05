@@ -111,11 +111,11 @@ int main(void)
     // run_modular<DenseMatrix<Givaro::Modular<double>>, MethodWIP::SparseElimination>();
     // run_modular<SparseMatrix<Givaro::Modular<double>>, MethodWIP::SparseElimination>();
     // // run_modular<DenseMatrix<Givaro::Modular<double>>, MethodWIP::Wiedemann>(); // @fixme Can't compile
-    run_modular<SparseMatrix<Givaro::Modular<double>>, MethodWIP::Wiedemann>();
+    // run_modular<SparseMatrix<Givaro::Modular<double>>, MethodWIP::Wiedemann>();
     // run_modular<DenseMatrix<Givaro::Modular<double>>, MethodWIP::Lanczos>(); // @fixme Segmentation fault
-    // // run_modular<SparseMatrix<Givaro::Modular<double>>, MethodWIP::Lanczos>(); // @fixme Segmentation fault
-    // // run_modular<DenseMatrix<Givaro::Modular<double>>, MethodWIP::BlockLanczos>(); // @fixme Can't compile
-    // // run_modular<SparseMatrix<Givaro::Modular<double>>, MethodWIP::BlockLanczos>(); // @fixme Segmentation fault
+    // run_modular<SparseMatrix<Givaro::Modular<double>>, MethodWIP::Lanczos>(); // @fixme Segmentation fault
+    // run_modular<DenseMatrix<Givaro::Modular<double>>, MethodWIP::BlockLanczos>(); // @fixme Can't compile
+    // run_modular<SparseMatrix<Givaro::Modular<double>>, MethodWIP::BlockLanczos>(); // @fixme Segmentation fault
 
     // @deprecated These do not compile anymore
     // run_modular<DenseMatrix<Givaro::Modular<double>>, MethodWIP::BlockWiedemann>();
