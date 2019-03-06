@@ -97,7 +97,7 @@ namespace LinBox
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>
 	SolverReturnStatus
-	RationalSolver<Ring,Field,RandomPrime,WiedemannTraits>::solve (Vector1& num,
+	RationalSolver<Ring,Field,RandomPrime,Method::Wiedemann>::solve (Vector1& num,
 								       Integer& den,
 								       const IMatrix& A,
 								       const Vector2& b,
@@ -132,7 +132,7 @@ namespace LinBox
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>
 	SolverReturnStatus
-	RationalSolver<Ring, Field, RandomPrime, WiedemannTraits>::solveNonsingular( Vector1& num,
+	RationalSolver<Ring, Field, RandomPrime, Method::Wiedemann>::solveNonsingular( Vector1& num,
 												      Integer& den,
 												      const IMatrix& A,
 												      const Vector2& b,
@@ -206,7 +206,7 @@ namespace LinBox
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>
 	SolverReturnStatus
-	RationalSolver<Ring,Field,RandomPrime,WiedemannTraits>:: solveSingular (Vector1& num,
+	RationalSolver<Ring,Field,RandomPrime,Method::Wiedemann>:: solveSingular (Vector1& num,
 										     Integer& den,
 										     const IMatrix& A,
 										     const Vector2& b,
@@ -341,7 +341,7 @@ namespace LinBox
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class FMatrix, class IVector>
 	void
-	RationalSolver<Ring,Field,RandomPrime,WiedemannTraits>::sparseprecondition (const Field& F,
+	RationalSolver<Ring,Field,RandomPrime,Method::Wiedemann>::sparseprecondition (const Field& F,
 										     const IMatrix *A,
 										     Compose<LambdaSparseMatrix<Ring>, Compose<IMatrix, LambdaSparseMatrix<Ring> > > *&PAQ,
 										     const FMatrix *Ap,
@@ -407,7 +407,7 @@ namespace LinBox
 #if 0
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class FMatrix, class IVector,class FVector>
-	void RationalSolver<Ring,Field,RandomPrime,WiedemannTraits>::
+	void RationalSolver<Ring,Field,RandomPrime,Method::Wiedemann>::
 	precondition (const Field&                          F,
 		      const IMatrix&                        A,
 		      BlackboxArchetype<IVector>        *&PAQ,
@@ -420,11 +420,11 @@ namespace LinBox
 	{
 		switch (_traits.preconditioner() ) {
 
-		case WiedemannTraits::BUTTERFLY:
+		case Method::Wiedemann::BUTTERFLY:
 			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<<"ERROR: Butterfly preconditioner not implemented yet. Sorry." << std::endl;
 
-		case WiedemannTraits::SPARSE:
+		case Method::Wiedemann::SPARSE:
 			{
 				commentator().start ("Constructing sparse preconditioner");
 
@@ -442,11 +442,11 @@ namespace LinBox
 				break;
 			}
 
-		case WiedemannTraits::TOEPLITZ:
+		case Method::Wiedemann::TOEPLITZ:
 			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: Toeplitz preconditioner not implemented yet. Sorry." << std::endl;
 
-		case WiedemannTraits::NONE:
+		case Method::Wiedemann::NONE:
 			throw PreconditionFailed (__func__, __LINE__, "preconditioner is BUTTERFLY, SPARSE, or TOEPLITZ");
 
 		default:
@@ -467,7 +467,7 @@ namespace LinBox
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>
 	SolverReturnStatus
-	RationalSolver<Ring,Field,RandomPrime,BlockWiedemannTraits>::solve (Vector1& num, Integer& den,
+	RationalSolver<Ring,Field,RandomPrime,Method::BlockWiedemann>::solve (Vector1& num, Integer& den,
 										     const IMatrix& A,
 										     const Vector2& b,
 										     const bool old,
@@ -501,7 +501,7 @@ namespace LinBox
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>
 	SolverReturnStatus
-	RationalSolver<Ring,Field,RandomPrime,BlockWiedemannTraits>::solveNonsingular (Vector1& num,
+	RationalSolver<Ring,Field,RandomPrime,Method::BlockWiedemann>::solveNonsingular (Vector1& num,
 										       Integer& den,
 										       const IMatrix& A,
 										       const Vector2& b,
@@ -557,7 +557,7 @@ namespace LinBox
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>
 	SolverReturnStatus
-	RationalSolver<Ring,Field,RandomPrime,DixonTraits>::solve (Vector1& num,
+	RationalSolver<Ring,Field,RandomPrime,Method::Dixon>::solve (Vector1& num,
 								   Integer& den,
 								   const IMatrix& A,
 								   const Vector2& b,
@@ -610,7 +610,7 @@ namespace LinBox
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>
 	SolverReturnStatus
-	RationalSolver<Ring,Field,RandomPrime,DixonTraits>::solveNonsingular(Vector1& num,
+	RationalSolver<Ring,Field,RandomPrime,Method::Dixon>::solveNonsingular(Vector1& num,
 									     Integer& den,
 									     const IMatrix& A,
 									     const Vector2& b,
@@ -752,7 +752,7 @@ namespace LinBox
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>
 	SolverReturnStatus
-	RationalSolver<Ring,Field,RandomPrime,DixonTraits>::solveSingular (Vector1& num,
+	RationalSolver<Ring,Field,RandomPrime,Method::Dixon>::solveSingular (Vector1& num,
 									   Integer& den,
 									   const IMatrix& A,
 									   const Vector2& b,
@@ -765,7 +765,7 @@ namespace LinBox
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>
 	SolverReturnStatus
-	RationalSolver<Ring,Field,RandomPrime,DixonTraits>::findRandomSolution (Vector1& num,
+	RationalSolver<Ring,Field,RandomPrime,Method::Dixon>::findRandomSolution (Vector1& num,
 										     Integer& den,
 										     const IMatrix& A,
 										     const Vector2& b,
@@ -784,7 +784,7 @@ namespace LinBox
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>
 	SolverReturnStatus
-	RationalSolver<Ring,Field,RandomPrime,DixonTraits>::monolithicSolve (Vector1& num,
+	RationalSolver<Ring,Field,RandomPrime,Method::Dixon>::monolithicSolve (Vector1& num,
 										     Integer& den,
 										     const IMatrix& A,
 										     const Vector2& b,
@@ -1380,7 +1380,7 @@ namespace LinBox
 
 
 
-
+#if 0
 	/*
 	 * Specialization for Block Hankel method
 	 */
@@ -1472,7 +1472,7 @@ namespace LinBox
 
 		return SS_OK;
 	}
-
+#endif
 
 
 	/*
@@ -1483,7 +1483,7 @@ namespace LinBox
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>
 	SolverReturnStatus
-	RationalSolver<Ring,Field,RandomPrime,SparseEliminationTraits>::solve(Vector1& num,
+	RationalSolver<Ring,Field,RandomPrime,Method::SparseElimination>::solve(Vector1& num,
                                                                           Integer& den,
                                                                           const IMatrix& A,
                                                                           const Vector2& b,

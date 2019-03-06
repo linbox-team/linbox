@@ -53,7 +53,7 @@ namespace LinBox {
      */
     template <class Matrix, class Vector>
     void solve(Vector& xNum, typename Vector::Field::Element& xDen, const Matrix& A, const Vector& b,
-               const RingCategories::IntegerTag& tag, const MethodWIP::Dixon& m)
+               const RingCategories::IntegerTag& tag, const Method::Dixon& m)
     {
         commentator().start("solve.dixon.integer.dense");
         linbox_check((A.coldim() != xNum.size()) || (A.rowdim() != b.size()));

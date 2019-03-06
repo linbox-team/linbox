@@ -64,7 +64,7 @@ int main (int argc, char **argv)
 		A.read(input);
 		cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 
-		SE.strategy(Specifier::PIVOT_LINEAR);
+		SE.strategy(PivotStrategy::Linear);
 		Givaro::ZRing<Integer>::Element d;
 		det (d, A, SE);
 
@@ -89,7 +89,7 @@ int main (int argc, char **argv)
 		F.write(cout << "Determinant is ", d) << endl;
 
 		// using Sparse Elimination with reordering
-		SE.strategy(Specifier::PIVOT_LINEAR);
+		SE.strategy(PivotStrategy::Linear);
 		detInPlace (d, B, SE);
 		if (B.rowdim() <= 20 && B.coldim() <= 20)
 			B.write(cout) << endl;

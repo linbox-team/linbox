@@ -25,7 +25,7 @@
 #include <linbox/algorithms/gauss.h>
 #include <linbox/algorithms/matrix-hom.h>
 #include <linbox/matrix/sparse-matrix.h>
-#include <linbox/solutions/methods-wip.h>
+#include <linbox/solutions/methods.h>
 
 namespace LinBox {
     //
@@ -37,10 +37,10 @@ namespace LinBox {
      */
     template <class ResultVector, class Matrix, class Vector, class CategoryTag>
     ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag,
-                        const MethodWIP::SparseElimination& m)
+                        const Method::SparseElimination& m)
     {
         commentator().report(Commentator::LEVEL_UNIMPORTANT,
-                             "Warning: Solve implicitly convert to a sparse matrix because of MethodWIP::SparseElimination.");
+                             "Warning: Solve implicitly convert to a sparse matrix because of Method::SparseElimination.");
 
         using Field = typename Matrix::Field;
         SparseMatrix<Field> ASparse(A.field(), A.rowdim(), A.coldim());
@@ -53,7 +53,7 @@ namespace LinBox {
      */
     template <class ResultVector, class... MatrixArgs, class Vector, class CategoryTag>
     ResultVector& solve(ResultVector& x, const SparseMatrix<MatrixArgs...>& A, const Vector& b, const CategoryTag& tag,
-                        const MethodWIP::SparseElimination& m)
+                        const Method::SparseElimination& m)
     {
         SparseMatrix<MatrixArgs...> ACopy(A);
         return solveInPlace(x, ACopy, b, tag, m);
@@ -64,9 +64,9 @@ namespace LinBox {
      */
     template <class ResultVector, class... MatrixArgs, class Vector>
     ResultVector& solve(ResultVector& x, const SparseMatrix<MatrixArgs...>& A, const Vector& b,
-                        const RingCategories::IntegerTag& tag, const MethodWIP::SparseElimination& m)
+                        const RingCategories::IntegerTag& tag, const Method::SparseElimination& m)
     {
-        return solve(x, A, b, tag, reinterpret_cast<const MethodWIP::Dixon&>(m));
+        return solve(x, A, b, tag, reinterpret_cast<const Method::Dixon&>(m));
     }
 
     //
@@ -78,7 +78,7 @@ namespace LinBox {
      */
     template <class ResultVector, class... MatrixArgs, class Vector, class CategoryTag>
     ResultVector& solveInPlace(ResultVector& x, SparseMatrix<MatrixArgs...>& A, const Vector& b, const CategoryTag& tag,
-                               const MethodWIP::SparseElimination& m)
+                               const Method::SparseElimination& m)
     {
         commentator().start("solve-in-place.sparse-elimination.any.sparse");
         linbox_check((A.coldim() != x.size()) || (A.rowdim() != b.size()));

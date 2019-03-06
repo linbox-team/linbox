@@ -26,7 +26,7 @@
 #include <linbox/algorithms/rational-solver-sn.h>
 #include <linbox/field/field-traits.h>
 #include <linbox/field/param-fuzzy.h>
-#include <linbox/solutions/methods-wip.h>
+#include <linbox/solutions/methods.h>
 // #include <linbox/algorithms/numsym.h>
 
 namespace LinBox {
@@ -37,9 +37,9 @@ namespace LinBox {
 
     template <class Matrix, class Vector>
     inline void solve(Vector& xNum, typename Vector::Field::Element& xDen, const Matrix& A, const Vector& b,
-                      const RingCategories::IntegerTag& tag, const MethodWIP::NumericSymbolicOverlap& m)
+                      const RingCategories::IntegerTag& tag, const Method::NumericSymbolicOverlap& m)
     {
-        throw LinBoxError("Rational solve with MethodWIP::NumericSymbolicOverlap only works with DenseMatrix.");
+        throw LinBoxError("Rational solve with Method::NumericSymbolicOverlap only works with DenseMatrix.");
     }
 
     /**
@@ -47,7 +47,7 @@ namespace LinBox {
      */
     template <class Ring, class Vector>
     inline void solve(Vector& xNum, typename Ring::Element& xDen, const DenseMatrix<Ring>& A, const Vector& b,
-                      const RingCategories::IntegerTag& tag, const MethodWIP::NumericSymbolicOverlap& m)
+                      const RingCategories::IntegerTag& tag, const Method::NumericSymbolicOverlap& m)
     {
         commentator().start("solve.numeric-symbolic-overlap.integer");
         linbox_check((A.coldim() != x.size()) || (A.rowdim() != b.size()));
@@ -78,9 +78,9 @@ namespace LinBox {
 
     template <class Matrix, class Vector>
     inline void solve(Vector& xNum, typename Vector::Field::Element& xDen, const Matrix& A, const Vector& b,
-                      const RingCategories::IntegerTag& tag, const MethodWIP::NumericSymbolicNorm& m)
+                      const RingCategories::IntegerTag& tag, const Method::NumericSymbolicNorm& m)
     {
-        throw LinBoxError("Rational solve with MethodWIP::NumericSymbolicNorm only works with DenseMatrix.");
+        throw LinBoxError("Rational solve with Method::NumericSymbolicNorm only works with DenseMatrix.");
     }
 
     /**
@@ -88,7 +88,7 @@ namespace LinBox {
      */
     template <class Ring, class Vector>
     inline void solve(Vector& xNum, typename Ring::Element& xDen, const DenseMatrix<Ring>& A, const Vector& b,
-                      const RingCategories::IntegerTag& tag, const MethodWIP::NumericSymbolicNorm& m)
+                      const RingCategories::IntegerTag& tag, const Method::NumericSymbolicNorm& m)
     {
         commentator().start("solve.numeric-symbolic-norm.integer");
         linbox_check((A.coldim() != x.size()) || (A.rowdim() != b.size()));
@@ -96,7 +96,7 @@ namespace LinBox {
         using Field = Givaro::Modular<int32_t>; // @fixme Why not double?
         using PrimeGenerator = PrimeIterator<IteratorCategories::HeuristicTag>;
 
-        RationalSolver<Ring, Field, PrimeGenerator, Method::NumSymNorm> rsolver(b.field());
+        RationalSolver<Ring, Field, PrimeGenerator, Method::NumericSymbolicNorm> rsolver(b.field());
 
         SolverReturnStatus status = rsolver.solve(xNum, xDen, A, b);
 

@@ -35,7 +35,7 @@
 #include "linbox/blackbox/archetype.h"
 #include "linbox/util/debug.h"
 #include "linbox/vector/vector-domain.h"
-#include "linbox/solutions/methods-wip.h"
+#include "linbox/solutions/methods.h"
 
 namespace LinBox
 {
@@ -56,7 +56,7 @@ namespace LinBox
 		 * @param traits @ref SolverTraits  structure describing user
 		 *               options for the solver
 		 */
-		LanczosSolver (const Field &F, const MethodWIP::Lanczos &traits) :
+		LanczosSolver (const Field &F, const Method::Lanczos &traits) :
 			_traits (traits), _field (&F), _randiter (F), _VD (F)
 		{}
 
@@ -66,7 +66,7 @@ namespace LinBox
 		 *               options for the solver
 		 * @param r Random iterator to use for randomization
 		 */
-		LanczosSolver (const Field &F, const MethodWIP::Lanczos &traits, typename Field::RandIter r) :
+		LanczosSolver (const Field &F, const Method::Lanczos &traits, typename Field::RandIter r) :
 			_traits (traits), _field (&F), _randiter (r), _VD (F)
 		{}
 
@@ -98,7 +98,7 @@ namespace LinBox
 		template<class Blackbox>
 		bool iterate (const Blackbox &A, Vector &x, const Vector &b);
 
-		const MethodWIP::Lanczos &_traits;
+		const Method::Lanczos &_traits;
 		const Field                       *_field;
 		typename Field::RandIter           _randiter;
 		VectorDomain<Field>                _VD;

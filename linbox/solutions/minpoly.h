@@ -166,11 +166,10 @@ namespace LinBox
 			     const RingCategories::ModularTag & tag,
 			     const Method::Blackbox           & M)
 	{
-		if (M.certificate()) {
+		if (M.certifyInconsistency) {
 			// Will make a word size extension
 			// when field size is too small
-			//return minpoly(P, A, tag, Method::ExtensionWiedemann (M));
-			minpoly(P, A, tag, Method::ExtensionWiedemann (M));
+			minpoly(P, A, tag, Method::WiedemannExtension (M));
 			return P;
 		}
 		else

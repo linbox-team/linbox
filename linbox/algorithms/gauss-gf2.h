@@ -84,24 +84,24 @@ namespace LinBox
 		SparseSeqMatrix        &A,
 		size_t  Ni,
 		size_t  Nj,
-		SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const ;
+		PivotStrategy   reord = PivotStrategy::Linear) const ;
 
 		///
 		template <class SparseSeqMatrix> size_t& rankInPlace(size_t &Rank,
 		SparseSeqMatrix        &A,
-		SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const;
+		PivotStrategy   reord = PivotStrategy::Linear) const;
 
 		///
 		template <class SparseSeqMatrix> size_t& rank(size_t &rk,
 		const SparseSeqMatrix        &A,
 		size_t  Ni,
 		size_t  Nj,
-		SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const ;
+		PivotStrategy   reord = PivotStrategy::Linear) const ;
 
 		///
 		template <class SparseSeqMatrix> size_t& rank(size_t &rk,
 		const SparseSeqMatrix        &A,
-		SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const ;
+		PivotStrategy   reord = PivotStrategy::Linear) const ;
 
 		//@}
 
@@ -116,23 +116,23 @@ namespace LinBox
 		///
 		template <class SparseSeqMatrix> Element& detInPlace(Element &determinant,
 		SparseSeqMatrix        &A,
-		SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const;
+		PivotStrategy   reord = PivotStrategy::Linear) const;
 		///
 		template <class SparseSeqMatrix> Element& detInPlace(Element &determinant,
 		SparseSeqMatrix        &A,
 		size_t  Ni,
 		size_t  Nj,
-		SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const;
+		PivotStrategy   reord = PivotStrategy::Linear) const;
 		///
 		template <class SparseSeqMatrix> Element& det(Element &determinant,
 		const SparseSeqMatrix        &A,
-		SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const;
+		PivotStrategy   reord = PivotStrategy::Linear) const;
 		///
 		template <class SparseSeqMatrix> Element& det(Element &determinant,
 		const SparseSeqMatrix        &A,
 		size_t  Ni,
 		size_t  Nj,
-		SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const;
+		PivotStrategy   reord = PivotStrategy::Linear) const;
 		//@}
 
 

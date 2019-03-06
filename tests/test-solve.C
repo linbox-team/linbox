@@ -114,7 +114,7 @@ static bool testIdentitySolve (const Field          &F,
 			solve (w, I, v, method);
 			//solve (I, w, v, F, traits);
 		}
-		catch (SolveFailed) {
+		catch (LinboxError) {
 			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Solve failed to solve system" << endl;
 			ret = iter_passed = false;
@@ -216,7 +216,7 @@ static bool testNonsingularSolve (const Field          &F,
 		try {
 			solve (x, D, b, method);
 		}
-		catch (SolveFailed) {
+		catch (LinboxError) {
 			commentator().restoreActivityState (state);
 			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: System solution failed" << endl;
@@ -353,7 +353,7 @@ static bool testSingularConsistentSolve (const Field          &F,
 				commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 					<< "ERROR: Computed solution is incorrect" << endl;
 		}
-		catch (SolveFailed) {
+		catch (LinboxError) {
 			commentator().restoreActivityState (state);
 			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: System solution failed" << endl;
@@ -365,7 +365,7 @@ static bool testSingularConsistentSolve (const Field          &F,
 			Report << "ERROR: Inconsistent system exception" << endl;
 
 			Report << "Certificate is: ";
-			VD.write (Report, e.certificate ()) << endl;
+			VD.write (Report, e.certifyInconsistency) << endl;
 
 			ret = false;
 
@@ -683,7 +683,7 @@ static bool testRandomSolve (const Field                  &F,
 		try {
 			solve (A, x, b, F, traits);
 		}
-		catch (SolveFailed) {
+		catch (LinboxError) {
 			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Solve failed to solve system" << endl;
 			ret = iter_passed = false;

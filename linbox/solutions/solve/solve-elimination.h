@@ -24,7 +24,7 @@
 
 #include <linbox/matrix/dense-matrix.h>
 #include <linbox/matrix/sparse-matrix.h>
-#include <linbox/solutions/methods-wip.h>
+#include <linbox/solutions/methods.h>
 
 namespace LinBox {
     //
@@ -36,9 +36,9 @@ namespace LinBox {
      */
     template <class ResultVector, class Matrix, class Vector, class CategoryTag>
     ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag,
-                        const MethodWIP::Elimination& m)
+                        const Method::Elimination& m)
     {
-        return solve(x, A, b, tag, reinterpret_cast<const MethodWIP::Blackbox&>(m));
+        return solve(x, A, b, tag, reinterpret_cast<const Method::Blackbox&>(m));
     }
 
     /**
@@ -46,9 +46,9 @@ namespace LinBox {
      */
     template <class ResultVector, class MatrixField, class Vector, class CategoryTag>
     ResultVector& solve(ResultVector& x, const DenseMatrix<MatrixField>& A, const Vector& b, const CategoryTag& tag,
-                        const MethodWIP::Elimination& m)
+                        const Method::Elimination& m)
     {
-        return solve(x, A, b, tag, reinterpret_cast<const MethodWIP::DenseElimination&>(m));
+        return solve(x, A, b, tag, reinterpret_cast<const Method::DenseElimination&>(m));
     }
 
     /**
@@ -56,9 +56,9 @@ namespace LinBox {
      */
     template <class ResultVector, class MatrixField, class Vector, class CategoryTag>
     ResultVector& solve(ResultVector& x, const SparseMatrix<MatrixField>& A, const Vector& b, const CategoryTag& tag,
-                        const MethodWIP::Elimination& m)
+                        const Method::Elimination& m)
     {
-        return solve(x, A, b, tag, reinterpret_cast<const MethodWIP::SparseElimination&>(m));
+        return solve(x, A, b, tag, reinterpret_cast<const Method::SparseElimination&>(m));
     }
 
     //
@@ -70,9 +70,9 @@ namespace LinBox {
      */
     template <class ResultVector, class Matrix, class Vector, class CategoryTag>
     ResultVector& solveInPlace(ResultVector& x, Matrix& A, const Vector& b, const CategoryTag& tag,
-                               const MethodWIP::Elimination& m)
+                               const Method::Elimination& m)
     {
-        return solveInPlace(x, A, b, tag, reinterpret_cast<const MethodWIP::Blackbox&>(m));
+        return solveInPlace(x, A, b, tag, reinterpret_cast<const Method::Blackbox&>(m));
     }
 
     /**
@@ -80,9 +80,9 @@ namespace LinBox {
      */
     template <class ResultVector, class MatrixField, class Vector, class CategoryTag>
     ResultVector& solveInPlace(ResultVector& x, DenseMatrix<MatrixField>& A, const Vector& b, const CategoryTag& tag,
-                               const MethodWIP::Elimination& m)
+                               const Method::Elimination& m)
     {
-        return solveInPlace(x, A, b, tag, reinterpret_cast<const MethodWIP::DenseElimination&>(m));
+        return solveInPlace(x, A, b, tag, reinterpret_cast<const Method::DenseElimination&>(m));
     }
 
     /**
@@ -90,8 +90,8 @@ namespace LinBox {
      */
     template <class ResultVector, class MatrixField, class Vector, class CategoryTag>
     ResultVector& solveInPlace(ResultVector& x, SparseMatrix<MatrixField>& A, const Vector& b, const CategoryTag& tag,
-                               const MethodWIP::Elimination& m)
+                               const Method::Elimination& m)
     {
-        return solveInPlace(x, A, b, tag, reinterpret_cast<const MethodWIP::SparseElimination&>(m));
+        return solveInPlace(x, A, b, tag, reinterpret_cast<const Method::SparseElimination&>(m));
     }
 }

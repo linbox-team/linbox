@@ -167,7 +167,7 @@ namespace LinBox {
             // Make it just Blackbox trait and not wiedemann:
             // Might need extension field for minpoly
             // Might also also use better method than Wiedemann ...
-            // @fixme Just reinterpret_cast<const Blackbox&>(_traits) when minpoly uses MethodWIP
+            // @fixme Just reinterpret_cast<const Blackbox&>(_traits) when minpoly uses Method
             minpoly(m_A, A, RingCategories::ModularTag(), Method::Blackbox());
         }
 
@@ -492,7 +492,7 @@ namespace LinBox {
         // Vector PTinvu(A.field());
         typename Field::Element uTb;
 
-        MethodWIP::Wiedemann cert_traits;
+        Method::Wiedemann cert_traits;
         cert_traits.trialsBeforeFailure = 1;
         cert_traits.singularity = Singularity::Singular;
 

@@ -1,7 +1,7 @@
 // @fixme LICENCE
 
 #include <linbox/matrix/dense-matrix.h>
-#include <linbox/solutions/solve-wip.h>
+#include <linbox/solutions/solve.h>
 
 using namespace LinBox;
 
@@ -94,32 +94,32 @@ int main(void)
 
     commentator().setReportStream(std::cout);
 
-    run_integer<Givaro::ZRing<Integer>, MethodWIP::Auto>(communicator, 2);
-    // run_integer<Givaro::ZRing<Integer>, MethodWIP::CraAuto>(communicator, 2);
-    // run_integer<Givaro::ZRing<Integer>, MethodWIP::CraAuto>(communicator, 3);
-    // run_integer<Givaro::ZRing<Integer>, MethodWIP::Dixon>(communicator, 2);
-    // run_integer<Givaro::ZRing<Integer>, MethodWIP::Dixon>(communicator, 3);
-    // run_integer<Givaro::ZRing<Integer>, MethodWIP::NumericSymbolicOverlap>(communicator, 2);
-    // run_integer<Givaro::ZRing<Integer>, MethodWIP::NumericSymbolicOverlap>(communicator, 3); // @fixme Fails
-    // run_integer<Givaro::ZRing<Integer>, MethodWIP::NumericSymbolicNorm>(communicator, 2); // @fixme Fails
-    // run_integer<Givaro::ZRing<Integer>, MethodWIP::NumericSymbolicNorm>(communicator, 3); // @fixme Fails
+    run_integer<Givaro::ZRing<Integer>, Method::Auto>(communicator, 2);
+    // run_integer<Givaro::ZRing<Integer>, Method::CraAuto>(communicator, 2);
+    // run_integer<Givaro::ZRing<Integer>, Method::CraAuto>(communicator, 3);
+    // run_integer<Givaro::ZRing<Integer>, Method::Dixon>(communicator, 2);
+    // run_integer<Givaro::ZRing<Integer>, Method::Dixon>(communicator, 3);
+    // run_integer<Givaro::ZRing<Integer>, Method::NumericSymbolicOverlap>(communicator, 2);
+    // run_integer<Givaro::ZRing<Integer>, Method::NumericSymbolicOverlap>(communicator, 3); // @fixme Fails
+    // run_integer<Givaro::ZRing<Integer>, Method::NumericSymbolicNorm>(communicator, 2); // @fixme Fails
+    // run_integer<Givaro::ZRing<Integer>, Method::NumericSymbolicNorm>(communicator, 3); // @fixme Fails
 
-    run_modular<DenseMatrix<Givaro::Modular<double>>, MethodWIP::Auto>();
-    run_modular<SparseMatrix<Givaro::Modular<double>>, MethodWIP::Auto>();
-    // run_modular<DenseMatrix<Givaro::Modular<double>>, MethodWIP::DenseElimination>();
-    // run_modular<SparseMatrix<Givaro::Modular<double>>, MethodWIP::DenseElimination>();
-    // run_modular<DenseMatrix<Givaro::Modular<double>>, MethodWIP::SparseElimination>();
-    // run_modular<SparseMatrix<Givaro::Modular<double>>, MethodWIP::SparseElimination>();
-    // // run_modular<DenseMatrix<Givaro::Modular<double>>, MethodWIP::Wiedemann>(); // @fixme Can't compile
-    run_modular<SparseMatrix<Givaro::Modular<double>>, MethodWIP::Wiedemann>();
-    // run_modular<DenseMatrix<Givaro::Modular<double>>, MethodWIP::Lanczos>(); // @fixme Segmentation fault
-    // run_modular<SparseMatrix<Givaro::Modular<double>>, MethodWIP::Lanczos>(); // @fixme Segmentation fault
-    // run_modular<DenseMatrix<Givaro::Modular<double>>, MethodWIP::BlockLanczos>(); // @fixme Can't compile
-    // run_modular<SparseMatrix<Givaro::Modular<double>>, MethodWIP::BlockLanczos>(); // @fixme Segmentation fault
+    run_modular<DenseMatrix<Givaro::Modular<double>>, Method::Auto>();
+    run_modular<SparseMatrix<Givaro::Modular<double>>, Method::Auto>();
+    // run_modular<DenseMatrix<Givaro::Modular<double>>, Method::DenseElimination>();
+    // run_modular<SparseMatrix<Givaro::Modular<double>>, Method::DenseElimination>();
+    // run_modular<DenseMatrix<Givaro::Modular<double>>, Method::SparseElimination>();
+    // run_modular<SparseMatrix<Givaro::Modular<double>>, Method::SparseElimination>();
+    // // run_modular<DenseMatrix<Givaro::Modular<double>>, Method::Wiedemann>(); // @fixme Can't compile
+    run_modular<SparseMatrix<Givaro::Modular<double>>, Method::Wiedemann>();
+    // run_modular<DenseMatrix<Givaro::Modular<double>>, Method::Lanczos>(); // @fixme Segmentation fault
+    // run_modular<SparseMatrix<Givaro::Modular<double>>, Method::Lanczos>(); // @fixme Segmentation fault
+    // run_modular<DenseMatrix<Givaro::Modular<double>>, Method::BlockLanczos>(); // @fixme Can't compile
+    // run_modular<SparseMatrix<Givaro::Modular<double>>, Method::BlockLanczos>(); // @fixme Segmentation fault
 
     // @deprecated These do not compile anymore
-    // run_modular<DenseMatrix<Givaro::Modular<double>>, MethodWIP::BlockWiedemann>();
-    // run_modular<DenseMatrix<Givaro::Modular<double>>, MethodWIP::Coppersmith>();
+    // run_modular<DenseMatrix<Givaro::Modular<double>>, Method::BlockWiedemann>();
+    // run_modular<DenseMatrix<Givaro::Modular<double>>, Method::Coppersmith>();
 
     // @fixme Test rectangular matrices...
 

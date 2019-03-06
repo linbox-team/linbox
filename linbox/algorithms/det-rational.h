@@ -243,8 +243,8 @@ namespace LinBox
 		Integer lif = 1;
 		if ((s1 > 4*s2) && (!term)){
 			//cout << "lif " << std::flush;
-			RationalSolver < Givaro::IntegerDom , Givaro::Modular<double>, PrimeIterator<IteratorCategories::HeuristicTag>, DixonTraits > RSolver;
-			LastInvariantFactor < Givaro::IntegerDom ,RationalSolver < Givaro::IntegerDom, Givaro::Modular<double>, PrimeIterator<IteratorCategories::HeuristicTag>, DixonTraits > >  LIF(RSolver);
+			RationalSolver < Givaro::IntegerDom , Givaro::Modular<double>, PrimeIterator<IteratorCategories::HeuristicTag>, Method::Dixon > RSolver;
+			LastInvariantFactor < Givaro::IntegerDom ,RationalSolver < Givaro::IntegerDom, Givaro::Modular<double>, PrimeIterator<IteratorCategories::HeuristicTag>, Method::Dixon > >  LIF(RSolver);
 			IVect r_num2 (Z,Atilde. coldim());
 			t1.clear();
 			t1.start();

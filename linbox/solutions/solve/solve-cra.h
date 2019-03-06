@@ -90,7 +90,7 @@ namespace LinBox {
      */
     template <class Matrix, class Vector, class IterationMethod>
     inline void solve(Vector& xNum, typename Vector::Field::Element& xDen, const Matrix& A, const Vector& b,
-                      const RingCategories::IntegerTag& tag, const MethodWIP::Cra<IterationMethod>& m)
+                      const RingCategories::IntegerTag& tag, const Method::Cra<IterationMethod>& m)
     {
         //
         // Handle auto-dispatch.
@@ -98,7 +98,7 @@ namespace LinBox {
 
         Dispatch dispatch = m.dispatch;
         if (dispatch == Dispatch::Auto) {
-            MethodWIP::Cra<IterationMethod> newM(m);
+            Method::Cra<IterationMethod> newM(m);
 
 #if __LINBOX_HAVE_MPI
             // User has MPI enabled in config, but not specified if it wanted to use it,
@@ -118,7 +118,7 @@ namespace LinBox {
         //
 
         if (m.dispatch == Dispatch::Distributed && m.pCommunicator == nullptr) {
-            MethodWIP::Cra<IterationMethod> newM(m);
+            Method::Cra<IterationMethod> newM(m);
             Communicator communicator(nullptr, 0);
             newM.pCommunicator = &communicator;
             return solve(xNum, xDen, A, b, tag, newM);

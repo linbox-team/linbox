@@ -24,7 +24,7 @@
 
 #include <linbox/matrix/dense-matrix.h>
 #include <linbox/matrix/sparse-matrix.h>
-#include <linbox/solutions/methods-wip.h>
+#include <linbox/solutions/methods.h>
 
 namespace LinBox {
     /**
@@ -32,10 +32,10 @@ namespace LinBox {
      */
     template <class ResultVector, class Matrix, class Vector>
     ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const RingCategories::ModularTag& tag,
-                        const MethodWIP::DenseElimination& m)
+                        const Method::DenseElimination& m)
     {
         commentator().report(Commentator::LEVEL_UNIMPORTANT,
-                             "Warning: Solve implicitly convert to a dense matrix because of MethodWIP::DenseElimination."
+                             "Warning: Solve implicitly convert to a dense matrix because of Method::DenseElimination."
                              "This is usually expected behavior for small-size blackboxes.");
 
         // Copy the matrix into a dense one.
@@ -49,7 +49,7 @@ namespace LinBox {
      */
     template <class Field, class Vector>
     Vector& solve(Vector& x, const DenseMatrix<Field>& A, const Vector& b, const RingCategories::ModularTag& tag,
-                        const MethodWIP::DenseElimination& m)
+                        const Method::DenseElimination& m)
     {
         linbox_check((A.coldim() != x.size()) || (A.rowdim() != b.size()));
 
@@ -68,8 +68,8 @@ namespace LinBox {
      */
     template <class ResultVector, class Field, class Vector>
     ResultVector& solve(ResultVector& x, const DenseMatrix<Field>& A, const Vector& b, const RingCategories::IntegerTag& tag,
-                        const MethodWIP::DenseElimination& m)
+                        const Method::DenseElimination& m)
     {
-        return solve(x, A, b, tag, reinterpret_cast<const MethodWIP::Dixon&>(m));
+        return solve(x, A, b, tag, reinterpret_cast<const Method::Dixon&>(m));
     }
 }
