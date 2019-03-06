@@ -74,7 +74,7 @@ namespace LinBox
 		 *               options for the solver
 		 */
 		BlockLanczosSolver (const Field &F, const BlockLanczosTraits &traits) :
-			_traits (traits), _field (&F), _VD (F), _MD (F), _randiter (F), _block (traits.blockingFactor ())
+			_traits (traits), _field (&F), _VD (F), _MD (F), _randiter (F), _block (traits.blockingFactor)
 		{
 			init_temps ();
 		}
@@ -86,7 +86,7 @@ namespace LinBox
 		 * @param r Random iterator to use for randomization
 		 */
 		BlockLanczosSolver (const Field &F, const BlockLanczosTraits &traits, typename Field::RandIter r) :
-			_traits (traits), _field (&F), _VD (F), _MD (F), _randiter (r), _block (traits.blockingFactor ())
+			_traits (traits), _field (&F), _VD (F), _MD (F), _randiter (r), _block (traits.blockingFactor)
 		{
 			init_temps ();
 		}

@@ -92,7 +92,7 @@ static bool testRandomSolve (const Field           &F,
 
 	BlockLanczosTraits traits;
 	traits.preconditioner (BlockLanczosTraits::NO_PRECONDITIONER);
-	traits.blockingFactor (N);
+	traits.blockingFactor = N;
 	//traits.maxTries (1);
 
 	LABLSolver lablsolver (F, traits, ri);
@@ -160,7 +160,7 @@ static bool testSampleNullspace (const Field           &F,
 
 	BlockLanczosTraits traits;
 	traits.preconditioner (BlockLanczosTraits::NO_PRECONDITIONER);
-	traits.blockingFactor (N);
+	traits.blockingFactor = N;
 	//traits.maxTries (1);
 
 	LABLSolver lablsolver (F, traits, ri);
@@ -218,7 +218,7 @@ static bool testRank (const Field           &F,
 
 	BlockLanczosTraits traits;
 	traits.preconditioner (BlockLanczosTraits::NO_PRECONDITIONER);
-	traits.blockingFactor (N);
+	traits.blockingFactor = N;
 	//traits.maxTries (1);
 
 	LABLSolver lablsolver (F, traits, ri);

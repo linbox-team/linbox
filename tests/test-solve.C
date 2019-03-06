@@ -524,7 +524,7 @@ static bool testSingularPreconditionedSolve (const Field                  &F,
 					     VectorStream<SparseVector>   &stream1,
 					     VectorStream<Vector>         &stream2,
 					     const char                   *text,
-					     Method::Wiedemann::Preconditioner preconditioner)
+					     Preconditioner preconditioner)
 {
 	ostringstream str;
 	str << "Testing singular preconditioned solve (" << text << ")";
@@ -804,7 +804,7 @@ int main (int argc, char **argv)
 #endif
 #if 1
 	Method::BlockWiedemann BWM;
-        BWM.blockingFactor (N);
+        BWM.blockingFactor = N;
 	if (!testIdentitySolve               (F, stream1, "BlockWiedemann", BWM))
 		pass = false;
 	if (!testNonsingularSolve            (F, stream1, stream2, "BlockWiedemann", BWM))
@@ -847,7 +847,7 @@ int main (int argc, char **argv)
 #if 0
 	Method::BlockLanczos traits2;
 	traits2.preconditioner (Method::BlockLanczos::FULL_DIAGONAL);
-	traits2.blockingFactor (N);
+	traits2.blockingFactor = N;
 
 	if (!testRandomSolve (F, A_stream, stream1, "Block Lanczos", traits2))
 		pass = false;
