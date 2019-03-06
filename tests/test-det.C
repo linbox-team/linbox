@@ -119,7 +119,7 @@ static bool testDiagonalDet1 (Field &F, size_t n, int iterations)
         det (phi_wiedemann, D,  WiedemannChoice);
         F.write (report << "Computed determinant (Wiedemann) : ", phi_wiedemann) << endl;
 
-        WiedemannChoice.symmetric(Specifier::SYMMETRIC);
+        WiedemannChoice.shapeFlags &= ShapeFlag::Symmetric;
         det (phi_symm_wied, D,  WiedemannChoice);
         F.write (report << "Computed determinant (Symmetric Wiedemann) : ", phi_symm_wied) << endl;
 
@@ -201,7 +201,7 @@ static bool testDiagonalDet2 (Field &F, size_t n, int iterations)
         Blackbox D (d);
         Method::Wiedemann WiedemannChoice;
         det (phi_wiedemann, D,  WiedemannChoice);
-        WiedemannChoice.symmetric(Specifier::SYMMETRIC);
+        WiedemannChoice.shapeFlags &= ShapeFlag::Symmetric;
         report << "Computed determinant (Wiedemann) : ";
         F.write (report, phi_wiedemann);
         report << endl;
@@ -283,7 +283,7 @@ static bool testSingularDiagonalDet (Field &F, size_t n, int iterations)
         F.write (report, phi_wiedemann);
         report << endl;
 
-        WiedemannChoice.symmetric(Specifier::SYMMETRIC);
+        WiedemannChoice.shapeFlags &= ShapeFlag::Symmetric;
         det (phi_symm_wied, D,  WiedemannChoice);
         report << "Computed determinant (Symmetric Wiedemann) : ";
         F.write (report, phi_symm_wied);
@@ -369,7 +369,7 @@ bool testIntegerDet (size_t n, int iterations)
         report << "Computed integer determinant (Wiedemann): " << det_A_wiedemann << endl;
 
 
-        WiedemannChoice.symmetric(Specifier::SYMMETRIC);
+        WiedemannChoice.shapeFlags &= ShapeFlag::Symmetric;
         det (det_A_symm_wied, A, WiedemannChoice);
         report << "Computed integer determinant (Symmetric Wiedemann): " << det_A_symm_wied << endl;
 

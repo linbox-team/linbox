@@ -233,7 +233,7 @@ namespace LinBox
 #endif
 
 #ifdef __LINBOX_HAVE_MPI
-		Communicator *c = M.communicatorp();
+		Communicator *c = M.pCommunicator;
 		if(!c || c->rank() == 0)
 			commentator().start ("Integer Minpoly", "Iminpoly");
 		else{

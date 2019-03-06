@@ -22,6 +22,7 @@
 
 #pragma once
 
+#include <linbox/field/field-traits.h>
 #include <linbox/util/mpicpp.h>
 #include <string>
 
