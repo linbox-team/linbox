@@ -31,6 +31,10 @@
 #ifndef __LINBOX_cra_single_H
 #define __LINBOX_cra_single_H
 
+#ifndef DEFAULT_EARLY_TERM_THRESHOLD
+#define DEFAULT_EARLY_TERM_THRESHOLD 20
+#endif
+
 #include "linbox/util/timer.h"
 #include <stdlib.h>
 #include "linbox/integer.h"

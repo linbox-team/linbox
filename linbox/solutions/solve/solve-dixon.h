@@ -72,6 +72,13 @@ namespace LinBox {
         bool singular = (m.singularity == Singularity::Singular) || (A.rowdim() != A.coldim());
         SolverReturnStatus status = SS_OK;
         if (!singular) {
+
+
+            // @fixme RationalSolve<..., SparseElimination> has no .solveNonSingular,
+            // so we need to specialize this function when Matrix = SparseMatrix<...>
+            //          test-hadamard-bound.C fails because of this
+
+
             status = dixonSolve.solveNonsingular(xNum, xDen, A, b, false, maxTrials);
             singular = (status != SS_OK);
         }

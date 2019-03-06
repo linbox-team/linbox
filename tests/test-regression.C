@@ -133,7 +133,8 @@ bool testSolveSparseSage(){return true;}
  * Testing regresssion for issue 56 https://github.com/linbox-team/linbox/issues/56
  * reported by Vincent Delecroix
  */
-bool testFlatDixonSolver (const Specifier& m){
+template <class SolveMethod>
+bool testFlatDixonSolver (const SolveMethod& m){
         // creating LinBox matrices and vectors
     Givaro::ZRing<Integer> ZZ;
     typedef DenseVector<Givaro::ZRing<Integer> > DenseVector;
@@ -160,8 +161,8 @@ bool testFlatDixonSolver (const Specifier& m){
     return true;
 }
 
-
-bool testFlatDixonSolver2 (const Specifier& m){
+template <class SolveMethod>
+bool testFlatDixonSolver2 (const SolveMethod& m){
         // creating LinBox matrices and vectors
     Givaro::ZRing<Integer> ZZ;
     typedef DenseVector<Givaro::ZRing<Integer> > DenseVector;
@@ -189,7 +190,8 @@ bool testFlatDixonSolver2 (const Specifier& m){
     return true;
 }
 
-bool testTallDixonSolver (const Specifier& m){
+template <class SolveMethod>
+bool testTallDixonSolver (const SolveMethod& m){
         // creating LinBox matrices and vectors
     Givaro::ZRing<Integer> ZZ;
     typedef DenseVector<Givaro::ZRing<Integer> > DenseVector;
@@ -218,7 +220,8 @@ bool testTallDixonSolver (const Specifier& m){
 
 }
 
-bool testSingularDixonSolver (const Specifier& m){
+template <class SolveMethod>
+bool testSingularDixonSolver (const SolveMethod& m){
         // creating LinBox matrices and vectors
     Givaro::ZRing<Integer> ZZ;
     typedef DenseVector<Givaro::ZRing<Integer> > DenseVector;
@@ -243,7 +246,9 @@ bool testSingularDixonSolver (const Specifier& m){
 
     return true;
 }
-bool testZeroDixonSolver (const Specifier& m){
+
+template <class SolveMethod>
+bool testZeroDixonSolver (const SolveMethod& m){
         // creating LinBox matrices and vectors
     Givaro::ZRing<Integer> ZZ;
     typedef DenseVector<Givaro::ZRing<Integer> > DenseVector;
@@ -331,8 +336,8 @@ bool testSparseRationalSolver() {
     return true;
 }
 
-template<typename Matrix_t=SparseMatrix<ZRingInts>>
-bool testDixonRectangularSolver(const Specifier& m) {
+template<typename Matrix_t=SparseMatrix<ZRingInts>, class SolveMethod>
+bool testDixonRectangularSolver(const SolveMethod& m) {
     ZRingInts ZZ;
     typedef DenseVector<ZRingInts> RVector;
     Matrix_t A (ZZ,1,3);
@@ -450,8 +455,8 @@ bool testBigScalarCharPoly(){
 }
 
 
-template<typename Matrix_t=SparseMatrix<ZRingInts>>
-bool testInconsistent (const Specifier& m){
+template<typename Matrix_t=SparseMatrix<ZRingInts>, class SolveMethod>
+bool testInconsistent (const SolveMethod& m){
         // creating LinBox matrices and vectors
     Givaro::ZRing<Integer> ZZ;
     typedef DenseVector<Givaro::ZRing<Integer> > DenseVector;
