@@ -72,7 +72,7 @@
 #include "linbox/matrix/sparse-matrix.h"
 #include "linbox/util/debug.h"
 #include "linbox/vector/vector-domain.h"
-#include "linbox/solutions/methods.h"
+#include "linbox/solutions/methods-wip.h"
 
 #include "linbox/algorithms/blackbox-container.h"
 #include "linbox/algorithms/blackbox-container-symmetric.h"
@@ -237,7 +237,7 @@ namespace LinBox
 		 * @param traits @ref SolverTraits  structure describing user
 		 *               options for the solver
 		 */
-		WiedemannSolver (const Field &F, const WiedemannTraits &traits) :
+		WiedemannSolver (const Field &F, const MethodWIP::Wiedemann &traits) :
 			_traits (traits), _field (&F), _randiter (F), _VD (F)
 		{}
 
@@ -249,7 +249,7 @@ namespace LinBox
 		 * @param r Random iterator to use for randomization
 		 */
 		WiedemannSolver (const Field &F,
-				 const WiedemannTraits &traits,
+				 const MethodWIP::Wiedemann &traits,
 				 typename Field::RandIter r) :
 			_traits (traits), _field (&F), _randiter (r), _VD (F)
 		{}
@@ -359,7 +359,7 @@ namespace LinBox
 		// Make an m x m lambda-sparse matrix, c.f. Mulders (2000)
 		SparseMatrix<Field> *makeLambdaSparseMatrix (size_t m);
 
-		WiedemannTraits                      _traits;
+		MethodWIP::Wiedemann                      _traits;
 		const Field                         *_field;
 		typename Field::RandIter             _randiter;
 		VectorDomain<Field>                  _VD;

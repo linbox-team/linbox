@@ -29,7 +29,7 @@
 
 namespace LinBox {
     namespace {
-        // @fixme TBR when RationalSolver is renamed
+        // @fixme Remove when RationalSolver is renamed
         template <class... Args>
         using DixonRationalSolver = RationalSolver<Args...>;
 
@@ -78,7 +78,7 @@ namespace LinBox {
 
         // Either A is known to be singular, or we just failed trying to solve it as non-singular.
         if (singular) {
-            SolverLevel level = (m.findInconsistencyCertificate ? SL_LASVEGAS : SL_MONTECARLO);
+            SolverLevel level = (m.certifyInconsistency ? SL_LASVEGAS : SL_MONTECARLO);
 
             if (m.singularSolutionType == SingularSolutionType::Diophantine) {
                 DiophantineSolver<Solver> diophantineSolve(dixonSolve);
