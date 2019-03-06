@@ -53,9 +53,7 @@ namespace LinBox {
         linbox_check((A.coldim() != x.size()) || (A.rowdim() != b.size()));
 
         using Solver = WiedemannSolver<typename Matrix::Field>;
-        // @fixme Just pass m here, when everything is forwarded correctly
-        Method::Wiedemann newM;
-        Solver solver(A.field(), newM);
+        Solver solver(A.field(), m);
 
         // @todo Getting certificateOfInconsistency is a design error,
         // we should give a pointer to that to be allowed to pass nullptr.

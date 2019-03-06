@@ -120,12 +120,12 @@ namespace LinBox {
         SingularSolutionType singularSolutionType = SingularSolutionType::Determinist;
 
         // For random-based systems.
-        size_t trialsBeforeFailure = 100;         //!< Maximum number of trials before giving up.
-        bool findInconsistencyCertificate = true; //!< Whether the solver should attempt to find a certificate of inconsistency if
-                                                  //!  it suspects the system to be inconsistent.
+        size_t trialsBeforeFailure = 100; //!< Maximum number of trials before giving up.
+        bool certifyInconsistency = true; //!< Whether the solver should attempt to find a certificate of inconsistency if
+                                          //!  it suspects the system to be inconsistent.
 
         // For block-based methods.
-        size_t blockingFactor = 16; //!< @fixme CHECK Size of blocks.
+        size_t blockingFactor = 16; //!< Size of blocks.
     };
 
     /**
