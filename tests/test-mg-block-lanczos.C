@@ -92,7 +92,7 @@ static bool testRandomSolve (const Field           &F,
 
 	BlockLanczosTraits traits;
 	traits.preconditioner (BlockLanczosTraits::SYMMETRIZE);
-	traits.blockingFactor (N);
+	traits.blockingFactor = N;
 	//traits.maxTries (1);
 
 	MGBLSolver mgblsolver (F, traits, ri);
@@ -160,7 +160,7 @@ static bool testSampleNullspace (const Field           &F,
 
 	BlockLanczosTraits traits;
 	traits.preconditioner (BlockLanczosTraits::SYMMETRIZE);
-	traits.blockingFactor (N);
+	traits.blockingFactor = N;
 	//traits.maxTries (1);
 
 	MGBLSolver mgblsolver (F, traits, ri);

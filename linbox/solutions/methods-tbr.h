@@ -158,7 +158,7 @@ namespace LinBox
 			_certificate(CERTIFY),
 			_maxTries(1),
 			_ett(DEFAULT_EARLY_TERM_THRESHOLD),
-			_blockingFactor(16),
+			.blockingFactor = 16,
 			_strategy(PIVOT_LINEAR),
 			_shape(SPARSE),
 			_provensuccessprobability( 0.0 )

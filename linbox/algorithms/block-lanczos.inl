@@ -379,12 +379,12 @@ namespace LinBox
 
 		bool      ret = true;
 
-		VectorWrapper::ensureDim (tmp, _traits.blockingFactor ());
-		VectorWrapper::ensureDim (tmp1, _traits.blockingFactor ());
+		VectorWrapper::ensureDim (tmp, _traits.blockingFactor);
+		VectorWrapper::ensureDim (tmp1, _traits.blockingFactor);
 		VectorWrapper::ensureDim (tmp2, A.rowdim ());
 
 		// How many iterations between each progress update
-		unsigned int progress_interval = A.rowdim () / _traits.blockingFactor () / 100;
+		unsigned int progress_interval = A.rowdim () / _traits.blockingFactor / 100;
 
 		// Make sure there are a minimum of ten
 		if (progress_interval == 0)
