@@ -24,7 +24,7 @@
 
 #include <linbox/matrix/dense-matrix.h>
 #include <linbox/matrix/sparse-matrix.h>
-#include <linbox/solutions/methods-wip.h>
+#include <linbox/solutions/methods.h>
 
 namespace LinBox {
     //
@@ -35,9 +35,9 @@ namespace LinBox {
      * \brief Solve specialisation for Blackbox.
      */
     template <class ResultVector, class Matrix, class Vector, class CategoryTag>
-    ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag, const MethodWIP::Blackbox& m)
+    ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag, const Method::Blackbox& m)
     {
-        return solve(x, A, b, tag, reinterpret_cast<const MethodWIP::Wiedemann&>(m));
+        return solve(x, A, b, tag, reinterpret_cast<const Method::Wiedemann&>(m));
     }
 
     //
@@ -48,8 +48,8 @@ namespace LinBox {
      * \brief Solve in place specialisation for Blackbox.
      */
     template <class ResultVector, class Matrix, class Vector, class CategoryTag>
-    ResultVector& solveInPlace(ResultVector& x, Matrix& A, const Vector& b, const CategoryTag& tag, const MethodWIP::Blackbox& m)
+    ResultVector& solveInPlace(ResultVector& x, Matrix& A, const Vector& b, const CategoryTag& tag, const Method::Blackbox& m)
     {
-        return solveInPlace(x, A, b, tag, reinterpret_cast<const MethodWIP::Wiedemann&>(m));
+        return solveInPlace(x, A, b, tag, reinterpret_cast<const Method::Wiedemann&>(m));
     }
 }

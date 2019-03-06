@@ -208,7 +208,7 @@ namespace LinBox
 		Field F = A.field();
 		typedef BlasVector<Field> Polynomial;
 
-		if(Meth.symmetric()) {
+		if(Meth.shapeFlags & ShapeFlag::Symmetric) {
 			commentator().start ("Symmetric Wiedemann Determinant", "sdet");
 			linbox_check (A.coldim () == A.rowdim ());
 			Polynomial               phi(F);
@@ -239,7 +239,7 @@ namespace LinBox
 
 				BlackboxContainerSymmetric<Field, Blackbox1> TF (&B, F, iter);
 
-				MasseyDomain<Field, BlackboxContainerSymmetric<Field, Blackbox1> > WD (&TF, Meth.earlyTermThreshold ());
+				MasseyDomain<Field, BlackboxContainerSymmetric<Field, Blackbox1> > WD (&TF, Meth.earlyTerminationThreshold);
 
 				WD.minpoly (phi, deg);
 #if 0
@@ -298,7 +298,7 @@ namespace LinBox
 
 				BlackboxContainer<Field, Blackbox1> TF (&B, F, iter);
 
-				MasseyDomain<Field, BlackboxContainer<Field, Blackbox1> > WD (&TF, Meth.earlyTermThreshold ());
+				MasseyDomain<Field, BlackboxContainer<Field, Blackbox1> > WD (&TF, Meth.earlyTerminationThreshold);
 
 				WD.minpoly (phi, deg);
 
@@ -362,7 +362,7 @@ namespace LinBox
 			for(size_t j = 0; j < A.coldim(); ++j)
 				A1.setEntry(i,j,getEntry(tmp, A, i, j));
 		GaussDomain<Field> GD ( A1.field() );
-		GD.detInPlace (d, A1, Meth.strategy ());
+		GD.detInPlace (d, A1, Meth.pivotStrategy);
 		commentator().stop ("done", NULL, "SEDet");
 		return d;
 
@@ -381,7 +381,7 @@ namespace LinBox
 		// We make a copy as these data will be destroyed
 		SparseMatrix<Field, SparseMatrixFormat::SparseSeq> A1 (A);
 		GaussDomain<Field> GD ( A.field() );
-		GD.detInPlace (d, A1, Meth.strategy ());
+		GD.detInPlace (d, A1, Meth.pivotStrategy);
 		commentator().stop ("done", NULL, "SEdet");
 		return d;
 	}
@@ -396,7 +396,7 @@ namespace LinBox
 			throw LinboxError("LinBox ERROR: matrix must be square for determinant computation\n");
 		commentator().start ("Sparse Elimination Determinant in place", "SEDetin");
 		GaussDomain<Field> GD ( A.field() );
-		GD.detInPlace (d, A, Meth.strategy ());
+		GD.detInPlace (d, A, Meth.pivotStrategy);
 		commentator().stop ("done", NULL, "SEdetin");
 		return d;
 	}

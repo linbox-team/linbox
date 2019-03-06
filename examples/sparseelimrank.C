@@ -96,7 +96,7 @@ int main (int argc, char **argv)
 // 		if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout) << endl;
 // 		cout << "Rank is " << r << endl;
 
-		SE.strategy(Specifier::PIVOT_LINEAR);
+		SE.strategy(PivotStrategy::Linear);
 		// using Sparse Elimination
         Givaro::Timer chrono; chrono.start();
 		LinBox::rankInPlace (r, B, SE);

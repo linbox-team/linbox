@@ -33,9 +33,9 @@ namespace LinBox {
      */
     template <class ResultVector, class Matrix, class Vector, class CategoryTag>
     ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag,
-                        const MethodWIP::Lanczos& m)
+                        const Method::Lanczos& m)
     {
-        throw LinboxError("MethodWIP::Lanczos can only be used with RingCategories::ModularTag.");
+        throw LinboxError("Method::Lanczos can only be used with RingCategories::ModularTag.");
     }
 
     /**
@@ -43,7 +43,7 @@ namespace LinBox {
      */
     template <class ResultVector, class Matrix, class Vector>
     ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const RingCategories::ModularTag& tag,
-                        const MethodWIP::Lanczos& m)
+                        const Method::Lanczos& m)
     {
         using Solver = LanczosSolver<typename Matrix::Field, Vector>;
         Solver solver(A.field(), m);
@@ -60,9 +60,9 @@ namespace LinBox {
      */
     template <class ResultVector, class Matrix, class Vector, class CategoryTag>
     ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag,
-                        const MethodWIP::BlockLanczos& m)
+                        const Method::BlockLanczos& m)
     {
-        throw LinboxError("MethodWIP::BlockLanczos can only be used with RingCategories::ModularTag.");
+        throw LinboxError("Method::BlockLanczos can only be used with RingCategories::ModularTag.");
     }
 
     /**
@@ -70,7 +70,7 @@ namespace LinBox {
      */
     template <class ResultVector, class Matrix, class Vector>
     ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const RingCategories::ModularTag& tag,
-                        const MethodWIP::BlockLanczos& m)
+                        const Method::BlockLanczos& m)
     {
         using Solver = MGBlockLanczosSolver<typename Matrix::Field>;
         Solver solver(A.field(), m);

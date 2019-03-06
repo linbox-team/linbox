@@ -24,7 +24,7 @@
 
 #include <linbox/matrix/dense-matrix.h>
 #include <linbox/matrix/sparse-matrix.h>
-#include <linbox/solutions/methods-wip.h>
+#include <linbox/solutions/methods.h>
 
 namespace {
     constexpr const uint32_t LINBOX_USE_BLACKBOX_THRESHOLD = 1000u;
@@ -51,13 +51,13 @@ namespace LinBox {
      * \brief Solve specialisation for Auto.
      */
     template <class ResultVector, class Matrix, class Vector, class CategoryTag>
-    ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag, const MethodWIP::Auto& m)
+    ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag, const Method::Auto& m)
     {
         if (useBlackboxMethod(A)) {
-            return solve(x, A, b, tag, reinterpret_cast<const MethodWIP::Blackbox&>(m));
+            return solve(x, A, b, tag, reinterpret_cast<const Method::Blackbox&>(m));
         }
         else {
-            return solve(x, A, b, tag, reinterpret_cast<const MethodWIP::Elimination&>(m));
+            return solve(x, A, b, tag, reinterpret_cast<const Method::Elimination&>(m));
         }
     }
 
@@ -66,9 +66,9 @@ namespace LinBox {
      */
     template <class ResultVector, class Matrix, class Vector>
     ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const RingCategories::IntegerTag& tag,
-                        const MethodWIP::Auto& m)
+                        const Method::Auto& m)
     {
-        return solve(x, A, b, tag, reinterpret_cast<const MethodWIP::Dixon&>(m));
+        return solve(x, A, b, tag, reinterpret_cast<const Method::Dixon&>(m));
     }
 
     /**
@@ -76,9 +76,9 @@ namespace LinBox {
      */
     template <class ResultVector, class Field, class Vector, class CategoryTag>
     typename std::enable_if<!std::is_same<CategoryTag, RingCategories::IntegerTag>::value, ResultVector&>::type solve(
-        ResultVector& x, const DenseMatrix<Field>& A, const Vector& b, const CategoryTag& tag, const MethodWIP::Auto& m)
+        ResultVector& x, const DenseMatrix<Field>& A, const Vector& b, const CategoryTag& tag, const Method::Auto& m)
     {
-        return solve(x, A, b, tag, reinterpret_cast<const MethodWIP::DenseElimination&>(m));
+        return solve(x, A, b, tag, reinterpret_cast<const Method::DenseElimination&>(m));
     }
 
     /**
@@ -86,9 +86,9 @@ namespace LinBox {
      */
     template <class ResultVector, class... MatrixArgs, class Vector, class CategoryTag>
     typename std::enable_if<!std::is_same<CategoryTag, RingCategories::IntegerTag>::value, ResultVector&>::type solve(
-        ResultVector& x, const SparseMatrix<MatrixArgs...>& A, const Vector& b, const CategoryTag& tag, const MethodWIP::Auto& m)
+        ResultVector& x, const SparseMatrix<MatrixArgs...>& A, const Vector& b, const CategoryTag& tag, const Method::Auto& m)
     {
-        return solve(x, A, b, tag, reinterpret_cast<const MethodWIP::SparseElimination&>(m));
+        return solve(x, A, b, tag, reinterpret_cast<const Method::SparseElimination&>(m));
     }
 
     //
@@ -100,9 +100,9 @@ namespace LinBox {
      */
     template <class Matrix, class Vector>
     inline void solve(Vector& xNum, typename Vector::Field::Element& xDen, const Matrix& A, const Vector& b,
-                      const RingCategories::IntegerTag& tag, const MethodWIP::Auto& m)
+                      const RingCategories::IntegerTag& tag, const Method::Auto& m)
     {
-        solve(xNum, xDen, A, b, tag, reinterpret_cast<const MethodWIP::Dixon&>(m));
+        solve(xNum, xDen, A, b, tag, reinterpret_cast<const Method::Dixon&>(m));
     }
 
     //
@@ -113,13 +113,13 @@ namespace LinBox {
      * \brief Solve in place specialisation for Auto.
      */
     template <class ResultVector, class Matrix, class Vector, class CategoryTag>
-    ResultVector& solveInPlace(ResultVector& x, Matrix& A, const Vector& b, const CategoryTag& tag, const MethodWIP::Auto& m)
+    ResultVector& solveInPlace(ResultVector& x, Matrix& A, const Vector& b, const CategoryTag& tag, const Method::Auto& m)
     {
         if (useBlackboxMethod(A)) {
-            return solve(x, A, b, tag, reinterpret_cast<const MethodWIP::Blackbox&>(m));
+            return solve(x, A, b, tag, reinterpret_cast<const Method::Blackbox&>(m));
         }
         else {
-            return solve(x, A, b, tag, reinterpret_cast<const MethodWIP::Elimination&>(m));
+            return solve(x, A, b, tag, reinterpret_cast<const Method::Elimination&>(m));
         }
     }
 
@@ -128,9 +128,9 @@ namespace LinBox {
      */
     template <class ResultVector, class Matrix, class Vector>
     ResultVector& solveInPlace(ResultVector& x, Matrix& A, const Vector& b, const RingCategories::IntegerTag& tag,
-                               const MethodWIP::Auto& m)
+                               const Method::Auto& m)
     {
-        return solveInPlace(x, A, b, tag, reinterpret_cast<const MethodWIP::Dixon&>(m));
+        return solveInPlace(x, A, b, tag, reinterpret_cast<const Method::Dixon&>(m));
     }
 
     /**
@@ -138,9 +138,9 @@ namespace LinBox {
      */
     template <class ResultVector, class Field, class Vector, class CategoryTag>
     typename std::enable_if<!std::is_same<CategoryTag, RingCategories::IntegerTag>::value, ResultVector&>::type solveInPlace(
-        ResultVector& x, DenseMatrix<Field>& A, const Vector& b, const CategoryTag& tag, const MethodWIP::Auto& m)
+        ResultVector& x, DenseMatrix<Field>& A, const Vector& b, const CategoryTag& tag, const Method::Auto& m)
     {
-        return solveInPlace(x, A, b, tag, reinterpret_cast<const MethodWIP::DenseElimination&>(m));
+        return solveInPlace(x, A, b, tag, reinterpret_cast<const Method::DenseElimination&>(m));
     }
 
     /**
@@ -148,9 +148,9 @@ namespace LinBox {
      */
     template <class ResultVector, class... MatrixArgs, class Vector, class CategoryTag>
     typename std::enable_if<!std::is_same<CategoryTag, RingCategories::IntegerTag>::value, ResultVector&>::type solveInPlace(
-        ResultVector& x, SparseMatrix<MatrixArgs...>& A, const Vector& b, const CategoryTag& tag, const MethodWIP::Auto& m)
+        ResultVector& x, SparseMatrix<MatrixArgs...>& A, const Vector& b, const CategoryTag& tag, const Method::Auto& m)
     {
-        return solveInPlace(x, A, b, tag, reinterpret_cast<const MethodWIP::SparseElimination&>(m));
+        return solveInPlace(x, A, b, tag, reinterpret_cast<const Method::SparseElimination&>(m));
     }
 
     //
@@ -162,8 +162,8 @@ namespace LinBox {
      */
     template <class Matrix, class Vector>
     inline void solveInPlace(Vector& xNum, typename Vector::Field::Element& xDen, Matrix& A, const Vector& b,
-                             const RingCategories::IntegerTag& tag, const MethodWIP::Auto& m)
+                             const RingCategories::IntegerTag& tag, const Method::Auto& m)
     {
-        solveInPlace(xNum, xDen, A, b, tag, reinterpret_cast<const MethodWIP::Dixon&>(m));
+        solveInPlace(xNum, xDen, A, b, tag, reinterpret_cast<const Method::Dixon&>(m));
     }
 }

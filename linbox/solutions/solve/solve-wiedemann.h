@@ -25,7 +25,7 @@
 #include <linbox/algorithms/block-wiedemann.h>
 #include <linbox/algorithms/coppersmith.h>
 #include <linbox/algorithms/wiedemann.h>
-#include <linbox/solutions/methods-wip.h>
+#include <linbox/solutions/methods.h>
 
 namespace LinBox {
     //
@@ -37,9 +37,9 @@ namespace LinBox {
      */
     template <class ResultVector, class Matrix, class Vector, class CategoryTag>
     ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag,
-                        const MethodWIP::Wiedemann& m)
+                        const Method::Wiedemann& m)
     {
-        throw LinboxError("MethodWIP::Wiedemann can only be used with RingCategories::ModularTag.");
+        throw LinboxError("Method::Wiedemann can only be used with RingCategories::ModularTag.");
     }
 
     /**
@@ -47,7 +47,7 @@ namespace LinBox {
      */
     template <class ResultVector, class Matrix, class Vector>
     ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const RingCategories::ModularTag& tag,
-                        const MethodWIP::Wiedemann& m)
+                        const Method::Wiedemann& m)
     {
         commentator().start("solve.wiedemann.modular");
         linbox_check((A.coldim() != x.size()) || (A.rowdim() != b.size()));
@@ -82,9 +82,9 @@ namespace LinBox {
      */
     template <class ResultVector, class Matrix, class Vector, class CategoryTag>
     ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag,
-                        const MethodWIP::BlockWiedemann& m)
+                        const Method::BlockWiedemann& m)
     {
-        throw LinboxError("MethodWIP::BlockWiedemann can only be used with RingCategories::ModularTag.");
+        throw LinboxError("Method::BlockWiedemann can only be used with RingCategories::ModularTag.");
     }
 
     /**
@@ -92,7 +92,7 @@ namespace LinBox {
      */
     template <class ResultVector, class Matrix, class Vector>
     ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const RingCategories::ModularTag& tag,
-                        const MethodWIP::BlockWiedemann& m)
+                        const Method::BlockWiedemann& m)
     {
         commentator().start("solve.block-wiedemann.modular");
         linbox_check((A.coldim() != x.size()) || (A.rowdim() != b.size()));
@@ -119,9 +119,9 @@ namespace LinBox {
      */
     template <class ResultVector, class Matrix, class Vector, class CategoryTag>
     ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag,
-                        const MethodWIP::Coppersmith& m)
+                        const Method::Coppersmith& m)
     {
-        throw LinboxError("MethodWIP::Coppersmith can only be used with RingCategories::ModularTag.");
+        throw LinboxError("Method::Coppersmith can only be used with RingCategories::ModularTag.");
     }
 
     /**
@@ -129,7 +129,7 @@ namespace LinBox {
      */
     template <class ResultVector, class Matrix, class Vector>
     ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const RingCategories::ModularTag& tag,
-                        const MethodWIP::Coppersmith& m)
+                        const Method::Coppersmith& m)
     {
         commentator().start("solve.coppersmith.modular");
         linbox_check((A.coldim() != x.size()) || (A.rowdim() != b.size()));

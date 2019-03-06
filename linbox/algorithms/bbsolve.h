@@ -69,7 +69,7 @@ namespace LinBox
 	 * \ref SolverTraits structure supplied requests certification of
 	 * inconsistency, it fills in the certificate of
 	 * inconsistency. Otherwise, it runs through the number of iterations
-	 * specified in \c traits and throws a \ref SolveFailed exception
+	 * specified in \c traits and throws a \ref LinboxError exception
 	 * if it cannot find a solution.
 	 *
 	 * This specialization uses Wiedemann's algorithm and is the default.
@@ -90,7 +90,7 @@ namespace LinBox
 	       const Vector                    &b,
 	       Vector                          &u,
 	       const Field                     &F,
-	       const WiedemannTraits &traits = WiedemannTraits ())
+	       const Method::Wiedemann &traits = Method::Wiedemann ())
 	{
 		WiedemannSolver<Field> solver (F, traits);
 		return solver.solve (A, x, b, u);
@@ -109,7 +109,7 @@ namespace LinBox
 		       Vector                          &x,
 		       const Vector                    &b,
 		       const Field                     &F,
-		       const WiedemannTraits &traits = WiedemannTraits ())
+		       const Method::Wiedemann &traits = Method::Wiedemann ())
 	{
 		Vector u(A.field());
 		WiedemannSolver<Field> solver (F, traits);
@@ -121,10 +121,10 @@ namespace LinBox
 			return x;
 
 		case WiedemannSolver<Field>::FAILED:
-			throw SolveFailed ();
+			throw LinboxError ();
 
 		case WiedemannSolver<Field>::SINGULAR:
-			throw SolveFailed ();
+			throw LinboxError ();
 
 		case WiedemannSolver<Field>::INCONSISTENT:
 			throw InconsistentSystem<Vector> (u);
@@ -143,7 +143,7 @@ namespace LinBox
 	 * description of the solution manifold. If the system is inconsistent and the
 	 * \ref SolverTraits  structure has result checking turned on, it runs through
 	 * the number of iterations specified in \c traits and throws a
-	 * \ref SolveFailed  exception if it cannot find a solution.
+	 * \ref LinboxError  exception if it cannot find a solution.
 	 *
 	 * This specialization uses the Lanczos algorithm.
 	 *
@@ -175,7 +175,7 @@ namespace LinBox
 	 * description of the solution manifold. If the system is inconsistent and the
 	 * \ref SolverTraits structure has result checking turned on, it runs through
 	 * the number of iterations specified in \c traits and throws a
-	 * \ref SolveFailed exception if it cannot find a solution.
+	 * \ref LinboxError exception if it cannot find a solution.
 	 *
 	 * This specialization uses the block Lanczos algorithm.
 	 *
@@ -210,7 +210,7 @@ namespace LinBox
 	 * inconsistency, it throws an \ref InconsistentSystem exception, which
 	 * includes a certificate of inconsistency. Otherwise, it runs through the
 	 * number of iterations specified in \p traits and throws a
-	 * \ref SolveFailed  exception if it cannot find a solution.
+	 * \ref LinboxError  exception if it cannot find a solution.
 	 *
 	 * @param A Black box matrix of the system
 	 * @param x Place to store solution vector
@@ -276,12 +276,12 @@ namespace LinBox
 		try {
 			solve (A, x, b, F, traits);
 		}
-		catch (SolveFailed) {
+		catch (LinboxError) {
 			return SOLVE_FAILED;
 		}
 		catch (InconsistentSystem<Vector> e) {
 			VectorDomain<Field> VD (F);
-			F.copy (u, e.certificate ());
+			F.copy (u, e.certifyInconsistency);
 			return SOLVE_INCONSISTENT;
 		}
 

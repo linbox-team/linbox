@@ -63,7 +63,7 @@ namespace LinBox
 	template <class Field>
 	Hankel<Field>::Hankel()
 	{
-		this->shape.shape(BlackboxSpecifier::HANKEL);
+		this->shape.shape(Method::Blackbox::HANKEL);
 #ifdef DBGMSGS
 		std::cout << "Hankel::Hankel():\tCreated a " << this->rowDim << "x"<< this->colDim<<
 						" Hankel matrix "<< std::endl;
@@ -219,7 +219,7 @@ namespace LinBox
 	void Hankel<Field>::setToUniModLT()
 	{
 		int L = int(this->rowDim-1)<<1;
-		this->shape.shape(BlackboxSpecifier::UNIMOD_LT);
+		this->shape.shape(Method::Blackbox::UNIMOD_LT);
 
 		for (int i= int(this->rowDim)-1; i <= L; i++ ) {
 			// zero out the below-diagonal entries
@@ -241,7 +241,7 @@ namespace LinBox
 	template <class Field>
 	void Hankel<Field>::setToUniModUT()
 	{
-		this->shape.shape(BlackboxSpecifier::UNIMOD_UT);
+		this->shape.shape(Method::Blackbox::UNIMOD_UT);
 
 		for (size_t i=0; i < this->rowDim-1; i++ ) {
 			// zero out the below-antidiagonal entries

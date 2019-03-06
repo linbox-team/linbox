@@ -109,7 +109,7 @@ namespace LinBox
 
 		static const int UnimodUT=1;
 		static const int UnimodLT=2;
-		BlackboxSpecifier shape; // Helps us deduce what our shape is
+		Method::Blackbox shape; // Helps us deduce what our shape is
 		//std::vector<NTL::ZZ_p> data;    // The vector of coeffs of the polynomial
 
 		/* These were only used by the XML stuff and are more or less

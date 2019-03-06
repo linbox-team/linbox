@@ -63,7 +63,7 @@ namespace LinBox
 		sysDim =               // Default dimension is 0
 		rowDim =               // Default row dim is 0
 		this->colDim = 0;            // Default col dim is 0
-		shape.shape(BlackboxSpecifier::TOEPLITZ);
+		shape.shapeFlags &= ShapeFlag::Toeplitz;
 #ifdef DBGMSGS
 		std::cout << "Toeplitz::Toeplitz():\tCreated a " << rowDim << "x"<< this->colDim<<
 		" Toeplitz matrix "<< std::endl;
@@ -83,7 +83,7 @@ namespace LinBox
 		sysDim =               // Default dimension is 0
 		rowDim =               // Default row dim is 0
 		this->colDim = 0;            // Default col dim is 0
-		shape.shape(BlackboxSpecifier::TOEPLITZ);
+		shape.shape(Method::Blackbox::TOEPLITZ);
 #ifdef DBGMSGS
 		std::cout << "Toeplitz::Toeplitz():\tCreated a " << rowDim << "x"<< this->colDim<<
 		" Toeplitz matrix "<< std::endl;
@@ -97,7 +97,7 @@ namespace LinBox
 		P(PF), field_(&(PF.getCoeffField()))
 	{
 		sysDim = rowDim = this->colDim = 0;
-		shape.shape(BlackboxSpecifier::TOEPLITZ);
+		shape.shapeFlags &= ShapeFlag::Toeplitz;
 
 	}//------ Polynomial Field constructor
 
@@ -111,7 +111,8 @@ namespace LinBox
 						     , size_t n ) :
 		P(PF), field_(&(PF.getCoeffField())), rowDim(m), colDim(n), pdata(p)
 	{
-		shape.shape(BlackboxSpecifier::TOEPLITZ);
+		shape.shapeFlags &= ShapeFlag::Toeplitz;
+
 		if( n == 0 ) this->colDim = rowDim;
 		if( rowDim >= this->colDim ) sysDim = rowDim;
 		else sysDim = this->colDim;
@@ -264,7 +265,7 @@ namespace LinBox
 		P.setCoeff(pdata,sysDim-1,PF.one);
 		P.setCoeff(rpdata,sysDim-1,PF.one);
 
-		shape.shape(BlackboxSpecifier::UNIMOD_UT);
+		shape.shape(Method::Blackbox::UNIMOD_UT);
 		return;
 	}// [UNCOMMENTED PART Tested 6/14/02 -- Works]
 
@@ -288,7 +289,7 @@ namespace LinBox
 		P.setCoeff(pdata,sysDim-1,PF.one);
 		P.setCoeff(rpdata,sysDim-1,PF.one);
 
-		shape.shape(BlackboxSpecifier::UNIMOD_LT);
+		shape.shape(Method::Blackbox::UNIMOD_LT);
 		return;
 	}// [UNCOMMENTED PART Tested 6/14/02 -- Works]
 
@@ -350,7 +351,7 @@ namespace LinBox
 #ifdef DBGMSGS
 		std::cout <<"pxOut is " << pxOut << std::endl;
 #endif
-		
+
 		size_t N = this->rowdim();
 		size_t M = this->coldim();
 		for( size_t i = 0; i < N; ++i )

@@ -48,7 +48,7 @@ namespace LinBox
 	{
 		// we need a BB/Blas hybrid in the style of Duran/Saunders/Wan.
 		//! @bug choose (benchmark) better cuttoff (size, nbnz, sparse rep)
-		if (useBB(A)) {
+		if (useBlackboxMethod(A)) {
 			return rank(r, A, tag, Method::Blackbox(m ));
 		}
 		else {
@@ -101,7 +101,7 @@ namespace LinBox
 		const Field F = A.field();
 		typename Field::RandIter iter (F);
 
-		if (M.symmetric()) {
+		if (M.shapeFlags & ShapeFlag::Symmetric) {
 			commentator().start ("Symmetric Rank", "srank");
 
 
@@ -120,7 +120,7 @@ namespace LinBox
 			BlackBox1 B (&B_0, &D_0);
 
 			BlackboxContainerSymmetric<Field, BlackBox1> TF (&B, F, iter);
-			MasseyDomain<Field, BlackboxContainerSymmetric<Field, BlackBox1> > WD (&TF, M.earlyTermThreshold ());
+			MasseyDomain<Field, BlackboxContainerSymmetric<Field, BlackBox1> > WD (&TF, M.earlyTerminationThreshold);
 			BlasVector<Field> phi(F);
 			WD.pseudo_minpoly (phi, res);
 			commentator().report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION) << "Pseudo Minpoly degree: " << res << std::endl;
@@ -164,7 +164,7 @@ namespace LinBox
 				BlackBox1 B2 (&B1, &D1);
 
 				BlackboxContainerSymmetric<Field, BlackBox1> TF1 (&B2, F, iter);
-				MasseyDomain<Field, BlackboxContainerSymmetric<Field, BlackBox1> > WD1 (&TF1, M.earlyTermThreshold ());
+				MasseyDomain<Field, BlackboxContainerSymmetric<Field, BlackBox1> > WD1 (&TF1, M.earlyTerminationThreshold);
 
 				WD1.pseudo_minpoly (phi, rk);
 				commentator().report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION) << "Permuted pseudo Minpoly degree: " << res << std::endl;
@@ -204,7 +204,7 @@ namespace LinBox
 				BlackBoxBAB PAP(&B1, &TP);
 
 				BlackboxContainerSymmetric<Field, BlackBoxBAB> TF1 (&PAP, F, iter);
-				MasseyDomain<Field, BlackboxContainerSymmetric<Field, BlackBoxBAB> > WD1 (&TF1, M.earlyTermThreshold ());
+				MasseyDomain<Field, BlackboxContainerSymmetric<Field, BlackBoxBAB> > WD1 (&TF1, M.earlyTerminationThreshold);
 
 				WD1.pseudo_minpoly (phi, rk);
 				commentator().report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION) << "Butterfly pseudo Minpoly degree: " << res << std::endl;
@@ -260,7 +260,7 @@ namespace LinBox
 			Blackbox0 B_i (&B3_i, &D1_i);
 
 			BlackboxContainerSymmetric<Field, Blackbox0> TF_i (&B_i, F, iter);
-			MasseyDomain<Field, BlackboxContainerSymmetric<Field, Blackbox0> > WD (&TF_i, M.earlyTermThreshold ());
+			MasseyDomain<Field, BlackboxContainerSymmetric<Field, Blackbox0> > WD (&TF_i, M.earlyTerminationThreshold);
 
 			BlasVector<Field> phi(F);
 			WD.pseudo_minpoly (phi, res);
@@ -302,7 +302,7 @@ namespace LinBox
 				Blackbox1 B (&B3, &D1);
 
 				BlackboxContainerSymmetric<Field, Blackbox1> TF (&B, F, iter);
-				MasseyDomain<Field, BlackboxContainerSymmetric<Field, Blackbox1> > MD (&TF, M.earlyTermThreshold ());
+				MasseyDomain<Field, BlackboxContainerSymmetric<Field, Blackbox1> > MD (&TF, M.earlyTerminationThreshold);
 
 				MD.pseudo_minpoly (phi, rk);
 				commentator().report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION) << "Permuted pseudo Minpoly degree: " << rk << std::endl;
@@ -346,7 +346,7 @@ namespace LinBox
 				Blackbox1 B (&B3, &D1);
 
 				BlackboxContainerSymmetric<Field, Blackbox1> TF (&B, F, iter);
-				MasseyDomain<Field, BlackboxContainerSymmetric<Field, Blackbox1> > MD (&TF, M.earlyTermThreshold ());
+				MasseyDomain<Field, BlackboxContainerSymmetric<Field, Blackbox1> > MD (&TF, M.earlyTerminationThreshold);
 
 				MD.pseudo_minpoly (phi, rk);
 				commentator().report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION) << "Butterfly pseudo Minpoly degree: " << rk << std::endl;
@@ -506,7 +506,7 @@ namespace LinBox
 				    const Method::Blackbox            & m)
 	{
 		commentator().start ("BB Rank", "extend");
-		if (m.certificate()) {
+		if (m.certifyInconsistency) {
 			typedef typename Blackbox::Field Field;
 			const Field& F = A.field();
 			integer a,c; F.cardinality(a); F.characteristic(c);
@@ -590,7 +590,7 @@ namespace LinBox { /*  rankInPlace */
 	{
 		commentator().start ("Sparse Elimination Rank over GF2", "serankmod2");
 		GaussDomain<GF2> GD ( A.field() );
-		GD.rankInPlace (r, A, Specifier::PIVOT_LINEAR);
+		GD.rankInPlace (r, A, PivotStrategy::Linear);
 		commentator().stop ("done", NULL, "serankmod2");
 		return r;
 	}
@@ -653,7 +653,7 @@ namespace LinBox { /*  rankInPlace */
 	{
 		commentator().start ("Sparse Elimination Rank", "serank");
 		GaussDomain<typename Blackbox::Field> GD (A.field());
-		GD.rankInPlace( r, A, M.strategy ());
+		GD.rankInPlace( r, A, M.pivotStrategy);
 		commentator().stop ("done", NULL, "serank");
 		return r;
 	}
