@@ -56,7 +56,7 @@ namespace LinBox
 	}
 
 	template <class SparseSeqMatrix, class Vector1, class Vector2>
-	Vector1& GaussDomain<GF2>::solvein(Vector1& x,
+	Vector1& GaussDomain<GF2>::solveInPlace(Vector1& x,
 					   SparseSeqMatrix        &A,
 					   const Vector2& b) const
 	{
@@ -79,7 +79,7 @@ namespace LinBox
 	}
 
 	template <class SparseSeqMatrix, class Vector1, class Vector2, class Random>
-	Vector1& GaussDomain<GF2>::solvein(Vector1& x,
+	Vector1& GaussDomain<GF2>::solveInPlace(Vector1& x,
 					   SparseSeqMatrix        &A,
 					   const Vector2& b,
                        Random& generator) const

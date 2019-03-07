@@ -178,12 +178,12 @@ static bool testDiagonalDet2 (Field &F, size_t n, int iterations)
         F.assign(pi, F.one);
 
         size_t m = (n+1) / 2;
-        for (j = 0; j < m; j++) {
+        for (j = 0; j < m; ++j) {
             do r.random (d[j]); while (F.isZero (d[j]));
             F.mulin (pi, d[j]);
         }
 
-        for (j = n / 2; j < n; j++) {
+        for (j = m; j < n; ++j) {
             k =int( (size_t)rand () % m );
             d[j] = d[(size_t)k];
             F.mulin (pi, d[(size_t)j]);
