@@ -143,11 +143,8 @@ int main (int argc, char **argv)
 
     std::vector<std::pair<double,double>> timebits(nbiter);
     for(size_t iter=0; iter<nbiter; ++iter) {
-
         if (ModComp) {
-
             tmain<Givaro::Modular<double>>(timebits[iter],n,q,bits);
-
         } else {
             tmain<Ints,VectorFractionInts>(timebits[iter],n,q,bits);
         }
