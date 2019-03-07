@@ -72,10 +72,10 @@ right_solve(X,A,B) = div_right(X,A,B) = X = A*B^{dagger}
 
 Matrix<MatrixDomain> could do the rest
 rank(i,A)
-rankin(i,A)
+rankInPlace(i,A)
 
 det(d,A)
-detin(d,A)
+detInPlace(d,A)
 
 minpoly(P,A)
 charpoly(P,A)

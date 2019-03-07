@@ -203,7 +203,7 @@ bool testQLUPsolve(const Field &F, size_t n, unsigned int iterations, int rseed,
 
 		Blackbox CopyA ( A );
 
-		GD.solvein(x, A, v /*, bitgenerator .random(randomsolve) */ );
+		GD.solveInPlace(x, A, v /*, bitgenerator .random(randomsolve) */ );
 		// report << "Random solving: " << randomsolve << std::endl;
 
 		CopyA.apply(y, x);

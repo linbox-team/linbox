@@ -206,7 +206,7 @@ bool testRankMethodsGF2(const GF2& F2, size_t n, unsigned int iterations, double
 			ret = false;
 		}
 
-		rankin (rank_sparselimination, A, Method::SparseElimination());
+		rankInPlace (rank_sparselimination, A, Method::SparseElimination());
 		if (rank_blackbox != rank_sparselimination) {
 			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: blackbox rank != sparse elimination GF2 rank " << rank_elimination << endl;
@@ -214,7 +214,7 @@ bool testRankMethodsGF2(const GF2& F2, size_t n, unsigned int iterations, double
 		}
 
 
-		rankin (rank_sparse, B, Method::SparseElimination());
+		rankInPlace (rank_sparse, B, Method::SparseElimination());
 
 		if (rank_sparselimination != rank_sparse) {
 			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
