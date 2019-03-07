@@ -63,7 +63,6 @@ namespace LinBox {
         using PrimeGenerator = PrimeIterator<IteratorCategories::HeuristicTag>;
         PrimeGenerator primeGenerator(FieldTraits<Field>::bestBitSize(A.coldim()));
 
-        // @note The template argument Method::Dixon means that we want to use a dense algorithm.
         using Solver = DixonRationalSolver<Ring, Field, PrimeGenerator, typename MethodForMatrix<Matrix>::type>;
         Solver dixonSolve(A.field(), primeGenerator);
 
@@ -72,13 +71,6 @@ namespace LinBox {
         bool singular = (m.singularity == Singularity::Singular) || (A.rowdim() != A.coldim());
         SolverReturnStatus status = SS_OK;
         if (!singular) {
-
-
-            // @fixme RationalSolve<..., SparseElimination> has no .solveNonSingular,
-            // so we need to specialize this function when Matrix = SparseMatrix<...>
-            //          test-hadamard-bound.C fails because of this
-
-
             status = dixonSolve.solveNonsingular(xNum, xDen, A, b, false, maxTrials);
             singular = (status != SS_OK);
         }
@@ -100,6 +92,37 @@ namespace LinBox {
         commentator().stop("solve.dixon.integer.dense");
 
         if (status == SS_INCONSISTENT) {
+            throw LinboxMathInconsistentSystem("From Dixon method.");
+        }
+    }
+
+    /**
+     * \brief Solve specialisation for Dixon on sparse matrices.
+     */
+    template <class... MatrixArgs, class Vector>
+    void solve(Vector& xNum, typename Vector::Field::Element& xDen, const SparseMatrix<MatrixArgs...>& A, const Vector& b,
+               const RingCategories::IntegerTag& tag, const Method::Dixon& m)
+    {
+        commentator().start("solve.dixon.integer.sparse");
+        linbox_check((A.coldim() != xNum.size()) || (A.rowdim() != b.size()));
+
+        using Ring = typename SparseMatrix<MatrixArgs...>::Field;
+        using Field = Givaro::Modular<double>;
+        using PrimeGenerator = PrimeIterator<IteratorCategories::HeuristicTag>;
+        PrimeGenerator primeGenerator(FieldTraits<Field>::bestBitSize(A.coldim()));
+
+        using Solver = DixonRationalSolver<Ring, Field, PrimeGenerator, typename MethodForMatrix<SparseMatrix<MatrixArgs...>>::type>;
+        Solver dixonSolve(A.field(), primeGenerator);
+
+        // @fixme I'm a bit sad that we cannot use generically the function above,
+        // just because RationalSolve<..., SparseElimination> has not the same
+        // API (i.e. no solveNonSingular) than RationalSolver<..., Dixon>
+        int maxTrials = m.trialsBeforeFailure;
+        SolverReturnStatus status = dixonSolve.solve(xNum, xDen, A, b, maxTrials);
+
+        commentator().stop("solve.dixon.integer.sparse");
+
+        if (status != SS_OK) {
             throw LinboxMathInconsistentSystem("From Dixon method.");
         }
     }
