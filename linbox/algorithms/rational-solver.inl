@@ -938,6 +938,7 @@ namespace LinBox
 					return SS_OK;
 				}
 				// so a was empty mod p but not over Z.
+
 				continue; //try new prime
 			}
 
@@ -1031,7 +1032,7 @@ namespace LinBox
 					return SS_INCONSISTENT;
 				}
 				commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT) << "system is suspected to be inconsistent but it was only a bad prime" << std::endl;
-				continue; // try new prime. analogous to u.A12 != A22 in Muld.+Storj.
+                continue; // try new prime. analogous to u.A12 != A22 in Muld.+Storj.
 			}
 
 #ifdef RSTIMING
@@ -1041,6 +1042,8 @@ namespace LinBox
             //
 			// we now know system is consistent mod p.
             //
+
+                std::cout << "consistent" << std::endl;
 
 			BlasMatrix<Ring> A_minor(_ring, rank, rank);    // -- will have the full rank minor of A
 			BlasMatrix<Field> *Ap_minor_inv;          // -- will have inverse mod p of A_minor
@@ -1170,6 +1173,8 @@ namespace LinBox
 			newb.resize(rank);
 
 			BlasMatrix<Ring>  BBA_minor(A_minor);
+            std::cout << "BBA_minor..." << BBA_minor << std::endl;
+            std::cout << "newb..." << newb << std::endl;
 #if 0
 			BlasMatrix<Field> BBA_inv(F,*Ap_minor_inv);
 			BlasMatrix<Integer>  BBA_minor(A_minor);
@@ -1185,13 +1190,19 @@ namespace LinBox
 
 			Vector1 short_num(_ring,rank); Integer short_den;
 
+
 			if (!re.getRational(short_num, short_den,0))
 				return SS_FAILED;    // dirty, but should not be called
 			// under normal circumstances
+
+            std::cout << "short_num... " << short_num << std::endl;
+            std::cout << "short_den... " << short_den << std::endl;
+
 #ifdef RSTIMING
 			ttSystemSolve.update(re, lc);
 			tCheckAnswer.start();
 #endif
+
 			VectorFraction<Ring> answer_to_vf(_ring, short_num. size());
 			answer_to_vf. numer = short_num;
 			answer_to_vf. denom = short_den;
@@ -1212,6 +1223,7 @@ namespace LinBox
 			}
 
             // @fixme Debug only?
+                std::cout << "level: " << level << " >= " << SL_LASVEGAS << std::endl;
 			if (level >= SL_LASVEGAS) { //check consistency
 
 				BlasVector<Ring> A_times_xnumer(_ring,b.size());
@@ -1246,6 +1258,7 @@ namespace LinBox
 			//answer_to_vf.toFVector(answer);
 			num = answer_to_vf. numer;
 			den = answer_to_vf. denom;
+                std::cout << "answer_to_vf... " << num << " " << den << std::endl;
 #ifdef RSTIMING
 			tCheckAnswer.stop();
 			ttCheckAnswer += tCheckAnswer;
@@ -1375,6 +1388,8 @@ namespace LinBox
 			// done making certificate, lets blow this popstand
 			return SS_OK;
 		}
+
+            std::cout << "ouch" << std::endl;
 		return SS_FAILED; //all primes were bad
 	}
 

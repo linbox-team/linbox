@@ -59,16 +59,6 @@ namespace LinBox {
         return solveInPlace(x, ACopy, b, tag, m);
     }
 
-    /**
-     * \brief Solve specialisation for SparseElimination with SparseMatrix on IntegerTag.
-     */
-    template <class ResultVector, class... MatrixArgs, class Vector>
-    ResultVector& solve(ResultVector& x, const SparseMatrix<MatrixArgs...>& A, const Vector& b,
-                        const RingCategories::IntegerTag& tag, const Method::SparseElimination& m)
-    {
-        return solve(x, A, b, tag, reinterpret_cast<const Method::Dixon&>(m));
-    }
-
     //
     // solveInPlace
     //

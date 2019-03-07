@@ -89,7 +89,7 @@ namespace LinBox {
      * If a Dispatch::Distributed is used, please note that the result will only be set on the master node.
      */
     template <class Matrix, class Vector, class IterationMethod>
-    inline void solve(Vector& xNum, typename Vector::Field::Element& xDen, const Matrix& A, const Vector& b,
+    inline void solve(Vector& xNum, typename Vector::Element& xDen, const Matrix& A, const Vector& b,
                       const RingCategories::IntegerTag& tag, const Method::Cra<IterationMethod>& m)
     {
         //

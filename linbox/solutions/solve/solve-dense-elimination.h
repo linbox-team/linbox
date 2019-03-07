@@ -49,7 +49,7 @@ namespace LinBox {
      */
     template <class Field, class Vector>
     Vector& solve(Vector& x, const DenseMatrix<Field>& A, const Vector& b, const RingCategories::ModularTag& tag,
-                        const Method::DenseElimination& m)
+                  const Method::DenseElimination& m)
     {
         linbox_check((A.coldim() != x.size()) || (A.rowdim() != b.size()));
 
@@ -61,15 +61,5 @@ namespace LinBox {
         commentator().stop("solve.dense-elimination.modular.dense");
 
         return x;
-    }
-
-    /**
-     * \brief Solve specialisation for DenseElimination on dense matrices with IntegerTag.
-     */
-    template <class ResultVector, class Field, class Vector>
-    ResultVector& solve(ResultVector& x, const DenseMatrix<Field>& A, const Vector& b, const RingCategories::IntegerTag& tag,
-                        const Method::DenseElimination& m)
-    {
-        return solve(x, A, b, tag, reinterpret_cast<const Method::Dixon&>(m));
     }
 }

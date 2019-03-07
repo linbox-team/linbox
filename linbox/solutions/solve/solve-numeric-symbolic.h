@@ -36,7 +36,7 @@ namespace LinBox {
     //
 
     template <class Matrix, class Vector>
-    inline void solve(Vector& xNum, typename Vector::Field::Element& xDen, const Matrix& A, const Vector& b,
+    inline void solve(Vector& xNum, typename Vector::Element& xDen, const Matrix& A, const Vector& b,
                       const RingCategories::IntegerTag& tag, const Method::NumericSymbolicOverlap& m)
     {
         throw LinBoxError("Rational solve with Method::NumericSymbolicOverlap only works with DenseMatrix.");
@@ -77,7 +77,7 @@ namespace LinBox {
     //
 
     template <class Matrix, class Vector>
-    inline void solve(Vector& xNum, typename Vector::Field::Element& xDen, const Matrix& A, const Vector& b,
+    inline void solve(Vector& xNum, typename Vector::Element& xDen, const Matrix& A, const Vector& b,
                       const RingCategories::IntegerTag& tag, const Method::NumericSymbolicNorm& m)
     {
         throw LinBoxError("Rational solve with Method::NumericSymbolicNorm only works with DenseMatrix.");
