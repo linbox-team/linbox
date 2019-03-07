@@ -99,7 +99,7 @@ namespace LinBox {
      * \brief Solve specialization for Auto and IntegerTag.
      */
     template <class Matrix, class Vector>
-    inline void solve(Vector& xNum, typename Vector::Field::Element& xDen, const Matrix& A, const Vector& b,
+    inline void solve(Vector& xNum, typename Vector::Element& xDen, const Matrix& A, const Vector& b,
                       const RingCategories::IntegerTag& tag, const Method::Auto& m)
     {
         solve(xNum, xDen, A, b, tag, reinterpret_cast<const Method::Dixon&>(m));
@@ -161,7 +161,7 @@ namespace LinBox {
      * \brief Solve in place specialization for Auto and IntegerTag.
      */
     template <class Matrix, class Vector>
-    inline void solveInPlace(Vector& xNum, typename Vector::Field::Element& xDen, Matrix& A, const Vector& b,
+    inline void solveInPlace(Vector& xNum, typename Vector::Element& xDen, Matrix& A, const Vector& b,
                              const RingCategories::IntegerTag& tag, const Method::Auto& m)
     {
         solveInPlace(xNum, xDen, A, b, tag, reinterpret_cast<const Method::Dixon&>(m));

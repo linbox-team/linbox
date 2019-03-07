@@ -551,36 +551,42 @@ int main (int argc, char **argv)
 	// text is written to clog/cerr/cout iff a command line argument is present.
 	if (argc > 1) writing = true;
 
-    pass &= testSolveSparse  ();
-    pass &= testSolveSparseSage ();
-    pass &= testFlatDixonSolver (Method::SparseElimination());
-    pass &= testFlatDixonSolver2 (Method::SparseElimination());
-    pass &= testTallDixonSolver (Method::SparseElimination());
-    pass &= testFlatDixonSolver (Method::DenseElimination());
-    pass &= testFlatDixonSolver2 (Method::DenseElimination());
-    pass &= testTallDixonSolver (Method::DenseElimination());
-    pass &= testFlatDixonSolver (Method::Wiedemann());
-    pass &= testFlatDixonSolver2 (Method::Wiedemann());
-    pass &= testTallDixonSolver (Method::Wiedemann());
-    pass &= testSingularDixonSolver (Method::SparseElimination());
-    pass &= testZeroDixonSolver (Method::SparseElimination());
-    pass &= testSingularDixonSolver (Method::DenseElimination());
-    pass &= testZeroDixonSolver (Method::DenseElimination());
-    pass &= testDixonSolverWithMPrhs ();
-    pass &= testSparseRationalSolver ();
-    pass &= testDixonRectangularSolver<> (Method::DenseElimination());
-    pass &= testDixonRectangularSolver<> (Method::SparseElimination());
-    pass &= testDixonRectangularSolver<> (Method::Wiedemann());
+    if (writing) {
+        commentator().setReportStream(std::cout);
+    }
+
+    // pass &= testSolveSparse  ();
+    // pass &= testSolveSparseSage ();
+    // pass &= testFlatDixonSolver (Method::SparseElimination());
+    // pass &= testFlatDixonSolver2 (Method::SparseElimination());
+    // pass &= testTallDixonSolver (Method::SparseElimination());
+    // pass &= testFlatDixonSolver (Method::DenseElimination());
+    // pass &= testFlatDixonSolver2 (Method::DenseElimination());
+    // pass &= testTallDixonSolver (Method::DenseElimination());
+    // pass &= testFlatDixonSolver (Method::Wiedemann());
+    // pass &= testFlatDixonSolver2 (Method::Wiedemann());
+    // pass &= testTallDixonSolver (Method::Wiedemann());
+    // pass &= testSingularDixonSolver (Method::SparseElimination());
+    // pass &= testZeroDixonSolver (Method::SparseElimination());
+    // pass &= testSingularDixonSolver (Method::DenseElimination());
+    // pass &= testZeroDixonSolver (Method::DenseElimination());
+    // pass &= testDixonSolverWithMPrhs ();
+    // pass &= testSparseRationalSolver ();
+    // pass &= testDixonRectangularSolver<> (Method::DenseElimination());
+    // pass &= testDixonRectangularSolver<> (Method::SparseElimination());
+    // pass &= testDixonRectangularSolver<> (Method::Wiedemann());
+    std::cout << pass << std::endl;
     pass &= testDixonRectangularSolver<DenseMatrix<ZRingInts>> (Method::DenseElimination());
-    pass &= testDixonRectangularSolver<DenseMatrix<ZRingInts>> (Method::SparseElimination());
-    pass &= testDixonRectangularSolver<DenseMatrix<ZRingInts>> (Method::Wiedemann());
-    pass &= testSparse1x1Det(1<<26);
-    pass &= testSparseDiagDet(46);
-    pass &= testZeroDimensionalCharPoly ();
-    pass &= testZeroDimensionalMinPoly ();
-    pass &= testBigScalarCharPoly ();
-    pass &= testLocalSmith ();
-    pass &= testInconsistent<DenseMatrix<ZRingInts>> (Method::DenseElimination());
+    std::cout << pass << std::endl;
+    // pass &= testDixonRectangularSolver<DenseMatrix<ZRingInts>> (Method::SparseElimination());
+    // pass &= testDixonRectangularSolver<DenseMatrix<ZRingInts>> (Method::Wiedemann());
+    // pass &= testSparse1x1Det(1<<26);
+    // pass &= testSparseDiagDet(46);
+    // pass &= testZeroDimensionalCharPoly ();
+    // pass &= testZeroDimensionalMinPoly ();
+    // pass &= testBigScalarCharPoly ();
+    // pass &= testLocalSmith ();
+    // pass &= testInconsistent<DenseMatrix<ZRingInts>> (Method::DenseElimination());
 
         // Still failing: see https://github.com/linbox-team/linbox/issues/105
         //pass &= testInconsistent<> (Method::SparseElimination());

@@ -52,7 +52,7 @@ namespace LinBox {
      * \brief Solve specialisation for Dixon on dense matrices.
      */
     template <class Matrix, class Vector>
-    void solve(Vector& xNum, typename Vector::Field::Element& xDen, const Matrix& A, const Vector& b,
+    void solve(Vector& xNum, typename Vector::Element& xDen, const Matrix& A, const Vector& b,
                const RingCategories::IntegerTag& tag, const Method::Dixon& m)
     {
         commentator().start("solve.dixon.integer.dense");
@@ -93,6 +93,8 @@ namespace LinBox {
 
         if (status == SS_INCONSISTENT) {
             throw LinboxMathInconsistentSystem("From Dixon method.");
+        } else if (status != SS_OK) {
+            throw LinboxError("From Dixon method.");
         }
     }
 
@@ -100,7 +102,7 @@ namespace LinBox {
      * \brief Solve specialisation for Dixon on sparse matrices.
      */
     template <class... MatrixArgs, class Vector>
-    void solve(Vector& xNum, typename Vector::Field::Element& xDen, const SparseMatrix<MatrixArgs...>& A, const Vector& b,
+    void solve(Vector& xNum, typename Vector::Element& xDen, const SparseMatrix<MatrixArgs...>& A, const Vector& b,
                const RingCategories::IntegerTag& tag, const Method::Dixon& m)
     {
         commentator().start("solve.dixon.integer.sparse");
@@ -111,7 +113,8 @@ namespace LinBox {
         using PrimeGenerator = PrimeIterator<IteratorCategories::HeuristicTag>;
         PrimeGenerator primeGenerator(FieldTraits<Field>::bestBitSize(A.coldim()));
 
-        using Solver = DixonRationalSolver<Ring, Field, PrimeGenerator, typename MethodForMatrix<SparseMatrix<MatrixArgs...>>::type>;
+        using Solver =
+            DixonRationalSolver<Ring, Field, PrimeGenerator, typename MethodForMatrix<SparseMatrix<MatrixArgs...>>::type>;
         Solver dixonSolve(A.field(), primeGenerator);
 
         // @fixme I'm a bit sad that we cannot use generically the function above,
@@ -122,8 +125,10 @@ namespace LinBox {
 
         commentator().stop("solve.dixon.integer.sparse");
 
-        if (status != SS_OK) {
+        if (status == SS_INCONSISTENT) {
             throw LinboxMathInconsistentSystem("From Dixon method.");
+        } else if (status != SS_OK) {
+            throw LinboxError("From Dixon method.");
         }
     }
 }

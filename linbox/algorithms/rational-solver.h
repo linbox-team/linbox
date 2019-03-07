@@ -823,6 +823,7 @@ namespace LinBox
 		{
             ++_genprime;
 			_prime = *_genprime;
+            std::cout << "hey " << _prime << std::endl;
 		}
 
 #ifdef RSTIMING

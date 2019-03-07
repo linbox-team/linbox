@@ -182,8 +182,8 @@ namespace LinBox {
      * as non-modular elimination would snowball elements to very big values.
      */
     template <class Matrix, class Vector, class CategoryTag, class SolveMethod>
-    inline void solve(Vector& xNum, typename Vector::Field::Element& xDen, const Matrix& A, const Vector& b,
-                      const CategoryTag& tag, const SolveMethod& m)
+    inline void solve(Vector& xNum, typename Vector::Element& xDen, const Matrix& A, const Vector& b, const CategoryTag& tag,
+                      const SolveMethod& m)
     {
         throw LinBoxError("Rational solve is only valid for RingCategories::IntegerTag.");
     }
@@ -192,17 +192,21 @@ namespace LinBox {
      * \brief Rational solve dispatcher for unimplemented methods.
      */
     template <class Matrix, class Vector, class SolveMethod>
-    inline void solve(Vector& xNum, typename Vector::Field::Element& xDen, const Matrix& A, const Vector& b,
+    inline void solve(Vector& xNum, typename Vector::Element& xDen, const Matrix& A, const Vector& b,
                       const RingCategories::IntegerTag& tag, const SolveMethod& m)
     {
-        throw LinBoxError("Rational solve<RingCategories::IntegerTag, " + SolveMethod::name() + "> does not exists.");
+        commentator().report(Commentator::LEVEL_UNIMPORTANT, ("Warning: Rational solve on RingCategories::IntegerTag with "
+                                                              + SolveMethod::name() + " is forwarded to Method::Dixon instead.")
+                                                                 .c_str());
+
+        solve(xNum, xDen, A, b, tag, reinterpret_cast<const Method::Dixon&>(m));
     }
 
     /**
      * \brief Rational solve dispatcher for automated category tag.
      */
     template <class Matrix, class Vector, class SolveMethod>
-    inline void solve(Vector& xNum, typename Vector::Field::Element& xDen, const Matrix& A, const Vector& b, const SolveMethod& m)
+    inline void solve(Vector& xNum, typename Vector::Element& xDen, const Matrix& A, const Vector& b, const SolveMethod& m)
     {
         solve(xNum, xDen, A, b, typename FieldTraits<typename Matrix::Field>::categoryTag(), m);
     }
@@ -211,7 +215,7 @@ namespace LinBox {
      * \brief Rational solve dispatcher for automated solve method.
      */
     template <class Matrix, class Vector>
-    inline void solve(Vector& xNum, typename Vector::Field::Element& xDen, const Matrix& A, const Vector& b)
+    inline void solve(Vector& xNum, typename Vector::Element& xDen, const Matrix& A, const Vector& b)
     {
         solve(xNum, xDen, A, b, Method::Auto());
     }
@@ -263,8 +267,8 @@ namespace LinBox {
      * Second interface for solving in place, only valid for RingCategories::IntegerTag.
      */
     template <class Matrix, class Vector, class SolveMethod, class CategoryTag>
-    inline void solveInPlace(Vector& xNum, typename Vector::Field::Element& xDen, Matrix& A, const Vector& b,
-                             const CategoryTag& tag, const SolveMethod& m)
+    inline void solveInPlace(Vector& xNum, typename Vector::Element& xDen, Matrix& A, const Vector& b, const CategoryTag& tag,
+                             const SolveMethod& m)
     {
         // @note This is called if the specialization has not been implemented,
         // which means there might not be any "in place" version of the solve.
@@ -277,8 +281,7 @@ namespace LinBox {
      * \brief Rational solve in place dispatcher for automated category tag.
      */
     template <class Matrix, class Vector, class SolveMethod>
-    inline void solveInPlace(Vector& xNum, typename Vector::Field::Element& xDen, Matrix& A, const Vector& b,
-                             const SolveMethod& m)
+    inline void solveInPlace(Vector& xNum, typename Vector::Element& xDen, Matrix& A, const Vector& b, const SolveMethod& m)
     {
         solveInPlace(xNum, xDen, A, b, typename FieldTraits<typename Matrix::Field>::categoryTag(), m);
     }
@@ -287,7 +290,7 @@ namespace LinBox {
      * \brief Rational solve in place dispatcher for automated solve method.
      */
     template <class Matrix, class Vector>
-    inline void solveInPlace(Vector& xNum, typename Vector::Field::Element& xDen, Matrix& A, const Vector& b)
+    inline void solveInPlace(Vector& xNum, typename Vector::Element& xDen, Matrix& A, const Vector& b)
     {
         solveInPlace(xNum, xDen, A, b, Method::Auto());
     }
