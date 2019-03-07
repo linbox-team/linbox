@@ -36,13 +36,88 @@
 #include "linbox/solutions/solve.h"
 #include "linbox/util/matrix-stream.h"
 #include "linbox/solutions/methods.h"
+#include "linbox/algorithms/vector-fraction.h"
 
 #ifdef _DEBUG
 #define _BENCHMARKS_DEBUG_
 #endif
 
 using namespace LinBox;
+
+template<typename Field, typename Vector_t>
+std::ostream& printVector(std::ostream& out,
+                          const Field& F, const Vector_t& v) {
+    out << '[';
+    for(const auto& it: v) F.write(std::clog, it) << ',';
+    return out << ']';
+}
+template<typename Vector_t>
+double& setBitsize(double& size, const Givaro::Integer& q, const Vector_t& v) {
+    return size=Givaro::logtwo(q);
+}
+
 typedef Givaro::ZRing<Givaro::Integer> Ints;
+typedef VectorFraction<Ints> VectorFractionInts;
+
+template<>
+std::ostream& printVector(std::ostream& out, const Ints& Z, const VectorFractionInts& v) {
+    return Z.write(printVector(out, Z, v.numer) << " / ", v.denom);
+}
+template<>
+double& setBitsize(double& size, const Givaro::Integer& q, const VectorFractionInts& v) {
+    return size=Givaro::logtwo(v.denom);
+}
+
+
+template<typename T1, typename T2, typename T3>
+void solve(VectorFractionInts& X, const T1& A, const T2& B, const T3& M) {
+    solve(X.numer, X.denom, A, B, M);
+}
+
+template<typename Field, typename Vector_t=DenseVector<Field>>
+void tmain (std::pair<double,double>& timebits, size_t n,
+            const Givaro::Integer& q, size_t bits) {
+    Field F(q);						// q is ignored for Integers
+    typename Field::RandIter G(F,bits);	// bits is ignored for ModularRandIter
+
+#ifdef _BENCHMARKS_DEBUG_
+    std::clog << "Setting A ... " << std::endl;
+#endif
+
+    Timer chrono;
+
+    chrono.start();
+    DenseMatrix<Field> A(F,n,n);
+    PAR_BLOCK { FFLAS::pfrand(F,G, n,n,A.getPointer(),n); }
+    chrono.stop();
+
+#ifdef _BENCHMARKS_DEBUG_
+    std::clog << "... A is " << A.rowdim() << " by " << A.coldim() << ", " << chrono << std::endl;
+    if (A.rowdim() <= 20 && A.coldim() <= 20) A.write(std::clog <<"A:=",Tag::FileFormat::Maple) << ';' << std::endl;
+#endif
+
+    DenseVector<Field> B(F, A.rowdim());
+    PAR_BLOCK { FFLAS::pfrand(F,G, n,1,B.getPointer(),1); }
+
+#ifdef _BENCHMARKS_DEBUG_
+    printVector(std::clog << "B is ", F, B) << std::endl;
+#endif
+
+        // DenseElimination
+    Vector_t X(F, A.coldim());
+    chrono.start();
+    solve (X, A, B, Method::DenseElimination());
+    chrono.stop();
+
+#ifdef _BENCHMARKS_DEBUG_
+    printVector(std::clog << "(DenseElimination) Solution is ", F, X) << std::endl;
+#endif
+
+    setBitsize(timebits.second, q, X);
+    timebits.first=chrono.usertime();
+}
+
+
 
 int main (int argc, char **argv)
 {
@@ -66,93 +141,18 @@ int main (int argc, char **argv)
     bool ModComp = false;
     if (q > 0) ModComp = true;
 
-    
-    Timer chrono;
     std::vector<std::pair<double,double>> timebits(nbiter);
     for(size_t iter=0; iter<nbiter; ++iter) {
 
         if (ModComp) {
-            
-            typedef Givaro::Modular<double> Field;
-            Field F(q);
-            Field::RandIter G(F);
-	
-#ifdef _BENCHMARKS_DEBUG_
-            std::clog << "Setting A ... " << std::endl;
-#endif
-            chrono.start();
-            DenseMatrix<Field> A(F,n,n);
-            PAR_BLOCK { FFLAS::pfrand(F,G, n,n,A.getPointer(),n); }
-            chrono.stop();
-#ifdef _BENCHMARKS_DEBUG_
-            std::clog << "... A is " << A.rowdim() << " by " << A.coldim() << ", " << chrono << std::endl;
-            if (A.rowdim() <= 20 && A.coldim() <= 20) A.write(std::clog <<"A:=",Tag::FileFormat::Maple) << ';' << std::endl;
-#endif            
-            DenseVector<Field> X(F, A.coldim()),B(F, A.rowdim());
-            PAR_BLOCK { FFLAS::pfrand(F,G, n,1,B.getPointer(),1); }
-#ifdef _BENCHMARKS_DEBUG_
-            std::clog << "B is [";
-            for(const auto& it: B)
-                F.write(std::clog, it) << ' ';
-            std::clog << ']' << std::endl;
-#endif
 
-                // DenseElimination
-            chrono.start();
-            solve (X, A, B, Method::DenseElimination());
-            chrono.stop();
+            tmain<Givaro::Modular<double>>(timebits[iter],n,q,bits);
 
-#ifdef _BENCHMARKS_DEBUG_
-            std::clog << "(DenseElimination) Solution is [";
-            for(const auto& it: X)
-                F.write(std::clog, it) << ' ';
-            std::clog << ']' << std::endl;
-#endif
-            timebits[iter].second=Givaro::logtwo(q);
         } else {
-
-            typedef Ints Integers;
-            Integers ZZ;
-            Integers::RandIter G(ZZ,bits);
-#ifdef _BENCHMARKS_DEBUG_
-            std::clog << "Reading A ... " << std::endl;
-            chrono.start();
-#endif
-            DenseMatrix<Integers> A(ZZ, n, n);
-            PAR_BLOCK { FFLAS::pfrand(ZZ,G, n,n,A.getPointer(),n); }
-#ifdef _BENCHMARKS_DEBUG_
-            chrono.stop();
-            std::clog << "... A is " << A.rowdim() << " by " << A.coldim() << ", " << chrono << std::endl;
-            if (A.rowdim() <= 20 && A.coldim() <= 20) A.write(std::clog <<"A:=",Tag::FileFormat::Maple) << ';' << std::endl;
-#endif    
-            Givaro::IntegerDom::Element d;
-
-            DenseVector<Integers> X(ZZ, A.coldim()),B(ZZ, A.rowdim());
-            PAR_BLOCK { FFLAS::pfrand(ZZ,G, n,1,B.getPointer(),1); }
-
-#ifdef _BENCHMARKS_DEBUG_
-            std::clog << "B is [";
-            for(const auto& it: B)
-                ZZ.write(std::clog, it) << ' ';
-            std::clog << ']' << std::endl;
-#endif
-	
-                // DenseElimination
-            chrono.start();
-            solve (X, d, A, B, RingCategories::IntegerTag(), Method::DenseElimination());
-            chrono.stop();
-
-#ifdef _BENCHMARKS_DEBUG_
-            std::clog << "(DenseElimination) Solution is [";
-            for(const auto& it: X) ZZ.write(std::clog, it) << ' ';
-            ZZ.write(std::clog << "] / ", d)<< std::endl;
-#endif
-
-            timebits[iter].second=Givaro::logtwo(d);
+            tmain<Ints,VectorFractionInts>(timebits[iter],n,q,bits);
         }
-
-        timebits[iter].first=chrono.usertime();
     }
+
 
 #ifdef _BENCHMARKS_DEBUG_
     for(const auto& it: timebits)
