@@ -302,7 +302,7 @@ namespace LinBox {
             bytesRead += unserialize(i, bytes, offset + bytesRead);
 
             // Check if there is the mark of the end of the matrix entries
-            if (i == 0xFFFFFFFF'FFFFFFFF) {
+            if (i == 0xFFFFFFFFFFFFFFFF) {
                 break;
             }
 
