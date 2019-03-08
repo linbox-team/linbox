@@ -149,7 +149,7 @@ namespace LinBox {
         PivotStrategy pivotStrategy = PivotStrategy::Linear;
 
         // For Dixon method.
-        SingularSolutionType singularSolutionType = SingularSolutionType::Determinist;
+        SingularSolutionType singularSolutionType = SingularSolutionType::Random; // @fixme SingularSolutionType::Determinist fails with Dense Dixon
 
         // For random-based systems.
         size_t trialsBeforeFailure = 100;  //!< Maximum number of trials before giving up.

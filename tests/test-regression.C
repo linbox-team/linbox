@@ -339,7 +339,6 @@ bool testSparseRationalSolver() {
 template<class SolveMethod, typename Matrix_t=SparseMatrix<ZRingInts>>
 bool testDixonRectangularSolver() {
     SolveMethod m;
-    m.singularSolutionType = SingularSolutionType::Random; // @fixme Dixon dense with Determinist fails
 
     ZRingInts ZZ;
     typedef DenseVector<ZRingInts> RVector;
