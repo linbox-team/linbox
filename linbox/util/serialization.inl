@@ -282,7 +282,7 @@ namespace LinBox {
             }
         }
 
-        constexpr const uint64_t endMarker = 0xFFFFFFFF'FFFFFFFF;
+        constexpr const uint64_t endMarker = 0xFFFFFFFFFFFFFFFF;
         bytesWritten += serialize(bytes, endMarker);
 
         return bytesWritten;
