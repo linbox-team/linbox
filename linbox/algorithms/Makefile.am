@@ -48,7 +48,6 @@ USE_OCL_HDRS = $(OCL_HDRS)
 pkgincludesub_HEADERS =            \
 	alt-blackbox-block-container.h     \
 	bbcharpoly.h                       \
-	bbsolve.h                          \
 	bitonic-sort.h                     \
 	blackbox-block-container-base.h    \
 	blackbox-block-container.h         \

@@ -101,7 +101,9 @@ int main (int argc, char **argv)
 
 		std::cout << "Sparse Elimination" << std::endl;
 		chrono.start();
-		solveInPlace (X, A, B, Method::SparseElimination(), generator);
+		// @fixme Can't pass a Randiter anymore
+        // solveInPlace (X, A, B, Method::SparseElimination(), generator);
+		solveInPlace (X, A, B, Method::SparseElimination());
 		chrono.stop();
 
 		std::cout << "(SparseElimination) Solution is [";
