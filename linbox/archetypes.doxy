@@ -62,7 +62,7 @@
 	in such a way that algorithms can be compiled once against the field archetype.
 	Alternatively, and with some performance gain, one can compile an algorithm
 	separately against each field class used.  For a listing of the field
-	implementations see LinBox::FieldInterface .
+	implementations see LinBox::FieldAbstract .
 
 - Random iterator archetype.  %LinBox fields (and rings) provide a random iterator
 	type.  Objects of this type can be used to generate elements at random.  \c

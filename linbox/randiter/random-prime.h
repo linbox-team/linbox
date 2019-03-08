@@ -145,6 +145,9 @@ namespace LinBox
 
     template<>
     void PrimeIterator<IteratorCategories::DeterministicTag>::generatePrime(){
+        if (_prime < 3) {
+            throw LinboxError("LinBox ERROR: Ran out of primes in Deterministic Prime Iterator.\n");
+        }
         _IPD.prevprimein(_prime);
     }
 
@@ -243,8 +246,9 @@ namespace LinBox
     template<class Trait = IteratorCategories::HeuristicTag>
     class MaskedPrimeIterator : public PrimeIterator<Trait> {
     private:
-        const uint32_t	_mask;
         const uint32_t  _shift;
+        const uint32_t	_fffff;
+        const uint32_t	_nmask;
 
     public:
         typedef MaskedPrimeIterator<Trait> Self_t;
@@ -257,17 +261,19 @@ namespace LinBox
                 return *this;
             }
 
+            // Makes mask odd: implicit _mask=2*mask+1
         MaskedPrimeIterator(uint32_t mask, uint32_t max, uint64_t bits = 23, uint64_t seed = 0) :
                 Father_t(bits,seed),
-                _mask( (mask<<1) | 0x1 ),
-                _shift( MultiplyDeBruijnHighestBit(max) + 2)
+                _shift( MultiplyDeBruijnHighestBit(max) + 2),
+                _fffff((1U<<_shift)-1),
+                _nmask( ~((mask<<1) | 0x1) & _fffff ) // NOT _mask
             {
-                this->_prime >>= _shift;
-                this->_prime <<= _shift; // set lowest bits to 0000
-                this->_prime |= _mask;   // set lowest bits to _mask
+                this->_prime |= _fffff; // set lowest bits to 11111
+                this->_prime ^= _nmask; // set lowest bits to _mask
+                generatePrime();
             }
 
-        const uint32_t getMask() const { return _mask; }
+        const uint32_t getMask() const { return  ( ~(_nmask) & _fffff ); }
         const uint32_t getShift() const { return _shift; }
     };
 
@@ -275,9 +281,8 @@ namespace LinBox
     void MaskedPrimeIterator<IteratorCategories::HeuristicTag>::generatePrime(){
         integer::random_exact_2exp(_prime,_bits);
 
-        _prime >>= _shift;
-        _prime <<= _shift; // set first bits to 0000
-        _prime |= _mask;   // set lowest bits to _mask
+        _prime |= _fffff; // set lowest bits to 11111
+        _prime ^= _nmask; // set lowest bits to _mask
 
         while(! _IPD.isprime(_prime) ) {
             _prime += (1<<_shift);
@@ -286,9 +291,12 @@ namespace LinBox
 
     template<>
     void MaskedPrimeIterator<IteratorCategories::DeterministicTag>::generatePrime(){
-        _prime -= (1<<_shift);
-        while(! _IPD.isprime(_prime) )
+        do {
             _prime -= (1<<_shift);
+			if (_prime < 2) {
+				throw LinboxError("LinBox ERROR: Ran out of primes in Masked Deterministic Prime Iterator.\n");
+			}
+        } while(! _IPD.isprime(_prime) );
     }
 
 
@@ -303,9 +311,8 @@ namespace LinBox
                 case 3: _prime+=2; break;
             }
 
-            _prime >>= _shift;
-            _prime <<= _shift; // set first bits to 0000
-            _prime |= _mask;   // set lowest bits to _mask
+            _prime |= _fffff; // set lowest bits to 11111
+            _prime ^= _nmask; // set lowest bits to _mask
 
         } while(!_IPD.isprime(_prime));
     }

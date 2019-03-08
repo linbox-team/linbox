@@ -47,7 +47,7 @@
 #include "linbox/linbox-config.h"
 #include "linbox/util/error.h"
 #include "linbox/util/debug.h"
-#include "linbox/field/field-interface.h"
+#include "linbox/field/field-documentation.h"
 #include "linbox/field/abstract.h"
 #include "linbox/field/envelope.h"
 #include "linbox/element/archetype.h"
@@ -77,7 +77,7 @@ namespace LinBox
 	 * stand point to include them.  However, because of archetype use three,
 	 * the elements themselves cannot be contained, but rather pointers to them.
 	 */
-	class FieldArchetype : public FieldInterface {
+	class FieldArchetype : public FieldDocumentation {
 	public:
 
 		/** @name Common Object Interface for a LinBox Field.
