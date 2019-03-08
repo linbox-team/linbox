@@ -31,22 +31,14 @@
 
 using namespace LinBox;
 
-using Field = Givaro::ZRing<Integer>;
+using Ring = Givaro::ZRing<Integer>;
+
+// Used to compare floating numbers
+#define ESPILON 0.0001
 
 template <class TMatrix, class TVector>
-bool test_with_matrix_vector(size_t n, size_t bitSize, int* seed)
+bool test(const Ring& F, const TMatrix& A, const TVector& b)
 {
-    Field F;
-    TMatrix A(F, n, n);
-
-    *seed += 1;
-    srand(*seed);
-    Field::RandIter randIter(F, bitSize, *seed);
-
-    // Generate a full rank matrix
-    RandomDenseMatrix<Field::RandIter, Field> RDM(F, randIter);
-    RDM.randomFullRank(A);
-
     // ---- Determinant
 
     // Compute the bounds
@@ -57,14 +49,14 @@ bool test_with_matrix_vector(size_t n, size_t bitSize, int* seed)
     Integer detA;
     det(detA, A);
 
-    // std::cout << "det hb fastHb : " << std::setprecision(100) << Givaro::logtwo(Givaro::abs(detA)) << " " << hb << " " << fastHb << std::endl;
+    std::cout << "det hb fastHb : " << std::setprecision(5) << Givaro::logtwo(Givaro::abs(detA)) << " " << hb << " " << fastHb << std::endl;
 
-    if (fastHb < hb) {
+    if (fastHb + ESPILON < hb) {
         std::cerr << "Fast Hadamard bound is somehow better than the precise one." << std::endl;
         return false;
     }
 
-    if (Givaro::logtwo(Givaro::abs(detA)) > hb) {
+    if (hb + ESPILON < Givaro::logtwo(Givaro::abs(detA))) {
         std::cerr << "The Hadamard bound does not bound the determinant." << std::endl;
         std::cerr << "det: " << Givaro::logtwo(Givaro::abs(detA)) << " > " << hb << std::endl;
         return false;
@@ -72,35 +64,51 @@ bool test_with_matrix_vector(size_t n, size_t bitSize, int* seed)
 
     // ---- Rational solve
 
-    if (detA > 0) {
-        TVector b(F, n);
-        b.random(randIter);
+    // Compute the bounds
+    auto rationalSolveHb = RationalSolveHadamardBound(A, b);
 
-        // Compute the bounds
-        auto rationalSolveHb = RationalSolveHadamardBound(A, b);
+    // Compute the effective solution
+    TVector num(F, b.size());
+    Ring::Element den;
+    solve(num, den, A, b);
 
-        // Compute the effective solution
-        TVector num(F, n);
-        Field::Element den;
-        solve(num, den, A, b);
-
-        for (size_t i = 0u; i < n; ++i) {
-            if (Givaro::logtwo(Givaro::abs(num[i])) > rationalSolveHb.numLogBound) {
-                std::cerr << "The rational solve Hadamard bound does not bound the numerator." << std::endl;
-                std::cerr << "num[i]: " << Givaro::logtwo(Givaro::abs(num[i])) << " > " << rationalSolveHb.numLogBound
-                        << std::endl;
-                return false;
-            }
-        }
-
-        if (Givaro::logtwo(Givaro::abs(den)) > rationalSolveHb.denLogBound) {
-            std::cerr << "The rational solve Hadamard bound does not bound the denominator." << std::endl;
-            std::cerr << "den: " << Givaro::logtwo(den) << " > " << rationalSolveHb.denLogBound << std::endl;
+    for (size_t i = 0u; i < num.size(); ++i) {
+        if (Givaro::logtwo(Givaro::abs(num[i])) > rationalSolveHb.numLogBound + ESPILON) {
+            std::cerr << "The rational solve Hadamard bound does not bound the numerator." << std::endl;
+            std::cerr << "num[i]: " << Givaro::logtwo(Givaro::abs(num[i])) << " > " << rationalSolveHb.numLogBound
+                    << std::endl;
             return false;
         }
     }
 
+    if (Givaro::logtwo(Givaro::abs(den)) > rationalSolveHb.denLogBound + ESPILON) {
+        std::cerr << "The rational solve Hadamard bound does not bound the denominator." << std::endl;
+        std::cerr << "den: " << Givaro::logtwo(den) << " > " << rationalSolveHb.denLogBound << std::endl;
+        return false;
+    }
+
     return true;
+}
+
+template <class TMatrix, class TVector>
+bool test_with_matrix_vector(size_t n, size_t bitSize, int* seed)
+{
+    Ring F;
+    TMatrix A(F, n, n);
+
+    *seed += 1;
+    srand(*seed);
+    Ring::RandIter randIter(F, bitSize, *seed);
+
+    // Generate a full rank matrix
+    RandomDenseMatrix<Ring::RandIter, Ring> RDM(F, randIter);
+    RDM.randomFullRank(A);
+
+    // Rational solve
+    TVector b(F, n);
+    b.random(randIter);
+
+    return test(F, A, b);
 }
 
 int main(int argc, char** argv)
@@ -125,11 +133,28 @@ int main(int argc, char** argv)
 
     bool ok = true;
 
+    //
+    // Predefined matrices
+    //
+
+    Ring F;
+
+    // A = {[0, 1], [1, 0]} and b = [0, 0]
+    BlasMatrix<Ring> A0(F, 2, 2);
+    BlasVector<Ring> b0(F, 2);
+    A0.setEntry(0, 1, Integer(1));
+    A0.setEntry(1, 0, Integer(1));
+    test(F, A0, b0);
+
+    //
+    // Random matrices
+    //
+
     int startingSeed;
     for (auto i = 0; ok && (loop || i < iterations); ++i) {
         startingSeed = seed;
-        ok = ok && test_with_matrix_vector<BlasMatrix<Field>, BlasVector<Field>>(n, bitSize, &seed);
-        ok = ok && test_with_matrix_vector<SparseMatrix<Field>, BlasVector<Field>>(n, bitSize, &seed);
+        ok = ok && test_with_matrix_vector<BlasMatrix<Ring>, BlasVector<Ring>>(n, bitSize, &seed);
+        ok = ok && test_with_matrix_vector<SparseMatrix<Ring>, BlasVector<Ring>>(n, bitSize, &seed);
     }
 
     if (!ok) {
