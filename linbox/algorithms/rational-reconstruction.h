@@ -1022,8 +1022,6 @@ namespace LinBox
 				_r.mulin(tmp,denominator[(size_t)i]);
 			}
 
-            std::cout << "HEY " << num[0] << std::endl;
-
 #if 0
 			typename Vector1::reverse_iterator rev_iter_num   = num.rbegin();
 			typename Vector::reverse_iterator  rev_iter_denom = denominator.rbegin();
