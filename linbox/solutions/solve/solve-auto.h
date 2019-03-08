@@ -26,22 +26,6 @@
 #include <linbox/matrix/sparse-matrix.h>
 #include <linbox/solutions/methods.h>
 
-namespace {
-    constexpr const uint32_t LINBOX_USE_BLACKBOX_THRESHOLD = 1000u;
-
-    template <class Matrix>
-    bool useBlackboxMethod(const Matrix& A)
-    {
-        return (A.coldim() > LINBOX_USE_BLACKBOX_THRESHOLD) && (A.rowdim() > LINBOX_USE_BLACKBOX_THRESHOLD);
-    }
-
-    template <class Field>
-    bool useBlackboxMethod(const LinBox::DenseMatrix<Field>& A)
-    {
-        return false;
-    }
-}
-
 namespace LinBox {
     //
     // solve

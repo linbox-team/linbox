@@ -123,7 +123,7 @@ namespace LinBox
 						const RingCategories::ModularTag	&tag,
 						const Method::Auto			&Meth)
 	{
-		if (useBB(A))
+		if (useBlackboxMethod(A))
 			return det(d, A, tag, Method::Blackbox(Meth));
 		else
 
@@ -136,7 +136,7 @@ namespace LinBox
 						  const Method::Auto			&Meth)
 	{
 		/*
-		   if (useBB(A))
+		   if (useBlackboxMethod(A))
 		   return det(d, A, tag, Method::Blackbox(Meth));
 		   else
 		   */

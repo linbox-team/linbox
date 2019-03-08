@@ -23,6 +23,7 @@
 #pragma once
 
 #include <linbox/field/field-traits.h>
+#include <linbox/matrix/dense-matrix.h> // Only for useBlackboxMethod
 #include <linbox/util/mpicpp.h>
 #include <string>
 
@@ -52,6 +53,21 @@
     using _MethodName##Auto = _MethodName<Method::Auto>;
 
 namespace LinBox {
+
+    // Some definitions to decide which method to use when using Method::Auto on a Blackbox or Sparse matrix.
+    constexpr const uint32_t LINBOX_USE_BLACKBOX_THRESHOLD = 1000u;
+
+    template <class Matrix>
+    bool useBlackboxMethod(const Matrix& A)
+    {
+        return (A.coldim() > LINBOX_USE_BLACKBOX_THRESHOLD) && (A.rowdim() > LINBOX_USE_BLACKBOX_THRESHOLD);
+    }
+
+    template <class Field>
+    bool useBlackboxMethod(const LinBox::DenseMatrix<Field>& A)
+    {
+        return false;
+    }
 
     /**
      * Singularity of the system.
