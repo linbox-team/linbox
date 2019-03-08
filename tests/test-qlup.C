@@ -96,7 +96,7 @@ bool testQLUP(const Field &F, size_t n, unsigned int iterations, int rseed, doub
 		unsigned long rank;
 
 		Method::SparseElimination SE;
-		SE.strategy(PivotStrategy::Linear);
+		SE.pivotStrategy = PivotStrategy::Linear;
 		GaussDomain<Field> GD ( F );
 		typename Field::Element determinant;
 		Blackbox L(F, A.rowdim(), A.coldim());
@@ -198,7 +198,7 @@ bool testQLUPsolve(const Field &F, size_t n, unsigned int iterations, int rseed,
 
 
 		Method::SparseElimination SE;
-		SE.strategy(PivotStrategy::Linear);
+		SE.pivotStrategy = PivotStrategy::Linear;
 		GaussDomain<Field> GD ( F );
 
 		Blackbox CopyA ( A );
@@ -273,7 +273,7 @@ bool testQLUPnullspace(const Field &F, size_t n, unsigned int iterations, int rs
 
 
 		Method::SparseElimination SE;
-		SE.strategy(PivotStrategy::Linear);
+		SE.pivotStrategy = PivotStrategy::Linear;
 		GaussDomain<Field> GD ( F );
 
 		Blackbox CopyA ( A );
