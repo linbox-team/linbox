@@ -66,14 +66,10 @@ namespace LinBox {
 		typedef	RingCategories::GenericTag categoryTag;
 	};
 
-
-	using Givaro::Caster;
-/** This does not work for randomly filling dense matrix with non givaro integer type value using Linbox functions which cause rank function link error
-        template<>
-        struct ClassifyRing<Givaro::QField<Givaro::Rational>> {
-                typedef RingCategories::RationalTag categoryTag;
-        };
-*/
+    template<>
+    struct ClassifyRing<Givaro::QField<Givaro::Rational>> {
+            typedef RingCategories::RationalTag categoryTag;
+    };
     template<>
     struct ClassifyRing<Givaro::ZRing<Givaro::Integer>> {
             typedef RingCategories::IntegerTag categoryTag;
