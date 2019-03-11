@@ -1,4 +1,24 @@
-// @fixme LICENCE
+/*
+ * Copyright (C) LinBox
+ *
+ * ========LICENCE========
+ * This file is part of the library LinBox.
+ *
+ * LinBox is free software: you can redistribute it and/or modify
+ * it under the terms of the  GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * ========LICENCE========
+ */
 
 #include <linbox/matrix/dense-matrix.h>
 #include <linbox/solutions/solve.h>
@@ -6,7 +26,7 @@
 using namespace LinBox;
 
 template <class Ring, class Method>
-void run_integer(Communicator& communicator, size_t dimension) {
+void run_integer(Communicator& communicator, bool verboseEnabled, size_t dimension) {
     Ring R;
 
     BlasVector<Ring> b(R, dimension);
@@ -21,15 +41,17 @@ void run_integer(Communicator& communicator, size_t dimension) {
 
     Method method;
     method.pCommunicator = &communicator;
-    // @fixme Dixon fails with dimension = 3
-    // when solution type is kept default (that is to say Determinist)
+    // @fixme Dixon fails with singular with SingularSolutionType::Determinist
     method.singularSolutionType = SingularSolutionType::Diophantine;
 
     // Rational vector interface will call (num, den) one
     Givaro::QField<Givaro::Rational> F;
     BlasVector<Givaro::QField<Givaro::Rational>> x(F, dimension);
 
-    std::cout << "--------------- " << Method::name() << " (" << dimension << ")" << std::endl;
+
+    if (verboseEnabled) {
+        std::cout << "--------------- Testing " << Method::name() << " on DenseMatrix<ZZ> (" << dimension << ")" << std::endl;
+    }
 
     try {
         solve(x, A, b, method);
@@ -48,7 +70,7 @@ void run_integer(Communicator& communicator, size_t dimension) {
 }
 
 template <class Matrix, class Method>
-void run_modular() {
+void run_modular(bool verboseEnabled) {
     using Field = typename Matrix::Field;
 
     Field F(101);
@@ -66,7 +88,9 @@ void run_modular() {
     Method method;
     method.blockingFactor = 1;
 
-    std::cout << "--------------- " << Method::name() << std::endl;
+    if (verboseEnabled) {
+        std::cout << "--------------- Testing " << Method::name() << " on DenseMatrix<Modular<...>>" << std::endl;
+    }
 
     BlasVector<Field> x(F, 2);
 
@@ -86,15 +110,24 @@ void run_modular() {
     }
 }
 
-int main(void)
+int main(int argc, char** argv)
 {
-    // @fixme -v for verbose mode (commentator on)
+    bool verboseEnabled = false;
+
+	static Argument args[] = {
+		{ 'v', "-v", "Enable verbose mode.", TYPE_BOOL,     &verboseEnabled },
+		END_OF_ARGUMENTS
+	};
+
+	parseArguments (argc, argv, args);
+
+    if (verboseEnabled) {
+        commentator().setReportStream(std::cout);
+    }
 
     Communicator communicator(0, nullptr);
 
-    commentator().setReportStream(std::cout);
-
-    run_integer<Givaro::ZRing<Integer>, Method::Auto>(communicator, 2);
+    run_integer<Givaro::ZRing<Integer>, Method::Auto>(communicator, verboseEnabled, 2);
     // run_integer<Givaro::ZRing<Integer>, Method::CraAuto>(communicator, 2);
     // run_integer<Givaro::ZRing<Integer>, Method::CraAuto>(communicator, 3);
     // run_integer<Givaro::ZRing<Integer>, Method::Dixon>(communicator, 2);
@@ -104,14 +137,14 @@ int main(void)
     // run_integer<Givaro::ZRing<Integer>, Method::NumericSymbolicNorm>(communicator, 2); // @fixme Fails
     // run_integer<Givaro::ZRing<Integer>, Method::NumericSymbolicNorm>(communicator, 3); // @fixme Fails
 
-    run_modular<DenseMatrix<Givaro::Modular<double>>, Method::Auto>();
-    run_modular<SparseMatrix<Givaro::Modular<double>>, Method::Auto>();
+    run_modular<DenseMatrix<Givaro::Modular<double>>, Method::Auto>(verboseEnabled);
+    run_modular<SparseMatrix<Givaro::Modular<double>>, Method::Auto>(verboseEnabled);
     // run_modular<DenseMatrix<Givaro::Modular<double>>, Method::DenseElimination>();
     // run_modular<SparseMatrix<Givaro::Modular<double>>, Method::DenseElimination>();
     // run_modular<DenseMatrix<Givaro::Modular<double>>, Method::SparseElimination>();
     // run_modular<SparseMatrix<Givaro::Modular<double>>, Method::SparseElimination>();
     // // run_modular<DenseMatrix<Givaro::Modular<double>>, Method::Wiedemann>(); // @fixme Can't compile
-    run_modular<SparseMatrix<Givaro::Modular<double>>, Method::Wiedemann>();
+    run_modular<SparseMatrix<Givaro::Modular<double>>, Method::Wiedemann>(verboseEnabled);
     // run_modular<DenseMatrix<Givaro::Modular<double>>, Method::Lanczos>(); // @fixme Segmentation fault
     // run_modular<SparseMatrix<Givaro::Modular<double>>, Method::Lanczos>(); // @fixme Segmentation fault
     // run_modular<DenseMatrix<Givaro::Modular<double>>, Method::BlockLanczos>(); // @fixme Can't compile
