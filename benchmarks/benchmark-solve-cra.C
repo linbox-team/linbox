@@ -24,7 +24,7 @@
 * @ingroup benchmarks
 * @brief Testing the MPI parallel/serial rational solver
 */
-
+#include <unistd.h>
 #include "givaro/modular.h"
 #include "givaro/zring.h"
 #include "linbox/linbox-config.h"
@@ -49,18 +49,19 @@ using Field = Givaro::ZRing<Integer>;
 #endif
 
 template <class Field, class Matrix>
-static bool checkResult(const Field& ZZ, Matrix& A, BlasVector<Field>& B, BlasVector<Field>& X, Integer& d)
+static bool checkResult(Matrix& A, BlasVector<Field>& B, BlasVector<Field>& X, Integer& d)
 {
+    Field ZZ;
     BlasVector<Field> B2(ZZ, A.coldim());
     BlasVector<Field> B3(ZZ, A.coldim());
     A.apply(B2, X);
-
-    Integer tmp;
+   
     for (size_t j = 0; j < B.size(); ++j) {
-        B3.setEntry(j, d * B.getEntry(j));
+        ZZ.mul(B3[j],B[j],d);
     }
+
     for (size_t j = 0; j < A.coldim(); ++j) {
-        if (!ZZ.areEqual(B2[j], B3[j])) {
+        if (!ZZ.isZero(B2[j]-B3[j])) {
             std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
             std::cerr << "               The solution of solveCRA is incorrect                " << std::endl;
             std::cerr << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
@@ -70,26 +71,17 @@ static bool checkResult(const Field& ZZ, Matrix& A, BlasVector<Field>& B, BlasVe
     return true;
 }
 
-template <class Field, class Matrix>
-void genData(Field& F, Matrix& A, size_t bits, int seed)
+template <class Field, class Matrix, class RandIterator>
+void genData(Field& F, RandIterator& RandIter, Matrix& A,  BlasVector<Field>& B)
 {
-    using RandIter = typename Field::RandIter;
-    RandIter RI(F, bits, seed);
-    LinBox::RandomDenseMatrix<RandIter, Field> RDM(F, RI);
+
+    LinBox::RandomDenseMatrix<typename Field::RandIter, Field> RDM(F, RandIter);
     RDM.randomFullRank(A);
+    B.random(RandIter);
 }
 
-template <class Field>
-void genData(Field& F, BlasVector<Field>& B, size_t bits, int seed)
+bool benchmark(size_t niter, BlasVector<Field>& x, BlasMatrix<Field>& A, BlasVector<Field>& B, Communicator* Cptr)
 {
-    using RandIter = typename Field::RandIter;
-    RandIter RI(F, bits, seed);
-    B.random(RI);
-}
-
-bool benchmark(BlasVector<Field>& x, BlasMatrix<Field>& A, BlasVector<Field>& B, Communicator* Cptr)
-{
-    Field ZZ;
     Field::Element d;
 
     double startTime = getWTime();
@@ -98,8 +90,8 @@ bool benchmark(BlasVector<Field>& x, BlasMatrix<Field>& A, BlasVector<Field>& B,
     bool ok = false;
     if (Cptr->master()) {
         double endTime = getWTime();
-        std::cout << "Total CPU time (seconds): " << endTime - startTime << std::endl;
-        ok = checkResult(ZZ, A, B, x, d);
+        std::cout << "CPU time (seconds): " << (endTime - startTime)/double(niter) << std::endl;
+        ok = checkResult(A, B, x, d);
     }
 
 #ifdef __LINBOX_HAVE_MPI
@@ -120,13 +112,11 @@ int main(int argc, char** argv)
     size_t bits = 10;
     size_t niter = 1;
     size_t n = 100;
-    bool loop = false;
 
     static Argument args[] = {{'n', "-n N", "Set column and row dimension of test matrices to N.", TYPE_INT, &n},
                               {'b', "-b B", "Set the maximum number of digits of integers to generate.", TYPE_INT, &bits},
                               {'i', "-i I", "Set the number of times to do the random unit tests.", TYPE_INT, &niter},
                               {'s', "-s SEED", "Set the seed for randomness (random if negative).", TYPE_INT, &seed},
-                              {'l', "-l", "Infinite loop (ignoring -i).", TYPE_BOOL, &loop},
                               END_OF_ARGUMENTS};
     parseArguments(argc, argv, args);
 
@@ -135,21 +125,27 @@ int main(int argc, char** argv)
     }
     srand(seed);
 
+/*    
 #ifdef __LINBOX_HAVE_MPI
+    MPI_Bcast(&seed, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&bits, 1, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Bcast(&n, 1, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Bcast(&niter, 1, MPI_INT, 0, MPI_COMM_WORLD);
 #endif
+*/
 
     Field ZZ;
     DenseMatrix<Field> A(ZZ, n, n);
     BlasVector<Field> b(ZZ, A.coldim());
     BlasVector<Field> x(ZZ, A.coldim());
-
+    
+    Field::RandIter RI(ZZ, bits, seed);
+    
     bool ok = true;
-    for (size_t j = 0u; loop || j < niter; j++) {
+    for (size_t j = 0u; j < niter; j++) {
+
         if (communicator.master()) {
-            genData(ZZ, A, bits, seed);
-            genData(ZZ, b, bits, seed);
+            genData(ZZ, RI, A, b);
         }
 
 #ifdef __LINBOX_HAVE_MPI
@@ -157,7 +153,7 @@ int main(int argc, char** argv)
         communicator.bcast(b, 0);
 #endif
 
-        ok = benchmark(x, A, b, &communicator);
+        ok = benchmark(niter, x, A, b, &communicator);
         if (!ok) break;
 
         ++seed;
