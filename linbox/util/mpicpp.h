@@ -33,6 +33,11 @@ namespace LinBox {
         inline int size() const { return 1; }
         inline int rank() const { return 0; }
         inline bool master() const { return true; }
+
+        template <class T> inline void send(const T& value, int dest) {}
+        template <class T> inline void ssend(const T& value, int dest) {}
+        template <class T> inline void recv(T& value, int src) {}
+        template <class T> inline void bcast(T& value, int src) {}
     };
 }
 #else

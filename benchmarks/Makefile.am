@@ -23,7 +23,7 @@ SUBDIRS=data matrix
 DEFCPPFLAGS  = @DEFAULT_CFLAGS@   -DDISABLE_COMMENTATOR -DLinBoxSrcOnly
 AM_CPPFLAGS = -I$(top_srcdir)  $(DEFCPPFLAGS)  $(DEPS_CFLAGS)
 LDADD =   $(DEPS_LIBS) $(LDFLAGS)
-# LDADD += $(top_builddir)/linbox/liblinbox.la
+LDADD += $(top_builddir)/linbox/liblinbox.la
 pkgincludesubdir=$(pkgincludedir)/benchmarks
 
 noinst_LTLIBRARIES=libbenchmarks.la
@@ -47,7 +47,8 @@ PERFPUBLISHERFILE=benchmarks-report.xml
 
 BENCH_BASIC=               \
 		benchmark-example\
-		benchmark-order-basis
+		benchmark-order-basis \
+        benchmark-solve-cra
 
 FAILS=    \
 		benchmark-ftrXm \
@@ -102,6 +103,7 @@ benchmarks: ${EXTRA_PROGRAMS}
 
 benchmark_example_SOURCES       = benchmark-example.C
 benchmark_order_basis_SOURCES       = benchmark-order-basis.C
+benchmark_solve_cra_SOURCES       = benchmark-solve-cra.C
 
 #  benchmark_matmul_SOURCES         = benchmark-matmul.C
 #  benchmark_spmv_SOURCES           = benchmark-spmv.C
