@@ -27,7 +27,7 @@
 #define __LINBOX_random_fftprime_H
 #include <vector>
 #include "linbox/integer.h"
-#include "linbox/util/debug.h"
+#include "linbox/util/error.h"
 #include "linbox/util/timer.h"
 
 namespace LinBox
@@ -70,7 +70,8 @@ namespace LinBox
 		 */
 		inline Prime_Type randomPrime (Prime_Type& t, uint64_t b) const
 		{
-			linbox_check(b<_bits);
+            if (b >= _bits)
+                throw LinBoxError ("FFTRandomPrime: b must be < _bits");
 			size_t tresh;
 			do {
 				size_t cbits= (size_t) integer::random() % (_bits-b);
