@@ -30,7 +30,7 @@
 
 #include <iostream>
 #include "linbox/linbox-config.h"
-#include "linbox/util/debug.h"
+#include "linbox/util/error.h"
 #include "givaro/givinteger.h"
 #include "givaro/givpower.h"
 #include <fflas-ffpack/fflas/fflas_simd.h>
@@ -238,12 +238,33 @@ namespace LinBox {
 			}
 		}
 
+		template<typename T=Element>
+        typename std::enable_if<std::is_integral<T>::value, bool>::type
+        check_cardinality ()
+        {
+            /* for integral types, we use Harvey's butterflies that do
+             * computation with residues <= 4*p, so we need
+             * 4*p <= maxCardinality
+             */
+            return _pl <= (field().maxCardinality() >> 2);
+        }
+		template<typename T=Element>
+        typename std::enable_if<std::is_floating_point<T>::value, bool>::type
+        check_cardinality ()
+        {
+            /* for floating point types, the above restriction is always
+             * satisfied.
+             */
+            return true;
+        }
+
 		FFT_init (const Field& fld2, size_t ln2, Element w = 0)
 			: fld (&fld2), n ((1UL << ln2)), ln (ln2), pow_w(n - 1), pow_wp(n - 1), _data(n) {
 			_pl = fld->characteristic();
 			_p  = fld->characteristic();
 
-			linbox_check(_pl <= (field().maxCardinality() >> 3)); // 8*p <= field()->maxCardinality() for Harvey's butterflies
+            if (!check_cardinality())
+			    throw LinBoxError ("FFT: 4p must be <= maxCardinality");
 			_dpl = (_pl << 1);
 			//_pinv = 1 / (double) _pl;
 
@@ -258,7 +279,8 @@ namespace LinBox {
 				_val2p++;
 			}
 
-			linbox_check(ln <= _val2p);      // Otherwise no 2 _ln roots of unity
+            if (ln > _val2p)
+			    throw LinBoxError ("FFT: ln2 is larger that log2(p-1)");
 
 			if (w == 0){   // find a pseudo 2^lpts-th primitive root of unity
 				//_I = (1L << (_logp << 1)) / _pl;
