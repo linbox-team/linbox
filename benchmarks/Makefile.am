@@ -48,8 +48,8 @@ PERFPUBLISHERFILE=benchmarks-report.xml
 BENCH_BASIC=               \
 		benchmark-example\
 		benchmark-dense-solve\
-		benchmark-order-basis
-
+		benchmark-order-basis \
+	        benchmark-solve-cra
 FAILS=    \
 		benchmark-ftrXm \
 		benchmark-ftrXm \
@@ -104,6 +104,7 @@ benchmarks: ${EXTRA_PROGRAMS}
 benchmark_example_SOURCES       = benchmark-example.C
 benchmark_order_basis_SOURCES       = benchmark-order-basis.C
 benchmark_dense_solve_SOURCES       = benchmark-dense-solve.C
+benchmark_solve_cra_SOURCES       = benchmark-solve-cra.C
 
 #  benchmark_matmul_SOURCES         = benchmark-matmul.C
 #  benchmark_spmv_SOURCES           = benchmark-spmv.C
