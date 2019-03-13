@@ -25,8 +25,20 @@
 
 #ifndef __LINBOX_HAVE_MPI
 namespace LinBox {
-    // Dummy declaration.
-    using Communicator = int;
+    // Dummy declaration when no MPI exists.
+    class Communicator {
+    public:
+        Communicator(int* argc, char*** argv) {}
+
+        inline int size() const { return 1; }
+        inline int rank() const { return 0; }
+        inline bool master() const { return true; }
+
+        template <class T> inline void send(const T& value, int dest) {}
+        template <class T> inline void ssend(const T& value, int dest) {}
+        template <class T> inline void recv(T& value, int src) {}
+        template <class T> inline void bcast(T& value, int src) {}
+    };
 }
 #else
 
@@ -63,6 +75,7 @@ namespace LinBox {
         int rank() const { return _rank; }
         MPI_Status status() const { return _status; }
         MPI_Comm comm() const { return _comm; }
+        bool master() const { return _rank == 0; }
 
         // peer to peer communication
         template <class Ptr> void send(Ptr begin, Ptr end, int dest, int tag);

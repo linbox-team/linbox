@@ -104,7 +104,7 @@ namespace LinBox
 		bool isZero(const Modulu& a ) const { return a == 0U;}
 
 		template<class Modulo, class Modulo2, class Modulo3>
-		Modulo& MY_Zpz_inv (Modulo& u1, const Modulo2 a, const Modulo3 _p) const
+		Modulo& MY_Zpz_inv_classic (Modulo& u1, const Modulo2 a, const Modulo3 _p) const
             {
                 u1 = Modulo(1U);
                 Modulo r0((Modulo)_p), r1((Modulo)a); //! clang complains for examples/smith.C and examples/smithvalence.C
@@ -132,10 +132,28 @@ namespace LinBox
 
                 return u1=(Modulo)_p-u0;
             }
-		template<class Modulo, class Modulo2>
-		Modulo MY_Zpz_inv (const Modulo a, const Modulo2 _p) const
+
+            // [On Newton-Raphson iteration for multiplicative
+            //  inverses modulo prime powers. J-G. Dumas.
+            //  IEEE Trans. on Computers, 63(8), pp 2106-2109, 2014]
+            // http://doi.org/10.1109/TC.2013.94
+		template<class Modulo, class Modulo2, class Modulo3>
+		Modulo& MY_Zpz_inv (Modulo& v1, const Modulo2& a, const Modulo3& _p, const Modulo3& _q, uint64_t exponent) const
             {
-                Modulo u1; return MY_Zpz_inv(u1,a,_p);
+                Modulo2 ta(a%_p);
+                MY_Zpz_inv_classic(v1, ta, _p);					// b=1/a % p
+                Modulo3 ttep2(_q); ttep2 += 2U;					// q+2
+                Modulo2 atimeb(a); atimeb*= v1; atimeb %= _q;	// ab
+                ttep2 -= atimeb;								// 2-ab
+                v1 *= ttep2; v1 %= _q;							// b(2-ab)
+                Modulo abmone(atimeb); --abmone; 				// ab-1
+                for(size_t i=2; i<exponent; i<<=1) {
+                    Modulo tmp(abmone); abmone *= tmp;			// (ab-1)^(2^i)
+                    abmone %= _q;
+                    v1 *= ++abmone; --abmone;					// in place
+                    v1 %= _q;
+                }
+                return v1;
             }
 
 		template<class Ring1, class Ring2>
@@ -412,8 +430,14 @@ namespace LinBox
                 typedef typename Signed_Trait<Modulo>::unsigned_type UModulo;
 
                 Modulo MOD = FMOD;
+                uint64_t exponent(1);
+                Modulo tq(FMOD);
+                while(tq > PRIME) {
+                    tq /= PRIME;
+                    ++exponent;
+                }
 #ifdef LINBOX_PRANK_OUT
-                std::cerr << "Elimination mod " << MOD << " (" << PrivilegiateNoColumnPivoting << ',' << PreserveUpperMatrix << ')' << std::endl;
+                std::cerr << "Elimination mod " << MOD << " (=" << PRIME << '^' << exponent << ',' << PrivilegiateNoColumnPivoting << ',' << PreserveUpperMatrix << ')' << std::endl;
 #endif
 
                 D col_density(Nj);
@@ -483,12 +507,14 @@ namespace LinBox
                             for(size_t jjj=LigneA[(size_t)ii].size();jjj--;)
                                 LigneA[(size_t)ii][(size_t)jjj].second /= PRIME;
                         MOD /= PRIME;
-                        ranks.push_back( indcol );
-                        ++ind_pow;
+                        --exponent;
+
 #ifdef LINBOX_PRANK_OUT
                         std::cerr << "Rank mod " << PRIME << "^" << ind_pow << " : " << indcol << std::endl;
                         if (MOD == 1) std::cerr << "wattadayada inhere ?" << std::endl;
 #endif
+                        ranks.push_back( indcol );
+                        ++ind_pow;
 
                     }
                     if (p != k) {
@@ -513,7 +539,7 @@ namespace LinBox
                         }
 
                         UModulo invpiv; 
-                        MY_Zpz_inv(invpiv, LigneA[(size_t)k][0].second, MOD);
+                        MY_Zpz_inv(invpiv, LigneA[(size_t)k][0].second, PRIME, MOD, exponent);
 
                         for(size_t l=k + 1; (l < Ni) && (col_density[currentrank]); ++l)
                             FaireElimination(MOD, LigneA[(size_t)l], LigneA[(size_t)k], invpiv, currentrank, c, col_density);

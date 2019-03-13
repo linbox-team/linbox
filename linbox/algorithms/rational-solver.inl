@@ -640,10 +640,10 @@ namespace LinBox
 #ifdef DEBUG_DIXON
 			//std::cout << "_prime: "<<_prime<<"\n";
 			std::cout<<"A:=\n";
-			A.write(std::cout);
-			std::cout<<"b:=\n";
+			A.write(std::cout, Tag::FileFormat::Maple);
+			std::cout<<"b:=[\n";
 			for (size_t i=0;i<b.size();++i) std::cout<<b[i]<<" , ";
-			std::cout<<std::endl;
+			std::cout<<']'<<std::endl;
 #endif
 #ifdef RSTIMING
 			tNonsingularSetup.start();
@@ -684,9 +684,9 @@ namespace LinBox
 
 #ifdef DEBUG_DIXON
 				std::cout<< "p = ";
-				F->write(std::cout);
-				std::cout<<" A mod p :=\n";
-				FMP->write(std::cout);
+				F->write(std::cout) << std::endl;
+				std::cout<<" Ap:=";
+				FMP->write(std::cout, Tag::FileFormat::Maple) << std::endl;
 #endif
 
 				if (!checkBlasPrime(_prime)){
@@ -728,8 +728,8 @@ namespace LinBox
 		} while (notfr);
 
 #ifdef DEBUG_DIXON
-		std::cout<<"A^-1 mod p :=\n";
-		FMP->write(std::cout);
+		std::cout<<"Ainvmodp:=";
+		FMP->write(std::cout, Tag::FileFormat::Maple)<<std::endl;
 #endif
 
 		typedef DixonLiftingContainer<Ring,Field,IMatrix,BlasMatrix<Field> > LiftingContainer;
@@ -807,7 +807,7 @@ namespace LinBox
 			if (trials != 0) chooseNewPrime();
 			++trials;
 #ifdef DEBUG_DIXON
-			std::cout << "_prime: "<<_prime<<"\n";
+			std::cout << "_prime:= "<<_prime<<";\n";
 #endif
 #ifdef RSTIMING
 			tSetup.start();
@@ -839,7 +839,7 @@ namespace LinBox
 			BlasMatrix<Field>* TAS_factors = new BlasMatrix<Field>(F, A.coldim()+1, A.rowdim());
 			Hom<Ring, Field> Hmap(_ring, F);
 
-			BlasMatrix<Field> Ap(F, A.rowdim(), A.coldim());
+			BlasMatrix<Field> Ap(F, A.rowdim(), A.coldim()); // @fixme Shouldn't Ap(F, A) work without map below?
 			MatrixHom::map(Ap, A);
 			for (size_t i=0;i<A.rowdim();++i)
 				for (size_t j=0;j<A.coldim();++j)
@@ -847,10 +847,13 @@ namespace LinBox
 
 			for (size_t i=0;i<A.rowdim();++i){
 				typename Field::Element tmpe;
-				F.init(tmpe);
+				F.init(tmpe); // @fixme Useless?
 				F.init(tmpe,_ring.convert(tmp,b[i]));
 				TAS_factors->setEntry(A.coldim(),i, tmpe);
 			}
+
+            // @note TAS_factors now holds (A|b)t
+
 #ifdef RSTIMING
 			tSetup.stop();
 			ttSetup += tSetup;
@@ -874,6 +877,9 @@ namespace LinBox
 			BMDs.mulin_right(TAS_Qt, srcCol);
 			BMDs.mulin_right(TAS_P, srcRow);
 
+            // @note srcCol/srcRow hold permutations (indices of (A|b)t)
+            // @fixme FFLAS has something for this?
+
 #ifdef DEBUG_INC
 			std::cout << "P takes (0 1 ...) to (";
 			for (size_t i=0; i<A.rowdim(); ++i) std::cout << srcRow[i] << ' ';
@@ -883,6 +889,7 @@ namespace LinBox
             std::cout << ')' << std::endl;
 #endif
 
+            // @note If permutation shows that b was needed, means b is not in the columns' span of A (= Ax=b inconsistent)
 			bool appearsInconsistent = (srcCol[TAS_rank-1] == A.coldim());
 			size_t rank = TAS_rank - (appearsInconsistent ? 1 : 0);
 #ifdef DEBUG_DIXON
@@ -936,6 +943,7 @@ namespace LinBox
 
 			BlasMatrix<Field>* Atp_minor_inv = NULL;
 
+            // @fixme What is the goal of this?
 			if ((appearsInconsistent && level > SL_MONTECARLO) || randomSolution == false) {
 				// take advantage of the (LQUP)t factorization to compute
 				// an inverse to the leading minor of (TAS_P . (A|b) . TAS_Q)
@@ -1029,7 +1037,11 @@ namespace LinBox
 #ifdef RSTIMING
 			tMakeConditioner.start();
 #endif
+
+            //
 			// we now know system is consistent mod p.
+            //
+
 			BlasMatrix<Ring> A_minor(_ring, rank, rank);    // -- will have the full rank minor of A
 			BlasMatrix<Field> *Ap_minor_inv;          // -- will have inverse mod p of A_minor
 			BlasMatrix<Ring> *P = NULL, *B = NULL;   // -- only used in random case
@@ -1044,8 +1056,10 @@ namespace LinBox
 						Ap_minor_inv->setEntry(i, j, Ap_minor_inv->refEntry(j, i));
 						Ap_minor_inv->setEntry(j, i, _rtmp);
 					}
+                // @note minor inv = L1\U1
 
 				// permute original entries into A_minor
+                // @note A_minor = Pt A Qt
 				for (size_t i=0; i<rank; ++i)
 					for (size_t j=0; j<rank; ++j)
 						_ring.assign(A_minor.refEntry(i, j), A_check.getEntry(srcRow[i], srcCol[j]));
@@ -1054,19 +1068,19 @@ namespace LinBox
 				ttMakeConditioner += tMakeConditioner;
 #endif
 
-				if (makeMinDenomCert && level >= SL_LASVEGAS){
+				if (makeMinDenomCert && level >= SL_LASVEGAS){ // @fixme makeMinDenomCert always false?
 					B = new BlasMatrix<Ring>(_ring, rank, A.coldim());
 					for (size_t i=0; i<rank; ++i)
 						for (size_t j=0; j<A.coldim(); ++j)
 							_ring.assign(B->refEntry(i, j), A_check.getEntry(srcRow[i],j));
 				}
+                // @note B = Pt A
 			}
-			else {
+			else { // if randomSolution == true
 				P = new BlasMatrix<Ring>(_ring, A.coldim(), rank);
 				B = new BlasMatrix<Ring>(_ring, rank,A.coldim());
 				BlasMatrix<Field> Ap_minor(F, rank, rank);
 				Ap_minor_inv = new BlasMatrix<Field>(F, rank, rank);
-				int nullity;
 
 				LinBox::integer tmp2=0;
 				size_t maxBitSize = 0;
@@ -1076,13 +1090,15 @@ namespace LinBox
 						_ring.convert(tmp2, A_check.getEntry(srcRow[i], j));
 						maxBitSize = std::max(maxBitSize, tmp2.bitsize());
 					}
+                // @note B = Pt A
 #ifdef RSTIMING
 				bool firstLoop = true;
 #endif
 				// prepare B to be preconditionned through BLAS matrix mul
 				MatrixApplyDomain<Ring, BlasMatrix<Ring> > MAD(_ring,*B);
-				MAD.setup(2);
+				MAD.setup(2); // @fixme Useless?
 
+				int nullity;
 				do { // O(1) loops of this preconditioner expected
 #ifdef RSTIMING
 					if (firstLoop)
@@ -1127,7 +1143,7 @@ namespace LinBox
 					}
 #endif
 
-					MAD.applyM(A_minor,*P);
+					MAD.applyM(A_minor,*P); // @fixme WHy preconditioner here?
 
 
 
@@ -1195,6 +1211,7 @@ namespace LinBox
 				answer_to_vf.numer = newNumer;
 			}
 
+            // @fixme Debug only?
 			if (level >= SL_LASVEGAS) { //check consistency
 
 				BlasVector<Ring> A_times_xnumer(_ring,b.size());
@@ -1233,6 +1250,7 @@ namespace LinBox
 			tCheckAnswer.stop();
 			ttCheckAnswer += tCheckAnswer;
 #endif
+            // @fixme makeMinDenomCert always used as false?
 			if (makeMinDenomCert && level >= SL_LASVEGAS)  // && randomSolution
 			{
 				// To make this certificate we solve with the same matrix as to get the
