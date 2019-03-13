@@ -186,7 +186,8 @@ FULLCHECK_TESTS =               \
 	test-vector-domain			\
 	test-zero-one				\
 	test-weak-popov-form        \
-    test-mpi-comm
+    test-mpi-comm				\
+    test-toeplitz
 
 # Really just one or two of these would be enough for target check.
 # The rest can be in target fullcheck.
@@ -373,6 +374,7 @@ test_frobenius_small_SOURCES =          test-frobenius-small.C
 test_frobenius_large_SOURCES =          test-frobenius-large.C
 test_weak_popov_form_SOURCES =          test-weak-popov-form.C
 test_mpi_comm_SOURCES =                 test-mpi-comm.C
+test_toeplitz_SOURCES =                 test-toeplitz.C
 
 # Perfpublisher script interaction - AB 2014/12/11
 perfpublisher:
