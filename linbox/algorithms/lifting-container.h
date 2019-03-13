@@ -163,11 +163,10 @@ namespace LinBox
 #ifdef DEBUG_LC
 			std::cout<<" norms computed, p = "<<_p<<"\n";
 			std::cout<<" N = "<<N<<", D = "<<D<<", length = "<<_length<<"\n";
-			std::cout<<"A:=\n";
-			_matA.write(std::cout);
-			std::cout<<"b:=\n";
+			_matA.write(std::cout<<"A:=", Tag::FileFormat::Maple) << std::endl;
+			std::cout<<"b:=[";
 			for (size_t i=0;i<_b.size();++i) std::cout<<_b[i]<<" , ";
-			std::cout<<std::endl;
+			std::cout<<']'<<std::endl;
 #endif
 			this->_intRing.init(_numbound,N);
 			this->_intRing.init(_denbound,D);
@@ -421,14 +420,17 @@ namespace LinBox
 			ttGetDigitConvert.clear();
 #endif
 #ifdef DEBUG_LC
-			std::cout<<"Primes: ";
-			field().write(std::cout);
-			std::cout<<"\n Matrix: \n";
-			A.write(std::cout);
-			std::cout<<"\n Matrix mod p: \n";
-			Ap.write(std::cout);
-			std::cout<<"\n Matrix LCBASE: \n";
-			LiftingContainerBase<Ring,IMatrix>::_matA.write(std::cout);
+			field().write(std::cout<<"Primes: ") << std::endl;
+
+			A.write(std::cout << "Matrix:=", Tag::FileFormat::Maple)
+                              << ';' << std::endl;
+
+			Ap.write(std::cout << "Matrixmodp:=", Tag::FileFormat::Maple)
+                               << ';' << std::endl;
+
+			LiftingContainerBase<Ring,IMatrix>::_matA.write(
+                std::cout << "MatrixLCBASE:=", Tag::FileFormat::Maple)
+                          << ';' << std::endl;
 #endif
 
 		}
@@ -688,11 +690,11 @@ namespace LinBox
 	class BlockWiedemannLiftingContainer : public LiftingContainerBase<_Ring, _IMatrix> {
 
 	public:
-		typedef _Field                                	            Field;
-		typedef _Ring                                 	             Ring;
-		typedef _IMatrix                              	          IMatrix;
-		typedef _FMatrix                              	          FMatrix;
-		typedef typename Field::Element               	          Element;
+		typedef _Field	            Field;
+		typedef _Ring	             Ring;
+		typedef _IMatrix	          IMatrix;
+		typedef _FMatrix	          FMatrix;
+		typedef typename Field::Element	          Element;
 		typedef typename Ring::Element                            Integer_t;
 		typedef std::vector<Integer_t>                              IVector;
 		typedef std::vector<Element>                              FVector;
@@ -1023,8 +1025,7 @@ namespace LinBox
 			ttGetDigitConvert.clear();
 #endif
 #ifdef DEBUG_LC
-			std::cout<<"Primes: ";
-			field().write(std::cout);
+			field().write(std::cout << "Primes: ") << std::endl;
 #endif
 
 		}
@@ -1291,10 +1292,5 @@ namespace LinBox
 
 #endif //__LINBOX_lifting_container_H
 
-// Local Variables:
-// mode: C++
-// tab-width: 4
-// indent-tabs-mode: nil
-// c-basic-offset: 4
-// End:
+/* -*- mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 // vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

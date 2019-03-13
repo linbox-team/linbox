@@ -191,7 +191,8 @@ FULLCHECK_TESTS =           \
 	test-vector-domain			\
 	test-zero-one				\
 	test-weak-popov-form        \
-	test-mpi-comm
+	test-mpi-comm				\
+	test-toeplitz
 
 # Really just one or two of these would be enough for target check.
 # The rest can be in target fullcheck.
@@ -355,6 +356,7 @@ test_smith_form_iliopoulos_SOURCES =    test-smith-form-iliopoulos.C
 test_smith_form_local_SOURCES =     test-smith-form-local.C
 test_smith_form_valence_SOURCES = test-smith-form-valence.C
 test_local_smith_form_sparseelim_SOURCES = test-local-smith-form-sparseelim.C
+<<<<<<< HEAD
 test_smith_form_SOURCES =           test-smith-form.C
 test_solve_nonsingular_SOURCES =    test-solve-nonsingular.C
 test_solve_SOURCES =            test-solve.C
@@ -379,6 +381,33 @@ test_frobenius_small_SOURCES =      test-frobenius-small.C
 test_frobenius_large_SOURCES =      test-frobenius-large.C
 test_weak_popov_form_SOURCES =      test-weak-popov-form.C
 test_mpi_comm_SOURCES =         test-mpi-comm.C
+=======
+test_smith_form_SOURCES =               test-smith-form.C
+test_solve_nonsingular_SOURCES =        test-solve-nonsingular.C
+test_solve_SOURCES =                    test-solve.C
+test_sparse_SOURCES =                   test-sparse.C test-common.h
+test_sparse_map_map_SOURCES = 			test-sparse-map-map.C test-blackbox.h
+test_subiterator_SOURCES =              test-subiterator.C test-common.h
+test_submatrix_SOURCES =                test-submatrix.C test-common.h
+test_subvector_SOURCES =                test-subvector.C test-common.h
+test_sum_SOURCES =                      test-sum.C
+test_toeplitz_det_SOURCES =             test-toeplitz-det.C
+test_toom_cook_SOURCES =                test-toom-cook.C
+test_trace_SOURCES =                    test-trace.C
+test_transpose_SOURCES =                test-transpose.C
+test_triplesbb_omp_SOURCES =            test-triplesbb-omp.C
+test_triplesbb_SOURCES =                test-triplesbb.C
+test_tutorial_SOURCES =                 test-tutorial.C
+test_vector_domain_SOURCES =            test-vector-domain.C test-vector-domain.h
+test_zero_one_SOURCES =                 test-zero-one.C
+test_polynomial_ring_SOURCES =          test-polynomial-ring.C
+test_invariant_factors_SOURCES =        test-invariant-factors.C
+test_frobenius_small_SOURCES =          test-frobenius-small.C
+test_frobenius_large_SOURCES =          test-frobenius-large.C
+test_weak_popov_form_SOURCES =          test-weak-popov-form.C
+test_mpi_comm_SOURCES =                 test-mpi-comm.C
+test_toeplitz_SOURCES =                 test-toeplitz.C
+>>>>>>> master
 
 # Perfpublisher script interaction - AB 2014/12/11
 perfpublisher:
