@@ -186,7 +186,7 @@ bool test_field(const Integer& q)
 
 int main(int argc, char** argv)
 {
-    Integer q = 2147483647;
+    Integer q = 101;
     uint64_t seed = time(nullptr);
     bool loop = false;
 

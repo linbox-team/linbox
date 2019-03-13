@@ -75,8 +75,8 @@ namespace LinBox
 
 	protected:
         std::vector<Shelf> shelves_;
-		const double				LOGARITHMIC_UPPER_BOUND;
-		double totalsize_ = 0.; // natural log of the current modulus
+		const double				LOGARITHMIC_UPPER_BOUND; // log2 of upper bound
+		double totalsize_ = 0.; // log2 of the current modulus
         size_t dimension_ = 0; // dimension of the vector being reconstructed
         bool collapsed_ = false;
         bool normalized_ = false;
@@ -147,7 +147,7 @@ namespace LinBox
             double logD = Givaro::naturallog(Dval);
             auto cur = getShelf(logD);
 
-            totalsize_ += logD;
+            totalsize_ += Givaro::logtwo(Dval);
 
             ensureShelf(cur, shelves_, dimension_);
             if (! shelves_[cur].occupied) {
