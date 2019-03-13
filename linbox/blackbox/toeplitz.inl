@@ -396,9 +396,10 @@ namespace LinBox
 		std::cout <<"pxOut is " << pxOut << std::endl;
 #endif
 
+		size_t M = this->rowdim();
 		size_t N = this->coldim();
 		for( size_t i = 0; i < N; ++i )
-			this->P.getCoeff(v_out[i], pOut, N-1+i);
+			this->P.getCoeff(v_out[i], pOut, M-1+i);
 
 		return v_out;
 
