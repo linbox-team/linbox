@@ -33,7 +33,9 @@
 #ifndef __LINBOX_omp_cra_H
 #define __LINBOX_omp_cra_H
 // commentator is not thread safe
+#ifndef DISABLE_COMMENTATOR
 #define DISABLE_COMMENTATOR
+#endif
 #include <omp.h>
 #include <set>
 #include "linbox/algorithms/cra-domain-seq.h"
