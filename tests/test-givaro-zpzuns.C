@@ -42,15 +42,11 @@
 #include "test-common.h"
 #include "test-field.h"
 
-#ifndef TEST_ARCHETYPES
-#define TEST_ARCHETYPES 1
-#endif
-
 using namespace LinBox;
 
 int main (int argc, char **argv)
 {
-        static integer q = 10733;
+    static integer q = 10733;
 	static size_t n = 10000;
 	static unsigned int iterations = 10;
 	static int e;
@@ -59,19 +55,19 @@ int main (int argc, char **argv)
 	static unsigned int hist_level = 10;
 
 
-        static Argument args[] = {
-                { 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
-                { 'e', "-e E", "Use GF(q^e) for the extension field [1].", TYPE_INT,     &e },
+    static Argument args[] = {
+        { 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
+        { 'e', "-e E", "Use GF(q^e) for the extension field [1].", TYPE_INT,     &e },
 		{ 'n', "-n N", "Set dimension of test vectors to NxN.", TYPE_INT,     &n },
 		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
 		{ 't', "-t T", "Number of trials for the random iterator test.", TYPE_INT, &trials },
 		{ 'c', "-c C", "Number of categories for the random iterator test.", TYPE_INT, &categories },
 		{ 'H', "-H H", "History level for random iterator test.", TYPE_INT, &hist_level },
 		END_OF_ARGUMENTS
-        };
-
-        parseArguments (argc, argv, args);
-
+    };
+    
+    parseArguments (argc, argv, args);
+    
 	//cout << endl << "Givaro::Modular< uint32_t> field test suite" << endl;
 	//cout.flush ();
 	bool pass = true;
@@ -98,42 +94,6 @@ int main (int argc, char **argv)
 	if (!testRandomIterator (F3,  "Givaro::Modular< uint32_t>(3)", trials, categories, hist_level)) pass = false;
 	if (!testRandomIterator (F4,  "Givaro::Modular< uint32_t>(32749)", trials, categories, hist_level)) pass = false;
 	if (!testRandomIterator (F5,  "Givaro::Modular< uint32_t>(65521)", trials, categories, hist_level)) pass = false;
-
-#if TEST_ARCHETYPES
-
-	Givaro::Modular< int16_t> * K1g = new Givaro::Modular< int16_t> (101);
-	FieldArchetype K1(K1g);
-	if (!testField<FieldArchetype> (K1, "Testing archetype with envelope of Givaro::Modular< int16_t> field"))
-		pass = false;
-	delete K1g;
-#endif
-
-#if TEST_ARCHETYPES
-	Givaro::Modular< uint32_t> * K2g = new Givaro::Modular< uint32_t> (101);
-	FieldArchetype K2(K2g);
-	if (!testField<FieldArchetype> (K2, "Testing archetype with envelope of Givaro::Modular< uint32_t> field"))
-		pass = false;
-	delete K2g;
-#endif
-
-#if TEST_ARCHETYPES
-	Givaro::Modular< Givaro::Log16> * K3g = new Givaro::Modular< Givaro::Log16>(101);
-	FieldArchetype K3(K3g);
-
-	if (!testField<FieldArchetype> (K3, "Testing archetype with envelope of Givaro::Modular< Givaro::Log16> field"))
-		pass = false;
-	delete K3g;
-#endif
-
-#if TEST_ARCHETYPES
-	Givaro::GFqDom<int64_t> * K4g = new Givaro::GFqDom<int64_t>(101,1);
-	FieldArchetype K4(K4g);
-
-	if (!testField<FieldArchetype> (K4, "Testing archetype with envelope of Givaro::GFqDom<int64_t> prime field"))
-		pass = false;
-	delete K4g;
-#endif
-
 
 	LinBox::commentator().stop(MSG_STATUS (pass), "Givaro::Modularuns test suite");
 	return pass ? 0 : -1;
