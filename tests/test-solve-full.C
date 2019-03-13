@@ -20,13 +20,34 @@
  * ========LICENCE========
  */
 
-#include <linbox/matrix/dense-matrix.h>
 #include <linbox/solutions/solve.h>
 
 using namespace LinBox;
 
-template <class Ring, class Method>
-void run_integer(Communicator& communicator, bool verboseEnabled, size_t dimension) {
+template <class SolveMethod, class ResultVector, class Matrix, class Vector>
+void print_error(const ResultVector& x, const Matrix& A, const Vector& b, bool verboseEnabled, std::string reason)
+{
+    if (verboseEnabled) {
+        A.write(std::cerr << "A: ", Tag::FileFormat::Maple) << std::endl;
+        std::cerr << "b: " << b << std::endl;
+        std::cerr << "x: " << x << std::endl;
+    }
+
+    // @note Within our tests A square implies non-singular
+    bool singular = (A.rowdim() != A.coldim());
+    std::cerr << "==> " << SolveMethod::name() << " on " << (singular ? "" : "non-") << "singular DenseMatrix over ";
+    A.field().write(std::cerr);
+    std::cerr << " FAILS (" << reason << ")" << std::endl;
+}
+
+template <class Ring, class SolveMethod>
+void run_integer(Communicator& communicator, bool verboseEnabled, size_t dimension)
+{
+
+    // @fixme Test non-singular
+
+    // @fixme Test singular (rectangular)
+
     Ring R;
 
     BlasVector<Ring> b(R, dimension);
@@ -39,38 +60,34 @@ void run_integer(Communicator& communicator, bool verboseEnabled, size_t dimensi
     A.setEntry(1, 0, 0);
     A.setEntry(1, 1, 4);
 
-    Method method;
+    SolveMethod method;
     method.pCommunicator = &communicator;
-    // @fixme Dixon fails with singular with SingularSolutionType::Determinist
-    method.singularSolutionType = SingularSolutionType::Diophantine;
 
     // Rational vector interface will call (num, den) one
-    Givaro::QField<Givaro::Rational> F;
-    BlasVector<Givaro::QField<Givaro::Rational>> x(F, dimension);
-
+    using RationalDomain = Givaro::QField<Givaro::Rational>;
+    RationalDomain F;
+    BlasVector<RationalDomain> x(F, dimension);
 
     if (verboseEnabled) {
-        std::cout << "--------------- Testing " << Method::name() << " on DenseMatrix<ZZ> (" << dimension << ")" << std::endl;
+        A.field().write(std::cout << "--------------- Testing " << SolveMethod::name() << " on DenseMatrix over ") << std::endl;
     }
 
     try {
         solve(x, A, b, method);
         solveInPlace(x, A, b, method);
     } catch (...) {
-        std::cout << "===> OUCH: Throwing error" << std::endl;
+        print_error<SolveMethod>(x, A, b, verboseEnabled, "throws error");
         return;
     }
 
     if (x[0].nume() != 1 || x[0].deno() != 1 || x[1].nume() != 3 || x[1].deno() != 2) {
-        A.write(std::cout << "A: ", Tag::FileFormat::Maple) << std::endl;
-        std::cout << "b: " << b << std::endl;
-        std::cout << "x: " << x << std::endl;
-        std::cerr << "===> OUCH" << std::endl;
+        print_error<SolveMethod>(x, A, b, verboseEnabled, "Ax != b");
     }
 }
 
 template <class Matrix, class Method>
-void run_modular(bool verboseEnabled) {
+void run_modular(bool verboseEnabled)
+{
     using Field = typename Matrix::Field;
 
     Field F(101);
@@ -89,7 +106,7 @@ void run_modular(bool verboseEnabled) {
     method.blockingFactor = 1;
 
     if (verboseEnabled) {
-        std::cout << "--------------- Testing " << Method::name() << " on DenseMatrix<Modular<...>>" << std::endl;
+        A.field().write(std::cout << "--------------- Testing " << Method::name() << " on DenseMatrix over ") << std::endl;
     }
 
     BlasVector<Field> x(F, 2);
@@ -98,44 +115,51 @@ void run_modular(bool verboseEnabled) {
         solve(x, A, b, method);
         solveInPlace(x, A, b, method);
     } catch (...) {
-        std::cout << "===> OUCH: Throwing error" << std::endl;
+        print_error<SolveMethod>(x, A, b, verboseEnabled, "throws error");
         return;
     }
 
     if (x[0] != 1 || x[1] != 52) {
-        A.write(std::cout << "A: ", Tag::FileFormat::Maple) << std::endl;
-        std::cout << "b: " << b << std::endl;
-        std::cout << "x: " << x << std::endl;
-        std::cerr << "===> OUCH" << std::endl;
+        print_error<SolveMethod>(x, A, b, verboseEnabled, "Ax != b");
     }
+}
+
+// Testing rational solve over the integers
+template <class SolveMethod>
+void test_rational_solve(Communicator& communicator, bool verboseEnabled)
+{
+    //
+    // Testing invertible matrix
+    //
+
+    run_integer<Givaro::ZRing<Integer>, SolveMethod>(communicator, verboseEnabled, 2);
+
+
+    //
+    // Testing singular matrix
+    //
+
+    run_integer<Givaro::ZRing<Integer>, SolveMethod>(communicator, verboseEnabled, 3);
 }
 
 int main(int argc, char** argv)
 {
     bool verboseEnabled = false;
 
-	static Argument args[] = {
-		{ 'v', "-v", "Enable verbose mode.", TYPE_BOOL,     &verboseEnabled },
-		END_OF_ARGUMENTS
-	};
+    static Argument args[] = {{'v', "-v", "Enable verbose mode.", TYPE_BOOL, &verboseEnabled}, END_OF_ARGUMENTS};
 
-	parseArguments (argc, argv, args);
+    parseArguments(argc, argv, args);
 
     if (verboseEnabled) {
         commentator().setReportStream(std::cout);
     }
 
     Communicator communicator(0, nullptr);
-
-    run_integer<Givaro::ZRing<Integer>, Method::Auto>(communicator, verboseEnabled, 2);
-    // run_integer<Givaro::ZRing<Integer>, Method::CraAuto>(communicator, 2);
-    // run_integer<Givaro::ZRing<Integer>, Method::CraAuto>(communicator, 3);
-    // run_integer<Givaro::ZRing<Integer>, Method::Dixon>(communicator, 2);
-    // run_integer<Givaro::ZRing<Integer>, Method::Dixon>(communicator, 3);
-    // run_integer<Givaro::ZRing<Integer>, Method::NumericSymbolicOverlap>(communicator, 2);
-    // run_integer<Givaro::ZRing<Integer>, Method::NumericSymbolicOverlap>(communicator, 3); // @fixme Fails
-    // run_integer<Givaro::ZRing<Integer>, Method::NumericSymbolicNorm>(communicator, 2); // @fixme Fails
-    // run_integer<Givaro::ZRing<Integer>, Method::NumericSymbolicNorm>(communicator, 3); // @fixme Fails
+    test_rational_solve<Method::Auto>(communicator, verboseEnabled);
+    test_rational_solve<Method::CraAuto>(communicator, verboseEnabled);
+    test_rational_solve<Method::Dixon>(communicator, verboseEnabled);
+    test_rational_solve<Method::NumericSymbolicOverlap>(communicator, verboseEnabled); // @fixme Singular case fails
+    test_rational_solve<Method::NumericSymbolicNorm>(communicator, verboseEnabled);    // @fixme Fails
 
     run_modular<DenseMatrix<Givaro::Modular<double>>, Method::Auto>(verboseEnabled);
     run_modular<SparseMatrix<Givaro::Modular<double>>, Method::Auto>(verboseEnabled);
