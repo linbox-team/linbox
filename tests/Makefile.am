@@ -70,7 +70,7 @@ PERFPUBLISHERFILE = tests-report.xml
 # Once present, tests should remain present, being moved from one group to another.
 BASIC_TESTS =					\
 	test-solve                  \
-	test-solve-wip              \
+	test-solve-full             \
 	test-smith-form-valence  \
 	test-local-smith-form-sparseelim\
 	test-det					\
@@ -355,7 +355,7 @@ test_local_smith_form_sparseelim_SOURCES = test-local-smith-form-sparseelim.C
 test_smith_form_SOURCES =               test-smith-form.C
 test_solve_nonsingular_SOURCES =        test-solve-nonsingular.C
 test_solve_SOURCES =                    test-solve.C
-test_solve_wip_SOURCES =                test-solve-wip.C
+test_solve_full_SOURCES =               test-solve-full.C
 test_sparse_SOURCES =                   test-sparse.C test-common.h
 test_sparse_map_map_SOURCES = 			test-sparse-map-map.C test-blackbox.h
 test_subiterator_SOURCES =              test-subiterator.C test-common.h
