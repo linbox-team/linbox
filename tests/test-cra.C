@@ -785,12 +785,12 @@ bool test_CRA_algos(size_t PrimeSize, size_t Size, size_t Taille, size_t iters)
 	_LB_REPEAT( if (test_early_single<double>(report,22,Size))                       pass = false ;  ) ;
 	_LB_REPEAT( if (test_early_single<integer>(report,PrimeSize,Size))               pass = false ;  ) ;
 
-        /* PROB SINGLE */
-        _LB_REPEAT( if (test_prob_single<double>(report,22,Size))                       pass = false ;  ) ;
+	/* PROB SINGLE */
+	_LB_REPEAT( if (test_prob_single<double>(report,22,Size))                       pass = false ;  ) ;
 	_LB_REPEAT( if (test_prob_single<integer>(report,PrimeSize,Size))               pass = false ;  ) ;
 
-        /* FULL SINGLE */
-        _LB_REPEAT( if (test_full_single<double>(report,22,Size))                       pass = false ;  ) ;
+	/* FULL SINGLE */
+	_LB_REPEAT( if (test_full_single<double>(report,22,Size))                       pass = false ;  ) ;
 	_LB_REPEAT( if (test_full_single<integer>(report,PrimeSize,Size))               pass = false ;  ) ;
 
 	/* EARLY MULTIPLE */

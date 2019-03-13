@@ -575,7 +575,7 @@ namespace LinBox
 		 * @param	failprob  An upper bound on the probability of failure.
 		 */
 		FullSingleCRA(const size_t bitbound) :
-            MultiParent(((double)bitbound) * log(2.0))
+            MultiParent((double)bitbound)
 		{
 		}
 
