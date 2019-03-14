@@ -59,8 +59,8 @@ namespace LinBox
 		/*! Constructor.
 		 * @param p is a pair such that
 		 * - \c p.first is the size of a residue (ie. it would be 1 for \"FullSingle\")
-		 * - \c p.second is the theoretical upperbound (natural
-		 *   logarithm) on the size of the integers to reconstruct.
+		 * - \c p.second is the theoretical upperbound (log2)
+		 *   on the size of the integers to reconstruct.
 		 * .
 		 */
 		CraBuilderFullMultipFixed(const std::pair<size_t,double>& p ) :

@@ -70,25 +70,24 @@ namespace LinBox {
 
 	/*! Default ring category.
 	 */
+
 	template <class Field>
 	struct ClassifyRing {
 		typedef	RingCategories::GenericTag categoryTag;
 	};
 
-	using Givaro::Caster;
-
-        template<>
-        struct ClassifyRing<Givaro::QField<Givaro::Rational>> {
-                typedef RingCategories::RationalTag categoryTag;
-        };
-        template<class Element>
-        struct ClassifyRing<Givaro::ZRing<Element>> {
-                 typedef RingCategories::IntegerTag categoryTag;
-         };
-        template<>
-        struct ClassifyRing<Givaro::IntegerDom> {
-                typedef RingCategories::IntegerTag categoryTag;
-        };
+    template<>
+    struct ClassifyRing<Givaro::QField<Givaro::Rational>> {
+            typedef RingCategories::RationalTag categoryTag;
+    };
+    template<>
+    struct ClassifyRing<Givaro::ZRing<Givaro::Integer>> {
+            typedef RingCategories::IntegerTag categoryTag;
+    };
+    template<>
+    struct ClassifyRing<Givaro::IntegerDom> {
+            typedef RingCategories::IntegerTag categoryTag;
+    };
 
 	using Givaro::Caster;
 

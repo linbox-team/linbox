@@ -76,7 +76,7 @@ namespace LinBox {
                                                                                 Vector& u)
     {
         linbox_check((x.size() == A.coldim()) && (b.size() == A.rowdim()));
-        linbox_check(_traits.singular() != Singularity::NonSingular || A.coldim() == A.rowdim());
+        linbox_check(_traits.singularity != Singularity::NonSingular || A.coldim() == A.rowdim());
 
         commentator().start("Solving linear system (Wiedemann)", "WiedemannSolver::solve");
 
