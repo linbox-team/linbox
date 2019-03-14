@@ -76,7 +76,7 @@ void solve(VectorFractionInts& X, const T1& A, const T2& B, const T3& M) {
 
 template<typename Field, typename Vector_t=DenseVector<Field>>
 void tmain (std::pair<double,double>& timebits, size_t n,
-            const Givaro::Integer& q, size_t bits) {
+            const Givaro::Integer& q, size_t bits, int p) {
     Field F(q);						// q is ignored for Integers
     typename Field::RandIter G(F,bits);	// bits is ignored for ModularRandIter
 
@@ -106,8 +106,28 @@ void tmain (std::pair<double,double>& timebits, size_t n,
         // DenseElimination
     Vector_t X(F, A.coldim());
     chrono.start();
-    solve (X, A, B, Method::DenseElimination());
+    switch(p){
+    case 0: solve (X, A, B, Method::DenseElimination());
+            break;
+    case 1: solve (X, A, B, Method::Dixon());
+            break;
+
+
+
+#if 0       //fixme: Only work with Integer => compile time conflict
+    case 2: solve (X, A, B, Method::BlockWiedemann()); 
+            break;
+
+    case 3: solve (X, A, B, Method::Wiedemann());
+            break;
+
+    case 4: solve (X, A, B, Method::Coppersmith()); 
+            break;
+#endif
+
+    }
     chrono.stop();
+
 
 #ifdef _BENCHMARKS_DEBUG_
     printVector(std::clog << "(DenseElimination) Solution is ", F, X) << std::endl;
@@ -125,14 +145,18 @@ int main (int argc, char **argv)
     size_t nbiter = 3 ;
     size_t n = 500 ;
     size_t bits = 10;
-//     size_t p = 0;
+    size_t p = 0;
+    Communicator communicator(&argc, &argv);
 
+    if (communicator.master()) {
+        std::cout << "Communicator size: " << communicator.size() << std::endl;
+    }
     Argument as[] = {
         { 'i', "-i R", "Set number of repetitions.",       TYPE_INT , &nbiter },
         { 'q', "-q Q", "Set the field characteristic (-1 for rationals).", TYPE_INTEGER , &q },
         { 'n', "-n N", "Set the matrix dimension.",      TYPE_INT , &n },
         { 'b', "-b B", "bit size", TYPE_INT , &bits },
-//         { 'p', "-p P", "0 for sequential, 1 for 2D iterative, 2 for 2D rec, 3 for 2D rec adaptive, 4 for 3D rec in-place, 5 for 3D rec, 6 for 3D rec adaptive.", TYPE_INT , &p },
+        { 'p', "-p P", "0 for DenseElimination, 1 for Dixon, 2 for BlockHankel.", TYPE_INT , &p },
         END_OF_ARGUMENTS
     };
 
@@ -144,9 +168,14 @@ int main (int argc, char **argv)
     std::vector<std::pair<double,double>> timebits(nbiter);
     for(size_t iter=0; iter<nbiter; ++iter) {
         if (ModComp) {
-            tmain<Givaro::Modular<double>>(timebits[iter],n,q,bits);
+            //tmain<Givaro::Modular<double>>(timebits[iter],n,q,bits,p);
+            //tmain<Givaro::ModularBalanced<double>>(timebits[iter],n,q,bits,p);
+            //tmain<Givaro::Modular<float>>(timebits[iter],n,q,bits,p);
+            //tmain<Givaro::ModularBalanced<float>>(timebits[iter],n,q,bits,p);
+            //tmain<Givaro::Modular<int>>(timebits[iter],n,q,bits,p);
+            //tmain<Givaro::ModularBalanced<int>>(timebits[iter],n,q,bits,p);
         } else {
-            tmain<Ints,VectorFractionInts>(timebits[iter],n,q,bits);
+            tmain<Ints,VectorFractionInts>(timebits[iter],n,q,bits,p);
         }
     }
 
