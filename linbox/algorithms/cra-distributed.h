@@ -39,6 +39,8 @@
 #include "linbox/util/mpicpp.h"
 #include "linbox/util/timer.h"
 
+#if defined(__LINBOX_HAVE_MPI)
+
 namespace LinBox {
 
     template <class CRABase>
@@ -85,7 +87,7 @@ namespace LinBox {
         {
             // Defer to standard CRA loop if no parallel usage is desired
             if (_pCommunicator == 0 || _pCommunicator->size() == 1) {
-                RationalRemainder<CRABase> sequential(Builder_);
+                RationalCra<CRABase> sequential(Builder_);
                 return sequential(num, den, Iteration, primeGenerator);
             }
 
@@ -104,7 +106,7 @@ namespace LinBox {
         {
             // Defer to standard CRA loop if no parallel usage is desired
             if (_pCommunicator == 0 || _pCommunicator->size() == 1) {
-                ChineseRemainder<CRABase> sequential(Builder_);
+                Cra<CRABase> sequential(Builder_);
                 return sequential(res, Iteration, primeGenerator);
             }
 
@@ -203,6 +205,8 @@ namespace LinBox {
         }
     };
 }
+
+#endif
 
 // Local Variables:
 // mode: C++

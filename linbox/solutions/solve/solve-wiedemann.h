@@ -50,7 +50,7 @@ namespace LinBox {
                         const Method::Wiedemann& m)
     {
         commentator().start("solve.wiedemann.modular");
-        linbox_check((A.coldim() != x.size()) || (A.rowdim() != b.size()));
+        linbox_check((A.coldim() == x.size()) && (A.rowdim() == b.size()));
 
         using Solver = WiedemannSolver<typename Matrix::Field>;
         Solver solver(A.field(), m);
@@ -132,7 +132,7 @@ namespace LinBox {
                         const Method::Coppersmith& m)
     {
         commentator().start("solve.coppersmith.modular");
-        linbox_check((A.coldim() != x.size()) || (A.rowdim() != b.size()));
+        linbox_check((A.coldim() == x.size()) && (A.rowdim() == b.size()));
 
         using Domain = MatrixDomain<typename Matrix::Field>;
         Domain domain(A.field());

@@ -50,7 +50,7 @@ namespace LinBox {
                       const RingCategories::IntegerTag& tag, const Method::NumericSymbolicOverlap& m)
     {
         commentator().start("solve.numeric-symbolic-overlap.integer");
-        linbox_check((A.coldim() != xNum.size()) || (A.rowdim() != b.size()));
+        linbox_check((A.coldim() == xNum.size()) && (A.rowdim() == b.size()));
 
         using Field = ParamFuzzy;
         using FMatrix = BlasMatrix<Field>;
@@ -91,7 +91,7 @@ namespace LinBox {
                       const RingCategories::IntegerTag& tag, const Method::NumericSymbolicNorm& m)
     {
         commentator().start("solve.numeric-symbolic-norm.integer");
-        linbox_check((A.coldim() != xNum.size()) || (A.rowdim() != b.size()));
+        linbox_check((A.coldim() == xNum.size()) && (A.rowdim() == b.size()));
 
         using Field = Givaro::Modular<int32_t>; // @fixme Why not double?
         using PrimeGenerator = PrimeIterator<IteratorCategories::HeuristicTag>;
