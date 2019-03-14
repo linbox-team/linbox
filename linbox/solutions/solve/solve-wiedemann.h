@@ -95,7 +95,7 @@ namespace LinBox {
                         const Method::BlockWiedemann& m)
     {
         commentator().start("solve.block-wiedemann.modular");
-        linbox_check((A.coldim() != x.size()) || (A.rowdim() != b.size()));
+        linbox_check((A.coldim() == x.size()) && (A.rowdim() == b.size()));
 
         using Context = BlasMatrixDomain<typename Matrix::Field>; // @fixme BlasMatrixDomain, really? How can we be sure?
         Context domain(A.field());
