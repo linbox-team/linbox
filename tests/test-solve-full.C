@@ -115,31 +115,76 @@ void run_modular(bool verboseEnabled)
         solve(x, A, b, method);
         solveInPlace(x, A, b, method);
     } catch (...) {
-        print_error<SolveMethod>(x, A, b, verboseEnabled, "throws error");
         return;
     }
 
     if (x[0] != 1 || x[1] != 52) {
-        print_error<SolveMethod>(x, A, b, verboseEnabled, "Ax != b");
     }
+}
+
+template <class SolveMethod, class Matrix>
+bool test_rational_solve_with_matrix(Communicator& communicator, bool verboseEnabled)
+{
+    // @fixme Get m, n from arguments
+    size_t m = 2;
+    size_t n = 2;
+
+    using RationalDomain = Givaro::QField<Givaro::Rational>;
+    using IntegerDomain = typename Matrix::Field;
+    using Vector = DenseVector<IntegerDomain>;
+    using RationalVector = DenseVector<RationalDomain>;
+
+    IntegerDomain ID;
+    Matrix A(ID, m, n);
+    Vector b(ID, m);
+
+    RationalDomain RD;
+    RationalVector x(RD, n);
+
+    // @fixme Generate random matrices
+
+    if (verboseEnabled) {
+        std::cout << "--- Testing " << SolveMethod::name() << " on DenseMatrix over ";
+        ID.write(std::cout) << " of size " << m << "x" << n << std::endl;
+    }
+
+    SolveMethod method;
+    method.pCommunicator = &communicator;
+
+    try {
+        solve(x, A, b, method);
+        solveInPlace(x, A, b, method);
+    } catch (...) {
+        print_error<SolveMethod>(x, A, b, verboseEnabled, "throws error");
+        return false;
+    }
+
+    // @fixme CHECK
+    // if (x[0] != 1 || x[1] != 52) {
+        // print_error<SolveMethod>(x, A, b, verboseEnabled, "Ax != b");
+        // return false;
+    // }
+
+    return true;
 }
 
 // Testing rational solve over the integers
 template <class SolveMethod>
 void test_rational_solve(Communicator& communicator, bool verboseEnabled)
 {
-    //
-    // Testing invertible matrix
-    //
+    using IntegerDomain = Givaro::ZRing<Integer>;
 
-    run_integer<Givaro::ZRing<Integer>, SolveMethod>(communicator, verboseEnabled, 2);
+    // Testing invertible matrix (@fixme should it be pre-generated?)
+    test_rational_solve_with_matrix<SolveMethod, DenseMatrix<IntegerDomain>>(communicator, verboseEnabled);
+    test_rational_solve_with_matrix<SolveMethod, SparseMatrix<IntegerDomain>>(communicator, verboseEnabled);
 
 
     //
     // Testing singular matrix
     //
 
-    run_integer<Givaro::ZRing<Integer>, SolveMethod>(communicator, verboseEnabled, 3);
+    // @fixme To do
+    // run_integer<Givaro::ZRing<Integer>, SolveMethod>(communicator, verboseEnabled, 3);
 }
 
 int main(int argc, char** argv)

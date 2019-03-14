@@ -55,7 +55,9 @@
 namespace LinBox {
 
     // Some definitions to decide which method to use when using Method::Auto on a Blackbox or Sparse matrix.
-    constexpr const uint32_t LINBOX_USE_BLACKBOX_THRESHOLD = 1000u;
+    #if !defined(LINBOX_USE_BLACKBOX_THRESHOLD)
+    #define LINBOX_USE_BLACKBOX_THRESHOLD 1000u
+    #endif
 
     template <class Matrix>
     bool useBlackboxMethod(const Matrix& A)
@@ -145,37 +147,45 @@ namespace LinBox {
 
     /**
      * Holds everything a method needs to know about the problem.
+     *
+     * @note This "put everything in it" design is used so that
+     * Method::Auto can specify any parameter of whatever method
+     * is going to be used.
+     * Fact is this structure is never copied between method switches.
+     * It does not matter if it is too big, but for clarity, we try
+     * to regroup elements used depending of the method.
      */
     struct MethodBase {
-        // Generic system information.
+        // ----- Generic system information.
         Singularity singularity = Singularity::Unknown;
         size_t rank = 0;           //!< Rank of the system. 0 means unknown.
         ShapeFlags shapeFlags = 0; //!< Shape of the system.
 
-        // Generic options.
+        // ----- Generic solve options.
         Preconditioner preconditioner = Preconditioner::None;
         bool checkResult = false; //!< Ensure that solving worked by checking Ax = b (might not be implemented by all methods).
 
-        // For Integer-based systems.
+        // ----- For Integer-based systems.
         Dispatch dispatch = Dispatch::Auto;
         Communicator* pCommunicator = nullptr;
         bool master() const { return (pCommunicator == nullptr) || pCommunicator->master(); }
 
-        // For Elimination-based methods.
+        // ----- For Elimination-based methods.
         PivotStrategy pivotStrategy = PivotStrategy::Linear;
 
-        // For Dixon method.
-        SingularSolutionType singularSolutionType = SingularSolutionType::Random; // @fixme SingularSolutionType::Determinist fails with Dense Dixon
+        // ----- For Dixon method.
+        // @fixme SingularSolutionType::Determinist fails with Dense Dixon
+        SingularSolutionType singularSolutionType = SingularSolutionType::Random;
 
-        // For random-based systems.
+        // ----- For random-based systems.
         size_t trialsBeforeFailure = 100;  //!< Maximum number of trials before giving up.
         bool certifyInconsistency = false; //!< Whether the solver should attempt to find a certificate of inconsistency if
                                            //!  it suspects the system to be inconsistent.
 
-        // For block-based methods.
+        // ----- For block-based methods.
         size_t blockingFactor = 16; //!< Size of blocks.
 
-        // For Wiedemann (Berlekamp Massey) methods.
+        // ----- For Wiedemann (Berlekamp Massey) methods.
         size_t earlyTerminationThreshold = 20;
     };
 

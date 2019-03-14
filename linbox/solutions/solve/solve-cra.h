@@ -130,7 +130,7 @@ namespace LinBox {
 
         if (m.master()) {
             commentator().start("solve.cra.integer");
-            linbox_check((A.coldim() != xNum.size()) || (A.rowdim() != b.size()));
+            linbox_check((A.coldim() == xNum.size()) && (A.rowdim() == b.size()));
         }
 
         using CraField = Givaro::ModularBalanced<double>;

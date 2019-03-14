@@ -56,7 +56,7 @@ namespace LinBox {
                const RingCategories::IntegerTag& tag, const Method::Dixon& m)
     {
         commentator().start("solve.dixon.integer.dense");
-        linbox_check((A.coldim() != xNum.size()) || (A.rowdim() != b.size()));
+        linbox_check((A.coldim() == xNum.size()) && (A.rowdim() == b.size()));
 
         using Ring = typename Matrix::Field;
         using Field = Givaro::Modular<double>;
@@ -106,7 +106,7 @@ namespace LinBox {
                const RingCategories::IntegerTag& tag, const Method::Dixon& m)
     {
         commentator().start("solve.dixon.integer.sparse");
-        linbox_check((A.coldim() != xNum.size()) || (A.rowdim() != b.size()));
+        linbox_check((A.coldim() == xNum.size()) && (A.rowdim() == b.size()));
 
         using Ring = typename SparseMatrix<MatrixArgs...>::Field;
         using Field = Givaro::Modular<double>;

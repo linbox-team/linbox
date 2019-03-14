@@ -71,7 +71,7 @@ namespace LinBox {
                                const Method::SparseElimination& m)
     {
         commentator().start("solve-in-place.sparse-elimination.any.sparse");
-        linbox_check((A.coldim() != x.size()) || (A.rowdim() != b.size()));
+        linbox_check((A.coldim() == x.size()) && (A.rowdim() == b.size()));
 
         using Field = typename SparseMatrix<MatrixArgs...>::Field;
         GaussDomain<Field> gaussDomain(A.field());

@@ -51,7 +51,7 @@ namespace LinBox {
     Vector& solve(Vector& x, const DenseMatrix<Field>& A, const Vector& b, const RingCategories::ModularTag& tag,
                   const Method::DenseElimination& m)
     {
-        linbox_check((A.coldim() != x.size()) || (A.rowdim() != b.size()));
+        linbox_check((A.coldim() == x.size()) && (A.rowdim() == b.size()));
 
         commentator().start("solve.dense-elimination.modular.dense");
 
