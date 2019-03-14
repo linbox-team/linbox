@@ -174,7 +174,7 @@ namespace LinBox
 			//t_hd.clear();
 			//t_hd.start();
 			size_t bound = HadamardBound(A);
-			logbound = (bound - logtwo (MIN(abs(s1),abs(s2))))*0.693147180559945;
+			logbound = (bound - logtwo (MIN(abs(s1),abs(s2))));
 			//t_hd.stop();
 			//std::cerr<<"Hadamard bound = : "<<logbound<<" in "<<t_hd.usertime()<<"s"<<std::endl;
 

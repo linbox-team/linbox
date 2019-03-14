@@ -175,7 +175,7 @@ namespace LinBox {
         // For block-based methods.
         size_t blockingFactor = 16; //!< Size of blocks.
 
-        // @fixme NO DOC @jgdumas help wanted
+        // For Wiedemann (Berlekamp Massey) methods.
         size_t earlyTerminationThreshold = 20;
     };
 
@@ -248,7 +248,8 @@ namespace LinBox {
         // Minpoly methods
         //
 
-        // @fixme NO DOC - @jgdumas help wanted
+        // If the field is too short...
+        // @fixme TRY TO USE MethodBase.useExtension
         DEFINE_METHOD(WiedemannExtension, void);
 
         //

@@ -20,8 +20,7 @@
  * ========LICENCE========
  */
 
-#ifndef __LINBOX_solve_H
-#define __LINBOX_solve_H
+#pragma once
 
 #include <iostream> // @note Needed for givaro/ring-interface to compile
 
@@ -317,4 +316,3 @@ namespace LinBox {
 #include "./solve/solve-lanczos.h"
 #include "./solve/solve-wiedemann.h"
 
-#endif

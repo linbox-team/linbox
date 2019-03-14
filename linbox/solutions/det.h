@@ -542,8 +542,8 @@ namespace LinBox
 		{}
 
 
-		template<typename Field>
-		IterationResult operator()(typename Field::Element& d, const Field& F) const
+		template<class Element, typename Field>
+		IterationResult operator()(Element& d, const Field& F) const
 		{
 			typedef typename Blackbox::template rebind<Field>::other FBlackbox;
 			FBlackbox Ap(A, F);
