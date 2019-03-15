@@ -279,7 +279,7 @@ r = n;
 		}
 
 		Method::Wiedemann MWS;
-        MWS.shapeFlags &= ShapeFlag::Symmetric;
+        MWS.shapeFlags = Shape::Symmetric;
 //		LinBox::rank (r, B, MWS);
 r = n;
 		if (r != n) {

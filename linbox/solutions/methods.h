@@ -121,12 +121,12 @@ namespace LinBox {
     /**
      * Flags decribing the shape of the matrix.
      *
-     * @note The structure is here just to force namespace
-     * and avoid collision.
+     * @note The namespace is here to avoid collisions.
      */
     using ShapeFlags = uint16_t;
-    struct ShapeFlag {
-        enum : ShapeFlags {
+    namespace Shape {
+        enum Value : ShapeFlags {
+            Unknown = 0x00,
             Symmetric = 0x01,       //!< Matrix has its main diagonal as a reflection axis.
             Diagonal = 0x02,        //!< Only main diagonal is non-zero.
             Toeplitz = 0x04,        //!< Main diagonals are constant.
@@ -136,6 +136,15 @@ namespace LinBox {
             LowerTriangular = 0x40, //!< Only lower left part of the matrix is non-zero.
         };
     };
+
+    // @note We overload operator== so that one can use method.shapeFlags == Shape::Symmetric
+    // seemlessly. Please note that affecting `shapeFlags = Shape::Symmetric` does strict affection
+    // and erase previous flags. Use `shapeFlags |= Shape::Symmetric` if you don't want destructiveness.
+    inline bool operator==(ShapeFlags shapeFlags, Shape::Value shape)
+    {
+        return (shape == Shape::Unknown) ? (shapeFlags == 0x00) : (shapeFlags & shape);
+    }
+    inline bool operator!=(ShapeFlags shapeFlags, Shape::Value shape) { return !(shapeFlags == shape); }
 
     /**
      * Pivoting strategy for elimination-based methods.
@@ -159,7 +168,7 @@ namespace LinBox {
         // ----- Generic system information.
         Singularity singularity = Singularity::Unknown;
         size_t rank = 0;           //!< Rank of the system. 0 means unknown.
-        ShapeFlags shapeFlags = 0; //!< Shape of the system.
+        ShapeFlags shapeFlags = Shape::Unknown; //!< Shape of the system.
 
         // ----- Generic solve options.
         Preconditioner preconditioner = Preconditioner::None;

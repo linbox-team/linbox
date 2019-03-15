@@ -105,7 +105,7 @@ namespace LinBox
 
 			WD.minpoly (P, deg);
 		}
-		else if (M.shapeFlags & ShapeFlag::Symmetric) {
+		else if (M.shapeFlags == Shape::Symmetric) {
 			typedef BlackboxContainerSymmetric<Field, Blackbox> BBContainerSym;
 			BBContainerSym TF (&A, A.field(), i);
 			MasseyDomain< Field, BBContainerSym > WD (&TF, M.earlyTerminationThreshold);
