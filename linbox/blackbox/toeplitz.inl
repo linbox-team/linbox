@@ -63,7 +63,7 @@ namespace LinBox
 		sysDim =               // Default dimension is 0
 		rowDim =               // Default row dim is 0
 		this->colDim = 0;            // Default col dim is 0
-		shape.shapeFlags &= ShapeFlag::Toeplitz;
+		shape.shapeFlags &= Shape::Toeplitz;
 #ifdef DBGMSGS
 		std::cout << "Toeplitz::Toeplitz():\tCreated a " << rowDim << "x"<< this->colDim<<
 		" Toeplitz matrix "<< std::endl;
@@ -97,7 +97,7 @@ namespace LinBox
 		P(PF), field_(&(PF.getCoeffField()))
 	{
 		sysDim = rowDim = this->colDim = 0;
-		shape.shapeFlags &= ShapeFlag::Toeplitz;
+		shape.shapeFlags &= Shape::Toeplitz;
 
 	}//------ Polynomial Field constructor
 
@@ -111,7 +111,7 @@ namespace LinBox
 						     , size_t n ) :
 		P(PF), field_(&(PF.getCoeffField())), rowDim(m), colDim(n), pdata(p)
 	{
-		shape.shapeFlags &= ShapeFlag::Toeplitz;
+		shape.shapeFlags &= Shape::Toeplitz;
 
 		if( n == 0 ) this->colDim = rowDim;
 		if( rowDim >= this->colDim ) sysDim = rowDim;

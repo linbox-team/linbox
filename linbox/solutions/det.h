@@ -208,7 +208,7 @@ namespace LinBox
 		Field F = A.field();
 		typedef BlasVector<Field> Polynomial;
 
-		if(Meth.shapeFlags & ShapeFlag::Symmetric) {
+		if(Meth.shapeFlags == Shape::Symmetric) {
 			commentator().start ("Symmetric Wiedemann Determinant", "sdet");
 			linbox_check (A.coldim () == A.rowdim ());
 			Polynomial               phi(F);

@@ -101,7 +101,7 @@ namespace LinBox
 		const Field F = A.field();
 		typename Field::RandIter iter (F);
 
-		if (M.shapeFlags & ShapeFlag::Symmetric) {
+		if (M.shapeFlags == Shape::Symmetric) {
 			commentator().start ("Symmetric Rank", "srank");
 
 
