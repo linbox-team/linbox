@@ -54,10 +54,10 @@
 
 namespace LinBox {
 
-    // Some definitions to decide which method to use when using Method::Auto on a Blackbox or Sparse matrix.
-    #if !defined(LINBOX_USE_BLACKBOX_THRESHOLD)
-    #define LINBOX_USE_BLACKBOX_THRESHOLD 1000u
-    #endif
+// Some definitions to decide which method to use when using Method::Auto on a Blackbox or Sparse matrix.
+#if !defined(LINBOX_USE_BLACKBOX_THRESHOLD)
+#define LINBOX_USE_BLACKBOX_THRESHOLD 1000u
+#endif
 
     template <class Matrix>
     bool useBlackboxMethod(const Matrix& A)
@@ -98,9 +98,9 @@ namespace LinBox {
      * For Dixon method, which solution type to get when the system is singular.
      */
     enum class SingularSolutionType {
-        Determinist, //!< The solution should be the easiest to compute and always the same.
-        Random,      //!< The solution should be random and different at each call.
-        Diophantine, //!< The solution is given over the integers.
+        Deterministic, //!< The solution should be the easiest to compute and always the same.
+        Random,        //!< The solution should be random and different at each call.
+        Diophantine,   //!< The solution is given over the integers.
     };
 
     /**
@@ -174,7 +174,7 @@ namespace LinBox {
         PivotStrategy pivotStrategy = PivotStrategy::Linear;
 
         // ----- For Dixon method.
-        // @fixme SingularSolutionType::Determinist fails with Dense Dixon
+        // @fixme SingularSolutionType::Deterministic fails with Dense Dixon
         SingularSolutionType singularSolutionType = SingularSolutionType::Random;
 
         // ----- For random-based systems.
