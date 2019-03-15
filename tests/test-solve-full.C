@@ -20,9 +20,23 @@
  * ========LICENCE========
  */
 
+#include <linbox/matrix/random-matrix.h>
 #include <linbox/solutions/solve.h>
 
 using namespace LinBox;
+
+template <class Matrix>
+struct matrixName;
+
+template <class MatrixArgs>
+struct matrixName<DenseMatrix<MatrixArgs>> {
+    static constexpr const char* value = "DenseMatrix";
+};
+
+template <class... MatrixArgs>
+struct matrixName<SparseMatrix<MatrixArgs...>> {
+    static constexpr const char* value = "SparseMatrix";
+};
 
 template <class SolveMethod, class ResultVector, class Matrix, class Vector>
 void print_error(const ResultVector& x, const Matrix& A, const Vector& b, bool verboseEnabled, std::string reason)
@@ -35,7 +49,8 @@ void print_error(const ResultVector& x, const Matrix& A, const Vector& b, bool v
 
     // @note Within our tests A square implies non-singular
     bool singular = (A.rowdim() != A.coldim());
-    std::cerr << "==> " << SolveMethod::name() << " on " << (singular ? "" : "non-") << "singular DenseMatrix over ";
+    std::cerr << "==> " << SolveMethod::name() << " on " << (singular ? "" : "non-");
+    std::cerr << "singular " << matrixName<Matrix>::value << " over ";
     A.field().write(std::cerr);
     std::cerr << " FAILS (" << reason << ")" << std::endl;
 }
@@ -138,13 +153,18 @@ bool test_rational_solve_with_matrix(Communicator& communicator, bool verboseEna
     Matrix A(ID, m, n);
     Vector b(ID, m);
 
+    // @note RandomDenseMatrix can also fill a SparseMatrix, it has just a sparsity of 0.
+    typename IntegerDomain::RandIter randIter(ID, 10, 0); // @fixme Set seed, bits
+    LinBox::RandomDenseMatrix<typename IntegerDomain::RandIter, IntegerDomain> RDM(ID, randIter);
+    RDM.randomFullRank(A);
+
     RationalDomain RD;
     RationalVector x(RD, n);
 
     // @fixme Generate random matrices
 
     if (verboseEnabled) {
-        std::cout << "--- Testing " << SolveMethod::name() << " on DenseMatrix over ";
+        std::cout << "--- Testing " << SolveMethod::name() << " on " << matrixName<Matrix>::value << " over ";
         ID.write(std::cout) << " of size " << m << "x" << n << std::endl;
     }
 
@@ -161,8 +181,8 @@ bool test_rational_solve_with_matrix(Communicator& communicator, bool verboseEna
 
     // @fixme CHECK
     // if (x[0] != 1 || x[1] != 52) {
-        // print_error<SolveMethod>(x, A, b, verboseEnabled, "Ax != b");
-        // return false;
+    // print_error<SolveMethod>(x, A, b, verboseEnabled, "Ax != b");
+    // return false;
     // }
 
     return true;
@@ -177,7 +197,6 @@ void test_rational_solve(Communicator& communicator, bool verboseEnabled)
     // Testing invertible matrix (@fixme should it be pre-generated?)
     test_rational_solve_with_matrix<SolveMethod, DenseMatrix<IntegerDomain>>(communicator, verboseEnabled);
     test_rational_solve_with_matrix<SolveMethod, SparseMatrix<IntegerDomain>>(communicator, verboseEnabled);
-
 
     //
     // Testing singular matrix
@@ -212,7 +231,7 @@ int main(int argc, char** argv)
     // run_modular<SparseMatrix<Givaro::Modular<double>>, Method::DenseElimination>();
     // run_modular<DenseMatrix<Givaro::Modular<double>>, Method::SparseElimination>();
     // run_modular<SparseMatrix<Givaro::Modular<double>>, Method::SparseElimination>();
-    // // run_modular<DenseMatrix<Givaro::Modular<double>>, Method::Wiedemann>(); // @fixme Can't compile
+    // run_modular<DenseMatrix<Givaro::Modular<double>>, Method::Wiedemann>(); // @fixme Can't compile
     run_modular<SparseMatrix<Givaro::Modular<double>>, Method::Wiedemann>(verboseEnabled);
     // run_modular<DenseMatrix<Givaro::Modular<double>>, Method::Lanczos>(); // @fixme Segmentation fault
     // run_modular<SparseMatrix<Givaro::Modular<double>>, Method::Lanczos>(); // @fixme Segmentation fault
