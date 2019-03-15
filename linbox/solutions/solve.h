@@ -24,6 +24,7 @@
 
 #include <iostream> // @note Needed for givaro/ring-interface to compile
 
+#include <linbox/algorithms/vector-fraction.h> // @fixme Why this is not inside vector/vector-fraction.h?
 #include <linbox/field/field-traits.h>
 #include <linbox/solutions/methods.h>
 
@@ -139,7 +140,7 @@ namespace LinBox {
     }
 
     /**
-     * \brief Solve specialisation on IntegerTag.
+     * \brief Solve specialisation on IntegerTag with Vector<QField> as result.
      *
      * This forward to the rational interface (num, den).
      * But will only work if the ResultVector if a vector of some Rational type.
@@ -169,6 +170,21 @@ namespace LinBox {
             ++iXNum;
         }
 
+        return x;
+    }
+
+    /**
+     * \brief Solve specialisation on IntegerTag with VectorFraction as result.
+     *
+     * This forward to the rational interface (num, den).
+     */
+    template <class Matrix, class Vector, class SolveMethod>
+    typename std::enable_if<std::is_same<typename SolveMethod::CategoryTag, RingCategories::IntegerTag>::value,
+                            VectorFraction<typename Matrix::Field>&>::type
+    solve(VectorFraction<typename Matrix::Field>& x, const Matrix& A, const Vector& b, const RingCategories::IntegerTag& tag,
+          const SolveMethod& m)
+    {
+        solve(x.numer, x.denom, A, b, tag, m);
         return x;
     }
 
@@ -315,4 +331,3 @@ namespace LinBox {
 #include "./solve/solve-blackbox.h"
 #include "./solve/solve-lanczos.h"
 #include "./solve/solve-wiedemann.h"
-
