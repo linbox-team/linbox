@@ -157,11 +157,10 @@ bool test_rational_solve_with_matrix(Communicator& communicator, bool verboseEna
     typename IntegerDomain::RandIter randIter(ID, 10, 0); // @fixme Set seed, bits
     LinBox::RandomDenseMatrix<typename IntegerDomain::RandIter, IntegerDomain> RDM(ID, randIter);
     RDM.randomFullRank(A);
+    b.random();
 
     RationalDomain RD;
     RationalVector x(RD, n);
-
-    // @fixme Generate random matrices
 
     if (verboseEnabled) {
         std::cout << "--- Testing " << SolveMethod::name() << " on " << matrixName<Matrix>::value << " over ";
