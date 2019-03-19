@@ -25,99 +25,54 @@
 
 using namespace LinBox;
 
-template <class Matrix>
-struct matrixName;
+namespace {
+    template <class Matrix>
+    struct matrixName;
 
-template <class MatrixArgs>
-struct matrixName<DenseMatrix<MatrixArgs>> {
-    static constexpr const char* value = "DenseMatrix";
-};
+    template <class MatrixArgs>
+    struct matrixName<DenseMatrix<MatrixArgs>> {
+        static constexpr const char* value = "DenseMatrix";
+    };
 
-template <class... MatrixArgs>
-struct matrixName<SparseMatrix<MatrixArgs...>> {
-    static constexpr const char* value = "SparseMatrix";
-};
+    template <class... MatrixArgs>
+    struct matrixName<SparseMatrix<MatrixArgs...>> {
+        static constexpr const char* value = "SparseMatrix";
+    };
+
+    enum : uint8_t {
+        TryDense = 0x1,
+        TrySparse = 0x2,
+        TryBoth = TryDense | TrySparse,
+    };
+}
 
 template <class SolveMethod, class ResultVector, class Matrix, class Vector>
-void print_error(const ResultVector& x, const Matrix& A, const Vector& b, bool verboseEnabled, std::string reason)
+void print_error(const ResultVector& x, const Matrix& A, const Vector& b, bool verbose, std::string reason)
 {
-    if (verboseEnabled) {
+    if (verbose) {
         A.write(std::cerr << "A: ", Tag::FileFormat::Maple) << std::endl;
         std::cerr << "b: " << b << std::endl;
         std::cerr << "x: " << x << std::endl;
     }
 
-    // @note Within our tests A square implies non-singular
-    bool singular = (A.rowdim() != A.coldim());
-    std::cerr << "==> " << SolveMethod::name() << " on " << (singular ? "" : "non-");
-    std::cerr << "singular " << matrixName<Matrix>::value << " over ";
+    std::cerr << "/!\\ " << SolveMethod::name() << " on " << matrixName<Matrix>::value << " over ";
     A.field().write(std::cerr);
-    std::cerr << " FAILS (" << reason << ")" << std::endl;
+    std::cerr << " of size " << A.rowdim() << "x" << A.coldim() << " FAILS (" << reason << ")" << std::endl;
 }
 
-template <class Ring, class SolveMethod>
-void run_integer(Communicator& communicator, bool verboseEnabled, size_t dimension)
+template <class SolveMethod, class Matrix, class Domain, class ResultDomain>
+bool test_solve(Domain& D, ResultDomain& RD,Communicator* pCommunicator, bool verbose, size_t m, size_t n)
 {
+    using Vector = DenseVector<Domain>;
+    using ResultVector = DenseVector<ResultDomain>;
 
-    // @fixme Test non-singular
-
-    // @fixme Test singular (rectangular)
-
-    Ring R;
-
-    BlasVector<Ring> b(R, dimension);
-    b.setEntry(0, 4);
-    b.setEntry(1, 6);
-
-    DenseMatrix<Ring> A(R, dimension, dimension);
-    A.setEntry(0, 0, 4);
-    A.setEntry(0, 1, 0);
-    A.setEntry(1, 0, 0);
-    A.setEntry(1, 1, 4);
-
-    SolveMethod method;
-    method.pCommunicator = &communicator;
-
-    // Rational vector interface will call (num, den) one
-    using RationalDomain = Givaro::QField<Givaro::Rational>;
-    RationalDomain F;
-    BlasVector<RationalDomain> x(F, dimension);
-
-    if (verboseEnabled) {
-        A.field().write(std::cout << "--------------- Testing " << SolveMethod::name() << " on DenseMatrix over ") << std::endl;
-    }
-
-    try {
-        solve(x, A, b, method);
-        solveInPlace(x, A, b, method);
-    } catch (...) {
-        print_error<SolveMethod>(x, A, b, verboseEnabled, "throws error");
-        return;
-    }
-
-    if (x[0].nume() != 1 || x[0].deno() != 1 || x[1].nume() != 3 || x[1].deno() != 2) {
-        print_error<SolveMethod>(x, A, b, verboseEnabled, "Ax != b");
-    }
-}
-
-template <class SolveMethod, class Matrix>
-bool test_rational_solve_with_matrix(Communicator& communicator, bool verboseEnabled, size_t m, size_t n)
-{
-    using RationalDomain = Givaro::QField<Givaro::Rational>;
-    using IntegerDomain = typename Matrix::Field;
-    using Vector = DenseVector<IntegerDomain>;
-    using RationalVector = DenseVector<RationalDomain>;
-
-    IntegerDomain ID;
-    Matrix A(ID, m, n);
-    Vector b(ID, m);
-
-    RationalDomain RD;
-    RationalVector x(RD, n);
+    Matrix A(D, m, n);
+    Vector b(D, m);
+    ResultVector x(RD, n);
 
     // @note RandomDenseMatrix can also fill a SparseMatrix, it has just a sparsity of 0.
-    typename IntegerDomain::RandIter randIter(ID, 10, 0); // @fixme Set seed, bits
-    LinBox::RandomDenseMatrix<typename IntegerDomain::RandIter, IntegerDomain> RDM(ID, randIter);
+    typename Domain::RandIter randIter(D, 10, 0); // @fixme Set seed, bits
+    LinBox::RandomDenseMatrix<typename Domain::RandIter, Domain> RDM(D, randIter);
     b.random();
 
     // @note Within our test m == n implies invertible,
@@ -129,25 +84,25 @@ bool test_rational_solve_with_matrix(Communicator& communicator, bool verboseEna
         RDM.random(A);
     }
 
-    if (verboseEnabled) {
+    if (verbose) {
         std::cout << "--- Testing " << SolveMethod::name() << " on " << matrixName<Matrix>::value << " over ";
-        ID.write(std::cout) << " of size " << m << "x" << n << std::endl;
+        D.write(std::cout) << " of size " << m << "x" << n << std::endl;
     }
 
     SolveMethod method;
-    method.pCommunicator = &communicator;
+    method.pCommunicator = pCommunicator;
 
     try {
         solve(x, A, b, method);
         solveInPlace(x, A, b, method);
     } catch (...) {
-        print_error<SolveMethod>(x, A, b, verboseEnabled, "throws error");
+        print_error<SolveMethod>(x, A, b, verbose, "throws error");
         return false;
     }
 
     // @fixme CHECK RESULT IS CORRECT
     // if (x[0] != 1 || x[1] != 52) {
-    // print_error<SolveMethod>(x, A, b, verboseEnabled, "Ax != b");
+    // print_error<SolveMethod>(x, A, b, verbose, "Ax != b");
     // return false;
     // }
 
@@ -156,61 +111,79 @@ bool test_rational_solve_with_matrix(Communicator& communicator, bool verboseEna
 
 // Testing rational solve over the integers
 template <class SolveMethod>
-void test_rational_solve(Communicator& communicator, bool verboseEnabled)
+void test_rational_solve(Communicator& communicator, uint8_t tryFlags, bool verbose)
 {
     using IntegerDomain = Givaro::ZRing<Integer>;
+    using RationalDomain = Givaro::QField<Givaro::Rational>;
 
-    // Testing invertible matrix
-    test_rational_solve_with_matrix<SolveMethod, DenseMatrix<IntegerDomain>>(communicator, verboseEnabled, 2, 2);
-    test_rational_solve_with_matrix<SolveMethod, SparseMatrix<IntegerDomain>>(communicator, verboseEnabled, 2, 2);
+    IntegerDomain D;
+    RationalDomain RD;
 
-    // Testing singular matrix
-    test_rational_solve_with_matrix<SolveMethod, DenseMatrix<IntegerDomain>>(communicator, verboseEnabled, 2, 3);
-    test_rational_solve_with_matrix<SolveMethod, SparseMatrix<IntegerDomain>>(communicator, verboseEnabled, 2, 3);
+    if (tryFlags & TryDense) {
+        // @fixme Forward n, m from arguments
+        test_solve<SolveMethod, DenseMatrix<IntegerDomain>>(D, RD, &communicator, verbose, 2, 2);
+        test_solve<SolveMethod, DenseMatrix<IntegerDomain>>(D, RD, &communicator, verbose, 2, 3);
+    }
+
+    if (tryFlags & TrySparse) {
+        test_solve<SolveMethod, SparseMatrix<IntegerDomain>>(D, RD, &communicator, verbose, 2, 2);
+        test_solve<SolveMethod, SparseMatrix<IntegerDomain>>(D, RD, &communicator, verbose, 2, 3);
+    }
+}
+
+// Testing solve over a finite field
+template <class SolveMethod>
+void test_modular_solve(uint8_t tryFlags, bool verbose)
+{
+    using ModularDomain = Givaro::Modular<double>;
+
+    ModularDomain D(101); // @fixme Use random or predefined as characteristic
+
+    if (tryFlags & TryDense) {
+        test_solve<SolveMethod, DenseMatrix<ModularDomain>>(D, D, nullptr, verbose, 2, 2);
+        test_solve<SolveMethod, DenseMatrix<ModularDomain>>(D, D, nullptr, verbose, 2, 3);
+    }
+
+    if (tryFlags & TrySparse) {
+        test_solve<SolveMethod, SparseMatrix<ModularDomain>>(D, D, nullptr, verbose, 2, 2);
+        test_solve<SolveMethod, SparseMatrix<ModularDomain>>(D, D, nullptr, verbose, 2, 3);
+    }
 }
 
 int main(int argc, char** argv)
 {
-    bool verboseEnabled = false;
+    bool verbose = false;
     bool loop = false;
 
-    static Argument args[] = {{'v', "-v", "Enable verbose mode.", TYPE_BOOL, &verboseEnabled},
+    static Argument args[] = {{'v', "-v", "Enable verbose mode.", TYPE_BOOL, &verbose},
                               {'l', "-l", "Infinite loop of tests.", TYPE_BOOL, &loop},
                               END_OF_ARGUMENTS};
 
     parseArguments(argc, argv, args);
 
-    if (verboseEnabled) {
+    if (verbose) {
         commentator().setReportStream(std::cout);
     }
 
     Communicator communicator(0, nullptr);
 
     do {
-        test_rational_solve<Method::Auto>(communicator, verboseEnabled);
-        test_rational_solve<Method::CraAuto>(communicator, verboseEnabled);
-        test_rational_solve<Method::Dixon>(communicator, verboseEnabled);
-        test_rational_solve<Method::NumericSymbolicOverlap>(communicator, verboseEnabled); // @fixme Singular case fails
-        test_rational_solve<Method::NumericSymbolicNorm>(communicator, verboseEnabled);    // @fixme Fails
+        // test_rational_solve<Method::Auto>(communicator, TryBoth, verbose);
+        // test_rational_solve<Method::CraAuto>(communicator, TryBoth, verbose);
+        // test_rational_solve<Method::Dixon>(communicator, TryBoth, verbose);
+        // test_rational_solve<Method::NumericSymbolicOverlap>(communicator, TryDense, verbose); // @fixme Singular case fails
+        // test_rational_solve<Method::NumericSymbolicNorm>(communicator, TryDense, verbose);    // @fixme Fails
 
-        // run_modular<DenseMatrix<Givaro::Modular<double>>, Method::Auto>(verboseEnabled);
-        // run_modular<SparseMatrix<Givaro::Modular<double>>, Method::Auto>(verboseEnabled);
-        // run_modular<DenseMatrix<Givaro::Modular<double>>, Method::DenseElimination>();
-        // run_modular<SparseMatrix<Givaro::Modular<double>>, Method::DenseElimination>();
-        // run_modular<DenseMatrix<Givaro::Modular<double>>, Method::SparseElimination>();
-        // run_modular<SparseMatrix<Givaro::Modular<double>>, Method::SparseElimination>();
-        // run_modular<DenseMatrix<Givaro::Modular<double>>, Method::Wiedemann>(); // @fixme Can't compile
-        // run_modular<SparseMatrix<Givaro::Modular<double>>, Method::Wiedemann>(verboseEnabled);
-        // run_modular<DenseMatrix<Givaro::Modular<double>>, Method::Lanczos>(); // @fixme Segmentation fault
-        // run_modular<SparseMatrix<Givaro::Modular<double>>, Method::Lanczos>(); // @fixme Segmentation fault
-        // run_modular<DenseMatrix<Givaro::Modular<double>>, Method::BlockLanczos>(); // @fixme Can't compile
-        // run_modular<SparseMatrix<Givaro::Modular<double>>, Method::BlockLanczos>(); // @fixme Segmentation fault
+        test_modular_solve<Method::Auto>(TryBoth, verbose);
+        test_modular_solve<Method::DenseElimination>(TryBoth, verbose);
+        test_modular_solve<Method::SparseElimination>(TryBoth, verbose);
+        // test_modular_solve<Method::Wiedemann>(TryBoth, verbose);
+        // test_modular_solve<Method::Lanczos>(TryBoth, verbose);
+        // test_modular_solve<Method::BlockLanczos>(TryBoth, verbose);
 
         // @deprecated These do not compile anymore
-        // run_modular<DenseMatrix<Givaro::Modular<double>>, Method::BlockWiedemann>();
-        // run_modular<DenseMatrix<Givaro::Modular<double>>, Method::Coppersmith>();
-
-        // @fixme Test rectangular matrices...
+        // test_modular_solve<Method::BlockWiedemann>(TryBoth, verbose);
+        // test_modular_solve<Method::Coppersmith>(TryBoth, verbose);
     } while (loop);
 
     return 0;
