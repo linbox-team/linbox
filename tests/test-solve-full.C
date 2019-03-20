@@ -46,8 +46,7 @@ namespace {
     }
 
     template <class SolveMethod, class ResultVector, class Matrix, class Vector>
-    void print_error(const ResultVector& x, const Matrix& A, const Vector& b, int m, int n, int bitSize, int seed, bool verbose,
-                     std::string reason)
+    void print_error(const ResultVector& x, const Matrix& A, const Vector& b, bool verbose, std::string reason)
     {
         if (verbose) {
             A.write(std::cerr << "A: ", Tag::FileFormat::Maple) << std::endl;
@@ -66,6 +65,10 @@ bool test_solve(Domain& D, ResultDomain& RD, Communicator* pCommunicator, int m,
 {
     using Vector = DenseVector<Domain>;
     using ResultVector = DenseVector<ResultDomain>;
+
+    //
+    // Generating data
+    //
 
     Matrix A(D, m, n);
     Vector b(D, m);
@@ -90,6 +93,18 @@ bool test_solve(Domain& D, ResultDomain& RD, Communicator* pCommunicator, int m,
         D.write(std::cout) << " of size " << m << "x" << n << std::endl;
     }
 
+    //
+    // Copying data for final check
+    //
+
+    using ResultMatrix = typename Matrix::template rebind<ResultDomain>::other;
+    ResultMatrix RA(A, RD);
+    ResultVector Rb(RD, b);
+
+    //
+    // Solving
+    //
+
     SolveMethod method;
     method.pCommunicator = pCommunicator;
 
@@ -97,15 +112,22 @@ bool test_solve(Domain& D, ResultDomain& RD, Communicator* pCommunicator, int m,
         solve(x, A, b, method);
         solveInPlace(x, A, b, method);
     } catch (...) {
-        print_error<SolveMethod>(x, A, b, m, n, bitSize, seed, verbose, "throws error");
+        print_error<SolveMethod>(x, A, b, verbose, "throws error");
         return false;
     }
 
-    // @fixme CHECK RESULT IS CORRECT
-    // if (x[0] != 1 || x[1] != 52) {
-    // print_error<SolveMethod>(x, A, b, m, n, bitSize, seed, verbose, "Ax != b");
-    // return false;
-    // }
+    //
+    // Checking result is correct
+    //
+
+    ResultVector RAx(RD, RA.coldim());
+    RA.apply(RAx, x);
+
+    VectorDomain<ResultDomain> VD(RD);
+    if (!VD.areEqual(RAx, Rb)) {
+        print_error<SolveMethod>(x, A, b, verbose, "Ax != b");
+        return false;
+    }
 
     return true;
 }
@@ -123,10 +145,8 @@ bool test_rational_solve(Communicator& communicator, int m, int n, int bitSize, 
     IntegerDomain D;
     RationalDomain RD;
 
-    // @fixme Add a test for blackboxes
-
     bool ok = true;
-    ok &= test_solve<SolveMethod, Matrix>(D, RD, &communicator, m, n, bitSize, seed, verbose);
+    ok &= test_solve<SolveMethod, Matrix>(D, RD, &communicator, m, m, bitSize, seed, verbose);
     ok &= test_solve<SolveMethod, Matrix>(D, RD, &communicator, m, n, bitSize, seed, verbose);
     return ok;
 }
@@ -167,10 +187,8 @@ bool test_modular_solve(Integer& q, int m, int n, int bitSize, int seed, bool ve
 
     ModularDomain D(q);
 
-    // @fixme Add a test for blackboxes
-
     bool ok = true;
-    ok &= test_solve<SolveMethod, Matrix>(D, D, nullptr, m, n, bitSize, seed, verbose);
+    ok &= test_solve<SolveMethod, Matrix>(D, D, nullptr, m, m, bitSize, seed, verbose);
     ok &= test_solve<SolveMethod, Matrix>(D, D, nullptr, m, n, bitSize, seed, verbose);
     return ok;
 }
@@ -241,7 +259,7 @@ int main(int argc, char** argv)
         // @fixme Singular case fails
         // ok &= test_dense_rational_solve<Method::NumericSymbolicOverlap>(communicator, m, n, bitSize, seed, verbose);
         // @fixme Fails
-        // ok &= test_dense_rational_solve<Method::NumericSymbolicNorm>(communicator, m, n, bitSize, seed, verbose);
+        // ok &= test_sparse_rational_solve<Method::NumericSymbolicNorm>(communicator, m, n, bitSize, seed, verbose);
 
         ok &= test_all_modular_solve<Method::Auto>(q, m, n, bitSize, seed, verbose);
         ok &= test_all_modular_solve<Method::Auto>(q, m, n, bitSize, seed, verbose);
@@ -271,7 +289,7 @@ int main(int argc, char** argv)
         }
 
         seed += 1;
-    } while (loop);
+    } while (ok && loop);
 
     return 0;
 }
