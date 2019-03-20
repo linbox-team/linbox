@@ -46,7 +46,7 @@ namespace {
     }
 
     template <class SolveMethod, class ResultVector, class Matrix, class Vector>
-    void print_error(const ResultVector& x, const Matrix& A, const Vector& b, int bitSize, int seed, bool verbose,
+    void print_error(const ResultVector& x, const Matrix& A, const Vector& b, int m, int n, int bitSize, int seed, bool verbose,
                      std::string reason)
     {
         if (verbose) {
@@ -62,7 +62,7 @@ namespace {
 }
 
 template <class SolveMethod, class Matrix, class Domain, class ResultDomain>
-bool test_solve(Domain& D, ResultDomain& RD, Communicator* pCommunicator, int bitSize, int seed, bool verbose, size_t m, size_t n)
+bool test_solve(Domain& D, ResultDomain& RD, Communicator* pCommunicator, int m, int n, int bitSize, int seed, bool verbose)
 {
     using Vector = DenseVector<Domain>;
     using ResultVector = DenseVector<ResultDomain>;
@@ -97,13 +97,13 @@ bool test_solve(Domain& D, ResultDomain& RD, Communicator* pCommunicator, int bi
         solve(x, A, b, method);
         solveInPlace(x, A, b, method);
     } catch (...) {
-        print_error<SolveMethod>(x, A, b, bitSize, seed, verbose, "throws error");
+        print_error<SolveMethod>(x, A, b, m, n, bitSize, seed, verbose, "throws error");
         return false;
     }
 
     // @fixme CHECK RESULT IS CORRECT
     // if (x[0] != 1 || x[1] != 52) {
-    // print_error<SolveMethod>(x, A, b, bitSize, seed, verbose, "Ax != b");
+    // print_error<SolveMethod>(x, A, b, m, n, bitSize, seed, verbose, "Ax != b");
     // return false;
     // }
 
@@ -115,7 +115,7 @@ bool test_solve(Domain& D, ResultDomain& RD, Communicator* pCommunicator, int bi
 //
 
 template <class SolveMethod, class Matrix>
-bool test_rational_solve(Communicator& communicator, int bitSize, int seed, bool verbose)
+bool test_rational_solve(Communicator& communicator, int m, int n, int bitSize, int seed, bool verbose)
 {
     using IntegerDomain = Givaro::ZRing<Integer>;
     using RationalDomain = Givaro::QField<Givaro::Rational>;
@@ -123,36 +123,37 @@ bool test_rational_solve(Communicator& communicator, int bitSize, int seed, bool
     IntegerDomain D;
     RationalDomain RD;
 
-    // @fixme Get matrix dimensions
+    // @fixme Add a test for blackboxes
+
     bool ok = true;
-    ok &= test_solve<SolveMethod, Matrix>(D, RD, &communicator, bitSize, seed, verbose, 2, 2);
-    ok &= test_solve<SolveMethod, Matrix>(D, RD, &communicator, bitSize, seed, verbose, 2, 3);
+    ok &= test_solve<SolveMethod, Matrix>(D, RD, &communicator, m, n, bitSize, seed, verbose);
+    ok &= test_solve<SolveMethod, Matrix>(D, RD, &communicator, m, n, bitSize, seed, verbose);
     return ok;
 }
 
 template <class SolveMethod>
-bool test_all_rational_solve(Communicator& communicator, int bitSize, int seed, bool verbose)
+bool test_all_rational_solve(Communicator& communicator, int m, int n, int bitSize, int seed, bool verbose)
 {
     using IntegerDomain = Givaro::ZRing<Integer>;
 
     bool ok = true;
-    ok &= test_rational_solve<SolveMethod, DenseMatrix<IntegerDomain>>(communicator, bitSize, seed, verbose);
-    ok &= test_rational_solve<SolveMethod, SparseMatrix<IntegerDomain>>(communicator, bitSize, seed, verbose);
+    ok &= test_rational_solve<SolveMethod, DenseMatrix<IntegerDomain>>(communicator, m, n, bitSize, seed, verbose);
+    ok &= test_rational_solve<SolveMethod, SparseMatrix<IntegerDomain>>(communicator, m, n, bitSize, seed, verbose);
     return ok;
 }
 
 template <class SolveMethod>
-bool test_dense_rational_solve(Communicator& communicator, int bitSize, int seed, bool verbose)
+bool test_dense_rational_solve(Communicator& communicator, int m, int n, int bitSize, int seed, bool verbose)
 {
     using IntegerDomain = Givaro::ZRing<Integer>;
-    return test_rational_solve<SolveMethod, DenseMatrix<IntegerDomain>>(communicator, bitSize, seed, verbose);
+    return test_rational_solve<SolveMethod, DenseMatrix<IntegerDomain>>(communicator, m, n, bitSize, seed, verbose);
 }
 
 template <class SolveMethod>
-bool test_sparse_rational_solve(Communicator& communicator, int bitSize, int seed, bool verbose)
+bool test_sparse_rational_solve(Communicator& communicator, int m, int n, int bitSize, int seed, bool verbose)
 {
     using IntegerDomain = Givaro::ZRing<Integer>;
-    return test_rational_solve<SolveMethod, SparseMatrix<IntegerDomain>>(communicator, bitSize, seed, verbose);
+    return test_rational_solve<SolveMethod, SparseMatrix<IntegerDomain>>(communicator, m, n, bitSize, seed, verbose);
 }
 
 //
@@ -160,42 +161,43 @@ bool test_sparse_rational_solve(Communicator& communicator, int bitSize, int see
 //
 
 template <class SolveMethod, class Matrix>
-bool test_modular_solve(Integer& q, int bitSize, int seed, bool verbose)
+bool test_modular_solve(Integer& q, int m, int n, int bitSize, int seed, bool verbose)
 {
     using ModularDomain = Givaro::Modular<double>;
 
     ModularDomain D(q);
 
-    // @fixme Get dimensions from somewhere
+    // @fixme Add a test for blackboxes
+
     bool ok = true;
-    ok &= test_solve<SolveMethod, Matrix>(D, D, nullptr, bitSize, seed, verbose, 2, 2);
-    ok &= test_solve<SolveMethod, Matrix>(D, D, nullptr, bitSize, seed, verbose, 2, 3);
+    ok &= test_solve<SolveMethod, Matrix>(D, D, nullptr, m, n, bitSize, seed, verbose);
+    ok &= test_solve<SolveMethod, Matrix>(D, D, nullptr, m, n, bitSize, seed, verbose);
     return ok;
 }
 
 template <class SolveMethod>
-bool test_all_modular_solve(Integer& q, int bitSize, int seed, bool verbose)
+bool test_all_modular_solve(Integer& q, int m, int n, int bitSize, int seed, bool verbose)
 {
     using ModularDomain = Givaro::Modular<double>;
 
     bool ok = true;
-    ok &= test_modular_solve<SolveMethod, DenseMatrix<ModularDomain>>(q, bitSize, seed, verbose);
-    ok &= test_modular_solve<SolveMethod, SparseMatrix<ModularDomain>>(q, bitSize, seed, verbose);
+    ok &= test_modular_solve<SolveMethod, DenseMatrix<ModularDomain>>(q, m, n, bitSize, seed, verbose);
+    ok &= test_modular_solve<SolveMethod, SparseMatrix<ModularDomain>>(q, m, n, bitSize, seed, verbose);
     return ok;
 }
 
 template <class SolveMethod>
-bool test_dense_modular_solve(Integer& q, int bitSize, int seed, bool verbose)
+bool test_dense_modular_solve(Integer& q, int m, int n, int bitSize, int seed, bool verbose)
 {
     using ModularDomain = Givaro::Modular<double>;
-    return test_modular_solve<SolveMethod, DenseMatrix<ModularDomain>>(q, bitSize, seed, verbose);
+    return test_modular_solve<SolveMethod, DenseMatrix<ModularDomain>>(q, m, n, bitSize, seed, verbose);
 }
 
 template <class SolveMethod>
-bool test_sparse_modular_solve(Integer& q, int bitSize, int seed, bool verbose)
+bool test_sparse_modular_solve(Integer& q, int m, int n, int bitSize, int seed, bool verbose)
 {
     using ModularDomain = Givaro::Modular<double>;
-    return test_modular_solve<SolveMethod, SparseMatrix<ModularDomain>>(q, bitSize, seed, verbose);
+    return test_modular_solve<SolveMethod, SparseMatrix<ModularDomain>>(q, m, n, bitSize, seed, verbose);
 }
 
 int main(int argc, char** argv)
@@ -205,12 +207,16 @@ int main(int argc, char** argv)
     bool loop = false;
     int seed = -1;
     int bitSize = 100;
+    int m = 32;
+    int n = 24;
 
     static Argument args[] = {{'q', "-q", "Field characteristic.", TYPE_INTEGER, &q},
                               {'v', "-v", "Enable verbose mode.", TYPE_BOOL, &verbose},
                               {'l', "-l", "Infinite loop of tests.", TYPE_BOOL, &loop},
                               {'s', "-s", "Seed for randomness.", TYPE_INT, &seed},
                               {'b', "-b", "Bit size for rational solve tests.", TYPE_INT, &bitSize},
+                              {'m', "-m", "Row dimension of matrices.", TYPE_INT, &m},
+                              {'n', "-n", "Column dimension of matrices.", TYPE_INT, &n},
                               END_OF_ARGUMENTS};
 
     if (seed < 0) {
@@ -227,30 +233,38 @@ int main(int argc, char** argv)
     Communicator communicator(0, nullptr);
 
     do {
-        // @fixme Add a test for blackboxes
+        ok &= test_all_rational_solve<Method::Auto>(communicator, m, n, bitSize, seed, verbose);
+        ok &= test_all_rational_solve<Method::CraAuto>(communicator, m, n, bitSize, seed, verbose);
+        ok &= test_all_rational_solve<Method::Dixon>(communicator, m, n, bitSize, seed, verbose);
 
-        // ok &= test_all_rational_solve<Method::Auto>(communicator, bitSize, seed, verbose);
-        // ok &= test_all_rational_solve<Method::CraAuto>(communicator, bitSize, seed, verbose);
-        // ok &= test_all_rational_solve<Method::Dixon>(communicator, bitSize, seed, verbose);
+        // @note NumericSymbolic methods are only implemented on DenseMatrix
+        // @fixme Singular case fails
+        // ok &= test_dense_rational_solve<Method::NumericSymbolicOverlap>(communicator, m, n, bitSize, seed, verbose);
+        // @fixme Fails
+        // ok &= test_dense_rational_solve<Method::NumericSymbolicNorm>(communicator, m, n, bitSize, seed, verbose);
 
-        // // @note NumericSymbolic methods are only implemented on DenseMatrix
-        // ok &= test_dense_rational_solve<Method::NumericSymbolicOverlap>(communicator, bitSize, seed, verbose); // @fixme
-        // Singular case fails ok &= test_dense_rational_solve<Method::NumericSymbolicNorm>(communicator, bitSize, seed, verbose);
-        // // @fixme Fails
+        ok &= test_all_modular_solve<Method::Auto>(q, m, n, bitSize, seed, verbose);
+        ok &= test_all_modular_solve<Method::Auto>(q, m, n, bitSize, seed, verbose);
+        ok &= test_all_modular_solve<Method::DenseElimination>(q, m, n, bitSize, seed, verbose);
+        ok &= test_all_modular_solve<Method::SparseElimination>(q, m, n, bitSize, seed, verbose);
 
-        ok &= test_all_modular_solve<Method::Auto>(q, bitSize, seed, verbose);
-        ok &= test_all_modular_solve<Method::Auto>(q, bitSize, seed, verbose);
-        ok &= test_all_modular_solve<Method::DenseElimination>(q, bitSize, seed, verbose);
-        ok &= test_all_modular_solve<Method::SparseElimination>(q, bitSize, seed, verbose);
-        ok &= test_all_modular_solve<Method::Lanczos>(q, bitSize, seed, verbose);
-        // ok &= test_dense_modular_solve<Method::Wiedemann>(q, bitSize, seed, verbose); // @fixme Dense does not compile
-        ok &= test_sparse_modular_solve<Method::Wiedemann>(q, bitSize, seed, verbose);
-        // ok &= test_dense_modular_solve<Method::BlockLanczos>(q, bitSize, seed, verbose); // @fixme Dense does not compile
-        // ok &= test_sparse_modular_solve<Method::BlockLanczos>(q, bitSize, seed, verbose); // @fixme Segfaulting
+        // @fixme Dense does not compile
+        // ok &= test_dense_modular_solve<Method::Wiedemann>(q, m, n, bitSize, seed, verbose);
+        ok &= test_sparse_modular_solve<Method::Wiedemann>(q, m, n, bitSize, seed, verbose);
+
+        // @fixme Dense is segfaulting
+        // ok &= test_dense_modular_solve<Method::Lanczos>(q, m, n, bitSize, seed, verbose);
+        // @fixme Singular case fails
+        // ok &= test_sparse_modular_solve<Method::Lanczos>(q, m, n, bitSize, seed, verbose);
+
+        // @fixme Dense does not compile
+        // ok &= test_dense_modular_solve<Method::BlockLanczos>(q, m, n, bitSize, seed, verbose);
+        // @fixme Sparse is segfaulting
+        // ok &= test_sparse_modular_solve<Method::BlockLanczos>(q, m, n, bitSize, seed, verbose);
 
         // @deprecated These do not compile anymore
-        // ok &= test_all_modular_solve<Method::BlockWiedemann>(q, bitSize, seed, verbose);
-        // ok &= test_all_modular_solve<Method::Coppersmith>(q, bitSize, seed, verbose);
+        // ok &= test_all_modular_solve<Method::BlockWiedemann>(q, m, n, bitSize, seed, verbose);
+        // ok &= test_all_modular_solve<Method::Coppersmith>(q, m, n, bitSize, seed, verbose);
 
         if (!ok) {
             std::cerr << "Failed with seed: " << seed << std::endl;
