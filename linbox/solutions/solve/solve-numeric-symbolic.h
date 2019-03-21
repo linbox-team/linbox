@@ -37,17 +37,17 @@ namespace LinBox {
 
     template <class Matrix, class Vector>
     inline void solve(Vector& xNum, typename Vector::Element& xDen, const Matrix& A, const Vector& b,
-                      const RingCategories::IntegerTag& tag, const Method::NumericSymbolicOverlap& m)
+                      const RingCategories::IntegerTag& tag, const Method::SymbolicNumericOverlap& m)
     {
-        throw LinBoxError("Rational solve with Method::NumericSymbolicOverlap only works with DenseMatrix.");
+        throw LinBoxError("Rational solve with Method::SymbolicNumericOverlap only works with DenseMatrix.");
     }
 
     /**
-     * \brief Solve specialisation for NumericSymbolicOverlap with IntegerTag on DenseMatrix.
+     * \brief Solve specialisation for SymbolicNumericOverlap with IntegerTag on DenseMatrix.
      */
     template <class Ring, class Vector>
     inline void solve(Vector& xNum, typename Ring::Element& xDen, const DenseMatrix<Ring>& A, const Vector& b,
-                      const RingCategories::IntegerTag& tag, const Method::NumericSymbolicOverlap& m)
+                      const RingCategories::IntegerTag& tag, const Method::SymbolicNumericOverlap& m)
     {
         commentator().start("solve.numeric-symbolic-overlap.integer");
         linbox_check((A.coldim() == xNum.size()) && (A.rowdim() == b.size()));
@@ -64,10 +64,10 @@ namespace LinBox {
         commentator().stop("solve.numeric-symbolic-overlap.integer");
 
         if (status == SNSS_INCONSISTENT) {
-            throw LinboxMathInconsistentSystem("From NumericSymbolicOverlap solve.");
+            throw LinboxMathInconsistentSystem("From SymbolicNumericOverlap solve.");
         }
         else if (status != SNSS_OK) {
-            throw LinboxError("Failed to solve with NumericSymbolicOverlap.");
+            throw LinboxError("Failed to solve with SymbolicNumericOverlap.");
         }
     }
 
@@ -78,17 +78,17 @@ namespace LinBox {
 
     template <class Matrix, class Vector>
     inline void solve(Vector& xNum, typename Vector::Element& xDen, const Matrix& A, const Vector& b,
-                      const RingCategories::IntegerTag& tag, const Method::NumericSymbolicNorm& m)
+                      const RingCategories::IntegerTag& tag, const Method::SymbolicNumericNorm& m)
     {
-        throw LinBoxError("Rational solve with Method::NumericSymbolicNorm only works with DenseMatrix.");
+        throw LinBoxError("Rational solve with Method::SymbolicNumericNorm only works with DenseMatrix.");
     }
 
     /**
-     * \brief Solve specialisation for NumericSymbolicNorm with IntegerTag on DenseMatrix.
+     * \brief Solve specialisation for SymbolicNumericNorm with IntegerTag on DenseMatrix.
      */
     template <class Ring, class Vector>
     inline void solve(Vector& xNum, typename Ring::Element& xDen, const DenseMatrix<Ring>& A, const Vector& b,
-                      const RingCategories::IntegerTag& tag, const Method::NumericSymbolicNorm& m)
+                      const RingCategories::IntegerTag& tag, const Method::SymbolicNumericNorm& m)
     {
         commentator().start("solve.numeric-symbolic-norm.integer");
         linbox_check((A.coldim() == xNum.size()) && (A.rowdim() == b.size()));
@@ -96,17 +96,17 @@ namespace LinBox {
         using Field = Givaro::Modular<int32_t>; // @fixme Why not double?
         using PrimeGenerator = PrimeIterator<IteratorCategories::HeuristicTag>;
 
-        RationalSolver<Ring, Field, PrimeGenerator, Method::NumericSymbolicNorm> rsolver(b.field());
+        RationalSolver<Ring, Field, PrimeGenerator, Method::SymbolicNumericNorm> rsolver(b.field());
 
         SolverReturnStatus status = rsolver.solve(xNum, xDen, A, b);
 
         commentator().stop("solve.numeric-symbolic-norm.integer");
 
         if (status == SS_INCONSISTENT) {
-            throw LinboxMathInconsistentSystem("From NumericSymbolicNorm solve.");
+            throw LinboxMathInconsistentSystem("From SymbolicNumericNorm solve.");
         }
         else if (status != SS_OK) {
-            throw LinboxError("Failed to solve with NumericSymbolicNorm.");
+            throw LinboxError("Failed to solve with SymbolicNumericNorm.");
         }
     }
 }

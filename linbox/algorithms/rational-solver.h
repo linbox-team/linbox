@@ -913,7 +913,7 @@ namespace LinBox
 		Keep it just for interface consistency.
 	 */
 	template <class Ring, class Field, class RandomPrime>
-	class RationalSolver<Ring, Field, RandomPrime, Method::NumericSymbolicOverlap>;
+	class RationalSolver<Ring, Field, RandomPrime, Method::SymbolicNumericOverlap>;
 
 	/** \brief solver using a hybrid Numeric/Symbolic computation.
 	 *
@@ -929,7 +929,7 @@ namespace LinBox
 	//template argument Field and RandomPrime are not used.
 	//Keep it just for interface consistency.
 	template <class Ring, class Field, class RandomPrime>
-	class RationalSolver<Ring, Field, RandomPrime, Method::NumericSymbolicNorm> ;
+	class RationalSolver<Ring, Field, RandomPrime, Method::SymbolicNumericNorm> ;
 
 #if 0
 	/*--------------*/

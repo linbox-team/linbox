@@ -255,11 +255,11 @@ int main(int argc, char** argv)
         ok &= test_all_rational_solve<Method::CRAAuto>(communicator, m, n, bitSize, seed, verbose);
         ok &= test_all_rational_solve<Method::Dixon>(communicator, m, n, bitSize, seed, verbose);
 
-        // @note NumericSymbolic methods are only implemented on DenseMatrix
+        // @note SymbolicNumeric methods are only implemented on DenseMatrix
         // @fixme Singular case fails
-        // ok &= test_dense_rational_solve<Method::NumericSymbolicOverlap>(communicator, m, n, bitSize, seed, verbose);
+        // ok &= test_dense_rational_solve<Method::SymbolicNumericOverlap>(communicator, m, n, bitSize, seed, verbose);
         // @fixme Fails
-        // ok &= test_sparse_rational_solve<Method::NumericSymbolicNorm>(communicator, m, n, bitSize, seed, verbose);
+        // ok &= test_sparse_rational_solve<Method::SymbolicNumericNorm>(communicator, m, n, bitSize, seed, verbose);
 
         ok &= test_all_modular_solve<Method::Auto>(q, m, n, bitSize, seed, verbose);
         ok &= test_all_modular_solve<Method::Auto>(q, m, n, bitSize, seed, verbose);

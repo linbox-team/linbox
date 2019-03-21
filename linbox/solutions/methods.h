@@ -233,13 +233,13 @@ namespace LinBox {
         // and finally reconstruct the solution.
         DEFINE_COMPOUND_METHOD(CRA, RingCategories::IntegerTag);
 
-        // Method::NumericSymbolicOverlap uses Youse's overlap-based numeric/symbolic iteration.
+        // Method::SymbolicNumericOverlap uses Youse's overlap-based numeric/symbolic iteration.
         // (Numeric symbolic overlap iteration - Saunders, Wood, Youse ISSAC 2011)
-        DEFINE_METHOD(NumericSymbolicOverlap, RingCategories::IntegerTag);
+        DEFINE_METHOD(SymbolicNumericOverlap, RingCategories::IntegerTag);
 
-        // Method::NumericSymbolicNorm uses Wan's (older) norm-based numeric/symbolic iteration.
+        // Method::SymbolicNumericNorm uses Wan's (older) norm-based numeric/symbolic iteration.
         // (Numeric symbolic norm iteration - Saunders, Wan ISSAC 2004)
-        DEFINE_METHOD(NumericSymbolicNorm, RingCategories::IntegerTag);
+        DEFINE_METHOD(SymbolicNumericNorm, RingCategories::IntegerTag);
 
         //
         // Blackbox methods

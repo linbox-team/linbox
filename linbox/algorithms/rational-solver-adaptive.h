@@ -45,8 +45,8 @@ namespace LinBox
 			linbox_check ((M. rowdim() == M. coldim()) && (b.size() == M.rowdim()) && (num. size() ==M.coldim()));
 			typedef Givaro::Modular<int32_t> Field;
 			// typedef Givaro::Modular<double> Field;
-			RationalSolver<IRing, Field, PrimeIterator<IteratorCategories::HeuristicTag>, Method::NumericSymbolicNorm> numerical_solver;
-			//RationalSolver<IRing, Field, PrimeIterator<IteratorCategories::HeuristicTag>, Method::NumericSymbolicOverlap> numerical_solver;
+			RationalSolver<IRing, Field, PrimeIterator<IteratorCategories::HeuristicTag>, Method::SymbolicNumericNorm> numerical_solver;
+			//RationalSolver<IRing, Field, PrimeIterator<IteratorCategories::HeuristicTag>, Method::SymbolicNumericOverlap> numerical_solver;
 			SolverReturnStatus ret;
 			ret = numerical_solver. solve(num, den, M, b);
 
@@ -74,7 +74,7 @@ namespace LinBox
 			linbox_check ((M. rowdim() == M. coldim()) && (b.size() == M.rowdim()) && (num. size() ==M.coldim()));
 			typedef Givaro::Modular<int32_t> Field;
 			// typedef Givaro::Modular<double> Field;
-			RationalSolver<IRing, Field, PrimeIterator<IteratorCategories::HeuristicTag>, Method::NumericSymbolicOverlap> numerical_solver;
+			RationalSolver<IRing, Field, PrimeIterator<IteratorCategories::HeuristicTag>, Method::SymbolicNumericOverlap> numerical_solver;
 			SolverReturnStatus ret;
 			ret = numerical_solver. solve(num, den, M, b);
 
