@@ -356,7 +356,7 @@ namespace LinBox
 		}
 		else {
 			commentator().stop ("done", "Solve failed", "BlockLanczosSolver::solve");
-			throw LinboxError ();
+			throw SolveFailed ();
 		}
 	}
 

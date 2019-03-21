@@ -152,8 +152,8 @@ pkgincludesub_HEADERS =            \
 	toeplitz-det.h                     \
 	triangular-solve-gf2.h             \
 	triangular-solve.h                 \
-	varprec-cra-builder-early-multip.h         \
-	varprec-cra-builder-early-single.h         \
+	cra-builder-var-prec-early-multip.h         \
+	cra-builder-var-prec-early-single.h         \
 	vector-fraction.h                  \
 	weak-popov-form.h                  \
 	whisart_trace.h                    \

@@ -160,7 +160,7 @@ namespace LinBox
 #include "linbox/algorithms/matrix-hom.h"
 
 #include "linbox/algorithms/rational-cra2.h"
-#include "linbox/algorithms/varprec-cra-builder-early-multip.h"
+#include "linbox/algorithms/cra-builder-var-prec-early-multip.h"
 #include "linbox/algorithms/charpoly-rational.h"
 
 namespace LinBox
@@ -315,7 +315,7 @@ namespace LinBox
 
 #if 0
 #include "linbox/algorithms/rational-cra2.h"
-#include "linbox/algorithms/varprec-cra-builder-early-multip.h"
+#include "linbox/algorithms/cra-builder-var-prec-early-multip.h"
 #include "linbox/algorithms/charpoly-rational.h"
 
 	namespace LinBox
@@ -375,9 +375,9 @@ namespace LinBox
 		size_t n=A.coldim();
 		double hadamarcp = n/2.0*(log(double(n))+2*log(double(max))+0.21163275)/log(2.0);
 
-		Cra< CraBuilderFullMultip<Field > > cra(hadamarcp);
+		Cra< CRABuilderFullMultip<Field > > cra(hadamarcp);
 #endif
-		Cra< CraBuilderEarlyMultip<Field > > cra(3UL);
+		Cra< CRABuilderEarlyMultip<Field > > cra(3UL);
 
 		IntegerModularCharpoly<Blackbox,Method::Blackbox> iteration(A, M);
 		cra.operator() (P, iteration, genprime);
@@ -419,9 +419,9 @@ namespace LinBox
 		double hadamarcp = n/2.0*(log(double(n))+2*log(double(max))+0.21163275)/log(2.0);
 
 
-		Cra< CraBuilderFullMultip<Field > > cra(hadamarcp);
+		Cra< CRABuilderFullMultip<Field > > cra(hadamarcp);
 #endif
-		Cra< CraBuilderEarlyMultip<Field > > cra(3UL);
+		Cra< CRABuilderEarlyMultip<Field > > cra(3UL);
         IntegerModularCharpoly<Blackbox,Method::DenseElimination> iteration(A, M);
 		cra (P, iteration, genprime);
 		commentator().stop ("done", NULL, "IbbCharpoly");
@@ -467,7 +467,7 @@ namespace LinBox
 
         typedef Givaro::ModularBalanced<double> Field;
 		PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
-		RationalRemainder2< VarprecCraBuilderEarlyMultip<Field > > rra(3UL);
+		RationalRemainder2< CRABuilderVarPrecEarlyMultip<Field > > rra(3UL);
 		IntegerModularCharpoly<Blackbox,MyMethod> iteration(A, M);
 
 		Givaro::ZRing<Integer> Z;

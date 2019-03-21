@@ -93,7 +93,6 @@ int main (int argc, char **argv)
 		std::cout << ']' << std::endl;
 
             // Generator for a random solution if over-determined
-        typename Rats::RandIter generator(QQ,0,BaseTimer::seed() );
 
 		Timer chrono;
 
@@ -101,7 +100,8 @@ int main (int argc, char **argv)
 
 		std::cout << "Sparse Elimination" << std::endl;
 		chrono.start();
-		// @fixme Can't pass a Randiter anymore
+        // @fixme Can't pass a Randiter anymore, we need an API through Method to set seed or such
+        // typename Rats::RandIter generator(QQ,0,BaseTimer::seed() );
         // solveInPlace (X, A, B, Method::SparseElimination(), generator);
 		solveInPlace (X, A, B, Method::SparseElimination());
 		chrono.stop();

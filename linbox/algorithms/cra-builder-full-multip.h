@@ -57,10 +57,10 @@ namespace LinBox
      * to another shelf, recursively.
 	 */
 	template<class Domain_Type>
-	struct CraBuilderFullMultip {
+	struct CRABuilderFullMultip {
 		typedef Domain_Type			Domain;
 		typedef typename Domain::Element DomainElement;
-		typedef CraBuilderFullMultip<Domain> 		Self_t;
+		typedef CRABuilderFullMultip<Domain> 		Self_t;
 
     public:
         struct Shelf {
@@ -88,7 +88,7 @@ namespace LinBox
          * @param bnd  upper bound on the natural logarithm of the result
          * @param dim  dimension of the vector to be reconstructed
          */
-		CraBuilderFullMultip(const double bnd=0.0, size_t dim=0) :
+		CRABuilderFullMultip(const double bnd=0.0, size_t dim=0) :
 			LOGARITHMIC_UPPER_BOUND(bnd), dimension_(dim)
 		{}
 

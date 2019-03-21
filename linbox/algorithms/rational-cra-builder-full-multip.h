@@ -32,15 +32,15 @@ namespace LinBox
 {
 
 	template<class Domain_Type>
-	struct RationalCraBuilderFullMultip : public virtual CraBuilderFullMultip<Domain_Type> {
+	struct RationalCRABuilderFullMultip : public virtual CRABuilderFullMultip<Domain_Type> {
 		typedef Domain_Type				Domain;
-		typedef CraBuilderFullMultip<Domain> 			Father_t;
+		typedef CRABuilderFullMultip<Domain> 			Father_t;
 		typedef typename Father_t::DomainElement 	DomainElement;
-		typedef RationalCraBuilderFullMultip<Domain>		Self_t;
+		typedef RationalCRABuilderFullMultip<Domain>		Self_t;
 		Givaro::ZRing<Integer> _ZZ;
 	public:
 
-		RationalCraBuilderFullMultip(const double BOUND = 0.0) :
+		RationalCRABuilderFullMultip(const double BOUND = 0.0) :
 			Father_t(BOUND)
 		{}
 

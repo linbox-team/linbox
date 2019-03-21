@@ -151,7 +151,7 @@ namespace LinBox {
         // Calling the right solver
         //
 
-        using CraAlgorithm = LinBox::RationalCraBuilderFullMultip<CraField>;
+        using CraAlgorithm = LinBox::RationalCRABuilderFullMultip<CraField>;
         if (dispatch == Dispatch::Sequential) {
             LinBox::RationalCra<CraAlgorithm> cra(hadamardLogBound);
             cra(num, den, iteration, primeGenerator);

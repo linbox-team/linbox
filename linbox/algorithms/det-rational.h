@@ -32,7 +32,7 @@
 //#include "linbox/field/gmp-rational.h"
 #include "givaro/givinteger.h"
 #include "linbox/blackbox/rational-matrix-factory.h"
-#include "linbox/algorithms/varprec-cra-builder-early-single.h"
+#include "linbox/algorithms/cra-builder-var-prec-early-single.h"
 #include "linbox/algorithms/cra-domain.h"
 #include "linbox/algorithms/rational-reconstruction-base.h"
 #include "linbox/algorithms/classic-rational-reconstruction.h"
@@ -195,7 +195,7 @@ namespace LinBox
 
 		corrections(Atilde,F);
 
-		Cra< VarprecCraBuilderEarlySingle<Givaro::Modular<double> > > cra(3UL);
+		Cra< CRABuilderVarPrecEarlySingle<Givaro::Modular<double> > > cra(3UL);
 		MyRationalModularDet<BlasMatrix<Rationals > , MyMethod> iteration1(A, Met, M, F);
 		MyIntegerModularDet<BlasMatrix<Givaro::IntegerDom>, MyMethod> iteration2(Atilde, Met);
 		MyModularDet<MyRationalModularDet<BlasMatrix<Rationals > , MyMethod>,
