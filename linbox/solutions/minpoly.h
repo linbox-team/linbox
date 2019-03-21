@@ -249,10 +249,10 @@ namespace LinBox
                 PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
 		IntegerModularMinpoly<Blackbox,MyMethod> iteration(A, M);
 #ifdef __LINBOX_HAVE_MPI
-		CraDistributed< CRABuilderEarlyMultip<Field > > cra(3UL, c);
+		ChineseRemainderDistributed< CRABuilderEarlyMultip<Field > > cra(3UL, c);
 		cra(P, iteration, genprime);
 #else
-		Cra< CRABuilderEarlyMultip<Field > > cra(3UL);
+		ChineseRemainder< CRABuilderEarlyMultip<Field > > cra(3UL);
 		cra(P, iteration, genprime);
 #endif
 

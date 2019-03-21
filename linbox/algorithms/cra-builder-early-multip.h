@@ -62,7 +62,7 @@ namespace LinBox
 		Integer& result(Integer &d) { std::cout << "should not be called" << std::endl; return d ;} ; // DON'T TOUCH
 	public:
 
-		CRABuilderEarlyMultip(const size_t EARLY=DEFAULT_EARLY_TERM_THRESHOLD) :
+		CRABuilderEarlyMultip(const size_t EARLY=LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD) :
 			CRABuilderEarlySingle<Domain>(EARLY), CRABuilderFullMultip<Domain>()
 		{}
 

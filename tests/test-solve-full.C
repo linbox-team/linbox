@@ -252,7 +252,7 @@ int main(int argc, char** argv)
 
     do {
         ok &= test_all_rational_solve<Method::Auto>(communicator, m, n, bitSize, seed, verbose);
-        ok &= test_all_rational_solve<Method::CraAuto>(communicator, m, n, bitSize, seed, verbose);
+        ok &= test_all_rational_solve<Method::CRAAuto>(communicator, m, n, bitSize, seed, verbose);
         ok &= test_all_rational_solve<Method::Dixon>(communicator, m, n, bitSize, seed, verbose);
 
         // @note NumericSymbolic methods are only implemented on DenseMatrix

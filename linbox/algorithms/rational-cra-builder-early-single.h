@@ -44,7 +44,7 @@ namespace LinBox
 
 	public:
 
-		RationalCRABuilderEarlySingle(const size_t EARLY=DEFAULT_EARLY_TERM_THRESHOLD) :
+		RationalCRABuilderEarlySingle(const size_t EARLY=LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD) :
 			Father_t(EARLY)
 		{}
 

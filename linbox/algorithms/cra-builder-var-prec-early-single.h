@@ -62,7 +62,7 @@ namespace LinBox
 		Integer factor_;
 		Integer multip_;
 
-		CRABuilderVarPrecEarlySingle(const size_t EARLY = DEFAULT_EARLY_TERM_THRESHOLD
+		CRABuilderVarPrecEarlySingle(const size_t EARLY = LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD
 				      , const double b=0.0
 				      , const Integer& f=Integer(1)
 				      , const Integer& m=Integer(1)) :

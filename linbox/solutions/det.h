@@ -577,14 +577,14 @@ namespace LinBox
 
 		//  will call regular cra if C=0
 #ifdef __LINBOX_HAVE_MPI
-		CraDistributed< CRABuilderEarlySingle< Field > > cra(4UL, C);
+		ChineseRemainderDistributed< CRABuilderEarlySingle< Field > > cra(4UL, C);
 		cra(dd, iteration, genprime);
 		if(!C || C->rank() == 0){
 			A.field().init(d, dd); // convert the result from integer to original type
 			commentator().stop ("done", NULL, "det");
 		}
 #else
-		Cra< CRABuilderEarlySingle< Field > > cra(4UL);
+		ChineseRemainder< CRABuilderEarlySingle< Field > > cra(4UL);
 		cra(dd, iteration, genprime);
 		A.field().init(d, dd); // convert the result from integer to original type
 		commentator().stop ("done", NULL, "idet");

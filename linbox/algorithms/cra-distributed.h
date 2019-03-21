@@ -44,7 +44,7 @@
 namespace LinBox {
 
     template <class CRABase>
-    struct CraDistributed {
+    struct ChineseRemainderDistributed {
         using Domain = typename CRABase::Domain;
 
         // @note This causes the algorithm to give wrong answer sometimes...
@@ -58,7 +58,7 @@ namespace LinBox {
         double _workerHadamardLogBound = 0.0; //!< Each worker will compute primes until this is hit.
 
     public:
-        CraDistributed(double b, Communicator* c)
+        ChineseRemainderDistributed(double b, Communicator* c)
             : Builder_(b)
             , _pCommunicator(c)
             , _hadamardLogBound(b)
@@ -87,7 +87,7 @@ namespace LinBox {
         {
             // Defer to standard CRA loop if no parallel usage is desired
             if (_pCommunicator == 0 || _pCommunicator->size() == 1) {
-                RationalCra<CRABase> sequential(Builder_);
+                RationalChineseRemainder<CRABase> sequential(Builder_);
                 return sequential(num, den, Iteration, primeGenerator);
             }
 
@@ -106,7 +106,7 @@ namespace LinBox {
         {
             // Defer to standard CRA loop if no parallel usage is desired
             if (_pCommunicator == 0 || _pCommunicator->size() == 1) {
-                Cra<CRABase> sequential(Builder_);
+                ChineseRemainder<CRABase> sequential(Builder_);
                 return sequential(res, Iteration, primeGenerator);
             }
 

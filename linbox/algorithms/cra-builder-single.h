@@ -31,10 +31,6 @@
 #ifndef __LINBOX_cra_single_H
 #define __LINBOX_cra_single_H
 
-#ifndef DEFAULT_EARLY_TERM_THRESHOLD
-#define DEFAULT_EARLY_TERM_THRESHOLD 20
-#endif
-
 #include "linbox/util/timer.h"
 #include <stdlib.h>
 #include "linbox/integer.h"
@@ -386,7 +382,7 @@ namespace LinBox
 		 *
 		 * @param	EARLY how many unchanging iterations until termination.
 		 */
-		CRABuilderEarlySingle(const size_t EARLY=DEFAULT_EARLY_TERM_THRESHOLD) :
+		CRABuilderEarlySingle(const size_t EARLY=LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD) :
 			EARLY_TERM_THRESHOLD((unsigned)EARLY-1),
 			occurency_(0U)
 		{ }
@@ -482,7 +478,7 @@ namespace LinBox
 		 * @param	bitbound  An upper bound on the number of bits in the result.
 		 * @param	failprob  An upper bound on the probability of failure.
 		 */
-		CRABuilderProbSingle(const size_t bitbound, const double failprob = 0.001) :
+		CRABuilderProbSingle(const size_t bitbound, const double failprob = LINBOX_DEFAULT_FAILURE_PROBABILITY) :
 			bitbound_(bitbound),
 			failbound_(failprob),
 			curfailprob_(-1.)

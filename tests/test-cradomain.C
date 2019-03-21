@@ -167,14 +167,14 @@ struct InteratorBlas : public Interator<IntVect> {
 template<typename Builder, typename Iter, typename RandGen, typename BoundType>
 bool TestOneCRA(std::ostream& report, Iter& iteration, RandGen& genprime, size_t N, const BoundType& bound)
 {
-	report << "Cra<" << typeid(Builder).name() << ">(" << bound << ')' << std::endl;
-	LinBox::Cra< Builder > cra( bound );
+	report << "ChineseRemainder<" << typeid(Builder).name() << ">(" << bound << ')' << std::endl;
+	LinBox::ChineseRemainder< Builder > cra( bound );
     auto Res = create_int_vect<typename Iter::IntVect>(N);
 	cra( Res, iteration, genprime);
 	bool locpass = std::equal( Res.begin(), Res.end(), iteration.getVector().begin() );
-	if (locpass) report << "Cra<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << ", passed."  << std::endl;
+	if (locpass) report << "ChineseRemainder<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << ", passed."  << std::endl;
 	else {
-		report << "***ERROR***: Cra<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << "***ERROR***"  << std::endl;
+		report << "***ERROR***: ChineseRemainder<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << "***ERROR***"  << std::endl;
 		auto Rit=Res.begin();
 		auto Oit=iteration.getVector().begin();
 		for( ; Rit!=Res.end(); ++Rit, ++Oit)
@@ -191,15 +191,15 @@ template<typename Builder, typename Iter, typename RandGen, typename BoundType>
 bool TestOneCRAbegin(std::ostream& report, Iter& iteration, RandGen& genprime, size_t N, const BoundType& bound)
 {
 	Givaro::ZRing<Integer> Z;
-	report << "Cra<" << typeid(Builder).name() << ">(" << bound << ')' << std::endl;
-	LinBox::Cra< Builder > cra( bound );
+	report << "ChineseRemainder<" << typeid(Builder).name() << ">(" << bound << ')' << std::endl;
+	LinBox::ChineseRemainder< Builder > cra( bound );
 	BlasVector<Givaro::ZRing<Integer> > Res(Z,N);
 	BlasVector<Givaro::ZRing<Integer> >::iterator ResIT= Res.begin();
 	cra( ResIT, iteration, genprime);
 	bool locpass = std::equal( Res.begin(), Res.end(), iteration.getVector().begin() );
-	if (locpass) report << "Cra<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << ", passed."  << std::endl;
+	if (locpass) report << "ChineseRemainder<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << ", passed."  << std::endl;
 	else {
-		report << "***ERROR***: Cra<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << "***ERROR***"  << std::endl;
+		report << "***ERROR***: ChineseRemainder<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << "***ERROR***"  << std::endl;
 		BlasVector<Givaro::ZRing<Integer> >::const_iterator Rit=Res.begin();
 		BlasVector<Givaro::ZRing<Integer> >::const_iterator Oit=iteration.getVector().begin();
 		for( ; Rit!=Res.end(); ++Rit, ++Oit)
@@ -213,18 +213,18 @@ bool TestOneCRAbegin(std::ostream& report, Iter& iteration, RandGen& genprime, s
 template<typename Builder, typename Iter, typename RandGen, typename BoundType>
 bool TestOneCRAWritePointer(std::ostream& report, Iter& iteration, RandGen& genprime, size_t N, const BoundType& bound)
 {
-	report << "Cra<" << typeid(Builder).name() << ">(" << bound << ')' << std::endl;
-	LinBox::Cra< Builder > cra( bound );
+	report << "ChineseRemainder<" << typeid(Builder).name() << ">(" << bound << ')' << std::endl;
+	LinBox::ChineseRemainder< Builder > cra( bound );
 	Givaro::ZRing<Integer> Z ;
 	LinBox::BlasMatrix<Givaro::ZRing<Integer> > Res(Z, (int)N, (int)N);
 	cra( Res.getWritePointer(), iteration, genprime);
 	bool locpass = std::equal( iteration.getVector().begin(), iteration.getVector().end(), Res.getWritePointer() );
 
 	if (locpass) {
-		report << "Cra<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << ", passed."  << std::endl;
+		report << "ChineseRemainder<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << ", passed."  << std::endl;
 	}
 	else {
-		report << "***ERROR***: Cra<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << "***ERROR***"  << std::endl;
+		report << "***ERROR***: ChineseRemainder<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << "***ERROR***"  << std::endl;
 	}
 	return locpass;
 }

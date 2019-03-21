@@ -375,9 +375,9 @@ namespace LinBox
 		size_t n=A.coldim();
 		double hadamarcp = n/2.0*(log(double(n))+2*log(double(max))+0.21163275)/log(2.0);
 
-		Cra< CRABuilderFullMultip<Field > > cra(hadamarcp);
+		ChineseRemainder< CRABuilderFullMultip<Field > > cra(hadamarcp);
 #endif
-		Cra< CRABuilderEarlyMultip<Field > > cra(3UL);
+		ChineseRemainder< CRABuilderEarlyMultip<Field > > cra(3UL);
 
 		IntegerModularCharpoly<Blackbox,Method::Blackbox> iteration(A, M);
 		cra.operator() (P, iteration, genprime);
@@ -419,9 +419,9 @@ namespace LinBox
 		double hadamarcp = n/2.0*(log(double(n))+2*log(double(max))+0.21163275)/log(2.0);
 
 
-		Cra< CRABuilderFullMultip<Field > > cra(hadamarcp);
+		ChineseRemainder< CRABuilderFullMultip<Field > > cra(hadamarcp);
 #endif
-		Cra< CRABuilderEarlyMultip<Field > > cra(3UL);
+		ChineseRemainder< CRABuilderEarlyMultip<Field > > cra(3UL);
         IntegerModularCharpoly<Blackbox,Method::DenseElimination> iteration(A, M);
 		cra (P, iteration, genprime);
 		commentator().stop ("done", NULL, "IbbCharpoly");

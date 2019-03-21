@@ -22,6 +22,7 @@
 
 #pragma once
 
+#include <linbox/solutions/constants.h>
 #include <linbox/field/field-traits.h>
 #include <linbox/matrix/dense-matrix.h> // Only for useBlackboxMethod
 #include <linbox/util/mpicpp.h>
@@ -54,11 +55,7 @@
 
 namespace LinBox {
 
-// Some definitions to decide which method to use when using Method::Auto on a Blackbox or Sparse matrix.
-#if !defined(LINBOX_USE_BLACKBOX_THRESHOLD)
-#define LINBOX_USE_BLACKBOX_THRESHOLD 1000u
-#endif
-
+    // Used to decide which method to use when using Method::Auto on a Blackbox or Sparse matrix.
     template <class Matrix>
     bool useBlackboxMethod(const Matrix& A)
     {
@@ -167,7 +164,7 @@ namespace LinBox {
     struct MethodBase {
         // ----- Generic system information.
         Singularity singularity = Singularity::Unknown;
-        size_t rank = 0;           //!< Rank of the system. 0 means unknown.
+        size_t rank = 0;                        //!< Rank of the system. 0 means unknown.
         ShapeFlags shapeFlags = Shape::Unknown; //!< Shape of the system.
 
         // ----- Generic solve options.
@@ -187,15 +184,15 @@ namespace LinBox {
         SingularSolutionType singularSolutionType = SingularSolutionType::Random;
 
         // ----- For random-based systems.
-        size_t trialsBeforeFailure = 100;  //!< Maximum number of trials before giving up.
+        size_t trialsBeforeFailure = LINBOX_DEFAULT_TRIALS_BEFORE_FAILURE; //!< Maximum number of trials before giving up.
         bool certifyInconsistency = false; //!< Whether the solver should attempt to find a certificate of inconsistency if
                                            //!  it suspects the system to be inconsistent.
 
         // ----- For block-based methods.
-        size_t blockingFactor = 16; //!< Size of blocks.
+        size_t blockingFactor = LINBOX_DEFAULT_BLOCKING_FACTOR; //!< Size of blocks.
 
         // ----- For Wiedemann (Berlekamp Massey) methods.
-        size_t earlyTerminationThreshold = 20;
+        size_t earlyTerminationThreshold = LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD;
     };
 
     /**
@@ -231,10 +228,10 @@ namespace LinBox {
         // (Numerische Mathematik - Dixon 1982)
         DEFINE_METHOD(Dixon, RingCategories::IntegerTag);
 
-        // Method::Cra uses the chinese remainder algorithm
+        // Method::ChineseRemainder uses the chinese remainder algorithm
         // to solve the problem on multiple modular domains,
         // and finally reconstruct the solution.
-        DEFINE_COMPOUND_METHOD(Cra, RingCategories::IntegerTag);
+        DEFINE_COMPOUND_METHOD(CRA, RingCategories::IntegerTag);
 
         // Method::NumericSymbolicOverlap uses Youse's overlap-based numeric/symbolic iteration.
         // (Numeric symbolic overlap iteration - Saunders, Wood, Youse ISSAC 2011)

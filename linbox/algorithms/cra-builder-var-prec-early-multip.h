@@ -68,7 +68,7 @@ namespace LinBox
 		std::vector< size_t > randv;
 		Integer& result(Integer &d) {return d;}; // DON'T TOUCH
 	public:
-		CRABuilderVarPrecEarlyMultip(const size_t EARLY = DEFAULT_EARLY_TERM_THRESHOLD, const double b=0.0,
+		CRABuilderVarPrecEarlyMultip(const size_t EARLY = LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD, const double b=0.0,
 				      const BlasVector<Givaro::ZRing<Integer> >& vf = BlasVector<Givaro::ZRing<Integer> >(Givaro::ZRing<Integer>()),
 				      const BlasVector<Givaro::ZRing<Integer> >& vm = BlasVector<Givaro::ZRing<Integer> >(Givaro::ZRing<Integer>())) :
 			CRABuilderEarlySingle<Domain>(EARLY), CRABuilderFullMultip<Domain>(b), vfactor_(vf), vmultip_(vm)
