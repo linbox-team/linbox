@@ -88,8 +88,7 @@ namespace LinBox {
 
         size_t r = (size_t)-1;
 
-        // Rank == 0 means unknown
-        if (_traits.rank != 0) r = _traits.rank;
+        if (_traits.rank != Rank::Unknown) r = _traits.rank;
 
         while (status == FAILED && tries-- > 0) {
             switch (singularity) {
@@ -167,8 +166,7 @@ namespace LinBox {
             // Make it just Blackbox trait and not wiedemann:
             // Might need extension field for minpoly
             // Might also also use better method than Wiedemann ...
-            // @fixme Just reinterpret_cast<const Blackbox&>(_traits) when minpoly uses Method
-            minpoly(m_A, A, RingCategories::ModularTag(), Method::Blackbox());
+            minpoly(m_A, A, RingCategories::ModularTag(), reinterpret_cast<const Method::Blackbox&>(_traits));
         }
 
         std::ostream& report = commentator().report(Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);

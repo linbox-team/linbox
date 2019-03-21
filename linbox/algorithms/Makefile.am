@@ -120,7 +120,7 @@ pkgincludesub_HEADERS =            \
 	poly-interpolation.h               \
 	poly-smith-form.h                  \
 	poly-smith-form-local-x.h          \
-	rational-cra2.h                    \
+	rational-cra-var-prec.h                    \
 	rational-cra-builder-early-multip.h        \
 	rational-cra-builder-early-single.h        \
 	rational-cra-builder-full-multip.h         \

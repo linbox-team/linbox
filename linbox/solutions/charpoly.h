@@ -159,7 +159,7 @@ namespace LinBox
 
 #include "linbox/algorithms/matrix-hom.h"
 
-#include "linbox/algorithms/rational-cra2.h"
+#include "linbox/algorithms/rational-cra-var-prec.h"
 #include "linbox/algorithms/cra-builder-var-prec-early-multip.h"
 #include "linbox/algorithms/charpoly-rational.h"
 
@@ -314,7 +314,7 @@ namespace LinBox
 {
 
 #if 0
-#include "linbox/algorithms/rational-cra2.h"
+#include "linbox/algorithms/rational-cra-var-prec.h"
 #include "linbox/algorithms/cra-builder-var-prec-early-multip.h"
 #include "linbox/algorithms/charpoly-rational.h"
 
@@ -467,7 +467,7 @@ namespace LinBox
 
         typedef Givaro::ModularBalanced<double> Field;
 		PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
-		RationalRemainder2< CRABuilderVarPrecEarlyMultip<Field > > rra(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD);
+		RationalChineseRemainderVarPrec< CRABuilderVarPrecEarlyMultip<Field > > rra(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD);
 		IntegerModularCharpoly<Blackbox,MyMethod> iteration(A, M);
 
 		Givaro::ZRing<Integer> Z;
