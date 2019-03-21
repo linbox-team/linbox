@@ -129,9 +129,8 @@ namespace LinBox {
      *
      * @note The namespace is here to avoid collisions.
      */
-    using ShapeFlags = uint16_t;
     namespace Shape {
-        enum Value : ShapeFlags {
+        enum Value : uint16_t {
             Unknown = 0x00,
             Symmetric = 0x01,       //!< Matrix has its main diagonal as a reflection axis.
             Diagonal = 0x02,        //!< Only main diagonal is non-zero.
@@ -142,15 +141,22 @@ namespace LinBox {
             LowerTriangular = 0x40, //!< Only lower left part of the matrix is non-zero.
         };
     };
+    struct ShapeFlags {
+        uint16_t flags = Shape::Unknown;
 
-    // @note We overload operator== so that one can use method.shapeFlags == Shape::Symmetric
-    // seemlessly. Please note that affecting `shapeFlags = Shape::Symmetric` does strict affection
-    // and erase previous flags. Use `shapeFlags |= Shape::Symmetric` if you don't want destructiveness.
-    inline bool operator==(ShapeFlags shapeFlags, Shape::Value shape)
-    {
-        return (shape == Shape::Unknown) ? (shapeFlags == 0x00) : (shapeFlags & shape);
-    }
-    inline bool operator!=(ShapeFlags shapeFlags, Shape::Value shape) { return !(shapeFlags == shape); }
+        // @note We overload operator== so that one can use
+        // method.shapeFlags == Shape::Symmetric seemlessly.
+        inline ShapeFlags& operator=(Shape::Value shape)
+        {
+            (shape == Shape::Unknown) ? (flags = Shape::Unknown) : (flags |= shape);
+            return *this;
+        }
+        inline bool operator==(Shape::Value shape) const
+        {
+            return (shape == Shape::Unknown) ? (flags == Shape::Unknown) : (flags & shape);
+        }
+        inline bool operator!=(Shape::Value shape) const { return !(flags == shape); }
+    };
 
     /**
      * Pivoting strategy for elimination-based methods.
@@ -173,8 +179,8 @@ namespace LinBox {
     struct MethodBase {
         // ----- Generic system information.
         Singularity singularity = Singularity::Unknown;
-        Rank::Value rank = Rank::Unknown;       //!< Rank of the system. -1 means unknown.
-        ShapeFlags shapeFlags = Shape::Unknown; //!< Shape of the system.
+        Rank::Value rank = Rank::Unknown; //!< Rank of the system. -1 means unknown.
+        ShapeFlags shapeFlags;            //!< Shape of the system.
 
         // ----- Generic solve options.
         Preconditioner preconditioner = Preconditioner::None;
