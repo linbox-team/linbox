@@ -195,7 +195,7 @@ namespace LinBox
 
 		corrections(Atilde,F);
 
-		Cra< CRABuilderVarPrecEarlySingle<Givaro::Modular<double> > > cra(3UL);
+		ChineseRemainder< CRABuilderVarPrecEarlySingle<Givaro::Modular<double> > > cra(3UL);
 		MyRationalModularDet<BlasMatrix<Rationals > , MyMethod> iteration1(A, Met, M, F);
 		MyIntegerModularDet<BlasMatrix<Givaro::IntegerDom>, MyMethod> iteration2(Atilde, Met);
 		MyModularDet<MyRationalModularDet<BlasMatrix<Rationals > , MyMethod>,

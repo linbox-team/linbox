@@ -72,10 +72,10 @@ namespace LinBox {
      *      |   - IntegerTag > Method::Dixon
      *      |   - Otherwise > `GaussDomain<Field>::solveInPlace`
      *      - Otherwise > Method::SparseElimination but copy to SparseMatrix first
-     * - Method::Cra
+     * - Method::CRA
      *      - IntegerTag
-     *      |   - Dispatch::Distributed > `RationalCraDistributed`
-     *      |   - Otherwise             > `RationalCra`
+     *      |   - Dispatch::Distributed > `RationalChineseRemainderDistributed`
+     *      |   - Otherwise             > `RationalChineseRemainder`
      *      - Otherwise > Error
      * - Method::Dixon
      *      - IntegerTag

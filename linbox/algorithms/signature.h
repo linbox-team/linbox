@@ -231,7 +231,7 @@ namespace LinBox
             {
                 typedef Givaro::Modular<double> Field;
 
-				Cra<CRABuilderEarlyMultip<Field>> cra(3UL);
+				ChineseRemainder<CRABuilderEarlyMultip<Field>> cra(3UL);
 				SemiDIteration<Matrix,Field> iter(M);
 				PrimeIterator<IteratorCategories::HeuristicTag> primes(FieldTraits<Field>::bestBitSize(M.coldim()));
 				return cra(out, iter, primes);

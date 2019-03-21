@@ -47,6 +47,7 @@
 // Time-stamp: <27 Aug 01 18:18:12 Jean-Guillaume.Dumas@imag.fr>
 // =======================================================================
 
+#include "linbox/solutions/methods.h"
 #include "linbox/util/commentator.h"
 #include "linbox/vector/reverse.h"
 #include "linbox/vector/subvector.h"
@@ -60,7 +61,6 @@ namespace LinBox
 #  define MIN(a,b) ((a)<(b)?(a):(b))
 #endif
 
-#define DEFAULT_EARLY_TERM_THRESHOLD 20
 #ifndef DEFAULT_ADDITIONAL_ITERATION
 #define DEFAULT_ADDITIONAL_ITERATION 2
 #endif
@@ -95,28 +95,28 @@ namespace LinBox
 		typedef typename Field::Element Element;
 
 		//-- Constructors
-		MasseyDomain (size_t ett_default = DEFAULT_EARLY_TERM_THRESHOLD) :
+		MasseyDomain (size_t ett_default = LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD) :
 			_container           (),
 			_field                   (),
 			_VD                  (),
 			EARLY_TERM_THRESHOLD (ett_default)
 		{}
 
-		MasseyDomain (const MasseyDomain<Field, Sequence> &Mat, size_t ett_default = DEFAULT_EARLY_TERM_THRESHOLD) :
+		MasseyDomain (const MasseyDomain<Field, Sequence> &Mat, size_t ett_default = LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD) :
 			_container           (Mat._container),
 			_field                   (Mat._field),
 			_VD                  (Mat.field()),
 			EARLY_TERM_THRESHOLD (ett_default)
 		{}
 
-		MasseyDomain (Sequence *D, size_t ett_default = DEFAULT_EARLY_TERM_THRESHOLD) :
+		MasseyDomain (Sequence *D, size_t ett_default = LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD) :
 			_container           (D),
 			_field                   (&(D->field ())),
 			_VD                  (D->field ()),
 			EARLY_TERM_THRESHOLD (ett_default)
 		{}
 
-		MasseyDomain (Sequence *MD, const Field &F, size_t ett_default = DEFAULT_EARLY_TERM_THRESHOLD) :
+		MasseyDomain (Sequence *MD, const Field &F, size_t ett_default = LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD) :
 			_container           (MD),
 			_field                   (&F),
 			_VD                  (F),

@@ -44,7 +44,7 @@ namespace LinBox
         /// No doc.
         /// @ingroup CRA
 	template<class CRABase>
-	struct CraDomainSequential {
+	struct ChineseRemainderSequential {
 		typedef typename CRABase::Domain	Domain;
 		typedef typename CRABase::DomainElement	DomainElement;
 
@@ -62,10 +62,10 @@ namespace LinBox
 		*/
 		template <class PrimeIterator, bool is_unique = PrimeIterator::UniqueSamplingTag::value>
 		struct PrimeSampler {
-			const CraDomainSequential& outer_;
+			const ChineseRemainderSequential& outer_;
 			PrimeIterator& primeiter_;
 
-			PrimeSampler (const CraDomainSequential& outer, PrimeIterator& primeiter) :
+			PrimeSampler (const ChineseRemainderSequential& outer, PrimeIterator& primeiter) :
 				outer_(outer), primeiter_(primeiter)
 			{ }
 
@@ -108,7 +108,7 @@ namespace LinBox
 		/** \brief Pass-through constructor to create the underlying builder.
 		 */
 		template <typename... Args>
-		CraDomainSequential(Args&&... args) :
+		ChineseRemainderSequential(Args&&... args) :
 			Builder_(std::forward<Args>(args)...)
 		{ }
 
@@ -283,10 +283,10 @@ namespace LinBox
 	*/
 	template <class CRABase>
 	template <class PrimeIterator>
-	struct CraDomainSequential<CRABase>::PrimeSampler<PrimeIterator,true> {
+	struct ChineseRemainderSequential<CRABase>::PrimeSampler<PrimeIterator,true> {
 		PrimeIterator& primeiter_;
 
-		PrimeSampler (const CraDomainSequential<CRABase>&, PrimeIterator& primeiter) :
+		PrimeSampler (const ChineseRemainderSequential<CRABase>&, PrimeIterator& primeiter) :
 			primeiter_(primeiter)
 		{ }
 

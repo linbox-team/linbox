@@ -90,7 +90,7 @@ namespace LinBox {
      */
     template <class Matrix, class Vector, class IterationMethod>
     inline void solve(Vector& xNum, typename Vector::Element& xDen, const Matrix& A, const Vector& b,
-                      const RingCategories::IntegerTag& tag, const Method::Cra<IterationMethod>& m)
+                      const RingCategories::IntegerTag& tag, const Method::CRA<IterationMethod>& m)
     {
         //
         // Handle auto-dispatch.
@@ -98,7 +98,7 @@ namespace LinBox {
 
         Dispatch dispatch = m.dispatch;
         if (dispatch == Dispatch::Auto) {
-            Method::Cra<IterationMethod> newM(m);
+            Method::CRA<IterationMethod> newM(m);
 
 #if __LINBOX_HAVE_MPI
             // User has MPI enabled in config, but not specified if it wanted to use it,
@@ -106,7 +106,7 @@ namespace LinBox {
             newM.dispatch = Dispatch::Distributed;
 #else
             // @note Currently, Sequential = Smp if OpenMP is active on
-            // the machine, as Cra -> CraDomainSequential or CraDomainOmp in cra-domain.h
+            // the machine, as CRA -> ChineseRemainderSequential or ChineseRemainderOMP in cra-domain.h
             newM.dispatch = Dispatch::Sequential;
 #endif
 
@@ -118,7 +118,7 @@ namespace LinBox {
         //
 
         if (m.dispatch == Dispatch::Distributed && m.pCommunicator == nullptr) {
-            Method::Cra<IterationMethod> newM(m);
+            Method::CRA<IterationMethod> newM(m);
             Communicator communicator(nullptr, 0);
             newM.pCommunicator = &communicator;
             return solve(xNum, xDen, A, b, tag, newM);
@@ -153,12 +153,12 @@ namespace LinBox {
 
         using CraAlgorithm = LinBox::RationalCRABuilderFullMultip<CraField>;
         if (dispatch == Dispatch::Sequential) {
-            LinBox::RationalCra<CraAlgorithm> cra(hadamardLogBound);
+            LinBox::RationalChineseRemainder<CraAlgorithm> cra(hadamardLogBound);
             cra(num, den, iteration, primeGenerator);
         }
 #if defined(__LINBOX_HAVE_MPI)
         else if (dispatch == Dispatch::Distributed) {
-            LinBox::RationalCraDistributed<CraAlgorithm> cra(hadamardLogBound, m.pCommunicator);
+            LinBox::RationalChineseRemainderDistributed<CraAlgorithm> cra(hadamardLogBound, m.pCommunicator);
             cra(num, den, iteration, primeGenerator);
         }
 #endif

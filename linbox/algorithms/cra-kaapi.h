@@ -71,7 +71,7 @@ namespace LinBox
 	 * @ingroup CRA
 	 */
 	template<class CRABase>
-	struct Cra {
+	struct ChineseRemainder {
 
 		typedef typename CRABase::Domain	Domain;
 		typedef typename CRABase::DomainElement	DomainElement;
@@ -80,7 +80,7 @@ namespace LinBox
 
 	public:
 		template<class Param>
-		Cra(const Param& b) :
+		ChineseRemainder(const Param& b) :
 			Builder_(b)
 		{}
 

@@ -44,17 +44,17 @@ namespace LinBox
 {
 
 	template<class CRABase>
-	struct CraDomainOmp : public CraDomainSequential<CRABase> {
+	struct ChineseRemainderOMP : public ChineseRemainderSequential<CRABase> {
 		typedef typename CRABase::Domain	Domain;
 		typedef typename CRABase::DomainElement	DomainElement;
-		typedef CraDomainSequential<CRABase>    Father_t;
+		typedef ChineseRemainderSequential<CRABase>    Father_t;
 
 		template<class Param>
-		CraDomainOmp(const Param& b) :
+		ChineseRemainderOMP(const Param& b) :
 			Father_t(b)
 		{}
 
-		CraDomainOmp(const CRABase& b) :
+		ChineseRemainderOMP(const CRABase& b) :
 			Father_t(b)
 		{}
 
