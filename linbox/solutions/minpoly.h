@@ -249,10 +249,10 @@ namespace LinBox
                 PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
 		IntegerModularMinpoly<Blackbox,MyMethod> iteration(A, M);
 #ifdef __LINBOX_HAVE_MPI
-		ChineseRemainderDistributed< CRABuilderEarlyMultip<Field > > cra(3UL, c);
+		ChineseRemainderDistributed< CRABuilderEarlyMultip<Field > > cra(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD, c);
 		cra(P, iteration, genprime);
 #else
-		ChineseRemainder< CRABuilderEarlyMultip<Field > > cra(3UL);
+		ChineseRemainder< CRABuilderEarlyMultip<Field > > cra(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD);
 		cra(P, iteration, genprime);
 #endif
 
@@ -273,7 +273,7 @@ namespace LinBox
 
 		typedef Givaro::ModularBalanced<double> Field;
                 PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
-		RationalRemainder2< CRABuilderVarPrecEarlyMultip<Field> > rra(3UL);
+		RationalRemainder2< CRABuilderVarPrecEarlyMultip<Field> > rra(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD);
 		IntegerModularMinpoly<Blackbox,MyMethod> iteration(A, M);
 
 		std::vector<Integer> PP; // use of integer due to non genericity of cra. PG 2005-08-04

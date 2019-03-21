@@ -377,7 +377,7 @@ namespace LinBox
 
 		ChineseRemainder< CRABuilderFullMultip<Field > > cra(hadamarcp);
 #endif
-		ChineseRemainder< CRABuilderEarlyMultip<Field > > cra(3UL);
+		ChineseRemainder< CRABuilderEarlyMultip<Field > > cra(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD);
 
 		IntegerModularCharpoly<Blackbox,Method::Blackbox> iteration(A, M);
 		cra.operator() (P, iteration, genprime);
@@ -421,7 +421,7 @@ namespace LinBox
 
 		ChineseRemainder< CRABuilderFullMultip<Field > > cra(hadamarcp);
 #endif
-		ChineseRemainder< CRABuilderEarlyMultip<Field > > cra(3UL);
+		ChineseRemainder< CRABuilderEarlyMultip<Field > > cra(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD);
         IntegerModularCharpoly<Blackbox,Method::DenseElimination> iteration(A, M);
 		cra (P, iteration, genprime);
 		commentator().stop ("done", NULL, "IbbCharpoly");
@@ -467,7 +467,7 @@ namespace LinBox
 
         typedef Givaro::ModularBalanced<double> Field;
 		PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
-		RationalRemainder2< CRABuilderVarPrecEarlyMultip<Field > > rra(3UL);
+		RationalRemainder2< CRABuilderVarPrecEarlyMultip<Field > > rra(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD);
 		IntegerModularCharpoly<Blackbox,MyMethod> iteration(A, M);
 
 		Givaro::ZRing<Integer> Z;

@@ -188,7 +188,7 @@ namespace LinBox
 
 		}
 		else {
-			ChineseRemainder <CRABuilderEarlyMultip <Field> >  cra(4UL);
+			ChineseRemainder <CRABuilderEarlyMultip <Field> >  cra(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD);
 			cra (dd, iteration, genprime);
 		}
 		F.mul (d1, dd[0], s1);
