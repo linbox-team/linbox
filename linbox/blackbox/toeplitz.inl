@@ -245,56 +245,6 @@ namespace LinBox
 		return;
 	} // write(char *) [Tested 6/14/02 -- Works]
 
-
-#if 0 //dated material with no known use -bds 2012Jul
-	/*-----------------------------------------------------------------
-	 *    Make the matrix upper triangular with determinant 1.
-	 *    i.e. clear the last N-1 elements in the data vector
-	 *----------------------------------------------------------------*/
-	template <class _CField, class _PRing>
-	void ToeplitzBase<_CField, _PRing>::setToUniModUT()
-	{
-		const PRing & PF = P.getCoeffField() ;
-
-		for( size_t i = sysdim(); i <= P.deg(pdata); ++i )
-			P.setCoeff(pdata,i,PF.zero);
-
-		for( size_t i = 0; i < sysDim - 1; ++i )
-			P.setCoeff(rpdata,i,PF.zero);
-
-		P.setCoeff(pdata,sysDim-1,PF.one);
-		P.setCoeff(rpdata,sysDim-1,PF.one);
-
-		shape.shape(Method::Blackbox::UNIMOD_UT);
-		return;
-	}// [UNCOMMENTED PART Tested 6/14/02 -- Works]
-
-
-
-	/*-----------------------------------------------------------------
-	 *    Make matrix a unimodular Lower Triangular with det 1
-	 *    i.e. clear the first N-1 elements in the data vector
-	 *----------------------------------------------------------------*/
-	template <class _CField, class _PRing>
-	void ToeplitzBase<_CField, _PRing>::setToUniModLT()
-	{
-		const PRing & PF = P.getCoeffField() ;
-
-		for( size_t i = sysDim; i <= P.deg(rpdata); ++i )
-			P.setCoeff(rpdata,i,PF.zero);
-
-		for( size_t i = 0; i < sysDim - 1; ++i )
-			P.setCoeff(pdata,i,PF.zero);
-
-		P.setCoeff(pdata,sysDim-1,PF.one);
-		P.setCoeff(rpdata,sysDim-1,PF.one);
-
-		shape.shape(Method::Blackbox::UNIMOD_LT);
-		return;
-	}// [UNCOMMENTED PART Tested 6/14/02 -- Works]
-
-#endif
-
 	/*-----------------------------------------------------------------
 	 *     Compute the determinant of the matrix
 	 *-----------------------------------------------------------------*/

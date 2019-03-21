@@ -189,7 +189,7 @@ namespace LinBox
 #include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/matrix-hom.h"
 
-#include "linbox/algorithms/rational-cra2.h"
+#include "linbox/algorithms/rational-cra-var-prec.h"
 #include "linbox/algorithms/cra-builder-var-prec-early-multip.h"
 #include "linbox/algorithms/minpoly-rational.h"
 
@@ -273,7 +273,7 @@ namespace LinBox
 
 		typedef Givaro::ModularBalanced<double> Field;
                 PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
-		RationalRemainder2< CRABuilderVarPrecEarlyMultip<Field> > rra(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD);
+		RationalChineseRemainderVarPrec< CRABuilderVarPrecEarlyMultip<Field> > rra(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD);
 		IntegerModularMinpoly<Blackbox,MyMethod> iteration(A, M);
 
 		std::vector<Integer> PP; // use of integer due to non genericity of cra. PG 2005-08-04

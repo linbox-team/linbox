@@ -32,7 +32,7 @@
 
 #include "linbox/algorithms/cra-domain.h"
 #include "linbox/algorithms/rational-cra.h"
-#include "linbox/algorithms/rational-cra2.h"
+#include "linbox/algorithms/rational-cra-var-prec.h"
 #include "linbox/integer.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/solutions/methods.h"

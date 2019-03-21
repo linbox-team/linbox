@@ -603,7 +603,7 @@ namespace LinBox
 # define SOLUTION_CRA_DET cra_det
 #endif
 
-#include "linbox/algorithms/rational-cra2.h"
+#include "linbox/algorithms/rational-cra-var-prec.h"
 #include "linbox/algorithms/cra-builder-var-prec-early-single.h"
 #include "linbox/algorithms/det-rational.h"
 namespace LinBox
@@ -636,7 +636,7 @@ namespace LinBox
 		IntegerModularDet<Blackbox, MyMethod> iteration(A, Meth);
                 typedef Givaro::ModularBalanced<double> Field;
 		PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
-		RationalRemainder2< CRABuilderVarPrecEarlySingle< Field > > rra(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD);
+		RationalChineseRemainderVarPrec< CRABuilderVarPrecEarlySingle< Field > > rra(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD);
 
 		rra(num,den, iteration, genprime);
 

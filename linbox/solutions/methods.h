@@ -22,9 +22,9 @@
 
 #pragma once
 
-#include <linbox/solutions/constants.h>
 #include <linbox/field/field-traits.h>
 #include <linbox/matrix/dense-matrix.h> // Only for useBlackboxMethod
+#include <linbox/solutions/constants.h>
 #include <linbox/util/mpicpp.h>
 #include <string>
 
@@ -66,6 +66,15 @@ namespace LinBox {
     bool useBlackboxMethod(const LinBox::DenseMatrix<Field>& A)
     {
         return false;
+    }
+
+    /**
+     * Rank of the system, if known.
+     */
+    namespace Rank {
+        enum Value : int16_t {
+            Unknown = -1,
+        };
     }
 
     /**
@@ -164,7 +173,7 @@ namespace LinBox {
     struct MethodBase {
         // ----- Generic system information.
         Singularity singularity = Singularity::Unknown;
-        size_t rank = 0;                        //!< Rank of the system. 0 means unknown.
+        Rank::Value rank = Rank::Unknown;       //!< Rank of the system. -1 means unknown.
         ShapeFlags shapeFlags = Shape::Unknown; //!< Shape of the system.
 
         // ----- Generic solve options.
