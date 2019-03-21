@@ -99,13 +99,13 @@ namespace LinBox {
      * - Method::BlockLanczos
      *      - ModularTag > `MGBlockLanczosSolver`
      *      - Otherwise  > Error
-     * - Method::NumericSymbolicOverlap
+     * - Method::SymbolicNumericOverlap
      *      - IntegerTag
      *      |   - DenseMatrix > `RationalSolverSN<Ring, LPS<FMatrix>>`
      *      |   - Otherwise   > Error
      *      - Otherwise  > Error
-     * - Method::NumericSymbolicNorm
-     *      - IntegerTag > `RationalSolver<..., Method::NumericSymbolicNorm>`
+     * - Method::SymbolicNumericNorm
+     *      - IntegerTag > `RationalSolver<..., Method::SymbolicNumericNorm>`
      *      - Otherwise  > Error
      *
      * @param [out] x solution, can be a rational solution (vector of numerators and one denominator)

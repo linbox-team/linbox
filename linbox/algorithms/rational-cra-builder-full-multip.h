@@ -40,8 +40,8 @@ namespace LinBox
 		Givaro::ZRing<Integer> _ZZ;
 	public:
 
-		RationalCRABuilderFullMultip(const double BOUND = 0.0) :
-			Father_t(BOUND)
+		RationalCRABuilderFullMultip(const double log2Bound = 0.0) :
+			Father_t(log2Bound)
 		{}
 
 
