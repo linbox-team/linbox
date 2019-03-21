@@ -577,14 +577,14 @@ namespace LinBox
 
 		//  will call regular cra if C=0
 #ifdef __LINBOX_HAVE_MPI
-		CraDistributed< CraBuilderEarlySingle< Field > > cra(4UL, C);
+		CraDistributed< CRABuilderEarlySingle< Field > > cra(4UL, C);
 		cra(dd, iteration, genprime);
 		if(!C || C->rank() == 0){
 			A.field().init(d, dd); // convert the result from integer to original type
 			commentator().stop ("done", NULL, "det");
 		}
 #else
-		Cra< CraBuilderEarlySingle< Field > > cra(4UL);
+		Cra< CRABuilderEarlySingle< Field > > cra(4UL);
 		cra(dd, iteration, genprime);
 		A.field().init(d, dd); // convert the result from integer to original type
 		commentator().stop ("done", NULL, "idet");
@@ -604,7 +604,7 @@ namespace LinBox
 #endif
 
 #include "linbox/algorithms/rational-cra2.h"
-#include "linbox/algorithms/varprec-cra-builder-early-single.h"
+#include "linbox/algorithms/cra-builder-var-prec-early-single.h"
 #include "linbox/algorithms/det-rational.h"
 namespace LinBox
 {
@@ -636,7 +636,7 @@ namespace LinBox
 		IntegerModularDet<Blackbox, MyMethod> iteration(A, Meth);
                 typedef Givaro::ModularBalanced<double> Field;
 		PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
-		RationalRemainder2< VarprecCraBuilderEarlySingle< Field > > rra(4UL);
+		RationalRemainder2< CRABuilderVarPrecEarlySingle< Field > > rra(4UL);
 
 		rra(num,den, iteration, genprime);
 

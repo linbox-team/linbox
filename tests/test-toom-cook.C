@@ -168,7 +168,7 @@ namespace LinBox { namespace BLAS2 {
 		{
 
             PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<ModularField>::bestBitSize(A.coldim()));
-            Cra< CraBuilderFullMultipMatrix< ModularField > > cra( std::pair<size_t,double>(C.size(), logC) );
+            Cra< CRABuilderFullMultipMatrix< ModularField > > cra( std::pair<size_t,double>(C.size(), logC) );
             Protected::IntegerSparseCraMatMul iteration(A,B);
 
             cra(C, iteration, genprime);

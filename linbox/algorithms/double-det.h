@@ -178,7 +178,7 @@ namespace LinBox
 			//t_hd.stop();
 			//std::cerr<<"Hadamard bound = : "<<logbound<<" in "<<t_hd.usertime()<<"s"<<std::endl;
 
-			Cra <CraBuilderFullMultip <Givaro::Modular <double> > > cra(logbound);
+			Cra <CRABuilderFullMultip <Givaro::Modular <double> > > cra(logbound);
 
 			//t_hd.clear();
 			//t_cra.start();
@@ -188,7 +188,7 @@ namespace LinBox
 
 		}
 		else {
-			Cra <CraBuilderEarlyMultip <Field> >  cra(4UL);
+			Cra <CRABuilderEarlyMultip <Field> >  cra(4UL);
 			cra (dd, iteration, genprime);
 		}
 		F.mul (d1, dd[0], s1);

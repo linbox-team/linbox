@@ -81,7 +81,7 @@ void call_progress(CRAType& cra, const Integer& p, const Integer& r) {
 	cra.progress(p, r);
 }
 
-// testing CraBuilderEarlySingle
+// testing CRABuilderEarlySingle
 template< class T >
 int test_early_single(std::ostream & report, size_t PrimeSize, size_t Size)
 {
@@ -106,8 +106,8 @@ int test_early_single(std::ostream & report, size_t PrimeSize, size_t Size)
 	Iterator genprime = primes.begin()  ; // prime iterator
 	Iterator residu = residues.begin()  ; // residu iterator
 
-	report << "CraBuilderEarlySingle (" <<  4UL << ')' << std::endl;
-	CraBuilderEarlySingle<ModularField> cra( 4UL ) ;
+	report << "CRABuilderEarlySingle (" <<  4UL << ')' << std::endl;
+	CRABuilderEarlySingle<ModularField> cra( 4UL ) ;
 	Integer res = 0; // the result
 	typedef ModularField::Element Element;
 	Element residue ; // temporary
@@ -122,7 +122,7 @@ int test_early_single(std::ostream & report, size_t PrimeSize, size_t Size)
 	{ /* progress */
 		if (cra.noncoprime((integer)*genprime)) {
 			report << "bad luck, you picked twice the same prime..." <<std::endl;
-			report << "CraBuilderEarlySingle exiting successfully." << std::endl;
+			report << "CRABuilderEarlySingle exiting successfully." << std::endl;
 			return EXIT_SUCCESS ; // pas la faute à cra...
 		}
 		ModularField F(*genprime);
@@ -141,17 +141,17 @@ int test_early_single(std::ostream & report, size_t PrimeSize, size_t Size)
 		F.init(tmp2,residues[i]);
 		if(!F.areEqual(tmp1,tmp2)){
 			report << tmp1 << "!=" << tmp2 << std::endl;
-			report << " *** CraBuilderEarlySingle failed. ***" << std::endl;
+			report << " *** CRABuilderEarlySingle failed. ***" << std::endl;
 			return EXIT_FAILURE ;
 		}
 	}
 
-	report << "CraBuilderEarlySingle exiting successfully." << std::endl;
+	report << "CRABuilderEarlySingle exiting successfully." << std::endl;
 
 	return EXIT_SUCCESS ;
 }
 
-// testing CraBuilderProbSingle
+// testing CRABuilderProbSingle
 template< class T >
 int test_prob_single(std::ostream & report, size_t PrimeSize, size_t Size)
 {
@@ -185,9 +185,9 @@ int test_prob_single(std::ostream & report, size_t PrimeSize, size_t Size)
 	Iterator genprime = primes.begin()  ; // prime iterator
 	Iterator residu = residues.begin()  ; // residu iterator
 
-	report << "CraBuilderProbSingle (" << pprod.bitsize()-1 << ")";
+	report << "CRABuilderProbSingle (" << pprod.bitsize()-1 << ")";
 	report << " actual length " << actual.bitsize() << std::endl;
-	CraBuilderProbSingle<ModularField> cra(pprod.bitsize()-1) ;
+	CRABuilderProbSingle<ModularField> cra(pprod.bitsize()-1) ;
 	Integer res = 0; // the result
 	typedef ModularField::Element Element;
 	{ /* init */
@@ -215,7 +215,7 @@ int test_prob_single(std::ostream & report, size_t PrimeSize, size_t Size)
 	if (res != actual) {
 		report << res << " != " << actual << std::endl;
 		report << "pprod: " << pprod << "\n" << "pprod / actual: " << (pprod / actual) << "\n";
-		report << " *** CraBuilderProbSingle failed. ***" << std::endl;
+		report << " *** CRABuilderProbSingle failed. ***" << std::endl;
 		return EXIT_FAILURE ;
 	}
 
@@ -226,17 +226,17 @@ int test_prob_single(std::ostream & report, size_t PrimeSize, size_t Size)
 		F.init(tmp2,residues[i]);
 		if(!F.areEqual(tmp1,tmp2)){
 			report << tmp1 << "!=" << tmp2 << std::endl;
-			report << " *** CraBuilderProbSingle failed. ***" << std::endl;
+			report << " *** CRABuilderProbSingle failed. ***" << std::endl;
 			return EXIT_FAILURE ;
 		}
 	}
 
-	report << "CraBuilderProbSingle exiting successfully." << std::endl;
+	report << "CRABuilderProbSingle exiting successfully." << std::endl;
 
 	return EXIT_SUCCESS ;
 }
 
-// testing CraBuilderFullSingle
+// testing CRABuilderFullSingle
 template< class T >
 int test_full_single(std::ostream & report, size_t PrimeSize, size_t Size)
 {
@@ -249,9 +249,9 @@ int test_full_single(std::ostream & report, size_t PrimeSize, size_t Size)
 
         PrimeIterator<IteratorCategories::DeterministicTag> pgen(PrimeSize);
 
-	report << "CraBuilderFullSingle (" << maxbits << ")";
+	report << "CRABuilderFullSingle (" << maxbits << ")";
 	report << " actual length " << actual.bitsize() << std::endl;
-	CraBuilderFullSingle<ModularField> cra(maxbits) ;
+	CRABuilderFullSingle<ModularField> cra(maxbits) ;
 	Integer res = 0; // the result
 	T residue;
 	T prime;
@@ -271,7 +271,7 @@ int test_full_single(std::ostream & report, size_t PrimeSize, size_t Size)
 			report << "got a duplicate prime from deterministic prime gen" << std::endl;
 			Integer mod;
 			report << prime << ' ' << cra.getModulus(mod) << std::endl;
-			report << " *** CraBuilderFullSingle failed. ***" << std::endl;
+			report << " *** CRABuilderFullSingle failed. ***" << std::endl;
 			return EXIT_FAILURE ;
 		}
 		call_progress(cra, prime, residue);
@@ -284,15 +284,15 @@ int test_full_single(std::ostream & report, size_t PrimeSize, size_t Size)
 	cra.result(res);
 	if (res != actual) {
 		report << res << " != " << actual << std::endl;
-		report << " *** CraBuilderFullSingle failed. ***" << std::endl;
+		report << " *** CRABuilderFullSingle failed. ***" << std::endl;
 		return EXIT_FAILURE ;
 	}
 
-	report << "CraBuilderFullSingle exiting successfully." << std::endl;
+	report << "CRABuilderFullSingle exiting successfully." << std::endl;
 	return EXIT_SUCCESS ;
 }
 
-// testing CraBuilderEarlyMultip
+// testing CRABuilderEarlyMultip
 template< class T >
 int test_early_multip(std::ostream & report, size_t PrimeSize, size_t Taille, size_t Size)
 {
@@ -326,7 +326,7 @@ int test_early_multip(std::ostream & report, size_t PrimeSize, size_t Taille, si
 	VectIterator residu = residues.begin()  ; // residu iterator
 
 	report << "EarlyMultpCRA (" <<  4UL << ')' << std::endl;
-	CraBuilderEarlyMultip<ModularField> cra( 4UL ) ;
+	CRABuilderEarlyMultip<ModularField> cra( 4UL ) ;
 	IntVect result (Taille); // the result
 	pVect residue(Taille) ; // temporary
 	{ /* init */
@@ -341,7 +341,7 @@ int test_early_multip(std::ostream & report, size_t PrimeSize, size_t Taille, si
 	{ /* progress */
 		if (cra.noncoprime((integer)*genprime)) {
 			report << "bad luck, you picked twice the same prime..." <<std::endl;
-			report << "CraBuilderEarlyMultip exiting successfully." << std::endl;
+			report << "CRABuilderEarlyMultip exiting successfully." << std::endl;
 			return EXIT_SUCCESS ; // pas la faute à cra...
 		}
 		ModularField F(*genprime);
@@ -361,19 +361,19 @@ int test_early_multip(std::ostream & report, size_t PrimeSize, size_t Taille, si
 			F.init(tmp1,result[j]);
 			F.init(tmp2,residues[i][j]);
 			if(!F.areEqual(tmp1,tmp2)){
-				report << " *** CraBuilderEarlyMultip failed. ***" << std::endl;
+				report << " *** CRABuilderEarlyMultip failed. ***" << std::endl;
 				return EXIT_FAILURE ;
 			}
 		}
 	}
 
-	report << "CraBuilderEarlyMultip exiting successfully." << std::endl;
+	report << "CRABuilderEarlyMultip exiting successfully." << std::endl;
 
 	return EXIT_SUCCESS ;
 }
 
 
-#if 1 /* testing CraBuilderFullMultipMatrix */
+#if 1 /* testing CRABuilderFullMultipMatrix */
 template< class T>
 int test_full_multip_matrix(std::ostream & report, size_t PrimeSize,
 			    size_t Size, std::pair<size_t, size_t> dims)
@@ -419,8 +419,8 @@ int test_full_multip_matrix(std::ostream & report, size_t PrimeSize,
 
 	std::pair<size_t,double> my_pair(dims.first*dims.second,LogIntSize)  ;
 
-	report << "CraBuilderFullMultipMatrix (" <<  my_pair.first << ", " << my_pair.second << ')' << std::endl;
-	CraBuilderFullMultipMatrix<Field> cra( my_pair ) ;
+	report << "CRABuilderFullMultipMatrix (" <<  my_pair.first << ", " << my_pair.second << ')' << std::endl;
+	CRABuilderFullMultipMatrix<Field> cra( my_pair ) ;
 	IntMatrix result(Z,dims.first,dims.second); // the result
 	{ /* init */
 		Field F(*genprime);
@@ -437,7 +437,7 @@ int test_full_multip_matrix(std::ostream & report, size_t PrimeSize,
 	{ /* progress */
 		if (cra.noncoprime((integer)*genprime)) {
 			report << "bad luck, you picked twice the same prime..." <<std::endl;
-			report << "CraBuilderFullMultipMatrix exiting successfully." << std::endl;
+			report << "CRABuilderFullMultipMatrix exiting successfully." << std::endl;
 			return EXIT_SUCCESS ; // pas la faute à cra...
 		}
 		Field F(*genprime);
@@ -463,19 +463,19 @@ int test_full_multip_matrix(std::ostream & report, size_t PrimeSize,
 				if(!F.areEqual(tmp1,tmp2)){
 					report << result.getEntry(l,m) << ';' << residues[i].getEntry(l,m) << '@' << primes[i] << std::endl;
 					report << i << ':' << l << ',' << m << "> " << tmp1 << "!=" << tmp2 << std::endl;
-					report << " *** CraBuilderFullMultipMatrix failed. ***" << std::endl;
+					report << " *** CRABuilderFullMultipMatrix failed. ***" << std::endl;
 					return EXIT_FAILURE ;
 				}
 			}
 	}
 
-	report << "CraBuilderFullMultipMatrix exiting successfully." << std::endl;
+	report << "CRABuilderFullMultipMatrix exiting successfully." << std::endl;
 
 	return EXIT_SUCCESS ;
 }
 #endif
 
-// testing CraBuilderFullMultip
+// testing CRABuilderFullMultip
 template< class T>
 int test_full_multip(std::ostream & report, size_t PrimeSize, size_t Size, size_t Taille)
 {
@@ -512,8 +512,8 @@ int test_full_multip(std::ostream & report, size_t PrimeSize, size_t Size, size_
 
 	double LogIntSize = (double)PrimeSize*std::log(2.)+std::log((double)Size)+1 ;
 
-	report << "CraBuilderFullMultip (" <<  LogIntSize << ')' << std::endl;
-	CraBuilderFullMultip<ModularField> cra( LogIntSize ) ;
+	report << "CRABuilderFullMultip (" <<  LogIntSize << ')' << std::endl;
+	CRABuilderFullMultip<ModularField> cra( LogIntSize ) ;
 	IntVect result(Taille) ; // the result
 	pVect  residue(Taille) ; // temporary
 	{ /* init */
@@ -529,7 +529,7 @@ int test_full_multip(std::ostream & report, size_t PrimeSize, size_t Size, size_
 		if (cra.noncoprime((integer)*genprime))
 		{
 			report << "bad luck, you picked twice the same prime..." <<std::endl;
-			report << "CraBuilderFullMultip exiting successfully." << std::endl;
+			report << "CRABuilderFullMultip exiting successfully." << std::endl;
 			return EXIT_SUCCESS ; // pas la faute à cra...
 		}
 		ModularField F(*genprime);
@@ -549,18 +549,18 @@ int test_full_multip(std::ostream & report, size_t PrimeSize, size_t Size, size_
 			F.init(tmp1,result[j]);
 			F.init(tmp2,residues[i][j]);
 			if(!F.areEqual(tmp1,tmp2)){
-				report << " *** CraBuilderFullMultip failed. ***" << std::endl;
+				report << " *** CRABuilderFullMultip failed. ***" << std::endl;
 				return EXIT_FAILURE ;
 			}
 		}
 	}
 
-	report << "CraBuilderFullMultip exiting successfully." << std::endl;
+	report << "CRABuilderFullMultip exiting successfully." << std::endl;
 
 	return EXIT_SUCCESS ;
 }
 
-// testing RationalCraBuilderFullMultip
+// testing RationalCRABuilderFullMultip
 template< class T>
 int test_full_multip_rat(std::ostream & report, size_t PrimeSize, size_t Size, size_t Taille)
 {
@@ -615,8 +615,8 @@ int test_full_multip_rat(std::ostream & report, size_t PrimeSize, size_t Size, s
 
 	double LogIntSize = (double)PrimeSize*std::log(2.)+std::log((double)Size)+1 ;
 
-	report << "RationalCraBuilderFullMultip (" <<  LogIntSize << ')' << std::endl;
-	RationalCraBuilderFullMultip<ModularField> cra( LogIntSize ) ;
+	report << "RationalCRABuilderFullMultip (" <<  LogIntSize << ')' << std::endl;
+	RationalCRABuilderFullMultip<ModularField> cra( LogIntSize ) ;
 	IntVect res_num(Taille) ; // the result
     Integer res_den;
 	{ /* init */
@@ -630,7 +630,7 @@ int test_full_multip_rat(std::ostream & report, size_t PrimeSize, size_t Size, s
 		if (cra.noncoprime((integer)*genprime))
 		{
 			report << "bad luck, you picked twice the same prime..." <<std::endl;
-			report << "RationalCraBuilderFullMultip exiting successfully." << std::endl;
+			report << "RationalCRABuilderFullMultip exiting successfully." << std::endl;
 			return EXIT_SUCCESS ; // pas la faute à cra...
 		}
 		cra.progress(*field_it,*residu);
@@ -642,7 +642,7 @@ int test_full_multip_rat(std::ostream & report, size_t PrimeSize, size_t Size, s
 	cra.result(res_num, res_den);
 
     if (act_den % res_den != 0) {
-        report << " *** RationalCraBuilderFullMultip failed. ***" << std::endl;
+        report << " *** RationalCRABuilderFullMultip failed. ***" << std::endl;
         report << "denominator mismatch: " << res_den << " != " << act_den << std::endl;
         return EXIT_FAILURE ;
     }
@@ -650,7 +650,7 @@ int test_full_multip_rat(std::ostream & report, size_t PrimeSize, size_t Size, s
 
     for (size_t i = 0; i < Taille; ++i) {
         if (act_num[i] != res_num[i]*dm) {
-            report << " *** RationalCraBuilderFullMultip failed. ***" << std::endl;
+            report << " *** RationalCRABuilderFullMultip failed. ***" << std::endl;
             report << "numerator mismatch: " << res_num[i] << " != " << act_num[i] << std::endl;
             return EXIT_FAILURE ;
         }
@@ -663,20 +663,20 @@ int test_full_multip_rat(std::ostream & report, size_t PrimeSize, size_t Size, s
             fields[i].init(tmp2, res_den);
             fields[i].mulin(tmp2, residues[i][j]);
 			if(!fields[i].areEqual(tmp1,tmp2)){
-				report << " *** RationalCraBuilderFullMultip failed. ***" << std::endl;
+				report << " *** RationalCRABuilderFullMultip failed. ***" << std::endl;
 				return EXIT_FAILURE ;
 			}
 		}
 	}
 
-	report << "RationalCraBuilderFullMultip exiting successfully." << std::endl;
+	report << "RationalCRABuilderFullMultip exiting successfully." << std::endl;
 
 	return EXIT_SUCCESS ;
 }
 
 
 
-#if 1 /* testing CraBuilderFullMultipFixed */
+#if 1 /* testing CRABuilderFullMultipFixed */
 template< class T>
 int test_full_multip_fixed(std::ostream & report, size_t PrimeSize, size_t Size, size_t Taille)
 {
@@ -717,9 +717,9 @@ int test_full_multip_fixed(std::ostream & report, size_t PrimeSize, size_t Size,
 
 	std::pair<size_t,double> my_pair(Taille,LogIntSize)  ;
 
-	report << "CraBuilderFullMultipFixed (" <<  my_pair.first << ", " << my_pair.second << ')' << std::endl;
+	report << "CRABuilderFullMultipFixed (" <<  my_pair.first << ", " << my_pair.second << ')' << std::endl;
 
-	CraBuilderFullMultipFixed<ModularField> cra( my_pair ) ;
+	CRABuilderFullMultipFixed<ModularField> cra( my_pair ) ;
 	IntVect result(Taille) ; // the result
 	pVect  residue(Taille) ; // temporary
 	pVectIterator residue_it = residue.begin();
@@ -736,7 +736,7 @@ int test_full_multip_fixed(std::ostream & report, size_t PrimeSize, size_t Size,
 		if (cra.noncoprime((integer)*genprime))
 		{
 			report << "bad luck, you picked twice the same prime..." <<std::endl;
-			report << "CraBuilderFullMultipFixed exiting successfully." << std::endl;
+			report << "CRABuilderFullMultipFixed exiting successfully." << std::endl;
 			return EXIT_SUCCESS ; // pas la faute à cra...
 		}
 		ModularField F(*genprime);
@@ -759,13 +759,13 @@ int test_full_multip_fixed(std::ostream & report, size_t PrimeSize, size_t Size,
 			F.init(tmp1,result[j]);
 			F.init(tmp2,residues[i][j]);
 			if(!F.areEqual(tmp1,tmp2)){
-				report << " *** CraBuilderFullMultipFixed failed. ***" << std::endl;
+				report << " *** CRABuilderFullMultipFixed failed. ***" << std::endl;
 				return EXIT_FAILURE ;
 			}
 		}
 	}
 
-	report << "CraBuilderFullMultipFixed exiting successfully." << std::endl;
+	report << "CRABuilderFullMultipFixed exiting successfully." << std::endl;
 
 	return EXIT_SUCCESS ;
 }

@@ -91,6 +91,13 @@ namespace LinBox {
             : LinboxError(msg){};
     };
 
+    // -- Exception thrown when probabilistic solve fails
+    class SolveFailed : public LinboxError {
+    public:
+        SolveFailed(const char* msg)
+            : LinboxError(msg){};
+    };
+
     /**
      * Exception thrown when the system to be solved is
      * inconsistent. Contains a certificate of inconsistency.

@@ -51,10 +51,10 @@ namespace LinBox
 	 * An upper bound is given on the size of the data to reconstruct.
 	 */
 	template<class Domain_Type>
-	struct CraBuilderFullMultipFixed : CraBuilderFullMultip<Domain_Type> {
+	struct CRABuilderFullMultipFixed : CRABuilderFullMultip<Domain_Type> {
 		typedef Domain_Type			Domain;
 		typedef typename Domain::Element 	DomainElement;
-		typedef CraBuilderFullMultipFixed<Domain> 	Self_t;
+		typedef CRABuilderFullMultipFixed<Domain> 	Self_t;
 
 		/*! Constructor.
 		 * @param p is a pair such that
@@ -63,8 +63,8 @@ namespace LinBox
 		 *   on the size of the integers to reconstruct.
 		 * .
 		 */
-		CraBuilderFullMultipFixed(const std::pair<size_t,double>& p ) :
-			CraBuilderFullMultip<Domain>(p.second, p.first)
+		CRABuilderFullMultipFixed(const std::pair<size_t,double>& p ) :
+			CRABuilderFullMultip<Domain>(p.second, p.first)
         { }
 
 		/*! Intialize to the first residue/prime.
@@ -99,13 +99,13 @@ namespace LinBox
 {
 	/*! NO DOC..
 	 * @ingroup CRA
-	 * Version of LinBox::CraBuilderFullMultip for matrices.
+	 * Version of LinBox::CRABuilderFullMultip for matrices.
 	 */
 	template<class Domain_Type>
-	struct CraBuilderFullMultipMatrix : CraBuilderFullMultip<Domain_Type> {
+	struct CRABuilderFullMultipMatrix : CRABuilderFullMultip<Domain_Type> {
 		typedef Domain_Type			Domain;
 		typedef typename Domain::Element 	DomainElement;
-		typedef CraBuilderFullMultipMatrix<Domain> 	Self_t;
+		typedef CRABuilderFullMultipMatrix<Domain> 	Self_t;
 
 		/*! Constructor.
 		 * @param p is a pair such that
@@ -114,8 +114,8 @@ namespace LinBox
 		 *   logarithm) on the size of the integers to reconstruct.
 		 * .
 		 */
-		CraBuilderFullMultipMatrix(const std::pair<size_t,double>& p ) :
-			CraBuilderFullMultip<Domain>(p.second, p.first)
+		CRABuilderFullMultipMatrix(const std::pair<size_t,double>& p ) :
+			CRABuilderFullMultip<Domain>(p.second, p.first)
         { }
 
 		/*! Intialize to the first residue/prime.

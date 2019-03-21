@@ -193,7 +193,7 @@ namespace LinBox
 		BlasMatrix<Givaro::ZRing<Integer> > Atilde(Z,A.rowdim(), A.coldim());
 		FA.makeAtilde(Atilde);
 
-		Cra< CraBuilderEarlyMultip<Field> > cra(4UL);
+		Cra< CRABuilderEarlyMultip<Field> > cra(4UL);
 		MyRationalModularCharpoly<BlasMatrix<Rationals > , MyMethod> iteration1(A, Met, M);
 		MyIntegerModularCharpoly<BlasMatrix<Givaro::ZRing<Integer> >, MyMethod> iteration2(Atilde, Met, Di, M);
 		MyModularCharpoly<MyRationalModularCharpoly<BlasMatrix<Rationals > , MyMethod>,

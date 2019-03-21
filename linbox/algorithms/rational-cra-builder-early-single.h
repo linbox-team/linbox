@@ -32,11 +32,11 @@ namespace LinBox
 {
 
 	template<class Domain_Type>
-	struct RationalCraBuilderEarlySingle : public CraBuilderEarlySingle<Domain_Type> {
+	struct RationalCRABuilderEarlySingle : public CRABuilderEarlySingle<Domain_Type> {
 		typedef Domain_Type				Domain;
-		typedef CraBuilderEarlySingle<Domain> 			Father_t;
+		typedef CRABuilderEarlySingle<Domain> 			Father_t;
 		typedef typename Father_t::DomainElement 	DomainElement;
-		typedef RationalCraBuilderEarlySingle<Domain>		Self_t;
+		typedef RationalCRABuilderEarlySingle<Domain>		Self_t;
 		Givaro::ZRing<Integer> _ZZ;
 
 		Integer					Numer0;
@@ -44,7 +44,7 @@ namespace LinBox
 
 	public:
 
-		RationalCraBuilderEarlySingle(const size_t EARLY=DEFAULT_EARLY_TERM_THRESHOLD) :
+		RationalCRABuilderEarlySingle(const size_t EARLY=DEFAULT_EARLY_TERM_THRESHOLD) :
 			Father_t(EARLY)
 		{}
 
