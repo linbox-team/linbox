@@ -106,8 +106,8 @@ int test_early_single(std::ostream & report, size_t PrimeSize, size_t Size)
 	Iterator genprime = primes.begin()  ; // prime iterator
 	Iterator residu = residues.begin()  ; // residu iterator
 
-	report << "CRABuilderEarlySingle (" <<  4UL << ')' << std::endl;
-	CRABuilderEarlySingle<ModularField> cra( 4UL ) ;
+	report << "CRABuilderEarlySingle (" <<  LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD << ')' << std::endl;
+	CRABuilderEarlySingle<ModularField> cra( LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD ) ;
 	Integer res = 0; // the result
 	typedef ModularField::Element Element;
 	Element residue ; // temporary
@@ -325,8 +325,8 @@ int test_early_multip(std::ostream & report, size_t PrimeSize, size_t Taille, si
 	Iterator   genprime = primes.begin()    ; // prime iterator
 	VectIterator residu = residues.begin()  ; // residu iterator
 
-	report << "EarlyMultpCRA (" <<  4UL << ')' << std::endl;
-	CRABuilderEarlyMultip<ModularField> cra( 4UL ) ;
+	report << "EarlyMultpCRA (" <<  LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD << ')' << std::endl;
+	CRABuilderEarlyMultip<ModularField> cra( LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD ) ;
 	IntVect result (Taille); // the result
 	pVect residue(Taille) ; // temporary
 	{ /* init */

@@ -153,7 +153,7 @@ namespace LinBox
 		// typename FPoly::iterator fp_p;
 		y.resize (degree + 1);
 
-		CRABuilderEarlyMultip< _Field > cra(3UL);
+		CRABuilderEarlyMultip< _Field > cra(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD);
 		do {
 			++primeg;
 			Field F(*primeg);
@@ -194,7 +194,7 @@ namespace LinBox
 		// typename FPoly::iterator fp_p;
 		y.resize (degree + 1);
 
-		CRABuilderEarlyMultip< _Field > cra(3UL);
+		CRABuilderEarlyMultip< _Field > cra(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD);
 		do {
 			++primeg;
 			Field F(*primeg);
@@ -268,7 +268,7 @@ namespace LinBox
 		std::vector<Element> poly (degree + 1);
 		// typename std::vector<Element>::iterator poly_ptr;
 
-		CRABuilderEarlyMultip< _Field > cra(3UL);
+		CRABuilderEarlyMultip< _Field > cra(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD);
 		do {
 			++primeg; while(cra.noncoprime(*primeg)) ++primeg;
 			Field F(*primeg);
