@@ -384,10 +384,14 @@ namespace LinBox {
             if (P != NULL) {
                 VectorWrapper::ensureDim(PAvpb, A.rowdim());
                 P->apply(PAvpb, Avpb);
-                _VD.copy(bp, PAvpb, 0, r);
+                if (r != 0) {
+                    _VD.copy(bp, PAvpb, 0, r);
+                }
             }
             else {
-                _VD.copy(bp, Avpb, 0, r);
+                if (r != 0) {
+                    _VD.copy(bp, Avpb, 0, r);
+                }
             }
 
             commentator().stop("done");
