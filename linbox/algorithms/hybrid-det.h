@@ -537,7 +537,7 @@ namespace LinBox
                 PrimeIterator<IteratorCategories::HeuristicTag> genprime1(FieldTraits<mymodular>::bestBitSize(A.coldim()));
                 Integers ZZ;
 #endif
-		typedef RationalSolver < Integers , mymodular, PrimeIterator<IteratorCategories::HeuristicTag>, BlockHankelTraits > Solver;
+		typedef RationalSolver < Integers , mymodular, PrimeIterator<IteratorCategories::HeuristicTag>, Method::BlockHankel > Solver;
 		Solver RSolver(A. field(), genprime);
 
 		typename Vector<Integers>:: Dense r_num1 (A. coldim());

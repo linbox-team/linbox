@@ -79,7 +79,9 @@ bool benchmark(size_t niter, BlasVector<Ring>& x, BlasMatrix<Ring>& A, BlasVecto
     Ring::Element d;
 
     double startTime = getWTime();
-    solveCRA(x, d, A, B, RingCategories::IntegerTag(), Method::DenseElimination(), &communicator);
+    Method::CRAAuto method;
+    method.pCommunicator = &communicator;
+    solve(x, d, A, B, method);
 
     bool ok = false;
     if (communicator.master()) {

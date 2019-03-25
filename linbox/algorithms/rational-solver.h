@@ -931,7 +931,6 @@ namespace LinBox
 	template <class Ring, class Field, class RandomPrime>
 	class RationalSolver<Ring, Field, RandomPrime, Method::SymbolicNumericNorm> ;
 
-#if 0
 	/*--------------*/
 	/* BLOCK HANKEL */
 	/*--------------*/
@@ -940,7 +939,7 @@ namespace LinBox
 	 * NO DOC
 	 */
 	template<class Ring, class Field,class RandomPrime>
-	class RationalSolver<Ring, Field, RandomPrime, BlockHankelTraits> {
+	class RationalSolver<Ring, Field, RandomPrime, Method::BlockHankel> {
 	public:
 		typedef Ring                                 RingType;
 		typedef typename Ring::Element               Integer;
@@ -988,7 +987,6 @@ namespace LinBox
 						    const IMatrix& A, const Vector2& b,
 						    size_t blocksize, int maxPrimes = DEFAULT_MAXPRIMES) const;
 	};
-#endif
 
 
 	/*-----------*/
