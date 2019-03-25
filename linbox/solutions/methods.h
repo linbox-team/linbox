@@ -292,6 +292,9 @@ namespace LinBox {
 
         // (Mathematics of Computations - Coppersmith 1994)
         DEFINE_METHOD(Coppersmith, void);
+
+        // Use Krylov sequence to solve.
+        DEFINE_METHOD(BlockHankel, RingCategories::IntegerTag);
     };
 }
 

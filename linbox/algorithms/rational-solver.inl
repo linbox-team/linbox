@@ -1386,7 +1386,6 @@ namespace LinBox
 
 
 
-#if 0
 	/*
 	 * Specialization for Block Hankel method
 	 */
@@ -1394,7 +1393,7 @@ namespace LinBox
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>
 	SolverReturnStatus
-	RationalSolver<Ring,Field,RandomPrime,BlockHankelTraits>::solveNonsingular(Vector1& num,
+	RationalSolver<Ring,Field,RandomPrime,Method::BlockHankel>::solveNonsingular(Vector1& num,
 										   Integer& den,
 										   const IMatrix& A,
 										   const Vector2& b,
@@ -1478,7 +1477,6 @@ namespace LinBox
 
 		return SS_OK;
 	}
-#endif
 
 
 	/*
