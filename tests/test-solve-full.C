@@ -76,22 +76,26 @@ bool test_solve(Domain& D, ResultDomain& RD, Communicator* pCommunicator, int m,
 
     // @note RandomDenseMatrix can also fill a SparseMatrix, it has just a sparsity of 0.
     typename Domain::RandIter randIter(D, bitSize, seed);
+    typename Domain::RandIter vectorRandIter(D, vectorBitSize, seed);
     LinBox::RandomDenseMatrix<typename Domain::RandIter, Domain> RDM(D, randIter);
-
-    if (bitSize != vectorBitSize) {
-        typename Domain::RandIter vectorRandIter(D, vectorBitSize, seed);
-        b.random(vectorRandIter);
-    } else {
-        b.random(randIter);
-    }
 
     // @note Within our test m == n implies invertible,
     // but for the rectangular case, we pass whatever.
     if (m == n) {
         RDM.randomFullRank(A);
+        if (bitSize != vectorBitSize) {
+            b.random(vectorRandIter);
+        } else {
+            b.random(randIter);
+        }
     }
     else {
         RDM.random(A);
+
+        // We set b so that the system is not inconsistent
+        Vector x(D, n);
+        x.random(randIter);
+        A.apply(b, x); // b <- Ax
     }
 
     if (verbose) {
