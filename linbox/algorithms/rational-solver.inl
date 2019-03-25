@@ -175,7 +175,7 @@ namespace LinBox
 			tNonsingularMinPoly.stop();
 			ttNonsingularMinPoly+=tNonsingularMinPoly;
 #endif
-			prime = _genprime.randomPrime();
+			prime = *_genprime;
 		}
 		while(F->isZero(MinPoly.front()) && --issingular );
 

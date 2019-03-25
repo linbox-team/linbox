@@ -35,6 +35,7 @@ namespace LinBox {
 
         template <class Matrix>
         struct MethodForMatrix {
+            using type = Method::Wiedemann; // For blackboxes
         };
 
         template <class Ring>
@@ -49,16 +50,50 @@ namespace LinBox {
     }
 
     /**
+     * \brief Solve specialisation for Dixon on blackboxes matrices.
+     */
+    template <class Blackbox, class Vector>
+    void solve(Vector& xNum, typename Vector::Element& xDen, const Blackbox& A, const Vector& b,
+               const RingCategories::IntegerTag& tag, const Method::Dixon& m)
+    {
+        commentator().start("solve.dixon.integer.blackbox");
+        linbox_check((A.coldim() == xNum.size()) && (A.rowdim() == b.size()));
+
+        using Ring = typename Blackbox::Field;
+        using Field = Givaro::Modular<double>;
+        using PrimeGenerator = PrimeIterator<IteratorCategories::HeuristicTag>;
+        PrimeGenerator primeGenerator(FieldTraits<Field>::bestBitSize(A.coldim()));
+
+        using Solver =
+            DixonRationalSolver<Ring, Field, PrimeGenerator, typename MethodForMatrix<Blackbox>::type>;
+        Solver dixonSolve(A.field(), primeGenerator);
+
+        // @fixme I'm still bit sad that we cannot use generically the function below,
+        // just because RationalSolve<..., SparseElimination> has not the same
+        // API (i.e. no solveNonSingular) than RationalSolver<..., Dixon>
+        int maxTrials = m.trialsBeforeFailure;
+        SolverReturnStatus status = dixonSolve.solve(xNum, xDen, A, b, maxTrials);
+
+        commentator().stop("solve.dixon.integer.blackbox");
+
+        if (status == SS_INCONSISTENT) {
+            throw LinboxMathInconsistentSystem("From Dixon method.");
+        } else if (status != SS_OK) {
+            throw LinboxError("From Dixon method.");
+        }
+    }
+
+    /**
      * \brief Solve specialisation for Dixon on dense matrices.
      */
-    template <class Matrix, class Vector>
-    void solve(Vector& xNum, typename Vector::Element& xDen, const Matrix& A, const Vector& b,
+    template <class Ring, class Vector>
+    void solve(Vector& xNum, typename Vector::Element& xDen, const DenseMatrix<Ring>& A, const Vector& b,
                const RingCategories::IntegerTag& tag, const Method::Dixon& m)
     {
         commentator().start("solve.dixon.integer.dense");
         linbox_check((A.coldim() == xNum.size()) && (A.rowdim() == b.size()));
 
-        using Ring = typename Matrix::Field;
+        using Matrix = DenseMatrix<Ring>;
         using Field = Givaro::Modular<double>;
         using PrimeGenerator = PrimeIterator<IteratorCategories::HeuristicTag>;
         PrimeGenerator primeGenerator(FieldTraits<Field>::bestBitSize(A.coldim()));
@@ -108,13 +143,14 @@ namespace LinBox {
         commentator().start("solve.dixon.integer.sparse");
         linbox_check((A.coldim() == xNum.size()) && (A.rowdim() == b.size()));
 
-        using Ring = typename SparseMatrix<MatrixArgs...>::Field;
+        using Matrix = SparseMatrix<MatrixArgs...>;
+        using Ring = typename Matrix::Field;
         using Field = Givaro::Modular<double>;
         using PrimeGenerator = PrimeIterator<IteratorCategories::HeuristicTag>;
         PrimeGenerator primeGenerator(FieldTraits<Field>::bestBitSize(A.coldim()));
 
         using Solver =
-            DixonRationalSolver<Ring, Field, PrimeGenerator, typename MethodForMatrix<SparseMatrix<MatrixArgs...>>::type>;
+            DixonRationalSolver<Ring, Field, PrimeGenerator, typename MethodForMatrix<Matrix>::type>;
         Solver dixonSolve(A.field(), primeGenerator);
 
         // @fixme I'm a bit sad that we cannot use generically the function above,

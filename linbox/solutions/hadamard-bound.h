@@ -142,6 +142,13 @@ namespace LinBox {
         minLogNorm /= 2.0;
     }
 
+    template <class IMatrix>
+    void HadamardRowLogBound(double& logBound, double& minLogNorm, const IMatrix& A, const MatrixCategories::BlackboxTag& tag)
+    {
+        DenseMatrix<typename IMatrix::Field> ACopy(A);
+        HadamardRowLogBound(logBound, minLogNorm, ACopy);
+    }
+
     /**
      * Precise Hadamard bound (bound on determinant) by taking
      * the column-wise euclidean norm.
@@ -210,6 +217,13 @@ namespace LinBox {
         // Square-root
         logBound /= 2.0;
         minLogNorm /= 2.0;
+    }
+
+    template <class IMatrix>
+    void HadamardColLogBound(double& logBound, double& minLogNorm, const IMatrix& A, const MatrixCategories::BlackboxTag& tag)
+    {
+        DenseMatrix<typename IMatrix::Field> ACopy(A);
+        HadamardColLogBound(logBound, minLogNorm, ACopy);
     }
 
     /**
