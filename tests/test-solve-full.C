@@ -132,14 +132,11 @@ bool test_solve(Domain& D, ResultDomain& RD, Communicator* pCommunicator, int m,
     // Checking result is correct
     //
 
-    ResultVector RAx(RD, RA.coldim());
+    ResultVector RAx(RD, m);
     RA.apply(RAx, x);
 
     VectorDomain<ResultDomain> VD(RD);
     if (!VD.areEqual(RAx, Rb)) {
-        RA.write(std::cout << "A : ", Tag::FileFormat::Maple) << std::endl;
-        std::cout << "Ax : " << RAx << std::endl;
-        std::cout << "b : " << Rb << std::endl;
         print_error<SolveMethod>(x, RA, Rb, verbose, "Ax != b");
         return false;
     }
