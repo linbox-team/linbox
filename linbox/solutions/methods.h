@@ -291,7 +291,9 @@ namespace LinBox {
         //
 
         // If the field is too short...
-        // @fixme TRY TO USE MethodBase.useExtension
+        // @todo This might not be needed as a method per se.
+        // An method attribute useExtension might do the work here.
+        // But it can be fixed while working on https://github.com/linbox-team/linbox/issues/190
         DEFINE_METHOD(WiedemannExtension, void);
 
         //
