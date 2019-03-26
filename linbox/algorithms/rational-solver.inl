@@ -794,8 +794,8 @@ namespace LinBox
 										     const SolverLevel level) const
 	{
 
-		if (level == SL_MONTECARLO && maxPrimes > 1)
-			std::cout << "WARNING: Even if maxPrimes > 1, SL_MONTECARLO uses just one prime." << std::endl;
+		// if (level == SL_MONTECARLO && maxPrimes > 1)
+		// 	std::cout << "WARNING: Even if maxPrimes > 1, SL_MONTECARLO uses just one prime." << std::endl;
 #if 0
 		if (makeMinDenomCert && !randomSolution)
 			std::cout << "WARNING: Will not compute a certificate of minimal denominator deterministically." << std::endl;
