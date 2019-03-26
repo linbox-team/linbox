@@ -28,6 +28,17 @@
 #include <linbox/util/mpicpp.h>
 #include <string>
 
+/**
+ * These macros are used to define methods.
+ *
+ * The CategoryTag is used to differenciate what the method is used for.
+ * For instance, Method::Dixon has its CategoryTag set to RingCategories::IntegerTag,
+ * expressing it is used only for non-modular computations.
+ * Setting CategoryTag to void means that we don't care.
+ *
+ * A compound method is something like Method::CRA<Method::Auto>
+ * telling the method CRA which method to use.
+ */
 #define DEFINE_METHOD_CONTENT(MethodName)                                                                                        \
     MethodName() = default;                                                                                                      \
     MethodName(const MethodName&) = default;                                                                                     \
@@ -95,7 +106,7 @@ namespace LinBox {
     enum class Dispatch {
         Auto,        //!< Let implementation decide what to use.
         Sequential,  //!< All sub-computations are done sequentially.
-        Smp,         //!< Use symmetric multiprocessing (Paladin) to do sub-computations.
+        SMP,         //!< Use symmetric multiprocessing (Paladin) to do sub-computations.
         Distributed, //!< Use MPI to distribute sub-computations accross nodes.
         Combined,    //!< Use MPI then Paladin on each node.
     };
@@ -117,11 +128,11 @@ namespace LinBox {
         Butterfly,                 //!< Use a butterfly network, see @ref Butterfly.
         Sparse,                    //!< Use a sparse preconditioner, c.f. (Mulders 2000).
         Toeplitz,                  //!< Use a Toeplitz preconditioner, c.f. (Kaltofen and Saunders 1991).
-        Symmetrize,                //!< Use At A (used by Lanczos).
-        PartialDiagonal,           //!< Use A D, where D is a random non-singular diagonal matrix (used by Lanczos).
-        PartialDiagonalSymmetrize, //!< Use At D A (used by Lanczos).
-        FullDiagonal,              //!< Use D1 At D2 A D1 (used by Lanczos).
-        Dense,                     //!< @fixme Missing doc (used by Dixon).
+        Symmetrize,                //!< Use At A (Eberly and Kaltofen 1997).
+        PartialDiagonal,           //!< Use A D, where D is a random non-singular diagonal matrix (Eberly and Kaltofen 1997).
+        PartialDiagonalSymmetrize, //!< Use At D A (Eberly and Kaltofen 1997).
+        FullDiagonal,              //!< Use D1 At D2 A D1 (Eberly and Kaltofen 1997).
+        Dense,                     //!< Multiply (@fixme or add?) by a random dense matrix (used by Dixon).
     };
 
     /**
@@ -133,8 +144,8 @@ namespace LinBox {
         enum Value : uint16_t {
             Unknown = 0x00,
             Symmetric = 0x01,       //!< Matrix has its main diagonal as a reflection axis.
-            Diagonal = 0x02,        //!< Only main diagonal is non-zero.
-            Toeplitz = 0x04,        //!< Main diagonals are constant.
+            Diagonal = 0x02,        //!< Outside main diagonal are zeroes.
+            Toeplitz = 0x04,        //!< Diagonals are constant.
             Hankel = 0x08,          //!< Anti-diagonals are constant.
             Unimodular = 0x10,      //!< Square integer matrix having determinant +1 or −1.
             UpperTriangular = 0x20, //!< Only upper right part of the matrix is non-zero.
@@ -174,7 +185,7 @@ namespace LinBox {
      * is going to be used.
      * Fact is this structure is never copied between method switches.
      * It does not matter if it is too big, but for clarity, we try
-     * to regroup elements used depending of the method.
+     * to regroup elements used depending on the method.
      */
     struct MethodBase {
         // ----- Generic system information.

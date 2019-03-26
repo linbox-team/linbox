@@ -36,10 +36,19 @@ namespace LinBox {
      * \brief Solve specialisation for Wiedemann.
      */
     template <class ResultVector, class Matrix, class Vector, class CategoryTag>
-    ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag,
-                        const Method::Wiedemann& m)
+    ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag, const Method::Wiedemann& m)
     {
         throw LinboxError("Method::Wiedemann can only be used with RingCategories::ModularTag.");
+    }
+
+    /**
+     * \brief Solve specialisation for Wiedemann with IntegerTag.
+     */
+    template <class ResultVector, class Matrix, class Vector>
+    ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const RingCategories::IntegerTag& tag,
+                        const Method::Wiedemann& m)
+    {
+        return solve(x, A, b, tag, reinterpret_cast<const Method::Dixon&>(m));
     }
 
     /**
@@ -118,8 +127,7 @@ namespace LinBox {
      * \brief Solve specialisation for Coppersmith.
      */
     template <class ResultVector, class Matrix, class Vector, class CategoryTag>
-    ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag,
-                        const Method::Coppersmith& m)
+    ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag, const Method::Coppersmith& m)
     {
         throw LinboxError("Method::Coppersmith can only be used with RingCategories::ModularTag.");
     }

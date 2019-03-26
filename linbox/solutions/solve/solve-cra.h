@@ -105,7 +105,7 @@ namespace LinBox {
             // we enable it with default communicator if needed.
             newM.dispatch = Dispatch::Distributed;
 #else
-            // @note Currently, Sequential = Smp if OpenMP is active on
+            // @note Currently, Sequential = SMP if OpenMP is active on
             // the machine, as CRA -> ChineseRemainderSequential or ChineseRemainderOMP in cra-domain.h
             newM.dispatch = Dispatch::Sequential;
 #endif

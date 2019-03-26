@@ -98,8 +98,8 @@ namespace {
 }
 
 template <class SolveMethod, class Matrix, class Domain, class ResultDomain>
-bool test_solve(Domain& D, ResultDomain& RD, Communicator* pCommunicator, int m, int n, int bitSize, int vectorBitSize, int seed,
-                bool verbose)
+bool test_solve(Domain& D, ResultDomain& RD, Communicator* pCommunicator, Dispatch dispatch, int m, int n, int bitSize,
+                int vectorBitSize, int seed, bool verbose)
 {
     using Vector = DenseVector<Domain>;
     using ResultVector = DenseVector<ResultDomain>;
@@ -124,7 +124,14 @@ bool test_solve(Domain& D, ResultDomain& RD, Communicator* pCommunicator, int m,
     //
 
     using ResultMatrix = typename Matrix::template rebind<ResultDomain>::other;
-    ResultMatrix RA(*A, RD);
+
+    // @note The following const_cast prevents this ambiguity warning:
+    // warning: ISO C++ says that these are ambiguous
+    // - linbox/matrix/sparsematrix/sparse-sequence-vector.h:660:3: note: candidate 1
+    //      SparseMatrix (const SparseMatrix<_Tp1, _Rw1> &Mat, const Field& F)
+    // - linbox/matrix/sparsematrix/sparse-sequence-vector.h:643:3: note: candidate 2
+    //      SparseMatrix (const Field &F, VectStream &stream)
+    ResultMatrix RA(*A, const_cast<const ResultDomain&>(RD));
     ResultVector Rb(RD, b);
 
     //
@@ -133,6 +140,7 @@ bool test_solve(Domain& D, ResultDomain& RD, Communicator* pCommunicator, int m,
 
     SolveMethod method;
     method.pCommunicator = pCommunicator;
+    method.dispatch = dispatch;
 
     try {
         solve(x, *A, b, method);
@@ -165,7 +173,8 @@ bool test_solve(Domain& D, ResultDomain& RD, Communicator* pCommunicator, int m,
 //
 
 template <class SolveMethod, class Matrix>
-bool test_rational_solve(Communicator& communicator, int m, int n, int bitSize, int vectorBitSize, int seed, bool verbose)
+bool test_rational_solve(Communicator& communicator, Dispatch dispatch, int m, int n, int bitSize, int vectorBitSize, int seed,
+                         bool verbose)
 {
     using IntegerDomain = Givaro::ZRing<Integer>;
     using RationalDomain = Givaro::QField<Givaro::Rational>;
@@ -174,34 +183,36 @@ bool test_rational_solve(Communicator& communicator, int m, int n, int bitSize, 
     RationalDomain RD;
 
     bool ok = true;
-    ok &= test_solve<SolveMethod, Matrix>(D, RD, &communicator, m, m, bitSize, vectorBitSize, seed, verbose);
-    ok &= test_solve<SolveMethod, Matrix>(D, RD, &communicator, m, n, bitSize, vectorBitSize, seed, verbose);
+    ok &= test_solve<SolveMethod, Matrix>(D, RD, &communicator, dispatch, m, m, bitSize, vectorBitSize, seed, verbose);
+    ok &= test_solve<SolveMethod, Matrix>(D, RD, &communicator, dispatch, m, n, bitSize, vectorBitSize, seed, verbose);
     return ok;
 }
 
 template <class SolveMethod>
-bool test_dense_rational_solve(Communicator& communicator, int m, int n, int bitSize, int vectorBitSize, int seed, bool verbose)
+bool test_dense_rational_solve(Communicator& communicator, Dispatch dispatch, int m, int n, int bitSize, int vectorBitSize,
+                               int seed, bool verbose)
 {
     using IntegerDomain = Givaro::ZRing<Integer>;
-    return test_rational_solve<SolveMethod, DenseMatrix<IntegerDomain>>(communicator, m, n, bitSize, vectorBitSize, seed,
-                                                                        verbose);
+    return test_rational_solve<SolveMethod, DenseMatrix<IntegerDomain>>(communicator, dispatch, m, n, bitSize, vectorBitSize,
+                                                                        seed, verbose);
 }
 
 template <class SolveMethod>
-bool test_sparse_rational_solve(Communicator& communicator, int m, int n, int bitSize, int vectorBitSize, int seed, bool verbose)
+bool test_sparse_rational_solve(Communicator& communicator, Dispatch dispatch, int m, int n, int bitSize, int vectorBitSize,
+                                int seed, bool verbose)
 {
     using IntegerDomain = Givaro::ZRing<Integer>;
-    return test_rational_solve<SolveMethod, SparseMatrix<IntegerDomain>>(communicator, m, n, bitSize, vectorBitSize, seed,
-                                                                         verbose);
+    return test_rational_solve<SolveMethod, SparseMatrix<IntegerDomain>>(communicator, dispatch, m, n, bitSize, vectorBitSize,
+                                                                         seed, verbose);
 }
 
 template <class SolveMethod>
-bool test_blackbox_rational_solve(Communicator& communicator, int m, int n, int bitSize, int vectorBitSize, int seed,
-                                  bool verbose)
+bool test_blackbox_rational_solve(Communicator& communicator, Dispatch dispatch, int m, int n, int bitSize, int vectorBitSize,
+                                  int seed, bool verbose)
 {
     using IntegerDomain = Givaro::ZRing<Integer>;
-    return test_rational_solve<SolveMethod, Transpose<DenseMatrix<IntegerDomain>>>(communicator, m, n, bitSize, vectorBitSize,
-                                                                                   seed, verbose);
+    return test_rational_solve<SolveMethod, Transpose<DenseMatrix<IntegerDomain>>>(communicator, dispatch, m, n, bitSize,
+                                                                                   vectorBitSize, seed, verbose);
 }
 
 //
@@ -216,8 +227,8 @@ bool test_modular_solve(Integer& q, int m, int n, int bitSize, int vectorBitSize
     ModularDomain D(q);
 
     bool ok = true;
-    ok &= test_solve<SolveMethod, Matrix>(D, D, nullptr, m, m, bitSize, vectorBitSize, seed, verbose);
-    ok &= test_solve<SolveMethod, Matrix>(D, D, nullptr, m, n, bitSize, vectorBitSize, seed, verbose);
+    ok &= test_solve<SolveMethod, Matrix>(D, D, nullptr, Dispatch::Auto, m, m, bitSize, vectorBitSize, seed, verbose);
+    ok &= test_solve<SolveMethod, Matrix>(D, D, nullptr, Dispatch::Auto, m, n, bitSize, vectorBitSize, seed, verbose);
     return ok;
 }
 
@@ -252,6 +263,7 @@ int main(int argc, char** argv)
     int vectorBitSize = -1;
     int m = 32;
     int n = 24;
+    std::string dispatchString = "AUTO";
 
     static Argument args[] = {
         {'q', "-q", "Field characteristic.", TYPE_INTEGER, &q},
@@ -262,7 +274,20 @@ int main(int argc, char** argv)
         {'B', "-B", "Vector bit size for rational solve tests (defaults to -b if not specified).", TYPE_INT, &vectorBitSize},
         {'m', "-m", "Row dimension of matrices.", TYPE_INT, &m},
         {'n', "-n", "Column dimension of matrices.", TYPE_INT, &n},
+        {'d', "-d", "Dispatch mode (either AUTO, SEQ, SMP or MPI).", TYPE_STR, &dispatchString},
         END_OF_ARGUMENTS};
+
+    Dispatch dispatch = Dispatch::Auto;
+    if (dispatchString == "MPI")
+        dispatch = Dispatch::Distributed;
+    else if (dispatchString == "SEQ")
+        dispatch = Dispatch::Sequential;
+    else if (dispatchString == "SMP")
+        dispatch = Dispatch::SMP;
+    else if (dispatchString != "AUTO") {
+        std::cerr << "-d Dispatch mode should be either AUTO, SEQ, SMP or MPI" << std::endl;
+        return EXIT_FAILURE;
+    }
 
     if (vectorBitSize < 0) {
         vectorBitSize = bitSize;
@@ -283,31 +308,32 @@ int main(int argc, char** argv)
 
     do {
         // ----- Rational Auto
-        ok &= test_dense_rational_solve<Method::Auto>(communicator, m, n, bitSize, vectorBitSize, seed, verbose);
-        ok &= test_sparse_rational_solve<Method::Auto>(communicator, m, n, bitSize, vectorBitSize, seed, verbose);
+        ok &= test_dense_rational_solve<Method::Auto>(communicator, dispatch, m, n, bitSize, vectorBitSize, seed, verbose);
+        ok &= test_sparse_rational_solve<Method::Auto>(communicator, dispatch, m, n, bitSize, vectorBitSize, seed, verbose);
         // @fixme Dixon<Wiedemann> does not compile
-        // ok &= test_blackbox_rational_solve<Method::Auto>(communicator, m, n, bitSize, vectorBitSize, seed, verbose);
+        // ok &= test_blackbox_rational_solve<Method::Auto>(communicator, dispatch, m, n, bitSize, vectorBitSize, seed, verbose);
 
         // ----- Rational CRA
         // @fixme @bug When bitSize = 5 and vectorBitSize = 50, CRA fails
-        ok &= test_dense_rational_solve<Method::CRAAuto>(communicator, m, n, bitSize, vectorBitSize, seed, verbose);
-        ok &= test_sparse_rational_solve<Method::CRAAuto>(communicator, m, n, bitSize, vectorBitSize, seed, verbose);
-        // ok &= test_blackbox_rational_solve<Method::CRAAuto>(communicator, m, n, bitSize, vectorBitSize, seed, verbose);
+        ok &= test_dense_rational_solve<Method::CRAAuto>(communicator, dispatch, m, n, bitSize, vectorBitSize, seed, verbose);
+        ok &= test_sparse_rational_solve<Method::CRAAuto>(communicator, dispatch, m, n, bitSize, vectorBitSize, seed, verbose);
+        // ok &= test_blackbox_rational_solve<Method::CRAAuto>(communicator, dispatch, m, n, bitSize, vectorBitSize, seed,
+        // verbose);
 
         // ----- Rational Dixon
-        ok &= test_dense_rational_solve<Method::Dixon>(communicator, m, n, bitSize, vectorBitSize, seed, verbose);
-        ok &= test_sparse_rational_solve<Method::Dixon>(communicator, m, n, bitSize, vectorBitSize, seed, verbose);
+        ok &= test_dense_rational_solve<Method::Dixon>(communicator, dispatch, m, n, bitSize, vectorBitSize, seed, verbose);
+        ok &= test_sparse_rational_solve<Method::Dixon>(communicator, dispatch, m, n, bitSize, vectorBitSize, seed, verbose);
         // @fixme Dixon<Wiedemann> does not compile
-        // ok &= test_blackbox_rational_solve<Method::Dixon>(communicator, m, n, bitSize, vectorBitSize, seed, verbose);
+        // ok &= test_blackbox_rational_solve<Method::Dixon>(communicator, dispatch, m, n, bitSize, vectorBitSize, seed, verbose);
 
         // ----- Rational SymbolicNumeric
         // @note SymbolicNumeric methods are only implemented on DenseMatrix
         // @fixme Singular case fails
-        // ok &= test_dense_rational_solve<Method::SymbolicNumericOverlap>(communicator, m, n, bitSize, vectorBitSize, seed,
-        // verbose);
+        // ok &= test_dense_rational_solve<Method::SymbolicNumericOverlap>(communicator, dispatch, m, n, bitSize, vectorBitSize,
+        // seed, verbose);
         // @fixme Fails
-        // ok &= test_sparse_rational_solve<Method::SymbolicNumericNorm>(communicator, m, n, bitSize, vectorBitSize, seed,
-        // verbose);
+        // ok &= test_sparse_rational_solve<Method::SymbolicNumericNorm>(communicator, dispatch, m, n, bitSize, vectorBitSize,
+        // seed, verbose);
 
         // ----- Modular Auto
         ok &= test_dense_modular_solve<Method::Auto>(q, m, n, bitSize, vectorBitSize, seed, verbose);
@@ -369,5 +395,5 @@ int main(int argc, char** argv)
         seed += 1;
     } while (ok && loop);
 
-    return 0;
+    return EXIT_SUCCESS;
 }

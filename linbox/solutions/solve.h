@@ -86,6 +86,7 @@ namespace LinBox {
      * - Method::Blackbox > Method::Wiedemann
      * - Method::Wiedemann
      *      - ModularTag > `WiedemannSolver`
+     *      - IntegerTag > Method::Dixon
      *      - Otherwise  > Error
      * - Method::BlockWiedemann [@deprecated, not tested]
      *      - ModularTag > `BlockWiedemannSolver`
