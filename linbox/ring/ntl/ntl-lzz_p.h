@@ -275,7 +275,7 @@ namespace LinBox
 		bool isUnit(const Element& x) const
             {
                 long d,u;
-                Givaro::invext(u,d,rep(x),NTL::zz_p::modulus());
+                Givaro::extended_euclid(u,d,rep(x),NTL::zz_p::modulus());
                 return (d==1) || (d==-1);
 //                 return !NTL::InvModStatus(d,rep(x),NTL::zz_p::modulus());
             }

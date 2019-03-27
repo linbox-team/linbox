@@ -471,6 +471,7 @@ namespace LinBox
 		
 		Element& lcm( Element& res, const Element& a, const Element& b ) const
 		{
+            if (isZero(a) || isZero(b)) return assign(res,zero);
 			Element tmp; 
 			gcd(tmp,a,b);
 			div(res, a, tmp);
