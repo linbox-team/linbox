@@ -27,13 +27,15 @@
 #include <linbox/field/field-traits.h>
 #include <linbox/field/param-fuzzy.h>
 #include <linbox/solutions/methods.h>
-// #include <linbox/algorithms/numsym.h>
 
 namespace LinBox {
     //
     // Numeric Symbolic Overlap
     // Youse's variant of Numeric Symbolic rational solve.
     //
+
+// @note LPS<...> requires LAPACK
+#if defined(__FFLASFFPACK_HAVE_LAPACK)
 
     template <class Matrix, class Vector>
     inline void solve(Vector& xNum, typename Vector::Element& xDen, const Matrix& A, const Vector& b,
@@ -70,6 +72,8 @@ namespace LinBox {
             throw LinboxError("Failed to solve with SymbolicNumericOverlap.");
         }
     }
+
+#endif
 
     //
     // Numeric Symbolic Norm
