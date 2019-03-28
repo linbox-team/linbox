@@ -30,13 +30,13 @@
 #include "linbox/linbox-config.h"
 #include <iostream>
 
-#include <givaro/modular.h>
-#include "linbox/util/args-parser.h"
-#include "linbox/matrix/sparse-matrix.h"
-#include "linbox/solutions/solve.h"
-#include "linbox/util/matrix-stream.h"
-#include "linbox/solutions/methods.h"
 #include "linbox/algorithms/vector-fraction.h"
+#include "linbox/matrix/sparse-matrix.h"
+#include "linbox/solutions/methods.h"
+#include "linbox/solutions/solve.h"
+#include "linbox/util/args-parser.h"
+#include "linbox/util/matrix-stream.h"
+#include <givaro/modular.h>
 
 #ifdef _DEBUG
 #define _BENCHMARKS_DEBUG_
@@ -44,41 +44,36 @@
 
 using namespace LinBox;
 
-template<typename Field, typename Vector_t>
-std::ostream& printVector(std::ostream& out,
-                          const Field& F, const Vector_t& v) {
-    out << '[';
-    for(const auto& it: v) F.write(std::clog, it) << ',';
-    return out << ']';
-}
-template<typename Vector_t>
-double& setBitsize(double& size, const Givaro::Integer& q, const Vector_t& v) {
-    return size=Givaro::logtwo(q);
-}
+using Ints = Givaro::ZRing<Givaro::Integer>;
+using VectorFractionInts = VectorFraction<Ints>;
 
-typedef Givaro::ZRing<Givaro::Integer> Ints;
-typedef VectorFraction<Ints> VectorFractionInts;
+namespace {
+    struct Arguments {
+        Givaro::Integer q = -1;
+        int nbiter = 3;
+        int n = 500;
+        int bits = 10;
+        std::string methodString;
+    };
 
-template<>
-std::ostream& printVector(std::ostream& out, const Ints& Z, const VectorFractionInts& v) {
-    return Z.write(printVector(out, Z, v.numer) << " / ", v.denom);
-}
-template<>
-double& setBitsize(double& size, const Givaro::Integer& q, const VectorFractionInts& v) {
-    return size=Givaro::logtwo(v.denom);
-}
+    template <typename Vector>
+    double& setBitsize(double& size, const Givaro::Integer& q, const Vector& v)
+    {
+        return size = Givaro::logtwo(q);
+    }
 
-
-template<typename T1, typename T2, typename T3>
-void solve(VectorFractionInts& X, const T1& A, const T2& B, const T3& M) {
-    solve(X.numer, X.denom, A, B, M);
+    template <>
+    double& setBitsize(double& size, const Givaro::Integer& q, const VectorFractionInts& v)
+    {
+        return size = Givaro::logtwo(v.denom);
+    }
 }
 
-template<typename Field, typename Vector_t=DenseVector<Field>>
-void tmain (std::pair<double,double>& timebits, size_t n,
-            const Givaro::Integer& q, size_t bits, int p) {
-    Field F(q);						// q is ignored for Integers
-    typename Field::RandIter G(F,bits);	// bits is ignored for ModularRandIter
+template <typename Field, typename Vector = DenseVector<Field>>
+void benchmark(std::pair<double, double>& timebits, Arguments& args)
+{
+    Field F(args.q);                          // q is ignored for Integers
+    typename Field::RandIter randIter(F, args.bits); // bits is ignored for ModularRandIter
 
 #ifdef _BENCHMARKS_DEBUG_
     std::clog << "Setting A ... " << std::endl;
@@ -87,111 +82,93 @@ void tmain (std::pair<double,double>& timebits, size_t n,
     Timer chrono;
 
     chrono.start();
-    DenseMatrix<Field> A(F,n,n);
-    PAR_BLOCK { FFLAS::pfrand(F,G, n,n,A.getPointer(),n); }
+    DenseMatrix<Field> A(F, args.n, args.n);
+    PAR_BLOCK { FFLAS::pfrand(F, randIter, args.n, args.n, A.getPointer(), args.n); }
     chrono.stop();
 
 #ifdef _BENCHMARKS_DEBUG_
     std::clog << "... A is " << A.rowdim() << " by " << A.coldim() << ", " << chrono << std::endl;
-    if (A.rowdim() <= 20 && A.coldim() <= 20) A.write(std::clog <<"A:=",Tag::FileFormat::Maple) << ';' << std::endl;
+    if (A.rowdim() <= 20 && A.coldim() <= 20) A.write(std::clog << "A:=", Tag::FileFormat::Maple) << ';' << std::endl;
 #endif
 
     DenseVector<Field> B(F, A.rowdim());
-    PAR_BLOCK { FFLAS::pfrand(F,G, n,1,B.getPointer(),1); }
+    PAR_BLOCK { FFLAS::pfrand(F, randIter, args.n, 1, B.getPointer(), 1); }
 
 #ifdef _BENCHMARKS_DEBUG_
-    printVector(std::clog << "B is ", F, B) << std::endl;
+    std::clog << "B is " << B << std::endl;
 #endif
 
-        // DenseElimination
-    Vector_t X(F, A.coldim());
+    Vector X(F, A.coldim());
     chrono.start();
-    switch(p){
-    case 0: solve (X, A, B, Method::DenseElimination());
-            break;
-    case 1: solve (X, A, B, Method::Dixon());
-            break;
 
+    if (args.methodString == "Elimination")                 solve(X, A, B, Method::Elimination());
+    else if (args.methodString == "DenseElimination")       solve(X, A, B, Method::DenseElimination());
+    else if (args.methodString == "SparseElimination")      solve(X, A, B, Method::SparseElimination());
+    else if (args.methodString == "Dixon")                  solve(X, A, B, Method::Dixon());
+    else if (args.methodString == "CRA")                    solve(X, A, B, Method::CRAAuto());
+    else if (args.methodString == "SymbolicNumericOverlap") solve(X, A, B, Method::SymbolicNumericOverlap());
+    else if (args.methodString == "SymbolicNumericNorm")    solve(X, A, B, Method::SymbolicNumericNorm());
+    // @fixme Won't compile with DenseMatrix
+    // else if (args.methodString == "Blackbox")               solve(X, A, B, Method::Blackbox());
+    // else if (args.methodString == "Wiedemann")              solve(X, A, B, Method::Wiedemann());
+    else if (args.methodString == "Lanczos")                solve(X, A, B, Method::Lanczos());
+    // @fixme Won't compile
+    // else if (args.methodString == "BlockLanczos")           solve(X, A, B, Method::BlockLanczos());
+    else                                                    solve(X, A, B, Method::Auto());
 
-
-#if 0       //fixme: Only work with Integer => compile time conflict
-    case 2: solve (X, A, B, Method::BlockWiedemann()); 
-            break;
-
-    case 3: solve (X, A, B, Method::Wiedemann());
-            break;
-
-    case 4: solve (X, A, B, Method::Coppersmith()); 
-            break;
-#endif
-
-    }
     chrono.stop();
-
 
 #ifdef _BENCHMARKS_DEBUG_
     printVector(std::clog << "(DenseElimination) Solution is ", F, X) << std::endl;
 #endif
 
-    setBitsize(timebits.second, q, X);
-    timebits.first=chrono.usertime();
+    setBitsize(timebits.second, args.q, X);
+    timebits.first = chrono.usertime();
 }
 
-
-
-int main (int argc, char **argv)
+int main(int argc, char** argv)
 {
-    Givaro::Integer q = -1 ;
-    size_t nbiter = 3 ;
-    size_t n = 500 ;
-    size_t bits = 10;
-    size_t p = 0;
-    Communicator communicator(&argc, &argv);
+    Arguments args;
+    Argument as[] = {{'i', "-i", "Set number of repetitions.", TYPE_INT, &args.nbiter},
+                     {'q', "-q", "Set the field characteristic (-1 for rationals).", TYPE_INTEGER, &args.q},
+                     {'n', "-n", "Set the matrix dimension.", TYPE_INT, &args.n},
+                     {'b', "-b", "bit size", TYPE_INT, &args.bits},
+                     {'M', "-M",
+                      "Choose the solve method (any of: Auto, Elimination, DenseElimination, SparseElimination, "
+                      "Dixon, CRA, SymbolicNumericOverlap, SymbolicNumericNorm, "
+                      "Blackbox, Wiedemann, Lanczos, BlockLanczos).",
+                      TYPE_STR, &args.methodString},
+                     END_OF_ARGUMENTS};
+    LinBox::parseArguments(argc, argv, as);
 
+    // @fixme Pass that to the method
+    Communicator communicator(&argc, &argv);
     if (communicator.master()) {
         std::cout << "Communicator size: " << communicator.size() << std::endl;
     }
-    Argument as[] = {
-        { 'i', "-i R", "Set number of repetitions.",       TYPE_INT , &nbiter },
-        { 'q', "-q Q", "Set the field characteristic (-1 for rationals).", TYPE_INTEGER , &q },
-        { 'n', "-n N", "Set the matrix dimension.",      TYPE_INT , &n },
-        { 'b', "-b B", "bit size", TYPE_INT , &bits },
-        { 'p', "-p P", "0 for DenseElimination, 1 for Dixon, 2 for BlockHankel.", TYPE_INT , &p },
-        END_OF_ARGUMENTS
-    };
 
-    LinBox::parseArguments(argc,argv,as);
+    bool isModular = false;
+    if (args.q > 0) isModular = true;
 
-    bool ModComp = false;
-    if (q > 0) ModComp = true;
-
-    std::vector<std::pair<double,double>> timebits(nbiter);
-    for(size_t iter=0; iter<nbiter; ++iter) {
-        if (ModComp) {
-            //tmain<Givaro::Modular<double>>(timebits[iter],n,q,bits,p);
-            //tmain<Givaro::ModularBalanced<double>>(timebits[iter],n,q,bits,p);
-            //tmain<Givaro::Modular<float>>(timebits[iter],n,q,bits,p);
-            //tmain<Givaro::ModularBalanced<float>>(timebits[iter],n,q,bits,p);
-            //tmain<Givaro::Modular<int>>(timebits[iter],n,q,bits,p);
-            //tmain<Givaro::ModularBalanced<int>>(timebits[iter],n,q,bits,p);
-        } else {
-            tmain<Ints,VectorFractionInts>(timebits[iter],n,q,bits,p);
+    using Timing = std::pair<double, double>;
+    std::vector<Timing> timebits(args.nbiter);
+    for (int iter = 0; iter < args.nbiter; ++iter) {
+        if (isModular) {
+            benchmark<Givaro::Modular<double>>(timebits[iter], args);
+            // benchmark<Givaro::ModularBalanced<double>>(timebits[iter],n,q,bits,p);
+        }
+        else {
+            benchmark<Ints, VectorFractionInts>(timebits[iter], args);
         }
     }
 
-
 #ifdef _BENCHMARKS_DEBUG_
-    for(const auto& it: timebits)
-        std::clog << it.first << "s, " << it.second << " bits" << std::endl;
+    for (const auto& it : timebits) std::clog << it.first << "s, " << it.second << " bits" << std::endl;
 #endif
 
-    std::sort(timebits.begin(), timebits.end(),
-              [](const std::pair<double,double> & a,
-                 const std::pair<double,double> & b) -> bool {
-        return a.first > b.first; });
+    std::sort(timebits.begin(), timebits.end(), [](const Timing& a, const Timing& b) -> bool { return a.first > b.first; });
 
-    std::cout << "Time: " << timebits[nbiter/2].first
-              << " Bitsize: " << timebits[nbiter/2].second;
+    std::cout << "Time: " << timebits[args.nbiter / 2].first << " Bitsize: " << timebits[args.nbiter / 2].second;
 
     FFLAS::writeCommandString(std::cout, as) << std::endl;
 
