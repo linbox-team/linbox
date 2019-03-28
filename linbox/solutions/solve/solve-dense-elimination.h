@@ -30,9 +30,9 @@ namespace LinBox {
     /**
      * \brief Solve specialisation for DenseElimination.
      */
-    template <class ResultVector, class Matrix, class Vector>
-    ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const RingCategories::ModularTag& tag,
-                        const Method::DenseElimination& m)
+    template <class Matrix, class Vector>
+    Vector& solve(Vector& x, const Matrix& A, const Vector& b, const RingCategories::ModularTag& tag,
+                  const Method::DenseElimination& m)
     {
         commentator().report(Commentator::LEVEL_UNIMPORTANT,
                              "Warning: Solve implicitly convert to a dense matrix because of Method::DenseElimination."

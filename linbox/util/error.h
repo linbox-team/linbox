@@ -96,6 +96,8 @@ namespace LinBox {
     public:
         SolveFailed(const char* msg)
             : LinboxError(msg){};
+        SolveFailed()
+            : LinboxError(){};
     };
 
     /**

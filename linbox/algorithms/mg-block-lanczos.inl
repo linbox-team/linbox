@@ -376,7 +376,7 @@ namespace LinBox
 			// Find a right-hand side for the linear system
 			_MD.blackboxMulLeft (_b, A, _y);
 
-			switch (_traits.preconditioner ()) {
+			switch (_traits.preconditioner) {
 			case Preconditioner::None:
 				// success =
 					iterate (A);
