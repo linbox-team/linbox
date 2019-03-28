@@ -31,9 +31,8 @@ namespace LinBox {
     /**
      * \brief Solve specialisation for Lanczos.
      */
-    template <class ResultVector, class Matrix, class Vector, class CategoryTag>
-    ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag,
-                        const Method::Lanczos& m)
+    template <class Matrix, class Vector, class CategoryTag>
+    Vector& solve(Vector& x, const Matrix& A, const Vector& b, const CategoryTag& tag, const Method::Lanczos& m)
     {
         throw LinboxError("Method::Lanczos can only be used with RingCategories::ModularTag.");
     }
@@ -41,9 +40,8 @@ namespace LinBox {
     /**
      * \brief Solve specialisation for Lanczos with ModularTag.
      */
-    template <class ResultVector, class Matrix, class Vector>
-    ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const RingCategories::ModularTag& tag,
-                        const Method::Lanczos& m)
+    template <class Matrix, class Vector>
+    Vector& solve(Vector& x, const Matrix& A, const Vector& b, const RingCategories::ModularTag& tag, const Method::Lanczos& m)
     {
         using Solver = LanczosSolver<typename Matrix::Field, Vector>;
         Solver solver(A.field(), m);
@@ -58,9 +56,8 @@ namespace LinBox {
     /**
      * \brief Solve specialisation for BlockLanczos.
      */
-    template <class ResultVector, class Matrix, class Vector, class CategoryTag>
-    ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag,
-                        const Method::BlockLanczos& m)
+    template <class Matrix, class Vector, class CategoryTag>
+    Vector& solve(Vector& x, const Matrix& A, const Vector& b, const CategoryTag& tag, const Method::BlockLanczos& m)
     {
         throw LinboxError("Method::BlockLanczos can only be used with RingCategories::ModularTag.");
     }
@@ -68,9 +65,9 @@ namespace LinBox {
     /**
      * \brief Solve specialisation for BlockLanczos with ModularTag.
      */
-    template <class ResultVector, class Matrix, class Vector>
-    ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const RingCategories::ModularTag& tag,
-                        const Method::BlockLanczos& m)
+    template <class Matrix, class Vector>
+    Vector& solve(Vector& x, const Matrix& A, const Vector& b, const RingCategories::ModularTag& tag,
+                  const Method::BlockLanczos& m)
     {
         using Solver = MGBlockLanczosSolver<typename Matrix::Field>;
         Solver solver(A.field(), m);

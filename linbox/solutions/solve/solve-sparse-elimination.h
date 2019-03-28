@@ -35,9 +35,8 @@ namespace LinBox {
     /**
      * \brief Solve specialisation for SparseElimination.
      */
-    template <class ResultVector, class Matrix, class Vector, class CategoryTag>
-    ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag,
-                        const Method::SparseElimination& m)
+    template <class Matrix, class Vector, class CategoryTag>
+    Vector& solve(Vector& x, const Matrix& A, const Vector& b, const CategoryTag& tag, const Method::SparseElimination& m)
     {
         commentator().report(Commentator::LEVEL_UNIMPORTANT,
                              "Warning: Solve implicitly convert to a sparse matrix because of Method::SparseElimination.");
@@ -51,9 +50,9 @@ namespace LinBox {
     /**
      * \brief Solve specialisation for SparseElimination with SparseMatrix.
      */
-    template <class ResultVector, class... MatrixArgs, class Vector, class CategoryTag>
-    ResultVector& solve(ResultVector& x, const SparseMatrix<MatrixArgs...>& A, const Vector& b, const CategoryTag& tag,
-                        const Method::SparseElimination& m)
+    template <class... MatrixArgs, class Vector, class CategoryTag>
+    Vector& solve(Vector& x, const SparseMatrix<MatrixArgs...>& A, const Vector& b, const CategoryTag& tag,
+                  const Method::SparseElimination& m)
     {
         SparseMatrix<MatrixArgs...> ACopy(A);
         return solveInPlace(x, ACopy, b, tag, m);
@@ -66,9 +65,9 @@ namespace LinBox {
     /**
      * \brief Solve in place specialisation for SparseElimination with SparseMatrix.
      */
-    template <class ResultVector, class... MatrixArgs, class Vector, class CategoryTag>
-    ResultVector& solveInPlace(ResultVector& x, SparseMatrix<MatrixArgs...>& A, const Vector& b, const CategoryTag& tag,
-                               const Method::SparseElimination& m)
+    template <class... MatrixArgs, class Vector, class CategoryTag>
+    Vector& solveInPlace(Vector& x, SparseMatrix<MatrixArgs...>& A, const Vector& b, const CategoryTag& tag,
+                         const Method::SparseElimination& m)
     {
         commentator().start("solve-in-place.sparse-elimination.any.sparse");
         linbox_check((A.coldim() == x.size()) && (A.rowdim() == b.size()));

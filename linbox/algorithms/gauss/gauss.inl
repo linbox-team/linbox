@@ -117,18 +117,18 @@ namespace LinBox
 #else
 #  ifdef __LINBOX_FILLIN__
         long sstep = 100;
-#  else    
+#  else
         long sstep = 1000;
 #  endif
 #endif
-        
+
         // Elimination steps with reordering
 
-        typename _Matrix::RowIterator LigneA_k = LigneA.rowBegin(), LigneA_p;
+        typename _Matrix::RowIterator LigneA_k = LigneA.rowBegin();
         for (long k = 0; k < last; ++k, ++LigneA_k) {
-            
+
 #ifdef __LINBOX_SpD_MAXSPARSITY__
-            
+
             if (accumulate(col_density.begin()+Rank,col_density.end(),0)>(Ni*Nj*__LINBOX_SpD_MAXSPARSITY__)) {
 #  ifdef _LB_DEBUG
                 std::cerr << "Dense switch: " << accumulate(col_density.begin()+Rank,col_density.end(),0) << '>' << Ni << '*' << Nj << '*' << __LINBOX_SpD_MAXSPARSITY__ << std::endl;
@@ -136,7 +136,7 @@ namespace LinBox
                 degeneratedense=std::is_base_of<Givaro::FiniteRingInterface<Element>,_Field>::value && true; break;
             }
 #endif
-            
+
             long p = k, s = 0;
 
             if ( ! (k % sstep) )
@@ -208,16 +208,16 @@ namespace LinBox
             }
             E one((unsigned)k,field().one);
             LigneL[(size_t)k].push_back(one);
-           
+
 
 //             LigneL.write(std::cerr << "L:= ", Tag::FileFormat::Maple) << std::endl;
 //             LigneA.write(std::cerr << "U:= ", Tag::FileFormat::Maple) << std::endl;
-            
+
         }//for k
 
 //         if (std::is_base_of<Givaro::FiniteRingInterface<Element>,_Field>::value && degeneratedense) {
 //             DenseQLUPin(Rank,determinant,invQ,LigneL,LigneA,P,Ni,Nj);
-            
+
 //         } else {
 
 //             SparseFindPivot ( LigneA[(size_t)last], Rank, c, determinant);
@@ -228,7 +228,7 @@ namespace LinBox
 //                         permute( LigneA[(size_t)ll], Rank, c);
 //                 }
 //             }
-            
+
 //             E one((unsigned)last,field().one);
 //             LigneL[(size_t)last].push_back(one);
 //         }
@@ -269,7 +269,7 @@ namespace LinBox
         LigneL.write(rep << "L:= ", Tag::FileFormat::Maple) << ':' << std::endl;
         LigneA.write(rep << "U:= ", Tag::FileFormat::Maple) << ':' << std::endl;
         P.write(rep << "P:= ", Tag::FileFormat::Maple) << ':' << std::endl;
-        
+
         commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
         << "Rank : " << Rank
         << " over GF (" << card << ")" << std::endl;
@@ -306,19 +306,19 @@ namespace LinBox
                     permute( LigneA[(size_t)ll], Rank, c);
             }
         }
-        
+
         E one((unsigned)last,field().one);
         LigneL[(size_t)last].push_back(one);
         return Rank;
     }
-    
+
 
     template <class _Field>
-    template<class _Matrix, class Perm> 
+    template<class _Matrix, class Perm>
     struct GaussDomain<_Field>::Continuation<_Matrix,Perm,false> {
         size_t& operator()(
             const GaussDomain<_Field>& GD,
-            size_t &Rank, 
+            size_t &Rank,
             typename GaussDomain<_Field>::Element       &determinant,
             std::deque<std::pair<size_t,size_t> > &invQ,
             _Matrix        &LigneL,
@@ -326,14 +326,14 @@ namespace LinBox
             Perm          &P,
             size_t Ni,
             size_t Nj,
-            bool degeneratedense) const 
+            bool degeneratedense) const
             {
                 return GD.SparseContinuation(Rank,determinant,invQ,LigneL,LigneA,P,Ni,Nj);
             }
     };
-    
+
     template <class _Field>
-    template <class _Matrix, class Perm> 
+    template <class _Matrix, class Perm>
     struct GaussDomain<_Field>::Continuation<_Matrix,Perm,true> {
         size_t& operator()(
             const GaussDomain<_Field>& GD,
@@ -354,7 +354,7 @@ namespace LinBox
                 }
             }
     };
-    
+
 
 
 
@@ -380,7 +380,7 @@ namespace LinBox
 //         _Matrix dLigneL(LigneL, this->field());
 //         _Matrix dLigneA(LigneA, this->field());
 //         Perm dP(P);
-        
+
 //         { Perm dQ(Ni);
 //           for(std::deque<std::pair<size_t,size_t> >::const_iterator it = dinvQ.begin(); it!=dinvQ.end();++it)
 //               dQ.permute( it->first, it->second );
@@ -389,21 +389,21 @@ namespace LinBox
 //         dLigneL.write(std::cerr << "dL:= ", Tag::FileFormat::Maple) << ':' << std::endl;
 //         dLigneA.write(std::cerr << "dU:= ", Tag::FileFormat::Maple) << ':' << std::endl;
 //         dP.write(std::cerr << "dP:= ") << ';' << std::endl;
-        
+
 
         size_t sNi=Ni-Rank, sNj=Nj-Rank;
 //         std::cerr << "Dense switch: " << sNi << 'x' << sNj << std::endl;
         BlasMatrix<_Field> A(this->field(), sNi, sNj);
-        
+
         for(size_t di=Rank;di<Ni;++di) {
             for(size_t dj=0;dj<dLigneA[di].size();++dj)
                 A.setEntry(di-Rank,dLigneA[di][dj].first-Rank, dLigneA[di][dj].second);
             dLigneA[di].resize(0);
         }
-        
-        
+
+
 //         A.write(std::cerr << "A:= ", Tag::FileFormat::Maple) << std::endl;
-        
+
         enum FFLAS::FFLAS_DIAG diag = FFLAS::FflasNonUnit;
         size_t *P2 = FFLAS::fflas_new<size_t>(sNi);
         size_t *Q2 = FFLAS::fflas_new<size_t>(sNj);
@@ -411,10 +411,10 @@ namespace LinBox
         for (size_t j=0;j<sNj;j++) Q2[j]=0;
         size_t R2 = FFPACK::PLUQ(this->field(), diag, sNi, sNj, A.getPointer(), sNj, P2, Q2);
 //         std::cerr << "Rank:" << Rank << '+' << R2 << '=' << (Rank+R2) << std::endl;
-        
-        
+
+
 //         std::cerr << dLigneL.rowdim() << 'x' << dLigneL.coldim() << std::endl;
-        
+
 //         { Perm dQ(Ni);
 //           for(std::deque<std::pair<size_t,size_t> >::const_iterator it = dinvQ.begin(); it!=dinvQ.end();++it)
 //               dQ.permute( it->first, it->second );
@@ -423,21 +423,21 @@ namespace LinBox
 //         dLigneL.write(std::cerr << "dL:= ", Tag::FileFormat::Maple) << ':' << std::endl;
 //         dLigneA.write(std::cerr << "dU:= ", Tag::FileFormat::Maple) << ':' << std::endl;
 //         dP.write(std::cerr << "dP:= ") << ';' << std::endl;
-        
+
 
         Givaro::ZRing<long> Z;
 
-//         std::cerr << '['; for (size_t j=0;j<sNi;j++) 
+//         std::cerr << '['; for (size_t j=0;j<sNi;j++)
 //             std::cerr << P2[j] << ' ';
 //         std::cerr << ']' << std::endl;
             // Left-Trans: P2^T * G
-        for (int i=sNi;--i>=0;) 
+        for (int i=sNi;--i>=0;)
             if(i != static_cast<int>(P2[i])) {
                 dinvQ.push_front( std::pair<size_t,size_t>(Rank+(size_t)i,Rank+P2[i]) );
                 this->field().negin(determinant);
                 std::swap(dLigneL[i+Rank],dLigneL[P2[i]+Rank]);
             }
-        
+
             // Put L2 in bottom right corner
         for(size_t i=0; i<sNi; ++i)
             for(size_t j=0; j<i; ++j)
@@ -455,18 +455,18 @@ namespace LinBox
         for(size_t i=0; i<R2; ++i)
             this->field().mulin(determinant,A.getEntry(i,i));
 
-//         std::cerr << '['; for (size_t j=0;j<sNj;++j) 
+//         std::cerr << '['; for (size_t j=0;j<sNj;++j)
 //             std::cerr << Q2[j] << ' ';
 //         std::cerr << ']' << std::endl;
-        
+
             // Right-Trans: H * Q2^T
-        for (size_t j=0;j<sNj;++j) 
+        for (size_t j=0;j<sNj;++j)
             if(j != Q2[j]) {
                 this->field().negin(determinant);
-                for (size_t l=0; l<Rank; ++l) 
+                for (size_t l=0; l<Rank; ++l)
                     permute( dLigneA[l], j+Rank+1, Q2[j]+Rank);
             }
-        
+
         FFPACK::applyP(Z,FFLAS::FflasLeft,FFLAS::FflasNoTrans,1,0,sNj,&(*(dP.getStorage().begin()))+Rank,1,Q2);
 
 //         { Perm dQ(Ni);
@@ -479,11 +479,11 @@ namespace LinBox
 //         dP.write(std::cerr << "dP:= ") << ';' << std::endl;
 
 
-       
+
 
         return Rank+=R2;
     }
-    
+
 
     template <class _Field>
     template <class _Matrix> inline size_t&
