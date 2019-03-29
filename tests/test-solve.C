@@ -729,7 +729,7 @@ static bool testBasicMethodsSolve (const Field &F, size_t n)
 	commentator().start ("Testing Basic Methods Solve");
 	ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
-	BlasVector<Field> xd(F,n), xh(F,n), xb(F,n), xe(F,n), b(F,n, F.zero);
+	BlasVector<Field> xd(F,n), xh(F,n), xb(F,n), xe(F,n), xs(F,n), b(F,n, F.zero);
 	for(size_t i = 0; i < n/2; ++i) b[i] = F.one;
 	//ScalarMatrix<Field> I(F, n/2, F.one), Z(F, n/2, F.zero);
 	ScalarMatrix<Field> I(F, n, n, F.one), Z(F, 0, 0, F.zero);
@@ -746,10 +746,13 @@ static bool testBasicMethodsSolve (const Field &F, size_t n)
 	solve(xb, A, b, Method::Blackbox());
 	VD.write(report<<"xb ", xb) << endl;
 
-	solve(xe, A, b, Method::Elimination());
+	solve(xe, A, b, Method::DenseElimination());
 	VD.write(report<<"xe ", xe) << endl;
 
-	ret = VD.areEqual(xd, xh) && VD.areEqual(xd, xb) && VD.areEqual(xd, xe);
+	solve(xs, A, b, Method::SparseElimination());
+	VD.write(report<<"xs ", xs) << endl;
+
+	ret = VD.areEqual(xd, xh) && VD.areEqual(xd, xb) && VD.areEqual(xd, xe) && VD.areEqual(xd, xs);
 	commentator().stop (MSG_STATUS (ret));
 	return ret;
 }
@@ -795,7 +798,7 @@ int main (int argc, char **argv)
 	RandomDenseStream<Field> stream3 (F, gen, r, (unsigned int)iterations), stream4 (F, gen, r, (unsigned int)iterations);
 	RandomSparseStream<Field> stream6 (F, gen, (double) r / (double) n, n, (unsigned int)iterations);
 	RandomSparseStream<Field> A_stream (F, gen, (double) r / (double) n, n, m);
-#if 0
+#if 1
 	Method::Wiedemann WM;
 	if (!testIdentitySolve               (F, stream1, "Wiedemann", WM))
 		pass = false;
@@ -811,7 +814,7 @@ int main (int argc, char **argv)
 		pass = false;
 #endif
 
-#if 0
+#if 1
 	if (!testSingularConsistentSolve     (F, n, stream3, stream4,
 					      "Wiedemann", Method::Wiedemann ()))
 		pass = false;
@@ -820,7 +823,7 @@ int main (int argc, char **argv)
 		pass = false;
 #endif
 
-#if 0
+#if 1
 	if (!testSingularPreconditionedSolve (F, stream6, stream2,
 					      "Sparse preconditioner", Method::Wiedemann::SPARSE))
 		pass = false;
@@ -852,7 +855,7 @@ int main (int argc, char **argv)
 	if (!testRandomSolve (F, A_stream, stream1, "Block Lanczos", traits2))
 		pass = false;
 #endif
-#if 0
+#if 1
 
     if ( ! testBasicMethodsSolve (F, n) )
 		pass = false;
