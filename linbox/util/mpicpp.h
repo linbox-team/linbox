@@ -76,7 +76,6 @@ namespace LinBox {
         bool master() const { return _rank == 0; }
         MPI_Status status() const { return _status; }
         MPI_Comm comm() const { return _comm; }
-        bool master() const { return _rank == 0; }
 
         // peer to peer communication
         template <class Ptr> void send(Ptr begin, Ptr end, int dest, int tag);

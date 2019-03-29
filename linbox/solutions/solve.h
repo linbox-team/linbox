@@ -74,7 +74,7 @@ namespace LinBox {
      *      - Otherwise > Method::SparseElimination but copy to SparseMatrix first
      * - Method::CRA
      *      - IntegerTag
-     *      |   - Dispatch::Distributed > `RationalChineseRemainderDistributed`
+     *      |   - Dispatch::Distributed > `ChineseRemainderDistributed`
      *      |   - Otherwise             > `RationalChineseRemainder`
      *      - Otherwise > Error
      * - Method::Dixon
