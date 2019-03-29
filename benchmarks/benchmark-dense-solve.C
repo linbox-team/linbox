@@ -73,34 +73,42 @@ namespace {
 template <typename Field, typename Vector = DenseVector<Field>>
 void benchmark(std::pair<double, double>& timebits, Arguments& args, MethodBase& method)
 {
-    Field F(args.q);                          // q is ignored for Integers
+    Field F(args.q);                                 // q is ignored for Integers
     typename Field::RandIter randIter(F, args.bits); // bits is ignored for ModularRandIter
 
 #ifdef _BENCHMARKS_DEBUG_
     std::clog << "Setting A ... " << std::endl;
 #endif
 
+    DenseMatrix<Field> A(F, args.n, args.n);
+    DenseVector<Field> B(F, A.rowdim());
     Timer chrono;
 
-    chrono.start();
-    DenseMatrix<Field> A(F, args.n, args.n);
-    PAR_BLOCK { FFLAS::pfrand(F, randIter, args.n, args.n, A.getPointer(), args.n); }
-    chrono.stop();
+    if (method.master()) {
+        chrono.start();
+        PAR_BLOCK { FFLAS::pfrand(F, randIter, args.n, args.n, A.getPointer(), args.n); }
+        chrono.stop();
 
 #ifdef _BENCHMARKS_DEBUG_
-    std::clog << "... A is " << A.rowdim() << " by " << A.coldim() << ", " << chrono << std::endl;
-    if (A.rowdim() <= 20 && A.coldim() <= 20) A.write(std::clog << "A:=", Tag::FileFormat::Maple) << ';' << std::endl;
+        std::clog << "... A is " << A.rowdim() << " by " << A.coldim() << ", " << chrono << std::endl;
+        if (A.rowdim() <= 20 && A.coldim() <= 20) A.write(std::clog << "A:=", Tag::FileFormat::Maple) << ';' << std::endl;
 #endif
 
-    DenseVector<Field> B(F, A.rowdim());
-    PAR_BLOCK { FFLAS::pfrand(F, randIter, args.n, 1, B.getPointer(), 1); }
+        PAR_BLOCK { FFLAS::pfrand(F, randIter, args.n, 1, B.getPointer(), 1); }
 
 #ifdef _BENCHMARKS_DEBUG_
-    std::clog << "B is " << B << std::endl;
+        std::clog << "B is " << B << std::endl;
 #endif
+    }
+
+    method.pCommunicator->bcast(A, 0);
+    method.pCommunicator->bcast(B, 0);
 
     Vector X(F, A.coldim());
-    chrono.start();
+
+    if (method.master()) {
+        chrono.start();
+    }
 
     if (args.methodString == "Elimination")                 solve(X, A, B, Method::Elimination(method));
     else if (args.methodString == "DenseElimination")       solve(X, A, B, Method::DenseElimination(method));
@@ -116,14 +124,16 @@ void benchmark(std::pair<double, double>& timebits, Arguments& args, MethodBase&
     // else if (args.methodString == "BlockLanczos")           solve(X, A, B, Method::BlockLanczos(method));
     else                                                    solve(X, A, B, Method::Auto(method));
 
-    chrono.stop();
+    if (method.master()) {
+        chrono.stop();
 
 #ifdef _BENCHMARKS_DEBUG_
-    printVector(std::clog << "(DenseElimination) Solution is ", F, X) << std::endl;
+        printVector(std::clog << "(DenseElimination) Solution is ", F, X) << std::endl;
 #endif
 
-    setBitsize(timebits.second, args.q, X);
-    timebits.first = chrono.usertime();
+        setBitsize(timebits.second, args.q, X);
+        timebits.first = chrono.usertime();
+    }
 }
 
 int main(int argc, char** argv)
@@ -177,11 +187,13 @@ int main(int argc, char** argv)
     for (const auto& it : timebits) std::clog << it.first << "s, " << it.second << " bits" << std::endl;
 #endif
 
-    std::sort(timebits.begin(), timebits.end(), [](const Timing& a, const Timing& b) -> bool { return a.first > b.first; });
+    if (method.master()) {
+        std::sort(timebits.begin(), timebits.end(), [](const Timing& a, const Timing& b) -> bool { return a.first > b.first; });
 
-    std::cout << "Time: " << timebits[args.nbiter / 2].first << " Bitsize: " << timebits[args.nbiter / 2].second;
+        std::cout << "Time: " << timebits[args.nbiter / 2].first << " Bitsize: " << timebits[args.nbiter / 2].second;
 
-    FFLAS::writeCommandString(std::cout, as) << std::endl;
+        FFLAS::writeCommandString(std::cout, as) << std::endl;
+    }
 
     return 0;
 }
