@@ -201,7 +201,7 @@ bool test_blackbox_solve(MethodBase& method, Domain& D, ResultDomain& RD, int m,
 
 int main(int argc, char** argv)
 {
-    Integer q = 101;
+    Integer q = 131071;
     bool verbose = false;
     bool loop = false;
     int seed = -1;
