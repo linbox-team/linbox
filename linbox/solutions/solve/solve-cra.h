@@ -158,7 +158,7 @@ namespace LinBox {
         }
 #if defined(__LINBOX_HAVE_MPI)
         else if (dispatch == Dispatch::Distributed) {
-            LinBox::RationalChineseRemainderDistributed<CraAlgorithm> cra(hadamardLogBound, m.pCommunicator);
+            LinBox::ChineseRemainderDistributed<CraAlgorithm> cra(hadamardLogBound, m.pCommunicator);
             cra(num, den, iteration, primeGenerator);
         }
 #endif
