@@ -166,7 +166,8 @@ namespace LinBox {
             // Make it just Blackbox trait and not wiedemann:
             // Might need extension field for minpoly
             // Might also also use better method than Wiedemann ...
-            minpoly(m_A, A, RingCategories::ModularTag(), reinterpret_cast<const Method::Blackbox&>(_traits));
+            minpoly(m_A, A, RingCategories::ModularTag(), Method::Blackbox(_traits));
+            // minpoly(m_A, A, RingCategories::ModularTag(), Method::Blackbox(_traits));
         }
 
         std::ostream& report = commentator().report(Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
