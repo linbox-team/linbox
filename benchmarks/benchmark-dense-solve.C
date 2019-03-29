@@ -53,8 +53,8 @@ namespace {
         int nbiter = 3;
         int n = 500;
         int bits = 10;
-        std::string dispatchString;
-        std::string methodString;
+        std::string dispatchString = "Auto";
+        std::string methodString = "Auto";
     };
 
     template <typename Vector>
@@ -109,8 +109,7 @@ void benchmark(std::pair<double, double>& timebits, Arguments& args, MethodBase&
     else if (args.methodString == "CRA")                    solve(X, A, B, Method::CRAAuto(method));
     else if (args.methodString == "SymbolicNumericOverlap") solve(X, A, B, Method::SymbolicNumericOverlap(method));
     else if (args.methodString == "SymbolicNumericNorm")    solve(X, A, B, Method::SymbolicNumericNorm(method));
-    // @fixme Won't compile with DenseMatrix
-    // else if (args.methodString == "Blackbox")               solve(X, A, B, Method::Blackbox(method));
+    else if (args.methodString == "Blackbox")               solve(X, A, B, Method::Blackbox(method));
     else if (args.methodString == "Wiedemann")              solve(X, A, B, Method::Wiedemann(method));
     else if (args.methodString == "Lanczos")                solve(X, A, B, Method::Lanczos(method));
     // @fixme Won't compile
@@ -138,7 +137,7 @@ int main(int argc, char** argv)
                      {'M', "-M",
                       "Choose the solve method (any of: Auto, Elimination, DenseElimination, SparseElimination, "
                       "Dixon, CRA, SymbolicNumericOverlap, SymbolicNumericNorm, "
-                      "Blackbox, Wiedemann, Lanczos, BlockLanczos).",
+                      "Blackbox, Wiedemann, Lanczos).",
                       TYPE_STR, &args.methodString},
                      END_OF_ARGUMENTS};
     LinBox::parseArguments(argc, argv, as);
@@ -147,7 +146,7 @@ int main(int argc, char** argv)
 
     Communicator communicator(&argc, &argv);
     if (communicator.master()) {
-        std::cout << "Communicator size: " << communicator.size() << std::endl;
+        std::clog << "Communicator size: " << communicator.size() << std::endl;
     }
 
     MethodBase method;
