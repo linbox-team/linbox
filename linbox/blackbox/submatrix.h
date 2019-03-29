@@ -375,6 +375,21 @@ namespace LinBox
 			return os;
 		}
 
+		size_t rowfirst() const
+		{
+			return this->_r0;
+		}
+
+		size_t colfirst() const
+		{
+			return this->_c0;
+		}
+
+		const Matrix* getPtr() const
+		{
+			return &this->_Mat;
+		}
+
 		/** Generic matrix-vector apply
 		 * <code>y = A * x</code>.
 		 * This version of apply allows use of arbitrary input and output vector         * types.
@@ -420,15 +435,12 @@ namespace LinBox
 
 		template<typename _Tp1>
 		struct rebind {
-			typedef SubmatrixOwner<BlasMatrix<_Tp1>, VectorCategories::DenseVectorTag> other;
-
-			void operator() (other & Ap, const Self_t& A) {
-
-				typename other::Father_t A1;
-				typename Father_t::template rebind<_Tp1> () ( A1, static_cast<Father_t>(A) );
-				Ap = other(A1, A.rowfirst(), A.colfirst(), A.rowdim(), A.coldim());
+			typedef typename Matrix::template rebind<_Tp1> Rebinder;
+			typedef SubmatrixOwner<typename Rebinder::other, VectorCategories::DenseVectorTag> other;
+			void operator() (other & Ap, const Self_t& A)
+			{
+				Rebinder () ( Ap.getData(), *(A.getPtr()));
 			}
-
 		};
 	};
 

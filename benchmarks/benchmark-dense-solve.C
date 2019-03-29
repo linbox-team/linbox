@@ -111,7 +111,7 @@ void benchmark(std::pair<double, double>& timebits, Arguments& args, MethodBase&
     else if (args.methodString == "SymbolicNumericNorm")    solve(X, A, B, Method::SymbolicNumericNorm(method));
     // @fixme Won't compile with DenseMatrix
     // else if (args.methodString == "Blackbox")               solve(X, A, B, Method::Blackbox(method));
-    // else if (args.methodString == "Wiedemann")              solve(X, A, B, Method::Wiedemann(method));
+    else if (args.methodString == "Wiedemann")              solve(X, A, B, Method::Wiedemann(method));
     else if (args.methodString == "Lanczos")                solve(X, A, B, Method::Lanczos(method));
     // @fixme Won't compile
     // else if (args.methodString == "BlockLanczos")           solve(X, A, B, Method::BlockLanczos(method));

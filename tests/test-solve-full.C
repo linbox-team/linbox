@@ -195,7 +195,7 @@ bool test_blackbox_solve(MethodBase& method, Domain& D, ResultDomain& RD, int m,
 
 int main(int argc, char** argv)
 {
-    Integer q = 101;
+    Integer q = 131071;
     bool verbose = false;
     bool loop = false;
     int seed = -1;
@@ -289,8 +289,7 @@ int main(int argc, char** argv)
         ok &= test_blackbox_solve<Method::Auto>(method, F, F, m, n, 0, 0, seed, verbose);
 
         // ----- Modular Blackbox
-        // @fixme Dense Wiedemann does not compile
-        // ok &= test_dense_solve<Method::Blackbox>(method, F, F, m, n, 0, 0, seed, verbose);
+        ok &= test_dense_solve<Method::Blackbox>(method, F, F, m, n, 0, 0, seed, verbose);
         ok &= test_sparse_solve<Method::Blackbox>(method, F, F, m, n, 0, 0, seed, verbose);
         ok &= test_blackbox_solve<Method::Blackbox>(method, F, F, m, n, 0, 0, seed, verbose);
 
@@ -305,8 +304,7 @@ int main(int argc, char** argv)
         ok &= test_blackbox_solve<Method::SparseElimination>(method, F, F, m, n, 0, 0, seed, verbose);
 
         // ----- Modular Wiedemann
-        // @fixme Dense does not compile
-        // ok &= test_dense_solve<Method::Wiedemann>(method, F, F, m, n, 0, 0, seed, verbose);
+        ok &= test_dense_solve<Method::Wiedemann>(method, F, F, m, n, 0, 0, seed, verbose);
         ok &= test_sparse_solve<Method::Wiedemann>(method, F, F, m, n, 0, 0, seed, verbose);
         ok &= test_blackbox_solve<Method::Wiedemann>(method, F, F, m, n, 0, 0, seed, verbose);
 
