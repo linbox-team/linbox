@@ -53,6 +53,7 @@ namespace {
         int nbiter = 3;
         int n = 500;
         int bits = 10;
+        std::string dispatchString;
         std::string methodString;
     };
 
@@ -70,7 +71,7 @@ namespace {
 }
 
 template <typename Field, typename Vector = DenseVector<Field>>
-void benchmark(std::pair<double, double>& timebits, Arguments& args)
+void benchmark(std::pair<double, double>& timebits, Arguments& args, MethodBase& method)
 {
     Field F(args.q);                          // q is ignored for Integers
     typename Field::RandIter randIter(F, args.bits); // bits is ignored for ModularRandIter
@@ -101,20 +102,20 @@ void benchmark(std::pair<double, double>& timebits, Arguments& args)
     Vector X(F, A.coldim());
     chrono.start();
 
-    if (args.methodString == "Elimination")                 solve(X, A, B, Method::Elimination());
-    else if (args.methodString == "DenseElimination")       solve(X, A, B, Method::DenseElimination());
-    else if (args.methodString == "SparseElimination")      solve(X, A, B, Method::SparseElimination());
-    else if (args.methodString == "Dixon")                  solve(X, A, B, Method::Dixon());
-    else if (args.methodString == "CRA")                    solve(X, A, B, Method::CRAAuto());
-    else if (args.methodString == "SymbolicNumericOverlap") solve(X, A, B, Method::SymbolicNumericOverlap());
-    else if (args.methodString == "SymbolicNumericNorm")    solve(X, A, B, Method::SymbolicNumericNorm());
+    if (args.methodString == "Elimination")                 solve(X, A, B, Method::Elimination(method));
+    else if (args.methodString == "DenseElimination")       solve(X, A, B, Method::DenseElimination(method));
+    else if (args.methodString == "SparseElimination")      solve(X, A, B, Method::SparseElimination(method));
+    else if (args.methodString == "Dixon")                  solve(X, A, B, Method::Dixon(method));
+    else if (args.methodString == "CRA")                    solve(X, A, B, Method::CRAAuto(method));
+    else if (args.methodString == "SymbolicNumericOverlap") solve(X, A, B, Method::SymbolicNumericOverlap(method));
+    else if (args.methodString == "SymbolicNumericNorm")    solve(X, A, B, Method::SymbolicNumericNorm(method));
     // @fixme Won't compile with DenseMatrix
-    // else if (args.methodString == "Blackbox")               solve(X, A, B, Method::Blackbox());
-    // else if (args.methodString == "Wiedemann")              solve(X, A, B, Method::Wiedemann());
-    else if (args.methodString == "Lanczos")                solve(X, A, B, Method::Lanczos());
+    // else if (args.methodString == "Blackbox")               solve(X, A, B, Method::Blackbox(method));
+    // else if (args.methodString == "Wiedemann")              solve(X, A, B, Method::Wiedemann(method));
+    else if (args.methodString == "Lanczos")                solve(X, A, B, Method::Lanczos(method));
     // @fixme Won't compile
-    // else if (args.methodString == "BlockLanczos")           solve(X, A, B, Method::BlockLanczos());
-    else                                                    solve(X, A, B, Method::Auto());
+    // else if (args.methodString == "BlockLanczos")           solve(X, A, B, Method::BlockLanczos(method));
+    else                                                    solve(X, A, B, Method::Auto(method));
 
     chrono.stop();
 
@@ -133,6 +134,7 @@ int main(int argc, char** argv)
                      {'q', "-q", "Set the field characteristic (-1 for rationals).", TYPE_INTEGER, &args.q},
                      {'n', "-n", "Set the matrix dimension.", TYPE_INT, &args.n},
                      {'b', "-b", "bit size", TYPE_INT, &args.bits},
+                     {'d', "-d", "Dispatch mode (any of: Auto, Sequential, SMP, Distributed).", TYPE_STR, &args.dispatchString},
                      {'M', "-M",
                       "Choose the solve method (any of: Auto, Elimination, DenseElimination, SparseElimination, "
                       "Dixon, CRA, SymbolicNumericOverlap, SymbolicNumericNorm, "
@@ -141,11 +143,21 @@ int main(int argc, char** argv)
                      END_OF_ARGUMENTS};
     LinBox::parseArguments(argc, argv, as);
 
-    // @fixme Pass that to the method
+    // Setting up context
+
     Communicator communicator(&argc, &argv);
     if (communicator.master()) {
         std::cout << "Communicator size: " << communicator.size() << std::endl;
     }
+
+    MethodBase method;
+    method.pCommunicator = &communicator;
+    if (args.dispatchString == "Sequential")        method.dispatch = Dispatch::Sequential;
+    else if (args.dispatchString == "SMP")          method.dispatch = Dispatch::SMP;
+    else if (args.dispatchString == "Distributed")  method.dispatch = Dispatch::Distributed;
+    else                                            method.dispatch = Dispatch::Auto;
+
+    // Real benchmark
 
     bool isModular = false;
     if (args.q > 0) isModular = true;
@@ -154,11 +166,11 @@ int main(int argc, char** argv)
     std::vector<Timing> timebits(args.nbiter);
     for (int iter = 0; iter < args.nbiter; ++iter) {
         if (isModular) {
-            benchmark<Givaro::Modular<double>>(timebits[iter], args);
+            benchmark<Givaro::Modular<double>>(timebits[iter], args, method);
             // benchmark<Givaro::ModularBalanced<double>>(timebits[iter],n,q,bits,p);
         }
         else {
-            benchmark<Ints, VectorFractionInts>(timebits[iter], args);
+            benchmark<Ints, VectorFractionInts>(timebits[iter], args, method);
         }
     }
 
