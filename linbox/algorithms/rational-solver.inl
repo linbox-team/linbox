@@ -776,6 +776,52 @@ namespace LinBox
 		return monolithicSolve (num, den, A, b, false, true, maxPrimes, level);
 	}
 
+    // TAS stands for Transpose Augmented System (A|b)t
+    // this provides a factorization (A|b) = Pt . Ut . Qt . Lt
+    // such that
+    // - P . (A|b) . Q   has nonzero principal minors up to TAS_rank
+    // - Q permutes b to the (TAS_rank)th column of A iff the system is inconsistent mod p
+
+    template <class Field>
+    class TAS {
+    public:
+
+        BlasMatrix<Field>* factors = nullptr;
+
+    public:
+
+        template <class Ring, class IMatrix, class IVector>
+        TAS(Ring& R, Field& F, const IMatrix& A, const IVector& b) {
+			std::cout << "HEY" << std::endl;
+
+            factors = new BlasMatrix<Field>(F, A.coldim() + 1, A.rowdim());
+
+			Hom<Ring, Field> Hmap(R, F);
+			BlasMatrix<Field> Ap(F, A.rowdim(), A.coldim()); // @fixme Shouldn't Ap(F, A) work without map below?
+			MatrixHom::map(Ap, A);
+
+            // Setting factors = [Ap|0]
+			for (size_t i = 0; i < A.rowdim(); ++i)
+				for (size_t j = 0; j < A.coldim(); ++j)
+					factors->setEntry(j, i, Ap.getEntry(i,j));
+
+            // And then factors = [Ap|bp]
+            Integer tmpInteger;
+			for (size_t i = 0; i < A.rowdim(); ++i) {
+				typename Field::Element tmpElement;
+				F.init(tmpElement, R.convert(tmpInteger, b[i]));
+				factors->setEntry(A.coldim(), i, tmpElement);
+			}
+        }
+
+        ~TAS() {
+            delete factors;
+        }
+
+        // @fixme Add TAS_LQUP?
+
+    };
+
 
 	// Most solving is done by the routine below.
 	// There used to be one for random and one for deterministic, but they have been merged to ease with
@@ -831,28 +877,9 @@ namespace LinBox
 
 			BlasMatrix<Ring> A_check(A); // used to check answer later
 
-			// TAS_xxx stands for Transpose Augmented System (A|b)t
-			// this provides a factorization (A|b) = TAS_Pt . TAS_Ut . TAS_Qt . TAS_Lt
-			// such that
-			// - TAS_P . (A|b) . TAS_Q   has nonzero principal minors up to TAS_rank
-			// - TAS_Q permutes b to the (TAS_rank)th column of A iff the system is inconsistent mod p
-			BlasMatrix<Field>* TAS_factors = new BlasMatrix<Field>(F, A.coldim()+1, A.rowdim());
-			Hom<Ring, Field> Hmap(_ring, F);
-
-			BlasMatrix<Field> Ap(F, A.rowdim(), A.coldim()); // @fixme Shouldn't Ap(F, A) work without map below?
-			MatrixHom::map(Ap, A);
-			for (size_t i=0;i<A.rowdim();++i)
-				for (size_t j=0;j<A.coldim();++j)
-					TAS_factors->setEntry(j,i, Ap.getEntry(i,j));
-
-			for (size_t i=0;i<A.rowdim();++i){
-				typename Field::Element tmpe;
-				F.init(tmpe); // @fixme Useless?
-				F.init(tmpe,_ring.convert(tmp,b[i]));
-				TAS_factors->setEntry(A.coldim(),i, tmpe);
-			}
-
-            // @note TAS_factors now holds (A|b)t
+			// TAS stands for Transpose Augmented System (A|b)t
+            TAS<Field> TAS_Ab(_ring, F, A, b);
+			BlasMatrix<Field>* TAS_factors = TAS_Ab.factors;
 
 #ifdef RSTIMING
 			tSetup.stop();
@@ -901,7 +928,6 @@ namespace LinBox
 #endif
 			if (rank == 0) {
 				delete TAS_LQUP;
-				delete TAS_factors;
 				//special case when A = 0, mod p. dealt with to avoid crash later
 				bool aEmpty = true;
 				if (level >= SL_LASVEGAS) { // in monte carlo, we assume A is actually empty
@@ -964,7 +990,6 @@ namespace LinBox
 			}
 
 			delete TAS_LQUP;
-			delete TAS_factors;
 
 			if (appearsInconsistent && level <= SL_MONTECARLO)
 				return SS_INCONSISTENT;
