@@ -29,9 +29,9 @@
 
 namespace LinBox {
     namespace {
-        // @fixme Remove when RationalSolver is renamed
+        // @fixme Remove when DixonSolver is renamed
         template <class... Args>
-        using DixonRationalSolver = RationalSolver<Args...>;
+        using DixonRationalSolver = DixonSolver<Args...>;
 
         template <class Matrix>
         struct MethodForMatrix {
@@ -70,7 +70,7 @@ namespace LinBox {
 
         // @fixme I'm still bit sad that we cannot use generically the function below,
         // just because RationalSolve<..., SparseElimination> has not the same
-        // API (i.e. no solveNonSingular) than RationalSolver<..., Dixon>
+        // API (i.e. no solveNonSingular) than DixonSolver<..., Dixon>
         int maxTrials = m.trialsBeforeFailure;
         SolverReturnStatus status = dixonSolve.solve(xNum, xDen, A, b, maxTrials);
 
@@ -155,7 +155,7 @@ namespace LinBox {
 
         // @fixme I'm a bit sad that we cannot use generically the function above,
         // just because RationalSolve<..., SparseElimination> has not the same
-        // API (i.e. no solveNonSingular) than RationalSolver<..., Dixon>
+        // API (i.e. no solveNonSingular) than DixonSolver<..., Dixon>
         int maxTrials = m.trialsBeforeFailure;
         SolverReturnStatus status = dixonSolve.solve(xNum, xDen, A, b, maxTrials);
 

@@ -131,7 +131,7 @@ namespace LinBox
 	 * \ingroup padic
 	 */
 	template<class Ring, class Field, class RandomPrime, class MethodTraits = Method::Dixon>
-	class RationalSolver {
+	class DixonSolver {
 
 	public:
 		/** Solve a linear system \c Ax=b over quotient field of a ring
@@ -236,7 +236,7 @@ namespace LinBox
 	 *
 	 */
 	template<class Ring, class Field,class RandomPrime>
-	class RationalSolver<Ring, Field, RandomPrime, Method::Wiedemann> {
+	class DixonSolver<Ring, Field, RandomPrime, Method::Wiedemann> {
 
 	public:
 		typedef Ring                                 RingType;
@@ -265,7 +265,7 @@ namespace LinBox
 		 * @param rp  a RandomPrime generator, set by default
 		 * @param traits
 		 */
-		RationalSolver (const Ring& r = Ring(),
+		DixonSolver (const Ring& r = Ring(),
 				const RandomPrime& rp = RandomPrime(),
 				const Method::Wiedemann& traits=Method::Wiedemann()) :
 			_ring(r), _genprime(rp), _traits(traits)
@@ -285,7 +285,7 @@ namespace LinBox
 		 * @param rp  a RandomPrime generator, set by default
 		 * @param traits
 		 */
-		RationalSolver (const Prime& p, const Ring& r = Ring(),
+		DixonSolver (const Prime& p, const Ring& r = Ring(),
 				const RandomPrime& rp = RandomPrime(),
 				const Method::Wiedemann& traits=Method::Wiedemann()) :
 			_ring(r), _genprime(rp), _prime(p), _traits(traits)
@@ -444,7 +444,7 @@ namespace LinBox
 	 *
 	 */
 	template<class Ring, class Field,class RandomPrime>
-	class RationalSolver<Ring, Field, RandomPrime, Method::BlockWiedemann> {
+	class DixonSolver<Ring, Field, RandomPrime, Method::BlockWiedemann> {
 
 	public:
 		typedef Ring                                 RingType;
@@ -475,7 +475,7 @@ namespace LinBox
 		 * @param rp  a RandomPrime generator, set by default
 		 * @param traits
 		 */
-		RationalSolver (const Ring& r = Ring(),
+		DixonSolver (const Ring& r = Ring(),
 				const RandomPrime& rp = RandomPrime(),
 				const Method::BlockWiedemann& traits=Method::BlockWiedemann()) :
 			_ring(r), _genprime(rp), _traits(traits)
@@ -495,7 +495,7 @@ namespace LinBox
 		 * @param rp  a RandomPrime generator, set by default
 		 * @param traits
 		 */
-		RationalSolver (const Prime& p, const Ring& r = Ring(),
+		DixonSolver (const Prime& p, const Ring& r = Ring(),
 				const RandomPrime& rp = RandomPrime(),
 				const Method::BlockWiedemann& traits=Method::BlockWiedemann()) :
 			_ring(r), _genprime(rp), _prime(p), _traits(traits)
@@ -620,7 +620,7 @@ namespace LinBox
 	 */
 
 	template<class Ring, class Field,class RandomPrime>
-	class RationalSolver<Ring, Field, RandomPrime, Method::Dixon> {
+	class DixonSolver<Ring, Field, RandomPrime, Method::Dixon> {
 
 	public:
 
@@ -671,7 +671,7 @@ namespace LinBox
 		 * @param r   a Ring, set by default
 		 * @param rp  a RandomPrime generator, set by default
 		 */
-		RationalSolver (const Ring& r = Ring(),
+		DixonSolver (const Ring& r = Ring(),
 				const RandomPrime& rp = RandomPrime()) :
 			lastCertificate(r, 0), _genprime(rp), _ring(r)
 		{
@@ -688,7 +688,7 @@ namespace LinBox
 		 * @param r a Ring, set by default
 		 * @param rp a RandomPrime generator, set by default
 		 */
-		RationalSolver (const Prime& p, const Ring& r = Ring(),
+		DixonSolver (const Prime& p, const Ring& r = Ring(),
 				const RandomPrime& rp = RandomPrime()) :
 			lastCertificate(r, 0), _genprime(rp), _prime(p), _ring(r)
 		{
@@ -901,7 +901,7 @@ namespace LinBox
 		}
 #endif
 
-	}; // end of specialization for the class RationalSolver with Dixon traits
+	}; // end of specialization for the class DixonSolver with Dixon traits
 
 
 	/*----------------*/
@@ -913,7 +913,7 @@ namespace LinBox
 		Keep it just for interface consistency.
 	 */
 	template <class Ring, class Field, class RandomPrime>
-	class RationalSolver<Ring, Field, RandomPrime, Method::SymbolicNumericOverlap>;
+	class DixonSolver<Ring, Field, RandomPrime, Method::SymbolicNumericOverlap>;
 
 	/** \brief solver using a hybrid Numeric/Symbolic computation.
 	 *
@@ -929,7 +929,7 @@ namespace LinBox
 	//template argument Field and RandomPrime are not used.
 	//Keep it just for interface consistency.
 	template <class Ring, class Field, class RandomPrime>
-	class RationalSolver<Ring, Field, RandomPrime, Method::SymbolicNumericNorm> ;
+	class DixonSolver<Ring, Field, RandomPrime, Method::SymbolicNumericNorm> ;
 
 	/*--------------*/
 	/* BLOCK HANKEL */
@@ -939,7 +939,7 @@ namespace LinBox
 	 * NO DOC
 	 */
 	template<class Ring, class Field,class RandomPrime>
-	class RationalSolver<Ring, Field, RandomPrime, Method::BlockHankel> {
+	class DixonSolver<Ring, Field, RandomPrime, Method::BlockHankel> {
 	public:
 		typedef Ring                                 RingType;
 		typedef typename Ring::Element               Integer;
@@ -958,7 +958,7 @@ namespace LinBox
 		 * @param r   a Ring, set by default
 		 * @param rp  a RandomPrime generator, set by default
 		 */
-		RationalSolver (const Ring& r = Ring(),
+		DixonSolver (const Ring& r = Ring(),
                         const RandomPrime& rp = RandomPrime()) :
 			_genprime(rp), _ring(r)
 		{
@@ -973,7 +973,7 @@ namespace LinBox
 		 * @param r   a Ring, set by default
 		 * @param rp  a RandomPrime generator, set by default
 		 */
-		RationalSolver (const Prime& p, const Ring& r = Ring(),
+		DixonSolver (const Prime& p, const Ring& r = Ring(),
 				const RandomPrime& rp = RandomPrime()) :
 			_genprime(rp), _prime(p), _ring(r)
 		{
@@ -997,7 +997,7 @@ namespace LinBox
 	 * NO DOC
 	 */
 	template<class Ring, class Field,class RandomPrime>
-	class RationalSolver<Ring, Field, RandomPrime, Method::SparseElimination> {
+	class DixonSolver<Ring, Field, RandomPrime, Method::SparseElimination> {
 	public:
 		typedef Ring                                 RingType;
 		typedef typename Ring::Element               Integer;
@@ -1016,7 +1016,7 @@ namespace LinBox
 		 * @param r   a Ring, set by default
 		 * @param rp  a RandomPrime generator, set by default
 		 */
-		RationalSolver (const Ring& r = Ring(),
+		DixonSolver (const Ring& r = Ring(),
 				const RandomPrime& rp = RandomPrime()) :
 			_genprime(rp), _ring(r)
 		{
@@ -1031,7 +1031,7 @@ namespace LinBox
 		 * @param r   a Ring, set by default
 		 * @param rp  a RandomPrime generator, set by default
 		 */
-		RationalSolver (const Prime& p, const Ring& r = Ring(),
+		DixonSolver (const Prime& p, const Ring& r = Ring(),
 				const RandomPrime& rp = RandomPrime()) :
 			_genprime(rp), _prime(p), _ring(r)
 		{}
