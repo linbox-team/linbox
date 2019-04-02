@@ -90,6 +90,21 @@ namespace {
     }
 }
 
+template <class SolveMethod, class Matrix, class Vector, class ResultMatrix, class ResultVector>
+bool check_result(ResultVector& x, Matrix& A, Vector& b, ResultMatrix& RA, ResultVector& Rb)
+{
+    ResultVector RAx(RA.field(), Rb.size());
+    RA.apply(RAx, x);
+
+    VectorDomain<typename ResultMatrix::Field> VD(RA.field());
+    if (!VD.areEqual(RAx, Rb)) {
+        print_error<SolveMethod>(x, A, b, "Ax != b");
+        return false;
+    }
+
+    return true;
+}
+
 template <class SolveMethod, class Matrix, class Vector, class ResultDomain>
 bool test_solve(MethodBase& methodBase, Matrix& A, Vector& b, ResultDomain& RD, bool verbose)
 {
@@ -122,28 +137,19 @@ bool test_solve(MethodBase& methodBase, Matrix& A, Vector& b, ResultDomain& RD, 
     SolveMethod method(methodBase);
     ResultVector x(RD, A.coldim());
 
+    bool ok = true;
     try {
         solve(x, A, b, method);
+        ok = ok && check_result<SolveMethod>(x, A, b, RA, Rb);
+
         solveInPlace(x, A, b, method);
+        ok = ok && check_result<SolveMethod>(x, A, b, RA, Rb);
     } catch (...) {
-        print_error<SolveMethod>(x, RA, b, "throws error");
+        print_error<SolveMethod>(x, A, b, "throws error");
         return false;
     }
 
-    //
-    // Checking result is correct
-    //
-
-    ResultVector RAx(RD, b.size());
-    RA.apply(RAx, x);
-
-    VectorDomain<ResultDomain> VD(RD);
-    if (!VD.areEqual(RAx, Rb)) {
-        print_error<SolveMethod>(x, RA, Rb, "Ax != b");
-        return false;
-    }
-
-    return true;
+    return ok;
 }
 
 template <class SolveMethod, class Domain, class ResultDomain>
@@ -265,8 +271,7 @@ int main(int argc, char** argv)
         // @fixme @bug When bitSize = 5 and vectorBitSize = 50, CRA fails
         ok &= test_dense_solve<Method::CRAAuto>(method, ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
         ok &= test_sparse_solve<Method::CRAAuto>(method, ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
-        // ok &= test_blackbox_solve<Method::CRAAuto>(method, ZZ, QQ, m, n, bitSize, vectorBitSize, seed,
-        // verbose);
+        // ok &= test_blackbox_solve<Method::CRAAuto>(method, ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
 
         // ----- Rational Dixon
         ok &= test_dense_solve<Method::Dixon>(method, ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
