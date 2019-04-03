@@ -854,6 +854,50 @@ namespace LinBox
 
     };
 
+	// Returns:
+	// - FAILED if A != 0
+	// - INCONSISTENT if A == 0 and b != 0 (also sets certificate)
+	// - OK if A == 0 and b == 0
+	template <class Matrix, class Vector, class Ring = typename Matrix::Field>
+	SolverReturnStatus certifyEmpty(const Matrix& A, const Vector& b, const SolverLevel level,
+									VectorFraction<Ring>& certificate, Integer& certifiedDenFactor, Integer& ZBNumer)
+{
+		const Ring& R = A.field();
+
+		// In monte carlo, we assume A is actually empty.
+		bool aEmpty = true;
+		if (level >= SL_LASVEGAS) {
+			MatrixDomain<Ring> MD(R);
+			aEmpty = MD.isZero(A);
+		}
+
+		if (!aEmpty) {
+			return SS_FAILED;
+		}
+
+		// @fixme Use VectorDomain::isZero
+		for (size_t i = 0; i < b.size(); ++i) {
+			if (!R.areEqual(b[i], R.zero)) {
+				if (level >= SL_CERTIFIED) {
+					certificate.clearAndResize(b.size());
+					R.assign(certificate.numer[i], R.one);
+				}
+				return SS_INCONSISTENT;
+			}
+		}
+
+		// System is consistent
+		// @todo What are those?
+		if (level >= SL_LASVEGAS) {
+			R.assign(certifiedDenFactor, R.one);
+		}
+		if (level == SL_CERTIFIED) {
+			R.assign(ZBNumer, R.zero);
+			certificate.clearAndResize(b.size());
+		}
+
+		return SS_OK;
+	}
 
 	// Most solving is done by the routine below.
 	// There used to be one for random and one for deterministic, but they have been merged to ease with
@@ -923,45 +967,25 @@ namespace LinBox
 #ifdef DEBUG_DIXON
 			std::cout << "tas.rank(), rank: " << tas.rank() << ' ' << rank << std::endl;
 #endif
+
+			// Special case when A = 0, mod p. Deal with it to avoid crash later.
 			if (rank == 0) {
-				//special case when A = 0, mod p. dealt with to avoid crash later
-				bool aEmpty = true;
-				if (level >= SL_LASVEGAS) { // in monte carlo, we assume A is actually empty
-					typename BlasMatrix<Ring>::Iterator iter = A_check.Begin();
-					for (; aEmpty && iter != A_check.End(); ++iter)
-						aEmpty &= _ring.isZero(*iter);
-				}
-				if (aEmpty) {
-					for (size_t i=0; i<b.size(); ++i)
-						if (!_ring.areEqual(b[i], _ring.zero)) {
-							if (level >= SL_CERTIFIED) {
-								lastCertificate.clearAndResize(b.size());
-								_ring.assign(lastCertificate.numer[i], _ring.one);
-							}
-							return SS_INCONSISTENT;
-						}
-#if 0
-					// both A and b are all zero.
-					for (size_t i=0; i<answer.size(); ++i) {
-						answer[i].first = _ring.zero;
-						answer[i].second = _ring.one;
-					}
-#endif
-					_ring. assign (den, _ring.one);
-					for (typename Vector1::iterator p = num. begin(); p != num. end(); ++ p)
-						_ring. assign (*p, _ring.zero);
+				SolverReturnStatus status = certifyEmpty(A, b, level, lastCertificate, lastCertifiedDenFactor, lastZBNumer);
 
-					if (level >= SL_LASVEGAS)
-						_ring.assign(lastCertifiedDenFactor, _ring.one);
-					if (level == SL_CERTIFIED) {
-						_ring.assign(lastZBNumer, _ring.zero);
-						lastCertificate.clearAndResize(b.size());
-					}
-					return SS_OK;
+				if (status == SS_FAILED) {
+					// A was empty mod p but not over Z, we try new prime.
+					continue;
+				} else if (status == SS_INCONSISTENT) {
+					return SS_INCONSISTENT;
 				}
-				// so a was empty mod p but not over Z.
 
-				continue; //try new prime
+				// It is consistent, set 0 as a valid answer
+				_ring.assign(den, _ring.one);
+				for (typename Vector1::iterator p = num.begin(); p != num.end(); ++ p) {
+					_ring.assign(*p, _ring.zero);
+				}
+
+				return SS_OK;
 			}
 
 			BlasMatrix<Field>* Atp_minor_inv = NULL;
