@@ -647,7 +647,6 @@ namespace LinBox
 #ifdef RSTIMING
 		mutable Timer
 		tSetup,           ttSetup,
-		tLQUP,            ttLQUP,
 		tFastInvert,      ttFastInvert,        //only done in deterministic or inconsistent
 		tCheckConsistency,ttCheckConsistency,        //includes lifting the certificate
 		tMakeConditioner, ttMakeConditioner,
@@ -829,7 +828,6 @@ namespace LinBox
 		void clearTimers() const
 		{
 			ttSetup.clear();
-			ttLQUP.clear();
 			ttFastInvert.clear();
 			ttCheckConsistency.clear();
 			ttMakeConditioner.clear();
@@ -885,7 +883,6 @@ namespace LinBox
 			printTime(ttNonsingularInv, "NonsingularInv", os);
 			printDixonTime(ttNonsingularSolve, "NS ", os);
 			printTime(ttSetup , "Setup", os);
-			printTime(ttLQUP , "LQUP", os);
 			printTime(ttFastInvert , "FastInvert", os);
 			printTime(ttCheckConsistency , "CheckConsistency", os);
 			printDixonTime(ttConsistencySolve, "INC ", os);

@@ -779,14 +779,22 @@ namespace LinBox
     // TAS stands for Transpose Augmented System (A|b)t
     // this provides a factorization (A|b) = Pt . Ut . Qt . Lt
     // such that
-    // - P . (A|b) . Q   has nonzero principal minors up to TAS_rank
-    // - Q permutes b to the (TAS_rank)th column of A iff the system is inconsistent mod p
+    // - P . (A|b) . Q   has nonzero principal minors up to TAS.rank()
+    // - Q permutes b to the (TAS.rank())th column of A iff the system is inconsistent mod p
 
     template <class Field>
     class TAS {
     public:
 
         BlasMatrix<Field>* factors = nullptr;
+		LQUPMatrix<Field>* LQUP = nullptr;
+
+		BlasPermutation<size_t> P;
+		BlasPermutation<size_t> Qt;
+
+		// @fixme Do we really need that?
+		std::vector<size_t> srcRow; // @fixme Why "src"?
+		std::vector<size_t> srcCol;
 
     public:
 
@@ -800,25 +808,49 @@ namespace LinBox
 			BlasMatrix<Field> Ap(F, A.rowdim(), A.coldim()); // @fixme Shouldn't Ap(F, A) work without map below?
 			MatrixHom::map(Ap, A);
 
-            // Setting factors = [Ap|0]
+            // Setting factors = [Ap|0]t
 			for (size_t i = 0; i < A.rowdim(); ++i)
 				for (size_t j = 0; j < A.coldim(); ++j)
 					factors->setEntry(j, i, Ap.getEntry(i,j));
 
-            // And then factors = [Ap|bp]
+            // And then factors = [Ap|bp]t
             Integer tmpInteger;
 			for (size_t i = 0; i < A.rowdim(); ++i) {
 				typename Field::Element tmpElement;
 				F.init(tmpElement, R.convert(tmpInteger, b[i]));
 				factors->setEntry(A.coldim(), i, tmpElement);
 			}
+
+			// Getting factors -> L Qt U P
+			P.resize(factors->coldim());
+			Qt.resize(factors->rowdim());
+
+			LQUP = new LQUPMatrix<Field>(*factors, P, Qt);
+
+			// Used to check consistency
+			srcRow.resize(factors->coldim());
+			srcCol.resize(factors->rowdim());
+			std::vector<size_t>::iterator sri = srcRow.begin(), sci = srcCol.begin();
+			for (size_t i = 0; i < srcRow.size(); ++i, ++sri) *sri = i;
+			for (size_t i = 0; i < srcCol.size(); ++i, ++sci) *sci = i;
+
+			indexDomain iDom;
+			BlasMatrixDomain<indexDomain> BMDs(iDom);
+			BMDs.mulin_right(Qt, srcCol);
+			BMDs.mulin_right(P, srcRow);
+
+            // @note srcCol/srcRow now hold permutations (indices of (A|b)t)
+            // @fixme Does FFLAS has something for this?
         }
 
         ~TAS() {
             delete factors;
+			delete LQUP;
         }
 
-        // @fixme Add TAS_LQUP?
+		size_t rank() const {
+			return LQUP->getRank();
+		}
 
     };
 
@@ -878,56 +910,20 @@ namespace LinBox
 			BlasMatrix<Ring> A_check(A); // used to check answer later
 
 			// TAS stands for Transpose Augmented System (A|b)t
-            TAS<Field> TAS_Ab(_ring, F, A, b);
-			BlasMatrix<Field>* TAS_factors = TAS_Ab.factors;
+            TAS<Field> tas(_ring, F, A, b);
 
 #ifdef RSTIMING
 			tSetup.stop();
 			ttSetup += tSetup;
-			tLQUP.start();
-#endif
-			BlasPermutation<size_t>  TAS_P(TAS_factors->coldim()) ;
-			BlasPermutation<size_t>  TAS_Qt(TAS_factors->rowdim()) ;
-
-			LQUPMatrix<Field>* TAS_LQUP = new LQUPMatrix<Field>(*TAS_factors,TAS_P,TAS_Qt);
-			size_t TAS_rank = TAS_LQUP->getRank();
-
-			// check consistency. note, getQ returns Qt.
-			// BlasPermutation<size_t>  TAS_P = TAS_LQUP->getP();
-			// BlasPermutation<size_t>  TAS_Qt = TAS_LQUP->getQ();
-			std::vector<size_t> srcRow(A.rowdim()), srcCol(A.coldim()+1);
-			std::vector<size_t>::iterator sri = srcRow.begin(), sci = srcCol.begin();
-			for (size_t i=0; i<A.rowdim(); ++i, ++sri) *sri = i;
-			for (size_t i=0; i<A.coldim()+1; ++i, ++sci) *sci = i;
-			indexDomain iDom;
-			BlasMatrixDomain<indexDomain> BMDs(iDom);
-			BMDs.mulin_right(TAS_Qt, srcCol);
-			BMDs.mulin_right(TAS_P, srcRow);
-
-            // @note srcCol/srcRow hold permutations (indices of (A|b)t)
-            // @fixme FFLAS has something for this?
-
-#ifdef DEBUG_INC
-			std::cout << "P takes (0 1 ...) to (";
-			for (size_t i=0; i<A.rowdim(); ++i) std::cout << srcRow[i] << ' ';
-            std::cout << ')' << std::endl;
-			std::cout << "Q takes (0 1 ...) to (";
-			for (size_t i=0; i<A.coldim()+1; ++i) std::cout << srcCol[i] << ' ';
-            std::cout << ')' << std::endl;
 #endif
 
             // @note If permutation shows that b was needed, means b is not in the columns' span of A (= Ax=b inconsistent)
-			bool appearsInconsistent = (srcCol[TAS_rank-1] == A.coldim());
-			size_t rank = TAS_rank - (appearsInconsistent ? 1 : 0);
+			bool appearsInconsistent = (tas.srcCol[tas.rank() - 1] == A.coldim());
+			size_t rank = tas.rank() - (appearsInconsistent ? 1 : 0);
 #ifdef DEBUG_DIXON
-			std::cout << "TAS_rank, rank: " << TAS_rank << ' ' << rank << std::endl;
-#endif
-#ifdef RSTIMING
-			tLQUP.stop();
-			ttLQUP += tLQUP;
+			std::cout << "tas.rank(), rank: " << tas.rank() << ' ' << rank << std::endl;
 #endif
 			if (rank == 0) {
-				delete TAS_LQUP;
 				//special case when A = 0, mod p. dealt with to avoid crash later
 				bool aEmpty = true;
 				if (level >= SL_LASVEGAS) { // in monte carlo, we assume A is actually empty
@@ -980,16 +976,14 @@ namespace LinBox
 				Atp_minor_inv = new BlasMatrix<Field>(F, rank, rank);
 
 
-				FFPACK::LQUPtoInverseOfFullRankMinor(F, rank, TAS_factors->getPointer(), A.rowdim(),
-								     TAS_Qt.getPointer(),
+				FFPACK::LQUPtoInverseOfFullRankMinor(F, rank, tas.factors->getPointer(), A.rowdim(),
+								     tas.Qt.getPointer(),
 								     Atp_minor_inv->getPointer(), rank);
 #ifdef RSTIMING
 				tFastInvert.stop();
 				ttFastInvert += tFastInvert;
 #endif
 			}
-
-			delete TAS_LQUP;
 
 			if (appearsInconsistent && level <= SL_MONTECARLO)
 				return SS_INCONSISTENT;
@@ -1001,12 +995,12 @@ namespace LinBox
 				Givaro::ZRing<Integer> Z;
 				BlasVector<Givaro::ZRing<Integer> > zt(Z,rank);
 				for (size_t i=0; i<rank; ++i)
-					_ring.assign(zt[i], A.getEntry(srcRow[rank], srcCol[i]));
+					_ring.assign(zt[i], A.getEntry(tas.srcRow[rank], tas.srcCol[i]));
 
 				BlasMatrix<Ring> At_minor(_ring, rank, rank);
 				for (size_t i=0; i<rank; ++i)
 					for (size_t j=0; j<rank; ++j)
-						_ring.assign(At_minor.refEntry(j, i), A.getEntry(srcRow[i], srcCol[j]));
+						_ring.assign(At_minor.refEntry(j, i), A.getEntry(tas.srcRow[i], tas.srcCol[j]));
 #ifdef DEBUG_INC
 				At_minor.write(std::cout << "At_minor:" << std::endl);//, _ring);
 				Atp_minor_inv->write(std::cout << "Atp_minor_inv:" << std::endl);//, F);
@@ -1037,7 +1031,7 @@ namespace LinBox
 				cert.numer.resize(b.size());
 				_ring.subin(cert.numer[rank], cert.denom);
 				_ring.assign(cert.denom, _ring.one);
-				BMDI.mulin_left(cert.numer, TAS_P);
+				BMDI.mulin_left(cert.numer, tas.P);
 #ifdef DEBUG_INC
 				cert.write(std::cout << "cert:") << std::endl;
 #endif
@@ -1088,7 +1082,7 @@ namespace LinBox
                 // @note A_minor = Pt A Qt
 				for (size_t i=0; i<rank; ++i)
 					for (size_t j=0; j<rank; ++j)
-						_ring.assign(A_minor.refEntry(i, j), A_check.getEntry(srcRow[i], srcCol[j]));
+						_ring.assign(A_minor.refEntry(i, j), A_check.getEntry(tas.srcRow[i], tas.srcCol[j]));
 #ifdef RSTIMING
 				tMakeConditioner.stop();
 				ttMakeConditioner += tMakeConditioner;
@@ -1098,7 +1092,7 @@ namespace LinBox
 					B = new BlasMatrix<Ring>(_ring, rank, A.coldim());
 					for (size_t i=0; i<rank; ++i)
 						for (size_t j=0; j<A.coldim(); ++j)
-							_ring.assign(B->refEntry(i, j), A_check.getEntry(srcRow[i],j));
+							_ring.assign(B->refEntry(i, j), A_check.getEntry(tas.srcRow[i],j));
 				}
                 // @note B = Pt A
 			}
@@ -1112,8 +1106,8 @@ namespace LinBox
 				size_t maxBitSize = 0;
 				for (size_t i=0; i<rank; ++i)
 					for (size_t j=0; j<A.coldim(); ++j){
-						_ring.assign(B->refEntry(i, j), A_check.getEntry(srcRow[i], j));
-						_ring.convert(tmp2, A_check.getEntry(srcRow[i], j));
+						_ring.assign(B->refEntry(i, j), A_check.getEntry(tas.srcRow[i], j));
+						_ring.convert(tmp2, A_check.getEntry(tas.srcRow[i], j));
 						maxBitSize = std::max(maxBitSize, tmp2.bitsize());
 					}
                 // @note B = Pt A
@@ -1142,36 +1136,7 @@ namespace LinBox
 					}
 
 					// compute A_minor = B.P
-#if 0
-					if (maxBitSize * log((double)A.coldim()) > 53)
-						MD.mul(A_minor, *B, *P);
-					else {
-						double *B_dbl= new double[rank*A.coldim()];
-						double *P_dbl= new double[A.coldim()*rank];
-						double *A_minor_dbl = new double[rank*rank];
-						for (size_t i=0;i<rank;++i)
-							for (size_t j=0;j<A.coldim(); ++j){
-								_ring.convert(B_dbl[j+i*A.coldim()], B->getEntry(i,j));
-								_ring.convert(P_dbl[i+j*rank], P->getEntry(j,i));
-							}
-						cblas_dgemm(CblasRowMajor, CblasNoTrans,
-							    CblasNoTrans,
-							    rank, rank, A.coldim(), 1,
-							    B_dbl, A.coldim(), P_dbl, rank, 0,A_minor_dbl, rank);
-
-						for (size_t i=0;i<rank;++i)
-							for (size_t j=0;j<rank;++j)
-								_ring.init(A_minor.refEntry(i,j),A_minor_dbl[j+i*rank]);
-
-						delete[] B_dbl;
-						delete[] P_dbl;
-						delete[] A_minor_dbl;
-					}
-#endif
-
 					MAD.applyM(A_minor,*P); // @fixme WHy preconditioner here?
-
-
 
 					// set Ap_minor = A_minor mod p, try to compute inverse
 					for (size_t i=0;i<rank;++i)
@@ -1192,7 +1157,7 @@ namespace LinBox
 			}
 			// Compute newb = (TAS_P.b)[0..(rank-1)]
 			BlasVector<Ring> newb(b);
-			BMDI.mulin_right(TAS_P, newb);
+			BMDI.mulin_right(tas.P, newb);
 			newb.resize(rank);
 
 			BlasMatrix<Ring>  BBA_minor(A_minor);
@@ -1228,7 +1193,7 @@ namespace LinBox
 			if (!randomSolution) {
 				// short_answer = TAS_Q * short_answer
 				answer_to_vf.numer.resize(A.coldim()+1,_ring.zero);
-				BMDI.mulin_left(answer_to_vf.numer, TAS_Qt);
+				BMDI.mulin_left(answer_to_vf.numer, tas.Qt);
 				answer_to_vf.numer.resize(A.coldim());
 			}
 			else {
@@ -1373,7 +1338,7 @@ namespace LinBox
 				VectorFraction<Ring> z(_ring, b.size()); //new constructor
 				u_to_vf.numer.resize(A.rowdim());
 
-				BMDI.mul(z.numer, u_to_vf.numer, TAS_P);
+				BMDI.mul(z.numer, u_to_vf.numer, tas.P);
 
 				z.denom = numergcd;
 
