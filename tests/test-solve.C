@@ -483,7 +483,7 @@ static bool testSingularInconsistentSolve (const Field          &F,
 		}
 		else if (status == WiedemannSolver<Field>::FAILED) {
 			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "FAILED: Solver was enable to certify inconsistency" << endl;
+				<< "FAILED: Solver was unable to certify inconsistency" << endl;
 		}
 		else {
 			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
@@ -603,7 +603,7 @@ static bool testSingularPreconditionedSolve (const Field                  &F,
 		}
 		else if (status == WiedemannSolver<Field>::FAILED) {
 			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "FAILED: Solver was enable to certify inconsistency" << endl;
+				<< "FAILED: Solver was unable to certify inconsistency" << endl;
 		}
 		else {
 			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
