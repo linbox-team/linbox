@@ -266,11 +266,19 @@ int main(int argc, char** argv)
         // @fixme Dixon<Wiedemann> does not compile
         // ok = ok && test_blackbox_solve(Method::Auto(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
 
+        // ok = ok && test_dense_solve(Method::Auto(method), QQ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
+        // ok = ok && test_sparse_solve(Method::Auto(method), QQ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
+        // ok = ok && test_blackbox_solve(Method::Auto(method), QQ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
+
         // ----- Rational CRA
         // @fixme @bug When bitSize = 5 and vectorBitSize = 50, CRA fails
         ok = ok && test_dense_solve(Method::CRAAuto(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
         ok = ok && test_sparse_solve(Method::CRAAuto(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
         // ok = ok && test_blackbox_solve(Method::CRAAuto(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
+
+        ok = ok && test_dense_solve(Method::CRAAuto(method), QQ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
+        ok = ok && test_sparse_solve(Method::CRAAuto(method), QQ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
+        // ok = ok && test_blackbox_solve(Method::CRAAuto(method), QQ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
 
         // ----- Rational Dixon
         ok = ok && test_dense_solve(Method::Dixon(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);

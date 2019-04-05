@@ -52,8 +52,8 @@ namespace LinBox {
     /**
      * \brief Solve specialisation for Dixon on blackboxes matrices.
      */
-    template <class Blackbox, class Vector>
-    void solve(Vector& xNum, typename Vector::Element& xDen, const Blackbox& A, const Vector& b,
+    template <class IntVector, class Blackbox, class Vector>
+    void solve(IntVector& xNum, typename IntVector::Element& xDen, const Blackbox& A, const Vector& b,
                const RingCategories::IntegerTag& tag, const Method::Dixon& m)
     {
         commentator().start("solve.dixon.integer.blackbox");
@@ -86,8 +86,8 @@ namespace LinBox {
     /**
      * \brief Solve specialisation for Dixon on dense matrices.
      */
-    template <class Ring, class Vector>
-    void solve(Vector& xNum, typename Vector::Element& xDen, const DenseMatrix<Ring>& A, const Vector& b,
+    template <class IntVector, class Ring, class Vector>
+    void solve(IntVector& xNum, typename IntVector::Element& xDen, const DenseMatrix<Ring>& A, const Vector& b,
                const RingCategories::IntegerTag& tag, const Method::Dixon& m)
     {
         commentator().start("solve.dixon.integer.dense");
@@ -137,8 +137,8 @@ namespace LinBox {
     /**
      * \brief Solve specialisation for Dixon on sparse matrices.
      */
-    template <class... MatrixArgs, class Vector>
-    void solve(Vector& xNum, typename Vector::Element& xDen, const SparseMatrix<MatrixArgs...>& A, const Vector& b,
+    template <class IntVector, class... MatrixArgs, class Vector>
+    void solve(IntVector& xNum, typename IntVector::Element& xDen, const SparseMatrix<MatrixArgs...>& A, const Vector& b,
                const RingCategories::IntegerTag& tag, const Method::Dixon& m)
     {
         commentator().start("solve.dixon.integer.sparse");

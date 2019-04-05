@@ -46,6 +46,26 @@ namespace LinBox {
     }
 
     /**
+     * \brief Solve specialisation for Auto with DenseMatrix and ModularTag.
+     */
+    template <class ResultVector, class Field, class Vector>
+    ResultVector& solve(ResultVector& x, const DenseMatrix<Field>& A, const Vector& b,
+                        const RingCategories::ModularTag& tag, const Method::Auto& m)
+    {
+        return solve(x, A, b, tag, reinterpret_cast<const Method::DenseElimination&>(m));
+    }
+
+    /**
+     * \brief Solve specialisation for Auto with SparseMatrix and ModularTag.
+     */
+    template <class ResultVector, class... MatrixArgs, class Vector>
+    ResultVector& solve(ResultVector& x, const SparseMatrix<MatrixArgs...>& A, const Vector& b,
+                        const RingCategories::ModularTag& tag, const Method::Auto& m)
+    {
+        return solve(x, A, b, tag, reinterpret_cast<const Method::SparseElimination&>(m));
+    }
+
+    /**
      * \brief Solve specialisation for Auto and IntegerTag.
      */
     template <class ResultVector, class Matrix, class Vector>
@@ -56,23 +76,13 @@ namespace LinBox {
     }
 
     /**
-     * \brief Solve specialisation for Auto with DenseMatrix and non-IntegerTag.
+     * \brief Solve specialisation for Auto and RationalTag.
      */
-    template <class ResultVector, class Field, class Vector, class CategoryTag>
-    typename std::enable_if<!std::is_same<CategoryTag, RingCategories::IntegerTag>::value, ResultVector&>::type solve(
-        ResultVector& x, const DenseMatrix<Field>& A, const Vector& b, const CategoryTag& tag, const Method::Auto& m)
+    template <class ResultVector, class Matrix, class Vector>
+    ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const RingCategories::RationalTag& tag,
+                        const Method::Auto& m)
     {
-        return solve(x, A, b, tag, reinterpret_cast<const Method::DenseElimination&>(m));
-    }
-
-    /**
-     * \brief Solve specialisation for Auto with SparseMatrix and non-IntegerTag.
-     */
-    template <class ResultVector, class... MatrixArgs, class Vector, class CategoryTag>
-    typename std::enable_if<!std::is_same<CategoryTag, RingCategories::IntegerTag>::value, ResultVector&>::type solve(
-        ResultVector& x, const SparseMatrix<MatrixArgs...>& A, const Vector& b, const CategoryTag& tag, const Method::Auto& m)
-    {
-        return solve(x, A, b, tag, reinterpret_cast<const Method::SparseElimination&>(m));
+        return solve(x, A, b, tag, Method::CRAAuto(m));
     }
 
     //
@@ -82,8 +92,8 @@ namespace LinBox {
     /**
      * \brief Solve specialization for Auto and IntegerTag.
      */
-    template <class Matrix, class Vector>
-    inline void solve(Vector& xNum, typename Vector::Element& xDen, const Matrix& A, const Vector& b,
+    template <class IntVector, class Matrix, class Vector>
+    inline void solve(IntVector& xNum, typename IntVector::Element& xDen, const Matrix& A, const Vector& b,
                       const RingCategories::IntegerTag& tag, const Method::Auto& m)
     {
         solve(xNum, xDen, A, b, tag, reinterpret_cast<const Method::Dixon&>(m));
