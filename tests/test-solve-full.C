@@ -327,7 +327,7 @@ int main(int argc, char** argv)
         // ok = ok && test_blackbox_solve(Method::BlockLanczos(method), F, F, m, n, 0, 0, seed, verbose);
 
         // ----- Modular BlockWiedemann
-        // @deprecated These do not compile anymore @fixme In test-solve, it works
+        // @deprecated These do not compile anymore
         // ok = ok && test_dense_solve(Method::BlockWiedemann(method), F, F, m, n, 0, 0, seed, verbose);
         // ok = ok && test_sparse_solve(Method::BlockWiedemann(method), F, F, m, n, 0, 0, seed, verbose);
         // ok = ok && test_blackbox_solve(Method::BlockWiedemann(method), F, F, m, n, 0, 0, seed, verbose);
