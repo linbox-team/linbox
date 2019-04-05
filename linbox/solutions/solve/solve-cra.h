@@ -166,8 +166,7 @@ namespace LinBox {
         using MatrixCategoryTag = typename FieldTraits<typename Matrix::Field>::categoryTag;
         double hadamardLogBound = LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD;
         if (!std::is_same<MatrixCategoryTag, RingCategories::RationalTag>::value) {
-            auto hb = RationalSolveHadamardBound(A, b);
-            hadamardLogBound = 1.0 + hb.numLogBound + hb.denLogBound; // = ln2(2 * N * D)
+            hadamardLogBound = RationalSolveHadamardBound(A, b).solutionLogBound;
         }
 
         using CRAAlgorithm = typename BestCRABuilder<CRAField, MatrixCategoryTag>::type;
