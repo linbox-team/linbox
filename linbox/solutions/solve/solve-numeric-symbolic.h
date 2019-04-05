@@ -61,14 +61,14 @@ namespace LinBox {
         NumericSolver numSolver;
         RationalSolverSN<Ring, NumericSolver> rsolver(b.field(), numSolver, false);
 
-        SNSolverReturnStatus status = rsolver.solve(xNum, xDen, A, b);
+        SolverReturnStatus status = rsolver.solve(xNum, xDen, A, b);
 
         commentator().stop("solve.numeric-symbolic-overlap.integer");
 
-        if (status == SNSS_INCONSISTENT) {
+        if (status == SS_INCONSISTENT) {
             throw LinboxMathInconsistentSystem("From SymbolicNumericOverlap solve.");
         }
-        else if (status != SNSS_OK) {
+        else if (status != SS_OK) {
             throw LinboxError("Failed to solve with SymbolicNumericOverlap.");
         }
     }

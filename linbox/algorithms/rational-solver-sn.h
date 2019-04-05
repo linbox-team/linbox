@@ -43,13 +43,6 @@
 
 namespace LinBox {
 
-
-	/** \brief define the possible return status of the solver's computation.
-	*/
-	enum SNSolverReturnStatus {
-		SNSS_OK, SNSS_FAILED, SNSS_SINGULAR, SNSS_INCONSISTENT
-	};
-
 	enum ShiftStatus {
 		SHIFT_GROW, SHIFT_SHRINK, SHIFT_PEAK, SHIFT_SEARCH, SHIFT_MAX
 	};
@@ -111,7 +104,7 @@ namespace LinBox {
 		//  sparse matrix flag at the end, then avoid copying to DM as well ass
 		//  new method to get hadamard bound and matrix norm!
 		template <class IMatrix, class IVector>
-		SNSolverReturnStatus solve(IVector& num, Int& den,
+		SolverReturnStatus solve(IVector& num, Int& den,
 					   const IMatrix& M, const IVector& b)
 		{
 			Timer timer, solve_timer, rr_timer, tt;
@@ -128,7 +121,7 @@ namespace LinBox {
 
 			if(n != M. rowdim() || n != M. coldim() || n != num.size()) {
 				// std::cerr << "solve fail 1 - dimension mismatch" << std::endl;
-				return SNSS_FAILED;
+				return SS_FAILED;
 			}
 
 			//  this is currently not used to check anything...
@@ -210,7 +203,7 @@ namespace LinBox {
 
 				if(ret == 1){
 					// std::cerr << "numsym loop failed - likely lack of num accuracy" << std::endl;
-					return SNSS_FAILED;
+					return SS_FAILED;
 				}
 				else if(ret == 2) denBound = denx; // zero residual
 
@@ -269,12 +262,12 @@ namespace LinBox {
 			else{
 				// std::cerr << "rat reconstruction asserts failure" << std::endl;
 				// dumpData(M, b, numx, denx, denBound);
-				return SNSS_FAILED;
+				return SS_FAILED;
 			}
 
 			if (_ring.isZero(den)) {
 				// std::cerr << "fail: zero denominator after rat-recons" << std::endl;
-				return SNSS_FAILED;
+				return SS_FAILED;
 			}
 
 #if 0
@@ -285,10 +278,10 @@ namespace LinBox {
 			if ( !_VDR.areEqual(y, z)) {
 				std::cerr << "fail check: A*x != b exactly" << std::endl;
 				dumpData(M, b, numx, denx, denBound);
-				return SNSS_FAILED;
+				return SS_FAILED;
 			}
 #endif
-			return SNSS_OK;
+			return SS_OK;
 
 		} // solve
 
