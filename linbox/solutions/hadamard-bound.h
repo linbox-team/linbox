@@ -310,8 +310,9 @@ namespace LinBox {
     // ----- Rational solve bound
 
     struct RationalSolveHadamardBoundData {
-        double numLogBound;
-        double denLogBound;
+        double numLogBound;      // log2(N)
+        double denLogBound;      // log2(D)
+        double solutionLogBound; // log2(2 * N * D)
     };
 
     /**
@@ -332,8 +333,10 @@ namespace LinBox {
         double bLogNorm;
         vectorLogNorm(bLogNorm, b.begin(), b.end());
 
-        data.numLogBound = hadamardBound.logBoundOverMinNorm + bLogNorm + 1;
+        data.numLogBound = hadamardBound.logBoundOverMinNorm + bLogNorm + 1.0;
         data.denLogBound = hadamardBound.logBound;
+        data.solutionLogBound = data.numLogBound + data.denLogBound + 1.0;
+
 #ifdef DEBUG_HADAMARD_BOUND
         std::clog << "numLogBound:=" << data.numLogBound << ';' << std::endl;
         std::clog << "denLogBound:=" << data.denLogBound << ';' << std::endl;
