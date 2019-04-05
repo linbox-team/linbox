@@ -57,8 +57,9 @@ namespace LinBox {
      *      |   - Row or column dimension < LINBOX_USE_BLACKBOX_THRESHOLD > Method::Elimination
      *      |   - Otherwise                                               > Method::Blackbox
      * - Method::Elimination
+     *      - DenseMatrix   > Method::DenseElimination
      *      - SparseMatrix  > Method::SparseElimination
-     *      - Otherwise     > Method::DenseElimination
+     *      - Otherwise     > Method::DenseElimination or Method::SparseElimination given matrix sparsity
      * - Method::DenseElimination
      *      - DenseMatrix
      *      |   - ModularTag > `LQUPMatrix<Field>::left_solve`

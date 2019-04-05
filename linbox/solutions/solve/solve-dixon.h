@@ -78,7 +78,7 @@ namespace LinBox {
 
         if (status == SS_INCONSISTENT) {
             throw LinboxMathInconsistentSystem("From Dixon method.");
-        } else if (status != SS_OK) {
+        } else if (status == SS_FAILED || status == SS_BAD_PRECONDITIONER) {
             throw LinboxError("From Dixon method.");
         }
     }
@@ -93,6 +93,7 @@ namespace LinBox {
         commentator().start("solve.dixon.integer.dense");
         linbox_check((A.coldim() == xNum.size()) && (A.rowdim() == b.size()));
 
+        // @fixme Using Givaro::ModularBalanced<double> for the field makes Dixon fail...
         using Matrix = DenseMatrix<Ring>;
         using Field = Givaro::Modular<double>;
         using PrimeGenerator = PrimeIterator<IteratorCategories::HeuristicTag>;
@@ -128,7 +129,7 @@ namespace LinBox {
 
         if (status == SS_INCONSISTENT) {
             throw LinboxMathInconsistentSystem("From Dixon method.");
-        } else if (status != SS_OK) {
+        } else if (status == SS_FAILED || status == SS_BAD_PRECONDITIONER) {
             throw LinboxError("From Dixon method.");
         }
     }
@@ -163,7 +164,7 @@ namespace LinBox {
 
         if (status == SS_INCONSISTENT) {
             throw LinboxMathInconsistentSystem("From Dixon method.");
-        } else if (status != SS_OK) {
+        } else if (status == SS_FAILED || status == SS_BAD_PRECONDITIONER) {
             throw LinboxError("From Dixon method.");
         }
     }
