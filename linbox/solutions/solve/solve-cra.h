@@ -47,19 +47,19 @@ namespace {
      * Initialized with a matrix A, vector b and a solve method,
      * returns x such that Ax = b (if any).
      *
-     * The parentheses operator excepts the computation to take place
+     * The parentheses operator expects the computation to take place
      * in a rebinded environment, with another field.
      *
      * This is used as a proxy within solve integer CRA
      * to provide each solve operations mod p.
      */
     template <class Matrix, class Vector, class SolveMethod>
-    struct CraRebinderSolver {
+    struct CRASolveIteration {
         const Matrix& A;
         const Vector& b;
         const SolveMethod& m;
 
-        CraRebinderSolver(const Matrix& _A, const Vector& _b, const SolveMethod& _m)
+        CRASolveIteration(const Matrix& _A, const Vector& _b, const SolveMethod& _m)
             : A(_A)
             , b(_b)
             , m(_m)
@@ -70,7 +70,7 @@ namespace {
         typename LinBox::Rebind<Vector, Field>::other& operator()(typename LinBox::Rebind<Vector, Field>::other& x,
                                                                   const Field& F) const
         {
-            using FMatrix = typename Matrix::template rebind<Field>::other;
+            using FMatrix = typename LinBox::Rebind<Matrix, Field>::other;
             using FVector = typename LinBox::Rebind<Vector, Field>::other;
 
             FMatrix FA(A, F);
@@ -133,11 +133,11 @@ namespace LinBox {
             linbox_check((A.coldim() == xNum.size()) && (A.rowdim() == b.size()));
         }
 
-        using CraField = Givaro::ModularBalanced<double>;
+        using CRAField = Givaro::ModularBalanced<double>;
         const typename Matrix::Field& F = A.field();
-        unsigned int bits = FieldTraits<CraField>::bestBitSize(A.coldim());
+        unsigned int bits = FieldTraits<CRAField>::bestBitSize(A.coldim());
         PrimeIterator<LinBox::IteratorCategories::HeuristicTag> primeGenerator(bits);
-        CraRebinderSolver<Matrix, Vector, IterationMethod> iteration(A, b, m.iterationMethod);
+        CRASolveIteration<Matrix, Vector, IterationMethod> iteration(A, b, m.iterationMethod);
 
         // @note The result is stored to Integers, and will be converted
         // later back.
@@ -151,14 +151,14 @@ namespace LinBox {
         // Calling the right solver
         //
 
-        using CraAlgorithm = LinBox::RationalCRABuilderFullMultip<CraField>;
+        using CRAAlgorithm = LinBox::RationalCRABuilderFullMultip<CRAField>;
         if (dispatch == Dispatch::Sequential) {
-            LinBox::RationalChineseRemainder<CraAlgorithm> cra(hadamardLogBound);
+            LinBox::RationalChineseRemainder<CRAAlgorithm> cra(hadamardLogBound);
             cra(num, den, iteration, primeGenerator);
         }
 #if defined(__LINBOX_HAVE_MPI)
         else if (dispatch == Dispatch::Distributed) {
-            LinBox::ChineseRemainderDistributed<CraAlgorithm> cra(hadamardLogBound, m.pCommunicator);
+            LinBox::ChineseRemainderDistributed<CRAAlgorithm> cra(hadamardLogBound, m.pCommunicator);
             cra(num, den, iteration, primeGenerator);
         }
 #endif
