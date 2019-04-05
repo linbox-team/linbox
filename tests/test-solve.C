@@ -305,7 +305,7 @@ static bool testSingularConsistentSolve (const Field          &F,
 	VectorWrapper::ensureDim (b1, n);
 
 	MethodTraits traits (method);
-	traits.preconditioner (MethodTraits::NO_PRECONDITIONER);
+	traits.preconditioner = Preconditioner::None;
 
 	while (stream1 && stream2) {
 		commentator().startIteration ((unsigned)stream1.j ());
@@ -428,7 +428,7 @@ static bool testSingularInconsistentSolve (const Field          &F,
 	VectorWrapper::ensureDim (d1, stream1.dim ());
 
 	MethodTraits traits (method);
-	traits.preconditioner (MethodTraits::NO_PRECONDITIONER);
+	traits.preconditioner = Preconditioner::None;
 
 	while (stream1 && stream2) {
 		commentator().startIteration ((unsigned)stream1.j ());
@@ -549,7 +549,7 @@ static bool testSingularPreconditionedSolve (const Field                  &F,
 
 
 	Method::Wiedemann traits;
-	traits.preconditioner (preconditioner);
+	traits.preconditioner = preconditioner;
 
 	while (stream1 && stream2) {
 		commentator().startIteration ((unsigned)stream1.j ());
@@ -838,7 +838,7 @@ int main (int argc, char **argv)
 		pass = false;
 
 	Method::Lanczos traits1;
-	traits1.preconditioner (Method::Lanczos::FULL_DIAGONAL);
+	traits1.preconditioner = Preconditioner::FullDiagonal;
 
 	if (!testRandomSolve (F, A_stream, stream1, "Lanczos", traits1))
 		pass = false;
@@ -846,7 +846,7 @@ int main (int argc, char **argv)
 
 #if 0
 	Method::BlockLanczos traits2;
-	traits2.preconditioner (Method::BlockLanczos::FULL_DIAGONAL);
+	traits2.preconditioner = Preconditioner::FullDiagonal;
 	traits2.blockingFactor = N;
 
 	if (!testRandomSolve (F, A_stream, stream1, "Block Lanczos", traits2))

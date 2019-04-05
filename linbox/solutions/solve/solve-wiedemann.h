@@ -38,7 +38,7 @@ namespace LinBox {
     template <class ResultVector, class Matrix, class Vector, class CategoryTag>
     ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag, const Method::Wiedemann& m)
     {
-        throw LinboxError("Method::Wiedemann can only be used with RingCategories::ModularTag.");
+        throw LinboxError("Method::Wiedemann can only be used with RingCategories::ModularTag or RingCategories::IntegerTag.");
     }
 
     /**
@@ -106,7 +106,9 @@ namespace LinBox {
         commentator().start("solve.block-wiedemann.modular");
         linbox_check((A.coldim() == x.size()) && (A.rowdim() == b.size()));
 
-        using Context = BlasMatrixDomain<typename Matrix::Field>; // @fixme BlasMatrixDomain, really? How can we be sure?
+        // @note We use BlasMatrixDomain because all the blocks will be dense,
+        // whatever A is.
+        using Context = BlasMatrixDomain<typename Matrix::Field>;
         Context domain(A.field());
 
         using Solver = BlockWiedemannSolver<Context>;
