@@ -327,17 +327,17 @@ namespace LinBox
 						 const Prec1             *P,
 						 const Prec2             *Q);
 
-		/*! Get a random element of the right nullspace of A.
+		/*! Get a random element of the right nullspace of A of rank r.
 		 *
 		 * @param x Vector in which to store nullspace element
 		 * @param A Black box of which to find nullspace element
 		 */
 		template<class Blackbox, class Vector>
 		ReturnStatus findNullspaceElement (Vector                &x,
-						   const Blackbox        &A);
+						   const Blackbox        &A, const size_t r);
 
 		/*! Get a certificate \p u that the given system \f$Ax=b\f$ is
-		 * inconsistent, if one can be found.
+		 * of rank r and inconsistent, if one can be found.
 		 *
 		 * @param u Vector in which to store certificate
 		 * @param A Blackbox for the linear system
@@ -348,7 +348,7 @@ namespace LinBox
 		template<class Blackbox, class Vector>
 		bool certifyInconsistency (Vector                          &u,
 					   const Blackbox                  &A,
-					   const Vector                    &b);
+					   const Vector                    &b, const size_t r);
 
 		//@}
 
