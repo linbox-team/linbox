@@ -66,14 +66,18 @@ namespace LinBox {
 
         // @todo Getting certificateOfInconsistency is a design error,
         // we should give a pointer to that to be allowed to pass nullptr.
-        Vector certificateOfInconsistency(A.field(), A.rowdim());
+        // Or just put it in x...
+        ResultVector certificateOfInconsistency(A.field(), A.rowdim());
         auto solverResult = solver.solve(A, x, b, certificateOfInconsistency);
 
         switch (solverResult) {
         case Solver::OK: break;
         case Solver::FAILED: throw LinboxError("Solving failed with Wiedemann.");
         case Solver::SINGULAR: /* @fixme Consistently decide what to do. */ break;
-        default: throw LinboxMathInconsistentSystem("From Wiedemann solve.");
+        default: {
+            x = certificateOfInconsistency;
+            throw LinboxMathInconsistentSystem("From Wiedemann solve.");
+        }
         }
 
         commentator().stop("solve.wiedemann.modular");
