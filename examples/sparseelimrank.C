@@ -90,13 +90,13 @@ int main (int argc, char **argv)
 
 
 		Method::SparseElimination SE;
-// 		SE.strategy(Specifier::PIVOT_NONE);
+// 		SE.pivotStrategy = PivotStrategy::None;
 // 		// using Sparse Elimination
 // 		LinBox::rank (r, B, SE);
 // 		if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout) << endl;
 // 		cout << "Rank is " << r << endl;
 
-		SE.strategy(Specifier::PIVOT_LINEAR);
+		SE.pivotStrategy = PivotStrategy::Linear;
 		// using Sparse Elimination
         Givaro::Timer chrono; chrono.start();
 		LinBox::rankInPlace (r, B, SE);

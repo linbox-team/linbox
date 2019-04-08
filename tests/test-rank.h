@@ -39,7 +39,7 @@ bool testZeroAndIdentRank (const Field &F, size_t n, unsigned int iterations = 1
 
 #include "linbox/linbox-config.h"
 
-#define LINBOX_USE_BLACKBOX_THRESHOLD 100
+#define LINBOX_USE_BLACKBOX_THRESHOLD 100 // Override what's defined in methods.h
 #define LINBOX_COO_TRANSPOSE 100 /*  this is supposed to be triggerd half the time */
 #define LINBOX_CSR_TRANSPOSE 100 /*  this is supposed to be triggerd half the time */
 #define LINBOX_ELL_TRANSPOSE 100 /*  this is supposed to be triggerd half the time */
@@ -278,7 +278,8 @@ r = n;
 			ret = false;
 		}
 
-		Method::Wiedemann MWS(Method::Wiedemann::SYMMETRIC);
+		Method::Wiedemann MWS;
+        MWS.shapeFlags = Shape::Symmetric;
 //		LinBox::rank (r, B, MWS);
 r = n;
 		if (r != n) {

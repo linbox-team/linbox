@@ -32,7 +32,7 @@
 //#include "linbox/field/gmp-rational.h"
 #include "givaro/givinteger.h"
 #include "linbox/blackbox/rational-matrix-factory.h"
-#include "linbox/algorithms/varprec-cra-early-single.h"
+#include "linbox/algorithms/cra-builder-var-prec-early-single.h"
 #include "linbox/algorithms/cra-domain.h"
 #include "linbox/algorithms/rational-reconstruction-base.h"
 #include "linbox/algorithms/classic-rational-reconstruction.h"
@@ -195,7 +195,7 @@ namespace LinBox
 
 		corrections(Atilde,F);
 
-		ChineseRemainder< VarPrecEarlySingleCRA<Givaro::Modular<double> > > cra(3UL);
+		ChineseRemainder< CRABuilderVarPrecEarlySingle<Givaro::Modular<double> > > cra(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD);
 		MyRationalModularDet<BlasMatrix<Rationals > , MyMethod> iteration1(A, Met, M, F);
 		MyIntegerModularDet<BlasMatrix<Givaro::IntegerDom>, MyMethod> iteration2(Atilde, Met);
 		MyModularDet<MyRationalModularDet<BlasMatrix<Rationals > , MyMethod>,
@@ -243,8 +243,8 @@ namespace LinBox
 		Integer lif = 1;
 		if ((s1 > 4*s2) && (!term)){
 			//cout << "lif " << std::flush;
-			RationalSolver < Givaro::IntegerDom , Givaro::Modular<double>, PrimeIterator<IteratorCategories::HeuristicTag>, DixonTraits > RSolver;
-			LastInvariantFactor < Givaro::IntegerDom ,RationalSolver < Givaro::IntegerDom, Givaro::Modular<double>, PrimeIterator<IteratorCategories::HeuristicTag>, DixonTraits > >  LIF(RSolver);
+			RationalSolver < Givaro::IntegerDom , Givaro::Modular<double>, PrimeIterator<IteratorCategories::HeuristicTag>, Method::Dixon > RSolver;
+			LastInvariantFactor < Givaro::IntegerDom ,RationalSolver < Givaro::IntegerDom, Givaro::Modular<double>, PrimeIterator<IteratorCategories::HeuristicTag>, Method::Dixon > >  LIF(RSolver);
 			IVect r_num2 (Z,Atilde. coldim());
 			t1.clear();
 			t1.start();

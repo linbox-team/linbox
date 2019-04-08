@@ -30,6 +30,7 @@
 #ifndef __LINBOX_numeric_solver_lapack_H
 #define __LINBOX_numeric_solver_lapack_H
 
+#if defined(__FFLASFFPACK_HAVE_LAPACK)
 
 namespace LinBox {
 
@@ -118,6 +119,8 @@ namespace LinBox {
 	}
 
 } // namespace LinBox
+
+#endif // __FFLASFFPACK_HAVE_LAPACK
 
 #endif // __LINBOX_numeric_solver_lapack_H
 

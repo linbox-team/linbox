@@ -38,13 +38,13 @@ namespace LinBox
 				 SparseSeqMatrix        &A,
 				 size_t  Ni,
 				 size_t  Nj,
-				 SparseEliminationTraits::PivotStrategy   reord)  const
+				 PivotStrategy   reord)  const
 	{
 		Element determinant;
 		const GF2 F2;
 		Permutation<GF2> P(F2,(int)A.coldim());
 
-		if (reord == SparseEliminationTraits::PIVOT_NONE)
+		if (reord == PivotStrategy::None)
 			return NoReordering(Rank, determinant, A,  Ni, Nj);
 		else
 			return InPlaceLinearPivoting(Rank, determinant, A, P, Ni, Nj);
@@ -54,7 +54,7 @@ namespace LinBox
 	template <class SparseSeqMatrix> size_t&
 	GaussDomain<GF2>::rankInPlace(size_t &Rank,
 				 SparseSeqMatrix        &A,
-				 SparseEliminationTraits::PivotStrategy   reord)  const
+				 PivotStrategy   reord)  const
 	{
 		return rankInPlace(Rank, A,  A.rowdim (), A.coldim (), reord);
 	}
@@ -64,7 +64,7 @@ namespace LinBox
 	template <class SparseSeqMatrix> size_t&
 	GaussDomain<GF2>::rank(size_t &rk,
 			       const SparseSeqMatrix        &A,
-			       SparseEliminationTraits::PivotStrategy   reord)  const
+			       PivotStrategy   reord)  const
 	{
 		return rank(rk, A,  A.rowdim (), A.coldim (), reord);
 	}
@@ -74,7 +74,7 @@ namespace LinBox
 			       const SparseSeqMatrix        &A,
 			       size_t  Ni,
 			       size_t  Nj,
-			       SparseEliminationTraits::PivotStrategy   reord)  const
+			       PivotStrategy   reord)  const
 	{
 		SparseSeqMatrix CopyA(Ni);
 		for(size_t i = 0; i < Ni; ++i)

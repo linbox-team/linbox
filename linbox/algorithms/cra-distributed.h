@@ -32,17 +32,19 @@
 
 #include "linbox/algorithms/cra-domain.h"
 #include "linbox/algorithms/rational-cra.h"
-#include "linbox/algorithms/rational-cra2.h"
+#include "linbox/algorithms/rational-cra-var-prec.h"
 #include "linbox/integer.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/solutions/methods.h"
 #include "linbox/util/mpicpp.h"
 #include "linbox/util/timer.h"
 
+#if defined(__LINBOX_HAVE_MPI)
+
 namespace LinBox {
 
     template <class CRABase>
-    struct MPIChineseRemainder {
+    struct ChineseRemainderDistributed {
         using Domain = typename CRABase::Domain;
 
         // @note This causes the algorithm to give wrong answer sometimes...
@@ -56,7 +58,7 @@ namespace LinBox {
         double _workerHadamardLogBound = 0.0; //!< Each worker will compute primes until this is hit.
 
     public:
-        MPIChineseRemainder(double b, Communicator* c)
+        ChineseRemainderDistributed(double b, Communicator* c)
             : Builder_(b)
             , _pCommunicator(c)
             , _hadamardLogBound(b)
@@ -85,7 +87,7 @@ namespace LinBox {
         {
             // Defer to standard CRA loop if no parallel usage is desired
             if (_pCommunicator == 0 || _pCommunicator->size() == 1) {
-                RationalRemainder<CRABase> sequential(Builder_);
+                RationalChineseRemainder<CRABase> sequential(Builder_);
                 return sequential(num, den, Iteration, primeGenerator);
             }
 
@@ -203,6 +205,8 @@ namespace LinBox {
         }
     };
 }
+
+#endif
 
 // Local Variables:
 // mode: C++

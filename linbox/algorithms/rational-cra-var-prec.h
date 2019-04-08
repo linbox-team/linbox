@@ -34,20 +34,10 @@
 
 namespace LinBox
 {
-
-#if 0
-	template<class T, template <class T> class Container>
-	std::ostream& operator<< (std::ostream& o, const Container<T>& C) {
-		for(typename Container<T>::const_iterator refs =  C.begin();
-		    refs != C.end() ;
-		    ++refs )
-			o << (*refs) << " " ;
-		return o << std::endl;
-	}
-#endif
-
-
-	/** \brief Chinese remainder of rationals
+	/**
+     * \brief Chinese remainder of vector of rationals.
+     *
+     * VarPrec: Variable preconditioner = lift random combination of residues
 	 *
 	 * Compute the reconstruction of rational numbers
 	 * Either by Early Termination see [Dumas, Saunder, Villard, JSC 32 (1/2), pp 71-99, 2001],
@@ -57,7 +47,7 @@ namespace LinBox
 	//typedef Integers::Element Integer;
 
 	template<class RatCRABase, class RatRecon = RReconstruction<Givaro::ZRing<Integer>, ClassicMaxQRationalReconstruction<Givaro::ZRing<Integer> > > >
-	struct RationalRemainder2 {
+	struct RationalChineseRemainderVarPrec {
 
 
 		typedef typename RatCRABase::Domain		Domain;
@@ -70,13 +60,13 @@ namespace LinBox
 		int IterCounter;
 
 		template<class Param>
-		RationalRemainder2(const Param& b, const RatRecon& RR = RatRecon()) :
+		RationalChineseRemainderVarPrec(const Param& b, const RatRecon& RR = RatRecon()) :
 			Builder_(b), RR_(RR)
 		{
 			IterCounter = 0;
 		}
 
-		RationalRemainder2(RatCRABase b, const RatRecon& RR = RatRecon()) :
+		RationalChineseRemainderVarPrec(RatCRABase b, const RatRecon& RR = RatRecon()) :
 			Builder_(b), RR_()
 		{
 			IterCounter = 0;

@@ -37,7 +37,7 @@
 
 #ifdef __LINBOX_HAVE_MPI
 #include "linbox/util/mpicpp.h"
-#include "linbox/algorithms/cra-mpi.h"
+#include "linbox/algorithms/cra-distributed.h"
 #endif
 
 #include "linbox/algorithms/minpoly-integer.h"
@@ -166,11 +166,10 @@ namespace LinBox
 			     const RingCategories::ModularTag & tag,
 			     const Method::Blackbox           & M)
 	{
-		if (M.certificate()) {
+		if (M.certifyInconsistency) {
 			// Will make a word size extension
 			// when field size is too small
-			//return minpoly(P, A, tag, Method::ExtensionWiedemann (M));
-			minpoly(P, A, tag, Method::ExtensionWiedemann (M));
+			minpoly(P, A, tag, Method::WiedemannExtension (M));
 			return P;
 		}
 		else
@@ -190,8 +189,8 @@ namespace LinBox
 #include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/matrix-hom.h"
 
-#include "linbox/algorithms/rational-cra2.h"
-#include "linbox/algorithms/varprec-cra-early-multip.h"
+#include "linbox/algorithms/rational-cra-var-prec.h"
+#include "linbox/algorithms/cra-builder-var-prec-early-multip.h"
 #include "linbox/algorithms/minpoly-rational.h"
 
 namespace LinBox
@@ -234,7 +233,7 @@ namespace LinBox
 #endif
 
 #ifdef __LINBOX_HAVE_MPI
-		Communicator *c = M.communicatorp();
+		Communicator *c = M.pCommunicator;
 		if(!c || c->rank() == 0)
 			commentator().start ("Integer Minpoly", "Iminpoly");
 		else{
@@ -250,10 +249,10 @@ namespace LinBox
                 PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
 		IntegerModularMinpoly<Blackbox,MyMethod> iteration(A, M);
 #ifdef __LINBOX_HAVE_MPI
-		MPIChineseRemainder< EarlyMultipCRA<Field > > cra(3UL, c);
+		ChineseRemainderDistributed< CRABuilderEarlyMultip<Field > > cra(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD, c);
 		cra(P, iteration, genprime);
 #else
-		ChineseRemainder< EarlyMultipCRA<Field > > cra(3UL);
+		ChineseRemainder< CRABuilderEarlyMultip<Field > > cra(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD);
 		cra(P, iteration, genprime);
 #endif
 
@@ -274,7 +273,7 @@ namespace LinBox
 
 		typedef Givaro::ModularBalanced<double> Field;
                 PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
-		RationalRemainder2< VarPrecEarlyMultipCRA<Field> > rra(3UL);
+		RationalChineseRemainderVarPrec< CRABuilderVarPrecEarlyMultip<Field> > rra(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD);
 		IntegerModularMinpoly<Blackbox,MyMethod> iteration(A, M);
 
 		std::vector<Integer> PP; // use of integer due to non genericity of cra. PG 2005-08-04

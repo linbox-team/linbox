@@ -60,11 +60,11 @@ namespace LinBox
 		VectorDomain<Field>         _VDF;
                 RandIter                   _rand;
                 size_t                 _left_blockdim;
-                size_t                 _right_blockdim; 
+                size_t                 _right_blockdim;
 
 
 #define BW_BLOCK_DEFAULT 8UL
-#define BW_MAX_TRY 100               
+#define BW_MAX_TRY 100
 	public:
 		const Field & field() const { return _BMD.field(); }
 
@@ -88,11 +88,11 @@ namespace LinBox
                                 solveNonSingular(x,B,y);
                         }
                         catch (const LinboxError& e) {
-                                std::cerr<<e<<std::endl;
+                                std::cerr<<e.what()<<std::endl;
                         }
                         return x;
                 }
-                
+
 		template <class Blackbox>
 		Vector &solveNonSingular (Vector &x, const Blackbox &B, const Vector &y) const
 		{
@@ -102,10 +102,10 @@ namespace LinBox
 			m = A.rowdim();
 			n = A.coldim();
                         Vector z(field(),y.size());
-                        
-                        if (_left_blockdim >m/2 || _right_blockdim >n/2) 
+
+                        if (_left_blockdim >m/2 || _right_blockdim >n/2)
                                 std::cerr<<"BlockWiedemannSolver (Warning) : block size too large, number of tries might be large"<<std::endl;
-                        
+
 			//std::cout<<"row block: "<<_left_blockdim<<std::endl;
 			//std::cout<<"col block: "<<_right_blockdim<<std::endl;
 
@@ -114,7 +114,7 @@ namespace LinBox
                         // LAS VEGAS VERSION
                         do
                                 {
-                                
+
                                         // set V at random
                                         for (size_t i=0;i<n;++i)
                                                 for (size_t j=0;j<_right_blockdim;++j)
@@ -140,7 +140,7 @@ namespace LinBox
                                         std::vector<size_t> degree;
                                         MBD.left_minpoly_rec(minpoly,degree);
                                         //MBD.printTimer();
-                        
+
                                         // std::cout<<"minpoly is: \n";
                                         // write_maple(field(),minpoly);
                                         // std::cout<<std::endl;
@@ -201,7 +201,7 @@ namespace LinBox
                                                 field().init(scaling);
                                                 field().neg(scaling,combi[0][0]);
                                                 field().invin(scaling);
-                                                _VDF.mul(x,accu,scaling);                                
+                                                _VDF.mul(x,accu,scaling);
                                         }
                                         else {
                                                 /*
@@ -256,7 +256,7 @@ namespace LinBox
                                 } while (!_VDF.areEqual(z,y));
 #ifdef _BW_LASVEGAS_COUNT
                         std::cerr<<"BlockWiedemannSolver: nbr of try: "<<bw_try<<std::endl;
-#endif 
+#endif
                         commentator().report()<<"BlockWiedemannSolver: nbr of tries: "<<bw_try<<std::endl;
 			return x;
 		}

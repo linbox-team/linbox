@@ -114,7 +114,6 @@ namespace LinBox
 			      const RingCategories::ModularTag & tag,
 			      const Method::Auto             & M)
 	{
-		// not yet a hybrid
 		return charpoly(P, A, tag, Method::DenseElimination(M));
 	}
 
@@ -160,8 +159,8 @@ namespace LinBox
 
 #include "linbox/algorithms/matrix-hom.h"
 
-#include "linbox/algorithms/rational-cra2.h"
-#include "linbox/algorithms/varprec-cra-early-multip.h"
+#include "linbox/algorithms/rational-cra-var-prec.h"
+#include "linbox/algorithms/cra-builder-var-prec-early-multip.h"
 #include "linbox/algorithms/charpoly-rational.h"
 
 namespace LinBox
@@ -307,16 +306,16 @@ namespace LinBox
 
 #include "linbox/ring/modular.h"
 #include "linbox/algorithms/cra-domain.h"
-#include "linbox/algorithms/cra-full-multip.h"
-#include "linbox/algorithms/cra-early-multip.h"
+#include "linbox/algorithms/cra-builder-full-multip.h"
+#include "linbox/algorithms/cra-builder-early-multip.h"
 #include "linbox/algorithms/matrix-hom.h"
 
 namespace LinBox
 {
 
 #if 0
-#include "linbox/algorithms/rational-cra2.h"
-#include "linbox/algorithms/varprec-cra-early-multip.h"
+#include "linbox/algorithms/rational-cra-var-prec.h"
+#include "linbox/algorithms/cra-builder-var-prec-early-multip.h"
 #include "linbox/algorithms/charpoly-rational.h"
 
 	namespace LinBox
@@ -376,9 +375,9 @@ namespace LinBox
 		size_t n=A.coldim();
 		double hadamarcp = n/2.0*(log(double(n))+2*log(double(max))+0.21163275)/log(2.0);
 
-		ChineseRemainder< FullMultipCRA<Field > > cra(hadamarcp);
+		ChineseRemainder< CRABuilderFullMultip<Field > > cra(hadamarcp);
 #endif
-		ChineseRemainder< EarlyMultipCRA<Field > > cra(3UL);
+		ChineseRemainder< CRABuilderEarlyMultip<Field > > cra(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD);
 
 		IntegerModularCharpoly<Blackbox,Method::Blackbox> iteration(A, M);
 		cra.operator() (P, iteration, genprime);
@@ -420,9 +419,9 @@ namespace LinBox
 		double hadamarcp = n/2.0*(log(double(n))+2*log(double(max))+0.21163275)/log(2.0);
 
 
-		ChineseRemainder< FullMultipCRA<Field > > cra(hadamarcp);
+		ChineseRemainder< CRABuilderFullMultip<Field > > cra(hadamarcp);
 #endif
-		ChineseRemainder< EarlyMultipCRA<Field > > cra(3UL);
+		ChineseRemainder< CRABuilderEarlyMultip<Field > > cra(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD);
         IntegerModularCharpoly<Blackbox,Method::DenseElimination> iteration(A, M);
 		cra (P, iteration, genprime);
 		commentator().stop ("done", NULL, "IbbCharpoly");
@@ -468,7 +467,7 @@ namespace LinBox
 
         typedef Givaro::ModularBalanced<double> Field;
 		PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
-		RationalRemainder2< VarPrecEarlyMultipCRA<Field > > rra(3UL);
+		RationalChineseRemainderVarPrec< CRABuilderVarPrecEarlyMultip<Field > > rra(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD);
 		IntegerModularCharpoly<Blackbox,MyMethod> iteration(A, M);
 
 		Givaro::ZRing<Integer> Z;

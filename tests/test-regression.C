@@ -133,7 +133,8 @@ bool testSolveSparseSage(){return true;}
  * Testing regresssion for issue 56 https://github.com/linbox-team/linbox/issues/56
  * reported by Vincent Delecroix
  */
-bool testFlatDixonSolver (const Specifier& m){
+template <class SolveMethod>
+bool testFlatDixonSolver (const SolveMethod& m){
         // creating LinBox matrices and vectors
     Givaro::ZRing<Integer> ZZ;
     typedef DenseVector<Givaro::ZRing<Integer> > DenseVector;
@@ -160,8 +161,8 @@ bool testFlatDixonSolver (const Specifier& m){
     return true;
 }
 
-
-bool testFlatDixonSolver2 (const Specifier& m){
+template <class SolveMethod>
+bool testFlatDixonSolver2 (const SolveMethod& m){
         // creating LinBox matrices and vectors
     Givaro::ZRing<Integer> ZZ;
     typedef DenseVector<Givaro::ZRing<Integer> > DenseVector;
@@ -189,7 +190,8 @@ bool testFlatDixonSolver2 (const Specifier& m){
     return true;
 }
 
-bool testTallDixonSolver (const Specifier& m){
+template <class SolveMethod>
+bool testTallDixonSolver (const SolveMethod& m){
         // creating LinBox matrices and vectors
     Givaro::ZRing<Integer> ZZ;
     typedef DenseVector<Givaro::ZRing<Integer> > DenseVector;
@@ -218,7 +220,8 @@ bool testTallDixonSolver (const Specifier& m){
 
 }
 
-bool testSingularDixonSolver (const Specifier& m){
+template <class SolveMethod>
+bool testSingularDixonSolver (const SolveMethod& m){
         // creating LinBox matrices and vectors
     Givaro::ZRing<Integer> ZZ;
     typedef DenseVector<Givaro::ZRing<Integer> > DenseVector;
@@ -243,7 +246,9 @@ bool testSingularDixonSolver (const Specifier& m){
 
     return true;
 }
-bool testZeroDixonSolver (const Specifier& m){
+
+template <class SolveMethod>
+bool testZeroDixonSolver (const SolveMethod& m){
         // creating LinBox matrices and vectors
     Givaro::ZRing<Integer> ZZ;
     typedef DenseVector<Givaro::ZRing<Integer> > DenseVector;
@@ -331,8 +336,10 @@ bool testSparseRationalSolver() {
     return true;
 }
 
-template<typename Matrix_t=SparseMatrix<ZRingInts>>
-bool testDixonRectangularSolver(const Specifier& m) {
+template<class SolveMethod, typename Matrix_t=SparseMatrix<ZRingInts>>
+bool testDixonRectangularSolver() {
+    SolveMethod m;
+
     ZRingInts ZZ;
     typedef DenseVector<ZRingInts> RVector;
     Matrix_t A (ZZ,1,3);
@@ -450,8 +457,8 @@ bool testBigScalarCharPoly(){
 }
 
 
-template<typename Matrix_t=SparseMatrix<ZRingInts>>
-bool testInconsistent (const Specifier& m){
+template<typename Matrix_t=SparseMatrix<ZRingInts>, class SolveMethod>
+bool testInconsistent (const SolveMethod& m){
         // creating LinBox matrices and vectors
     Givaro::ZRing<Integer> ZZ;
     typedef DenseVector<Givaro::ZRing<Integer> > DenseVector;
@@ -571,6 +578,10 @@ int main (int argc, char **argv)
 	// text is written to clog/cerr/cout iff a command line argument is present.
 	if (argc > 1) writing = true;
 
+    if (writing) {
+        commentator().setReportStream(std::cout);
+    }
+
     pass &= testSolveSparse  ();
     pass &= testSolveSparseSage ();
     pass &= testFlatDixonSolver (Method::SparseElimination());
@@ -588,12 +599,12 @@ int main (int argc, char **argv)
     pass &= testZeroDixonSolver (Method::DenseElimination());
     pass &= testDixonSolverWithMPrhs ();
     pass &= testSparseRationalSolver ();
-    pass &= testDixonRectangularSolver<> (Method::DenseElimination());
-    pass &= testDixonRectangularSolver<> (Method::SparseElimination());
-    pass &= testDixonRectangularSolver<> (Method::Wiedemann());
-    pass &= testDixonRectangularSolver<DenseMatrix<ZRingInts>> (Method::DenseElimination());
-    pass &= testDixonRectangularSolver<DenseMatrix<ZRingInts>> (Method::SparseElimination());
-    pass &= testDixonRectangularSolver<DenseMatrix<ZRingInts>> (Method::Wiedemann());
+    pass &= testDixonRectangularSolver<Method::DenseElimination> ();
+    pass &= testDixonRectangularSolver<Method::SparseElimination> ();
+    pass &= testDixonRectangularSolver<Method::Wiedemann> ();
+    pass &= testDixonRectangularSolver<Method::DenseElimination, DenseMatrix<ZRingInts>> ();
+    pass &= testDixonRectangularSolver<Method::SparseElimination, DenseMatrix<ZRingInts>> ();
+    pass &= testDixonRectangularSolver<Method::Wiedemann, DenseMatrix<ZRingInts>> ();
     pass &= testSparse1x1Det(1<<26);
     pass &= testSparseDiagDet(46);
     pass &= testZeroDimensionalCharPoly ();

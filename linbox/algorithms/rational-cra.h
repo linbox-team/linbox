@@ -28,6 +28,9 @@
 
 #include "givaro/zring.h"
 
+#include "linbox/integer.h"
+#include "linbox/vector/blas-vector.h"
+
 namespace LinBox
 {
 
@@ -50,7 +53,7 @@ namespace LinBox
 	 * Or via a bound on the size of the integers.
 	 */
 	template<class RatCRABase>
-	struct RationalRemainder {
+	struct RationalChineseRemainder {
 		typedef typename RatCRABase::Domain		Domain;
 		typedef typename RatCRABase::DomainElement	DomainElement;
 	protected:
@@ -58,7 +61,7 @@ namespace LinBox
 
 	public:
 		template<class Param>
-		RationalRemainder(const Param& b) :
+		RationalChineseRemainder(const Param& b) :
 			Builder_(b)
 		{ }
 
