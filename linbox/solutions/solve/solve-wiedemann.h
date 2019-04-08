@@ -38,7 +38,7 @@ namespace LinBox {
     template <class ResultVector, class Matrix, class Vector, class CategoryTag>
     ResultVector& solve(ResultVector& x, const Matrix& A, const Vector& b, const CategoryTag& tag, const Method::Wiedemann& m)
     {
-        throw LinboxError("Method::Wiedemann can only be used with RingCategories::ModularTag.");
+        throw LinboxError("Method::Wiedemann can only be used with RingCategories::ModularTag or RingCategories::IntegerTag.");
     }
 
     /**
@@ -66,14 +66,18 @@ namespace LinBox {
 
         // @todo Getting certificateOfInconsistency is a design error,
         // we should give a pointer to that to be allowed to pass nullptr.
-        Vector certificateOfInconsistency(A.field(), A.rowdim());
+        // Or just put it in x...
+        ResultVector certificateOfInconsistency(A.field(), A.rowdim());
         auto solverResult = solver.solve(A, x, b, certificateOfInconsistency);
 
         switch (solverResult) {
         case Solver::OK: break;
         case Solver::FAILED: throw LinboxError("Solving failed with Wiedemann.");
         case Solver::SINGULAR: /* @fixme Consistently decide what to do. */ break;
-        default: throw LinboxMathInconsistentSystem("From Wiedemann solve.");
+        default: {
+            x = certificateOfInconsistency;
+            throw LinboxMathInconsistentSystem("From Wiedemann solve.");
+        }
         }
 
         commentator().stop("solve.wiedemann.modular");
@@ -106,7 +110,9 @@ namespace LinBox {
         commentator().start("solve.block-wiedemann.modular");
         linbox_check((A.coldim() == x.size()) && (A.rowdim() == b.size()));
 
-        using Context = BlasMatrixDomain<typename Matrix::Field>; // @fixme BlasMatrixDomain, really? How can we be sure?
+        // @note We use BlasMatrixDomain because all the blocks will be dense,
+        // whatever A is.
+        using Context = BlasMatrixDomain<typename Matrix::Field>;
         Context domain(A.field());
 
         using Solver = BlockWiedemannSolver<Context>;

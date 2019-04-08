@@ -52,8 +52,8 @@ namespace LinBox {
     /**
      * \brief Solve specialisation for Dixon on blackboxes matrices.
      */
-    template <class Blackbox, class Vector>
-    void solve(Vector& xNum, typename Vector::Element& xDen, const Blackbox& A, const Vector& b,
+    template <class IntVector, class Blackbox, class Vector>
+    void solve(IntVector& xNum, typename IntVector::Element& xDen, const Blackbox& A, const Vector& b,
                const RingCategories::IntegerTag& tag, const Method::Dixon& m)
     {
         commentator().start("solve.dixon.integer.blackbox");
@@ -78,7 +78,7 @@ namespace LinBox {
 
         if (status == SS_INCONSISTENT) {
             throw LinboxMathInconsistentSystem("From Dixon method.");
-        } else if (status != SS_OK) {
+        } else if (status == SS_FAILED || status == SS_BAD_PRECONDITIONER) {
             throw LinboxError("From Dixon method.");
         }
     }
@@ -86,13 +86,14 @@ namespace LinBox {
     /**
      * \brief Solve specialisation for Dixon on dense matrices.
      */
-    template <class Ring, class Vector>
-    void solve(Vector& xNum, typename Vector::Element& xDen, const DenseMatrix<Ring>& A, const Vector& b,
+    template <class IntVector, class Ring, class Vector>
+    void solve(IntVector& xNum, typename IntVector::Element& xDen, const DenseMatrix<Ring>& A, const Vector& b,
                const RingCategories::IntegerTag& tag, const Method::Dixon& m)
     {
         commentator().start("solve.dixon.integer.dense");
         linbox_check((A.coldim() == xNum.size()) && (A.rowdim() == b.size()));
 
+        // @fixme Using Givaro::ModularBalanced<double> for the field makes Dixon fail...
         using Matrix = DenseMatrix<Ring>;
         using Field = Givaro::Modular<double>;
         using PrimeGenerator = PrimeIterator<IteratorCategories::HeuristicTag>;
@@ -128,7 +129,7 @@ namespace LinBox {
 
         if (status == SS_INCONSISTENT) {
             throw LinboxMathInconsistentSystem("From Dixon method.");
-        } else if (status != SS_OK) {
+        } else if (status == SS_FAILED || status == SS_BAD_PRECONDITIONER) {
             throw LinboxError("From Dixon method.");
         }
     }
@@ -136,8 +137,8 @@ namespace LinBox {
     /**
      * \brief Solve specialisation for Dixon on sparse matrices.
      */
-    template <class... MatrixArgs, class Vector>
-    void solve(Vector& xNum, typename Vector::Element& xDen, const SparseMatrix<MatrixArgs...>& A, const Vector& b,
+    template <class IntVector, class... MatrixArgs, class Vector>
+    void solve(IntVector& xNum, typename IntVector::Element& xDen, const SparseMatrix<MatrixArgs...>& A, const Vector& b,
                const RingCategories::IntegerTag& tag, const Method::Dixon& m)
     {
         commentator().start("solve.dixon.integer.sparse");
@@ -163,7 +164,7 @@ namespace LinBox {
 
         if (status == SS_INCONSISTENT) {
             throw LinboxMathInconsistentSystem("From Dixon method.");
-        } else if (status != SS_OK) {
+        } else if (status == SS_FAILED || status == SS_BAD_PRECONDITIONER) {
             throw LinboxError("From Dixon method.");
         }
     }
