@@ -37,7 +37,10 @@ namespace LinBox {
     template <class Matrix, class Vector, class CategoryTag>
     Vector& solve(Vector& x, const Matrix& A, const Vector& b, const CategoryTag& tag, const Method::Elimination& m)
     {
-        return solve(x, A, b, tag, reinterpret_cast<const Method::Blackbox&>(m));
+        // @fixme Make a DenseMatrix, compute sparsity,
+        // and decide with magic whether to use Sparse or DenseElimination.
+        // Ah, and do the very same within solveInPlace.
+        return solve(x, A, b, tag, reinterpret_cast<const Method::DenseElimination&>(m));
     }
 
     /**
