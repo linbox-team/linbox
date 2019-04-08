@@ -25,6 +25,7 @@
 #include <linbox/field/field-traits.h>
 #include <linbox/integer.h>
 #include <linbox/matrix/matrix-category.h>
+#include <linbox/matrix/matrix-traits.h>
 
 #include <limits>
 
@@ -141,6 +142,13 @@ namespace LinBox {
         minLogNorm /= 2.0;
     }
 
+    template <class IMatrix>
+    void HadamardRowLogBound(double& logBound, double& minLogNorm, const IMatrix& A, const MatrixCategories::BlackboxTag& tag)
+    {
+        DenseMatrix<typename IMatrix::Field> ACopy(A);
+        HadamardRowLogBound(logBound, minLogNorm, ACopy);
+    }
+
     /**
      * Precise Hadamard bound (bound on determinant) by taking
      * the column-wise euclidean norm.
@@ -209,6 +217,13 @@ namespace LinBox {
         // Square-root
         logBound /= 2.0;
         minLogNorm /= 2.0;
+    }
+
+    template <class IMatrix>
+    void HadamardColLogBound(double& logBound, double& minLogNorm, const IMatrix& A, const MatrixCategories::BlackboxTag& tag)
+    {
+        DenseMatrix<typename IMatrix::Field> ACopy(A);
+        HadamardColLogBound(logBound, minLogNorm, ACopy);
     }
 
     /**
@@ -295,8 +310,9 @@ namespace LinBox {
     // ----- Rational solve bound
 
     struct RationalSolveHadamardBoundData {
-        double numLogBound;
-        double denLogBound;
+        double numLogBound;      // log2(N)
+        double denLogBound;      // log2(D)
+        double solutionLogBound; // log2(2 * N * D)
     };
 
     /**
@@ -306,8 +322,10 @@ namespace LinBox {
      *
      * @note Matrix and Vector should be over Integer.
      */
-    template <class IMatrix, class Vector>
-    RationalSolveHadamardBoundData RationalSolveHadamardBound(const IMatrix& A, const Vector& b)
+    template <class Matrix, class Vector>
+    typename std::enable_if<std::is_same<typename FieldTraits<typename Matrix::Field>::categoryTag, RingCategories::IntegerTag>::value,
+                            RationalSolveHadamardBoundData>::type
+    RationalSolveHadamardBound(const Matrix& A, const Vector& b)
     {
         RationalSolveHadamardBoundData data;
 
@@ -315,12 +333,23 @@ namespace LinBox {
         double bLogNorm;
         vectorLogNorm(bLogNorm, b.begin(), b.end());
 
-        data.numLogBound = hadamardBound.logBoundOverMinNorm + bLogNorm + 1;
+        data.numLogBound = hadamardBound.logBoundOverMinNorm + bLogNorm + 1.0;
         data.denLogBound = hadamardBound.logBound;
+        data.solutionLogBound = data.numLogBound + data.denLogBound + 1.0;
+
 #ifdef DEBUG_HADAMARD_BOUND
         std::clog << "numLogBound:=" << data.numLogBound << ';' << std::endl;
         std::clog << "denLogBound:=" << data.denLogBound << ';' << std::endl;
 #endif
         return data;
+    }
+
+    /// @fixme Needed to solve-cra.h, but can't be used yet.
+    template <class Matrix, class Vector>
+    typename std::enable_if<std::is_same<typename FieldTraits<typename Matrix::Field>::categoryTag, RingCategories::RationalTag>::value,
+                            RationalSolveHadamardBoundData>::type
+    RationalSolveHadamardBound(const Matrix& A, const Vector& b)
+    {
+        throw NotImplementedYet("Hadamard bound on Rational matrices is not implemented yet.");
     }
 }

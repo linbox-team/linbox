@@ -47,15 +47,25 @@ namespace LinBox {
 	 */
 	namespace RingCategories {
 		//! generic ring.
-		struct GenericTag{};
+		struct GenericTag {
+			static std::string name() { return "RingCategories::GenericTag"; }
+		};
 		//! If it is isomorphic to Z/mZ, for some m or its extensions.
-		struct ModularTag : public virtual GenericTag{};
+		struct ModularTag : public virtual GenericTag {
+			static std::string name() { return "RingCategories::ModularTag"; }
+		};
 		//! Galois Field  GF(p^e)
-		struct GaloisTag : public virtual GenericTag {};
+		struct GaloisTag : public virtual GenericTag {
+			static std::string name() { return "RingCategories::GaloisTag"; }
+		};
 		//! If it is isomorphic to Z
-		struct IntegerTag : public virtual GenericTag{};
+		struct IntegerTag : public virtual GenericTag {
+			static std::string name() { return "RingCategories::IntegerTag"; }
+		};
 		//! If it is isomorphic to Q
-		struct RationalTag : public virtual GenericTag{};
+		struct RationalTag : public virtual GenericTag {
+			static std::string name() { return "RingCategories::RationalTag"; }
+		};
 	}
 
 	/*! Default ring category.

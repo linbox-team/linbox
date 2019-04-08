@@ -125,12 +125,12 @@ namespace LinBox
 	 * -  Ring: ring over which entries are defined
 	 * -  Field: finite field for p-adic lifting
 	 * -  RandomPrime: generator of random primes
-	 * -  MethodTraits: type of subalgorithm to use in p-adic lifting (default is DixonTraits)
+	 * -  MethodTraits: type of subalgorithm to use in p-adic lifting (default is Method::Dixon)
 	 * .
 	 *
 	 * \ingroup padic
 	 */
-	template<class Ring, class Field, class RandomPrime, class MethodTraits = DixonTraits>
+	template<class Ring, class Field, class RandomPrime, class MethodTraits = Method::Dixon>
 	class RationalSolver {
 
 	public:
@@ -236,7 +236,7 @@ namespace LinBox
 	 *
 	 */
 	template<class Ring, class Field,class RandomPrime>
-	class RationalSolver<Ring, Field, RandomPrime, WiedemannTraits> {
+	class RationalSolver<Ring, Field, RandomPrime, Method::Wiedemann> {
 
 	public:
 		typedef Ring                                 RingType;
@@ -249,7 +249,7 @@ namespace LinBox
 		Ring                       _ring;
 		mutable RandomPrime _genprime;
 		mutable Prime          _prime;
-		WiedemannTraits       _traits;
+		Method::Wiedemann       _traits;
 
 #ifdef RSTIMING
 		mutable Timer  tNonsingularSetup,   ttNonsingularSetup,
@@ -267,13 +267,13 @@ namespace LinBox
 		 */
 		RationalSolver (const Ring& r = Ring(),
 				const RandomPrime& rp = RandomPrime(),
-				const WiedemannTraits& traits=WiedemannTraits()) :
+				const Method::Wiedemann& traits=Method::Wiedemann()) :
 			_ring(r), _genprime(rp), _traits(traits)
 		{
 
             _genprime.setBits(FieldTraits<Field>::bestBitSize());
             _prime=*_genprime;
-            ++_genprime; 
+            ++_genprime;
 #ifdef RSTIMING
 			clearTimers();
 #endif
@@ -287,7 +287,7 @@ namespace LinBox
 		 */
 		RationalSolver (const Prime& p, const Ring& r = Ring(),
 				const RandomPrime& rp = RandomPrime(),
-				const WiedemannTraits& traits=WiedemannTraits()) :
+				const Method::Wiedemann& traits=Method::Wiedemann()) :
 			_ring(r), _genprime(rp), _prime(p), _traits(traits)
 		{
             _genprime.setBits(FieldTraits<Field>::bestBitSize());
@@ -444,7 +444,7 @@ namespace LinBox
 	 *
 	 */
 	template<class Ring, class Field,class RandomPrime>
-	class RationalSolver<Ring, Field, RandomPrime, BlockWiedemannTraits> {
+	class RationalSolver<Ring, Field, RandomPrime, Method::BlockWiedemann> {
 
 	public:
 		typedef Ring                                 RingType;
@@ -459,7 +459,7 @@ namespace LinBox
 		Ring                         _ring;
 		RandomPrime           _genprime;
 		mutable Prime            _prime;
-		BlockWiedemannTraits    _traits;
+		Method::BlockWiedemann    _traits;
 
 #ifdef RSTIMING
 		mutable Timer  tNonsingularSetup,   ttNonsingularSetup,
@@ -477,13 +477,13 @@ namespace LinBox
 		 */
 		RationalSolver (const Ring& r = Ring(),
 				const RandomPrime& rp = RandomPrime(),
-				const BlockWiedemannTraits& traits=BlockWiedemannTraits()) :
+				const Method::BlockWiedemann& traits=Method::BlockWiedemann()) :
 			_ring(r), _genprime(rp), _traits(traits)
 		{
 
             _genprime.setBits(FieldTraits<Field>::bestBitSize());
 			_prime=*_genprime;
-            ++_genprime; 
+            ++_genprime;
 #ifdef RSTIMING
 			clearTimers();
 #endif
@@ -497,7 +497,7 @@ namespace LinBox
 		 */
 		RationalSolver (const Prime& p, const Ring& r = Ring(),
 				const RandomPrime& rp = RandomPrime(),
-				const BlockWiedemannTraits& traits=BlockWiedemannTraits()) :
+				const Method::BlockWiedemann& traits=Method::BlockWiedemann()) :
 			_ring(r), _genprime(rp), _prime(p), _traits(traits)
 		{
             _genprime.setBits(FieldTraits<Field>::bestBitSize());
@@ -620,7 +620,7 @@ namespace LinBox
 	 */
 
 	template<class Ring, class Field,class RandomPrime>
-	class RationalSolver<Ring, Field, RandomPrime, DixonTraits> {
+	class RationalSolver<Ring, Field, RandomPrime, Method::Dixon> {
 
 	public:
 
@@ -676,7 +676,7 @@ namespace LinBox
 			lastCertificate(r, 0), _genprime(rp), _ring(r)
 		{
             _genprime.setBits(FieldTraits<Field>::bestBitSize());
-            _prime=*_genprime; ++_genprime; 
+            _prime=*_genprime; ++_genprime;
 #ifdef RSTIMING
 			clearTimers();
 #endif
@@ -913,7 +913,7 @@ namespace LinBox
 		Keep it just for interface consistency.
 	 */
 	template <class Ring, class Field, class RandomPrime>
-	class RationalSolver<Ring, Field, RandomPrime, NumSymOverlapTraits>;
+	class RationalSolver<Ring, Field, RandomPrime, Method::SymbolicNumericOverlap>;
 
 	/** \brief solver using a hybrid Numeric/Symbolic computation.
 	 *
@@ -929,7 +929,7 @@ namespace LinBox
 	//template argument Field and RandomPrime are not used.
 	//Keep it just for interface consistency.
 	template <class Ring, class Field, class RandomPrime>
-	class RationalSolver<Ring, Field, RandomPrime, NumSymNormTraits> ;
+	class RationalSolver<Ring, Field, RandomPrime, Method::SymbolicNumericNorm> ;
 
 	/*--------------*/
 	/* BLOCK HANKEL */
@@ -939,7 +939,7 @@ namespace LinBox
 	 * NO DOC
 	 */
 	template<class Ring, class Field,class RandomPrime>
-	class RationalSolver<Ring, Field, RandomPrime, BlockHankelTraits> {
+	class RationalSolver<Ring, Field, RandomPrime, Method::BlockHankel> {
 	public:
 		typedef Ring                                 RingType;
 		typedef typename Ring::Element               Integer;
@@ -989,7 +989,6 @@ namespace LinBox
 	};
 
 
-
 	/*-----------*/
 	/* SPARSE LU */
 	/*-----------*/
@@ -998,7 +997,7 @@ namespace LinBox
 	 * NO DOC
 	 */
 	template<class Ring, class Field,class RandomPrime>
-	class RationalSolver<Ring, Field, RandomPrime, SparseEliminationTraits> {
+	class RationalSolver<Ring, Field, RandomPrime, Method::SparseElimination> {
 	public:
 		typedef Ring                                 RingType;
 		typedef typename Ring::Element               Integer;

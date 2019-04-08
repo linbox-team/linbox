@@ -1,4 +1,4 @@
-/* linbox/algorithms/cra-domain-seq.h
+/* linbox/algorithms/cra-domain-sequential.h
  * Copyright (C) 1999-2010 The LinBox group
  *
  * Time-stamp: <04 Dec 17 14:59:50 Jean-Guillaume.Dumas@imag.fr>
@@ -22,7 +22,7 @@
  * ========LICENCE========
  */
 
-/*! @file algorithms/cra-domain-seq.h
+/*! @file algorithms/cra-domain-sequential.h
  * @brief Sequencial version of \ref CRA
  * @ingroup CRA
  */
@@ -44,7 +44,7 @@ namespace LinBox
         /// No doc.
         /// @ingroup CRA
 	template<class CRABase>
-	struct ChineseRemainderSeq {
+	struct ChineseRemainderSequential {
 		typedef typename CRABase::Domain	Domain;
 		typedef typename CRABase::DomainElement	DomainElement;
 
@@ -62,10 +62,10 @@ namespace LinBox
 		*/
 		template <class PrimeIterator, bool is_unique = PrimeIterator::UniqueSamplingTag::value>
 		struct PrimeSampler {
-			const ChineseRemainderSeq& outer_;
+			const ChineseRemainderSequential& outer_;
 			PrimeIterator& primeiter_;
 
-			PrimeSampler (const ChineseRemainderSeq& outer, PrimeIterator& primeiter) :
+			PrimeSampler (const ChineseRemainderSequential& outer, PrimeIterator& primeiter) :
 				outer_(outer), primeiter_(primeiter)
 			{ }
 
@@ -108,7 +108,7 @@ namespace LinBox
 		/** \brief Pass-through constructor to create the underlying builder.
 		 */
 		template <typename... Args>
-		ChineseRemainderSeq(Args&&... args) :
+		ChineseRemainderSequential(Args&&... args) :
 			Builder_(std::forward<Args>(args)...)
 		{ }
 
@@ -283,10 +283,10 @@ namespace LinBox
 	*/
 	template <class CRABase>
 	template <class PrimeIterator>
-	struct ChineseRemainderSeq<CRABase>::PrimeSampler<PrimeIterator,true> {
+	struct ChineseRemainderSequential<CRABase>::PrimeSampler<PrimeIterator,true> {
 		PrimeIterator& primeiter_;
 
-		PrimeSampler (const ChineseRemainderSeq<CRABase>&, PrimeIterator& primeiter) :
+		PrimeSampler (const ChineseRemainderSequential<CRABase>&, PrimeIterator& primeiter) :
 			primeiter_(primeiter)
 		{ }
 

@@ -97,7 +97,7 @@ namespace LinBox
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>
 	SolverReturnStatus
-	RationalSolver<Ring,Field,RandomPrime,WiedemannTraits>::solve (Vector1& num,
+	RationalSolver<Ring,Field,RandomPrime,Method::Wiedemann>::solve (Vector1& num,
 								       Integer& den,
 								       const IMatrix& A,
 								       const Vector2& b,
@@ -132,7 +132,7 @@ namespace LinBox
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>
 	SolverReturnStatus
-	RationalSolver<Ring, Field, RandomPrime, WiedemannTraits>::solveNonsingular( Vector1& num,
+	RationalSolver<Ring, Field, RandomPrime, Method::Wiedemann>::solveNonsingular( Vector1& num,
 												      Integer& den,
 												      const IMatrix& A,
 												      const Vector2& b,
@@ -175,7 +175,7 @@ namespace LinBox
 			tNonsingularMinPoly.stop();
 			ttNonsingularMinPoly+=tNonsingularMinPoly;
 #endif
-			prime = _genprime.randomPrime();
+			prime = *_genprime;
 		}
 		while(F->isZero(MinPoly.front()) && --issingular );
 
@@ -206,7 +206,7 @@ namespace LinBox
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>
 	SolverReturnStatus
-	RationalSolver<Ring,Field,RandomPrime,WiedemannTraits>:: solveSingular (Vector1& num,
+	RationalSolver<Ring,Field,RandomPrime,Method::Wiedemann>:: solveSingular (Vector1& num,
 										     Integer& den,
 										     const IMatrix& A,
 										     const Vector2& b,
@@ -341,7 +341,7 @@ namespace LinBox
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class FMatrix, class IVector>
 	void
-	RationalSolver<Ring,Field,RandomPrime,WiedemannTraits>::sparseprecondition (const Field& F,
+	RationalSolver<Ring,Field,RandomPrime,Method::Wiedemann>::sparseprecondition (const Field& F,
 										     const IMatrix *A,
 										     Compose<LambdaSparseMatrix<Ring>, Compose<IMatrix, LambdaSparseMatrix<Ring> > > *&PAQ,
 										     const FMatrix *Ap,
@@ -404,61 +404,6 @@ namespace LinBox
 	}
 
 
-#if 0
-	template <class Ring, class Field, class RandomPrime>
-	template <class IMatrix, class FMatrix, class IVector,class FVector>
-	void RationalSolver<Ring,Field,RandomPrime,WiedemannTraits>::
-	precondition (const Field&                          F,
-		      const IMatrix&                        A,
-		      BlackboxArchetype<IVector>        *&PAQ,
-		      const FMatrix                       *Ap,
-		      BlackboxArchetype<FVector>       *&PApQ,
-		      const IVector                        &b,
-		      IVector                             &Pb,
-		      BlackboxArchetype<IVector>          *&P,
-		      BlackboxArchetype<IVector>          *&Q) const
-	{
-		switch (_traits.preconditioner() ) {
-
-		case WiedemannTraits::BUTTERFLY:
-			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<<"ERROR: Butterfly preconditioner not implemented yet. Sorry." << std::endl;
-
-		case WiedemannTraits::SPARSE:
-			{
-				commentator().start ("Constructing sparse preconditioner");
-
-				P = new LambdaSparseMatrix<Ring> (_ring,Ap->coldim(),Ap->rowdim(),2);
-
-				PAQ = new Compose<LambdaSparseMatrix<Ring>, IMatrix> (*P,A);
-
-				P->apply(Pb,b);
-
-				LambdaSparseMatrix<Field> Pmodp(F,*P);
-
-				PApQ = new Compose<LambdaSparseMatrix<Field>, FMatrix> (Pmodp, *Ap);
-
-				commentator().stop ("done");
-				break;
-			}
-
-		case WiedemannTraits::TOEPLITZ:
-			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: Toeplitz preconditioner not implemented yet. Sorry." << std::endl;
-
-		case WiedemannTraits::NONE:
-			throw PreconditionFailed (__func__, __LINE__, "preconditioner is BUTTERFLY, SPARSE, or TOEPLITZ");
-
-		default:
-			throw PreconditionFailed (__func__, __LINE__, "preconditioner is BUTTERFLY, SPARSE, or TOEPLITZ");
-		}
-
-
-
-	}
-#endif
-
-
 	// SPECIALIZATION FOR BLOCK WIEDEMANN
 
 	// note: if Vector1 != Vector2 compilation of solve or solveSingluar will fail (via an invalid call to sparseprecondition)!
@@ -467,7 +412,7 @@ namespace LinBox
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>
 	SolverReturnStatus
-	RationalSolver<Ring,Field,RandomPrime,BlockWiedemannTraits>::solve (Vector1& num, Integer& den,
+	RationalSolver<Ring,Field,RandomPrime,Method::BlockWiedemann>::solve (Vector1& num, Integer& den,
 										     const IMatrix& A,
 										     const Vector2& b,
 										     const bool old,
@@ -501,7 +446,7 @@ namespace LinBox
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>
 	SolverReturnStatus
-	RationalSolver<Ring,Field,RandomPrime,BlockWiedemannTraits>::solveNonsingular (Vector1& num,
+	RationalSolver<Ring,Field,RandomPrime,Method::BlockWiedemann>::solveNonsingular (Vector1& num,
 										       Integer& den,
 										       const IMatrix& A,
 										       const Vector2& b,
@@ -557,7 +502,7 @@ namespace LinBox
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>
 	SolverReturnStatus
-	RationalSolver<Ring,Field,RandomPrime,DixonTraits>::solve (Vector1& num,
+	RationalSolver<Ring,Field,RandomPrime,Method::Dixon>::solve (Vector1& num,
 								   Integer& den,
 								   const IMatrix& A,
 								   const Vector2& b,
@@ -610,7 +555,7 @@ namespace LinBox
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>
 	SolverReturnStatus
-	RationalSolver<Ring,Field,RandomPrime,DixonTraits>::solveNonsingular(Vector1& num,
+	RationalSolver<Ring,Field,RandomPrime,Method::Dixon>::solveNonsingular(Vector1& num,
 									     Integer& den,
 									     const IMatrix& A,
 									     const Vector2& b,
@@ -752,7 +697,7 @@ namespace LinBox
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>
 	SolverReturnStatus
-	RationalSolver<Ring,Field,RandomPrime,DixonTraits>::solveSingular (Vector1& num,
+	RationalSolver<Ring,Field,RandomPrime,Method::Dixon>::solveSingular (Vector1& num,
 									   Integer& den,
 									   const IMatrix& A,
 									   const Vector2& b,
@@ -765,7 +710,7 @@ namespace LinBox
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>
 	SolverReturnStatus
-	RationalSolver<Ring,Field,RandomPrime,DixonTraits>::findRandomSolution (Vector1& num,
+	RationalSolver<Ring,Field,RandomPrime,Method::Dixon>::findRandomSolution (Vector1& num,
 										     Integer& den,
 										     const IMatrix& A,
 										     const Vector2& b,
@@ -784,7 +729,7 @@ namespace LinBox
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>
 	SolverReturnStatus
-	RationalSolver<Ring,Field,RandomPrime,DixonTraits>::monolithicSolve (Vector1& num,
+	RationalSolver<Ring,Field,RandomPrime,Method::Dixon>::monolithicSolve (Vector1& num,
 										     Integer& den,
 										     const IMatrix& A,
 										     const Vector2& b,
@@ -794,8 +739,8 @@ namespace LinBox
 										     const SolverLevel level) const
 	{
 
-		if (level == SL_MONTECARLO && maxPrimes > 1)
-			std::cout << "WARNING: Even if maxPrimes > 1, SL_MONTECARLO uses just one prime." << std::endl;
+		// if (level == SL_MONTECARLO && maxPrimes > 1)
+		// 	std::cout << "WARNING: Even if maxPrimes > 1, SL_MONTECARLO uses just one prime." << std::endl;
 #if 0
 		if (makeMinDenomCert && !randomSolution)
 			std::cout << "WARNING: Will not compute a certificate of minimal denominator deterministically." << std::endl;
@@ -938,6 +883,7 @@ namespace LinBox
 					return SS_OK;
 				}
 				// so a was empty mod p but not over Z.
+
 				continue; //try new prime
 			}
 
@@ -1031,7 +977,7 @@ namespace LinBox
 					return SS_INCONSISTENT;
 				}
 				commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT) << "system is suspected to be inconsistent but it was only a bad prime" << std::endl;
-				continue; // try new prime. analogous to u.A12 != A22 in Muld.+Storj.
+                continue; // try new prime. analogous to u.A12 != A22 in Muld.+Storj.
 			}
 
 #ifdef RSTIMING
@@ -1185,13 +1131,16 @@ namespace LinBox
 
 			Vector1 short_num(_ring,rank); Integer short_den;
 
+
 			if (!re.getRational(short_num, short_den,0))
 				return SS_FAILED;    // dirty, but should not be called
 			// under normal circumstances
+
 #ifdef RSTIMING
 			ttSystemSolve.update(re, lc);
 			tCheckAnswer.start();
 #endif
+
 			VectorFraction<Ring> answer_to_vf(_ring, short_num. size());
 			answer_to_vf. numer = short_num;
 			answer_to_vf. denom = short_den;
@@ -1375,9 +1324,10 @@ namespace LinBox
 			// done making certificate, lets blow this popstand
 			return SS_OK;
 		}
+
+            std::cout << "ouch" << std::endl;
 		return SS_FAILED; //all primes were bad
 	}
-
 
 
 
@@ -1388,7 +1338,7 @@ namespace LinBox
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>
 	SolverReturnStatus
-	RationalSolver<Ring,Field,RandomPrime,BlockHankelTraits>::solveNonsingular(Vector1& num,
+	RationalSolver<Ring,Field,RandomPrime,Method::BlockHankel>::solveNonsingular(Vector1& num,
 										   Integer& den,
 										   const IMatrix& A,
 										   const Vector2& b,
@@ -1474,7 +1424,6 @@ namespace LinBox
 	}
 
 
-
 	/*
 	 * Specialization for Sparse Elimination method
 	 */
@@ -1483,7 +1432,7 @@ namespace LinBox
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>
 	SolverReturnStatus
-	RationalSolver<Ring,Field,RandomPrime,SparseEliminationTraits>::solve(Vector1& num,
+	RationalSolver<Ring,Field,RandomPrime,Method::SparseElimination>::solve(Vector1& num,
                                                                           Integer& den,
                                                                           const IMatrix& A,
                                                                           const Vector2& b,

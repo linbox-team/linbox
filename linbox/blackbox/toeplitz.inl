@@ -63,7 +63,7 @@ namespace LinBox
 		sysDim =               // Default dimension is 0
 		rowDim =               // Default row dim is 0
 		this->colDim = 0;            // Default col dim is 0
-		shape.shape(BlackboxSpecifier::TOEPLITZ);
+		shape.shapeFlags = Shape::Toeplitz;
 #ifdef DBGMSGS
 		std::cout << "Toeplitz::Toeplitz():\tCreated a " << rowDim << "x"<< this->colDim<<
 		" Toeplitz matrix "<< std::endl;
@@ -71,33 +71,12 @@ namespace LinBox
 
 	}//----- Field-only Constructor
 
-
-#if 0
-	/*-----------------------------------------------------------------
-	 *----    Zero Parameter Constructor
-	 *----------------------------------------------------------------*/
-	template <class _CField, class _PRing>
-	ToeplitzBase<_CField, _PRing>::ToeplitzBase() :
-		P(0), field_(0)
-	{
-		sysDim =               // Default dimension is 0
-		rowDim =               // Default row dim is 0
-		this->colDim = 0;            // Default col dim is 0
-		shape.shape(BlackboxSpecifier::TOEPLITZ);
-#ifdef DBGMSGS
-		std::cout << "Toeplitz::Toeplitz():\tCreated a " << rowDim << "x"<< this->colDim<<
-		" Toeplitz matrix "<< std::endl;
-#endif
-
-	}//----- Zero Param Constructor ---- [Tested 6/14/02 -- Works]
-#endif
-
 	template <class _CField, class _PRing>
 	ToeplitzBase<_CField, _PRing>::ToeplitzBase(const _PRing& PF) :
 		P(PF), field_(&(PF.getCoeffField()))
 	{
 		sysDim = rowDim = this->colDim = 0;
-		shape.shape(BlackboxSpecifier::TOEPLITZ);
+		shape.shapeFlags = Shape::Toeplitz;
 
 	}//------ Polynomial Field constructor
 
@@ -111,7 +90,8 @@ namespace LinBox
 						     , size_t n ) :
 		P(PF), field_(&(PF.getCoeffField())), rowDim(m), colDim(n), pdata(p)
 	{
-		shape.shape(BlackboxSpecifier::TOEPLITZ);
+		shape.shapeFlags = Shape::Toeplitz;
+
 		if( n == 0 ) this->colDim = rowDim;
 		if( rowDim >= this->colDim ) sysDim = rowDim;
 		else sysDim = this->colDim;
@@ -244,56 +224,6 @@ namespace LinBox
 		return;
 	} // write(char *) [Tested 6/14/02 -- Works]
 
-
-#if 0 //dated material with no known use -bds 2012Jul
-	/*-----------------------------------------------------------------
-	 *    Make the matrix upper triangular with determinant 1.
-	 *    i.e. clear the last N-1 elements in the data vector
-	 *----------------------------------------------------------------*/
-	template <class _CField, class _PRing>
-	void ToeplitzBase<_CField, _PRing>::setToUniModUT()
-	{
-		const PRing & PF = P.getCoeffField() ;
-
-		for( size_t i = sysdim(); i <= P.deg(pdata); ++i )
-			P.setCoeff(pdata,i,PF.zero);
-
-		for( size_t i = 0; i < sysDim - 1; ++i )
-			P.setCoeff(rpdata,i,PF.zero);
-
-		P.setCoeff(pdata,sysDim-1,PF.one);
-		P.setCoeff(rpdata,sysDim-1,PF.one);
-
-		shape.shape(BlackboxSpecifier::UNIMOD_UT);
-		return;
-	}// [UNCOMMENTED PART Tested 6/14/02 -- Works]
-
-
-
-	/*-----------------------------------------------------------------
-	 *    Make matrix a unimodular Lower Triangular with det 1
-	 *    i.e. clear the first N-1 elements in the data vector
-	 *----------------------------------------------------------------*/
-	template <class _CField, class _PRing>
-	void ToeplitzBase<_CField, _PRing>::setToUniModLT()
-	{
-		const PRing & PF = P.getCoeffField() ;
-
-		for( size_t i = sysDim; i <= P.deg(rpdata); ++i )
-			P.setCoeff(rpdata,i,PF.zero);
-
-		for( size_t i = 0; i < sysDim - 1; ++i )
-			P.setCoeff(pdata,i,PF.zero);
-
-		P.setCoeff(pdata,sysDim-1,PF.one);
-		P.setCoeff(rpdata,sysDim-1,PF.one);
-
-		shape.shape(BlackboxSpecifier::UNIMOD_LT);
-		return;
-	}// [UNCOMMENTED PART Tested 6/14/02 -- Works]
-
-#endif
-
 	/*-----------------------------------------------------------------
 	 *     Compute the determinant of the matrix
 	 *-----------------------------------------------------------------*/
@@ -350,7 +280,7 @@ namespace LinBox
 #ifdef DBGMSGS
 		std::cout <<"pxOut is " << pxOut << std::endl;
 #endif
-		
+
 		size_t N = this->rowdim();
 		size_t M = this->coldim();
 		for( size_t i = 0; i < N; ++i )

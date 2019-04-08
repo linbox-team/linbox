@@ -60,7 +60,7 @@ namespace LinBox
 	 * @param A    Black box of which to compute the determinant
 	 * @param tag  optional tag.  Specifies Integer, Rational or modular ring/field
 	 * @param M    optional method.  The default is Method::Auto(), Other options
-	 include Blackbox, Elimination, Wiedemann, BlasElimination and SparseElimination.
+	 include Blackbox, Elimination, Wiedemann, DenseElimination and SparseElimination.
 	 Sometimes it helps to 	 indicate properties of the matrix in the method object
 	 (for instance symmetry). See class Method for details.
 	 \ingroup solutions
@@ -123,7 +123,7 @@ namespace LinBox
 						const RingCategories::ModularTag	&tag,
 						const Method::Auto			&Meth)
 	{
-		if (useBB(A))
+		if (useBlackboxMethod(A))
 			return det(d, A, tag, Method::Blackbox(Meth));
 		else
 
@@ -136,7 +136,7 @@ namespace LinBox
 						  const Method::Auto			&Meth)
 	{
 		/*
-		   if (useBB(A))
+		   if (useBlackboxMethod(A))
 		   return det(d, A, tag, Method::Blackbox(Meth));
 		   else
 		   */
@@ -208,7 +208,7 @@ namespace LinBox
 		Field F = A.field();
 		typedef BlasVector<Field> Polynomial;
 
-		if(Meth.symmetric()) {
+		if(Meth.shapeFlags == Shape::Symmetric) {
 			commentator().start ("Symmetric Wiedemann Determinant", "sdet");
 			linbox_check (A.coldim () == A.rowdim ());
 			Polynomial               phi(F);
@@ -239,7 +239,7 @@ namespace LinBox
 
 				BlackboxContainerSymmetric<Field, Blackbox1> TF (&B, F, iter);
 
-				MasseyDomain<Field, BlackboxContainerSymmetric<Field, Blackbox1> > WD (&TF, Meth.earlyTermThreshold ());
+				MasseyDomain<Field, BlackboxContainerSymmetric<Field, Blackbox1> > WD (&TF, Meth.earlyTerminationThreshold);
 
 				WD.minpoly (phi, deg);
 #if 0
@@ -298,7 +298,7 @@ namespace LinBox
 
 				BlackboxContainer<Field, Blackbox1> TF (&B, F, iter);
 
-				MasseyDomain<Field, BlackboxContainer<Field, Blackbox1> > WD (&TF, Meth.earlyTermThreshold ());
+				MasseyDomain<Field, BlackboxContainer<Field, Blackbox1> > WD (&TF, Meth.earlyTerminationThreshold);
 
 				WD.minpoly (phi, deg);
 
@@ -362,7 +362,7 @@ namespace LinBox
 			for(size_t j = 0; j < A.coldim(); ++j)
 				A1.setEntry(i,j,getEntry(tmp, A, i, j));
 		GaussDomain<Field> GD ( A1.field() );
-		GD.detInPlace (d, A1, Meth.strategy ());
+		GD.detInPlace (d, A1, Meth.pivotStrategy);
 		commentator().stop ("done", NULL, "SEDet");
 		return d;
 
@@ -381,7 +381,7 @@ namespace LinBox
 		// We make a copy as these data will be destroyed
 		SparseMatrix<Field, SparseMatrixFormat::SparseSeq> A1 (A);
 		GaussDomain<Field> GD ( A.field() );
-		GD.detInPlace (d, A1, Meth.strategy ());
+		GD.detInPlace (d, A1, Meth.pivotStrategy);
 		commentator().stop ("done", NULL, "SEdet");
 		return d;
 	}
@@ -396,7 +396,7 @@ namespace LinBox
 			throw LinboxError("LinBox ERROR: matrix must be square for determinant computation\n");
 		commentator().start ("Sparse Elimination Determinant in place", "SEDetin");
 		GaussDomain<Field> GD ( A.field() );
-		GD.detInPlace (d, A, Meth.strategy ());
+		GD.detInPlace (d, A, Meth.pivotStrategy);
 		commentator().stop ("done", NULL, "SEdetin");
 		return d;
 	}
@@ -516,7 +516,7 @@ namespace LinBox
 //#include "linbox/field/givaro-zpz.h"
 
 #ifdef __LINBOX_HAVE_MPI
-#include "linbox/algorithms/cra-mpi.h"
+#include "linbox/algorithms/cra-distributed.h"
 #else
 #ifdef __LINBOX_HAVE_KAAPI //use the kaapi version instead of the usual version if this macro is defined
 #include "linbox/algorithms/cra-kaapi.h"
@@ -525,7 +525,7 @@ namespace LinBox
 #endif
 #endif
 
-#include "linbox/algorithms/cra-single.h"
+#include "linbox/algorithms/cra-builder-single.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/matrix-hom.h"
 
@@ -577,14 +577,14 @@ namespace LinBox
 
 		//  will call regular cra if C=0
 #ifdef __LINBOX_HAVE_MPI
-		MPIChineseRemainder< EarlySingleCRA< Field > > cra(4UL, C);
+		ChineseRemainderDistributed< CRABuilderEarlySingle< Field > > cra(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD, C);
 		cra(dd, iteration, genprime);
 		if(!C || C->rank() == 0){
 			A.field().init(d, dd); // convert the result from integer to original type
 			commentator().stop ("done", NULL, "det");
 		}
 #else
-		ChineseRemainder< EarlySingleCRA< Field > > cra(4UL);
+		ChineseRemainder< CRABuilderEarlySingle< Field > > cra(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD);
 		cra(dd, iteration, genprime);
 		A.field().init(d, dd); // convert the result from integer to original type
 		commentator().stop ("done", NULL, "idet");
@@ -603,8 +603,8 @@ namespace LinBox
 # define SOLUTION_CRA_DET cra_det
 #endif
 
-#include "linbox/algorithms/rational-cra2.h"
-#include "linbox/algorithms/varprec-cra-early-single.h"
+#include "linbox/algorithms/rational-cra-var-prec.h"
+#include "linbox/algorithms/cra-builder-var-prec-early-single.h"
 #include "linbox/algorithms/det-rational.h"
 namespace LinBox
 {
@@ -636,7 +636,7 @@ namespace LinBox
 		IntegerModularDet<Blackbox, MyMethod> iteration(A, Meth);
                 typedef Givaro::ModularBalanced<double> Field;
 		PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
-		RationalRemainder2< VarPrecEarlySingleCRA< Field > > rra(4UL);
+		RationalChineseRemainderVarPrec< CRABuilderVarPrecEarlySingle< Field > > rra(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD);
 
 		rra(num,den, iteration, genprime);
 

@@ -81,25 +81,25 @@ namespace LinBox
 	{
 		linbox_check ((x.size () == A.coldim ()) &&
 			      (b.size () == A.rowdim ()));
-		linbox_check (_traits.singular () != WiedemannTraits::NONSINGULAR || A.coldim () == A.rowdim ());
+		linbox_check (_traits.singularity != Singularity::NonSingular || A.coldim () == A.rowdim ());
 
 		commentator().start ("Solving linear system (Wiedemann)", "WiedemannSolver::solve");
 
-		WiedemannTraits::SingularState singular = _traits.singular ();
-		if (A.rowdim() != A.coldim() ) _traits.singular (singular = WiedemannTraits::SINGULAR);
+		Singularity singular = _traits.singularity;
+		if (A.rowdim() != A.coldim() ) _traits.singularity = (singular = Singularity::Singular);
 		ReturnStatus status = FAILED;
 
-		unsigned int tries = (unsigned int)_traits.maxTries ();
+		unsigned int tries = (unsigned int)_traits.trialsBeforeFailure;
 
 		size_t r = (size_t) -1;
 
 		// Dan Roche 6-21-04 Changed this from UNKNOWN which I think was incorrect
-		if (_traits.rank () != WiedemannTraits::RANK_UNKNOWN)
-			r = _traits.rank ();
+		if (_traits.rank != Rank::Unknown)
+			r = _traits.rank;
 
 		while (status == FAILED && tries-- > 0) {
 			switch (singular) {
-			case WiedemannTraits::SINGULARITY_UNKNOWN:
+			case Singularity::Unknown:
 				{
 					switch (solveNonsingular (A, x, b, true)) {
 					case OK:
@@ -112,8 +112,8 @@ namespace LinBox
 					case SINGULAR:
 						commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
 						<< "System found to be singular. Reverting to nonsingular solver." << std::endl;
-						tries = (unsigned int)_traits.maxTries ();
-						singular = WiedemannTraits::SINGULAR;
+						tries = (unsigned int)_traits.trialsBeforeFailure;
+						singular = Singularity::Singular;
 						break;
 					default:
 						throw LinboxError ("Bad return value from solveNonsingular");
@@ -121,7 +121,7 @@ namespace LinBox
 					break;
 				}
 
-			case WiedemannTraits::NONSINGULAR:
+			case Singularity::NonSingular:
 				{
 					switch (solveNonsingular (A, x, b, false)) {
 					case OK:
@@ -142,7 +142,7 @@ namespace LinBox
 					break;
 				}
 
-			case WiedemannTraits::SINGULAR:
+			case Singularity::Singular:
 				{
 					if (r == (size_t) -1) {
 						rank (r, A);
@@ -251,7 +251,7 @@ namespace LinBox
 			commentator().stop ("done");
 		}
 
-		if (_traits.checkResult ()) {
+		if (_traits.checkResult) {
 			commentator().start ("Checking whether Ax=b");
 			A.apply (z, x);
 
@@ -293,8 +293,8 @@ namespace LinBox
 		ReturnStatus status = OK, sfrs = OK;
 
 
-		switch (_traits.preconditioner ()) {
-		case WiedemannTraits::BUTTERFLY:
+		switch (_traits.preconditioner) {
+		case Preconditioner::Butterfly:
 			{
 				commentator().start ("Constructing butterfly preconditioner");
 
@@ -310,7 +310,7 @@ namespace LinBox
 				break;
 			}
 
-		case WiedemannTraits::SPARSE:
+		case Preconditioner::Sparse:
 			{
 				commentator().start ("Constructing sparse preconditioner");
 
@@ -329,12 +329,12 @@ namespace LinBox
 				break;
 			}
 
-		case WiedemannTraits::TOEPLITZ:
+		case Preconditioner::Toeplitz:
 			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: Toeplitz preconditioner not implemented yet. Sorry." << std::endl;
 			break;
 
-		case WiedemannTraits::NO_PRECONDITIONER:
+		case Preconditioner::None:
 			{
 				commentator().start ("Wiedemann without preconditioner (hope the system has generic rank profile)");
 				SparseMatrix<Field> *P = NULL;
@@ -360,7 +360,7 @@ namespace LinBox
 			break;
 
 		case FAILED:
-			if (_traits.certificate ()) {
+			if (_traits.certifyInconsistency) {
 				VectorWrapper::ensureDim (u, A.rowdim ());
 
 				if (certifyInconsistency (u, A, b, r))
@@ -383,7 +383,7 @@ namespace LinBox
 			break;
 		}
 
-		if (status == OK && _traits.checkResult ()) {
+		if (status == OK && _traits.checkResult) {
 			commentator().start ("Checking system solution");
 
 			VectorWrapper::ensureDim (Ax, A.rowdim ());
@@ -395,7 +395,7 @@ namespace LinBox
 			else {
 				commentator().stop ("FAILED");
 
-				if (_traits.certificate ()) {
+				if (_traits.certifyInconsistency) {
 					commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
 					<< "Computed system solution is not correct. "
 					<< "Attempting to find certificate of inconsistency." << std::endl;
@@ -449,10 +449,14 @@ namespace LinBox
 			if (P != NULL) {
 				VectorWrapper::ensureDim (PAvpb, A.rowdim ());
 				P->apply (PAvpb, Avpb);
-				_VD.copy (bp, PAvpb, 0, r);
+                if (r != 0) {
+				    _VD.copy (bp, PAvpb, 0, r);
+                }
 			}
 			else {
-				_VD.copy (bp, Avpb, 0, r);
+                if (r != 0) {
+				    _VD.copy (bp, Avpb, 0, r);
+                }
 			}
 
 			commentator().stop ("done");
@@ -579,14 +583,14 @@ namespace LinBox
 		// Vector PTinvu(A.field());
 		typename Field::Element uTb;
 
-		WiedemannTraits cert_traits;
+		Method::Wiedemann cert_traits;
 
 		bool ret = false;
 
-		cert_traits.preconditioner (WiedemannTraits::NO_PRECONDITIONER);
-		cert_traits.certificate (false);
-		cert_traits.singular (WiedemannTraits::SINGULAR);
-		cert_traits.maxTries (1);
+		cert_traits.preconditioner = Preconditioner::None;
+		cert_traits.certifyInconsistency = false;
+		cert_traits.singularity = Singularity::Singular;
+		cert_traits.trialsBeforeFailure = 1;
 
 		WiedemannSolver solver (field(), cert_traits, _randiter);
 

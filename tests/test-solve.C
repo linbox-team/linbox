@@ -114,7 +114,7 @@ static bool testIdentitySolve (const Field          &F,
 			solve (w, I, v, method);
 			//solve (I, w, v, F, traits);
 		}
-		catch (SolveFailed) {
+		catch (LinboxError) {
 			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Solve failed to solve system" << endl;
 			ret = iter_passed = false;
@@ -216,7 +216,7 @@ static bool testNonsingularSolve (const Field          &F,
 		try {
 			solve (x, D, b, method);
 		}
-		catch (SolveFailed) {
+		catch (LinboxError) {
 			commentator().restoreActivityState (state);
 			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: System solution failed" << endl;
@@ -305,7 +305,7 @@ static bool testSingularConsistentSolve (const Field          &F,
 	VectorWrapper::ensureDim (b1, n);
 
 	MethodTraits traits (method);
-	traits.preconditioner (MethodTraits::NO_PRECONDITIONER);
+	traits.preconditioner = Preconditioner::None;
 
 	while (stream1 && stream2) {
 		commentator().startIteration ((unsigned)stream1.j ());
@@ -334,7 +334,7 @@ static bool testSingularConsistentSolve (const Field          &F,
 
 		try {
 			bool iter_passed = true;
-			solve (D, x, b, F, traits);
+			solve (x, D, b, traits);
 
 			report << "System solution:  ";
 			VD.write (report, x);
@@ -353,7 +353,7 @@ static bool testSingularConsistentSolve (const Field          &F,
 				commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 					<< "ERROR: Computed solution is incorrect" << endl;
 		}
-		catch (SolveFailed) {
+		catch (LinboxError) {
 			commentator().restoreActivityState (state);
 			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: System solution failed" << endl;
@@ -365,7 +365,7 @@ static bool testSingularConsistentSolve (const Field          &F,
 			Report << "ERROR: Inconsistent system exception" << endl;
 
 			Report << "Certificate is: ";
-			VD.write (Report, e.certificate ()) << endl;
+			VD.write (Report, e.certificate()) << endl;
 
 			ret = false;
 
@@ -415,10 +415,9 @@ static bool testSingularInconsistentSolve (const Field          &F,
 
 	VectorDomain<Field> VD (F);
 
-	typename WiedemannSolver<Field>::ReturnStatus status;
 	bool ret = true;
 
-	Vector d1, d, b, x, y, u;
+	Vector d1, d, b, x, y;
 	typename Field::Element uTb;
 
 	VectorWrapper::ensureDim (d, stream2.dim ());
@@ -428,7 +427,8 @@ static bool testSingularInconsistentSolve (const Field          &F,
 	VectorWrapper::ensureDim (d1, stream1.dim ());
 
 	MethodTraits traits (method);
-// 	traits.preconditioner (MethodTraits::NO_PRECONDITIONER);
+	traits.certifyInconsistency = true;
+	traits.checkResult = true; // @fixme Wiedemann does know it is inconsistent if it does not check...
 
 	while (stream1 && stream2) {
 		commentator().startIteration ((unsigned)stream1.j ());
@@ -451,9 +451,19 @@ static bool testSingularInconsistentSolve (const Field          &F,
 		Blackbox D (dd);
 		//Blackbox D (d);
 
-		status = solve (D, x, b, u, F, traits);
+		bool inconsistent = false;
+		bool errored = false;
+		try {
+			// @note Certificate of inconsistency will be put in x
+			solve(x, D, b, traits);
+		} catch (const LinBox::LinboxMathInconsistentSystem& error) {
+			inconsistent = true;
+		} catch (...) {
+			errored = true;
+		}
 
-		if (status == WiedemannSolver<Field>::INCONSISTENT) {
+		if (inconsistent) {
+			Vector u(x);
 			D.applyTranspose (y, u);
 
 			report << "Certificate of inconsistency found." << endl;
@@ -481,7 +491,7 @@ static bool testSingularInconsistentSolve (const Field          &F,
 				ret = false;
 			}
 		}
-		else if (status == WiedemannSolver<Field>::FAILED) {
+		else if (errored) {
 			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "FAILED: Solver was unable to certify inconsistency" << endl;
 		}
@@ -523,7 +533,7 @@ static bool testSingularPreconditionedSolve (const Field                  &F,
 					     VectorStream<SparseVector>   &stream1,
 					     VectorStream<Vector>         &stream2,
 					     const char                   *text,
-					     Method::Wiedemann::Preconditioner preconditioner)
+					     Preconditioner preconditioner)
 {
 	ostringstream str;
 	str << "Testing singular preconditioned solve (" << text << ")";
@@ -532,13 +542,12 @@ static bool testSingularPreconditionedSolve (const Field                  &F,
 
 	VectorDomain<Field> VD (F);
 
-	typename WiedemannSolver<Field>::ReturnStatus status;
 	bool ret = true;
 
 	SparseVector d1;
 	typename Field::Element uTb;
 	typename LinBox::Vector<Field>::Dense d;
-	Vector b, x, y, u;
+	Vector b, x, y;
 
 	VectorWrapper::ensureDim (d, stream2.dim ());
 	VectorWrapper::ensureDim (b, stream2.dim ());
@@ -548,7 +557,7 @@ static bool testSingularPreconditionedSolve (const Field                  &F,
 
 
 	Method::Wiedemann traits;
-	traits.preconditioner (preconditioner);
+	traits.preconditioner = preconditioner;
 
 	while (stream1 && stream2) {
 		commentator().startIteration ((unsigned)stream1.j ());
@@ -571,9 +580,19 @@ static bool testSingularPreconditionedSolve (const Field                  &F,
 		Diagonal<Field> A (dd);
 		//Diagonal<Field> A (F, d);
 
-		status = solve (A, x, b, u, F, traits);
+		bool inconsistent = false;
+		bool errored = false;
+		try {
+			// @note Certificate of inconsistency will be put in x
+			solve(x, A, b, traits);
+		} catch (const LinBox::LinboxMathInconsistentSystem& error) {
+			inconsistent = true;
+		} catch (...) {
+			errored = true;
+		}
 
-		if (status == WiedemannSolver<Field>::INCONSISTENT) {
+		if (inconsistent) {
+			Vector u(x);
 			A.applyTranspose (y, u);
 
 			report << "Certificate of inconsistency found." << endl;
@@ -601,7 +620,7 @@ static bool testSingularPreconditionedSolve (const Field                  &F,
 				ret = false;
 			}
 		}
-		else if (status == WiedemannSolver<Field>::FAILED) {
+		else if (errored) {
 			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "FAILED: Solver was unable to certify inconsistency" << endl;
 		}
@@ -681,7 +700,7 @@ static bool testRandomSolve (const Field                  &F,
 		try {
 			solve (A, x, b, F, traits);
 		}
-		catch (SolveFailed) {
+		catch (LinboxError) {
 			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Solve failed to solve system" << endl;
 			ret = iter_passed = false;
@@ -805,7 +824,7 @@ int main (int argc, char **argv)
 #endif
 #if 1
 	Method::BlockWiedemann BWM;
-        BWM.blockingFactor (N);
+        BWM.blockingFactor = N;
 	if (!testIdentitySolve               (F, stream1, "BlockWiedemann", BWM))
 		pass = false;
 	if (!testNonsingularSolve            (F, stream1, stream2, "BlockWiedemann", BWM))
@@ -823,7 +842,7 @@ int main (int argc, char **argv)
 
 #if 1
 	if (!testSingularPreconditionedSolve (F, stream6, stream2,
-					      "Sparse preconditioner", Method::Wiedemann::BUTTERFLY))
+					      "Sparse preconditioner", Preconditioner::Butterfly))
 		pass = false;
 #endif
 
@@ -839,7 +858,7 @@ int main (int argc, char **argv)
 		pass = false;
 
 	Method::Lanczos traits1;
-	traits1.preconditioner (Method::Lanczos::FULL_DIAGONAL);
+	traits1.preconditioner = Preconditioner::FullDiagonal;
 
 	if (!testRandomSolve (F, A_stream, stream1, "Lanczos", traits1))
 		pass = false;
@@ -847,8 +866,8 @@ int main (int argc, char **argv)
 
 #if 0
 	Method::BlockLanczos traits2;
-	traits2.preconditioner (Method::BlockLanczos::FULL_DIAGONAL);
-	traits2.blockingFactor (N);
+	traits2.preconditioner = Preconditioner::FullDiagonal;
+	traits2.blockingFactor = N;
 
 	if (!testRandomSolve (F, A_stream, stream1, "Block Lanczos", traits2))
 		pass = false;

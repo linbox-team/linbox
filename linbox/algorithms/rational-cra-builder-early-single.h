@@ -26,17 +26,17 @@
 #define __LINBOX_rational_early_single_cra_H
 
 #include "givaro/zring.h"
-#include "linbox/algorithms/cra-single.h"
+#include "linbox/algorithms/cra-builder-single.h"
 
 namespace LinBox
 {
 
 	template<class Domain_Type>
-	struct EarlySingleRatCRA : public EarlySingleCRA<Domain_Type> {
+	struct RationalCRABuilderEarlySingle : public CRABuilderEarlySingle<Domain_Type> {
 		typedef Domain_Type				Domain;
-		typedef EarlySingleCRA<Domain> 			Father_t;
+		typedef CRABuilderEarlySingle<Domain> 			Father_t;
 		typedef typename Father_t::DomainElement 	DomainElement;
-		typedef EarlySingleRatCRA<Domain>		Self_t;
+		typedef RationalCRABuilderEarlySingle<Domain>		Self_t;
 		Givaro::ZRing<Integer> _ZZ;
 
 		Integer					Numer0;
@@ -44,7 +44,7 @@ namespace LinBox
 
 	public:
 
-		EarlySingleRatCRA(const size_t EARLY=DEFAULT_EARLY_TERM_THRESHOLD) :
+		RationalCRABuilderEarlySingle(const size_t EARLY=LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD) :
 			Father_t(EARLY)
 		{}
 

@@ -36,10 +36,10 @@ namespace LinBox
 				    _Matrix        &A,
 				    size_t  Ni,
 				    size_t  Nj,
-				    SparseEliminationTraits::PivotStrategy   reord)  const
+				    PivotStrategy   reord)  const
 	{
 		Element determinant;
-		if (reord == SparseEliminationTraits::PIVOT_NONE)
+		if (reord == PivotStrategy::None)
 			return NoReordering(Rank, determinant, A,  Ni, Nj);
 		else
 			return InPlaceLinearPivoting(Rank, determinant, A, Ni, Nj);
@@ -50,7 +50,7 @@ namespace LinBox
 	template <class _Matrix> size_t&
 	GaussDomain<_Field>::rankInPlace(size_t &Rank,
 				    _Matrix        &A,
-				    SparseEliminationTraits::PivotStrategy   reord)  const
+				    PivotStrategy   reord)  const
 	{
 		return rankInPlace(Rank, A,  A.rowdim (), A.coldim (), reord);
 	}
@@ -61,7 +61,7 @@ namespace LinBox
 	template <class _Matrix> size_t&
 	GaussDomain<_Field>::rank(size_t &rk,
 				  const _Matrix        &A,
-				  SparseEliminationTraits::PivotStrategy   reord)  const
+				  PivotStrategy   reord)  const
 	{
 		return rank(rk, A,  A.rowdim (), A.coldim (), reord);
 	}
@@ -72,7 +72,7 @@ namespace LinBox
 				  const _Matrix        &A,
 				  size_t  Ni,
 				  size_t  Nj,
-				  SparseEliminationTraits::PivotStrategy   reord)  const
+				  PivotStrategy   reord)  const
 	{
 		_Matrix CopyA(Ni);
 		for(size_t i = 0; i < Ni; ++i)

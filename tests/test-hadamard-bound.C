@@ -49,7 +49,7 @@ bool test(const Ring& F, const TMatrix& A, const TVector& b)
     Integer detA;
     det(detA, A);
 
-    std::cout << "det hb fastHb : " << std::setprecision(5) << Givaro::logtwo(Givaro::abs(detA)) << " " << hb << " " << fastHb << std::endl;
+    // std::cout << "det hb fastHb : " << std::setprecision(5) << Givaro::logtwo(Givaro::abs(detA)) << " " << hb << " " << fastHb << std::endl;
 
     if (fastHb + ESPILON < hb) {
         std::cerr << "Fast Hadamard bound is somehow better than the precise one." << std::endl;

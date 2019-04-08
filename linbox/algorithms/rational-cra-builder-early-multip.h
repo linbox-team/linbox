@@ -26,17 +26,17 @@
 #define __LINBOX_rational_early_multip_cra_H
 
 #include "givaro/zring.h"
-#include "linbox/algorithms/rational-cra-early-single.h"
-#include "linbox/algorithms/rational-cra-full-multip.h"
+#include "linbox/algorithms/rational-cra-builder-early-single.h"
+#include "linbox/algorithms/rational-cra-builder-full-multip.h"
 
 namespace LinBox
 {
 
 	template<class Domain_Type>
-	struct EarlyMultipRatCRA : public EarlySingleRatCRA<Domain_Type>, public FullMultipRatCRA<Domain_Type> {
+	struct RationalCRABuilderEarlyMultip : public RationalCRABuilderEarlySingle<Domain_Type>, public RationalCRABuilderFullMultip<Domain_Type> {
 		typedef Domain_Type			Domain;
 		typedef typename Domain_Type::Element 	DomainElement;
-		typedef EarlyMultipRatCRA<Domain>	Self_t;
+		typedef RationalCRABuilderEarlyMultip<Domain>	Self_t;
 	protected:
 		// Random coefficients for a linear combination
 		// of the elements to be reconstructed
@@ -56,8 +56,8 @@ namespace LinBox
 	public:
 
 
-		EarlyMultipRatCRA(const size_t EARLY=DEFAULT_EARLY_TERM_THRESHOLD) :
-			EarlySingleRatCRA<Domain>(EARLY), FullMultipRatCRA<Domain>()
+		RationalCRABuilderEarlyMultip(const size_t EARLY=LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD) :
+			RationalCRABuilderEarlySingle<Domain>(EARLY), RationalCRABuilderFullMultip<Domain>()
 		{ }
 
 		//!init
@@ -77,8 +77,8 @@ namespace LinBox
 			// - do not compute twice the product of moduli
 			// - reconstruct one element of e until Early Termination,
 			//   then only, try a random linear combination.
-			EarlySingleRatCRA<Domain>::initialize(D,dot(z, D, e, randv) );
-			FullMultipRatCRA<Domain>::initialize(D, e);
+			RationalCRABuilderEarlySingle<Domain>::initialize(D,dot(z, D, e, randv) );
+			RationalCRABuilderFullMultip<Domain>::initialize(D, e);
 		}
 
 		void initialize (const Domain& D, const BlasVector<Domain>& e)
@@ -96,8 +96,8 @@ namespace LinBox
 			// - do not compute twice the product of moduli
 			// - reconstruct one element of e until Early Termination,
 			//   then only, try a random linear combination.
-			EarlySingleRatCRA<Domain>::initialize(D,dot(z, D, e, randv) );
-			FullMultipRatCRA<Domain>::initialize(D, e);
+			RationalCRABuilderEarlySingle<Domain>::initialize(D,dot(z, D, e, randv) );
+			RationalCRABuilderFullMultip<Domain>::initialize(D, e);
 		}
 
 		//!progress
@@ -109,8 +109,8 @@ namespace LinBox
 			// - do not compute twice the product of moduli
 			// - reconstruct one element of e until Early Termination,
 			//   then only, try a random linear combination.
-			EarlySingleRatCRA<Domain>::progress(D, dot(z, D, e, randv));
-			FullMultipRatCRA<Domain>::progress(D, e);
+			RationalCRABuilderEarlySingle<Domain>::progress(D, dot(z, D, e, randv));
+			RationalCRABuilderFullMultip<Domain>::progress(D, e);
 		}
 
 		void progress (const Domain& D, const BlasVector<Domain>& e)
@@ -120,31 +120,31 @@ namespace LinBox
 			// - do not compute twice the product of moduli
 			// - reconstruct one element of e until Early Termination,
 			//   then only, try a random linear combination.
-			EarlySingleRatCRA<Domain>::progress(D, dot(z, D, e, randv));
-			FullMultipRatCRA<Domain>::progress(D, e);
+			RationalCRABuilderEarlySingle<Domain>::progress(D, dot(z, D, e, randv));
+			RationalCRABuilderFullMultip<Domain>::progress(D, e);
 		}
 
 		//!result
 		template<template<class, class> class Vect, template <class> class Alloc>
 		Vect<Integer, Alloc<Integer> >& result(Vect<Integer, Alloc<Integer> >& num, Integer& den)
 		{
-			return FullMultipRatCRA<Domain>::result(num, den);
+			return RationalCRABuilderFullMultip<Domain>::result(num, den);
 		}
 
 		BlasVector<Givaro::ZRing<Integer> >& result(BlasVector<Givaro::ZRing<Integer>>& num, Givaro::ZRing<Integer>::Element& den)
 		{
-			return FullMultipRatCRA<Domain>::result(num, den);
+			return RationalCRABuilderFullMultip<Domain>::result(num, den);
 		}
 
 		//!tools
 		bool terminated()
 		{
-			return EarlySingleRatCRA<Domain>::terminated();
+			return RationalCRABuilderEarlySingle<Domain>::terminated();
 		}
 
 		bool noncoprime(const Integer& i) const
 		{
-			return EarlySingleRatCRA<Domain>::noncoprime(i);
+			return RationalCRABuilderEarlySingle<Domain>::noncoprime(i);
 		}
 
 	protected:
