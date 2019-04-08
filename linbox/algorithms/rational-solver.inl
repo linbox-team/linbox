@@ -744,8 +744,6 @@ namespace LinBox
 
         template <class Ring, class IMatrix, class IVector>
         TAS(Ring& R, Field& F, const IMatrix& A, const IVector& b) {
-			std::cout << "HEY" << std::endl;
-
             factors = new BlasMatrix<Field>(F, A.coldim() + 1, A.rowdim());
 
 			Hom<Ring, Field> Hmap(R, F);
@@ -843,6 +841,97 @@ namespace LinBox
 		return SS_OK;
 	}
 
+	// SS_FAILED means that we will need to try a new prime
+	template <class Ring, class Field, class RandomPrime>
+	template <class TAS>
+	SolverReturnStatus
+	DixonSolver<Ring,Field,RandomPrime,Method::Dixon>::solveApparentlyInconsistent (Field& F,
+																				    const BlasMatrix<Ring>& A,
+																					TAS& tas,
+																					BlasMatrix<Field>* Atp_minor_inv,
+																					size_t rank,
+																					const SolverLevel level) const
+	{
+		using LiftingContainer = DixonLiftingContainer<Ring, Field, BlasMatrix<Ring>, BlasMatrix<Field>>;
+
+		// @fixme Put these as members!
+		BlasMatrixDomain<Ring> BMDI(_ring);
+		BlasApply<Ring> BAR(_ring);
+
+		if (level <= SL_MONTECARLO) return SS_INCONSISTENT;
+
+#ifdef RSTIMING
+		tCheckConsistency.start();
+#endif
+
+		BlasVector<Ring> zt(_ring, rank);
+		for (size_t i=0; i<rank; ++i)
+			_ring.assign(zt[i], A.getEntry(tas.srcRow[rank], tas.srcCol[i]));
+
+		BlasMatrix<Ring> At_minor(_ring, rank, rank);
+		for (size_t i=0; i<rank; ++i)
+			for (size_t j=0; j<rank; ++j)
+				_ring.assign(At_minor.refEntry(j, i), A.getEntry(tas.srcRow[i], tas.srcCol[j]));
+
+#ifdef RSTIMING
+		tCheckConsistency.stop();
+		ttCheckConsistency += tCheckConsistency;
+#endif
+
+		LiftingContainer lc(_ring, F, At_minor, *Atp_minor_inv, zt, _prime);
+		RationalReconstruction<LiftingContainer> re(lc);
+
+		BlasVector<Ring> shortNum(A.field(), rank);
+		Integer shortDen;
+
+		// Dirty, but should not be called under normal circumstances
+		if (!re.getRational(shortNum, shortDen, 0)) {
+			return SS_FAILED;
+		}
+
+#ifdef RSTIMING
+		ttConsistencySolve.update(re, lc);
+		tCheckConsistency.start();
+#endif
+
+		// Build up certificate
+		VectorFraction<Ring> cert(_ring, shortNum.size());
+		cert.numer = shortNum;
+		cert.denom = shortDen;
+		cert.numer.resize(A.rowdim());
+		_ring.subin(cert.numer[rank], cert.denom);
+		_ring.assign(cert.denom, _ring.one);
+
+		BMDI.mulin_left(cert.numer, tas.P);
+
+#ifdef DEBUG_INC
+		cert.write(std::cout << "cert:") << std::endl;
+#endif
+
+		bool certifies = true; //check certificate
+		BlasVector<Ring> certnumer_A(_ring, A.coldim());
+		BAR.applyVTrans(certnumer_A, A, cert.numer);
+		typename BlasVector<Ring>::iterator cai = certnumer_A.begin();
+		for (size_t i = 0; certifies && i < A.coldim(); ++i, ++cai) {
+			certifies = certifies && _ring.isZero(*cai);
+		}
+
+#ifdef RSTIMING
+		tCheckConsistency.stop();
+		ttCheckConsistency += tCheckConsistency;
+#endif
+
+		if (certifies) {
+			if (level == SL_CERTIFIED) lastCertificate.copy(cert);
+			return SS_INCONSISTENT;
+		}
+		commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT) << "system is suspected to be inconsistent but it was only a bad prime" << std::endl;
+
+		// @fixme Try new prime, is SS_FAILED the right API?
+		// Analogous to u.A12 != A22 in Muld.+Storj.
+		return SS_FAILED;
+	}
+
 	// Most solving is done by the routine below.
 	// There used to be one for random and one for deterministic, but they have been merged to ease with
 	//  repeated code (certifying inconsistency, optimization are 2 examples)
@@ -859,15 +948,12 @@ namespace LinBox
 										     int maxPrimes,
 										     const SolverLevel level) const
 	{
+		using LiftingContainer = DixonLiftingContainer<Ring, Field, BlasMatrix<Ring>, BlasMatrix<Field>>;
 
-		// if (level == SL_MONTECARLO && maxPrimes > 1)
-		// 	std::cout << "WARNING: Even if maxPrimes > 1, SL_MONTECARLO uses just one prime." << std::endl;
-#if 0
-		if (makeMinDenomCert && !randomSolution)
-			std::cout << "WARNING: Will not compute a certificate of minimal denominator deterministically." << std::endl;
-#endif
-		if (makeMinDenomCert && level == SL_MONTECARLO)
+		if (makeMinDenomCert && level == SL_MONTECARLO) {
 			std::cout << "WARNING: No certificate of min-denominality generated due to  level=SL_MONTECARLO" << std::endl;
+		}
+
 		int trials = 0;
 		while (trials < maxPrimes){
 			if (trials != 0) chooseNewPrime();
@@ -878,11 +964,6 @@ namespace LinBox
 #ifdef RSTIMING
 			tSetup.start();
 #endif
-
-			// typedef typename Field::Element Element;
-			// typedef typename Ring::Element  Integer_t;
-			typedef DixonLiftingContainer<Ring, Field,
-				BlasMatrix<Ring>, BlasMatrix<Field> > LiftingContainer;
 
 			// checking size of system
 			linbox_check(A.rowdim() == b.size());
@@ -953,74 +1034,17 @@ namespace LinBox
 #endif
 			}
 
-			if (appearsInconsistent && level <= SL_MONTECARLO)
-				return SS_INCONSISTENT;
-
+			// If the system appears inconsistent, we either try a new prime,
+			// a validate the inconsistency of (A,b).
 			if (appearsInconsistent) {
-#ifdef RSTIMING
-				tCheckConsistency.start();
-#endif
-				Givaro::ZRing<Integer> Z;
-				BlasVector<Givaro::ZRing<Integer> > zt(Z,rank);
-				for (size_t i=0; i<rank; ++i)
-					_ring.assign(zt[i], A.getEntry(tas.srcRow[rank], tas.srcCol[i]));
+				auto status = solveApparentlyInconsistent(F, A_check, tas, Atp_minor_inv, rank, level);
 
-				BlasMatrix<Ring> At_minor(_ring, rank, rank);
-				for (size_t i=0; i<rank; ++i)
-					for (size_t j=0; j<rank; ++j)
-						_ring.assign(At_minor.refEntry(j, i), A.getEntry(tas.srcRow[i], tas.srcCol[j]));
-#ifdef DEBUG_INC
-				At_minor.write(std::cout << "At_minor:" << std::endl);//, _ring);
-				Atp_minor_inv->write(std::cout << "Atp_minor_inv:" << std::endl);//, F);
-				std::cout << "zt: "; for (size_t i=0; i<rank; ++i) std::cout << zt[i] <<' '; std::cout << std::endl;
-#endif
-#ifdef RSTIMING
-				tCheckConsistency.stop();
-				ttCheckConsistency += tCheckConsistency;
-#endif
-
-				LiftingContainer lc(_ring, F, At_minor, *Atp_minor_inv, zt, _prime);
-
-				RationalReconstruction<LiftingContainer > re(lc);
-
-				Vector1 short_num(A.field(),rank);
-				Integer short_den;
-
-				if (!re.getRational(short_num, short_den,0))
-					return SS_FAILED;    // dirty, but should not be called
-				// under normal circumstances
-#ifdef RSTIMING
-				ttConsistencySolve.update(re, lc);
-				tCheckConsistency.start();
-#endif
-				VectorFraction<Ring> cert(_ring, short_num. size());
-				cert. numer = short_num;
-				cert. denom = short_den;
-				cert.numer.resize(b.size());
-				_ring.subin(cert.numer[rank], cert.denom);
-				_ring.assign(cert.denom, _ring.one);
-				BMDI.mulin_left(cert.numer, tas.P);
-#ifdef DEBUG_INC
-				cert.write(std::cout << "cert:") << std::endl;
-#endif
-
-				bool certifies = true; //check certificate
-				BlasVector<Ring> certnumer_A(_ring,A.coldim());
-				BAR.applyVTrans(certnumer_A, A_check, cert.numer);
-				typename BlasVector<Ring>::iterator cai = certnumer_A.begin();
-				for (size_t i=0; certifies && i<A.coldim(); ++i, ++cai)
-					certifies &= _ring.isZero(*cai);
-#ifdef RSTIMING
-				tCheckConsistency.stop();
-				ttCheckConsistency += tCheckConsistency;
-#endif
-				if (certifies) {
-					if (level == SL_CERTIFIED) lastCertificate.copy(cert);
-					return SS_INCONSISTENT;
-				}
-				commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT) << "system is suspected to be inconsistent but it was only a bad prime" << std::endl;
-                continue; // try new prime. analogous to u.A12 != A22 in Muld.+Storj.
+				// Failing means we should try a new prime
+				if (status == SS_FAILED) continue;
+				return status;
 			}
+
+
 
 #ifdef RSTIMING
 			tMakeConditioner.start();

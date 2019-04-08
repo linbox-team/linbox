@@ -813,6 +813,15 @@ namespace LinBox
 						    int maxPrimes = DEFAULT_MAXPRIMES,
 						    const SolverLevel level = SL_DEFAULT) const;
 
+		/// Internal usage
+		template <class TAS>
+		SolverReturnStatus solveApparentlyInconsistent (Field& F,
+														const BlasMatrix<Ring>& A,
+														TAS& tas,
+														BlasMatrix<Field>* Atp_minor_inv,
+														size_t rank,
+														const SolverLevel level) const;
+
 		Ring getRing() const
 		{
 			return _ring;
