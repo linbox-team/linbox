@@ -404,61 +404,6 @@ namespace LinBox
 	}
 
 
-#if 0
-	template <class Ring, class Field, class RandomPrime>
-	template <class IMatrix, class FMatrix, class IVector,class FVector>
-	void RationalSolver<Ring,Field,RandomPrime,Method::Wiedemann>::
-	precondition (const Field&                          F,
-		      const IMatrix&                        A,
-		      BlackboxArchetype<IVector>        *&PAQ,
-		      const FMatrix                       *Ap,
-		      BlackboxArchetype<FVector>       *&PApQ,
-		      const IVector                        &b,
-		      IVector                             &Pb,
-		      BlackboxArchetype<IVector>          *&P,
-		      BlackboxArchetype<IVector>          *&Q) const
-	{
-		switch (_traits.preconditioner() ) {
-
-		case Method::Wiedemann::BUTTERFLY:
-			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<<"ERROR: Butterfly preconditioner not implemented yet. Sorry." << std::endl;
-
-		case Method::Wiedemann::SPARSE:
-			{
-				commentator().start ("Constructing sparse preconditioner");
-
-				P = new LambdaSparseMatrix<Ring> (_ring,Ap->coldim(),Ap->rowdim(),2);
-
-				PAQ = new Compose<LambdaSparseMatrix<Ring>, IMatrix> (*P,A);
-
-				P->apply(Pb,b);
-
-				LambdaSparseMatrix<Field> Pmodp(F,*P);
-
-				PApQ = new Compose<LambdaSparseMatrix<Field>, FMatrix> (Pmodp, *Ap);
-
-				commentator().stop ("done");
-				break;
-			}
-
-		case Method::Wiedemann::TOEPLITZ:
-			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: Toeplitz preconditioner not implemented yet. Sorry." << std::endl;
-
-		case Method::Wiedemann::NONE:
-			throw PreconditionFailed (__func__, __LINE__, "preconditioner is BUTTERFLY, SPARSE, or TOEPLITZ");
-
-		default:
-			throw PreconditionFailed (__func__, __LINE__, "preconditioner is BUTTERFLY, SPARSE, or TOEPLITZ");
-		}
-
-
-
-	}
-#endif
-
-
 	// SPECIALIZATION FOR BLOCK WIEDEMANN
 
 	// note: if Vector1 != Vector2 compilation of solve or solveSingluar will fail (via an invalid call to sparseprecondition)!

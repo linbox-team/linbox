@@ -57,8 +57,9 @@ namespace LinBox {
      *      |   - Row or column dimension < LINBOX_USE_BLACKBOX_THRESHOLD > Method::Elimination
      *      |   - Otherwise                                               > Method::Blackbox
      * - Method::Elimination
+     *      - DenseMatrix   > Method::DenseElimination
      *      - SparseMatrix  > Method::SparseElimination
-     *      - Otherwise     > Method::DenseElimination
+     *      - Otherwise     > Method::DenseElimination or Method::SparseElimination given matrix sparsity
      * - Method::DenseElimination
      *      - DenseMatrix
      *      |   - ModularTag > `LQUPMatrix<Field>::left_solve`
@@ -141,17 +142,27 @@ namespace LinBox {
     }
 
     /**
+     * \brief Solve specialisation on RationalTag, with a generic method.
+     */
+    template <class RatVector, class RatMatrix, class Vector, class SolveMethod>
+    RatVector& solve(RatVector& x, const RatMatrix& A, const Vector& b, const RingCategories::RationalTag& tag, const SolveMethod& m)
+    {
+        return solve(x, A, b, tag, Method::CRA<SolveMethod>(m));
+    }
+
+    /**
      * \brief Solve specialisation on IntegerTag with Vector<QField> as result.
      *
      * This forward to the rational interface (num, den).
      * But will only work if the ResultVector if a vector of some Rational type.
      */
-    template <class ResultVector, class Matrix, class Vector, class SolveMethod>
-    typename std::enable_if<std::is_same<typename SolveMethod::CategoryTag, RingCategories::IntegerTag>::value,
-                            ResultVector&>::type
-    solve(ResultVector& x, const Matrix& A, const Vector& b, const RingCategories::IntegerTag& tag, const SolveMethod& m)
+    template <class RatVector, class Matrix, class Vector, class SolveMethod>
+    typename std::enable_if<std::is_same<typename SolveMethod::CategoryTag, RingCategories::IntegerTag>::value
+                            && std::is_same<typename FieldTraits<typename RatVector::Field>::categoryTag, RingCategories::RationalTag>::value,
+                            RatVector&>::type
+    solve(RatVector& x, const Matrix& A, const Vector& b, const RingCategories::IntegerTag& tag, const SolveMethod& m)
     {
-        using Ring = typename Vector::Field;
+        using Ring = typename Matrix::Field;
         using Element = typename Ring::Element;
 
         Vector xNum(b.field(), x.size());
@@ -164,10 +175,10 @@ namespace LinBox {
             throw LinboxError("Rational solve failed.");
         }
 
-        // Copy result back to ResultVector
+        // Copy result back to RatVector
         auto iXNum = xNum.begin();
         for (auto iX = x.begin(); iX != x.end(); ++iX) {
-            *iX = typename ResultVector::value_type(*iXNum, xDen);
+            *iX = typename RatVector::value_type(*iXNum, xDen);
             ++iXNum;
         }
 
@@ -197,8 +208,8 @@ namespace LinBox {
      * Solve with this interface will usually go for CRA or Dixon lifting,
      * as non-modular elimination would snowball elements to very big values.
      */
-    template <class Matrix, class Vector, class CategoryTag, class SolveMethod>
-    inline void solve(Vector& xNum, typename Vector::Element& xDen, const Matrix& A, const Vector& b, const CategoryTag& tag,
+    template <class IntVector, class Matrix, class Vector, class CategoryTag, class SolveMethod>
+    inline void solve(IntVector& xNum, typename IntVector::Element& xDen, const Matrix& A, const Vector& b, const CategoryTag& tag,
                       const SolveMethod& m)
     {
         throw LinBoxError("Rational solve is only valid for RingCategories::IntegerTag.");
@@ -207,8 +218,8 @@ namespace LinBox {
     /**
      * \brief Rational solve dispatcher for unimplemented methods.
      */
-    template <class Matrix, class Vector, class SolveMethod>
-    inline void solve(Vector& xNum, typename Vector::Element& xDen, const Matrix& A, const Vector& b,
+    template <class IntVector, class Matrix, class Vector, class SolveMethod>
+    inline void solve(IntVector& xNum, typename IntVector::Element& xDen, const Matrix& A, const Vector& b,
                       const RingCategories::IntegerTag& tag, const SolveMethod& m)
     {
         commentator().report(Commentator::LEVEL_UNIMPORTANT, ("Warning: Rational solve on RingCategories::IntegerTag with "
@@ -221,8 +232,8 @@ namespace LinBox {
     /**
      * \brief Rational solve dispatcher for automated category tag.
      */
-    template <class Matrix, class Vector, class SolveMethod>
-    inline void solve(Vector& xNum, typename Vector::Element& xDen, const Matrix& A, const Vector& b, const SolveMethod& m)
+    template <class IntVector, class Matrix, class Vector, class SolveMethod>
+    inline void solve(IntVector& xNum, typename IntVector::Element& xDen, const Matrix& A, const Vector& b, const SolveMethod& m)
     {
         solve(xNum, xDen, A, b, typename FieldTraits<typename Matrix::Field>::categoryTag(), m);
     }
@@ -230,8 +241,8 @@ namespace LinBox {
     /**
      * \brief Rational solve dispatcher for automated solve method.
      */
-    template <class Matrix, class Vector>
-    inline void solve(Vector& xNum, typename Vector::Element& xDen, const Matrix& A, const Vector& b)
+    template <class IntVector, class Matrix, class Vector>
+    inline void solve(IntVector& xNum, typename IntVector::Element& xDen, const Matrix& A, const Vector& b)
     {
         solve(xNum, xDen, A, b, Method::Auto());
     }
@@ -282,8 +293,8 @@ namespace LinBox {
      *
      * Second interface for solving in place, only valid for RingCategories::IntegerTag.
      */
-    template <class Matrix, class Vector, class SolveMethod, class CategoryTag>
-    inline void solveInPlace(Vector& xNum, typename Vector::Element& xDen, Matrix& A, const Vector& b, const CategoryTag& tag,
+    template <class IntVector, class Matrix, class Vector, class SolveMethod, class CategoryTag>
+    inline void solveInPlace(IntVector& xNum, typename IntVector::Element& xDen, Matrix& A, const Vector& b, const CategoryTag& tag,
                              const SolveMethod& m)
     {
         // @note This is called if the specialization has not been implemented,
@@ -296,8 +307,8 @@ namespace LinBox {
     /**
      * \brief Rational solve in place dispatcher for automated category tag.
      */
-    template <class Matrix, class Vector, class SolveMethod>
-    inline void solveInPlace(Vector& xNum, typename Vector::Element& xDen, Matrix& A, const Vector& b, const SolveMethod& m)
+    template <class IntVector, class Matrix, class Vector, class SolveMethod>
+    inline void solveInPlace(IntVector& xNum, typename IntVector::Element& xDen, Matrix& A, const Vector& b, const SolveMethod& m)
     {
         solveInPlace(xNum, xDen, A, b, typename FieldTraits<typename Matrix::Field>::categoryTag(), m);
     }
@@ -305,8 +316,8 @@ namespace LinBox {
     /**
      * \brief Rational solve in place dispatcher for automated solve method.
      */
-    template <class Matrix, class Vector>
-    inline void solveInPlace(Vector& xNum, typename Vector::Element& xDen, Matrix& A, const Vector& b)
+    template <class IntVector, class Matrix, class Vector>
+    inline void solveInPlace(IntVector& xNum, typename IntVector::Element& xDen, Matrix& A, const Vector& b)
     {
         solveInPlace(xNum, xDen, A, b, Method::Auto());
     }

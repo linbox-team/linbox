@@ -35,8 +35,8 @@ namespace LinBox {
     /**
      * \brief Solve specialisation for SparseElimination.
      */
-    template <class Matrix, class Vector, class CategoryTag>
-    Vector& solve(Vector& x, const Matrix& A, const Vector& b, const CategoryTag& tag, const Method::SparseElimination& m)
+    template <class Matrix, class Vector>
+    Vector& solve(Vector& x, const Matrix& A, const Vector& b, const RingCategories::ModularTag& tag, const Method::SparseElimination& m)
     {
         commentator().report(Commentator::LEVEL_UNIMPORTANT,
                              "Warning: Solve implicitly convert to a sparse matrix because of Method::SparseElimination.");
@@ -50,8 +50,8 @@ namespace LinBox {
     /**
      * \brief Solve specialisation for SparseElimination with SparseMatrix.
      */
-    template <class... MatrixArgs, class Vector, class CategoryTag>
-    Vector& solve(Vector& x, const SparseMatrix<MatrixArgs...>& A, const Vector& b, const CategoryTag& tag,
+    template <class... MatrixArgs, class Vector>
+    Vector& solve(Vector& x, const SparseMatrix<MatrixArgs...>& A, const Vector& b, const RingCategories::ModularTag& tag,
                   const Method::SparseElimination& m)
     {
         SparseMatrix<MatrixArgs...> ACopy(A);
@@ -65,8 +65,8 @@ namespace LinBox {
     /**
      * \brief Solve in place specialisation for SparseElimination with SparseMatrix.
      */
-    template <class... MatrixArgs, class Vector, class CategoryTag>
-    Vector& solveInPlace(Vector& x, SparseMatrix<MatrixArgs...>& A, const Vector& b, const CategoryTag& tag,
+    template <class... MatrixArgs, class Vector>
+    Vector& solveInPlace(Vector& x, SparseMatrix<MatrixArgs...>& A, const Vector& b, const RingCategories::ModularTag& tag,
                          const Method::SparseElimination& m)
     {
         commentator().start("solve-in-place.sparse-elimination.any.sparse");

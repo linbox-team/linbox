@@ -37,8 +37,8 @@ namespace LinBox {
 // @note LPS<...> requires LAPACK
 #if defined(__FFLASFFPACK_HAVE_LAPACK)
 
-    template <class Matrix, class Vector>
-    inline void solve(Vector& xNum, typename Vector::Element& xDen, const Matrix& A, const Vector& b,
+    template <class IntVector, class Matrix, class Vector>
+    inline void solve(IntVector& xNum, typename IntVector::Element& xDen, const Matrix& A, const Vector& b,
                       const RingCategories::IntegerTag& tag, const Method::SymbolicNumericOverlap& m)
     {
         throw LinBoxError("Rational solve with Method::SymbolicNumericOverlap only works with DenseMatrix.");
@@ -47,8 +47,8 @@ namespace LinBox {
     /**
      * \brief Solve specialisation for SymbolicNumericOverlap with IntegerTag on DenseMatrix.
      */
-    template <class Ring, class Vector>
-    inline void solve(Vector& xNum, typename Ring::Element& xDen, const DenseMatrix<Ring>& A, const Vector& b,
+    template <class IntVector, class Ring, class Vector>
+    inline void solve(IntVector& xNum, typename IntVector::Element& xDen, const DenseMatrix<Ring>& A, const Vector& b,
                       const RingCategories::IntegerTag& tag, const Method::SymbolicNumericOverlap& m)
     {
         commentator().start("solve.numeric-symbolic-overlap.integer");
@@ -61,14 +61,14 @@ namespace LinBox {
         NumericSolver numSolver;
         RationalSolverSN<Ring, NumericSolver> rsolver(b.field(), numSolver, false);
 
-        SNSolverReturnStatus status = rsolver.solve(xNum, xDen, A, b);
+        SolverReturnStatus status = rsolver.solve(xNum, xDen, A, b);
 
         commentator().stop("solve.numeric-symbolic-overlap.integer");
 
-        if (status == SNSS_INCONSISTENT) {
+        if (status == SS_INCONSISTENT) {
             throw LinboxMathInconsistentSystem("From SymbolicNumericOverlap solve.");
         }
-        else if (status != SNSS_OK) {
+        else if (status != SS_OK) {
             throw LinboxError("Failed to solve with SymbolicNumericOverlap.");
         }
     }
@@ -80,8 +80,8 @@ namespace LinBox {
     // Wan's variant of Numeric Symbolic rational solve.
     //
 
-    template <class Matrix, class Vector>
-    inline void solve(Vector& xNum, typename Vector::Element& xDen, const Matrix& A, const Vector& b,
+    template <class IntVector, class Matrix, class Vector>
+    inline void solve(IntVector& xNum, typename IntVector::Element& xDen, const Matrix& A, const Vector& b,
                       const RingCategories::IntegerTag& tag, const Method::SymbolicNumericNorm& m)
     {
         throw LinBoxError("Rational solve with Method::SymbolicNumericNorm only works with DenseMatrix.");
@@ -90,8 +90,8 @@ namespace LinBox {
     /**
      * \brief Solve specialisation for SymbolicNumericNorm with IntegerTag on DenseMatrix.
      */
-    template <class Ring, class Vector>
-    inline void solve(Vector& xNum, typename Ring::Element& xDen, const DenseMatrix<Ring>& A, const Vector& b,
+    template <class IntVector, class Ring, class Vector>
+    inline void solve(IntVector& xNum, typename IntVector::Element& xDen, const DenseMatrix<Ring>& A, const Vector& b,
                       const RingCategories::IntegerTag& tag, const Method::SymbolicNumericNorm& m)
     {
         commentator().start("solve.numeric-symbolic-norm.integer");
