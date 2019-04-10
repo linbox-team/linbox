@@ -271,21 +271,6 @@ namespace LinBox {
                                            bool randomSolution, int maxPrimes = DEFAULT_MAXPRIMES,
                                            const SolverLevel level = SL_DEFAULT);
 
-        /// Internal usage
-        template <class TAS>
-        SolverReturnStatus solveApparentlyInconsistent(const BlasMatrix<Ring>& A, TAS& tas,
-                                                       BlasMatrix<Field>* Atp_minor_inv,
-                                                       size_t rank, const SolverLevel level);
-
-        /// Internal usage
-        /// @note P seems to be a preconditioner: a random matrix filled with 0 or 1
-        template <class TAS>
-        void makeConditioner(BlasMatrix<Ring>& A_minor, BlasMatrix<Field>* Ap_minor_inv,
-                             BlasMatrix<Ring>* B, BlasMatrix<Ring>* P, const BlasMatrix<Ring>& A,
-                             TAS& tas, const BlasMatrix<Field>* Atp_minor_inv, size_t rank,
-                             const SolverLevel level, bool makeMinDenomCert,
-                             bool randomSolution);
-
         Ring getRing() { return _ring; }
 
         void chooseNewPrime()
@@ -364,6 +349,23 @@ namespace LinBox {
             return os;
         }
 #endif
+
+    private:
+        /// Internal usage
+        template <class TAS>
+        SolverReturnStatus solveApparentlyInconsistent(const BlasMatrix<Ring>& A, TAS& tas,
+                                                       BlasMatrix<Field>* Atp_minor_inv,
+                                                       size_t rank, const SolverLevel level);
+
+        /// Internal usage
+        /// @note P seems to be a preconditioner: a random matrix filled with 0 or 1
+        /// @note Please note that Atp_minor_inv content *might* be changed after this function
+        /// call.
+        template <class TAS>
+        void makeConditioner(BlasMatrix<Ring>& A_minor, BlasMatrix<Field>*& Ap_minor_inv,
+                             BlasMatrix<Ring>*& B, BlasMatrix<Ring>*& P, const BlasMatrix<Ring>& A,
+                             TAS& tas, BlasMatrix<Field>* Atp_minor_inv, size_t rank,
+                             const SolverLevel level, bool makeMinDenomCert, bool randomSolution);
     };
 }
 
