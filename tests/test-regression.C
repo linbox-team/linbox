@@ -544,7 +544,35 @@ bool testLocalSmith(){
     return success;
 }
 
+bool testDixonSmallFat() {
+    bool success;
+    using Ring = Givaro::ZRing<Integer>;
+    using Matrix = DenseMatrix<Ring>;
+    using Vector = DenseVector<Ring>;
 
+    Ring ZZ;
+
+    Matrix A(ZZ, 1, 3);
+    Vector x(ZZ, A.coldim());
+    Vector b(ZZ, A.rowdim());
+    Vector r(ZZ, A.rowdim());
+    Ring::Element d;
+
+    A.setEntry(0, 1, 1);
+    A.setEntry(0, 2, 2);
+    ZZ.assign(b[0], 1);
+
+    Method::Dixon rationalLifting;
+    rationalLifting.singularSolutionType = SingularSolutionType::Deterministic;
+
+    // Calling Dixon
+    solve(x, d, A, b, rationalLifting );
+
+    A.apply(r,x);
+    ZZ.divin(r[0],d);
+
+    return success = ZZ.areEqual(r[0], b[0]);
+}
 
 int main (int argc, char **argv)
 {
@@ -587,7 +615,7 @@ int main (int argc, char **argv)
     pass &= testBigScalarCharPoly ();
     pass &= testLocalSmith ();
     pass &= testInconsistent<DenseMatrix<ZRingInts>> (Method::DenseElimination());
-
+    pass &= testDixonSmallFat();
         // Still failing: see https://github.com/linbox-team/linbox/issues/105
         //pass &= testInconsistent<> (Method::SparseElimination());
         //pass &= testInconsistent<> (Method::Wiedemann());
