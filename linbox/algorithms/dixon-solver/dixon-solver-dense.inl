@@ -445,10 +445,9 @@ namespace LinBox {
     template <class Ring, class Field, class RandomPrime>
     template <class TAS>
     void DixonSolver<Ring, Field, RandomPrime, Method::Dixon>::makeConditioner(
-        BlasMatrix<Ring>& A_minor, BlasMatrix<Field>* Ap_minor_inv, BlasMatrix<Ring>* B,
-        BlasMatrix<Ring>* P, const BlasMatrix<Ring>& A, TAS& tas,
-        const BlasMatrix<Field>* Atp_minor_inv, size_t rank, SolverLevel level,
-        bool makeMinDenomCert, bool randomSolution)
+        BlasMatrix<Ring>& A_minor, BlasMatrix<Field>*& Ap_minor_inv, BlasMatrix<Ring>*& B,
+        BlasMatrix<Ring>*& P, const BlasMatrix<Ring>& A, TAS& tas, BlasMatrix<Field>* Atp_minor_inv,
+        size_t rank, SolverLevel level, bool makeMinDenomCert, bool randomSolution)
     {
 #ifdef RSTIMING
         tMakeConditioner.start();
@@ -518,7 +517,7 @@ namespace LinBox {
                 // compute P a n*r random matrix of entry in [0,1]
                 typename BlasMatrix<Ring>::Iterator iter;
                 for (iter = P->Begin(); iter != P->End(); ++iter) {
-                    if (rand() > RAND_MAX / 2)
+                    if (rand() % 2 == 1)
                         _ring.assign(*iter, _ring.one);
                     else
                         _ring.assign(*iter, _ring.zero);
@@ -537,7 +536,10 @@ namespace LinBox {
                 ttMakeConditioner += tMakeConditioner;
                 tInvertBP.start();
 #endif
+
+                // @fixme Seems sad to be forced to specify these BlasMatrix<Field>& casts
                 _bmdf.inv((BlasMatrix<Field>&)*Ap_minor_inv, (BlasMatrix<Field>&)Ap_minor, nullity);
+
 #ifdef RSTIMING
                 tInvertBP.stop();
                 ttInvertBP += tInvertBP;
@@ -652,7 +654,7 @@ namespace LinBox {
             // a validate the inconsistency of (A,b).
             if (appearsInconsistent) {
                 auto status =
-                    solveApparentlyInconsistent(A_check, tas, Atp_minor_inv, rank, level);
+                    solveApparentlyInconsistent(A_check, tas, Atp_minor_inv.get(), rank, level);
 
                 // Failing means we should try a new prime
                 if (status == SS_FAILED) continue;
@@ -667,9 +669,9 @@ namespace LinBox {
             BlasMatrix<Ring>* B = nullptr;               // @fixme Make that a std::unique_ptr
             BlasMatrix<Ring>* P = nullptr;               // @fixme Make that a std::unique_ptr
             BlasMatrix<Ring> A_minor(_ring, rank, rank); // -- will have the full rank minor of A
-            BlasMatrix<Field>* Ap_minor_inv;             // -- will have inverse mod p of A_minor
-            makeConditioner(A_minor, Ap_minor_inv, B, P, A_check, tas, Atp_minor_inv, rank, level,
-                            makeMinDenomCert, randomSolution);
+            BlasMatrix<Field>* Ap_minor_inv = nullptr;   // -- will have inverse mod p of A_minor
+            makeConditioner(A_minor, Ap_minor_inv, B, P, A_check, tas, Atp_minor_inv.get(), rank,
+                            level, makeMinDenomCert, randomSolution);
 
             // Compute newb = (TAS_P.b)[0..(rank-1)]
             BlasVector<Ring> newb(b);
