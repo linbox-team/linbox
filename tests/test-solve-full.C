@@ -204,7 +204,7 @@ int main(int argc, char** argv)
     bool verbose = false;
     bool loop = false;
     int seed = -1;
-    int bitSize = 100;
+    int bitSize = 10;
     int vectorBitSize = -1;
     int m = 32;
     int n = 24;
