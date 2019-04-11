@@ -72,8 +72,10 @@ namespace LinBox { namespace Protected {
 		inline typename Matrix::Element operator() (const typename Matrix::Field                             &F,
 							    BlasSubmatrix<Matrix>     &A) const
 		{
-
-			return FFPACK::Det(F, A.rowdim(), A.coldim(), A.getPointer(), A.getStride());
+            if (A.rowdim() != A.coldim())
+                return Field.zero;
+            typename Matrix::Field::Element det;
+			return FFPACK::Det(F, det, A.coldim(), A.getPointer(), A.getStride());
 		}
 	};
 
