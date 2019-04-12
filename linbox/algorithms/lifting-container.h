@@ -37,6 +37,8 @@
 #include "linbox/util/debug.h"
 
 #include "linbox/blackbox/apply.h"
+#include "linbox/blackbox/diagonal.h"
+#include "linbox/algorithms/matrix-hom.h"
 #include "linbox/algorithms/blackbox-container.h"
 #include "linbox/algorithms/massey-domain.h"
 #include "linbox/algorithms/blackbox-block-container.h"

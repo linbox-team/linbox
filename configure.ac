@@ -309,6 +309,7 @@ examples/data/Makefile
 doc/Makefile
 linbox/Makefile
 linbox/algorithms/Makefile
+linbox/algorithms/dixon-solver/Makefile
 linbox/algorithms/gauss/Makefile
 linbox/algorithms/matrix-blas3/Makefile
 linbox/algorithms/opencl-kernels/Makefile
