@@ -260,65 +260,65 @@ int main(int argc, char** argv)
 
     bool ok = true;
     do {
-        // // ----- Rational Auto
-        // ok = ok && test_dense_solve(Method::Auto(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
-        // ok = ok && test_sparse_solve(Method::Auto(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
-        // // @fixme Dixon<Wiedemann> does not compile
-        // // ok = ok && test_blackbox_solve(Method::Auto(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
+        // ----- Rational Auto
+        ok = ok && test_dense_solve(Method::Auto(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
+        ok = ok && test_sparse_solve(Method::Auto(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
+        // @fixme Dixon<Wiedemann> does not compile
+        // ok = ok && test_blackbox_solve(Method::Auto(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
 
-        // ok = ok && test_dense_solve(Method::Auto(method), QQ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
-        // ok = ok && test_sparse_solve(Method::Auto(method), QQ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
-        // // ok = ok && test_blackbox_solve(Method::Auto(method), QQ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
+        ok = ok && test_dense_solve(Method::Auto(method), QQ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
+        ok = ok && test_sparse_solve(Method::Auto(method), QQ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
+        // ok = ok && test_blackbox_solve(Method::Auto(method), QQ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
 
-        // // ----- Rational CRA
-        // // @fixme @bug When bitSize = 5 and vectorBitSize = 50, CRA fails
-        // ok = ok && test_dense_solve(Method::CRAAuto(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
-        // ok = ok && test_sparse_solve(Method::CRAAuto(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
-        // // ok = ok && test_blackbox_solve(Method::CRAAuto(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
+        // ----- Rational CRA
+        // @fixme @bug When bitSize = 5 and vectorBitSize = 50, CRA fails
+        ok = ok && test_dense_solve(Method::CRAAuto(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
+        ok = ok && test_sparse_solve(Method::CRAAuto(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
+        // ok = ok && test_blackbox_solve(Method::CRAAuto(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
 
-        // ok = ok && test_dense_solve(Method::CRAAuto(method), QQ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
-        // ok = ok && test_sparse_solve(Method::CRAAuto(method), QQ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
-        // // ok = ok && test_blackbox_solve(Method::CRAAuto(method), QQ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
+        ok = ok && test_dense_solve(Method::CRAAuto(method), QQ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
+        ok = ok && test_sparse_solve(Method::CRAAuto(method), QQ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
+        // ok = ok && test_blackbox_solve(Method::CRAAuto(method), QQ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
 
-        // // ----- Rational Dixon
-        // ok = ok && test_dense_solve(Method::Dixon(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
-        // ok = ok && test_sparse_solve(Method::Dixon(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
-        // // @fixme Dixon<Wiedemann> does not compile
-        // // ok = ok && test_blackbox_solve(Method::Dixon(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
+        // ----- Rational Dixon
+        ok = ok && test_dense_solve(Method::Dixon(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
+        ok = ok && test_sparse_solve(Method::Dixon(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
+        // @fixme Dixon<Wiedemann> does not compile
+        // ok = ok && test_blackbox_solve(Method::Dixon(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
 
-        // // ----- Rational SymbolicNumeric
-        // // @note SymbolicNumeric methods are only implemented on DenseMatrix
-        // // @fixme Singular case fails
-        // // ok = ok && test_dense_solve(Method::SymbolicNumericOverlap(method), ZZ, QQ, m, n, bitSize, vectorBitSize,
-        // // seed, verbose);
-        // // @fixme Fails
-        // // ok = ok && test_sparse_solve(Method::SymbolicNumericNorm(method), ZZ, QQ, m, n, bitSize, vectorBitSize,
-        // // seed, verbose);
+        // ----- Rational SymbolicNumeric
+        // @note SymbolicNumeric methods are only implemented on DenseMatrix
+        // @fixme Singular case fails
+        // ok = ok && test_dense_solve(Method::SymbolicNumericOverlap(method), ZZ, QQ, m, n, bitSize, vectorBitSize,
+        // seed, verbose);
+        // @fixme Fails
+        // ok = ok && test_sparse_solve(Method::SymbolicNumericNorm(method), ZZ, QQ, m, n, bitSize, vectorBitSize,
+        // seed, verbose);
 
-        // // ----- Modular Auto
-        // ok = ok && test_dense_solve(Method::Auto(method), F, F, m, n, 0, 0, seed, verbose);
-        // ok = ok && test_sparse_solve(Method::Auto(method), F, F, m, n, 0, 0, seed, verbose);
-        // ok = ok && test_blackbox_solve(Method::Auto(method), F, F, m, n, 0, 0, seed, verbose);
+        // ----- Modular Auto
+        ok = ok && test_dense_solve(Method::Auto(method), F, F, m, n, 0, 0, seed, verbose);
+        ok = ok && test_sparse_solve(Method::Auto(method), F, F, m, n, 0, 0, seed, verbose);
+        ok = ok && test_blackbox_solve(Method::Auto(method), F, F, m, n, 0, 0, seed, verbose);
 
-        // // ----- Modular Blackbox
-        // ok = ok && test_dense_solve(Method::Blackbox(method), F, F, m, n, 0, 0, seed, verbose);
-        // ok = ok && test_sparse_solve(Method::Blackbox(method), F, F, m, n, 0, 0, seed, verbose);
-        // ok = ok && test_blackbox_solve(Method::Blackbox(method), F, F, m, n, 0, 0, seed, verbose);
+        // ----- Modular Blackbox
+        ok = ok && test_dense_solve(Method::Blackbox(method), F, F, m, n, 0, 0, seed, verbose);
+        ok = ok && test_sparse_solve(Method::Blackbox(method), F, F, m, n, 0, 0, seed, verbose);
+        ok = ok && test_blackbox_solve(Method::Blackbox(method), F, F, m, n, 0, 0, seed, verbose);
 
-        // // ----- Modular DenseElimination
+        // ----- Modular DenseElimination
         ok = ok && test_dense_solve(Method::DenseElimination(method), F, F, m, n, 0, 0, seed, verbose);
-        // ok = ok && test_sparse_solve(Method::DenseElimination(method), F, F, m, n, 0, 0, seed, verbose);
-        // ok = ok && test_blackbox_solve(Method::DenseElimination(method), F, F, m, n, 0, 0, seed, verbose);
+        ok = ok && test_sparse_solve(Method::DenseElimination(method), F, F, m, n, 0, 0, seed, verbose);
+        ok = ok && test_blackbox_solve(Method::DenseElimination(method), F, F, m, n, 0, 0, seed, verbose);
 
-        // // ----- Modular SparseElimination
-        // ok = ok && test_dense_solve(Method::SparseElimination(method), F, F, m, n, 0, 0, seed, verbose);
-        // ok = ok && test_sparse_solve(Method::SparseElimination(method), F, F, m, n, 0, 0, seed, verbose);
-        // ok = ok && test_blackbox_solve(Method::SparseElimination(method), F, F, m, n, 0, 0, seed, verbose);
+        // ----- Modular SparseElimination
+        ok = ok && test_dense_solve(Method::SparseElimination(method), F, F, m, n, 0, 0, seed, verbose);
+        ok = ok && test_sparse_solve(Method::SparseElimination(method), F, F, m, n, 0, 0, seed, verbose);
+        ok = ok && test_blackbox_solve(Method::SparseElimination(method), F, F, m, n, 0, 0, seed, verbose);
 
-        // // ----- Modular Wiedemann
-        // ok = ok && test_dense_solve(Method::Wiedemann(method), F, F, m, n, 0, 0, seed, verbose);
-        // ok = ok && test_sparse_solve(Method::Wiedemann(method), F, F, m, n, 0, 0, seed, verbose);
-        // ok = ok && test_blackbox_solve(Method::Wiedemann(method), F, F, m, n, 0, 0, seed, verbose);
+        // ----- Modular Wiedemann
+        ok = ok && test_dense_solve(Method::Wiedemann(method), F, F, m, n, 0, 0, seed, verbose);
+        ok = ok && test_sparse_solve(Method::Wiedemann(method), F, F, m, n, 0, 0, seed, verbose);
+        ok = ok && test_blackbox_solve(Method::Wiedemann(method), F, F, m, n, 0, 0, seed, verbose);
 
         // ----- Modular Lanczos
         // @fixme Dense is segfaulting
