@@ -570,7 +570,6 @@ bool testDixonSmallFat() {
 
     A.apply(r,x);
     ZZ.divin(r[0],d);
-
     return success = ZZ.areEqual(r[0], b[0]);
 }
 
