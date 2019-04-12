@@ -40,32 +40,18 @@ namespace LinBox {
         SolverReturnStatus status;
         int maxPrimes = maxP;
         while (maxPrimes > 0) {
-#ifdef SKIP_NONSINGULAR
-            switch (SS_SINGULAR)
-#else
-            switch (A.rowdim() == A.coldim() ? solveNonsingular(num, den, A, b, old, maxPrimes)
-                                             : SS_SINGULAR)
-#endif
-            {
-            case SS_OK:
-#ifdef DEBUG_DIXON
-                std::cout << "nonsingular worked\n";
-#endif
-                return SS_OK;
-                break;
+            auto nonSingularResult = (A.rowdim() == A.coldim())
+                                         ? solveNonsingular(num, den, A, b, old, maxPrimes)
+                                         : SS_SINGULAR;
+            switch (nonSingularResult) {
+            case SS_OK: return SS_OK; break;
 
             case SS_SINGULAR:
-#ifdef DEBUG_DIXON
-                std::cout << "switching to singular\n";
-#endif
                 status = solveSingular(num, den, A, b, maxPrimes, level);
                 if (status != SS_FAILED) return status;
                 break;
 
-            case SS_FAILED:
-                // std::cout <<"nonsingular failed\n";  // BDS: in what sense is this part of the
-                // spec of solve?
-                break;
+            case SS_FAILED: break;
 
             default: throw LinboxError("Bad return value from solveNonsingular");
             }
@@ -82,10 +68,6 @@ namespace LinBox {
         int maxPrimes)
     {
 
-        // std::cout<<"DIXON\n\n\n\n";
-#ifdef DEBUG_DIXON
-        std::cout << "entering nonsingular solver\n";
-#endif
         int trials = 0, notfr;
 
         // history sensitive data for optimal reason
@@ -95,19 +77,6 @@ namespace LinBox {
         Field* F = NULL;
 
         do {
-#if 0
-			if (trials == maxPrimes) return SS_SINGULAR;
-			if (trials != 0) chooseNewPrime();
-			++trials;
-#endif
-#ifdef DEBUG_DIXON
-            // std::cout << "_prime: "<<_prime<<"\n";
-            std::cout << "A:=\n";
-            A.write(std::cout, Tag::FileFormat::Maple);
-            std::cout << "b:=[\n";
-            for (size_t i = 0; i < b.size(); ++i) std::cout << b[i] << " , ";
-            std::cout << ']' << std::endl;
-#endif
 #ifdef RSTIMING
             tNonsingularSetup.start();
 #endif
@@ -134,23 +103,8 @@ namespace LinBox {
                 if (F != NULL) delete F;
 
                 F = new Field(_prime);
-
                 FMP = new BlasMatrix<Field>(*F, A.rowdim(), A.coldim());
-
                 MatrixHom::map(*FMP, A); // use MatrixHom to reduce matrix PG 2005-06-16
-#if 0
-				typename BlasMatrix<Field>::Iterator iter_p  = FMP->Begin();
-				typename IMatrix::ConstIterator iter  = A.Begin();
-				for (;iter != A.End();++iter,++iter_p)
-					F->init(*iter_p, _ring.convert(tmp,*iter));
-#endif
-
-#ifdef DEBUG_DIXON
-                std::cout << "p = ";
-                F->write(std::cout) << std::endl;
-                std::cout << " Ap:=";
-                FMP->write(std::cout, Tag::FileFormat::Maple) << std::endl;
-#endif
 
                 if (!checkBlasPrime(_prime)) {
                     if (FMP != NULL) delete FMP;
@@ -167,14 +121,9 @@ namespace LinBox {
 #endif
                     assert(FMP != NULL);
                     BMDF.invin(*invA, *FMP, notfr); // notfr <- nullity
-                    // if (FMP != NULL)  // useless
                     delete FMP;
                     FMP = invA;
-#if 0
-					std::cout << "notfr = " << notfr << std::endl;
-					std::cout << "inverse mod p: " << std::endl;
-					FMP->write(std::cout, *F);
-#endif
+
 #ifdef RSTIMING
                     tNonsingularInv.stop();
                     ttNonsingularInv += tNonsingularInv;
@@ -189,11 +138,6 @@ namespace LinBox {
                 notfr = 0;
             }
         } while (notfr);
-
-#ifdef DEBUG_DIXON
-        std::cout << "Ainvmodp:=";
-        FMP->write(std::cout, Tag::FileFormat::Maple) << std::endl;
-#endif
 
         typedef DixonLiftingContainer<Ring, Field, IMatrix, BlasMatrix<Field>> LiftingContainer;
         LiftingContainer lc(_ring, *F, A, *FMP, b, _prime);
@@ -309,9 +253,8 @@ namespace LinBox {
     // - INCONSISTENT if A == 0 and b != 0 (also sets certificate)
     // - OK if A == 0 and b == 0
     template <class Matrix, class Vector, class Ring = typename Matrix::Field>
-    SolverReturnStatus certifyEmpty(const Matrix& A, const Vector& b, const SolverLevel level,
-                                    VectorFraction<Ring>& certificate, Integer& certifiedDenFactor,
-                                    Integer& ZBNumer)
+    SolverReturnStatus certifyEmpty(const Matrix& A, const Vector& b, const MethodBase& method,
+                                    Integer& certifiedDenFactor)
     {
         const Ring& R = A.field();
 
@@ -329,22 +272,13 @@ namespace LinBox {
         // @fixme Use VectorDomain::isZero
         for (size_t i = 0; i < b.size(); ++i) {
             if (!R.areEqual(b[i], R.zero)) {
-                if (level >= SL_CERTIFIED) {
-                    certificate.clearAndResize(b.size());
-                    R.assign(certificate.numer[i], R.one);
-                }
                 return SS_INCONSISTENT;
             }
         }
 
         // System is consistent
-        // @todo What are those?
-        if (level >= SL_LASVEGAS) {
+        if (method.certifyInconsistency) {
             R.assign(certifiedDenFactor, R.one);
-        }
-        if (level == SL_CERTIFIED) {
-            R.assign(ZBNumer, R.zero);
-            certificate.clearAndResize(b.size());
         }
 
         return SS_OK;
@@ -556,20 +490,19 @@ namespace LinBox {
     template <class Ring, class Field, class RandomPrime>
     template <class IMatrix, class Vector1, class Vector2>
     SolverReturnStatus DixonSolver<Ring, Field, RandomPrime, Method::Dixon>::monolithicSolve(
-        Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, bool makeMinDenomCert,
-        bool randomSolution, int maxPrimes, const SolverLevel level)
+        Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, const Method::Dixon& method)
     {
         using LiftingContainer =
             DixonLiftingContainer<Ring, Field, BlasMatrix<Ring>, BlasMatrix<Field>>;
 
-        if (makeMinDenomCert && level == SL_MONTECARLO) {
-            std::cout << "WARNING: No certificate of min-denominality generated due to  "
-                         "level=SL_MONTECARLO"
+        if (method.certifyMinimalDenominator && !method.certifyInconsistency) {
+            std::cerr << "WARNING: No certificate of min-denominality generated due to  "
+                         "Method::certifyInconsistency = false"
                       << std::endl;
         }
 
         int trials = 0;
-        while (trials < maxPrimes) {
+        while (trials < method.trialsBeforeFailure) {
             if (trials != 0) chooseNewPrime();
             ++trials;
 
@@ -609,8 +542,7 @@ namespace LinBox {
 
             // Special case when A = 0, mod p. Deal with it to avoid crash later.
             if (rank == 0) {
-                SolverReturnStatus status =
-                    certifyEmpty(A, b, level, lastCertificate, lastCertifiedDenFactor, lastZBNumer);
+                SolverReturnStatus status = certifyEmpty(A, b, method, lastCertifiedDenFactor);
 
                 if (status == SS_FAILED) {
                     // A was empty mod p but not over Z, we try new prime.
