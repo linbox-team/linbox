@@ -802,17 +802,17 @@ namespace LinBox
 #ifdef RSTIMING
 			tSetup.stop();
 			ttSetup += tSetup;
-			tLQUP.start();
+			tPLUQ.start();
 #endif
 			BlasPermutation<size_t>  TAS_P(TAS_factors->coldim()) ;
 			BlasPermutation<size_t>  TAS_Qt(TAS_factors->rowdim()) ;
 
-			LQUPMatrix<Field>* TAS_LQUP = new LQUPMatrix<Field>(*TAS_factors,TAS_P,TAS_Qt);
-			size_t TAS_rank = TAS_LQUP->getRank();
+			PLUQMatrix<Field>* TAS_PLUQ = new PLUQMatrix<Field>(*TAS_factors,TAS_P,TAS_Qt);
+			size_t TAS_rank = TAS_PLUQ->getRank();
 
 			// check consistency. note, getQ returns Qt.
-			// BlasPermutation<size_t>  TAS_P = TAS_LQUP->getP();
-			// BlasPermutation<size_t>  TAS_Qt = TAS_LQUP->getQ();
+			// BlasPermutation<size_t>  TAS_P = TAS_PLUQ->getP();
+			// BlasPermutation<size_t>  TAS_Qt = TAS_PLUQ->getQ();
 			std::vector<size_t> srcRow(A.rowdim()), srcCol(A.coldim()+1);
 			std::vector<size_t>::iterator sri = srcRow.begin(), sci = srcCol.begin();
 			for (size_t i=0; i<A.rowdim(); ++i, ++sri) *sri = i;
@@ -841,11 +841,11 @@ namespace LinBox
 			std::cout << "TAS_rank, rank: " << TAS_rank << ' ' << rank << std::endl;
 #endif
 #ifdef RSTIMING
-			tLQUP.stop();
-			ttLQUP += tLQUP;
+			tPLUQ.stop();
+			ttPLUQ += tPLUQ;
 #endif
 			if (rank == 0) {
-				delete TAS_LQUP;
+				delete TAS_PLUQ;
 				delete TAS_factors;
 				//special case when A = 0, mod p. dealt with to avoid crash later
 				bool aEmpty = true;
@@ -891,7 +891,7 @@ namespace LinBox
 
             // @fixme What is the goal of this?
 			if ((appearsInconsistent && level > SL_MONTECARLO) || randomSolution == false) {
-				// take advantage of the (LQUP)t factorization to compute
+				// take advantage of the (PLUQ)t factorization to compute
 				// an inverse to the leading minor of (TAS_P . (A|b) . TAS_Q)
 #ifdef RSTIMING
 				tFastInvert.start();
@@ -899,16 +899,19 @@ namespace LinBox
 				Atp_minor_inv = new BlasMatrix<Field>(F, rank, rank);
 
 
-				FFPACK::LQUPtoInverseOfFullRankMinor(F, rank, TAS_factors->getPointer(), A.rowdim(),
-								     TAS_Qt.getPointer(),
-								     Atp_minor_inv->getPointer(), rank);
+                FFPACK::ftrtri (F, FFLAS::FflasUpper, FFLAS::FflasNonUnit, rank, TAS_factors->getPointer(), TAS_factors->getStride());
+                FFPACK::ftrtri (F, FFLAS::FflasLower, FFLAS::FflasUnit, rank, TAS_factors->getPointer(), TAS_factors->getStride());
+                FFPACK::ftrtrm (F, FFLAS::FflasLeft, FFLAS::FflasNonUnit, rank, TAS_factors->getPointer(), TAS_factors->getStride());
+				// FFPACK::PLUQtoInverseOfFullRankMinor(F, rank, TAS_factors->getPointer(), A.rowdim(),
+				// 				     TAS_Qt.getPointer(),
+				// 				     Atp_minor_inv->getPointer(), rank);
 #ifdef RSTIMING
 				tFastInvert.stop();
 				ttFastInvert += tFastInvert;
 #endif
 			}
 
-			delete TAS_LQUP;
+			delete TAS_PLUQ;
 			delete TAS_factors;
 
 			if (appearsInconsistent && level <= SL_MONTECARLO)
@@ -1448,7 +1451,7 @@ namespace LinBox
 		typedef typename IMatrix::template rebind<Field>::other FMatrix;
 		FMatrix Ap(A, F);
 
-		// compute LQUP Factorization
+		// compute PLUQ Factorization
 		Permutation<Field> P(F,(int)A.coldim()),Q(F,(int)A.rowdim());
 		FMatrix L(F, A.rowdim(), A.rowdim());
 		size_t rank;
