@@ -267,9 +267,7 @@ namespace LinBox {
          */
         template <class IMatrix, class Vector1, class Vector2>
         SolverReturnStatus monolithicSolve(Vector1& num, Integer& den, const IMatrix& A,
-                                           const Vector2& b, bool makeMinDenomCert,
-                                           bool randomSolution, int maxPrimes = DEFAULT_MAXPRIMES,
-                                           const SolverLevel level = SL_DEFAULT);
+                                           const Vector2& b, const Method::Dixon& method);
 
         Ring getRing() { return _ring; }
 

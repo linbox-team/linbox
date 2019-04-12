@@ -208,6 +208,8 @@ namespace LinBox {
         // ----- For Dixon method.
         // @fixme SingularSolutionType::Deterministic fails with Dense Dixon
         SingularSolutionType singularSolutionType = SingularSolutionType::Random;
+        bool certifyMinimalDenominator = false; //!< Whether the solver should try to find a certificate
+                                                //!  that the provided denominator is minimal.
 
         // ----- For random-based systems.
         size_t trialsBeforeFailure = LINBOX_DEFAULT_TRIALS_BEFORE_FAILURE; //!< Maximum number of trials before giving up.
