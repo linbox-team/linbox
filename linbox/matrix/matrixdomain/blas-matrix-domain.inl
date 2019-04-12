@@ -1435,8 +1435,8 @@ namespace LinBox
 										   const Matrix& A,
 										   const Operand2& B) const
 	{
-		LQUPMatrix<Field> LQUP(A);
-		LQUP.left_solve(X, B);
+		PLUQMatrix<Field> PLUQ(A);
+		PLUQ.left_solve(X, B);
 		return X;
 	}
 
@@ -1446,8 +1446,8 @@ namespace LinBox
 										   const Matrix& A,
 										   Operand1& B) const
 	{
-		LQUPMatrix<Field> LQUP(A);
-		LQUP.left_solve(B);
+		PLUQMatrix<Field> PLUQ(A);
+		PLUQ.left_solve(B);
 		return B;
 	}
 
@@ -1459,8 +1459,8 @@ namespace LinBox
 										    const Operand2& B) const
 	{
 		// typename Matrix::subMatrixType subMatrixType ;
-		LQUPMatrix<Field> LQUP(A);
-		LQUP.right_solve(X, B);
+		PLUQMatrix<Field> PLUQ(A);
+		PLUQ.right_solve(X, B);
 		return X;
 	}
 
@@ -1470,8 +1470,8 @@ namespace LinBox
 										    const Matrix& A,
 										    Operand1& B) const
 	{
-		LQUPMatrix<Field> LQUP(A);
-		LQUP.right_solve(B);
+		PLUQMatrix<Field> PLUQ(A);
+		PLUQ.right_solve(B);
 		return B;
 	}
 
@@ -1485,8 +1485,8 @@ namespace LinBox
 						   const BlasSubmatrix<Matrix>& A,
 						   const BlasSubmatrix<Matrix>& B) const
 		{
-			LQUPMatrix<Field> LQUP(A);
-			LQUP.right_solve(X, B);
+			PLUQMatrix<Field> PLUQ(A);
+			PLUQ.right_solve(X, B);
 			return X;
 		}
 
@@ -1495,8 +1495,8 @@ namespace LinBox
 						   const BlasSubmatrix<Matrix>& A,
 						   BlasSubmatrix<Matrix>& B) const
 		{
-			LQUPMatrix<Field> LQUP(A);
-			LQUP.right_solve(B);
+			PLUQMatrix<Field> PLUQ(A);
+			PLUQ.right_solve(B);
 			return B;
 		}
 
@@ -1515,8 +1515,8 @@ namespace LinBox
 								  const BlasMatrix<Field, _Rep>& A,
 								  const std::vector<typename Field::Element>& B) const
 		{
-			LQUPMatrix<Field> LQUP(A);
-			LQUP.left_solve(X, B);
+			PLUQMatrix<Field> PLUQ(A);
+			PLUQ.left_solve(X, B);
 			return X;
 		}
 
@@ -1524,8 +1524,8 @@ namespace LinBox
 								 const BlasMatrix<Field, _Rep>& A,
 								 std::vector<typename Field::Element>& B) const
 		{
-			LQUPMatrix<Field> LQUP(A);
-			LQUP.left_solve(B);
+			PLUQMatrix<Field> PLUQ(A);
+			PLUQ.left_solve(B);
 			return B;
 		}
 
@@ -1539,8 +1539,8 @@ namespace LinBox
 								  const BlasMatrix<Field, _Rep>& A,
 								  const std::vector<typename Field::Element>& B) const
 		{
-			LQUPMatrix<Field> LQUP(A);
-			LQUP.right_solve(X, B);
+			PLUQMatrix<Field> PLUQ(A);
+			PLUQ.right_solve(X, B);
 			return X;
 		}
 
@@ -1548,8 +1548,8 @@ namespace LinBox
 								  const BlasMatrix<Field, _Rep>& A,
 								  std::vector<typename Field::Element>& B) const
 		{
-			LQUPMatrix<Field> LQUP(A);
-			LQUP.right_solve(B);
+			PLUQMatrix<Field> PLUQ(A);
+			PLUQ.right_solve(B);
 			return B;
 		}
 
@@ -1563,8 +1563,8 @@ namespace LinBox
 					       const BlasMatrix<Field, _Rep>& A,
 					       const BlasVector<Field>& B) const
 		{
-			LQUPMatrix<Field> LQUP(A);
-			LQUP.left_solve(X, B);
+			PLUQMatrix<Field> PLUQ(A);
+			PLUQ.left_solve(X, B);
 			return X;
 		}
 
@@ -1572,8 +1572,8 @@ namespace LinBox
 					      const BlasMatrix<Field, _Rep>& A,
 					      BlasVector<Field>& B) const
 		{
-			LQUPMatrix<Field> LQUP(A);
-			LQUP.left_solve(B);
+			PLUQMatrix<Field> PLUQ(A);
+			PLUQ.left_solve(B);
 			return B;
 		}
 
@@ -1587,8 +1587,8 @@ namespace LinBox
 					       const BlasMatrix<Field, _Rep>& A,
 					       const BlasVector<Field>& B) const
 		{
-			LQUPMatrix<Field> LQUP(A);
-			LQUP.right_solve(X, B);
+			PLUQMatrix<Field> PLUQ(A);
+			PLUQ.right_solve(X, B);
 			return X;
 		}
 
@@ -1596,8 +1596,8 @@ namespace LinBox
 					       const BlasMatrix<Field, _Rep>& A,
 					       BlasVector<Field>& B) const
 		{
-			LQUPMatrix<Field> LQUP(A);
-			LQUP.right_solve(B);
+			PLUQMatrix<Field> PLUQ(A);
+			PLUQ.right_solve(B);
 			return B;
 		}
 

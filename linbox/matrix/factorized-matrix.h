@@ -47,25 +47,24 @@ namespace LinBox
 
 	// forward definition
 	template <class Field>
-	class LQUPMatrix;
+	class PLUQMatrix;
 
 
-	/*! LQUP factorisation.
-	 * This is a class to ease the use LU factorisation (see FFPACK::LUdivine
-	 * (bug link here.))
+	/*! PLUQ factorisation.
+	 * This is a class to ease the use LU factorisation (see FFPACK::PLUQ
 	 *
-	 * The factorisation is \f$ A = L Q U P \f$ with \c L lower unit
+	 * The factorisation is \f$ A = P L U P \f$ with \c L lower unit
 	 * triangular, \c U upper non-unit triangular, \c P and \c Q
 	 * permutations.
 	 *
 	 * There are two kind of contructors (with and without permutations)
-	 * and they build a \c LQUP factorisation of a \c BlasMatrix/\c BlasBlackbox on
-	 * a finite field.  There are methods for retrieving \p L,\p Q,\p U and \p P
+	 * and they build a \c PLUQ factorisation of a \c BlasMatrix/\c BlasBlackbox on
+	 * a finite field.  There are methods for retrieving \p P \p L,\p U and \p Q
 	 * matrices and methods for solving systems.
 	 */
 	//! @bug Should really be tempalted by Matrix and be a (sub)domain
 	template <class Field>
-	class LQUPMatrix {
+	class PLUQMatrix {
 
 	public:
 		typedef typename Field::Element Element;
@@ -75,8 +74,8 @@ namespace LinBox
 
 		Field                     _field;
 		BlasMatrix<Field,typename Vector<Field>::Dense >       &_factLU;
-		BlasPermutation<size_t> &_permP;
-		BlasPermutation<size_t> &_permQ;  //note: this is actually Qt!
+		BlasPermutation<size_t> &_permP;   //note: this is actually P^T!
+		BlasPermutation<size_t> &_permQ;
 		size_t                    _m;
 		size_t                    _n;
 		size_t                 _rank;
@@ -85,121 +84,32 @@ namespace LinBox
 
 	public:
 
-#if 0
-		//! Contruction of LQUP factorization of A (making a copy of A)
-		LQUPMatrix (const Field& F, const BlasMatrix<Field,_Rep>& A) :
-			_field(F), _factLU(*(new BlasMatrix<Field,_Rep> (A))) ,
-			_permP(*(new BlasPermutation<size_t>(A.coldim()))),
-			_permQ(*(new BlasPermutation<size_t>(A.rowdim()))),
-			_m(A.rowdim()), _n(A.coldim()),
-			_alloc(true),_plloc(true)
-		{
-			//std::cerr<<"Je passe par le constructeur const"<<std::endl;
-
-			_rank= FFPACK::LUdivine( _field,FFLAS::FflasNonUnit,  FFLAS::FflasNoTrans, _m, _n,
-						 _factLU.getPointer(),_factLU.getStride(),
-						 _permP.getWritePointer(), _permQ.getWritePointer(), FFPACK::FfpackLQUP );
-			_permP.setOrder(_rank);
-			_permQ.setOrder(_rank);
-
-		}
-
-		//! Contruction of LQUP factorization of A (in-place in A)
-		LQUPMatrix (const Field& F, BlasMatrix<Field,_Rep>& A) :
-			_field(F), _factLU(A) ,
-			_permP(*(new BlasPermutation<size_t>(A.coldim()))),
-			_permQ(*(new BlasPermutation<size_t>(A.rowdim()))),
-			_m(A.rowdim()), _n(A.coldim()),
-			_alloc(false),_plloc(true)
-		{
-			if (!A.coldim() || !A.rowdim()) {
-				// throw LinBoxError("LQUP does not accept empty matrices");
-				_rank = 0 ;
-			}
-			else {
-				//std::cerr<<"Je passe par le constructeur non const"<<std::endl;
-				_rank= FFPACK::LUdivine( _field,FFLAS::FflasNonUnit, FFLAS::FflasNoTrans, _m, _n,
-                                                         _factLU.getPointer(),_factLU.getStride(),
-							 _permP.getWritePointer(), _permQ.getWritePointer(), FFPACK::FfpackLQUP );
-                        }
-			_permP.setOrder(_rank);
-			_permQ.setOrder(_rank);
-		}
-
-		/*! Contruction of LQUP factorization of A (making a copy of A).
-		 * P and Q are arguments !
-		 */
-		LQUPMatrix (const BlasMatrix<Field,_Rep>& A,
-			    BlasPermutation<size_t> & P, BlasPermutation<size_t> & Q) :
-			_field(F), _factLU(*(new BlasMatrix<Field,_Rep> (A))) ,
-			_permP(P), _permQ(Q),
-			_m(A.rowdim()), _n(A.coldim()),
-			_alloc(true),_plloc(false)
-		{
-			//std::cerr<<"Je passe par le constructeur const"<<std::endl;
-
-			linbox_check(_permQ.getOrder()==A.rowdim());
-			linbox_check(_permP.getOrder()==A.coldim());
-			_rank= FFPACK::LUdivine( _field,FFLAS::FflasNonUnit,  FFLAS::FflasNoTrans, _m, _n,
-						 _factLU.getPointer(),_factLU.getStride(),
-						 _permP.getWritePointer(), _permQ.getWritePointer(), FFPACK::FfpackLQUP );
-			_permP.setOrder(_rank);
-			_permQ.setOrder(_rank);
-
-
-		}
-
-		/*! Contruction of LQUP factorization of A (in-place in A).
-		 * P and Q are arguments !
-		 */
-		LQUPMatrix ( BlasMatrix<Field,_Rep>& A,
-			    BlasPermutation<size_t> & P, BlasPermutation<size_t> & Q) :
-			_field(F), _factLU(A) , _permP(P), _permQ(Q),
-			_m(A.rowdim()), _n(A.coldim()),
-			_alloc(false),_plloc(false)
-		{
-			//std::cerr<<"Je passe par le constructeur non const"<<std::endl;
-			linbox_check(_permQ.getOrder()<=A.rowdim());
-			linbox_check(_permP.getOrder()<=A.coldim());
-			if (_permQ.getOrder() == 0)
-				_permQ.resize(A.rowdim());
-			if (_permP.getOrder() == 0)
-				_permP.resize(A.coldim());
-
-			_rank= FFPACK::LUdivine( _field,FFLAS::FflasNonUnit, FFLAS::FflasNoTrans, _m, _n,
-						 _factLU.getPointer(),_factLU.getStride(),
-						 _permP.getWritePointer(), _permQ.getWritePointer(), FFPACK::FfpackLQUP );
-			_permP.setOrder(_rank);
-			_permQ.setOrder(_rank);
-
-		}
-#endif
-		//! Contruction of LQUP factorization of A (making a copy of A)
+		//! Contruction of PLUQ factorization of A (making a copy of A)
 		template<class _Rep>
-		LQUPMatrix (const BlasMatrix<Field,_Rep>& A) ;
+		PLUQMatrix (const BlasMatrix<Field,_Rep>& A) ;
 
-		//! Contruction of LQUP factorization of A (in-place in A)
+		//! Contruction of PLUQ factorization of A (in-place in A)
 		template<class _Rep>
-		LQUPMatrix (BlasMatrix<Field,_Rep>& A) ;
+		PLUQMatrix (BlasMatrix<Field,_Rep>& A) ;
 
 
-		/*! Contruction of LQUP factorization of A (making a copy of A).
+		/*! Contruction of PLUQ factorization of A (making a copy of A).
 		 * P and Q are arguments !
 		 */
 		template<class _Rep>
-		LQUPMatrix (const BlasMatrix<Field,_Rep>& A,
+		PLUQMatrix (const BlasMatrix<Field,_Rep>& A,
 			    BlasPermutation<size_t> & P, BlasPermutation<size_t> & Q) ;
 
-		/*! Contruction of LQUP factorization of A (in-place in A).
+		/*! Contruction of PLUQ factorization of A (in-place in A).
 		 * P and Q are arguments !
 		 * @bug in place ?
 		 */
 		template<class _Rep>
-		LQUPMatrix (BlasMatrix<Field,_Rep>& A,
+		PLUQMatrix (BlasMatrix<Field,_Rep>& A,
 			    BlasPermutation<size_t> & P, BlasPermutation<size_t> & Q) ;
 
 		//! destructor.
-		~LQUPMatrix () ;
+		~PLUQMatrix () ;
 
 		//! get the field on which the factorization is done
 		Field& field() ;
@@ -213,39 +123,39 @@ namespace LinBox
 		//! get the rank of matrix
 		size_t getRank() const ;
 
-		/*! get the permutation P.
+		/*! get the permutation Q.
 		 * (no copy)
 		 */
-		const BlasPermutation<size_t>& getP() const ;
+		const BlasPermutation<size_t>& getQ() const ;
 
-		/*! get the permutation P.
+		/*! get the permutation Q.
 		 * (copy)
 		 */
-		BlasPermutation<size_t> & getP( BlasPermutation<size_t> & P ) const ;
+		BlasPermutation<size_t> & getQ( BlasPermutation<size_t> & Q ) const ;
 
-		/** Get the <i>transpose</i> of the permutation \p Q.
-		 * @warning This does not return \p Q itself! (because it is
-		 * more difficult to compute) If needed, \p Q can be obtained
+		/** Get the <i>transpose</i> of the permutation \p P.
+		 * @warning This does not return \p P itself! (because it is
+		 * more difficult to compute) If needed, \p P can be obtained
 		 * as a \p TransposedBlasMatrix from the return value. One
 		 * reason this confusion exists is that left-multiplying by
 		 * a permuation matrix corresponds to a row permuation \f$\pi \in S_n\f$,
 		 * while right-multiplying by the same matrix corresponds to
 		 * the inverse column permutation \f$\pi^{-1}\f$!  Usually this
 		 * is handled intelligently (eg by \c applyP) but you must be
-		 * careful with \c getQ().
+		 * careful with \c getP().
 		 */
-		const BlasPermutation<size_t>& getQ() const ;
+		const BlasPermutation<size_t>& getP() const ;
 
-		/*! get the permutation Qt.
+		/*! get the permutation P^T.
 		 * (copy)
-		 * @warning see <code>LQUPMatrix::getQ()</code>
+		 * @warning see <code>PLUQMatrix::getP()</code>
 		 */
-		BlasPermutation<size_t> & getQ( BlasPermutation<size_t> & Qt ) const ;
+		BlasPermutation<size_t> & getP( BlasPermutation<size_t> & PT ) const ;
 
 		/*! get the Matrix \c  L.
 		 * @param[out] L
 		 * @param _QLUP if true then \c L form \c QLUP decomposition,
-		 * else \c L is form \c LQUP decomposition.
+		 * else \c L is form \c PLUQ decomposition.
 		 * @pre \c L has unit diagonal
 		 */
 
@@ -258,11 +168,11 @@ namespace LinBox
 		template<class _Rep>
 		TriangularBlasMatrix<Field,_Rep>& getU(TriangularBlasMatrix<Field,_Rep>& U) const;
 
-		/*! get the matrix S.
-		 *  from the LSP factorization of A deduced from LQUP)
-		 */
-		template<class _Rep>
-		BlasMatrix<Field,_Rep>& getS( BlasMatrix<Field,_Rep>& S) const;
+		// /*! get the matrix S.
+		//  *  from the LSP factorization of A deduced from PLUQ)
+		//  */
+		// template<class _Rep>
+		// BlasMatrix<Field,_Rep>& getS( BlasMatrix<Field,_Rep>& S) const;
 
 		/*! @internal get a pointer to the begin of storage.
 		*/
@@ -293,41 +203,41 @@ namespace LinBox
 		template <class Operand>
 		Operand& right_solve(Operand& B) const;
 
-		// solve LX=B (L from LQUP)
+		// solve LX=B (L from PLUQ)
 		template <class Operand>
 		Operand& left_Lsolve(Operand& X, const Operand& B) const;
 
-		// solve LX=B (L from LQUP) (X is stored in B)
+		// solve LX=B (L from PLUQ) (X is stored in B)
 		template <class Operand>
 		Operand& left_Lsolve(Operand& B) const;
 
-		// solve XL=B (L from LQUP)
+		// solve XL=B (L from PLUQ)
 		template <class Operand>
 		Operand& right_Lsolve(Operand& X, const Operand& B) const;
 
-		// solve XL=B (L from LQUP) (X is stored in B)
+		// solve XL=B (L from PLUQ) (X is stored in B)
 		template <class Operand>
 		Operand& right_Lsolve(Operand& B) const;
 
-		// solve UX=B (U from LQUP is r by r)
+		// solve UX=B (U from PLUQ is r by r)
 		template <class Operand>
 		Operand& left_Usolve(Operand& X, const Operand& B) const;
 
-		// solve UX=B (U from LQUP) (X is stored in B)
+		// solve UX=B (U from PLUQ) (X is stored in B)
 		template <class Operand>
 		Operand& rleft_Usolve(Operand& B) const;
 
-		// solve XU=B (U from LQUP)
+		// solve XU=B (U from PLUQ)
 		template <class Operand>
 		Operand& right_Usolve(Operand& X, const Operand& B) const;
 
-		// solve XU=B (U from LQUP) (X is stored in B)
+		// solve XU=B (U from PLUQ) (X is stored in B)
 		template <class Operand>
 		Operand& right_Usolve(Operand& B) const;
 		//@}
 
 
-	}; // end of class LQUPMatrix
+	}; // end of class PLUQMatrix
 
 	//-}
 } // end of namespace LinBox
