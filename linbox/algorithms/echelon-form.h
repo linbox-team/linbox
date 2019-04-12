@@ -159,13 +159,13 @@ namespace LinBox
 			m = E.rowdim();
 			n = E.coldim();
 
-			BlasPermutation<size_t> P(E.coldim());
-			BlasPermutation<size_t> Qt(E.rowdim());
-			// compute the LQUP of E
-			LQUPMatrix<Field> LQUP(E,P,Qt);
+			BlasPermutation<size_t> Pt(E.rowdim());
+			BlasPermutation<size_t> Q(E.coldim());
+			// compute the PLUQ of E
+			PLUQMatrix<Field> PLUQ(E,Pt,Q);
 
 			// get the rank
-			rank = LQUP.getRank();
+			rank = PLUQ.getRank();
 
 			// get permutation Qt
 			// BlasPermutation<size_t> Qt = LQUP.getQ();
@@ -177,7 +177,7 @@ namespace LinBox
 
 			// put one inplace of pivot
 			for (size_t i=0;i<rank;++i){
-				E.setEntry(*(Qt.getPointer()+i),i,field().one);
+				E.setEntry(*(Pt.getPointer()+i),i,field().one);
 			}
 
 			return (int)rank;
@@ -193,24 +193,24 @@ namespace LinBox
 			n = E.coldim();
 
 			// compute the LQUP of E
-			BlasPermutation<size_t> P(E.coldim());
-			BlasPermutation<size_t> Qt(E.rowdim());
+			BlasPermutation<size_t> Pt(E.rowdim());
+			BlasPermutation<size_t> Q(E.coldim());
 
-			LQUPMatrix<Field> LQUP( E, P, Qt);
+			PLUQMatrix<Field> PLUQ( E, Pt, Q);
 
 			// get the rank
-			rank = LQUP.getRank();
+			rank = PLUQ.getRank();
 
 			// BlasPermutation<size_t> Qt = LQUP.getQ();
-			TransposedBlasMatrix<BlasPermutation<size_t> > Q(Qt);
+			TransposedBlasMatrix<BlasPermutation<size_t> > P(Pt);
 
 			// Zero out upper triangular part of E
 			for (size_t i=0;i<m;++i)
 				for (size_t j=i;j<n;++j)
 					E.setEntry(i,j,field().zero);
 
-			// permute E with Qt
-			_BMD.mulin_right(Qt,E);
+			// permute E with Pt
+			_BMD.mulin_right(Pt,E);
 
 			// put one inplace of pivot
 			for (size_t i=0;i<rank;++i)
@@ -229,8 +229,8 @@ namespace LinBox
 					E.setEntry(i,j,field().zero);
 			}
 
-			// permute L such that L<-Q.E
-			_BMD.mulin_right(Q,E);
+			// permute L such that L<-P.E
+			_BMD.mulin_right(P,E);
 
 			return (int)rank;
 		}
