@@ -678,49 +678,45 @@ namespace LinBox {
             BMDI.mulin_right(tas.P, newb);
             newb.resize(rank);
 
+            // ----- Do lifting
+
             BlasMatrix<Ring> BBA_minor(A_minor);
             LiftingContainer lc(_ring, _field, BBA_minor, *Ap_minor_inv, newb, _prime);
 
-#ifdef DEBUG_DIXON
-            std::cout << "length of lifting: " << lc.length() << std::endl;
-#endif
+            // ----- Reconstruct rational
+
             RationalReconstruction<LiftingContainer> re(lc);
 
-            Vector1 short_num(_ring, rank);
-            Integer short_den;
-
-            if (!re.getRational(short_num, short_den, 0))
-                return SS_FAILED; // dirty, but should not be called
-                                  // under normal circumstances
+            VectorFraction<Ring> resultVF(_ring, rank);
+            if (!re.getRational(short_num, short_den, 0)) {
+                // dirty, but should not be called
+                return SS_FAILED;
+            }
 
 #ifdef RSTIMING
             ttSystemSolve.update(re, lc);
             tCheckAnswer.start();
 #endif
 
-            VectorFraction<Ring> answer_to_vf(_ring, short_num.size());
-            answer_to_vf.numer = short_num;
-            answer_to_vf.denom = short_den;
-
             if (!randomSolution) {
                 // short_answer = TAS_Q * short_answer
-                answer_to_vf.numer.resize(A.coldim() + 1, _ring.zero);
-                BMDI.mulin_left(answer_to_vf.numer, tas.Qt);
-                answer_to_vf.numer.resize(A.coldim());
+                resultVF.numer.resize(A.coldim() + 1, _ring.zero);
+                BMDI.mulin_left(resultVF.numer, tas.Qt);
+                resultVF.numer.resize(A.coldim());
             }
             else {
                 // short_answer = P * short_answer
                 BlasVector<Ring> newNumer(_ring, A.coldim());
-                BAR.applyV(newNumer, *P, answer_to_vf.numer);
-                answer_to_vf.numer = newNumer;
+                BAR.applyV(newNumer, *P, resultVF.numer);
+                resultVF.numer = newNumer;
             }
 
-            // @fixme Debug only?
+            // @fixme Debug only? Or check result?
             if (level >= SL_LASVEGAS) { // check consistency
 
                 BlasVector<Ring> A_times_xnumer(_ring, b.size());
 
-                BAR.applyV(A_times_xnumer, A_check, answer_to_vf.numer);
+                BAR.applyV(A_times_xnumer, A_check, resultVF.numer);
 
                 Integer tmpi;
 
@@ -730,7 +726,7 @@ namespace LinBox {
                 bool needNewPrime = false;
 
                 for (; !needNewPrime && ib != b.end(); ++iAx, ++ib, ++thisrow)
-                    if (!_ring.areEqual(_ring.mul(tmpi, *ib, answer_to_vf.denom), *iAx)) {
+                    if (!_ring.areEqual(_ring.mul(tmpi, *ib, resultVF.denom), *iAx)) {
                         // should attempt to certify inconsistency now
                         // as in "if [A31 | A32]y != b3" of step (4)
                         needNewPrime = true;
@@ -749,9 +745,10 @@ namespace LinBox {
                 }
             }
 
-            // answer_to_vf.toFVector(answer);
-            num = answer_to_vf.numer;
-            den = answer_to_vf.denom;
+            // Result value
+            num = resultVF.numer;
+            den = resultVF.denom;
+
 #ifdef RSTIMING
             tCheckAnswer.stop();
             ttCheckAnswer += tCheckAnswer;
