@@ -779,8 +779,8 @@ namespace LinBox
 			// TAS_xxx stands for Transpose Augmented System (A|b)t
 			// this provides a factorization (A|b) = TAS_Pt . TAS_Ut . TAS_Qt . TAS_Lt
 			// such that
-			// - TAS_P . (A|b) . TAS_Q   has nonzero principal minors up to TAS_rank
-			// - TAS_Q permutes b to the (TAS_rank)th column of A iff the system is inconsistent mod p
+			// - TAS_Q . (A|b) . TAS_P   has nonzero principal minors up to TAS_rank
+			// - TAS_P permutes b to the (TAS_rank)th column of A iff the system is inconsistent mod p
 			BlasMatrix<Field>* TAS_factors = new BlasMatrix<Field>(F, A.coldim()+1, A.rowdim());
 			Hom<Ring, Field> Hmap(_ring, F);
 
@@ -804,10 +804,10 @@ namespace LinBox
 			ttSetup += tSetup;
 			tPLUQ.start();
 #endif
-			BlasPermutation<size_t>  TAS_P(TAS_factors->coldim()) ;
-			BlasPermutation<size_t>  TAS_Qt(TAS_factors->rowdim()) ;
+			BlasPermutation<size_t>  TAS_P(TAS_factors->rowdim()) ;
+			BlasPermutation<size_t>  TAS_Q(TAS_factors->coldim()) ;
 
-			PLUQMatrix<Field>* TAS_PLUQ = new PLUQMatrix<Field>(*TAS_factors,TAS_P,TAS_Qt);
+			PLUQMatrix<Field>* TAS_PLUQ = new PLUQMatrix<Field>(*TAS_factors,TAS_P,TAS_Q);
 			size_t TAS_rank = TAS_PLUQ->getRank();
 
 			// check consistency. note, getQ returns Qt.
@@ -819,17 +819,17 @@ namespace LinBox
 			for (size_t i=0; i<A.coldim()+1; ++i, ++sci) *sci = i;
 			indexDomain iDom;
 			BlasMatrixDomain<indexDomain> BMDs(iDom);
-			BMDs.mulin_right(TAS_Qt, srcCol);
-			BMDs.mulin_right(TAS_P, srcRow);
+			BMDs.mulin_right(TAS_P, srcCol);
+			BMDs.mulin_right(TAS_Q, srcRow);
 
             // @note srcCol/srcRow hold permutations (indices of (A|b)t)
             // @fixme FFLAS has something for this?
 
 #ifdef DEBUG_INC
-			std::cout << "P takes (0 1 ...) to (";
+			std::cout << "Q takes (0 1 ...) to (";
 			for (size_t i=0; i<A.rowdim(); ++i) std::cout << srcRow[i] << ' ';
             std::cout << ')' << std::endl;
-			std::cout << "Q takes (0 1 ...) to (";
+			std::cout << "P takes (0 1 ...) to (";
 			for (size_t i=0; i<A.coldim()+1; ++i) std::cout << srcCol[i] << ' ';
             std::cout << ')' << std::endl;
 #endif
@@ -892,16 +892,16 @@ namespace LinBox
             // @fixme What is the goal of this?
 			if ((appearsInconsistent && level > SL_MONTECARLO) || randomSolution == false) {
 				// take advantage of the (PLUQ)t factorization to compute
-				// an inverse to the leading minor of (TAS_P . (A|b) . TAS_Q)
+				// an inverse to the leading minor of (TAS_Q . (A|b) . TAS_P)
 #ifdef RSTIMING
 				tFastInvert.start();
 #endif
 				Atp_minor_inv = new BlasMatrix<Field>(F, rank, rank);
 
-
-                FFPACK::ftrtri (F, FFLAS::FflasUpper, FFLAS::FflasNonUnit, rank, TAS_factors->getPointer(), TAS_factors->getStride());
-                FFPACK::ftrtri (F, FFLAS::FflasLower, FFLAS::FflasUnit, rank, TAS_factors->getPointer(), TAS_factors->getStride());
-                FFPACK::ftrtrm (F, FFLAS::FflasLeft, FFLAS::FflasNonUnit, rank, TAS_factors->getPointer(), TAS_factors->getStride());
+                FFLAS::fassign(F, rank, rank, TAS_factors->getPointer(), TAS_factors->getStride(), Atp_minor_inv->getPointer(), Atp_minor_inv->getStride());
+                FFPACK::ftrtri (F, FFLAS::FflasUpper, FFLAS::FflasNonUnit, rank, Atp_minor_inv->getPointer(), Atp_minor_inv->getStride());
+                FFPACK::ftrtri (F, FFLAS::FflasLower, FFLAS::FflasUnit, rank, Atp_minor_inv->getPointer(), Atp_minor_inv->getStride());
+                FFPACK::ftrtrm (F, FFLAS::FflasLeft, FFLAS::FflasNonUnit, rank, Atp_minor_inv->getPointer(), Atp_minor_inv->getStride());
 				// FFPACK::PLUQtoInverseOfFullRankMinor(F, rank, TAS_factors->getPointer(), A.rowdim(),
 				// 				     TAS_Qt.getPointer(),
 				// 				     Atp_minor_inv->getPointer(), rank);
@@ -1113,9 +1113,9 @@ namespace LinBox
 #endif
 				} while (nullity > 0);
 			}
-			// Compute newb = (TAS_P.b)[0..(rank-1)]
+			// Compute newb = (TAS_Q.b)[0..(rank-1)]
 			BlasVector<Ring> newb(b);
-			BMDI.mulin_right(TAS_P, newb);
+			BMDI.mulin_right(TAS_Q, newb);
 			newb.resize(rank);
 
 			BlasMatrix<Ring>  BBA_minor(A_minor);
@@ -1149,9 +1149,9 @@ namespace LinBox
 			answer_to_vf. denom = short_den;
 
 			if (!randomSolution) {
-				// short_answer = TAS_Q * short_answer
+				// short_answer = TAS_P * short_answer
 				answer_to_vf.numer.resize(A.coldim()+1,_ring.zero);
-				BMDI.mulin_left(answer_to_vf.numer, TAS_Qt);
+				BMDI.mulin_left(answer_to_vf.numer, TAS_P);
 				answer_to_vf.numer.resize(A.coldim());
 			}
 			else {
@@ -1229,17 +1229,17 @@ namespace LinBox
 				// we then try to create a partial certificate
 				// the correspondance with Algorithm MinimalSolution from Mulders/Storjohann:
 				// paper | here
-				// P     | TAS_P
-				// Q     | transpose of TAS_Qt
-				// B     | *B (== TAS_P . A,  but only top #rank rows)
-				// c     | newb (== TAS_P . b,   but only top #rank rows)
+				// P     | TAS_Q
+				// Q     | transpose of TAS_P
+				// B     | *B (== TAS_Q . A,  but only top #rank rows)
+				// c     | newb (== TAS_Q . b,   but only top #rank rows)
 				// P     | P
 				// q     | q
 				// U     | {0, 1}
 				// u     | u
 				// z-hat | lastCertificate
 
-				// we multiply the certificate by TAS_Pt at the end
+				// we multiply the certificate by TAS_Qt at the end
 				// so it corresponds to b instead of newb
 
 				//q in {0, 1}^rank
@@ -1296,7 +1296,7 @@ namespace LinBox
 				VectorFraction<Ring> z(_ring, b.size()); //new constructor
 				u_to_vf.numer.resize(A.rowdim());
 
-				BMDI.mul(z.numer, u_to_vf.numer, TAS_P);
+				BMDI.mul(z.numer, u_to_vf.numer, TAS_Q);
 
 				z.denom = numergcd;
 
