@@ -55,8 +55,8 @@ namespace LinBox {
 
         commentator().start("solve.dense-elimination.modular.dense");
 
-        LQUPMatrix<Field> LQUP(A);
-        LQUP.left_solve(x, b);
+        PLUQMatrix<Field> PLUQ(A);
+        PLUQ.left_solve(x, b);
 
         commentator().stop("solve.dense-elimination.modular.dense");
 
