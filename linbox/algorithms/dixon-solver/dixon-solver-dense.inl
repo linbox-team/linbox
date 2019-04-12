@@ -572,12 +572,11 @@ namespace LinBox {
         while (trials < maxPrimes) {
             if (trials != 0) chooseNewPrime();
             ++trials;
-#ifdef DEBUG_DIXON
-            std::cout << "_prime:= " << _prime << ";\n";
-#endif
+
 #ifdef RSTIMING
             tSetup.start();
 #endif
+            // ----- Build Transposed Augmented System (TAS)
 
             // checking size of system
             linbox_check(A.rowdim() == b.size());
@@ -602,12 +601,11 @@ namespace LinBox {
 #endif
 
             // @note If permutation shows that b was needed, means b is not in the columns' span of
-            // A (= Ax=b inconsistent)
+            // A (=> Ax=b inconsistent)
             bool appearsInconsistent = (tas.srcCol[tas.rank() - 1] == A.coldim());
             size_t rank = tas.rank() - (appearsInconsistent ? 1 : 0);
-#ifdef DEBUG_DIXON
-            std::cout << "tas.rank(), rank: " << tas.rank() << ' ' << rank << std::endl;
-#endif
+
+            // ----- Handle A == 0 mod p
 
             // Special case when A = 0, mod p. Deal with it to avoid crash later.
             if (rank == 0) {
@@ -631,9 +629,9 @@ namespace LinBox {
                 return SS_OK;
             }
 
-            std::unique_ptr<BlasMatrix<Field>> Atp_minor_inv = nullptr;
+            // ----- @fixme What is the goal of this?
 
-            // @fixme What is the goal of this?
+            std::unique_ptr<BlasMatrix<Field>> Atp_minor_inv = nullptr;
             if ((appearsInconsistent && level > SL_MONTECARLO) || randomSolution == false) {
                 // take advantage of the (LQUP)t factorization to compute
                 // an inverse to the leading minor of (TAS_P . (A|b) . TAS_Q)
@@ -649,6 +647,8 @@ namespace LinBox {
                 ttFastInvert += tFastInvert;
 #endif
             }
+
+            // ----- Confirm inconsistency if it looks like it
 
             // If the system appears inconsistent, we either try a new prime,
             // a validate the inconsistency of (A,b).
@@ -678,7 +678,7 @@ namespace LinBox {
             BMDI.mulin_right(tas.P, newb);
             newb.resize(rank);
 
-            // ----- Do lifting
+            // ----- Do lifting on sub matrix
 
             BlasMatrix<Ring> BBA_minor(A_minor);
             LiftingContainer lc(_ring, _field, BBA_minor, *Ap_minor_inv, newb, _prime);
@@ -686,9 +686,8 @@ namespace LinBox {
             // ----- Reconstruct rational
 
             RationalReconstruction<LiftingContainer> re(lc);
-
             VectorFraction<Ring> resultVF(_ring, rank);
-            if (!re.getRational(short_num, short_den, 0)) {
+            if (!re.getRational(resultVF.numer, resultVF.denom, 0)) {
                 // dirty, but should not be called
                 return SS_FAILED;
             }
@@ -697,6 +696,8 @@ namespace LinBox {
             ttSystemSolve.update(re, lc);
             tCheckAnswer.start();
 #endif
+
+            // ----- Build effective solution from sub matrix
 
             if (!randomSolution) {
                 // short_answer = TAS_Q * short_answer
@@ -710,6 +711,8 @@ namespace LinBox {
                 BAR.applyV(newNumer, *P, resultVF.numer);
                 resultVF.numer = newNumer;
             }
+
+            // ----- Check consistency
 
             // @fixme Debug only? Or check result?
             if (level >= SL_LASVEGAS) { // check consistency
@@ -745,9 +748,12 @@ namespace LinBox {
                 }
             }
 
-            // Result value
+            // ----- We have the result values!
+
             num = resultVF.numer;
             den = resultVF.denom;
+
+            // ----- Checking answer
 
 #ifdef RSTIMING
             tCheckAnswer.stop();
@@ -869,6 +875,8 @@ namespace LinBox {
 #endif
             }
 
+            // @fixme This might be = Atp_minor_inv,
+            // which we don't want to delete...
             delete Ap_minor_inv;
 
             if (randomSolution) {
@@ -879,7 +887,7 @@ namespace LinBox {
             return SS_OK;
         }
 
-        std::cout << "ouch" << std::endl;
-        return SS_FAILED; // all primes were bad
+        // All primes were bad
+        return SS_FAILED;
     }
 }
