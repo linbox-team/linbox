@@ -73,7 +73,7 @@ namespace LinBox { namespace Protected {
 							    BlasSubmatrix<Matrix>     &A) const
 		{
             if (A.rowdim() != A.coldim())
-                return Field.zero;
+                return Matrix::Field.zero;
             typename Matrix::Field::Element det;
 			return FFPACK::Det(F, det, A.coldim(), A.getPointer(), A.getStride());
 		}
@@ -1008,7 +1008,7 @@ namespace LinBox
 		BlasMatrix<Field, _Rep>& operator()( const Field& F,
 						     const BlasPermutation<size_t>& B,
 						     BlasMatrix<Field, _Rep>& A) const
-		{                        
+		{
 			if (B.isIdentity()) return A ;
 			linbox_check( A.rowdim() >= B.getSize() );
 			FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasNoTrans,
@@ -2044,7 +2044,7 @@ namespace LinBox
 
 	template<class Field, class Polynomial, class Matrix>
 	Polynomial &
-	BlasMatrixDomainCharpoly<Field,Polynomial,Matrix>::operator() ( 
+	BlasMatrixDomainCharpoly<Field,Polynomial,Matrix>::operator() (
         const Field    &F, Polynomial    &P, const Matrix   &A) const
 	{
 		size_t n = A.coldim();
