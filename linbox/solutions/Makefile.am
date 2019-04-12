@@ -22,6 +22,8 @@
 AM_CXXFLAGS = @DEFAULT_CFLAGS@ -DLinBoxSrcOnly
 pkgincludesubdir=$(pkgincludedir)/solutions
 
+SUBDIRS=solve
+
 pkgincludesub_HEADERS=          \
     charpoly.h                  \
     det.h                       \
