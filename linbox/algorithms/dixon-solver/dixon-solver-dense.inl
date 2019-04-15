@@ -260,7 +260,7 @@ namespace LinBox {
 
         // In monte carlo, we assume A is actually empty.
         bool aEmpty = true;
-        if (level >= SL_LASVEGAS) {
+        if (method.certifyInconsistency) {
             MatrixDomain<Ring> MD(R);
             aEmpty = MD.isZero(A);
         }
@@ -292,12 +292,12 @@ namespace LinBox {
     SolverReturnStatus DixonSolver<Ring, Field, RandomPrime, Method::Dixon>::
         solveApparentlyInconsistent(const BlasMatrix<Ring>& A, TAS& tas,
                                     BlasMatrix<Field>* Atp_minor_inv, size_t rank,
-                                    const SolverLevel level)
+                                    const MethodBase& method)
     {
         using LiftingContainer =
             DixonLiftingContainer<Ring, Field, BlasMatrix<Ring>, BlasMatrix<Field>>;
 
-        if (level <= SL_MONTECARLO) return SS_INCONSISTENT;
+        if (!method.certifyInconsistency) return SS_INCONSISTENT;
 
         // @fixme Put these as class members!
         BlasMatrixDomain<Ring> BMDI(_ring);
@@ -365,7 +365,7 @@ namespace LinBox {
 #endif
 
         if (certifies) {
-            if (level == SL_CERTIFIED) lastCertificate.copy(cert);
+            if (method.certifyInconsistency) lastCertificate.copy(cert);
             return SS_INCONSISTENT;
         }
         commentator().report(Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
@@ -381,13 +381,13 @@ namespace LinBox {
     void DixonSolver<Ring, Field, RandomPrime, Method::Dixon>::makeConditioner(
         BlasMatrix<Ring>& A_minor, BlasMatrix<Field>*& Ap_minor_inv, BlasMatrix<Ring>*& B,
         BlasMatrix<Ring>*& P, const BlasMatrix<Ring>& A, TAS& tas, BlasMatrix<Field>* Atp_minor_inv,
-        size_t rank, SolverLevel level, bool makeMinDenomCert, bool randomSolution)
+        size_t rank, const MethodBase& method)
     {
 #ifdef RSTIMING
         tMakeConditioner.start();
 #endif
 
-        if (!randomSolution) {
+        if (method.singularSolutionType != SingularSolutionType::Random) {
             // Transpose Atp_minor_inv to get Ap_minor_inv
             // @note minor inv = L1\U1
             Element _rtmp;
@@ -410,7 +410,7 @@ namespace LinBox {
             ttMakeConditioner += tMakeConditioner;
 #endif
 
-            if (makeMinDenomCert && level >= SL_LASVEGAS) { // @fixme makeMinDenomCert always false?
+            if (method.certifyMinimalDenominator) {
                 B = new BlasMatrix<Ring>(_ring, rank, A.coldim());
                 for (size_t i = 0; i < rank; ++i)
                     for (size_t j = 0; j < A.coldim(); ++j)
@@ -501,7 +501,7 @@ namespace LinBox {
                       << std::endl;
         }
 
-        int trials = 0;
+        size_t trials = 0;
         while (trials < method.trialsBeforeFailure) {
             if (trials != 0) chooseNewPrime();
             ++trials;
@@ -564,7 +564,7 @@ namespace LinBox {
             // ----- @fixme What is the goal of this?
 
             std::unique_ptr<BlasMatrix<Field>> Atp_minor_inv = nullptr;
-            if ((appearsInconsistent && level > SL_MONTECARLO) || randomSolution == false) {
+            if ((appearsInconsistent && method.certifyInconsistency) || method.singularSolutionType != SingularSolutionType::Random) {
                 // take advantage of the (LQUP)t factorization to compute
                 // an inverse to the leading minor of (TAS_P . (A|b) . TAS_Q)
 #ifdef RSTIMING
@@ -586,7 +586,7 @@ namespace LinBox {
             // a validate the inconsistency of (A,b).
             if (appearsInconsistent) {
                 auto status =
-                    solveApparentlyInconsistent(A_check, tas, Atp_minor_inv.get(), rank, level);
+                    solveApparentlyInconsistent(A_check, tas, Atp_minor_inv.get(), rank, method);
 
                 // Failing means we should try a new prime
                 if (status == SS_FAILED) continue;
@@ -603,7 +603,7 @@ namespace LinBox {
             BlasMatrix<Ring> A_minor(_ring, rank, rank); // -- will have the full rank minor of A
             BlasMatrix<Field>* Ap_minor_inv = nullptr;   // -- will have inverse mod p of A_minor
             makeConditioner(A_minor, Ap_minor_inv, B, P, A_check, tas, Atp_minor_inv.get(), rank,
-                            level, makeMinDenomCert, randomSolution);
+                            method);
 
             // Compute newb = (TAS_P.b)[0..(rank-1)]
             BlasVector<Ring> newb(b);
@@ -631,7 +631,7 @@ namespace LinBox {
 
             // ----- Build effective solution from sub matrix
 
-            if (!randomSolution) {
+            if (method.singularSolutionType != SingularSolutionType::Random) {
                 // short_answer = TAS_Q * short_answer
                 resultVF.numer.resize(A.coldim() + 1, _ring.zero);
                 BMDI.mulin_left(resultVF.numer, tas.Qt);
@@ -646,8 +646,8 @@ namespace LinBox {
 
             // ----- Check consistency
 
-            // @fixme Debug only? Or check result?
-            if (level >= SL_LASVEGAS) { // check consistency
+            // @fixme In what world is this useful?
+            if (method.checkResult) { // check consistency
 
                 BlasVector<Ring> A_times_xnumer(_ring, b.size());
 
@@ -669,7 +669,7 @@ namespace LinBox {
 
                 if (needNewPrime) {
                     delete Ap_minor_inv;
-                    if (randomSolution) {
+                    if (method.singularSolutionType == SingularSolutionType::Random) {
                         delete P;
                     }
 #ifdef RSTIMING
@@ -691,8 +691,7 @@ namespace LinBox {
             tCheckAnswer.stop();
             ttCheckAnswer += tCheckAnswer;
 #endif
-            // @fixme makeMinDenomCert always used as false?
-            if (makeMinDenomCert && level >= SL_LASVEGAS) // && randomSolution
+            if (method.certifyMinimalDenominator)
             {
                 // To make this certificate we solve with the same matrix as to get the
                 // solution, except transposed.
@@ -792,7 +791,7 @@ namespace LinBox {
 
                 // 				z.write(std::cout << "z: ") << std::endl;
 
-                if (level >= SL_CERTIFIED) lastCertificate.copy(z);
+                if (method.certifyInconsistency) lastCertificate.copy(z);
 
                 // output new certified denom factor
                 Integer znumer_b, zbgcd;
@@ -800,7 +799,7 @@ namespace LinBox {
                 _ring.gcd(zbgcd, znumer_b, z.denom);
                 _ring.div(lastCertifiedDenFactor, z.denom, zbgcd);
 
-                if (level >= SL_CERTIFIED) _ring.div(lastZBNumer, znumer_b, zbgcd);
+                if (method.certifyInconsistency) _ring.div(lastZBNumer, znumer_b, zbgcd);
 #ifdef RSTIMING
                 tCertMaking.stop();
                 ttCertMaking += tCertMaking;
@@ -811,7 +810,7 @@ namespace LinBox {
             // which we don't want to delete...
             delete Ap_minor_inv;
 
-            if (randomSolution) {
+            if (method.singularSolutionType == SingularSolutionType::Random) {
                 delete P;
             }
 

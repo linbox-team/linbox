@@ -64,8 +64,7 @@ namespace LinBox {
         using PrimeGenerator = PrimeIterator<IteratorCategories::HeuristicTag>;
         PrimeGenerator primeGenerator(FieldTraits<Field>::bestBitSize(A.coldim()));
 
-        using Solver =
-            DixonRationalSolver<Ring, Field, PrimeGenerator, typename MethodForMatrix<Blackbox>::type>;
+        using Solver = DixonRationalSolver<Ring, Field, PrimeGenerator, typename MethodForMatrix<Blackbox>::type>;
         Solver dixonSolve(A.field(), primeGenerator);
 
         // @fixme I'm still bit sad that we cannot use generically the function below,
@@ -78,7 +77,8 @@ namespace LinBox {
 
         if (status == SS_INCONSISTENT) {
             throw LinboxMathInconsistentSystem("From Dixon method.");
-        } else if (status == SS_FAILED || status == SS_BAD_PRECONDITIONER) {
+        }
+        else if (status == SS_FAILED || status == SS_BAD_PRECONDITIONER) {
             throw LinboxError("From Dixon method.");
         }
     }
@@ -113,15 +113,13 @@ namespace LinBox {
 
         // Either A is known to be singular, or we just failed trying to solve it as non-singular.
         if (singular) {
-            SolverLevel level = (m.certifyInconsistency ? SL_LASVEGAS : SL_MONTECARLO);
-
             if (m.singularSolutionType == SingularSolutionType::Diophantine) {
+                SolverLevel level = (m.certifyInconsistency ? SL_LASVEGAS : SL_MONTECARLO);
                 DiophantineSolver<Solver> diophantineSolve(dixonSolve);
                 status = diophantineSolve.diophantineSolve(xNum, xDen, A, b, maxTrials, level);
             }
             else {
-                bool randomSolutionType = (m.singularSolutionType == SingularSolutionType::Random);
-                status = dixonSolve.monolithicSolve(xNum, xDen, A, b, false, randomSolutionType, maxTrials, level);
+                status = dixonSolve.monolithicSolve(xNum, xDen, A, b, m);
             }
         }
 
@@ -129,7 +127,8 @@ namespace LinBox {
 
         if (status == SS_INCONSISTENT) {
             throw LinboxMathInconsistentSystem("From Dixon method.");
-        } else if (status == SS_FAILED || status == SS_BAD_PRECONDITIONER) {
+        }
+        else if (status == SS_FAILED || status == SS_BAD_PRECONDITIONER) {
             throw LinboxError("From Dixon method.");
         }
     }
@@ -150,8 +149,7 @@ namespace LinBox {
         using PrimeGenerator = PrimeIterator<IteratorCategories::HeuristicTag>;
         PrimeGenerator primeGenerator(FieldTraits<Field>::bestBitSize(A.coldim()));
 
-        using Solver =
-            DixonRationalSolver<Ring, Field, PrimeGenerator, typename MethodForMatrix<Matrix>::type>;
+        using Solver = DixonRationalSolver<Ring, Field, PrimeGenerator, typename MethodForMatrix<Matrix>::type>;
         Solver dixonSolve(A.field(), primeGenerator);
 
         // @fixme I'm a bit sad that we cannot use generically the function above,
@@ -164,7 +162,8 @@ namespace LinBox {
 
         if (status == SS_INCONSISTENT) {
             throw LinboxMathInconsistentSystem("From Dixon method.");
-        } else if (status == SS_FAILED || status == SS_BAD_PRECONDITIONER) {
+        }
+        else if (status == SS_FAILED || status == SS_BAD_PRECONDITIONER) {
             throw LinboxError("From Dixon method.");
         }
     }

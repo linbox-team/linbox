@@ -353,7 +353,7 @@ namespace LinBox {
         template <class TAS>
         SolverReturnStatus solveApparentlyInconsistent(const BlasMatrix<Ring>& A, TAS& tas,
                                                        BlasMatrix<Field>* Atp_minor_inv,
-                                                       size_t rank, const SolverLevel level);
+                                                       size_t rank, const MethodBase& method);
 
         /// Internal usage
         /// @note P seems to be a preconditioner: a random matrix filled with 0 or 1
@@ -363,7 +363,7 @@ namespace LinBox {
         void makeConditioner(BlasMatrix<Ring>& A_minor, BlasMatrix<Field>*& Ap_minor_inv,
                              BlasMatrix<Ring>*& B, BlasMatrix<Ring>*& P, const BlasMatrix<Ring>& A,
                              TAS& tas, BlasMatrix<Field>* Atp_minor_inv, size_t rank,
-                             const SolverLevel level, bool makeMinDenomCert, bool randomSolution);
+                             const MethodBase& method);
     };
 }
 
