@@ -208,7 +208,7 @@ int main(int argc, char** argv)
     int vectorBitSize = -1;
     int m = 32;
     int n = 24;
-    std::string dispatchString = "AUTO";
+    std::string dispatchString = "Auto";
 
     static Argument args[] = {
         {'q', "-q", "Field characteristic.", TYPE_INTEGER, &q},
@@ -219,7 +219,7 @@ int main(int argc, char** argv)
         {'B', "-B", "Vector bit size for rational solve tests (defaults to -b if not specified).", TYPE_INT, &vectorBitSize},
         {'m', "-m", "Row dimension of matrices.", TYPE_INT, &m},
         {'n', "-n", "Column dimension of matrices.", TYPE_INT, &n},
-        {'d', "-d", "Dispatch mode (either AUTO, SEQ, SMP or MPI).", TYPE_STR, &dispatchString},
+        {'d', "-d", "Dispatch mode (either Auto, Sequential, SMP or Distributed).", TYPE_STR, &dispatchString},
         END_OF_ARGUMENTS};
 
     parseArguments(argc, argv, args);
@@ -231,14 +231,14 @@ int main(int argc, char** argv)
     MethodBase method;
     method.pCommunicator = &communicator;
     method.dispatch = Dispatch::Auto;
-    if (dispatchString == "MPI")
+    if (dispatchString == "Distributed")
         method.dispatch = Dispatch::Distributed;
-    else if (dispatchString == "SEQ")
+    else if (dispatchString == "Sequential")
         method.dispatch = Dispatch::Sequential;
     else if (dispatchString == "SMP")
         method.dispatch = Dispatch::SMP;
-    else if (dispatchString != "AUTO") {
-        std::cerr << "-d Dispatch mode should be either AUTO, SEQ, SMP or MPI" << std::endl;
+    else if (dispatchString != "Auto") {
+        std::cerr << "-d Dispatch mode should be either Auto, Sequential, SMP or Distributed" << std::endl;
         return EXIT_FAILURE;
     }
 
