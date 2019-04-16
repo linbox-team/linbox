@@ -238,8 +238,11 @@ int main(int argc, char** argv){
 	}
 	uint64_t bits =atoi(argv[1]);
 	long seed=((argc>2)?atoi(argv[2]):time(NULL));	
-	RandomFFTPrime Rd(1<<bits,seed);
-	uint32_t p = (uint32_t)Rd.randomPrime(5);
+	integer prime;
+	RandomFFTPrime::seeding (seed);
+	if (!RandomFFTPrime::randomPrime (prime, 1<<bits, 5))
+		throw LinboxError ("RandomFFTPrime::randomPrime failed");
+	uint32_t p = (uint32_t) prime;
 	size_t k = bits-4;
 	cout<<"prime : "<<p<<endl;
 	cout<<endl;

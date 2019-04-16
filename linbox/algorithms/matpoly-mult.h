@@ -523,18 +523,14 @@ namespace LinBox
 
 				// get number of necessary primes
 				integer ibound = uint64_t(n) * _p * _p * uint64_t(std::max(b.size(), c.size()));
-				integer primesprod;
-				size_t nbrprimes=1;
-				RandomFFTPrime fftprime(bit, FFT_PRIME_SEED);
-				std::vector<integer> lprimes(10); lprimes.resize(nbrprimes);
-				lprimes[0] = fftprime.generatePrime();
-				primesprod = lprimes[0];
-				while (primesprod < ibound) {
-					++nbrprimes;
-					lprimes.resize(nbrprimes);
-					do {lprimes[nbrprimes-1] = fftprime.generatePrime();} while (primesprod % lprimes[nbrprimes-1] == 0);
-					primesprod *= lprimes[nbrprimes-1];
-				}
+				std::vector<integer> lprimes;
+				RandomFFTPrime::seeding (FFT_PRIME_SEED);
+				if (!RandomFFTPrime::generatePrimes (lprimes, bit, ibound))
+					throw LinboxError ("RandomFFTPrime::generatePrime failed");
+				size_t nbrprimes = lprimes.size();
+				integer primesprod = 1;
+				for (auto &p: lprimes)
+					primesprod *= p;
 #ifdef FFT_TIMING
 				std::cout<<"num of primes "<<nbrprimes<< std::endl;
 #endif
@@ -639,19 +635,14 @@ namespace LinBox
 
 				// get number of necessary primes
 				integer ibound = uint64_t(n) * _p * _p * uint64_t(std::max(b.size(), c.size()));
-				integer primesprod;
-				size_t nbrprimes=1;
-				RandomFFTPrime fftprime(bit, FFT_PRIME_SEED);
-				std::vector<integer> lprimes(10); lprimes.resize(nbrprimes);
-				lprimes[0] = fftprime.generatePrime();
-				primesprod = lprimes[0];
-				while (primesprod < ibound) {
-					++nbrprimes;
-					lprimes.resize(nbrprimes);
-					do {lprimes[nbrprimes-1] = fftprime.generatePrime();} while (primesprod % lprimes[nbrprimes-1] == 0);
-					primesprod *= lprimes[nbrprimes-1];
-				}
-
+				std::vector<integer> lprimes;
+				RandomFFTPrime::seeding (FFT_PRIME_SEED);
+				if (!RandomFFTPrime::generatePrimes (lprimes, bit, ibound))
+					throw LinboxError ("RandomFFTPrime::generatePrime failed");
+				size_t nbrprimes = lprimes.size();
+				integer primesprod = 1;
+				for (auto &p: lprimes)
+					primesprod *= p;
 #ifdef FFT_TIMING
 				std::cout<<"num of primes "<<nbrprimes<<"\n";
 #endif
@@ -777,17 +768,14 @@ namespace LinBox
 
 			// get number of necessary primes
 			integer ibound = n * _p * _p * std::max(b.size(), c.size());
-			integer primesprod=1; size_t nbrprimes=1;
-			RandomFFTPrime fftprime(bit, FFT_PRIME_SEED);
-			std::vector<integer> lprimes(10); lprimes.resize(nbrprimes);
-			lprimes[0] = fftprime.generatePrime();
-			primesprod = lprimes[0];
-			while (primesprod < ibound) {
-				++nbrprimes;
-				lprimes.resize(nbrprimes);
-				do {lprimes[nbrprimes-1] = fftprime.generatePrime();} while (primesprod % lprimes[nbrprimes-1] == 0);
-				primesprod *= lprimes[nbrprimes-1];
-			}
+			std::vector<integer> lprimes;
+			RandomFFTPrime::seeding (FFT_PRIME_SEED);
+			if (!RandomFFTPrime::generatePrimes (lprimes, bit, ibound))
+				throw LinboxError ("RandomFFTPrime::generatePrime failed");
+			size_t nbrprimes = lprimes.size();
+			integer primesprod = 1;
+			for (auto &p: lprimes)
+				primesprod *= p;
 #ifdef FFT_TIMING
 			std::cout<<"num of primes "<<nbrprimes<<"\n";
 #endif
@@ -894,18 +882,14 @@ namespace LinBox
 
 				// get number of necessary primes
 				integer ibound = n * _p * _p * std::max(b.size(), c.size());
-				integer primesprod=1; size_t nbrprimes=1;
-				RandomFFTPrime fftprime(bit, FFT_PRIME_SEED);
-				std::vector<integer> lprimes(10); lprimes.resize(nbrprimes);
-				lprimes[0] = fftprime.generatePrime();
-				primesprod = lprimes[0];
-				while (primesprod < ibound) {
-					++nbrprimes;
-					lprimes.resize(nbrprimes);
-					do {lprimes[nbrprimes-1] = fftprime.generatePrime();} while (primesprod % lprimes[nbrprimes-1] == 0);
-					primesprod *= lprimes[nbrprimes-1];
-				}
-
+				std::vector<integer> lprimes;
+				RandomFFTPrime::seeding (FFT_PRIME_SEED);
+				if (!RandomFFTPrime::generatePrimes (lprimes, bit, ibound))
+					throw LinboxError ("RandomFFTPrime::generatePrime failed");
+				size_t nbrprimes = lprimes.size();
+				integer primesprod = 1;
+				for (auto &p: lprimes)
+					primesprod *= p;
 #ifdef FFT_TIMING
 				std::cout<<"num of primes "<<nbrprimes<<"\n";
 #endif
