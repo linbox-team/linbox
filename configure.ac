@@ -326,6 +326,7 @@ linbox/ring/Makefile
 linbox/ring/ntl/Makefile
 linbox/ring/modular/Makefile
 linbox/solutions/Makefile
+linbox/solutions/solve/Makefile
 linbox/util/Makefile
 linbox/util/formats/Makefile
 linbox/vector/Makefile
