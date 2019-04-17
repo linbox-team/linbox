@@ -562,11 +562,8 @@ bool testDixonSmallFat() {
     A.setEntry(0, 2, 2);
     ZZ.assign(b[0], 1);
 
-    Method::Dixon rationalLifting;
-    rationalLifting.singularSolutionType = SingularSolutionType::Deterministic;
-
     // Calling Dixon
-    solve(x, d, A, b, rationalLifting );
+    solve(x, d, A, b, Method::Dixon(SingularSolutionType::Deterministic) );
 
     A.apply(r,x);
     ZZ.divin(r[0],d);
