@@ -56,7 +56,7 @@ namespace LinBox
 				 *  the randomness is on the FFT primes lying in the given range
 				 *  an error is thrown if no such prime exist
 		 */
-		inline Prime_Type randomPrime (size_t b) const
+		inline Prime_Type randomPrime (uint64_t b) const
 		{
 			integer tmp;
 			randomPrime(tmp,b);
