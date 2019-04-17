@@ -193,11 +193,13 @@ namespace LinBox {
         int32_t mpSize = mpzStruct->_mp_size;
         auto bytesWritten = serialize(bytes, mpSize);
 
-        // @todo As said, we're not sure of how many bytes we will write here,
-        // because mp_limb_t can be either 32 or 64 bytes-long depending on configuration.
-        // This means it's not platform-independent yet.
+        /**
+         * @note As said, we're not sure of how many bytes we will write here,
+         * because mp_limb_t can be either 32 or 64 bytes-long depending on configuration.
+         * We force it to be 64 bit-long so that it becomes platform-independent.
+         */
         for (auto i = 0, l = std::abs(mpSize); i < l; ++i) {
-            bytesWritten += serialize(bytes, mpzStruct->_mp_d[i]);
+            bytesWritten += serialize(bytes, static_cast<uint64_t>(mpzStruct->_mp_d[i]));
         }
 
         return bytesWritten;
