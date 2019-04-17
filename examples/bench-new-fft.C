@@ -263,9 +263,8 @@ int main(int argc, char** argv){
 	long seed=((argc>2)?atoi(argv[2]):time(NULL));
 	size_t l2n = 20;
 	size_t k = l2n;
-	RandomFFTPrime Rd;
 	uint32_t p;
-
+    integer prime;
 
 	//Modular<double,double>
 	
@@ -295,8 +294,10 @@ int main(int argc, char** argv){
 	*/
 	//Modular<uint32_t,uint64_t>
 	bits = 27;
-	Rd = RandomFFTPrime (1<<bits,seed);
-	p = (uint32_t)Rd.randomPrime(l2n);
+	RandomFFTPrime::seeding (seed);
+	if (!RandomFFTPrime::randomPrime (prime, 1<<bits, l2n))
+		throw LinboxError ("RandomFFTPrime::randomPrime failed");
+	p = (uint32_t) prime;
 
 	Givaro::Modular<uint32_t,uint64_t> Fi32(p);
 	Fi32.write(cout)<<endl;
@@ -308,8 +309,9 @@ int main(int argc, char** argv){
 	//Modular<uint16_t,uint32_t>
 	bits = 11;
 	k = l2n = 7;
-	Rd = RandomFFTPrime (1<<bits,seed);
-	p = (uint16_t)Rd.randomPrime(l2n);
+	if (!RandomFFTPrime::randomPrime (prime, 1<<bits, l2n))
+		throw LinboxError ("RandomFFTPrime::randomPrime failed");
+	p = (uint16_t) prime;
 	
 
 	Givaro::Modular<uint16_t,uint32_t> Fi16(p);

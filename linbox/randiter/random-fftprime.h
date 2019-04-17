@@ -32,206 +32,137 @@
 
 namespace LinBox
 {
-
 	class RandomFFTPrime {
 	public:
-		// define the prime type
-		typedef integer Prime_Type;
+		typedef integer PrimeType; /* define the prime type */
+		typedef std::vector<PrimeType> VectPrime;
+		static const int32_t probab_prime_ntests = 25;
+		static const size_t max_ntries = 256;
 
-		uint64_t           _bits;
-		Prime_Type  _prime_bound;
-
-		RandomFFTPrime(Prime_Type pbound=0x100000, unsigned long seed = 0) :
-			_bits(pbound.bitsize()), _prime_bound(pbound)
-		{
-			if (! seed)
-				RandomFFTPrime::setSeed( (unsigned long)BaseTimer::seed() );
-			else
-				RandomFFTPrime::setSeed( seed );
-		}
-
-		
-		/** @brief randomPrime(size_t b)
-		 *  return a random FFT prime with a 2-valuation larger than b in its order
-				 *  the randomness is on the FFT primes lying in the given range
-				 *  an error is thrown if no such prime exist
+		/* Set p to an odd random prime such that
+		 *  - p < pbound
+		 *  - 2^k divides p-1
+		 *
+		 * The function repeatedly draws a random positive integer m and check
+		 * if m*2^k+1 is prime, using Givaro::Protected::probab_prime.
+		 *
+		 * If after max_ntries tries, the function fails to find a prime, it
+		 * returns false and p is set to 0.
 		 */
-		inline Prime_Type randomPrime (uint64_t b) const
+		static inline bool randomPrime (PrimeType &p, const PrimeType &pbound, uint64_t k)
 		{
-			integer tmp;
-			randomPrime(tmp,b);
-			return tmp;
-		}
-
-		/** @brief randomPrime(Prime_Type& p, size_t b)
-		 *  return a random FFT prime with a 2-valuation larger than b in its order
-				 *  the randomness is on the FFT primes lying in the given range
-				 *  an error is thrown if no such prime exist
-		 */
-		inline Prime_Type randomPrime (Prime_Type& t, uint64_t b) const
-		{
-			linbox_check(b<_bits);
-			size_t tresh;
-			do {
-				size_t cbits= (size_t)rand() %(_bits-b);
-				tresh = 1<<(cbits);
-				uint64_t p = 1<<((size_t)_bits-cbits);
-				do {
-					integer::random(t,cbits);
-					t = t*integer(p)+1;
-					tresh--;
-				} while (!Givaro::Protected::probab_prime(t,25) && (tresh));
-			}
-			while(tresh==0);
-			linbox_check(Givaro::Protected::probab_prime(t,25))
-					return t;
-		}
-
-		/** @brief generatePrime()
-		 *  return a FFT prime with the largest 2-valuation in its order
-		 */
-		inline Prime_Type generatePrime() const
-		{
-			integer tmp;
-			generatePrime(tmp);
-			return tmp;
-		}
-
-		/** @brief generatePrime(Prime_Type& p)
-		 *  return a FFT prime with the largest 2-valuation in its order
-		 */
-		inline Prime_Type generatePrime (Prime_Type& t) const
-		{
-			size_t cbits=1;
-			size_t tresh;
-			do {
-				tresh = 1<<(cbits);
-				uint64_t p = 1<<((size_t)_bits-cbits);
-				do {
-					integer::random(t,cbits);
-					t = t*integer(p)+1;
-					tresh--;
-				} while (!Givaro::Protected::probab_prime(t,25) && (tresh));
-				cbits++;
-			}
-			while(tresh==0);
-
-			return t;
-		}
-
-		// generate a vector of distinct FFT primes with largest 2-valuation
-		// s.t. their product is larger than a given bound
-		inline std::vector<Prime_Type> generatePrimes (const Prime_Type & bound) const {
-			std::vector<Prime_Type> primes;
-			Prime_Type prod=1;
-			integer tmp;
-			for (int64_t b = _bits - 1; b >= 0; b--)
-				for (int64_t l = ((int64_t)1 << (_bits - b - 1)) + 1; l < (1L << (_bits - b)); l +=2) {
-					tmp = ((int64_t)1 << b) * l + 1;
-					if (Givaro::Protected::probab_prime(tmp, 25) >= 1) {
-						primes.push_back(tmp);
-						prod*=tmp;
-						if (prod > bound)
-							return primes;
-					}
-				}
-			linbox_check(prod > bound ); // Could not find enough primes
-			return primes;
-		}
-
-		// generate a vector of distinct FFT primes with largest 2-valuation
-		// s.t. their product is larger than a given bound
-		inline bool generatePrimes (const Prime_Type & bound, std::vector<Prime_Type> &primes) const {
-			primes.clear();
-			Prime_Type prod=1;
-			integer tmp;
-			for (int64_t b = (int64_t)_bits - 1; b >= 0; b--)
-				for (int64_t l = (1L << ((int64_t)_bits - b - 1)) + 1; l < (1L << ((int64_t)_bits - b)); l +=2) {
-					tmp = (1L << b) * l + 1;
-					if (Givaro::Protected::probab_prime(tmp, 25) >= 1) {
-						primes.push_back(tmp);
-						prod*=tmp;
-						if (prod > bound){
-							return true;
-						}
-					}
-				}
-			return false; // false -> Could not find enough primes
-		}
-
-		size_t twoVal(integer t) const {
-			integer x=t;
-			size_t v=0;
-			while(x%2 == 0) {v++;x/=2;}
-			return v;
-		}
-
-		// generate a vector of distinct FFT primes with  2-valuation largest than val
-		// s.t. their product is larger than a given bound
-		inline bool generatePrimes ( uint64_t val, const Prime_Type & bound, std::vector<Prime_Type> &primes) const {
-			primes.clear();
-			Prime_Type prod=1;
-			integer tmp;
-			// std::cout<<"rns bound: "<<bound<<std::endl;
-			// std::cout<<"2 valuation: "<<val<<std::endl;
-			// std::cout<<"prime bitmax: "<<_bits<<std::endl;
-			// std::cout<<"prime max: "<<_prime_bound<<std::endl;
-
-			if (val > _bits) return false;
-
-#if 0
-			for (int64_t b = (int64_t)_bits; b >= (int64_t)val; b--)
-				// for (uint64_t l = (1ULL << ((int64_t)_bits - b - 1)) + 1; l < (1ULL << ((int64_t)_bits - b)); l +=2) {
-				for (int64_t l = ((int64_t)1 << ((int64_t)_bits - b)) - 1; l >=1; l -=2) {
-					tmp = ((int64_t)1 << b) * l + 1;
-					if (Givaro::Protected::probab_prime(tmp, 25) >= 1) {
-						primes.push_back(tmp);
-						prod*=tmp;
-						//std::cout<<tmp<<" -> "<<tmp.bitsize()<<" (order="<<twoVal(tmp-1)<<") "<<prod<<std::endl;
-						if (prod > bound){
-							return true;
-						}
-					}
-				}
-#else
-			for (int64_t l = (_prime_bound -1) >>val ; l >=1; l -=1) {
-				tmp = ((int64_t)1 << val) * l + 1;
-				if (Givaro::Protected::probab_prime(tmp, 25) >= 1) {
-					primes.push_back(tmp);
-					prod*=tmp;
-					//std::cout<<tmp<<" -> "<<tmp.bitsize()<<" (order="<<twoVal(tmp-1)<<") "<<prod<<std::endl;
-					if (prod > bound){
-						// try to replace the last prime with a smallest one
-						for (int64_t k=1;k<l;k++){
-							tmp = ((int64_t)1 << val) * k + 1;
-							if (Givaro::Protected::probab_prime(tmp, 25) >= 1) {
-								if (prod*tmp > bound*primes.back()){
-									//std::cout<<"replacing prime "<<primes.back()<<" with "<<tmp<< " -> "<<tmp.bitsize()<<" (order="<<twoVal(tmp-1)<<") ";
-									prod/=primes.back();
-									primes.back()=tmp;
-									prod*=tmp;
-									//std::cout<<prod<<std::endl;
-									return true;
-								}
-							}
-						}
-
+			using Givaro::Protected::probab_prime;
+			integer B = compute_max_m (pbound, k);
+			if (B > 0)
+			{
+				for (size_t ntries = 0; ntries < max_ntries; ntries++)
+				{
+					integer::random_lessthan (p, B); /* 0 <= p < B */
+					p = ((p+1) << k) + 1; /* 2^k+1 <= p < pbound */
+					if (probab_prime (p, probab_prime_ntests))
 						return true;
+				}
+			}
+			p = 0;
+			return false;
+		}
+
+		/* Set p to the largest odd prime satisfying
+		 *  - p < pbound
+		 *  - the 2-valuation of p-1 is maximal and >= kmin
+		 *
+		 * The function sets p to 0 and returns false, if there is no odd prime
+		 * below pbound.
+		 */
+		static inline bool generatePrime (PrimeType &p, const PrimeType &pbound, size_t kmin = 1)
+		{
+			using Givaro::Protected::probab_prime;
+			if (!kmin) /* set kmin to 1 if k == 0 */
+				kmin++;
+			for (size_t k = (pbound-2).bitsize()-1; k >= kmin; k--)
+			{
+				integer m = compute_max_m (pbound, k);
+				/* test only odd value of m, so k is exactly the 2-valuation */
+				if (!Givaro::isOdd (m))
+					m--;
+				for ( ; m > 0; m -= 2)
+				{
+					p = (m << k) + 1; /* p = m*2^k+1 */
+					if (probab_prime (p, probab_prime_ntests))
+						return true;
+				}
+			}
+			p = 0;
+			return false;
+		}
+
+		/* Set primes to a vector of distinct primes pi such that
+		 *  - pi < pbound
+		 *  - prod pi >= prodbound
+		 *  - the 2-valuation of pi-1 is >= kmin and as large as possible
+		 *
+		 * The function returns false if there is no enough primes. In this
+		 * case, the vector still contains the primes found so far.
+		 */
+		static inline bool generatePrimes (VectPrime &primes, const PrimeType &pbound, const PrimeType & prodbound, size_t kmin = 1)
+		{
+			using Givaro::Protected::probab_prime;
+			primes.clear();
+			PrimeType p, prod = 1;
+			if (!kmin) /* set kmin to 1 if k == 0 */
+				kmin++;
+			for (size_t k = (pbound-2).bitsize()-1; k > kmin; k--)
+			{
+				integer m = compute_max_m (pbound, k);
+				/* test only odd value of m, so k is exactly the 2-valuation */
+				if (!Givaro::isOdd (m))
+					m--;
+				for ( ; m > 0; m -= 2)
+				{
+					p = (m << k) + 1; /* p = m*2^k+1 */
+					if (probab_prime (p, probab_prime_ntests))
+					{
+						primes.push_back (p);
+						prod *= p;
+						if (prod > prodbound)
+							return true;
 					}
 				}
 			}
-
-
-#endif
-			return false; // false -> Could not find enough primes
+			return false;
 		}
 
-		/** @brief setSeed (unsigned long ul)
-		 *  Set the random seed to be ul.
-		 */
-		void static setSeed(unsigned long ul)
+		/* Set the random seed */
+		static inline void seeding (uint64_t seed)
 		{
-			integer::seeding(ul);
+			integer::seeding (seed);
+		}
+		static inline void seeding (const Integer &seed)
+		{
+			integer::seeding (seed);
+		}
+		static inline void seeding ()
+		{
+			integer::seeding ();
+		}
+
+	private:
+		RandomFFTPrime ()
+		{
+		}
+
+		/* Given bound and k, compute maximum value of m such that
+		 *      m*2^k+1 < bound  (Eq. 1)
+		 *
+		 * (Eq. 1) <=>   m < (bound-1)/2^k
+		 *              <=>   m <= ((bound-1) >> k)-1      if 2^k | bound-1
+		 *                    m <= (bound-1) >> k          otherwise
+		 */
+		static inline PrimeType compute_max_m (const PrimeType &bound, size_t k)
+		{
+			integer B = bound-1;
+			B = (B & (uint64_t) ((1<<k) - 1)) ? (B >> k) : (B >> k) - 1;
+			return B;
 		}
 	};
 }
