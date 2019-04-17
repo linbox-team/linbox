@@ -125,12 +125,12 @@ namespace LinBox
 	 * -  Ring: ring over which entries are defined
 	 * -  Field: finite field for p-adic lifting
 	 * -  RandomPrime: generator of random primes
-	 * -  MethodTraits: type of subalgorithm to use in p-adic lifting (default is Method::Dixon)
+	 * -  MethodTraits: type of subalgorithm to use in p-adic lifting (default is Method::DenseElimination)
 	 * .
 	 *
 	 * \ingroup padic
 	 */
-	template<class Ring, class Field, class RandomPrime, class MethodTraits = Method::Dixon>
+	template<class Ring, class Field, class RandomPrime, class MethodTraits = Method::DenseElimination>
 	class DixonSolver {
 
 	public:

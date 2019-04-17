@@ -395,7 +395,7 @@ int main(int argc, char** argv) {
 	pass = pass && part_pass;
 	if(run & 4){
 		PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<DField>::bestBitSize(A.coldim()));
-		DixonSolver<Ring, DField, PrimeIterator<IteratorCategories::HeuristicTag>, Method::Dixon> rsolver(R, genprime);
+		DixonSolver<Ring, DField, PrimeIterator<IteratorCategories::HeuristicTag>, Method::DenseElimination> rsolver(R, genprime);
 		part_pass = testRandomSolve(R, rsolver, A, b);
 		report << "dixon: " << (part_pass ? "pass" : "fail") << std::endl << std::endl;
 	}

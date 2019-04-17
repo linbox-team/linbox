@@ -64,10 +64,8 @@ namespace LinBox {
      *  1982.
      *
      */
-
-    // @fixme Replace that Method::Dixon with Method::DenseElimination
     template <class Ring, class Field, class RandomPrime>
-    class DixonSolver<Ring, Field, RandomPrime, Method::Dixon> {
+    class DixonSolver<Ring, Field, RandomPrime, Method::DenseElimination> {
 
     public:
         typedef Ring RingType;
