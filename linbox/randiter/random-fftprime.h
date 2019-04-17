@@ -74,12 +74,12 @@ namespace LinBox
 		 * The function sets p to 0 and returns false, if there is no odd prime
 		 * below pbound.
 		 */
-		static inline bool generatePrime (PrimeType &p, const PrimeType &pbound, size_t kmin = 1)
+		static inline bool generatePrime (PrimeType &p, const PrimeType &pbound, uint64_t kmin = 1)
 		{
 			using Givaro::Protected::probab_prime;
 			if (!kmin) /* set kmin to 1 if k == 0 */
 				kmin++;
-			for (size_t k = (pbound-2).bitsize()-1; k >= kmin; k--)
+			for (uint64_t k = (pbound-2).bitsize()-1; k >= kmin; k--)
 			{
 				integer m = compute_max_m (pbound, k);
 				/* test only odd value of m, so k is exactly the 2-valuation */
@@ -104,14 +104,14 @@ namespace LinBox
 		 * The function returns false if there is no enough primes. In this
 		 * case, the vector still contains the primes found so far.
 		 */
-		static inline bool generatePrimes (VectPrime &primes, const PrimeType &pbound, const PrimeType & prodbound, size_t kmin = 1)
+		static inline bool generatePrimes (VectPrime &primes, const PrimeType &pbound, const PrimeType & prodbound, uint64_t kmin = 1)
 		{
 			using Givaro::Protected::probab_prime;
 			primes.clear();
 			PrimeType p, prod = 1;
 			if (!kmin) /* set kmin to 1 if k == 0 */
 				kmin++;
-			for (size_t k = (pbound-2).bitsize()-1; k > kmin; k--)
+			for (uint64_t k = (pbound-2).bitsize()-1; k > kmin; k--)
 			{
 				integer m = compute_max_m (pbound, k);
 				/* test only odd value of m, so k is exactly the 2-valuation */
@@ -158,7 +158,7 @@ namespace LinBox
 		 *              <=>   m <= ((bound-1) >> k)-1      if 2^k | bound-1
 		 *                    m <= (bound-1) >> k          otherwise
 		 */
-		static inline PrimeType compute_max_m (const PrimeType &bound, size_t k)
+		static inline PrimeType compute_max_m (const PrimeType &bound, uint64_t k)
 		{
 			integer B = bound-1;
 			B = (B & (uint64_t) ((1<<k) - 1)) ? (B >> k) : (B >> k) - 1;
