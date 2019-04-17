@@ -124,8 +124,10 @@ bool runTest(uint64_t m,uint64_t n, uint64_t d, long seed){
     
 	// fourier prime < 2^(53--log(n))/2
 	{
-		RandomFFTPrime Rd(1<<bits,seed);
-		integer p = Rd.randomPrime(integer(d).bitsize()+1);		
+		integer p;
+		RandomFFTPrime::seeding (seed);
+		if (!RandomFFTPrime::randomPrime (p, 1<<bits, integer(d).bitsize()+1))
+			throw LinboxError ("RandomFFTPrime::randomPrime failed");
 		SmallField  F((int32_t)p);
         typename SmallField::RandIter G(F,0,seed);
         report<<"   - checking with small FFT prime p="<<p<<endl;
