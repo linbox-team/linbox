@@ -254,13 +254,13 @@ namespace LinBox
 		PrimeIterator<IteratorCategories::HeuristicTag> genprime1(FieldTraits<mymodular>::bestBitSize(A.coldim()));
 
 		Integers ZZ;
-		DixonSolver < Integers , mymodular, PrimeIterator<IteratorCategories::HeuristicTag>, Method::Dixon > RSolver(A. field(), genprime);
+		DixonSolver < Integers , mymodular, PrimeIterator<IteratorCategories::HeuristicTag>, Method::DenseElimination > RSolver(A. field(), genprime);
 #endif
-		DixonSolver < Integers , mymodular, PrimeIterator<IteratorCategories::HeuristicTag>, Method::Dixon > RSolver;
+		DixonSolver < Integers , mymodular, PrimeIterator<IteratorCategories::HeuristicTag>, Method::DenseElimination > RSolver;
 
 		BlasVector<Integers> r_num1 (A.field(),A. coldim());
 
-		LastInvariantFactor < Integers ,DixonSolver < Integers, mymodular, PrimeIterator<IteratorCategories::HeuristicTag>, Method::Dixon > >  LIF(RSolver);
+		LastInvariantFactor < Integers ,DixonSolver < Integers, mymodular, PrimeIterator<IteratorCategories::HeuristicTag>, Method::DenseElimination > >  LIF(RSolver);
 #ifdef _LB_H_DET_TIMING
 		BT.start();
 #endif

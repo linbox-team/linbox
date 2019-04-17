@@ -33,7 +33,7 @@ namespace LinBox {
 
     template <class Ring, class Field, class RandomPrime>
     template <class IMatrix, class Vector1, class Vector2>
-    SolverReturnStatus DixonSolver<Ring, Field, RandomPrime, Method::Dixon>::solve(
+    SolverReturnStatus DixonSolver<Ring, Field, RandomPrime, Method::DenseElimination>::solve(
         Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, const bool old, int maxP,
         const SolverLevel level)
     {
@@ -63,7 +63,7 @@ namespace LinBox {
 
     template <class Ring, class Field, class RandomPrime>
     template <class IMatrix, class Vector1, class Vector2>
-    SolverReturnStatus DixonSolver<Ring, Field, RandomPrime, Method::Dixon>::solveNonsingular(
+    SolverReturnStatus DixonSolver<Ring, Field, RandomPrime, Method::DenseElimination>::solveNonsingular(
         Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, bool oldMatrix,
         int maxPrimes)
     {
@@ -156,7 +156,7 @@ namespace LinBox {
 
     template <class Ring, class Field, class RandomPrime>
     template <class IMatrix, class Vector1, class Vector2>
-    SolverReturnStatus DixonSolver<Ring, Field, RandomPrime, Method::Dixon>::solveSingular(
+    SolverReturnStatus DixonSolver<Ring, Field, RandomPrime, Method::DenseElimination>::solveSingular(
         Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes,
         const SolverLevel level)
     {
@@ -165,7 +165,7 @@ namespace LinBox {
 
     template <class Ring, class Field, class RandomPrime>
     template <class IMatrix, class Vector1, class Vector2>
-    SolverReturnStatus DixonSolver<Ring, Field, RandomPrime, Method::Dixon>::findRandomSolution(
+    SolverReturnStatus DixonSolver<Ring, Field, RandomPrime, Method::DenseElimination>::findRandomSolution(
         Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes,
         const SolverLevel level)
     {
@@ -285,11 +285,10 @@ namespace LinBox {
     }
 
     // ---------------------------------------------
-    // @fixme WE SHOULD TAKE Method::Dixon as a parameter, would be simpler
     // SS_FAILED means that we will need to try a new prime
     template <class Ring, class Field, class RandomPrime>
     template <class TAS>
-    SolverReturnStatus DixonSolver<Ring, Field, RandomPrime, Method::Dixon>::
+    SolverReturnStatus DixonSolver<Ring, Field, RandomPrime, Method::DenseElimination>::
         solveApparentlyInconsistent(const BlasMatrix<Ring>& A, TAS& tas,
                                     BlasMatrix<Field>* Atp_minor_inv, size_t rank,
                                     const MethodBase& method)
@@ -378,7 +377,7 @@ namespace LinBox {
 
     template <class Ring, class Field, class RandomPrime>
     template <class TAS>
-    void DixonSolver<Ring, Field, RandomPrime, Method::Dixon>::makeConditioner(
+    void DixonSolver<Ring, Field, RandomPrime, Method::DenseElimination>::makeConditioner(
         BlasMatrix<Ring>& A_minor, BlasMatrix<Field>*& Ap_minor_inv, BlasMatrix<Ring>*& B,
         BlasMatrix<Ring>*& P, const BlasMatrix<Ring>& A, TAS& tas, BlasMatrix<Field>* Atp_minor_inv,
         size_t rank, const MethodBase& method)
@@ -489,7 +488,7 @@ namespace LinBox {
 
     template <class Ring, class Field, class RandomPrime>
     template <class IMatrix, class Vector1, class Vector2>
-    SolverReturnStatus DixonSolver<Ring, Field, RandomPrime, Method::Dixon>::monolithicSolve(
+    SolverReturnStatus DixonSolver<Ring, Field, RandomPrime, Method::DenseElimination>::monolithicSolve(
         Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, const Method::Dixon& method)
     {
         using LiftingContainer =

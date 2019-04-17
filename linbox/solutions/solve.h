@@ -80,7 +80,7 @@ namespace LinBox {
      *      - Otherwise > Error
      * - Method::Dixon
      *      - IntegerTag
-     *      |   - DenseMatrix   > `DixonSolver<..., Method::Dixon>`
+     *      |   - DenseMatrix   > `DixonSolver<..., Method::DenseElimination>`
      *      |   - SparseMatrix  > `DixonSolver<..., Method::SparseElimination>`
      *      |   - Otherwise     >  Error
      *      - Otherwise > Error
