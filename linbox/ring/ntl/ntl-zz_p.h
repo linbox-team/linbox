@@ -475,16 +475,17 @@ namespace LinBox
 	template <>
 	class UnparametricRandIter<NTL::ZZ_p> {
 	protected:
-		integer _size,_seed;
+		integer _size;
+        uint64_t _seed;
         const NTL_ZZ_p & _ring;
 	public:
 
 		UnparametricRandIter<NTL::ZZ_p> (const NTL_ZZ_p & F,
 						 const integer& size = 0,
-						 const integer& seed = 0) :
+						 const uint64_t seed = 0) :
                 _size(size), _seed(seed), _ring(F)
 		{
-			if (_seed == integer(0)) _seed = int64_t(time(NULL));
+			if (_seed == 0) _seed = uint64_t(time(NULL));
 
 			integer cardinality;
 			F.cardinality(cardinality);

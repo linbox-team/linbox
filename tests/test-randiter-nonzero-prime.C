@@ -129,8 +129,8 @@ bool testMask(PGenerator& genprime, unsigned int iterations, size_t numproc, siz
 	commentator().start ("Testing masked prime random elements", "testMaskedPrimeRandom", iterations);
 
     bool pass(true);
-    const size_t MAXMASK = ( (1U<<genprime.getShift())-1);
-    const size_t EXPECTS = (numproc<<1) | 0x1;
+    const uint64_t MAXMASK = ( (UINT64_C(1)<<genprime.getShift())-1);
+    const uint64_t EXPECTS = (numproc<<1) | 0x1;
     if (EXPECTS != genprime.getMask()) pass = false;
 
     for(size_t i=0; i<iterations; ++i, ++genprime) {

@@ -52,10 +52,10 @@ namespace LinBox
 		 */
 		LidiaGfqRandIter(const field& F,
 				 const integer& size = 0,
-				 const integer& seed = 0) :
+				 const uint64_t seed = 0) :
 			_size(size), _seed(seed) , GF(F)
 		{
-			if (_seed == integer(0)) _seed = time(NULL);
+			if (_seed == 0) _seed = time(NULL);
 
 			integer cardinality ;
 			F.cardinality(cardinality);
@@ -133,7 +133,7 @@ namespace LinBox
 		integer _size;
 
 		/// Seed
-		integer _seed;
+		uint64_t _seed;
 
 		field GF;
 
