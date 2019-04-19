@@ -49,11 +49,11 @@ namespace LinBox
 
 		ParamFuzzyRandIter (/*const ParamFuzzy &F, */
 				   const integer &size = 0,
-				   const uint64_t &seed = 0) :
+				   const uint64_t seed = 0) :
 		       	_field (ParamFuzzy()), _size (size), _seed (seed)
 		{
 			/*if (_size == 0) F.cardinality (_size);*/
-			if (_seed == 0) _seed = (uint64_t)time (NULL);
+			if (_seed == 0) _seed = time (NULL);
 		}
 
 		ParamFuzzyRandIter (const ParamFuzzy &F,
@@ -62,7 +62,7 @@ namespace LinBox
 		       	_field (F), _size (size), _seed (seed)
 		{
 			if (_size == 0) F.cardinality (_size);
-			if (_seed == 0) _seed = (uint64_t)time (NULL);
+			if (_seed == 0) _seed = time (NULL);
 		}
 
 		ParamFuzzyRandIter (const ParamFuzzyRandIter &R) :
