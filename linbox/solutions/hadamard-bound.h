@@ -302,7 +302,7 @@ namespace LinBox {
             return 0.0;
         }
 
-        auto n = std::max(A.rowdim(), A.coldim());
+        uint64_t n = std::max(A.rowdim(), A.coldim());
         double logBound = static_cast<double>(n) * (Givaro::logtwo(n) / 2.0 + Givaro::logtwo(max));
         return logBound;
     }
