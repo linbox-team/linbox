@@ -210,7 +210,7 @@ namespace LinBox {
         __mpz_struct* mpzStruct = integer.get_mpz();
 
         int32_t mpSize;
-        uint32_t bytesRead = 0u;
+        uint64_t bytesRead = 0u;
         bytesRead += unserialize(mpSize, bytes, offset + bytesRead);
 
         mpzStruct->_mp_alloc = std::abs(mpSize);
@@ -218,7 +218,9 @@ namespace LinBox {
         _mpz_realloc(mpzStruct, mpzStruct->_mp_alloc);
 
         for (auto i = 0, l = std::abs(mpSize); i < l; ++i) {
-            bytesRead += unserialize(mpzStruct->_mp_d[i], bytes, offset + bytesRead);
+            uint64_t tmp;
+            bytesRead += unserialize(tmp, bytes, offset + bytesRead);
+            mpzStruct->_mp_d[i] = tmp;
         }
 
         return bytesRead;
