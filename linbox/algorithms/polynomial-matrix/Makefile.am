@@ -36,5 +36,9 @@ pkgincludesub_HEADERS =         \
 	polynomial-fft-transform.h	\
 	polynomial-fft-transform.inl	\
 	polynomial-matrix-domain.h	\
+	polynomial-fft-algorithms.h	\
+	polynomial-fft-butterflies.h	\
+	polynomial-fft-init.h	\
+	simd-additional-functions.h	\
         simd.h		\
 	order-basis.h
