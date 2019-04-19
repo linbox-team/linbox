@@ -89,7 +89,7 @@ namespace LinBox
 		 */
 		RandIterArchetype (const FieldArchetype &F,
 				   const integer &size = 0,
-				   const uint64_t &seed = 0)
+				   const uint64_t seed = 0)
                         {_randIter_ptr = F._randIter_ptr->construct (*(F._field_ptr), size, seed);}
 
 		/** Copy constructor.
@@ -116,7 +116,7 @@ namespace LinBox
 		template<class Field_qcq>
 		RandIterArchetype (Field_qcq *f,
 				   const integer &size = 0,
-				   const uint64_t &seed = 0)
+				   const uint64_t seed = 0)
 		{ constructor (f, f, size, seed); }
 
 
@@ -200,7 +200,7 @@ namespace LinBox
 		void constructor (FieldAbstract *trait,
 				  Field_qcq     *field_ptr,
 				  const integer &size = 0,
-				  const uint64_t &seed = 0)
+				  const uint64_t seed = 0)
 		{
 			typename Field_qcq::RandIter FRI(*field_ptr);
 			_randIter_ptr = FRI->construct (*field_ptr, size, seed);
@@ -218,7 +218,7 @@ namespace LinBox
 		void constructor (void      *trait,
 				  Field_qcq *field_ptr,
 				  const integer &size = 0,
-				  const integer &seed = 0)
+				  const integer seed = 0)
 		{
 			FieldEnvelope< Field_qcq > EnvF (*field_ptr);
 			constructor (static_cast<FieldAbstract*> (&EnvF), &EnvF, size, seed) ;

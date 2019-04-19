@@ -290,7 +290,7 @@ namespace LinBox
 					       const uint64_t seed = 0) :
                 _size(size), _seed(seed), _ring(F)
 		{
-			if (_seed == 0) _seed = uint64_t(time(NULL));
+			if (_seed == 0) _seed = time(NULL);
 
 			// integer cardinality;
 			// F.cardinality(cardinality);

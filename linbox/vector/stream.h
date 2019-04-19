@@ -437,7 +437,7 @@ namespace LinBox
 		typedef _Vector Vector;
 
 		RandomSparseStream (const Field &F, RandIter &r, double p,
-				    size_t N, size_t M = 0, uint64_t seed=(int)time (NULL)) :
+				    size_t N, size_t M = 0, uint64_t seed= time (NULL)) :
                 _field (F), 
                 _r1 (r), 
                 _r (r), 
@@ -445,7 +445,7 @@ namespace LinBox
                 _p (p), 
                 _m (M), 
                 _j (0),
-                MT (seed)
+                MT (static_cast<uint32_t>(seed))
 		{ setP (p); }
 
 		Vector &get (Vector &v)
@@ -517,9 +517,9 @@ namespace LinBox
 		typedef RandomSparseStream<Field, Vector, RandIter, VectorCategories::SparseAssociativeVectorTag > Self_t;
 
 		RandomSparseStream (const Field &F, RandIter &r, double p, size_t N,
-				    size_t M = 0, uint64_t seed=(uint64_t)time (NULL)) :
+				    size_t M = 0, uint64_t seed= time (NULL)) :
 			_field (F), _r1 (r), _r (_r1), _n (N), _k ((long) (p * N)), _j (0), _m (M),
-			MT (seed)
+			MT (static_cast<uint32_t>(seed))
 		{}
 
 		Vector &get (Vector &v)
@@ -571,9 +571,9 @@ namespace LinBox
 		typedef _Vector Vector;
 		typedef RandomSparseStream<Field, Vector, RandIter, VectorCategories::SparseParallelVectorTag > Self_t;
 
-		RandomSparseStream (const Field &F, RandIter &r, double p, size_t nn, size_t mm = 0, uint64_t  seed=(int)time (NULL)) :
+		RandomSparseStream (const Field &F, RandIter &r, double p, size_t nn, size_t mm = 0, uint64_t  seed= time (NULL)) :
 			_field (F), _r1 (r), _r (_r1), _n (nn), _m (mm), _j (0),
-			MT (seed)
+			MT (static_cast<uint32_t>(seed))
 		{ setP (p); }
 
 		Vector &get (Vector &v)
