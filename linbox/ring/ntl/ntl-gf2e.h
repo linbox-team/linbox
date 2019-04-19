@@ -206,7 +206,7 @@ public :
 		typedef NTL::GF2E Element;
 		UnparametricRandIter<NTL::GF2E>(const NTL_GF2E & F,
                                         const size_t& size = 0,
-                                        const size_t& seed = 0
+                                        const uint64_t seed = 0
                                         ) :
                 _size(size), _seed(seed)
             {
@@ -234,7 +234,7 @@ public :
 
 	protected:
 		size_t _size;
-		size_t _seed;
+		uint64_t _seed;
 	};
 
 
