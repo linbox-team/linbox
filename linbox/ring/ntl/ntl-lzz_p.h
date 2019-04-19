@@ -340,10 +340,10 @@ namespace LinBox
 
 		UnparametricRandIter<NTL::zz_p> (const NTL_zz_p & F,
                                          const integer& size=0,
-                                         const integer& seed=0) :
+                                         const uint64_t& seed=0) :
                 _size(size), _seed(seed), _ring(F)
             {
-                if (_seed == integer(0)) _seed = int64_t(time(NULL));
+                if (_seed == 0) _seed = int64_t(time(NULL));
 
                 integer cardinality;
                 F.cardinality(cardinality);
@@ -375,7 +375,8 @@ namespace LinBox
             }
         const NTL_zz_p& ring() const { return _ring; }
 	protected :
-		integer _size,_seed ;
+		integer _size;
+        uint64_t _seed ;
         const NTL_zz_p& _ring;
 	};
 

@@ -71,7 +71,7 @@ namespace LinBox
 		 */
 		virtual RandIterAbstract *construct (const FieldAbstract &F,
 						     const integer &size = 0,
-						     const integer &seed = 0) const = 0;
+						     const uint64_t &seed = 0) const = 0;
 
 		/** Virtual copy constructor.
 		 * Required because constructors cannot be virtual.
