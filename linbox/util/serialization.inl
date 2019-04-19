@@ -217,10 +217,12 @@ namespace LinBox {
         mpzStruct->_mp_size = mpSize;
         _mpz_realloc(mpzStruct, mpzStruct->_mp_alloc);
 
+        // @note We use this proxy limb for the very same reason
+        // than above: the GMP real limb can be 64 or 32.
+        uint64_t limb;
         for (auto i = 0, l = std::abs(mpSize); i < l; ++i) {
-            uint64_t tmp;
-            bytesRead += unserialize(tmp, bytes, offset + bytesRead);
-            mpzStruct->_mp_d[i] = tmp;
+            bytesRead += unserialize(limb, bytes, offset + bytesRead);
+            mpzStruct->_mp_d[i] = static_cast<mp_limb_t>(limb);
         }
 
         return bytesRead;
