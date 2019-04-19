@@ -50,6 +50,9 @@ namespace LinBox {
 		}
 	}; // FFT_butterflies
 
+    /**************************************************************************/
+    /* NoSimd, integral *******************************************************/
+    /**************************************************************************/
 	template<typename Field>
 	class FFT_butterflies<Field, NoSimd<typename Field::Element>, 1, IS_INTEGRAL> : public FFT_init<Field> {
 	public:
@@ -58,40 +61,53 @@ namespace LinBox {
 
 		FFT_butterflies(const FFT_init<Field>& f_i) : FFT_init<Field>(f_i) {}
 
-		inline void Butterfly_DIT_mod4p (Element& A, Element& B, const Element& alpha, const Element& alphap) {
-			// Harvey's algorithm
-			// 0 <= A,B < 4*p, p < 2^32 / 4
-			// alphap = Floor(alpha * 2^ 32 / p])
+        /* Compute A+B*alpha, A-B*alpha using Harvey's algorithm.
+         * Input must satisfy:
+         *  - 0 <= A,B < 4*p
+         *  - 0 <= alpha < p
+         *  - p < 2^#nbits(Element) / 4
+         *  - alphap = Floor(alpha * 2^#nbits(Element) / p)
+         * Ensure that output satisfy:
+         *  - 0 <= A,B < 4*p
+         *
+         * Note: maybe 2^#nbits(Element) should be maxCardinality ?
+         */
+        inline void
+        Butterfly_DIT_mod4p (Element& A, Element& B, const Element& alpha,
+                                                     const Element& alphap) {
+            A -= (A >= this->_dpl) ? this->_dpl : 0; /* substract 2p if >= 2p */
+            Element tmp;
+            this->fld->mul_precomp_b_without_reduction (tmp, B, alpha, alphap);
+            B = A + (this->_dpl - tmp);
+            A += tmp;
+        }
 
-			if (A >= this->_dpl) A -= this->_dpl;
+        /* Compute A+B, A-B*alpha using Harvey's algorithm.
+         * Input must satisfy:
+         *  - 0 <= A,B < 2*p
+         *  - 0 <= alpha < p
+         *  - p < 2^#nbits(Element) / 4
+         *  - alphap = Floor(alpha * 2^#nbits(Element) / p)
+         * Ensure that output satisfy:
+         *  - 0 <= A,B < 2*p
+         *
+         * Note: maybe 2^#nbits(Element) should be maxCardinality ?
+         */
+        inline void
+        Butterfly_DIF_mod2p (Element& A, Element& B, const Element& alpha,
+                                                     const Element& alphap) {
+            Element tmp = A;
+            A += B;
+            A -= (A >= this->_dpl) ? this->_dpl : 0; /* substract 2p if >= 2p */
+            B = tmp + (this->_dpl - B);
+            this->fld->mul_precomp_b_without_reduction (B, B, alpha, alphap);
+        }
 
-			Element tmp;
-			this->fld->mul_precomp_b (tmp, B, alpha, alphap);
+	};
 
-			B = A + (this->_dpl - tmp);
-			A += tmp;
-		}
-
-		inline void Butterfly_DIF_mod2p (Element& A, Element& B, const Element& alpha, const Element& alphap) {
-			// Harvey's algorithm
-			// 0 <= A,B < 2*p, p < 2^32 / 4
-			// alphap = Floor(alpha * 2^ 32 / p])
-
-			Element tmp = A;
-
-			A += B;
-
-			if (A >= this->_dpl) A -= this->_dpl;
-
-			B = tmp + (this->_dpl - B);
-
-			this->fld->mul_precomp_b (B, B, alpha, alphap);
-		}
-
-	}; // FFT_butterflies<Field, 1>
-
-	// ATTENTION à tous les uint64_t !!!!
-
+    /**************************************************************************/
+    /* Simd by 4, integral ****************************************************/
+    /**************************************************************************/
 	template<typename Field, typename simd>
 	class FFT_butterflies<Field, simd, 4, IS_INTEGRAL> : public FFT_init<Field> {
 	public:
@@ -261,6 +277,9 @@ namespace LinBox {
 	}; // FFT_butterflies<Field, 4>
 
 
+    /**************************************************************************/
+    /* Simd by 8, integral ****************************************************/
+    /**************************************************************************/
 	template<typename Field, typename simd>
 	class FFT_butterflies<Field, simd, 8, IS_INTEGRAL> : public FFT_init<Field> {
 	public:
@@ -482,6 +501,9 @@ namespace LinBox {
 
 	}; // FFT_butterflies<Field, 8>
 
+    /**************************************************************************/
+    /* NoSimd, floating *******************************************************/
+    /**************************************************************************/
     template<typename Field>
     class FFT_butterflies<Field, NoSimd<typename Field::Element>, 1, IS_FLOATING> : public FFT_init<Field> {
     public:
@@ -509,8 +531,9 @@ namespace LinBox {
 
     }; // FFT_butterflies<Field, 1, IS_FLOATING>
 
-	// ATTENTION à tous les uint64_t !!!!
-
+    /**************************************************************************/
+    /* Simd by 4, floating ****************************************************/
+    /**************************************************************************/
 	template<typename Field, typename simd>
 	class FFT_butterflies<Field, simd, 4, IS_FLOATING> : public FFT_init<Field> {
 	public:
