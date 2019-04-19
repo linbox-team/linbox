@@ -589,7 +589,7 @@ namespace LinBox
 			if(_seed == 0)
 				NTL::SetSeed(NTL::to_ZZ(time(0)));
 			else
-				NTL::SetSeed(NTL::to_ZZ(_seed));
+				NTL::SetSeed(NTL::to_ZZ(static_cast<long unsigned int>(_seed)));
 		}
 
         const NTL_zz_pX& ring() const { return _ring; }
@@ -600,7 +600,7 @@ namespace LinBox
 			if(_seed == 0)
 				NTL::SetSeed(NTL::to_ZZ(time(0)));
 			else
-				NTL::SetSeed(NTL::to_ZZ(_seed));
+				NTL::SetSeed(NTL::to_ZZ(static_cast<long unsigned int>(_seed)));
 		}
 
 		Element& random (Element& x) const
