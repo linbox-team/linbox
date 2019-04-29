@@ -218,6 +218,9 @@ namespace LinBox {
         // @fixme SingularSolutionType::Deterministic fails with Dense Dixon
         SingularSolutionType singularSolutionType = SingularSolutionType::Random;
 
+        // ----- For DixonRNS method.
+        uint32_t primeBaseLength = 16u; //!< How many primes to use lifting will be done over p = p1p2...pl.
+
         // ----- For random-based systems.
         size_t trialsBeforeFailure = LINBOX_DEFAULT_TRIALS_BEFORE_FAILURE; //!< Maximum number of trials before giving up.
         bool certifyInconsistency = false; //!< Whether the solver should attempt to find a certificate of inconsistency if
@@ -262,6 +265,11 @@ namespace LinBox {
         // Method::Dixon uses Dixon's p-adic lifting.
         // (Numerische Mathematik - Dixon 1982)
         DEFINE_METHOD(Dixon, RingCategories::IntegerTag);
+
+        // Method::DixonRNS uses RNS features over Dixon's p-adic lifting.
+        // (A BLAS Based C Library for Exact Linear Algebra on Integer Matrices - Chen, Storjohann ISSAC 2005)
+        // https://cs.uwaterloo.ca/~astorjoh/p92-chen.pdf
+        DEFINE_METHOD(DixonRNS, RingCategories::IntegerTag);
 
         // Method::ChineseRemainder uses the chinese remainder algorithm
         // to solve the problem on multiple modular domains,

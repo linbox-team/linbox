@@ -84,6 +84,11 @@ namespace LinBox {
      *      |   - SparseMatrix  > `RationalSolver<..., Method::SparseElimination>`
      *      |   - Otherwise     >  Error
      *      - Otherwise > Error
+     * - Method::DixonRNS
+     *      - IntegerTag
+     *      |   - DenseMatrix   > `DixonRNSSolver`
+     *      |   - Otherwise     >  Error
+     *      - Otherwise > Error
      * - Method::Blackbox > Method::Wiedemann
      * - Method::Wiedemann
      *      - ModularTag > `WiedemannSolver`
@@ -337,6 +342,7 @@ namespace LinBox {
 // Integer-based
 #include "./solve/solve-cra.h"
 #include "./solve/solve-dixon.h"
+#include "./solve/solve-dixon-rns.h"
 #include "./solve/solve-numeric-symbolic.h"
 
 // Blackbox
