@@ -94,8 +94,8 @@ namespace LinBox {
 
 #ifdef RSTIMING
         mutable Timer tSetup, ttSetup, tFastInvert,
-            ttFastInvert,                          // only done in deterministic or inconsistent
-            tCheckConsistency, ttCheckConsistency, // includes lifting the certificate
+            ttFastInvert,                                               // only done in deterministic or inconsistent
+            tCheckConsistency, ttCheckConsistency,                      // includes lifting the certificate
             tMakeConditioner, ttMakeConditioner, tInvertBP, ttInvertBP, // only done in random
             tCheckAnswer, ttCheckAnswer, tCertSetup,
             ttCertSetup, // remaining 3 only done when makeMinDenomCert = true
@@ -159,15 +159,14 @@ namespace LinBox {
          * lastCertificate if \c (level >= SL_CERTIFIED)
          */
         template <class IMatrix, class Vector1, class Vector2>
-        SolverReturnStatus solve(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b,
-                                 const bool s = false, const int maxPrimes = DEFAULT_MAXPRIMES,
-                                 const SolverLevel level = SL_DEFAULT);
+        SolverReturnStatus solve(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, const bool s = false,
+                                 const int maxPrimes = DEFAULT_MAXPRIMES, const SolverLevel level = SL_DEFAULT);
 
         // @fixme Can we remove that?
         /** overload so that the bool 'oldMatrix' argument is not accidentally set to true */
         template <class IMatrix, class Vector1, class Vector2>
-        SolverReturnStatus solve(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b,
-                                 const int maxPrimes, const SolverLevel level = SL_DEFAULT)
+        SolverReturnStatus solve(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, const int maxPrimes,
+                                 const SolverLevel level = SL_DEFAULT)
         {
             return solve(num, den, A, b, false, maxPrimes, level);
         }
@@ -189,8 +188,7 @@ namespace LinBox {
          *   .
          */
         template <class IMatrix, class Vector1, class Vector2>
-        SolverReturnStatus solveNonsingular(Vector1& num, Integer& den, const IMatrix& A,
-                                            const Vector2& b, bool s = false,
+        SolverReturnStatus solveNonsingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, bool s = false,
                                             int maxPrimes = DEFAULT_MAXPRIMES);
 
         /** Solve a general rectangular linear system \c Ax=b over quotient field of a ring.
@@ -212,9 +210,8 @@ namespace LinBox {
          * lastCertificate if <code>(level >= SL_CERTIFIED)</code>
          */
         template <class IMatrix, class Vector1, class Vector2>
-        SolverReturnStatus solveSingular(Vector1& num, Integer& den, const IMatrix& A,
-                                         const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES,
-                                         const SolverLevel level = SL_DEFAULT);
+        SolverReturnStatus solveSingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b,
+                                         int maxPrimes = DEFAULT_MAXPRIMES, const SolverLevel level = SL_DEFAULT);
 
         /** Find a random solution of the general linear system  \c Ax=b over quotient field of a
          * ring.
@@ -235,9 +232,8 @@ namespace LinBox {
          * if <code>(level >= SL_CERTIFIED)</code>
          */
         template <class IMatrix, class Vector1, class Vector2>
-        SolverReturnStatus findRandomSolution(Vector1& num, Integer& den, const IMatrix& A,
-                                              const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES,
-                                              const SolverLevel level = SL_DEFAULT);
+        SolverReturnStatus findRandomSolution(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b,
+                                              int maxPrimes = DEFAULT_MAXPRIMES, const SolverLevel level = SL_DEFAULT);
 
         /** Big solving routine to perform random solving and certificate generation.
          * Same arguments and return as findRandomSolution, except
@@ -264,8 +260,7 @@ namespace LinBox {
          *
          */
         template <class IMatrix, class Vector1, class Vector2>
-        SolverReturnStatus monolithicSolve(Vector1& num, Integer& den, const IMatrix& A,
-                                           const Vector2& b, const Method::Dixon& method);
+        SolverReturnStatus monolithicSolve(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, Method::Dixon method);
 
         Ring getRing() { return _ring; }
 
@@ -296,8 +291,7 @@ namespace LinBox {
         }
 
     public:
-        inline std::ostream& printTime(const Timer& timer, const char* title, std::ostream& os,
-                                       const char* pref = "")
+        inline std::ostream& printTime(const Timer& timer, const char* title, std::ostream& os, const char* pref = "")
         {
             if (&timer != &totalTimer) totalTimer += timer;
             if (timer.count() > 0) {
@@ -309,8 +303,7 @@ namespace LinBox {
                 return os;
         }
 
-        inline std::ostream& printDixonTime(const DixonTimer& timer, const char* title,
-                                            std::ostream& os)
+        inline std::ostream& printDixonTime(const DixonTimer& timer, const char* title, std::ostream& os)
         {
             if (timer.ttSetup.count() > 0) {
                 printTime(timer.ttSetup, "Setup", os, title);
@@ -349,8 +342,7 @@ namespace LinBox {
     private:
         /// Internal usage
         template <class TAS>
-        SolverReturnStatus solveApparentlyInconsistent(const BlasMatrix<Ring>& A, TAS& tas,
-                                                       BlasMatrix<Field>* Atp_minor_inv,
+        SolverReturnStatus solveApparentlyInconsistent(const BlasMatrix<Ring>& A, TAS& tas, BlasMatrix<Field>* Atp_minor_inv,
                                                        size_t rank, const MethodBase& method);
 
         /// Internal usage
@@ -358,10 +350,13 @@ namespace LinBox {
         /// @note Please note that Atp_minor_inv content *might* be changed after this function
         /// call.
         template <class TAS>
-        void makeConditioner(BlasMatrix<Ring>& A_minor, BlasMatrix<Field>*& Ap_minor_inv,
-                             BlasMatrix<Ring>*& B, BlasMatrix<Ring>*& P, const BlasMatrix<Ring>& A,
-                             TAS& tas, BlasMatrix<Field>* Atp_minor_inv, size_t rank,
-                             const MethodBase& method);
+        void makeConditioner(BlasMatrix<Ring>& A_minor, BlasMatrix<Field>*& Ap_minor_inv, BlasMatrix<Ring>*& B,
+                             BlasMatrix<Ring>*& P, const BlasMatrix<Ring>& A, TAS& tas, BlasMatrix<Field>* Atp_minor_inv,
+                             size_t rank, const MethodBase& method);
+
+        template <class Vector1, class Vector2, class TAS>
+        void certifyMinimalDenominator(const BlasMatrix<Ring>& A, const Vector2& b, const TAS& tas, const BlasMatrix<Ring>& B,
+                                       BlasMatrix<Ring>& A_minor, BlasMatrix<Field>& Ap_minor_inv, size_t rank);
     };
 }
 

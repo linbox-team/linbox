@@ -33,16 +33,15 @@ namespace LinBox {
 
     template <class Ring, class Field, class RandomPrime>
     template <class IMatrix, class Vector1, class Vector2>
-    SolverReturnStatus DixonSolver<Ring, Field, RandomPrime, Method::DenseElimination>::solve(
-        Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, const bool old, int maxP,
-        const SolverLevel level)
+    SolverReturnStatus DixonSolver<Ring, Field, RandomPrime, Method::DenseElimination>::solve(Vector1& num, Integer& den,
+                                                                                              const IMatrix& A, const Vector2& b,
+                                                                                              const bool old, int maxP,
+                                                                                              const SolverLevel level)
     {
         SolverReturnStatus status;
         int maxPrimes = maxP;
         while (maxPrimes > 0) {
-            auto nonSingularResult = (A.rowdim() == A.coldim())
-                                         ? solveNonsingular(num, den, A, b, old, maxPrimes)
-                                         : SS_SINGULAR;
+            auto nonSingularResult = (A.rowdim() == A.coldim()) ? solveNonsingular(num, den, A, b, old, maxPrimes) : SS_SINGULAR;
             switch (nonSingularResult) {
             case SS_OK: return SS_OK; break;
 
@@ -64,8 +63,7 @@ namespace LinBox {
     template <class Ring, class Field, class RandomPrime>
     template <class IMatrix, class Vector1, class Vector2>
     SolverReturnStatus DixonSolver<Ring, Field, RandomPrime, Method::DenseElimination>::solveNonsingular(
-        Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, bool oldMatrix,
-        int maxPrimes)
+        Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, bool oldMatrix, int maxPrimes)
     {
 
         int trials = 0, notfr;
@@ -157,8 +155,7 @@ namespace LinBox {
     template <class Ring, class Field, class RandomPrime>
     template <class IMatrix, class Vector1, class Vector2>
     SolverReturnStatus DixonSolver<Ring, Field, RandomPrime, Method::DenseElimination>::solveSingular(
-        Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes,
-        const SolverLevel level)
+        Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes, const SolverLevel level)
     {
         return monolithicSolve(num, den, A, b, false, false, maxPrimes, level);
     }
@@ -166,8 +163,7 @@ namespace LinBox {
     template <class Ring, class Field, class RandomPrime>
     template <class IMatrix, class Vector1, class Vector2>
     SolverReturnStatus DixonSolver<Ring, Field, RandomPrime, Method::DenseElimination>::findRandomSolution(
-        Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes,
-        const SolverLevel level)
+        Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes, const SolverLevel level)
     {
 
         return monolithicSolve(num, den, A, b, false, true, maxPrimes, level);
@@ -200,9 +196,8 @@ namespace LinBox {
             factors = new BlasMatrix<Field>(_field, A.coldim() + 1, A.rowdim());
 
             Hom<Ring, Field> Hmap(R, _field);
-            BlasMatrix<Field> Ap(
-                _field, A.rowdim(),
-                A.coldim()); // @fixme Shouldn't Ap(_field, A) work without map below?
+            BlasMatrix<Field> Ap(_field, A.rowdim(),
+                                 A.coldim()); // @fixme Shouldn't Ap(_field, A) work without map below?
             MatrixHom::map(Ap, A);
 
             // Setting factors = [Ap|0]t
@@ -253,8 +248,7 @@ namespace LinBox {
     // - INCONSISTENT if A == 0 and b != 0 (also sets certificate)
     // - OK if A == 0 and b == 0
     template <class Matrix, class Vector, class Ring = typename Matrix::Field>
-    SolverReturnStatus certifyEmpty(const Matrix& A, const Vector& b, const MethodBase& method,
-                                    Integer& certifiedDenFactor)
+    SolverReturnStatus certifyEmpty(const Matrix& A, const Vector& b, const MethodBase& method, Integer& certifiedDenFactor)
     {
         const Ring& R = A.field();
 
@@ -288,13 +282,10 @@ namespace LinBox {
     // SS_FAILED means that we will need to try a new prime
     template <class Ring, class Field, class RandomPrime>
     template <class TAS>
-    SolverReturnStatus DixonSolver<Ring, Field, RandomPrime, Method::DenseElimination>::
-        solveApparentlyInconsistent(const BlasMatrix<Ring>& A, TAS& tas,
-                                    BlasMatrix<Field>* Atp_minor_inv, size_t rank,
-                                    const MethodBase& method)
+    SolverReturnStatus DixonSolver<Ring, Field, RandomPrime, Method::DenseElimination>::solveApparentlyInconsistent(
+        const BlasMatrix<Ring>& A, TAS& tas, BlasMatrix<Field>* Atp_minor_inv, size_t rank, const MethodBase& method)
     {
-        using LiftingContainer =
-            DixonLiftingContainer<Ring, Field, BlasMatrix<Ring>, BlasMatrix<Field>>;
+        using LiftingContainer = DixonLiftingContainer<Ring, Field, BlasMatrix<Ring>, BlasMatrix<Field>>;
 
         if (!method.certifyInconsistency) return SS_INCONSISTENT;
 
@@ -307,13 +298,11 @@ namespace LinBox {
 #endif
 
         BlasVector<Ring> zt(_ring, rank);
-        for (size_t i = 0; i < rank; ++i)
-            _ring.assign(zt[i], A.getEntry(tas.srcRow[rank], tas.srcCol[i]));
+        for (size_t i = 0; i < rank; ++i) _ring.assign(zt[i], A.getEntry(tas.srcRow[rank], tas.srcCol[i]));
 
         BlasMatrix<Ring> At_minor(_ring, rank, rank);
         for (size_t i = 0; i < rank; ++i)
-            for (size_t j = 0; j < rank; ++j)
-                _ring.assign(At_minor.refEntry(j, i), A.getEntry(tas.srcRow[i], tas.srcCol[j]));
+            for (size_t j = 0; j < rank; ++j) _ring.assign(At_minor.refEntry(j, i), A.getEntry(tas.srcRow[i], tas.srcCol[j]));
 
 #ifdef RSTIMING
         tCheckConsistency.stop();
@@ -378,9 +367,8 @@ namespace LinBox {
     template <class Ring, class Field, class RandomPrime>
     template <class TAS>
     void DixonSolver<Ring, Field, RandomPrime, Method::DenseElimination>::makeConditioner(
-        BlasMatrix<Ring>& A_minor, BlasMatrix<Field>*& Ap_minor_inv, BlasMatrix<Ring>*& B,
-        BlasMatrix<Ring>*& P, const BlasMatrix<Ring>& A, TAS& tas, BlasMatrix<Field>* Atp_minor_inv,
-        size_t rank, const MethodBase& method)
+        BlasMatrix<Ring>& A_minor, BlasMatrix<Field>*& Ap_minor_inv, BlasMatrix<Ring>*& B, BlasMatrix<Ring>*& P,
+        const BlasMatrix<Ring>& A, TAS& tas, BlasMatrix<Field>* Atp_minor_inv, size_t rank, const MethodBase& method)
     {
 #ifdef RSTIMING
         tMakeConditioner.start();
@@ -402,8 +390,7 @@ namespace LinBox {
             // permute original entries into A_minor
             // @note A_minor = Pt A Qt
             for (size_t i = 0; i < rank; ++i)
-                for (size_t j = 0; j < rank; ++j)
-                    _ring.assign(A_minor.refEntry(i, j), A.getEntry(tas.srcRow[i], tas.srcCol[j]));
+                for (size_t j = 0; j < rank; ++j) _ring.assign(A_minor.refEntry(i, j), A.getEntry(tas.srcRow[i], tas.srcCol[j]));
 #ifdef RSTIMING
             tMakeConditioner.stop();
             ttMakeConditioner += tMakeConditioner;
@@ -412,8 +399,7 @@ namespace LinBox {
             if (method.certifyMinimalDenominator) {
                 B = new BlasMatrix<Ring>(_ring, rank, A.coldim());
                 for (size_t i = 0; i < rank; ++i)
-                    for (size_t j = 0; j < A.coldim(); ++j)
-                        _ring.assign(B->refEntry(i, j), A.getEntry(tas.srcRow[i], j));
+                    for (size_t j = 0; j < A.coldim(); ++j) _ring.assign(B->refEntry(i, j), A.getEntry(tas.srcRow[i], j));
             }
             // @note B = Pt A
         }
@@ -462,8 +448,7 @@ namespace LinBox {
                 // set Ap_minor = A_minor mod p, try to compute inverse
                 for (size_t i = 0; i < rank; ++i)
                     for (size_t j = 0; j < rank; ++j)
-                        _field.init(Ap_minor.refEntry(i, j),
-                                    _ring.convert(tmp2, A_minor.getEntry(i, j)));
+                        _field.init(Ap_minor.refEntry(i, j), _ring.convert(tmp2, A_minor.getEntry(i, j)));
 #ifdef RSTIMING
                 tMakeConditioner.stop();
                 ttMakeConditioner += tMakeConditioner;
@@ -481,6 +466,125 @@ namespace LinBox {
         }
     }
 
+    template <class Ring, class Field, class RandomPrime>
+    template <class Vector1, class Vector2, class TAS>
+    void DixonSolver<Ring, Field, RandomPrime, Method::DenseElimination>::certifyMinimalDenominator(
+        const BlasMatrix<Ring>& A, const Vector2& b, const TAS& tas, const BlasMatrix<Ring>& B, BlasMatrix<Ring>& A_minor,
+        BlasMatrix<Field>& Ap_minor_inv, size_t rank)
+    {
+        // To make this certificate we solve with the same matrix as to get the
+        // solution, except transposed.
+#ifdef RSTIMING
+        tCertSetup.start();
+#endif
+
+        // @note We transpose Ap and A minors in-place because it won't be used anymore
+        Integer _rtmp;
+        Element _ftmp;
+        for (size_t i = 0; i < rank; ++i)
+            for (size_t j = 0; j < i; ++j) {
+                Ap_minor_inv.getEntry(_ftmp, i, j);
+                Ap_minor_inv.setEntry(i, j, Ap_minor_inv.refEntry(j, i));
+                Ap_minor_inv.setEntry(j, i, _ftmp);
+            }
+
+        for (size_t i = 0; i < rank; ++i)
+            for (size_t j = 0; j < i; ++j) {
+                A_minor.getEntry(_rtmp, i, j);
+                A_minor.setEntry(i, j, A_minor.refEntry(j, i));
+                A_minor.setEntry(j, i, _rtmp);
+            }
+
+        // we then try to create a partial certificate
+        // the correspondance with Algorithm MinimalSolution from Mulders/Storjohann:
+        // paper | here
+        // P     | TAS_P
+        // Q     | transpose of TAS_Qt
+        // B     | *B (== TAS_P . A,  but only top #rank rows)
+        // c     | newb (== TAS_P . b,   but only top #rank rows)
+        // P     | P
+        // q     | q
+        // U     | {0, 1}
+        // u     | u
+        // z-hat | lastCertificate
+
+        // we multiply the certificate by TAS_Pt at the end
+        // so it corresponds to b instead of newb
+
+        // q in {0, 1}^rank
+        Givaro::ZRing<Integer> Z;
+        BlasVector<Givaro::ZRing<Integer>> q(Z, rank);
+        typename BlasVector<Givaro::ZRing<Integer>>::iterator q_iter;
+
+        bool allzero;
+        do {
+            allzero = true;
+            for (q_iter = q.begin(); q_iter != q.end(); ++q_iter) {
+                if (rand() > RAND_MAX / 2) {
+                    _ring.assign((*q_iter), _ring.one);
+                    allzero = false;
+                }
+                else
+                    (*q_iter) = _ring.zero;
+            }
+        } while (allzero);
+
+#ifdef RSTIMING
+        tCertSetup.stop();
+        ttCertSetup += tCertSetup;
+#endif
+
+        using LiftingContainer = DixonLiftingContainer<Ring, Field, BlasMatrix<Ring>, BlasMatrix<Field>>;
+        LiftingContainer lc2(_ring, _field, A_minor, Ap_minor_inv, q, _prime);
+
+        RationalReconstruction<LiftingContainer> rere(lc2);
+        Vector1 u_num(_ring, rank);
+        Integer u_den;
+
+        // Failure
+        if (!rere.getRational(u_num, u_den, 0)) return;
+
+#ifdef RSTIMING
+        ttCertSolve.update(rere, lc2);
+        tCertMaking.start();
+#endif
+
+        // remainder of code does   z <- denom(partial_cert . Mr) * partial_cert * Qt
+        BlasApply<Ring> BAR(_ring);
+        VectorFraction<Ring> u_to_vf(_ring, u_num.size());
+        u_to_vf.numer = u_num;
+        u_to_vf.denom = u_den;
+        BlasVector<Ring> uB(_ring, A.coldim());
+        BAR.applyVTrans(uB, B, u_to_vf.numer);
+
+        Integer numergcd = _ring.zero;
+        vectorGcdIn(numergcd, _ring, uB);
+
+        // denom(partial_cert . Mr) = partial_cert_to_vf.denom / numergcd
+        VectorFraction<Ring> z(_ring, b.size()); // new constructor
+        u_to_vf.numer.resize(A.rowdim());
+
+        BlasMatrixDomain<Ring> BMDI(_ring);
+        BMDI.mul(z.numer, u_to_vf.numer, tas.P);
+
+        z.denom = numergcd;
+
+        lastCertificate.copy(z);
+
+        // output new certified denom factor
+        Integer znumer_b, zbgcd;
+        VectorDomain<Ring> VDR(_ring);
+        VDR.dotprod(znumer_b, z.numer, b);
+        _ring.gcd(zbgcd, znumer_b, z.denom);
+        _ring.div(lastCertifiedDenFactor, z.denom, zbgcd);
+
+        _ring.div(lastZBNumer, znumer_b, zbgcd);
+#ifdef RSTIMING
+        tCertMaking.stop();
+        ttCertMaking += tCertMaking;
+#endif
+    }
+
     // Most solving is done by the routine below.
     // There used to be one for random and one for deterministic, but they have been merged to ease
     // with
@@ -489,15 +593,13 @@ namespace LinBox {
     template <class Ring, class Field, class RandomPrime>
     template <class IMatrix, class Vector1, class Vector2>
     SolverReturnStatus DixonSolver<Ring, Field, RandomPrime, Method::DenseElimination>::monolithicSolve(
-        Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, const Method::Dixon& method)
+        Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, Method::Dixon method)
     {
-        using LiftingContainer =
-            DixonLiftingContainer<Ring, Field, BlasMatrix<Ring>, BlasMatrix<Field>>;
+        using LiftingContainer = DixonLiftingContainer<Ring, Field, BlasMatrix<Ring>, BlasMatrix<Field>>;
 
         if (method.certifyMinimalDenominator && !method.certifyInconsistency) {
-            std::cerr << "WARNING: No certificate of min-denominality generated due to  "
-                         "Method::certifyInconsistency = false"
-                      << std::endl;
+            method.certifyInconsistency = true;
+            std::cerr << "WARNING: forcing certifyInconsistency due to certifyMinimalDenominator" << std::endl;
         }
 
         size_t trials = 0;
@@ -520,7 +622,6 @@ namespace LinBox {
             BlasMatrixDomain<Ring> BMDI(_ring);
             BlasApply<Ring> BAR(_ring);
             MatrixDomain<Ring> MD(_ring);
-            VectorDomain<Ring> VDR(_ring);
 
             BlasMatrix<Ring> A_check(A); // used to check answer later
 
@@ -563,15 +664,15 @@ namespace LinBox {
             // ----- @fixme What is the goal of this?
 
             std::unique_ptr<BlasMatrix<Field>> Atp_minor_inv = nullptr;
-            if ((appearsInconsistent && method.certifyInconsistency) || method.singularSolutionType != SingularSolutionType::Random) {
+            if ((appearsInconsistent && method.certifyInconsistency)
+                || method.singularSolutionType != SingularSolutionType::Random) {
                 // take advantage of the (LQUP)t factorization to compute
                 // an inverse to the leading minor of (TAS_P . (A|b) . TAS_Q)
 #ifdef RSTIMING
                 tFastInvert.start();
 #endif
                 Atp_minor_inv = std::make_unique<BlasMatrix<Field>>(_field, rank, rank);
-                FFPACK::LQUPtoInverseOfFullRankMinor(_field, rank, tas.factors->getPointer(),
-                                                     A.rowdim(), tas.Qt.getPointer(),
+                FFPACK::LQUPtoInverseOfFullRankMinor(_field, rank, tas.factors->getPointer(), A.rowdim(), tas.Qt.getPointer(),
                                                      Atp_minor_inv->getPointer(), rank);
 #ifdef RSTIMING
                 tFastInvert.stop();
@@ -584,8 +685,7 @@ namespace LinBox {
             // If the system appears inconsistent, we either try a new prime,
             // a validate the inconsistency of (A,b).
             if (appearsInconsistent) {
-                auto status =
-                    solveApparentlyInconsistent(A_check, tas, Atp_minor_inv.get(), rank, method);
+                auto status = solveApparentlyInconsistent(A_check, tas, Atp_minor_inv.get(), rank, method);
 
                 // Failing means we should try a new prime
                 if (status == SS_FAILED) continue;
@@ -601,8 +701,7 @@ namespace LinBox {
             BlasMatrix<Ring>* P = nullptr;               // @fixme Make that a std::unique_ptr
             BlasMatrix<Ring> A_minor(_ring, rank, rank); // -- will have the full rank minor of A
             BlasMatrix<Field>* Ap_minor_inv = nullptr;   // -- will have inverse mod p of A_minor
-            makeConditioner(A_minor, Ap_minor_inv, B, P, A_check, tas, Atp_minor_inv.get(), rank,
-                            method);
+            makeConditioner(A_minor, Ap_minor_inv, B, P, A_check, tas, Atp_minor_inv.get(), rank, method);
 
             // Compute newb = (TAS_P.b)[0..(rank-1)]
             BlasVector<Ring> newb(b);
@@ -647,9 +746,7 @@ namespace LinBox {
 
             // @fixme In what world is this useful?
             if (method.checkResult) { // check consistency
-
                 BlasVector<Ring> A_times_xnumer(_ring, b.size());
-
                 BAR.applyV(A_times_xnumer, A_check, resultVF.numer);
 
                 Integer tmpi;
@@ -679,130 +776,20 @@ namespace LinBox {
                 }
             }
 
+#ifdef RSTIMING
+            tCheckAnswer.stop();
+            ttCheckAnswer += tCheckAnswer;
+#endif
+
             // ----- We have the result values!
 
             num = resultVF.numer;
             den = resultVF.denom;
 
-            // ----- Checking answer
+            // ----- Checking minimal denominator
 
-#ifdef RSTIMING
-            tCheckAnswer.stop();
-            ttCheckAnswer += tCheckAnswer;
-#endif
-            if (method.certifyMinimalDenominator)
-            {
-                // To make this certificate we solve with the same matrix as to get the
-                // solution, except transposed.
-#ifdef RSTIMING
-                tCertSetup.start();
-#endif
-                Integer _rtmp;
-                Element _ftmp;
-                for (size_t i = 0; i < rank; ++i)
-                    for (size_t j = 0; j < i; ++j) {
-                        Ap_minor_inv->getEntry(_ftmp, i, j);
-                        Ap_minor_inv->setEntry(i, j, Ap_minor_inv->refEntry(j, i));
-                        Ap_minor_inv->setEntry(j, i, _ftmp);
-                    }
-
-                for (size_t i = 0; i < rank; ++i)
-                    for (size_t j = 0; j < i; ++j) {
-                        A_minor.getEntry(_rtmp, i, j);
-                        A_minor.setEntry(i, j, A_minor.refEntry(j, i));
-                        A_minor.setEntry(j, i, _rtmp);
-                    }
-
-                // we then try to create a partial certificate
-                // the correspondance with Algorithm MinimalSolution from Mulders/Storjohann:
-                // paper | here
-                // P     | TAS_P
-                // Q     | transpose of TAS_Qt
-                // B     | *B (== TAS_P . A,  but only top #rank rows)
-                // c     | newb (== TAS_P . b,   but only top #rank rows)
-                // P     | P
-                // q     | q
-                // U     | {0, 1}
-                // u     | u
-                // z-hat | lastCertificate
-
-                // we multiply the certificate by TAS_Pt at the end
-                // so it corresponds to b instead of newb
-
-                // q in {0, 1}^rank
-                Givaro::ZRing<Integer> Z;
-                BlasVector<Givaro::ZRing<Integer>> q(Z, rank);
-                typename BlasVector<Givaro::ZRing<Integer>>::iterator q_iter;
-
-                bool allzero;
-                do {
-                    allzero = true;
-                    for (q_iter = q.begin(); q_iter != q.end(); ++q_iter) {
-                        if (rand() > RAND_MAX / 2) {
-                            _ring.assign((*q_iter), _ring.one);
-                            allzero = false;
-                        }
-                        else
-                            (*q_iter) = _ring.zero;
-                    }
-                } while (allzero);
-#ifdef RSTIMING
-                tCertSetup.stop();
-                ttCertSetup += tCertSetup;
-#endif
-                // LiftingContainer lc2(_ring, _field, BBA_minor, BBA_inv, q, _prime);
-                LiftingContainer lc2(_ring, _field, A_minor, *Ap_minor_inv, q, _prime);
-
-                RationalReconstruction<LiftingContainer> rere(lc2);
-                Vector1 u_num(_ring, rank);
-                Integer u_den;
-                if (!rere.getRational(u_num, u_den, 0)) return SS_FAILED;
-
-#ifdef RSTIMING
-                ttCertSolve.update(rere, lc2);
-                tCertMaking.start();
-#endif
-                // remainder of code does   z <- denom(partial_cert . Mr) * partial_cert * Qt
-                VectorFraction<Ring> u_to_vf(_ring, u_num.size());
-                u_to_vf.numer = u_num;
-                u_to_vf.denom = u_den;
-                BlasVector<Ring> uB(_ring, A.coldim());
-                BAR.applyVTrans(uB, *B, u_to_vf.numer);
-
-#if 0
-				std::cout << "BP: ";
-				A_minor.write(std::cout, _ring) << std::endl;
-				std::cout << "q: ";
-				for (size_t i=0; i<rank; ++i) std::cout << q[i]; std::cout << std::endl;
-				u_to_vf.write(std::cout  << "u: ") << std::endl;
-#endif
-
-                Integer numergcd = _ring.zero;
-                vectorGcdIn(numergcd, _ring, uB);
-
-                // denom(partial_cert . Mr) = partial_cert_to_vf.denom / numergcd
-                VectorFraction<Ring> z(_ring, b.size()); // new constructor
-                u_to_vf.numer.resize(A.rowdim());
-
-                BMDI.mul(z.numer, u_to_vf.numer, tas.P);
-
-                z.denom = numergcd;
-
-                // 				z.write(std::cout << "z: ") << std::endl;
-
-                if (method.certifyInconsistency) lastCertificate.copy(z);
-
-                // output new certified denom factor
-                Integer znumer_b, zbgcd;
-                VDR.dotprod(znumer_b, z.numer, b);
-                _ring.gcd(zbgcd, znumer_b, z.denom);
-                _ring.div(lastCertifiedDenFactor, z.denom, zbgcd);
-
-                if (method.certifyInconsistency) _ring.div(lastZBNumer, znumer_b, zbgcd);
-#ifdef RSTIMING
-                tCertMaking.stop();
-                ttCertMaking += tCertMaking;
-#endif
+            if (method.certifyMinimalDenominator) {
+                certifyMinimalDenominator<Vector1>(A, b, tas, *B, A_minor, *Ap_minor_inv, rank);
             }
 
             // @fixme This might be = Atp_minor_inv,
