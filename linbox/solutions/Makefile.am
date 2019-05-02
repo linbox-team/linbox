@@ -42,6 +42,7 @@ pkgincludesub_HEADERS=          \
     trace.inl                   \
     valence.h			\
     hadamard-bound.h            \
+    constants.h	                \
     solution-tags.h
 
 #    rankInPlace.h
