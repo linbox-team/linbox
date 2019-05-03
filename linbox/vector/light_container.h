@@ -52,15 +52,15 @@ namespace LinBox
 		LightContainer() :
 			allocated(2), _container(new Elem[allocated]), _finish(_container)
 		{
-			ENSURE( (allocated == 2) && (size() == 0) );
+			ASSERT( (allocated == 2) && (size() == 0) );
 
 		}
 		LightContainer(size_t s) :
 			allocated(s), _container(new Elem[s]), _finish(_container+s)
 		{
 
-			ENSURE( (allocated == s) && (size() == s) );
-			ENSURE( allocated >= size() );
+			ASSERT( (allocated == s) && (size() == s) );
+			ASSERT( allocated >= size() );
 
 		}
 
@@ -87,7 +87,7 @@ namespace LinBox
 		{
 			STATE( size_t oldsize = size() );
 			reallocate(s, size() );
-			ENSURE( (allocated >= s) && (size() == oldsize) && ( allocated >= size() ) );
+			ASSERT( (allocated >= s) && (size() == oldsize) && ( allocated >= size() ) );
 		}
 
 		size_t size() const
@@ -110,14 +110,14 @@ namespace LinBox
 		void clear()
 		{
 			_finish = _container;
-			ENSURE( (size() == 0) );
+			ASSERT( (size() == 0) );
 
 		}
 		void resize(size_t s)
 		{
 			if (s>allocated) reallocate( s+(s>>1), s );
 			else _finish = _container + s;
-			ENSURE( allocated >= size() );
+			ASSERT( allocated >= size() );
 		}
 		iterator begin() { return _container; }
 		iterator end() { return _finish; }
@@ -134,16 +134,16 @@ namespace LinBox
 			if (size() == allocated) reserve(allocated+(allocated>>1));
 			*(_finish) = c; ++_finish;
 
-			ENSURE( size() == (oldsize+1) );
-			ENSURE( allocated >= size() );
+			ASSERT( size() == (oldsize+1) );
+			ASSERT( allocated >= size() );
 		}
 		void pop_back()
 		{
 			STATE( size_t  oldsize = size() );
 			REQUIRE( oldsize >= 1 );
 			--_finish;
-			ENSURE( size() == (oldsize-1) );
-			ENSURE( allocated >= size() );
+			ASSERT( size() == (oldsize-1) );
+			ASSERT( allocated >= size() );
 		}
 
 		~LightContainer() { delete[] _container; }
@@ -165,8 +165,8 @@ namespace LinBox
 				else
 					newpos = insertwithrealloc(pos,c);
 			}
-			ENSURE( size() == oldsize+1 );
-			ENSURE( allocated >= size() );
+			ASSERT( size() == oldsize+1 );
+			ASSERT( allocated >= size() );
 			return newpos;
 		}
 
@@ -182,7 +182,7 @@ namespace LinBox
 				for(const_iterator iter=Beg; iter != End; ++iter)
 					insert(pos, *iter);
 			}
-			ENSURE( allocated >= size() );
+			ASSERT( allocated >= size() );
 			return pos;
 		}
 
@@ -200,9 +200,9 @@ namespace LinBox
 				*(pos)=*(ppos);
 				erase(ppos);
 			}
-			ENSURE( size() == oldsize-1 );
-			ENSURE( allocated >= size() );
-			ENSURE( _finish >= _container );
+			ASSERT( size() == oldsize-1 );
+			ASSERT( allocated >= size() );
+			ASSERT( _finish >= _container );
 			return pos;
 		}
 
@@ -223,9 +223,9 @@ namespace LinBox
 					*(nf) = *(nl);
 				erase(nf,nl);
 			}
-			ENSURE( size() == oldsize-lmf );
-			ENSURE( allocated >= size() );
-			ENSURE( _finish >= _container );
+			ASSERT( size() == oldsize-lmf );
+			ASSERT( allocated >= size() );
+			ASSERT( _finish >= _container );
 			return first;
 		}
 
@@ -270,7 +270,7 @@ namespace LinBox
 				allocated = s;
 			}
 			_finish = _container + endc;
-			ENSURE( allocated >= size() );
+			ASSERT( allocated >= size() );
 		}
 
 		iterator insertwithspace(iterator pos, const Elem& c)
@@ -287,9 +287,9 @@ namespace LinBox
 				insertwithspace(pos+1, *(pos));
 				*(pos) = c;
 			}
-			ENSURE( size() == oldsize+1 );
-			ENSURE( allocated >= size() );
-			ENSURE( allocated == oldalloc );
+			ASSERT( size() == oldsize+1 );
+			ASSERT( allocated >= size() );
+			ASSERT( allocated == oldalloc );
 			return pos;
 		}
 
@@ -311,7 +311,7 @@ namespace LinBox
 			delete [] _container;
 			_container = futur;
 			_finish = _container + (++olds);
-			ENSURE( allocated >= size() );
+			ASSERT( allocated >= size() );
 			return newpos;
 		}
 

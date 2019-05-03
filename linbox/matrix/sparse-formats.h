@@ -30,16 +30,6 @@
 #include "linbox/linbox-tags.h"
 
 namespace LinBox {
-
-	/** Exception class for invalid matrix input
-	*/
-	namespace Exceptions {
-		class InvalidMatrixInput {};
-	}
-
-
-
-
 	//! Sparse matrix format (memory storage)
 	namespace SparseMatrixFormat {
 		class ANY {} ;
