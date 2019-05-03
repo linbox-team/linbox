@@ -105,6 +105,7 @@ namespace LinBox
 
 		Integer& result(Integer& d)
 		{
+            // @fixme Consider a better error object
 			throw "not a good idea calling this function here !!" ;
 		}
 	protected:
