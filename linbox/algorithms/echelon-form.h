@@ -176,7 +176,7 @@ namespace LinBox
 					E.setEntry(i,j,field().zero);
 
 			// put one inplace of pivot
-			for (size_t i=0;i<rank;++i){
+			for (size_t i=0;i<m;++i){
 				E.setEntry(*(Pt.getPointer()+i),i,field().one);
 			}
 
