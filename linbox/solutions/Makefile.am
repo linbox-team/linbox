@@ -22,7 +22,7 @@
 AM_CXXFLAGS = @DEFAULT_CFLAGS@ -DLinBoxSrcOnly
 pkgincludesubdir=$(pkgincludedir)/solutions
 
-SUBDIRS=solve
+SUBDIRS=solve echelon
 
 pkgincludesub_HEADERS=          \
     charpoly.h                  \
