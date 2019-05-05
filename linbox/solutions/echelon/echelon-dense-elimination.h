@@ -37,7 +37,7 @@ namespace LinBox {
          */
     template <class Field>
     inline size_t rowEchelon (DenseMatrix<Field>& E, const DenseMatrix<Field>& A,
-                              const RingCategories::ModularTag& tag, const Method::DenseElimination& m)
+                              const RingCategories::ModularTag& tag, const Method::DenseElimination& M)
     {
         linbox_check((A.coldim() == E.coldim()) && (A.rowdim() == E.rowdim()));
 
@@ -45,6 +45,7 @@ namespace LinBox {
         size_t n = A.coldim();
         size_t* P = new size_t[m];
         size_t* Q = new size_t[n];
+        const Field& F = A.field();
 
         size_t R = FFPACK::RowEchelonForm (F, m, n, A.getPointer(), A.getStride(), P, Q, false);
 
@@ -62,7 +63,7 @@ namespace LinBox {
          */
     template <class Field>
     inline size_t rowEchelon (DenseMatrix<Field>& E, DenseMatrix<Field>& T, const DenseMatrix<Field>& A,
-                              const RingCategories::ModularTag& tag, const Method::DenseElimination& m)
+                              const RingCategories::ModularTag& tag, const Method::DenseElimination& M)
     {
         linbox_check((A.coldim() == E.coldim()) && (A.rowdim() == E.rowdim()) &&
                      (A.rowdim() == T.rowdim()) && (T.rowdim() == T.coldim()) );
@@ -71,7 +72,7 @@ namespace LinBox {
         size_t n = A.coldim();
         size_t* P = new size_t[m];
         size_t* Q = new size_t[n];
-        Field& F = A.getField();
+        const Field& F = A.field();
 
         size_t R = FFPACK::RowEchelonForm (F, m, n, A.getPointer(), A.getStride(), P, Q, false);
 
@@ -93,13 +94,14 @@ namespace LinBox {
          */
     template <class Field>
     inline size_t rowEchelonize (DenseMatrix<Field>& A,
-                                 const RingCategories::ModularTag& tag, const Method::DenseElimination& m)
+                                 const RingCategories::ModularTag& tag, const Method::DenseElimination& M)
     {
 
         size_t m = A.rowdim();
         size_t n = A.coldim();
         size_t* P = new size_t[m];
         size_t* Q = new size_t[n];
+        const Field& F = A.field();
 
         size_t R = FFPACK::RowEchelonForm (F, m, n, A.getPointer(), A.getStride(), P, Q, false);
 
@@ -116,7 +118,7 @@ namespace LinBox {
          */
     template <class Field>
     inline size_t rowEchelonize (DenseMatrix<Field>& A, DenseMatrix<Field>& T,
-                                 const RingCategories::ModularTag& tag, const Method::DenseElimination& m)
+                                 const RingCategories::ModularTag& tag, const Method::DenseElimination& M)
     {
         linbox_check((A.rowdim() == T.rowdim()) && (T.rowdim() == T.coldim()));
 
@@ -124,7 +126,7 @@ namespace LinBox {
         size_t n = A.coldim();
         size_t* P = new size_t[m];
         size_t* Q = new size_t[n];
-        Field& F = A.getField();
+        const Field& F = A.field();
 
         size_t R = FFPACK::RowEchelonForm (F, m, n, A.getPointer(), A.getStride(), P, Q, true);
 
@@ -146,7 +148,7 @@ namespace LinBox {
          */
     template <class Field>
     inline size_t reducedRowEchelon (DenseMatrix<Field>& E, const DenseMatrix<Field>& A,
-                                     const RingCategories::ModularTag& tag, const Method::DenseElimination& m)
+                                     const RingCategories::ModularTag& tag, const Method::DenseElimination& M)
     {
         linbox_check((A.coldim() == E.coldim()) && (A.rowdim() == E.rowdim()));
 
@@ -154,10 +156,11 @@ namespace LinBox {
         size_t n = A.coldim();
         size_t* P = new size_t[m];
         size_t* Q = new size_t[n];
+        const Field& F = A.field();
 
         size_t R = FFPACK::ReducedRowEchelonForm (F, m, n, A.getPointer(), A.getStride(), P, Q, false);
 
-        FFPACK::getReducedEchelonForm (F, FFLAS::FflasUpper, FFLAS::FflasUnit, m, n, R, Q,
+        FFPACK::getReducedEchelonForm (F, FFLAS::FflasUpper, m, n, R, Q,
                                        A.getPointer(), A.getStride(), E.getPointer(), E.getStride());
         
         delete[] P;
@@ -170,7 +173,7 @@ namespace LinBox {
          */
     template <class Field>
     inline size_t reducedRowEchelon (DenseMatrix<Field>& E, DenseMatrix<Field>& T, const DenseMatrix<Field>& A,
-                                     const RingCategories::ModularTag& tag, const Method::DenseElimination& m)
+                                     const RingCategories::ModularTag& tag, const Method::DenseElimination& M)
     {
         linbox_check((A.coldim() == E.coldim()) && (A.rowdim() == E.rowdim()) &&
                      (A.rowdim() == T.rowdim()) && (T.rowdim() == T.coldim()) );
@@ -179,11 +182,11 @@ namespace LinBox {
         size_t n = A.coldim();
         size_t* P = new size_t[m];
         size_t* Q = new size_t[n];
-        Field& F = A.getField();
+        const Field& F = A.field();
 
         size_t R = FFPACK::ReducedRowEchelonForm (F, m, n, A.getPointer(), A.getStride(), P, Q, false);
 
-        FFPACK::getReducedEchelonForm (F, FFLAS::FflasUpper, FFLAS::FflasUnit, m, n, R, Q,
+        FFPACK::getReducedEchelonForm (F, FFLAS::FflasUpper, m, n, R, Q,
                                        A.getPointer(), A.getStride(), E.getPointer(), E.getStride());
         FFPACK::getReducedEchelonTransform (F, FFLAS::FflasUpper, FFLAS::FflasUnit, m, n, R, P, Q,
                                             A.getPointer(), A.getStride(), T.getPointer(), T.getStride());
@@ -202,16 +205,17 @@ namespace LinBox {
          */
     template <class Field>
     inline size_t reducedRowEchelonize (DenseMatrix<Field>& A,
-                                        const RingCategories::ModularTag& tag, const Method::DenseElimination& m)
+                                        const RingCategories::ModularTag& tag, const Method::DenseElimination& M)
     {
         size_t m = A.rowdim();
         size_t n = A.coldim();
         size_t* P = new size_t[m];
         size_t* Q = new size_t[n];
+        const Field& F = A.field();
 
         size_t R = FFPACK::ReducedRowEchelonForm (F, m, n, A.getPointer(), A.getStride(), P, Q, false);
 
-        FFPACK::getReducedEchelonForm (F, FFLAS::FflasUpper, FFLAS::FflasUnit, m, n, R, Q,
+        FFPACK::getReducedEchelonForm (F, FFLAS::FflasUpper, m, n, R, Q,
                                        A.getPointer(), A.getStride());
         
         delete[] P;
@@ -224,7 +228,7 @@ namespace LinBox {
          */
     template <class Field>
     inline size_t reducedRowEchelonize (DenseMatrix<Field>& A, DenseMatrix<Field>& T,
-                                        const RingCategories::ModularTag& tag, const Method::DenseElimination& m)
+                                        const RingCategories::ModularTag& tag, const Method::DenseElimination& M)
     {
         linbox_check((A.rowdim() == T.rowdim()) && (T.rowdim() == T.coldim()));
 
@@ -232,13 +236,13 @@ namespace LinBox {
         size_t n = A.coldim();
         size_t* P = new size_t[m];
         size_t* Q = new size_t[n];
-        Field& F = A.getField();
+        const Field& F = A.field();
 
         size_t R = FFPACK::ReducedRowEchelonForm (F, m, n, A.getPointer(), A.getStride(), P, Q, true);
 
         FFPACK::getReducedEchelonTransform (F, FFLAS::FflasUpper, FFLAS::FflasUnit, m, n, R, P, Q,
                                             A.getPointer(), A.getStride(), T.getPointer(), T.getStride());
-        FFPACK::getReducedEchelonForm (F, FFLAS::FflasUpper, FFLAS::FflasUnit, m, n, R, Q, A.getPointer(), A.getStride());
+        FFPACK::getReducedEchelonForm (F, FFLAS::FflasUpper, m, n, R, Q, A.getPointer(), A.getStride());
         
         delete[] P;
         delete[] Q;
@@ -254,7 +258,7 @@ namespace LinBox {
          */
     template <class Field>
     inline size_t colEchelon (DenseMatrix<Field>& E, const DenseMatrix<Field>& A,
-                              const RingCategories::ModularTag& tag, const Method::DenseElimination& m)
+                              const RingCategories::ModularTag& tag, const Method::DenseElimination& M)
     {
         linbox_check((A.coldim() == E.coldim()) && (A.rowdim() == E.rowdim()));
 
@@ -262,8 +266,9 @@ namespace LinBox {
         size_t n = A.coldim();
         size_t* P = new size_t[m];
         size_t* Q = new size_t[n];
+        const Field& F = A.field();
 
-        size_t R = FFPACK::ColEchelonForm (F, m, n, A.getPointer(), A.getStride(), P, Q, false);
+        size_t R = FFPACK::ColumnEchelonForm (F, m, n, A.getPointer(), A.getStride(), P, Q, false);
 
         FFPACK::getEchelonForm (F, FFLAS::FflasLower, FFLAS::FflasUnit, m, n, R, Q,
                                 A.getPointer(), A.getStride(), E.getPointer(), E.getStride());
@@ -279,7 +284,7 @@ namespace LinBox {
          */
     template <class Field>
     inline size_t colEchelon (DenseMatrix<Field>& E, DenseMatrix<Field>& T, const DenseMatrix<Field>& A,
-                              const RingCategories::ModularTag& tag, const Method::DenseElimination& m)
+                              const RingCategories::ModularTag& tag, const Method::DenseElimination& M)
     {
         linbox_check((A.coldim() == E.coldim()) && (A.rowdim() == E.rowdim()) &&
                      (A.coldim() == T.rowdim()) && (T.rowdim() == T.coldim()) );
@@ -288,9 +293,9 @@ namespace LinBox {
         size_t n = A.coldim();
         size_t* P = new size_t[m];
         size_t* Q = new size_t[n];
-        Field& F = A.getField();
+        const Field& F = A.field();
 
-        size_t R = FFPACK::ColEchelonForm (F, m, n, A.getPointer(), A.getStride(), P, Q, false);
+        size_t R = FFPACK::ColumnEchelonForm (F, m, n, A.getPointer(), A.getStride(), P, Q, false);
 
         FFPACK::getEchelonForm (F, FFLAS::FflasLower, FFLAS::FflasUnit, m, n, R, Q,
                                 A.getPointer(), A.getStride(), E.getPointer(), E.getStride());
@@ -310,15 +315,16 @@ namespace LinBox {
          */
     template <class Field>
     inline size_t colEchelonize (DenseMatrix<Field>& A,
-                                 const RingCategories::ModularTag& tag, const Method::DenseElimination& m)
+                                 const RingCategories::ModularTag& tag, const Method::DenseElimination& M)
     {
 
         size_t m = A.rowdim();
         size_t n = A.coldim();
         size_t* P = new size_t[m];
         size_t* Q = new size_t[n];
+        const Field& F = A.field();
 
-        size_t R = FFPACK::ColEchelonForm (F, m, n, A.getPointer(), A.getStride(), P, Q, false);
+        size_t R = FFPACK::ColumnEchelonForm (F, m, n, A.getPointer(), A.getStride(), P, Q, false);
 
         FFPACK::getEchelonForm (F, FFLAS::FflasLower, FFLAS::FflasUnit, m, n, R, Q,
                                 A.getPointer(), A.getStride());
@@ -333,7 +339,7 @@ namespace LinBox {
          */
     template <class Field>
     inline size_t colEchelonize (DenseMatrix<Field>& A, DenseMatrix<Field>& T,
-                                 const RingCategories::ModularTag& tag, const Method::DenseElimination& m)
+                                 const RingCategories::ModularTag& tag, const Method::DenseElimination& M)
     {
         linbox_check((A.coldim() == T.rowdim()) && (T.rowdim() == T.coldim()));
 
@@ -341,9 +347,9 @@ namespace LinBox {
         size_t n = A.coldim();
         size_t* P = new size_t[m];
         size_t* Q = new size_t[n];
-        Field& F = A.getField();
+        const Field& F = A.field();
 
-        size_t R = FFPACK::ColEchelonForm (F, m, n, A.getPointer(), A.getStride(), P, Q, true);
+        size_t R = FFPACK::ColumnEchelonForm (F, m, n, A.getPointer(), A.getStride(), P, Q, true);
 
         FFPACK::getEchelonTransform (F, FFLAS::FflasLower, FFLAS::FflasUnit, m, n, R, P, Q,
                                      A.getPointer(), A.getStride(), T.getPointer(), T.getStride());
@@ -363,7 +369,7 @@ namespace LinBox {
          */
     template <class Field>
     inline size_t reducedColEchelon (DenseMatrix<Field>& E, const DenseMatrix<Field>& A,
-                                     const RingCategories::ModularTag& tag, const Method::DenseElimination& m)
+                                     const RingCategories::ModularTag& tag, const Method::DenseElimination& M)
     {
         linbox_check((A.coldim() == E.coldim()) && (A.rowdim() == E.rowdim()));
 
@@ -371,10 +377,11 @@ namespace LinBox {
         size_t n = A.coldim();
         size_t* P = new size_t[m];
         size_t* Q = new size_t[n];
+        const Field& F = A.field();
 
-        size_t R = FFPACK::ReducedColEchelonForm (F, m, n, A.getPointer(), A.getStride(), P, Q, false);
+        size_t R = FFPACK::ReducedColumnEchelonForm (F, m, n, A.getPointer(), A.getStride(), P, Q, false);
 
-        FFPACK::getReducedEchelonForm (F, FFLAS::FflasLower, FFLAS::FflasUnit, m, n, R, Q,
+        FFPACK::getReducedEchelonForm (F, FFLAS::FflasLower, m, n, R, Q,
                                        A.getPointer(), A.getStride(), E.getPointer(), E.getStride());
         
         delete[] P;
@@ -387,7 +394,7 @@ namespace LinBox {
          */
     template <class Field>
     inline size_t reducedColEchelon (DenseMatrix<Field>& E, DenseMatrix<Field>& T, const DenseMatrix<Field>& A,
-                                     const RingCategories::ModularTag& tag, const Method::DenseElimination& m)
+                                     const RingCategories::ModularTag& tag, const Method::DenseElimination& M)
     {
         linbox_check((A.coldim() == E.coldim()) && (A.rowdim() == E.rowdim()) &&
                      (A.coldim() == T.rowdim()) && (T.rowdim() == T.coldim()) );
@@ -396,11 +403,11 @@ namespace LinBox {
         size_t n = A.coldim();
         size_t* P = new size_t[m];
         size_t* Q = new size_t[n];
-        Field& F = A.getField();
+        const Field& F = A.field();
 
-        size_t R = FFPACK::ReducedColEchelonForm (F, m, n, A.getPointer(), A.getStride(), P, Q, false);
+        size_t R = FFPACK::ReducedColumnEchelonForm (F, m, n, A.getPointer(), A.getStride(), P, Q, false);
 
-        FFPACK::getReducedEchelonForm (F, FFLAS::FflasLower, FFLAS::FflasUnit, m, n, R, Q,
+        FFPACK::getReducedEchelonForm (F, FFLAS::FflasLower, m, n, R, Q,
                                        A.getPointer(), A.getStride(), E.getPointer(), E.getStride());
         FFPACK::getReducedEchelonTransform (F, FFLAS::FflasLower, FFLAS::FflasUnit, m, n, R, P, Q,
                                             A.getPointer(), A.getStride(), T.getPointer(), T.getStride());
@@ -419,16 +426,17 @@ namespace LinBox {
          */
     template <class Field>
     inline size_t reducedColEchelonize (DenseMatrix<Field>& A,
-                                        const RingCategories::ModularTag& tag, const Method::DenseElimination& m)
+                                        const RingCategories::ModularTag& tag, const Method::DenseElimination& M)
     {
         size_t m = A.rowdim();
         size_t n = A.coldim();
         size_t* P = new size_t[m];
         size_t* Q = new size_t[n];
+        const Field& F = A.field();
 
-        size_t R = FFPACK::ReducedColEchelonForm (F, m, n, A.getPointer(), A.getStride(), P, Q, false);
+        size_t R = FFPACK::ReducedColumnEchelonForm (F, m, n, A.getPointer(), A.getStride(), P, Q, false);
 
-        FFPACK::getReducedEchelonForm (F, FFLAS::FflasLower, FFLAS::FflasUnit, m, n, R, Q,
+        FFPACK::getReducedEchelonForm (F, FFLAS::FflasLower, m, n, R, Q,
                                        A.getPointer(), A.getStride());
         
         delete[] P;
@@ -441,7 +449,7 @@ namespace LinBox {
          */
     template <class Field>
     inline size_t reducedColEchelonize (DenseMatrix<Field>& A, DenseMatrix<Field>& T,
-                                        const RingCategories::ModularTag& tag, const Method::DenseElimination& m)
+                                        const RingCategories::ModularTag& tag, const Method::DenseElimination& M)
     {
         linbox_check((A.coldim() == T.rowdim()) && (T.rowdim() == T.coldim()));
 
@@ -449,13 +457,13 @@ namespace LinBox {
         size_t n = A.coldim();
         size_t* P = new size_t[m];
         size_t* Q = new size_t[n];
-        Field& F = A.getField();
+        const Field& F = A.field();
 
-        size_t R = FFPACK::ReducedColEchelonForm (F, m, n, A.getPointer(), A.getStride(), P, Q, true);
+        size_t R = FFPACK::ReducedColumnEchelonForm (F, m, n, A.getPointer(), A.getStride(), P, Q, true);
 
         FFPACK::getReducedEchelonTransform (F, FFLAS::FflasLower, FFLAS::FflasUnit, m, n, R, P, Q,
                                             A.getPointer(), A.getStride(), T.getPointer(), T.getStride());
-        FFPACK::getReducedEchelonForm (F, FFLAS::FflasLower, FFLAS::FflasUnit, m, n, R, Q, A.getPointer(), A.getStride());
+        FFPACK::getReducedEchelonForm (F, FFLAS::FflasLower, m, n, R, Q, A.getPointer(), A.getStride());
         
         delete[] P;
         delete[] Q;

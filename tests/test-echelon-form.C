@@ -47,7 +47,7 @@
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/util/commentator.h"
 #include "linbox/matrix/matrix-domain.h"
-#include "linbox/algorithms/echelon-form.h"
+#include "linbox/solutions/echelon.h"
 #include "givaro/givranditer.h"
 
 using namespace LinBox;
@@ -88,13 +88,13 @@ static bool testRank (const Field& F, size_t m, size_t n, int iterations = 1)
 	Element tmp;
 	bool ret = true;
 	BlasMatrixDomain<Field> BMD(F);
-	EchelonFormDomain<Field> EFD(F);
+        //EchelonFormDomain<Field> EFD(F);
 
 	for (int k=0;k<iterations; ++k) {
 
 	unsigned int r;
 		mycommentator().progress(k);
-		BlasMatrix<Field> A(F,m,n),S(F,m,n), L(F,m,m);
+		DenseMatrix<Field> A(F,m,n),S(F,m,n), L(F,m,m);
 
 		int mn = (m < n) ? (int)m :(int) n;
 		r = (unsigned int)(random() % mn);
@@ -120,23 +120,23 @@ static bool testRank (const Field& F, size_t m, size_t n, int iterations = 1)
                 BMD.write(commentator().report(), A) << " = A" << std::endl;
 
 		// compute the rank of A
-		BlasMatrix<Field> E1(F,m,n), E2(F,m,n), E3(F,m,n), E4(F,m,n);
-		unsigned int rank1= (unsigned int)EFD.rowEchelon(E1, A);
+		DenseMatrix<Field> E1(F,m,n), E2(F,m,n), E3(F,m,n), E4(F,m,n);
+		unsigned int rank1= rowEchelon(E1, A);
                 BMD.write(commentator().report(), E1) << " = rowEchelon(E1, A)" << std::endl;
 
-		unsigned int rank2=(unsigned int) EFD.rowReducedEchelon(E2, A);
+		unsigned int rank2=(unsigned int) reducedRowEchelon(E2, A);
                 BMD.write(commentator().report(), E2) << " = rowReducedEchelon(E2, A)" << std::endl;
 
-		unsigned int rank3=(unsigned int) EFD.columnEchelon(E3, A);
+		unsigned int rank3=(unsigned int) colEchelon(E3, A);
                 BMD.write(commentator().report(), E3) << " = columnEchelon(E3, A)" << std::endl;
 
-		unsigned int rank4=(unsigned int) EFD.columnReducedEchelon(E4, A);
+		unsigned int rank4=(unsigned int) reducedColEchelon(E4, A);
                 BMD.write(commentator().report(), E4) << " = columnReducedEchelon(E4, A)" << std::endl;
 
-		unsigned int rank5=(unsigned int) EFD.columnEchelon(A);
+		unsigned int rank5=(unsigned int) colEchelonize(A);
                 BMD.write(commentator().report(), A) << " = columnEchelon(A)" << std::endl;
 
-		unsigned int rank6=(unsigned int) EFD.columnReducedEchelon(E1);
+		unsigned int rank6=(unsigned int) reducedColEchelonize(E1);
                 BMD.write(commentator().report(), E1) << " = columnReducedEchelon(E1)" << std::endl;
 
 		commentator().report() << "Ranks " << rank1 << " " << rank2 << " " << rank3 << " " << rank4 << " " << rank5 << " " << rank6 << " should be " << r << std::endl;
@@ -151,21 +151,21 @@ static bool testRank (const Field& F, size_t m, size_t n, int iterations = 1)
 }
 
 /*
- * Test of the LQUPMatrix class
+ * Test of the PLUQMatrix class
  */
 template <class Field>
-static bool testLQUP (const Field& F, size_t m, size_t n, int iterations = 1)
+static bool testPLUQ (const Field& F, size_t m, size_t n, int iterations = 1)
 {
 
 	typedef typename Field::Element                  Element;
-	typedef BlasMatrix<Field>                       Matrix;
+	typedef DenseMatrix<Field>                       Matrix;
 	typedef typename Field::RandIter                RandIter;
 	typedef typename Field::NonZeroRandIter         NonZeroRandIter;
 
 	//Commentator mycommentator;
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	mycommentator().start (pretty("Testing LQUP factorization"),"testLQUP",(unsigned int)iterations);
+	mycommentator().start (pretty("Testing PLUQ factorization"),"testPLUQ",(unsigned int)iterations);
 
 	RandIter G(F);
 	NonZeroRandIter Gn(G);
@@ -205,7 +205,7 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations = 1)
 		Abis = A;
 
 		BlasPermutation<size_t>  P(A.coldim()),Q(A.rowdim());
-		LQUPMatrix<Field> X(A,P,Q);
+		PLUQMatrix<Field> X(A,P,Q);
 
 		TriangularBlasMatrix<Field> L(F,m,m,Tag::Shape::Lower,Tag::Diag::Unit);
 		TriangularBlasMatrix<Field> U(F,m,n,Tag::Shape::Upper,Tag::Diag::NonUnit);
@@ -231,7 +231,7 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations = 1)
 
 		Abis = A;
 
-		LQUPMatrix<Field> Y(A,P,Q);
+		PLUQMatrix<Field> Y(A,P,Q);
 
 		TriangularBlasMatrix<Field> L2(F,m,m,Tag::Shape::Lower,Tag::Diag::Unit);
 		TriangularBlasMatrix<Field> U2(F,m,n,Tag::Shape::Upper,Tag::Diag::NonUnit);
@@ -252,7 +252,7 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations = 1)
 			ret=false;
 	}
 
-	mycommentator().stop(MSG_STATUS (ret), (const char *) 0, "testLQUP");
+	mycommentator().stop(MSG_STATUS (ret), (const char *) 0, "testPLUQ");
 
 	return ret;
 }
@@ -268,7 +268,7 @@ int launch_tests(Field & F, size_t m, size_t n, int iterations = 1)
  		if (!testRank (F, n, m, iterations))   pass=false;
  		if (!testRank (F, m, n, iterations))   pass=false;
 	}
- 	//if (!testLQUP (F,n,n,iterations))                     pass=false;
+ 	//if (!testPLUQ (F,n,n,iterations))                     pass=false;
 	return pass ;
 
 }

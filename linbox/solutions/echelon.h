@@ -28,6 +28,7 @@
 #include <iostream> // @note Needed for givaro/ring-interface to compile
 
 #include <linbox/field/field-traits.h>
+#include <linbox/solutions/methods.h>
 
 namespace LinBox {
     //
@@ -49,7 +50,7 @@ namespace LinBox {
     template <class Matrix, class CategoryTag, class EchelonMethod>
     inline size_t rowEchelon (Matrix & E, const Matrix& A, const CategoryTag& tag, const EchelonMethod& m)
     {
-        throw LinBoxError("rowEchelon<" + CategoryTag::name() + ", " + EchelonMethod::name() + "> does not exists.");
+        throw LinBoxError("coucou rowEchelon<" + CategoryTag::name() + ", " + EchelonMethod::name() + "> does not exists.");
     }
 
     /**
@@ -445,7 +446,7 @@ namespace LinBox {
      * \brief colEchelonize dispatcher for automated category tag.
      */
     template <class Matrix, class EchelonMethod>
-    inline size_t colEchelonize (const Matrix& A, const EchelonMethod& m)
+    inline size_t colEchelonize (Matrix& A, const EchelonMethod& m)
     {
         return colEchelonize (A, typename FieldTraits<typename Matrix::Field>::categoryTag(), m);
     }
@@ -600,7 +601,7 @@ namespace LinBox {
      * \brief reducedColEchelonize dispatcher for automated category tag.
      */
     template <class Matrix, class EchelonMethod>
-    inline size_t reducedColEchelonize (const Matrix& A, const EchelonMethod& m)
+    inline size_t reducedColEchelonize (Matrix& A, const EchelonMethod& m)
     {
         return reducedColEchelonize (A, typename FieldTraits<typename Matrix::Field>::categoryTag(), m);
     }
@@ -660,7 +661,7 @@ namespace LinBox {
 #include "./echelon/echelon-auto.h"
 
 // Elimination
-#include "./solve/solve-dense-elimination.h"
+#include "./echelon/echelon-dense-elimination.h"
 // #include "./echelon/echelon-elimination.h"
 // #include "./echelon/echelon-sparse-elimination.h"
 

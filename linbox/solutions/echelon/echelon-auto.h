@@ -36,7 +36,7 @@ namespace LinBox {
      * \brief rowEchelon specialisation for Auto.
      */
     template <class Matrix, class CategoryTag>
-    ResultVector& rowEchelon (Matrix & E, const Matrix& A, const CategoryTag& tag, const Method::Auto& m)
+    size_t rowEchelon (Matrix & E, const Matrix& A, const CategoryTag& tag, const Method::Auto& m)
     {
         return rowEchelon (E, A, tag, reinterpret_cast<const Method::Elimination&>(m));
     }
@@ -45,7 +45,7 @@ namespace LinBox {
      * \brief rowEchelon specialisation for Auto with DenseMatrix and ModularTag.
      */
     template <class Field>
-    ResultVector& rowEchelon (DenseMatrix<Field>& E, const DenseMatrix<Field>& A,
+    size_t rowEchelon (DenseMatrix<Field>& E, const DenseMatrix<Field>& A,
                               const RingCategories::ModularTag& tag, const Method::Auto& m)
     {
         return rowEchelon (E, A, tag, reinterpret_cast<const Method::DenseElimination&>(m));
@@ -55,7 +55,7 @@ namespace LinBox {
      * \brief rowEchelon specialisation for Auto.
      */
     template <class Matrix, class CategoryTag>
-    ResultVector& rowEchelon (Matrix & E, Matrix & T, const Matrix& A, const CategoryTag& tag, const Method::Auto& m)
+    size_t rowEchelon (Matrix & E, Matrix & T, const Matrix& A, const CategoryTag& tag, const Method::Auto& m)
     {
         return rowEchelon (E, A, T, tag, reinterpret_cast<const Method::Elimination&>(m));
     }
@@ -64,7 +64,7 @@ namespace LinBox {
      * \brief rowEchelon specialisation for Auto with DenseMatrix and ModularTag.
      */
     template <class Field>
-    ResultVector& rowEchelon (DenseMatrix<Field>& E, DenseMatrix<Field>& T, const DenseMatrix<Field>& A,
+    size_t rowEchelon (DenseMatrix<Field>& E, DenseMatrix<Field>& T, const DenseMatrix<Field>& A,
                               const RingCategories::ModularTag& tag, const Method::Auto& m)
     {
         return rowEchelon (E, A, T, tag, reinterpret_cast<const Method::DenseElimination&>(m));
@@ -78,7 +78,7 @@ namespace LinBox {
      * \brief rowEchelonize specialisation for Auto.
      */
     template <class Matrix, class CategoryTag>
-    ResultVector& rowEchelonize (Matrix & A const CategoryTag& tag, const Method::Auto& m)
+    size_t rowEchelonize (Matrix & A, const CategoryTag& tag, const Method::Auto& m)
     {
         return rowEchelonize (A, tag, reinterpret_cast<const Method::Elimination&>(m));
     }
@@ -87,7 +87,7 @@ namespace LinBox {
      * \brief rowEchelonize specialisation for Auto with DenseMatrix and ModularTag.
      */
     template <class Field>
-    ResultVector& rowEchelonize (DenseMatrix<Field>& A,
+    size_t rowEchelonize (DenseMatrix<Field>& A,
                                  const RingCategories::ModularTag& tag, const Method::Auto& m)
     {
         return rowEchelonize (A, tag, reinterpret_cast<const Method::DenseElimination&>(m));
@@ -97,7 +97,7 @@ namespace LinBox {
      * \brief rowEchelonize specialisation for Auto.
      */
     template <class Matrix, class CategoryTag>
-    ResultVector& rowEchelonize (Matrix & A, Matrix & T, const CategoryTag& tag, const Method::Auto& m)
+    size_t rowEchelonize (Matrix & A, Matrix & T, const CategoryTag& tag, const Method::Auto& m)
     {
         return rowEchelonize (A, T, tag, reinterpret_cast<const Method::Elimination&>(m));
     }
@@ -106,7 +106,7 @@ namespace LinBox {
      * \brief rowEchelonize specialisation for Auto with DenseMatrix and ModularTag.
      */
     template <class Field>
-    ResultVector& rowEchelonize (DenseMatrix<Field>& A, DenseMatrix<Field>& T,
+    size_t rowEchelonize (DenseMatrix<Field>& A, DenseMatrix<Field>& T,
                                  const RingCategories::ModularTag& tag, const Method::Auto& m)
     {
         return rowEchelonize (A, T, tag, reinterpret_cast<const Method::DenseElimination&>(m));
@@ -120,7 +120,7 @@ namespace LinBox {
      * \brief reducedRowEchelon specialisation for Auto.
      */
     template <class Matrix, class CategoryTag>
-    ResultVector& reducedRowEchelon (Matrix & E, const Matrix& A, const CategoryTag& tag, const Method::Auto& m)
+    size_t reducedRowEchelon (Matrix & E, const Matrix& A, const CategoryTag& tag, const Method::Auto& m)
     {
         return reducedRowEchelon (E, A, tag, reinterpret_cast<const Method::Elimination&>(m));
     }
@@ -129,7 +129,7 @@ namespace LinBox {
      * \brief reducedRowEchelon specialisation for Auto with DenseMatrix and ModularTag.
      */
     template <class Field>
-    ResultVector& reducedRowEchelon (DenseMatrix<Field>& E, const DenseMatrix<Field>& A,
+    size_t reducedRowEchelon (DenseMatrix<Field>& E, const DenseMatrix<Field>& A,
                               const RingCategories::ModularTag& tag, const Method::Auto& m)
     {
         return reducedRowEchelon (E, A, tag, reinterpret_cast<const Method::DenseElimination&>(m));
@@ -139,7 +139,7 @@ namespace LinBox {
      * \brief reducedRowEchelon specialisation for Auto.
      */
     template <class Matrix, class CategoryTag>
-    ResultVector& reducedRowEchelon (Matrix & E, Matrix & T, const Matrix& A, const CategoryTag& tag, const Method::Auto& m)
+    size_t reducedRowEchelon (Matrix & E, Matrix & T, const Matrix& A, const CategoryTag& tag, const Method::Auto& m)
     {
         return reducedRowEchelon (E, A, T, tag, reinterpret_cast<const Method::Elimination&>(m));
     }
@@ -148,7 +148,7 @@ namespace LinBox {
      * \brief reducedRowEchelon specialisation for Auto with DenseMatrix and ModularTag.
      */
     template <class Field>
-    ResultVector& reducedRowEchelon (DenseMatrix<Field>& E, DenseMatrix<Field>& T, const DenseMatrix<Field>& A,
+    size_t reducedRowEchelon (DenseMatrix<Field>& E, DenseMatrix<Field>& T, const DenseMatrix<Field>& A,
                               const RingCategories::ModularTag& tag, const Method::Auto& m)
     {
         return reducedRowEchelon (E, A, T, tag, reinterpret_cast<const Method::DenseElimination&>(m));
@@ -162,7 +162,7 @@ namespace LinBox {
      * \brief reducedRowEchelonize specialisation for Auto.
      */
     template <class Matrix, class CategoryTag>
-    ResultVector& reducedRowEchelonize (Matrix & A const CategoryTag& tag, const Method::Auto& m)
+    size_t reducedRowEchelonize (Matrix & A, const CategoryTag& tag, const Method::Auto& m)
     {
         return reducedRowEchelonize (A, tag, reinterpret_cast<const Method::Elimination&>(m));
     }
@@ -171,7 +171,7 @@ namespace LinBox {
      * \brief reducedRowEchelonize specialisation for Auto with DenseMatrix and ModularTag.
      */
     template <class Field>
-    ResultVector& reducedRowEchelonize (DenseMatrix<Field>& A,
+    size_t reducedRowEchelonize (DenseMatrix<Field>& A,
                                  const RingCategories::ModularTag& tag, const Method::Auto& m)
     {
         return reducedRowEchelonize (A, tag, reinterpret_cast<const Method::DenseElimination&>(m));
@@ -181,7 +181,7 @@ namespace LinBox {
      * \brief reducedRowEchelonize specialisation for Auto.
      */
     template <class Matrix, class CategoryTag>
-    ResultVector& reducedRowEchelonize (Matrix & A, Matrix & T, const CategoryTag& tag, const Method::Auto& m)
+    size_t reducedRowEchelonize (Matrix & A, Matrix & T, const CategoryTag& tag, const Method::Auto& m)
     {
         return reducedRowEchelonize (A, T, tag, reinterpret_cast<const Method::Elimination&>(m));
     }
@@ -190,7 +190,7 @@ namespace LinBox {
      * \brief reducedRowEchelonize specialisation for Auto with DenseMatrix and ModularTag.
      */
     template <class Field>
-    ResultVector& reducedRowEchelonize (DenseMatrix<Field>& A, DenseMatrix<Field>& T,
+    size_t reducedRowEchelonize (DenseMatrix<Field>& A, DenseMatrix<Field>& T,
                                  const RingCategories::ModularTag& tag, const Method::Auto& m)
     {
         return reducedRowEchelonize (A, T, tag, reinterpret_cast<const Method::DenseElimination&>(m));
@@ -203,7 +203,7 @@ namespace LinBox {
      * \brief colEchelon specialisation for Auto.
      */
     template <class Matrix, class CategoryTag>
-    ResultVector& colEchelon (Matrix & E, const Matrix& A, const CategoryTag& tag, const Method::Auto& m)
+    size_t colEchelon (Matrix & E, const Matrix& A, const CategoryTag& tag, const Method::Auto& m)
     {
         return colEchelon (E, A, tag, reinterpret_cast<const Method::Elimination&>(m));
     }
@@ -212,8 +212,8 @@ namespace LinBox {
      * \brief colEchelon specialisation for Auto with DenseMatrix and ModularTag.
      */
     template <class Field>
-    ResultVector& colEchelon (DenseMatrix<Field>& E, const DenseMatrix<Field>& A,
-                              const RingCategories::ModularTag& tag, const Method::Auto& m)
+    size_t colEchelon (DenseMatrix<Field>& E, const DenseMatrix<Field>& A,
+                       const RingCategories::ModularTag& tag, const Method::Auto& m)
     {
         return colEchelon (E, A, tag, reinterpret_cast<const Method::DenseElimination&>(m));
     }
@@ -222,7 +222,7 @@ namespace LinBox {
      * \brief colEchelon specialisation for Auto.
      */
     template <class Matrix, class CategoryTag>
-    ResultVector& colEchelon (Matrix & E, Matrix & T, const Matrix& A, const CategoryTag& tag, const Method::Auto& m)
+    size_t colEchelon (Matrix & E, Matrix & T, const Matrix& A, const CategoryTag& tag, const Method::Auto& m)
     {
         return colEchelon (E, A, T, tag, reinterpret_cast<const Method::Elimination&>(m));
     }
@@ -231,7 +231,7 @@ namespace LinBox {
      * \brief colEchelon specialisation for Auto with DenseMatrix and ModularTag.
      */
     template <class Field>
-    ResultVector& colEchelon (DenseMatrix<Field>& E, DenseMatrix<Field>& T, const DenseMatrix<Field>& A,
+    size_t colEchelon (DenseMatrix<Field>& E, DenseMatrix<Field>& T, const DenseMatrix<Field>& A,
                               const RingCategories::ModularTag& tag, const Method::Auto& m)
     {
         return colEchelon (E, A, T, tag, reinterpret_cast<const Method::DenseElimination&>(m));
@@ -245,7 +245,7 @@ namespace LinBox {
      * \brief colEchelonize specialisation for Auto.
      */
     template <class Matrix, class CategoryTag>
-    ResultVector& colEchelonize (Matrix & A const CategoryTag& tag, const Method::Auto& m)
+    size_t colEchelonize (Matrix & A, const CategoryTag& tag, const Method::Auto& m)
     {
         return colEchelonize (A, tag, reinterpret_cast<const Method::Elimination&>(m));
     }
@@ -254,8 +254,8 @@ namespace LinBox {
      * \brief colEchelonize specialisation for Auto with DenseMatrix and ModularTag.
      */
     template <class Field>
-    ResultVector& colEchelonize (DenseMatrix<Field>& A,
-                                 const RingCategories::ModularTag& tag, const Method::Auto& m)
+    size_t colEchelonize (DenseMatrix<Field>& A,
+                          const RingCategories::ModularTag& tag, const Method::Auto& m)
     {
         return colEchelonize (A, tag, reinterpret_cast<const Method::DenseElimination&>(m));
     }
@@ -264,7 +264,7 @@ namespace LinBox {
      * \brief colEchelonize specialisation for Auto.
      */
     template <class Matrix, class CategoryTag>
-    ResultVector& colEchelonize (Matrix & A, Matrix & T, const CategoryTag& tag, const Method::Auto& m)
+    size_t colEchelonize (Matrix & A, Matrix & T, const CategoryTag& tag, const Method::Auto& m)
     {
         return colEchelonize (A, T, tag, reinterpret_cast<const Method::Elimination&>(m));
     }
@@ -273,8 +273,8 @@ namespace LinBox {
      * \brief colEchelonize specialisation for Auto with DenseMatrix and ModularTag.
      */
     template <class Field>
-    ResultVector& colEchelonize (DenseMatrix<Field>& A, DenseMatrix<Field>& T,
-                                 const RingCategories::ModularTag& tag, const Method::Auto& m)
+    size_t colEchelonize (DenseMatrix<Field>& A, DenseMatrix<Field>& T,
+                          const RingCategories::ModularTag& tag, const Method::Auto& m)
     {
         return colEchelonize (A, T, tag, reinterpret_cast<const Method::DenseElimination&>(m));
     }
@@ -287,7 +287,7 @@ namespace LinBox {
      * \brief reducedColEchelon specialisation for Auto.
      */
     template <class Matrix, class CategoryTag>
-    ResultVector& reducedColEchelon (Matrix & E, const Matrix& A, const CategoryTag& tag, const Method::Auto& m)
+    size_t reducedColEchelon (Matrix & E, const Matrix& A, const CategoryTag& tag, const Method::Auto& m)
     {
         return reducedColEchelon (E, A, tag, reinterpret_cast<const Method::Elimination&>(m));
     }
@@ -296,7 +296,7 @@ namespace LinBox {
      * \brief reducedColEchelon specialisation for Auto with DenseMatrix and ModularTag.
      */
     template <class Field>
-    ResultVector& reducedColEchelon (DenseMatrix<Field>& E, const DenseMatrix<Field>& A,
+    size_t reducedColEchelon (DenseMatrix<Field>& E, const DenseMatrix<Field>& A,
                               const RingCategories::ModularTag& tag, const Method::Auto& m)
     {
         return reducedColEchelon (E, A, tag, reinterpret_cast<const Method::DenseElimination&>(m));
@@ -306,7 +306,7 @@ namespace LinBox {
      * \brief reducedColEchelon specialisation for Auto.
      */
     template <class Matrix, class CategoryTag>
-    ResultVector& reducedColEchelon (Matrix & E, Matrix & T, const Matrix& A, const CategoryTag& tag, const Method::Auto& m)
+    size_t reducedColEchelon (Matrix & E, Matrix & T, const Matrix& A, const CategoryTag& tag, const Method::Auto& m)
     {
         return reducedColEchelon (E, A, T, tag, reinterpret_cast<const Method::Elimination&>(m));
     }
@@ -315,7 +315,7 @@ namespace LinBox {
      * \brief reducedColEchelon specialisation for Auto with DenseMatrix and ModularTag.
      */
     template <class Field>
-    ResultVector& reducedColEchelon (DenseMatrix<Field>& E, DenseMatrix<Field>& T, const DenseMatrix<Field>& A,
+    size_t reducedColEchelon (DenseMatrix<Field>& E, DenseMatrix<Field>& T, const DenseMatrix<Field>& A,
                               const RingCategories::ModularTag& tag, const Method::Auto& m)
     {
         return reducedColEchelon (E, A, T, tag, reinterpret_cast<const Method::DenseElimination&>(m));
@@ -329,7 +329,7 @@ namespace LinBox {
      * \brief reducedColEchelonize specialisation for Auto.
      */
     template <class Matrix, class CategoryTag>
-    ResultVector& reducedColEchelonize (Matrix & A const CategoryTag& tag, const Method::Auto& m)
+    size_t reducedColEchelonize (Matrix & A, const CategoryTag& tag, const Method::Auto& m)
     {
         return reducedColEchelonize (A, tag, reinterpret_cast<const Method::Elimination&>(m));
     }
@@ -338,7 +338,7 @@ namespace LinBox {
      * \brief reducedColEchelonize specialisation for Auto with DenseMatrix and ModularTag.
      */
     template <class Field>
-    ResultVector& reducedColEchelonize (DenseMatrix<Field>& A,
+    size_t reducedColEchelonize (DenseMatrix<Field>& A,
                                  const RingCategories::ModularTag& tag, const Method::Auto& m)
     {
         return reducedColEchelonize (A, tag, reinterpret_cast<const Method::DenseElimination&>(m));
@@ -348,7 +348,7 @@ namespace LinBox {
      * \brief reducedColEchelonize specialisation for Auto.
      */
     template <class Matrix, class CategoryTag>
-    ResultVector& reducedColEchelonize (Matrix & A, Matrix & T, const CategoryTag& tag, const Method::Auto& m)
+    size_t reducedColEchelonize (Matrix & A, Matrix & T, const CategoryTag& tag, const Method::Auto& m)
     {
         return reducedColEchelonize (A, T, tag, reinterpret_cast<const Method::Elimination&>(m));
     }
@@ -357,7 +357,7 @@ namespace LinBox {
      * \brief reducedColEchelonize specialisation for Auto with DenseMatrix and ModularTag.
      */
     template <class Field>
-    ResultVector& reducedColEchelonize (DenseMatrix<Field>& A, DenseMatrix<Field>& T,
+    size_t reducedColEchelonize (DenseMatrix<Field>& A, DenseMatrix<Field>& T,
                                  const RingCategories::ModularTag& tag, const Method::Auto& m)
     {
         return reducedColEchelonize (A, T, tag, reinterpret_cast<const Method::DenseElimination&>(m));
