@@ -214,17 +214,17 @@ static bool testPLUQ (const Field& F, size_t m, size_t n, int iterations = 1)
 
 		Q=X.getQ();
 
-		// C = U*P
-		BMD.mul( C, U, P);
-		// C = Q*C
-		BMD.mulin_right( Q, C);
+		// C = U*Q
+		BMD.mul( C, U, Q);
 		// A = L*C
 		BMD.mul( A, L, C);
+		// C = Q*C
+		BMD.mulin_right( P, C);
 
 		if (!MD.areEqual(A,Abis))
 			ret=false;
 
-		// Second pass
+        // Second pass
 		// A = B*C
 		BMD.mul(A, B, C);
 
@@ -241,11 +241,11 @@ static bool testPLUQ (const Field& F, size_t m, size_t n, int iterations = 1)
 		Q=Y.getQ();
 
 		// C = Q*U2
-		BMD.mul( C,Q,U2);
-		// C = Q*C
-		BMD.mulin_left(  C,P);
+		BMD.mul( C,L2,U2);
+		// C = C*Q
+		BMD.mulin_left(  C,Q);
 		// A = L*C
-		BMD.mul( A, L2, C);
+		BMD.mul( A, P, C);
 
 		if (!MD.areEqual(A,Abis))
 			ret=false;
@@ -267,7 +267,7 @@ int launch_tests(Field & F, size_t m, size_t n, int iterations = 1)
  		if (!testRank (F, n, m, iterations))   pass=false;
  		if (!testRank (F, m, n, iterations))   pass=false;
 	}
- 	//if (!testPLUQ (F,n,n,iterations))                     pass=false;
+    if (!testPLUQ (F,n,n,iterations))                     pass=false;
 	return pass ;
 
 }
