@@ -47,11 +47,13 @@ namespace LinBox {
         size_t* Q = new size_t[n];
         const Field& F = A.field();
 
-        size_t R = FFPACK::RowEchelonForm (F, m, n, A.getPointer(), A.getStride(), P, Q, false);
+        E = A;
+
+        size_t R = FFPACK::RowEchelonForm (F, m, n, E.getPointer(), E.getStride(), P, Q, false);
 
         FFPACK::getEchelonForm (F, FFLAS::FflasUpper, FFLAS::FflasUnit, m, n, R, Q,
-                                A.getPointer(), A.getStride(), E.getPointer(), E.getStride());
-        
+                                E.getPointer(), E.getStride());
+
         delete[] P;
         delete[] Q;
         return R;
@@ -74,13 +76,15 @@ namespace LinBox {
         size_t* Q = new size_t[n];
         const Field& F = A.field();
 
-        size_t R = FFPACK::RowEchelonForm (F, m, n, A.getPointer(), A.getStride(), P, Q, false);
+        E = A;
 
-        FFPACK::getEchelonForm (F, FFLAS::FflasUpper, FFLAS::FflasUnit, m, n, R, Q,
-                                A.getPointer(), A.getStride(), E.getPointer(), E.getStride());
+        size_t R = FFPACK::RowEchelonForm (F, m, n, E.getPointer(), E.getStride(), P, Q, false);
+
         FFPACK::getEchelonTransform (F, FFLAS::FflasUpper, FFLAS::FflasUnit, m, n, R, P, Q,
-                                     A.getPointer(), A.getStride(), T.getPointer(), T.getStride());
-        
+                                     E.getPointer(), E.getStride(), T.getPointer(), T.getStride());
+        FFPACK::getEchelonForm (F, FFLAS::FflasUpper, FFLAS::FflasUnit, m, n, R, Q,
+                                E.getPointer(), E.getStride());
+
         delete[] P;
         delete[] Q;
         return R;
@@ -107,7 +111,7 @@ namespace LinBox {
 
         FFPACK::getEchelonForm (F, FFLAS::FflasUpper, FFLAS::FflasUnit, m, n, R, Q,
                                 A.getPointer(), A.getStride());
-        
+
         delete[] P;
         delete[] Q;
         return R;
@@ -133,7 +137,7 @@ namespace LinBox {
         FFPACK::getEchelonTransform (F, FFLAS::FflasUpper, FFLAS::FflasUnit, m, n, R, P, Q,
                                      A.getPointer(), A.getStride(), T.getPointer(), T.getStride());
         FFPACK::getEchelonForm (F, FFLAS::FflasUpper, FFLAS::FflasUnit, m, n, R, Q, A.getPointer(), A.getStride());
-        
+
         delete[] P;
         delete[] Q;
         return R;
@@ -158,11 +162,12 @@ namespace LinBox {
         size_t* Q = new size_t[n];
         const Field& F = A.field();
 
-        size_t R = FFPACK::ReducedRowEchelonForm (F, m, n, A.getPointer(), A.getStride(), P, Q, false);
+        E = A;
 
-        FFPACK::getReducedEchelonForm (F, FFLAS::FflasUpper, m, n, R, Q,
-                                       A.getPointer(), A.getStride(), E.getPointer(), E.getStride());
-        
+        size_t R = FFPACK::ReducedRowEchelonForm (F, m, n, E.getPointer(), E.getStride(), P, Q, false);
+
+        FFPACK::getReducedEchelonForm (F, FFLAS::FflasUpper, m, n, R, Q, E.getPointer(), E.getStride());
+
         delete[] P;
         delete[] Q;
         return R;
@@ -184,13 +189,14 @@ namespace LinBox {
         size_t* Q = new size_t[n];
         const Field& F = A.field();
 
-        size_t R = FFPACK::ReducedRowEchelonForm (F, m, n, A.getPointer(), A.getStride(), P, Q, false);
+        E = A;
 
-        FFPACK::getReducedEchelonForm (F, FFLAS::FflasUpper, m, n, R, Q,
-                                       A.getPointer(), A.getStride(), E.getPointer(), E.getStride());
+        size_t R = FFPACK::ReducedRowEchelonForm (F, m, n, E.getPointer(), E.getStride(), P, Q, false);
+
         FFPACK::getReducedEchelonTransform (F, FFLAS::FflasUpper, FFLAS::FflasUnit, m, n, R, P, Q,
-                                            A.getPointer(), A.getStride(), T.getPointer(), T.getStride());
-        
+                                            E.getPointer(), E.getStride(), T.getPointer(), T.getStride());
+        FFPACK::getReducedEchelonForm (F, FFLAS::FflasUpper, m, n, R, Q, E.getPointer(), E.getStride());
+
         delete[] P;
         delete[] Q;
         return R;
@@ -217,7 +223,7 @@ namespace LinBox {
 
         FFPACK::getReducedEchelonForm (F, FFLAS::FflasUpper, m, n, R, Q,
                                        A.getPointer(), A.getStride());
-        
+
         delete[] P;
         delete[] Q;
         return R;
@@ -243,7 +249,7 @@ namespace LinBox {
         FFPACK::getReducedEchelonTransform (F, FFLAS::FflasUpper, FFLAS::FflasUnit, m, n, R, P, Q,
                                             A.getPointer(), A.getStride(), T.getPointer(), T.getStride());
         FFPACK::getReducedEchelonForm (F, FFLAS::FflasUpper, m, n, R, Q, A.getPointer(), A.getStride());
-        
+
         delete[] P;
         delete[] Q;
         return R;
@@ -264,15 +270,17 @@ namespace LinBox {
 
         size_t m = A.rowdim();
         size_t n = A.coldim();
-        size_t* P = new size_t[m];
-        size_t* Q = new size_t[n];
+        size_t* P = new size_t[n];
+        size_t* Q = new size_t[m];
         const Field& F = A.field();
 
-        size_t R = FFPACK::ColumnEchelonForm (F, m, n, A.getPointer(), A.getStride(), P, Q, false);
+        E = A;
+
+        size_t R = FFPACK::ColumnEchelonForm (F, m, n, E.getPointer(), E.getStride(), P, Q, false);
 
         FFPACK::getEchelonForm (F, FFLAS::FflasLower, FFLAS::FflasUnit, m, n, R, Q,
-                                A.getPointer(), A.getStride(), E.getPointer(), E.getStride());
-        
+                                E.getPointer(), E.getStride());
+
         delete[] P;
         delete[] Q;
         return R;
@@ -291,17 +299,19 @@ namespace LinBox {
 
         size_t m = A.rowdim();
         size_t n = A.coldim();
-        size_t* P = new size_t[m];
-        size_t* Q = new size_t[n];
+        size_t* P = new size_t[n];
+        size_t* Q = new size_t[m];
         const Field& F = A.field();
 
-        size_t R = FFPACK::ColumnEchelonForm (F, m, n, A.getPointer(), A.getStride(), P, Q, false);
+        E = A;
 
-        FFPACK::getEchelonForm (F, FFLAS::FflasLower, FFLAS::FflasUnit, m, n, R, Q,
-                                A.getPointer(), A.getStride(), E.getPointer(), E.getStride());
+        size_t R = FFPACK::ColumnEchelonForm (F, m, n, E.getPointer(), E.getStride(), P, Q, false);
+
         FFPACK::getEchelonTransform (F, FFLAS::FflasLower, FFLAS::FflasUnit, m, n, R, P, Q,
-                                     A.getPointer(), A.getStride(), T.getPointer(), T.getStride());
-        
+                                     E.getPointer(), E.getStride(), T.getPointer(), T.getStride());
+        FFPACK::getEchelonForm (F, FFLAS::FflasLower, FFLAS::FflasUnit, m, n, R, Q,
+                                E.getPointer(), E.getStride());
+
         delete[] P;
         delete[] Q;
         return R;
@@ -320,15 +330,15 @@ namespace LinBox {
 
         size_t m = A.rowdim();
         size_t n = A.coldim();
-        size_t* P = new size_t[m];
-        size_t* Q = new size_t[n];
+        size_t* P = new size_t[n];
+        size_t* Q = new size_t[m];
         const Field& F = A.field();
 
         size_t R = FFPACK::ColumnEchelonForm (F, m, n, A.getPointer(), A.getStride(), P, Q, false);
 
         FFPACK::getEchelonForm (F, FFLAS::FflasLower, FFLAS::FflasUnit, m, n, R, Q,
                                 A.getPointer(), A.getStride());
-        
+
         delete[] P;
         delete[] Q;
         return R;
@@ -345,8 +355,8 @@ namespace LinBox {
 
         size_t m = A.rowdim();
         size_t n = A.coldim();
-        size_t* P = new size_t[m];
-        size_t* Q = new size_t[n];
+        size_t* P = new size_t[n];
+        size_t* Q = new size_t[m];
         const Field& F = A.field();
 
         size_t R = FFPACK::ColumnEchelonForm (F, m, n, A.getPointer(), A.getStride(), P, Q, true);
@@ -354,7 +364,7 @@ namespace LinBox {
         FFPACK::getEchelonTransform (F, FFLAS::FflasLower, FFLAS::FflasUnit, m, n, R, P, Q,
                                      A.getPointer(), A.getStride(), T.getPointer(), T.getStride());
         FFPACK::getEchelonForm (F, FFLAS::FflasLower, FFLAS::FflasUnit, m, n, R, Q, A.getPointer(), A.getStride());
-        
+
         delete[] P;
         delete[] Q;
         return R;
@@ -375,15 +385,16 @@ namespace LinBox {
 
         size_t m = A.rowdim();
         size_t n = A.coldim();
-        size_t* P = new size_t[m];
-        size_t* Q = new size_t[n];
+        size_t* P = new size_t[n];
+        size_t* Q = new size_t[m];
         const Field& F = A.field();
 
-        size_t R = FFPACK::ReducedColumnEchelonForm (F, m, n, A.getPointer(), A.getStride(), P, Q, false);
+        E = A;
 
-        FFPACK::getReducedEchelonForm (F, FFLAS::FflasLower, m, n, R, Q,
-                                       A.getPointer(), A.getStride(), E.getPointer(), E.getStride());
-        
+        size_t R = FFPACK::ReducedColumnEchelonForm (F, m, n, E.getPointer(), E.getStride(), P, Q, false);
+
+        FFPACK::getReducedEchelonForm (F, FFLAS::FflasLower, m, n, R, Q, E.getPointer(), E.getStride());
+
         delete[] P;
         delete[] Q;
         return R;
@@ -401,17 +412,18 @@ namespace LinBox {
 
         size_t m = A.rowdim();
         size_t n = A.coldim();
-        size_t* P = new size_t[m];
-        size_t* Q = new size_t[n];
+        size_t* P = new size_t[n];
+        size_t* Q = new size_t[m];
         const Field& F = A.field();
 
-        size_t R = FFPACK::ReducedColumnEchelonForm (F, m, n, A.getPointer(), A.getStride(), P, Q, false);
+        E = A;
 
-        FFPACK::getReducedEchelonForm (F, FFLAS::FflasLower, m, n, R, Q,
-                                       A.getPointer(), A.getStride(), E.getPointer(), E.getStride());
+        size_t R = FFPACK::ReducedColumnEchelonForm (F, m, n, E.getPointer(), E.getStride(), P, Q, false);
+
         FFPACK::getReducedEchelonTransform (F, FFLAS::FflasLower, FFLAS::FflasUnit, m, n, R, P, Q,
-                                            A.getPointer(), A.getStride(), T.getPointer(), T.getStride());
-        
+                                            E.getPointer(), E.getStride(), T.getPointer(), T.getStride());
+        FFPACK::getReducedEchelonForm (F, FFLAS::FflasLower, m, n, R, Q, E.getPointer(), E.getStride());
+
         delete[] P;
         delete[] Q;
         return R;
@@ -430,15 +442,15 @@ namespace LinBox {
     {
         size_t m = A.rowdim();
         size_t n = A.coldim();
-        size_t* P = new size_t[m];
-        size_t* Q = new size_t[n];
+        size_t* P = new size_t[n];
+        size_t* Q = new size_t[m];
         const Field& F = A.field();
 
         size_t R = FFPACK::ReducedColumnEchelonForm (F, m, n, A.getPointer(), A.getStride(), P, Q, false);
 
         FFPACK::getReducedEchelonForm (F, FFLAS::FflasLower, m, n, R, Q,
                                        A.getPointer(), A.getStride());
-        
+
         delete[] P;
         delete[] Q;
         return R;
@@ -455,8 +467,8 @@ namespace LinBox {
 
         size_t m = A.rowdim();
         size_t n = A.coldim();
-        size_t* P = new size_t[m];
-        size_t* Q = new size_t[n];
+        size_t* P = new size_t[n];
+        size_t* Q = new size_t[m];
         const Field& F = A.field();
 
         size_t R = FFPACK::ReducedColumnEchelonForm (F, m, n, A.getPointer(), A.getStride(), P, Q, true);
@@ -464,7 +476,7 @@ namespace LinBox {
         FFPACK::getReducedEchelonTransform (F, FFLAS::FflasLower, FFLAS::FflasUnit, m, n, R, P, Q,
                                             A.getPointer(), A.getStride(), T.getPointer(), T.getStride());
         FFPACK::getReducedEchelonForm (F, FFLAS::FflasLower, m, n, R, Q, A.getPointer(), A.getStride());
-        
+
         delete[] P;
         delete[] Q;
         return R;
