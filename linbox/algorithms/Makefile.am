@@ -84,7 +84,6 @@ pkgincludesub_HEADERS =            \
 	diophantine-solver.inl             \
 	double-det.h                       \
 	dyadic-to-rational.h               \
-	echelon-form.h                     \
 	eliminator.h                       \
 	eliminator.inl                     \
 	fast-rational-reconstruction.h     \
