@@ -81,7 +81,7 @@ static bool testRank (const Field& F, size_t m, size_t n, int iterations = 1)
 	//Commentator mycommentator;
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	mycommentator().start (pretty("Testing rank"),"testRank",(unsigned int)iterations);
+	mycommentator().start (pretty("Testing rank"),"testRank",(size_t)iterations);
 
 	typename Field::RandIter G(F);
 	typename Field::NonZeroRandIter Gn(G);
@@ -92,12 +92,12 @@ static bool testRank (const Field& F, size_t m, size_t n, int iterations = 1)
 
 	for (int k=0;k<iterations; ++k) {
 
-	unsigned int r;
+	size_t r;
 		mycommentator().progress(k);
 		DenseMatrix<Field> A(F,m,n),S(F,m,n), L(F,m,m);
 
 		int mn = (m < n) ? (int)m :(int) n;
-		r = (unsigned int)(random() % mn);
+		r = (size_t)(random() % mn);
 		// create S as an upper triangular matrix with r nonzero rows
 		for (size_t i=0;i<r;++i){
 			S.setEntry(i,i,Gn.random(tmp));
@@ -121,22 +121,21 @@ static bool testRank (const Field& F, size_t m, size_t n, int iterations = 1)
 
 		// compute the rank of A
 		DenseMatrix<Field> E1(F,m,n), E2(F,m,n), E3(F,m,n), E4(F,m,n);
-		unsigned int rank1= rowEchelon(E1, A);
-                BMD.write(commentator().report(), E1) << " = rowEchelon(E1, A)" << std::endl;
+		size_t rank1 = rowEchelon(E1, A);
+        BMD.write(commentator().report(), E1) << " = rowEchelon(E1, A)" << std::endl;
 
-		unsigned int rank2=(unsigned int) reducedRowEchelon(E2, A);
-                BMD.write(commentator().report(), E2) << " = rowReducedEchelon(E2, A)" << std::endl;
-
-		unsigned int rank3=(unsigned int) colEchelon(E3, A);
+        size_t rank2 = reducedRowEchelon(E2, A);
+        BMD.write(commentator().report(), E2) << " = rowReducedEchelon(E2, A)" << std::endl;
+		size_t rank3= colEchelon(E3, A);
                 BMD.write(commentator().report(), E3) << " = columnEchelon(E3, A)" << std::endl;
 
-		unsigned int rank4=(unsigned int) reducedColEchelon(E4, A);
+		size_t rank4 = reducedColEchelon(E4, A);
                 BMD.write(commentator().report(), E4) << " = columnReducedEchelon(E4, A)" << std::endl;
 
-		unsigned int rank5=(unsigned int) colEchelonize(A);
+		size_t rank5 = colEchelonize(A);
                 BMD.write(commentator().report(), A) << " = columnEchelon(A)" << std::endl;
 
-		unsigned int rank6=(unsigned int) reducedColEchelonize(E1);
+		size_t rank6 = reducedColEchelonize(E1);
                 BMD.write(commentator().report(), E1) << " = columnReducedEchelon(E1)" << std::endl;
 
 		commentator().report() << "Ranks " << rank1 << " " << rank2 << " " << rank3 << " " << rank4 << " " << rank5 << " " << rank6 << " should be " << r << std::endl;
@@ -165,7 +164,7 @@ static bool testPLUQ (const Field& F, size_t m, size_t n, int iterations = 1)
 	//Commentator mycommentator;
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	mycommentator().start (pretty("Testing PLUQ factorization"),"testPLUQ",(unsigned int)iterations);
+	mycommentator().start (pretty("Testing PLUQ factorization"),"testPLUQ", iterations);
 
 	RandIter G(F);
 	NonZeroRandIter Gn(G);
