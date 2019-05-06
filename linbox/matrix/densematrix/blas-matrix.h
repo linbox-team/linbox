@@ -449,7 +449,8 @@ namespace LinBox
 		/*! @internal
 		 * Get read-only pointer to the matrix data.
 		 */
-		pointer getPointer() const ;
+		pointer& getPointer() ;
+		const_pointer& getPointer() const ;
 
 		const_pointer &getConstPointer() const ;
 
