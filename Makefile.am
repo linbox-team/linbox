@@ -93,6 +93,8 @@ uninstall-hook:
 		"$(includedir)/linbox/matrix" \
 		"$(includedir)/linbox/randiter" \
 		"$(includedir)/linbox/ring" \
+		"$(includedir)/linbox/solutions/solve" \
+		"$(includedir)/linbox/solutions/echelon" \
 		"$(includedir)/linbox/solutions" \
 		"$(includedir)/linbox/switch" \
 		"$(includedir)/linbox/util/formats" \
