@@ -26,44 +26,34 @@
 
 namespace LinBox {
     /**
-     * @fixme Should this just be a different LiftingContainer?
+     * @fixme This should just be a different LiftingContainer!
      *
-     * Chen/Storjohann RNS-based p-adic lifting.
      * The algorithm solves Ax = b over the integers.
-     *
+     * It is based on Chen/Storjohann RNS-based p-adic lifting.
      * Based on https://cs.uwaterloo.ca/~astorjoh/p92-chen.pdf
      * A BLAS Based C Library for Exact Linear Algebra on Integer Matrices (ISSAC 2009)
+     * But it has been slightly modified in order to use BLAS3 multiplication within the main loop.
      *
-     *  Dixon algorithm goes this way:
-     *      (i)     Compute B := A^{-1} mod p
-     *              (with p a random number which is hopefully orthogonal to det(A))
-     *      (ii)    Compute (ci) such that A^{-1} b = c0 + c1 p + ... + ci p^i mod p^{i+1}
-     *              Which means:    r = b
-     *                              for i = 0 .. k-1:
-     *                              |   ci = B r mod p
-     *                              |   r = (r - A ci) / p
-     *              (stop when p^k > 2ND given by Hadamard bound)
-     *      (iii)   Rational reconstruct with c = c0 + c1 p + ... + ck p^{k-1} (over the integers)
-     *
-     * The RNS part:
-     *      (i)     Use p = p0p1...p{lp-1} with an arbitrary lp and (q0, q1, ..., q{lq-1}) also primes.
-     *      (ii)    We now do our computation in a RNS system (p0, ..., p{lp-1}, q0, ..., q{lq-1}):
-    *                               r = b
-     *                              for i = 0 .. k-1:
-     *                              |   for j = 0 .. lq-1:
-     *                              |   |   ci[qj] = Bj r mod qj
-     *                              |   (Q, R) = such that r = pQ + R with |R| < p
-     *                              |   r = Q + (R - A ci) / p      < Matrix-vector multiplication done in RNS domain
-     *                              |                                 and final addition over ZZ
-     *              @note (R - A ci) / p can be computed in a RNS system.
-     *              We know that (R - A ci) is divisible by p,
-     *              so its representation is 0 on all lp first terms of the representation, meaning
-     *              we just need representation of ci mod (q0, ..., q{lq-1}).
-     *              For the division part, we just have to multiply the RNS representation of (R - A ci) by
-     *              (1/p) mod (q0, ..., q{lq-1}).
-     *              /!\ @fixme The paper does not talk about matrix-matrix multiplication,
-     *              but instead about exploiting RNS.
-     *      (iii)   We first RNS-reconstruct the solution before rational reconstruction.
+     *  RNS Dixon algorithm goes this way:
+     *      (i)     Use (p1, ..., pl) primes with an arbitrary l.
+     *      (ii)    Algorithm goes:
+     *                  for i = 1 .. l:
+     *                  |   Bi = A^{-1} mod pi                      < Pre-computing
+     *                  [r1|...|rl] = [b|...|b]
+     *                  [y1|...|yl] = [0|...|0]
+     *                  for j = 1 .. k:
+     *                  |   for i = 1 .. l:
+     *                  |   |   ci = Bi ri mod pi                   < Matrix-vector in Z/pZ
+     *                  |   |   yi = (yi * pi) + ci                 < Done over ZZ
+     *                  |   |   (Qi, Ri) = such that r = pi Qi + Ri with |Ri| < pi
+     *                  |   V = [R1|...|Rl] - A [c1|...|cl]         < Matrix-matrix in ZZ
+     *                  |   for i = 1 .. l:
+     *                  |   |   ri = Qi + (Vi / pi)
+     *              @note The computation of V can be done in a RNS system such that each RNS base-prime
+     *              is bigger than each (p1, ..., pl). This way, [R1|...|Rl] and [c1|...|cl] are zero-cost
+     *              to get in the RNS system.
+     *      (iii)   y = CRT_Reconstruct(y1, ..., yl)
+     *      (iv)    x = Rational_Reconstruct(y)
      *
      * One can configure how many primes are used with `Method::DixonRNS.primeBaseLength`.
      * According to the paper, a value of lp = 2 (ln(n) + log2(||A||)) or without the factor 2
