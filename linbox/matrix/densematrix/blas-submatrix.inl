@@ -326,18 +326,17 @@ namespace LinBox
 
 	template < class _Matrix >
 	typename BlasSubmatrix<_Matrix>::pointer
-	BlasSubmatrix<_Matrix>::getPointer() const
+	BlasSubmatrix<_Matrix>::getPointer()
 	{
 		return _Mat.getPointer()+_off;
 	}
 
 	template < class _Matrix >
-	typename BlasSubmatrix<_Matrix>::const_pointer &
-	BlasSubmatrix<_Matrix>::getConstPointer() const
+	typename BlasSubmatrix<_Matrix>::const_pointer
+	BlasSubmatrix<_Matrix>::getPointer() const
 	{
-		return _Mat.getConstPointer()+_off;
+		return _Mat.getPointer()+_off;
 	}
-
 
 	template < class _Matrix >
 	typename BlasSubmatrix<_Matrix>::pointer
