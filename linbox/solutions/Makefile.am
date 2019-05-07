@@ -27,6 +27,7 @@ SUBDIRS=solve echelon
 pkgincludesub_HEADERS=          \
     charpoly.h                  \
     det.h                       \
+    echelon.h                   \
     getentry.h                  \
     getentry.inl                \
     is-positive-definite.h      \
