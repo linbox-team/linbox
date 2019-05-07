@@ -50,7 +50,7 @@ namespace LinBox {
     template <class Matrix, class CategoryTag, class EchelonMethod>
     inline size_t rowEchelon (Matrix & E, const Matrix& A, const CategoryTag& tag, const EchelonMethod& m)
     {
-        throw LinBoxError("coucou rowEchelon<" + CategoryTag::name() + ", " + EchelonMethod::name() + "> does not exists.");
+        throw LinBoxError("rowEchelon<" + CategoryTag::name() + ", " + EchelonMethod::name() + "> does not exists.");
     }
 
     /**
