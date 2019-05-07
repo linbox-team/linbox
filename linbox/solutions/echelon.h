@@ -135,7 +135,7 @@ namespace LinBox {
      * \brief rowEchelonize dispatcher for automated category tag.
      */
     template <class Matrix, class EchelonMethod>
-    inline size_t rowEchelonize (const Matrix& A, const EchelonMethod& m)
+    inline size_t rowEchelonize (Matrix& A, const EchelonMethod& m)
     {
         return rowEchelonize (A, typename FieldTraits<typename Matrix::Field>::categoryTag(), m);
     }
@@ -290,7 +290,7 @@ namespace LinBox {
      * \brief reducedRowEchelonize dispatcher for automated category tag.
      */
     template <class Matrix, class EchelonMethod>
-    inline size_t reducedRowEchelonize (const Matrix& A, const EchelonMethod& m)
+    inline size_t reducedRowEchelonize (Matrix& A, const EchelonMethod& m)
     {
         return reducedRowEchelonize (A, typename FieldTraits<typename Matrix::Field>::categoryTag(), m);
     }
