@@ -287,7 +287,7 @@ namespace LinBox {
      * This is a larger estimation but faster to compute.
      */
     template <class IMatrix>
-    double FastHadamardBound(const IMatrix& A)
+    inline double FastHadamardBound(const IMatrix& A, const MatrixCategories::RowColMatrixTag& tag)
     {
         Integer max = 0;
         for (auto it = A.Begin(); it != A.End(); ++it) {
@@ -307,6 +307,31 @@ namespace LinBox {
         return logBound;
     }
 
+    template <class IMatrix>
+    inline double FastHadamardBound(const IMatrix& A, const MatrixCategories::BlackboxTag& tag)
+    {
+        DenseMatrix<typename IMatrix::Field> ACopy(A);
+        return FastHadamardBound(ACopy);
+    }
+
+    template <class IMatrix>
+    inline double FastHadamardBound(const IMatrix& A)
+    {
+        typename MatrixTraits<IMatrix>::MatrixCategory tag;
+        return FastHadamardBound(A, tag);
+    }
+
+        /**
+         * Bound on the coefficients of the characteristic polynomial
+         * @bib "Efficient Computation of the Characteristic Polynomial". Dumas Pernet Wan ISSAC'05.
+         *
+         */
+    template <class IMatrix>
+    inline double FastCharPolyHadamardBound(const IMatrix& A)
+    {
+        return FastHadamardBound(A)+A.coldim()*.105815875; // .105815875 = 0.21163275 / 2
+    }
+    
     // ----- Rational solve bound
 
     struct RationalSolveHadamardBoundData {
