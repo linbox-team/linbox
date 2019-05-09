@@ -296,7 +296,7 @@ namespace LinBox
 		cra.operator() (P, iteration, genprime);
 		commentator().stop ("done", NULL, "IbbCharpoly");
 #ifdef _LB_CRATIMING
-        cra.reportTimes(std::clog);
+        cra.reportTimes(std::clog) << std::endl;
 #endif
 		return P;
 	}
