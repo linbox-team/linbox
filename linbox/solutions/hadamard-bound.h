@@ -310,6 +310,10 @@ namespace LinBox {
         return max;
     }
 
+     /**
+      * Returns the bit size of the Hadamard bound.
+      * This is a larger estimation but faster to compute.
+      */
     template <class IMatrix>
     inline double FastHadamardBound(const IMatrix& A, const Integer& infnorm)
     {
