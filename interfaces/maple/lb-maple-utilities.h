@@ -67,8 +67,6 @@ extern "C" {
 	/*********************************
 	 * Raising LinBox error in Maple *
 	 *********************************/
-    // @fixme CONSIDER merging in error.h
-    // We could print an arbitrary object on error
 	static void lbRaiseError(MKernelVector kv, lb_runtime_error &t){
 		std::ostringstream out;
 		out<<t;

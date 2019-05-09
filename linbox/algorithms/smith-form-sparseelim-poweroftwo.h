@@ -53,7 +53,7 @@
 namespace LinBox
 {
 
-        /** \brief Repository of functions for rank modulo
+        /** \brief Repository of functions for rank modulo 
          * a prime power by elimination on sparse matrices.
          * Specialization for powers of 2
          */
@@ -108,7 +108,7 @@ namespace LinBox
                 u1 *= ++xmone; --xmone;
                 u1 &= TWOTOEXPMONE;
             }
-            ASSERT( ((a * u1) & TWOTOEXPMONE) == 1U );
+            ENSURE( ((a * u1) & TWOTOEXPMONE) == 1U );
             return u1;
         }
 
@@ -368,8 +368,8 @@ namespace LinBox
                 uint64_t EXPONENT = EXPONENTMAX;
                 UInt_t TWOK(1U); TWOK <<= EXPONENT;
                 UInt_t TWOKMONE(TWOK); --TWOKMONE;
-                ASSERT( TWOK == (UInt_t(1U) << EXPONENT) );
-                ASSERT( TWOKMONE == (TWOK - 1U) );
+                ENSURE( TWOK == (UInt_t(1U) << EXPONENT) );
+                ENSURE( TWOKMONE == (TWOK - 1U) );
 
 
 
@@ -407,7 +407,7 @@ namespace LinBox
                         // Look for invertible pivot
                     size_t p=k;
                     for(;;) {
-                            // Order the rows
+                            // Order the rows 
                         std::multimap< long, long > psizes;
                         for(p=k; p<Ni; ++p)
                             psizes.insert( psizes.end(), std::pair<long,long>( (long)LigneA[(size_t)p].size(), (long)p) );
@@ -441,8 +441,8 @@ namespace LinBox
                         TWOK >>= 1;
                         TWOKMONE >>=1;
 
-                        ASSERT( TWOK == (UInt_t(1U) << EXPONENT) );
-                        ASSERT( TWOKMONE == (TWOK - 1U) );
+                        ENSURE( TWOK == (UInt_t(1U) << EXPONENT) );
+                        ENSURE( TWOKMONE == (TWOK - 1U) );
 
                         ranks.push_back( indcol );
                         ++ind_pow;
@@ -463,7 +463,7 @@ namespace LinBox
                     if (c != -1) {
                             // Pivot has been found
                         REQUIRE( indcol > 0);
-                        const size_t currentrank(indcol-1);
+                        const size_t currentrank(indcol-1); 
 
                         if (c != (long)currentrank) {
 #ifdef  LINBOX_pp_gauss_steps_OUT
@@ -481,7 +481,7 @@ namespace LinBox
                         for(size_t l=k + 1; (l < Ni) && (col_density[currentrank]); ++l)
                             FaireElimination(EXPONENT, TWOK, TWOKMONE, LigneA[(size_t)l], LigneA[(size_t)k], invpiv, currentrank, c, col_density);
                     }
-
+                    
 #ifdef  LINBOX_pp_gauss_steps_OUT
                     std::cerr << "step[" << k << "], pivot: " << c << std::endl;
 #  ifdef  LINBOX_pp_gauss_intermediate_OUT

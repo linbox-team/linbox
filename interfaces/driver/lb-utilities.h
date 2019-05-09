@@ -36,8 +36,7 @@
 /**************************************
  * definition of LinBox's exceptions  *
  **************************************/
-// @fixme CONSIDER MERGING IN error.h
-typedef LinBox::LinboxError lb_runtime_error;
+typedef LinBox::Error lb_runtime_error;
 
 
 
