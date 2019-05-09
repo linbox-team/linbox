@@ -360,11 +360,11 @@ namespace LinBox {
         return FastHadamardBound(A, infnorm) + A.coldim()*.105815875;
     }
 
-		/**
+        /**
          * A.J. Goldstein et R.L. Graham.
          * A Hadamard-type bound on the coefficients of
          * a determinant of polynomials.
-         * SIAM Review, volume 15, 1973, pages 657?658.
+         * SIAM Review, volume 15, 1973, pages 657-658.
          *
          */
     template <class IMatrix>
