@@ -1,7 +1,7 @@
 /* linbox/algorithms/cra-builder-full-multip.h
  * Copyright (C) 1999-2010 The LinBox group
  *
- * Time-stamp: <15 Dec 10 15:54:00 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <09 May 19 16:50:52 Jean-Guillaume.Dumas@imag.fr>
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -60,7 +60,7 @@ namespace LinBox
 	struct CRABuilderFullMultip {
 		typedef Domain_Type			Domain;
 		typedef typename Domain::Element DomainElement;
-		typedef CRABuilderFullMultip<Domain> 		Self_t;
+		typedef CRABuilderFullMultip<Domain>		Self_t;
 
     public:
         struct Shelf {
@@ -406,6 +406,14 @@ namespace LinBox
             u1 += temp; // u1 <-- u1 + ((u0-u1)/m1 mod m0) * m1
             return u1;
         }
+
+#ifdef _LB_CRATIMING
+    public:
+        std::ostream& reportTimes(std::ostream& os) const
+        {
+            return os <<  "FullMultip CRA total size:" << totalsize_;
+        }
+#endif
 
 	};
 
