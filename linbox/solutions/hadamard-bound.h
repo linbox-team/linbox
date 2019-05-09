@@ -382,8 +382,10 @@ namespace LinBox {
         InfinityNorm(infnorm, A, tag);
         const double DPWbound = FastCharPolyDumasPernetWanBound(A, infnorm);
         const double GGbound = FastCharPolyGoldsteinGrahamBound(A, infnorm);
-//         std::clog << "DPWbound: " << DPWbound << std::endl;
-//         std::clog << "GGbound : " << GGbound << std::endl;
+#ifdef DEBUG_HADAMARD_BOUND
+        std::clog << "DPWbound: " << DPWbound << std::endl;
+        std::clog << "GGbound : " << GGbound << std::endl;
+#endif
         return std::min(DPWbound,GGbound);
     }
 
