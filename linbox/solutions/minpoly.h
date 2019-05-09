@@ -34,6 +34,7 @@
 
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/algorithms/wiedemann.h"
+#include "linbox/solutions/hadamard-bound.h"
 
 #ifdef __LINBOX_HAVE_MPI
 #include "linbox/util/mpicpp.h"
@@ -218,15 +219,15 @@ namespace LinBox
 
 	template <class Polynomial, class Blackbox, class MyMethod>
 	Polynomial &minpoly (Polynomial 			&P,
-			     const Blackbox                     &A,
-			     const RingCategories::IntegerTag   &tag,
-			     const MyMethod                     &M)
+                         const Blackbox                     &A,
+                         const RingCategories::IntegerTag   &tag,
+                         const MyMethod                     &M)
 	{
-                if (A.rowdim() == 0 || A.coldim() == 0){
-                        P.resize(1);
-                        P.field().assign(P[0],P.field().one);
-                        return P;
-                }
+        if (A.rowdim() == 0 || A.coldim() == 0){
+            P.resize(1);
+            P.field().assign(P[0],P.field().one);
+            return P;
+        }
 #if 0
 		if (A.coldim() != A.rowdim())
 			throw LinboxError("LinBox ERROR: matrix must be square for minimal polynomial computation\n");
@@ -237,24 +238,30 @@ namespace LinBox
 		if(!c || c->rank() == 0)
 			commentator().start ("Integer Minpoly", "Iminpoly");
 		else{
-			//commentator().setMaxDepth(0);
-			//commentator().setMaxDetailLevel(0);
-			//commentator().setPrintParameters(0, 0, 0);
+                //commentator().setMaxDepth(0);
+                //commentator().setMaxDetailLevel(0);
+                //commentator().setPrintParameters(0, 0, 0);
 		}
 #else
 		commentator().start ("Integer Minpoly", "Iminpoly");
 #endif
-		// 0.7213475205 is an upper approximation of 1/(2log(2))
+            // 0.7213475205 is an upper approximation of 1/(2log(2))
 		typedef Givaro::ModularBalanced<double> Field;
-                PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
+        PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
 		IntegerModularMinpoly<Blackbox,MyMethod> iteration(A, M);
+
 #ifdef __LINBOX_HAVE_MPI
 		ChineseRemainderDistributed< CRABuilderEarlyMultip<Field > > cra(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD, c);
-		cra(P, iteration, genprime);
 #else
+            // @todo: use a value for the switch provided by the method and not by a macro
+#  ifdef __LINBOX_HEURISTIC_CRA
 		ChineseRemainder< CRABuilderEarlyMultip<Field > > cra(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD);
-		cra(P, iteration, genprime);
+#  else
+        double hbound = FastCharPolyHadamardBound(A);
+		ChineseRemainder< CRABuilderFullMultip<Field > > cra(hbound);
+#  endif
 #endif
+		cra(P, iteration, genprime);
 
 #ifdef __LINBOX_HAVE_MPI
 		if(c || c->rank() == 0)
