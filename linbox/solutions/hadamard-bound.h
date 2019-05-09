@@ -282,14 +282,23 @@ namespace LinBox {
 
     // ----- Fast Hadamard bound
 
+
+
     /**
-     * Returns the bit size of the Hadamard bound.
-     * This is a larger estimation but faster to compute.
+     * Returns the maximal absolute value.
      */
-    template <class IMatrix>
-    inline double FastHadamardBound(const IMatrix& A, const MatrixCategories::RowColMatrixTag& tag)
+    template <class IMatrix, class MTag>
+    inline Integer& InfinityNorm(Integer& max, const IMatrix& A, const MTag& tag)
     {
-        Integer max = 0;
+        DenseMatrix<typename IMatrix::Field> ACopy(A);
+        return InfinityNorm(max, ACopy, MatrixCategories::RowColMatrixTag());
+    }
+
+
+    template <class IMatrix>
+    inline Integer& InfinityNorm(Integer& max, const IMatrix& A, const MatrixCategories::RowColMatrixTag& tag)
+    {
+        max = 0;
         for (auto it = A.Begin(); it != A.End(); ++it) {
             const Integer& ai = *it;
             if (max < ai)
@@ -298,13 +307,27 @@ namespace LinBox {
                 max = -ai;
         }
 
-        if (max == 0) {
+        return max;
+    }
+
+    template <class IMatrix>
+    inline double FastHadamardBound(const IMatrix& A, const Integer& infnorm)
+    {
+        if (infnorm == 0) {
             return 0.0;
         }
 
         uint64_t n = std::max(A.rowdim(), A.coldim());
-        double logBound = static_cast<double>(n) * (Givaro::logtwo(n) / 2.0 + Givaro::logtwo(max));
+        double logBound = static_cast<double>(n) * (Givaro::logtwo(n) / 2.0 + Givaro::logtwo(infnorm));
         return logBound;
+    }
+
+    template <class IMatrix>
+    inline double FastHadamardBound(const IMatrix& A, const MatrixCategories::RowColMatrixTag& tag)
+    {
+        Integer infnorm;
+        InfinityNorm(infnorm, A, tag);
+        return FastHadamardBound(A, infnorm);
     }
 
     template <class IMatrix>
@@ -327,11 +350,44 @@ namespace LinBox {
          *
          */
     template <class IMatrix>
+    inline double FastCharPolyDumasPernetWanBound(const IMatrix& A, const Integer& infnorm)
+    {
+		// .105815875 = 0.21163275 / 2
+        return FastHadamardBound(A, infnorm) + A.coldim()*.105815875;
+    }
+
+		/**
+         * A.J. Goldstein et R.L. Graham.
+         * A Hadamard-type bound on the coefficients of
+         * a determinant of polynomials.
+         * SIAM Review, volume 15, 1973, pages 657?658.
+         *
+         */
+    template <class IMatrix>
+    inline double FastCharPolyGoldsteinGrahamBound(const IMatrix& A, const Integer& infnorm)
+    {
+        Integer ggb(infnorm);
+        ggb *= A.coldim();
+        ggb += 2;
+        ggb *= infnorm;
+        ++ggb;
+        return Givaro::logtwo(ggb)*A.coldim()/2.0;
+    }
+
+    template <class IMatrix>
     inline double FastCharPolyHadamardBound(const IMatrix& A)
     {
-        return FastHadamardBound(A)+A.coldim()*.105815875; // .105815875 = 0.21163275 / 2
+        typename MatrixTraits<IMatrix>::MatrixCategory tag;
+        Integer infnorm;
+        InfinityNorm(infnorm, A, tag);
+        const double DPWbound = FastCharPolyDumasPernetWanBound(A, infnorm);
+        const double GGbound = FastCharPolyGoldsteinGrahamBound(A, infnorm);
+//         std::clog << "DPWbound: " << DPWbound << std::endl;
+//         std::clog << "GGbound : " << GGbound << std::endl;
+        return std::min(DPWbound,GGbound);
     }
-    
+
+
     // ----- Rational solve bound
 
     struct RationalSolveHadamardBoundData {
