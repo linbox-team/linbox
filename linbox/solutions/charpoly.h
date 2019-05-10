@@ -193,10 +193,10 @@ namespace LinBox
 						  const Method::Auto	       & M)
 	{
 		commentator().start ("Integer Charpoly", "Icharpoly");
-		if ((A.rowdim() < 1000) && (A.coldim() <1000))
-			charpoly(P, A, tag, Method::DenseElimination(M) );
-		else
+		if (useBlackboxMethod(A))
 			charpoly(P, A, tag, Method::Blackbox(M) );
+		else
+			charpoly(P, A, tag, Method::DenseElimination(M) );
 		commentator().stop ("done", NULL, "Icharpoly");
 		return P;
 	}
