@@ -35,13 +35,14 @@
 #include "linbox/vector/blas-vector.h"
 #include "linbox/solutions/solve.h"
 #include "linbox/solutions/charpoly.h"
-#include "linbox/algorithms/smith-form-sparseelim-poweroftwo.h"
-#include "test-smith-form.h"
 
 using namespace LinBox;
 typedef Givaro::ZRing<Givaro::Integer> ZRingInts;
 
 bool writing=false;
+
+#include "linbox/algorithms/smith-form-sparseelim-poweroftwo.h"
+#include "test-smith-form.h"
 
 bool testSolveSparse(){
 
