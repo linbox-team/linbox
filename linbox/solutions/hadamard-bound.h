@@ -371,7 +371,7 @@ namespace LinBox {
     inline double FastCharPolyGoldsteinGrahamBound(const IMatrix& A, const Integer& infnorm)
     {
         Integer ggb(infnorm);
-        ggb *= A.coldim();
+        ggb *= static_cast<uint64_t>(A.coldim());
         ggb += 2;
         ggb *= infnorm;
         ++ggb;
