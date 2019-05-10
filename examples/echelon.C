@@ -32,9 +32,10 @@
 #include <iostream>
 
 #include <linbox/ring/modular.h>
-#include <linbox/algorithms/echelon-form.h>
+#include <linbox/solutions/echelon.h>
 #include <fflas-ffpack/ffpack/ffpack.h>
 
+#define COMPARE_FFPACK
 using namespace LinBox;
 using namespace std;
 
@@ -55,18 +56,18 @@ int main (int argc, char **argv)
 	A.read(input);
 	DenseMatrix<Field> E(F,A.rowdim(),A.coldim());
 	cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
-	cout << A << std::endl;
+        //cout << A << std::endl;
 
-	EchelonFormDomain<Givaro::Modular<double> > EFD (F);
-
-	EFD.rowReducedEchelon(E,A);
+    reducedRowEchelon(E,A);
 
 #ifdef COMPARE_FFPACK
 	DenseMatrix<Field> G(A);
-	size_t * P = new size_t[G.coldim()];
-	size_t * Q = new size_t[G.rowdim()];
+	size_t * P = new size_t[G.rowdim()];
+	size_t * Q = new size_t[G.coldim()];
 	/*  size_t r = (size_t)*/
-	FFPACK::ReducedRowEchelonForm (F, G.rowdim(), G.coldim(), G.getWritePointer(), G.coldim(), P, Q,false);
+	size_t r= FFPACK::ReducedRowEchelonForm (F, G.rowdim(), G.coldim(), G.getWritePointer(), G.coldim(), P, Q,false);
+	FFPACK::getReducedEchelonForm (F, FFLAS::FflasUpper, G.rowdim(), G.coldim(), r,
+                                   Q, G.getWritePointer(), G.coldim());
 
 	if (G.coldim() <20)
 		G.write(cerr<<"FFPACK::Echelon = "<<endl)<<endl;
