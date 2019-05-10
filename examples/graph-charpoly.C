@@ -44,9 +44,6 @@ template <class Field, class Polynomial>
 void printPolynomial(const Field& F, const Polynomial& P)
 {
 	int n= (int) P.size()-1;
-	for (int i=0;i<n;++i)
-		cout<<P[(size_t)i]<<" ";
-	cout<<endl;
 	if (n==1){
 		cout<<"X";
 		if ( P[0] != 0)
@@ -65,9 +62,6 @@ void printPolynomial(const Field& F, const Polynomial& P)
 }
 
 
-typedef ZeroOne<Givaro::ZRing<Integer> > Matrix;
-typedef PolynomialRing<Givaro::ZRing<Integer> > IntPolRing;
-
 int main (int argc, char **argv)
 {
 	commentator().getMessageClass (BRIEF_REPORT).setMaxDepth (2);
@@ -75,7 +69,7 @@ int main (int argc, char **argv)
 
 
 	if (argc != 2) {
-		cerr << "Usage: graph-charpoly <matrix-file-in-SMS-format>" <<endl;
+		cerr << "Usage: graph-charpoly <0/1-symmetric-matrix-file-in-SMS-format>" <<endl;
 		return -1;
 	}
 
@@ -85,19 +79,21 @@ int main (int argc, char **argv)
 		return -1;
 	}
 
-	//Givaro::ZRing<integer> ZZ;
-	Givaro::ZRing<Integer> ZZ;
-	Matrix A(ZZ);
+    typedef Givaro::ZRing<Integer> IRing_t;
+
+	IRing_t ZZ;
+	ZeroOne<IRing_t > A(ZZ);
 	A.read (input);
 	commentator().report(1, BRIEF_REPORT)<< "A is " << A.rowdim() << " by " << A.coldim() << endl;
 
-	IntPolRing::Element c_A(ZZ);
+    DensePolynomial<IRing_t> c_A(ZZ);
 
-	charpoly (c_A, A, Method::Blackbox(Method::Wiedemann( Specifier::SYMMETRIC)));
+	charpoly (c_A, A, Method::Blackbox(Method::Wiedemann(Shape::Symmetric)));
 
-	cout<< "Characteristic Polynomial is ";
-	printPolynomial (ZZ, c_A);
-
+	PolynomialRing<IRing_t>(ZZ,'X').write(
+        cout<< "Characteristic Polynomial is ", c_A) << std::endl;
+    
+    
 	return 0;
 }
 
