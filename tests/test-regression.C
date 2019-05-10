@@ -599,6 +599,42 @@ bool testZeroMatrixCharPoly() {
     return success;
 }
 
+bool testFourFourMatrix() {
+    bool success;
+    using Ring = Givaro::ZRing<Integer>;
+    using Matrix = DenseMatrix<Ring>;
+    Ring ZZ;
+
+    Matrix A(ZZ, 4,4);
+    for(size_t i=0; i<4; ++i) for(size_t j=0; j<4; ++j)
+        A.setEntry(i,j, 4*i+j+1);
+
+    PolynomialRing<Ring>::Element c_A, Res;
+
+    charpoly(c_A, A);
+
+    PolynomialRing<Ring> PZ(ZZ,'X');
+    PZ.assign(Res, Givaro::Degree(4), ZZ.one);
+    Res[2] = -80;
+    Res[3] = -34;
+
+    success = PZ.areEqual(c_A, Res);
+
+    if (!success) {
+        if (writing) std::clog<<"**** ERROR **** Fail tFFM " <<std::endl;
+
+        PZ.write(std::clog << "Ex: ", Res) << std::endl;
+        PZ.write(std::clog << "cA: ", c_A) << std::endl;
+
+        return false;
+    } else
+        if (writing) std::cout << "tFFM: PASSED" << std::endl;
+
+    return success;
+}
+
+
+
 int main (int argc, char **argv)
 {
     bool pass = true;
@@ -642,6 +678,7 @@ int main (int argc, char **argv)
     pass &= testLocalSmith ();
     pass &= testInconsistent<DenseMatrix<ZRingInts>> (Method::DenseElimination());
     pass &= testDixonSmallFat();
+    pass &= testFourFourMatrix();
 
         // Still failing: see https://github.com/linbox-team/linbox/issues/105
         //pass &= testInconsistent<> (Method::SparseElimination());
