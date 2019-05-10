@@ -275,7 +275,7 @@ namespace LinBox
 			/* Computation of the minimal polynomial */
 			Polynomial minPoly(F);
 			minpoly (minPoly, A, M);
-            PD.write(std::cerr<<"Minpoly = ",minPoly) << std::endl;
+//             PD.write(std::cerr<<"Minpoly = ",minPoly) << std::endl;
 
 			if (minPoly.size() == n+1){
 				commentator().stop ("done", NULL, "MbbCharpoly");
@@ -292,7 +292,7 @@ namespace LinBox
 
             PD.factor (factors, exp, minPoly);
             size_t factnum = factors.size();
-std::cerr<<"factnum = "<<factnum;
+//             std::cerr<<"factnum = "<<factnum<<std::endl;
 
 				/* Building the structure of factors */
             int goal = (int)n;

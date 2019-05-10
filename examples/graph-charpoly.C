@@ -90,7 +90,7 @@ int main (int argc, char **argv)
 
 	charpoly (c_A, A, Method::Blackbox(Method::Wiedemann(Shape::Symmetric)));
 
-	PolynomialRing<IRing_t>(ZZ).write(
+	PolynomialRing<IRing_t>(ZZ,'X').write(
         cout<< "Characteristic Polynomial is ", c_A) << std::endl;
     
     
