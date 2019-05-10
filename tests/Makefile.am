@@ -73,6 +73,7 @@ BASIC_TESTS =            \
     test-solve-full             \
     test-smith-form-valence  \
     test-local-smith-form-sparseelim\
+    test-qlup                    \
     test-det            \
     test-regression        \
     test-rank-u32        \
@@ -94,6 +95,7 @@ BASIC_TESTS =            \
     test-givaro-zpz        \
     test-givaro-zpzuns        \
     test-givaro-interfaces        \
+    test-echelon-form       \
     test-hadamard-bound     \
     test-serialization
 
@@ -122,10 +124,7 @@ FULLCHECK_TESTS =           \
     test-fibb                    \
     test-ftrmm                    \
     test-getentry                \
-    test-gf2                    \
     test-givaropoly                \
-    test-givaro-zpz                \
-    test-givaro-zpzuns                \
     test-gmp-rational            \
     test-hilbert                \
     test-hom                    \
@@ -163,7 +162,6 @@ FULLCHECK_TESTS =           \
     test-permutation            \
     test-plain-domain            \
     test-poly-det                \
-    test-qlup                    \
     test-quad-matrix            \
     test-random-matrix            \
     test-rat-charpoly            \
@@ -397,4 +395,3 @@ perfpublisher:
 
 fullcheck: checker
 	./checker
-
