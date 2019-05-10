@@ -93,6 +93,7 @@ BASIC_TESTS =            \
     test-givaro-zpz        \
     test-givaro-zpzuns        \
     test-givaro-interfaces        \
+    test-echelon-form       \
     test-hadamard-bound     \
     test-serialization
 
@@ -115,7 +116,6 @@ FULLCHECK_TESTS =           \
 	test-dif					\
 	test-direct-sum				\
 	test-dyadic-to-rational  	\
-	test-echelon-form			\
 	test-polynomial-ring		\
 	test-ffpack					\
 	test-fibb					\
@@ -123,8 +123,6 @@ FULLCHECK_TESTS =           \
 	test-getentry				\
 	test-gf2					\
 	test-givaropoly				\
-	test-givaro-zpz				\
-	test-givaro-zpzuns				\
 	test-gmp-rational			\
 	test-hilbert				\
 	test-hom					\
