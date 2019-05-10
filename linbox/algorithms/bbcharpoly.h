@@ -242,7 +242,7 @@ namespace LinBox
 			IntPoly tmpP;
 			intRing.assign(intCharPoly[0], intRing.one);
 			for (FactPolyIterator it_f = factCharPoly.begin(); it_f != factCharPoly.end(); ++it_f){
-                it_f->second->write(std::clog) << std::endl;
+//                 it_f->second->write(std::clog) << std::endl;
 
 				IPD.pow (tmpP, *it_f->second->intP, (long) it_f->second->multiplicity);
 				IPD.mulin (intCharPoly, tmpP);
