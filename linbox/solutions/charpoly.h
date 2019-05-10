@@ -203,8 +203,7 @@ namespace LinBox
 
 }
 
-#if 0 // CIA is buggy (try with matrix(ZZ,4,[1..16]) )
-//#if defined(__LINBOX_HAVE_NTL)
+#if defined(__LINBOX_HAVE_NTL)
 
 #include "linbox/algorithms/cia.h"
 namespace LinBox
@@ -227,9 +226,7 @@ namespace LinBox
 	{
 		if (A.coldim() != A.rowdim())
 			throw LinboxError("LinBox ERROR: matrix must be square for characteristic polynomial computation\n");
-		typename Givaro::Poly1Dom<typename Blackbox::Field, Givaro::Dense>::Element Pg;
-                std::cerr<<"CIA"<<std::endl;
-		return P = cia (Pg, A, M);
+		return cia (P, A, M);
 	}
 
 	/** Compute the characteristic polynomial over {\bf Z}
