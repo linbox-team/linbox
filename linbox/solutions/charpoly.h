@@ -102,9 +102,7 @@ namespace LinBox
 			      const RingCategories::ModularTag & tag,
 			      const Method::Auto             & M)
 	{
-                // bb method broken, default to dense method
-		return charpoly(P, A, tag, Method::DenseElimination(M));
-//		return charpoly(P, A, tag, Method::Blackbox(M));
+		return charpoly(P, A, tag, Method::Blackbox(M));
 	}
 
 	// The charpoly with Auto Method
@@ -195,8 +193,7 @@ namespace LinBox
 						  const Method::Auto	       & M)
 	{
 		commentator().start ("Integer Charpoly", "Icharpoly");
-		// bb method broken, default to dense method
-		if (1/* (A.rowdim() < 1000) && (A.coldim() <1000) */)
+		if (useBlackboxMethod(A))
 			charpoly(P, A, tag, Method::DenseElimination(M) );
 		else
 			charpoly(P, A, tag, Method::Blackbox(M) );
@@ -251,11 +248,7 @@ namespace LinBox
 	{
 		if (A.coldim() != A.rowdim())
 			throw LinboxError("LinBox ERROR: matrix must be square for characteristic polynomial computation\n");
-// 		typename Givaro::Poly1Dom<typename Blackbox::Field>::Element Pg;
-// 		return P = BBcharpoly::blackboxcharpoly (Pg, A, tag, M);
-                    // BB method broken: default to dense method
-        return charpoly(P, A, tag, Method::DenseElimination(M) );
-                    //return BBcharpoly::blackboxcharpoly (P, A, tag, M);
+        return BBcharpoly::blackboxcharpoly (P, A, tag, M);
 	}
 
 }

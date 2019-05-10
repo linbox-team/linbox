@@ -153,7 +153,8 @@ namespace LinBox {
         };
     };
     struct ShapeFlags {
-        uint16_t flags = Shape::Unknown;
+        uint16_t flags;
+        ShapeFlags(const uint16_t& f = Shape::Unknown) : flags(f) {}
 
         // @note We overload operator== so that one can use
         // method.shapeFlags == Shape::Symmetric seemlessly.
@@ -190,6 +191,7 @@ namespace LinBox {
     struct MethodBase {
         MethodBase() = default;
         MethodBase(Singularity _singularity) : singularity(_singularity) {}
+        MethodBase(Shape::Value _shapeFlag) : shapeFlags(_shapeFlag) {}
         MethodBase(ShapeFlags _shapeFlags) : shapeFlags(_shapeFlags) {}
         MethodBase(Preconditioner _preconditioner) : preconditioner(_preconditioner) {}
         MethodBase(Dispatch _dispatch) : dispatch(_dispatch) {}
