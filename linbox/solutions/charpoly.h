@@ -194,9 +194,9 @@ namespace LinBox
 	{
 		commentator().start ("Integer Charpoly", "Icharpoly");
 		if (useBlackboxMethod(A))
-			charpoly(P, A, tag, Method::DenseElimination(M) );
-		else
 			charpoly(P, A, tag, Method::Blackbox(M) );
+		else
+			charpoly(P, A, tag, Method::DenseElimination(M) );
 		commentator().stop ("done", NULL, "Icharpoly");
 		return P;
 	}
