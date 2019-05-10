@@ -85,7 +85,6 @@ BASIC_TESTS =            \
     test-randiter-nonzero-prime    \
     test-cra            \
     test-blas-matrix        \
-    test-minpoly                \
     test-charpoly        \
     test-commentator        \
     test-isposdef        \
@@ -136,6 +135,7 @@ FULLCHECK_TESTS =           \
     test-matrix-domain            \
     test-matrix-stream            \
     test-mg-block-lanczos        \
+    test-minpoly                \
     test-modular                \
     test-modular-balanced-double \
     test-modular-balanced-float  \
