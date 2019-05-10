@@ -182,7 +182,7 @@ namespace LinBox
 			/* Factorization over the integers */
 			std::vector<IntPoly> intFactors;
 			std::vector<uint64_t> exp;
-			IPD.factor (intFactors, exp, IntPoly(intMinPoly.getRep().begin(),intMinPoly.getRep().end()));
+			IPD.factor (intFactors, exp, intMinPoly);
 			size_t factnum = intFactors.size();
 
 			/* Choose a modular prime field */
@@ -195,14 +195,17 @@ namespace LinBox
 
 			for (size_t i = 0; i < intFactors.size(); ++i) {
 				uint64_t deg =  (intFactors[i].size()-1);
+
+
 				FactorMult<FieldPoly,IntPoly>* FFM=NULL;
 				if (exp[i] > 1) {
 					IntPoly *tmp = new IntPoly(intFactors[i]);
 					FM* depend = NULL;
 					for (size_t j = 1; j <= exp[i]; ++j){
 						IntPoly * tmp2 = new IntPoly(*tmp);
-						FieldPoly *tmp2p = new FieldPoly(tmp2->size());
-						typename IntPoly::template rebind<Field>() (*tmp2p, *tmp2, F);
+// 						FieldPoly *tmp2p = new FieldPoly(tmp2->size());
+// 						typename IntPoly::template rebind<Field>() (*tmp2p, *tmp2, F);
+						FieldPoly *tmp2p = new FieldPoly(*tmp2, F);
 
 						FFM = new FM (tmp2p, tmp2, 0, depend);
 						factCharPoly.insert (std::pair<size_t, FM*> (deg, FFM));
@@ -219,8 +222,10 @@ namespace LinBox
 					leadingBlocks.insert (std::pair<FM*,bool>(FFM,false));
 				}
 				else {
-					FieldPoly* fp=new FieldPoly(intFactors[i].size());
-					typename IntPoly::template rebind<Field>() (*fp, (intFactors[i]), F);
+// 					FieldPoly* fp=new FieldPoly(intFactors[i].size());
+// 					typename IntPoly::template rebind<Field>() (*fp, (intFactors[i]), F);
+					FieldPoly* fp=new FieldPoly(intFactors[i], F);
+
 					FFM = new FM (fp,&intFactors[i],1,NULL);
 					factCharPoly.insert (std::pair<size_t, FM* > (intFactors[i].size()-1, FFM));
 					leadingBlocks.insert (std::pair<FM*,bool>(FFM,false));
@@ -237,6 +242,8 @@ namespace LinBox
 			IntPoly tmpP;
 			intRing.assign(intCharPoly[0], intRing.one);
 			for (FactPolyIterator it_f = factCharPoly.begin(); it_f != factCharPoly.end(); ++it_f){
+//                 it_f->second->write(std::clog) << std::endl;
+
 				IPD.pow (tmpP, *it_f->second->intP, (long) it_f->second->multiplicity);
 				IPD.mulin (intCharPoly, tmpP);
 				delete it_f->second->intP;
@@ -245,7 +252,7 @@ namespace LinBox
 			}
 			commentator().stop ("done", NULL, "IbbCharpoly");
 
-			return P = Polynomial(A.field(), typename Polynomial::Rep(intCharPoly.begin(),intCharPoly.end()));
+			return P = Polynomial(A.field(), intCharPoly);
 		}
 
 		/** Algorithm computing the  characteristic polynomial

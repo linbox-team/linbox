@@ -35,13 +35,14 @@
 #include "linbox/vector/blas-vector.h"
 #include "linbox/solutions/solve.h"
 #include "linbox/solutions/charpoly.h"
-#include "linbox/algorithms/smith-form-sparseelim-poweroftwo.h"
-#include "test-smith-form.h"
 
 using namespace LinBox;
 typedef Givaro::ZRing<Givaro::Integer> ZRingInts;
 
 bool writing=false;
+
+#include "linbox/algorithms/smith-form-sparseelim-poweroftwo.h"
+#include "test-smith-form.h"
 
 bool testSolveSparse(){
 
@@ -587,11 +588,12 @@ bool testZeroMatrixCharPoly() {
     success = PZ.areEqual(c_A, Ex);
 
     if (!success) {
-        if (writing) std::clog<<"**** ERROR **** Fail ZMCP " <<std::endl;
+        if (writing) {
+            std::clog<<"**** ERROR **** Fail ZMCP " <<std::endl;
 
-        PZ.write(std::clog << "Ex: ", Ex) << std::endl;
-        PZ.write(std::clog << "cA: ", c_A) << std::endl;
-
+            PZ.write(std::clog << "Ex: ", Ex) << std::endl;
+            PZ.write(std::clog << "cA: ", c_A) << std::endl;
+        }
         return false;
     } else
         if (writing) std::cout << "ZMCP: PASSED" << std::endl;
@@ -621,10 +623,12 @@ bool testFourFourMatrix() {
     success = PZ.areEqual(c_A, Res);
 
     if (!success) {
-        if (writing) std::clog<<"**** ERROR **** Fail tFFM " <<std::endl;
+        if (writing) {
+            std::clog<<"**** ERROR **** Fail tFFM " <<std::endl;
 
-        PZ.write(std::clog << "Ex: ", Res) << std::endl;
-        PZ.write(std::clog << "cA: ", c_A) << std::endl;
+            PZ.write(std::clog << "Ex: ", Res) << std::endl;
+            PZ.write(std::clog << "cA: ", c_A) << std::endl;
+        }
 
         return false;
     } else
