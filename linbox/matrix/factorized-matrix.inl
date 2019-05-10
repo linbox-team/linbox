@@ -1223,7 +1223,7 @@ namespace LinBox
 // 		}
 // #endif
 
-        FFPACK::getTriangular (_field, FFLAS::FflasLower, FFLAS::FflasUnit, _m, _n,
+        FFPACK::getTriangular (_field, FFLAS::FflasLower, FFLAS::FflasUnit, _m, _n, _rank,
                                _factLU.getPointer(), _factLU.getStride(), L.getWritePointer(), L.getStride(), false);
 // #if 1 /*  slower */
 // 		for ( size_t i=0; i<_m; ++i ){
@@ -1268,8 +1268,9 @@ namespace LinBox
 		linbox_check( U.coldim() == _n);
 		linbox_check( U.getUpLo() == Tag::Shape::Upper);
 		linbox_check( U.getDiag() == Tag::Diag::NonUnit);
-        FFPACK::getTriangular (_field, FFLAS::FflasUpper, FFLAS::FflasNonUnit, _m, _n,
+        FFPACK::getTriangular (_field, FFLAS::FflasUpper, FFLAS::FflasNonUnit, _m, _n, _rank,
                                _factLU.getPointer(), _factLU.getStride(), U.getWritePointer(), U.getStride(), false);
+        return U;
 	}
 
 	// // get the Matrix S (from the LSP factorization of A deduced from PLUQ)
