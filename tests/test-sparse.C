@@ -140,7 +140,7 @@ int main (int argc, char **argv)
 
 	commentator().start("Sparse matrix black box test suite", "Sparse");
 	MatrixDomain<Field> MD(F) ;
-	typename Field::RandIter r(F,0,1);
+	typename Field::RandIter r(F,1);
 	srand(0);
 
 	 /*  default case */
