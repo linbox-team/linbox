@@ -174,7 +174,7 @@ bool testQLUPsolve(const Field &F, size_t n, unsigned int iterations, int rseed,
 	RandStream stream (F, generator, sparsity, n, n);
 
 	GF2 F2;
-	GF2::RandIter bitgenerator(F2,2,rseed);
+	GF2::RandIter bitgenerator(F2,0,rseed);
 	// GF2::Element randomsolve;
 
 	for (size_t i = 0; i < iterations; ++i) {
