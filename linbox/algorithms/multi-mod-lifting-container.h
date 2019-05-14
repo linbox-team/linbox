@@ -26,8 +26,6 @@
 
 namespace LinBox {
     /**
-     * @fixme This should just be a different LiftingContainer!
-     *
      * The algorithm solves Ax = b over the integers.
      * It is based on Chen/Storjohann RNS-based p-adic lifting.
      * Based on https://cs.uwaterloo.ca/~astorjoh/p92-chen.pdf
@@ -43,15 +41,15 @@ namespace LinBox {
      *                  [y1|...|yl] = [0|...|0]
      *                  for j = 1 .. k:
      *                  |   for i = 1 .. l:
-     *                  |   |   ci = Bi ri mod pi                   < Matrix-vector in Z/pZ
-     *                  |   |   yi = (yi * pi) + ci                 < Done over ZZ
      *                  |   |   (Qi, Ri) = such that r = pi Qi + Ri with |Ri| < pi
+     *                  |   |   ci = Bi ri mod pi                   < Matrix-vector in Z/pZ
+     *                  |   |   yi = yi + ci * pi^(i-1)             < Done over ZZ
      *                  |   V = [R1|...|Rl] - A [c1|...|cl]         < Matrix-matrix in ZZ
      *                  |   for i = 1 .. l:
      *                  |   |   ri = Qi + (Vi / pi)
-     *              @note The computation of V can be done in a RNS system such that each RNS base-prime
-     *              is bigger than each (p1, ..., pl). This way, [R1|...|Rl] and [c1|...|cl] are zero-cost
-     *              to get in the RNS system.
+     *              @note The computation of V can be done in a RNS system such that each RNS
+     * base-prime is bigger than each (p1, ..., pl). This way, [R1|...|Rl] and [c1|...|cl] are
+     * zero-cost to get in the RNS system.
      *      (iii)   y = CRT_Reconstruct(y1, ..., yl)
      *      (iv)    x = Rational_Reconstruct(y)
      *
@@ -59,18 +57,32 @@ namespace LinBox {
      * According to the paper, a value of lp = 2 (ln(n) + log2(||A||)) or without the factor 2
      * can be used, but it depends on the problem, really.
      */
-    template <class Field, class Ring, class PrimeGenerator>
-    class DixonRNSSolver {
-    public:
-        DixonRNSSolver(const Ring& ring, PrimeGenerator primeGenerator);
+    template <class _Field, class _Ring, class _PrimeGenerator>
+    class MultiModLiftingContainer final : public LiftingContainerBase<_Ring, DenseMatrix<_Ring>> {
+        using BaseClass = LiftingContainerBase<_Ring, DenseMatrix<_Ring>>;
 
-        /**
-         * Dense solving.
-         */
-        template <class IntVector, class Vector>
-        void solve(IntVector& xNum, typename IntVector::Element& xDen, const DenseMatrix<Ring>& A,
-                   const Vector& b, const Method::DixonRNS& m);
+    public:
+        using typename BaseClass::Ring;
+        using typename BaseClass::IMatrix;
+        using typename BaseClass::IVector;
+
+        using Field = _Field;
+        using PrimeGenerator = _PrimeGenerator;
+
+    public:
+        // @fixme
+        const std::vector<Integer> primes = {97, 101};
+
+        // @fixme Split to inline file
+        MultiModLiftingContainer(const Ring& ring, PrimeGenerator primeGenerator,
+                                 const IMatrix& A, const IVector& b,
+                                 const Method::DixonRNS& m)
+            : BaseClass(ring, A, b, 97 * 101)
+        {
+        }
+
+        IVector& nextdigit (IVector& , const IVector&) const final {
+
+        }
     };
 }
-
-#include "./dixon-rns-solver.inl"

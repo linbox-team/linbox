@@ -22,15 +22,51 @@
 
 #pragma once
 
-#include <linbox/algorithms/dixon-rns-solver.h>
+#include <linbox/algorithms/multi-mod-lifting-container.h>
 
 namespace LinBox {
+    // @fixme Move that to a file - and make it be a RationalSolver<Method::DixonRNS>
+    template <class Field, class Ring, class PrimeGenerator>
+    class DixonRNSSolver {
+    public:
+        DixonRNSSolver(const Ring& ring, PrimeGenerator& primeGenerator)
+            : _ring(ring)
+            , _primeGenerator(primeGenerator)
+        {
+            /* @todo */
+        }
+
+        /**
+         * Dense solving.
+         */
+        template <class RVector, class Vector>
+        void solve(RVector& xNum, typename RVector::Element& xDen, const DenseMatrix<Ring>& A,
+                   const Vector& b, const Method::DixonRNS& m)
+        {
+            // @fixme We should use some code from DixonSolver...
+            // But that's hard so we just assume that A is square and invertible.
+            linbox_check(A.rowdim() == A.coldim());
+
+            using LiftingContainer = MultiModLiftingContainer<Field, Ring, PrimeGenerator>;
+            LiftingContainer lc(_ring, _primeGenerator, A, b, m);
+            RationalReconstruction<LiftingContainer> re(lc);
+
+            if (!re.getRational(xNum, xDen, 0)) {
+                std::cerr << "OUCH!" << std::endl;
+            }
+        }
+
+    private:
+        const Ring& _ring;
+        PrimeGenerator& _primeGenerator;
+    };
+
     /**
      * \brief Solve specialisation for DixonRNS on dense matrices.
      */
-    template <class IntVector, class Ring, class Vector>
-    void solve(IntVector& xNum, typename IntVector::Element& xDen, const DenseMatrix<Ring>& A, const Vector& b,
-               const RingCategories::IntegerTag& tag, const Method::DixonRNS& m)
+    template <class RVector, class Ring, class Vector>
+    void solve(RVector& xNum, typename RVector::Element& xDen, const DenseMatrix<Ring>& A,
+               const Vector& b, const RingCategories::IntegerTag& tag, const Method::DixonRNS& m)
     {
         commentator().start("solve.dixon.integer.dense");
 
