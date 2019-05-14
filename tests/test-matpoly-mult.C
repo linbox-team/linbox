@@ -175,7 +175,7 @@ bool debug_midpgen_dlp(const Field& fld,  RandIter& Gen) {
 template<typename Field>
 bool launchTest(const Field& F, size_t n, long b, long d, long seed){
 	bool ok=true;
-	typename Field::RandIter G(F,b,seed);
+	typename Field::RandIter G(F,seed,b);
 	typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field> MatrixP;
 	ostream& report = LinBox::commentator().report();
 	report<<"Polynomial matrix (polfirst) testing over ";F.write(report)<<std::endl;

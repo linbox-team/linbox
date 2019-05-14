@@ -59,7 +59,7 @@ namespace {
     void generateMatrix(Domain& D, Matrix& A, int bitSize, int seed)
     {
         // @note RandomDenseMatrix can also fill a SparseMatrix, it has just a sparsity of 0.
-        typename Domain::RandIter randIter(D, bitSize, seed);
+        typename Domain::RandIter randIter(D, seed, bitSize);
         LinBox::RandomDenseMatrix<typename Domain::RandIter, Domain> RDM(D, randIter);
 
         // @note Within our test m == n implies invertible,
@@ -75,7 +75,7 @@ namespace {
     template <class Matrix, class Vector, class Domain>
     void generateVector(Domain& D, const Matrix& A, Vector& b, int vectorBitSize, int seed)
     {
-        typename Domain::RandIter vectorRandIter(D, vectorBitSize, seed);
+        typename Domain::RandIter vectorRandIter(D, seed, vectorBitSize);
 
         // @note For the rectangular cases,
         // we set b so that the system is not inconsistent

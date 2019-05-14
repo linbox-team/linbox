@@ -203,7 +203,7 @@ bool test_sparse_local_smith(size_t seed, size_t R, size_t M, size_t N,
 
     std::uniform_real_distribution<> nonzero(0., 1.);
 
-    typename ModRing::RandIter G(F,0,seed);
+    typename ModRing::RandIter G(F,seed);
     typename ModRing::Element pp;
     DenseMatrix<ModRing> A(F,M,N);
     DenseMatrix<ModRing> L(F,M,N);
