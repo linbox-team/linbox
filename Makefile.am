@@ -93,6 +93,8 @@ uninstall-hook:
 		"$(includedir)/linbox/matrix" \
 		"$(includedir)/linbox/randiter" \
 		"$(includedir)/linbox/ring" \
+		"$(includedir)/linbox/solutions/solve" \
+		"$(includedir)/linbox/solutions/echelon" \
 		"$(includedir)/linbox/solutions" \
 		"$(includedir)/linbox/switch" \
 		"$(includedir)/linbox/util/formats" \
@@ -107,7 +109,7 @@ git:
 	git commit -a; git pull; git push
 
 
-VERSION=1.6.0rc0
+VERSION=1.6.1
 
 EXTRA_DIST=linbox-auto-install.sh
 #incremente-versions

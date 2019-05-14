@@ -463,12 +463,17 @@ namespace LinBox { /* BlasVector */
 
 		const Rep &getRep() const { return _rep ; }
 
-		pointer getPointer() const
+		pointer getPointer()
 		{
 			return _ptr;
 		}
 
-		const_pointer &getConstPointer() const
+        const_pointer getPointer() const
+		{
+			return (const_pointer)_ptr;
+		}
+
+		const_pointer getConstPointer() const
 		{
 			return (const_pointer)_ptr;
 		}
@@ -781,9 +786,10 @@ namespace LinBox { /*  BlasSubvector */
 		//   ELEMENTS   //
 		//////////////////
 
-		pointer getPointer() const { return &(_Vec[_i0]); }
+		pointer getPointer() { return &(_Vec[_i0]); }
+		const_pointer getPointer() const { return &(_Vec[_i0]); }
 
-		const_pointer &getConstPointer() const { return &(_Vec[_i0]); }
+		const_pointer getConstPointer() const { return &(_Vec[_i0]); }
 
 
 		pointer& getWritePointer() { return &(_Vec[_i0]); }

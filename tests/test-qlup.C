@@ -1,7 +1,7 @@
 /* tests/test-qlup.C
  * Copyright (C) The LinBox group
  *
- * Time-stamp: <13 Nov 17 16:57:58 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <10 May 19 11:28:22 Jean-Guillaume.Dumas@imag.fr>
  * -----------------------------------------------------
  *
  * ========LICENCE========
@@ -407,7 +407,6 @@ int main (int argc, char **argv)
 // 			pass = false;
 // 	}
 
-#if 1
 	{
 		commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 		<< "specialized over GF2>" << endl;
@@ -420,7 +419,6 @@ int main (int argc, char **argv)
 		if (!testQLUPsolve<Field, Blackbox, RandStream> (F2, n, iterations, rseed, sparsity))
 			pass = false;
 	}
-#endif
 
 	commentator().stop(MSG_STATUS (pass),"QLUP test suite");
 	return pass ? 0 : -1;

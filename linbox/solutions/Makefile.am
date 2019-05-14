@@ -22,11 +22,12 @@
 AM_CXXFLAGS = @DEFAULT_CFLAGS@ -DLinBoxSrcOnly
 pkgincludesubdir=$(pkgincludedir)/solutions
 
-SUBDIRS=solve
+SUBDIRS=solve echelon
 
 pkgincludesub_HEADERS=          \
     charpoly.h                  \
     det.h                       \
+    echelon.h                   \
     getentry.h                  \
     getentry.inl                \
     is-positive-definite.h      \
@@ -42,6 +43,7 @@ pkgincludesub_HEADERS=          \
     trace.inl                   \
     valence.h			\
     hadamard-bound.h            \
+    constants.h	                \
     solution-tags.h
 
 #    rankInPlace.h
