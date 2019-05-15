@@ -55,6 +55,7 @@ EXTRA_DIST =            \
     test-matrix-domain.h    \
     test-rank.h        \
     test-vector-domain.h    \
+    test-smith-form.h       \
     tests.doxy        \
     checker.C
 
