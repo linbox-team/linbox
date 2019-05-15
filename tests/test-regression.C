@@ -609,7 +609,7 @@ bool testFourFourMatrix() {
 
     Matrix A(ZZ, 4,4);
     for(size_t i=0; i<4; ++i) for(size_t j=0; j<4; ++j)
-        A.setEntry(i,j, 4*i+j+1);
+        A.setEntry(i,j, static_cast<uint64_t>(4*i+j+1));
 
     PolynomialRing<Ring>::Element c_A, Res;
 
