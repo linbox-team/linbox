@@ -48,8 +48,8 @@
  * the linear transform property of the matrix (that, given A and x,  one can
  * compute \f$y \gets Ax\f$).  Such methods are especially effective with
  * sparse or structured matrices for which the matrix-vector product can be
- * computed cheaply.  Increasingly, %LinBox also provides elimination based
- * methods for dense matrices exploiting the numeric BLAS routines.
+ * computed cheaply. %LinBox also provides elimination based methods
+ * for dense matrices exploiting the numeric BLAS routines via FFLAS-FFPACK.  
  *
  * A good collection of finite field implementations is available.  Some
  * algorithms are probabilistic, but their results are extremely reliable
