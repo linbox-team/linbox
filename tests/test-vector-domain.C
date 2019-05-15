@@ -122,8 +122,8 @@ int main (int argc, char **argv)
 	static unsigned int n = 100;
 	static integer q1("18446744073709551557");
 	static integer q2 = 65521;
-	static integer q3 = 1009;
-	static int q4 = 101;
+	static integer q3 = 251;
+	static int q4 = 13;
 	static unsigned int iterations = 2;
 
 	static Argument args[] = {

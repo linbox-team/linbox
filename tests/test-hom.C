@@ -70,9 +70,8 @@ int main (int argc, char **argv)
 
 	commentator().start("Hom test suite", "Hom");
 	bool pass = true;
-
 	Givaro::Modular<uint32_t> F_uint32_t ((uint32_t) q);
-	Givaro::Modular<uint16_t> F_uint16_t ((uint16_t) q);
+	Givaro::Modular<uint16_t> F_uint16_t (std::max((uint16_t)2,std::min((uint16_t) q,Givaro::Modular<uint16_t>::maxCardinality())));
 	Hom<Givaro::Modular<uint16_t>, Givaro::Modular<uint32_t> > iso(F_uint16_t, F_uint32_t);
 
 	uint16_t x=2, y;
