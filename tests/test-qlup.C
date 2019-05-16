@@ -92,7 +92,7 @@ bool testQLUP(const Field &F, size_t n, unsigned int iterations, int rseed, doub
 		A.apply(v,u);
 
 
-		unsigned long rank;
+		size_t rank;
 
 		Method::SparseElimination SE;
 		SE.pivotStrategy = PivotStrategy::Linear;
