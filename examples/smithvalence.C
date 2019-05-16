@@ -93,9 +93,10 @@ int main (int argc, char **argv)
 
     std::vector<Givaro::Integer> SmithDiagonal;
 
+#ifdef  __LINBOX_USE_OPENMP
 	std::clog << "num procs: " << omp_get_num_procs() << std::endl;
     std::clog << "max threads: " << MAX_THREADS << std::endl;
-
+#endif
         // Returns the Smith form as a diagonal,
         // the valence val_A,
         // the coprimeV used to compute the integral rank
