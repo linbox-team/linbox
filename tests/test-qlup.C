@@ -68,8 +68,7 @@ bool testQLUP(const Field &F, size_t n, unsigned int iterations, int rseed, doub
 
 	size_t Ni = n;
 	size_t Nj = n;
-	integer card; F.cardinality(card);
-	typename Field::RandIter generator (F,card,rseed);
+	typename Field::RandIter generator (F,0,rseed);
 	RandStream stream (F, generator, sparsity, n, n);
 
 	for (size_t i = 0; i < iterations; ++i) {
@@ -171,12 +170,11 @@ bool testQLUPsolve(const Field &F, size_t n, unsigned int iterations, int rseed,
 
 	size_t Ni = n;
 	size_t Nj = n;
-	integer card; F.cardinality(card);
-	typename Field::RandIter generator (F,card,rseed);
+	typename Field::RandIter generator (F,0,rseed);
 	RandStream stream (F, generator, sparsity, n, n);
 
 	GF2 F2;
-	GF2::RandIter bitgenerator(F2,2,rseed);
+	GF2::RandIter bitgenerator(F2,0,rseed);
 	// GF2::Element randomsolve;
 
 	for (size_t i = 0; i < iterations; ++i) {
@@ -256,8 +254,7 @@ bool testQLUPnullspace(const Field &F, size_t n, unsigned int iterations, int rs
 
 	size_t Ni = n;
 	size_t Nj = n;
-	integer card; F.cardinality(card);
-	typename Field::RandIter generator (F,card,rseed);
+	typename Field::RandIter generator (F,0,rseed);
 	RandStream stream (F, generator, sparsity, n, n, rseed);
 
 	for (size_t i = 0; i < iterations; ++i) {
