@@ -233,7 +233,9 @@ namespace LinBox
 				}
 			}
 
-			FieldBlackBox Ap(A, F);
+                // CP: const_cast is here only to please clang who would otherwise fail to compile
+                // claiming (mistakingly) that there is an ambiguous specialization
+			FieldBlackBox Ap(A, const_cast<const Field&>(F));
 
 			findMultiplicities (Ap, factCharPoly, leadingBlocks, goal, M);
 
