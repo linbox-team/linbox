@@ -85,33 +85,81 @@ namespace LinBox {
             // @fixme Have l = log(||A||) + log(n) or so
             uint32_t l = p.size();
 
+            // @fixme Initialize fields _F[i]
+
             // Ap[0] = A mod p[0]
             // Ap[1] = A mod p[1]
 
-            // B[0] = inv(Ap[0]) mod p[0] @fixme How?
+            // B[0] = inv(Ap[0]) mod p[0]
             // B[1] = inv(Ap[1]) mod p[1]
+            // @fixme How?
 
             // @note As _r is row major, we store each ri on each row.
             // So that r[i] = current residue for p[i].
-            _r = std::make_unique<DenseMatrix<Ring>>(_ring, l, b.size());
+            _r.init(_ring, l, b.size());
             for (auto i = 0u; i < l; ++i) {
                 // @fixme Is there a vector domain to copy to a matrix?
                 for (auto j = 0u; j < b.size(); ++j) {
                     _ring.assign(_r[i][j], b[j]);
                 }
             }
+
+            // @fixme Allocate Q and R
+            // @fixme Allocate c
+
+            // @todo Set up an RNS system
         }
 
-        IVector& nextdigit(IVector&, const IVector&) const final
+        IVector& nextdigit(IVector& digit, const IVector& residu) const final
         {
-            // @fixme With this design, are we forces to CRT_Reconstruct each ci?
+            // @fixme The residu can't be r, here!
+            // So the overall does a lot more job than it needs.
+            // See below for the solution.
+
+            // @fixme With this design, are we forced to CRT_Reconstruct each ci?
             // Is this bad?
+            // If we don't want that, we need to not extent LiftingContainerBase,
+            // and reimplement some of the behavior.
+            // Because the only thing needed to user API (rational reconstruction)
+            // is bool next (IVector& digit) from iterator.
+
+            /*  for i = 1 .. l:
+             *  |   (Qi, Ri) = such that ri = pi Qi + Ri with |Ri| < pi
+             *  |   ci = Bi Ri mod pi                   < Matrix-vector in Z/pZ
+             *  V = [R1|...|Rl] - A [c1|...|cl]         < Matrix-matrix in ZZ
+             *  for i = 1 .. l:
+             *  |   ri = Qi + (Vi / pi)
+             */
+
+            // @fixme Could be parallel!
+            for (auto i = 0u; i < l; ++i) {
+                Hom<Ring, Field> hom(_ring, _F[i]);
+
+                // @fixme How to do euclidian division?
+                // ri = pi Qi + Ri
+
+                // @todo If R might already be a field element
+                _B[i]->apply(_c[i], hom.convert(_R[i]));
+
+                // @todo Convert _c[i] to RNS
+            }
+
+            // @fixme How can we do A [c1|...|cl] in ZZ if the ci are in the fields?
+
+            // @fixme Compute the next residue!
+
+            return digit;
         }
 
     private:
         Ring& _ring;
 
         // @note r is a big matrix in ZZ holding all residues
-        std::unique_ptr<DenseMatrix<Ring>> _r;
+        IMatrix _r;
+        FMatrix _c;
+        std::vector<FMatrix> _B; // Inverses of A mod p[i]
+        std::vector<IVector> _Q;
+        std::vector<FVector> _R;
+        std::vector<Field> _F;
     };
 }
