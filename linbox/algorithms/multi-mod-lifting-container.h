@@ -41,7 +41,7 @@ namespace LinBox {
      *                  [y1|...|yl] = [0|...|0]
      *                  for j = 1 .. k:
      *                  |   for i = 1 .. l:
-     *                  |   |   (Qi, Ri) = such that r = pi Qi + Ri with |Ri| < pi
+     *                  |   |   (Qi, Ri) = such that ri = pi Qi + Ri with |Ri| < pi
      *                  |   |   ci = Bi ri mod pi                   < Matrix-vector in Z/pZ
      *                  |   |   yi = yi + ci * pi^(i-1)             < Done over ZZ
      *                  |   V = [R1|...|Rl] - A [c1|...|cl]         < Matrix-matrix in ZZ
@@ -62,27 +62,56 @@ namespace LinBox {
         using BaseClass = LiftingContainerBase<_Ring, DenseMatrix<_Ring>>;
 
     public:
-        using typename BaseClass::Ring;
         using typename BaseClass::IMatrix;
         using typename BaseClass::IVector;
+        using typename BaseClass::Ring;
 
         using Field = _Field;
         using PrimeGenerator = _PrimeGenerator;
 
     public:
-        // @fixme
-        const std::vector<Integer> primes = {97, 101};
+        // @fixme Have dynamic random ones
+        const std::vector<Integer> p = {97, 101};
 
         // @fixme Split to inline file
-        MultiModLiftingContainer(const Ring& ring, PrimeGenerator primeGenerator,
-                                 const IMatrix& A, const IVector& b,
+        MultiModLiftingContainer(const Ring& ring, PrimeGenerator primeGenerator, const IMatrix& A, const IVector& b,
                                  const Method::DixonRNS& m)
+            // @fixme Am forces to set the prime here? Why?
             : BaseClass(ring, A, b, 97 * 101)
+            , _ring(ring)
         {
+            // @note From baseClass, we have _length = log2(2 * N * D)
+
+            // @fixme Have l = log(||A||) + log(n) or so
+            uint32_t l = p.size();
+
+            // Ap[0] = A mod p[0]
+            // Ap[1] = A mod p[1]
+
+            // B[0] = inv(Ap[0]) mod p[0] @fixme How?
+            // B[1] = inv(Ap[1]) mod p[1]
+
+            // @note As _r is row major, we store each ri on each row.
+            // So that r[i] = current residue for p[i].
+            _r = std::make_unique<DenseMatrix<Ring>>(_ring, l, b.size());
+            for (auto i = 0u; i < l; ++i) {
+                // @fixme Is there a vector domain to copy to a matrix?
+                for (auto j = 0u; j < b.size(); ++j) {
+                    _ring.assign(_r[i][j], b[j]);
+                }
+            }
         }
 
-        IVector& nextdigit (IVector& , const IVector&) const final {
-
+        IVector& nextdigit(IVector&, const IVector&) const final
+        {
+            // @fixme With this design, are we forces to CRT_Reconstruct each ci?
+            // Is this bad?
         }
+
+    private:
+        Ring& _ring;
+
+        // @note r is a big matrix in ZZ holding all residues
+        std::unique_ptr<DenseMatrix<Ring>> _r;
     };
 }
