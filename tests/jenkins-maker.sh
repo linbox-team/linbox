@@ -60,11 +60,6 @@ if [ "$CXX" == "icpc" ]; then
 	source /usr/local/bin/compilervars.sh intel64
      fi
 fi
-# Particular case for Fedora: g++-6 <- g++
-if [[ "$ARCH" == "linbox-fedora-amd64" &&  "$CXX" == "g++-6" ]]; then
-    CXX="g++"
-    CC=gcc
-fi
 
 #==================================#
 # Automated installation and tests #
