@@ -98,7 +98,7 @@ namespace LinBox {
             // Generating primes
             IElement iTmp;
             _ring.assign(_p, _ring.one);
-            for (auto i = 0u; i < _l; ++i) {
+            for (auto j = 0u; j < _l; ++j) {
                 // @fixme Ensure that all primes are different
                 // @fixme Take into account bestBitSize!
                 _primes.emplace_back(*primeGenerator);
@@ -224,20 +224,24 @@ namespace LinBox {
                  *  |   ri = Qi + (Vi / pi)
                  */
 
-                std::cout << "ci: " << ci << std::endl;
-
                 // @fixme Could be parallel!
-                // for (auto i = 0u; i < l; ++i) {
-                //     Hom<Ring, Field> hom(_ring, _F[i]);
+                for (auto j = 0u; j < _l; ++j) {
+                    // @fixme How to do euclidian division?
+                    // ri = pi Qi + Ri
 
-                //     // @fixme How to do euclidian division?
-                //     // ri = pi Qi + Ri
+                    // @todo If R might already be a field element
+                    // @cpernet!!!
+                    // @fixme We will probably need a low-level API
+                    // so that we can say that the j-th row of _ci takes
+                    // the result of B * R mod pj
+                    // _B[j]->apply(*_ci[j], *_R[j]);
 
-                //     // @todo If R might already be a field element
-                //     _B[i]->apply(_c[i], hom.convert(_R[i]));
+                    // @todo Convert _c[i] to RNS
+                }
 
-                //     // @todo Convert _c[i] to RNS
-                // }
+                // @fixme CRT reconstruct ci from (cij)
+
+                std::cout << "ci: " << ci << std::endl;
 
                 // @fixme How can we do A [c1|...|cl] in ZZ if the ci are in the fields?
 
@@ -292,7 +296,7 @@ namespace LinBox {
 
         // @note r is a big matrix in ZZ holding all residues
         // IMatrix _r;
-        // FMatrix _c;
+        FMatrix _ci; // Contains [ci mod p0 | ... | ci mod p{l-1}] on each row.
         std::vector<std::unique_ptr<FMatrix>> _B; // Inverses of A mod p[i]
         // std::vector<IVector> _Q;
         // std::vector<FVector> _R;
