@@ -153,7 +153,8 @@ namespace LinBox {
         };
     };
     struct ShapeFlags {
-        uint16_t flags = Shape::Unknown;
+        uint16_t flags;
+        ShapeFlags(const uint16_t& f = Shape::Unknown) : flags(f) {}
 
         // @note We overload operator== so that one can use
         // method.shapeFlags == Shape::Symmetric seemlessly.
@@ -188,6 +189,16 @@ namespace LinBox {
      * to regroup elements used depending on the method.
      */
     struct MethodBase {
+        MethodBase() = default;
+        MethodBase(Singularity _singularity) : singularity(_singularity) {}
+        MethodBase(Shape::Value _shapeFlag) : shapeFlags(_shapeFlag) {}
+        MethodBase(ShapeFlags _shapeFlags) : shapeFlags(_shapeFlags) {}
+        MethodBase(Preconditioner _preconditioner) : preconditioner(_preconditioner) {}
+        MethodBase(Dispatch _dispatch) : dispatch(_dispatch) {}
+        MethodBase(Communicator* _pCommunicator) : pCommunicator(_pCommunicator) {}
+        MethodBase(PivotStrategy _pivotStrategy) : pivotStrategy(_pivotStrategy) {}
+        MethodBase(SingularSolutionType _singularSolutionType) : singularSolutionType(_singularSolutionType) {}
+
         // ----- Generic system information.
         Singularity singularity = Singularity::Unknown;
         Rank::Value rank = Rank::Unknown; //!< Rank of the system. -1 means unknown.

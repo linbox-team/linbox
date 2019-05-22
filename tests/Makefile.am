@@ -55,6 +55,7 @@ EXTRA_DIST =            \
     test-matrix-domain.h    \
     test-rank.h        \
     test-vector-domain.h    \
+    test-smith-form.h       \
     tests.doxy        \
     checker.C
 
@@ -70,9 +71,10 @@ PERFPUBLISHERFILE = tests-report.xml
 # Once present, tests should remain present, being moved from one group to another.
 BASIC_TESTS =            \
     test-solve          \
-	test-solve-full             \
+    test-solve-full             \
     test-smith-form-valence  \
     test-local-smith-form-sparseelim\
+    test-qlup                    \
     test-det            \
     test-regression        \
     test-rank-u32        \
@@ -93,6 +95,7 @@ BASIC_TESTS =            \
     test-givaro-zpz        \
     test-givaro-zpzuns        \
     test-givaro-interfaces        \
+    test-echelon-form       \
     test-hadamard-bound     \
     test-serialization
 
@@ -101,99 +104,95 @@ BASIC_TESTS =            \
 FULLCHECK_TESTS =           \
     test-bitonic-sort       \
     test-one-invariant-factor   \
-	test-blackbox-block-container \
-	test-sparse-map-map         \
-	test-blas-domain            \
-	test-block-ring				\
-	test-block-wiedemann		\
-	test-butterfly				\
-	test-companion				\
-	test-cradomain				\
-	test-dense					\
-	test-dense-zero-one      	\
-	test-diagonal				\
-	test-dif					\
-	test-direct-sum				\
-	test-dyadic-to-rational  	\
-	test-echelon-form			\
-	test-polynomial-ring		\
-	test-ffpack					\
-	test-fibb					\
-	test-ftrmm					\
-	test-getentry				\
-	test-gf2					\
-	test-givaropoly				\
-	test-givaro-zpz				\
-	test-givaro-zpzuns				\
-	test-gmp-rational			\
-	test-hilbert				\
-	test-hom					\
-	test-image-field			\
-	test-inverse				\
-	test-la-block-lanczos		\
-	test-last-invariant-factor  \
-	test-matpoly-mult			\
-	test-matrix-domain			\
-	test-matrix-stream			\
-	test-mg-block-lanczos    	\
-	test-minpoly				\
-	test-modular				\
-	test-modular-balanced-double \
-	test-modular-balanced-float  \
-	test-modular-balanced-int   \
-	test-modular-byte			\
-	test-modular-double			\
-	test-modular-float			\
-	test-modular-int			\
-	test-modular-short			\
-	test-moore-penrose			\
-	test-ntl-hankel             \
-	test-ntl-lzz_p              \
-	test-ntl-lzz_pe             \
-	test-ntl-lzz_pex            \
-	test-ntl-lzz_px             \
-	test-ntl-rr					\
-	test-ntl-sylvester          \
-	test-ntl-toeplitz           \
-	test-ntl-zz_p               \
-	test-nullspace				\
-	test-optimization			\
-	test-order-basis			\
-	test-param-fuzzy			\
-	test-permutation			\
-	test-plain-domain			\
-	test-poly-det				\
-	test-qlup					\
-	test-quad-matrix			\
-	test-random-matrix			\
-	test-rat-charpoly			\
-	test-rational-matrix-factory \
-	test-rational-reconstruction-base \
-	test-rat-minpoly			\
-	test-rat-solve				\
-	test-scalar-matrix			\
-	test-smith-form             \
-	test-smith-form-adaptive 	\
-	test-smith-form-binary      \
-	test-smith-form-iliopoulos  \
-	test-smith-form-local    	\
-	test-solve-nonsingular		\
-	test-sparse					\
-	test-subiterator			\
-	test-submatrix				\
-	test-subvector				\
-	test-sum					\
-	test-toom-cook				\
-	test-trace					\
-	test-transpose				\
-	test-triplesbb				\
-	test-triplesbb-omp			\
-	test-tutorial				\
-	test-vector-domain			\
-	test-zero-one				\
-	test-weak-popov-form        \
-	test-mpi-comm				\
-	test-toeplitz
+    test-blackbox-block-container \
+    test-sparse-map-map         \
+    test-blas-domain            \
+    test-block-ring                \
+    test-block-wiedemann        \
+    test-butterfly                \
+    test-companion                \
+    test-cradomain                \
+    test-dense                    \
+    test-dense-zero-one          \
+    test-diagonal                \
+    test-dif                    \
+    test-direct-sum                \
+    test-dyadic-to-rational      \
+    test-echelon-form            \
+    test-polynomial-ring        \
+    test-ffpack                    \
+    test-fibb                    \
+    test-ftrmm                    \
+    test-getentry                \
+    test-givaropoly                \
+    test-gmp-rational            \
+    test-hilbert                \
+    test-hom                    \
+    test-image-field            \
+    test-inverse                \
+    test-la-block-lanczos        \
+    test-last-invariant-factor  \
+    test-matpoly-mult            \
+    test-matrix-domain            \
+    test-matrix-stream            \
+    test-mg-block-lanczos        \
+    test-minpoly                \
+    test-modular                \
+    test-modular-balanced-double \
+    test-modular-balanced-float  \
+    test-modular-balanced-int   \
+    test-modular-byte            \
+    test-modular-double            \
+    test-modular-float            \
+    test-modular-int            \
+    test-modular-short            \
+    test-moore-penrose            \
+    test-ntl-hankel             \
+    test-ntl-lzz_p              \
+    test-ntl-lzz_pe             \
+    test-ntl-lzz_pex            \
+    test-ntl-lzz_px             \
+    test-ntl-rr                    \
+    test-ntl-sylvester          \
+    test-ntl-toeplitz           \
+    test-ntl-zz_p               \
+    test-nullspace                \
+    test-optimization            \
+    test-order-basis            \
+    test-param-fuzzy            \
+    test-permutation            \
+    test-plain-domain            \
+    test-poly-det                \
+    test-quad-matrix            \
+    test-random-matrix            \
+    test-rat-charpoly            \
+    test-rational-matrix-factory \
+    test-rational-reconstruction-base \
+    test-rat-minpoly            \
+    test-rat-solve                \
+    test-scalar-matrix            \
+    test-smith-form             \
+    test-smith-form-adaptive     \
+    test-smith-form-binary      \
+    test-smith-form-iliopoulos  \
+    test-smith-form-local        \
+    test-solve-nonsingular        \
+    test-sparse                    \
+    test-subiterator            \
+    test-submatrix                \
+    test-subvector                \
+    test-sum                    \
+    test-toom-cook                \
+    test-trace                    \
+    test-transpose                \
+    test-triplesbb                \
+    test-triplesbb-omp            \
+    test-tutorial                \
+    test-vector-domain            \
+    test-zero-one                \
+    test-weak-popov-form        \
+    test-mpi-comm                \
+    test-toeplitz
 
 # Really just one or two of these would be enough for target check.
 # The rest can be in target fullcheck.
@@ -326,7 +325,7 @@ test_ntl_sylvester_SOURCES =            test-ntl-sylvester.C
 test_ntl_toeplitz_SOURCES =             test-ntl-toeplitz.C
 test_ntl_zz_p_SOURCES =                 test-ntl-zz_p.C
 test_nullspace_SOURCES =                test-nullspace.C
-test_one_invariant_factor_SOURCES = 	test-one-invariant-factor.C
+test_one_invariant_factor_SOURCES =     test-one-invariant-factor.C
 test_opencl_domain_SOURCES =            test-opencl-domain.C
 test_optimization_SOURCES =             test-optimization.C
 test_order_basis_SOURCES =              test-order-basis.C
@@ -397,4 +396,3 @@ perfpublisher:
 
 fullcheck: checker
 	./checker
-

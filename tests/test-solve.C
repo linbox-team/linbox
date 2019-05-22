@@ -114,14 +114,14 @@ static bool testIdentitySolve (const Field          &F,
 			solve (w, I, v, method);
 			//solve (I, w, v, F, traits);
 		}
-		catch (LinboxError) {
-			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Solve failed to solve system" << endl;
-			ret = iter_passed = false;
-		}
-		catch (InconsistentSystem<Vector> e) {
+		catch (const InconsistentSystem<Vector>& e) {
 			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Solve reported an inconsistent system" << endl;
+			ret = iter_passed = false;
+		}
+		catch (const LinboxError&) {
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: Solve failed to solve system" << endl;
 			ret = iter_passed = false;
 		}
 
@@ -216,16 +216,16 @@ static bool testNonsingularSolve (const Field          &F,
 		try {
 			solve (x, D, b, method);
 		}
-		catch (LinboxError) {
-			commentator().restoreActivityState (state);
-			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: System solution failed" << endl;
-			ret = iter_passed = false;
-		}
-		catch (InconsistentSystem<Vector> e) {
+		catch (const InconsistentSystem<Vector>& e) {
 			commentator().restoreActivityState (state);
 			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: solve reported inconsistent system" << endl;
+			ret = iter_passed = false;
+		}
+		catch (const LinboxError&) {
+			commentator().restoreActivityState (state);
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: System solution failed" << endl;
 			ret = iter_passed = false;
 		}
 
@@ -353,13 +353,7 @@ static bool testSingularConsistentSolve (const Field          &F,
 				commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 					<< "ERROR: Computed solution is incorrect" << endl;
 		}
-		catch (LinboxError) {
-			commentator().restoreActivityState (state);
-			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: System solution failed" << endl;
-			ret = false;
-		}
-		catch (InconsistentSystem<Vector> e) {
+		catch (const InconsistentSystem<Vector>& e) {
 			commentator().restoreActivityState (state);
 			ostream &Report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR);
 			Report << "ERROR: Inconsistent system exception" << endl;
@@ -370,6 +364,12 @@ static bool testSingularConsistentSolve (const Field          &F,
 			ret = false;
 
 			commentator().restoreActivityState (state);
+		}
+		catch (const LinboxError&) {
+			commentator().restoreActivityState (state);
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: System solution failed" << endl;
+			ret = false;
 		}
 
 		commentator().stop ("done");
@@ -700,14 +700,14 @@ static bool testRandomSolve (const Field                  &F,
 		try {
 			solve (A, x, b, F, traits);
 		}
-		catch (LinboxError) {
-			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Solve failed to solve system" << endl;
-			ret = iter_passed = false;
-		}
-		catch (InconsistentSystem<Vector2> e) {
+		catch (const InconsistentSystem<Vector2>& e) {
 			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Solve reported an inconsistent system" << endl;
+			ret = iter_passed = false;
+		}
+		catch (const LinboxError&) {
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: Solve failed to solve system" << endl;
 			ret = iter_passed = false;
 		}
 

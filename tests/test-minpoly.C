@@ -1,6 +1,5 @@
-/* tests/test-minpoly.C
- * Copyright (C) 2001, 2002 Bradford Hovinen
- *
+/* Copyright (C) the LinBox group
+ * tests/test-minpoly.C *
  * Written by Bradford Hovinen <hovinen@cis.udel.edu>
  *
  * --------------------------------------------------------
@@ -63,7 +62,7 @@
 using namespace LinBox;
 
 /* Test 0: Minimal polynomial of the zero matrix
-*/
+ */
 template <class Field, class Meth>
 static bool testZeroMinpoly (Field &F, size_t n, const Meth& M)
 {
@@ -74,7 +73,7 @@ static bool testZeroMinpoly (Field &F, size_t n, const Meth& M)
 	SparseMatrix<Field> A(F, n, n);
 	minpoly(phi, A, M);
 
-        A.write(report, Tag::FileFormat::Maple);
+    A.write(report, Tag::FileFormat::Maple);
 	report << "Minimal polynomial is: ";
 
 	printPolynomial<Field, Polynomial> (F, report, phi);
@@ -114,7 +113,7 @@ static bool testIdentityMinpoly (Field &F, size_t n, const Meth& M)
 
 	typename Field::Element c0, c1;
 
-	//StandardBasisStream<Field, Row> stream (F, n);
+        //StandardBasisStream<Field, Row> stream (F, n);
 	Blackbox A (F, n, n, F.one);
 
 	Polynomial phi(F);
@@ -214,16 +213,16 @@ static bool testNilpotentMinpoly (Field &F, size_t n, const Meth& M)
 
 template <class Field, class BBStream, class VectStream, class Meth>
 bool testRandomMinpoly (Field                 &F,
-			int                    iterations,
-			BBStream    &A_stream,
-			VectStream &v_stream,
+                        int                    iterations,
+                        BBStream    &A_stream,
+                        VectStream &v_stream,
                         const Meth& M)
 {
 	typedef DensePolynomial<Field> Polynomial;
 	typedef SparseMatrix<Field> Blackbox;
-        typedef typename VectStream::Vector Vector;
+    typedef typename VectStream::Vector Vector;
 
-        commentator().start ("Testing sparse random minpoly", "testRandomMinpoly", (unsigned int)iterations);
+    commentator().start ("Testing sparse random minpoly", "testRandomMinpoly", (unsigned int)iterations);
 
 	bool ret = true;
 
@@ -312,7 +311,7 @@ static bool testGramMinpoly (Field &F, size_t m, const Meth& M)
 	minpoly(phi, A, M);
 
 	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-        A.write (report);
+    A.write (report);
 	report << "Minimal polynomial is: ";
 	printPolynomial<Field, Polynomial> (F, report, phi);
 
@@ -350,55 +349,55 @@ bool run_with_field(integer q, int e, size_t b, size_t n, int iter, int numVecto
 	while (ok && nbiter)
 	{
 		Field* F;
-                integer card=q;
-                do{
-                        F = FFPACK::chooseField<Field>(q, b, ++seed); // F, characteristic q of b bits
-                        card = F->cardinality();
-                }while (card < 2*n*n && card != 0); // ensures high probability of succes of the probabilistic algorithm
+        integer card=q;
+        do{
+            F = FFPACK::chooseField<Field>(q, b, ++seed); // F, characteristic q of b bits
+            card = F->cardinality();
+        }while (card < 2*n*n && card != 0); // ensures high probability of succes of the probabilistic algorithm
 		typename Field::RandIter G(*F, b, seed); //random generator over F
 		typename Field::NonZeroRandIter NzG(G); //non-zero random generator over F
 
 		if(F == nullptr)
 			return true; //if F is null, nothing to test, just pass
 
-		/*
-		ostringstream oss;
-		F->write(oss);
-		cout.fill('.');
-		cout<<"Checking ";
-		cout.width(40);
-		cout<<oss.str();
-		cout<<" ... ";
-		*/
+            /*
+              ostringstream oss;
+              F->write(oss);
+              cout.fill('.');
+              cout<<"Checking ";
+              cout.width(40);
+              cout<<oss.str();
+              cout<<" ... ";
+            */
 
 		ok &= testZeroMinpoly  	   (*F, n, Method::Auto());
 		ok &= testZeroMinpoly  	   (*F, n, Method::Elimination());
 		ok &= testZeroMinpoly  	   (*F, n, Method::Blackbox());
-                ok &= testIdentityMinpoly  (*F, n, Method::Auto());
-                ok &= testIdentityMinpoly  (*F, n, Method::Elimination());
-                ok &= testIdentityMinpoly  (*F, n, Method::Blackbox());
-                ok &= testNilpotentMinpoly (*F, n, Method::Auto());
-                 ok &= testNilpotentMinpoly (*F, n, Method::Elimination());
-                 ok &= testNilpotentMinpoly (*F, n, Method::Blackbox());
-                typedef typename SparseMatrix<Field>::Row SparseVector;
-//                typedef vector<typename Field::Element> DenseVector;
-                typedef BlasVector<Field> DenseVector;
-                RandomDenseStream<Field, DenseVector, typename Field::NonZeroRandIter> zv_stream (*F, NzG, n, numVectors);
-                RandomSparseStream<Field, SparseVector, typename Field::NonZeroRandIter > zA_stream (*F, NzG, (double) k / (double) n, n, n);
-                ok &= testRandomMinpoly    (*F, n, zA_stream, zv_stream, Method::Auto());
-                ok &= testRandomMinpoly    (*F, n, zA_stream, zv_stream, Method::Elimination());
-                ok &= testRandomMinpoly    (*F, n, zA_stream, zv_stream, Method::Blackbox());
-                if (card>0){
-                        ok &= testGramMinpoly      (*F, n, Method::Auto());
-                        ok &= testGramMinpoly      (*F, n, Method::Elimination());
-                        ok &= testGramMinpoly      (*F, n, Method::Blackbox());
-                }
-		/*
-		if(!ok)
-			cout<<"FAILED"<<endl;
-		else
-			cout<<"PASS"<<endl;
-		*/
+        ok &= testIdentityMinpoly  (*F, n, Method::Auto());
+        ok &= testIdentityMinpoly  (*F, n, Method::Elimination());
+        ok &= testIdentityMinpoly  (*F, n, Method::Blackbox());
+        ok &= testNilpotentMinpoly (*F, n, Method::Auto());
+        ok &= testNilpotentMinpoly (*F, n, Method::Elimination());
+        ok &= testNilpotentMinpoly (*F, n, Method::Blackbox());
+        typedef typename SparseMatrix<Field>::Row SparseVector;
+        typedef DenseVector<Field> DenseVector;
+        RandomDenseStream<Field, DenseVector, typename Field::NonZeroRandIter> zv_stream (*F, NzG, n, numVectors);
+        RandomSparseStream<Field, SparseVector, typename Field::NonZeroRandIter > zA_stream (*F, NzG, (double) k / (double) n, n, n);
+
+        ok &= testRandomMinpoly    (*F, n, zA_stream, zv_stream, Method::Auto());
+        ok &= testRandomMinpoly    (*F, n, zA_stream, zv_stream, Method::Elimination());
+        ok &= testRandomMinpoly    (*F, n, zA_stream, zv_stream, Method::Blackbox());
+        if (card>0){
+            ok &= testGramMinpoly      (*F, n, Method::Auto());
+            ok &= testGramMinpoly      (*F, n, Method::Elimination());
+            ok &= testGramMinpoly      (*F, n, Method::Blackbox());
+        }
+            /*
+              if(!ok)
+              cout<<"FAILED"<<endl;
+              else
+              cout<<"PASS"<<endl;
+            */
 
 		delete F;
 		nbiter--;
@@ -416,16 +415,16 @@ int main (int argc, char **argv)
 
 	integer q = -1;
 	size_t b = 0; // set to a non zero value to force the bitsize of q
-        int e = 1; // exponent for non prime fields
-	size_t n = 70;
+    int e = 1; // exponent for non prime fields
+	size_t n = 30;
 	int iterations = 3;
 	int numVectors = 1;
 	int k = 3;
-        uint64_t seed = time(NULL);
+    uint64_t seed = time(NULL);
 
 	static Argument args[] = {
-                { 'q', "-q Q", "Operate over the \"field\" GF(Q^E) [1].", TYPE_INTEGER, &q },
-                { 'b', "-b B", "Set the bitsize of the field characteristic.", TYPE_INT, &b },
+        { 'q', "-q Q", "Operate over the \"field\" GF(Q^E) [1].", TYPE_INTEGER, &q },
+        { 'b', "-b B", "Set the bitsize of the field characteristic.", TYPE_INT, &b },
 		{ 'e', "-e E", "Operate over the \"field\" GF(Q^E) [1].", TYPE_INT, &e },
 		{ 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT,     &n },
 		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
@@ -444,7 +443,7 @@ int main (int argc, char **argv)
     pass &= run_with_field<Givaro::Modular<double> >(q,e,b,n,iterations,numVectors,k,seed);
     pass &= run_with_field<Givaro::Modular<int32_t> >(q,e,b,n,iterations,numVectors,k,seed);
     pass &= run_with_field<Givaro::Modular<Givaro::Integer> >(q,e,b?b:128,n/3+1,iterations,numVectors,k,seed);
-        //pass &= run_with_field<Givaro::GFqDom<int64_t> >(q,e,b,n,iterations,numVectors,k,seed);
+//     pass &= run_with_field<Givaro::GFqDom<int64_t> >(q,e,b,n,iterations,numVectors,k,seed);
     pass &= run_with_field<Givaro::ZRing<Givaro::Integer> >(0,e,b?b:128,n/3+1,iterations,numVectors,k,seed);
 
     return !pass;
