@@ -22,25 +22,25 @@
 #pragma once
 
 namespace LinBox {
-	/*! @brief NO DOC !
-	 * @bug why is this hard coded ?
-	*/
-	template <class Prime>
-	inline bool checkBlasPrime(const Prime& p)
-	{
-		return p < Prime(67108863);
-	}
+    /*! @brief NO DOC !
+     * @bug why is this hard coded ?
+     */
+    template <class Prime>
+    inline bool checkBlasPrime(const Prime& p)
+    {
+        return p < Prime(67108863);
+    }
 
-	template<>
-	inline bool checkBlasPrime(const BlasVector<Givaro::ZRing<Integer>>& p)
-	{
-		bool tmp=true;
-		for (size_t i=0;i<p.size();++i)
-			if  (p[i] >= integer(67108863)) {
-				tmp=false;
-				break;
-			}
+	// Check that all primes within the vector are valid for blas.
+    template <>
+    inline bool checkBlasPrime(const BlasVector<Givaro::ZRing<Integer>>& p)
+    {
+        for (size_t i = 0; i < p.size(); ++i) {
+            if (!checkBlasPrime(p[i])) {
+                return false;
+            }
+        }
 
-		return tmp;
-	}
+        return true;
+    }
 }

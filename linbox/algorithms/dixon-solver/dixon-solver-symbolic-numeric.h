@@ -1,5 +1,4 @@
-/* linbox/algorithms/rational-solver2.h
- * Copyright (C) 2010 LinBox
+/* Copyright (C) 2010 LinBox
  * Author Z. Wan
  *
  *
@@ -22,15 +21,15 @@
  * ========LICENCE========
  */
 
-/*! @file algorithms/rational-solver2.h
+/*! @file algorithms/dixon-solver/dixon-solver-symbolic-numeric.h
  * @brief NO DOC
  * @bib
  * Implementation of the algorithm in manuscript, available at
  * http://www.cis.udel.edu/~wan/jsc_wan.ps
  */
 
-#ifndef __LINBOX_rational_solver2__H
-#define __LINBOX_rational_solver2__H
+#ifndef __LINBOX_dixon_solver_symbolic_numeric__H
+#define __LINBOX_dixon_solver_symbolic_numeric__H
 
 #include <memory.h>
 #include <iostream>
@@ -551,7 +550,7 @@ namespace LinBox
 	}
 }//LinBox
 
-#endif //__LINBOX_rational_solver2__H
+#endif //__LINBOX_dixon_solver_symbolic_numeric__H
 
 // Local Variables:
 // mode: C++

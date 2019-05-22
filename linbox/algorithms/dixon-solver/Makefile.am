@@ -23,4 +23,5 @@ pkgincludesubdir=$(pkgincludedir)/algorithms/dixon-solver
 pkgincludesub_HEADERS =         \
     dixon-solver-common.inl     \
 	dixon-solver-dense.h        \
-	dixon-solver-dense.inl
+	dixon-solver-dense.inl		\
+	dixon-solver-symbolic-numeric.h
