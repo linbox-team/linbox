@@ -175,7 +175,6 @@ namespace LinBox {
     // - Q . (A|b) . P   has nonzero principal minors up to TAS.rank()
     // - P permutes b to the (TAS.rank())th column of A iff the system is inconsistent mod p
 
-    // @fixme Move?
     template <class Field>
     class TransposeAugmentedSystem {
     public:
@@ -443,7 +442,7 @@ namespace LinBox {
                 }
 
                 // compute A_minor = B.P
-                MAD.applyM(A_minor, *P); // @fixme WHy preconditioner here?
+                MAD.applyM(A_minor, *P);
 
                 // set Ap_minor = A_minor mod p, try to compute inverse
                 for (size_t i = 0; i < rank; ++i)
@@ -661,7 +660,7 @@ namespace LinBox {
                 return SS_OK;
             }
 
-            // ----- @fixme What is the goal of this?
+            // ----- Certifying inconsistency
 
             std::unique_ptr<BlasMatrix<Field>> Atp_minor_inv = nullptr;
             if ((appearsInconsistent && method.certifyInconsistency)
@@ -749,7 +748,6 @@ namespace LinBox {
 
             // ----- Check consistency
 
-            // @fixme In what world is this useful?
             if (method.checkResult) { // check consistency
                 BlasVector<Ring> A_times_xnumer(_ring, b.size());
                 BAR.applyV(A_times_xnumer, A_check, resultVF.numer);
