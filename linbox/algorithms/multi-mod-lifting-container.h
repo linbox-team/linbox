@@ -106,7 +106,7 @@ namespace LinBox {
                 _ring.init(iTmp, _primes.back());
                 _ring.mulin(_p, iTmp);
 
-                std::cout << "primes[" << i << "]: " << Integer(_primes.back()) << std::endl;
+                std::cout << "primes[" << j << "]: " << Integer(_primes.back()) << std::endl;
 
                 ++primeGenerator;
             }
@@ -116,8 +116,8 @@ namespace LinBox {
             // Compute how many iterations are needed
             auto hb = RationalSolveHadamardBound(A, b);
             double pLog = Givaro::logtwo(_p);
-            _k = std::ceil((1.0 + hb.numLogBound + hb.denLogBound)
-                           / pLog); // log2(2 * N * D) / log2(p)
+            // _k = log2(2 * N * D) / log2(p)
+            _k = std::ceil((1.0 + hb.numLogBound + hb.denLogBound) / pLog);
             std::cout << "k: " << _k << std::endl;
 
             // @fixme Fact is RationalReconstruction which needs numbound and denbound
@@ -132,20 +132,22 @@ namespace LinBox {
             // computation done there that is completely useless when using this container. Meaning
             // that we need a RNSDixonSolver<Dense>.
             {
+                _B.reserve(_l);
+
                 for (const auto& F : _fields) {
                     BlasMatrixDomain<Field> bmd(F);
-                    auto Bpi = std::make_unique<FMatrix>(F, _n, _n);
+                    _B.emplace_back(F, _n, _n);
+                    auto& Bpi = _B.back();
 
                     // @fixme Taken for rational-solver.inl. BETTER USE REBIND!!!
                     for (size_t i = 0; i < _n; ++i) {
                         for (size_t j = 0; j < _n; ++j) {
-                            F.init(Bpi->refEntry(i, j), A.getEntry(i, j));
+                            F.init(Bpi.refEntry(i, j), A.getEntry(i, j));
                         }
                     }
 
-                    bmd.invin(*Bpi);
-                    Bpi->write(std::cout << "B mod " << Integer(F.characteristic()) << ": ", Tag::FileFormat::Maple) << std::endl;
-                    _B.emplace_back(std::move(Bpi));
+                    bmd.invin(Bpi); // @fixme Use FFLAS directly, so that we can have a REAL in place inv.
+                    Bpi.write(std::cout << "B mod " << Integer(F.characteristic()) << ": ", Tag::FileFormat::Maple) << std::endl;
                 }
             }
 
@@ -225,7 +227,7 @@ namespace LinBox {
                  */
 
                 // @fixme Could be parallel!
-                for (auto j = 0u; j < _l; ++j) {
+                for (auto j = 0u; j < _lc._l; ++j) {
                     // @fixme How to do euclidian division?
                     // ri = pi Qi + Ri
 
@@ -296,8 +298,8 @@ namespace LinBox {
 
         // @note r is a big matrix in ZZ holding all residues
         // IMatrix _r;
-        FMatrix _ci; // Contains [ci mod p0 | ... | ci mod p{l-1}] on each row.
-        std::vector<std::unique_ptr<FMatrix>> _B; // Inverses of A mod p[i]
+        // FMatrix _ci; // Contains [ci mod p0 | ... | ci mod p{l-1}] on each row.
+        std::vector<FMatrix> _B; // Inverses of A mod p[i]
         // std::vector<IVector> _Q;
         // std::vector<FVector> _R;
         std::vector<Field> _fields;
