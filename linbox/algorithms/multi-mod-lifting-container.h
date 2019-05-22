@@ -26,7 +26,10 @@
 
 namespace LinBox {
     /**
-     * The algorithm solves Ax = b over the integers.
+     * The algorithm find out the p-adic writing of A^{-1} * b.
+     * So that A^{-1} * b = c0 + c1 * p + c2 * p^2 + ... + c{k-1} * p^{k-1}.
+     * The chosen p is multi-modular.
+     *
      * It is based on Chen/Storjohann RNS-based p-adic lifting.
      * Based on https://cs.uwaterloo.ca/~astorjoh/p92-chen.pdf
      * A BLAS Based C Library for Exact Linear Algebra on Integer Matrices (ISSAC 2009)
@@ -58,32 +61,36 @@ namespace LinBox {
      * can be used, but it depends on the problem, really.
      */
     template <class _Field, class _Ring, class _PrimeGenerator>
-    class MultiModLiftingContainer final : public LiftingContainerBase<_Ring, DenseMatrix<_Ring>> {
-        using BaseClass = LiftingContainerBase<_Ring, DenseMatrix<_Ring>>;
+    class MultiModLiftingContainer final : public LiftingContainer<_Ring> {
+        using BaseClass = LiftingContainer<_Ring>;
 
     public:
-        using typename BaseClass::IMatrix;
-        using typename BaseClass::IVector;
-        using typename BaseClass::Ring;
-
+        using Ring = _Ring;
         using Field = _Field;
         using PrimeGenerator = _PrimeGenerator;
 
+        using IElement = typename _Ring::Element;
+        using IMatrix = DenseMatrix<_Ring>;
+        using IVector = DenseVector<_Ring>;
+        using FMatrix = DenseMatrix<_Field>;
+        using FVector = DenseVector<_Field>;
+
     public:
-        // @fixme Have dynamic random ones
-        const std::vector<Integer> p = {97, 101};
+        // -------------------
+        // ----- Main behavior
 
         // @fixme Split to inline file
-        MultiModLiftingContainer(const Ring& ring, PrimeGenerator primeGenerator, const IMatrix& A, const IVector& b,
-                                 const Method::DixonRNS& m)
-            // @fixme Am forces to set the prime here? Why?
-            : BaseClass(ring, A, b, 97 * 101)
-            , _ring(ring)
+        MultiModLiftingContainer(const Ring& ring, PrimeGenerator primeGenerator, const IMatrix& A,
+                                 const IVector& b, const Method::DixonRNS& m)
+            : _ring(ring)
+            , _r(_ring)
+            , _c(_field)
         {
+            // @fixme Compute hadamard and such
+
             // @note From baseClass, we have _length = log2(2 * N * D)
 
             // @fixme Have l = log(||A||) + log(n) or so
-            uint32_t l = p.size();
 
             // @fixme Initialize fields _F[i]
 
@@ -96,13 +103,13 @@ namespace LinBox {
 
             // @note As _r is row major, we store each ri on each row.
             // So that r[i] = current residue for p[i].
-            _r.init(_ring, l, b.size());
-            for (auto i = 0u; i < l; ++i) {
-                // @fixme Is there a vector domain to copy to a matrix?
-                for (auto j = 0u; j < b.size(); ++j) {
-                    _ring.assign(_r[i][j], b[j]);
-                }
-            }
+            // _r.init(_ring, l, b.size());
+            // for (auto i = 0u; i < l; ++i) {
+            //     // @fixme Is there a vector domain to copy to a matrix?
+            //     for (auto j = 0u; j < b.size(); ++j) {
+            //         _ring.assign(_r[i][j], b[j]);
+            //     }
+            // }
 
             // @fixme Allocate Q and R
             // @fixme Allocate c
@@ -110,7 +117,8 @@ namespace LinBox {
             // @todo Set up an RNS system
         }
 
-        IVector& nextdigit(IVector& digit, const IVector& residu) const final
+        // @fixme USELESS?
+        IVector& nextdigit(IVector& digit, const IVector& residu) const
         {
             // @fixme The residu can't be r, here!
             // So the overall does a lot more job than it needs.
@@ -132,17 +140,17 @@ namespace LinBox {
              */
 
             // @fixme Could be parallel!
-            for (auto i = 0u; i < l; ++i) {
-                Hom<Ring, Field> hom(_ring, _F[i]);
+            // for (auto i = 0u; i < l; ++i) {
+            //     Hom<Ring, Field> hom(_ring, _F[i]);
 
-                // @fixme How to do euclidian division?
-                // ri = pi Qi + Ri
+            //     // @fixme How to do euclidian division?
+            //     // ri = pi Qi + Ri
 
-                // @todo If R might already be a field element
-                _B[i]->apply(_c[i], hom.convert(_R[i]));
+            //     // @todo If R might already be a field element
+            //     _B[i]->apply(_c[i], hom.convert(_R[i]));
 
-                // @todo Convert _c[i] to RNS
-            }
+            //     // @todo Convert _c[i] to RNS
+            // }
 
             // @fixme How can we do A [c1|...|cl] in ZZ if the ci are in the fields?
 
@@ -151,8 +159,106 @@ namespace LinBox {
             return digit;
         }
 
+        // --------------------------
+        // ----- LiftingContainer API
+
+        const Ring& ring() const final { return _ring; }
+
+        /// The length of the container.
+        size_t length() const final { return _k; }
+
+        /// The dimension of the problem/solution.
+        size_t size() const final { return _n; }
+
+        /**
+         * We are compliant to the interface even though
+         * p is multi-modular and thus not a prime.
+         */
+        const IElement& prime() const final { return _p; }
+
+        // ------------------------------
+        // ----- NOT LiftingContainer API
+        // ----- but still needed
+
+		const IElement numbound() const
+		{
+			return _numbound;
+		}
+
+		const IElement denbound() const
+		{
+			return _denbound;
+		}
+
+        // --------------
+        // ----- Iterator
+
+        /**
+         * Needed API for rational reconstruction.
+         * Each call to next() will update
+         */
+        class const_iterator {
+        private:
+            BlasVector<Ring> _res;
+            const MultiModLiftingContainer& _lc;
+            size_t _position;
+
+        public:
+            const_iterator(const MultiModLiftingContainer& lc, size_t end = 0)
+                : _lc(lc)
+                , _position(end)
+            {
+                // @fixme Initialize _residue
+            }
+
+            /**
+             * Returns false if the next digit cannot be computed (bad modulus).
+             */
+            bool next(IVector& digit)
+            {
+                // compute v2 = _matA * digit
+                IVector v2(_lc.ring(), _lc.size());
+                // @fixme _lc._MAD.applyV(v2, digit, _res);
+
+                // update _res -= v2
+                // @fixme _lc._VDR.subin(_res, v2);
+                typename BlasVector<Ring>::iterator p0;
+
+                // update _res = _res / p
+                int index = 0;
+                for (p0 = _res.begin(); p0 != _res.end(); ++p0, ++index) {
+                    _lc.ring().divin(*p0, _lc._p);
+                }
+
+                // increase position of the iterator
+                ++_position;
+                return true;
+            }
+
+            bool operator!=(const const_iterator& iterator) const
+            {
+                return _position != iterator._position;
+            }
+
+            bool operator==(const const_iterator& iterator) const
+            {
+                return _position == iterator._position;
+            }
+        };
+
+        const_iterator begin() const { return const_iterator(*this); }
+        const_iterator end() const { return const_iterator(*this, _k); }
+
     private:
-        Ring& _ring;
+        const Ring& _ring;
+        Field _field;
+
+        IElement _numbound;
+        IElement _denbound;
+
+        IElement _p;
+        size_t _k; //< Length of the ci sequence. So that p^{k-1} > 2ND (Hadamard bound)
+        size_t _n; //< Row/column dimension of A.
 
         // @note r is a big matrix in ZZ holding all residues
         IMatrix _r;

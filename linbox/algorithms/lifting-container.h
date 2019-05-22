@@ -283,34 +283,6 @@ namespace LinBox
 
 		};
 
-		/*- @brief Bit manipulation function for possible use in optimization.
-		 * efficiently pulls out continuous blocks of bits, from lsb to msb inclusive
-		 * least significant bits start at index 0, so msb >= lsb
-		 * if any bits with index >= 8*numBytes are asked for they will be zeroes
-		 */
-#if 0
-		static long long bytesToBits(unsigned char * byteArray, size_t numBytes, size_t lsb, size_t msb) {
-			linbox_check(msb >= lsb);
-			size_t lsbi = lsb >> 3;
-			size_t msbi = msb >> 3;
-			if (msbi == lsbi)
-				if (msbi >= numBytes)
-					return 0;
-				else
-					return (byteArray[lsbi] >> (lsb & 7)) & ((1 << (msb - lsb + 1)) - 1);
-
-			long long result = (msbi < numBytes) ? (byteArray[msbi] & ((1 << ((msb & 7)+1)) - 1)) : 0;
-			for (size_t i=msbi-1; i>lsbi; i--) {
-				result <<= 8;
-				result |= (i < numBytes) ? byteArray[i] : 0;
-			}
-			result <<= 8 - (lsb & 7);
-			result |= (lsbi < numBytes) ? (byteArray[lsbi] >> (lsb & 7)) : 0;
-
-			return result;
-		}
-#endif
-
 		const_iterator begin() const
 		{
 			return const_iterator(*this);
