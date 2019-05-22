@@ -177,7 +177,7 @@ namespace LinBox {
 
     // @fixme Move?
     template <class Field>
-    class TAS {
+    class TransposeAugmentedSystem {
     public:
         BlasMatrix<Field>* factors = nullptr;
         PLUQMatrix<Field>* PLUQ = nullptr;
@@ -191,7 +191,7 @@ namespace LinBox {
 
     public:
         template <class Ring, class IMatrix, class IVector>
-        TAS(Ring& R, Field& _field, const IMatrix& A, const IVector& b)
+        TransposeAugmentedSystem(Ring& R, Field& _field, const IMatrix& A, const IVector& b)
         {
             factors = new BlasMatrix<Field>(_field, A.coldim() + 1, A.rowdim());
 
@@ -234,7 +234,7 @@ namespace LinBox {
             // @fixme Does FFLAS has something for this?
         }
 
-        ~TAS()
+        ~TransposeAugmentedSystem()
         {
             delete factors;
             delete PLUQ;
@@ -626,7 +626,7 @@ namespace LinBox {
             BlasMatrix<Ring> A_check(A); // used to check answer later
 
             // TAS stands for Transpose Augmented System (A|b)t
-            TAS<Field> tas(_ring, _field, A, b);
+            TransposeAugmentedSystem<Field> tas(_ring, _field, A, b);
 
 #ifdef RSTIMING
             tSetup.stop();

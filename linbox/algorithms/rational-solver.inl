@@ -641,7 +641,7 @@ namespace LinBox
 } //end of namespace LinBox
 
 //BB : moved the following "guarded" code in a new file, verbatim :
-#include "rational-solver2.h"
+#include "./dixon-solver/dixon-solver-symbolic-numeric.h"
 
 #endif //__LINBOX_rational_solver_INL
 
