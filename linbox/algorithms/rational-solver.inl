@@ -590,7 +590,7 @@ namespace LinBox
 		typedef typename IMatrix::template rebind<Field>::other FMatrix;
 		FMatrix Ap(A, F);
 
-		// compute LQUP Factorization
+		// compute PLUQ Factorization
 		Permutation<Field> P(F,(int)A.coldim()),Q(F,(int)A.rowdim());
 		FMatrix L(F, A.rowdim(), A.rowdim());
 		size_t rank;

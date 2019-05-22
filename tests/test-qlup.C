@@ -1,7 +1,7 @@
 /* tests/test-qlup.C
  * Copyright (C) The LinBox group
  *
- * Time-stamp: <13 Nov 17 16:57:58 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <10 May 19 11:28:22 Jean-Guillaume.Dumas@imag.fr>
  * -----------------------------------------------------
  *
  * ========LICENCE========
@@ -68,8 +68,7 @@ bool testQLUP(const Field &F, size_t n, unsigned int iterations, int rseed, doub
 
 	size_t Ni = n;
 	size_t Nj = n;
-	integer card; F.cardinality(card);
-	typename Field::RandIter generator (F,card,rseed);
+	typename Field::RandIter generator (F,0,rseed);
 	RandStream stream (F, generator, sparsity, n, n);
 
 	for (size_t i = 0; i < iterations; ++i) {
@@ -93,7 +92,7 @@ bool testQLUP(const Field &F, size_t n, unsigned int iterations, int rseed, doub
 		A.apply(v,u);
 
 
-		unsigned long rank;
+		size_t rank;
 
 		Method::SparseElimination SE;
 		SE.pivotStrategy = PivotStrategy::Linear;
@@ -171,12 +170,11 @@ bool testQLUPsolve(const Field &F, size_t n, unsigned int iterations, int rseed,
 
 	size_t Ni = n;
 	size_t Nj = n;
-	integer card; F.cardinality(card);
-	typename Field::RandIter generator (F,card,rseed);
+	typename Field::RandIter generator (F,0,rseed);
 	RandStream stream (F, generator, sparsity, n, n);
 
 	GF2 F2;
-	GF2::RandIter bitgenerator(F2,2,rseed);
+	GF2::RandIter bitgenerator(F2,0,rseed);
 	// GF2::Element randomsolve;
 
 	for (size_t i = 0; i < iterations; ++i) {
@@ -256,8 +254,7 @@ bool testQLUPnullspace(const Field &F, size_t n, unsigned int iterations, int rs
 
 	size_t Ni = n;
 	size_t Nj = n;
-	integer card; F.cardinality(card);
-	typename Field::RandIter generator (F,card,rseed);
+	typename Field::RandIter generator (F,0,rseed);
 	RandStream stream (F, generator, sparsity, n, n, rseed);
 
 	for (size_t i = 0; i < iterations; ++i) {
@@ -407,7 +404,6 @@ int main (int argc, char **argv)
 // 			pass = false;
 // 	}
 
-#if 1
 	{
 		commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 		<< "specialized over GF2>" << endl;
@@ -420,7 +416,6 @@ int main (int argc, char **argv)
 		if (!testQLUPsolve<Field, Blackbox, RandStream> (F2, n, iterations, rseed, sparsity))
 			pass = false;
 	}
-#endif
 
 	commentator().stop(MSG_STATUS (pass),"QLUP test suite");
 	return pass ? 0 : -1;

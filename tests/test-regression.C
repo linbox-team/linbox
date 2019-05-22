@@ -31,18 +31,18 @@
 #include "givaro/modular.h"
 #include "linbox/matrix/sparse-matrix.h"
 #include "linbox/matrix/dense-matrix.h"
-#include "linbox/polynomial/dense-polynomial.h"
 #include "linbox/ring/polynomial-ring.h"
 #include "linbox/vector/blas-vector.h"
 #include "linbox/solutions/solve.h"
 #include "linbox/solutions/charpoly.h"
-#include "linbox/algorithms/smith-form-sparseelim-poweroftwo.h"
-#include "test-smith-form.h"
 
 using namespace LinBox;
 typedef Givaro::ZRing<Givaro::Integer> ZRingInts;
 
 bool writing=false;
+
+#include "linbox/algorithms/smith-form-sparseelim-poweroftwo.h"
+#include "test-smith-form.h"
 
 bool testSolveSparse(){
 
@@ -562,17 +562,82 @@ bool testDixonSmallFat() {
     A.setEntry(0, 2, 2);
     ZZ.assign(b[0], 1);
 
-    Method::Dixon rationalLifting;
-    rationalLifting.singularSolutionType = SingularSolutionType::Deterministic;
-
     // Calling Dixon
-    solve(x, d, A, b, rationalLifting );
+    solve(x, d, A, b, Method::Dixon(SingularSolutionType::Deterministic) );
 
     A.apply(r,x);
     ZZ.divin(r[0],d);
-
     return success = ZZ.areEqual(r[0], b[0]);
 }
+
+bool testZeroMatrixCharPoly() {
+    bool success;
+	using Ring = Givaro::Modular<double>;
+	using Matrix = SparseMatrix<Ring>;
+    Ring R(3);
+
+    Matrix A(R, 1, 1);
+    A.setEntry(0, 0, R.zero);
+
+    PolynomialRing<Ring>::Element c_A, Ex;
+
+    charpoly(c_A, A);
+
+    PolynomialRing<Ring> PZ(R,'X'); PZ.assign(Ex, Givaro::Degree(1), R.one);
+
+    success = PZ.areEqual(c_A, Ex);
+
+    if (!success) {
+        if (writing) {
+            std::clog<<"**** ERROR **** Fail ZMCP " <<std::endl;
+
+            PZ.write(std::clog << "Ex: ", Ex) << std::endl;
+            PZ.write(std::clog << "cA: ", c_A) << std::endl;
+        }
+        return false;
+    } else
+        if (writing) std::cout << "ZMCP: PASSED" << std::endl;
+
+    return success;
+}
+
+bool testFourFourMatrix() {
+    bool success;
+    using Ring = Givaro::ZRing<Integer>;
+    using Matrix = DenseMatrix<Ring>;
+    Ring ZZ;
+
+    Matrix A(ZZ, 4,4);
+    for(size_t i=0; i<4; ++i) for(size_t j=0; j<4; ++j)
+        A.setEntry(i,j, static_cast<uint64_t>(4*i+j+1));
+
+    PolynomialRing<Ring>::Element c_A, Res;
+
+    charpoly(c_A, A);
+
+    PolynomialRing<Ring> PZ(ZZ,'X');
+    PZ.assign(Res, Givaro::Degree(4), ZZ.one);
+    Res[2] = -80;
+    Res[3] = -34;
+
+    success = PZ.areEqual(c_A, Res);
+
+    if (!success) {
+        if (writing) {
+            std::clog<<"**** ERROR **** Fail tFFM " <<std::endl;
+
+            PZ.write(std::clog << "Ex: ", Res) << std::endl;
+            PZ.write(std::clog << "cA: ", c_A) << std::endl;
+        }
+
+        return false;
+    } else
+        if (writing) std::cout << "tFFM: PASSED" << std::endl;
+
+    return success;
+}
+
+
 
 int main (int argc, char **argv)
 {
@@ -612,10 +677,13 @@ int main (int argc, char **argv)
     pass &= testSparseDiagDet(46);
     pass &= testZeroDimensionalCharPoly ();
     pass &= testZeroDimensionalMinPoly ();
+    pass &= testZeroMatrixCharPoly();
     pass &= testBigScalarCharPoly ();
     pass &= testLocalSmith ();
     pass &= testInconsistent<DenseMatrix<ZRingInts>> (Method::DenseElimination());
     pass &= testDixonSmallFat();
+    pass &= testFourFourMatrix();
+
         // Still failing: see https://github.com/linbox-team/linbox/issues/105
         //pass &= testInconsistent<> (Method::SparseElimination());
         //pass &= testInconsistent<> (Method::Wiedemann());

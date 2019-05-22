@@ -170,20 +170,20 @@ namespace LinBox {
     }
 
     // TAS stands for Transpose Augmented System (A|b)t
-    // this provides a factorization (A|b) = Pt . Ut . Qt . Lt
+    // this provides a factorization (A|b) = Pt . Lt . Ut . Qt
     // such that
-    // - P . (A|b) . Q   has nonzero principal minors up to TAS.rank()
-    // - Q permutes b to the (TAS.rank())th column of A iff the system is inconsistent mod p
+    // - Q . (A|b) . P   has nonzero principal minors up to TAS.rank()
+    // - P permutes b to the (TAS.rank())th column of A iff the system is inconsistent mod p
 
     // @fixme Move?
     template <class Field>
     class TAS {
     public:
         BlasMatrix<Field>* factors = nullptr;
-        LQUPMatrix<Field>* LQUP = nullptr;
+        PLUQMatrix<Field>* PLUQ = nullptr;
 
         BlasPermutation<size_t> P;
-        BlasPermutation<size_t> Qt;
+        BlasPermutation<size_t> Q;
 
         // @fixme Do we really need that?
         std::vector<size_t> srcRow; // @fixme Why "src"?
@@ -212,11 +212,11 @@ namespace LinBox {
                 factors->setEntry(A.coldim(), i, tmpElement);
             }
 
-            // Getting factors -> L Qt U P
-            P.resize(factors->coldim());
-            Qt.resize(factors->rowdim());
+            // Getting factors -> P L U Q
+            P.resize(factors->rowdim());
+            Q.resize(factors->coldim());
 
-            LQUP = new LQUPMatrix<Field>(*factors, P, Qt);
+            PLUQ = new PLUQMatrix<Field>(*factors, P, Q);
 
             // Used to check consistency
             srcRow.resize(factors->coldim());
@@ -227,8 +227,8 @@ namespace LinBox {
 
             indexDomain iDom;
             BlasMatrixDomain<indexDomain> BMDs(iDom);
-            BMDs.mulin_right(Qt, srcCol);
-            BMDs.mulin_right(P, srcRow);
+            BMDs.mulin_right(P, srcCol);
+            BMDs.mulin_right(Q, srcRow);
 
             // @note srcCol/srcRow now hold permutations (indices of (A|b)t)
             // @fixme Does FFLAS has something for this?
@@ -237,10 +237,10 @@ namespace LinBox {
         ~TAS()
         {
             delete factors;
-            delete LQUP;
+            delete PLUQ;
         }
 
-        size_t rank() { return LQUP->getRank(); }
+        size_t rank() { return PLUQ->getRank(); }
     };
 
     // Returns:
@@ -333,7 +333,7 @@ namespace LinBox {
         _ring.subin(cert.numer[rank], cert.denom);
         _ring.assign(cert.denom, _ring.one);
 
-        BMDI.mulin_left(cert.numer, tas.P);
+        BMDI.mulin_left(cert.numer, tas.Q);
 
 #ifdef DEBUG_INC
         cert.write(std::cout << "cert:") << std::endl;
@@ -498,17 +498,17 @@ namespace LinBox {
         // we then try to create a partial certificate
         // the correspondance with Algorithm MinimalSolution from Mulders/Storjohann:
         // paper | here
-        // P     | TAS_P
-        // Q     | transpose of TAS_Qt
-        // B     | *B (== TAS_P . A,  but only top #rank rows)
-        // c     | newb (== TAS_P . b,   but only top #rank rows)
+        // P     | TAS_Q
+        // Q     | transpose of TAS_P
+        // B     | *B (== TAS_Q . A,  but only top #rank rows)
+        // c     | newb (== TAS_Q . b,   but only top #rank rows)
         // P     | P
         // q     | q
         // U     | {0, 1}
         // u     | u
         // z-hat | lastCertificate
 
-        // we multiply the certificate by TAS_Pt at the end
+        // we multiply the certificate by TAS_Qt at the end
         // so it corresponds to b instead of newb
 
         // q in {0, 1}^rank
@@ -565,7 +565,7 @@ namespace LinBox {
         u_to_vf.numer.resize(A.rowdim());
 
         BlasMatrixDomain<Ring> BMDI(_ring);
-        BMDI.mul(z.numer, u_to_vf.numer, tas.P);
+        BMDI.mul(z.numer, u_to_vf.numer, tas.Q);
 
         z.denom = numergcd;
 
@@ -666,14 +666,19 @@ namespace LinBox {
             std::unique_ptr<BlasMatrix<Field>> Atp_minor_inv = nullptr;
             if ((appearsInconsistent && method.certifyInconsistency)
                 || method.singularSolutionType != SingularSolutionType::Random) {
-                // take advantage of the (LQUP)t factorization to compute
+                // take advantage of the (PLUQ)t factorization to compute
                 // an inverse to the leading minor of (TAS_P . (A|b) . TAS_Q)
 #ifdef RSTIMING
                 tFastInvert.start();
 #endif
+
                 Atp_minor_inv = std::make_unique<BlasMatrix<Field>>(_field, rank, rank);
-                FFPACK::LQUPtoInverseOfFullRankMinor(_field, rank, tas.factors->getPointer(), A.rowdim(), tas.Qt.getPointer(),
-                                                     Atp_minor_inv->getPointer(), rank);
+
+                FFLAS::fassign(_field, rank, rank, tas.factors->getPointer(), tas.factors->getStride(), Atp_minor_inv->getPointer(), Atp_minor_inv->getStride());
+                FFPACK::ftrtri (_field, FFLAS::FflasUpper, FFLAS::FflasNonUnit, rank, Atp_minor_inv->getPointer(), Atp_minor_inv->getStride());
+                FFPACK::ftrtri (_field, FFLAS::FflasLower, FFLAS::FflasUnit, rank, Atp_minor_inv->getPointer(), Atp_minor_inv->getStride());
+                FFPACK::ftrtrm (_field, FFLAS::FflasLeft, FFLAS::FflasNonUnit, rank, Atp_minor_inv->getPointer(), Atp_minor_inv->getStride());
+
 #ifdef RSTIMING
                 tFastInvert.stop();
                 ttFastInvert += tFastInvert;
@@ -705,7 +710,7 @@ namespace LinBox {
 
             // Compute newb = (TAS_P.b)[0..(rank-1)]
             BlasVector<Ring> newb(b);
-            BMDI.mulin_right(tas.P, newb);
+            BMDI.mulin_right(tas.Q, newb);
             newb.resize(rank);
 
             // ----- Do lifting on sub matrix
@@ -732,7 +737,7 @@ namespace LinBox {
             if (method.singularSolutionType != SingularSolutionType::Random) {
                 // short_answer = TAS_Q * short_answer
                 resultVF.numer.resize(A.coldim() + 1, _ring.zero);
-                BMDI.mulin_left(resultVF.numer, tas.Qt);
+                BMDI.mulin_left(resultVF.numer, tas.P);
                 resultVF.numer.resize(A.coldim());
             }
             else {

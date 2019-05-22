@@ -200,8 +200,10 @@ bool runTest(uint64_t n, uint64_t d, long seed){
 	size_t bits= (53-integer(n).bitsize())/2;
 	// fourier prime < 2^(53--log(n))/2
 	{
-		RandomFFTPrime Rd(1<<bits,seed);
-		integer p = Rd.randomPrime(integer(d).bitsize()+1);
+		integer p;
+		RandomFFTPrime::seeding (seed);
+		if (!RandomFFTPrime::randomPrime (p, 1<<bits, integer(d).bitsize()+1))
+			throw LinboxError ("RandomFFTPrime::randomPrime failed");
 		
 		Givaro::Modular<double> F((int32_t)p);
 		ok&=launchTest (F,n,bits,d,seed);

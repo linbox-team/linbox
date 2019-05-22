@@ -342,7 +342,7 @@ namespace LinBox
 	Matrix&
 	RandomDenseMatrix<Randiter, Field>::randomFullRank(Matrix &A)
 	{
-		long unsigned r,b,m,n;
+		size_t r,b,m,n;
 		m=A.rowdim();
 		n=A.coldim();
 		b=m<n?m:n;

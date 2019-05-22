@@ -559,13 +559,20 @@ namespace LinBox
 
 	template < class _Field, class _Rep >
 	typename BlasMatrix< _Field, _Rep >::pointer
-	BlasMatrix< _Field, _Rep >::getPointer() const
+	BlasMatrix< _Field, _Rep >::getPointer()
 	{
 		return _ptr;
 	}
 
 	template < class _Field, class _Rep >
-	typename BlasMatrix< _Field, _Rep >::const_pointer &
+	typename BlasMatrix< _Field, _Rep >::const_pointer
+	BlasMatrix< _Field, _Rep >::getPointer() const
+	{
+		return (const_pointer)_ptr;
+	}
+
+	template < class _Field, class _Rep >
+	typename BlasMatrix< _Field, _Rep >::const_pointer
 	BlasMatrix< _Field, _Rep >::getConstPointer() const
 	{
 		return (const_pointer)_ptr;

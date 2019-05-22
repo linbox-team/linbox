@@ -511,8 +511,11 @@ int main(int argc, char** argv){
 			FFT_PROF_LEVEL=1; 
 #endif
 			if (fourier){
-				RandomFFTPrime Rd(1<<b,seed);
-				integer p = Rd.randomPrime(integer(d).bitsize()+1);
+				integer p;
+				RandomFFTPrime::seeding (seed);
+				if (!RandomFFTPrime::randomPrime (p, 1<<b, integer(d).bitsize()+1))
+					throw LinboxError ("RandomFFTPrime::randomPrime failed");
+
 				//Givaro::Modular<int32_t> F((int32_t)p);
 				Givaro::Modular<double> F((int32_t)p);
 				cout<<"Computation over Fp[x] with p=  "<<p<<" (FFT prime)"<<endl;
