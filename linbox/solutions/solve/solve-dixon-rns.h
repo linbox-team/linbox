@@ -70,7 +70,10 @@ namespace LinBox {
     {
         commentator().start("solve.dixon.integer.dense");
 
-        using Field = Givaro::ModularBalanced<double>;
+        // @fixme We don't know if we can use ModularBalanced<double>,
+        // because of the rational reconstruction which might be
+        // implicitly requiring 0-{p-1} representation of the p-adic sequence elements.
+        using Field = Givaro::Modular<double>;
         using PrimeGenerator = PrimeIterator<IteratorCategories::HeuristicTag>;
         PrimeGenerator primeGenerator(FieldTraits<Field>::bestBitSize(A.coldim()));
 

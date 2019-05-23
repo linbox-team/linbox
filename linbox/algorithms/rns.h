@@ -78,6 +78,7 @@ namespace LinBox
 		 * @param l  max recoverable bits
 		 * @param ps bitsize of the primes (defaulting to 21 because...)
 		 */
+		RNS() {}
 		RNS(size_t l, size_t ps=21) ;
 		/*x Create a RNS with given primes.
 		 * @param primes given basis of primes
@@ -97,6 +98,8 @@ namespace LinBox
 		/*! Inits cra.
 		 */
 		void initCRA() ;
+		template <class T>
+		void init(const std::vector<T>& primes);
 		/*! Computes \c result corresponding to the \c residues.
 		 *
 		 */

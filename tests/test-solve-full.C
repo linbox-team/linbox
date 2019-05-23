@@ -139,10 +139,12 @@ bool test_solve(const SolveMethod& method, Matrix& A, Vector& b, ResultDomain& R
     bool ok = true;
     try {
         solve(x, A, b, method);
-        ok = ok && check_result<SolveMethod>(x, A, b, RA, Rb);
+        ok = check_result<SolveMethod>(x, A, b, RA, Rb);
 
-        solveInPlace(x, A, b, method);
-        ok = ok && check_result<SolveMethod>(x, A, b, RA, Rb);
+        if (ok) {
+            solveInPlace(x, A, b, method);
+            ok = check_result<SolveMethod>(x, A, b, RA, Rb);
+        }
     } catch (...) {
         print_error<SolveMethod>(x, A, b, "throws error");
         return false;
