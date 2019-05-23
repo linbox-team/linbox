@@ -100,26 +100,17 @@ namespace LinBox
 		void initCRA() ;
 		template <class T>
 		void init(const std::vector<T>& primes);
+
 		/*! Computes \c result corresponding to the \c residues.
 		 *
 		 */
 		void cra(integer & result, const std::vector<double> & residues);
-		/*! Computes \c result corresponding to the \c residues.
-		 *
-		 */
-		void cra(std::vector<integer> & result, const std::vector<std::vector<double> > & residues);
 
 		/*! Computes \c result corresponding to the iteration.
 		 *
 		 */
 		template<typename Iteration>
 		void cra(Ivect & result, Iteration & iter) ;
-
-		template<class Tinteger, class Tresidue>
-		void cra(Tinteger & result, Tresidue & residues);
-
-		template<class Tinteger, class Tresidue>
-		void convert(Tinteger & result, Tresidue & residues) ;
 
 		// mixed radix
 	};

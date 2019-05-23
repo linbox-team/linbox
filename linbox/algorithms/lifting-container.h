@@ -224,7 +224,7 @@ namespace LinBox
 
 				// compute v2 = _matA * digit
 				IVector v2 (_lc.ring(),_lc._matA.rowdim());
-				_lc._MAD.applyV(v2,digit, _res);
+				_lc._MAD.applyV(v2,digit, _res); // @fixme This third parameter makes no sense!
 
 #ifdef DEBUG_LC
 

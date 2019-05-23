@@ -80,6 +80,9 @@ namespace LinBox {
         DixonRNSSolver<Field, Ring, PrimeGenerator> solver(A.field(), primeGenerator);
         solver.solve(xNum, xDen, A, b, m);
 
+        std::cout << "FOUND xNum: " << xNum << std::endl;
+        std::cout << "FOUND xDen: " << xDen << std::endl;
+
         commentator().stop("solve.dixon.integer.dense");
 
         // @fixme Implement something like that

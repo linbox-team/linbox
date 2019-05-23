@@ -114,7 +114,6 @@ namespace LinBox {
                 ++primeGenerator;
             }
 
-            _pRns.init(_primes);
             std::cout << "p: " << _p << std::endl;
 
             // Compute how many iterations are needed
@@ -203,12 +202,17 @@ namespace LinBox {
                 _Fc; // @note No need to be a matrix, as we will embed it into an RNS system later.
             size_t _position;
 
+            // @fixme Better use Givaro::RNSSystem?
+            RNS<true> _pRns; // RNS system for primes
+
         public:
             const_iterator(const MultiModLiftingContainer& lc, size_t position = 0)
                 : _lc(lc)
                 , _position(position)
             {
-                VectorDomain<Ring> VD(_lc._ring);
+                VectorDomain<Ring> IVD(_lc._ring);
+
+                _pRns.init(_lc._primes);
 
                 _r.reserve(_lc._l);
                 _Q.reserve(_lc._l);
@@ -233,19 +237,13 @@ namespace LinBox {
 
             /**
              * Returns false if the next digit cannot be computed (bad modulus).
-             * ci is a vector of integers but all element are below p = p1 * ... * pl
+             * c is a vector of integers but all element are below p = p1 * ... * pl
              */
-            bool next(IVector& ci)
+            bool next(IVector& c)
             {
                 std::cout << "----- NEXT" << std::endl;
 
-                /*  for i = 1 .. l:
-                 *  |   (Qi, Ri) = such that ri = pi Qi + Ri with |Ri| < pi
-                 *  |   ci = Bi Ri mod pi                   < Matrix-vector in Z/pZ
-                 *  V = [R1|...|Rl] - A [c1|...|cl]         < Matrix-matrix in ZZ
-                 *  for i = 1 .. l:
-                 *  |   ri = Qi + (Vi / pi)
-                 */
+                VectorDomain<Ring> IVD(_lc._ring);
 
                 // @fixme Should be done in parallel!
                 for (auto j = 0u; j < _lc._l; ++j) {
@@ -282,34 +280,56 @@ namespace LinBox {
                     // @todo Convert _c[i] to RNS
                 }
 
-                // @fixme CRT reconstruct ci from (cij)
-                // @cpernet Is that what I should use? I tweaked it so that I can use it.
-                // _lc._pRns.cra(ci, _Fc); // @fixme This cra function should be called reconstruct or such.
-                // @fixme Better use Givaro::RNSSystem?
+                // ----- CRT reconstruct c from (cj)
 
-                std::cout << "ci: " << ci << std::endl;
+                std::cout << "--- CRT reconstruction" << std::endl;
 
-                // @fixme How can we do A [c1|...|cl] in ZZ if the ci are in the fields?
+                // @cpernet Is that RNS system what I should use? I tweaked it so that I can use it.
+                std::vector<FElement> fElements(_lc._l);
+                for (auto i = 0u; i < _lc._n; ++i) {
+                    for (auto j = 0u; j < _lc._l; ++j) {
+                        fElements[j] = _Fc[j][i];
+                    }
+                    // @fixme This cra function should be called reconstruct or such.
+                    _pRns.cra(c[i], fElements);
+                }
 
-                // @fixme Compute the next residue!
+                std::cout << "c: " << c << std::endl;
 
-                // @fixme @note For us, Aci is a matrix!
+                // ----- Compute the next residue!
 
-                // // compute Aci = _matA * ci
-                // IVector Aci(_lc.ring(), _lc.size());
-                // // @fixme _lc._MAD.applyV(Aci, ci, _res);
+                std::cout << "--- Residue update" << std::endl;
 
-                // // update _res -= Aci
-                // // @fixme _lc._VDR.subin(_res, Aci);
-                // typename BlasVector<Ring>::iterator p0;
+                // @note This is a dummy implementation, for now.
 
-                // // update _res = _res / p
-                // int index = 0;
-                // for (p0 = _res.begin(); p0 != _res.end(); ++p0, ++index) {
-                //     _lc.ring().divin(*p0, _lc._p);
-                // }
+                // r <= (rj - A c) / pj
+                for (auto j = 0u; j < _lc._l; ++j) {
+                    auto pj = _lc._primes[j];
+                    auto& r = _r[j];
+                    auto& Q = _Q[j];
+                    auto& R = _R[j];
 
-                // increase position of the iterator
+                    auto& Fc = _Fc[j];
+                    // @fixme For now, we convert cj to integer,
+                    // but it should be converted into a RNS system, on pre-allocated memory.
+                    IVector Ic(_lc._ring, Fc);
+
+                    // @fixme Should become a matrix-matrix multiplication!
+                    // @fixme Should be able to do a gemv
+                    _lc._A.apply(r, Ic); // r = A c
+                    IVD.negin(r);        // r = - A c
+                    IVD.addin(r, R);     // r = R - A c
+
+                    // r = (R - A c) / pj
+                    IElement Ipj;
+                    _lc._ring.init(Ipj, pj);
+                    for (auto i = 0u; i < _lc._n; ++i) {
+                        _lc._ring.divin(r[i], Ipj); // @fixme Is there a divin in VectorDomain?
+                    }
+
+                    IVD.addin(r, Q); // r = Q + (R - A c) / pj
+                }
+
                 ++_position;
                 return true;
             }
@@ -340,17 +360,11 @@ namespace LinBox {
 
         IElement _p;                   // The global modulus for lifting: a multiple of all _primes.
         std::vector<FElement> _primes; // @fixme We might want something else as a type!
-        RNS<false> _pRns;              // RNS system for primes
         size_t _k; // Length of the ci sequence. So that p^{k-1} > 2ND (Hadamard bound).
         size_t _n; // Row/column dimension of A.
         size_t _l; // How many primes. Equal to _primes.size().
 
-        // @note r is a big matrix in ZZ holding all residues
-        // IMatrix _r;
-        // FMatrix _ci; // Contains [ci mod p0 | ... | ci mod p{l-1}] on each row.
-        std::vector<FMatrix> _B; // Inverses of A mod p[i]
-        // std::vector<IVector> _Q;
-        // std::vector<FVector> _R;
+        std::vector<FMatrix> _B;    // Inverses of A mod p[i]
         std::vector<Field> _fields; // All fields Modular<p[i]>
     };
 }
