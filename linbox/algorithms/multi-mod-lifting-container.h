@@ -102,16 +102,22 @@ namespace LinBox {
             IElement iTmp;
             _ring.assign(_p, _ring.one);
             for (auto j = 0u; j < _l; ++j) {
-                // @fixme Ensure that all primes are different
-                // @fixme Take into account bestBitSize!
-                _primes.emplace_back(*primeGenerator);
-                _fields.emplace_back(_primes.back());
-                _ring.init(iTmp, _primes.back());
+                auto pj = *primeGenerator;
+                ++primeGenerator;
+
+                // Ensure that all primes are different
+                if (std::find(_primes.begin(), _primes.end(), pj) != _primes.end()) {
+                    j -= 1;
+                    continue;
+                }
+
+                _primes.emplace_back(pj);
+                _fields.emplace_back(pj);
+                _ring.init(iTmp, pj);
                 _ring.mulin(_p, iTmp);
 
-                std::cout << "primes[" << j << "]: " << Integer(_primes.back()) << std::endl;
+                std::cout << "primes[" << j << "]: " << Integer(pj) << std::endl;
 
-                ++primeGenerator;
             }
 
             std::cout << "p: " << _p << std::endl;
@@ -150,10 +156,6 @@ namespace LinBox {
 
                     // @fixme @cpernet Use FFLAS directly, so that we can have a REAL in place inv.
                     bmd.invin(Bpi);
-
-                    Bpi.write(std::cout << "B mod " << Integer(F.characteristic()) << ": ",
-                              Tag::FileFormat::Maple)
-                        << std::endl;
                 }
             }
         }
@@ -252,6 +254,8 @@ namespace LinBox {
                     auto& Q = _Q[j];
                     auto& R = _R[j];
 
+                    std::cout << "--- FOR " << Integer(pj) << std::endl;
+
                     // @todo @cpernet Is there a VectorDomain::divmod somewhere?
                     // Euclidian division so that rj = pj Qj + Rj
                     for (auto i = 0u; i < _lc._n; ++i) {
@@ -260,7 +264,6 @@ namespace LinBox {
                         _lc._ring.quoRem(Q[i], R[i], r[i], pj);
                     }
 
-                    std::cout << "--- FOR " << Integer(pj) << std::endl;
                     std::cout << "r: " << r << std::endl;
                     std::cout << "Q: " << Q << std::endl;
                     std::cout << "R: " << R << std::endl;

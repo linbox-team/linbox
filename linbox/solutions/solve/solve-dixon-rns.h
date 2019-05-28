@@ -75,7 +75,9 @@ namespace LinBox {
         // implicitly requiring 0-{p-1} representation of the p-adic sequence elements.
         using Field = Givaro::Modular<double>;
         using PrimeGenerator = PrimeIterator<IteratorCategories::HeuristicTag>;
-        PrimeGenerator primeGenerator(FieldTraits<Field>::bestBitSize(A.coldim()));
+        // PrimeGenerator primeGenerator(FieldTraits<Field>::bestBitSize(A.coldim()));
+        // @fixme This is for debug!
+        PrimeGenerator primeGenerator(3);
 
         DixonRNSSolver<Field, Ring, PrimeGenerator> solver(A.field(), primeGenerator);
         solver.solve(xNum, xDen, A, b, m);
