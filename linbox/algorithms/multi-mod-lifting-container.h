@@ -95,13 +95,13 @@ namespace LinBox {
             std::cout << "b: " << b << std::endl;
 
             // @fixme Pass it through Method::DixonRNS (and rename it Method::DixonMultiMod?)
-            _l = 2;
-            std::cout << "l: " << _l << std::endl;
+            _primesCount = 2;
+            std::cout << "l: " << _primesCount << std::endl;
 
             // Generating primes
             IElement iTmp;
             _ring.assign(_p, _ring.one);
-            for (auto j = 0u; j < _l; ++j) {
+            for (auto j = 0u; j < _primesCount; ++j) {
                 auto pj = *primeGenerator;
                 ++primeGenerator;
 
@@ -117,7 +117,6 @@ namespace LinBox {
                 _ring.mulin(_p, iTmp);
 
                 std::cout << "primes[" << j << "]: " << Integer(pj) << std::endl;
-
             }
 
             std::cout << "p: " << _p << std::endl;
@@ -125,9 +124,9 @@ namespace LinBox {
             // Compute how many iterations are needed
             auto hb = RationalSolveHadamardBound(A, b);
             double pLog = Givaro::logtwo(_p);
-            // _k = log2(2 * N * D) / log2(p)
-            _k = std::ceil((1.0 + hb.numLogBound + hb.denLogBound) / pLog);
-            std::cout << "k: " << _k << std::endl;
+            // _iterationsCount = log2(2 * N * D) / log2(p)
+            _iterationsCount = std::ceil((1.0 + hb.numLogBound + hb.denLogBound) / pLog);
+            std::cout << "k: " << _iterationsCount << std::endl;
 
             // @fixme Fact is RationalReconstruction which needs numbound and denbound
             // expects them to be in non-log...
@@ -140,7 +139,7 @@ namespace LinBox {
             // to keep control of generated primes, so that the RNS base has bigger primes
             // than the .
             {
-                _B.reserve(_l);
+                _B.reserve(_primesCount);
 
                 for (const auto& F : _fields) {
                     BlasMatrixDomain<Field> bmd(F);
@@ -158,6 +157,24 @@ namespace LinBox {
                     bmd.invin(Bpi);
                 }
             }
+
+            //----- Iteration
+
+            _r.reserve(_primesCount);
+            _Q.reserve(_primesCount);
+            _R.reserve(_primesCount);
+            _Fc.reserve(_primesCount);
+            for (auto j = 0u; j < _primesCount; ++j) {
+                auto& F = _fields[j];
+
+                _r.emplace_back(_ring, _n);
+                _Q.emplace_back(_ring, _n);
+                _R.emplace_back(_ring, _n);
+                _Fc.emplace_back(F, _n);
+
+                // Initialize all residues to b
+                _r.back() = _b; // Copying data
+            }
         }
 
         // --------------------------
@@ -166,7 +183,7 @@ namespace LinBox {
         const Ring& ring() const final { return _ring; }
 
         /// The length of the container.
-        size_t length() const final { return _k; }
+        size_t length() const final { return _iterationsCount; }
 
         /// The dimension of the problem/solution.
         size_t size() const final { return _n; }
@@ -185,171 +202,97 @@ namespace LinBox {
 
         const IElement denbound() const { return _denbound; }
 
+        uint32_t primesCount() const { return _primesCount; }
+
+        const FElement& prime(uint32_t index) const { return _primes.at(index); }
+
         // --------------
         // ----- Iterator
 
         /**
-         * Needed API for rational reconstruction.
-         * Each call to next() will update
+         * Returns false if the next digit cannot be computed (bad modulus).
+         * c is a vector of integers but all element are below p = p1 * ... * pl
          */
-        class const_iterator {
-        private:
-            const MultiModLiftingContainer& _lc;
-            std::vector<IVector> _r; // @todo Could be a matrix? Might not be useful, as it is never
-                                     // used directly in computations.
-            std::vector<IVector> _Q;
-            std::vector<IVector> _R; // @fixme This one should be expressed in a RNS system q, and
-                                     // HAS TO BE A MATRIX for gemm.
-            std::vector<FVector>
-                _Fc; // @note No need to be a matrix, as we will embed it into an RNS system later.
-            size_t _position;
+        bool next(std::vector<IVector>& digits)
+        {
+            std::cout << "----- NEXT" << std::endl;
 
-            // @fixme Better use Givaro::RNSSystem?
-            RNS<true> _pRns; // RNS system for primes
+            VectorDomain<Ring> IVD(_ring);
 
-        public:
-            const_iterator(const MultiModLiftingContainer& lc, size_t position = 0)
-                : _lc(lc)
-                , _position(position)
-            {
-                VectorDomain<Ring> IVD(_lc._ring);
+            // @fixme Should be done in parallel!
+            for (auto j = 0u; j < _primesCount; ++j) {
+                auto pj = _primes[j];
+                auto& r = _r[j];
+                auto& Q = _Q[j];
+                auto& R = _R[j];
 
-                _pRns.init(_lc._primes);
+                std::cout << "--- FOR " << Integer(pj) << std::endl;
 
-                _r.reserve(_lc._l);
-                _Q.reserve(_lc._l);
-                _R.reserve(_lc._l);
-                _Fc.reserve(_lc._l);
-                for (auto j = 0u; j < _lc._l; ++j) {
-                    auto& F = _lc._fields[j];
-
-                    _r.emplace_back(_lc._ring, _lc._n);
-                    _Q.emplace_back(_lc._ring, _lc._n);
-                    _R.emplace_back(_lc._ring, _lc._n);
-                    _Fc.emplace_back(F, _lc._n);
-
-                    // Initialize all residues to b
-                    _r.back() = _lc._b; // Copying data
+                // @todo @cpernet Is there a VectorDomain::divmod somewhere?
+                // Euclidian division so that rj = pj Qj + Rj
+                for (auto i = 0u; i < _n; ++i) {
+                    // @fixme @cpernet Is this OK for any Ring or should we be sure we are using
+                    // Integers?
+                    _ring.quoRem(Q[i], R[i], r[i], pj);
                 }
 
-                // @fixme Allocate c
+                std::cout << "r: " << r << std::endl;
+                std::cout << "Q: " << Q << std::endl;
+                std::cout << "R: " << R << std::endl;
 
-                // @todo Set up an RNS system
+                // Convert R to the field
+                // @fixme @cpernet Could this step be ignored?
+                // If not, put that in already allocated memory, and not use a temporary here.
+                auto& F = _fields[j];
+                FVector FR(F, R); // rebind
+
+                auto& B = _B[j];
+                auto& Fc = _Fc[j];
+                B.apply(Fc, FR);
+
+                std::cout << "Fc: " << Fc << std::endl;
+
+                // @todo Convert _c[i] to RNS
+                digits[j] = IVector(_ring, Fc);
             }
 
-            /**
-             * Returns false if the next digit cannot be computed (bad modulus).
-             * c is a vector of integers but all element are below p = p1 * ... * pl
-             */
-            bool next(IVector& c)
-            {
-                std::cout << "----- NEXT" << std::endl;
+            // ----- Compute the next residue!
 
-                VectorDomain<Ring> IVD(_lc._ring);
+            std::cout << "--- Residue update" << std::endl;
 
-                // @fixme Should be done in parallel!
-                for (auto j = 0u; j < _lc._l; ++j) {
-                    auto pj = _lc._primes[j];
-                    auto& r = _r[j];
-                    auto& Q = _Q[j];
-                    auto& R = _R[j];
+            // @note This is a dummy implementation, for now.
 
-                    std::cout << "--- FOR " << Integer(pj) << std::endl;
+            // r <= (r - A c) / p
+            for (auto j = 0u; j < _primesCount; ++j) {
+                auto pj = _primes[j];
+                auto& r = _r[j]; // @fixme THEY HOLD ALL THE VERY SAME VALUE!
+                auto& Q = _Q[j];
+                auto& R = _R[j];
 
-                    // @todo @cpernet Is there a VectorDomain::divmod somewhere?
-                    // Euclidian division so that rj = pj Qj + Rj
-                    for (auto i = 0u; i < _lc._n; ++i) {
-                        // @fixme @cpernet Is this OK for any Ring or should we be sure we are using
-                        // Integers?
-                        _lc._ring.quoRem(Q[i], R[i], r[i], pj);
-                    }
+                auto& Fc = _Fc[j];
+                // @fixme For now, we convert cj to integer,
+                // but it should be converted into a RNS system, on pre-allocated memory.
+                IVector Ic(_ring, Fc);
 
-                    std::cout << "r: " << r << std::endl;
-                    std::cout << "Q: " << Q << std::endl;
-                    std::cout << "R: " << R << std::endl;
+                // @fixme Should become a matrix-matrix multiplication!
+                // @fixme Should be able to do a gemv
+                _A.apply(r, Ic); // r = A c
+                IVD.negin(r);    // r = - A c
+                IVD.addin(r, R); // r = R - A c
 
-                    // Convert R to the field
-                    // @fixme @cpernet Could this step be ignored?
-                    // If not, put that in already allocated memory, and not use a temporary here.
-                    auto& F = _lc._fields[j];
-                    FVector FR(F, R); // rebind
-
-                    auto& B = _lc._B[j];
-                    auto& Fc = _Fc[j];
-                    B.apply(Fc, FR);
-
-                    std::cout << "Fc: " << Fc << std::endl;
-
-                    // @todo Convert _c[i] to RNS
+                // r = (R - A c) / p
+                IElement Ipj;
+                _ring.init(Ipj, pj);
+                for (auto i = 0u; i < _n; ++i) {
+                    _ring.divin(r[i], Ipj); // @fixme Is there a divin in VectorDomain?
                 }
 
-                // ----- CRT reconstruct c from (cj)
-
-                std::cout << "--- CRT reconstruction" << std::endl;
-
-                // @cpernet Is that RNS system what I should use? I tweaked it so that I can use it.
-                std::vector<FElement> fElements(_lc._l);
-                for (auto i = 0u; i < _lc._n; ++i) {
-                    for (auto j = 0u; j < _lc._l; ++j) {
-                        fElements[j] = _Fc[j][i];
-                    }
-                    // @fixme This cra function should be called reconstruct or such.
-                    _pRns.cra(c[i], fElements);
-                }
-
-                std::cout << "c: " << c << std::endl;
-
-                // ----- Compute the next residue!
-
-                std::cout << "--- Residue update" << std::endl;
-
-                // @note This is a dummy implementation, for now.
-
-                // r <= (rj - A c) / pj
-                for (auto j = 0u; j < _lc._l; ++j) {
-                    auto pj = _lc._primes[j];
-                    auto& r = _r[j];
-                    auto& Q = _Q[j];
-                    auto& R = _R[j];
-
-                    auto& Fc = _Fc[j];
-                    // @fixme For now, we convert cj to integer,
-                    // but it should be converted into a RNS system, on pre-allocated memory.
-                    IVector Ic(_lc._ring, Fc);
-
-                    // @fixme Should become a matrix-matrix multiplication!
-                    // @fixme Should be able to do a gemv
-                    _lc._A.apply(r, Ic); // r = A c
-                    IVD.negin(r);        // r = - A c
-                    IVD.addin(r, R);     // r = R - A c
-
-                    // r = (R - A c) / pj
-                    IElement Ipj;
-                    _lc._ring.init(Ipj, pj);
-                    for (auto i = 0u; i < _lc._n; ++i) {
-                        _lc._ring.divin(r[i], Ipj); // @fixme Is there a divin in VectorDomain?
-                    }
-
-                    IVD.addin(r, Q); // r = Q + (R - A c) / pj
-                }
-
-                ++_position;
-                return true;
+                IVD.addin(r, Q); // r = Q + (R - A c) / p
             }
 
-            bool operator!=(const const_iterator& iterator) const
-            {
-                return _position != iterator._position;
-            }
-
-            bool operator==(const const_iterator& iterator) const
-            {
-                return _position == iterator._position;
-            }
-        };
-
-        const_iterator begin() const { return const_iterator(*this); }
-        const_iterator end() const { return const_iterator(*this, _k); }
+            ++_position;
+            return true;
+        }
 
     private:
         const Ring& _ring;
@@ -363,11 +306,22 @@ namespace LinBox {
 
         IElement _p;                   // The global modulus for lifting: a multiple of all _primes.
         std::vector<FElement> _primes; // @fixme We might want something else as a type!
-        size_t _k; // Length of the ci sequence. So that p^{k-1} > 2ND (Hadamard bound).
-        size_t _n; // Row/column dimension of A.
-        size_t _l; // How many primes. Equal to _primes.size().
+        size_t
+            _iterationsCount; // Length of the ci sequence. So that p^{k-1} > 2ND (Hadamard bound).
+        size_t _n;            // Row/column dimension of A.
+        size_t _primesCount;  // How many primes. Equal to _primes.size().
 
         std::vector<FMatrix> _B;    // Inverses of A mod p[i]
         std::vector<Field> _fields; // All fields Modular<p[i]>
+
+        //----- Iteration
+        std::vector<IVector> _r; // @todo Could be a matrix? Might not be useful, as it is never
+                                 // used directly in computations.
+        std::vector<IVector> _Q;
+        std::vector<IVector> _R; // @fixme This one should be expressed in a RNS system q, and
+                                 // HAS TO BE A MATRIX for gemm.
+        std::vector<FVector>
+            _Fc; // @note No need to be a matrix, as we will embed it into an RNS system later.
+        size_t _position;
     };
 }
