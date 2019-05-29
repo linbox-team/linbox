@@ -44,7 +44,8 @@ namespace LinBox {
         {
         }
 
-        bool getRational(IVector& xNum, IElement& xDen) {
+        bool getRational(IVector& xNum, IElement& xDen)
+        {
             VectorDomain<Ring> IVD(_lc.ring());
 
             // Stores each c0 + c1 pj + ... + ck pj^k for each pj
@@ -59,7 +60,6 @@ namespace LinBox {
                 digits[j].resize(_lc.size());
             }
 
-            // @fixme IMPLEMENT Rat Recon
             for (auto i = 0u; i < _lc.length(); ++i) {
                 _lc.next(digits);
 
@@ -73,7 +73,10 @@ namespace LinBox {
             }
 
             // @fixme From here padicAccumulations are all right, we should CRT reconstruct that
+            using CRAField = Modular<Integer>;
+            ChineseRemainder<CRABuilderFullMultip<CRAField>> cra();
 
+            // @fixme Rat Recon
 
             return true;
         }
@@ -97,8 +100,8 @@ namespace LinBox {
          * Dense solving.
          */
         template <class RVector, class Vector>
-        void solve(RVector& xNum, typename RVector::Element& xDen, const DenseMatrix<Ring>& A,
-                   const Vector& b, const Method::DixonRNS& m)
+        void solve(RVector& xNum, typename RVector::Element& xDen, const DenseMatrix<Ring>& A, const Vector& b,
+                   const Method::DixonRNS& m)
         {
             // @fixme We should use some code from DixonSolver...
             // But that's hard so we just assume that A is square and invertible.
@@ -122,8 +125,8 @@ namespace LinBox {
      * \brief Solve specialisation for DixonRNS on dense matrices.
      */
     template <class RVector, class Ring, class Vector>
-    void solve(RVector& xNum, typename RVector::Element& xDen, const DenseMatrix<Ring>& A,
-               const Vector& b, const RingCategories::IntegerTag& tag, const Method::DixonRNS& m)
+    void solve(RVector& xNum, typename RVector::Element& xDen, const DenseMatrix<Ring>& A, const Vector& b,
+               const RingCategories::IntegerTag& tag, const Method::DixonRNS& m)
     {
         commentator().start("solve.dixon.integer.dense");
 
