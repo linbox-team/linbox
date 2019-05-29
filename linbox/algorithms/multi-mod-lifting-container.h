@@ -123,9 +123,10 @@ namespace LinBox {
 
             // Compute how many iterations are needed
             auto hb = RationalSolveHadamardBound(A, b);
-            double pLog = Givaro::logtwo(_p);
+            double log2P = Givaro::logtwo(_p);
             // _iterationsCount = log2(2 * N * D) / log2(p)
-            _iterationsCount = std::ceil((1.0 + hb.numLogBound + hb.denLogBound) / pLog);
+            _log2Bound = 1.0 + hb.numLogBound + hb.denLogBound;
+            _iterationsCount = std::ceil(_log2Bound / log2P);
             std::cout << "k: " << _iterationsCount << std::endl;
 
             // @fixme Fact is RationalReconstruction which needs numbound and denbound
@@ -198,9 +199,11 @@ namespace LinBox {
         // ----- NOT LiftingContainer API
         // ----- but still needed
 
-        const IElement numbound() const { return _numbound; }
+        const IElement& numbound() const { return _numbound; }
 
-        const IElement denbound() const { return _denbound; }
+        const IElement& denbound() const { return _denbound; }
+
+        double log2Bound() const { return _log2Bound; }
 
         uint32_t primesCount() const { return _primesCount; }
 
@@ -303,6 +306,7 @@ namespace LinBox {
 
         IElement _numbound;
         IElement _denbound;
+        double _log2Bound;
 
         IElement _p;                   // The global modulus for lifting: a multiple of all _primes.
         std::vector<FElement> _primes; // @fixme We might want something else as a type!

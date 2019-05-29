@@ -51,7 +51,8 @@ namespace LinBox {
             // Stores each c0 + c1 pj + ... + ck pj^k for each pj
             std::vector<IVector> padicAccumulations(_lc.primesCount(), _lc.ring());
             // Temporary structure to store a ci for each pj
-            std::vector<IVector> digits(_lc.primesCount(), _lc.ring()); // @fixme Could be a Field Element?
+            std::vector<IVector> digits(_lc.primesCount(),
+                                        _lc.ring()); // @fixme Could be a Field Element?
             // The pj^i for each pj
             std::vector<IElement> radices(_lc.primesCount(), 1);
 
@@ -68,15 +69,28 @@ namespace LinBox {
                     std::cout << "STEP " << i << " DIGITS " << digits[j] << std::endl;
                     IVD.axpyin(padicAccumulations[j], radices[j], digits[j]); // y <- y + p^i * ci
                     _lc.ring().mulin(radices[j], _lc.prime(j));
-                    std::cout << "STEP " << i << " ACCUMULATION " << padicAccumulations[j] << std::endl;
+                    std::cout << "STEP " << i << " ACCUMULATION " << padicAccumulations[j]
+                              << std::endl;
                 }
             }
 
-            // @fixme From here padicAccumulations are all right, we should CRT reconstruct that
-            using CRAField = Modular<Integer>;
-            ChineseRemainder<CRABuilderFullMultip<CRAField>> cra();
+            // CRT reconstruction from paddicAccumulations
+            using CRAField = Givaro::Modular<Integer>;
+            RationalCRABuilderFullMultip<CRAField> craBuilder(
+                _lc.log2Bound() * 1.4427); // 1.4427 = 1 / log(2)
 
-            // @fixme Rat Recon
+            {
+                CRAField field(radices[0]);
+                craBuilder.initialize(field, padicAccumulations[0]);
+            }
+
+            for (auto j = 1u; j < _lc.primesCount(); ++j) {
+                CRAField field(radices[j]);
+                craBuilder.progress(field, padicAccumulations[j]);
+            }
+
+            // Rational reconstruction
+            craBuilder.result(xNum, xDen);
 
             return true;
         }
@@ -100,8 +114,8 @@ namespace LinBox {
          * Dense solving.
          */
         template <class RVector, class Vector>
-        void solve(RVector& xNum, typename RVector::Element& xDen, const DenseMatrix<Ring>& A, const Vector& b,
-                   const Method::DixonRNS& m)
+        void solve(RVector& xNum, typename RVector::Element& xDen, const DenseMatrix<Ring>& A,
+                   const Vector& b, const Method::DixonRNS& m)
         {
             // @fixme We should use some code from DixonSolver...
             // But that's hard so we just assume that A is square and invertible.
@@ -125,8 +139,8 @@ namespace LinBox {
      * \brief Solve specialisation for DixonRNS on dense matrices.
      */
     template <class RVector, class Ring, class Vector>
-    void solve(RVector& xNum, typename RVector::Element& xDen, const DenseMatrix<Ring>& A, const Vector& b,
-               const RingCategories::IntegerTag& tag, const Method::DixonRNS& m)
+    void solve(RVector& xNum, typename RVector::Element& xDen, const DenseMatrix<Ring>& A,
+               const Vector& b, const RingCategories::IntegerTag& tag, const Method::DixonRNS& m)
     {
         commentator().start("solve.dixon.integer.dense");
 
