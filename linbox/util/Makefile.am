@@ -54,6 +54,8 @@ pkgincludesub_HEADERS=    \
 	mpicpp.h	  \
 	mpicpp.inl	  \
 	prime-stream.h	  \
+	serialization.h   \
+	serialization.inl \
 	timer.h		  \
 	write-mm.h
 
