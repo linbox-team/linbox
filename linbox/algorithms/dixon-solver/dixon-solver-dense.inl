@@ -214,17 +214,10 @@ namespace LinBox {
             // Used to check consistency
             srcRow.resize(A.rowdim());
             srcCol.resize(A.coldim() + 1);
-            std::vector<size_t>::iterator sri = srcRow.begin(), sci = srcCol.begin();
-            for (size_t i = 0; i < srcRow.size(); ++i, ++sri) *sri = i;
-            for (size_t i = 0; i < srcCol.size(); ++i, ++sci) *sci = i;
-
-            indexDomain iDom;
-            BlasMatrixDomain<indexDomain> BMDs(iDom);
-            BMDs.mulin_right(P, srcCol);
-            BMDs.mulin_right(Q, srcRow);
+            FFPACK::LAPACKPerm2MathPerm(srcRow.data(), Q.getStorage().data(), srcRow.size());
+            FFPACK::LAPACKPerm2MathPerm(srcCol.data(), P.getStorage().data(), srcCol.size());
 
             // @note srcCol/srcRow now hold permutations (indices of (A|b)t)
-            // @fixme Should try LapackPermToMathPerm
         }
 
         ~TransposeAugmentedSystem()
