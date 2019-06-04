@@ -127,7 +127,6 @@ pkgincludesub_HEADERS =            \
 	rational-reconstruction2.h         \
 	rational-reconstruction-base.h     \
 	rational-reconstruction.h          \
-	dixon-solver-symbolic-numeric.h    \
 	rational-solver-adaptive.h         \
 	rational-solver.h                  \
 	rational-solver.inl                \

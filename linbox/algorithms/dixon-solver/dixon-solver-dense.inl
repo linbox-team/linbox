@@ -27,8 +27,6 @@
 #include "linbox/algorithms/matrix-inverse.h"
 #include "linbox/algorithms/rational-reconstruction.h"
 
-#include "./dixon-solver-common.inl"
-
 namespace LinBox {
 
     template <class Ring, class Field, class RandomPrime>
@@ -104,29 +102,22 @@ namespace LinBox {
                 FMP = new BlasMatrix<Field>(*F, A.rowdim(), A.coldim());
                 MatrixHom::map(*FMP, A); // use MatrixHom to reduce matrix PG 2005-06-16
 
-                if (!checkBlasPrime(_prime)) {
-                    if (FMP != NULL) delete FMP;
-                    FMP = new BlasMatrix<Field>(*F, A.rowdim(), A.coldim());
-                    notfr = (int)MatrixInverse::matrixInverseIn(*F, *FMP);
-                }
-                else {
-                    BlasMatrix<Field>* invA = new BlasMatrix<Field>(*F, A.rowdim(), A.coldim());
-                    BlasMatrixDomain<Field> BMDF(*F);
+                BlasMatrix<Field>* invA = new BlasMatrix<Field>(*F, A.rowdim(), A.coldim());
+                BlasMatrixDomain<Field> BMDF(*F);
 #ifdef RSTIMING
-                    tNonsingularSetup.stop();
-                    ttNonsingularSetup += tNonsingularSetup;
-                    tNonsingularInv.start();
+                tNonsingularSetup.stop();
+                ttNonsingularSetup += tNonsingularSetup;
+                tNonsingularInv.start();
 #endif
-                    assert(FMP != NULL);
-                    BMDF.invin(*invA, *FMP, notfr); // notfr <- nullity
-                    delete FMP;
-                    FMP = invA;
+                assert(FMP != NULL);
+                BMDF.invin(*invA, *FMP, notfr); // notfr <- nullity
+                delete FMP;
+                FMP = invA;
 
 #ifdef RSTIMING
-                    tNonsingularInv.stop();
-                    ttNonsingularInv += tNonsingularInv;
+                tNonsingularInv.stop();
+                ttNonsingularInv += tNonsingularInv;
 #endif
-                }
             }
             else {
 #ifdef RSTIMING
@@ -157,7 +148,11 @@ namespace LinBox {
     SolverReturnStatus DixonSolver<Ring, Field, RandomPrime, Method::DenseElimination>::solveSingular(
         Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes, const SolverLevel level)
     {
-        return monolithicSolve(num, den, A, b, false, false, maxPrimes, level);
+        Method::Dixon m;
+        m.certifyMinimalDenominator = false;
+        m.certifyInconsistency = false;
+        m.trialsBeforeFailure = maxPrimes;
+        return monolithicSolve(num, den, A, b, m);
     }
 
     template <class Ring, class Field, class RandomPrime>
@@ -165,8 +160,12 @@ namespace LinBox {
     SolverReturnStatus DixonSolver<Ring, Field, RandomPrime, Method::DenseElimination>::findRandomSolution(
         Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes, const SolverLevel level)
     {
-
-        return monolithicSolve(num, den, A, b, false, true, maxPrimes, level);
+        Method::Dixon m;
+        m.singularSolutionType = SingularSolutionType::Random;
+        m.certifyMinimalDenominator = false;
+        m.certifyInconsistency = true;
+        m.trialsBeforeFailure = maxPrimes;
+        return monolithicSolve(num, den, A, b, m);
     }
 
     // TAS stands for Transpose Augmented System (A|b)t
@@ -184,20 +183,18 @@ namespace LinBox {
         BlasPermutation<size_t> P;
         BlasPermutation<size_t> Q;
 
-        // @fixme Do we really need that?
-        std::vector<size_t> srcRow; // @fixme Why "src"?
+        std::vector<size_t> srcRow;
         std::vector<size_t> srcCol;
 
     public:
         template <class Ring, class IMatrix, class IVector>
         TransposeAugmentedSystem(Ring& R, Field& _field, const IMatrix& A, const IVector& b)
+            : P(A.coldim() + 1)
+            , Q(A.rowdim())
         {
             factors = new BlasMatrix<Field>(_field, A.coldim() + 1, A.rowdim());
 
-            Hom<Ring, Field> Hmap(R, _field);
-            BlasMatrix<Field> Ap(_field, A.rowdim(),
-                                 A.coldim()); // @fixme Shouldn't Ap(_field, A) work without map below?
-            MatrixHom::map(Ap, A);
+            BlasMatrix<Field> Ap(A, _field); // Getting into the field
 
             // Setting factors = [Ap|0]t
             for (size_t i = 0; i < A.rowdim(); ++i)
@@ -212,14 +209,11 @@ namespace LinBox {
             }
 
             // Getting factors -> P L U Q
-            P.resize(factors->rowdim());
-            Q.resize(factors->coldim());
-
             PLUQ = new PLUQMatrix<Field>(*factors, P, Q);
 
             // Used to check consistency
-            srcRow.resize(factors->coldim());
-            srcCol.resize(factors->rowdim());
+            srcRow.resize(A.rowdim());
+            srcCol.resize(A.coldim() + 1);
             std::vector<size_t>::iterator sri = srcRow.begin(), sci = srcCol.begin();
             for (size_t i = 0; i < srcRow.size(); ++i, ++sri) *sri = i;
             for (size_t i = 0; i < srcCol.size(); ++i, ++sci) *sci = i;
@@ -230,7 +224,7 @@ namespace LinBox {
             BMDs.mulin_right(Q, srcRow);
 
             // @note srcCol/srcRow now hold permutations (indices of (A|b)t)
-            // @fixme Does FFLAS has something for this?
+            // @fixme Should try LapackPermToMathPerm
         }
 
         ~TransposeAugmentedSystem()
@@ -639,7 +633,7 @@ namespace LinBox {
 
             // ----- Handle A == 0 mod p
 
-            // Special case when A = 0, mod p. Deal with it to avoid crash later.
+            // Special case when A = 0, mod p. Deal with it to avoid later deadlock.
             if (rank == 0) {
                 SolverReturnStatus status = certifyEmpty(A, b, method, lastCertifiedDenFactor);
 
@@ -671,7 +665,8 @@ namespace LinBox {
                 tFastInvert.start();
 #endif
 
-                Atp_minor_inv = std::make_unique<BlasMatrix<Field>>(_field, rank, rank);
+                // @note std::make_unique is only C++14
+                Atp_minor_inv = std::unique_ptr<BlasMatrix<Field>>(new BlasMatrix<Field>(_field, rank, rank));
 
                 FFLAS::fassign(_field, rank, rank, tas.factors->getPointer(), tas.factors->getStride(), Atp_minor_inv->getPointer(), Atp_minor_inv->getStride());
                 FFPACK::ftrtri (_field, FFLAS::FflasUpper, FFLAS::FflasNonUnit, rank, Atp_minor_inv->getPointer(), Atp_minor_inv->getStride());
@@ -767,7 +762,9 @@ namespace LinBox {
                     }
 
                 if (needNewPrime) {
-                    delete Ap_minor_inv;
+                    if (Ap_minor_inv != Atp_minor_inv.get()) {
+                        delete Ap_minor_inv;
+                    }
                     if (method.singularSolutionType == SingularSolutionType::Random) {
                         delete P;
                     }
@@ -795,9 +792,9 @@ namespace LinBox {
                 certifyMinimalDenominator<Vector1>(A, b, tas, *B, A_minor, *Ap_minor_inv, rank);
             }
 
-            // @fixme This might be = Atp_minor_inv,
-            // which we don't want to delete...
-            delete Ap_minor_inv;
+            if (Ap_minor_inv != Atp_minor_inv.get()) {
+                delete Ap_minor_inv;
+            }
 
             if (method.singularSolutionType == SingularSolutionType::Random) {
                 delete P;

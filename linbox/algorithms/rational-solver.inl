@@ -63,8 +63,6 @@
 //#define DEBUG_INC
 //#define SKIP_NONSINGULAR
 
-#include "./dixon-solver/dixon-solver-common.inl"
-
 namespace LinBox
 {
 	// SPECIALIZATION FOR WIEDEMANN
