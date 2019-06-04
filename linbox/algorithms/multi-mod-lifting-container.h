@@ -143,19 +143,15 @@ namespace LinBox {
                 _B.reserve(_primesCount);
 
                 for (const auto& F : _fields) {
+                    _B.emplace_back(A, F); // Rebind into the field
+
+                    int nullity = 0;
                     BlasMatrixDomain<Field> bmd(F);
-                    _B.emplace_back(F, _n, _n);
-                    auto& Bpi = _B.back();
-
-                    // @fixme Taken for rational-solver.inl. BETTER USE REBIND!!!
-                    for (size_t i = 0; i < _n; ++i) {
-                        for (size_t j = 0; j < _n; ++j) {
-                            F.init(Bpi.refEntry(i, j), A.getEntry(i, j));
-                        }
+                    bmd.invin(_B.back(), nullity);
+                    if (nullity > 0) {
+                        // @fixme Should redraw another prime!
+                        throw LinBoxError("Wrong prime, sorry.");
                     }
-
-                    // @fixme @cpernet Use FFLAS directly, so that we can have a REAL in place inv.
-                    bmd.invin(Bpi);
                 }
             }
 
@@ -218,8 +214,6 @@ namespace LinBox {
          */
         bool next(std::vector<IVector>& digits)
         {
-            std::cout << "----- NEXT" << std::endl;
-
             VectorDomain<Ring> IVD(_ring);
 
             // @fixme Should be done in parallel!
@@ -229,8 +223,6 @@ namespace LinBox {
                 auto& Q = _Q[j];
                 auto& R = _R[j];
 
-                std::cout << "--- FOR " << Integer(pj) << std::endl;
-
                 // @todo @cpernet Is there a VectorDomain::divmod somewhere?
                 // Euclidian division so that rj = pj Qj + Rj
                 for (auto i = 0u; i < _n; ++i) {
@@ -238,10 +230,6 @@ namespace LinBox {
                     // Integers?
                     _ring.quoRem(Q[i], R[i], r[i], pj);
                 }
-
-                std::cout << "r: " << r << std::endl;
-                std::cout << "Q: " << Q << std::endl;
-                std::cout << "R: " << R << std::endl;
 
                 // Convert R to the field
                 // @fixme @cpernet Could this step be ignored?
@@ -253,15 +241,11 @@ namespace LinBox {
                 auto& Fc = _Fc[j];
                 B.apply(Fc, FR);
 
-                std::cout << "Fc: " << Fc << std::endl;
-
                 // @todo Convert _c[i] to RNS
                 digits[j] = IVector(_ring, Fc);
             }
 
             // ----- Compute the next residue!
-
-            std::cout << "--- Residue update" << std::endl;
 
             // @note This is a dummy implementation, for now.
 

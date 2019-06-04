@@ -66,18 +66,15 @@ namespace LinBox {
 
                 // @fixme Better use PolEval (except memory explosion?)
                 for (auto j = 0u; j < _lc.primesCount(); ++j) {
-                    std::cout << "STEP " << i << " DIGITS " << digits[j] << std::endl;
                     IVD.axpyin(padicAccumulations[j], radices[j], digits[j]); // y <- y + p^i * ci
                     _lc.ring().mulin(radices[j], _lc.prime(j));
-                    std::cout << "STEP " << i << " ACCUMULATION " << padicAccumulations[j]
-                              << std::endl;
                 }
             }
 
             // CRT reconstruction from paddicAccumulations
             using CRAField = Givaro::Modular<Integer>;
-            RationalCRABuilderFullMultip<CRAField> craBuilder(
-                _lc.log2Bound() * 1.4427); // 1.4427 = 1 / log(2)
+            RationalCRABuilderFullMultip<CRAField> craBuilder(_lc.log2Bound()
+                                                              / 1.4427); // 1.4427 = 1 / log(2)
 
             {
                 CRAField field(radices[0]);
@@ -149,9 +146,7 @@ namespace LinBox {
         // implicitly requiring 0-{p-1} representation of the p-adic sequence elements.
         using Field = Givaro::Modular<double>;
         using PrimeGenerator = PrimeIterator<IteratorCategories::HeuristicTag>;
-        // PrimeGenerator primeGenerator(FieldTraits<Field>::bestBitSize(A.coldim()));
-        // @fixme This is for debug!
-        PrimeGenerator primeGenerator(3);
+        PrimeGenerator primeGenerator(FieldTraits<Field>::bestBitSize(A.coldim()));
 
         DixonRNSSolver<Field, Ring, PrimeGenerator> solver(A.field(), primeGenerator);
         solver.solve(xNum, xDen, A, b, m);
