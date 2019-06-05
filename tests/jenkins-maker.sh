@@ -86,18 +86,17 @@ tar zxvf $distarchive
 cd builddir
 
 echo "|=== JENKINS AUTOMATED SCRIPT ===| ../$distdir/configure CXX=$CXX CXXFLAGS=$CXXFLAGS --prefix=$PREFIX_INSTALL $LINBOX_NTLFLAG"
-../$distdir/configure CXX=$CXX CXXFLAGS=$CXXFLAGS --prefix="$PREFIX_INSTALL" "$LINBOX_NTLFLAG" ;;
+../$distdir/configure CXX=$CXX CXXFLAGS=$CXXFLAGS --prefix="$PREFIX_INSTALL" "$LINBOX_NTLFLAG"
 
-echo "|=== JENKINS AUTOMATED SCRIPT ===| make install" ;;
-make install ;;
-V="$?"; if test "x$V" != "x0"; then exit "$V"; fi ;;
+echo "|=== JENKINS AUTOMATED SCRIPT ===| make install"
+make install
+V="$?"; if test "x$V" != "x0"; then exit "$V"; fi
 
-echo "|=== JENKINS AUTOMATED SCRIPT ===| make perfpublisher" ;;
-make perfpublisher ;;
+echo "|=== JENKINS AUTOMATED SCRIPT ===| make perfpublisher"
+make perfpublisher
 
 echo "|=== JENKINS AUTOMATED SCRIPT ===| make examples"
 make examples
 V="$?"; if test "x$V" != "x0"; then exit "$V"; fi
 (cd examples && make clean)
 
-)
