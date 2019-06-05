@@ -18,8 +18,8 @@
 ## Only for stable fetching
 #############################
 #### stable .tar.gz
-STABLE_LB=1.6.2
-STABLE_FFLAS=2.4.0
+STABLE_LB=1.6.3
+STABLE_FFLAS=2.4.1
 STABLE_GIVARO=4.1.0
 STABLE_OPENBLAS=0.3.6
 STABLE_BLIS=0.5.2

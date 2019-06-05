@@ -34,8 +34,8 @@ export LD_LIBRARY_PATH="$LD_LIBRARY_PATH":/usr/local/lib:"$LOCAL_DIR/$CXX/lib":"
 echo "LD_LIBRARY_PATH = $LD_LIBRARY_PATH"
 export PKG_CONFIG_PATH="$LOCAL_DIR/$CXX/lib/pkgconfig"
 echo "PKG_CONFIG_PATH = $PKG_CONFIG_PATH"
-distdir = $(PACKAGE)-$(VERSION)
-distarchive = $(distdir).tar.gz
+distdir=$(PACKAGE)-$(VERSION)
+distarchive=$(distdir).tar.gz
 
 # Where to install linbox binaries
 # Keep default for local installation.
