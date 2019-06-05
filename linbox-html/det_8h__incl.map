@@ -1,0 +1,31 @@
+<map id="det.h" name="det.h">
+<area shape="rect" id="node2" href="$diagonal_8h.html" title="Random diagonal matrices and diagonal matrices Class especially meant for diagonal precondtionners..." alt="" coords="728,87,920,114"/>
+<area shape="rect" id="node4" href="$vector-traits_8h.html" title="vector traits " alt="" coords="1123,512,1282,553"/>
+<area shape="rect" id="node18" href="$debug_8h.html" title="Various utilities for debugging. " alt="" coords="1247,698,1390,725"/>
+<area shape="rect" id="node22" href="$blas-vector_8h.html" title="A BlasVector&lt;_Field &gt; represents a vector as an array of _Field::Elements. " alt="" coords="1035,348,1173,389"/>
+<area shape="rect" id="node27" href="$dense-matrix_8h.html" title="NODOC. " alt="" coords="379,169,533,211"/>
+<area shape="rect" id="node30" href="$modular_8h.html" title="A Givaro::Modular ring is a representations of Z/mZ. " alt="" coords="854,355,1010,382"/>
+<area shape="rect" id="node33" href="$matrix-domain_8h.html" title="NODOC. " alt="" coords="678,512,834,553"/>
+<area shape="rect" id="node35" href="$gauss_8h.html" title="Gauss elimination and applications for sparse matrices. " alt="" coords="1849,437,2037,464"/>
+<area shape="rect" id="node39" href="$cra-domain_8h.html" title="Wrapper around OMP/SEQ version of ChineseRemainder. " alt="" coords="1539,169,1698,211"/>
+<area shape="rect" id="node43" href="$cra-builder-single_8h.html" title="Chinese remaindering of a single value. " alt="" coords="2117,80,2275,121"/>
+<area shape="rect" id="node46" href="$random-prime_8h.html" title="Generates random positive prime Integers. " alt="" coords="2579,259,2749,300"/>
+<area shape="rect" id="node49" href="$matrix-hom_8h.html" title="Matrix Homomorphism A map function converts a matrix on a field/ring to its natural image in another ..." alt="" coords="1054,80,1237,121"/>
+<area shape="rect" id="node13" href="$linbox-config_8h.html" title="linbox base configuration file " alt="" coords="409,780,569,807"/>
+<area shape="rect" id="node26" href="$solution-tags_8h.html" title="This allows files defining objects that have traits concerning several solutions to get the tags and ..." alt="" coords="608,169,787,211"/>
+<area shape="rect" id="node11" href="$field_2archetype_8h.html" title="NO DOC. " alt="" coords="1621,609,1800,635"/>
+<area shape="rect" id="node21" href="$integer_8h.html" title="This is a representation of arbitrary integers. " alt="" coords="1826,698,1950,725"/>
+<area shape="rect" id="node23" href="$linbox-tags_8h.html" title="Provides tags for various algorithms/solutions, à la FFLAS. " alt="" coords="159,437,310,464"/>
+<area shape="rect" id="node25" href="$vector_8h.html" title="A DenseVector&lt;_Field &gt; is default dense vector of _Field::Elements. " alt="" coords="961,437,1130,464"/>
+<area shape="rect" id="node28" href="$blas-matrix_8h.html" title="A BlasMatrix&lt;_Field &gt; represents a matrix as an array of _Field::Elements. " alt="" coords="357,259,555,300"/>
+<area shape="rect" id="node29" href="$stream_8h.html" title="Generation of sequences of random vectors. " alt="" coords="451,437,626,464"/>
+<area shape="rect" id="node32" href="$matrixdomain_2matrix-domain_8h.html" title="NO DOC. " alt="" coords="603,691,807,732"/>
+<area shape="rect" id="node34" href="$opencl-domain_8h.html" title="NO DOC. " alt="" coords="654,601,858,643"/>
+<area shape="rect" id="node36" href="$commentator_8h.html" title="Reports information to the user. " alt="" coords="1741,519,1936,546"/>
+<area shape="rect" id="node37" href="$sparse-matrix_8h.html" title="A SparseMatrix&lt;_Field, _Storage&gt; .... " alt="" coords="1510,512,1666,553"/>
+<area shape="rect" id="node38" href="$matrix_2archetype_8h.html" title="NO DOC. " alt="" coords="2399,698,2593,725"/>
+<area shape="rect" id="node40" href="$cra-domain-sequential_8h.html" title="Sequencial version of Chinese Remaindering Algorithm. " alt="" coords="1670,259,1834,300"/>
+<area shape="rect" id="node41" href="$timer_8h.html" title="LinBox timer is Givaro&#39;s. " alt="" coords="2366,355,2503,382"/>
+<area shape="rect" id="node44" href="$cra-builder-full-multip_8h.html" title="NO DOC. " alt="" coords="2242,259,2401,300"/>
+<area shape="rect" id="node50" href="$blackbox_8h.html" title="File including all of LinBox blackboxes. " alt="" coords="1115,177,1311,203"/>
+</map>

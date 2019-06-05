@@ -1,0 +1,7 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$class_lin_box_1_1_exception.html" title="This is the exception class in LinBox. " alt="" coords="5,81,96,108"/>
+<area shape="rect" id="node2" href="$class_lin_box_1_1algo_exception.html" title="Algorithmic exception. " alt="" coords="199,5,317,32"/>
+<area shape="rect" id="node3" href="$class_lin_box_1_1_bad_input_exception.html" title="The input is not as expected. " alt="" coords="183,56,333,83"/>
+<area shape="rect" id="node4" href="$class_lin_box_1_1_irrecuperable_exception.html" title="Something bad an unexpected happened. " alt="" coords="169,107,347,133"/>
+<area shape="rect" id="node5" href="$class_lin_box_1_1_not_implemented_yet_exception.html" title="Not implemented yet. " alt="" coords="144,157,372,184"/>
+</map>

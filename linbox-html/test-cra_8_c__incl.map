@@ -1,0 +1,25 @@
+<map id="test&#45;cra.C" name="test&#45;cra.C">
+<area shape="rect" id="node2" href="$linbox-config_8h.html" title="linbox base configuration file " alt="" coords="1790,869,1950,896"/>
+<area shape="rect" id="node9" href="$integer_8h.html" title="This is a representation of arbitrary integers. " alt="" coords="1195,787,1319,814"/>
+<area shape="rect" id="node14" href="$random-prime_8h.html" title="Generates random positive prime Integers. " alt="" coords="209,363,379,404"/>
+<area shape="rect" id="node17" href="$timer_8h.html" title="LinBox timer is Givaro&#39;s. " alt="" coords="808,459,945,486"/>
+<area shape="rect" id="node25" href="$cra-domain_8h.html" title="Wrapper around OMP/SEQ version of ChineseRemainder. " alt="" coords="1429,266,1588,307"/>
+<area shape="rect" id="node39" href="$cra-builder-single_8h.html" title="Chinese remaindering of a single value. " alt="" coords="975,169,1133,211"/>
+<area shape="rect" id="node40" href="$cra-builder-full-multip_8h.html" title="NO DOC. " alt="" coords="759,363,917,404"/>
+<area shape="rect" id="node42" href="$cra-builder-early-multip_8h.html" title="NO DOC. " alt="" coords="610,80,781,121"/>
+<area shape="rect" id="node43" href="$dense-matrix_8h.html" title="NODOC. " alt="" coords="2127,266,2280,307"/>
+<area shape="rect" id="node50" href="$cra-builder-full-multip-fixed_8h.html" title="CRA for multi&#45;residues. " alt="" coords="1247,259,1405,315"/>
+<area shape="rect" id="node20" href="$debug_8h.html" title="Various utilities for debugging. " alt="" coords="2467,787,2609,814"/>
+<area shape="rect" id="node26" href="$vector_8h.html" title="A DenseVector&lt;_Field &gt; is default dense vector of _Field::Elements. " alt="" coords="1725,541,1895,568"/>
+<area shape="rect" id="node34" href="$cra-domain-sequential_8h.html" title="Sequencial version of Chinese Remaindering Algorithm. " alt="" coords="1449,363,1613,404"/>
+<area shape="rect" id="node27" href="$vector-traits_8h.html" title="vector traits " alt="" coords="2460,616,2619,657"/>
+<area shape="rect" id="node33" href="$field_2archetype_8h.html" title="NO DOC. " alt="" coords="2450,705,2629,732"/>
+<area shape="rect" id="node35" href="$blas-vector_8h.html" title="A BlasVector&lt;_Field &gt; represents a vector as an array of _Field::Elements. " alt="" coords="1573,452,1711,493"/>
+<area shape="rect" id="node38" href="$commentator_8h.html" title="Reports information to the user. " alt="" coords="2049,623,2243,650"/>
+<area shape="rect" id="node36" href="$linbox-tags_8h.html" title="Provides tags for various algorithms/solutions, à la FFLAS. " alt="" coords="2072,541,2223,568"/>
+<area shape="rect" id="node44" href="$blas-matrix_8h.html" title="A BlasMatrix&lt;_Field &gt; represents a matrix as an array of _Field::Elements. " alt="" coords="2263,363,2461,404"/>
+<area shape="rect" id="node45" href="$stream_8h.html" title="Generation of sequences of random vectors. " alt="" coords="2909,541,3084,568"/>
+<area shape="rect" id="node46" href="$modular_8h.html" title="A Givaro::Modular ring is a representations of Z/mZ. " alt="" coords="2400,459,2556,486"/>
+<area shape="rect" id="node48" href="$matrixdomain_2matrix-domain_8h.html" title="NO DOC. " alt="" coords="2085,780,2289,821"/>
+<area shape="rect" id="node49" href="$apply-domain_8h.html" title="NO DOC. " alt="" coords="2019,452,2223,493"/>
+</map>

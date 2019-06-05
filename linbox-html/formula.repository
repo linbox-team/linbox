@@ -1,0 +1,75 @@
+\form#0:$U A^i V$
+\form#1:$U$
+\form#2:$V$
+\form#3:$U A^{i+1} V$
+\form#4:$A$
+\form#5:$n\times N$
+\form#6:$N$
+\form#7:$v_1, \ldots, v_N$
+\form#8:$N\times N$
+\form#9:$\mathbf{0}$
+\form#10:$F_2$
+\form#11:$v$
+\form#12:$0$
+\form#13:$>0$
+\form#14:$lC \cdot A = 0$
+\form#15:$lC \cdot b \neq 0 $
+\form#16:$ \mathrm{den}(lC \cdot A) = 1, \mathrm{den}(lC \cdot b) = \mathrm{den}(answer) $
+\form#17:$2^50$
+\form#18:$\sigma$
+\form#19:$Ax=b$
+\form#20:$K \subset F$
+\form#21:$Z \rightarrow Zp$
+\form#22:$C = AB$
+\form#23:$Cx \gets A(Bx)$
+\form#24:$ y \gets (A\cdot B)\cdot x$
+\form#25:$ y \gets (A\cdot B)^t \cdot x$
+\form#26:$ y= (A\cdot B) \cdot x.$
+\form#27:$y= (A \times B)^T \cdot x$
+\form#28:$n \times n$
+\form#29:$ y= A^t \cdot x.$
+\form#30:$i,j$
+\form#31:$1/(i+j+2)$
+\form#32:$ y = A x$
+\form#33:$y = A x$
+\form#34:$y = A^T x$
+\form#35:$y \leftarrow Px$
+\form#36:$y^T \leftarrow x^T P$
+\form#37:$y= (A+B)\cdot x$
+\form#38:$ y= (A+B)^T\cdot x$
+\form#39:$ y= (A+B) \cdot x$
+\form#40:$ y= (A+B)^T \cdot x$
+\form#41:$0 \leq n < \mathrm{characteristic}$
+\form#42:$ 0 \times 0$
+\form#43:$ m \times n$
+\form#44:$ A = P L U P $
+\form#45:$\pi \in S_n$
+\form#46:$\pi^{-1}$
+\form#47:$y gets a A x + b y$
+\form#48:$y gets a A^t x + b y$
+\form#49:$\mathbf{Z}/m\mathbf{Z}$
+\form#50:$ D \gets \alpha A B + \beta C$
+\form#51:$y \gets y + A x$
+\form#52:$[p_1,p_2,\cdots, p_r]$
+\form#53:$p_i > i$
+\form#54:$(i,p_i)$
+\form#55:$S_n$
+\form#56:$ M \gets P M$
+\form#57:$ M \gets M P$
+\form#58:$ M \gets M P^t$
+\form#59:$ M \gets P^t M$
+\form#60:$ y = A^T x$
+\form#61:$\mathbf{Z}_p$
+\form#62:$ \mathbf{F}_2 $
+\form#63:$Z$
+\form#64:$Z_m$
+\form#65:$e_1,\cdots,e_n$
+\form#66:$y \gets Ax$
+\form#67:$\mathtt{linbox}\!-\!\mathtt{use} \mathtt{@} \mathtt{googlegroups}\!\cdot\!\mathtt{com}$
+\form#68:$\mathbf{GF}(101)$
+\form#69:$\{0,1\}-$
+\form#70:$2C + 3I$
+\form#71:$ n \times n$
+\form#72:$0 \leq RIII < s$
+\form#73:$[[0, s-1]]$
+\form#74:$ f(\mathtt{Data\_}[0][0..\mathtt{Current\_}-1]) \approx refY()[0..\mathtt{Current\_}-1]$

@@ -1,0 +1,6 @@
+<map id="Exception" name="Exception">
+<area shape="rect" id="node2" href="$class_lin_box_1_1algo_exception.html" title="Algorithmic exception. " alt="" coords="5,80,123,107"/>
+<area shape="rect" id="node3" href="$class_lin_box_1_1_bad_input_exception.html" title="The input is not as expected. " alt="" coords="147,80,298,107"/>
+<area shape="rect" id="node4" href="$class_lin_box_1_1_irrecuperable_exception.html" title="Something bad an unexpected happened. " alt="" coords="323,80,501,107"/>
+<area shape="rect" id="node5" href="$class_lin_box_1_1_not_implemented_yet_exception.html" title="Not implemented yet. " alt="" coords="526,80,754,107"/>
+</map>

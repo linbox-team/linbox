@@ -1,0 +1,6 @@
+<map id="GenericTag" name="GenericTag">
+<area shape="rect" id="node2" href="$struct_lin_box_1_1_ring_categories_1_1_galois_tag.html" title="Galois Field GF(p^e) " alt="" coords="5,80,88,107"/>
+<area shape="rect" id="node3" href="$struct_lin_box_1_1_ring_categories_1_1_integer_tag.html" title="If it is isomorphic to Z. " alt="" coords="113,80,207,107"/>
+<area shape="rect" id="node4" href="$struct_lin_box_1_1_ring_categories_1_1_modular_tag.html" title="If it is isomorphic to Z/mZ, for some m or its extensions. " alt="" coords="232,80,328,107"/>
+<area shape="rect" id="node5" href="$struct_lin_box_1_1_ring_categories_1_1_rational_tag.html" title="If it is isomorphic to Q. " alt="" coords="352,80,451,107"/>
+</map>

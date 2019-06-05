@@ -1,0 +1,24 @@
+<map id="gauss.h" name="gauss.h">
+<area shape="rect" id="node2" href="$gauss-gf2_8h.html" title="Gauss elimination and applications for sparse matrices on . " alt="" coords="128,80,227,107"/>
+<area shape="rect" id="node3" href="$test-qlup_8_c.html" title="tests LQUP decomposition, solve, and nullspace of a random sparse matrice. " alt="" coords="5,155,104,181"/>
+<area shape="rect" id="node4" href="$test-rank_8h.html" title="no doc " alt="" coords="128,155,227,181"/>
+<area shape="rect" id="node7" href="$lifting-container_8h.html" title="Lifting from mod p^n to rationals NO DOC. " alt="" coords="491,80,631,107"/>
+<area shape="rect" id="node8" href="$det_8h.html" title="NO DOC. " alt="" coords="785,80,844,107"/>
+<area shape="rect" id="node22" href="$nullspacebasis_8_c.html" title="nullspacebasis.C" alt="" coords="868,80,999,107"/>
+<area shape="rect" id="node23" href="$nullspacebasis__rank_8_c.html" title="nullspacebasis_rank.C" alt="" coords="1023,80,1190,107"/>
+<area shape="rect" id="node5" href="$test-rank-md_8_c.html" title="no doc " alt="" coords="38,229,165,256"/>
+<area shape="rect" id="node6" href="$test-rank-u32_8_c.html" title="no doc " alt="" coords="189,229,320,256"/>
+<area shape="rect" id="node9" href="$bbcharpoly_8h.html" title="no doc. " alt="" coords="251,155,355,181"/>
+<area shape="rect" id="node10" href="$athadet_8_c.html" title="athadet.C" alt="" coords="379,155,469,181"/>
+<area shape="rect" id="node11" href="$det_8_c.html" title="examples/det.C " alt="" coords="494,155,554,181"/>
+<area shape="rect" id="node12" href="$doubledet_8_c.html" title="doubledet.C" alt="" coords="579,155,683,181"/>
+<area shape="rect" id="node13" href="$mpidet_8_c.html" title="mpidet.C" alt="" coords="707,155,791,181"/>
+<area shape="rect" id="node14" href="$sparseelimdet_8_c.html" title="sparseelimdet.C" alt="" coords="815,155,947,181"/>
+<area shape="rect" id="node15" href="$tutorial_8_c.html" title="tutorial.C" alt="" coords="972,155,1057,181"/>
+<area shape="rect" id="node16" href="$test-butterfly_8_c.html" title="no doc " alt="" coords="1081,155,1212,181"/>
+<area shape="rect" id="node17" href="$test-det_8_c.html" title="no doc " alt="" coords="1236,155,1332,181"/>
+<area shape="rect" id="node18" href="$test-matrix-domain_8_c.html" title="no real doc. " alt="" coords="1356,155,1527,181"/>
+<area shape="rect" id="node19" href="$test-smith-form-iliopoulos_8_c.html" title="no doc. " alt="" coords="1551,155,1763,181"/>
+<area shape="rect" id="node20" href="$test-toeplitz-det_8_c.html" title="no doc " alt="" coords="1787,155,1941,181"/>
+<area shape="rect" id="node21" href="$test-tutorial_8_c.html" title="no doc " alt="" coords="1966,155,2087,181"/>
+</map>

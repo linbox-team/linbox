@@ -1,0 +1,28 @@
+<map id="cra&#45;domain&#45;sequential.h" name="cra&#45;domain&#45;sequential.h">
+<area shape="rect" id="node2" href="$cra-domain-omp_8h.html" title="Parallel (OMP) version of Chinese Remaindering Algorithm. " alt="" coords="147,80,291,107"/>
+<area shape="rect" id="node3" href="$cra-domain_8h.html" title="Wrapper around OMP/SEQ version of ChineseRemainder. " alt="" coords="315,80,424,107"/>
+<area shape="rect" id="node4" href="$cra-builder-single_8h.html" title="Chinese remaindering of a single value. " alt="" coords="173,155,321,181"/>
+<area shape="rect" id="node7" href="$test-cra_8_c.html" title="We test the various CRA algorithms here. " alt="" coords="5,304,99,331"/>
+<area shape="rect" id="node8" href="$test-cradomain_8_c.html" title="tests LinBox::ChineseRemainer " alt="" coords="285,304,427,331"/>
+<area shape="rect" id="node9" href="$det_8h.html" title="NO DOC. " alt="" coords="1289,229,1348,256"/>
+<area shape="rect" id="node23" href="$matrix_2random-matrix_8h.html" title="Implementation of random matrices. " alt="" coords="1581,155,1715,181"/>
+<area shape="rect" id="node5" href="$cra-builder-early-multip_8h.html" title="NO DOC. " alt="" coords="141,229,331,256"/>
+<area shape="rect" id="node6" href="$minpoly-integer_8h.html" title="Compute the minpoly of a matrix over an integer ring using modular arithmetic. " alt="" coords="123,304,261,331"/>
+<area shape="rect" id="node10" href="$bbcharpoly_8h.html" title="no doc. " alt="" coords="1207,304,1311,331"/>
+<area shape="rect" id="node11" href="$athadet_8_c.html" title="athadet.C" alt="" coords="1335,304,1425,331"/>
+<area shape="rect" id="node12" href="$det_8_c.html" title="examples/det.C " alt="" coords="1450,304,1510,331"/>
+<area shape="rect" id="node13" href="$doubledet_8_c.html" title="doubledet.C" alt="" coords="1535,304,1639,331"/>
+<area shape="rect" id="node14" href="$mpidet_8_c.html" title="mpidet.C" alt="" coords="1663,304,1747,331"/>
+<area shape="rect" id="node15" href="$sparseelimdet_8_c.html" title="sparseelimdet.C" alt="" coords="1771,304,1903,331"/>
+<area shape="rect" id="node16" href="$tutorial_8_c.html" title="tutorial.C" alt="" coords="1928,304,2013,331"/>
+<area shape="rect" id="node17" href="$test-butterfly_8_c.html" title="no doc " alt="" coords="2037,304,2168,331"/>
+<area shape="rect" id="node18" href="$test-det_8_c.html" title="no doc " alt="" coords="2192,304,2288,331"/>
+<area shape="rect" id="node19" href="$test-matrix-domain_8_c.html" title="no real doc. " alt="" coords="451,304,621,331"/>
+<area shape="rect" id="node20" href="$test-smith-form-iliopoulos_8_c.html" title="no doc. " alt="" coords="646,304,858,331"/>
+<area shape="rect" id="node21" href="$test-toeplitz-det_8_c.html" title="no doc " alt="" coords="881,304,1036,331"/>
+<area shape="rect" id="node22" href="$test-tutorial_8_c.html" title="no doc " alt="" coords="1061,304,1182,331"/>
+<area shape="rect" id="node24" href="$test-blas-domain_8_c.html" title="no doc " alt="" coords="1572,229,1724,256"/>
+<area shape="rect" id="node25" href="$test-mpi-comm_8_c.html" title="Check MPI communicator interface. " alt="" coords="1748,229,1892,256"/>
+<area shape="rect" id="node26" href="$test-toom-cook_8_c.html" title="toom&#45;cook multiplication routine " alt="" coords="1917,229,2062,256"/>
+<area shape="rect" id="node27" href="$benchmark-example_8_c.html" title="Benchmarking example. " alt="" coords="1373,229,1547,256"/>
+</map>

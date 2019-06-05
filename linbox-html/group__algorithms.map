@@ -1,0 +1,14 @@
+<map id="algorithms" name="algorithms">
+<area shape="rect" id="node1" href="$group__lattice.html" title="Lattice reduction (LLL) in LinBox. " alt="" coords="261,11,408,38"/>
+<area shape="rect" id="node2" href="$group__wiedemann.html" title="NO DOC YET. " alt="" coords="284,70,385,97"/>
+<area shape="rect" id="node3" href="$group__blas3.html" title="BLAS level 3 (matrix&#45;matrix) operations. " alt="" coords="305,121,364,147"/>
+<area shape="rect" id="node4" href="$group__elim.html" title="NO DOC YET. " alt="" coords="287,171,382,198"/>
+<area shape="rect" id="node5" href="$group___c_r_a.html" title="Chinese Remaindering (cra) in LinBox. " alt="" coords="249,223,420,264"/>
+<area shape="rect" id="node6" href="$group__gauss.html" title="NO DOC YET. " alt="" coords="303,289,366,315"/>
+<area shape="rect" id="node7" href="$group__padic.html" title="interface for solving linear system by p&#45;adic lifting technique over the quotient field of a ring..." alt="" coords="243,340,427,381"/>
+<area shape="rect" id="node8" href="$group__iml.html" title="NO DOC YET. " alt="" coords="311,406,358,433"/>
+<area shape="rect" id="node9" href="$group__sigmabase.html" title="NO DOC YET. " alt="" coords="284,457,385,483"/>
+<area shape="rect" id="node10" href="$group__diophant.html" title="NO DOC YET. " alt="" coords="257,507,412,534"/>
+<area shape="rect" id="node11" href="$group__lanczos.html" title="NO DOC YET. " alt="" coords="296,558,373,585"/>
+<area shape="rect" id="node13" href="$group___solvers.html" title="Solvers" alt="" coords="299,609,370,635"/>
+</map>

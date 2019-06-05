@@ -1,0 +1,51 @@
+<map id="archetype.h" name="archetype.h">
+<area shape="rect" id="node2" href="$blackbox-block-container-base_8h.html" title="NO DOC. " alt="" coords="58,304,249,345"/>
+<area shape="rect" id="node7" href="$rational-solver_8h.html" title="Rational solving (Dixon, Wiedemann,...) " alt="" coords="4014,311,4143,338"/>
+<area shape="rect" id="node12" href="$wiedemann_8h.html" title="minpoly computation and Wiedeman solvers. " alt="" coords="3842,80,3953,107"/>
+<area shape="rect" id="node13" href="$matrix_2archetype_8h.html" title="NO DOC. " alt="" coords="3663,80,3767,107"/>
+<area shape="rect" id="node29" href="$matrixdomain_2matrix-domain_8h.html" title="NO DOC. " alt="" coords="2923,80,3055,107"/>
+<area shape="rect" id="node3" href="$blackbox-block-container_8h.html" title="no doc. " alt="" coords="839,401,1041,427"/>
+<area shape="rect" id="node4" href="$lifting-container_8h.html" title="Lifting from mod p^n to rationals NO DOC. " alt="" coords="957,490,1097,517"/>
+<area shape="rect" id="node5" href="$test-blackbox-block-container_8_c.html" title="no doc " alt="" coords="777,483,933,524"/>
+<area shape="rect" id="node6" href="$omp-benchmark_8_c.html" title="f " alt="" coords="1981,490,2126,517"/>
+<area shape="rect" id="node8" href="$test-last-invariant-factor_8_c.html" title="no doc " alt="" coords="4199,393,4345,435"/>
+<area shape="rect" id="node9" href="$test-one-invariant-factor_8_c.html" title="no doc " alt="" coords="4369,393,4516,435"/>
+<area shape="rect" id="node10" href="$test-rational-solver_8_c.html" title="no doc. " alt="" coords="3793,401,3959,427"/>
+<area shape="rect" id="node11" href="$test-smith-form-binary_8_c.html" title="Test the EGV divide and conquer SNF alg. " alt="" coords="3983,401,4174,427"/>
+<area shape="rect" id="node14" href="$gauss_8h.html" title="Gauss elimination and applications for sparse matrices. " alt="" coords="3691,229,3763,256"/>
+<area shape="rect" id="node15" href="$gauss-gf2_8h.html" title="Gauss elimination and applications for sparse matrices on . " alt="" coords="3840,311,3939,338"/>
+<area shape="rect" id="node16" href="$test-qlup_8_c.html" title="tests LQUP decomposition, solve, and nullspace of a random sparse matrice. " alt="" coords="3669,401,3768,427"/>
+<area shape="rect" id="node17" href="$test-rank_8h.html" title="no doc " alt="" coords="3547,401,3645,427"/>
+<area shape="rect" id="node18" href="$det_8h.html" title="NO DOC. " alt="" coords="3407,401,3465,427"/>
+<area shape="rect" id="node27" href="$nullspacebasis_8_c.html" title="nullspacebasis.C" alt="" coords="3341,311,3472,338"/>
+<area shape="rect" id="node28" href="$nullspacebasis__rank_8_c.html" title="nullspacebasis_rank.C" alt="" coords="3497,311,3663,338"/>
+<area shape="rect" id="node19" href="$bbcharpoly_8h.html" title="no doc. " alt="" coords="3384,490,3488,517"/>
+<area shape="rect" id="node20" href="$athadet_8_c.html" title="athadet.C" alt="" coords="3512,490,3603,517"/>
+<area shape="rect" id="node21" href="$det_8_c.html" title="examples/det.C " alt="" coords="3627,490,3687,517"/>
+<area shape="rect" id="node22" href="$doubledet_8_c.html" title="doubledet.C" alt="" coords="3712,490,3816,517"/>
+<area shape="rect" id="node23" href="$mpidet_8_c.html" title="mpidet.C" alt="" coords="3119,490,3203,517"/>
+<area shape="rect" id="node24" href="$sparseelimdet_8_c.html" title="sparseelimdet.C" alt="" coords="3227,490,3359,517"/>
+<area shape="rect" id="node25" href="$test-matrix-domain_8_c.html" title="no real doc. " alt="" coords="2924,490,3095,517"/>
+<area shape="rect" id="node26" href="$test-smith-form-iliopoulos_8_c.html" title="no doc. " alt="" coords="2509,490,2721,517"/>
+<area shape="rect" id="node30" href="$blas-matrix_8h.html" title="A BlasMatrix&lt;_Field &gt; represents a matrix as an array of _Field::Elements. " alt="" coords="2934,155,3045,181"/>
+<area shape="rect" id="node42" href="$matrix-domain_8h.html" title="NODOC. " alt="" coords="1614,229,1746,256"/>
+<area shape="rect" id="node31" href="$dense-matrix_8h.html" title="NODOC. " alt="" coords="2927,229,3052,256"/>
+<area shape="rect" id="node32" href="$sigma-basis_8h.html" title="&#45;basis (minimal basis). " alt="" coords="2739,311,2851,338"/>
+<area shape="rect" id="node33" href="$diagonal_8h.html" title="Random diagonal matrices and diagonal matrices Class especially meant for diagonal precondtionners..." alt="" coords="3229,311,3317,338"/>
+<area shape="rect" id="node36" href="$matrix_2random-matrix_8h.html" title="Implementation of random matrices. " alt="" coords="1921,311,2055,338"/>
+<area shape="rect" id="node37" href="$test-blas-domain_8_c.html" title="no doc " alt="" coords="1865,401,2017,427"/>
+<area shape="rect" id="node38" href="$benchmark-example_8_c.html" title="Benchmarking example. " alt="" coords="2042,401,2217,427"/>
+<area shape="rect" id="node39" href="$test-cradomain_8_c.html" title="tests LinBox::ChineseRemainer " alt="" coords="2181,311,2323,338"/>
+<area shape="rect" id="node40" href="$test-dense-zero-one_8_c.html" title="no doc " alt="" coords="2347,311,2527,338"/>
+<area shape="rect" id="node41" href="$test-echelon-form_8_c.html" title="no doc " alt="" coords="2552,311,2715,338"/>
+<area shape="rect" id="node34" href="$test-block-wiedemann_8_c.html" title="no doc. " alt="" coords="2528,401,2717,427"/>
+<area shape="rect" id="node35" href="$test-fibb_8_c.html" title="no doc " alt="" coords="3128,401,3224,427"/>
+<area shape="rect" id="node43" href="$sparse-generic_8h.html" title="sparse&#45;generic.h" alt="" coords="375,311,510,338"/>
+<area shape="rect" id="node44" href="$sparse-tpl-matrix_8h.html" title="A SparseMatrix&lt;_Field, SparseMatrixFormat::TPL &gt; is a vector of (i,j,value) triples. " alt="" coords="535,311,687,338"/>
+<area shape="rect" id="node45" href="$test-companion_8_c.html" title="no doc " alt="" coords="711,311,855,338"/>
+<area shape="rect" id="node46" href="$test-ffpack_8_c.html" title="Tests for the ffpack set of routines. " alt="" coords="879,311,993,338"/>
+<area shape="rect" id="node47" href="$test-nullspace_8_c.html" title="Tests the dense nullspace functions for Zp. " alt="" coords="1017,311,1151,338"/>
+<area shape="rect" id="node48" href="$test-plain-domain_8_c.html" title="no real doc. " alt="" coords="1175,311,1331,338"/>
+<area shape="rect" id="node49" href="$test-smith-form-local_8_c.html" title="no doc " alt="" coords="1355,311,1538,338"/>
+<area shape="rect" id="node50" href="$test-triplesbb_8_c.html" title="no doc " alt="" coords="1563,311,1693,338"/>
+</map>

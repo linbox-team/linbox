@@ -1,0 +1,31 @@
+<map id="diagonal.h" name="diagonal.h">
+<area shape="rect" id="node2" href="$diagonal-gf2_8h.html" title="Random diagonal matrices and diagonal matrices Class especially meant for diagonal precondtionners..." alt="" coords="841,87,956,114"/>
+<area shape="rect" id="node3" href="$det_8h.html" title="NO DOC. " alt="" coords="980,87,1039,114"/>
+<area shape="rect" id="node11" href="$test-butterfly_8_c.html" title="no doc " alt="" coords="1592,169,1723,196"/>
+<area shape="rect" id="node12" href="$test-det_8_c.html" title="no doc " alt="" coords="1747,169,1843,196"/>
+<area shape="rect" id="node17" href="$omp__block__rank_8_c.html" title="omp_block_rank.C" alt="" coords="1455,87,1596,114"/>
+<area shape="rect" id="node18" href="$test-block-wiedemann_8_c.html" title="no doc. " alt="" coords="1620,87,1809,114"/>
+<area shape="rect" id="node19" href="$test-diagonal_8_c.html" title="no doc " alt="" coords="1834,87,1961,114"/>
+<area shape="rect" id="node20" href="$test-dif_8_c.html" title="no doc " alt="" coords="1985,87,2071,114"/>
+<area shape="rect" id="node21" href="$test-fibb_8_c.html" title="no doc " alt="" coords="2096,87,2192,114"/>
+<area shape="rect" id="node22" href="$test-getentry_8_c.html" title="no doc " alt="" coords="2216,87,2347,114"/>
+<area shape="rect" id="node23" href="$test-inverse_8_c.html" title="no doc " alt="" coords="2371,87,2493,114"/>
+<area shape="rect" id="node24" href="$test-qlup_8_c.html" title="tests LQUP decomposition, solve, and nullspace of a random sparse matrice. " alt="" coords="2517,87,2616,114"/>
+<area shape="rect" id="node25" href="$test-rank_8h.html" title="no doc " alt="" coords="2640,87,2739,114"/>
+<area shape="rect" id="node28" href="$test-rational-solver-adaptive_8_c.html" title="no doc " alt="" coords="2763,80,2917,121"/>
+<area shape="rect" id="node29" href="$test-rational-solver_8_c.html" title="no doc. " alt="" coords="2942,87,3109,114"/>
+<area shape="rect" id="node30" href="$test-sum_8_c.html" title="no doc " alt="" coords="3133,87,3233,114"/>
+<area shape="rect" id="node4" href="$bbcharpoly_8h.html" title="no doc. " alt="" coords="1464,169,1568,196"/>
+<area shape="rect" id="node5" href="$athadet_8_c.html" title="athadet.C" alt="" coords="5,169,96,196"/>
+<area shape="rect" id="node6" href="$det_8_c.html" title="examples/det.C " alt="" coords="121,169,181,196"/>
+<area shape="rect" id="node7" href="$doubledet_8_c.html" title="doubledet.C" alt="" coords="205,169,309,196"/>
+<area shape="rect" id="node8" href="$mpidet_8_c.html" title="mpidet.C" alt="" coords="334,169,418,196"/>
+<area shape="rect" id="node9" href="$sparseelimdet_8_c.html" title="sparseelimdet.C" alt="" coords="442,169,574,196"/>
+<area shape="rect" id="node10" href="$tutorial_8_c.html" title="tutorial.C" alt="" coords="599,169,684,196"/>
+<area shape="rect" id="node13" href="$test-matrix-domain_8_c.html" title="no real doc. " alt="" coords="708,169,879,196"/>
+<area shape="rect" id="node14" href="$test-smith-form-iliopoulos_8_c.html" title="no doc. " alt="" coords="903,169,1115,196"/>
+<area shape="rect" id="node15" href="$test-toeplitz-det_8_c.html" title="no doc " alt="" coords="1139,169,1293,196"/>
+<area shape="rect" id="node16" href="$test-tutorial_8_c.html" title="no doc " alt="" coords="1318,169,1439,196"/>
+<area shape="rect" id="node26" href="$test-rank-md_8_c.html" title="no doc " alt="" coords="2703,169,2830,196"/>
+<area shape="rect" id="node27" href="$test-rank-u32_8_c.html" title="no doc " alt="" coords="2548,169,2679,196"/>
+</map>

@@ -1,0 +1,51 @@
+<map id="sparse&#45;domain.h" name="sparse&#45;domain.h">
+<area shape="rect" id="node2" href="$sparse-coo-implicit-matrix_8h.html" title="sparse&#45;coo&#45;implicit\l&#45;matrix.h" alt="" coords="1900,80,2051,121"/>
+<area shape="rect" id="node3" href="$sparse-coo-matrix_8h.html" title="sparse&#45;coo&#45;matrix.h" alt="" coords="2249,87,2408,114"/>
+<area shape="rect" id="node47" href="$sparse-hyb-matrix_8h.html" title="sparse&#45;hyb&#45;matrix.h" alt="" coords="2516,169,2675,196"/>
+<area shape="rect" id="node48" href="$sparse-csr-matrix_8h.html" title="sparse&#45;csr&#45;matrix.h" alt="" coords="2432,87,2585,114"/>
+<area shape="rect" id="node49" href="$sparse-ell-matrix_8h.html" title="sparse&#45;ell&#45;matrix.h" alt="" coords="2075,87,2225,114"/>
+<area shape="rect" id="node50" href="$sparse-ellr-matrix_8h.html" title="sparse&#45;ellr&#45;matrix.h" alt="" coords="2609,87,2763,114"/>
+<area shape="rect" id="node4" href="$sparse-matrix_8h.html" title="A SparseMatrix&lt;_Field, _Storage&gt; .... " alt="" coords="2358,169,2486,196"/>
+<area shape="rect" id="node5" href="$blackbox-block-container-base_8h.html" title="NO DOC. " alt="" coords="5,244,196,285"/>
+<area shape="rect" id="node6" href="$gauss_8h.html" title="Gauss elimination and applications for sparse matrices. " alt="" coords="271,251,343,278"/>
+<area shape="rect" id="node7" href="$test-qlup_8_c.html" title="tests LQUP decomposition, solve, and nullspace of a random sparse matrice. " alt="" coords="185,333,283,360"/>
+<area shape="rect" id="node8" href="$test-rank_8h.html" title="no doc " alt="" coords="307,333,406,360"/>
+<area shape="rect" id="node9" href="$matrix-hom_8h.html" title="Matrix Homomorphism A map function converts a matrix on a field/ring to its natural image in another ..." alt="" coords="469,251,583,278"/>
+<area shape="rect" id="node10" href="$matrix-rank_8h.html" title="Computes the rank of a matrix by Gaussian Elimination, in place. " alt="" coords="430,333,542,360"/>
+<area shape="rect" id="node11" href="$wiedemann_8h.html" title="minpoly computation and Wiedeman solvers. " alt="" coords="567,333,677,360"/>
+<area shape="rect" id="node12" href="$smith-form-valence_8h.html" title="smith&#45;form&#45;valence.h" alt="" coords="658,251,826,278"/>
+<area shape="rect" id="node13" href="$whisart__trace_8h.html" title="Whisart trace Computes the trace of D1 B D2 B^T D1 or D1 B^T D2 B D1. " alt="" coords="851,251,977,278"/>
+<area shape="rect" id="node14" href="$athadet_8_c.html" title="athadet.C" alt="" coords="1002,251,1093,278"/>
+<area shape="rect" id="node15" href="$charpoly_8_c.html" title="charpoly.C" alt="" coords="1117,251,1207,278"/>
+<area shape="rect" id="node16" href="$det_8_c.html" title="examples/det.C " alt="" coords="1232,251,1292,278"/>
+<area shape="rect" id="node17" href="$minpoly_8_c.html" title="minpoly.C" alt="" coords="1317,251,1402,278"/>
+<area shape="rect" id="node18" href="$mpidet_8_c.html" title="mpidet.C" alt="" coords="1427,251,1511,278"/>
+<area shape="rect" id="node19" href="$power__rank_8_c.html" title="power_rank.C" alt="" coords="1535,251,1647,278"/>
+<area shape="rect" id="node20" href="$poweroftwo__ranks_8_c.html" title="poweroftwo_ranks.C" alt="" coords="1672,251,1831,278"/>
+<area shape="rect" id="node21" href="$qchar_8_c.html" title="qchar.C" alt="" coords="1855,251,1927,278"/>
+<area shape="rect" id="node22" href="$rank_8_c.html" title="rank.C" alt="" coords="1951,251,2015,278"/>
+<area shape="rect" id="node23" href="$smithsparse_8_c.html" title="smithsparse.C" alt="" coords="2040,251,2159,278"/>
+<area shape="rect" id="node24" href="$solve_8_c.html" title="Blackbox solvers. " alt="" coords="2183,251,2253,278"/>
+<area shape="rect" id="node25" href="$sparseelimdet_8_c.html" title="sparseelimdet.C" alt="" coords="2277,251,2409,278"/>
+<area shape="rect" id="node26" href="$sparseelimrank_8_c.html" title="sparseelimrank.C" alt="" coords="2434,251,2570,278"/>
+<area shape="rect" id="node27" href="$valence_8_c.html" title="Valence of sparse matrix over Z or Zp. " alt="" coords="2595,251,2684,278"/>
+<area shape="rect" id="node28" href="$test-blackbox-block-container_8_c.html" title="no doc " alt="" coords="2708,244,2864,285"/>
+<area shape="rect" id="node29" href="$test-block-wiedemann_8_c.html" title="no doc. " alt="" coords="2889,251,3078,278"/>
+<area shape="rect" id="node30" href="$test-charpoly_8_c.html" title="tests the characteristic polynomial of sparse and special matrices " alt="" coords="3103,251,3229,278"/>
+<area shape="rect" id="node31" href="$test-det_8_c.html" title="no doc " alt="" coords="3254,251,3350,278"/>
+<area shape="rect" id="node32" href="$test-getentry_8_c.html" title="no doc " alt="" coords="3374,251,3505,278"/>
+<area shape="rect" id="node33" href="$test-isposdef_8_c.html" title="no doc " alt="" coords="3529,251,3656,278"/>
+<area shape="rect" id="node34" href="$test-ispossemidef_8_c.html" title="no doc " alt="" coords="3680,251,3839,278"/>
+<area shape="rect" id="node35" href="$test-la-block-lanczos_8_c.html" title="no doc " alt="" coords="3863,251,4042,278"/>
+<area shape="rect" id="node36" href="$test-matrix-domain_8_c.html" title="no real doc. " alt="" coords="4066,251,4237,278"/>
+<area shape="rect" id="node37" href="$test-matrix-stream_8_c.html" title="no doc " alt="" coords="4261,251,4431,278"/>
+<area shape="rect" id="node38" href="$test-mg-block-lanczos_8_c.html" title="no doc " alt="" coords="4455,251,4645,278"/>
+<area shape="rect" id="node39" href="$test-minpoly_8_c.html" title="no doc " alt="" coords="4669,251,4791,278"/>
+<area shape="rect" id="node40" href="$test-moore-penrose_8_c.html" title="no doc. " alt="" coords="4815,251,4989,278"/>
+<area shape="rect" id="node41" href="$test-mpi-comm_8_c.html" title="Check MPI communicator interface. " alt="" coords="5014,251,5158,278"/>
+<area shape="rect" id="node42" href="$test-rat-minpoly_8_c.html" title="no doc " alt="" coords="5182,251,5329,278"/>
+<area shape="rect" id="node43" href="$test-rat-solve_8_c.html" title="no doc " alt="" coords="5353,251,5486,278"/>
+<area shape="rect" id="node44" href="$test-regression_8_c.html" title="tests former bugs to check that no regression made them show up again. " alt="" coords="5510,251,5651,278"/>
+<area shape="rect" id="node45" href="$test-solve_8_c.html" title="no doc " alt="" coords="5675,251,5782,278"/>
+<area shape="rect" id="node46" href="$test-sparse_8_c.html" title="no doc " alt="" coords="5807,251,5923,278"/>
+</map>

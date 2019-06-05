@@ -1,0 +1,51 @@
+<map id="solution&#45;tags.h" name="solution&#45;tags.h">
+<area shape="rect" id="node2" href="$diagonal_8h.html" title="Random diagonal matrices and diagonal matrices Class especially meant for diagonal precondtionners..." alt="" coords="2762,237,2850,263"/>
+<area shape="rect" id="node32" href="$toeplitz_8h.html" title="Partial Specialization of Toeplitz for Dense vectors from an FFT based on Shoup&#39;s NTL library..." alt="" coords="3679,80,3765,107"/>
+<area shape="rect" id="node34" href="$zo-gf2_8inl.html" title="NO DOC. " alt="" coords="3790,80,3873,107"/>
+<area shape="rect" id="node35" href="$sparse-generic_8h.html" title="sparse&#45;generic.h" alt="" coords="2237,80,2372,107"/>
+<area shape="rect" id="node3" href="$diagonal-gf2_8h.html" title="Random diagonal matrices and diagonal matrices Class especially meant for diagonal precondtionners..." alt="" coords="2749,326,2863,353"/>
+<area shape="rect" id="node4" href="$det_8h.html" title="NO DOC. " alt="" coords="790,326,849,353"/>
+<area shape="rect" id="node12" href="$test-butterfly_8_c.html" title="no doc " alt="" coords="1569,408,1699,435"/>
+<area shape="rect" id="node13" href="$test-det_8_c.html" title="no doc " alt="" coords="1449,408,1545,435"/>
+<area shape="rect" id="node18" href="$omp__block__rank_8_c.html" title="omp_block_rank.C" alt="" coords="2407,326,2549,353"/>
+<area shape="rect" id="node19" href="$test-block-wiedemann_8_c.html" title="no doc. " alt="" coords="2039,326,2229,353"/>
+<area shape="rect" id="node20" href="$test-diagonal_8_c.html" title="no doc " alt="" coords="2888,326,3015,353"/>
+<area shape="rect" id="node21" href="$test-dif_8_c.html" title="no doc " alt="" coords="3091,326,3177,353"/>
+<area shape="rect" id="node22" href="$test-fibb_8_c.html" title="no doc " alt="" coords="3202,326,3298,353"/>
+<area shape="rect" id="node23" href="$test-getentry_8_c.html" title="no doc " alt="" coords="2253,326,2383,353"/>
+<area shape="rect" id="node24" href="$test-inverse_8_c.html" title="no doc " alt="" coords="3323,326,3444,353"/>
+<area shape="rect" id="node25" href="$test-qlup_8_c.html" title="tests LQUP decomposition, solve, and nullspace of a random sparse matrice. " alt="" coords="873,326,971,353"/>
+<area shape="rect" id="node26" href="$test-rank_8h.html" title="no doc " alt="" coords="1917,326,2015,353"/>
+<area shape="rect" id="node29" href="$test-rational-solver-adaptive_8_c.html" title="no doc " alt="" coords="3469,319,3623,360"/>
+<area shape="rect" id="node30" href="$test-rational-solver_8_c.html" title="no doc. " alt="" coords="3648,326,3815,353"/>
+<area shape="rect" id="node31" href="$test-sum_8_c.html" title="no doc " alt="" coords="2624,326,2724,353"/>
+<area shape="rect" id="node5" href="$bbcharpoly_8h.html" title="no doc. " alt="" coords="357,408,461,435"/>
+<area shape="rect" id="node6" href="$athadet_8_c.html" title="athadet.C" alt="" coords="1106,408,1197,435"/>
+<area shape="rect" id="node7" href="$det_8_c.html" title="examples/det.C " alt="" coords="1221,408,1281,435"/>
+<area shape="rect" id="node8" href="$doubledet_8_c.html" title="doubledet.C" alt="" coords="978,408,1082,435"/>
+<area shape="rect" id="node9" href="$mpidet_8_c.html" title="mpidet.C" alt="" coords="1305,408,1389,435"/>
+<area shape="rect" id="node10" href="$sparseelimdet_8_c.html" title="sparseelimdet.C" alt="" coords="5,408,137,435"/>
+<area shape="rect" id="node11" href="$tutorial_8_c.html" title="tutorial.C" alt="" coords="722,408,807,435"/>
+<area shape="rect" id="node14" href="$test-matrix-domain_8_c.html" title="no real doc. " alt="" coords="162,408,333,435"/>
+<area shape="rect" id="node15" href="$test-smith-form-iliopoulos_8_c.html" title="no doc. " alt="" coords="485,408,697,435"/>
+<area shape="rect" id="node16" href="$test-toeplitz-det_8_c.html" title="no doc " alt="" coords="1723,408,1878,435"/>
+<area shape="rect" id="node17" href="$test-tutorial_8_c.html" title="no doc " alt="" coords="832,408,953,435"/>
+<area shape="rect" id="node27" href="$test-rank-md_8_c.html" title="no doc " alt="" coords="1903,408,2029,435"/>
+<area shape="rect" id="node28" href="$test-rank-u32_8_c.html" title="no doc " alt="" coords="2054,408,2185,435"/>
+<area shape="rect" id="node33" href="$test-ntl-toeplitz_8_c.html" title="no doc. " alt="" coords="3890,155,4039,181"/>
+<area shape="rect" id="node36" href="$sparse-matrix_8h.html" title="A SparseMatrix&lt;_Field, _Storage&gt; .... " alt="" coords="1321,155,1449,181"/>
+<area shape="rect" id="node37" href="$blackbox-block-container-base_8h.html" title="NO DOC. " alt="" coords="780,229,971,271"/>
+<area shape="rect" id="node38" href="$gauss_8h.html" title="Gauss elimination and applications for sparse matrices. " alt="" coords="633,237,705,263"/>
+<area shape="rect" id="node39" href="$matrix-hom_8h.html" title="Matrix Homomorphism A map function converts a matrix on a field/ring to its natural image in another ..." alt="" coords="444,237,557,263"/>
+<area shape="rect" id="node40" href="$matrix-rank_8h.html" title="Computes the rank of a matrix by Gaussian Elimination, in place. " alt="" coords="553,326,665,353"/>
+<area shape="rect" id="node41" href="$wiedemann_8h.html" title="minpoly computation and Wiedeman solvers. " alt="" coords="316,326,427,353"/>
+<area shape="rect" id="node42" href="$smith-form-valence_8h.html" title="smith&#45;form&#45;valence.h" alt="" coords="1046,237,1214,263"/>
+<area shape="rect" id="node43" href="$whisart__trace_8h.html" title="Whisart trace Computes the trace of D1 B D2 B^T D1 or D1 B^T D2 B D1. " alt="" coords="2415,237,2541,263"/>
+<area shape="rect" id="node44" href="$charpoly_8_c.html" title="charpoly.C" alt="" coords="1339,237,1430,263"/>
+<area shape="rect" id="node45" href="$minpoly_8_c.html" title="minpoly.C" alt="" coords="1454,237,1539,263"/>
+<area shape="rect" id="node46" href="$power__rank_8_c.html" title="power_rank.C" alt="" coords="1563,237,1675,263"/>
+<area shape="rect" id="node47" href="$poweroftwo__ranks_8_c.html" title="poweroftwo_ranks.C" alt="" coords="1700,237,1859,263"/>
+<area shape="rect" id="node48" href="$qchar_8_c.html" title="qchar.C" alt="" coords="1883,237,1955,263"/>
+<area shape="rect" id="node49" href="$rank_8_c.html" title="rank.C" alt="" coords="1979,237,2043,263"/>
+<area shape="rect" id="node50" href="$smithsparse_8_c.html" title="smithsparse.C" alt="" coords="2068,237,2187,263"/>
+</map>

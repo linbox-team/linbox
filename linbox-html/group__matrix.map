@@ -1,0 +1,8 @@
+<map id="matrix" name="matrix">
+<area shape="rect" id="node2" href="$group__matrixiterators.html" title="NO DOC YET. " alt="" coords="263,5,345,32"/>
+<area shape="rect" id="node3" href="$group__sparsematrix.html" title="These are sparse matrix reprensentations. " alt="" coords="247,56,361,83"/>
+<area shape="rect" id="node4" href="$group__sliced3.html" title="These are files related to a special bitsliced GF(3) representation. " alt="" coords="250,107,358,133"/>
+<area shape="rect" id="node5" href="$group__permutationmatrix.html" title="These are permutation matrix reprensentations. " alt="" coords="227,157,381,184"/>
+<area shape="rect" id="node6" href="$group__matrixdomain.html" title="Matrix domain operations. " alt="" coords="244,208,364,235"/>
+<area shape="rect" id="node7" href="$group__densematrix.html" title="These are dense matrix reprensentations. " alt="" coords="247,259,361,285"/>
+</map>

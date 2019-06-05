@@ -2,11 +2,12 @@ When updating the website, please also make an up-to-date version of the html
 documentation:  in a linbox installation, 
 make the html docs and copy the html directory to here.
 
-1. cd <path>/linbox/doc
+1. cd <path>/linbox ; git checkout master
 
-2. make doc
+2. (cd doc; make docs)
 
-3. cd ~linbox
+3. cd <path>/www-linbox ; git checkout gh-pages
 
-4  cp -r <path>/linbox/doc/html html
+4. rsync --verbose --update --recursive --links --times <path>/linbox/doc/linbox-html . 
 
+5. git commit -a ; git pull ; git push

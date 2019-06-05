@@ -1,0 +1,24 @@
+<map id="matrix&#45;hom.h" name="matrix&#45;hom.h">
+<area shape="rect" id="node2" href="$bbcharpoly_8h.html" title="no doc. " alt="" coords="563,162,667,189"/>
+<area shape="rect" id="node3" href="$matrix-rank_8h.html" title="Computes the rank of a matrix by Gaussian Elimination, in place. " alt="" coords="291,80,403,107"/>
+<area shape="rect" id="node7" href="$minpoly-integer_8h.html" title="Compute the minpoly of a matrix over an integer ring using modular arithmetic. " alt="" coords="1100,80,1239,107"/>
+<area shape="rect" id="node8" href="$wiedemann_8h.html" title="minpoly computation and Wiedeman solvers. " alt="" coords="1263,80,1374,107"/>
+<area shape="rect" id="node9" href="$det_8h.html" title="NO DOC. " alt="" coords="1399,80,1457,107"/>
+<area shape="rect" id="node19" href="$test-smith-form-iliopoulos_8_c.html" title="no doc. " alt="" coords="2187,162,2399,189"/>
+<area shape="rect" id="node22" href="$samplebb_8_c.html" title="samplebb.C" alt="" coords="1533,80,1633,107"/>
+<area shape="rect" id="node23" href="$smith_8_c.html" title="smith.C" alt="" coords="1656,80,1731,107"/>
+<area shape="rect" id="node4" href="$test-last-invariant-factor_8_c.html" title="no doc " alt="" coords="5,155,152,196"/>
+<area shape="rect" id="node5" href="$test-one-invariant-factor_8_c.html" title="no doc " alt="" coords="176,155,323,196"/>
+<area shape="rect" id="node6" href="$test-smith-form-binary_8_c.html" title="Test the EGV divide and conquer SNF alg. " alt="" coords="347,162,538,189"/>
+<area shape="rect" id="node10" href="$athadet_8_c.html" title="athadet.C" alt="" coords="1595,162,1685,189"/>
+<area shape="rect" id="node11" href="$det_8_c.html" title="examples/det.C " alt="" coords="1710,162,1770,189"/>
+<area shape="rect" id="node12" href="$doubledet_8_c.html" title="doubledet.C" alt="" coords="1795,162,1899,189"/>
+<area shape="rect" id="node13" href="$mpidet_8_c.html" title="mpidet.C" alt="" coords="1923,162,2007,189"/>
+<area shape="rect" id="node14" href="$sparseelimdet_8_c.html" title="sparseelimdet.C" alt="" coords="2031,162,2163,189"/>
+<area shape="rect" id="node15" href="$tutorial_8_c.html" title="tutorial.C" alt="" coords="691,162,776,189"/>
+<area shape="rect" id="node16" href="$test-butterfly_8_c.html" title="no doc " alt="" coords="800,162,931,189"/>
+<area shape="rect" id="node17" href="$test-det_8_c.html" title="no doc " alt="" coords="955,162,1051,189"/>
+<area shape="rect" id="node18" href="$test-matrix-domain_8_c.html" title="no real doc. " alt="" coords="1075,162,1245,189"/>
+<area shape="rect" id="node20" href="$test-toeplitz-det_8_c.html" title="no doc " alt="" coords="1269,162,1424,189"/>
+<area shape="rect" id="node21" href="$test-tutorial_8_c.html" title="no doc " alt="" coords="1449,162,1570,189"/>
+</map>

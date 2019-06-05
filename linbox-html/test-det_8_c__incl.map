@@ -1,0 +1,29 @@
+<map id="test&#45;det.C" name="test&#45;det.C">
+<area shape="rect" id="node2" href="$linbox-config_8h.html" title="linbox base configuration file " alt="" coords="876,519,1036,546"/>
+<area shape="rect" id="node11" href="$commentator_8h.html" title="Reports information to the user. " alt="" coords="3163,341,3357,367"/>
+<area shape="rect" id="node21" href="$blas-vector_8h.html" title="A BlasVector&lt;_Field &gt; represents a vector as an array of _Field::Elements. " alt="" coords="648,244,787,285"/>
+<area shape="rect" id="node31" href="$diagonal_8h.html" title="Random diagonal matrices and diagonal matrices Class especially meant for diagonal precondtionners..." alt="" coords="476,162,668,189"/>
+<area shape="rect" id="node35" href="$sparse-matrix_8h.html" title="A SparseMatrix&lt;_Field, _Storage&gt; .... " alt="" coords="1939,244,2095,285"/>
+<area shape="rect" id="node44" href="$det_8h.html" title="NO DOC. " alt="" coords="1167,80,1329,107"/>
+<area shape="rect" id="node22" href="$debug_8h.html" title="Various utilities for debugging. " alt="" coords="1649,430,1791,457"/>
+<area shape="rect" id="node26" href="$linbox-tags_8h.html" title="Provides tags for various algorithms/solutions, à la FFLAS. " alt="" coords="501,430,651,457"/>
+<area shape="rect" id="node28" href="$vector_8h.html" title="A DenseVector&lt;_Field &gt; is default dense vector of _Field::Elements. " alt="" coords="617,341,786,367"/>
+<area shape="rect" id="node29" href="$vector-traits_8h.html" title="vector traits " alt="" coords="1466,423,1625,464"/>
+<area shape="rect" id="node32" href="$solution-tags_8h.html" title="This allows files defining objects that have traits concerning several solutions to get the tags and ..." alt="" coords="297,423,476,464"/>
+<area shape="rect" id="node33" href="$dense-matrix_8h.html" title="NODOC. " alt="" coords="862,244,1015,285"/>
+<area shape="rect" id="node34" href="$matrix-domain_8h.html" title="NODOC. " alt="" coords="778,423,934,464"/>
+<area shape="rect" id="node36" href="$read-write-sparse_8h.html" title="linbox/matrix/sparsematrix\l/read&#45;write&#45;sparse.h" alt="" coords="1939,333,2139,375"/>
+<area shape="rect" id="node37" href="$sparse-generic_8h.html" title="linbox/matrix/sparsematrix\l/sparse&#45;generic.h" alt="" coords="1136,333,1336,375"/>
+<area shape="rect" id="node38" href="$sparse-coo-matrix_8h.html" title="linbox/matrix/sparsematrix\l/sparse&#45;coo&#45;matrix.h" alt="" coords="2437,333,2637,375"/>
+<area shape="rect" id="node39" href="$sparse-csr-matrix_8h.html" title="linbox/matrix/sparsematrix\l/sparse&#45;csr&#45;matrix.h" alt="" coords="2213,333,2413,375"/>
+<area shape="rect" id="node40" href="$sparse-ell-matrix_8h.html" title="linbox/matrix/sparsematrix\l/sparse&#45;ell&#45;matrix.h" alt="" coords="2661,333,2861,375"/>
+<area shape="rect" id="node41" href="$sparse-ellr-matrix_8h.html" title="linbox/matrix/sparsematrix\l/sparse&#45;ellr&#45;matrix.h" alt="" coords="1664,333,1864,375"/>
+<area shape="rect" id="node42" href="$sparse-map-map-matrix_8h.html" title="Supports fast elementary row AND column operations simultaneously. " alt="" coords="2885,333,3088,375"/>
+<area shape="rect" id="node43" href="$sparse-tpl-matrix_8h.html" title="A SparseMatrix&lt;_Field, SparseMatrixFormat::TPL &gt; is a vector of (i,j,value) triples. " alt="" coords="861,333,1061,375"/>
+<area shape="rect" id="node45" href="$gauss_8h.html" title="Gauss elimination and applications for sparse matrices. " alt="" coords="1749,162,1937,189"/>
+<area shape="rect" id="node46" href="$modular_8h.html" title="A Givaro::Modular ring is a representations of Z/mZ. " alt="" coords="1351,162,1507,189"/>
+<area shape="rect" id="node47" href="$cra-domain_8h.html" title="Wrapper around OMP/SEQ version of ChineseRemainder. " alt="" coords="1039,244,1198,285"/>
+<area shape="rect" id="node48" href="$cra-builder-single_8h.html" title="Chinese remaindering of a single value. " alt="" coords="1169,155,1327,196"/>
+<area shape="rect" id="node49" href="$random-prime_8h.html" title="Generates random positive prime Integers. " alt="" coords="1613,244,1784,285"/>
+<area shape="rect" id="node50" href="$matrix-hom_8h.html" title="Matrix Homomorphism A map function converts a matrix on a field/ring to its natural image in another ..." alt="" coords="910,155,1093,196"/>
+</map>

@@ -1,0 +1,30 @@
+<map id="lifting&#45;container.h" name="lifting&#45;container.h">
+<area shape="rect" id="node3" href="$linbox-config_8h.html" title="linbox base configuration file " alt="" coords="3309,705,3469,732"/>
+<area shape="rect" id="node9" href="$debug_8h.html" title="Various utilities for debugging. " alt="" coords="1911,623,2053,650"/>
+<area shape="rect" id="node13" href="$blackbox-block-container_8h.html" title="no doc. " alt="" coords="1899,80,2095,121"/>
+<area shape="rect" id="node22" href="$matrix-domain_8h.html" title="NODOC. " alt="" coords="2111,437,2267,479"/>
+<area shape="rect" id="node44" href="$gauss_8h.html" title="Gauss elimination and applications for sparse matrices. " alt="" coords="1259,177,1447,203"/>
+<area shape="rect" id="node14" href="$blackbox-block-container-base_8h.html" title="NO DOC. " alt="" coords="2076,169,2272,211"/>
+<area shape="rect" id="node40" href="$dense-matrix_8h.html" title="NODOC. " alt="" coords="3695,348,3848,389"/>
+<area shape="rect" id="node42" href="$timer_8h.html" title="LinBox timer is Givaro&#39;s. " alt="" coords="1745,177,1883,203"/>
+<area shape="rect" id="node17" href="$blackbox_2archetype_8h.html" title="NO DOC. " alt="" coords="2149,705,2357,732"/>
+<area shape="rect" id="node18" href="$sparse-matrix_8h.html" title="A SparseMatrix&lt;_Field, _Storage&gt; .... " alt="" coords="2569,259,2725,300"/>
+<area shape="rect" id="node19" href="$read-write-sparse_8h.html" title="linbox/matrix/sparsematrix\l/read&#45;write&#45;sparse.h" alt="" coords="2211,348,2411,389"/>
+<area shape="rect" id="node20" href="$sparse-generic_8h.html" title="linbox/matrix/sparsematrix\l/sparse&#45;generic.h" alt="" coords="2435,348,2635,389"/>
+<area shape="rect" id="node33" href="$sparse-coo-matrix_8h.html" title="linbox/matrix/sparsematrix\l/sparse&#45;coo&#45;matrix.h" alt="" coords="3273,527,3473,568"/>
+<area shape="rect" id="node34" href="$sparse-csr-matrix_8h.html" title="linbox/matrix/sparsematrix\l/sparse&#45;csr&#45;matrix.h" alt="" coords="3049,527,3249,568"/>
+<area shape="rect" id="node35" href="$sparse-ell-matrix_8h.html" title="linbox/matrix/sparsematrix\l/sparse&#45;ell&#45;matrix.h" alt="" coords="3497,527,3697,568"/>
+<area shape="rect" id="node36" href="$sparse-ellr-matrix_8h.html" title="linbox/matrix/sparsematrix\l/sparse&#45;ellr&#45;matrix.h" alt="" coords="2723,527,2923,568"/>
+<area shape="rect" id="node37" href="$sparse-map-map-matrix_8h.html" title="Supports fast elementary row AND column operations simultaneously. " alt="" coords="1033,527,1235,568"/>
+<area shape="rect" id="node39" href="$sparse-tpl-matrix_8h.html" title="A SparseMatrix&lt;_Field, SparseMatrixFormat::TPL &gt; is a vector of (i,j,value) triples. " alt="" coords="2659,348,2859,389"/>
+<area shape="rect" id="node26" href="$vector-traits_8h.html" title="vector traits " alt="" coords="1583,437,1741,479"/>
+<area shape="rect" id="node23" href="$matrixdomain_2matrix-domain_8h.html" title="NO DOC. " alt="" coords="2292,616,2496,657"/>
+<area shape="rect" id="node24" href="$opencl-domain_8h.html" title="NO DOC. " alt="" coords="2020,527,2224,568"/>
+<area shape="rect" id="node29" href="$field_2archetype_8h.html" title="NO DOC. " alt="" coords="1411,534,1590,561"/>
+<area shape="rect" id="node30" href="$element_2archetype_8h.html" title="NO DOC. " alt="" coords="1299,623,1507,650"/>
+<area shape="rect" id="node31" href="$integer_8h.html" title="This is a representation of arbitrary integers. " alt="" coords="2572,623,2696,650"/>
+<area shape="rect" id="node32" href="$randiter_2archetype_8h.html" title="NO DOC. " alt="" coords="1531,623,1734,650"/>
+<area shape="rect" id="node41" href="$blas-matrix_8h.html" title="A BlasMatrix&lt;_Field &gt; represents a matrix as an array of _Field::Elements. " alt="" coords="2350,527,2547,568"/>
+<area shape="rect" id="node45" href="$commentator_8h.html" title="Reports information to the user. " alt="" coords="391,534,586,561"/>
+<area shape="rect" id="node50" href="$matrix_2archetype_8h.html" title="NO DOC. " alt="" coords="814,534,1009,561"/>
+</map>

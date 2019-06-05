@@ -1,0 +1,32 @@
+<map id="benchmark&#45;example.C" name="benchmark&#45;example.C">
+<area shape="rect" id="node2" href="$benchmark_8h.html" title="Common header to ease benchmarking routines. " alt="" coords="3341,177,3535,203"/>
+<area shape="rect" id="node28" href="$modular_8h.html" title="A Givaro::Modular ring is a representations of Z/mZ. " alt="" coords="5,370,161,397"/>
+<area shape="rect" id="node29" href="$matrix_2random-matrix_8h.html" title="Implementation of random matrices. " alt="" coords="973,80,1135,121"/>
+<area shape="rect" id="node30" href="$dense-matrix_8h.html" title="NODOC. " alt="" coords="719,169,872,211"/>
+<area shape="rect" id="node37" href="$matrix-domain_8h.html" title="NODOC. " alt="" coords="1040,266,1196,307"/>
+<area shape="rect" id="node42" href="$sparse-matrix_8h.html" title="A SparseMatrix&lt;_Field, _Storage&gt; .... " alt="" coords="1929,80,2085,121"/>
+<area shape="rect" id="node3" href="$linbox-config_8h.html" title="linbox base configuration file " alt="" coords="1222,459,1382,486"/>
+<area shape="rect" id="node10" href="$integer_8h.html" title="This is a representation of arbitrary integers. " alt="" coords="3136,370,3260,397"/>
+<area shape="rect" id="node15" href="$debug_8h.html" title="Various utilities for debugging. " alt="" coords="2041,459,2184,486"/>
+<area shape="rect" id="node18" href="$timer_8h.html" title="LinBox timer is Givaro&#39;s. " alt="" coords="2675,370,2812,397"/>
+<area shape="rect" id="node24" href="$benchmark-utils_8h.html" title="utils " alt="" coords="3831,370,3973,397"/>
+<area shape="rect" id="node25" href="$benchmark-metadata_8h.html" title="metadata " alt="" coords="3875,273,4057,300"/>
+<area shape="rect" id="node26" href="$benchmark_8inl.html" title="Common header to ease benchmarking routines. " alt="" coords="3068,273,3267,300"/>
+<area shape="rect" id="node35" href="$random-prime_8h.html" title="Generates random positive prime Integers. " alt="" coords="2121,266,2291,307"/>
+<area shape="rect" id="node36" href="$permutation-matrix_8h.html" title="linbox/matrix/permutation\l&#45;matrix.h" alt="" coords="169,452,365,493"/>
+<area shape="rect" id="node39" href="$cra-domain_8h.html" title="Wrapper around OMP/SEQ version of ChineseRemainder. " alt="" coords="2417,169,2576,211"/>
+<area shape="rect" id="node40" href="$cra-builder-full-multip-fixed_8h.html" title="CRA for multi&#45;residues. " alt="" coords="2507,259,2665,315"/>
+<area shape="rect" id="node41" href="$random-matrix_8inl.html" title="Implementation of random matrices. " alt="" coords="998,169,1161,211"/>
+<area shape="rect" id="node31" href="$vector-traits_8h.html" title="vector traits " alt="" coords="384,266,543,307"/>
+<area shape="rect" id="node32" href="$blas-matrix_8h.html" title="A BlasMatrix&lt;_Field &gt; represents a matrix as an array of _Field::Elements. " alt="" coords="621,266,818,307"/>
+<area shape="rect" id="node34" href="$matrixdomain_2matrix-domain_8h.html" title="NO DOC. " alt="" coords="611,363,815,404"/>
+<area shape="rect" id="node38" href="$opencl-domain_8h.html" title="NO DOC. " alt="" coords="941,363,1145,404"/>
+<area shape="rect" id="node43" href="$read-write-sparse_8h.html" title="linbox/matrix/sparsematrix\l/read&#45;write&#45;sparse.h" alt="" coords="2601,169,2801,211"/>
+<area shape="rect" id="node44" href="$sparse-generic_8h.html" title="linbox/matrix/sparsematrix\l/sparse&#45;generic.h" alt="" coords="1185,169,1385,211"/>
+<area shape="rect" id="node45" href="$sparse-coo-matrix_8h.html" title="linbox/matrix/sparsematrix\l/sparse&#45;coo&#45;matrix.h" alt="" coords="1799,363,1999,404"/>
+<area shape="rect" id="node46" href="$sparse-csr-matrix_8h.html" title="linbox/matrix/sparsematrix\l/sparse&#45;csr&#45;matrix.h" alt="" coords="2450,363,2650,404"/>
+<area shape="rect" id="node47" href="$sparse-ell-matrix_8h.html" title="linbox/matrix/sparsematrix\l/sparse&#45;ell&#45;matrix.h" alt="" coords="1575,363,1775,404"/>
+<area shape="rect" id="node48" href="$sparse-ellr-matrix_8h.html" title="linbox/matrix/sparsematrix\l/sparse&#45;ellr&#45;matrix.h" alt="" coords="2226,363,2426,404"/>
+<area shape="rect" id="node49" href="$sparse-map-map-matrix_8h.html" title="Supports fast elementary row AND column operations simultaneously. " alt="" coords="2741,266,2943,307"/>
+<area shape="rect" id="node50" href="$sparse-tpl-matrix_8h.html" title="A SparseMatrix&lt;_Field, SparseMatrixFormat::TPL &gt; is a vector of (i,j,value) triples. " alt="" coords="1409,169,1609,211"/>
+</map>

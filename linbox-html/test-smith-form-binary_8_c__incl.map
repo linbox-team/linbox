@@ -1,0 +1,29 @@
+<map id="test&#45;smith&#45;form&#45;binary.C" name="test&#45;smith&#45;form&#45;binary.C">
+<area shape="rect" id="node2" href="$linbox-config_8h.html" title="linbox base configuration file " alt="" coords="2493,445,2653,471"/>
+<area shape="rect" id="node8" href="$random-prime_8h.html" title="Generates random positive prime Integers. " alt="" coords="522,259,693,300"/>
+<area shape="rect" id="node19" href="$matrix-rank_8h.html" title="Computes the rank of a matrix by Gaussian Elimination, in place. " alt="" coords="645,80,828,121"/>
+<area shape="rect" id="node39" href="$smith-form-binary_8h.html" title="Implementation of EGV and EGV+ algorithm. " alt="" coords="2654,259,2830,300"/>
+<area shape="rect" id="node41" href="$commentator_8h.html" title="Reports information to the user. " alt="" coords="3702,355,3897,382"/>
+<area shape="rect" id="node46" href="$scompose_8h.html" title="Implemenatation of EGV and EGV+ algorithm. " alt="" coords="1107,177,1313,203"/>
+<area shape="rect" id="node47" href="$rational-solver_8h.html" title="Rational solving (Dixon, Wiedemann,...) " alt="" coords="3003,259,3191,300"/>
+<area shape="rect" id="node50" href="$test-smith-form_8h.html" title="tools for making matrix with known SNF. " alt="" coords="3581,266,3727,293"/>
+<area shape="rect" id="node11" href="$timer_8h.html" title="LinBox timer is Givaro&#39;s. " alt="" coords="3028,355,3165,382"/>
+<area shape="rect" id="node14" href="$debug_8h.html" title="Various utilities for debugging. " alt="" coords="1460,445,1603,471"/>
+<area shape="rect" id="node20" href="$sparse-matrix_8h.html" title="A SparseMatrix&lt;_Field, _Storage&gt; .... " alt="" coords="1501,259,1657,300"/>
+<area shape="rect" id="node34" href="$matrix-hom_8h.html" title="Matrix Homomorphism A map function converts a matrix on a field/ring to its natural image in another ..." alt="" coords="2372,169,2555,211"/>
+<area shape="rect" id="node21" href="$read-write-sparse_8h.html" title="linbox/matrix/sparsematrix\l/read&#45;write&#45;sparse.h" alt="" coords="818,348,1018,389"/>
+<area shape="rect" id="node22" href="$sparse-generic_8h.html" title="linbox/matrix/sparsematrix\l/sparse&#45;generic.h" alt="" coords="2039,348,2239,389"/>
+<area shape="rect" id="node27" href="$sparse-coo-matrix_8h.html" title="linbox/matrix/sparsematrix\l/sparse&#45;coo&#45;matrix.h" alt="" coords="1042,348,1242,389"/>
+<area shape="rect" id="node28" href="$sparse-csr-matrix_8h.html" title="linbox/matrix/sparsematrix\l/sparse&#45;csr&#45;matrix.h" alt="" coords="1815,348,2015,389"/>
+<area shape="rect" id="node29" href="$sparse-ell-matrix_8h.html" title="linbox/matrix/sparsematrix\l/sparse&#45;ell&#45;matrix.h" alt="" coords="1591,348,1791,389"/>
+<area shape="rect" id="node30" href="$sparse-ellr-matrix_8h.html" title="linbox/matrix/sparsematrix\l/sparse&#45;ellr&#45;matrix.h" alt="" coords="1367,348,1567,389"/>
+<area shape="rect" id="node31" href="$sparse-map-map-matrix_8h.html" title="Supports fast elementary row AND column operations simultaneously. " alt="" coords="2699,348,2902,389"/>
+<area shape="rect" id="node33" href="$sparse-tpl-matrix_8h.html" title="A SparseMatrix&lt;_Field, SparseMatrixFormat::TPL &gt; is a vector of (i,j,value) triples. " alt="" coords="442,348,642,389"/>
+<area shape="rect" id="node24" href="$vector-traits_8h.html" title="vector traits " alt="" coords="2677,437,2836,479"/>
+<area shape="rect" id="node35" href="$integer_8h.html" title="This is a representation of arbitrary integers. " alt="" coords="2855,266,2979,293"/>
+<area shape="rect" id="node36" href="$dense-matrix_8h.html" title="NODOC. " alt="" coords="3423,348,3576,389"/>
+<area shape="rect" id="node37" href="$blackbox_8h.html" title="File including all of LinBox blackboxes. " alt="" coords="2433,266,2629,293"/>
+<area shape="rect" id="node38" href="$blas-vector_8h.html" title="A BlasVector&lt;_Field &gt; represents a vector as an array of _Field::Elements. " alt="" coords="2486,348,2625,389"/>
+<area shape="rect" id="node40" href="$default_8h.html" title="define some const " alt="" coords="2263,355,2461,382"/>
+<area shape="rect" id="node48" href="$blackbox_2archetype_8h.html" title="NO DOC. " alt="" coords="3190,355,3398,382"/>
+</map>

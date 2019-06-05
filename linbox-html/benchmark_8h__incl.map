@@ -1,0 +1,9 @@
+<map id="benchmark.h" name="benchmark.h">
+<area shape="rect" id="node2" href="$linbox-config_8h.html" title="linbox base configuration file " alt="" coords="145,229,305,256"/>
+<area shape="rect" id="node9" href="$integer_8h.html" title="This is a representation of arbitrary integers. " alt="" coords="852,155,976,181"/>
+<area shape="rect" id="node14" href="$debug_8h.html" title="Various utilities for debugging. " alt="" coords="1061,155,1204,181"/>
+<area shape="rect" id="node19" href="$timer_8h.html" title="LinBox timer is Givaro&#39;s. " alt="" coords="1228,155,1365,181"/>
+<area shape="rect" id="node27" href="$benchmark-utils_8h.html" title="utils " alt="" coords="1807,155,1949,181"/>
+<area shape="rect" id="node28" href="$benchmark-metadata_8h.html" title="metadata " alt="" coords="1739,80,1921,107"/>
+<area shape="rect" id="node29" href="$benchmark_8inl.html" title="Common header to ease benchmarking routines. " alt="" coords="1033,80,1232,107"/>
+</map>

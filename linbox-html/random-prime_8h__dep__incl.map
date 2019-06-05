@@ -1,0 +1,32 @@
+<map id="random&#45;prime.h" name="random&#45;prime.h">
+<area shape="rect" id="node2" href="$bbcharpoly_8h.html" title="no doc. " alt="" coords="5,177,109,203"/>
+<area shape="rect" id="node3" href="$matrix-rank_8h.html" title="Computes the rank of a matrix by Gaussian Elimination, in place. " alt="" coords="2016,87,2128,114"/>
+<area shape="rect" id="node4" href="$test-last-invariant-factor_8_c.html" title="no doc " alt="" coords="1865,169,2012,211"/>
+<area shape="rect" id="node5" href="$test-one-invariant-factor_8_c.html" title="no doc " alt="" coords="2036,169,2183,211"/>
+<area shape="rect" id="node6" href="$test-smith-form-binary_8_c.html" title="Test the EGV divide and conquer SNF alg. " alt="" coords="2207,177,2398,203"/>
+<area shape="rect" id="node7" href="$minpoly-integer_8h.html" title="Compute the minpoly of a matrix over an integer ring using modular arithmetic. " alt="" coords="2253,87,2392,114"/>
+<area shape="rect" id="node8" href="$matrix_2random-matrix_8h.html" title="Implementation of random matrices. " alt="" coords="2417,87,2551,114"/>
+<area shape="rect" id="node13" href="$det_8h.html" title="NO DOC. " alt="" coords="805,87,864,114"/>
+<area shape="rect" id="node23" href="$test-smith-form-iliopoulos_8_c.html" title="no doc. " alt="" coords="1451,177,1663,203"/>
+<area shape="rect" id="node24" href="$test-toeplitz-det_8_c.html" title="no doc " alt="" coords="1687,177,1841,203"/>
+<area shape="rect" id="node26" href="$test-cra_8_c.html" title="We test the various CRA algorithms here. " alt="" coords="2576,87,2669,114"/>
+<area shape="rect" id="node27" href="$test-cradomain_8_c.html" title="tests LinBox::ChineseRemainer " alt="" coords="2693,87,2835,114"/>
+<area shape="rect" id="node28" href="$test-randiter-nonzero-prime_8_c.html" title="no doc " alt="" coords="2859,80,3029,121"/>
+<area shape="rect" id="node29" href="$test-rational-reconstruction-base_8_c.html" title="tests rational reconstruction using rational&#45;cra&#45;var&#45;prec.h . " alt="" coords="3053,80,3267,121"/>
+<area shape="rect" id="node30" href="$test-rational-solver_8_c.html" title="no doc. " alt="" coords="3291,87,3458,114"/>
+<area shape="rect" id="node31" href="$test-smith-form-adaptive_8_c.html" title="no doc " alt="" coords="3482,87,3694,114"/>
+<area shape="rect" id="node9" href="$test-blas-domain_8_c.html" title="no doc " alt="" coords="2423,177,2575,203"/>
+<area shape="rect" id="node10" href="$test-mpi-comm_8_c.html" title="Check MPI communicator interface. " alt="" coords="2599,177,2743,203"/>
+<area shape="rect" id="node11" href="$test-toom-cook_8_c.html" title="toom&#45;cook multiplication routine " alt="" coords="2767,177,2913,203"/>
+<area shape="rect" id="node12" href="$benchmark-example_8_c.html" title="Benchmarking example. " alt="" coords="2937,177,3111,203"/>
+<area shape="rect" id="node14" href="$athadet_8_c.html" title="athadet.C" alt="" coords="133,177,224,203"/>
+<area shape="rect" id="node15" href="$det_8_c.html" title="examples/det.C " alt="" coords="249,177,309,203"/>
+<area shape="rect" id="node16" href="$doubledet_8_c.html" title="doubledet.C" alt="" coords="333,177,437,203"/>
+<area shape="rect" id="node17" href="$mpidet_8_c.html" title="mpidet.C" alt="" coords="462,177,546,203"/>
+<area shape="rect" id="node18" href="$sparseelimdet_8_c.html" title="sparseelimdet.C" alt="" coords="570,177,702,203"/>
+<area shape="rect" id="node19" href="$tutorial_8_c.html" title="tutorial.C" alt="" coords="727,177,812,203"/>
+<area shape="rect" id="node20" href="$test-butterfly_8_c.html" title="no doc " alt="" coords="836,177,967,203"/>
+<area shape="rect" id="node21" href="$test-det_8_c.html" title="no doc " alt="" coords="991,177,1087,203"/>
+<area shape="rect" id="node22" href="$test-matrix-domain_8_c.html" title="no real doc. " alt="" coords="1111,177,1281,203"/>
+<area shape="rect" id="node25" href="$test-tutorial_8_c.html" title="no doc " alt="" coords="1306,177,1427,203"/>
+</map>

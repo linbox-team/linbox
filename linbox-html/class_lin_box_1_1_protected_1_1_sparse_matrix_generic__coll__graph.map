@@ -1,0 +1,6 @@
+<map id="SparseMatrixGeneric&lt; _Field, _Row, Trait &gt;" name="SparseMatrixGeneric&lt; _Field, _Row, Trait &gt;">
+<area shape="rect" id="node2" href="$class_lin_box_1_1_transpose_matrix.html" title="TransposeMatrix\&lt; LinBox\l::Protected::SparseMatrixGeneric\l\&lt; _Field, _Row \&gt; \&gt;" alt="" coords="261,8,513,64"/>
+<area shape="rect" id="node3" href="$class_lin_box_1_1_protected_1_1_sparse_matrix_generic.html" title="SparseMatrixGeneric\l\&lt; _Field, _Row \&gt;" alt="" coords="603,15,766,57"/>
+<area shape="rect" id="node4" href="$class_lin_box_1_1_matrix_domain.html" title="MatrixDomain\&lt; Field \&gt;" alt="" coords="299,136,475,163"/>
+<area shape="rect" id="node5" href="$class_lin_box_1_1_m_v_product_domain.html" title="Helper class to allow specializations of certain matrix&#45;vector products. " alt="" coords="5,136,212,163"/>
+</map>

@@ -1,0 +1,51 @@
+<map id="stream.h" name="stream.h">
+<area shape="rect" id="node2" href="$blas-matrix_8h.html" title="A BlasMatrix&lt;_Field &gt; represents a matrix as an array of _Field::Elements. " alt="" coords="2052,80,2163,107"/>
+<area shape="rect" id="node12" href="$test-butterfly_8_c.html" title="no doc " alt="" coords="2382,415,2513,442"/>
+<area shape="rect" id="node13" href="$test-matrix-domain_8_c.html" title="no real doc. " alt="" coords="3379,415,3550,442"/>
+<area shape="rect" id="node15" href="$test-last-invariant-factor_8_c.html" title="no doc " alt="" coords="3281,319,3427,360"/>
+<area shape="rect" id="node16" href="$test-one-invariant-factor_8_c.html" title="no doc " alt="" coords="3502,319,3649,360"/>
+<area shape="rect" id="node17" href="$test-rational-solver_8_c.html" title="no doc. " alt="" coords="3089,326,3256,353"/>
+<area shape="rect" id="node20" href="$test-smith-form-adaptive_8_c.html" title="no doc " alt="" coords="3673,326,3885,353"/>
+<area shape="rect" id="node23" href="$test-block-wiedemann_8_c.html" title="no doc. " alt="" coords="2109,326,2298,353"/>
+<area shape="rect" id="node24" href="$test-dif_8_c.html" title="no doc " alt="" coords="2323,326,2409,353"/>
+<area shape="rect" id="node25" href="$test-getentry_8_c.html" title="no doc " alt="" coords="2485,326,2615,353"/>
+<area shape="rect" id="node26" href="$test-inverse_8_c.html" title="no doc " alt="" coords="2640,326,2761,353"/>
+<area shape="rect" id="node27" href="$test-rational-solver-adaptive_8_c.html" title="no doc " alt="" coords="2786,319,2941,360"/>
+<area shape="rect" id="node28" href="$test-sum_8_c.html" title="no doc " alt="" coords="2965,326,3065,353"/>
+<area shape="rect" id="node40" href="$dot-product_8_c.html" title="dot&#45;product.C" alt="" coords="3803,80,3921,107"/>
+<area shape="rect" id="node41" href="$benchmark-fields_8_c.html" title="no doc " alt="" coords="3945,80,4096,107"/>
+<area shape="rect" id="node42" href="$test-bitonic-sort_8_c.html" title="no doc. " alt="" coords="4120,80,4271,107"/>
+<area shape="rect" id="node43" href="$test-charpoly_8_c.html" title="tests the characteristic polynomial of sparse and special matrices " alt="" coords="4295,80,4421,107"/>
+<area shape="rect" id="node44" href="$test-la-block-lanczos_8_c.html" title="no doc " alt="" coords="4446,80,4625,107"/>
+<area shape="rect" id="node45" href="$test-mg-block-lanczos_8_c.html" title="no doc " alt="" coords="4649,80,4838,107"/>
+<area shape="rect" id="node46" href="$test-minpoly_8_c.html" title="no doc " alt="" coords="4863,80,4984,107"/>
+<area shape="rect" id="node47" href="$test-moore-penrose_8_c.html" title="no doc. " alt="" coords="5008,80,5183,107"/>
+<area shape="rect" id="node48" href="$test-solve_8_c.html" title="no doc " alt="" coords="5207,80,5314,107"/>
+<area shape="rect" id="node49" href="$test-submatrix_8_c.html" title="no doc. " alt="" coords="5338,80,5477,107"/>
+<area shape="rect" id="node50" href="$test-vector-domain_8_c.html" title="no doc. " alt="" coords="5501,80,5671,107"/>
+<area shape="rect" id="node3" href="$dense-matrix_8h.html" title="NODOC. " alt="" coords="1490,155,1615,181"/>
+<area shape="rect" id="node4" href="$blackbox-block-container-base_8h.html" title="NO DOC. " alt="" coords="195,229,385,271"/>
+<area shape="rect" id="node5" href="$blackbox-block-container_8h.html" title="no doc. " alt="" coords="195,326,396,353"/>
+<area shape="rect" id="node6" href="$test-blackbox-block-container_8_c.html" title="no doc " alt="" coords="148,408,304,449"/>
+<area shape="rect" id="node7" href="$dense-nullspace_8h.html" title="We provide the right or left nullspace (kernel or cokernel) of a dense matrix. " alt="" coords="461,237,604,263"/>
+<area shape="rect" id="node8" href="$mul_8h.html" title="BLAS3 multiplication algorithms. " alt="" coords="629,237,687,263"/>
+<area shape="rect" id="node9" href="$matrix-hom_8h.html" title="Matrix Homomorphism A map function converts a matrix on a field/ring to its natural image in another ..." alt="" coords="1261,237,1375,263"/>
+<area shape="rect" id="node10" href="$det_8h.html" title="NO DOC. " alt="" coords="1809,326,1867,353"/>
+<area shape="rect" id="node11" href="$tutorial_8_c.html" title="tutorial.C" alt="" coords="1399,415,1485,442"/>
+<area shape="rect" id="node14" href="$rational-solver_8h.html" title="Rational solving (Dixon, Wiedemann,...) " alt="" coords="3147,237,3276,263"/>
+<area shape="rect" id="node18" href="$sigma-basis_8h.html" title="&#45;basis (minimal basis). " alt="" coords="871,237,983,263"/>
+<area shape="rect" id="node19" href="$smith-form-adaptive_8h.html" title="Implement the adaptive algorithm for Smith form computation. " alt="" coords="3300,237,3475,263"/>
+<area shape="rect" id="node21" href="$whisart__trace_8h.html" title="Whisart trace Computes the trace of D1 B D2 B^T D1 or D1 B^T D2 B D1. " alt="" coords="1059,237,1185,263"/>
+<area shape="rect" id="node22" href="$diagonal_8h.html" title="Random diagonal matrices and diagonal matrices Class especially meant for diagonal precondtionners..." alt="" coords="2781,237,2869,263"/>
+<area shape="rect" id="node29" href="$blas-matrix-multimod_8h.html" title="A BlasMatrix&lt;_Field &gt; represents a matrix as an array of _Field::Elements. " alt="" coords="1399,237,1578,263"/>
+<area shape="rect" id="node30" href="$matrix_2random-matrix_8h.html" title="Implementation of random matrices. " alt="" coords="712,237,847,263"/>
+<area shape="rect" id="node31" href="$test-blas-domain_8_c.html" title="no doc " alt="" coords="823,326,975,353"/>
+<area shape="rect" id="node32" href="$mats_8_c.html" title="mats.C" alt="" coords="1653,237,1724,263"/>
+<area shape="rect" id="node33" href="$nullspacebasis_8_c.html" title="nullspacebasis.C" alt="" coords="1749,237,1879,263"/>
+<area shape="rect" id="node34" href="$nullspacebasis__rank_8_c.html" title="nullspacebasis_rank.C" alt="" coords="1904,237,2071,263"/>
+<area shape="rect" id="node35" href="$qchar_8_c.html" title="qchar.C" alt="" coords="2095,237,2167,263"/>
+<area shape="rect" id="node36" href="$test-cra_8_c.html" title="We test the various CRA algorithms here. " alt="" coords="2191,237,2285,263"/>
+<area shape="rect" id="node37" href="$test-cradomain_8_c.html" title="tests LinBox::ChineseRemainer " alt="" coords="2309,237,2450,263"/>
+<area shape="rect" id="node38" href="$test-dense-zero-one_8_c.html" title="no doc " alt="" coords="2475,237,2655,263"/>
+<area shape="rect" id="node39" href="$test-dense_8_c.html" title="no doc " alt="" coords="5,237,119,263"/>
+</map>

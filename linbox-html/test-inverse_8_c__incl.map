@@ -1,0 +1,25 @@
+<map id="test&#45;inverse.C" name="test&#45;inverse.C">
+<area shape="rect" id="node2" href="$linbox-config_8h.html" title="linbox base configuration file " alt="" coords="2530,765,2690,792"/>
+<area shape="rect" id="node10" href="$commentator_8h.html" title="Reports information to the user. " alt="" coords="419,505,614,531"/>
+<area shape="rect" id="node19" href="$modular_8h.html" title="A Givaro::Modular ring is a representations of Z/mZ. " alt="" coords="1321,341,1477,367"/>
+<area shape="rect" id="node20" href="$diagonal_8h.html" title="Random diagonal matrices and diagonal matrices Class especially meant for diagonal precondtionners..." alt="" coords="1590,80,1782,107"/>
+<area shape="rect" id="node40" href="$stream_8h.html" title="Generation of sequences of random vectors. " alt="" coords="1020,423,1195,449"/>
+<area shape="rect" id="node49" href="$hilbert_8h.html" title="NO DESC. " alt="" coords="2403,80,2585,107"/>
+<area shape="rect" id="node22" href="$vector-traits_8h.html" title="vector traits " alt="" coords="1301,497,1460,539"/>
+<area shape="rect" id="node27" href="$debug_8h.html" title="Various utilities for debugging. " alt="" coords="1044,683,1187,710"/>
+<area shape="rect" id="node33" href="$blas-vector_8h.html" title="A BlasVector&lt;_Field &gt; represents a vector as an array of _Field::Elements. " alt="" coords="2267,333,2406,375"/>
+<area shape="rect" id="node37" href="$solution-tags_8h.html" title="This allows files defining objects that have traits concerning several solutions to get the tags and ..." alt="" coords="1787,155,1966,196"/>
+<area shape="rect" id="node38" href="$dense-matrix_8h.html" title="NODOC. " alt="" coords="1609,155,1763,196"/>
+<area shape="rect" id="node47" href="$matrix-domain_8h.html" title="NODOC. " alt="" coords="1700,497,1856,539"/>
+<area shape="rect" id="node26" href="$field_2archetype_8h.html" title="NO DOC. " alt="" coords="2066,594,2245,621"/>
+<area shape="rect" id="node30" href="$element_2archetype_8h.html" title="NO DOC. " alt="" coords="1846,683,2054,710"/>
+<area shape="rect" id="node31" href="$integer_8h.html" title="This is a representation of arbitrary integers. " alt="" coords="2457,683,2581,710"/>
+<area shape="rect" id="node32" href="$randiter_2archetype_8h.html" title="NO DOC. " alt="" coords="2078,683,2281,710"/>
+<area shape="rect" id="node34" href="$linbox-tags_8h.html" title="Provides tags for various algorithms/solutions, à la FFLAS. " alt="" coords="2505,423,2656,449"/>
+<area shape="rect" id="node36" href="$vector_8h.html" title="A DenseVector&lt;_Field &gt; is default dense vector of _Field::Elements. " alt="" coords="2209,423,2379,449"/>
+<area shape="rect" id="node39" href="$blas-matrix_8h.html" title="A BlasMatrix&lt;_Field &gt; represents a matrix as an array of _Field::Elements. " alt="" coords="1757,244,1954,285"/>
+<area shape="rect" id="node44" href="$matrixdomain_2matrix-domain_8h.html" title="NO DOC. " alt="" coords="1567,676,1771,717"/>
+<area shape="rect" id="node45" href="$apply-domain_8h.html" title="NO DOC. " alt="" coords="2532,333,2736,375"/>
+<area shape="rect" id="node48" href="$opencl-domain_8h.html" title="NO DOC. " alt="" coords="1565,587,1769,628"/>
+<area shape="rect" id="node50" href="$jit-matrix_8h.html" title="nodoc " alt="" coords="2748,155,2888,196"/>
+</map>

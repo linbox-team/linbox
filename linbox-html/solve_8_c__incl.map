@@ -1,0 +1,29 @@
+<map id="solve.C" name="solve.C">
+<area shape="rect" id="node2" href="$linbox-config_8h.html" title="linbox base configuration file " alt="" coords="2755,527,2915,553"/>
+<area shape="rect" id="node10" href="$sparse-matrix_8h.html" title="A SparseMatrix&lt;_Field, _Storage&gt; .... " alt="" coords="2201,80,2357,121"/>
+<area shape="rect" id="node11" href="$read-write-sparse_8h.html" title="linbox/matrix/sparsematrix\l/read&#45;write&#45;sparse.h" alt="" coords="2317,169,2517,211"/>
+<area shape="rect" id="node12" href="$sparse-generic_8h.html" title="linbox/matrix/sparsematrix\l/sparse&#45;generic.h" alt="" coords="1638,169,1838,211"/>
+<area shape="rect" id="node40" href="$sparse-coo-matrix_8h.html" title="linbox/matrix/sparsematrix\l/sparse&#45;coo&#45;matrix.h" alt="" coords="1714,348,1914,389"/>
+<area shape="rect" id="node42" href="$sparse-csr-matrix_8h.html" title="linbox/matrix/sparsematrix\l/sparse&#45;csr&#45;matrix.h" alt="" coords="1490,348,1690,389"/>
+<area shape="rect" id="node43" href="$sparse-ell-matrix_8h.html" title="linbox/matrix/sparsematrix\l/sparse&#45;ell&#45;matrix.h" alt="" coords="914,348,1114,389"/>
+<area shape="rect" id="node44" href="$sparse-ellr-matrix_8h.html" title="linbox/matrix/sparsematrix\l/sparse&#45;ellr&#45;matrix.h" alt="" coords="1938,348,2138,389"/>
+<area shape="rect" id="node45" href="$sparse-map-map-matrix_8h.html" title="Supports fast elementary row AND column operations simultaneously. " alt="" coords="258,259,461,300"/>
+<area shape="rect" id="node50" href="$sparse-tpl-matrix_8h.html" title="A SparseMatrix&lt;_Field, SparseMatrixFormat::TPL &gt; is a vector of (i,j,value) triples. " alt="" coords="2869,259,3069,300"/>
+<area shape="rect" id="node16" href="$debug_8h.html" title="Various utilities for debugging. " alt="" coords="1043,527,1185,553"/>
+<area shape="rect" id="node20" href="$linbox-tags_8h.html" title="Provides tags for various algorithms/solutions, à la FFLAS. " alt="" coords="2592,266,2743,293"/>
+<area shape="rect" id="node22" href="$matrix-domain_8h.html" title="NODOC. " alt="" coords="2869,348,3025,389"/>
+<area shape="rect" id="node27" href="$vector-traits_8h.html" title="vector traits " alt="" coords="1136,259,1295,300"/>
+<area shape="rect" id="node36" href="$solution-tags_8h.html" title="This allows files defining objects that have traits concerning several solutions to get the tags and ..." alt="" coords="1319,259,1498,300"/>
+<area shape="rect" id="node37" href="$sparse-sequence-vector_8h.html" title="linbox/matrix/sparsematrix\l/sparse&#45;sequence&#45;vector.h" alt="" coords="1523,259,1727,300"/>
+<area shape="rect" id="node38" href="$sparse-parallel-vector_8h.html" title="linbox/matrix/sparsematrix\l/sparse&#45;parallel&#45;vector.h" alt="" coords="1751,259,1951,300"/>
+<area shape="rect" id="node39" href="$sparse-associative-vector_8h.html" title="linbox/matrix/sparsematrix\l/sparse&#45;associative&#45;vector.h" alt="" coords="1976,259,2191,300"/>
+<area shape="rect" id="node23" href="$matrixdomain_2matrix-domain_8h.html" title="NO DOC. " alt="" coords="3253,437,3457,479"/>
+<area shape="rect" id="node25" href="$opencl-domain_8h.html" title="NO DOC. " alt="" coords="2267,437,2471,479"/>
+<area shape="rect" id="node24" href="$blackbox_2archetype_8h.html" title="NO DOC. " alt="" coords="3199,527,3407,553"/>
+<area shape="rect" id="node31" href="$field_2archetype_8h.html" title="NO DOC. " alt="" coords="2162,355,2341,382"/>
+<area shape="rect" id="node32" href="$element_2archetype_8h.html" title="NO DOC. " alt="" coords="1671,445,1879,471"/>
+<area shape="rect" id="node33" href="$integer_8h.html" title="This is a representation of arbitrary integers. " alt="" coords="2547,445,2671,471"/>
+<area shape="rect" id="node35" href="$randiter_2archetype_8h.html" title="NO DOC. " alt="" coords="2039,445,2242,471"/>
+<area shape="rect" id="node41" href="$sparse-domain_8h.html" title="sparse&#45;domain.h" alt="" coords="1261,445,1393,471"/>
+<area shape="rect" id="node48" href="$sparse-map-map-matrix_8inl.html" title="Supports fast elementary row AND column operations simultaneously. " alt="" coords="202,348,410,389"/>
+</map>

@@ -1,0 +1,18 @@
+<map id="sparse&#45;generic.h" name="sparse&#45;generic.h">
+<area shape="rect" id="node6" href="$linbox-config_8h.html" title="linbox base configuration file " alt="" coords="956,348,1116,375"/>
+<area shape="rect" id="node11" href="$debug_8h.html" title="Various utilities for debugging. " alt="" coords="358,266,501,293"/>
+<area shape="rect" id="node15" href="$linbox-tags_8h.html" title="Provides tags for various algorithms/solutions, à la FFLAS. " alt="" coords="830,87,981,114"/>
+<area shape="rect" id="node17" href="$matrix-domain_8h.html" title="NODOC. " alt="" coords="562,80,718,121"/>
+<area shape="rect" id="node22" href="$vector-traits_8h.html" title="vector traits " alt="" coords="1107,80,1266,121"/>
+<area shape="rect" id="node34" href="$solution-tags_8h.html" title="This allows files defining objects that have traits concerning several solutions to get the tags and ..." alt="" coords="1291,80,1469,121"/>
+<area shape="rect" id="node35" href="$sparse-sequence-vector_8h.html" title="linbox/matrix/sparsematrix\l/sparse&#45;sequence&#45;vector.h" alt="" coords="1494,80,1698,121"/>
+<area shape="rect" id="node36" href="$sparse-parallel-vector_8h.html" title="linbox/matrix/sparsematrix\l/sparse&#45;parallel&#45;vector.h" alt="" coords="1723,80,1923,121"/>
+<area shape="rect" id="node37" href="$sparse-associative-vector_8h.html" title="linbox/matrix/sparsematrix\l/sparse&#45;associative&#45;vector.h" alt="" coords="1947,80,2162,121"/>
+<area shape="rect" id="node18" href="$matrixdomain_2matrix-domain_8h.html" title="NO DOC. " alt="" coords="525,259,729,300"/>
+<area shape="rect" id="node20" href="$opencl-domain_8h.html" title="NO DOC. " alt="" coords="213,169,417,211"/>
+<area shape="rect" id="node19" href="$blackbox_2archetype_8h.html" title="NO DOC. " alt="" coords="673,348,881,375"/>
+<area shape="rect" id="node26" href="$field_2archetype_8h.html" title="NO DOC. " alt="" coords="1267,177,1445,203"/>
+<area shape="rect" id="node27" href="$element_2archetype_8h.html" title="NO DOC. " alt="" coords="1057,266,1265,293"/>
+<area shape="rect" id="node28" href="$integer_8h.html" title="This is a representation of arbitrary integers. " alt="" coords="1567,266,1691,293"/>
+<area shape="rect" id="node33" href="$randiter_2archetype_8h.html" title="NO DOC. " alt="" coords="1289,266,1492,293"/>
+</map>

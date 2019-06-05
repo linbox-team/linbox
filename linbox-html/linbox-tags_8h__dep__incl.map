@@ -1,0 +1,51 @@
+<map id="linbox&#45;tags.h" name="linbox&#45;tags.h">
+<area shape="rect" id="node2" href="$dense-nullspace_8h.html" title="We provide the right or left nullspace (kernel or cokernel) of a dense matrix. " alt="" coords="56,311,199,338"/>
+<area shape="rect" id="node3" href="$test-nullspace_8_c.html" title="Tests the dense nullspace functions for Zp. " alt="" coords="5,401,140,427"/>
+<area shape="rect" id="node4" href="$blas-matrix-multimod_8h.html" title="A BlasMatrix&lt;_Field &gt; represents a matrix as an array of _Field::Elements. " alt="" coords="2331,311,2510,338"/>
+<area shape="rect" id="node5" href="$blas-matrix_8h.html" title="A BlasMatrix&lt;_Field &gt; represents a matrix as an array of _Field::Elements. " alt="" coords="2244,155,2355,181"/>
+<area shape="rect" id="node37" href="$apply-domain_8h.html" title="NO DOC. " alt="" coords="2210,80,2333,107"/>
+<area shape="rect" id="node38" href="$sparse-generic_8h.html" title="sparse&#45;generic.h" alt="" coords="2727,80,2861,107"/>
+<area shape="rect" id="node41" href="$blas-vector_8h.html" title="A BlasVector&lt;_Field &gt; represents a vector as an array of _Field::Elements. " alt="" coords="4143,80,4253,107"/>
+<area shape="rect" id="node6" href="$dense-matrix_8h.html" title="NODOC. " alt="" coords="1970,229,2095,256"/>
+<area shape="rect" id="node7" href="$blackbox-block-container-base_8h.html" title="NO DOC. " alt="" coords="2783,304,2973,345"/>
+<area shape="rect" id="node8" href="$blackbox-block-container_8h.html" title="no doc. " alt="" coords="2724,401,2925,427"/>
+<area shape="rect" id="node9" href="$test-blackbox-block-container_8_c.html" title="no doc " alt="" coords="2699,483,2855,524"/>
+<area shape="rect" id="node10" href="$omp-benchmark_8_c.html" title="f " alt="" coords="2989,490,3135,517"/>
+<area shape="rect" id="node11" href="$mul_8h.html" title="BLAS3 multiplication algorithms. " alt="" coords="325,311,383,338"/>
+<area shape="rect" id="node12" href="$matrix-hom_8h.html" title="Matrix Homomorphism A map function converts a matrix on a field/ring to its natural image in another ..." alt="" coords="3371,311,3484,338"/>
+<area shape="rect" id="node13" href="$det_8h.html" title="NO DOC. " alt="" coords="3821,401,3879,427"/>
+<area shape="rect" id="node14" href="$tutorial_8_c.html" title="tutorial.C" alt="" coords="2879,490,2965,517"/>
+<area shape="rect" id="node17" href="$rational-solver_8h.html" title="Rational solving (Dixon, Wiedemann,...) " alt="" coords="408,311,537,338"/>
+<area shape="rect" id="node18" href="$sigma-basis_8h.html" title="&#45;basis (minimal basis). " alt="" coords="562,311,674,338"/>
+<area shape="rect" id="node19" href="$smith-form-adaptive_8h.html" title="Implement the adaptive algorithm for Smith form computation. " alt="" coords="699,311,873,338"/>
+<area shape="rect" id="node20" href="$whisart__trace_8h.html" title="Whisart trace Computes the trace of D1 B D2 B^T D1 or D1 B^T D2 B D1. " alt="" coords="2535,311,2661,338"/>
+<area shape="rect" id="node21" href="$diagonal_8h.html" title="Random diagonal matrices and diagonal matrices Class especially meant for diagonal precondtionners..." alt="" coords="4025,311,4113,338"/>
+<area shape="rect" id="node23" href="$matrix_2random-matrix_8h.html" title="Implementation of random matrices. " alt="" coords="897,311,1032,338"/>
+<area shape="rect" id="node24" href="$test-blas-domain_8_c.html" title="no doc " alt="" coords="578,401,730,427"/>
+<area shape="rect" id="node25" href="$mats_8_c.html" title="mats.C" alt="" coords="1108,311,1179,338"/>
+<area shape="rect" id="node26" href="$nullspacebasis_8_c.html" title="nullspacebasis.C" alt="" coords="1203,311,1334,338"/>
+<area shape="rect" id="node27" href="$nullspacebasis__rank_8_c.html" title="nullspacebasis_rank.C" alt="" coords="1359,311,1525,338"/>
+<area shape="rect" id="node28" href="$qchar_8_c.html" title="qchar.C" alt="" coords="2686,311,2758,338"/>
+<area shape="rect" id="node29" href="$test-cra_8_c.html" title="We test the various CRA algorithms here. " alt="" coords="3705,311,3798,338"/>
+<area shape="rect" id="node30" href="$test-cradomain_8_c.html" title="tests LinBox::ChineseRemainer " alt="" coords="4561,311,4702,338"/>
+<area shape="rect" id="node31" href="$test-dense-zero-one_8_c.html" title="no doc " alt="" coords="1549,311,1729,338"/>
+<area shape="rect" id="node32" href="$test-dense_8_c.html" title="no doc " alt="" coords="1753,311,1867,338"/>
+<area shape="rect" id="node33" href="$test-echelon-form_8_c.html" title="no doc " alt="" coords="1891,311,2054,338"/>
+<area shape="rect" id="node34" href="$test-regression_8_c.html" title="tests former bugs to check that no regression made them show up again. " alt="" coords="3150,401,3291,427"/>
+<area shape="rect" id="node35" href="$test-smith-form_8h.html" title="tools for making matrix with known SNF. " alt="" coords="3201,311,3347,338"/>
+<area shape="rect" id="node36" href="$test-smith-form_8_c.html" title="no doc. " alt="" coords="3315,401,3462,427"/>
+<area shape="rect" id="node16" href="$samplebb_8_c.html" title="samplebb.C" alt="" coords="3627,401,3727,427"/>
+<area shape="rect" id="node15" href="$test-det_8_c.html" title="no doc " alt="" coords="3903,490,3999,517"/>
+<area shape="rect" id="node22" href="$test-rational-solver-adaptive_8_c.html" title="no doc " alt="" coords="4670,393,4825,435"/>
+<area shape="rect" id="node39" href="$sparse-matrix_8h.html" title="A SparseMatrix&lt;_Field, _Storage&gt; .... " alt="" coords="2973,229,3101,256"/>
+<area shape="rect" id="node40" href="$test-minpoly_8_c.html" title="no doc " alt="" coords="3508,311,3629,338"/>
+<area shape="rect" id="node42" href="$cra-builder-full-multip_8h.html" title="NO DOC. " alt="" coords="4543,229,4720,256"/>
+<area shape="rect" id="node43" href="$cra-domain-sequential_8h.html" title="Sequencial version of Chinese Remaindering Algorithm. " alt="" coords="4025,155,4211,181"/>
+<area shape="rect" id="node44" href="$cra-givrnsfixed_8h.html" title="NO DOC. " alt="" coords="5219,229,5353,256"/>
+<area shape="rect" id="node45" href="$ntl-zz__p_8h.html" title="NO DOC. " alt="" coords="4235,155,4324,181"/>
+<area shape="rect" id="node46" href="$test-bitonic-sort_8_c.html" title="no doc. " alt="" coords="4348,155,4499,181"/>
+<area shape="rect" id="node47" href="$test-ntl-toeplitz_8_c.html" title="no doc. " alt="" coords="4523,155,4673,181"/>
+<area shape="rect" id="node48" href="$test-subiterator_8_c.html" title="no doc " alt="" coords="4697,155,4843,181"/>
+<area shape="rect" id="node49" href="$test-subvector_8_c.html" title="no doc " alt="" coords="4867,155,5006,181"/>
+<area shape="rect" id="node50" href="$test-vector-domain_8_c.html" title="no doc. " alt="" coords="5030,155,5201,181"/>
+</map>

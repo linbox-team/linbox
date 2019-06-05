@@ -1,0 +1,17 @@
+<map id="blas&#45;matrix.h" name="blas&#45;matrix.h">
+<area shape="rect" id="node2" href="$linbox-config_8h.html" title="linbox base configuration file " alt="" coords="85,497,245,524"/>
+<area shape="rect" id="node8" href="$debug_8h.html" title="Various utilities for debugging. " alt="" coords="1428,415,1571,442"/>
+<area shape="rect" id="node13" href="$linbox-tags_8h.html" title="Provides tags for various algorithms/solutions, à la FFLAS. " alt="" coords="204,169,355,196"/>
+<area shape="rect" id="node15" href="$stream_8h.html" title="Generation of sequences of random vectors. " alt="" coords="1515,169,1689,196"/>
+<area shape="rect" id="node31" href="$blas-vector_8h.html" title="A BlasVector&lt;_Field &gt; represents a vector as an array of _Field::Elements. " alt="" coords="645,80,783,121"/>
+<area shape="rect" id="node33" href="$modular_8h.html" title="A Givaro::Modular ring is a representations of Z/mZ. " alt="" coords="1285,87,1441,114"/>
+<area shape="rect" id="node36" href="$matrixdomain_2matrix-domain_8h.html" title="NO DOC. " alt="" coords="492,408,696,449"/>
+<area shape="rect" id="node38" href="$apply-domain_8h.html" title="NO DOC. " alt="" coords="317,80,521,121"/>
+<area shape="rect" id="node17" href="$vector-traits_8h.html" title="vector traits " alt="" coords="1052,244,1211,285"/>
+<area shape="rect" id="node23" href="$field_2archetype_8h.html" title="NO DOC. " alt="" coords="771,333,950,360"/>
+<area shape="rect" id="node24" href="$element_2archetype_8h.html" title="NO DOC. " alt="" coords="771,415,979,442"/>
+<area shape="rect" id="node25" href="$integer_8h.html" title="This is a representation of arbitrary integers. " alt="" coords="344,415,468,442"/>
+<area shape="rect" id="node30" href="$randiter_2archetype_8h.html" title="NO DOC. " alt="" coords="1003,415,1206,442"/>
+<area shape="rect" id="node32" href="$vector_8h.html" title="A DenseVector&lt;_Field &gt; is default dense vector of _Field::Elements. " alt="" coords="629,169,799,196"/>
+<area shape="rect" id="node37" href="$blackbox_2archetype_8h.html" title="NO DOC. " alt="" coords="998,497,1206,524"/>
+</map>

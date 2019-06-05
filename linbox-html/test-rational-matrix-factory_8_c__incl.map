@@ -1,0 +1,20 @@
+<map id="test&#45;rational&#45;matrix&#45;factory.C" name="test&#45;rational&#45;matrix&#45;factory.C">
+<area shape="rect" id="node2" href="$linbox-config_8h.html" title="linbox base configuration file " alt="" coords="128,691,288,717"/>
+<area shape="rect" id="node10" href="$commentator_8h.html" title="Reports information to the user. " alt="" coords="1739,445,1933,471"/>
+<area shape="rect" id="node20" href="$dense-matrix_8h.html" title="NODOC. " alt="" coords="1154,95,1307,136"/>
+<area shape="rect" id="node21" href="$vector-traits_8h.html" title="vector traits " alt="" coords="971,437,1130,479"/>
+<area shape="rect" id="node37" href="$blas-matrix_8h.html" title="A BlasMatrix&lt;_Field &gt; represents a matrix as an array of _Field::Elements. " alt="" coords="776,184,973,225"/>
+<area shape="rect" id="node26" href="$field_2archetype_8h.html" title="NO DOC. " alt="" coords="1156,527,1335,553"/>
+<area shape="rect" id="node27" href="$debug_8h.html" title="Various utilities for debugging. " alt="" coords="747,609,890,635"/>
+<area shape="rect" id="node30" href="$element_2archetype_8h.html" title="NO DOC. " alt="" coords="1141,609,1349,635"/>
+<area shape="rect" id="node31" href="$integer_8h.html" title="This is a representation of arbitrary integers. " alt="" coords="1425,609,1549,635"/>
+<area shape="rect" id="node36" href="$randiter_2archetype_8h.html" title="NO DOC. " alt="" coords="915,609,1117,635"/>
+<area shape="rect" id="node38" href="$linbox-tags_8h.html" title="Provides tags for various algorithms/solutions, à la FFLAS. " alt="" coords="195,363,346,389"/>
+<area shape="rect" id="node40" href="$stream_8h.html" title="Generation of sequences of random vectors. " alt="" coords="809,363,983,389"/>
+<area shape="rect" id="node42" href="$blas-vector_8h.html" title="A BlasVector&lt;_Field &gt; represents a vector as an array of _Field::Elements. " alt="" coords="195,273,333,315"/>
+<area shape="rect" id="node44" href="$modular_8h.html" title="A Givaro::Modular ring is a representations of Z/mZ. " alt="" coords="358,281,514,307"/>
+<area shape="rect" id="node46" href="$matrixdomain_2matrix-domain_8h.html" title="NO DOC. " alt="" coords="366,601,570,643"/>
+<area shape="rect" id="node48" href="$apply-domain_8h.html" title="NO DOC. " alt="" coords="1015,273,1219,315"/>
+<area shape="rect" id="node43" href="$vector_8h.html" title="A DenseVector&lt;_Field &gt; is default dense vector of _Field::Elements. " alt="" coords="563,363,733,389"/>
+<area shape="rect" id="node47" href="$blackbox_2archetype_8h.html" title="NO DOC. " alt="" coords="312,691,520,717"/>
+</map>

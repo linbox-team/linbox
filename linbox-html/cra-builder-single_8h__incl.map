@@ -1,0 +1,17 @@
+<map id="cra&#45;builder&#45;single.h" name="cra&#45;builder&#45;single.h">
+<area shape="rect" id="node2" href="$timer_8h.html" title="LinBox timer is Givaro&#39;s. " alt="" coords="467,266,604,293"/>
+<area shape="rect" id="node6" href="$integer_8h.html" title="This is a representation of arbitrary integers. " alt="" coords="349,587,473,613"/>
+<area shape="rect" id="node17" href="$cra-domain_8h.html" title="Wrapper around OMP/SEQ version of ChineseRemainder. " alt="" coords="892,80,1051,121"/>
+<area shape="rect" id="node43" href="$cra-builder-full-multip_8h.html" title="NO DOC. " alt="" coords="705,169,864,211"/>
+<area shape="rect" id="node8" href="$linbox-config_8h.html" title="linbox base configuration file " alt="" coords="685,661,845,688"/>
+<area shape="rect" id="node18" href="$vector_8h.html" title="A DenseVector&lt;_Field &gt; is default dense vector of _Field::Elements. " alt="" coords="1255,348,1424,375"/>
+<area shape="rect" id="node33" href="$cra-domain-sequential_8h.html" title="Sequencial version of Chinese Remaindering Algorithm. " alt="" coords="888,169,1052,211"/>
+<area shape="rect" id="node19" href="$vector-traits_8h.html" title="vector traits " alt="" coords="1409,423,1568,464"/>
+<area shape="rect" id="node27" href="$field_2archetype_8h.html" title="NO DOC. " alt="" coords="843,512,1022,539"/>
+<area shape="rect" id="node28" href="$debug_8h.html" title="Various utilities for debugging. " alt="" coords="1404,587,1547,613"/>
+<area shape="rect" id="node31" href="$element_2archetype_8h.html" title="NO DOC. " alt="" coords="894,587,1102,613"/>
+<area shape="rect" id="node32" href="$randiter_2archetype_8h.html" title="NO DOC. " alt="" coords="1126,587,1329,613"/>
+<area shape="rect" id="node34" href="$blas-vector_8h.html" title="A BlasVector&lt;_Field &gt; represents a vector as an array of _Field::Elements. " alt="" coords="718,259,857,300"/>
+<area shape="rect" id="node37" href="$commentator_8h.html" title="Reports information to the user. " alt="" coords="1623,430,1818,457"/>
+<area shape="rect" id="node35" href="$linbox-tags_8h.html" title="Provides tags for various algorithms/solutions, à la FFLAS. " alt="" coords="712,348,863,375"/>
+</map>

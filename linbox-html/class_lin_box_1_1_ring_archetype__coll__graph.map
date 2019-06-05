@@ -1,0 +1,8 @@
+<map id="RingArchetype" name="RingArchetype">
+<area shape="rect" id="node2" href="$class_lin_box_1_1_field_archetype.html" title="field specification and archetypical instance. " alt="" coords="371,124,494,151"/>
+<area shape="rect" id="node3" href="$class_lin_box_1_1_field_documentation.html" title="This field base class exists solely to aid documentation organization. " alt="" coords="5,5,164,32"/>
+<area shape="rect" id="node4" href="$class_lin_box_1_1_element_archetype.html" title="Field and Ring element interface specification and archetypical instance class. " alt="" coords="188,5,339,32"/>
+<area shape="rect" id="node5" href="$class_lin_box_1_1_rand_iter_abstract.html" title="Random field element generator. " alt="" coords="363,5,503,32"/>
+<area shape="rect" id="node6" href="$class_lin_box_1_1_element_abstract.html" title="Abstract element base class, a technicality. " alt="" coords="527,5,666,32"/>
+<area shape="rect" id="node7" href="$class_lin_box_1_1_field_abstract.html" title="field base class. " alt="" coords="691,5,801,32"/>
+</map>

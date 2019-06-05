@@ -1,0 +1,14 @@
+<map id="test&#45;ntl&#45;toeplitz.C" name="test&#45;ntl&#45;toeplitz.C">
+<area shape="rect" id="node2" href="$linbox-config_8h.html" title="linbox base configuration file " alt="" coords="93,483,253,509"/>
+<area shape="rect" id="node9" href="$integer_8h.html" title="This is a representation of arbitrary integers. " alt="" coords="487,408,611,435"/>
+<area shape="rect" id="node14" href="$blas-vector_8h.html" title="A BlasVector&lt;_Field &gt; represents a vector as an array of _Field::Elements. " alt="" coords="281,80,419,121"/>
+<area shape="rect" id="node32" href="$toeplitz_8h.html" title="Partial Specialization of Toeplitz for Dense vectors from an FFT based on Shoup&#39;s NTL library..." alt="" coords="1321,169,1512,196"/>
+<area shape="rect" id="node15" href="$debug_8h.html" title="Various utilities for debugging. " alt="" coords="1095,408,1237,435"/>
+<area shape="rect" id="node20" href="$linbox-tags_8h.html" title="Provides tags for various algorithms/solutions, à la FFLAS. " alt="" coords="172,169,323,196"/>
+<area shape="rect" id="node22" href="$vector_8h.html" title="A DenseVector&lt;_Field &gt; is default dense vector of _Field::Elements. " alt="" coords="347,169,516,196"/>
+<area shape="rect" id="node23" href="$vector-traits_8h.html" title="vector traits " alt="" coords="985,244,1144,285"/>
+<area shape="rect" id="node29" href="$field_2archetype_8h.html" title="NO DOC. " alt="" coords="598,333,777,360"/>
+<area shape="rect" id="node30" href="$element_2archetype_8h.html" title="NO DOC. " alt="" coords="635,408,843,435"/>
+<area shape="rect" id="node31" href="$randiter_2archetype_8h.html" title="NO DOC. " alt="" coords="867,408,1070,435"/>
+<area shape="rect" id="node33" href="$solution-tags_8h.html" title="This allows files defining objects that have traits concerning several solutions to get the tags and ..." alt="" coords="1477,244,1655,285"/>
+</map>

@@ -1,0 +1,15 @@
+<map id="det.h" name="det.h">
+<area shape="rect" id="node2" href="$bbcharpoly_8h.html" title="no doc. " alt="" coords="5,80,109,107"/>
+<area shape="rect" id="node3" href="$athadet_8_c.html" title="athadet.C" alt="" coords="133,80,224,107"/>
+<area shape="rect" id="node4" href="$det_8_c.html" title="examples/det.C " alt="" coords="249,80,309,107"/>
+<area shape="rect" id="node5" href="$doubledet_8_c.html" title="doubledet.C" alt="" coords="333,80,437,107"/>
+<area shape="rect" id="node6" href="$mpidet_8_c.html" title="mpidet.C" alt="" coords="462,80,546,107"/>
+<area shape="rect" id="node7" href="$sparseelimdet_8_c.html" title="sparseelimdet.C" alt="" coords="570,80,702,107"/>
+<area shape="rect" id="node8" href="$tutorial_8_c.html" title="tutorial.C" alt="" coords="727,80,812,107"/>
+<area shape="rect" id="node9" href="$test-butterfly_8_c.html" title="no doc " alt="" coords="836,80,967,107"/>
+<area shape="rect" id="node10" href="$test-det_8_c.html" title="no doc " alt="" coords="991,80,1087,107"/>
+<area shape="rect" id="node11" href="$test-matrix-domain_8_c.html" title="no real doc. " alt="" coords="1111,80,1281,107"/>
+<area shape="rect" id="node12" href="$test-smith-form-iliopoulos_8_c.html" title="no doc. " alt="" coords="1306,80,1518,107"/>
+<area shape="rect" id="node13" href="$test-toeplitz-det_8_c.html" title="no doc " alt="" coords="1541,80,1696,107"/>
+<area shape="rect" id="node14" href="$test-tutorial_8_c.html" title="no doc " alt="" coords="1721,80,1842,107"/>
+</map>

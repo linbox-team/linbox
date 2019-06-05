@@ -1,0 +1,5 @@
+<map id="VectorCategories::DenseZeroOneVectorTag" name="VectorCategories::DenseZeroOneVectorTag">
+<area shape="rect" id="node2" href="$struct_lin_box_1_1_vector_categories_1_1_dense_vector_tag.html" title="Dense vector (GF2 and general) " alt="" coords="52,155,185,181"/>
+<area shape="rect" id="node3" href="$struct_lin_box_1_1_vector_categories_1_1_sparse_zero_one_vector_tag.html" title="Sparse GF2 vectors. " alt="" coords="21,80,216,107"/>
+<area shape="rect" id="node4" href="$struct_lin_box_1_1_vector_categories_1_1_generic_vector_tag.html" title="Generic vector (no assumption is made) " alt="" coords="48,5,189,32"/>
+</map>

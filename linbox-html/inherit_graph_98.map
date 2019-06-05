@@ -1,0 +1,7 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$class_lin_box_1_1_field_abstract.html" title="field base class. " alt="" coords="5,56,116,83"/>
+<area shape="rect" id="node2" href="$class_lin_box_1_1_field_envelope.html" title="FieldEnvelope\&lt; Ring \&gt;" alt="" coords="165,5,338,32"/>
+<area shape="rect" id="node4" href="$class_lin_box_1_1_field_envelope.html" title="Derived class used to implement the field archetypeHelps to minimize code bloat. " alt="" coords="164,56,339,83"/>
+<area shape="rect" id="node5" href="$class_lin_box_1_1_ring_abstract.html" title="Abstract ring base class. " alt="" coords="196,107,307,133"/>
+<area shape="rect" id="node3" href="$class_lin_box_1_1_ring_envelope.html" title="implement the ring archetype to minimize code bloat. " alt="" coords="387,56,559,83"/>
+</map>

@@ -1,0 +1,19 @@
+<map id="dense&#45;nullspace.h" name="dense&#45;nullspace.h">
+<area shape="rect" id="node2" href="$linbox-tags_8h.html" title="Provides tags for various algorithms/solutions, à la FFLAS. " alt="" coords="2194,348,2345,375"/>
+<area shape="rect" id="node10" href="$dense-matrix_8h.html" title="NODOC. " alt="" coords="1893,80,2046,121"/>
+<area shape="rect" id="node4" href="$linbox-config_8h.html" title="linbox base configuration file " alt="" coords="1995,676,2155,703"/>
+<area shape="rect" id="node11" href="$vector-traits_8h.html" title="vector traits " alt="" coords="474,423,633,464"/>
+<area shape="rect" id="node30" href="$blas-matrix_8h.html" title="A BlasMatrix&lt;_Field &gt; represents a matrix as an array of _Field::Elements. " alt="" coords="1581,169,1779,211"/>
+<area shape="rect" id="node19" href="$field_2archetype_8h.html" title="NO DOC. " alt="" coords="1009,512,1188,539"/>
+<area shape="rect" id="node20" href="$debug_8h.html" title="Various utilities for debugging. " alt="" coords="446,594,589,621"/>
+<area shape="rect" id="node23" href="$element_2archetype_8h.html" title="NO DOC. " alt="" coords="765,594,973,621"/>
+<area shape="rect" id="node24" href="$integer_8h.html" title="This is a representation of arbitrary integers. " alt="" coords="1503,594,1627,621"/>
+<area shape="rect" id="node29" href="$randiter_2archetype_8h.html" title="NO DOC. " alt="" coords="997,594,1200,621"/>
+<area shape="rect" id="node31" href="$stream_8h.html" title="Generation of sequences of random vectors. " alt="" coords="321,348,495,375"/>
+<area shape="rect" id="node33" href="$blas-vector_8h.html" title="A BlasVector&lt;_Field &gt; represents a vector as an array of _Field::Elements. " alt="" coords="1849,259,1988,300"/>
+<area shape="rect" id="node35" href="$modular_8h.html" title="A Givaro::Modular ring is a representations of Z/mZ. " alt="" coords="1314,266,1470,293"/>
+<area shape="rect" id="node38" href="$matrixdomain_2matrix-domain_8h.html" title="NO DOC. " alt="" coords="1275,587,1479,628"/>
+<area shape="rect" id="node40" href="$apply-domain_8h.html" title="NO DOC. " alt="" coords="2167,259,2371,300"/>
+<area shape="rect" id="node34" href="$vector_8h.html" title="A DenseVector&lt;_Field &gt; is default dense vector of _Field::Elements. " alt="" coords="1834,348,2003,375"/>
+<area shape="rect" id="node39" href="$blackbox_2archetype_8h.html" title="NO DOC. " alt="" coords="1084,676,1292,703"/>
+</map>

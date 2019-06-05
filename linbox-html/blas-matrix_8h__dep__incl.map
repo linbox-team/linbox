@@ -1,0 +1,51 @@
+<map id="blas&#45;matrix.h" name="blas&#45;matrix.h">
+<area shape="rect" id="node2" href="$dense-matrix_8h.html" title="NODOC. " alt="" coords="1874,80,1999,107"/>
+<area shape="rect" id="node3" href="$blackbox-block-container-base_8h.html" title="NO DOC. " alt="" coords="188,155,379,196"/>
+<area shape="rect" id="node4" href="$blackbox-block-container_8h.html" title="no doc. " alt="" coords="155,244,356,271"/>
+<area shape="rect" id="node6" href="$test-blackbox-block-container_8_c.html" title="no doc " alt="" coords="5,319,161,360"/>
+<area shape="rect" id="node7" href="$omp-benchmark_8_c.html" title="f " alt="" coords="349,326,495,353"/>
+<area shape="rect" id="node8" href="$dense-nullspace_8h.html" title="We provide the right or left nullspace (kernel or cokernel) of a dense matrix. " alt="" coords="489,162,632,189"/>
+<area shape="rect" id="node10" href="$mul_8h.html" title="BLAS3 multiplication algorithms. " alt="" coords="750,162,809,189"/>
+<area shape="rect" id="node11" href="$test-toom-cook_8_c.html" title="toom&#45;cook multiplication routine " alt="" coords="613,244,759,271"/>
+<area shape="rect" id="node12" href="$matrix-hom_8h.html" title="Matrix Homomorphism A map function converts a matrix on a field/ring to its natural image in another ..." alt="" coords="1628,162,1741,189"/>
+<area shape="rect" id="node19" href="$det_8h.html" title="NO DOC. " alt="" coords="1311,244,1370,271"/>
+<area shape="rect" id="node20" href="$tutorial_8_c.html" title="tutorial.C" alt="" coords="965,326,1050,353"/>
+<area shape="rect" id="node21" href="$test-matrix-domain_8_c.html" title="no real doc. " alt="" coords="1074,326,1245,353"/>
+<area shape="rect" id="node23" href="$test-tutorial_8_c.html" title="no doc " alt="" coords="1269,326,1391,353"/>
+<area shape="rect" id="node26" href="$rational-solver_8h.html" title="Rational solving (Dixon, Wiedemann,...) " alt="" coords="1475,162,1604,189"/>
+<area shape="rect" id="node28" href="$sigma-basis_8h.html" title="&#45;basis (minimal basis). " alt="" coords="1965,162,2077,189"/>
+<area shape="rect" id="node29" href="$smith-form-adaptive_8h.html" title="Implement the adaptive algorithm for Smith form computation. " alt="" coords="1765,162,1940,189"/>
+<area shape="rect" id="node30" href="$whisart__trace_8h.html" title="Whisart trace Computes the trace of D1 B D2 B^T D1 or D1 B^T D2 B D1. " alt="" coords="2101,162,2228,189"/>
+<area shape="rect" id="node31" href="$diagonal_8h.html" title="Random diagonal matrices and diagonal matrices Class especially meant for diagonal precondtionners..." alt="" coords="1362,162,1450,189"/>
+<area shape="rect" id="node32" href="$blas-matrix-multimod_8h.html" title="A BlasMatrix&lt;_Field &gt; represents a matrix as an array of _Field::Elements. " alt="" coords="2253,162,2431,189"/>
+<area shape="rect" id="node33" href="$matrix_2random-matrix_8h.html" title="Implementation of random matrices. " alt="" coords="911,162,1045,189"/>
+<area shape="rect" id="node34" href="$test-blas-domain_8_c.html" title="no doc " alt="" coords="783,244,935,271"/>
+<area shape="rect" id="node35" href="$benchmark-example_8_c.html" title="Benchmarking example. " alt="" coords="960,244,1135,271"/>
+<area shape="rect" id="node36" href="$mats_8_c.html" title="mats.C" alt="" coords="2456,162,2527,189"/>
+<area shape="rect" id="node37" href="$nullspacebasis_8_c.html" title="nullspacebasis.C" alt="" coords="2551,162,2682,189"/>
+<area shape="rect" id="node38" href="$nullspacebasis__rank_8_c.html" title="nullspacebasis_rank.C" alt="" coords="2707,162,2873,189"/>
+<area shape="rect" id="node39" href="$qchar_8_c.html" title="qchar.C" alt="" coords="2898,162,2970,189"/>
+<area shape="rect" id="node40" href="$test-cra_8_c.html" title="We test the various CRA algorithms here. " alt="" coords="2994,162,3087,189"/>
+<area shape="rect" id="node41" href="$test-cradomain_8_c.html" title="tests LinBox::ChineseRemainer " alt="" coords="3111,162,3253,189"/>
+<area shape="rect" id="node42" href="$test-dense-zero-one_8_c.html" title="no doc " alt="" coords="3277,162,3457,189"/>
+<area shape="rect" id="node43" href="$test-dense_8_c.html" title="no doc " alt="" coords="3481,162,3595,189"/>
+<area shape="rect" id="node44" href="$test-echelon-form_8_c.html" title="no doc " alt="" coords="3619,162,3782,189"/>
+<area shape="rect" id="node45" href="$test-rational-matrix-factory_8_c.html" title="no doc. " alt="" coords="3807,155,3965,196"/>
+<area shape="rect" id="node46" href="$test-regression_8_c.html" title="tests former bugs to check that no regression made them show up again. " alt="" coords="3946,244,4087,271"/>
+<area shape="rect" id="node47" href="$test-smith-form_8h.html" title="tools for making matrix with known SNF. " alt="" coords="4041,162,4187,189"/>
+<area shape="rect" id="node48" href="$test-smith-form_8_c.html" title="no doc. " alt="" coords="4138,244,4285,271"/>
+<area shape="rect" id="node49" href="$test-transpose_8_c.html" title="no doc " alt="" coords="4262,162,4401,189"/>
+<area shape="rect" id="node50" href="$test-triplesbb-omp_8_c.html" title="no doc " alt="" coords="4425,162,4590,189"/>
+<area shape="rect" id="node5" href="$lifting-container_8h.html" title="Lifting from mod p^n to rationals NO DOC. " alt="" coords="185,326,325,353"/>
+<area shape="rect" id="node9" href="$test-nullspace_8_c.html" title="Tests the dense nullspace functions for Zp. " alt="" coords="455,244,589,271"/>
+<area shape="rect" id="node13" href="$bbcharpoly_8h.html" title="no doc. " alt="" coords="1415,326,1519,353"/>
+<area shape="rect" id="node14" href="$matrix-rank_8h.html" title="Computes the rank of a matrix by Gaussian Elimination, in place. " alt="" coords="1789,244,1901,271"/>
+<area shape="rect" id="node17" href="$minpoly-integer_8h.html" title="Compute the minpoly of a matrix over an integer ring using modular arithmetic. " alt="" coords="1925,244,2063,271"/>
+<area shape="rect" id="node18" href="$wiedemann_8h.html" title="minpoly computation and Wiedeman solvers. " alt="" coords="2088,244,2199,271"/>
+<area shape="rect" id="node22" href="$test-smith-form-iliopoulos_8_c.html" title="no doc. " alt="" coords="1544,326,1756,353"/>
+<area shape="rect" id="node24" href="$samplebb_8_c.html" title="samplebb.C" alt="" coords="2223,244,2323,271"/>
+<area shape="rect" id="node25" href="$smith_8_c.html" title="smith.C" alt="" coords="2346,244,2421,271"/>
+<area shape="rect" id="node15" href="$test-last-invariant-factor_8_c.html" title="no doc " alt="" coords="1781,319,1927,360"/>
+<area shape="rect" id="node16" href="$test-one-invariant-factor_8_c.html" title="no doc " alt="" coords="1951,319,2098,360"/>
+<area shape="rect" id="node27" href="$test-rational-solver_8_c.html" title="no doc. " alt="" coords="1395,244,1561,271"/>
+</map>

@@ -1,0 +1,23 @@
+<map id="sigma&#45;basis.h" name="sigma&#45;basis.h">
+<area shape="rect" id="node5" href="$commentator_8h.html" title="Reports information to the user. " alt="" coords="411,430,605,457"/>
+<area shape="rect" id="node15" href="$timer_8h.html" title="LinBox timer is Givaro&#39;s. " alt="" coords="693,430,830,457"/>
+<area shape="rect" id="node17" href="$matrix-domain_8h.html" title="NODOC. " alt="" coords="945,423,1101,464"/>
+<area shape="rect" id="node31" href="$dense-matrix_8h.html" title="NODOC. " alt="" coords="1606,80,1759,121"/>
+<area shape="rect" id="node18" href="$linbox-config_8h.html" title="linbox base configuration file " alt="" coords="2259,691,2419,717"/>
+<area shape="rect" id="node23" href="$matrixdomain_2matrix-domain_8h.html" title="NO DOC. " alt="" coords="754,601,958,643"/>
+<area shape="rect" id="node25" href="$opencl-domain_8h.html" title="NO DOC. " alt="" coords="921,512,1125,553"/>
+<area shape="rect" id="node24" href="$blackbox_2archetype_8h.html" title="NO DOC. " alt="" coords="887,691,1095,717"/>
+<area shape="rect" id="node27" href="$debug_8h.html" title="Various utilities for debugging. " alt="" coords="1398,609,1541,635"/>
+<area shape="rect" id="node32" href="$vector-traits_8h.html" title="vector traits " alt="" coords="1718,423,1877,464"/>
+<area shape="rect" id="node40" href="$blas-matrix_8h.html" title="A BlasMatrix&lt;_Field &gt; represents a matrix as an array of _Field::Elements. " alt="" coords="1860,169,2057,211"/>
+<area shape="rect" id="node36" href="$field_2archetype_8h.html" title="NO DOC. " alt="" coords="2075,519,2253,546"/>
+<area shape="rect" id="node37" href="$element_2archetype_8h.html" title="NO DOC. " alt="" coords="1717,609,1925,635"/>
+<area shape="rect" id="node38" href="$integer_8h.html" title="This is a representation of arbitrary integers. " alt="" coords="2227,609,2351,635"/>
+<area shape="rect" id="node39" href="$randiter_2archetype_8h.html" title="NO DOC. " alt="" coords="1949,609,2152,635"/>
+<area shape="rect" id="node41" href="$linbox-tags_8h.html" title="Provides tags for various algorithms/solutions, à la FFLAS. " alt="" coords="2209,348,2359,375"/>
+<area shape="rect" id="node43" href="$stream_8h.html" title="Generation of sequences of random vectors. " alt="" coords="1369,348,1543,375"/>
+<area shape="rect" id="node45" href="$blas-vector_8h.html" title="A BlasVector&lt;_Field &gt; represents a vector as an array of _Field::Elements. " alt="" coords="1968,259,2107,300"/>
+<area shape="rect" id="node47" href="$modular_8h.html" title="A Givaro::Modular ring is a representations of Z/mZ. " alt="" coords="2462,266,2618,293"/>
+<area shape="rect" id="node49" href="$apply-domain_8h.html" title="NO DOC. " alt="" coords="2182,259,2386,300"/>
+<area shape="rect" id="node46" href="$vector_8h.html" title="A DenseVector&lt;_Field &gt; is default dense vector of _Field::Elements. " alt="" coords="1830,348,1999,375"/>
+</map>
