@@ -35,8 +35,9 @@ echo "LD_LIBRARY_PATH = $LD_LIBRARY_PATH"
 export PKG_CONFIG_PATH="$LOCAL_DIR/$CXX/lib/pkgconfig"
 echo "PKG_CONFIG_PATH = $PKG_CONFIG_PATH"
 VERSION=`grep VERSION Makefile.am  | sed s/VERSION=// `
-distdir=linbox-$(VERSION)
-distarchive=$(distdir).tar.gz
+echo "VERSION = $VERSION"
+distdir=linbox-$VERSION
+distarchive=$distdir.tar.gz
 
 # Where to install linbox binaries
 # Keep default for local installation.
