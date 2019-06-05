@@ -282,7 +282,11 @@ namespace LinBox {
 
     // ----- Fast Hadamard bound
 
-
+    template <class IMatrix>
+    inline Integer& InfinityNorm(Integer& max, const IMatrix& A) {
+        typename MatrixTraits<IMatrix>::MatrixCategory tag;
+        return InfinityNorm(max, A, tag);
+    }
 
     /**
      * Returns the maximal absolute value.
@@ -293,7 +297,6 @@ namespace LinBox {
         DenseMatrix<typename IMatrix::Field> ACopy(A);
         return InfinityNorm(max, ACopy, MatrixCategories::RowColMatrixTag());
     }
-
 
     template <class IMatrix>
     inline Integer& InfinityNorm(Integer& max, const IMatrix& A, const MatrixCategories::RowColMatrixTag& tag)

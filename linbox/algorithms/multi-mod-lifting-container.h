@@ -99,40 +99,62 @@ namespace LinBox {
             std::cout << "l: " << _primesCount << std::endl;
 
             // Generating primes
-            IElement iTmp;
-            _ring.assign(_p, _ring.one);
-            for (auto j = 0u; j < _primesCount; ++j) {
-                auto pj = *primeGenerator;
-                ++primeGenerator;
+            {
+                IElement iTmp;
+                _ring.assign(_p, _ring.one);
+                for (auto j = 0u; j < _primesCount; ++j) {
+                    auto pj = *primeGenerator;
+                    ++primeGenerator;
 
-                // Ensure that all primes are different
-                if (std::find(_primes.begin(), _primes.end(), pj) != _primes.end()) {
-                    j -= 1;
-                    continue;
+                    // Ensure that all primes are different
+                    if (std::find(_primes.begin(), _primes.end(), pj) != _primes.end()) {
+                        j -= 1;
+                        continue;
+                    }
+
+                    _primes.emplace_back(pj);
+                    _fields.emplace_back(pj);
+                    _ring.init(iTmp, pj);
+                    _ring.mulin(_p, iTmp);
+
+                    std::cout << "primes[" << j << "]: " << Integer(pj) << std::endl;
                 }
 
-                _primes.emplace_back(pj);
-                _fields.emplace_back(pj);
-                _ring.init(iTmp, pj);
-                _ring.mulin(_p, iTmp);
-
-                std::cout << "primes[" << j << "]: " << Integer(pj) << std::endl;
+                std::cout << "p: " << _p << std::endl;
             }
 
-            std::cout << "p: " << _p << std::endl;
-
             // Compute how many iterations are needed
-            auto hb = RationalSolveHadamardBound(A, b);
-            double log2P = Givaro::logtwo(_p);
-            // _iterationsCount = log2(2 * N * D) / log2(p)
-            _log2Bound = 1.0 + hb.numLogBound + hb.denLogBound;
-            _iterationsCount = std::ceil(_log2Bound / log2P);
-            std::cout << "k: " << _iterationsCount << std::endl;
+            {
+                auto hb = RationalSolveHadamardBound(A, b);
+                double log2P = Givaro::logtwo(_p);
+                // _iterationsCount = log2(2 * N * D) / log2(p)
+                _log2Bound = hb.solutionLogBound;
+                _iterationsCount = std::ceil(_log2Bound / log2P);
+                std::cout << "k: " << _iterationsCount << std::endl;
 
-            // @fixme Fact is RationalReconstruction which needs numbound and denbound
-            // expects them to be in non-log...
-            _ring.init(_numbound, Integer(1) << static_cast<uint64_t>(std::ceil(hb.numLogBound)));
-            _ring.init(_denbound, Integer(1) << static_cast<uint64_t>(std::ceil(hb.denLogBound)));
+                // @fixme Fact is RationalReconstruction which needs numbound and denbound
+                // expects them to be in non-log... @fixme Still needed?
+                _ring.init(_numbound, Integer(1)
+                                          << static_cast<uint64_t>(std::ceil(hb.numLogBound)));
+                _ring.init(_denbound, Integer(1)
+                                          << static_cast<uint64_t>(std::ceil(hb.denLogBound)));
+            }
+
+            // Making A into a RNS domain
+            {
+                // @fixme Really provide the primes, with the correct bound
+                FFPACK::rns_double rnsSystem(std::vector<double>({59059367, 57648973}));
+                FFPACK::RNSInteger<FFPACK::rns_double> rnsDomain(rnsSystem);
+                auto rnsA = FFLAS::fflas_new(rnsDomain, A.rowdim(), A.coldim());
+
+                Integer max;
+                InfinityNorm(max, A);
+                double logMax = Givaro::logtwo(max) / 16.; // @note So that 2^(16*k) is the max.
+                FFLAS::finit_rns(rnsDomain, A.rowdim(), A.coldim(), logMax, A.getPointer(), A.stride(),
+                                 rnsA);
+
+                std::cout << "rnsA: " << rnsA[0]._ptr[0] << " " << rnsA[0]._ptr[1] << std::endl;
+            }
 
             // Initialize all inverses
             // @note An inverse mod some p within DixonSolver<Dense> was already computed,
@@ -155,7 +177,7 @@ namespace LinBox {
                 }
             }
 
-            //----- Iteration
+            //----- Locals setup
 
             _r.reserve(_primesCount);
             _Q.reserve(_primesCount);
