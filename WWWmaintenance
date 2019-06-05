@@ -10,4 +10,4 @@ make the html docs and copy the html directory to here.
 
 4. rsync --verbose --update --recursive --links --times <path>/linbox/doc/linbox-html . 
 
-5. git commit -a ; git pull ; git push
+5. git add linbox-html ; git commit -a ; git pull ; git push
