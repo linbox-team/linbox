@@ -38,6 +38,7 @@ VERSION=`grep VERSION Makefile.am  | sed s/VERSION=// `
 echo "VERSION = $VERSION"
 distdir=linbox-$VERSION
 distarchive=$distdir.tar.gz
+echo "distarchive = $distarchive"
 
 # Where to install linbox binaries
 # Keep default for local installation.
@@ -77,24 +78,26 @@ echo "|=== JENKINS AUTOMATED SCRIPT ===| make dist"
 make dist
 V="$?"; if test "x$V" != "x0";then exit "$V"; fi
 
-cd ..
-mv linbox/$distarchive .
+rm -rf work
+mkdir -p work/builddir
+mv $distarchive work
+cd work
 tar zxvf $distarchive
-mkdir -P buildir
-cd buildir
-rm -rf ./*
+cd builddir
 
 echo "|=== JENKINS AUTOMATED SCRIPT ===| ../$distdir/configure CXX=$CXX CXXFLAGS=$CXXFLAGS --prefix=$PREFIX_INSTALL $LINBOX_NTLFLAG"
-../$distdir/configure CXX=$CXX CXXFLAGS=$CXXFLAGS --prefix="$PREFIX_INSTALL" "$LINBOX_NTLFLAG"
+../$distdir/configure CXX=$CXX CXXFLAGS=$CXXFLAGS --prefix="$PREFIX_INSTALL" "$LINBOX_NTLFLAG" ;;
 
-echo "|=== JENKINS AUTOMATED SCRIPT ===| make install"
-make install
-V="$?"; if test "x$V" != "x0"; then exit "$V"; fi
+echo "|=== JENKINS AUTOMATED SCRIPT ===| make install" ;;
+make install ;;
+V="$?"; if test "x$V" != "x0"; then exit "$V"; fi ;;
 
-echo "|=== JENKINS AUTOMATED SCRIPT ===| make perfpublisher"
-make perfpublisher
+echo "|=== JENKINS AUTOMATED SCRIPT ===| make perfpublisher" ;;
+make perfpublisher ;;
 
 echo "|=== JENKINS AUTOMATED SCRIPT ===| make examples"
 make examples
 V="$?"; if test "x$V" != "x0"; then exit "$V"; fi
 (cd examples && make clean)
+
+)
