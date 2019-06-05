@@ -78,13 +78,14 @@ make dist
 V="$?"; if test "x$V" != "x0";then exit "$V"; fi
 
 cd ..
-mv linbox/$(distarchive) .
+mv linbox/$distarchive .
 tar zxvf $distarchive
-mkdir buildir
+mkdir -P buildir
 cd buildir
+rm -rf ./*
 
-echo "|=== JENKINS AUTOMATED SCRIPT ===| ../$(distdir)/configure CXX=$CXX CXXFLAGS=$CXXFLAGS --prefix=$PREFIX_INSTALL $LINBOX_NTLFLAG"
-../$(distdir)/configure CXX=$CXX CXXFLAGS=$CXXFLAGS --prefix="$PREFIX_INSTALL" "$LINBOX_NTLFLAG"
+echo "|=== JENKINS AUTOMATED SCRIPT ===| ../$distdir/configure CXX=$CXX CXXFLAGS=$CXXFLAGS --prefix=$PREFIX_INSTALL $LINBOX_NTLFLAG"
+../$distdir/configure CXX=$CXX CXXFLAGS=$CXXFLAGS --prefix="$PREFIX_INSTALL" "$LINBOX_NTLFLAG"
 
 echo "|=== JENKINS AUTOMATED SCRIPT ===| make install"
 make install
