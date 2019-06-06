@@ -111,5 +111,7 @@ git:
 
 VERSION=1.6.3
 
-EXTRA_DIST=linbox-auto-install.sh
+EXTRA_DIST= \
+	linbox-auto-install.sh \
+	README.md
 #incremente-versions
