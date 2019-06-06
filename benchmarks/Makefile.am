@@ -86,8 +86,9 @@ pkginclude_HEADERS = \
 		     benchmark.C \
 		     benchmark.inl
 
-EXTRA_DIST = $(PERFPUBLISHERFILE) \
-	    benchmark.doxy
+EXTRA_DIST =  \
+	perfpublisher.sh \
+	benchmark.doxy
 
 CLEANFILES= $(EXTRA_PROGRAMS) $(PERFPUBLISHERFILE)
 

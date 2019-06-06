@@ -47,7 +47,8 @@ AM_LDFLAGS = $(top_builddir)/linbox/liblinbox.la
 
 PERFPUBLISHERFILE = tests-report.xml
 
-EXTRA_DIST = $(PERFPUBLISHERFILE) \
+EXTRA_DIST = \
+    perfpublisher.sh \
     test-blackbox.h        \
     test-common.h        \
     test-common.inl        \
