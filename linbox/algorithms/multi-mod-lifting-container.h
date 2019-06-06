@@ -94,66 +94,72 @@ namespace LinBox {
             A.write(std::cout << "A: ", Tag::FileFormat::Maple) << std::endl;
             std::cout << "b: " << b << std::endl;
 
+            // This will contain the primes or our MultiMod basis
             // @fixme Pass it through Method::DixonRNS (and rename it Method::DixonMultiMod?)
             _primesCount = 2;
+            _primes.resize(_primesCount);
             std::cout << "l: " << _primesCount << std::endl;
+
+            // Some preparation work
+            Integer infinityNormA;
+            InfinityNorm(infinityNormA, A);
+            double logInfinityNormA = Givaro::logtwo(infinityNormA);
+
+            {
+                // Based on Chen-Storjohann's paper, this is the bit size
+                // of the needed RNS basis for the residue computation
+                double rnsBasisBitSize = (logInfinityNormA + Givaro::logtwo(_n)) * 16; // @fixme @cpernet Does this factor 16 makes sense?
+                uint32_t rnsBasisPrimesCount =
+                    std::ceil(rnsBasisBitSize / primeGenerator.getBits());
+                _rnsPrimes.resize(rnsBasisPrimesCount);
+                std::cout << "RNS basis: " << rnsBasisPrimesCount << " estimated primes." << std::endl;
+
+                std::vector<double> primes;
+                for (auto j = 0u; j < _primesCount + rnsBasisPrimesCount; ++j) {
+                    auto p = *primeGenerator;
+                    ++primeGenerator;
+
+                    auto lb = std::lower_bound(primes.begin(), primes.end(), p);
+                    if (lb != primes.end() && *lb == p) {
+                        --j;
+                        continue;
+                    }
+
+                    // Inserting the primes at the right place to keep the array sorted
+                    primes.insert(lb, p);
+                }
+
+                // We take the smallest primes for our MultiMod basis
+                std::copy(primes.begin(), primes.begin() + _primesCount, _primes.begin());
+
+                // And the others for our RNS basis
+                std::copy(primes.begin() + _primesCount, primes.end(), _rnsPrimes.begin());
+
+                // We check that we really need all the primes within the RNS basis,
+                // as the first count was just an upper estimation.
+                double bitSize = 0.0;
+                for (int i = _rnsPrimes.size() - 1; i >= 0; --i) {
+                    bitSize += Givaro::logtwo(primes[i]);
+
+                    if (bitSize > rnsBasisBitSize && i > 0) {
+                        _rnsPrimes.erase(_rnsPrimes.begin(), _rnsPrimes.begin() + (i - 1));
+                        std::cout << "RNS basis: Erasing extra " << i << "primes." << std::endl;
+                        break;
+                    }
+                }
+            }
 
             // Generating primes
             {
                 IElement iTmp;
                 _ring.assign(_p, _ring.one);
-                for (auto j = 0u; j < _primesCount; ++j) {
-                    auto pj = *primeGenerator;
-                    ++primeGenerator;
-
-                    // Ensure that all primes are different
-                    if (std::find(_primes.begin(), _primes.end(), pj) != _primes.end()) {
-                        j -= 1;
-                        continue;
-                    }
-
-                    _primes.emplace_back(pj);
+                for (auto& pj : _primes) {
                     _fields.emplace_back(pj);
                     _ring.init(iTmp, pj);
                     _ring.mulin(_p, iTmp);
-
-                    std::cout << "primes[" << j << "]: " << Integer(pj) << std::endl;
                 }
 
                 std::cout << "p: " << _p << std::endl;
-            }
-
-            // Compute how many iterations are needed
-            {
-                auto hb = RationalSolveHadamardBound(A, b);
-                double log2P = Givaro::logtwo(_p);
-                // _iterationsCount = log2(2 * N * D) / log2(p)
-                _log2Bound = hb.solutionLogBound;
-                _iterationsCount = std::ceil(_log2Bound / log2P);
-                std::cout << "k: " << _iterationsCount << std::endl;
-
-                // @fixme Fact is RationalReconstruction which needs numbound and denbound
-                // expects them to be in non-log... @fixme Still needed?
-                _ring.init(_numbound, Integer(1)
-                                          << static_cast<uint64_t>(std::ceil(hb.numLogBound)));
-                _ring.init(_denbound, Integer(1)
-                                          << static_cast<uint64_t>(std::ceil(hb.denLogBound)));
-            }
-
-            // Making A into a RNS domain
-            {
-                // @fixme Really provide the primes, with the correct bound
-                FFPACK::rns_double rnsSystem(std::vector<double>({59059367, 57648973}));
-                FFPACK::RNSInteger<FFPACK::rns_double> rnsDomain(rnsSystem);
-                auto rnsA = FFLAS::fflas_new(rnsDomain, A.rowdim(), A.coldim());
-
-                Integer max;
-                InfinityNorm(max, A);
-                double logMax = Givaro::logtwo(max) / 16.; // @note So that 2^(16*k) is the max.
-                FFLAS::finit_rns(rnsDomain, A.rowdim(), A.coldim(), logMax, A.getPointer(), A.stride(),
-                                 rnsA);
-
-                std::cout << "rnsA: " << rnsA[0]._ptr[0] << " " << rnsA[0]._ptr[1] << std::endl;
             }
 
             // Initialize all inverses
@@ -175,6 +181,35 @@ namespace LinBox {
                         throw LinBoxError("Wrong prime, sorry.");
                     }
                 }
+            }
+
+            // Making A into the RNS domain
+            {
+                FFPACK::rns_double rnsSystem(_rnsPrimes);
+                FFPACK::RNSInteger<FFPACK::rns_double> rnsDomain(rnsSystem);
+                auto rnsA = FFLAS::fflas_new(rnsDomain, A.rowdim(), A.coldim());
+
+                double cmax =
+                    logInfinityNormA / 16.; // @note So that 2^(16*cmax) is the max element of A.
+                FFLAS::finit_rns(rnsDomain, A.rowdim(), A.coldim(), cmax, A.getPointer(),
+                                 A.stride(), rnsA);
+            }
+
+            // Compute how many iterations are needed
+            {
+                auto hb = RationalSolveHadamardBound(A, b);
+                double log2P = Givaro::logtwo(_p);
+                // _iterationsCount = log2(2 * N * D) / log2(p)
+                _log2Bound = hb.solutionLogBound;
+                _iterationsCount = std::ceil(_log2Bound / log2P);
+                std::cout << "k: " << _iterationsCount << std::endl;
+
+                // @fixme Fact is RationalReconstruction which needs numbound and denbound
+                // expects them to be in non-log... @fixme Still needed?
+                _ring.init(_numbound, Integer(1)
+                                          << static_cast<uint64_t>(std::ceil(hb.numLogBound)));
+                _ring.init(_denbound, Integer(1)
+                                          << static_cast<uint64_t>(std::ceil(hb.denLogBound)));
             }
 
             //----- Locals setup
@@ -316,6 +351,7 @@ namespace LinBox {
 
         IElement _p;                   // The global modulus for lifting: a multiple of all _primes.
         std::vector<FElement> _primes; // @fixme We might want something else as a type!
+        std::vector<double> _rnsPrimes;
         size_t
             _iterationsCount; // Length of the ci sequence. So that p^{k-1} > 2ND (Hadamard bound).
         size_t _n;            // Row/column dimension of A.
