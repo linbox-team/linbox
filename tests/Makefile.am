@@ -45,7 +45,9 @@ LDADD = $(DEPS_LIBS) $(LDFLAGS)
 AM_LDFLAGS = $(top_builddir)/linbox/liblinbox.la
 #  AM_LDFLAGS+=-static -Wl,-rpath -Wl,
 
-EXTRA_DIST =            \
+PERFPUBLISHERFILE = tests-report.xml
+
+EXTRA_DIST = $(PERFPUBLISHERFILE) \
     test-blackbox.h        \
     test-common.h        \
     test-common.inl        \
@@ -58,8 +60,6 @@ EXTRA_DIST =            \
     test-smith-form.h       \
     tests.doxy        \
     checker.C
-
-PERFPUBLISHERFILE = tests-report.xml
 
 #  tutorial-1: tutorial-1.C
 
