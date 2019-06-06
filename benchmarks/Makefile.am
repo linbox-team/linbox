@@ -133,7 +133,7 @@ LINBOX_BIN=@bindir@
 
 # Perfpublisher script interaction - AB 2014/12/11
 perfpublisher:
-	+./perfpublisher.sh "$(PERFPUBLISHERFILE)" "$(EXTRA_PROGRAMS)" "$(CXX)"
+	$(top_srcdir)/tests/perfpublisher.sh "$(PERFPUBLISHERFILE)" "$(EXTRA_PROGRAMS)" "$(CXX)"
 	mv $(PERFPUBLISHERFILE) ..
 	make clean
 	mv ../$(PERFPUBLISHERFILE) .

@@ -386,7 +386,7 @@ test_toeplitz_SOURCES =                 test-toeplitz.C
 
 # Perfpublisher script interaction - AB 2014/12/11
 perfpublisher:
-	+./perfpublisher.sh "$(PERFPUBLISHERFILE)" "$(TESTS)" "$(CXX)"
+	$(top_srcdir)/tests/perfpublisher.sh "$(PERFPUBLISHERFILE)" "$(TESTS)" "$(CXX)"
 	mv $(PERFPUBLISHERFILE) ..
 	make clean
 	mv ../$(PERFPUBLISHERFILE) .
