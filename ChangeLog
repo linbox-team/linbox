@@ -1,3 +1,8 @@
+2019-06-07 v1.6.3
+	Minor update:
+	* fix test-suite failures when compiling in builddir!=srcdir
+	* improve jenkins builder script
+	* add README.md and other missing files in distribution
 2019-05-10 v1.6.0
 	Major code refactorization:
 	* solve solution
