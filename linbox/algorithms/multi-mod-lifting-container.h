@@ -70,6 +70,11 @@ namespace LinBox {
         using Field = _Field;
         using PrimeGenerator = _PrimeGenerator;
 
+        using RNSSystem = FFPACK::rns_double;
+        using RNSDomain = FFPACK::RNSInteger<FFPACK::rns_double>;
+        using RNSElement = typename RNSDomain::Element;
+        using RNSElementPtr = typename RNSDomain::Element_ptr;
+
         using IElement = typename Ring::Element;
         using IMatrix = DenseMatrix<_Ring>;
         using IVector = DenseVector<_Ring>;
@@ -108,14 +113,15 @@ namespace LinBox {
             {
                 // Based on Chen-Storjohann's paper, this is the bit size
                 // of the needed RNS basis for the residue computation
-                double rnsBasisBitSize = (logInfinityNormA + Givaro::logtwo(_n)) * 16; // @fixme @cpernet Does this factor 16 makes sense?
-                uint32_t rnsBasisPrimesCount =
-                    std::ceil(rnsBasisBitSize / primeGenerator.getBits());
-                _rnsPrimes.resize(rnsBasisPrimesCount);
-                std::cout << "RNS basis: " << rnsBasisPrimesCount << " estimated primes." << std::endl;
+                double rnsBasisBitSize = (logInfinityNormA + Givaro::logtwo(_n))
+                                         * 16; // @fixme @cpernet Does this factor 16 makes sense?
+                _rnsBasisPrimesCount = std::ceil(rnsBasisBitSize / primeGenerator.getBits());
+                _rnsPrimes.resize(_rnsBasisPrimesCount);
+                std::cout << "RNS basis: " << _rnsBasisPrimesCount << " estimated primes."
+                          << std::endl;
 
                 std::vector<double> primes;
-                for (auto j = 0u; j < _primesCount + rnsBasisPrimesCount; ++j) {
+                for (auto j = 0u; j < _primesCount + _rnsBasisPrimesCount; ++j) {
                     auto p = *primeGenerator;
                     ++primeGenerator;
 
@@ -185,14 +191,17 @@ namespace LinBox {
 
             // Making A into the RNS domain
             {
-                FFPACK::rns_double rnsSystem(_rnsPrimes);
-                FFPACK::RNSInteger<FFPACK::rns_double> rnsDomain(rnsSystem);
-                auto rnsA = FFLAS::fflas_new(rnsDomain, A.rowdim(), A.coldim());
+                RNSSystem rnsSystem(_rnsPrimes);
+                _rnsDomain = new RNSDomain(rnsSystem);
+                _rnsA = FFLAS::fflas_new(*_rnsDomain, _n, _n);
+
+                // @fixme @cpernet Just it be transpose for better memory access between threads?
+                // Each column is the current digit c[j] mod pj
+                _rnsc = FFLAS::fflas_new(*_rnsDomain, _n, _primesCount);
 
                 double cmax =
                     logInfinityNormA / 16.; // @note So that 2^(16*cmax) is the max element of A.
-                FFLAS::finit_rns(rnsDomain, A.rowdim(), A.coldim(), cmax, A.getPointer(),
-                                 A.stride(), rnsA);
+                FFLAS::finit_rns(*_rnsDomain, _n, _n, cmax, A.getPointer(), A.stride(), _rnsA);
             }
 
             // Compute how many iterations are needed
@@ -229,6 +238,12 @@ namespace LinBox {
                 // Initialize all residues to b
                 _r.back() = _b; // Copying data
             }
+        }
+
+        ~MultiModLiftingContainer()
+        {
+            FFLAS::fflas_delete(_rnsA); // @fixme Does it knows the size?
+            delete _rnsDomain;
         }
 
         // --------------------------
@@ -298,22 +313,38 @@ namespace LinBox {
                 auto& Fc = _Fc[j];
                 B.apply(Fc, FR);
 
-                // @todo Convert _c[i] to RNS
                 digits[j] = IVector(_ring, Fc);
+
+                // Store the very same result in an RNS system,
+                // but fact is all the primes of the RNS system are bigger
+                // than the modulus used to compute _Fc, we just copy the result for everybody.
+                std::cout << "FOR " << pj << std::endl;
+                for (auto i = 0u; i < _n; ++i) {
+                    // std::cout << _rnsc[i * _n + j]._ptr << std::endl;
+                    double cij = _Fc[j][i];
+                    std::cout << "stride " << _rnsc[i * _n + j]._stride << std::endl;
+                    auto stride = _rnsc[i * _n + j]._stride;
+                    for (auto h = 0u; h < _rnsBasisPrimesCount; ++h) {
+                        _rnsc[i * _n + j]._ptr[h + stride] = cij;
+                    }
+                    _rnsDomain->write(std::cout << i << " " << j << " ", _rnsc[i * _n + j]);
+                    std::cout << std::endl;
+                }
             }
 
             // ----- Compute the next residue!
 
-            // @note This is a dummy implementation, for now.
-
             // r <= (r - A c) / p
             for (auto j = 0u; j < _primesCount; ++j) {
                 auto pj = _primes[j];
-                auto& r = _r[j]; // @fixme THEY HOLD ALL THE VERY SAME VALUE!
+                auto& r = _r[j];
                 auto& Q = _Q[j];
                 auto& R = _R[j];
 
                 auto& Fc = _Fc[j];
+
+                // @note We know that _Fc  @fixme @todo XXXX
+
                 // @fixme For now, we convert cj to integer,
                 // but it should be converted into a RNS system, on pre-allocated memory.
                 IVector Ic(_ring, Fc);
@@ -349,13 +380,19 @@ namespace LinBox {
         IElement _denbound;
         double _log2Bound;
 
+        RNSDomain* _rnsDomain = nullptr;
+        RNSElementPtr _rnsA; // The matrix A, but in the RNS system
+        // A matrix of digits c[j], being the current digits mod pj, in the RNS system
+        RNSElementPtr _rnsc;
+        size_t _rnsBasisPrimesCount = 0u;
+
         IElement _p;                   // The global modulus for lifting: a multiple of all _primes.
         std::vector<FElement> _primes; // @fixme We might want something else as a type!
         std::vector<double> _rnsPrimes;
-        size_t
-            _iterationsCount; // Length of the ci sequence. So that p^{k-1} > 2ND (Hadamard bound).
-        size_t _n;            // Row/column dimension of A.
-        size_t _primesCount;  // How many primes. Equal to _primes.size().
+        // Length of the ci sequence. So that p^{k-1} > 2ND (Hadamard bound).
+        size_t _iterationsCount = 0u;
+        size_t _n = 0u;           // Row/column dimension of A.
+        size_t _primesCount = 0u; // How many primes. Equal to _primes.size().
 
         std::vector<FMatrix> _B;    // Inverses of A mod p[i]
         std::vector<Field> _fields; // All fields Modular<p[i]>
