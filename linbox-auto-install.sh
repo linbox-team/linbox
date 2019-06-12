@@ -673,7 +673,7 @@ if [ "$OPENBLAS_VAR" = "true" ]; then
 	cool
     fi
 
-    OPENBLAS_FLAGS="USE_THREADS=0 USE_THREAD=0 CC=gcc FC=gfortran PREFIX=$PREFIX_LOC"
+    OPENBLAS_FLAGS="CC=gcc FC=gfortran PREFIX=$PREFIX_LOC"
 
     echo -e "${BEG}building OpenBLAS..."| tee -a ../../linbox-auto-install.log
     echo "${MAKEPROG} ${OPENBLAS_FLAGS} CXXFLAGS+=\"$EXTRA\" LDFLAGS+=\"-Wl,-rpath,$PREFIX_LOC\""| tee -a ../../linbox-auto-install.log
