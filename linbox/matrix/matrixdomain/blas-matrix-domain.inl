@@ -73,7 +73,7 @@ namespace LinBox { namespace Protected {
                                                     BlasSubmatrix<Matrix> &A) const {
             if (A.rowdim() != A.coldim())
                 return F.zero;
-            typename Matrix::Field::Element det;
+            typename Matrix::Field::Element det; F.init(det);
             return FFPACK::Det(F, det, A.coldim(), A.getPointer(), A.getStride());
         }
 	};
