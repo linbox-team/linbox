@@ -114,12 +114,12 @@ namespace LinBox {
                 // Based on Chen-Storjohann's paper, this is the bit size
                 // of the needed RNS basis for the residue computation
                 double rnsBasisBitSize = (logInfinityNormA + Givaro::logtwo(_n));
-                _rnsBasisPrimesCount = std::ceil(rnsBasisBitSize / primeGenerator.getBits());
-                _rnsPrimes.resize(_rnsBasisPrimesCount);
-                std::cout << "rnsBasisPrimesCount: " << _rnsBasisPrimesCount << std::endl;
+                _rnsPrimesCount = std::ceil(rnsBasisBitSize / primeGenerator.getBits());
+                _rnsPrimes.resize(_rnsPrimesCount);
+                std::cout << "rnsBasisPrimesCount: " << _rnsPrimesCount << std::endl;
 
                 std::vector<double> primes;
-                for (auto j = 0u; j < _primesCount + _rnsBasisPrimesCount; ++j) {
+                for (auto j = 0u; j < _primesCount + _rnsPrimesCount; ++j) {
                     auto p = *primeGenerator;
                     ++primeGenerator;
 
@@ -145,18 +145,20 @@ namespace LinBox {
                 // We check that we really need all the primes within the RNS basis,
                 // as the first count was just an upper estimation.
                 double bitSize = 0.0;
-                for (int i = _rnsPrimes.size() - 1; i >= 0; --i) {
-                    bitSize += Givaro::logtwo(primes[i]);
+                for (int h = _rnsPrimes.size() - 1; h >= 0; --h) {
+                    bitSize += Givaro::logtwo(primes[h]);
 
-                    if (bitSize > rnsBasisBitSize && i > 0) {
-                        _rnsPrimes.erase(_rnsPrimes.begin(), _rnsPrimes.begin() + (i - 1));
-                        std::cout << "RNS basis: Erasing extra " << i << "primes." << std::endl;
+                    if (bitSize > rnsBasisBitSize && h > 0) {
+                        _rnsPrimes.erase(_rnsPrimes.begin(), _rnsPrimes.begin() + (h - 1));
+                        _rnsPrimesCount -= h;
+                        std::cout << "RNS basis: Erasing extra " << h << "primes." << std::endl;
                         break;
                     }
                 }
             }
 
             // Generating primes
+            // @fixme Cleanup, might not be needed
             {
                 IElement iTmp;
                 _ring.assign(_primesProduct, _ring.one);
@@ -196,12 +198,26 @@ namespace LinBox {
                 _rnsDomain = new RNSDomain(*_rnsSystem);
                 _rnsA = FFLAS::fflas_new(*_rnsDomain, _n, _n);
                 _rnsc = FFLAS::fflas_new(*_rnsDomain, _n, _primesCount);
-                _rnsAc = FFLAS::fflas_new(*_rnsDomain, _n, _primesCount);
+                _rnsR = FFLAS::fflas_new(*_rnsDomain, _n, _primesCount);
 
                 // @note So that 2^(16*cmax) is the max element of A.
                 double cmax = logInfinityNormA / 16.;
                 FFLAS::finit_rns(*_rnsDomain, _n, _n, std::ceil(cmax), A.getPointer(), A.stride(),
                                  _rnsA);
+            }
+
+            // Compute the inverses of pj for each RNS prime
+            {
+                _primesRNSInverses.resize(_primesCount);
+                for (auto j = 0u; j < _primesCount; ++j) {
+                    auto prime = _primes[j];
+                    _primesRNSInverses[j].resize(_rnsPrimesCount);
+                    for (auto h = 0u; h < _rnsPrimesCount; ++h) {
+                        auto& rnsF = _rnsSystem->_field_rns[h];
+                        auto& primeInverse = _primesRNSInverses[j][h];
+                        rnsF.inv(primeInverse, prime);
+                    }
+                }
             }
 
             // Compute how many iterations are needed
@@ -242,6 +258,8 @@ namespace LinBox {
 
         ~MultiModLiftingContainer()
         {
+            FFLAS::fflas_delete(_rnsR); // @fixme Does it knows the size?
+            FFLAS::fflas_delete(_rnsc); // @fixme Does it knows the size?
             FFLAS::fflas_delete(_rnsA); // @fixme Does it knows the size?
             delete _rnsDomain;
             delete _rnsSystem;
@@ -322,61 +340,92 @@ namespace LinBox {
                 // but fact is all the primes of the RNS system are bigger
                 // than the modulus used to compute _Fc, we just copy the result for everybody.
                 for (auto i = 0u; i < _n; ++i) {
-                    double cij = Fc[i];
-                    auto stride = _rnsc[i * _n + j]._stride;
-                    for (auto h = 0u; h < _rnsBasisPrimesCount; ++h) {
-                        _rnsc[i * _n + j]._ptr[h * stride] = cij;
+                    setRNSMatrixElementAllResidues(_rnsR, _n, i, j, FR[i]);
+                    setRNSMatrixElementAllResidues(_rnsc, _n, i, j, Fc[i]);
+                }
+            }
+
+            // ----- Compute the next residues!
+
+            // r <= Q + (R - A c) / p
+
+            std::cout << "A" << std::endl;
+            for (auto j = 0u; j < _n; ++j) {
+                for (auto i = 0u; i < _n; ++i) {
+                    logRNSMatrixElement(_rnsA, _n, i, j);
+                }
+            }
+
+            std::cout << "c" << std::endl;
+            for (auto j = 0u; j < _primesCount; ++j) {
+                for (auto i = 0u; i < _n; ++i) {
+                    logRNSMatrixElement(_rnsc, _n, i, j);
+                }
+            }
+
+            // By first computing R <= R - A c as a fgemm within the RNS domain.
+            FFLAS::fgemm(*_rnsDomain, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, _n, _primesCount, _n,
+                         _rnsDomain->mOne, _rnsA, _n, _rnsc, _n, _rnsDomain->one,
+                         _rnsR, _n);
+
+            std::cout << "R = Ac" << std::endl;
+            for (auto j = 0u; j < _primesCount; ++j) {
+                for (auto i = 0u; i < _n; ++i) {
+                    logRNSMatrixElement(_rnsR, _n, i, j);
+                }
+            }
+
+            // We divide each residues by the according pj, which is done by multiplying.
+            // @fixme Could be done in parallel!
+            for (auto j = 0u; j < _primesCount; ++j) {
+                for (auto i = 0u; i < _n; ++i) {
+                    auto& rnsElement = _rnsR[i * _n + j];
+                    auto stride = rnsElement._stride;
+                    for (auto h = 0u; h < _rnsPrimesCount; ++h) {
+                        auto& rnsF = _rnsSystem->_field_rns[h];
+                        rnsF.mulin(rnsElement._ptr[h * stride], _primesRNSInverses[j][h]);
                     }
                 }
             }
 
-            // ----- Compute the next residue!
-
-            // @note The compute the next residu r <= (r - A c) / p
-            // By first doing A c as a fgemm within the RNS domain.
-            FFLAS::fgemm(*_rnsDomain, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, _n, _n,
-                         _primesCount, _rnsDomain->one, _rnsA, _n, _rnsc, _n, _rnsDomain->zero,
-                         _rnsAc, _n);
-
-            std::cout << "---------" << std::endl;
-            for (auto i = 0u; i < _n; ++i) {
-                for (auto j = 0u; j < _primesCount; ++j) {
-                    _rnsDomain->write(std::cout << i << " " << j << " ", _rnsc[i * _n + j])
-                        << std::endl;
-                }
-            }
-
-            // r <= (r - A c) / p
+            // @fixme Could be done in parallel!
             for (auto j = 0u; j < _primesCount; ++j) {
-                auto pj = _primes[j];
                 auto& r = _r[j];
                 auto& Q = _Q[j];
-                auto& R = _R[j];
 
-                auto& Fc = _Fc[j];
-
-                // @fixme For now, we convert cj to integer,
-                // but it should be converted into a RNS system, on pre-allocated memory.
-                IVector Ic(_ring, Fc);
-
-                // @fixme Should become a matrix-matrix multiplication!
-                // @fixme Should be able to do a gemv
-                _A.apply(r, Ic); // r = A c
-                IVD.negin(r);    // r = - A c
-                IVD.addin(r, R); // r = R - A c
-
-                // r = (R - A c) / p
-                IElement Ipj;
-                _ring.init(Ipj, pj);
+                // r <- (R - Ac) / p
+                // @fixme @cpernet Don't know how to do that with one fconvert_rns!
                 for (auto i = 0u; i < _n; ++i) {
-                    _ring.divin(r[i], Ipj); // @fixme Is there a divin in VectorDomain?
+                    FFLAS::fconvert_rns(*_rnsDomain, 1, 1, 0, &r[i], 1, _rnsR + (i * _n + j));
                 }
 
-                IVD.addin(r, Q); // r = Q + (R - A c) / p
+                // r <- Q + (R - Ac) / p
+                IVD.addin(r, Q);
             }
 
             ++_position;
             return true;
+        }
+
+    private:
+        // Helper function, setting all residues of a matrix element to the very same value.
+        // This doesn't check the moduli.
+        void setRNSMatrixElementAllResidues(RNSElementPtr& A, size_t lda, size_t i, size_t j,
+                                            double value)
+        {
+            auto stride = A[i * lda + j]._stride;
+            for (auto h = 0u; h < _rnsPrimesCount; ++h) {
+                A[i * lda + j]._ptr[h * stride] = value;
+            }
+        }
+
+        void logRNSMatrixElement(RNSElementPtr& A, size_t lda, size_t i, size_t j)
+        {
+            Integer reconstructedInteger;
+            FFLAS::fconvert_rns(*_rnsDomain, 1, 1, 0, &reconstructedInteger, 1, A + (i * lda + j));
+            std::cout << i << " " << j << " ";
+            _rnsDomain->write(std::cout, A[i * lda + j]);
+            std::cout << " -> " << reconstructedInteger << std::endl;
         }
 
     private:
@@ -395,9 +444,10 @@ namespace LinBox {
         RNSElementPtr _rnsA; // The matrix A, but in the RNS system
         // A matrix of digits c[j], being the current digits mod pj, in the RNS system
         RNSElementPtr _rnsc;
-        // The result matrix of the fgemm _rnsA * _rnsc.
-        RNSElementPtr _rnsAc;
-        size_t _rnsBasisPrimesCount = 0u;
+        RNSElementPtr _rnsR;
+        size_t _rnsPrimesCount = 0u;
+        // Stores the inverse of pj of the i-th RNS prime into _primesRNSInverses[j][i]
+        std::vector<std::vector<FElement>> _primesRNSInverses;
 
         IElement _primesProduct;       // The global modulus for lifting: a multiple of all _primes.
         std::vector<FElement> _primes; // @fixme We might want something else as a type!
