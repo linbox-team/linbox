@@ -123,8 +123,9 @@ namespace LinBox {
                     auto p = *primeGenerator;
                     ++primeGenerator;
 
-                    // @note std::lower_bound finds the iterator where to put p in the sorted container.
-                    // The name of the routine might be strange, but, hey, that's not my fault.
+                    // @note std::lower_bound finds the iterator where to put p in the sorted
+                    // container. The name of the routine might be strange, but, hey, that's not my
+                    // fault.
                     auto lb = std::lower_bound(primes.begin(), primes.end(), p);
                     if (lb != primes.end() && *lb == p) {
                         --j;
@@ -191,17 +192,16 @@ namespace LinBox {
 
             // Making A into the RNS domain
             {
-                RNSSystem rnsSystem(_rnsPrimes);
-                _rnsDomain = new RNSDomain(rnsSystem);
+                _rnsSystem = new RNSSystem(_rnsPrimes);
+                _rnsDomain = new RNSDomain(*_rnsSystem);
                 _rnsA = FFLAS::fflas_new(*_rnsDomain, _n, _n);
-
-                // @fixme @cpernet Just it be transpose for better memory access between threads?
-                // Each column is the current digit c[j] mod pj
                 _rnsc = FFLAS::fflas_new(*_rnsDomain, _n, _primesCount);
+                _rnsAc = FFLAS::fflas_new(*_rnsDomain, _n, _primesCount);
 
-                double cmax =
-                    logInfinityNormA / 16.; // @note So that 2^(16*cmax) is the max element of A.
-                FFLAS::finit_rns(*_rnsDomain, _n, _n, std::ceil(cmax), A.getPointer(), A.stride(), _rnsA);
+                // @note So that 2^(16*cmax) is the max element of A.
+                double cmax = logInfinityNormA / 16.;
+                FFLAS::finit_rns(*_rnsDomain, _n, _n, std::ceil(cmax), A.getPointer(), A.stride(),
+                                 _rnsA);
             }
 
             // Compute how many iterations are needed
@@ -244,6 +244,7 @@ namespace LinBox {
         {
             FFLAS::fflas_delete(_rnsA); // @fixme Does it knows the size?
             delete _rnsDomain;
+            delete _rnsSystem;
         }
 
         // --------------------------
@@ -331,6 +332,20 @@ namespace LinBox {
 
             // ----- Compute the next residue!
 
+            // @note The compute the next residu r <= (r - A c) / p
+            // By first doing A c as a fgemm within the RNS domain.
+            FFLAS::fgemm(*_rnsDomain, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, _n, _n,
+                         _primesCount, _rnsDomain->one, _rnsA, _n, _rnsc, _n, _rnsDomain->zero,
+                         _rnsAc, _n);
+
+            std::cout << "---------" << std::endl;
+            for (auto i = 0u; i < _n; ++i) {
+                for (auto j = 0u; j < _primesCount; ++j) {
+                    _rnsDomain->write(std::cout << i << " " << j << " ", _rnsc[i * _n + j])
+                        << std::endl;
+                }
+            }
+
             // r <= (r - A c) / p
             for (auto j = 0u; j < _primesCount; ++j) {
                 auto pj = _primes[j];
@@ -339,8 +354,6 @@ namespace LinBox {
                 auto& R = _R[j];
 
                 auto& Fc = _Fc[j];
-
-                // @note We know that _Fc  @fixme @todo XXXX
 
                 // @fixme For now, we convert cj to integer,
                 // but it should be converted into a RNS system, on pre-allocated memory.
@@ -377,13 +390,16 @@ namespace LinBox {
         IElement _denbound;
         double _log2Bound;
 
+        RNSSystem* _rnsSystem = nullptr;
         RNSDomain* _rnsDomain = nullptr;
         RNSElementPtr _rnsA; // The matrix A, but in the RNS system
         // A matrix of digits c[j], being the current digits mod pj, in the RNS system
         RNSElementPtr _rnsc;
+        // The result matrix of the fgemm _rnsA * _rnsc.
+        RNSElementPtr _rnsAc;
         size_t _rnsBasisPrimesCount = 0u;
 
-        IElement _primesProduct;                   // The global modulus for lifting: a multiple of all _primes.
+        IElement _primesProduct;       // The global modulus for lifting: a multiple of all _primes.
         std::vector<FElement> _primes; // @fixme We might want something else as a type!
         std::vector<double> _rnsPrimes;
         // Length of the ci sequence. So that p^{k-1} > 2ND (Hadamard bound).
