@@ -93,7 +93,7 @@ bool testRandomSolve (const Ring& R,
 
         for(int i = 0; i < n; ++i) R.init (D[(size_t)i][(size_t)i],  d[(size_t)i]);
 
-        typedef DixonSolver<Ring, Field, PrimeIterator<IteratorCategories::HeuristicTag> > RSolver;
+        typedef RationalSolver<Ring, Field, PrimeIterator<IteratorCategories::HeuristicTag> > RSolver;
         RSolver rsolver;
 
         BlasVector<Ring> num(R,(size_t)n);
@@ -144,7 +144,7 @@ int main(int argc, char** argv)
     using Ring  = Givaro::IntegerDom;
 
     Ring R; Ring::RandIter gen(R);
-    Field F(101);
+    Field F(101); 
 
     RandomDenseStream<Ring> s1 (R, gen, n, (unsigned int)iterations), s2 (R, gen, n, (unsigned int)iterations);
     if (!testRandomSolve(R, F, s1, s2)) pass = false;

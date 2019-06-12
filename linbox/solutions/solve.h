@@ -80,8 +80,8 @@ namespace LinBox {
      *      - Otherwise > Error
      * - Method::Dixon
      *      - IntegerTag
-     *      |   - DenseMatrix   > `DixonSolver<..., Method::DenseElimination>`
-     *      |   - SparseMatrix  > `DixonSolver<..., Method::SparseElimination>`
+     *      |   - DenseMatrix   > `RationalSolver<..., Method::Dixon>`
+     *      |   - SparseMatrix  > `RationalSolver<..., Method::SparseElimination>`
      *      |   - Otherwise     >  Error
      *      - Otherwise > Error
      * - Method::Blackbox > Method::Wiedemann
@@ -107,7 +107,7 @@ namespace LinBox {
      *      |   - Otherwise   > Error
      *      - Otherwise  > Error
      * - Method::SymbolicNumericNorm
-     *      - IntegerTag > `DixonSolver<..., Method::SymbolicNumericNorm>`
+     *      - IntegerTag > `RationalSolver<..., Method::SymbolicNumericNorm>`
      *      - Otherwise  > Error
      *
      * @param [out] x solution, can be a rational solution (vector of numerators and one denominator)
