@@ -113,8 +113,7 @@ namespace LinBox {
             {
                 // Based on Chen-Storjohann's paper, this is the bit size
                 // of the needed RNS basis for the residue computation
-                double rnsBasisBitSize = (logInfinityNormA + Givaro::logtwo(_n))
-                                         * 16; // @fixme @cpernet Does this factor 16 makes sense?
+                double rnsBasisBitSize = (logInfinityNormA + Givaro::logtwo(_n));
                 _rnsBasisPrimesCount = std::ceil(rnsBasisBitSize / primeGenerator.getBits());
                 _rnsPrimes.resize(_rnsBasisPrimesCount);
                 std::cout << "RNS basis: " << _rnsBasisPrimesCount << " estimated primes."
@@ -201,7 +200,7 @@ namespace LinBox {
 
                 double cmax =
                     logInfinityNormA / 16.; // @note So that 2^(16*cmax) is the max element of A.
-                FFLAS::finit_rns(*_rnsDomain, _n, _n, cmax, A.getPointer(), A.stride(), _rnsA);
+                FFLAS::finit_rns(*_rnsDomain, _n, _n, std::ceil(cmax), A.getPointer(), A.stride(), _rnsA);
             }
 
             // Compute how many iterations are needed
@@ -325,7 +324,7 @@ namespace LinBox {
                     std::cout << "stride " << _rnsc[i * _n + j]._stride << std::endl;
                     auto stride = _rnsc[i * _n + j]._stride;
                     for (auto h = 0u; h < _rnsBasisPrimesCount; ++h) {
-                        _rnsc[i * _n + j]._ptr[h + stride] = cij;
+                        _rnsc[i * _n + j]._ptr[h * stride] = cij;
                     }
                     _rnsDomain->write(std::cout << i << " " << j << " ", _rnsc[i * _n + j]);
                     std::cout << std::endl;
