@@ -1,5 +1,4 @@
-/* linbox/algorithms/rational-solver2.h
- * Copyright (C) 2010 LinBox
+/* Copyright (C) 2010 LinBox
  * Author Z. Wan
  *
  *
@@ -22,15 +21,15 @@
  * ========LICENCE========
  */
 
-/*! @file algorithms/rational-solver2.h
+/*! @file algorithms/dixon-solver/dixon-solver-symbolic-numeric.h
  * @brief NO DOC
  * @bib
  * Implementation of the algorithm in manuscript, available at
  * http://www.cis.udel.edu/~wan/jsc_wan.ps
  */
 
-#ifndef __LINBOX_rational_solver2__H
-#define __LINBOX_rational_solver2__H
+#ifndef __LINBOX_dixon_solver_symbolic_numeric__H
+#define __LINBOX_dixon_solver_symbolic_numeric__H
 
 #include <memory.h>
 #include <iostream>
@@ -56,7 +55,7 @@ namespace LinBox
 	//template argument Field and RandomPrime are not used.
 	//Keep it just for interface consistency.
 	template <class Ring, class Field, class RandomPrime>
-	class RationalSolver<Ring, Field, RandomPrime, Method::SymbolicNumericNorm> {
+	class DixonSolver<Ring, Field, RandomPrime, Method::SymbolicNumericNorm> {
 
 	protected:
 		Ring r;
@@ -64,7 +63,7 @@ namespace LinBox
 	public:
 		typedef typename Ring::Element Integer;
 
-		RationalSolver(const Ring& _r = Ring()) :
+		DixonSolver(const Ring& _r = Ring()) :
 			r(_r)
 		{}
 
@@ -187,7 +186,7 @@ namespace LinBox
 	};
 #if __LINBOX_HAVE_CLAPACK
 	template <class Ring, class Field, class RandomPrime>
-	inline int RationalSolver<Ring, Field, RandomPrime, Method::SymbolicNumericNorm>::cblas_dgeinv(double* M, int n)
+	inline int DixonSolver<Ring, Field, RandomPrime, Method::SymbolicNumericNorm>::cblas_dgeinv(double* M, int n)
 	{
 		enum CBLAS_ORDER order = CblasRowMajor;
 		int lda = n;
@@ -195,7 +194,7 @@ namespace LinBox
 		int ierr = clapack_dgetrf (order, n, n, M, lda, P);
 		if (ierr != 0) {
 			commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
-			/*std::cerr*/ << "In RationalSolver::cblas_dgeinv Matrix is not full rank" << std::endl;
+			/*std::cerr*/ << "In DixonSolver::cblas_dgeinv Matrix is not full rank" << std::endl;
 			delete[] P ;
 			return -1;
 		}
@@ -205,7 +204,7 @@ namespace LinBox
 	}
 
 	template <class Ring, class Field, class RandomPrime>
-	inline int RationalSolver<Ring, Field, RandomPrime, Method::SymbolicNumericNorm>::cblas_rsol (int n, const double* M, integer* numx, integer& denx, double* b)
+	inline int DixonSolver<Ring, Field, RandomPrime, Method::SymbolicNumericNorm>::cblas_rsol (int n, const double* M, integer* numx, integer& denx, double* b)
 	{
 		if (n < 1) return 0;
 		double* IM = new double[n * n];
@@ -422,14 +421,14 @@ namespace LinBox
 
 	template <class Ring, class Field, class RandomPrime>
 	/* apply  y <- Ax */
-	inline int RationalSolver<Ring, Field, RandomPrime, Method::SymbolicNumericNorm>::cblas_dapply (int m, int n, const double* A, const double* x, double* y)
+	inline int DixonSolver<Ring, Field, RandomPrime, Method::SymbolicNumericNorm>::cblas_dapply (int m, int n, const double* A, const double* x, double* y)
 	{
 		cblas_dgemv (CblasRowMajor, CblasNoTrans, m, n, 1, A, n, x, 1, 0, y, 1);
 		return 0;
 	}
 
 	template <class Ring, class Field, class RandomPrime>
-	inline int RationalSolver<Ring, Field, RandomPrime, Method::SymbolicNumericNorm>::cblas_mpzapply (int m, int n, const double* A, const integer* x, integer* y)
+	inline int DixonSolver<Ring, Field, RandomPrime, Method::SymbolicNumericNorm>::cblas_mpzapply (int m, int n, const double* A, const integer* x, integer* y)
 	{
 		const double* p_A;
 		const integer* p_x;
@@ -449,7 +448,7 @@ namespace LinBox
 
 	template <class Ring, class Field, class RandomPrime>
 	template <class Elt>
-	inline int RationalSolver<Ring, Field, RandomPrime, Method::SymbolicNumericNorm>::printvec (const Elt* v, int n)
+	inline int DixonSolver<Ring, Field, RandomPrime, Method::SymbolicNumericNorm>::printvec (const Elt* v, int n)
 	{
 		const Elt* p;
 		std::cout << '[';
@@ -461,7 +460,7 @@ namespace LinBox
 
 	template <class Ring, class Field, class RandomPrime>
 	//update num, *num <- *num * 2^shift + d
-	inline int RationalSolver<Ring, Field, RandomPrime, Method::SymbolicNumericNorm>::update_num (integer* num, int n, const double* d, int shift)
+	inline int DixonSolver<Ring, Field, RandomPrime, Method::SymbolicNumericNorm>::update_num (integer* num, int n, const double* d, int shift)
 	{
 		integer* p_mpz;
 		integer tmp_mpz;
@@ -476,7 +475,7 @@ namespace LinBox
 
 	template <class Ring, class Field, class RandomPrime>
 	//update r = r * shift - M d
-	inline int RationalSolver<Ring, Field, RandomPrime, Method::SymbolicNumericNorm>::update_r_int (double* r, int n, const double* M, const double* d, int shift)
+	inline int DixonSolver<Ring, Field, RandomPrime, Method::SymbolicNumericNorm>::update_r_int (double* r, int n, const double* M, const double* d, int shift)
 	{
 		double* p1;
 		const double* p2;
@@ -495,7 +494,7 @@ namespace LinBox
 
 	template <class Ring, class Field, class RandomPrime>
 	//update r = r * shift - M d
-	inline int RationalSolver<Ring, Field, RandomPrime, Method::SymbolicNumericNorm>::update_r_ll (double* r, int n, const double* M, const double* d, int shift)
+	inline int DixonSolver<Ring, Field, RandomPrime, Method::SymbolicNumericNorm>::update_r_ll (double* r, int n, const double* M, const double* d, int shift)
 	{
 		double* p1;
 		const double* p2;
@@ -513,7 +512,7 @@ namespace LinBox
 	}
 
 	template <class Ring, class Field, class RandomPrime>
-	inline double RationalSolver<Ring, Field, RandomPrime, Method::SymbolicNumericNorm>::cblas_dOOnorm(const double* M, int m, int n)
+	inline double DixonSolver<Ring, Field, RandomPrime, Method::SymbolicNumericNorm>::cblas_dOOnorm(const double* M, int m, int n)
 	{
 		double norm = 0;
 		const double* p;
@@ -528,13 +527,13 @@ namespace LinBox
 	}
 
 	template <class Ring, class Field, class RandomPrime>
-	inline double RationalSolver<Ring, Field, RandomPrime, Method::SymbolicNumericNorm>::cblas_dmax (const int N, const double* a, const int inc)
+	inline double DixonSolver<Ring, Field, RandomPrime, Method::SymbolicNumericNorm>::cblas_dmax (const int N, const double* a, const int inc)
 	{
 		return fabs(a[cblas_idamax (N, a, inc)]);
 	}
 
 	template <class Ring, class Field, class RandomPrime>
-	inline int RationalSolver<Ring, Field, RandomPrime, Method::SymbolicNumericNorm>::cblas_hbound (integer& b, int m, int n, const double* M)
+	inline int DixonSolver<Ring, Field, RandomPrime, Method::SymbolicNumericNorm>::cblas_hbound (integer& b, int m, int n, const double* M)
 	{
 		const  double* p;
 		integer tmp;
@@ -551,7 +550,7 @@ namespace LinBox
 	}
 }//LinBox
 
-#endif //__LINBOX_rational_solver2__H
+#endif //__LINBOX_dixon_solver_symbolic_numeric__H
 
 // Local Variables:
 // mode: C++
