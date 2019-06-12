@@ -34,6 +34,11 @@ export LD_LIBRARY_PATH="$LD_LIBRARY_PATH":/usr/local/lib:"$LOCAL_DIR/$CXX/lib":"
 echo "LD_LIBRARY_PATH = $LD_LIBRARY_PATH"
 export PKG_CONFIG_PATH="$LOCAL_DIR/$CXX/lib/pkgconfig"
 echo "PKG_CONFIG_PATH = $PKG_CONFIG_PATH"
+VERSION=`grep VERSION Makefile.am  | sed s/VERSION=// `
+echo "VERSION = $VERSION"
+distdir=linbox-$VERSION
+distarchive=$distdir.tar.gz
+echo "distarchive = $distarchive"
 
 # Where to install linbox binaries
 # Keep default for local installation.
@@ -65,9 +70,23 @@ fi
 # Automated installation and tests #
 #==================================#
 
-echo "|=== JENKINS AUTOMATED SCRIPT ===| ./autogen.sh CXX=$CXX CXXFLAGS=$CXXFLAGS --prefix=$PREFIX_INSTALL $LINBOX_NTLFLAG $LINBOX_FFLASFFPACKFLAG"
-./autogen.sh CXX=$CXX CXXFLAGS=$CXXFLAGS --prefix="$PREFIX_INSTALL" "$LINBOX_NTLFLAG" "$LINBOX_FFLASFFPACKFLAG"
+echo "|=== JENKINS AUTOMATED SCRIPT ===| ./autogen.sh CXX=$CXX CXXFLAGS=$CXXFLAGS"
+./autogen.sh CXX=$CXX CXXFLAGS=$CXXFLAGS --prefix="$PREFIX_INSTALL" "$LINBOX_NTLFLAG"
 V="$?"; if test "x$V" != "x0";then exit "$V"; fi
+
+echo "|=== JENKINS AUTOMATED SCRIPT ===| make dist"
+make dist
+V="$?"; if test "x$V" != "x0";then exit "$V"; fi
+
+rm -rf work
+mkdir -p work/builddir
+mv $distarchive work
+cd work
+tar zxvf $distarchive
+cd builddir
+
+echo "|=== JENKINS AUTOMATED SCRIPT ===| ../$distdir/configure CXX=$CXX CXXFLAGS=$CXXFLAGS --prefix=$PREFIX_INSTALL $LINBOX_NTLFLAG"
+../$distdir/configure CXX=$CXX CXXFLAGS=$CXXFLAGS --prefix="$PREFIX_INSTALL" "$LINBOX_NTLFLAG"
 
 echo "|=== JENKINS AUTOMATED SCRIPT ===| make install"
 make install
@@ -80,3 +99,4 @@ echo "|=== JENKINS AUTOMATED SCRIPT ===| make examples"
 make examples
 V="$?"; if test "x$V" != "x0"; then exit "$V"; fi
 (cd examples && make clean)
+
