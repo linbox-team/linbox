@@ -103,7 +103,7 @@ namespace LinBox {
             // @fixme Pass it through Method::DixonRNS (and rename it Method::DixonMultiMod?)
             _primesCount = 2;
             _primes.resize(_primesCount);
-            std::cout << "l: " << _primesCount << std::endl;
+            std::cout << "primesCount: " << _primesCount << std::endl;
 
             // Some preparation work
             Integer infinityNormA;
@@ -116,14 +116,15 @@ namespace LinBox {
                 double rnsBasisBitSize = (logInfinityNormA + Givaro::logtwo(_n));
                 _rnsBasisPrimesCount = std::ceil(rnsBasisBitSize / primeGenerator.getBits());
                 _rnsPrimes.resize(_rnsBasisPrimesCount);
-                std::cout << "RNS basis: " << _rnsBasisPrimesCount << " estimated primes."
-                          << std::endl;
+                std::cout << "rnsBasisPrimesCount: " << _rnsBasisPrimesCount << std::endl;
 
                 std::vector<double> primes;
                 for (auto j = 0u; j < _primesCount + _rnsBasisPrimesCount; ++j) {
                     auto p = *primeGenerator;
                     ++primeGenerator;
 
+                    // @note std::lower_bound finds the iterator where to put p in the sorted container.
+                    // The name of the routine might be strange, but, hey, that's not my fault.
                     auto lb = std::lower_bound(primes.begin(), primes.end(), p);
                     if (lb != primes.end() && *lb == p) {
                         --j;
@@ -157,14 +158,14 @@ namespace LinBox {
             // Generating primes
             {
                 IElement iTmp;
-                _ring.assign(_p, _ring.one);
+                _ring.assign(_primesProduct, _ring.one);
                 for (auto& pj : _primes) {
                     _fields.emplace_back(pj);
                     _ring.init(iTmp, pj);
-                    _ring.mulin(_p, iTmp);
+                    _ring.mulin(_primesProduct, iTmp);
                 }
 
-                std::cout << "p: " << _p << std::endl;
+                std::cout << "primesProduct: " << _primesProduct << std::endl;
             }
 
             // Initialize all inverses
@@ -206,11 +207,11 @@ namespace LinBox {
             // Compute how many iterations are needed
             {
                 auto hb = RationalSolveHadamardBound(A, b);
-                double log2P = Givaro::logtwo(_p);
+                double log2P = Givaro::logtwo(_primesProduct);
                 // _iterationsCount = log2(2 * N * D) / log2(p)
                 _log2Bound = hb.solutionLogBound;
                 _iterationsCount = std::ceil(_log2Bound / log2P);
-                std::cout << "k: " << _iterationsCount << std::endl;
+                std::cout << "iterationsCount: " << _iterationsCount << std::endl;
 
                 // @fixme Fact is RationalReconstruction which needs numbound and denbound
                 // expects them to be in non-log... @fixme Still needed?
@@ -260,7 +261,7 @@ namespace LinBox {
          * We are compliant to the interface even though
          * p is multi-modular and thus not a prime per se.
          */
-        const IElement& prime() const final { return _p; }
+        const IElement& prime() const final { return _primesProduct; }
 
         // ------------------------------
         // ----- NOT LiftingContainer API
@@ -294,7 +295,7 @@ namespace LinBox {
                 auto& Q = _Q[j];
                 auto& R = _R[j];
 
-                // @todo @cpernet Is there a VectorDomain::divmod somewhere?
+                // @note There is no VectorDomain::divmod yet.
                 // Euclidian division so that rj = pj Qj + Rj
                 for (auto i = 0u; i < _n; ++i) {
                     // @fixme @cpernet Is this OK for any Ring or should we be sure we are using
@@ -312,22 +313,19 @@ namespace LinBox {
                 auto& Fc = _Fc[j];
                 B.apply(Fc, FR);
 
+                // @fixme We might not need to store digits into IVectors, and returning _Fc
+                // would do the trick
                 digits[j] = IVector(_ring, Fc);
 
                 // Store the very same result in an RNS system,
                 // but fact is all the primes of the RNS system are bigger
                 // than the modulus used to compute _Fc, we just copy the result for everybody.
-                std::cout << "FOR " << pj << std::endl;
                 for (auto i = 0u; i < _n; ++i) {
-                    // std::cout << _rnsc[i * _n + j]._ptr << std::endl;
-                    double cij = _Fc[j][i];
-                    std::cout << "stride " << _rnsc[i * _n + j]._stride << std::endl;
+                    double cij = Fc[i];
                     auto stride = _rnsc[i * _n + j]._stride;
                     for (auto h = 0u; h < _rnsBasisPrimesCount; ++h) {
                         _rnsc[i * _n + j]._ptr[h * stride] = cij;
                     }
-                    _rnsDomain->write(std::cout << i << " " << j << " ", _rnsc[i * _n + j]);
-                    std::cout << std::endl;
                 }
             }
 
@@ -385,7 +383,7 @@ namespace LinBox {
         RNSElementPtr _rnsc;
         size_t _rnsBasisPrimesCount = 0u;
 
-        IElement _p;                   // The global modulus for lifting: a multiple of all _primes.
+        IElement _primesProduct;                   // The global modulus for lifting: a multiple of all _primes.
         std::vector<FElement> _primes; // @fixme We might want something else as a type!
         std::vector<double> _rnsPrimes;
         // Length of the ci sequence. So that p^{k-1} > 2ND (Hadamard bound).
