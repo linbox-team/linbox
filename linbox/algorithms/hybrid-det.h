@@ -254,13 +254,13 @@ namespace LinBox
 		PrimeIterator<IteratorCategories::HeuristicTag> genprime1(FieldTraits<mymodular>::bestBitSize(A.coldim()));
 
 		Integers ZZ;
-		DixonSolver < Integers , mymodular, PrimeIterator<IteratorCategories::HeuristicTag>, Method::DenseElimination > RSolver(A. field(), genprime);
+		RationalSolver < Integers , mymodular, PrimeIterator<IteratorCategories::HeuristicTag>, Method::Dixon > RSolver(A. field(), genprime);
 #endif
-		DixonSolver < Integers , mymodular, PrimeIterator<IteratorCategories::HeuristicTag>, Method::DenseElimination > RSolver;
+		RationalSolver < Integers , mymodular, PrimeIterator<IteratorCategories::HeuristicTag>, Method::Dixon > RSolver;
 
 		BlasVector<Integers> r_num1 (A.field(),A. coldim());
 
-		LastInvariantFactor < Integers ,DixonSolver < Integers, mymodular, PrimeIterator<IteratorCategories::HeuristicTag>, Method::DenseElimination > >  LIF(RSolver);
+		LastInvariantFactor < Integers ,RationalSolver < Integers, mymodular, PrimeIterator<IteratorCategories::HeuristicTag>, Method::Dixon > >  LIF(RSolver);
 #ifdef _LB_H_DET_TIMING
 		BT.start();
 #endif
@@ -537,7 +537,7 @@ namespace LinBox
                 PrimeIterator<IteratorCategories::HeuristicTag> genprime1(FieldTraits<mymodular>::bestBitSize(A.coldim()));
                 Integers ZZ;
 #endif
-		typedef DixonSolver < Integers , mymodular, PrimeIterator<IteratorCategories::HeuristicTag>, Method::BlockHankel > Solver;
+		typedef RationalSolver < Integers , mymodular, PrimeIterator<IteratorCategories::HeuristicTag>, Method::BlockHankel > Solver;
 		Solver RSolver(A. field(), genprime);
 
 		typename Vector<Integers>:: Dense r_num1 (A. coldim());

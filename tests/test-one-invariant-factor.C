@@ -218,8 +218,8 @@ int main(int argc, char** argv)
         commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 
 
-	typedef DixonSolver<Ring, Givaro::Modular<int32_t>, PrimeIterator<IteratorCategories::HeuristicTag> > Solver;
-        // typedef DixonSolver<Ring, Givaro::Modular<double>, LinBox::PrimeIterator<IteratorCategories::HeuristicTag> > Solver;
+	typedef RationalSolver<Ring, Givaro::Modular<int32_t>, PrimeIterator<IteratorCategories::HeuristicTag> > Solver;
+        // typedef RationalSolver<Ring, Givaro::Modular<double>, LinBox::PrimeIterator<IteratorCategories::HeuristicTag> > Solver;
 
 	typedef LastInvariantFactor<Ring, Solver> LIF;
 	typedef OneInvariantFactor<Ring, LIF, SCompose, RandomMatrix>  OIF;

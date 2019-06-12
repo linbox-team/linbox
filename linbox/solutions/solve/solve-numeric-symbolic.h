@@ -100,7 +100,7 @@ namespace LinBox {
         using Field = Givaro::Modular<int32_t>; // @fixme Why not double?
         using PrimeGenerator = PrimeIterator<IteratorCategories::HeuristicTag>;
 
-        DixonSolver<Ring, Field, PrimeGenerator, Method::SymbolicNumericNorm> rsolver(b.field());
+        RationalSolver<Ring, Field, PrimeGenerator, Method::SymbolicNumericNorm> rsolver(b.field());
 
         SolverReturnStatus status = rsolver.solve(xNum, xDen, A, b);
 
