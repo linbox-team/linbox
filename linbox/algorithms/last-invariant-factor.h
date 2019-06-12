@@ -160,7 +160,7 @@ namespace LinBox
 		 */
 		template<class IMatrix, class Vector>
 		Integer& lastInvariantFactor_Bonus(Integer& lif, Integer& Bonus, const IMatrix& A,
-						   const Vector& PrimeL) const
+						   const Vector& PrimeL)
 		{
 
 			r. assign(lif, r.one);
@@ -267,7 +267,7 @@ namespace LinBox
 		}
 
 		template<class IMatrix, class Vector>
-		Integer& lastInvariantFactor1(Integer& lif, Vector& r_num, const IMatrix& A, const bool oldMatrix=false) const
+		Integer& lastInvariantFactor1(Integer& lif, Vector& r_num, const IMatrix& A, const bool oldMatrix=false)
 		{
 			//cout << "enetering lif\n";
 			SolverReturnStatus tmp;
@@ -285,7 +285,7 @@ namespace LinBox
 // 				* b_p = rand() % 268435456 - 134217728; // may need to change to use ring's random gen.
 // 				// dpritcha, 2004-07-26
                 _gen( * b_p );
-                
+
 			}
 			//report <<"try to solve Ax = b over Ring";
 			// try to solve Ax = b over Ring
