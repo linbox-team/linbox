@@ -21,7 +21,7 @@
 
 pkgincludesubdir=$(pkgincludedir)/algorithms
 
-SUBDIRS=gauss opencl-kernels matrix-blas3 polynomial-matrix
+SUBDIRS=dixon-solver gauss opencl-kernels matrix-blas3 polynomial-matrix
 #  IML
 
 noinst_LTLIBRARIES=libalgorithms.la
@@ -127,7 +127,6 @@ pkgincludesub_HEADERS =            \
 	rational-reconstruction2.h         \
 	rational-reconstruction-base.h     \
 	rational-reconstruction.h          \
-	rational-solver2.h                 \
 	rational-solver-adaptive.h         \
 	rational-solver.h                  \
 	rational-solver.inl                \
