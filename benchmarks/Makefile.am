@@ -86,8 +86,9 @@ pkginclude_HEADERS = \
 		     benchmark.C \
 		     benchmark.inl
 
-EXTRA_DIST= \
-	    benchmark.doxy
+EXTRA_DIST =  \
+	perfpublisher.sh \
+	benchmark.doxy
 
 CLEANFILES= $(EXTRA_PROGRAMS) $(PERFPUBLISHERFILE)
 
@@ -132,7 +133,7 @@ LINBOX_BIN=@bindir@
 
 # Perfpublisher script interaction - AB 2014/12/11
 perfpublisher:
-	+./perfpublisher.sh "$(PERFPUBLISHERFILE)" "$(EXTRA_PROGRAMS)" "$(CXX)"
+	$(top_srcdir)/tests/perfpublisher.sh "$(PERFPUBLISHERFILE)" "$(EXTRA_PROGRAMS)" "$(CXX)"
 	mv $(PERFPUBLISHERFILE) ..
 	make clean
 	mv ../$(PERFPUBLISHERFILE) .

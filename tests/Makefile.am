@@ -45,7 +45,10 @@ LDADD = $(DEPS_LIBS) $(LDFLAGS)
 AM_LDFLAGS = $(top_builddir)/linbox/liblinbox.la
 #  AM_LDFLAGS+=-static -Wl,-rpath -Wl,
 
-EXTRA_DIST =            \
+PERFPUBLISHERFILE = tests-report.xml
+
+EXTRA_DIST = \
+    perfpublisher.sh \
     test-blackbox.h        \
     test-common.h        \
     test-common.inl        \
@@ -58,8 +61,6 @@ EXTRA_DIST =            \
     test-smith-form.h       \
     tests.doxy        \
     checker.C
-
-PERFPUBLISHERFILE = tests-report.xml
 
 #  tutorial-1: tutorial-1.C
 
@@ -385,7 +386,7 @@ test_toeplitz_SOURCES =                 test-toeplitz.C
 
 # Perfpublisher script interaction - AB 2014/12/11
 perfpublisher:
-	+./perfpublisher.sh "$(PERFPUBLISHERFILE)" "$(TESTS)" "$(CXX)"
+	$(top_srcdir)/tests/perfpublisher.sh "$(PERFPUBLISHERFILE)" "$(TESTS)" "$(CXX)"
 	mv $(PERFPUBLISHERFILE) ..
 	make clean
 	mv ../$(PERFPUBLISHERFILE) .

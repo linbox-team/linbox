@@ -109,7 +109,9 @@ git:
 	git commit -a; git pull; git push
 
 
-VERSION=1.6.3alpha0
+VERSION=1.6.3
 
-EXTRA_DIST=linbox-auto-install.sh
+EXTRA_DIST= \
+	linbox-auto-install.sh \
+	README.md
 #incremente-versions
