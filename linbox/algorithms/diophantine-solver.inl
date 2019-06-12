@@ -77,13 +77,7 @@ namespace LinBox
 		SolverReturnStatus status;
 
 		//this should eliminate all inconsistent systems; when level == SL_MONTECARLO maybe not.
-        Method::Dixon method;
-        method.certifyMinimalDenominator = (level >= SL_LASVEGAS);
-        method.certifyInconsistency = (level >= SL_LASVEGAS);
-        method.singularSolutionType = SingularSolutionType::Random;
-        method.trialsBeforeFailure = maxPrimes;
-
-		status = _rationalSolver.monolithicSolve(x, den, A, b, method);
+		status = _rationalSolver.monolithicSolve(x, den, A, b, (level >= SL_LASVEGAS), true, maxPrimes, level);
 		if (status != SS_OK) {
 			if (status == SS_FAILED && maxPrimes > 2)
 				std::cout << "ERROR, failed to find original solution and maxPrimes is not too small!" << std::endl;
@@ -119,14 +113,7 @@ namespace LinBox
 		int boredom = 0; //used in monte carlo, when we assume there's a diophantine solution
 		while (! _ring.areEqual(upperDenBound, lowerDenBound)) {
 			_rationalSolver.chooseNewPrime();
-
-            Method::Dixon method;
-            method.certifyMinimalDenominator = (level >= SL_LASVEGAS);
-            method.certifyInconsistency = (level >= SL_LASVEGAS);
-            method.singularSolutionType = SingularSolutionType::Random;
-            method.trialsBeforeFailure = 1;
-
-			status = _rationalSolver.monolithicSolve(x, den, A, b, method);
+			status = _rationalSolver.monolithicSolve(x, den, A, b, (level >= SL_LASVEGAS), true, 1, level);
 			numSolutionsNeeded++;
 #ifdef DEBUG_DIO
 			std::cout << '.' ;

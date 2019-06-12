@@ -46,7 +46,7 @@
 namespace LinBox
 {
 
-	/// \brief Limited doc so far. Used in DixonSolver.
+	/// \brief Limited doc so far. Used in RationalSolver.
 	namespace MatrixHom
 	{
 		// function class to hanle map to BlasMatrix (needed to allow partial specialization)
@@ -235,7 +235,7 @@ namespace LinBox
 		}
 
 		template <class Field, class Field2, class Vect>
-		void map (SparseMatrix<Field, Vect> &Ap,
+		void map (SparseMatrix<Field, Vect> &Ap, 
                   const SparseMatrix<Field2, Vect> & A)
 		{
             typedef SparseMatrix<Field, Vect> FMatrix;
@@ -244,7 +244,7 @@ namespace LinBox
         }
 
 		template <class Field, class Field2, class Vect>
-		void map (SparseMatrix<Field, Vect> &Ap,
+		void map (SparseMatrix<Field, Vect> &Ap, 
                   const SparseMatrix<Field, Vect> & A)
 		{
             typedef SparseMatrix<Field, Vect> FMatrix;
