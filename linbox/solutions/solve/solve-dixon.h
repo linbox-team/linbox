@@ -23,16 +23,12 @@
 #pragma once
 
 #include <linbox/algorithms/diophantine-solver.h>
-#include <linbox/algorithms/rational-solver.h> // @todo Rename dixon-rational-solver?
+#include <linbox/algorithms/rational-solver.h>
 #include <linbox/matrix/densematrix/blas-matrix.h>
 #include <linbox/matrix/sparse-matrix.h>
 
 namespace LinBox {
     namespace {
-        // @fixme Remove when RationalSolver is renamed
-        template <class... Args>
-        using DixonRationalSolver = RationalSolver<Args...>;
-
         template <class Matrix>
         struct MethodForMatrix {
             using type = Method::Wiedemann; // For blackboxes
@@ -40,7 +36,7 @@ namespace LinBox {
 
         template <class Ring>
         struct MethodForMatrix<DenseMatrix<Ring>> {
-            using type = Method::Dixon;
+            using type = Method::DenseElimination;
         };
 
         template <class Ring>
@@ -64,13 +60,12 @@ namespace LinBox {
         using PrimeGenerator = PrimeIterator<IteratorCategories::HeuristicTag>;
         PrimeGenerator primeGenerator(FieldTraits<Field>::bestBitSize(A.coldim()));
 
-        using Solver =
-            DixonRationalSolver<Ring, Field, PrimeGenerator, typename MethodForMatrix<Blackbox>::type>;
+        using Solver = DixonSolver<Ring, Field, PrimeGenerator, typename MethodForMatrix<Blackbox>::type>;
         Solver dixonSolve(A.field(), primeGenerator);
 
         // @fixme I'm still bit sad that we cannot use generically the function below,
         // just because RationalSolve<..., SparseElimination> has not the same
-        // API (i.e. no solveNonSingular) than RationalSolver<..., Dixon>
+        // API (i.e. no solveNonSingular) than DixonSolver<..., DenseElimination>
         int maxTrials = m.trialsBeforeFailure;
         SolverReturnStatus status = dixonSolve.solve(xNum, xDen, A, b, maxTrials);
 
@@ -78,7 +73,8 @@ namespace LinBox {
 
         if (status == SS_INCONSISTENT) {
             throw LinboxMathInconsistentSystem("From Dixon method.");
-        } else if (status == SS_FAILED || status == SS_BAD_PRECONDITIONER) {
+        }
+        else if (status == SS_FAILED || status == SS_BAD_PRECONDITIONER) {
             throw LinboxError("From Dixon method.");
         }
     }
@@ -99,7 +95,7 @@ namespace LinBox {
         using PrimeGenerator = PrimeIterator<IteratorCategories::HeuristicTag>;
         PrimeGenerator primeGenerator(FieldTraits<Field>::bestBitSize(A.coldim()));
 
-        using Solver = DixonRationalSolver<Ring, Field, PrimeGenerator, typename MethodForMatrix<Matrix>::type>;
+        using Solver = DixonSolver<Ring, Field, PrimeGenerator, typename MethodForMatrix<Matrix>::type>;
         Solver dixonSolve(A.field(), primeGenerator);
 
         // Either A is known to be non-singular, or we just don't know yet.
@@ -113,15 +109,13 @@ namespace LinBox {
 
         // Either A is known to be singular, or we just failed trying to solve it as non-singular.
         if (singular) {
-            SolverLevel level = (m.certifyInconsistency ? SL_LASVEGAS : SL_MONTECARLO);
-
             if (m.singularSolutionType == SingularSolutionType::Diophantine) {
+                SolverLevel level = (m.certifyInconsistency ? SL_LASVEGAS : SL_MONTECARLO);
                 DiophantineSolver<Solver> diophantineSolve(dixonSolve);
                 status = diophantineSolve.diophantineSolve(xNum, xDen, A, b, maxTrials, level);
             }
             else {
-                bool randomSolutionType = (m.singularSolutionType == SingularSolutionType::Random);
-                status = dixonSolve.monolithicSolve(xNum, xDen, A, b, false, randomSolutionType, maxTrials, level);
+                status = dixonSolve.monolithicSolve(xNum, xDen, A, b, m);
             }
         }
 
@@ -129,7 +123,8 @@ namespace LinBox {
 
         if (status == SS_INCONSISTENT) {
             throw LinboxMathInconsistentSystem("From Dixon method.");
-        } else if (status == SS_FAILED || status == SS_BAD_PRECONDITIONER) {
+        }
+        else if (status == SS_FAILED || status == SS_BAD_PRECONDITIONER) {
             throw LinboxError("From Dixon method.");
         }
     }
@@ -150,13 +145,12 @@ namespace LinBox {
         using PrimeGenerator = PrimeIterator<IteratorCategories::HeuristicTag>;
         PrimeGenerator primeGenerator(FieldTraits<Field>::bestBitSize(A.coldim()));
 
-        using Solver =
-            DixonRationalSolver<Ring, Field, PrimeGenerator, typename MethodForMatrix<Matrix>::type>;
+        using Solver = DixonSolver<Ring, Field, PrimeGenerator, typename MethodForMatrix<Matrix>::type>;
         Solver dixonSolve(A.field(), primeGenerator);
 
         // @fixme I'm a bit sad that we cannot use generically the function above,
         // just because RationalSolve<..., SparseElimination> has not the same
-        // API (i.e. no solveNonSingular) than RationalSolver<..., Dixon>
+        // API (i.e. no solveNonSingular) than DixonSolver<..., DenseElimination>
         int maxTrials = m.trialsBeforeFailure;
         SolverReturnStatus status = dixonSolve.solve(xNum, xDen, A, b, maxTrials);
 
@@ -164,7 +158,8 @@ namespace LinBox {
 
         if (status == SS_INCONSISTENT) {
             throw LinboxMathInconsistentSystem("From Dixon method.");
-        } else if (status == SS_FAILED || status == SS_BAD_PRECONDITIONER) {
+        }
+        else if (status == SS_FAILED || status == SS_BAD_PRECONDITIONER) {
             throw LinboxError("From Dixon method.");
         }
     }
