@@ -74,7 +74,7 @@ int main(int argc, char** argv)
 		PIR R;
 
 		typedef Givaro::Modular<int64_t> Field;
-		typedef RationalSolver<PIR, Field, PrimeIterator<IteratorCategories::HeuristicTag> > Solver;
+		typedef DixonSolver<PIR, Field, PrimeIterator<IteratorCategories::HeuristicTag> > Solver;
 		typedef LastInvariantFactor<PIR, Solver> LIF;
 		typedef OneInvariantFactor<PIR, LIF, SCompose, RandomMatrix>  OIF;
 		typedef SmithFormBinary<PIR, OIF, MatrixRank<PIR, Field > > SF;
@@ -126,7 +126,7 @@ int main(int argc, char** argv)
 		RandomDenseStream<Ring> s1 (R, gen, n, 1);
 
 		typedef Givaro::Modular<int32_t> Field;
-		typedef RationalSolver<Ring, Field, PrimeIterator<IteratorCategories::HeuristicTag> > Solver;
+		typedef DixonSolver<Ring, Field, PrimeIterator<IteratorCategories::HeuristicTag> > Solver;
 		typedef LastInvariantFactor<Ring, Solver> LIF;
 		typedef OneInvariantFactor<Ring, LIF, SCompose, RandomMatrix>  OIF;
 		typedef SmithFormBinary<Ring, OIF, MatrixRank<Ring, Field > > SF;
