@@ -139,7 +139,7 @@ namespace LinBox {
     void solve(RVector& xNum, typename RVector::Element& xDen, const DenseMatrix<Ring>& A,
                const Vector& b, const RingCategories::IntegerTag& tag, const Method::DixonRNS& m)
     {
-        commentator().start("solve.dixon.integer.dense");
+        commentator().start("solve.dixon-rns.integer.dense");
 
         // @fixme We don't know if we can use ModularBalanced<double>,
         // because of the rational reconstruction which might be
@@ -151,7 +151,7 @@ namespace LinBox {
         DixonRNSSolver<Field, Ring, PrimeGenerator> solver(A.field(), primeGenerator);
         solver.solve(xNum, xDen, A, b, m);
 
-        commentator().stop("solve.dixon.integer.dense");
+        commentator().stop("solve.dixon-rns.integer.dense");
 
         // @fixme Implement something like that
         // if (status == SS_INCONSISTENT) {

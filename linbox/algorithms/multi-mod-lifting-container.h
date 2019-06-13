@@ -96,11 +96,12 @@ namespace LinBox {
         {
             linbox_check(A.rowdim() == A.coldim());
 
+            std::cout << "----------" << std::endl;
             A.write(std::cout << "A: ", Tag::FileFormat::Maple) << std::endl;
             std::cout << "b: " << b << std::endl;
 
             // This will contain the primes or our MultiMod basis
-            // @fixme Pass it through Method::DixonRNS (and rename it Method::DixonMultiMod?)
+            // @fixme Pass the count through Method::DixonRNS (and rename it Method::DixonMultiMod?)
             _primesCount = 2;
             _primes.resize(_primesCount);
             std::cout << "primesCount: " << _primesCount << std::endl;
@@ -116,6 +117,7 @@ namespace LinBox {
                 double rnsBasisBitSize = (logInfinityNormA + Givaro::logtwo(_n));
                 _rnsPrimesCount = std::ceil(rnsBasisBitSize / primeGenerator.getBits());
                 _rnsPrimes.resize(_rnsPrimesCount);
+                std::cout << "primeGenerator.getBits(): " << primeGenerator.getBits() << std::endl;
                 std::cout << "rnsBasisPrimesCount: " << _rnsPrimesCount << std::endl;
 
                 std::vector<double> primes;
@@ -226,7 +228,11 @@ namespace LinBox {
                 double log2P = Givaro::logtwo(_primesProduct);
                 // _iterationsCount = log2(2 * N * D) / log2(p)
                 _log2Bound = hb.solutionLogBound;
-                _iterationsCount = std::ceil(_log2Bound / log2P);
+
+                // @fixme @cpernet @jgdumas Is this computation wrong?
+                // I have to increase the number of iterations when the bitsize of the vector
+                // is big, maybe there is something wrong with the Hadamard bound.
+                _iterationsCount = std::ceil(_log2Bound / log2P) + 2;
                 std::cout << "iterationsCount: " << _iterationsCount << std::endl;
 
                 // @fixme Fact is RationalReconstruction which needs numbound and denbound
@@ -376,7 +382,7 @@ namespace LinBox {
                 // r <- (R - Ac) / p
                 // @fixme @cpernet Don't know how to do that with one fconvert_rns!
                 for (auto i = 0u; i < _n; ++i) {
-                    FFLAS::fconvert_rns(*_rnsDomain, 1, 1, 0, &r[i], 1, _rnsR + (i * _n + j));
+                    FFLAS::fconvert_rns(*_rnsDomain, 1, 1, 0, &r[i], 1, _rnsR + (i * _primesCount + j));
                 }
 
                 // r <- Q + (R - Ac) / p
