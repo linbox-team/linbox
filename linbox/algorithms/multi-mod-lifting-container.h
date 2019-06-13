@@ -258,9 +258,9 @@ namespace LinBox {
 
         ~MultiModLiftingContainer()
         {
-            FFLAS::fflas_delete(_rnsR); // @fixme Does it knows the size?
-            FFLAS::fflas_delete(_rnsc); // @fixme Does it knows the size?
-            FFLAS::fflas_delete(_rnsA); // @fixme Does it knows the size?
+            FFLAS::fflas_delete(_rnsR);
+            FFLAS::fflas_delete(_rnsc);
+            FFLAS::fflas_delete(_rnsA);
             delete _rnsDomain;
             delete _rnsSystem;
         }
@@ -340,8 +340,8 @@ namespace LinBox {
                 // but fact is all the primes of the RNS system are bigger
                 // than the modulus used to compute _Fc, we just copy the result for everybody.
                 for (auto i = 0u; i < _n; ++i) {
-                    setRNSMatrixElementAllResidues(_rnsR, _n, i, j, FR[i]);
-                    setRNSMatrixElementAllResidues(_rnsc, _n, i, j, Fc[i]);
+                    setRNSMatrixElementAllResidues(_rnsR, _primesCount, i, j, FR[i]);
+                    setRNSMatrixElementAllResidues(_rnsc, _primesCount, i, j, Fc[i]);
                 }
             }
 
@@ -349,37 +349,17 @@ namespace LinBox {
 
             // r <= Q + (R - A c) / p
 
-            std::cout << "A" << std::endl;
-            for (auto j = 0u; j < _n; ++j) {
-                for (auto i = 0u; i < _n; ++i) {
-                    logRNSMatrixElement(_rnsA, _n, i, j);
-                }
-            }
-
-            std::cout << "c" << std::endl;
-            for (auto j = 0u; j < _primesCount; ++j) {
-                for (auto i = 0u; i < _n; ++i) {
-                    logRNSMatrixElement(_rnsc, _n, i, j);
-                }
-            }
-
             // By first computing R <= R - A c as a fgemm within the RNS domain.
-            FFLAS::fgemm(*_rnsDomain, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, _n, _primesCount, _n,
-                         _rnsDomain->mOne, _rnsA, _n, _rnsc, _n, _rnsDomain->one,
-                         _rnsR, _n);
-
-            std::cout << "R = Ac" << std::endl;
-            for (auto j = 0u; j < _primesCount; ++j) {
-                for (auto i = 0u; i < _n; ++i) {
-                    logRNSMatrixElement(_rnsR, _n, i, j);
-                }
-            }
+            // @fixme Use parallel helper!
+            FFLAS::fgemm(*_rnsDomain, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, _n, _primesCount,
+                         _n, _rnsDomain->mOne, _rnsA, _n, _rnsc, _primesCount, _rnsDomain->one,
+                         _rnsR, _primesCount);
 
             // We divide each residues by the according pj, which is done by multiplying.
             // @fixme Could be done in parallel!
             for (auto j = 0u; j < _primesCount; ++j) {
                 for (auto i = 0u; i < _n; ++i) {
-                    auto& rnsElement = _rnsR[i * _n + j];
+                    auto& rnsElement = _rnsR[i * _primesCount + j];
                     auto stride = rnsElement._stride;
                     for (auto h = 0u; h < _rnsPrimesCount; ++h) {
                         auto& rnsF = _rnsSystem->_field_rns[h];
