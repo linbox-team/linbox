@@ -228,19 +228,15 @@ namespace LinBox {
                 double log2P = Givaro::logtwo(_primesProduct);
                 // _iterationsCount = log2(2 * N * D) / log2(p)
                 _log2Bound = hb.solutionLogBound;
+                _log2NumBound = hb.numLogBound;
+                _log2DenBound = hb.denLogBound;
+                std::cout << "_log2Bound: " << _log2Bound << std::endl;
+                std::cout << "_log2NumBound: " << _log2NumBound << std::endl;
+                std::cout << "_log2DenBound: " << hb.denLogBound << std::endl;
+                std::cout << "log2P: " << log2P << std::endl;
 
-                // @fixme @cpernet @jgdumas Is this computation wrong?
-                // I have to increase the number of iterations when the bitsize of the vector
-                // is big, maybe there is something wrong with the Hadamard bound.
-                _iterationsCount = std::ceil(_log2Bound / log2P) + 2;
+                _iterationsCount = std::ceil(_log2Bound / log2P);
                 std::cout << "iterationsCount: " << _iterationsCount << std::endl;
-
-                // @fixme Fact is RationalReconstruction which needs numbound and denbound
-                // expects them to be in non-log... @fixme Still needed?
-                _ring.init(_numbound, Integer(1)
-                                          << static_cast<uint64_t>(std::ceil(hb.numLogBound)));
-                _ring.init(_denbound, Integer(1)
-                                          << static_cast<uint64_t>(std::ceil(hb.denLogBound)));
             }
 
             //----- Locals setup
@@ -292,11 +288,9 @@ namespace LinBox {
         // ----- NOT LiftingContainer API
         // ----- but still needed
 
-        const IElement& numbound() const { return _numbound; }
-
-        const IElement& denbound() const { return _denbound; }
-
         double log2Bound() const { return _log2Bound; }
+        double log2NumBound() const { return _log2NumBound; }
+        double log2DenBound() const { return _log2DenBound; }
 
         uint32_t primesCount() const { return _primesCount; }
 
@@ -414,16 +408,16 @@ namespace LinBox {
             std::cout << " -> " << reconstructedInteger << std::endl;
         }
 
-    private:
+    public: // @fixme BACK TO PRIVATE!
         const Ring& _ring;
 
         // The problem: A^{-1} * b
         const IMatrix& _A;
         const IVector& _b;
 
-        IElement _numbound;
-        IElement _denbound;
         double _log2Bound;
+        double _log2NumBound;
+        double _log2DenBound;
 
         RNSSystem* _rnsSystem = nullptr;
         RNSDomain* _rnsDomain = nullptr;

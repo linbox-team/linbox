@@ -65,11 +65,30 @@ namespace LinBox
             return num;
         }
 
+        template <class Vect>
+		Vect& result (Vect &num, Integer& den, const Integer& numBound, const Integer& denBound)
+		{
+            Father_t::result(num, false);
+            den = 1;
+            const auto& mod = Father_t::getModulus();
+            Integer nd;
+            for (auto num_it = num.begin(); num_it != num.end(); ++num_it) {
+                iterativeratrecon(*num_it, nd, den, mod, numBound, denBound);
+
+                if (nd > 1) {
+                    for (auto t02 = num.begin(); t02 != num_it; ++t02)
+                        *t02 *= nd;
+                    den *= nd;
+                }
+            }
+            return num;
+        }
+
 	protected:
-		Integer& iterativeratrecon(Integer& u1, Integer& new_den, const Integer& old_den, const Integer& m1, const Integer& s)
+		Integer& iterativeratrecon(Integer& u1, Integer& new_den, const Integer& old_den, const Integer& m1, const Integer& sn, const Integer& sd)
 		{
 			Integer a;
-			_ZZ.reconstructRational(a, new_den, u1*=old_den, m1, s);
+			_ZZ.reconstructRational(a, new_den, u1*=old_den, m1, sn, sd);
 			return u1=a;
 		}
 	};

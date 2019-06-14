@@ -86,8 +86,41 @@ namespace LinBox {
                 craBuilder.progress(field, padicAccumulations[j]);
             }
 
+
+            for (auto j = 0u; j < _lc.primesCount(); ++j) {
+                auto Cj = padicAccumulations[j];
+                auto xxx = (_lc._A.getEntry(0, 0) * Cj[0] - _lc._b[0]) % radices[j];
+                std::cout << "xxx " << j << " " << xxx << std::endl;
+            }
+
             // Rational reconstruction
-            craBuilder.result(xNum, xDen);
+            Integer numBound = (Integer(1) << size_t(std::ceil(_lc.log2NumBound())));
+            Integer denBound = (Integer(1) << size_t(std::ceil(_lc.log2DenBound())));
+
+            // @todo @cleanup Do the same for denBound ?
+            // The following finds the closest Integer that satisfies 2 ^ exponent.
+            // This is done by dichotomy, going from floor to ceil.
+
+            Integer minNumBound = (Integer(1) << size_t(std::floor(_lc.log2NumBound())));
+            Integer maxNumBound = (Integer(1) << size_t(std::ceil(_lc.log2NumBound())));
+            auto middleNumBound = (minNumBound + maxNumBound);
+            double l = _lc.log2NumBound();
+            double lm = Givaro::logtwo(middleNumBound) - 1;
+            while (minNumBound < maxNumBound) {
+                if (lm > l) {
+                    maxNumBound = middleNumBound / 2;
+                }
+                else if (lm < l) {
+                    minNumBound = middleNumBound / 2;
+                }
+                else {
+                    break;
+                }
+                middleNumBound = (minNumBound + maxNumBound);
+                lm = Givaro::logtwo(middleNumBound) - 1;
+            }
+
+            craBuilder.result(xNum, xDen, middleNumBound / 2, denBound);
 
             return true;
         }
@@ -125,6 +158,11 @@ namespace LinBox {
             if (!re.getRational(xNum, xDen)) {
                 std::cerr << "OUCH!" << std::endl;
             }
+
+// #ifdef DEBUG_HADAMARD_BOUND
+            std::clog << "numLog " << Givaro::logtwo(Givaro::abs(xNum[0])) << ';' << std::endl;
+            std::clog << "denLog " << Givaro::logtwo(xDen) << ';' << std::endl;
+// #endif
         }
 
     private:

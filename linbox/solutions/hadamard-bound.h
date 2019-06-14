@@ -51,7 +51,7 @@ namespace LinBox {
         }
 #ifdef DEBUG_HADAMARD_BOUND
         std::clog << "normSquared:=" << normSquared << ';' << std::endl;
-        std::clog << "vectorLogNorm:=" << (Givaro::logtwo(normSquared) / 2.0) << ';' << std::endl;
+        std::clog << "vectorLogNorm:=" << Givaro::logtwo(normSquared) / 2.0 << ';' << std::endl;
 #endif
         logNorm = Givaro::logtwo(normSquared) / 2.0;
         return true;
@@ -423,9 +423,9 @@ namespace LinBox {
         double bLogNorm;
         vectorLogNorm(bLogNorm, b.begin(), b.end());
 
-        data.numLogBound = hadamardBound.logBoundOverMinNorm + bLogNorm + 1.0;
+        data.numLogBound = hadamardBound.logBoundOverMinNorm + bLogNorm;
         data.denLogBound = hadamardBound.logBound;
-        data.solutionLogBound = data.numLogBound + data.denLogBound + 1.0;
+        data.solutionLogBound = 1.0 + data.numLogBound + data.denLogBound; // log2(2 * N * D)
 
 #ifdef DEBUG_HADAMARD_BOUND
         std::clog << "numLogBound:=" << data.numLogBound << ';' << std::endl;
