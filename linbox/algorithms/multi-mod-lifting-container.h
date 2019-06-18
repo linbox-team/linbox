@@ -153,7 +153,7 @@ namespace LinBox {
                     if (bitSize > rnsBasisBitSize && h > 0) {
                         _rnsPrimes.erase(_rnsPrimes.begin(), _rnsPrimes.begin() + (h - 1));
                         _rnsPrimesCount -= h;
-                        std::cout << "RNS basis: Erasing extra " << h << "primes." << std::endl;
+                        std::cout << "RNS basis: Erasing extra " << h << " primes." << std::endl;
                         break;
                     }
                 }
@@ -228,11 +228,11 @@ namespace LinBox {
                 double log2P = Givaro::logtwo(_primesProduct);
                 // _iterationsCount = log2(2 * N * D) / log2(p)
                 _log2Bound = hb.solutionLogBound;
-                _log2NumBound = hb.numLogBound;
-                _log2DenBound = hb.denLogBound;
+                _numBound = hb.numBound;
+                _denBound = hb.denBound;
                 std::cout << "_log2Bound: " << _log2Bound << std::endl;
-                std::cout << "_log2NumBound: " << _log2NumBound << std::endl;
-                std::cout << "_log2DenBound: " << hb.denLogBound << std::endl;
+                std::cout << "_numBound: " << _numBound << std::endl;
+                std::cout << "_denBound: " << _denBound << std::endl;
                 std::cout << "log2P: " << log2P << std::endl;
 
                 _iterationsCount = std::ceil(_log2Bound / log2P);
@@ -289,8 +289,8 @@ namespace LinBox {
         // ----- but still needed
 
         double log2Bound() const { return _log2Bound; }
-        double log2NumBound() const { return _log2NumBound; }
-        double log2DenBound() const { return _log2DenBound; }
+        Integer numBound() const { return _numBound; }
+        Integer denBound() const { return _denBound; }
 
         uint32_t primesCount() const { return _primesCount; }
 
@@ -320,6 +320,8 @@ namespace LinBox {
                     // @fixme @cpernet Is this OK for any Ring or should we be sure we are using
                     // Integers?
                     _ring.quoRem(Q[i], R[i], r[i], pj);
+                    // std::cout << "Q" << j << " " << Q[i] << std::endl;
+                    // std::cout << "R" << j << " " << R[i] << std::endl;
                 }
 
                 // Convert R to the field
@@ -335,6 +337,9 @@ namespace LinBox {
                 // @fixme We might not need to store digits into IVectors, and returning _Fc
                 // would do the trick
                 digits[j] = IVector(_ring, Fc);
+
+                // auto ooo = (_A.getEntry(0, 0) * Integer(digits[j][0]) - r[0]) % Integer(pj);
+                // std::cout << "ooo " << j << " " << ooo << std::endl;
 
                 // Store the very same result in an RNS system,
                 // but fact is all the primes of the RNS system are bigger
@@ -373,6 +378,9 @@ namespace LinBox {
                 auto& r = _r[j];
                 auto& Q = _Q[j];
 
+                // std::cout << "old r" << j << " " << r[0] << std::endl;
+                // std::cout << "r" << j << " " << (r[0] - _A.getEntry(0, 0) * Integer(_Fc[j][0])) / Integer(_primes[j])  << " expected" << std::endl;
+
                 // r <- (R - Ac) / p
                 // @fixme @cpernet Don't know how to do that with one fconvert_rns!
                 for (auto i = 0u; i < _n; ++i) {
@@ -380,7 +388,12 @@ namespace LinBox {
                 }
 
                 // r <- Q + (R - Ac) / p
+                // std::cout << "p" << j << " " << Integer(_primes[j]) << std::endl;
+                // std::cout << "c" << j << " " << Integer(_Fc[j][0]) << std::endl;
+
                 IVD.addin(r, Q);
+
+                // std::cout << "r" << j << " " << r[0] << std::endl;
             }
 
             ++_position;
@@ -416,8 +429,8 @@ namespace LinBox {
         const IVector& _b;
 
         double _log2Bound;
-        double _log2NumBound;
-        double _log2DenBound;
+        Integer _numBound;
+        Integer _denBound;
 
         RNSSystem* _rnsSystem = nullptr;
         RNSDomain* _rnsDomain = nullptr;

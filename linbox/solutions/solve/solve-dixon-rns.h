@@ -25,65 +25,6 @@
 #include <linbox/algorithms/multi-mod-lifting-container.h>
 
 namespace LinBox {
-    // @todo @cleanup Move that somewhere inside Givaro?
-    // Find the closest upper bound Integer that satisfies 2 ^ exponent.
-    // This is done by dichotomy, going from floor to ceil.
-    Integer twoPower(double exponent)
-    {
-        // @note Is the exponent is small, we will be extra precise,
-        // otherwise, we over estimate the exponent a bit,
-        // so that results are all right with rational reconstruction.
-        // The reason being that RR does has to be very precise for small
-        // values so that it does not go too far.
-        // And, RR also need to go far enough, the exponent not being very precise
-        // for big values.
-        // @fixme This is hard-coded... That's sad. What does this mean really?
-        if (exponent > 20.) {
-            exponent *= 1.0001;
-        }
-
-        Integer min = (Integer(1) << uint64_t(std::floor(exponent)));
-        Integer max = (Integer(1) << uint64_t(std::ceil(exponent)));
-
-        // To keep full precision, we do not divide by two here,
-        // but just the computed exponent.
-        Integer target = min + max;
-        Integer lastKnownTarget = target;
-        double targetExponent = 0.0;
-
-        while (min < max) {
-            targetExponent = Givaro::logtwo(target) - 1;
-            if (targetExponent > exponent) {
-                max = (target + 1) / 2;
-            }
-            else if (targetExponent < exponent) {
-                min = target / 2;
-            }
-            else {
-                break;
-            }
-
-            target = min + max;
-
-            // Get out if we're lock in an infinite loop
-            if (lastKnownTarget == target) {
-                break;
-            }
-            lastKnownTarget = target;
-        }
-
-        // Find the smallest value that satisfies the upper
-        // evaluation of the exponent.
-        if (Givaro::logtwo(min) >= exponent) {
-            return min;
-        } else if (Givaro::logtwo(target / 2) >= exponent) {
-            return target / 2;
-        }
-        else {
-            return max;
-        }
-    }
-
     /**
      * From a MultiModLiftingContainer, will build
      * the solution on each prime, then will do a CRT reconstruction,
@@ -105,6 +46,15 @@ namespace LinBox {
 
         bool getRational(IVector& xNum, IElement& xDen)
         {
+            // Early out when the numerator is bounded by zero.
+            if (_lc.numBound() == 0) {
+                for (auto i = 0u; i < _lc.length(); ++i) {
+                    _lc.ring().assign(xNum[i], _lc.ring().zero);
+                }
+                _lc.ring().assign(xDen, _lc.ring().one);
+                return true;
+            }
+
             VectorDomain<Ring> IVD(_lc.ring());
 
             // Stores each c0 + c1 pj + ... + ck pj^k for each pj
@@ -127,6 +77,9 @@ namespace LinBox {
                 for (auto j = 0u; j < _lc.primesCount(); ++j) {
                     IVD.axpyin(padicAccumulations[j], radices[j], digits[j]); // y <- y + p^i * ci
                     _lc.ring().mulin(radices[j], _lc.prime(j));
+                    auto xxx = (_lc._A.getEntry(0, 0) * padicAccumulations[j][0] - _lc._b[0]) % radices[j];
+                    // std::cout << "xxx " << j << "." << i << " " << _lc._A.getEntry(0, 0) << " * " << padicAccumulations[j][0] << " - " << _lc._b[0] << " mod " << radices[j] << std::endl;
+                    std::cout << "xxx " << j << "." << i << " " << xxx << std::endl;
                 }
             }
 
@@ -145,17 +98,9 @@ namespace LinBox {
                 craBuilder.progress(field, padicAccumulations[j]);
             }
 
-            for (auto j = 0u; j < _lc.primesCount(); ++j) {
-                auto Cj = padicAccumulations[j];
-                auto xxx = (_lc._A.getEntry(0, 0) * Cj[0] - _lc._b[0]) % radices[j];
-                std::cout << "xxx " << j << " " << xxx << std::endl;
-            }
-
             // Rational reconstruction
-            Integer numBound = twoPower(_lc.log2NumBound());
-            Integer denBound = twoPower(_lc.log2DenBound());
-
-            craBuilder.result(xNum, xDen, numBound, denBound);
+            // @note RR expects the bounds to be strict, this is why we add a + 1
+            craBuilder.result(xNum, xDen, _lc.numBound() + 1, _lc.denBound() + 1);
 
             return true;
         }
@@ -195,8 +140,8 @@ namespace LinBox {
             }
 
             // #ifdef DEBUG_HADAMARD_BOUND
-            std::clog << "numLog " << Givaro::logtwo(Givaro::abs(xNum[0])) << ';' << std::endl;
-            std::clog << "denLog " << Givaro::logtwo(xDen) << ';' << std::endl;
+            std::clog << "numLog " << Givaro::logtwo(Givaro::abs(xNum[0])) << " " << xNum[0] << ';' << std::endl;
+            std::clog << "denLog " << Givaro::logtwo(xDen) << " " << xDen << ';' << std::endl;
             // #endif
         }
 
@@ -219,7 +164,7 @@ namespace LinBox {
         // implicitly requiring 0-{p-1} representation of the p-adic sequence elements.
         using Field = Givaro::Modular<double>;
         using PrimeGenerator = PrimeIterator<IteratorCategories::HeuristicTag>;
-        PrimeGenerator primeGenerator(FieldTraits<Field>::bestBitSize(A.coldim()));
+        PrimeGenerator primeGenerator(FieldTraits<Field>::bestBitSize(A.coldim()), 12); // @fixme REMOVE SEED
 
         DixonRNSSolver<Field, Ring, PrimeGenerator> solver(A.field(), primeGenerator);
         solver.solve(xNum, xDen, A, b, m);

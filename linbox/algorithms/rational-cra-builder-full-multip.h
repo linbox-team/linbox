@@ -68,6 +68,9 @@ namespace LinBox
         template <class Vect>
 		Vect& result (Vect &num, Integer& den, const Integer& numBound, const Integer& denBound)
 		{
+            // std::cout << "numBound " << numBound << std::endl;
+            // std::cout << "denBound " << denBound << std::endl;
+
             Father_t::result(num, false);
             den = 1;
             const auto& mod = Father_t::getModulus();
@@ -87,9 +90,12 @@ namespace LinBox
 	protected:
 		Integer& iterativeratrecon(Integer& u1, Integer& new_den, const Integer& old_den, const Integer& m1, const Integer& sn, const Integer& sd)
 		{
-			Integer a;
-			_ZZ.reconstructRational(a, new_den, u1*=old_den, m1, sn, sd);
-			return u1=a;
+            // @note This interface of the rational does the RatRecon.
+            Givaro::Rational myRational(u1 *= old_den, m1, sn, false);
+
+            u1 = myRational.nume();
+            new_den = myRational.deno();
+			return u1;
 		}
 	};
 }
