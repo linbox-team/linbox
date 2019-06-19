@@ -77,9 +77,6 @@ namespace LinBox {
                 for (auto j = 0u; j < _lc.primesCount(); ++j) {
                     IVD.axpyin(padicAccumulations[j], radices[j], digits[j]); // y <- y + p^i * ci
                     _lc.ring().mulin(radices[j], _lc.prime(j));
-                    auto xxx = (_lc._A.getEntry(0, 0) * padicAccumulations[j][0] - _lc._b[0]) % radices[j];
-                    // std::cout << "xxx " << j << "." << i << " " << _lc._A.getEntry(0, 0) << " * " << padicAccumulations[j][0] << " - " << _lc._b[0] << " mod " << radices[j] << std::endl;
-                    std::cout << "xxx " << j << "." << i << " " << xxx << std::endl;
                 }
             }
 
@@ -100,7 +97,7 @@ namespace LinBox {
 
             // Rational reconstruction
             // @note RR expects the bounds to be strict, this is why we add a + 1
-            craBuilder.result(xNum, xDen, _lc.numBound() + 1, _lc.denBound() + 1);
+            craBuilder.result(xNum, xDen, _lc.numBound() + 1);
 
             return true;
         }
@@ -139,10 +136,8 @@ namespace LinBox {
                 std::cerr << "OUCH!" << std::endl;
             }
 
-            // #ifdef DEBUG_HADAMARD_BOUND
-            std::clog << "numLog " << Givaro::logtwo(Givaro::abs(xNum[0])) << " " << xNum[0] << ';' << std::endl;
-            std::clog << "denLog " << Givaro::logtwo(xDen) << " " << xDen << ';' << std::endl;
-            // #endif
+            std::cout << "numLog " << xNum << std::endl;
+            std::cout << "denLog " << xDen << std::endl;
         }
 
     private:

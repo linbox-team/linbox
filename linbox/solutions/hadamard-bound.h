@@ -73,18 +73,17 @@ namespace LinBox {
      * the row-wise euclidean norm.
      */
     template <class IMatrix>
-    void HadamardRowBound(Integer& bound, Integer& minNormSquared, const IMatrix& A)
+    void HadamardRowBound(Integer& bound, const IMatrix& A)
     {
         typename MatrixTraits<IMatrix>::MatrixCategory tag;
-        HadamardRowBound(bound, minNormSquared, A, tag);
+        HadamardRowBound(bound, A, tag);
     }
 
     template <class IMatrix>
-    void HadamardRowBound(Integer& bound, Integer& minNormSquared, const IMatrix& A,
+    void HadamardRowBound(Integer& bound, const IMatrix& A,
                           const MatrixCategories::RowColMatrixTag& tag)
     {
         bound = 1;
-        minNormSquared = -1;
 
         for (auto rowIt = A.rowBegin(); rowIt != A.rowEnd(); ++rowIt) {
             Integer rowNormSquared;
@@ -92,26 +91,25 @@ namespace LinBox {
 
             if (rowNormSquared == 0) {
                 bound = 0;
-                minNormSquared = 0;
                 return;
-            }
-
-            if (minNormSquared < 0 || rowNormSquared < minNormSquared) {
-                minNormSquared = rowNormSquared;
             }
 
             bound *= rowNormSquared;
         }
 
-        bound = Givaro::sqrt(bound);
+        // Square-root (upper bound)
+        Integer rem;
+        bound = Givaro::sqrtrem(bound, rem);
+        if (rem != 0) {
+            bound += 1;
+        }
     }
 
     template <class IMatrix>
-    void HadamardRowBound(Integer& bound, Integer& minNormSquared, const IMatrix& A,
+    void HadamardRowBound(Integer& bound, const IMatrix& A,
                           const MatrixCategories::RowMatrixTag& tag)
     {
         bound = 1;
-        minNormSquared = -1;
 
         for (auto rowIt = A.rowBegin(); rowIt != A.rowEnd(); ++rowIt) {
             Integer normSquared = 0;
@@ -121,26 +119,26 @@ namespace LinBox {
 
             if (normSquared == 0) {
                 bound = 0;
-                minNormSquared = 0;
                 return;
-            }
-
-            if (minNormSquared < 0 || normSquared < minNormSquared) {
-                minNormSquared = normSquared;
             }
 
             bound *= normSquared;
         }
 
-        bound = Givaro::sqrt(bound);
+        // Square-root (upper bound)
+        Integer rem;
+        bound = Givaro::sqrtrem(bound, rem);
+        if (rem != 0) {
+            bound += 1;
+        }
     }
 
     template <class IMatrix>
-    void HadamardRowBound(Integer& bound, Integer& minNormSquared, const IMatrix& A,
+    void HadamardRowBound(Integer& bound, const IMatrix& A,
                           const MatrixCategories::BlackboxTag& tag)
     {
         DenseMatrix<typename IMatrix::Field> ACopy(A);
-        HadamardRowBound(bound, minNormSquared, ACopy);
+        HadamardRowBound(bound, ACopy);
     }
 
     /**
@@ -181,7 +179,12 @@ namespace LinBox {
             bound *= colNormSquared;
         }
 
-        bound = Givaro::sqrt(bound);
+        // Square-root (upper bound)
+        Integer rem;
+        bound = Givaro::sqrtrem(bound, rem);
+        if (rem != 0) {
+            bound += 1;
+        }
     }
 
     template <class IMatrix>
@@ -215,8 +218,12 @@ namespace LinBox {
             bound *= normSquared;
         }
 
-        // Square-root
-        bound = Givaro::sqrt(bound);
+        // Square-root (upper bound)
+        Integer rem;
+        bound = Givaro::sqrtrem(bound, rem);
+        if (rem != 0) {
+            bound += 1;
+        }
     }
 
     template <class IMatrix>
@@ -236,20 +243,24 @@ namespace LinBox {
     template <class IMatrix>
     HadamarBoundDetails DetailedHadamardBound(const IMatrix& A)
     {
+        // @note We can't use the rowBoundOverMinNorm because
+        // the rational solve Hadamard bound uses it for the numerator bound.
+
         Integer rowBound;
-        Integer rowMinNormSquared;
-        HadamardRowBound(rowBound, rowMinNormSquared, A);
-        Integer rowBoundOverMinNorm = rowBound / Givaro::sqrt(rowMinNormSquared);
+        HadamardRowBound(rowBound, A);
 #ifdef DEBUG_HADAMARD_BOUND
         std::clog << "rowBound:=" << rowBound << ';' << std::endl;
-        std::clog << "rowMinNormSquared:=" << rowMinNormSquared << ';' << std::endl;
-        std::clog << "rowBoundOverMinNorm:=" << rowBoundOverMinNorm << ';' << std::endl;
 #endif
 
+        Integer rem;
         Integer colBound;
         Integer colMinNormSquared;
         HadamardColBound(colBound, colMinNormSquared, A);
-        Integer colBoundOverMinNorm = colBound / Givaro::sqrt(colMinNormSquared);
+        Integer colBoundOverMinNorm;
+        Integer::divmod(colBoundOverMinNorm, rem, colBound, Givaro::sqrt(colMinNormSquared));
+        if (rem != 0) {
+            colBoundOverMinNorm += 1;
+        }
 #ifdef DEBUG_HADAMARD_BOUND
         std::clog << "colBound:=" << colBound << ';' << std::endl;
         std::clog << "colMinNormSquared:=" << colMinNormSquared << ';' << std::endl;
@@ -258,8 +269,7 @@ namespace LinBox {
 
         HadamarBoundDetails data;
         data.bound = (rowBound < colBound) ? rowBound : colBound;
-        data.boundOverMinNorm =
-            (rowBoundOverMinNorm < colBoundOverMinNorm) ? rowBoundOverMinNorm : colBoundOverMinNorm;
+        data.boundOverMinNorm = colBoundOverMinNorm;
 #ifdef DEBUG_HADAMARD_BOUND
         std::clog << "bound:=" << data.bound << ';' << std::endl;
         std::clog << "boundOverMinNorm:=" << data.boundOverMinNorm << ';' << std::endl;
@@ -429,8 +439,15 @@ namespace LinBox {
         Integer bNormSquared;
         vectorNormSquared(bNormSquared, b.begin(), b.end());
 
+        // Square-root of bNormSquared (upper bound)
+        Integer rem;
+        Integer bNorm = Givaro::sqrtrem(bNormSquared, rem);
+        if (rem != 0) {
+            bNorm += 1;
+        }
+
         data.denBound = hadamardBound.bound;
-        data.numBound = hadamardBound.boundOverMinNorm * Givaro::sqrt(bNormSquared);
+        data.numBound = hadamardBound.boundOverMinNorm * bNorm;
         if (data.denBound == 0 || data.numBound == 0) {
             data.solutionLogBound = 0.0;
         }

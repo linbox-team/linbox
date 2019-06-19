@@ -66,17 +66,14 @@ namespace LinBox
         }
 
         template <class Vect>
-		Vect& result (Vect &num, Integer& den, const Integer& numBound, const Integer& denBound)
+		Vect& result (Vect &num, Integer& den, const Integer& numBound)
 		{
-            // std::cout << "numBound " << numBound << std::endl;
-            // std::cout << "denBound " << denBound << std::endl;
-
             Father_t::result(num, false);
             den = 1;
             const auto& mod = Father_t::getModulus();
             Integer nd;
             for (auto num_it = num.begin(); num_it != num.end(); ++num_it) {
-                iterativeratrecon(*num_it, nd, den, mod, numBound, denBound);
+                iterativeratrecon(*num_it, nd, den, mod, numBound);
 
                 if (nd > 1) {
                     for (auto t02 = num.begin(); t02 != num_it; ++t02)
@@ -88,11 +85,10 @@ namespace LinBox
         }
 
 	protected:
-		Integer& iterativeratrecon(Integer& u1, Integer& new_den, const Integer& old_den, const Integer& m1, const Integer& sn, const Integer& sd)
+		Integer& iterativeratrecon(Integer& u1, Integer& new_den, const Integer& old_den, const Integer& m1, const Integer& sn)
 		{
             // @note This interface of the rational does the RatRecon.
-            Givaro::Rational myRational(u1 *= old_den, m1, sn, false);
-
+            Givaro::Rational myRational(Integer::modin(u1 *= old_den, m1), m1, sn);
             u1 = myRational.nume();
             new_den = myRational.deno();
 			return u1;

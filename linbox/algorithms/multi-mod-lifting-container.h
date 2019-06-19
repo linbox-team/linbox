@@ -110,15 +110,18 @@ namespace LinBox {
             Integer infinityNormA;
             InfinityNorm(infinityNormA, A);
             double logInfinityNormA = Givaro::logtwo(infinityNormA);
+            std::cout << "infinityNormA: " << infinityNormA << std::endl;
+            std::cout << "logInfinityNormA: " << logInfinityNormA << std::endl;
 
             {
                 // Based on Chen-Storjohann's paper, this is the bit size
                 // of the needed RNS basis for the residue computation
-                double rnsBasisBitSize = (logInfinityNormA + Givaro::logtwo(_n));
-                _rnsPrimesCount = std::ceil(rnsBasisBitSize / primeGenerator.getBits());
+                double rnsBasisBitSize = std::ceil(1.0 + Givaro::logtwo(1 + infinityNormA * _n)); // @fixme @jgdumas Is this OK, then?
+                _rnsPrimesCount = std::ceil(rnsBasisBitSize / (primeGenerator.getBits() - 1));
                 _rnsPrimes.resize(_rnsPrimesCount);
                 std::cout << "primeGenerator.getBits(): " << primeGenerator.getBits() << std::endl;
-                std::cout << "rnsBasisPrimesCount: " << _rnsPrimesCount << std::endl;
+                std::cout << "rnsBasisBitSize: " << rnsBasisBitSize << std::endl;
+                std::cout << "_rnsPrimesCount: " << _rnsPrimesCount << std::endl;
 
                 std::vector<double> primes;
                 for (auto j = 0u; j < _primesCount + _rnsPrimesCount; ++j) {
@@ -148,12 +151,13 @@ namespace LinBox {
                 // as the first count was just an upper estimation.
                 double bitSize = 0.0;
                 for (int h = _rnsPrimes.size() - 1; h >= 0; --h) {
-                    bitSize += Givaro::logtwo(primes[h]);
+                    bitSize += Givaro::logtwo(_rnsPrimes[h]);
 
                     if (bitSize > rnsBasisBitSize && h > 0) {
-                        _rnsPrimes.erase(_rnsPrimes.begin(), _rnsPrimes.begin() + (h - 1));
+                        _rnsPrimes.erase(_rnsPrimes.begin(), _rnsPrimes.begin() + h);
                         _rnsPrimesCount -= h;
                         std::cout << "RNS basis: Erasing extra " << h << " primes." << std::endl;
+                        std::cout << _rnsPrimes.size() << std::endl;
                         break;
                     }
                 }
@@ -325,8 +329,7 @@ namespace LinBox {
                 }
 
                 // Convert R to the field
-                // @fixme @cpernet Could this step be ignored?
-                // If not, put that in already allocated memory, and not use a temporary here.
+                // @fixme Put that FVector in already allocated memory, and not use a temporary here.
                 auto& F = _fields[j];
                 FVector FR(F, R); // rebind
 
@@ -337,9 +340,6 @@ namespace LinBox {
                 // @fixme We might not need to store digits into IVectors, and returning _Fc
                 // would do the trick
                 digits[j] = IVector(_ring, Fc);
-
-                // auto ooo = (_A.getEntry(0, 0) * Integer(digits[j][0]) - r[0]) % Integer(pj);
-                // std::cout << "ooo " << j << " " << ooo << std::endl;
 
                 // Store the very same result in an RNS system,
                 // but fact is all the primes of the RNS system are bigger
@@ -378,22 +378,13 @@ namespace LinBox {
                 auto& r = _r[j];
                 auto& Q = _Q[j];
 
-                // std::cout << "old r" << j << " " << r[0] << std::endl;
-                // std::cout << "r" << j << " " << (r[0] - _A.getEntry(0, 0) * Integer(_Fc[j][0])) / Integer(_primes[j])  << " expected" << std::endl;
-
                 // r <- (R - Ac) / p
                 // @fixme @cpernet Don't know how to do that with one fconvert_rns!
                 for (auto i = 0u; i < _n; ++i) {
                     FFLAS::fconvert_rns(*_rnsDomain, 1, 1, 0, &r[i], 1, _rnsR + (i * _primesCount + j));
                 }
 
-                // r <- Q + (R - Ac) / p
-                // std::cout << "p" << j << " " << Integer(_primes[j]) << std::endl;
-                // std::cout << "c" << j << " " << Integer(_Fc[j][0]) << std::endl;
-
                 IVD.addin(r, Q);
-
-                // std::cout << "r" << j << " " << r[0] << std::endl;
             }
 
             ++_position;
@@ -403,21 +394,23 @@ namespace LinBox {
     private:
         // Helper function, setting all residues of a matrix element to the very same value.
         // This doesn't check the moduli.
-        void setRNSMatrixElementAllResidues(RNSElementPtr& A, size_t lda, size_t i, size_t j,
+        inline void setRNSMatrixElementAllResidues(RNSElementPtr& A, size_t lda, size_t i, size_t j,
                                             double value)
         {
-            auto stride = A[i * lda + j]._stride;
+            auto& Aij = A[i * lda + j];
+            auto stride = Aij._stride;
             for (auto h = 0u; h < _rnsPrimesCount; ++h) {
-                A[i * lda + j]._ptr[h * stride] = value;
+                Aij._ptr[h * stride] = value;
             }
         }
 
-        void logRNSMatrixElement(RNSElementPtr& A, size_t lda, size_t i, size_t j)
+        inline void logRNSMatrixElement(RNSElementPtr& A, size_t lda, size_t i, size_t j)
         {
+            auto& Aij = A[i * lda + j];
             Integer reconstructedInteger;
             FFLAS::fconvert_rns(*_rnsDomain, 1, 1, 0, &reconstructedInteger, 1, A + (i * lda + j));
             std::cout << i << " " << j << " ";
-            _rnsDomain->write(std::cout, A[i * lda + j]);
+            _rnsDomain->write(std::cout, Aij);
             std::cout << " -> " << reconstructedInteger << std::endl;
         }
 
