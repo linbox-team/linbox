@@ -238,6 +238,13 @@ namespace LinBox
                          x.getPointer(), x.getStride(), _field.zero, y.getWritePointer(),y.getStride());
             return y;
         }
+        // NEED TO BE REMOVED -> just to be done after new-blas-subvector is merged
+        std::vector<Element>&  apply (std::vector<Element>& y, const std::vector<Element>& x) const
+        {
+            FFLAS::fgemv(_field, FFLAS::FflasNoTrans, _row,_col, _field.one, _ptr, _stride,
+                         x.data(), 1, _field.zero, y.data(),1);
+            return y;
+        }
 
         //! @bug use Matrix domain
         //!@bug since removal of ApplyDomain this does not handle the case where Field if Givaro::Extension needed for charpoly computation
@@ -248,7 +255,16 @@ namespace LinBox
                          x.getPointer(), x.getStride(), _field.zero, y.getWritePointer(),y.getStride());
             return y;
         }
+        // NEED TO BE REMOVED -> just to be done after new-blas-subvector is merged
+        std::vector<Element>&  applyTranspose (std::vector<Element>& y, const std::vector<Element>& x) const
+        {
+            FFLAS::fgemv(_field, FFLAS::FflasTrans, _row,_col, _field.one, _ptr, _stride,
+                         x.data(), 1, _field.zero, y.data(),1);
+            return y;
+        }
 
+
+        
         void zero() {
             FFLAS::fzero(field(),_row,_col,_ptr,_stride);
         }

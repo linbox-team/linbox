@@ -295,7 +295,7 @@ namespace LinBox
 			   size_t col,
 			   size_t Rowdim,
 			   size_t Coldim) :
-			BlasSubmatrix<Matrix>(const_cast<BlasMatrix<Field>& >(*Mat), row, col, Rowdim, Coldim),
+            BlasSubmatrix<Matrix>(const_cast<BlasMatrix<Field>& >(*Mat), row, col, Rowdim, Coldim),
 			f(Mat -> field()), vd(Mat -> field())
 		{ }
 
@@ -377,17 +377,17 @@ namespace LinBox
 
 		size_t rowfirst() const
 		{
-			return this->_r0;
+			return 0;
 		}
 
 		size_t colfirst() const
 		{
-			return this->_c0;
+			return 0;
 		}
 
-		const Matrix* getPtr() const
+		const Father_t* getPtr() const
 		{
-			return &this->_Mat;
+			return static_cast<const Father_t*>(this);
 		}
 
 		/** Generic matrix-vector apply
@@ -433,13 +433,25 @@ namespace LinBox
 			return y;
 		}
 
-		template<typename _Tp1>
+		// template<typename _Tp1>
+		// struct rebind {
+		// 	typedef typename Matrix::template rebind<_Tp1> Rebinder;
+		// 	typedef SubmatrixOwner<typename Rebinder::other, VectorCategories::DenseVectorTag> other;
+		// 	void operator() (other & Ap, const Self_t& A)
+		// 	{
+		// 		Rebinder () ( Ap.getData(), *(A.getPtr()));
+
+                
+		// 	}
+		// };
+
+        template<typename _Tp1>
 		struct rebind {
-			typedef typename Matrix::template rebind<_Tp1> Rebinder;
-			typedef SubmatrixOwner<typename Rebinder::other, VectorCategories::DenseVectorTag> other;
+			typedef typename Father_t::template rebind<_Tp1> Rebinder;
+			typedef typename Rebinder::other other;
 			void operator() (other & Ap, const Self_t& A)
 			{
-				Rebinder () ( Ap.getData(), *(A.getPtr()));
+                Rebinder () ( Ap, *(A.getPtr()));
 			}
 		};
 	};
