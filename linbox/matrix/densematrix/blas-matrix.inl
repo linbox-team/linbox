@@ -286,9 +286,9 @@ namespace LinBox
 
     //! @bug other rep
     template < class _Field, class _Storage >
-    template<typename _Tp1>
+    template<typename _Tp1, typename _Rep2>
     struct BlasMatrix< _Field, _Storage >::rebind {
-		typedef BlasMatrix<_Tp1,typename Vector<_Tp1>::Dense> other;
+		typedef BlasMatrix<_Tp1, _Rep2> other;
 
 		void operator() (other & Ap, const Self_t& A) {
 			// typedef Self_t::ConstIterator ConstSelfIterator ;
@@ -320,7 +320,7 @@ namespace LinBox
     }
 
     template < class _Field, class _Storage >
-    std::ostream &BlasMatrix< _Field, _Storage >::write (std::ostream &os, LINBOX_enum (Tag::FileFormat) f) const
+    std::ostream &BlasMatrix< _Field, _Storage >::write (std::ostream &os, Tag::FileFormat f) const
     {
         constSubMatrixType B(*this);
         return B.write(os,f);

@@ -135,7 +135,8 @@ namespace LinBox
                        size_t stride);
         
 
-        
+        template <typename _TP1, typename _Rep2 = Storage >
+        struct rebind;
         /*  Members  */
 
         //////////////////
@@ -165,8 +166,9 @@ namespace LinBox
         /*! @internal
          * Get pointer to the matrix data (read/write access will depend on the type of the template parameter _Matrix, i.e. const or not)
          */
-        pointer getPointer() const {return _ptr;}
-        pointer& getWritePointer()  { return _ptr;}
+        pointer getPointer() {return _ptr;}
+        const_pointer getPointer() const {return _ptr;}
+        const_pointer getConstPointer() const {return _ptr;}
 		
         ///////////////////
         //      I/O      //
@@ -183,7 +185,7 @@ namespace LinBox
          * @param os Output stream to which to write
          * @param f write in some format (@ref Tag::FileFormat::Format). Default is MM's.
          */
-        std::ostream &write (std::ostream &os,LINBOX_enum (Tag::FileFormat) f = Tag::FileFormat::MatrixMarket )const;
+        std::ostream &write (std::ostream &os,Tag::FileFormat f = Tag::FileFormat::MatrixMarket )const;
 
         //////////////////
         //   ELEMENTS   //
