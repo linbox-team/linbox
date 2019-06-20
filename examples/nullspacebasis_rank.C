@@ -60,7 +60,7 @@ int main (int argc, char **argv)
   GaussDomain<Field> GD(F);
   
   typename Field::Element Det;
-  unsigned long Rank;
+  size_t Rank;
   size_t Ni(A.rowdim()),Nj(A.coldim());
 
   Permutation<Field> P(F,(int)Nj);

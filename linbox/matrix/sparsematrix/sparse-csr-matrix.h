@@ -746,7 +746,7 @@ namespace LinBox {
 		 * @param format Format with which to write
 		 */
 		std::ostream & write(std::ostream &os
-				     , LINBOX_enum(Tag::FileFormat) format  = Tag::FileFormat::MatrixMarket) const
+				     , Tag::FileFormat format  = Tag::FileFormat::MatrixMarket) const
 		{
 			return SparseMatrixWriteHelper<Self_t>::write(*this,os,format);
 		}
@@ -758,7 +758,7 @@ namespace LinBox {
 		 * @return ref to \p is.
 		 */
 		std::istream& read (std::istream &is
-				    , LINBOX_enum(Tag::FileFormat) format = Tag::FileFormat::Detect)
+				    , Tag::FileFormat format = Tag::FileFormat::Detect)
 		{
 			return SparseMatrixReadHelper<Self_t>::read(*this,is,format);
 		}
@@ -1160,26 +1160,26 @@ namespace LinBox {
 		};
 
 #if 1
-		// This simplified indexed iterator conquers a bug and 
+		// This simplified indexed iterator conquers a bug and
 		// supports all tested uses.
 
-		/** a forward iterator. 
-		  
-		  Allows traversing the nonzero values, with position info.  
+		/** a forward iterator.
+
+		  Allows traversing the nonzero values, with position info.
 		  Used, for example, in building an equivalent dense matrix.
 
 		  Preincrement, ++i, is provided, but not postincrement, i++.
 		  Dereference, *i, is replaced by i.rowIndex(), i.colIndex(), i.value().
 
-		  No distinction is made between IndexedIterator and ConstIndexedIterator.  
-		  In particular, value() is not a reference.  
+		  No distinction is made between IndexedIterator and ConstIndexedIterator.
+		  In particular, value() is not a reference.
 		  To modify the matrix use setEntry().
 		 */
 		class IndexedIterator {
 			public:
 				typedef SparseMatrix<Field, Storage> CSR_Matrix;
 				typedef CSR_Matrix::Element value_type;
-			private: 
+			private:
 				const CSR_Matrix *Ap_;
 				index_t row_; // row number, index for Ap_->_start
 				index_t i_; // index for Ap_->_colid, Ap_->_data
@@ -1526,7 +1526,7 @@ namespace LinBox {
 		{}
 
 		// template<class inMatrix, class outMatrix>
-		// outMatrix & apply( outMatrix & y, const inMatrix & x, Element & alpha, const LINBOX_enum(Tag::Side) lr)
+		// outMatrix & apply( outMatrix & y, const inMatrix & x, Element & alpha, const Tag::Side lr)
 
 		template<class inMatrix, class outMatrix>
 		outMatrix & applyLeft( outMatrix & y, const inMatrix & x, Element & alpha)

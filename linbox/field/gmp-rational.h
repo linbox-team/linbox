@@ -35,7 +35,7 @@
 #include <gmp.h>
 
 #include "linbox/integer.h"
-#include "linbox/field/field-interface.h"
+#include "linbox/field/field-documentation.h"
 #include "linbox/element/gmp-rational.h"
 #include "linbox/linbox-config.h"
 #include "linbox/util/debug.h"
@@ -65,7 +65,7 @@ namespace LinBox
 		typedef RingCategories::RationalTag categoryTag;
 	};
 
-	class GMPRationalField : public FieldInterface {
+	class GMPRationalField : public FieldDocumentation {
 	private:
 
 		const integer _cardinality;

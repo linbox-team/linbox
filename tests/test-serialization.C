@@ -174,7 +174,7 @@ bool test_field(const Integer& q)
 
     // --- Test dense vector
 
-    BlasVector<Field> denseVector(F, denseMatrix.rowdim(), denseMatrix.coldim());
+    BlasVector<Field> denseVector(F, denseMatrix.rowdim());
     for (auto i = 0u; i < denseMatrix.rowdim(); i++) {
         denseVector[i] = denseMatrix.getEntry(i, 0);
     }
@@ -186,7 +186,7 @@ bool test_field(const Integer& q)
 
 int main(int argc, char** argv)
 {
-    Integer q = 2147483647;
+    Integer q = 101;
     uint64_t seed = time(nullptr);
     bool loop = false;
 

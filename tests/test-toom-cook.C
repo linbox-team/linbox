@@ -168,7 +168,7 @@ namespace LinBox { namespace BLAS2 {
 		{
 
             PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<ModularField>::bestBitSize(A.coldim()));
-            ChineseRemainder< FullMultipBlasMatCRA< ModularField > > cra( std::pair<size_t,double>(C.size(), logC) );
+            ChineseRemainder< CRABuilderFullMultipMatrix< ModularField > > cra( std::pair<size_t,double>(C.size(), logC) );
             Protected::IntegerSparseCraMatMul iteration(A,B);
 
             cra(C, iteration, genprime);
@@ -176,7 +176,7 @@ namespace LinBox { namespace BLAS2 {
 #ifdef _LB_DEBUG
 #ifdef _LB_MM_TIMING
 #endif
-                    
+
             Integer mC;
             mC = C.magnitude();
             report << "C max: " << logtwo(mC) <<  " (" << LinBox::naturallog(mC) << ')' << std::endl;

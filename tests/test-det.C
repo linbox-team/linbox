@@ -119,12 +119,12 @@ static bool testDiagonalDet1 (Field &F, size_t n, int iterations)
         det (phi_wiedemann, D,  WiedemannChoice);
         F.write (report << "Computed determinant (Wiedemann) : ", phi_wiedemann) << endl;
 
-        WiedemannChoice.symmetric(Specifier::SYMMETRIC);
+        WiedemannChoice.shapeFlags = Shape::Symmetric;
         det (phi_symm_wied, D,  WiedemannChoice);
         F.write (report << "Computed determinant (Symmetric Wiedemann) : ", phi_symm_wied) << endl;
 
-        det (phi_blas_elimination, D,  Method::BlasElimination ());
-        F.write (report << "Computed determinant (BlasElimination) : ", phi_blas_elimination) << endl;
+        det (phi_blas_elimination, D,  Method::DenseElimination ());
+        F.write (report << "Computed determinant (DenseElimination) : ", phi_blas_elimination) << endl;
 
         det (phi_sparseelim, D,  Method::SparseElimination ());
         F.write (report << "Computed determinant (SparseElimination) : ", phi_sparseelim) << endl;
@@ -178,12 +178,12 @@ static bool testDiagonalDet2 (Field &F, size_t n, int iterations)
         F.assign(pi, F.one);
 
         size_t m = (n+1) / 2;
-        for (j = 0; j < m; j++) {
+        for (j = 0; j < m; ++j) {
             do r.random (d[j]); while (F.isZero (d[j]));
             F.mulin (pi, d[j]);
         }
 
-        for (j = n / 2; j < n; j++) {
+        for (j = m; j < n; ++j) {
             k =int( (size_t)rand () % m );
             d[j] = d[(size_t)k];
             F.mulin (pi, d[(size_t)j]);
@@ -201,7 +201,7 @@ static bool testDiagonalDet2 (Field &F, size_t n, int iterations)
         Blackbox D (d);
         Method::Wiedemann WiedemannChoice;
         det (phi_wiedemann, D,  WiedemannChoice);
-        WiedemannChoice.symmetric(Specifier::SYMMETRIC);
+        WiedemannChoice.shapeFlags = Shape::Symmetric;
         report << "Computed determinant (Wiedemann) : ";
         F.write (report, phi_wiedemann);
         report << endl;
@@ -211,8 +211,8 @@ static bool testDiagonalDet2 (Field &F, size_t n, int iterations)
         F.write (report, phi_symm_wied);
         report << endl;
 
-        det (phi_blas_elimination, D,  Method::BlasElimination ());
-        report << "Computed determinant (BlasElimination) : ";
+        det (phi_blas_elimination, D,  Method::DenseElimination ());
+        report << "Computed determinant (DenseElimination) : ";
         F.write (report, phi_blas_elimination);
         report << endl;
 
@@ -283,14 +283,14 @@ static bool testSingularDiagonalDet (Field &F, size_t n, int iterations)
         F.write (report, phi_wiedemann);
         report << endl;
 
-        WiedemannChoice.symmetric(Specifier::SYMMETRIC);
+        WiedemannChoice.shapeFlags = Shape::Symmetric;
         det (phi_symm_wied, D,  WiedemannChoice);
         report << "Computed determinant (Symmetric Wiedemann) : ";
         F.write (report, phi_symm_wied);
         report << endl;
 
-        det (phi_blas_elimination, D,  Method::BlasElimination ());
-        report << "Computed determinant (BlasElimination) : ";
+        det (phi_blas_elimination, D,  Method::DenseElimination ());
+        report << "Computed determinant (DenseElimination) : ";
         F.write (report, phi_blas_elimination);
         report << endl;
 
@@ -369,12 +369,12 @@ bool testIntegerDet (size_t n, int iterations)
         report << "Computed integer determinant (Wiedemann): " << det_A_wiedemann << endl;
 
 
-        WiedemannChoice.symmetric(Specifier::SYMMETRIC);
+        WiedemannChoice.shapeFlags = Shape::Symmetric;
         det (det_A_symm_wied, A, WiedemannChoice);
         report << "Computed integer determinant (Symmetric Wiedemann): " << det_A_symm_wied << endl;
 
-        det (det_A_blas_elimination, A, Method::BlasElimination());
-        report << "Computed integer determinant (BlasElimination): " << det_A_blas_elimination << endl;
+        det (det_A_blas_elimination, A, Method::DenseElimination());
+        report << "Computed integer determinant (DenseElimination): " << det_A_blas_elimination << endl;
 
 
         if ((det_A_wiedemann != pi)||(det_A_blas_elimination != pi)||(det_A_symm_wied != pi))  {
@@ -440,11 +440,11 @@ bool testIntegerDetGen (size_t n, int iterations)
             ret = false;
         }
 
-        det (det_A_H, A, Method::Hybrid());
-        report << "Computed integer determinant (Hybrid): " << det_A_H << endl;
+        det (det_A_H, A, Method::Auto());
+        report << "Computed integer determinant (Auto): " << det_A_H << endl;
         if (det_A_H != pi){
             commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-                << "ERROR: Hybrid Computed determinant is incorrect" << endl;
+                << "ERROR: Auto Computed determinant is incorrect" << endl;
             ret = false;
         }
 
@@ -531,11 +531,11 @@ bool testRationalDetGen (size_t n, int iterations)
             ret = false;
         }
 
-        det (det_A_H, A, Method::Hybrid());
-        report << "Computed rational determinant (Hybrid): "; Q.write(report, det_A_H); report << endl;
+        det (det_A_H, A, Method::Auto());
+        report << "Computed rational determinant (Auto): "; Q.write(report, det_A_H); report << endl;
         if (!Q.areEqual(det_A_H ,pi)){
             commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-                << "ERROR: Hybrid Computed determinant is incorrect" << endl;
+                << "ERROR: Auto Computed determinant is incorrect" << endl;
             ret = false;
         }
 
@@ -563,11 +563,11 @@ bool testRationalDetGen (size_t n, int iterations)
             ret = false;
         }
 
-        det (det_B_H, BB, Method::Hybrid());
-        report << "Computed rational determinant (Hybrid): "; Q.write(report, det_A_H); report << endl;
+        det (det_B_H, BB, Method::Auto());
+        report << "Computed rational determinant (Auto): "; Q.write(report, det_A_H); report << endl;
         if (!Q.areEqual(det_B_H ,pi)){
             commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-                << "ERROR: (Dense) Hybrid Computed determinant is incorrect" << endl;
+                << "ERROR: (Dense) Auto Computed determinant is incorrect" << endl;
             ret = false;
         }
         det (det_B_B, BB, Method::Blackbox());
@@ -579,7 +579,7 @@ bool testRationalDetGen (size_t n, int iterations)
         }
 
         det (det_B_E, BB, Method::Elimination());
-        report << "Computed rational determinant (BlasElimination): "; Q.write(report, det_A_E); report << endl;
+        report << "Computed rational determinant (DenseElimination): "; Q.write(report, det_A_E); report << endl;
         if (!Q.areEqual(det_B_E ,pi)){
             commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
                 << "ERROR: (Dense) Elimination Computed determinant is incorrect" << endl;

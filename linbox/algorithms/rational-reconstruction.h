@@ -63,24 +63,24 @@ namespace Givaro
         a = rr.nume();
         b = rr.deno();
     }
-    
+
     inline void reconstructRational (Integer& a, Integer& b, const Integer& x, const Integer& m)
     {
         reconstructRational(a,b, x, m, Givaro::sqrt(m));
     }
-    
+
     inline bool reconstructRational (Integer& a, Integer& b,
                                      const Integer& x, const Integer& m,
                                      const Integer& a_bound, const Integer& b_bound)
     {
         Integer bound = x/b_bound;
 			// if (bound>a_bound) std::cerr << "a_bound: " << a_bound << ", x/b_bound: " << bound << std::endl;
-        
+
         reconstructRational(a,b,x,m, (bound>a_bound?bound:a_bound));
-        
+
         return b<= b_bound;
     }
-    
+
 }
 
 
@@ -92,7 +92,7 @@ namespace LinBox
 	}
 
 
-    
+
 
 	/*! \brief Limited doc so far.
 	 * Used, for instance, after LiftingContainer.
@@ -379,7 +379,7 @@ namespace LinBox
 				else {
 					int status= (int)Givaro::reconstructRational(tmp_num, tmp_den, *res_p, modulus, numbound, denbound);
 					if (!status) {
-						commentator().report() 
+						commentator().report()
 						<< "ERROR in reconstruction ? (1)\n" << std::endl;
 #ifdef DEBUG_RR
 						std::cout<<" try to reconstruct :\n";
@@ -766,7 +766,6 @@ namespace LinBox
 		template<class Vector1>
 		bool getRational3(Vector1& num, Integer& den) const
 		{
-
 #ifdef RSTIMING
 			ttRecon.clear();
 			tRecon.start();
@@ -988,7 +987,7 @@ namespace LinBox
 #endif
 						return false;
 					}
- 
+
 					_r.mulin(common_den, *iter_denom);
 					idx_last_den=(int)i;
 					counter++;

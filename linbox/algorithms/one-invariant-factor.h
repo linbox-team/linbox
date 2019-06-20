@@ -223,7 +223,7 @@ namespace LinBox
 		 */
 		template<class IMatrix, class Vector>
 		Integer& oneInvariantFactor_Bonus(Integer& oif, Integer& bonus, const IMatrix& A,
-						  int i, Vector& PrimeL) const
+						  int i, Vector& PrimeL)
 		{
 			// some check
 			linbox_check(0 < i);
@@ -269,7 +269,7 @@ namespace LinBox
 		 *  It implements the adaptive algorithm of EGV and EGV+.
 		 */
 		template<class IMatrix>
-		Integer& oneInvariantFactor_Bonus(Integer& oif, Integer& bonus, const IMatrix& A, int i) const
+		Integer& oneInvariantFactor_Bonus(Integer& oif, Integer& bonus, const IMatrix& A, int i)
 		{
 
 			std::vector<Integer> empty_v;

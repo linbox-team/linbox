@@ -36,7 +36,6 @@
 
 #include "linbox/util/debug.h"
 #include "linbox/integer.h"
-#include "linbox/field/field-interface.h"
 #include "linbox/vector/bit-vector.h"
 #include "linbox/field/field-traits.h"
 // #include "linbox/vector/vector-domain.h"
@@ -69,7 +68,7 @@ namespace LinBox
 		typedef RingCategories::ModularTag categoryTag;
 	};
 
-	class GF2 : public FieldInterface {
+	class GF2 {
 	public:
 		const bool zero,one,mOne;
 

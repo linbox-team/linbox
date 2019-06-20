@@ -375,8 +375,10 @@ int main(int argc, char** argv){
 			std::cout<<"degree is to large for field bitsize: "<<b<<std::endl;
 			exit(0);
 		}
-		RandomFFTPrime Rd(1<<b,seed);
-		integer p = Rd.randomPrime(logd+1);
+        integer p;
+		RandomFFTPrime::seeding (seed);
+		if (!RandomFFTPrime::randomPrime (p, 1<<b, logd+1))
+			throw LinboxError ("RandomFFTPrime::randomPrime failed");
 		std::cout<<"# starting sigma basis computation over Fp[x] with p="<<p<<endl;;		
 		SmallField F(p);
 		typename SmallField::RandIter G(F,0,seed);

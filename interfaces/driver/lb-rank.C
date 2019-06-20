@@ -37,7 +37,7 @@ extern BlackboxTable blackbox_hashtable;
 /****************
  * Rank Functor *
  ****************/
-template<typename Method= LinBox::Method::Hybrid>
+template<typename Method= LinBox::Method::Auto>
 class RankFunctor{
 private:
 	Method meth;

@@ -184,7 +184,7 @@ int test()
 	cout<<"' and Z/pZ of type '";
 	F.write(cout)<<"'"<<endl;
 
-	typedef RationalSolver<Ring, Field, class RandomPrime, DixonTraits> QSolver;
+	typedef DixonSolver<Ring, Field, class RandomPrime, Method::DenseElimination> QSolver;
 	typedef DiophantineSolver<QSolver> ZSolver;
 
 	//typedef std::vector<std::pair<RingElement, RingElement> > FractionVector;

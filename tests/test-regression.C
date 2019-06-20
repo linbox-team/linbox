@@ -31,16 +31,18 @@
 #include "givaro/modular.h"
 #include "linbox/matrix/sparse-matrix.h"
 #include "linbox/matrix/dense-matrix.h"
-#include "linbox/polynomial/dense-polynomial.h"
 #include "linbox/ring/polynomial-ring.h"
 #include "linbox/vector/blas-vector.h"
 #include "linbox/solutions/solve.h"
 #include "linbox/solutions/charpoly.h"
-#include "linbox/algorithms/smith-form-sparseelim-poweroftwo.h"
+
 using namespace LinBox;
 typedef Givaro::ZRing<Givaro::Integer> ZRingInts;
 
 bool writing=false;
+
+#include "linbox/algorithms/smith-form-sparseelim-poweroftwo.h"
+#include "test-smith-form.h"
 
 bool testSolveSparse(){
 
@@ -62,10 +64,10 @@ bool testSolveSparse(){
     A.setEntry(2,2, 1);
     for (int i=0;i<3;i++)
         F.assign(b[i],i+1);
-    
+
     Matrix B(A);
-    
-    solve(x,B,b,  Method::BlasElimination());
+
+    solve(x,B,b,  Method::DenseElimination());
 
     if (!F.areEqual (x[0],73)) return false;
     if (!F.areEqual (x[1],76)) return false;
@@ -77,9 +79,9 @@ bool testSolveSparse(){
 }
 
 #if __LINBOX_HAVE_SAGE
-// CP: Include the .C file instead of linking to the linboxsage lib: 
+// CP: Include the .C file instead of linking to the linboxsage lib:
 // avoid requiring to make install before make check.
-#include "interfaces/sage/linbox-sage.C" 
+#include "interfaces/sage/linbox-sage.C"
 bool testSolveSparseSage(){
     size_t p = 127;
     c_vector_modint_linbox * A = new c_vector_modint_linbox[3];
@@ -91,7 +93,7 @@ bool testSolveSparseSage(){
         for (int j=0;j<3;j++)
             A[i].positions[j]=j;
         A[i].p = p;
-    }        
+    }
     b.entries = new int[3];
     b.positions = new size_t[3];
     for (int j=0;j<3;j++)
@@ -118,7 +120,7 @@ bool testSolveSparseSage(){
     if (x[0] != 73) return false;
     if (x[1] != 76) return false;
     if (x[2] != 10) return false;
-    
+
 	if (writing) std::cout << "TSSS: PASSED" << std::endl;
 
     return true;
@@ -131,7 +133,8 @@ bool testSolveSparseSage(){return true;}
  * Testing regresssion for issue 56 https://github.com/linbox-team/linbox/issues/56
  * reported by Vincent Delecroix
  */
-bool testFlatDixonSolver (const Specifier& m){
+template <class SolveMethod>
+bool testFlatDixonSolver (const SolveMethod& m){
         // creating LinBox matrices and vectors
     Givaro::ZRing<Integer> ZZ;
     typedef DenseVector<Givaro::ZRing<Integer> > DenseVector;
@@ -158,8 +161,8 @@ bool testFlatDixonSolver (const Specifier& m){
     return true;
 }
 
-
-bool testFlatDixonSolver2 (const Specifier& m){
+template <class SolveMethod>
+bool testFlatDixonSolver2 (const SolveMethod& m){
         // creating LinBox matrices and vectors
     Givaro::ZRing<Integer> ZZ;
     typedef DenseVector<Givaro::ZRing<Integer> > DenseVector;
@@ -187,7 +190,8 @@ bool testFlatDixonSolver2 (const Specifier& m){
     return true;
 }
 
-bool testTallDixonSolver (const Specifier& m){
+template <class SolveMethod>
+bool testTallDixonSolver (const SolveMethod& m){
         // creating LinBox matrices and vectors
     Givaro::ZRing<Integer> ZZ;
     typedef DenseVector<Givaro::ZRing<Integer> > DenseVector;
@@ -216,7 +220,8 @@ bool testTallDixonSolver (const Specifier& m){
 
 }
 
-bool testSingularDixonSolver (const Specifier& m){
+template <class SolveMethod>
+bool testSingularDixonSolver (const SolveMethod& m){
         // creating LinBox matrices and vectors
     Givaro::ZRing<Integer> ZZ;
     typedef DenseVector<Givaro::ZRing<Integer> > DenseVector;
@@ -241,7 +246,9 @@ bool testSingularDixonSolver (const Specifier& m){
 
     return true;
 }
-bool testZeroDixonSolver (const Specifier& m){
+
+template <class SolveMethod>
+bool testZeroDixonSolver (const SolveMethod& m){
         // creating LinBox matrices and vectors
     Givaro::ZRing<Integer> ZZ;
     typedef DenseVector<Givaro::ZRing<Integer> > DenseVector;
@@ -283,9 +290,9 @@ bool testDixonSolverWithMPrhs (){
 
     A.setEntry(0,0,Integer("12345678901234567890"));
     ZZ.assign(B[0],Integer("12345678901234567890"));
-    
-    // solving via Dixon lifting 
-    solve (X, D, A, B, Method::BlasElimination());
+
+    // solving via Dixon lifting
+    solve (X, D, A, B, Method::DenseElimination());
 
     if (!ZZ.areEqual(X[0],ZZ.one) ||  !ZZ.areEqual(D,ZZ.one)) {
         if (writing) std::cerr<<"**** ERROR **** Fail solving a system over QQ with a DenseMatrix and a MP rhs"<<std::endl;
@@ -329,24 +336,26 @@ bool testSparseRationalSolver() {
     return true;
 }
 
-template<typename Matrix_t=SparseMatrix<ZRingInts>>
-bool testDixonRectangularSolver(const Specifier& m) {
+template<class SolveMethod, typename Matrix_t=SparseMatrix<ZRingInts>>
+bool testDixonRectangularSolver() {
+    SolveMethod m;
+
     ZRingInts ZZ;
     typedef DenseVector<ZRingInts> RVector;
     Matrix_t A (ZZ,1,3);
     RVector X(ZZ, A.coldim()),B(ZZ, A.rowdim()),L(ZZ, A.rowdim());
     ZRingInts::Element d;
-    
+
     A.setEntry(0,1,1);
     A.setEntry(0,2,2);
     ZZ.assign(B[0],1);
 
-        // Dixon Lifting 
+        // Dixon Lifting
     solve(X,d,A,B,m);
 
     bool pass=true;
 
-    if (ZZ.isZero(d)) 
+    if (ZZ.isZero(d))
         pass = false;
     else{
         MatrixDomain<ZRingInts> MD(ZZ);
@@ -359,7 +368,7 @@ bool testDixonRectangularSolver(const Specifier& m) {
             pass = false;
         }
     }
-    
+
     if (! pass) {
         if (writing) A.write(std::cerr << "A:=", LinBox::Tag::FileFormat::Maple) << ';' << std::endl;
         if (writing) std::cerr<<"X:= "<< X << ';' << std::endl;
@@ -447,9 +456,9 @@ bool testBigScalarCharPoly(){
     return PR.areEqual(P,Q);
 }
 
-/*
-template<typename Matrix_t=SparseMatrix<ZRingInts>>
-bool testInconsistent (const Specifier& m){
+
+template<typename Matrix_t=SparseMatrix<ZRingInts>, class SolveMethod>
+bool testInconsistent (const SolveMethod& m){
         // creating LinBox matrices and vectors
     Givaro::ZRing<Integer> ZZ;
     typedef DenseVector<Givaro::ZRing<Integer> > DenseVector;
@@ -463,27 +472,21 @@ bool testInconsistent (const Specifier& m){
     ZZ.assign(B[0],ZZ.one);
 
         // solving via Dixon Lifting
-    solve (A, D, M, B, m);
+    try{
+        solve (A, D, M, B, m);
+    }
+    catch (LinBox::LinboxMathInconsistentSystem& e){return true;}
 
-    if (!ZZ.areEqual(A[0],ZZ.zero) || !ZZ.areEqual(D,ZZ.one)) {
-        if (writing) std::cerr<<"A = "<<A<<" D = "<<D<<std::endl;
-        if (writing) std::cerr<<"**** ERROR **** Fail solving an inconsistent system  over QQ via Dixon Lifting"<<std::endl;
-        return false;
-    } else
-        if (writing) std::cout << "TICS: PASSED" << std::endl;
-
-    return true;
+    return false;
 }
-*/
 
 
 bool testLocalSmith(){
-    typedef Givaro::ZRing<int64_t> Ring;
-    typedef std::vector<std::pair<size_t,uint64_t> > Smith_t;
+    typedef Givaro::ZRing<uint64_t> Ring; // characteristic 2
     typedef LinBox::SparseMatrix<Ring,
         LinBox::SparseMatrixFormat::SparseSeq > SparseMat;
 
-    Smith_t local;
+    SmithList<Ring> local;
     Ring R;
     SparseMat A(R,2,3);
     A.setEntry(0,0, 2);
@@ -496,23 +499,22 @@ bool testLocalSmith(){
 
     PGD(local, A, Q, 5, PRESERVE_UPPER_MATRIX|PRIVILEGIATE_NO_COLUMN_PIVOTING);
 
-    if (writing) std::cerr << "Local Smith: {";
-    for(auto const& it:local) if (writing) std::cerr << it.first << ':' << it.second << ' ';
-    if (writing) std::cerr << '}';
+    if (writing) {
+        std::clog << "Local Smith: {";
+        for(auto const& it:local) std::clog << '{' << it.first << ',' << it.second << '}';
+        std::clog << '}';
+    }
 
 // > ([1,1] [1,2] )
 // > [[1, 2, 0 ], [0, 1, 0 ]]
 // > [[0,0,1], [1,0,0], [0,1,0]]
 
         // Smith form
-    bool success =
-        (local.size() == 2U) &&
-        (local[0].first == 1U) &&
-        (local[0].second == 1U) &&
-        (local[1].first == 1U) &&
-        (local[1].second == 2U) ;
+    SmithList<Ring> correctSL{ {1U,1U},{2U,1U} };
+    bool success( checkSNFExample(correctSL, local, R) );
 
-    if (writing) A.write(std::cerr << ", A:=", LinBox::Tag::FileFormat::Maple) << ';';
+    if (writing)
+        A.write(std::clog << ", A:=", LinBox::Tag::FileFormat::Maple) << ';';
 
         // Upper triangular
     success &=
@@ -525,7 +527,8 @@ bool testLocalSmith(){
         (A[1][0].first == 1U) &&
         (A[1][0].second == 1U);
 
-    if (writing) Q.write(std::cerr << ", Q:=", LinBox::Tag::FileFormat::Maple) << ';';
+    if (writing)
+        Q.write(std::clog << ", Q:=", LinBox::Tag::FileFormat::Maple) << ';';
 
         // Permutation
     success &=
@@ -534,11 +537,104 @@ bool testLocalSmith(){
         (Q[2] == 1);
 
     if (!success) {
-        if (writing) std::cerr<<"**** ERROR **** Fail Local Smith" <<std::endl;
+        if (writing) std::clog<<"**** ERROR **** Fail Local Smith" <<std::endl;
         return false;
     } else
         if (writing) std::cout << "TSLS: PASSED" << std::endl;
-     return success;
+    return success;
+}
+
+bool testDixonSmallFat() {
+    bool success;
+    using Ring = Givaro::ZRing<Integer>;
+    using Matrix = DenseMatrix<Ring>;
+    using Vector = DenseVector<Ring>;
+
+    Ring ZZ;
+
+    Matrix A(ZZ, 1, 3);
+    Vector x(ZZ, A.coldim());
+    Vector b(ZZ, A.rowdim());
+    Vector r(ZZ, A.rowdim());
+    Ring::Element d;
+
+    A.setEntry(0, 1, 1);
+    A.setEntry(0, 2, 2);
+    ZZ.assign(b[0], 1);
+
+    // Calling Dixon
+    solve(x, d, A, b, Method::Dixon(SingularSolutionType::Deterministic) );
+
+    A.apply(r,x);
+    ZZ.divin(r[0],d);
+    return success = ZZ.areEqual(r[0], b[0]);
+}
+
+bool testZeroMatrixCharPoly() {
+    bool success;
+	using Ring = Givaro::Modular<double>;
+	using Matrix = SparseMatrix<Ring>;
+    Ring R(3);
+
+    Matrix A(R, 1, 1);
+    A.setEntry(0, 0, R.zero);
+
+    PolynomialRing<Ring>::Element c_A, Ex;
+
+    charpoly(c_A, A);
+
+    PolynomialRing<Ring> PZ(R,'X'); PZ.assign(Ex, Givaro::Degree(1), R.one);
+
+    success = PZ.areEqual(c_A, Ex);
+
+    if (!success) {
+        if (writing) {
+            std::clog<<"**** ERROR **** Fail ZMCP " <<std::endl;
+
+            PZ.write(std::clog << "Ex: ", Ex) << std::endl;
+            PZ.write(std::clog << "cA: ", c_A) << std::endl;
+        }
+        return false;
+    } else
+        if (writing) std::cout << "ZMCP: PASSED" << std::endl;
+
+    return success;
+}
+
+bool testFourFourMatrix() {
+    bool success;
+    using Ring = Givaro::ZRing<Integer>;
+    using Matrix = DenseMatrix<Ring>;
+    Ring ZZ;
+
+    Matrix A(ZZ, 4,4);
+    for(size_t i=0; i<4; ++i) for(size_t j=0; j<4; ++j)
+        A.setEntry(i,j, static_cast<uint64_t>(4*i+j+1));
+
+    PolynomialRing<Ring>::Element c_A, Res;
+
+    charpoly(c_A, A);
+
+    PolynomialRing<Ring> PZ(ZZ,'X');
+    PZ.assign(Res, Givaro::Degree(4), ZZ.one);
+    Res[2] = -80;
+    Res[3] = -34;
+
+    success = PZ.areEqual(c_A, Res);
+
+    if (!success) {
+        if (writing) {
+            std::clog<<"**** ERROR **** Fail tFFM " <<std::endl;
+
+            PZ.write(std::clog << "Ex: ", Res) << std::endl;
+            PZ.write(std::clog << "cA: ", c_A) << std::endl;
+        }
+
+        return false;
+    } else
+        if (writing) std::cout << "tFFM: PASSED" << std::endl;
+
+    return success;
 }
 
 
@@ -547,43 +643,50 @@ int main (int argc, char **argv)
 {
     bool pass = true;
 
-	// text is written to cerr/cout iff a command line argument is present.
+	// text is written to clog/cerr/cout iff a command line argument is present.
 	if (argc > 1) writing = true;
+
+    if (writing) {
+        commentator().setReportStream(std::cout);
+    }
 
     pass &= testSolveSparse  ();
     pass &= testSolveSparseSage ();
     pass &= testFlatDixonSolver (Method::SparseElimination());
     pass &= testFlatDixonSolver2 (Method::SparseElimination());
     pass &= testTallDixonSolver (Method::SparseElimination());
-    pass &= testFlatDixonSolver (Method::BlasElimination());
-    pass &= testFlatDixonSolver2 (Method::BlasElimination());
-    pass &= testTallDixonSolver (Method::BlasElimination());
+    pass &= testFlatDixonSolver (Method::DenseElimination());
+    pass &= testFlatDixonSolver2 (Method::DenseElimination());
+    pass &= testTallDixonSolver (Method::DenseElimination());
     pass &= testFlatDixonSolver (Method::Wiedemann());
     pass &= testFlatDixonSolver2 (Method::Wiedemann());
     pass &= testTallDixonSolver (Method::Wiedemann());
     pass &= testSingularDixonSolver (Method::SparseElimination());
     pass &= testZeroDixonSolver (Method::SparseElimination());
-    pass &= testSingularDixonSolver (Method::BlasElimination());
-    pass &= testZeroDixonSolver (Method::BlasElimination());
+    pass &= testSingularDixonSolver (Method::DenseElimination());
+    pass &= testZeroDixonSolver (Method::DenseElimination());
     pass &= testDixonSolverWithMPrhs ();
     pass &= testSparseRationalSolver ();
-    pass &= testDixonRectangularSolver<> (Method::BlasElimination());
-    pass &= testDixonRectangularSolver<> (Method::SparseElimination());
-    pass &= testDixonRectangularSolver<> (Method::Wiedemann());
-    pass &= testDixonRectangularSolver<DenseMatrix<ZRingInts>> (Method::BlasElimination());
-    pass &= testDixonRectangularSolver<DenseMatrix<ZRingInts>> (Method::SparseElimination());
-    pass &= testDixonRectangularSolver<DenseMatrix<ZRingInts>> (Method::Wiedemann());
+    pass &= testDixonRectangularSolver<Method::DenseElimination> ();
+    pass &= testDixonRectangularSolver<Method::SparseElimination> ();
+    pass &= testDixonRectangularSolver<Method::Wiedemann> ();
+    pass &= testDixonRectangularSolver<Method::DenseElimination, DenseMatrix<ZRingInts>> ();
+    pass &= testDixonRectangularSolver<Method::SparseElimination, DenseMatrix<ZRingInts>> ();
+    pass &= testDixonRectangularSolver<Method::Wiedemann, DenseMatrix<ZRingInts>> ();
     pass &= testSparse1x1Det(1<<26);
     pass &= testSparseDiagDet(46);
     pass &= testZeroDimensionalCharPoly ();
     pass &= testZeroDimensionalMinPoly ();
+    pass &= testZeroMatrixCharPoly();
     pass &= testBigScalarCharPoly ();
     pass &= testLocalSmith ();
-    /*
-    pass &= testInconsistent<> (Method::BlasElimination());
-    pass &= testInconsistent<> (Method::SparseElimination());
-    pass &= testInconsistent<> (Method::Wiedemann());
-    */
+    pass &= testInconsistent<DenseMatrix<ZRingInts>> (Method::DenseElimination());
+    pass &= testDixonSmallFat();
+    pass &= testFourFourMatrix();
+
+        // Still failing: see https://github.com/linbox-team/linbox/issues/105
+        //pass &= testInconsistent<> (Method::SparseElimination());
+        //pass &= testInconsistent<> (Method::Wiedemann());
 
     return pass ? 0 : -1;
 }

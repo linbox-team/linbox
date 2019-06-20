@@ -47,24 +47,30 @@ namespace LinBox
 	 */
 	template < class Polynomial, class Blackbox >
 	Polynomial& cia (Polynomial & P, const Blackbox & A,
-			 const Method::BlasElimination  & M)
+			 const Method::DenseElimination  & M)
 	{
 		commentator().start ("Integer Givaro::Dense Charpoly ", "CIA");
 
-		typename Blackbox::Field intRing = A.field();
+		using Ring = typename Blackbox::Field;
+		Ring ZZ = A.field();
 		typedef Givaro::Modular<double> Field;
 		typedef typename Blackbox::template rebind<Field>::other FBlackbox;
-		typedef Givaro::Poly1FactorDom<typename Blackbox::Field, Givaro::Dense> IntPolyDom;
-		typedef Givaro::Poly1FactorDom<Field, Givaro::Dense>                  FieldPolyDom;
+		typedef PolynomialRing<Ring> IntPolyDom;
+		typedef PolynomialRing<Field> FieldPolyDom;
 		typedef typename IntPolyDom::Element IntPoly;
 		typedef typename FieldPolyDom::Element FieldPoly;
 
-		IntPolyDom IPD(intRing);
+		IntPolyDom IPD(ZZ);
 
-		FieldPoly fieldCharPoly(A.coldim());
 		/* Computation of the integer minimal polynomial */
-		IntPoly intMinPoly;
+		IntPoly intMinPoly(ZZ);
 		minpoly (intMinPoly, A, RingCategories::IntegerTag(), M);
+
+        if (intMinPoly.size() == A.coldim()+1){
+            commentator().stop ("done", NULL, "CIA");
+            return P = intMinPoly;
+        }
+//         IPD.write(std::cerr<<"Minpoly = ", intMinPoly) << std::endl;
 
 		/* Factorization over the integers */
 		std::vector<IntPoly> intFactors;
@@ -77,6 +83,7 @@ namespace LinBox
 		++primeg;
 		Field F(*primeg);
 		FBlackbox fbb(F, A.rowdim(), A.coldim());
+		FieldPoly fieldCharPoly(F);
 		MatrixHom::map(fbb, A);
 		charpoly (fieldCharPoly, fbb, M);
 		/* Determination of the multiplicities */
@@ -88,7 +95,7 @@ namespace LinBox
 			fieldFactors[i].resize(d);
 			for (size_t j = 0; j < d; ++j)
 				//F.init ((fieldFactors[i])[j], (*intFactors[i])[j]);
-				F.init ((fieldFactors[i])[j], intRing.convert(tmp_convert,(intFactors[i])[j]));// PG 2005-08-04
+				F.init ((fieldFactors[i])[j], ZZ.convert(tmp_convert,(intFactors[i])[j]));// PG 2005-08-04
 		}
 
 		FieldPoly currPol = fieldCharPoly;
@@ -107,8 +114,8 @@ namespace LinBox
 			multip[i] = m-1;
 		}
 
-		IntPoly intCharPoly (A.coldim());
-		intRing.assign (intCharPoly[0], intRing.one);
+		IntPoly intCharPoly (ZZ);
+		IPD.assign (intCharPoly, IPD.one);
 		for (size_t i = 0; i < nf; ++i){
 			IPD.pow( P, intFactors[i], multip[i] );
 			IPD.mulin( intCharPoly, P );

@@ -69,7 +69,7 @@ int main (int argc, char **argv)
         typedef Givaro::QField<Givaro::Rational> Rats;
         Rats QQ;
         typedef DenseVector<Rats> RVector;
-        
+
         MatrixStream<Rats> ms( QQ, input );
         SparseMatrix<Rats> A ( ms );
 		std::cout << "A is " << A.rowdim() << " by " << A.coldim() << std::endl;
@@ -87,13 +87,12 @@ int main (int argc, char **argv)
 			for(auto&& it:B) invect >> it;
             invect.close();
 		}
-        
+
 		std::cout << "B is [";
 		for(auto it:B) QQ.write(cout, it) << ' ';
 		std::cout << ']' << std::endl;
 
             // Generator for a random solution if over-determined
-        typename Rats::RandIter generator(QQ,0,BaseTimer::seed() );
 
 		Timer chrono;
 
@@ -101,7 +100,10 @@ int main (int argc, char **argv)
 
 		std::cout << "Sparse Elimination" << std::endl;
 		chrono.start();
-		solvein (X, A, B, Method::SparseElimination(), generator);
+        // @fixme Can't pass a Randiter anymore, we need an API through Method to set seed or such
+        // typename Rats::RandIter generator(QQ,0,BaseTimer::seed() );
+        // solveInPlace (X, A, B, Method::SparseElimination(), generator);
+		solveInPlace (X, A, B, Method::SparseElimination());
 		chrono.stop();
 
 		std::cout << "(SparseElimination) Solution is [";

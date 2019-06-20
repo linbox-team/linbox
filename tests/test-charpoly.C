@@ -82,7 +82,7 @@ static bool testIdentityCharpoly (Dom &Z, size_t n, bool symmetrizing=false)
 {
 	typedef typename Dom::Element Element;
 	typedef ScalarMatrix<Dom> Blackbox;
-// 	typedef GivPolynomialRing<Dom, Givaro::Dense> PolDom;
+//	typedef GivPolynomialRing<Dom, Givaro::Dense> PolDom;
 //  typedef BlasVector<Dom,GivPolynomialRing<Dom, Givaro::Dense> > PolDom;
     typedef DensePolynomial<Dom> Polynomial;
 
@@ -139,8 +139,8 @@ static bool testIdentityCharpoly (Dom &Z, size_t n, bool symmetrizing=false)
 template <class Field>
 static bool testNilpotentCharpoly (Field &F, size_t n)
 {
-// 	typedef GivPolynomialRing<Field, Givaro::Dense> PolDom;
-// 	typedef typename PolDom::Element Polynomial;
+//	typedef GivPolynomialRing<Field, Givaro::Dense> PolDom;
+//	typedef typename PolDom::Element Polynomial;
 	typedef DensePolynomial<Field> Polynomial;
 	typedef std::pair <std::vector <size_t>, std::vector <typename Field::Element> > Row;
 	typedef SparseMatrix<Field, typename VectorTraits<Row>::SparseFormat> Blackbox;
@@ -244,7 +244,7 @@ bool testRandomCharpoly (Field                 &F,
 	report << "Matrix:" << endl;
 	A.write (report, Tag::FileFormat::Pretty);
 
-        Polynomial phi(F);
+    Polynomial phi(F);
 
 	charpoly (phi, A);
 
@@ -269,6 +269,22 @@ bool testRandomCharpoly (Field                 &F,
 	if (!ret)
 		LinBox::commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: Output vector was incorrect" << endl;
+
+    typedef PolynomialRing<Field> PolyDom;
+    Polynomial psi(F);
+
+	charpoly (psi, A, Method::Blackbox() );
+
+    ret = ret && PolyDom(F).areEqual(phi, psi);
+
+	if (!ret) {
+		LinBox::commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			<< "ERROR: Auto charpoly differs from BB charpoly" << endl;
+
+        PolyDom(F).write(report << "phi: ", phi) << std::endl;
+        PolyDom(F).write(report << "psi: ", psi) << std::endl;
+    }
+
 
 	LinBox::commentator().stop (MSG_STATUS (ret), (const char *) 0, "testRandomCharpoly");
 	return ret;
@@ -335,7 +351,7 @@ int main (int argc, char **argv)
 
 	Givaro::ZRing<integer>::RandIter myZgen(Z);
         Givaro::GeneralRingNonZeroRandIter<Givaro::ZRing<integer>> myNzZgen(myZgen);
- 
+
 	RandomDenseStream<Givaro::ZRing<integer>, ZDenseVector, Givaro::GeneralRingNonZeroRandIter<Givaro::ZRing<integer>> >
         zv_stream (Z, myNzZgen, n, (size_t)numVectors);
 	RandomSparseStream<Givaro::ZRing<integer>, SparseVector, Givaro::GeneralRingNonZeroRandIter<Givaro::ZRing<integer>> >
@@ -344,7 +360,7 @@ int main (int argc, char **argv)
 	//no symmetrizing
 	if (!testIdentityCharpoly  (Z, n)) pass = false;
 	if (!testNilpotentCharpoly (Z, n)) pass = false;
-        
+
 	//Comment by Z. Wan. Stream doesn't work here
 //	if (!testRandomCharpoly    (Z, zA_stream, zv_stream)) pass = false;
 
