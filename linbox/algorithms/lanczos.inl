@@ -5,20 +5,20 @@
  *
  * ------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -37,7 +37,6 @@
 #include "linbox/blackbox/transpose.h"
 #include "linbox/util/debug.h"
 #include "linbox/vector/vector-domain.h"
-#include "linbox/solutions/methods.h"
 
 namespace LinBox
 {
@@ -89,15 +88,15 @@ namespace LinBox
 		Givaro::GeneralRingNonZeroRandIter<Field> real_ri (_randiter);
 		RandomDenseStream<Field, LVector, Givaro::GeneralRingNonZeroRandIter<Field> > stream (field(), real_ri, A.coldim ());
 
-		for (unsigned int i = 0; !success && i < _traits.maxTries (); ++i) {
+		for (unsigned int i = 0; !success && i < _traits.trialsBeforeFailure; ++i) {
 			std::ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
-			switch (_traits.preconditioner ()) {
-			case LanczosTraits::NO_PRECONDITIONER:
+			switch (_traits.preconditioner ) {
+			case Preconditioner::None:
 				success = iterate (A, x, b);
 				break;
 
-			case LanczosTraits::SYMMETRIZE:
+			case Preconditioner::Symmetrize:
 				{
 					VectorWrapper::ensureDim (bp, A.coldim ());
 
@@ -111,13 +110,13 @@ namespace LinBox
 					break;
 				}
 
-			case LanczosTraits::PARTIAL_DIAGONAL:
+			case Preconditioner::PartialDiagonal:
 				{
 					VectorWrapper::ensureDim (d1, A.coldim ());
 					VectorWrapper::ensureDim (y, A.coldim ());
 
 					stream >> d1;
-					Diagonal<Field, typename VectorTraits<LVector>::VectorCategory> D (field(), d1);
+					Diagonal<Field, typename VectorTraits<LVector>::VectorCategory> D (d1);
 					Compose<Blackbox, Diagonal<Field, typename VectorTraits<LVector>::VectorCategory> > B (&A, &D);
 
 					report << "Random D: ";
@@ -129,14 +128,14 @@ namespace LinBox
 					break;
 				}
 
-			case LanczosTraits::PARTIAL_DIAGONAL_SYMMETRIZE:
+			case Preconditioner::PartialDiagonalSymmetrize:
 				{
 					VectorWrapper::ensureDim (d1, A.rowdim ());
 					VectorWrapper::ensureDim (b1, A.rowdim ());
 					VectorWrapper::ensureDim (bp, A.coldim ());
 
 					stream >> d1;
-					Diagonal<Field, typename VectorTraits<LVector>::VectorCategory> D (field(), d1);
+					Diagonal<Field, typename VectorTraits<LVector>::VectorCategory> D (d1);
 					Transpose<Blackbox> AT (&A);
 					Compose<Diagonal<Field, typename VectorTraits<LVector>::VectorCategory>, Blackbox> B1 (&D, &A);
 					Compose<Transpose<Blackbox>, Compose<Diagonal<Field, typename VectorTraits<LVector>::VectorCategory>, Blackbox> > B (&AT, &B1);
@@ -152,7 +151,7 @@ namespace LinBox
 					break;
 				}
 
-			case LanczosTraits::FULL_DIAGONAL:
+			case Preconditioner::FullDiagonal:
 				{
 					VectorWrapper::ensureDim (d1, A.coldim ());
 					VectorWrapper::ensureDim (d2, A.rowdim ());
@@ -162,8 +161,8 @@ namespace LinBox
 					VectorWrapper::ensureDim (y, A.coldim ());
 
 					stream >> d1 >> d2;
-					Diagonal<Field, typename VectorTraits<LVector>::VectorCategory> D1 (field(), d1);
-					Diagonal<Field, typename VectorTraits<LVector>::VectorCategory> D2 (field(), d2);
+					Diagonal<Field, typename VectorTraits<LVector>::VectorCategory> D1 (d1);
+					Diagonal<Field, typename VectorTraits<LVector>::VectorCategory> D2 (d2);
 					Transpose<Blackbox> AT (&A);
 
 					Compose<Blackbox,
@@ -202,17 +201,16 @@ namespace LinBox
 
 			default:
 				throw PreconditionFailed (__func__, __LINE__,
-							  "preconditioner is NO_PRECONDITIONER, SYMMETRIZE, PARTIAL_DIAGONAL_SYMMETRIZE, "
-							  "PARTIAL_DIAGONAL, or FULL_DIAGONAL");
+							  "preconditioner should be None, Symmetrize, PartialDiagonal,"
+							  "PartialDiagonalSymmetrize, or FullDiagonal");
 			}
 
-			if (success && _traits.checkResult ()) {
+			if (success && _traits.checkResult) {
 				VectorWrapper::ensureDim (Ax, A.rowdim ());
 
-				if (_traits.checkResult () &&
-				    ((_traits.preconditioner () == LanczosTraits::SYMMETRIZE) ||
-				     (_traits.preconditioner () == LanczosTraits::PARTIAL_DIAGONAL_SYMMETRIZE) ||
-				     (_traits.preconditioner () == LanczosTraits::FULL_DIAGONAL)))
+				if ((_traits.preconditioner == Preconditioner::Symmetrize) ||
+				    (_traits.preconditioner == Preconditioner::PartialDiagonalSymmetrize) ||
+				    (_traits.preconditioner == Preconditioner::FullDiagonal))
 				{
 					VectorWrapper::ensureDim (ATAx, A.coldim ());
 					VectorWrapper::ensureDim (ATb, A.coldim ());
@@ -230,7 +228,7 @@ namespace LinBox
 						success = false;
 					}
 				}
-				else if (_traits.checkResult ()) {
+				else {
 					commentator().start ("Checking whether Ax=b");
 
 					A.apply (Ax, x);

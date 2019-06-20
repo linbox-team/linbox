@@ -201,11 +201,11 @@ bool runTest(uint64_t n, uint64_t d, long seed){
 	ostream &report = commentator().report (Commentator::LEVEL_ALWAYS, INTERNAL_DESCRIPTION);
 	// fourier prime < 2^(53--log(n))/2
 	{
-        commentator().start("Half wordsize Fourrier prime");
-		RandomFFTPrime Rd(1<<bits,seed);
-		integer p = Rd.randomPrime(integer(d).bitsize()+1);
-        report<<"prime bits : "<<p.bitsize()<<std::endl;
-        
+		integer p;
+		RandomFFTPrime::seeding (seed);
+		if (!RandomFFTPrime::randomPrime (p, 1<<bits, integer(d).bitsize()+1))
+			throw LinboxError ("RandomFFTPrime::randomPrime failed");
+		
 		Givaro::Modular<double> F((int32_t)p);
 		ok&=launchTest (F,n,bits,d,seed);
         commentator().stop(MSG_STATUS (ok), (const char *) 0,"Half wordsize Fourrier prime");

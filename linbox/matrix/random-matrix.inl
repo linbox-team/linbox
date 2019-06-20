@@ -342,13 +342,13 @@ namespace LinBox
 	Matrix&
 	RandomDenseMatrix<Randiter, Field>::randomFullRank(Matrix &A)
 	{
-		long unsigned r,b,m,n;
+		size_t r,b,m,n;
 		m=A.rowdim();
 		n=A.coldim();
 		b=m<n?m:n;
 		do {
 			random(A);
-		} while(LinBox::rank(r,A,Method::Hybrid()) < b);
+		} while(LinBox::rank(r,A,Method::Auto()) < b);
 		return A;
 	}
 
@@ -411,7 +411,7 @@ namespace LinBox
 
 	void RandomBlasPermutation(BlasPermutation<size_t> & P)
 	{
-		size_t * Pt = P.getWritePointer();
+		size_t * Pt = P.getPointer();
 		// size_t n = P.getSize();
 		size_t r = P.getOrder();
 		size_t n = r ; // no size given ?

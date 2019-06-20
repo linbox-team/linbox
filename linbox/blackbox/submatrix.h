@@ -295,7 +295,7 @@ namespace LinBox
 			   size_t col,
 			   size_t Rowdim,
 			   size_t Coldim) :
-			BlasSubmatrix<Matrix>(const_cast<BlasMatrix<Field>& >(*Mat), row, col, Rowdim, Coldim),
+            BlasSubmatrix<Matrix>(const_cast<BlasMatrix<Field>& >(*Mat), row, col, Rowdim, Coldim),
 			f(Mat -> field()), vd(Mat -> field())
 		{ }
 
@@ -375,6 +375,21 @@ namespace LinBox
 			return os;
 		}
 
+		size_t rowfirst() const
+		{
+			return 0;
+		}
+
+		size_t colfirst() const
+		{
+			return 0;
+		}
+
+		const Father_t* getPtr() const
+		{
+			return static_cast<const Father_t*>(this);
+		}
+
 		/** Generic matrix-vector apply
 		 * <code>y = A * x</code>.
 		 * This version of apply allows use of arbitrary input and output vector         * types.
@@ -418,17 +433,26 @@ namespace LinBox
 			return y;
 		}
 
-		template<typename _Tp1>
+		// template<typename _Tp1>
+		// struct rebind {
+		// 	typedef typename Matrix::template rebind<_Tp1> Rebinder;
+		// 	typedef SubmatrixOwner<typename Rebinder::other, VectorCategories::DenseVectorTag> other;
+		// 	void operator() (other & Ap, const Self_t& A)
+		// 	{
+		// 		Rebinder () ( Ap.getData(), *(A.getPtr()));
+
+                
+		// 	}
+		// };
+
+        template<typename _Tp1>
 		struct rebind {
-			typedef SubmatrixOwner<BlasMatrix<_Tp1>, VectorCategories::DenseVectorTag> other;
-
-			void operator() (other & Ap, const Self_t& A) {
-
-				typename other::Father_t A1;
-				typename Father_t::template rebind<_Tp1> () ( A1, static_cast<Father_t>(A) );
-				Ap = other(A1, A.rowfirst(), A.colfirst(), A.rowdim(), A.coldim());
+			typedef typename Father_t::template rebind<_Tp1> Rebinder;
+			typedef typename Rebinder::other other;
+			void operator() (other & Ap, const Self_t& A)
+			{
+                Rebinder () ( Ap, *(A.getPtr()));
 			}
-
 		};
 	};
 

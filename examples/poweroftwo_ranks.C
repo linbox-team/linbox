@@ -2,7 +2,7 @@
  *
  * Copyright (C) 2012 LinBox
  * Written by J-G Dumas
- * Time-stamp: <22 Dec 17 17:46:53 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <21 Dec 18 10:08:04 Jean-Guillaume.Dumas@imag.fr>
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
@@ -33,6 +33,7 @@
 
 #include <givaro/modular.h>
 #include <linbox/matrix/sparse-matrix.h>
+#include <linbox/solutions/smith-form.h>
 #include <linbox/algorithms/smith-form-sparseelim-poweroftwo.h>
 
 using namespace LinBox;
@@ -40,12 +41,12 @@ using namespace std;
 
 template<class Int_type, class Ring_type = Givaro::ZRing<Int_type> >
 void runpoweroftworank(ifstream& input, const size_t exponent, size_t StPr) {
-    typedef std::vector<std::pair<size_t,Int_type> > Smith_t;
+//     typedef std::vector<std::pair<size_t,Int_type> > Smith_t;
     typedef Ring_type Ring; // signed ?
     typedef LinBox::SparseMatrix<Ring, 
         LinBox::SparseMatrixFormat::SparseSeq > SparseMat;
 
-    Smith_t local;
+    SmithList<Ring> local;
     Ring R;
     LinBox::MatrixStream<Ring> ms( R, input );
     SparseMat A (ms);
@@ -69,8 +70,8 @@ void runpoweroftworank(ifstream& input, const size_t exponent, size_t StPr) {
     R.write(std::cout << "Local Smith Form ") << " : " << std::endl << '(';
 	int num = A.rowdim();
     for (auto  p = local.begin(); p != local.end(); ++p) {
-        std::cout << '[' << p->second << ',' << p->first << "] ";
-		num -= p->first;
+        std::cout << '[' << p->first << ',' << p->second << "] ";
+		num -= p->second;
 	}
 	if (num > 0) std::cout << '[' << F2.zero << ',' << num << "] ";
 	std::cout << ')' << std::endl;
@@ -115,7 +116,7 @@ int main (int argc, char **argv) {
         runpoweroftworank<Givaro::Integer>(input, exponent, StPr);
     } else {
         if ((method == 1) || ((method == 0) && (exponent < 64)) ) {
-            runpoweroftworank<uint64_t, Givaro::ZRing<int64_t> >(input, exponent, StPr);
+            runpoweroftworank<uint64_t>(input, exponent, StPr);
         } else {
             switch (method) {
                 case 6: runpoweroftworank<RecInt::ruint<6>>(input, exponent, StPr); break;

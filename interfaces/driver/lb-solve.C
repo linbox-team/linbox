@@ -170,7 +170,7 @@ void modifyResultVector(const VectorKey &key){
  * Generic Solving linear system Functor *
  *****************************************/
 
-template<typename Method = LinBox::Method::Hybrid >
+template<typename Method = LinBox::Method::Auto >
 class SolveFunctor{
 protected:
 	const VectorKey &_Vkey;

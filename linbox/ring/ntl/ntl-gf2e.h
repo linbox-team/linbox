@@ -206,14 +206,14 @@ public :
 		typedef NTL::GF2E Element;
 		UnparametricRandIter<NTL::GF2E>(const NTL_GF2E & F,
                                         const size_t& size = 0,
-                                        const size_t& seed = 0
+                                        const uint64_t seed = 0
                                         ) :
                 _size(size), _seed(seed)
             {
                 if(_seed == 0)
                     NTL::SetSeed(NTL::to_ZZ(time(0)));
                 else
-                    NTL::SetSeed(NTL::to_ZZ(_seed));
+                    NTL::SetSeed(NTL::to_ZZ(static_cast<long unsigned int>(_seed)));
             }
 
 		UnparametricRandIter<NTL::GF2E>(const UnparametricRandIter<NTL::GF2E>& R) :
@@ -223,7 +223,7 @@ public :
                 if(_seed == 0)
                     NTL::SetSeed(NTL::to_ZZ(time(0)));
                 else
-                    NTL::SetSeed(NTL::to_ZZ(_seed));
+                    NTL::SetSeed(NTL::to_ZZ(static_cast<long unsigned int>(_seed)));
             }
 
 		Element& random (Element& x) const
@@ -234,7 +234,7 @@ public :
 
 	protected:
 		size_t _size;
-		size_t _seed;
+		uint64_t _seed;
 	};
 
 

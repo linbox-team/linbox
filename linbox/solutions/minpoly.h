@@ -34,10 +34,11 @@
 
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/algorithms/wiedemann.h"
+#include "linbox/solutions/hadamard-bound.h"
 
 #ifdef __LINBOX_HAVE_MPI
 #include "linbox/util/mpicpp.h"
-#include "linbox/algorithms/cra-mpi.h"
+#include "linbox/algorithms/cra-distributed.h"
 #endif
 
 #include "linbox/algorithms/minpoly-integer.h"
@@ -75,7 +76,7 @@ namespace LinBox
 	 * \param A  a blackbox matrix
 	 * \param M  the method object.  Generally, the default
 	 * object suffices and the algorithm used is determined by the class of M.
-	 * Basic methods are Method::Blackbox, Method::Elimination, and Method::Hybrid
+	 * Basic methods are Method::Blackbox, Method::Elimination, and Method::Auto
 	 * (the default).
 	 * See methods.h for more options.
 	 * \return a reference to P.
@@ -93,30 +94,29 @@ namespace LinBox
 	Polynomial &minpoly (Polynomial     &P,
 			     const Blackbox &A)
 	{
-		return minpoly (P, A, Method::Hybrid());
+		return minpoly (P, A, Method::Auto());
 	}
 
 
 
-	//! @internal The minpoly with Hybrid Method
+	//! @internal The minpoly with Auto Method
 	template<class Polynomial, class Blackbox>
 	Polynomial &minpoly (
 			     Polynomial                       & P,
 			     const Blackbox                   & A,
 			     const RingCategories::ModularTag & tag,
-			     const Method::Hybrid             & M)
+			     const Method::Auto             & M)
 	{
-		// not yet a hybrid
 		return minpoly(P, A, tag, Method::Blackbox(M));
 	}
 
-	//! @internal The minpoly with Hybrid Method on BlasMatrix
+	//! @internal The minpoly with Auto Method on BlasMatrix
 	template<class Polynomial, class Field>
 	Polynomial &minpoly (
 			     Polynomial                       & P,
 			     const BlasMatrix<Field>          & A,
 			     const RingCategories::ModularTag & tag,
-			     const Method::Hybrid             & M)
+			     const Method::Auto             & M)
 	{
 		return minpoly(P, A, tag, Method::Elimination(M));
 	}
@@ -129,16 +129,16 @@ namespace LinBox
 			     const RingCategories::ModularTag & tag,
 			     const Method::Elimination        & M)
 	{
-		return minpoly(P, A, tag, Method::BlasElimination(M));
+		return minpoly(P, A, tag, Method::DenseElimination(M));
 	}
 
-	//! @internal The minpoly with BlasElimination Method
+	//! @internal The minpoly with DenseElimination Method
 	template<class Polynomial, class Blackbox>
 	Polynomial &minpoly (
 			     Polynomial                       & P,
 			     const Blackbox                   & A,
 			     const RingCategories::ModularTag & tag,
-			     const Method::BlasElimination    & M)
+			     const Method::DenseElimination    & M)
 	{
 		commentator().start ("Convertion to BLAS Minimal polynomial", "blasconvert");
 
@@ -167,11 +167,10 @@ namespace LinBox
 			     const RingCategories::ModularTag & tag,
 			     const Method::Blackbox           & M)
 	{
-		if (M.certificate()) {
+		if (M.certifyInconsistency) {
 			// Will make a word size extension
 			// when field size is too small
-			//return minpoly(P, A, tag, Method::ExtensionWiedemann (M));
-			minpoly(P, A, tag, Method::ExtensionWiedemann (M));
+			minpoly(P, A, tag, Method::WiedemannExtension (M));
 			return P;
 		}
 		else
@@ -191,8 +190,8 @@ namespace LinBox
 #include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/matrix-hom.h"
 
-#include "linbox/algorithms/rational-cra2.h"
-#include "linbox/algorithms/varprec-cra-early-multip.h"
+#include "linbox/algorithms/rational-cra-var-prec.h"
+#include "linbox/algorithms/cra-builder-var-prec-early-multip.h"
 #include "linbox/algorithms/minpoly-rational.h"
 
 namespace LinBox
@@ -220,43 +219,49 @@ namespace LinBox
 
 	template <class Polynomial, class Blackbox, class MyMethod>
 	Polynomial &minpoly (Polynomial 			&P,
-			     const Blackbox                     &A,
-			     const RingCategories::IntegerTag   &tag,
-			     const MyMethod                     &M)
+                         const Blackbox                     &A,
+                         const RingCategories::IntegerTag   &tag,
+                         const MyMethod                     &M)
 	{
-                if (A.rowdim() == 0 || A.coldim() == 0){
-                        P.resize(1);
-                        P.field().assign(P[0],P.field().one);
-                        return P;
-                }
+        if (A.rowdim() == 0 || A.coldim() == 0){
+            P.resize(1);
+            P.field().assign(P[0],P.field().one);
+            return P;
+        }
 #if 0
 		if (A.coldim() != A.rowdim())
 			throw LinboxError("LinBox ERROR: matrix must be square for minimal polynomial computation\n");
 #endif
 
 #ifdef __LINBOX_HAVE_MPI
-		Communicator *c = M.communicatorp();
+		Communicator *c = M.pCommunicator;
 		if(!c || c->rank() == 0)
 			commentator().start ("Integer Minpoly", "Iminpoly");
 		else{
-			//commentator().setMaxDepth(0);
-			//commentator().setMaxDetailLevel(0);
-			//commentator().setPrintParameters(0, 0, 0);
+                //commentator().setMaxDepth(0);
+                //commentator().setMaxDetailLevel(0);
+                //commentator().setPrintParameters(0, 0, 0);
 		}
 #else
 		commentator().start ("Integer Minpoly", "Iminpoly");
 #endif
-		// 0.7213475205 is an upper approximation of 1/(2log(2))
+            // 0.7213475205 is an upper approximation of 1/(2log(2))
 		typedef Givaro::ModularBalanced<double> Field;
-                PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
+        PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
 		IntegerModularMinpoly<Blackbox,MyMethod> iteration(A, M);
+
 #ifdef __LINBOX_HAVE_MPI
-		MPIChineseRemainder< EarlyMultipCRA<Field > > cra(3UL, c);
-		cra(P, iteration, genprime);
+		ChineseRemainderDistributed< CRABuilderEarlyMultip<Field > > cra(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD, c);
 #else
-		ChineseRemainder< EarlyMultipCRA<Field > > cra(3UL);
-		cra(P, iteration, genprime);
+            // @todo: use a value for the switch provided by the method and not by a macro
+#  ifdef __LINBOX_HEURISTIC_CRA
+		ChineseRemainder< CRABuilderEarlyMultip<Field > > cra(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD);
+#  else
+        double hbound = FastCharPolyHadamardBound(A);
+		ChineseRemainder< CRABuilderFullMultip<Field > > cra(hbound);
+#  endif
 #endif
+		cra(P, iteration, genprime);
 
 #ifdef __LINBOX_HAVE_MPI
 		if(c || c->rank() == 0)
@@ -275,7 +280,7 @@ namespace LinBox
 
 		typedef Givaro::ModularBalanced<double> Field;
                 PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
-		RationalRemainder2< VarPrecEarlyMultipCRA<Field> > rra(3UL);
+		RationalChineseRemainderVarPrec< CRABuilderVarPrecEarlyMultip<Field> > rra(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD);
 		IntegerModularMinpoly<Blackbox,MyMethod> iteration(A, M);
 
 		std::vector<Integer> PP; // use of integer due to non genericity of cra. PG 2005-08-04

@@ -58,7 +58,7 @@ int main (int argc, char **argv)
 	ifstream input (argv[1]);
 	if (!input) { cerr << "Error opening matrix file: " << argv[1] << endl; return -1; }
 
-	long unsigned int r;
+	size_t r;
 
 	if (argc == 2) { // rank over the integers.
 
@@ -90,16 +90,16 @@ int main (int argc, char **argv)
 
 
 		Method::SparseElimination SE;
-// 		SE.strategy(Specifier::PIVOT_NONE);
+// 		SE.pivotStrategy = PivotStrategy::None;
 // 		// using Sparse Elimination
 // 		LinBox::rank (r, B, SE);
 // 		if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout) << endl;
 // 		cout << "Rank is " << r << endl;
 
-		SE.strategy(Specifier::PIVOT_LINEAR);
+		SE.pivotStrategy = PivotStrategy::Linear;
 		// using Sparse Elimination
         Givaro::Timer chrono; chrono.start();
-		LinBox::rankin (r, B, SE);
+		LinBox::rankInPlace (r, B, SE);
         chrono.stop();
 		if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout) << endl;
 		F.write(cout << "Rank is " << r << " over ") << endl;

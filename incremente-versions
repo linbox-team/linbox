@@ -7,6 +7,7 @@
 
 set conf = configure.ac
 set ver  = Makefile.am
+set autoinst = linbox-auto-install.sh
 
 #verbatim second argument of AC_INIT
 set verb = `grep ^AC_INIT $conf | cut -d',' -f2`
@@ -60,7 +61,7 @@ if ("$answ" == "y") then
     if ("$newv" != "$verb") then
 		echo -n "Confirmation of incrementation ? (yes/no)"
 		set answ = $<
-        set backupconf = $conf.back$$
+            set backupconf = $conf.back$$
 		if ("$answ" == "yes") then
 			\cp -p $conf $backupconf
             echo "Back-up of $conf made in $backupconf. Now overwriting $conf."
@@ -94,10 +95,10 @@ if ("$answ" == "y") then
 		diff -u0 $ver $tmpfile
 		echo -n "Confirmation of incrementation ? (yes/no) "
 		set answ = $<
+                set backupmake = $ver.back$$
 		if ("$answ" == "yes") then
+			\cp -p $ver $backupmake
 			\mv -f $tmpfile $ver
-			echo " your old $conf is destroyed..."
-			\rm -f $backupconf
 		else
 			echo "'$answ' read. Not incrementing anything."
 			echo " your old $conf is restored..."
@@ -105,7 +106,42 @@ if ("$answ" == "y") then
 			\mv -f $backupconf $conf
 			exit 0
 		endif
-
+	#now change linbox-auto-install accordingly
+		echo -n "Incrementing linbox-auto-install.sh revision accordingly"
+		set tmpfile = `mktemp` #tempfile
+		set sedfile = `mktemp` #tempfile
+		switch ($increm)
+			case 0:
+				echo -n "s/STABLE_LB=.*/STABLE_LB=$macro.$minor.$pmicro/"  >> $sedfile
+				breaksw
+			case 1:
+				echo "s/STABLE_LB=.*/STABLE_LB=$macro.$pminor.0/"  > $sedfile
+				breaksw
+			case 2:
+				echo "s/STABLE_LB=.*/STABLE_LB=$pmacro.0.0/"  > $sedfile
+				breaksw
+			default:
+				echo "Something abnormal happened"
+				exit 1
+				breaksw
+		endsw
+		sed -f $sedfile $autoinst > $tmpfile
+		\rm -f $sedfile
+		diff -u0 $autoinst $tmpfile
+		echo -n "Confirmation of incrementation ? (yes/no) "
+		set answ = $<
+		if ("$answ" == "yes") then
+			\mv -f $tmpfile $autoinst
+			echo " your old $conf and $ver are destroyed..."
+			\rm -f $backupconf $backupmake
+		else
+			echo "'$answ' read. Not incrementing anything."
+			echo " your old $conf and $ver are restored..."
+			\rm -f $tmpfile
+			\mv -f $backupconf $conf
+			\mv -f $backupmake $ver
+			exit 0
+		endif
 	endif
 else
 	echo "'$answ' read. Not doing anything."

@@ -1,9 +1,7 @@
 /* linbox/field/envelope.h
- * Copyright (C) 1999-2001 William J Turner,
- *               2001 Bradford Hovinen
+ * Copyright (C) The LinBox group
  *
- * Written by William J Turner <wjturner@math.ncsu.edu>,
- *            Bradford Hovinen <hovinen@cis.udel.edu>
+ * Written by Jean-Guillaume Dumas
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -23,11 +21,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  * ========LICENCE========
  *
- * ------------------------------------
- * 2002-05-14 William J. Turner <wjturner@acm.org>
- *
- * changed randIter to RandIter.
- * ------------------------------------
  */
 
 #ifndef __LINBOX_field_envelope_H
@@ -151,7 +144,23 @@ namespace LinBox
 		 * @param x field base element to contain output (reference returned).
 		 * @param y integer.
 		 */
-		ElementAbstract& init (ElementAbstract& x, const integer& y = 0) const
+		ElementAbstract& init (ElementAbstract& x) const
+		{
+			_field.init (static_cast<ElementEnvelope<Field>&> (x)._elem);
+			return x;
+		}
+
+		/** Initialization of field base element from an integer.
+		 * Behaves like C++ allocator construct.
+		 * This function assumes the output field base element x has already been
+		 * constructed, but that it is not already initialized.
+		 * This is not a specialization of the template function because
+		 * such a specialization is not allowed inside the class declaration.
+		 * @return reference to field base element.
+		 * @param x field base element to contain output (reference returned).
+		 * @param y integer.
+		 */
+		ElementAbstract& init (ElementAbstract& x, const integer& y) const
 		{
 			_field.init (static_cast<ElementEnvelope<Field>&> (x)._elem, y);
 			return x;
@@ -354,6 +363,50 @@ namespace LinBox
 			return r;
 		}
 
+		/** Natural AXMY.
+		 * r  = a * x - y
+		 * This function assumes all field elements have already been
+		 * constructed and initialized.
+		 * @return reference to r.
+		 * @param  r field element (reference returned).
+		 * @param  a field element.
+		 * @param  x field element.
+		 * @param  y field element.
+		 */
+		ElementAbstract& axmy (ElementAbstract& r,
+				       const ElementAbstract& a,
+				       const ElementAbstract& x,
+				       const ElementAbstract& y) const
+		{
+			_field.axmy (static_cast<ElementEnvelope<Field>&> (r)._elem,
+				     static_cast<const ElementEnvelope<Field>&> (a)._elem,
+				     static_cast<const ElementEnvelope<Field>&> (x)._elem,
+				     static_cast<const ElementEnvelope<Field>&> (y)._elem);
+			return r;
+		}
+
+		/** Natural MAXPY.
+		 * r  = y - a * x
+		 * This function assumes all field elements have already been
+		 * constructed and initialized.
+		 * @return reference to r.
+		 * @param  r field element (reference returned).
+		 * @param  a field element.
+		 * @param  x field element.
+		 * @param  y field element.
+		 */
+		ElementAbstract& maxpy (ElementAbstract& r,
+				       const ElementAbstract& a,
+				       const ElementAbstract& x,
+				       const ElementAbstract& y) const
+		{
+			_field.maxpy (static_cast<ElementEnvelope<Field>&> (r)._elem,
+				     static_cast<const ElementEnvelope<Field>&> (a)._elem,
+				     static_cast<const ElementEnvelope<Field>&> (x)._elem,
+				     static_cast<const ElementEnvelope<Field>&> (y)._elem);
+			return r;
+		}
+
 		//@} Arithmetic Operations
 
 		/** @name Inplace Arithmetic Operations
@@ -504,6 +557,44 @@ namespace LinBox
 					 const ElementAbstract& x) const
 		{
 			_field.axpyin (static_cast<ElementEnvelope<Field>&> (r)._elem,
+				       static_cast<const ElementEnvelope<Field>&> (a)._elem,
+				       static_cast<const ElementEnvelope<Field>&> (x)._elem);
+			return r;
+		}
+
+		/** Inplace AXMY.
+		 * r  = a * x - r
+		 * This function assumes all field elements have already been
+		 * constructed and initialized.
+		 * @return reference to r.
+		 * @param  r field element (reference returned).
+		 * @param  a field element.
+		 * @param  x field element.
+		 */
+		ElementAbstract& axmyin (ElementAbstract& r,
+					 const ElementAbstract& a,
+					 const ElementAbstract& x) const
+		{
+			_field.axmyin (static_cast<ElementEnvelope<Field>&> (r)._elem,
+				       static_cast<const ElementEnvelope<Field>&> (a)._elem,
+				       static_cast<const ElementEnvelope<Field>&> (x)._elem);
+			return r;
+		}
+
+		/** Inplace MAXPY.
+		 * r  -= a * x
+		 * This function assumes all field elements have already been
+		 * constructed and initialized.
+		 * @return reference to r.
+		 * @param  r field element (reference returned).
+		 * @param  a field element.
+		 * @param  x field element.
+		 */
+		ElementAbstract& maxpyin (ElementAbstract& r,
+					 const ElementAbstract& a,
+					 const ElementAbstract& x) const
+		{
+			_field.maxpyin (static_cast<ElementEnvelope<Field>&> (r)._elem,
 				       static_cast<const ElementEnvelope<Field>&> (a)._elem,
 				       static_cast<const ElementEnvelope<Field>&> (x)._elem);
 			return r;

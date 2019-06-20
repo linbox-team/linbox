@@ -33,6 +33,8 @@
 #include "linbox/util/commentator.h"
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/vector/blas-vector.h"
+#include "linbox/solutions/smith-form.h"
+
 using std::endl;
 using namespace LinBox;
 
@@ -140,20 +142,71 @@ void makeSNFExample(DenseMatrix<PIR>& A,
 
 template <class PIR>
 bool checkSNFExample( const BlasVector<PIR>& d, const BlasVector<PIR>& x ){
+
+	std::ostream & report =
+#ifndef DISABLE_COMMENTATOR
+        commentator().report()
+#else
+        std::cerr
+#endif
+;
+
 	VectorDomain<PIR> VD(d.field());
-	std::ostream & report = commentator().report();
 
-	report << "Computed Smith form:" << endl;
-	VD. write (report, x) << endl;
-
-	report << "Expected smith form:" << endl;
+	report << "Expected smith form: ";
 	VD.write (report, d) << endl;
 
+	report << "Computed Smith form: ";
+	VD. write (report, x) << endl;
+
 	if (not VD.areEqual (d, x)) {
-		report << "ERROR: Computed not as Expected" << endl;
+		report << "ERROR: Computed not as Expected." << endl;
 		return false;
-	} else 
-		return true;
+	}
+
+    report << "PASSED." << endl;
+
+    return true;
+}
+
+template <class PIR>
+bool checkSNFExample( const LinBox::SmithList<PIR>& d, const LinBox::SmithList<PIR>& x, const PIR& R){
+
+	std::ostream & report =
+#ifndef DISABLE_COMMENTATOR
+        commentator().report()
+#else
+        std::clog
+#endif
+;
+	report << "Expected smith form SL: " << '{';
+    for(auto const & sit: d) report << '{' << sit.first << ',' << sit.second << '}';
+    report << '}' << std::endl;
+
+	report << "Computed Smith form SL: " << '{';
+    for(auto const & sit: x) report << '{' << sit.first << ',' << sit.second << '}';
+    report << '}' << std::endl;
+
+
+    auto dit=d.begin();
+    auto xit=x.begin();
+    bool pass=true;
+    for( ; dit != d.end(); ++dit, ++xit) {
+        if (!R.areEqual(dit->first,xit->first)
+            || dit->second!=xit->second) {
+            R.write( R.write(
+                report << "ERROR: Computed not as Expected. "
+                << '(', dit->first) << ',' << dit->second << ')'
+                       << " != "
+                       << '(', xit->first) << ',' << xit->second << ')'
+                       << endl;
+            pass = false;
+        }
+    }
+
+    report << "PASSED." << endl;
+
+    return pass;
 }
 #endif // __TEST_SMITH_FORM_H
 

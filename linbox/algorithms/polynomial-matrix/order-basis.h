@@ -448,8 +448,8 @@ namespace LinBox {
                                 // Compute a column reduced basis of the nullspace of delta
                                 // -> [ L2 I ]                                 
                                 rank= FFPACK::PLUQ (field(), FFLAS::FflasNonUnit, m, n,
-                                                    delta_copy.getWritePointer(),delta_copy.getStride(),
-                                                    Qt.getWritePointer(), P.getWritePointer());
+                                                    delta_copy.getPointer(),delta_copy.getStride(),
+                                                    Qt.getPointer(), P.getPointer());
 #ifdef __DEBUG_MBASIS
                                 std::cout<<"delta :\n";
                                 delta.write(std::cout,Tag::FileFormat::Maple);
@@ -463,7 +463,7 @@ namespace LinBox {
                                 View L2(delta_copy,rank,0,m-rank,rank);
                                 FFLAS::ftrsm(field(),FFLAS::FflasRight,FFLAS::FflasLower,
                                              FFLAS::FflasNoTrans,FFLAS::FflasUnit,
-                                             m-rank,rank, field().mOne, L1.getPointer(),L1.getStride(), L2.getWritePointer(),L2.getStride());
+                                             m-rank,rank, field().mOne, L1.getPointer(),L1.getStride(), L2.getPointer(),L2.getStride());
 #ifdef __DEBUG_MBASIS
                                 std::cout<<"delta :\n";
                                 delta.write(std::cout,Tag::FileFormat::Maple);
@@ -490,7 +490,7 @@ namespace LinBox {
                                 View L2(L,rank,0,m-rank,rank);
                                 FFLAS::ftrsm(field(),FFLAS::FflasRight,FFLAS::FflasLower,
                                              FFLAS::FflasNoTrans,FFLAS::FflasUnit,
-                                             m-rank,rank, field().mOne, L1.getPointer(),m, L2.getWritePointer(),m);
+                                             m-rank,rank, field().mOne, L1.getPointer(),m, L2.getPointer(),m);
 #endif
                                 
                                 // update sigma by L^(-1) (rank sensitive -> use only the left kernel basis)

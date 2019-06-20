@@ -267,14 +267,14 @@ namespace LinBox { namespace Protected { /*  SparseMatrixGeneric */
 		 * @param is Input stream from which to read the matrix
 		 * @param format Format of input matrix
 		 */
-		std::istream &read (std::istream &is,   LINBOX_enum(Tag::FileFormat) format = Tag::FileFormat::Detect );
+		std::istream &read (std::istream &is,   Tag::FileFormat format = Tag::FileFormat::Detect );
 
 		/** Write a matrix to the given output stream using field read/write
 		 * @param os Output stream to which to write the matrix
 		 * @param F Field with which to write
 		 * @param format Format with which to write
 		 */
-		std::ostream &write (std::ostream &os,  LINBOX_enum(Tag::FileFormat) format = Tag::FileFormat::MatrixMarket) const;
+		std::ostream &write (std::ostream &os,  Tag::FileFormat format = Tag::FileFormat::MatrixMarket) const;
 
 		/** Set an individual entry
 		 * Setting the entry to 0 will remove it from the matrix

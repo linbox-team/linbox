@@ -171,7 +171,7 @@ namespace LinBox
 			return &P_[0];
 		}
 
-		_UnsignedInt* getWritePointer()
+		_UnsignedInt* getPointer()
 		{
 			linbox_check(P_.size());
 			return &P_[0];

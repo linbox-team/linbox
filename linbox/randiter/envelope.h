@@ -69,8 +69,8 @@ namespace LinBox
 		 */
 		RandIterEnvelope (const FieldEnvelope<Field> &F,
 				  const integer &size = 0,
-				  const integer &seed = 0) :
-			_randIter (F._field, uint64_t(seed))
+				  const uint64_t seed = 0) :
+			_randIter (F._field, seed)
 		{}
 
 		/** Constructor from random field element generator to be wrapped
@@ -127,7 +127,7 @@ namespace LinBox
 		 */
 		RandIterAbstract *construct (const FieldAbstract &F,
 					     const integer &size = 0,
-					     const integer &seed = 0) const
+					     const uint64_t seed = 0) const
 		{
 			return new RandIterEnvelope (static_cast<const FieldEnvelope<Field>&> (F), size, seed);
 		}

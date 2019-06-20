@@ -44,7 +44,7 @@
 //#include "linbox/solutions/minpoly.h"
 #include "linbox/util/commentator.h"
 #include <fflas-ffpack/ffpack/ffpack.h>
-#include "linbox/algorithms/cra-early-multip.h"
+#include "linbox/algorithms/cra-builder-early-multip.h"
 
 namespace LinBox
 {
@@ -153,7 +153,7 @@ namespace LinBox
 		// typename FPoly::iterator fp_p;
 		y.resize (degree + 1);
 
-		EarlyMultipCRA< _Field > cra(3UL);
+		CRABuilderEarlyMultip< _Field > cra(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD);
 		do {
 			++primeg;
 			Field F(*primeg);
@@ -194,7 +194,7 @@ namespace LinBox
 		// typename FPoly::iterator fp_p;
 		y.resize (degree + 1);
 
-		EarlyMultipCRA< _Field > cra(3UL);
+		CRABuilderEarlyMultip< _Field > cra(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD);
 		do {
 			++primeg;
 			Field F(*primeg);
@@ -268,7 +268,7 @@ namespace LinBox
 		std::vector<Element> poly (degree + 1);
 		// typename std::vector<Element>::iterator poly_ptr;
 
-		EarlyMultipCRA< _Field > cra(3UL);
+		CRABuilderEarlyMultip< _Field > cra(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD);
 		do {
 			++primeg; while(cra.noncoprime(*primeg)) ++primeg;
 			Field F(*primeg);

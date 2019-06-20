@@ -471,6 +471,7 @@ namespace LinBox
 		
 		Element& lcm( Element& res, const Element& a, const Element& b ) const
 		{
+            if (isZero(a) || isZero(b)) return assign(res,zero);
 			Element tmp; 
 			gcd(tmp,a,b);
 			div(res, a, tmp);
@@ -581,14 +582,14 @@ namespace LinBox
 		typedef NTL::zz_pX Element;
 		UnparametricRandIter<NTL::zz_pX>(const NTL_zz_pX & F ,
 						 const size_t& size = 0,
-						 const size_t& seed = 0
+						 const uint64_t& seed = 0
 						) :
                 _size(size), _seed(seed), _ring(F)
 		{
 			if(_seed == 0)
 				NTL::SetSeed(NTL::to_ZZ(time(0)));
 			else
-				NTL::SetSeed(NTL::to_ZZ(_seed));
+				NTL::SetSeed(NTL::to_ZZ(static_cast<long unsigned int>(_seed)));
 		}
 
         const NTL_zz_pX& ring() const { return _ring; }
@@ -599,7 +600,7 @@ namespace LinBox
 			if(_seed == 0)
 				NTL::SetSeed(NTL::to_ZZ(time(0)));
 			else
-				NTL::SetSeed(NTL::to_ZZ(_seed));
+				NTL::SetSeed(NTL::to_ZZ(static_cast<long unsigned int>(_seed)));
 		}
 
 		Element& random (Element& x) const
@@ -620,7 +621,7 @@ namespace LinBox
 
 	protected:
 		size_t _size;
-		size_t _seed;
+		uint64_t _seed;
         const NTL_zz_pX& _ring;
 	}; // class UnparametricRandIters
 	
