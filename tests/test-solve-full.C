@@ -205,6 +205,7 @@ int main(int argc, char** argv)
     Integer q = 131071;
     bool verbose = false;
     bool loop = false;
+    int primesCount = -1;
     int seed = -1;
     int bitSize = 10;
     int vectorBitSize = -1;
@@ -214,6 +215,7 @@ int main(int argc, char** argv)
 
     static Argument args[] = {
         {'q', "-q", "Field characteristic.", TYPE_INTEGER, &q},
+        {'p', "-p", "For multi-modular methods, how many primes to use.", TYPE_INT, &primesCount},
         {'v', "-v", "Enable verbose mode.", TYPE_BOOL, &verbose},
         {'l', "-l", "Infinite loop of tests.", TYPE_BOOL, &loop},
         {'s', "-s", "Seed for randomness.", TYPE_INT, &seed},
@@ -242,6 +244,10 @@ int main(int argc, char** argv)
     else if (dispatchString != "Auto") {
         std::cerr << "-d Dispatch mode should be either Auto, Sequential, SMP or Distributed" << std::endl;
         return EXIT_FAILURE;
+    }
+
+    if (primesCount > 0) {
+        method.primesCount = primesCount;
     }
 
     if (vectorBitSize < 0) {

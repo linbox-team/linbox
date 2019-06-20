@@ -135,9 +135,6 @@ namespace LinBox {
             if (!re.getRational(xNum, xDen)) {
                 std::cerr << "OUCH!" << std::endl;
             }
-
-            std::cout << "numLog " << xNum << std::endl;
-            std::cout << "denLog " << xDen << std::endl;
         }
 
     private:

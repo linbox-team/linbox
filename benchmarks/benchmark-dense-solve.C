@@ -114,6 +114,7 @@ void benchmark(std::pair<double, double>& timebits, Arguments& args, MethodBase&
     else if (args.methodString == "DenseElimination")       solve(X, A, B, Method::DenseElimination(method));
     else if (args.methodString == "SparseElimination")      solve(X, A, B, Method::SparseElimination(method));
     else if (args.methodString == "Dixon")                  solve(X, A, B, Method::Dixon(method));
+    else if (args.methodString == "DixonRNS")               solve(X, A, B, Method::DixonRNS(method));
     else if (args.methodString == "CRA")                    solve(X, A, B, Method::CRAAuto(method));
     else if (args.methodString == "SymbolicNumericOverlap") solve(X, A, B, Method::SymbolicNumericOverlap(method));
     else if (args.methodString == "SymbolicNumericNorm")    solve(X, A, B, Method::SymbolicNumericNorm(method));

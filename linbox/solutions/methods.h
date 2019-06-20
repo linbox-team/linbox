@@ -221,7 +221,7 @@ namespace LinBox {
         SingularSolutionType singularSolutionType = SingularSolutionType::Random;
 
         // ----- For DixonRNS method.
-        uint32_t primeBaseLength = 16u; //!< How many primes to use lifting will be done over p = p1p2...pl.
+        uint32_t primesCount = 16u; //!< How many primes to use lifting will be done over p = p1p2...pl.
 
         // ----- For random-based systems.
         size_t trialsBeforeFailure = LINBOX_DEFAULT_TRIALS_BEFORE_FAILURE; //!< Maximum number of trials before giving up.

@@ -96,22 +96,18 @@ namespace LinBox {
         {
             linbox_check(A.rowdim() == A.coldim());
 
-            std::cout << "----------" << std::endl;
-            A.write(std::cout << "A: ", Tag::FileFormat::Maple) << std::endl;
-            std::cout << "b: " << b << std::endl;
+            // std::cout << "----------" << std::endl;
+            // A.write(std::cout << "A: ", Tag::FileFormat::Maple) << std::endl;
+            // std::cout << "b: " << b << std::endl;
 
             // This will contain the primes or our MultiMod basis
-            // @fixme Pass the count through Method::DixonRNS (and rename it Method::DixonMultiMod?)
-            _primesCount = 2;
+            _primesCount = m.primesCount;
             _primes.resize(_primesCount);
-            std::cout << "primesCount: " << _primesCount << std::endl;
 
             // Some preparation work
             Integer infinityNormA;
             InfinityNorm(infinityNormA, A);
             double logInfinityNormA = Givaro::logtwo(infinityNormA);
-            std::cout << "infinityNormA: " << infinityNormA << std::endl;
-            std::cout << "logInfinityNormA: " << logInfinityNormA << std::endl;
 
             {
                 // Based on Chen-Storjohann's paper, this is the bit size
@@ -119,9 +115,7 @@ namespace LinBox {
                 double rnsBasisBitSize = std::ceil(1.0 + Givaro::logtwo(1 + infinityNormA * _n)); // @fixme @jgdumas Is this OK, then?
                 _rnsPrimesCount = std::ceil(rnsBasisBitSize / (primeGenerator.getBits() - 1));
                 _rnsPrimes.resize(_rnsPrimesCount);
-                std::cout << "primeGenerator.getBits(): " << primeGenerator.getBits() << std::endl;
-                std::cout << "rnsBasisBitSize: " << rnsBasisBitSize << std::endl;
-                std::cout << "_rnsPrimesCount: " << _rnsPrimesCount << std::endl;
+                // std::cout << "_rnsPrimesCount: " << _rnsPrimesCount << std::endl;
 
                 std::vector<double> primes;
                 for (auto j = 0u; j < _primesCount + _rnsPrimesCount; ++j) {
@@ -156,25 +150,15 @@ namespace LinBox {
                     if (bitSize > rnsBasisBitSize && h > 0) {
                         _rnsPrimes.erase(_rnsPrimes.begin(), _rnsPrimes.begin() + h);
                         _rnsPrimesCount -= h;
-                        std::cout << "RNS basis: Erasing extra " << h << " primes." << std::endl;
                         std::cout << _rnsPrimes.size() << std::endl;
                         break;
                     }
                 }
             }
 
-            // Generating primes
-            // @fixme Cleanup, might not be needed
-            {
-                IElement iTmp;
-                _ring.assign(_primesProduct, _ring.one);
-                for (auto& pj : _primes) {
-                    _fields.emplace_back(pj);
-                    _ring.init(iTmp, pj);
-                    _ring.mulin(_primesProduct, iTmp);
-                }
-
-                std::cout << "primesProduct: " << _primesProduct << std::endl;
+            // Setting fields up
+            for (auto& pj : _primes) {
+                _fields.emplace_back(pj);
             }
 
             // Initialize all inverses
@@ -228,19 +212,18 @@ namespace LinBox {
 
             // Compute how many iterations are needed
             {
+                double log2PrimesProduct = 0.0;
+                for (auto& pj : _primes) {
+                    log2PrimesProduct += Givaro::logtwo(Integer(pj));
+                }
+
                 auto hb = RationalSolveHadamardBound(A, b);
-                double log2P = Givaro::logtwo(_primesProduct);
-                // _iterationsCount = log2(2 * N * D) / log2(p)
                 _log2Bound = hb.solutionLogBound;
                 _numBound = hb.numBound;
                 _denBound = hb.denBound;
-                std::cout << "_log2Bound: " << _log2Bound << std::endl;
-                std::cout << "_numBound: " << _numBound << std::endl;
-                std::cout << "_denBound: " << _denBound << std::endl;
-                std::cout << "log2P: " << log2P << std::endl;
 
-                _iterationsCount = std::ceil(_log2Bound / log2P);
-                std::cout << "iterationsCount: " << _iterationsCount << std::endl;
+                // _iterationsCount = log2(2 * N * D) / log2(p1 * p2 * ...)
+                _iterationsCount = std::ceil(_log2Bound / log2PrimesProduct);
             }
 
             //----- Locals setup
@@ -282,11 +265,8 @@ namespace LinBox {
         /// The dimension of the problem/solution.
         size_t size() const final { return _n; }
 
-        /**
-         * We are compliant to the interface even though
-         * p is multi-modular and thus not a prime per se.
-         */
-        const IElement& prime() const final { return _primesProduct; }
+        /// @note Useless, but in the API.
+        const IElement& prime() const final { return _ring.one; }
 
         // ------------------------------
         // ----- NOT LiftingContainer API
@@ -435,7 +415,6 @@ namespace LinBox {
         // Stores the inverse of pj of the i-th RNS prime into _primesRNSInverses[j][i]
         std::vector<std::vector<FElement>> _primesRNSInverses;
 
-        IElement _primesProduct;       // The global modulus for lifting: a multiple of all _primes.
         std::vector<FElement> _primes; // @fixme We might want something else as a type!
         std::vector<double> _rnsPrimes;
         // Length of the ci sequence. So that p^{k-1} > 2ND (Hadamard bound).
