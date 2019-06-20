@@ -55,6 +55,7 @@ namespace LinBox
 		 */
 		typedef double      Element;
         typedef double* Element_ptr;
+        typedef const double* ConstElement_ptr;
 
 		/** Random iterator generator type.
 		 * It must meet the common object interface of random element generators

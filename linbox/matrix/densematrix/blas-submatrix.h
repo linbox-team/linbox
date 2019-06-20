@@ -34,6 +34,7 @@
 #define __LINBOX_densematrix_blas_submatrix_H
 
 #include "fflas-ffpack/fflas-ffpack.h"
+#include "linbox/field/rebind.h"
 
 namespace LinBox
 {
@@ -135,7 +136,7 @@ namespace LinBox
                        size_t stride);
         
 
-        template <typename _TP1, typename _Rep2 = Storage >
+        template <typename _TP1, typename _Rep2 = typename Rebind<Storage, _TP1>::other >
         struct rebind;
         /*  Members  */
 

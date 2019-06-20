@@ -411,7 +411,7 @@ namespace LinBox
 
 	void RandomBlasPermutation(BlasPermutation<size_t> & P)
 	{
-		size_t * Pt = P.getWritePointer();
+		size_t * Pt = P.getPointer();
 		// size_t n = P.getSize();
 		size_t r = P.getOrder();
 		size_t n = r ; // no size given ?

@@ -44,6 +44,7 @@
 #include "linbox/matrix/matrix-category.h"
 #include "linbox/matrix/matrix-traits.h"
 #include "linbox/util/matrix-stream.h"
+#include "linbox/field/rebind.h"
 
 #include "linbox/matrix/densematrix/blas-transposed-matrix.h"
 #include "linbox/matrix/densematrix/blas-submatrix.h"
@@ -204,7 +205,7 @@ namespace LinBox
 
         
             //! Rebind operator
-        template<typename _Tp1, typename _Rep2 = Storage>
+        template<typename _Tp1, typename _Rep2 = typename Rebind<Storage, _Tp1>::other>
         struct rebind ;
 
             /////////////////
