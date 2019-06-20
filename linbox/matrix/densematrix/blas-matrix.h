@@ -204,7 +204,7 @@ namespace LinBox
 
         
             //! Rebind operator
-        template<typename _Tp1>
+        template<typename _Tp1, typename _Rep2 = Storage>
         struct rebind ;
 
             /////////////////
@@ -228,7 +228,8 @@ namespace LinBox
              * Get read-only access to the matrix data.
              */
         ConstElement_ptr getPointer() const { return _ptr;}
-        Element_ptr& getWritePointer()  { return _ptr;}
+        Element_ptr getPointer() { return _ptr;}
+        ConstElement_ptr getConstPointer() const { return _ptr;}
         
             //////////////////
             //   ELEMENTS   //
@@ -540,10 +541,10 @@ namespace LinBox
                               Tag::Diag y= Tag::Diag::NonUnit) ;
 
             /// get the shape of the matrix (upper or lower)
-        Tag::Shape) getUpLo() const ;
+        Tag::Shape getUpLo() const ;
 
             /// Is the diagonal implicitly unit ?
-        Tag::Diag) getDiag() const ;
+        Tag::Diag getDiag() const ;
 
     }; // end of class TriangularBlasMatrix
 

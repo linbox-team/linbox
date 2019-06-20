@@ -46,7 +46,7 @@ namespace LinBox {
         _ptr(M.getPointer()+rowbeg*M.getStride()+colbeg),
         _row (Rowdim),
         _col(Coldim),
-		_stride(M.getStride()),
+        _stride(M.getStride()),
         _field(M.field())
 	{
         linbox_check ( rowbeg  <= M.rowdim() ); // allow for NULL matrix
@@ -60,7 +60,7 @@ namespace LinBox {
         _ptr(M.getPointer()+rowbeg*M.getStride()+colbeg),
         _row (Rowdim),
         _col(Coldim),
-		_stride(M.getStride()),
+        _stride(M.getStride()),
         _field(M.field())
 	{
         linbox_check ( rowbeg  <= M.rowdim() ); // allow for NULL matrix
@@ -1158,7 +1158,7 @@ namespace LinBox {
     };
 
 	template <class _Matrix>
-	template<typename _Tp1, class _Rep2>
+	template<typename _Tp1, typename _Rep2>
 	struct BlasSubmatrix< _Matrix>::rebind {
 		typedef BlasMatrix<_Tp1,_Rep2> other;
 

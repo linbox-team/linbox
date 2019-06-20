@@ -435,7 +435,7 @@ namespace LinBox
 				     A_v.getPointer(), A_v.getStride(),
 				     B_v.getPointer(), B_v.getStride(),
 				     beta,
-				     C_v.getWritePointer(), C_v.getStride());
+				     C_v.getPointer(), C_v.getStride());
 			return C;
 		}
 	};
@@ -545,7 +545,7 @@ namespace LinBox
 				     A.getPointer(), A.getStride(),
 				     B.getPointer(), B.getStride(),
 				     beta,
-				     C.getWritePointer(), C.getStride());
+				     C.getPointer(), C.getStride());
 			return C;
 		}
 	};
@@ -789,7 +789,7 @@ namespace LinBox
 				     A.getPointer(), A.getStride(),
 				     b.getPointer(),b.getStride(),
 				     beta,
-				     d.getWritePointer(),d.getStride());
+				     d.getPointer(),d.getStride());
 			return d;
 		}
 
@@ -810,7 +810,7 @@ namespace LinBox
 				     A.getPointer(), A.getStride(),
 				     b.getPointer(),b.getStride(),
 				     beta,
-				     c.getWritePointer(),c.getStride());
+				     c.getPointer(),c.getStride());
 			return c;
 		}
 	};
@@ -888,7 +888,7 @@ namespace LinBox
 				     B.getPointer(), B.getStride(),
 				     a.getPonter(),a.getStride(),
 				     beta,
-				     a.getWritePointer(),a.getStride());
+				     a.getPointer(),a.getStride());
 			return d;
 		}
 
@@ -909,7 +909,7 @@ namespace LinBox
 				     B.getPointer(), B.getStride(),
 				     a.getPointer(),a.getStride(),
 				     beta,
-				     c.getWritePointer(),c.getStride());
+				     c.getPointer(),c.getStride());
 			return c;
 		}
 	};
@@ -1010,8 +1010,8 @@ namespace LinBox
 		{
 			if (B.isIdentity()) return A ;
 			linbox_check( A.rowdim() >= B.getSize() );
-			FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasNoTrans,
-				       A.coldim(), 0,(int) B.getOrder(), A.getPointer(), A.getStride(), B.getPointer() );
+			FFPACK::applyP (F, FFLAS::FflasLeft, FFLAS::FflasNoTrans,
+                            A.coldim(), 0,(int) B.getOrder(), A.getPointer(), A.getStride(), B.getPointer() );
 			return A;
 		}
 
