@@ -71,7 +71,7 @@ namespace LinBox
 	typename Blackbox::Field::Element &valence (typename Blackbox::Field::Element         &v,
 						    const Blackbox                               &A)
 	{
-		return valence(v, A, Method::Hybrid());
+		return valence(v, A, Method::Auto());
 	}
 
 	template<class Blackbox, class MyMethod>
@@ -99,7 +99,7 @@ namespace LinBox
 
 #include "linbox/ring/modular.h"
 #include "linbox/algorithms/cra-domain.h"
-#include "linbox/algorithms/cra-single.h"
+#include "linbox/algorithms/cra-builder-single.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/matrix-hom.h"
 
@@ -149,13 +149,46 @@ namespace LinBox
 		typedef Givaro::ModularBalanced<double> Field;
 #endif
                 PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.rowdim()));
-		ChineseRemainder< EarlySingleCRA<Field> > cra(3UL);
+		ChineseRemainder< CRABuilderEarlySingle<Field> > cra(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD);
 
 		IntegerModularValence<Blackbox,MyMethod> iteration(A, M);
 		cra(V, iteration, genprime);
 		commentator().stop ("done", NULL, "Ivalence");
 		return V;
 	}
+
+
+    template<class Blackbox>
+    typename Blackbox::Field::Element &squarizeValence(
+        typename Blackbox::Field::Element	&val_A,
+        const Blackbox						&A,
+        size_t method=0) {
+            // method:	0 is automatic
+            // 			1 is aat
+            // 			2 is ata
+
+        if (A.rowdim() == A.coldim()) {
+            return valence(val_A, A);
+        } else {
+            if (! method) {
+                if (A.rowdim() > A.coldim())
+                    method=2;
+                else
+                    method=1;
+            }
+            Transpose<Blackbox> T(&A);
+            if (method==2) {
+                Compose< Transpose<Blackbox>, Blackbox > C (&T, &A);
+                std::clog << "A^T A is " << C.rowdim() << " by " << C.coldim() << std::endl;
+                return valence(val_A, C);
+            } else {
+                Compose< Blackbox, Transpose<Blackbox> > C (&A, &T);
+                std::clog << "A A^T is " << C.rowdim() << " by " << C.coldim() << std::endl;
+                return valence(val_A, C);
+            }
+        }
+    }
+
 
 
 } //End of LinBox

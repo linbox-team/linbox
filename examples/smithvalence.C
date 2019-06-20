@@ -1,7 +1,6 @@
 /*
  * examples/smithvalence.C
- *
- * Copyright (C) 2010  J-G Dumas
+ * Copyright (c) Linbox
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
@@ -23,255 +22,96 @@
 
 /**\file examples/smithvalence.C
  * @example  examples/smithvalence.C
-  \brief Valence of sparse matrix over Z or Zp.
-  \ingroup examples
-  */
+ \brief Valence of sparse matrix over Z or Zp.
+ \ingroup examples
+*/
+#ifndef DISABLE_COMMENTATOR
+#define DISABLE_COMMENTATOR
+#endif
+
+#define __VALENCE_REPORTING__ 1
+
 #include <linbox/linbox-config.h>
 
 #include <iostream>
-
-#define NOT_USING_OMP
-#include "smithvalence.h"
-#undef NOT_USING_OMP
+#include <givaro/givintfactor.h>
+#include <fflas-ffpack/paladin/parallel.h>
+#include <linbox/solutions/smith-form.h>
+#include <linbox/algorithms/smith-form-valence.h>
+#include <vector>
 
 using namespace LinBox;
 
+
+
+
 int main (int argc, char **argv)
 {
-    commentator().setMaxDetailLevel (-1);
-    commentator().setMaxDepth (-1);
-    commentator().setReportStream (std::cerr);
-    
 
 	if (argc < 2 || argc > 4) {
 		std::cerr << "Usage: smithvalence <matrix-file-in-supported-format> [-ata|-aat|valence] [coprime]" << std::endl;
         std::cerr << "       Optional parameters valence and coprime are integers." << std::endl;
         std::cerr << "       Prime factors of valence will be used for local computation." << std::endl;
-        std::cerr << "       coprime will be used for overall rank computation." << std::endl;
-
-
+        std::cerr << "       coprime will be used for overall Z rank computation." << std::endl;
 		return -1;
 	}
 
-	Givaro::ZRing<Integer> ZZ;
-	typedef SparseMatrix<Givaro::ZRing<Integer> >  Blackbox;
+    const std::string filename(argv[1]);
 
-	std::ifstream input (argv[1]);
-	if (!input) { std::cerr << "Error opening matrix file " << argv[1] << std::endl; return -1; }
+	std::ifstream input (filename);
+	if (!input) { std::cerr << "Error opening matrix file " << filename << std::endl; return -1; }
+
+	Givaro::ZRing<Integer> ZZ;
 	MatrixStream< Givaro::ZRing<Integer> > ms( ZZ, input );
+	typedef SparseMatrix<Givaro::ZRing<Integer>>  Blackbox;
 	Blackbox A (ms);
 	input.close();
 
-	std::cout << "A is " << A.rowdim() << " by " << A.coldim() << std::endl;
+	std::clog << "A is " << A.rowdim() << " by " << A.coldim() << std::endl;
 
-	Givaro::ZRing<Integer>::Element val_A;
+    size_t method=0;
+	Givaro::Integer val_A(0);
 
- Givaro::Timer chrono; chrono.start();
 	if (argc >= 3) {
-		Transpose<Blackbox> T(&A);
 		if (strcmp(argv[2],"-ata") == 0) {
-			Compose< Transpose<Blackbox>, Blackbox > C (&T, &A);
-			std::cout << "A^T A is " << C.rowdim() << " by " << C.coldim() << std::endl;
-			valence(val_A, C);
+            method=2;
 		}
 		else if (strcmp(argv[2],"-aat") == 0) {
-			Compose< Blackbox, Transpose<Blackbox> > C (&A, &T);
-			std::cout << "A A^T is " << C.rowdim() << " by " << C.coldim() << std::endl;
-			valence(val_A, C);
+            method=1;
 		}
 		else {
-			std::cout << "Suppose primes are contained in " << argv[2] << std::endl;
-			val_A = integer(argv[2]);
+			std::clog << "Suppose primes are contained in " << argv[2] << std::endl;
+			val_A = LinBox::Integer(argv[2]);
 		}
 	}
-	else {
-		if (A.rowdim() != A.coldim()) {
-			std::cerr << "Valence works only on square matrices, try either to change the dimension in the matrix file, or to compute the valence of A A^T or A^T A, via the -aat or -ata options."  << std::endl;
-			exit(0);
-		}
-		else
-			valence (val_A, A);
-	}
 
-	std::cerr << "Valence is " << val_A << std::endl;
-
-	std::vector<integer> Moduli;
-	std::vector<size_t> exponents;
- Givaro::IntFactorDom<> FTD;
-
-	typedef std::pair<integer,unsigned long> PairIntRk;
-	std::vector< PairIntRk > smith;
-
-
-	integer coprimeV=2;
+    Givaro::Integer coprimeV=1;
 	if (argc >= 4) {
-		coprimeV = integer(argv[3]);
-	}
-	while ( gcd(val_A,coprimeV) > 1 ) {
-		FTD.nextprimein(coprimeV);
+		std::clog << "Suppose " << argv[3] << " is coprime with Smith form" << std::endl;
+		coprimeV =Givaro::Integer(argv[3]);
 	}
 
-	if (argc >= 4) {
-		std::cerr << "Suppose " << argv[3] << " is coprime with Smith form" << std::endl;
-	}
+    std::vector<Givaro::Integer> SmithDiagonal;
 
-	std::cerr << "integer rank: " << std::endl;
+#ifdef  __LINBOX_USE_OPENMP
+	std::clog << "num procs: " << omp_get_num_procs() << std::endl;
+    std::clog << "max threads: " << MAX_THREADS << std::endl;
+#endif
+        // Returns the Smith form as a diagonal,
+        // the valence val_A,
+        // the coprimeV used to compute the integral rank
+	LinBox::Timer chrono; chrono.start();
+    PAR_BLOCK {
+        smithValence(SmithDiagonal, val_A, A, filename, coprimeV, method);
+    }
 
-	unsigned long coprimeR; LRank(coprimeR, argv[1], coprimeV);
-	smith.push_back(PairIntRk(coprimeV, coprimeR));
-	//         std::cerr << "Rank mod " << coprimeV << " is " << coprimeR << std::endl;
-
-	std::cerr << "Some factors (5000 factoring loop bound): ";
-	FTD.set(Moduli, exponents, val_A, 5000);
-	std::vector<size_t>::const_iterator eit=exponents.begin();
-	for(std::vector<integer>::const_iterator mit=Moduli.begin();
-	    mit != Moduli.end(); ++mit,++eit)
-<<<<<<< HEAD
-		std::cout << *mit << '^' << *eit << ' ';
-	std::cout << std::endl;
-    smith.resize(Moduli.size());
-
-    unsigned long coprimeR; 
- 
-	std::cout << "num procs: " << omp_get_num_procs() << std::endl;
-	std::cout << "max threads: " << omp_get_max_threads() << std::endl;
-
-
-#pragma omp parallel 
-    {
-#pragma omp single
-        {
-            for(size_t j=0; j<Moduli.size(); ++j) {
-                smith[j].first = Moduli[j];
-#pragma omp task shared(smith,argv) firstprivate(j)
-                LRank(smith[j].second, argv[1], smith[j].first);
-            }
-            LRank(coprimeR, argv[1], coprimeV);
-        }
-	}
-
- 
-	std::vector<Givaro::Integer> SmithDiagonal(coprimeR,Givaro::Integer(1));
-
-#pragma omp parallel for shared(SmithDiagonal, smith, exponents)
-	for(size_t j=0; j<Moduli.size(); ++j) {
-        
-        if (smith[j].second != coprimeR) {
-            std::vector<size_t> ranks;
-            ranks.push_back(smith[j].second);
-            size_t effexp;
-            if (exponents[j] > 1) {
-                if (smith[j].first == 2)
-                    PRankPowerOfTwo(ranks, effexp, argv[1], exponents[j], coprimeR);
-                else
-                    PRank(ranks, effexp, argv[1], smith[j].first, exponents[j], coprimeR);
-            }
-            else {
-                if (smith[j].first == 2)
-                    PRankPowerOfTwo(ranks, effexp, argv[1], 2, coprimeR);
-                else
-                    PRank(ranks, effexp, argv[1], smith[j].first, 2, coprimeR);
-            }
-            if (ranks.size() == 1) ranks.push_back(coprimeR);
-=======
-		std::cerr << *mit << '^' << *eit << ' ';
-	std::cerr << std::endl;
-
-	std::vector<integer> SmithDiagonal(coprimeR,integer(1));
-
-
-	for(std::vector<integer>::const_iterator mit=Moduli.begin();
-	    mit != Moduli.end(); ++mit) {
-		unsigned long r; LRank(r, argv[1], *mit);
-		//             std::cerr << "Rank mod " << *mit << " is " << r << std::endl;
-		smith.push_back(PairIntRk(*mit, r));
-		for(size_t i=r; i < coprimeR; ++i)
-			SmithDiagonal[i] *= *mit;
-	}
-
->>>>>>> parent of 33a9f59fc... start putting smith valence in algorithms
-
-	eit=exponents.begin();
-	std::vector<PairIntRk>::const_iterator sit=smith.begin();
-	for( ++sit; sit != smith.end(); ++sit, ++eit) {
-		if (sit->second != coprimeR) {
-			std::vector<size_t> ranks;
-			ranks.push_back(sit->second);
-            size_t effexp;
-			if (*eit > 1) {
-				PRank(ranks, effexp, argv[1], sit->first, *eit, coprimeR);
-			}
-			else {
-				PRank(ranks, effexp, argv[1], sit->first, 2, coprimeR);
-			}
-			if (ranks.size() == 1) ranks.push_back(coprimeR);
-
-            if (effexp < *eit) {
-                for(size_t expo = effexp<<1; ranks.back() < coprimeR; expo<<=1) {
-                    PRankInteger(ranks, argv[1], sit->first, expo, coprimeR);
-                }
-            } else {
-
-                for(size_t expo = (*eit)<<1; ranks.back() < coprimeR; expo<<=1) {
-                    PRank(ranks, effexp, argv[1], sit->first, expo, coprimeR);
-                    if (ranks.size() < expo) {
-                        std::cerr << "It seems we need a larger prime power, it will take longer ..." << std::endl;
-                            // break;
-                        PRankInteger(ranks, argv[1], sit->first, expo, coprimeR);
-                    }
-                }
-            }
-
-<<<<<<< HEAD
-#pragma omp critical
-            {   
-                for(size_t i=smith[j].second; i < coprimeR; ++i) {
-                    SmithDiagonal[i] *= smith[j].first;
-                }
-                
-                std::vector<size_t>::const_iterator rit=ranks.begin();
-                for(++rit; rit!= ranks.end(); ++rit) {
-                    if ((*rit)>= coprimeR) break;
-                    for(size_t i=(*rit); i < coprimeR; ++i)
-                        SmithDiagonal[i] *= smith[j].first;
-                }
-            }
-        }
-=======
-			std::vector<size_t>::const_iterator rit=ranks.begin();
-			// unsigned long modrank = *rit;
-			for(++rit; rit!= ranks.end(); ++rit) {
-				if ((*rit)>= coprimeR) break;
-				for(size_t i=(*rit); i < coprimeR; ++i)
-					SmithDiagonal[i] *= sit->first;
-				// modrank = *rit;
-			}
-		}
->>>>>>> parent of 33a9f59fc... start putting smith valence in algorithms
-	}
 	chrono.stop();
 
-	integer si=1;;
-	size_t num=0;
-	std::cerr << "Integer Smith Form :" << std::endl;
-    std::cout << '(';
-	for( std::vector<integer>::const_iterator dit=SmithDiagonal.begin();
-	     dit != SmithDiagonal.end(); ++dit) {
-		if (*dit == si) ++num;
-		else {
-			if (num > 0)
-				std::cout << '[' << si << ',' << num << "] ";
-			num=1;
-			si = *dit;
-		}
-	}
-	std::cout << '[' << si << ',' << num << "] ";
-	num = std::min(A.rowdim(),A.coldim()) - SmithDiagonal.size();
-	si = ZZ.zero;
-	if (num > 0) std::cout << '[' << si << ',' << num << ']';
-	std::cout << ')' << std::endl;
-	std::cout << chrono << std::endl;
+	std::clog << "Integer Smith Form :" << std::endl;
+    writeCompressedSmith(std::cout, SmithDiagonal, ZZ, A.rowdim(), A.coldim()) << std::endl;
 
+	std::clog << chrono << std::endl;
+    
 
 	return 0;
 }

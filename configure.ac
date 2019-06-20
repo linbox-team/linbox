@@ -21,7 +21,7 @@
 
 AC_PREREQ([2.68])
 
-AC_INIT([LinBox], [1.5.3],[linbox-use@googlegroups.com],[linbox],
+AC_INIT([LinBox], [1.6.3],[linbox-use@googlegroups.com],[linbox],
 		[http://www.linalg.org/])
 
 AC_CONFIG_MACRO_DIR([macros])
@@ -29,6 +29,11 @@ AC_CONFIG_AUX_DIR([build-aux])
 AM_INIT_AUTOMAKE([1.10 -Wall -Wno-portability foreign])
 AC_CONFIG_HEADERS([config.h])
 AX_PREFIX_CONFIG_H(linbox/config.h, __LINBOX)
+
+# symlinks to matrix files for the testsuite
+AC_CONFIG_LINKS([tests/data/sms.matrix:tests/data/sms.matrix])
+AC_CONFIG_LINKS([tests/data/30_30_27.sms:tests/data/30_30_27.sms])
+AC_CONFIG_LINKS([tests/data/fib25.sms:tests/data/fib25.sms])
 
 AM_PROG_AR
 
@@ -225,8 +230,8 @@ LB_DRIVER
 echo "-----------------------------------------------"
 
 # Now getting GMP and Givaro from FFLAS-FFPACK - AB 2014-12-10
-PKG_CHECK_MODULES([FFLAS_FFPACK], [fflas-ffpack >= 2.3.1])
-PKG_CHECK_MODULES([GIVARO], [givaro >= 4.0.5])
+PKG_CHECK_MODULES([FFLAS_FFPACK], [fflas-ffpack >= 2.4.0])
+PKG_CHECK_MODULES([GIVARO], [givaro >= 4.1.0])
 
 dnl LB_CHECK_FFLAS_FFPACK(,,[
 dnl echo ''
@@ -309,6 +314,7 @@ examples/data/Makefile
 doc/Makefile
 linbox/Makefile
 linbox/algorithms/Makefile
+linbox/algorithms/dixon-solver/Makefile
 linbox/algorithms/gauss/Makefile
 linbox/algorithms/matrix-blas3/Makefile
 linbox/algorithms/opencl-kernels/Makefile
@@ -326,6 +332,8 @@ linbox/ring/Makefile
 linbox/ring/ntl/Makefile
 linbox/ring/modular/Makefile
 linbox/solutions/Makefile
+linbox/solutions/solve/Makefile
+linbox/solutions/echelon/Makefile
 linbox/util/Makefile
 linbox/util/formats/Makefile
 linbox/vector/Makefile

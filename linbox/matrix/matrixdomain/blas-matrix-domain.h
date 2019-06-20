@@ -377,9 +377,9 @@ namespace LinBox
 		Matrix& invin(Matrix &A) const
 		M1& invin( M1 &Ainv, M2 &A, int& nullity) const
 		unsigned int rank(const Matrix &A) const
-		unsigned int rankin(Matrix &A) const
+		unsigned int rankInPlace(Matrix &A) const
 		Element det(const Matrix &A) const
-		Element detin(Matrix &A) const
+		Element detInPlace(Matrix &A) const
 		T& left_solve (T& X, const Matrix& A, const T& B) const
 		T& left_solve (const Matrix& A, T& B) const
 		T1& right_solve (T1& X, const Matrix& A, const T2& B) const
@@ -666,7 +666,7 @@ namespace LinBox
 
 		//! in-place Rank (the matrix is modified)
 		template <class Matrix>
-		unsigned int rankin(Matrix &A) const
+		unsigned int rankInPlace(Matrix &A) const
 		{
 			return BlasMatrixDomainRank<Field, Matrix>()(field(),A);
 		}
@@ -680,7 +680,7 @@ namespace LinBox
 
 		//! in-place Determinant (the matrix is modified)
 		template <class Matrix>
-		Element detin(Matrix &A) const
+		Element detInPlace(Matrix &A) const
 		{
 
 			return BlasMatrixDomainDet<Field, Matrix>()(field(),A);

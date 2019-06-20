@@ -119,7 +119,7 @@ namespace LinBox
 		}
 
 		inline Vector& applyVTrans(Vector                        &y,
-					   BlasMatrix<Domain>           &A,
+					   const BlasMatrix<Domain>           &A,
 					   const Vector                  &x) const
 		{
 
@@ -1008,7 +1008,7 @@ namespace LinBox
 						cout << "v2[" << i << "]:" << result  << endl;
 #endif
 
-						_domain.init(*(Y.getWritePointer()+i), result);
+						_domain.init(*(Y.getPointer()+i), result);
 					}
 					delete[] combined;
 					delete[] ctd;

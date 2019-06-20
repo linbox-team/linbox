@@ -1,7 +1,7 @@
 /* tests/test-qlup.C
  * Copyright (C) The LinBox group
  *
- * Time-stamp: <13 Nov 17 16:57:58 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <10 May 19 11:28:22 Jean-Guillaume.Dumas@imag.fr>
  * -----------------------------------------------------
  *
  * ========LICENCE========
@@ -68,7 +68,6 @@ bool testQLUP(const Field &F, size_t n, unsigned int iterations, int rseed, doub
 
 	size_t Ni = n;
 	size_t Nj = n;
-	integer card; F.cardinality(card);// not needed
 	typename Field::RandIter generator (F,0,rseed);
 	RandStream stream (F, generator, sparsity, n, n);
 
@@ -93,10 +92,10 @@ bool testQLUP(const Field &F, size_t n, unsigned int iterations, int rseed, doub
 		A.apply(v,u);
 
 
-		unsigned long rank;
+		size_t rank;
 
 		Method::SparseElimination SE;
-		SE.strategy(Specifier::PIVOT_LINEAR);
+		SE.pivotStrategy = PivotStrategy::Linear;
 		GaussDomain<Field> GD ( F );
 		typename Field::Element determinant;
 		Blackbox L(F, A.rowdim(), A.coldim());
@@ -171,12 +170,11 @@ bool testQLUPsolve(const Field &F, size_t n, unsigned int iterations, int rseed,
 
 	size_t Ni = n;
 	size_t Nj = n;
-	integer card; F.cardinality(card);// not needed
 	typename Field::RandIter generator (F,0,rseed);
 	RandStream stream (F, generator, sparsity, n, n);
 
 	GF2 F2;
-	GF2::RandIter bitgenerator(F2,2,rseed);
+	GF2::RandIter bitgenerator(F2,0,rseed);
 	// GF2::Element randomsolve;
 
 	for (size_t i = 0; i < iterations; ++i) {
@@ -198,12 +196,12 @@ bool testQLUPsolve(const Field &F, size_t n, unsigned int iterations, int rseed,
 
 
 		Method::SparseElimination SE;
-		SE.strategy(Specifier::PIVOT_LINEAR);
+		SE.pivotStrategy = PivotStrategy::Linear;
 		GaussDomain<Field> GD ( F );
 
 		Blackbox CopyA ( A );
 
-		GD.solvein(x, A, v /*, bitgenerator .random(randomsolve) */ );
+		GD.solveInPlace(x, A, v /*, bitgenerator .random(randomsolve) */ );
 		// report << "Random solving: " << randomsolve << std::endl;
 
 		CopyA.apply(y, x);
@@ -256,7 +254,6 @@ bool testQLUPnullspace(const Field &F, size_t n, unsigned int iterations, int rs
 
 	size_t Ni = n;
 	size_t Nj = n;
-	integer card; F.cardinality(card);//not needed
 	typename Field::RandIter generator (F,0,rseed);
 	RandStream stream (F, generator, sparsity, n, n, rseed);
 
@@ -273,7 +270,7 @@ bool testQLUPnullspace(const Field &F, size_t n, unsigned int iterations, int rs
 
 
 		Method::SparseElimination SE;
-		SE.strategy(Specifier::PIVOT_LINEAR);
+		SE.pivotStrategy = PivotStrategy::Linear;
 		GaussDomain<Field> GD ( F );
 
 		Blackbox CopyA ( A );
@@ -407,7 +404,6 @@ int main (int argc, char **argv)
 // 			pass = false;
 // 	}
 
-#if 1
 	{
 		commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 		<< "specialized over GF2>" << endl;
@@ -420,7 +416,6 @@ int main (int argc, char **argv)
 		if (!testQLUPsolve<Field, Blackbox, RandStream> (F2, n, iterations, rseed, sparsity))
 			pass = false;
 	}
-#endif
 
 	commentator().stop(MSG_STATUS (pass),"QLUP test suite");
 	return pass ? 0 : -1;

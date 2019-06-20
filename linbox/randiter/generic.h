@@ -92,7 +92,7 @@ namespace LinBox
 		 */
 		GenericRandIter (const Field &F,
 				 const integer &size = 0,
-				 const integer &seed = 0) :
+				 const uint64_t seed = 0) :
 			_field (F), _size (size), _seed (seed)
 		{
 			if (_seed == 0) _seed = time (NULL);
@@ -162,7 +162,7 @@ namespace LinBox
 		integer _size;
 
 		/// Seed
-		long _seed;
+		uint64_t _seed;
 
 	}; // class GenericRandIter
 }

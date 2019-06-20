@@ -5,20 +5,20 @@
  *
  * ------------------------------------
  *
- * 
+ *
  * ========LICENCE========
  * This file is part of the library LinBox.
- * 
+ *
  * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -56,7 +56,7 @@ namespace LinBox
 		 * @param traits @ref SolverTraits  structure describing user
 		 *               options for the solver
 		 */
-		LanczosSolver (const Field &F, const LanczosTraits &traits) :
+		LanczosSolver (const Field &F, const Method::Lanczos &traits) :
 			_traits (traits), _field (&F), _randiter (F), _VD (F)
 		{}
 
@@ -66,7 +66,7 @@ namespace LinBox
 		 *               options for the solver
 		 * @param r Random iterator to use for randomization
 		 */
-		LanczosSolver (const Field &F, const LanczosTraits &traits, typename Field::RandIter r) :
+		LanczosSolver (const Field &F, const Method::Lanczos &traits, typename Field::RandIter r) :
 			_traits (traits), _field (&F), _randiter (r), _VD (F)
 		{}
 
@@ -98,7 +98,7 @@ namespace LinBox
 		template<class Blackbox>
 		bool iterate (const Blackbox &A, Vector &x, const Vector &b);
 
-		const LanczosTraits &_traits;
+		const Method::Lanczos &_traits;
 		const Field                       *_field;
 		typename Field::RandIter           _randiter;
 		VectorDomain<Field>                _VD;

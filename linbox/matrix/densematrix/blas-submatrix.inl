@@ -46,7 +46,7 @@ namespace LinBox {
         _ptr(M.getPointer()+rowbeg*M.getStride()+colbeg),
         _row (Rowdim),
         _col(Coldim),
-		_stride(M.getStride()),
+        _stride(M.getStride()),
         _field(M.field())
 	{
         linbox_check ( rowbeg  <= M.rowdim() ); // allow for NULL matrix
@@ -60,7 +60,7 @@ namespace LinBox {
         _ptr(M.getPointer()+rowbeg*M.getStride()+colbeg),
         _row (Rowdim),
         _col(Coldim),
-		_stride(M.getStride()),
+        _stride(M.getStride()),
         _field(M.field())
 	{
         linbox_check ( rowbeg  <= M.rowdim() ); // allow for NULL matrix
@@ -137,7 +137,6 @@ namespace LinBox {
         do {
             mse = ms.nextTriple(i,j,v);
             if ( (i<0 or i> _row) and (j<0 or j> _col)){
-                std::cout<<"BEN OUI\n";
                 throw ms.reportError(__FUNCTION__,__LINE__);
             }
             setEntry(i,j,v);
@@ -172,7 +171,7 @@ namespace LinBox {
     }
 
     template < class _Matrix >
-    std::ostream& BlasSubmatrix<_Matrix>::write (std::ostream &os,LINBOX_enum (Tag::FileFormat) f) const {
+    std::ostream& BlasSubmatrix<_Matrix>::write (std::ostream &os, Tag::FileFormat f) const {
         
 		ConstRowIterator p;
 		switch(f) {
@@ -279,7 +278,6 @@ namespace LinBox {
                 throw LinBoxError("unknown format to write matrix in");
             }
 		}
-
 		return os;
 	}
 
@@ -814,8 +812,6 @@ namespace LinBox {
 		return Row (_ptr+ i * _stride, _ptr + (i+1) * _stride);
 	}
 
-    
-
     /* class for Row iterator
      */
     template < class _Matrix >
@@ -1161,9 +1157,24 @@ namespace LinBox {
         size_t _stride;
     };
 
-    
-    
-}
+	template <class _Matrix>
+	template<typename _Tp1, typename _Rep2>
+	struct BlasSubmatrix< _Matrix>::rebind {
+		typedef BlasMatrix<_Tp1,_Rep2> other;
+
+		void operator() (other & Ap, const Self_t& A) {
+			typedef typename BlasSubmatrix<_Matrix>::ConstIterator ConstSelfIterator ;
+			typedef typename other::Iterator OtherIterator ;
+			OtherIterator    Ap_i;
+			ConstSelfIterator A_i;
+			Hom<Field, _Tp1> hom(A. field(), Ap. field());
+			for (A_i = A. Begin(), Ap_i = Ap.Begin();
+			     A_i != A. End(); ++ A_i, ++ Ap_i)
+				hom.image (*Ap_i, *A_i);
+		}
+	};
+
+} // LinBox
 
 
 

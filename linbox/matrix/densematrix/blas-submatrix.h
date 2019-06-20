@@ -34,6 +34,7 @@
 #define __LINBOX_densematrix_blas_submatrix_H
 
 #include "fflas-ffpack/fflas-ffpack.h"
+#include "linbox/field/rebind.h"
 
 namespace LinBox
 {
@@ -135,7 +136,8 @@ namespace LinBox
                        size_t stride);
         
 
-        
+        template <typename _TP1, typename _Rep2 = typename Rebind<Storage, _TP1>::other >
+        struct rebind;
         /*  Members  */
 
         //////////////////
@@ -165,8 +167,9 @@ namespace LinBox
         /*! @internal
          * Get pointer to the matrix data (read/write access will depend on the type of the template parameter _Matrix, i.e. const or not)
          */
-        pointer getPointer() const {return _ptr;}
-        pointer& getWritePointer()  { return _ptr;}
+        pointer getPointer() {return _ptr;}
+        const_pointer getPointer() const {return _ptr;}
+        const_pointer getConstPointer() const {return _ptr;}
 		
         ///////////////////
         //      I/O      //
@@ -183,7 +186,7 @@ namespace LinBox
          * @param os Output stream to which to write
          * @param f write in some format (@ref Tag::FileFormat::Format). Default is MM's.
          */
-        std::ostream &write (std::ostream &os,LINBOX_enum (Tag::FileFormat) f = Tag::FileFormat::MatrixMarket )const;
+        std::ostream &write (std::ostream &os,Tag::FileFormat f = Tag::FileFormat::MatrixMarket )const;
 
         //////////////////
         //   ELEMENTS   //
@@ -235,6 +238,13 @@ namespace LinBox
                          x.getPointer(), x.getStride(), _field.zero, y.getWritePointer(),y.getStride());
             return y;
         }
+        // NEED TO BE REMOVED -> just to be done after new-blas-subvector is merged
+        std::vector<Element>&  apply (std::vector<Element>& y, const std::vector<Element>& x) const
+        {
+            FFLAS::fgemv(_field, FFLAS::FflasNoTrans, _row,_col, _field.one, _ptr, _stride,
+                         x.data(), 1, _field.zero, y.data(),1);
+            return y;
+        }
 
         //! @bug use Matrix domain
         //!@bug since removal of ApplyDomain this does not handle the case where Field if Givaro::Extension needed for charpoly computation
@@ -245,7 +255,16 @@ namespace LinBox
                          x.getPointer(), x.getStride(), _field.zero, y.getWritePointer(),y.getStride());
             return y;
         }
+        // NEED TO BE REMOVED -> just to be done after new-blas-subvector is merged
+        std::vector<Element>&  applyTranspose (std::vector<Element>& y, const std::vector<Element>& x) const
+        {
+            FFLAS::fgemv(_field, FFLAS::FflasTrans, _row,_col, _field.one, _ptr, _stride,
+                         x.data(), 1, _field.zero, y.data(),1);
+            return y;
+        }
 
+
+        
         void zero() {
             FFLAS::fzero(field(),_row,_col,_ptr,_stride);
         }

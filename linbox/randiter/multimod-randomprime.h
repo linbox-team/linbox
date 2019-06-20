@@ -47,13 +47,13 @@ namespace LinBox
 	public:
 
 
-		MultiModRandomPrime(size_t n=1, uint64_t bits = 30, unsigned long seed = 0) :
+		MultiModRandomPrime(size_t n=1, uint64_t bits = 30, uint64_t seed = 0) :
 			_bits(bits), _size(n)
 		{
 			_shift = integer(1)<<_bits;
 
 			if (! seed)
-				setSeed( (unsigned long) BaseTimer::seed() );
+				setSeed( (uint64_t) BaseTimer::seed() );
 			else
 				setSeed( seed );
 		}

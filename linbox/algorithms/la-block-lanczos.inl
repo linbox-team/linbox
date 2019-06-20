@@ -142,9 +142,9 @@ namespace LinBox
 		_b.resize (b.size (), 1);
 		_x.resize (x.size (), 1);
 
-		_v0.resize (A.coldim (), _traits.blockingFactor ());
-		_ATu.resize (A.rowdim (), _traits.blockingFactor ());
-		_Av.resize (A.coldim (), _traits.blockingFactor ());
+		_v0.resize (A.coldim (), _traits.blockingFactor);
+		_ATu.resize (A.rowdim (), _traits.blockingFactor);
+		_Av.resize (A.coldim (), _traits.blockingFactor);
 
 		// Copy the right-hand side to the first column of _b
 		_VD.copy (*(_b.colBegin ()), b);
@@ -212,20 +212,20 @@ namespace LinBox
 	(const Blackbox &A, Matrix1 &x)
 	{
 		linbox_check (x.rowdim () == A.coldim ());
-		linbox_check (x.coldim () == _traits.blockingFactor ());
+		linbox_check (x.coldim () == _traits.blockingFactor);
 		linbox_check (A.rowdim () == A.coldim ());
 
 		commentator().start ("Sampling from nullspace (Lookahead-based block Lanczos)",
 				   "LABlockLanczosSolver::sampleNullspace");
 
 		// Get the temporaries into the right sizes
-		_b.resize (x.rowdim (), _traits.blockingFactor ());
-		_x.resize (x.rowdim (), _traits.blockingFactor ());
-		_y.resize (x.rowdim (), _traits.blockingFactor ());
+		_b.resize (x.rowdim (), _traits.blockingFactor);
+		_x.resize (x.rowdim (), _traits.blockingFactor);
+		_y.resize (x.rowdim (), _traits.blockingFactor);
 
-		_v0.resize (A.coldim (), _traits.blockingFactor ());
-		_ATu.resize (A.rowdim (), _traits.blockingFactor ());
-		_Av.resize (A.coldim (), _traits.blockingFactor ());
+		_v0.resize (A.coldim (), _traits.blockingFactor);
+		_ATu.resize (A.rowdim (), _traits.blockingFactor);
+		_Av.resize (A.coldim (), _traits.blockingFactor);
 
 		// Fill y with random data
 		RandomDenseStream<Field, typename Matrix::Col> stream (field(), _randiter, A.coldim ());
@@ -292,11 +292,11 @@ namespace LinBox
 		// Get the temporaries into the right sizes
 		_b.resize (A.rowdim (), 1);
 		_x.resize (A.rowdim (), 1);
-		_y.resize (A.rowdim (), _traits.blockingFactor ());
+		_y.resize (A.rowdim (), _traits.blockingFactor);
 
-		_v0.resize (A.coldim (), _traits.blockingFactor ());
-		_ATu.resize (A.rowdim (), _traits.blockingFactor ());
-		_Av.resize (A.coldim (), _traits.blockingFactor ());
+		_v0.resize (A.coldim (), _traits.blockingFactor);
+		_ATu.resize (A.rowdim (), _traits.blockingFactor);
+		_Av.resize (A.coldim (), _traits.blockingFactor);
 
 		// Fill v0 with random data
 		RandomDenseStream<Field, typename Matrix::Col> stream (field(), _randiter, A.coldim ());
@@ -346,7 +346,7 @@ namespace LinBox
 		_total_dim = 0;
 		_rank = 0;
 
-		const unsigned int N =  (unsigned int) _traits.blockingFactor ();
+		const unsigned int N =  (unsigned int) _traits.blockingFactor;
 
 		unsigned int dead_iters = 0;
 		Integer c;
@@ -371,7 +371,7 @@ namespace LinBox
 		unsigned int history_total = 0, history_max = 0;
 
 		// How many iterations between each progress update
-		unsigned int progress_interval =  (unsigned int) ( A.rowdim () / _traits.blockingFactor () / 100);
+		unsigned int progress_interval =  (unsigned int) ( A.rowdim () / _traits.blockingFactor / 100);
 
 		// Make sure there are a minimum of ten
 		if (progress_interval == 0)
@@ -398,8 +398,8 @@ namespace LinBox
 
 		//! @bug what is this ?
 #ifdef LABL_DETAILED_TRACE
-		Matrix    u0 (A.rowdim (), _traits.blockingFactor ());
-		Matrix    v0 (A.rowdim (), _traits.blockingFactor ());
+		Matrix    u0 (A.rowdim (), _traits.blockingFactor);
+		Matrix    v0 (A.rowdim (), _traits.blockingFactor);
 #else  // Give those variables something just to satisfy the compiler
 #  define AU0 iterate_here->_u
 #  define AV0 iterate_here->_v
@@ -601,7 +601,7 @@ namespace LinBox
 	 const Matrix1                           &Cv,
 	 unsigned int                             iter)
 	{
-		const unsigned int N =  (unsigned int) _traits.blockingFactor ();
+		const unsigned int N =  (unsigned int) _traits.blockingFactor;
 
 		BlasMatrix<Field> udotAv ((*l)->_udotAv, 0, 0, Cu.coldim (), N);
 		BlasMatrix<Field> uAvdot ((*l)->_uAvdot, 0, 0, N, Cv.rowdim ());
@@ -635,7 +635,7 @@ namespace LinBox
 
 		typename std::list<Iterate *>::iterator j;
 
-		const unsigned int N =  (unsigned int) _traits.blockingFactor ();
+		const unsigned int N =  (unsigned int) _traits.blockingFactor;
 
 		unsigned int rho_u = 0, rho_v = 0;
 		typename Field::Element d;
@@ -907,7 +907,7 @@ namespace LinBox
 	{
 		typename std::list<Iterate *>::iterator l = _history.begin (), second;
 
-		const unsigned int N =  (unsigned int) _traits.blockingFactor ();
+		const unsigned int N =  (unsigned int) _traits.blockingFactor;
 
 #ifdef LABL_DETAILED_TRACE
 		int discard_count = 0;
@@ -982,7 +982,7 @@ namespace LinBox
 			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
 			<< "Allocating new iterate structure..." << std::endl;
 #endif
-			ret = new Iterate (*this, _x.rowdim (), _traits.blockingFactor (), iter);
+			ret = new Iterate (*this, _x.rowdim (), _traits.blockingFactor, iter);
 			return ret;
 		}
 		else {
@@ -1007,7 +1007,7 @@ namespace LinBox
 	 ElimStep &step,
 	 unsigned int iter)
 	{
-		const unsigned int N =  (unsigned int) _traits.blockingFactor ();
+		const unsigned int N =  (unsigned int) _traits.blockingFactor;
 
 		if (step._nuukAvj == NULL || step._l_iter < _history.front ()->_iter)
 			return;
@@ -1054,7 +1054,7 @@ namespace LinBox
 	 ElimStep &step,
 	 unsigned int iter)
 	{
-		const unsigned int N =  (unsigned int) _traits.blockingFactor ();
+		const unsigned int N =  (unsigned int) _traits.blockingFactor;
 
 		if (step._ujAvkmu == NULL || step._l_iter < _history.front ()->_iter)
 			return;
@@ -1103,7 +1103,7 @@ namespace LinBox
 	 Iterate      *l,
 	 unsigned int  rho)
 	{
-		const unsigned int N =  (unsigned int) _traits.blockingFactor ();
+		const unsigned int N =  (unsigned int) _traits.blockingFactor;
 
 		_MD.copy (_T1, *_uAv.get (l->_iter, i->_iter));
 		l->_sigma_u.apply (_T1, true);
@@ -1120,7 +1120,7 @@ namespace LinBox
 	 Iterate      *l,
 	 unsigned int  rho)
 	{
-		const unsigned int N =  (unsigned int) _traits.blockingFactor ();
+		const unsigned int N =  (unsigned int) _traits.blockingFactor;
 
 		_MD.copy (_T1, *_uAv.get (i->_iter, l->_iter));
 		l->_sigma_v.apply (_T1, false);
@@ -1418,7 +1418,7 @@ namespace LinBox
 		Matrix *ret;
 
 		if (_ip_trashcan.empty ())
-			ret = new Matrix (field(),_traits.blockingFactor (), _traits.blockingFactor ());
+			ret = new Matrix (field(),_traits.blockingFactor, _traits.blockingFactor);
 		else {
 			ret = _ip_trashcan.top ();
 			_ip_trashcan.pop ();
@@ -1454,7 +1454,7 @@ namespace LinBox
 
 		BlasMatrix<Field> T1p (_T1, 0, 0, rho_u, rho_v);
 
-		Matrix Av (A.rowdim (), _traits.blockingFactor ());
+		Matrix Av (A.rowdim (), _traits.blockingFactor);
 
 		_MD.blackboxMulLeft (Av, A, v);
 		_MD.mul (_T1, transpose (u), Av);
@@ -1481,7 +1481,7 @@ namespace LinBox
 
 		typename std::list<Iterate *>::const_iterator i, j;
 
-		Matrix Av (A.rowdim (), _traits.blockingFactor ());
+		Matrix Av (A.rowdim (), _traits.blockingFactor);
 
 		for (i = _history.begin (); i != _history.end (); ++i) {
 			for (j = _history.begin (); j != _history.end (); ++j) {
@@ -1538,14 +1538,14 @@ namespace LinBox
 	template <class Field, class Matrix>
 	void LABlockLanczosSolver<Field, Matrix>::init_temps ()
 	{
-		_T1.resize (_traits.blockingFactor (), _traits.blockingFactor ());
-		_T2.resize (_traits.blockingFactor (), _traits.blockingFactor ());
-		_T3.resize (_traits.blockingFactor (), _traits.blockingFactor ());
-		_T4.resize (_traits.blockingFactor (), _traits.blockingFactor ());
-		_T5.resize (_traits.blockingFactor (), _traits.blockingFactor ());
-		_matW.resize (_traits.blockingFactor (), _traits.blockingFactor ());
-		_Cu.resize (_traits.blockingFactor (), _traits.blockingFactor ());
-		_Cv.resize (_traits.blockingFactor (), _traits.blockingFactor ());
+		_T1.resize (_traits.blockingFactor, _traits.blockingFactor);
+		_T2.resize (_traits.blockingFactor, _traits.blockingFactor);
+		_T3.resize (_traits.blockingFactor, _traits.blockingFactor);
+		_T4.resize (_traits.blockingFactor, _traits.blockingFactor);
+		_T5.resize (_traits.blockingFactor, _traits.blockingFactor);
+		_matW.resize (_traits.blockingFactor, _traits.blockingFactor);
+		_Cu.resize (_traits.blockingFactor, _traits.blockingFactor);
+		_Cv.resize (_traits.blockingFactor, _traits.blockingFactor);
 		field().init (_one, 1);
 	}
 

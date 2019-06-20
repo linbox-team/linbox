@@ -30,7 +30,7 @@
 /*! @file  tests/test-rational-reconstruction-base.C
  * @ingroup tests
  * @ingroup CRA
- * @brief  tests rational reconstruction using rational-cra2.h .
+ * @brief  tests rational reconstruction using rational-cra-var-prec.h .
  * @test no doc.
  */
 
@@ -47,8 +47,8 @@
 #include "linbox/ring/modular.h"
 //#include "linbox/field/gmp-rational.h"
 
-#include "linbox/algorithms/rational-cra2.h"
-#include "linbox/algorithms/varprec-cra-early-single.h"
+#include "linbox/algorithms/rational-cra-var-prec.h"
+#include "linbox/algorithms/cra-builder-var-prec-early-single.h"
 #include "linbox/algorithms/rational-reconstruction-base.h"
 #include "linbox/algorithms/classic-rational-reconstruction.h"
 #include "linbox/algorithms/fast-rational-reconstruction.h"
@@ -58,7 +58,7 @@
 
 using namespace LinBox;
 
-/* Test: Rational reconstruction of random fraction using rational-cra2.h
+/* Test: Rational reconstruction of random fraction using rational-cra-var-prec.h
  *
  * Constructs a random pair of numerator/denominator
  * Reconstructs it based on rational reconstruction
@@ -122,8 +122,8 @@ static bool testRandomFraction (size_t n, size_t d, int iterations)
 		integer a1_4, b1_4, a2_4, b2_4, a3_4, b3_4, a4_4, b4_4;
 
 		RReconstruction<Givaro::ZRing<Integer>, FastRationalReconstruction<Givaro::ZRing<Integer> > > RR1_1(Z,INCREMENTAL,5);
-		RationalRemainder2< VarPrecEarlySingleCRA< Field >,
-		RReconstruction<Givaro::ZRing<Integer>, FastRationalReconstruction<Givaro::ZRing<Integer> > > > cra1_1(4UL, RR1_1);
+		RationalChineseRemainderVarPrec< CRABuilderVarPrecEarlySingle< Field >,
+		RReconstruction<Givaro::ZRing<Integer>, FastRationalReconstruction<Givaro::ZRing<Integer> > > > cra1_1(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD, RR1_1);
 		cra1_1(a1_1,b1_1,iteration,genprime);
 		if ((a1_1 != num)  || (b1_1 != den) ) {
 			ret = false;
@@ -132,8 +132,8 @@ static bool testRandomFraction (size_t n, size_t d, int iterations)
 		}
 
 		RReconstruction<Givaro::ZRing<Integer>, FastMaxQRationalReconstruction<Givaro::ZRing<Integer> > > RR2_1(Z,INCREMENTAL,5);
-		RationalRemainder2< VarPrecEarlySingleCRA< Field >,
-		RReconstruction<Givaro::ZRing<Integer>, FastMaxQRationalReconstruction<Givaro::ZRing<Integer> > > > cra2_1(4UL, RR2_1);
+		RationalChineseRemainderVarPrec< CRABuilderVarPrecEarlySingle< Field >,
+		RReconstruction<Givaro::ZRing<Integer>, FastMaxQRationalReconstruction<Givaro::ZRing<Integer> > > > cra2_1(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD, RR2_1);
 		cra2_1(a2_1,b2_1,iteration,genprime);
 		if ((a2_1 != num)  || (b2_1 != den) ) {
 			ret = false;
@@ -142,8 +142,8 @@ static bool testRandomFraction (size_t n, size_t d, int iterations)
 		}
 
 		RReconstruction<Givaro::ZRing<Integer>, ClassicRationalReconstruction<Givaro::ZRing<Integer> > > RR3_1(RRB1,INCREMENTAL,5);
-		RationalRemainder2< VarPrecEarlySingleCRA< Field >,
-		RReconstruction<Givaro::ZRing<Integer>, ClassicRationalReconstruction<Givaro::ZRing<Integer> > > > cra3_1(4UL, RR3_1);
+		RationalChineseRemainderVarPrec< CRABuilderVarPrecEarlySingle< Field >,
+		RReconstruction<Givaro::ZRing<Integer>, ClassicRationalReconstruction<Givaro::ZRing<Integer> > > > cra3_1(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD, RR3_1);
 		cra3_1(a3_1,b3_1,iteration,genprime);
 		if ((a3_1 != num)  || (b3_1 != den) ) {
 			ret = false;
@@ -152,8 +152,8 @@ static bool testRandomFraction (size_t n, size_t d, int iterations)
 		}
 
 		RReconstruction<Givaro::ZRing<Integer>, ClassicMaxQRationalReconstruction<Givaro::ZRing<Integer> > > RR4_1(RRB2,INCREMENTAL,5);
-		RationalRemainder2< VarPrecEarlySingleCRA< Field >,
-		RReconstruction<Givaro::ZRing<Integer>, ClassicMaxQRationalReconstruction<Givaro::ZRing<Integer> > > > cra4_1(4UL, RR4_1);
+		RationalChineseRemainderVarPrec< CRABuilderVarPrecEarlySingle< Field >,
+		RReconstruction<Givaro::ZRing<Integer>, ClassicMaxQRationalReconstruction<Givaro::ZRing<Integer> > > > cra4_1(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD, RR4_1);
 		cra4_1(a4_1,b4_1,iteration,genprime);
 		if ((a4_1 != num)  || (b4_1 != den) ) {
 			ret = false;
@@ -162,8 +162,8 @@ static bool testRandomFraction (size_t n, size_t d, int iterations)
 		}
 
 		RReconstruction<Givaro::ZRing<Integer>, FastRationalReconstruction<Givaro::ZRing<Integer> > > RR1_2(Z,QUADRATIC,0,10);
-		RationalRemainder2< VarPrecEarlySingleCRA< Field >,
-		RReconstruction<Givaro::ZRing<Integer>, FastRationalReconstruction<Givaro::ZRing<Integer> > > > cra1_2(4UL, RR1_2);
+		RationalChineseRemainderVarPrec< CRABuilderVarPrecEarlySingle< Field >,
+		RReconstruction<Givaro::ZRing<Integer>, FastRationalReconstruction<Givaro::ZRing<Integer> > > > cra1_2(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD, RR1_2);
 		cra1_2(a1_2,b1_2,iteration,genprime);
 		if ((a1_2 != num)  || (b1_2 != den) ) {
 			ret = false;
@@ -172,8 +172,8 @@ static bool testRandomFraction (size_t n, size_t d, int iterations)
 		}
 
 		RReconstruction<Givaro::ZRing<Integer>, FastMaxQRationalReconstruction<Givaro::ZRing<Integer> > > RR2_2(Z,QUADRATIC,0,10);
-		RationalRemainder2< VarPrecEarlySingleCRA< Field >,
-		RReconstruction<Givaro::ZRing<Integer>, FastMaxQRationalReconstruction<Givaro::ZRing<Integer> > > > cra2_2(4UL, RR2_2);
+		RationalChineseRemainderVarPrec< CRABuilderVarPrecEarlySingle< Field >,
+		RReconstruction<Givaro::ZRing<Integer>, FastMaxQRationalReconstruction<Givaro::ZRing<Integer> > > > cra2_2(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD, RR2_2);
 		cra2_2(a2_2,b2_2,iteration,genprime);
 		if ((a2_2 != num)  || (b2_2 != den) ) {
 			ret = false;
@@ -182,8 +182,8 @@ static bool testRandomFraction (size_t n, size_t d, int iterations)
 		}
 
 		RReconstruction<Givaro::ZRing<Integer>, ClassicRationalReconstruction<Givaro::ZRing<Integer> > > RR3_2(RRB1,QUADRATIC,0,10);
-		RationalRemainder2< VarPrecEarlySingleCRA< Field >,
-		RReconstruction<Givaro::ZRing<Integer>, ClassicRationalReconstruction<Givaro::ZRing<Integer> > > > cra3_2(4UL, RR3_2);
+		RationalChineseRemainderVarPrec< CRABuilderVarPrecEarlySingle< Field >,
+		RReconstruction<Givaro::ZRing<Integer>, ClassicRationalReconstruction<Givaro::ZRing<Integer> > > > cra3_2(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD, RR3_2);
 		cra3_2(a3_2,b3_2,iteration,genprime);
 		if ((a3_2 != num)  || (b3_2 != den) ) {
 			ret = false;
@@ -192,8 +192,8 @@ static bool testRandomFraction (size_t n, size_t d, int iterations)
 		}
 
 		RReconstruction<Givaro::ZRing<Integer>, ClassicMaxQRationalReconstruction<Givaro::ZRing<Integer> > > RR4_2(RRB2,QUADRATIC,0,10);
-		RationalRemainder2< VarPrecEarlySingleCRA< Field >,
-		RReconstruction<Givaro::ZRing<Integer>, ClassicMaxQRationalReconstruction<Givaro::ZRing<Integer> > > > cra4_2(4UL, RR4_2);
+		RationalChineseRemainderVarPrec< CRABuilderVarPrecEarlySingle< Field >,
+		RReconstruction<Givaro::ZRing<Integer>, ClassicMaxQRationalReconstruction<Givaro::ZRing<Integer> > > > cra4_2(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD, RR4_2);
 		cra4_2(a4_2,b4_2,iteration,genprime);
 		if ((a4_2 != num)  || (b4_2 != den) ) {
 			ret = false;
@@ -203,8 +203,8 @@ static bool testRandomFraction (size_t n, size_t d, int iterations)
 
 
 		RReconstruction<Givaro::ZRing<Integer>, FastRationalReconstruction<Givaro::ZRing<Integer> > > RR1_3(Z,GEOMETRIC,0,5);
-		RationalRemainder2< VarPrecEarlySingleCRA< Field >,
-		RReconstruction<Givaro::ZRing<Integer>, FastRationalReconstruction<Givaro::ZRing<Integer> > > > cra1_3(4UL, RR1_3);
+		RationalChineseRemainderVarPrec< CRABuilderVarPrecEarlySingle< Field >,
+		RReconstruction<Givaro::ZRing<Integer>, FastRationalReconstruction<Givaro::ZRing<Integer> > > > cra1_3(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD, RR1_3);
 		cra1_3(a1_3,b1_3,iteration,genprime);
 		if ((a1_3 != num)  || (b1_3 != den) ) {
 			ret = false;
@@ -213,8 +213,8 @@ static bool testRandomFraction (size_t n, size_t d, int iterations)
 		}
 
 		RReconstruction<Givaro::ZRing<Integer>, FastMaxQRationalReconstruction<Givaro::ZRing<Integer> > > RR2_3(Z,GEOMETRIC,0,5);
-		RationalRemainder2< VarPrecEarlySingleCRA< Field >,
-		RReconstruction<Givaro::ZRing<Integer>, FastMaxQRationalReconstruction<Givaro::ZRing<Integer> > > > cra2_3(4UL, RR2_3);
+		RationalChineseRemainderVarPrec< CRABuilderVarPrecEarlySingle< Field >,
+		RReconstruction<Givaro::ZRing<Integer>, FastMaxQRationalReconstruction<Givaro::ZRing<Integer> > > > cra2_3(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD, RR2_3);
 		cra2_3(a2_3,b2_3,iteration,genprime);
 		if ((a2_3 != num)  || (b2_3 != den) ) {
 			ret = false;
@@ -223,8 +223,8 @@ static bool testRandomFraction (size_t n, size_t d, int iterations)
 		}
 
 		RReconstruction<Givaro::ZRing<Integer>, ClassicRationalReconstruction<Givaro::ZRing<Integer> > > RR3_3(RRB1,GEOMETRIC,0,5);
-		RationalRemainder2< VarPrecEarlySingleCRA< Field >,
-		RReconstruction<Givaro::ZRing<Integer>, ClassicRationalReconstruction<Givaro::ZRing<Integer> > > > cra3_3(4UL, RR3_3);
+		RationalChineseRemainderVarPrec< CRABuilderVarPrecEarlySingle< Field >,
+		RReconstruction<Givaro::ZRing<Integer>, ClassicRationalReconstruction<Givaro::ZRing<Integer> > > > cra3_3(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD, RR3_3);
 		cra3_3(a3_3,b3_3,iteration,genprime);
 		if ((a3_3 != num)  || (b3_3 != den) ) {
 			ret = false;
@@ -233,8 +233,8 @@ static bool testRandomFraction (size_t n, size_t d, int iterations)
 		}
 
 		RReconstruction<Givaro::ZRing<Integer>, ClassicMaxQRationalReconstruction<Givaro::ZRing<Integer> > > RR4_3(RRB2,GEOMETRIC,0,5);
-		RationalRemainder2< VarPrecEarlySingleCRA< Field >,
-		RReconstruction<Givaro::ZRing<Integer>, ClassicMaxQRationalReconstruction<Givaro::ZRing<Integer> > > > cra4_3(4UL, RR4_3);
+		RationalChineseRemainderVarPrec< CRABuilderVarPrecEarlySingle< Field >,
+		RReconstruction<Givaro::ZRing<Integer>, ClassicMaxQRationalReconstruction<Givaro::ZRing<Integer> > > > cra4_3(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD, RR4_3);
 		cra4_3(a4_3,b4_3,iteration,genprime);
 		if ((a4_3 != num)  || (b4_3 != den) ) {
 			ret = false;
@@ -248,8 +248,8 @@ static bool testRandomFraction (size_t n, size_t d, int iterations)
 		H *=2;
 		++H;
 		RReconstruction<Givaro::ZRing<Integer>, FastRationalReconstruction<Givaro::ZRing<Integer> > > RR1_4(Z,CERTIFIED,0,H);
-		RationalRemainder2< VarPrecEarlySingleCRA< Field >,
-		RReconstruction<Givaro::ZRing<Integer>, FastRationalReconstruction<Givaro::ZRing<Integer> > > > cra1_4(4UL, RR1_4);
+		RationalChineseRemainderVarPrec< CRABuilderVarPrecEarlySingle< Field >,
+		RReconstruction<Givaro::ZRing<Integer>, FastRationalReconstruction<Givaro::ZRing<Integer> > > > cra1_4(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD, RR1_4);
 		cra1_4(a1_4,b1_4,iteration,genprime);
 		if ((a1_4 != num)  || (b1_4 != den) ) {
 			ret = false;
@@ -259,8 +259,8 @@ static bool testRandomFraction (size_t n, size_t d, int iterations)
 
 		//RReconstruction<Givaro::ZRing<Integer>, FastMaxQRationalReconstruction<Givaro::ZRing<Integer> > > RR2_4(Z,CERTIFIED);
 		RReconstruction<Givaro::ZRing<Integer>, ClassicRationalReconstruction<Givaro::ZRing<Integer> > > RR3_4(RRB1,CERTIFIED,0,H);
-		RationalRemainder2< VarPrecEarlySingleCRA< Field >,
-		RReconstruction<Givaro::ZRing<Integer>, ClassicRationalReconstruction<Givaro::ZRing<Integer> > > > cra3_4(4UL, RR3_4);
+		RationalChineseRemainderVarPrec< CRABuilderVarPrecEarlySingle< Field >,
+		RReconstruction<Givaro::ZRing<Integer>, ClassicRationalReconstruction<Givaro::ZRing<Integer> > > > cra3_4(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD, RR3_4);
 		cra3_4(a3_4,b3_4,iteration,genprime);
 		if ((a3_4 != num)  || (b3_4 != den) ) {
 			ret = false;
