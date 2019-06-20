@@ -81,25 +81,25 @@ namespace LinBox
 	{
 		linbox_check ((x.size () == A.coldim ()) &&
 			      (b.size () == A.rowdim ()));
-		linbox_check (_traits.singular () != WiedemannTraits::NONSINGULAR || A.coldim () == A.rowdim ());
+		linbox_check (_traits.singularity != Singularity::NonSingular || A.coldim () == A.rowdim ());
 
 		commentator().start ("Solving linear system (Wiedemann)", "WiedemannSolver::solve");
 
-		WiedemannTraits::SingularState singular = _traits.singular ();
-		if (A.rowdim() != A.coldim() ) _traits.singular (singular = WiedemannTraits::SINGULAR);
+		Singularity singular = _traits.singularity;
+		if (A.rowdim() != A.coldim() ) _traits.singularity = (singular = Singularity::Singular);
 		ReturnStatus status = FAILED;
 
-		unsigned int tries = (unsigned int)_traits.maxTries ();
+		unsigned int tries = (unsigned int)_traits.trialsBeforeFailure;
 
 		size_t r = (size_t) -1;
 
 		// Dan Roche 6-21-04 Changed this from UNKNOWN which I think was incorrect
-		if (_traits.rank () != WiedemannTraits::RANK_UNKNOWN)
-			r = _traits.rank ();
+		if (_traits.rank != Rank::Unknown)
+			r = _traits.rank;
 
 		while (status == FAILED && tries-- > 0) {
 			switch (singular) {
-			case WiedemannTraits::SINGULARITY_UNKNOWN:
+			case Singularity::Unknown:
 				{
 					switch (solveNonsingular (A, x, b, true)) {
 					case OK:
@@ -112,8 +112,8 @@ namespace LinBox
 					case SINGULAR:
 						commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
 						<< "System found to be singular. Reverting to nonsingular solver." << std::endl;
-						tries = (unsigned int)_traits.maxTries ();
-						singular = WiedemannTraits::SINGULAR;
+						tries = (unsigned int)_traits.trialsBeforeFailure;
+						singular = Singularity::Singular;
 						break;
 					default:
 						throw LinboxError ("Bad return value from solveNonsingular");
@@ -121,7 +121,7 @@ namespace LinBox
 					break;
 				}
 
-			case WiedemannTraits::NONSINGULAR:
+			case Singularity::NonSingular:
 				{
 					switch (solveNonsingular (A, x, b, false)) {
 					case OK:
@@ -142,7 +142,7 @@ namespace LinBox
 					break;
 				}
 
-			case WiedemannTraits::SINGULAR:
+			case Singularity::Singular:
 				{
 					if (r == (size_t) -1) {
 						rank (r, A);
@@ -251,7 +251,7 @@ namespace LinBox
 			commentator().stop ("done");
 		}
 
-		if (_traits.checkResult ()) {
+		if (_traits.checkResult) {
 			commentator().start ("Checking whether Ax=b");
 			A.apply (z, x);
 
@@ -293,8 +293,8 @@ namespace LinBox
 		ReturnStatus status = OK, sfrs = OK;
 
 
-		switch (_traits.preconditioner ()) {
-		case WiedemannTraits::BUTTERFLY:
+		switch (_traits.preconditioner) {
+		case Preconditioner::Butterfly:
 			{
 				commentator().start ("Constructing butterfly preconditioner");
 
@@ -303,14 +303,14 @@ namespace LinBox
 				ButterflyP Q(field(), A.coldim ());
 				Compose< Blackbox, ButterflyP > AQ(&A, &Q);
 				Compose< ButterflyP, Compose< Blackbox, ButterflyP > > PAQ(&P, &AQ);
-
 				commentator().stop ("done");
 
 				sfrs = findRandomSolution (PAQ, x, b, r, &P, &Q);
+
 				break;
 			}
 
-		case WiedemannTraits::SPARSE:
+		case Preconditioner::Sparse:
 			{
 				commentator().start ("Constructing sparse preconditioner");
 
@@ -329,15 +329,17 @@ namespace LinBox
 				break;
 			}
 
-		case WiedemannTraits::TOEPLITZ:
+		case Preconditioner::Toeplitz:
 			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: Toeplitz preconditioner not implemented yet. Sorry." << std::endl;
 			break;
 
-		case WiedemannTraits::NO_PRECONDITIONER:
+		case Preconditioner::None:
 			{
+				commentator().start ("Wiedemann without preconditioner (hope the system has generic rank profile)");
 				SparseMatrix<Field> *P = NULL;
 				sfrs = findRandomSolution (A, x, b, r, P, P);
+				commentator().stop ("done");
 				delete P;
 				break;
 			}
@@ -358,10 +360,10 @@ namespace LinBox
 			break;
 
 		case FAILED:
-			if (_traits.certificate ()) {
+			if (_traits.certifyInconsistency) {
 				VectorWrapper::ensureDim (u, A.rowdim ());
 
-				if (certifyInconsistency (u, A, b))
+				if (certifyInconsistency (u, A, b, r))
 					status = INCONSISTENT;
 				else
 					status = FAILED;
@@ -381,7 +383,7 @@ namespace LinBox
 			break;
 		}
 
-		if (status == OK && _traits.checkResult ()) {
+		if (status == OK && _traits.checkResult) {
 			commentator().start ("Checking system solution");
 
 			VectorWrapper::ensureDim (Ax, A.rowdim ());
@@ -393,14 +395,14 @@ namespace LinBox
 			else {
 				commentator().stop ("FAILED");
 
-				if (_traits.certificate ()) {
+				if (_traits.certifyInconsistency) {
 					commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
 					<< "Computed system solution is not correct. "
 					<< "Attempting to find certificate of inconsistency." << std::endl;
 
 					VectorWrapper::ensureDim (u, A.rowdim ());
 
-					if (certifyInconsistency (u, A, b))
+					if (certifyInconsistency (u, A, b, r))
 						status = INCONSISTENT;
 					else
 						status = FAILED;
@@ -441,15 +443,20 @@ namespace LinBox
 			commentator().start ("Preparing right hand side");
 
 			stream >> v;
+
 			A.apply (Avpb, v);
 			_VD.addin (Avpb, b);
 			if (P != NULL) {
 				VectorWrapper::ensureDim (PAvpb, A.rowdim ());
 				P->apply (PAvpb, Avpb);
-				_VD.copy (bp, PAvpb, 0, r);
+                if (r != 0) {
+				    _VD.copy (bp, PAvpb, 0, r);
+                }
 			}
 			else {
-				_VD.copy (bp, Avpb, 0, r);
+                if (r != 0) {
+				    _VD.copy (bp, Avpb, 0, r);
+                }
 			}
 
 			commentator().stop ("done");
@@ -492,15 +499,13 @@ namespace LinBox
 	template<class Blackbox, class Vector>
 	typename WiedemannSolver<Field>::ReturnStatus
 	WiedemannSolver<Field>::findNullspaceElement (Vector             &x,
-						      const Blackbox     &A)
+						      const Blackbox     &A, const size_t r)
 	{
 		commentator().start ("Finding a nullspace element (Wiedemann)", "WiedemannSolver::findNullspaceElement");
 
 		Vector v(A.field()), Av(A.field()), PAv(A.field()), vp(A.field()), xp(A.field()), Qinvx(A.field());
 
 		RandomDenseStream<Field, Vector> stream (field(), _randiter, A.coldim ());
-
-		size_t r = (A.coldim () < A.rowdim ()) ? A.coldim () : A.rowdim ();
 
 		VectorWrapper::ensureDim (v, A.coldim ());
 		VectorWrapper::ensureDim (Av, A.rowdim ());
@@ -513,7 +518,7 @@ namespace LinBox
 			stream >> v;
 			A.apply (Av, v);
 
-			if (A.coldim () < A.rowdim ()) {
+			if (r < A.rowdim ()) {
 				VectorWrapper::ensureDim (vp, r);
 				_VD.copy (vp, Av, 0, r);
 			}
@@ -521,18 +526,25 @@ namespace LinBox
 			commentator().stop ("done");
 		}
 
-		if (A.coldim () < A.rowdim ()) {
-			Submatrix<Blackbox> Ap (&A, 0, 0, r, r);
-			status = solveNonsingular (Ap, x, vp, false);
-		}
-		else if (A.rowdim () < A.coldim ()) {
-			Submatrix<Blackbox> Ap (&A, 0, 0, r, r);
-			VectorWrapper::ensureDim (xp, r);
-			status = solveNonsingular (Ap, xp, Av, false);
-			_VD.copy (x, xp);
-		}
-		else
-			status = solveNonsingular (A, x, Av, false);
+        Submatrix<Blackbox> Ap (&A, 0, 0, r, r);
+        if (r < A.coldim()) {
+                // use xp instead of x
+            VectorWrapper::ensureDim (xp, r);
+            if (r < A.rowdim ()) {
+                // Use vp instead of Av
+                status = solveNonsingular (Ap, xp, vp, false);
+            } else {
+                status = solveNonsingular (Ap, xp, Av, false);
+            }
+            _VD.copy (x, xp);
+
+        } else {
+            if (r < A.rowdim()) {
+                // Use vp instead of Av
+                status = solveNonsingular (Ap, x, vp, false);
+            } else
+                status = solveNonsingular (Ap, x, Av, false);
+        }
 
 		if (status == SINGULAR) {
 			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
@@ -544,6 +556,15 @@ namespace LinBox
 
 		_VD.subin (x, v);
 
+#ifdef _LB_DEBUG
+        VectorWrapper::ensureDim(Av, A.rowdim());
+        A.apply(Av, x);
+        if (! VectorDomain<Field>(A.field()).isZero(Av)) {
+            throw LinboxError ("findNullspaceElement return vector is not in Nullspace");
+            return FAILED;
+        }
+#endif
+
 		commentator().stop ("done", NULL, "WiedemannSolver::findNullspaceElement");
 
 		return OK;
@@ -553,7 +574,8 @@ namespace LinBox
 	template <class Blackbox, class Vector>
 	bool WiedemannSolver<Field>::certifyInconsistency (Vector                          &u,
 							   const Blackbox                  &A,
-							   const Vector                    &b)
+							   const Vector                    &b,
+                               const size_t                    r)
 	{
 		commentator().start ("Obtaining certificate of inconsistency (Wiedemann)",
 				   "WiedemannSolver::certifyInconsistency");
@@ -561,20 +583,20 @@ namespace LinBox
 		// Vector PTinvu(A.field());
 		typename Field::Element uTb;
 
-		WiedemannTraits cert_traits;
+		Method::Wiedemann cert_traits;
 
 		bool ret = false;
 
-		cert_traits.preconditioner (WiedemannTraits::NO_PRECONDITIONER);
-		cert_traits.certificate (false);
-		cert_traits.singular (WiedemannTraits::SINGULAR);
-		cert_traits.maxTries (1);
+		cert_traits.preconditioner = Preconditioner::None;
+		cert_traits.certifyInconsistency = false;
+		cert_traits.singularity = Singularity::Singular;
+		cert_traits.trialsBeforeFailure = 1;
 
 		WiedemannSolver solver (field(), cert_traits, _randiter);
 
 		Transpose<Blackbox> AT (&A);
 
-		solver.findNullspaceElement (u, AT);
+		solver.findNullspaceElement (u, AT, r);
 		_VD.dot (uTb, u, b);
 
 		if (!field().isZero (uTb))

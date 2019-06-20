@@ -105,25 +105,25 @@ namespace LinBox
 		  */
 		//@{
 		///
-		template <class _Matrix> size_t& rankin(size_t &rank,
+		template <class _Matrix> size_t& rankInPlace(size_t &rank,
 							      _Matrix        &A,
-							      SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const;
+							      PivotStrategy   reord = PivotStrategy::Linear) const;
 		///
-		template <class _Matrix> size_t& rankin(size_t &rank,
+		template <class _Matrix> size_t& rankInPlace(size_t &rank,
 		_Matrix        &A,
 		size_t  Ni,
 		size_t  Nj,
-		SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const;
+		PivotStrategy   reord = PivotStrategy::Linear) const;
 		///
 		template <class _Matrix> size_t& rank(size_t &rank,
 		const _Matrix        &A,
-		SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const;
+		PivotStrategy   reord = PivotStrategy::Linear) const;
 		///
 		template <class _Matrix> size_t& rank(size_t &rank,
 		const _Matrix        &A,
 		size_t  Ni,
 		size_t  Nj,
-		SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const;
+		PivotStrategy   reord = PivotStrategy::Linear) const;
 		//@}
 
 		/** @name det
@@ -135,25 +135,25 @@ namespace LinBox
 		  */
 		//@{
 		///
-		template <class _Matrix> Element& detin(Element &determinant,
+		template <class _Matrix> Element& detInPlace(Element &determinant,
 		_Matrix        &A,
-		SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const;
+		PivotStrategy   reord = PivotStrategy::Linear) const;
 		///
-		template <class _Matrix> Element& detin(Element &determinant,
+		template <class _Matrix> Element& detInPlace(Element &determinant,
 		_Matrix        &A,
 		size_t  Ni,
 		size_t  Nj,
-		SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const;
+		PivotStrategy   reord = PivotStrategy::Linear) const;
 		///
 		template <class _Matrix> Element& det(Element &determinant,
 		const _Matrix        &A,
-		SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const;
+		PivotStrategy   reord = PivotStrategy::Linear) const;
 		///
 		template <class _Matrix> Element& det(Element &determinant,
 		const _Matrix        &A,
 		size_t  Ni,
 		size_t  Nj,
-		SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const;
+		PivotStrategy   reord = PivotStrategy::Linear) const;
 		//@}
 
 
@@ -199,12 +199,12 @@ namespace LinBox
 
 
 		template <class _Matrix, class Vector1, class Vector2>
-		Vector1& solvein(Vector1	&x,
+		Vector1& solveInPlace(Vector1	&x,
 				 _Matrix         &A,
 				 const Vector2	&b)  const;
 
 		template <class _Matrix, class Vector1, class Vector2, class Random>
-		Vector1& solvein(Vector1	&x,
+		Vector1& solveInPlace(Vector1	&x,
 				 _Matrix         &A,
 				 const Vector2	&b, Random& generator)  const;
 
@@ -370,7 +370,7 @@ Using : FindPivot and LU
 				      size_t Ni,
 				      size_t Nj) const;
 
-        
+
 		template <class _Matrix, class Perm, bool hasFFLAS>
         struct Continuation {
             size_t& operator()(

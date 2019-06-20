@@ -31,9 +31,9 @@
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/algorithms/cra-domain.h"
-#include "linbox/algorithms/cra-early-multip.h"
-#include "linbox/algorithms/cra-full-multip.h"
-#include "linbox/algorithms/cra-full-multip-fixed.h"
+#include "linbox/algorithms/cra-builder-early-multip.h"
+#include "linbox/algorithms/cra-builder-full-multip.h"
+#include "linbox/algorithms/cra-builder-full-multip-fixed.h"
 #include "linbox/algorithms/cra-givrnsfixed.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/integer.h"
@@ -254,42 +254,42 @@ bool TestCra(size_t N, int S, size_t seed)
 
 	bool pass = true;
 
-	pass &= TestOneCRA< LinBox::EarlyMultipCRA< Field > >(
+	pass &= TestOneCRA< LinBox::CRABuilderEarlyMultip< Field > >(
 						     report, iteration, genprime, N, 5);
 
-	pass &= TestOneCRA< LinBox::EarlyMultipCRA< Field > >(
+	pass &= TestOneCRA< LinBox::CRABuilderEarlyMultip< Field > >(
 						     report, iteration, genprime, N, 15);
 
-	pass &= TestOneCRA< LinBox::FullMultipCRA< Field > >(
+	pass &= TestOneCRA< LinBox::CRABuilderFullMultip< Field > >(
 						     report, iteration, genprime, N, iteration.getLogSize()+1);
 
-	pass &= TestOneCRA< LinBox::FullMultipCRA< Field > >(
+	pass &= TestOneCRA< LinBox::CRABuilderFullMultip< Field > >(
 						     report, iteration, genprime, N, 3*iteration.getLogSize()+15);
 
 #if 0
-	pass &= TestOneCRAbegin<LinBox::FullMultipFixedCRA< Field >,
+	pass &= TestOneCRAbegin<LinBox::CRABuilderFullMultipFixed< Field >,
 	     InteratorIt, LinBox::PrimeIterator<IteratorCategories::HeuristicTag> >(
 						       report, iterationIt, genprime, N, std::pair<size_t,double>(N,iteration.getLogSize()+1));
 
-	pass &= TestOneCRAbegin<LinBox::FullMultipFixedCRA< Field >,
+	pass &= TestOneCRAbegin<LinBox::CRABuilderFullMultipFixed< Field >,
 	     InteratorIt, LinBox::PrimeIterator<IteratorCategories::HeuristicTag> >(
 						       report, iterationIt, genprime, N, std::pair<size_t,double>(N,3*iteration.getLogSize()+15));
 
 
-	pass &= TestOneCRAWritePointer<LinBox::FullMultipFixedCRA< Field >,
+	pass &= TestOneCRAWritePointer<LinBox::CRABuilderFullMultipFixed< Field >,
 	     InteratorIt, LinBox::PrimeIterator<IteratorCategories::HeuristicTag> >(
 						       report, iterationIt, genprime, N, std::pair<size_t,double>(N,iterationIt.getLogSize()+1) );
 
-	pass &= TestOneCRAWritePointer<LinBox::FullMultipFixedCRA< Field >,
+	pass &= TestOneCRAWritePointer<LinBox::CRABuilderFullMultipFixed< Field >,
 	     InteratorIt, LinBox::PrimeIterator<IteratorCategories::HeuristicTag> >(
 						       report, iterationIt, genprime, N, std::pair<size_t,double>(N,3*iterationIt.getLogSize()+15) );
 
-	pass &= TestOneCRAWritePointer<LinBox::FullMultipFixedCRA< Field >,
+	pass &= TestOneCRAWritePointer<LinBox::CRABuilderFullMultipFixed< Field >,
 	     InteratorBlas< Field >,
 	     LinBox::PrimeIterator<IteratorCategories::HeuristicTag> >(
 					  report, iterationBlas, genprime, N, std::pair<size_t,double>(N,iterationIt.getLogSize()+1) );
 
-	pass &= TestOneCRAWritePointer<LinBox::FullMultipFixedCRA< Field >,
+	pass &= TestOneCRAWritePointer<LinBox::CRABuilderFullMultipFixed< Field >,
 	     InteratorBlas< Field >,
 	     LinBox::PrimeIterator<IteratorCategories::HeuristicTag> >(
 					  report, iterationBlas, genprime, N, std::pair<size_t,double>(N,3*iterationIt.getLogSize()+15) );

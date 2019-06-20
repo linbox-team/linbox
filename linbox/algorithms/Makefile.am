@@ -21,14 +21,14 @@
 
 pkgincludesubdir=$(pkgincludedir)/algorithms
 
-SUBDIRS=gauss opencl-kernels matrix-blas3 polynomial-matrix
+SUBDIRS=dixon-solver gauss opencl-kernels matrix-blas3 polynomial-matrix
 #  IML
 
 noinst_LTLIBRARIES=libalgorithms.la
 
 libalgorithms_la_SOURCES= diophantine-solver.C
 
-#  AM_CPPFLAGS= $(CBLAS_FLAG) $(GMP_CFLAGS) $(NTL_CFLAGS)  
+#  AM_CPPFLAGS= $(CBLAS_FLAG) $(GMP_CFLAGS) $(NTL_CFLAGS)
 
 AM_CPPFLAGS= -I$(top_srcdir) $(DEPS_CFLAGS) $(DEFAULT_CFLAGS)
 LDADD = $(DEPS_LIBS) $(LDFLAGS)
@@ -48,7 +48,6 @@ USE_OCL_HDRS = $(OCL_HDRS)
 pkgincludesub_HEADERS =            \
 	alt-blackbox-block-container.h     \
 	bbcharpoly.h                       \
-	bbsolve.h                          \
 	bitonic-sort.h                     \
 	blackbox-block-container-base.h    \
 	blackbox-block-container.h         \
@@ -68,14 +67,14 @@ pkgincludesub_HEADERS =            \
 	coppersmith-invariant-factors.h    \
 	cra-domain.h                       \
 	cra-domain-omp.h                   \
-	cra-domain-seq.h                   \
-	cra-early-multip.h                 \
-	cra-full-multip-fixed.h            \
-	cra-full-multip.h                  \
+	cra-domain-sequential.h                   \
+	cra-builder-early-multip.h                 \
+	cra-builder-full-multip-fixed.h            \
+	cra-builder-full-multip.h                  \
 	cra-givrnsfixed.h                  \
 	cra-kaapi.h                        \
-	cra-mpi.h                          \
-	cra-single.h                       \
+	cra-distributed.h                  \
+	cra-builder-single.h                       \
 	default.h                          \
 	dense-container.h                  \
 	dense-nullspace.h                  \
@@ -85,7 +84,6 @@ pkgincludesub_HEADERS =            \
 	diophantine-solver.inl             \
 	double-det.h                       \
 	dyadic-to-rational.h               \
-	echelon-form.h                     \
 	eliminator.h                       \
 	eliminator.inl                     \
 	fast-rational-reconstruction.h     \
@@ -121,15 +119,14 @@ pkgincludesub_HEADERS =            \
 	poly-interpolation.h               \
 	poly-smith-form.h                  \
 	poly-smith-form-local-x.h          \
-	rational-cra2.h                    \
-	rational-cra-early-multip.h        \
-	rational-cra-early-single.h        \
-	rational-cra-full-multip.h         \
+	rational-cra-var-prec.h                    \
+	rational-cra-builder-early-multip.h        \
+	rational-cra-builder-early-single.h        \
+	rational-cra-builder-full-multip.h         \
 	rational-cra.h                     \
 	rational-reconstruction2.h         \
 	rational-reconstruction-base.h     \
 	rational-reconstruction.h          \
-	rational-solver2.h                 \
 	rational-solver-adaptive.h         \
 	rational-solver.h                  \
 	rational-solver.inl                \
@@ -147,13 +144,14 @@ pkgincludesub_HEADERS =            \
 	smith-form-kannan-bachem.h         \
 	smith-form-local2.inl              \
 	smith-form-local.h                 \
+	smith-form-valence.h               \
 	smith-form-sparseelim-local.h      \
 	smith-form-sparseelim-poweroftwo.h \
 	toeplitz-det.h                     \
 	triangular-solve-gf2.h             \
 	triangular-solve.h                 \
-	varprec-cra-early-multip.h         \
-	varprec-cra-early-single.h         \
+	cra-builder-var-prec-early-multip.h         \
+	cra-builder-var-prec-early-single.h         \
 	vector-fraction.h                  \
 	weak-popov-form.h                  \
 	whisart_trace.h                    \

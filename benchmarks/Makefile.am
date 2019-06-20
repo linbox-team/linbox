@@ -47,8 +47,9 @@ PERFPUBLISHERFILE=benchmarks-report.xml
 
 BENCH_BASIC=               \
 		benchmark-example\
-		benchmark-order-basis
-
+		benchmark-dense-solve\
+		benchmark-order-basis \
+	        benchmark-solve-cra
 FAILS=    \
 		benchmark-ftrXm \
 		benchmark-ftrXm \
@@ -85,8 +86,9 @@ pkginclude_HEADERS = \
 		     benchmark.C \
 		     benchmark.inl
 
-EXTRA_DIST= \
-	    benchmark.doxy
+EXTRA_DIST =  \
+	perfpublisher.sh \
+	benchmark.doxy
 
 CLEANFILES= $(EXTRA_PROGRAMS) $(PERFPUBLISHERFILE)
 
@@ -102,6 +104,8 @@ benchmarks: ${EXTRA_PROGRAMS}
 
 benchmark_example_SOURCES       = benchmark-example.C
 benchmark_order_basis_SOURCES       = benchmark-order-basis.C
+benchmark_dense_solve_SOURCES       = benchmark-dense-solve.C
+benchmark_solve_cra_SOURCES       = benchmark-solve-cra.C
 
 #  benchmark_matmul_SOURCES         = benchmark-matmul.C
 #  benchmark_spmv_SOURCES           = benchmark-spmv.C
@@ -129,7 +133,7 @@ LINBOX_BIN=@bindir@
 
 # Perfpublisher script interaction - AB 2014/12/11
 perfpublisher:
-	+./perfpublisher.sh "$(PERFPUBLISHERFILE)" "$(EXTRA_PROGRAMS)" "$(CXX)"
+	$(top_srcdir)/tests/perfpublisher.sh "$(PERFPUBLISHERFILE)" "$(EXTRA_PROGRAMS)" "$(CXX)"
 	mv $(PERFPUBLISHERFILE) ..
 	make clean
 	mv ../$(PERFPUBLISHERFILE) .

@@ -65,7 +65,7 @@ namespace LinBox
 
 #define BW_BLOCK_DEFAULT 8UL
         //#define BW_MAX_TRY 100
-#define BW_MAX_TRY 1               
+#define BW_MAX_TRY 10
 	public:
 		const Field & field() const { return _BMD.field(); }
 
@@ -93,7 +93,7 @@ namespace LinBox
             }
             return x;
         }
-                
+
 		template <class Blackbox>
 		Vector &solveNonSingular (Vector &x, const Blackbox &B, const Vector &y) const
 		{
@@ -107,8 +107,8 @@ namespace LinBox
                         
             if (_left_blockdim >m/2 || _right_blockdim >n/2) 
                 std::cerr<<"BlockWiedemannSolver (Warning) : block size too large, number of tries might be large"<<std::endl;
-                        
-			//std::cout<<"row block: "<<_left_blockdim<<std::endl;
+
+            //std::cout<<"row block: "<<_left_blockdim<<std::endl;
 			//std::cout<<"col block: "<<_right_blockdim<<std::endl;
 
 			Block U(field(),_left_blockdim,m), UA(field(),_left_blockdim-1,m), V(field(),n,_right_blockdim);

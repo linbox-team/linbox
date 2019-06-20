@@ -111,7 +111,7 @@ namespace LinBox
 
 			typedef typename Blackbox::template rebind<Field>::other FBlackbox;
 			FBlackbox Ap(A,F);
-			detin( d, Ap, M);
+			detInPlace( d, Ap, M);
 
 			if (beta > 1) {
 				typename Field::Element y;
@@ -145,7 +145,7 @@ namespace LinBox
 	 * @param d Field element into which to store the result
 	 * @param A Black box of which to compute the determinant
 	 * @param tag explicit over the integers
-	 * @param M may be a Method::BlasElimination (default) or a Method::Wiedemann.
+	 * @param M may be a Method::DenseElimination (default) or a Method::Wiedemann.
 	 \ingroup solutions
 	 */
 	template <class Blackbox, class MyMethod>
@@ -172,7 +172,7 @@ namespace LinBox
 
 		PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<mymodular>::bestBitSize(A.coldim()));
 		//cout << "prime size: " << p_size << "\n";
-		EarlySingleCRA<mymodular> cra(4UL);
+		CRABuilderEarlySingle<mymodular> cra(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD);
 		IntegerModularDetReduced<Blackbox,MyMethod> iteration(A, M, beta,myfactor);
 
 #if 0
@@ -252,15 +252,15 @@ namespace LinBox
 		}
 
 		PrimeIterator<IteratorCategories::HeuristicTag> genprime1(FieldTraits<mymodular>::bestBitSize(A.coldim()));
-                
+
 		Integers ZZ;
-		RationalSolver < Integers , mymodular, PrimeIterator<IteratorCategories::HeuristicTag>, DixonTraits > RSolver(A. field(), genprime);
+		DixonSolver < Integers , mymodular, PrimeIterator<IteratorCategories::HeuristicTag>, Method::DenseElimination > RSolver(A. field(), genprime);
 #endif
-		RationalSolver < Integers , mymodular, PrimeIterator<IteratorCategories::HeuristicTag>, DixonTraits > RSolver;
+		DixonSolver < Integers , mymodular, PrimeIterator<IteratorCategories::HeuristicTag>, Method::DenseElimination > RSolver;
 
 		BlasVector<Integers> r_num1 (A.field(),A. coldim());
 
-		LastInvariantFactor < Integers ,RationalSolver < Integers, mymodular, PrimeIterator<IteratorCategories::HeuristicTag>, DixonTraits > >  LIF(RSolver);
+		LastInvariantFactor < Integers ,DixonSolver < Integers, mymodular, PrimeIterator<IteratorCategories::HeuristicTag>, Method::DenseElimination > >  LIF(RSolver);
 #ifdef _LB_H_DET_TIMING
 		BT.start();
 #endif
@@ -298,7 +298,7 @@ namespace LinBox
 		beta = lif*bonus;
 		iteration.Beta(beta);
 
-		EarlySingleCRA<mymodular> cra2(4UL);
+		CRABuilderEarlySingle<mymodular> cra2(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD);
 		Integer_t k = 1;
 
 		early_counter = 0;
@@ -336,7 +336,7 @@ namespace LinBox
 				//iteration.Moduli(moduli);
 				//iteration.Primes(primes);
 				k=1;
-				EarlySingleCRA<mymodular> cra3(4UL);
+				CRABuilderEarlySingle<mymodular> cra3(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD);
 
 				early_counter = 0;
 				while ( (early_counter < myfactor) && (!cra3.terminated() )) {
@@ -461,7 +461,7 @@ namespace LinBox
                 PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<mymodular>::bestBitSize(A.coldim()));
 
 		commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION) << "prime size: " << p_size << "\n";
-		ChineseRemainder< mymodular > cra(3UL);
+		ChineseRemainder< mymodular > cra(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD);
 		IntegerModularDetReduced<SparseMatrix<Integers >,MyMethod> iteration(A, M, beta,myfactor);
 #if 0
 		if (A.rowdim() < 200 ) {
@@ -537,7 +537,7 @@ namespace LinBox
                 PrimeIterator<IteratorCategories::HeuristicTag> genprime1(FieldTraits<mymodular>::bestBitSize(A.coldim()));
                 Integers ZZ;
 #endif
-		typedef RationalSolver < Integers , mymodular, PrimeIterator<IteratorCategories::HeuristicTag>, BlockHankelTraits > Solver;
+		typedef DixonSolver < Integers , mymodular, PrimeIterator<IteratorCategories::HeuristicTag>, Method::BlockHankel > Solver;
 		Solver RSolver(A. field(), genprime);
 
 		typename Vector<Integers>:: Dense r_num1 (A. coldim());
@@ -575,7 +575,7 @@ namespace LinBox
 		beta = lif*bonus;
 		iteration.Beta(beta);
 
-		ChineseRemainder< Givaro::Modular<double> > cra2(3UL);
+		ChineseRemainder< Givaro::Modular<double> > cra2(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD);
 		Integer k = 1;
 
 		early_counter = 0;
@@ -613,7 +613,7 @@ namespace LinBox
 				//iteration.Moduli(moduli);
 				//iteration.Primes(primes);
 				k=1;
-				ChineseRemainder< Givaro::Modular<double> > cra3(3UL);
+				ChineseRemainder< Givaro::Modular<double> > cra3(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD);
 
 				early_counter = 0;
 				while ( (early_counter < myfactor) && (!cra3.terminated() )) {

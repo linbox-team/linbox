@@ -26,7 +26,9 @@ EXTRA_DIST = \
 	maple-dense1.matrix		\
 	generic-dense.matrix		\
 	sparse-row.matrix		\
-	matrix-market-coordinate.matrix
+	matrix-market-coordinate.matrix \
+	30_30_27.sms			\
+	fib25.sms
 
 #  test.matrix			\
 	#

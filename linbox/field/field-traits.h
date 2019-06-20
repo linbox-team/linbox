@@ -47,38 +47,47 @@ namespace LinBox {
 	 */
 	namespace RingCategories {
 		//! generic ring.
-		struct GenericTag{};
+		struct GenericTag {
+			static std::string name() { return "RingCategories::GenericTag"; }
+		};
 		//! If it is isomorphic to Z/mZ, for some m or its extensions.
-		struct ModularTag : public virtual GenericTag{};
+		struct ModularTag : public virtual GenericTag {
+			static std::string name() { return "RingCategories::ModularTag"; }
+		};
 		//! Galois Field  GF(p^e)
-		struct GaloisTag : public virtual GenericTag {};
+		struct GaloisTag : public virtual GenericTag {
+			static std::string name() { return "RingCategories::GaloisTag"; }
+		};
 		//! If it is isomorphic to Z
-		struct IntegerTag : public virtual GenericTag{};
+		struct IntegerTag : public virtual GenericTag {
+			static std::string name() { return "RingCategories::IntegerTag"; }
+		};
 		//! If it is isomorphic to Q
-		struct RationalTag : public virtual GenericTag{};
+		struct RationalTag : public virtual GenericTag {
+			static std::string name() { return "RingCategories::RationalTag"; }
+		};
 	}
 
 	/*! Default ring category.
 	 */
+
 	template <class Field>
 	struct ClassifyRing {
 		typedef	RingCategories::GenericTag categoryTag;
 	};
 
-	using Givaro::Caster;
-
-        template<>
-        struct ClassifyRing<Givaro::QField<Givaro::Rational>> {
-                typedef RingCategories::RationalTag categoryTag;
-        };
-        template<class Element>
-        struct ClassifyRing<Givaro::ZRing<Element>> {
-                 typedef RingCategories::IntegerTag categoryTag;
-         };
-        template<>
-        struct ClassifyRing<Givaro::IntegerDom> {
-                typedef RingCategories::IntegerTag categoryTag;
-        };
+    template<>
+    struct ClassifyRing<Givaro::QField<Givaro::Rational>> {
+            typedef RingCategories::RationalTag categoryTag;
+    };
+    template<>
+    struct ClassifyRing<Givaro::ZRing<Givaro::Integer>> {
+            typedef RingCategories::IntegerTag categoryTag;
+    };
+    template<>
+    struct ClassifyRing<Givaro::IntegerDom> {
+            typedef RingCategories::IntegerTag categoryTag;
+    };
 
 	using Givaro::Caster;
 
@@ -185,17 +194,17 @@ namespace LinBox {
 	};
 
         template<>
-        inline uint64_t FieldTraits<Givaro::Modular<double> >::bestBitSize(size_t n){return std::max (UINT64_C(22), uint64_t(52-log2(n))>>1); }
+        inline uint64_t FieldTraits<Givaro::Modular<double> >::bestBitSize(size_t n){return std::max (UINT64_C(22), uint64_t(52-(n?log2(n):0))>>1); }
         template<>
-        inline uint64_t FieldTraits<Givaro::ModularBalanced<double> >::bestBitSize(size_t n){return std::max (UINT64_C(23), uint64_t(54-log2(n))>>1);}
+        inline uint64_t FieldTraits<Givaro::ModularBalanced<double> >::bestBitSize(size_t n){return std::max (UINT64_C(23), uint64_t(54-(n?log2(n):0))>>1);}
         template<>
-        inline uint64_t FieldTraits<Givaro::Modular<float> >::bestBitSize(size_t n){return std::max (UINT64_C(8), uint64_t(24-log2(n))>>1);}
+        inline uint64_t FieldTraits<Givaro::Modular<float> >::bestBitSize(size_t n){return std::max (UINT64_C(8), uint64_t(24-(n?log2(n):0))>>1);}
         template<>
-        inline uint64_t FieldTraits<Givaro::ModularBalanced<float> >::bestBitSize(size_t n){return std::max ( UINT64_C(8), uint64_t(26-log2(n))>>1);}
+        inline uint64_t FieldTraits<Givaro::ModularBalanced<float> >::bestBitSize(size_t n){return std::max ( UINT64_C(8), uint64_t(26-(n?log2(n):0))>>1);}
         template<>
-        inline uint64_t FieldTraits<Givaro::Modular<int64_t> >::bestBitSize(size_t n){return std::max ( UINT64_C(26), uint64_t(63-log2(n))>>1);}
+        inline uint64_t FieldTraits<Givaro::Modular<int64_t> >::bestBitSize(size_t n){return std::max ( UINT64_C(26), uint64_t(63-(n?log2(n):0))>>1);}
         template<>
-        inline uint64_t FieldTraits<Givaro::ModularBalanced<int64_t> >::bestBitSize(size_t n){return std::max ( UINT64_C(27), uint64_t(64-log2(n))>>1);}
+        inline uint64_t FieldTraits<Givaro::ModularBalanced<int64_t> >::bestBitSize(size_t n){return std::max ( UINT64_C(27), uint64_t(64-(n?log2(n):0))>>1);}
 
 } // Namespace LinBox
 

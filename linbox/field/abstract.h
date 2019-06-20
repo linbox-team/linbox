@@ -41,6 +41,8 @@
 
 #endif
 
+#include <givaro/ring-interface.h>
+
 namespace LinBox
 {
 
@@ -58,7 +60,7 @@ namespace LinBox
 	 * it.  This minimizes code bloat, but it also introduces indirection through
 	 * the use of pointers and virtual functions which is inefficient.
 	 */
-	class FieldAbstract {
+	class FieldAbstract : Givaro::FieldInterface<ElementAbstract> {
 	    public:
 
 		/// element type.
@@ -95,6 +97,16 @@ namespace LinBox
 		 */
 		virtual FieldAbstract &operator= (const FieldAbstract &F) = 0;
 
+		/** Initialization of field element as in an empty constructor.
+		 * Behaves like C++ allocator construct.
+		 * This function assumes the output field element x has already been
+		 * constructed, but that it is not already initialized.
+		 * Purely virtual.
+		 * @return reference to field element.
+		 * @param x field element to contain output (reference returned).
+		 */
+        using Givaro::FieldInterface<ElementAbstract>::init;
+
 		/** Initialization of field element from an integer.
 		 * Behaves like C++ allocator construct.
 		 * This function assumes the output field element x has already been
@@ -116,16 +128,6 @@ namespace LinBox
 		 */
 		virtual integer &convert (integer &x, const Element &y) const = 0;
 
-		/** Assignment of one field element to another.
-		 * This function assumes both field elements have already been
-		 * constructed and initialized.
-		 * Purely virtual.
-		 * @return reference to x
-		 * @param  x field element (reference returned).
-		 * @param  y field element.
-		 */
-		virtual Element &assign (Element &x, const Element &y) const = 0;
-
 		/** Cardinality.
 		 * Return integer representing cardinality of the domain.
 		 * Returns a non-negative integer for all domains with finite
@@ -144,6 +146,19 @@ namespace LinBox
 		 * @return integer representing characteristic of the domain.
 		 */
 		virtual integer &characteristic (integer &c) const = 0;
+
+#if 0
+		virtual Element &init (Element &x) const = 0;
+
+		/** Assignment of one field element to another.
+		 * This function assumes both field elements have already been
+		 * constructed and initialized.
+		 * Purely virtual.
+		 * @return reference to x
+		 * @param  x field element (reference returned).
+		 * @param  y field element.
+		 */
+		virtual Element &assign (Element &x, const Element &y) const = 0;
 
 		//@} Object Management
 
@@ -254,6 +269,38 @@ namespace LinBox
 		 * @param  y field element.
 		 */
 		virtual Element &axpy (Element       &r,
+				       const Element &a,
+				       const Element &x,
+				       const Element &y) const = 0;
+
+		/** Natural AXMY.
+		 * r  = a * x - y
+		 * This function assumes all field elements have already been
+		 * constructed and initialized.
+		 * Purely virtual.
+		 * @return reference to r.
+		 * @param  r field element (reference returned).
+		 * @param  a field element.
+		 * @param  x field element.
+		 * @param  y field element.
+		 */
+		virtual Element &axmy (Element       &r,
+				       const Element &a,
+				       const Element &x,
+				       const Element &y) const = 0;
+
+		/** Natural MAXPY.
+		 * r  = y - a * x
+		 * This function assumes all field elements have already been
+		 * constructed and initialized.
+		 * Purely virtual.
+		 * @return reference to r.
+		 * @param  r field element (reference returned).
+		 * @param  a field element.
+		 * @param  x field element.
+		 * @param  y field element.
+		 */
+		virtual Element &maxpy (Element       &r,
 				       const Element &a,
 				       const Element &x,
 				       const Element &y) const = 0;
@@ -383,6 +430,34 @@ namespace LinBox
 					 const Element &a,
 					 const Element &x) const = 0;
 
+		/** Inplace AXMY.
+		 * r  = a * x - r
+		 * This function assumes all field elements have already been
+		 * constructed and initialized.
+		 * Purely virtual
+		 * @return reference to r.
+		 * @param  r field element (reference returned).
+		 * @param  a field element.
+		 * @param  x field element.
+		 */
+		virtual Element &axmyin (Element       &r,
+					 const Element &a,
+					 const Element &x) const = 0;
+
+		/** Inplace MAXPY.
+		 * r  -= a * x
+		 * This function assumes all field elements have already been
+		 * constructed and initialized.
+		 * Purely virtual
+		 * @return reference to r.
+		 * @param  r field element (reference returned).
+		 * @param  a field element.
+		 * @param  x field element.
+		 */
+		virtual Element &maxpyin (Element       &r,
+					 const Element &a,
+					 const Element &x) const = 0;
+
 		//@} Inplace Arithmetic Operations
 #ifndef __LINBOX_XMLENABLED
 		/** @name Input/Output Operations */
@@ -424,7 +499,7 @@ namespace LinBox
 		virtual std::istream &read(std::istream &is, Element &e) const = 0;
 		virtual bool fromTag(Reader &R, Element &e) const = 0;
 #endif
-
+#endif
 	    protected:
 
 		/** Default Constructor.

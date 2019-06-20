@@ -119,7 +119,7 @@ namespace LinBox
 		}
 
 		inline Vector& applyVTrans(Vector                        &y,
-					   BlasMatrix<Domain>           &A,
+					   const BlasMatrix<Domain>           &A,
 					   const Vector                  &x) const
 		{
 

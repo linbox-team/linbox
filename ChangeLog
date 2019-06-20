@@ -1,3 +1,22 @@
+2019-06-07 v1.6.3
+	Minor update:
+	* fix test-suite failures when compiling in builddir!=srcdir
+	* improve jenkins builder script
+	* add README.md and other missing files in distribution
+2019-05-10 v1.6.0
+	Major code refactorization:
+	* solve solution
+	* echelon form code
+	* prime generators
+	* Smith form via Valence
+	* MPI serialization and communicators
+	Improvements:
+	* many bug fixes
+	* new hadamard bound solutions
+	* removal of the obsolete sage-interface
+	* update and new polynomial matrix classes and API with Givaro
+	* MPI based chinese remaindering applied to solve
+	* broader testsuite
 2017-12-08 v1.5.2
 	Improvements:
 	* minor bug fixes (missing config.h file, and SIMD macros)

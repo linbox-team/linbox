@@ -25,13 +25,13 @@
 /*! @file  tests/test-rank.h
  * @ingroup tests
  * @brief  no doc
- * @test 
+ * @test
 bool testSparseRank(const Field &F, const size_t & n, size_t m, const size_t & iterations, const double & sparsity)
- * @test 
+ * @test
 bool testRankMethods(const typename BlackBox::Field & F, size_t n, size_t m, unsigned int iterations, double sparsity = 0.05)
- * @test 
+ * @test
 //bool testRankMethodsGF2(const GF2& F2, size_t n, unsigned int iterations, double sparsity = 0.05)
- * @test 
+ * @test
 bool testZeroAndIdentRank (const Field &F, size_t n, unsigned int iterations = 1)
  */
 
@@ -39,7 +39,7 @@ bool testZeroAndIdentRank (const Field &F, size_t n, unsigned int iterations = 1
 
 #include "linbox/linbox-config.h"
 
-#define LINBOX_USE_BLACKBOX_THRESHOLD 100
+#define LINBOX_USE_BLACKBOX_THRESHOLD 100 // Override what's defined in methods.h
 #define LINBOX_COO_TRANSPOSE 100 /*  this is supposed to be triggerd half the time */
 #define LINBOX_CSR_TRANSPOSE 100 /*  this is supposed to be triggerd half the time */
 #define LINBOX_ELL_TRANSPOSE 100 /*  this is supposed to be triggerd half the time */
@@ -81,7 +81,7 @@ bool testRankMethods(const typename BlackBox::Field & F, size_t n, size_t m, uns
 	bool ret = true, equalRank = true;
 	unsigned int i;
 
-	unsigned long rank_blackbox, rank_elimination;
+	size_t rank_blackbox, rank_elimination;
 
 	typename Field::RandIter ri (F);
 
@@ -109,14 +109,14 @@ bool testRankMethods(const typename BlackBox::Field & F, size_t n, size_t m, uns
 #endif
 
 #if 0
-		Method::Hybrid MH;
+		Method::Auto MH;
 		LinBox::rank (rank_hybrid, A, MH);
 		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "hybrid rank " << rank_hybrid << endl;
 		equalRank = equalRank and rank_hybrid == rank_elimination;
 #endif
 #if 0
-		unsigned long rank_Wiedemann;
+		size_t rank_Wiedemann;
 		Method::Wiedemann MW;  // rank soln needs fixing for this.
 		LinBox::rank (rank_Wiedemann, A, MW);
 		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
@@ -124,15 +124,15 @@ bool testRankMethods(const typename BlackBox::Field & F, size_t n, size_t m, uns
 		equalRank = equalRank and rank_Wiedemann == rank_elimination;
 #endif
 
-		unsigned long rank_blas_elimination ;
-		if (F.characteristic() < LinBox::BlasBound 
+		size_t rank_blas_elimination ;
+		if (F.characteristic() < LinBox::BlasBound
 				and
 			F.characteristic() == F.cardinality()
 				and
 			numeric_limits<typename Field::Element>::is_signed
 		   )
 		{
-			Method::BlasElimination MBE;
+			Method::DenseElimination MBE;
 			LinBox::rank (rank_blas_elimination, A, MBE);
 			commentator().report ()//Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 			<< endl << "Blas elimination rank " << rank_blas_elimination << endl;
@@ -172,7 +172,7 @@ bool testRankMethodsGF2(const GF2& F2, size_t n, unsigned int iterations, double
 	bool ret = true;
 	unsigned int i;
 
-	unsigned long rank_blackbox, rank_elimination, rank_sparselimination, rank_sparse;
+	size_t rank_blackbox, rank_elimination, rank_sparselimination, rank_sparse;
 
 	GF2::RandIter ri (F2);
 
@@ -199,14 +199,14 @@ bool testRankMethodsGF2(const GF2& F2, size_t n, unsigned int iterations, double
 			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "blackbox rank " << rank_blackbox << endl;
 
-			LinBox::rank (rank_elimination, B, Method::BlasElimination());
+			LinBox::rank (rank_elimination, B, Method::DenseElimination());
 		if (rank_blackbox != rank_elimination) {
 			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: blackbox rank != BLAS elimination rank " << rank_elimination << endl;
 			ret = false;
 		}
 
-		rankin (rank_sparselimination, A, Method::SparseElimination());
+		rankInPlace (rank_sparselimination, A, Method::SparseElimination());
 		if (rank_blackbox != rank_sparselimination) {
 			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: blackbox rank != sparse elimination GF2 rank " << rank_elimination << endl;
@@ -214,7 +214,7 @@ bool testRankMethodsGF2(const GF2& F2, size_t n, unsigned int iterations, double
 		}
 
 
-		rankin (rank_sparse, B, Method::SparseElimination());
+		rankInPlace (rank_sparse, B, Method::SparseElimination());
 
 		if (rank_sparselimination != rank_sparse) {
 			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
@@ -245,7 +245,7 @@ bool testZeroAndIdentRank (const Field &F, size_t n, unsigned int iterations = 1
 	bool ret = true;
 	unsigned int i;
 
-	unsigned long r; // rank
+	size_t r; // rank
 
 	for (i = 0; i < iterations; ++i) {
 		commentator().startIteration (i);
@@ -278,7 +278,8 @@ r = n;
 			ret = false;
 		}
 
-		Method::Wiedemann MWS(Method::Wiedemann::SYMMETRIC);
+		Method::Wiedemann MWS;
+        MWS.shapeFlags = Shape::Symmetric;
 //		LinBox::rank (r, B, MWS);
 r = n;
 		if (r != n) {
@@ -327,7 +328,7 @@ bool testSparseRank(const Field &F, const size_t & n, size_t m, const size_t & i
 		if (!testRankMethods<Blackbox> (F, n, m, (unsigned int)iterations, sparsity)) pass = false;
 	}
 #endif //
-#if 1 // 
+#if 1 //
 	{
 		commentator().report() << "CSR " << endl;
 		typedef SparseMatrix<Field,SparseMatrixFormat::CSR> Blackbox; // inf loop
@@ -356,7 +357,7 @@ bool testSparseRank(const Field &F, const size_t & n, size_t m, const size_t & i
 	}
 #endif
 #if 0
-	{	
+	{
 		commentator().report() << "TPL " << endl;
 		typedef SparseMatrix<Field,SparseMatrixFormat::TPL> Blackbox;
 		if (!testRankMethods<Blackbox> (F, n, m, (unsigned int)iterations, sparsity)) pass = false;
