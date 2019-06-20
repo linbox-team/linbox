@@ -301,8 +301,9 @@ int main (int argc, char **argv)
 	commentator().start("Rational reconstruction test suite", "rr");
 
 	// Make sure some more detailed messages get printed
-	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+    commentator().setMaxDetailLevel (-1);
+    commentator().setMaxDepth (-1);
+    commentator().setReportStream (std::clog);
 
 	if (!testRandomFraction          (n, n,iterations)) pass = false;
 

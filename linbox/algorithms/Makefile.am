@@ -124,7 +124,6 @@ pkgincludesub_HEADERS =            \
 	rational-cra-builder-early-single.h        \
 	rational-cra-builder-full-multip.h         \
 	rational-cra.h                     \
-	rational-reconstruction2.h         \
 	rational-reconstruction-base.h     \
 	rational-reconstruction.h          \
 	rational-solver-adaptive.h         \
