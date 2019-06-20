@@ -209,8 +209,10 @@ namespace LinBox
 		template<class IMatrix>
 		Integer& oneInvariantFactor(Integer& oif, const IMatrix& A, int i) const
 		{
-
-			std::vector<Integer> empty_v;
+            
+			//std::vector<Integer> empty_v;
+            Givaro::ZRing<Integer> Z;
+            BlasVector<Givaro::ZRing<Integer> > empty_v (Z);
 
 			oneInvariantFactor (oif, A, i, empty_v);
 
@@ -272,8 +274,9 @@ namespace LinBox
 		Integer& oneInvariantFactor_Bonus(Integer& oif, Integer& bonus, const IMatrix& A, int i)
 		{
 
-			std::vector<Integer> empty_v;
-
+			//std::vector<Integer> empty_v;
+            Givaro::ZRing<Integer> Z;
+            BlasVector<Givaro::ZRing<Integer> > empty_v (Z);
 			oneInvariantFactor_Bonus (oif, bonus, A, i, empty_v);
 
 			return oif;
