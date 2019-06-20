@@ -55,6 +55,7 @@ namespace LinBox {
                 return true;
             }
 
+            commentator().start("[MultiModLifting] Lifting");
             VectorDomain<Ring> IVD(_lc.ring());
 
             // Stores each c0 + c1 pj + ... + ck pj^k for each pj
@@ -79,8 +80,10 @@ namespace LinBox {
                     _lc.ring().mulin(radices[j], _lc.prime(j));
                 }
             }
+            commentator().stop("[MultiModLifting] Lifting");
 
             // CRT reconstruction from paddicAccumulations
+            commentator().start("[MultiModLifting] CRT Reconstruction");
             using CRAField = Givaro::Modular<Integer>;
             RationalCRABuilderFullMultip<CRAField> craBuilder(_lc.log2Bound()
                                                               / 1.4427); // 1.4427 = 1 / log(2)
@@ -94,10 +97,13 @@ namespace LinBox {
                 CRAField field(radices[j]);
                 craBuilder.progress(field, padicAccumulations[j]);
             }
+            commentator().stop("[MultiModLifting] CRT Reconstruction");
 
             // Rational reconstruction
             // @note RR expects the bounds to be strict, this is why we add a + 1
+            commentator().start("[MultiModLifting] Rational Reconstruction");
             craBuilder.result(xNum, xDen, _lc.numBound() + 1);
+            commentator().stop("[MultiModLifting] Rational Reconstruction");
 
             return true;
         }
@@ -129,8 +135,11 @@ namespace LinBox {
             linbox_check(A.rowdim() == A.coldim());
 
             using LiftingContainer = MultiModLiftingContainer<Field, Ring, PrimeGenerator>;
+
+            commentator().start("[MultiModLifting] Init");
             LiftingContainer lc(_ring, _primeGenerator, A, b, m);
             MultiModRationalReconstruction<LiftingContainer> re(lc);
+            commentator().stop("[MultiModLifting] Init");
 
             if (!re.getRational(xNum, xDen)) {
                 std::cerr << "OUCH!" << std::endl;

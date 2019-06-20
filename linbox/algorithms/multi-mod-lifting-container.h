@@ -150,7 +150,6 @@ namespace LinBox {
                     if (bitSize > rnsBasisBitSize && h > 0) {
                         _rnsPrimes.erase(_rnsPrimes.begin(), _rnsPrimes.begin() + h);
                         _rnsPrimesCount -= h;
-                        std::cout << _rnsPrimes.size() << std::endl;
                         break;
                     }
                 }
@@ -291,7 +290,10 @@ namespace LinBox {
         {
             VectorDomain<Ring> IVD(_ring);
 
+            commentator().start("[MultiModLifting] nextDigit");
+
             // @fixme Should be done in parallel!
+            commentator().start("[MultiModLifting] Computing c");
             for (auto j = 0u; j < _primesCount; ++j) {
                 auto pj = _primes[j];
                 auto& r = _r[j];
@@ -329,6 +331,7 @@ namespace LinBox {
                     setRNSMatrixElementAllResidues(_rnsc, _primesCount, i, j, Fc[i]);
                 }
             }
+            commentator().stop("[MultiModLifting] c = A^{-1} r mod p");
 
             // ----- Compute the next residues!
 
@@ -336,12 +339,15 @@ namespace LinBox {
 
             // By first computing R <= R - A c as a fgemm within the RNS domain.
             // @fixme Use parallel helper!
+            commentator().start("[MultiModLifting] FGEMM R <= R - Ac");
             FFLAS::fgemm(*_rnsDomain, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, _n, _primesCount,
                          _n, _rnsDomain->mOne, _rnsA, _n, _rnsc, _primesCount, _rnsDomain->one,
                          _rnsR, _primesCount);
+            commentator().stop("[MultiModLifting] FGEMM R <= R - Ac");
 
             // We divide each residues by the according pj, which is done by multiplying.
             // @fixme Could be done in parallel!
+            commentator().start("[MultiModLifting] MUL FOR INV R <= R / p");
             for (auto j = 0u; j < _primesCount; ++j) {
                 for (auto i = 0u; i < _n; ++i) {
                     auto& rnsElement = _rnsR[i * _primesCount + j];
@@ -352,8 +358,10 @@ namespace LinBox {
                     }
                 }
             }
+            commentator().stop("[MultiModLifting] MUL FOR INV R <= R / p");
 
             // @fixme Could be done in parallel!
+            commentator().start("[MultiModLifting] CONVERT TO INTEGER r <= Q + R");
             for (auto j = 0u; j < _primesCount; ++j) {
                 auto& r = _r[j];
                 auto& Q = _Q[j];
@@ -366,8 +374,10 @@ namespace LinBox {
 
                 IVD.addin(r, Q);
             }
+            commentator().stop("[MultiModLifting] CONVERT TO INTEGER r <= Q + R");
 
-            ++_position;
+            commentator().stop("[MultiModLifting] nextDigit");
+
             return true;
         }
 
@@ -433,6 +443,5 @@ namespace LinBox {
                                  // HAS TO BE A MATRIX for gemm.
         std::vector<FVector>
             _Fc; // @note No need to be a matrix, as we will embed it into an RNS system later.
-        size_t _position;
     };
 }
