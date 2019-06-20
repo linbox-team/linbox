@@ -76,8 +76,8 @@ namespace LinBox { /* BlasVector */
 
 	protected:
 		size_t			       _size;
-		size_t                       _1stride;
-		Rep			        _rep;
+		size_t              _1stride;
+		Rep			            _rep;
 		pointer			        _ptr;
 		const Field		    * _field;
 	private:

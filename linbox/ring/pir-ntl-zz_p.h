@@ -125,7 +125,7 @@ namespace LinBox
 		}
 
 
-        inline Element& init (Element& x) const {}
+        inline Element& init (Element& x) const {return x;}
             
 		/** @brief
 		 *  Init x from y.
