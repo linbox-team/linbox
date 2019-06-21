@@ -118,7 +118,7 @@ int main (int argc, char **argv)
 	typedef BlasVector<Field> Vector;  
 
 	Field F ( (uint32_t) q);
-        Field::RandIter G(F, 0, seed); //random generator over F
+        Field::RandIter G(F, seed); //random generator over F
         Field::NonZeroRandIter NzG(G); //non-zero random generator over F 
 
 	MatrixDomain<Field> MD(F);
