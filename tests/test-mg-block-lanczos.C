@@ -88,7 +88,7 @@ static bool testRandomSolve (const Field           &F,
 	report << "Input matrix A:" << endl;
 	A.write (report);
 
-	typename Field::RandIter ri (F, 0, time (NULL));
+	typename Field::RandIter ri (F);
 
 	Method::BlockLanczos traits;
 	traits.preconditioner = Preconditioner::Symmetrize;
@@ -156,7 +156,7 @@ static bool testSampleNullspace (const Field           &F,
 	report << "Input matrix A:" << endl;
 	A.write (report);
 
-	typename Field::RandIter ri (F, 0, time (NULL));
+	typename Field::RandIter ri (F);
 
 	Method::BlockLanczos traits;
 	traits.preconditioner = Preconditioner::Symmetrize;
