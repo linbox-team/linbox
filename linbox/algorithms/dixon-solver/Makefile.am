@@ -1,4 +1,5 @@
 # Copyright (c) 2010 the LinBox group
+# written by Brice Boyer <boyer.brice@gmail.com>
 # ========LICENCE========
 # This file is part of the library LinBox.
 #
@@ -17,46 +18,9 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 # ========LICENCE========
 
+pkgincludesubdir=$(pkgincludedir)/algorithms/dixon-solver
 
-
-#we now need to include givaro headers for timer ?
-
-AM_CPPFLAGS= -I$(top_srcdir) $(DEPS_CFLAGS) $(DEFAULT_CFLAGS)
-LDADD = $(DEPS_LIBS) $(LDFLAGS)
-
-SUBDIRS=formats
-
-pkgincludesubdir=$(pkgincludedir)/util
-
-noinst_LTLIBRARIES=libutil.la
-
-
-libutil_la_SOURCES=	\
-	error.C		\
-	debug.C
-
-libutil_la_LDFLAGS=  $(LDFLAGS)
-
-#libutil_la_LIBADD=	\
-#	gmp++/libgmpxx.la
-
-pkgincludesub_HEADERS=    \
-	args-parser.h     \
-	commentator.h 	  \
-	commentator.inl   \
-	contracts.h 	  \
-	debug.h		  \
-	error.h		  \
-	field-axpy.h	  \
-	iml_wrapper.h     \
-	matrix-stream.h	  \
-	matrix-stream.inl \
-	mpicpp.h	  \
-	mpicpp.inl	  \
-	prime-stream.h	  \
-	serialization.h   \
-	serialization.inl \
-	timer.h		  \
-	write-mm.h
-
-EXTRA_DIST = util.doxy
+pkgincludesub_HEADERS =         \
+	dixon-solver-dense.h        \
+	dixon-solver-dense.inl		\
+	dixon-solver-symbolic-numeric.h
