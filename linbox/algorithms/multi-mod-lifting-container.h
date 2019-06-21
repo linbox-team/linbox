@@ -93,6 +93,8 @@ namespace LinBox {
             , _A(A)
             , _b(b)
             , _n(A.rowdim())
+            , _rMatrix(_ring)
+            , _qMatrix(_ring)
         {
             linbox_check(A.rowdim() == A.coldim());
 
@@ -228,22 +230,23 @@ namespace LinBox {
 
             //----- Locals setup
 
-            _r.reserve(_primesCount);
-            _Q.reserve(_primesCount);
+            _rMatrix = IMatrix(_ring, _n, _primesCount);
+            _qMatrix = IMatrix(_ring, _n, _primesCount);
+
             _R.reserve(_primesCount);
             _Fc.reserve(_primesCount);
             _FR.reserve(_primesCount);
             for (auto j = 0u; j < _primesCount; ++j) {
                 auto& F = _fields[j];
 
-                _r.emplace_back(_ring, _n);
-                _Q.emplace_back(_ring, _n);
                 _R.emplace_back(_ring, _n);
                 _Fc.emplace_back(F, _n);
                 _FR.emplace_back(F, _n);
 
                 // Initialize all residues to b
-                _r.back() = _b; // Copying data
+                for (auto i = 0u; i < _n; ++i) {
+                    _rMatrix.refEntry(i, j) = _b[i];
+                }
             }
         }
 
@@ -292,19 +295,18 @@ namespace LinBox {
         bool next(std::vector<IVector>& digits)
         {
             VectorDomain<Ring> IVD(_ring);
+            BlasMatrixDomain<Ring> IMD(_ring);
 
             // commentator().start("[MultiModLifting] Computing c");
             #pragma omp parallel for
             for (auto j = 0u; j < _primesCount; ++j) {
                 auto pj = _primes[j];
-                auto& r = _r[j];
-                auto& Q = _Q[j];
                 auto& R = _R[j];
 
                 // @note There is no VectorDomain::divmod yet.
                 // Euclidian division so that rj = pj Qj + Rj
                 for (auto i = 0u; i < _n; ++i) {
-                    _ring.quoRem(Q[i], R[i], r[i], pj);
+                    _ring.quoRem(_qMatrix.refEntry(i, j), R[i], _rMatrix.getEntry(i, j), pj);
                 }
 
                 // Convert R to the field
@@ -336,13 +338,14 @@ namespace LinBox {
             // r <= Q + (R - A c) / p
 
             // By first computing R <= R - A c as a fgemm within the RNS domain.
+            // commentator().start("[MultiModLifting] FGEMM R <= R - Ac");
             PAR_BLOCK
             {
                 using RNSParallel = FFLAS::ParSeqHelper::Parallel<FFLAS::CuttingStrategy::RNSModulus, FFLAS::StrategyParameter::Threads>;
                 using FGEMMSequential = FFLAS::ParSeqHelper::Sequential;
                 using ComposedParSeqHelper = FFLAS::ParSeqHelper::Compose<RNSParallel, FGEMMSequential>;
                 using MMHelper = FFLAS::MMHelper<RNSDomain, FFLAS::MMHelperAlgo::Classic, FFLAS::ModeCategories::DefaultTag, ComposedParSeqHelper>;
-                ComposedParSeqHelper composedParSeqHelper(4, 4);
+                ComposedParSeqHelper composedParSeqHelper(4, 4); // @fixme REPLACE THESE 444!
                 MMHelper mmHelper(*_rnsDomain, -1, composedParSeqHelper);
 
                 FFLAS::fgemm(*_rnsDomain, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, _n, _primesCount,
@@ -368,20 +371,10 @@ namespace LinBox {
             // commentator().stop("[MultiModLifting] MUL FOR INV R <= R / p");
 
             // commentator().start("[MultiModLifting] CONVERT TO INTEGER r <= Q + R");
-            #pragma omp parallel for
-            for (auto j = 0u; j < _primesCount; ++j) {
-                auto& r = _r[j];
-                auto& Q = _Q[j];
-
-                // r <- (R - Ac) / p
-                // @fixme @cpernet Don't know how to do that with one fconvert_rns!
-                for (auto i = 0u; i < _n; ++i) {
-                    FFLAS::fconvert_rns(*_rnsDomain, 1, 1, 0, &r[i], 1,
-                                        _rnsR + (i * _primesCount + j));
-                }
-
-                IVD.addin(r, Q);
-            }
+            // @fixme @cpernet Is this parallel?
+            FFLAS::fconvert_rns(*_rnsDomain, _n, _primesCount, 0, _rMatrix.getWritePointer(), _primesCount,
+                                _rnsR + 0);
+            IMD.addin(_rMatrix, _qMatrix);
             // commentator().stop("[MultiModLifting] CONVERT TO INTEGER r <= Q + R");
 
             return true;
@@ -442,11 +435,10 @@ namespace LinBox {
         std::vector<Field> _fields; // All fields Modular<p[i]>
 
         //----- Iteration
-        std::vector<IVector> _r; // @todo Could be a matrix? Might not be useful, as it is never
-                                 // used directly in computations.
-        std::vector<IVector> _Q;
         std::vector<IVector> _R; // Will be inited to RNS within _rnsR
         std::vector<FVector> _Fc;
         std::vector<FVector> _FR;
+        IMatrix _rMatrix;
+        IMatrix _qMatrix;
     };
 }
