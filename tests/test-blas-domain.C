@@ -425,24 +425,6 @@ static bool testMulAddAgain (const Field& F, size_t n, int iterations)
 
 	size_t ll = 17 ;
 	Integer::seeding();
-#if 0
-	size_t lA = 15 ;
-	size_t lB = 18 ;
-	size_t lC = 19 ;
-
-	Givaro::ZRing<Integer> ZZ ;
-
-	typedef RandomIntegerIterator<>                       IntRandIter ;
-	typedef RandomDenseMatrix<IntRandIter, Givaro::ZRing<Integer> > IntRand_t;
-
-	IntRandIter RA(ZZ,lA);
-	IntRandIter RB(ZZ,lB);
-	IntRandIter RC(ZZ,lC);
-
-	IntRand_t Arand (ZZ,RA);
-	IntRand_t Brand (ZZ,RB);
-	IntRand_t Crand (ZZ,RC);
-#endif
 
 	for (int k=0;k<iterations; ++k) {
 
