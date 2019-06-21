@@ -60,15 +60,15 @@ namespace LinBox
 		~ClassicRationalReconstruction() {}
 
 		//Wang method
-		bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m) const
+		bool RationalReconstruction(Element& a, Element& b, const Element& x, const Element& m) const
 		{
 			Element a_bound; _intRing.sqrt(a_bound, m/2);
-			bool res = reconstructRational(a,b,x,m,a_bound);
+			bool res = RationalReconstruction(a,b,x,m,a_bound);
 			res = res && (b <= a_bound);
 			return res;
 		}
 
-		bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m, const Element& a_bound) const{
+		bool RationalReconstruction(Element& a, Element& b, const Element& x, const Element& m, const Element& a_bound) const{
 			bool res=false;
 
 			if (x == 0) {
@@ -237,15 +237,15 @@ namespace LinBox
 
 			~ClassicMaxQRationalReconstruction() {}
 
-			bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m) const
+			bool RationalReconstruction(Element& a, Element& b, const Element& x, const Element& m) const
 			{
 				bool res = maxEEA(a,b,x,m);
 				return res;
 			}
 
-			bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m, const Element& a_bound) const{
+			bool RationalReconstruction(Element& a, Element& b, const Element& x, const Element& m, const Element& a_bound) const{
 				// bool res= false;
-				return /*  res =*/ ClassicRationalReconstruction<Ring>::reconstructRational(a,b,x,m,a_bound);
+				return /*  res =*/ ClassicRationalReconstruction<Ring>::RationalReconstruction(a,b,x,m,a_bound);
 			}
 
 		protected:

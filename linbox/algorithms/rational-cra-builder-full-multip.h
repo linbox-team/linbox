@@ -69,7 +69,7 @@ namespace LinBox
 		Integer& iterativeratrecon(Integer& u1, Integer& new_den, const Integer& old_den, const Integer& m1, const Integer& s)
 		{
 			Integer a;
-			_ZZ.reconstructRational(a, new_den, u1*=old_den, m1, s);
+			_ZZ.RationalReconstruction(a, new_den, u1*=old_den, m1, s);
 			return u1=a;
 		}
 	};
