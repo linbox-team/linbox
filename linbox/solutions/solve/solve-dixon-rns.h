@@ -83,7 +83,7 @@ namespace LinBox {
             commentator().stop("[MultiModLifting] Lifting");
 
             // CRT reconstruction from paddicAccumulations
-            commentator().start("[MultiModLifting] CRT Reconstruction");
+            commentator().start("[MultiModLifting] CRT Reconstruction Progress");
             using CRAField = Givaro::Modular<Integer>;
             RationalCRABuilderFullMultip<CRAField> craBuilder(_lc.log2Bound()
                                                               / 1.4427); // 1.4427 = 1 / log(2)
@@ -97,13 +97,11 @@ namespace LinBox {
                 CRAField field(radices[j]);
                 craBuilder.progress(field, padicAccumulations[j]);
             }
-            commentator().stop("[MultiModLifting] CRT Reconstruction");
+            commentator().stop("[MultiModLifting] CRT Reconstruction Progress");
 
             // Rational reconstruction
             // @note RR expects the bounds to be strict, this is why we add a + 1
-            commentator().start("[MultiModLifting] Rational Reconstruction");
             craBuilder.result(xNum, xDen, _lc.numBound() + 1);
-            commentator().stop("[MultiModLifting] Rational Reconstruction");
 
             return true;
         }
@@ -165,7 +163,7 @@ namespace LinBox {
         // implicitly requiring 0-{p-1} representation of the p-adic sequence elements.
         using Field = Givaro::Modular<double>;
         using PrimeGenerator = PrimeIterator<IteratorCategories::HeuristicTag>;
-        PrimeGenerator primeGenerator(FieldTraits<Field>::bestBitSize(A.coldim()), 12); // @fixme REMOVE SEED
+        PrimeGenerator primeGenerator(FieldTraits<Field>::bestBitSize(A.coldim()));
 
         DixonRNSSolver<Field, Ring, PrimeGenerator> solver(A.field(), primeGenerator);
         solver.solve(xNum, xDen, A, b, m);

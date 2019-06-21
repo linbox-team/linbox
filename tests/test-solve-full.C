@@ -95,6 +95,8 @@ namespace {
 template <class SolveMethod, class Matrix, class Vector, class ResultMatrix, class ResultVector>
 bool check_result(ResultVector& x, Matrix& A, Vector& b, ResultMatrix& RA, ResultVector& Rb)
 {
+    std::cout << "Checking result..." << std::endl;
+
     ResultVector RAx(RA.field(), Rb.size());
     RA.apply(RAx, x);
 
@@ -103,6 +105,8 @@ bool check_result(ResultVector& x, Matrix& A, Vector& b, ResultMatrix& RA, Resul
         print_error<SolveMethod>(x, A, b, "Ax != b");
         return false;
     }
+
+    std::cout << "Result OK !" << std::endl;
 
     return true;
 }
@@ -291,7 +295,7 @@ int main(int argc, char** argv)
         // // ok = ok && test_blackbox_solve(Method::CRAAuto(method), QQ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
 
         // // ----- Rational Dixon
-        // ok = ok && test_dense_solve(Method::Dixon(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
+        ok = ok && test_dense_solve(Method::Dixon(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
         // ok = ok && test_sparse_solve(Method::Dixon(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
         // // @fixme Dixon<Wiedemann> does not compile
         // // ok = ok && test_blackbox_solve(Method::Dixon(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);

@@ -112,7 +112,7 @@ namespace LinBox {
             {
                 // Based on Chen-Storjohann's paper, this is the bit size
                 // of the needed RNS basis for the residue computation
-                double rnsBasisBitSize = std::ceil(1.0 + Givaro::logtwo(1 + infinityNormA * _n)); // @fixme @jgdumas Is this OK, then?
+                double rnsBasisBitSize = std::ceil(1.0 + Givaro::logtwo(1 + infinityNormA * _n));
                 _rnsPrimesCount = std::ceil(rnsBasisBitSize / (primeGenerator.getBits() - 1));
                 _rnsPrimes.resize(_rnsPrimesCount);
                 // std::cout << "_rnsPrimesCount: " << _rnsPrimesCount << std::endl;
@@ -213,7 +213,7 @@ namespace LinBox {
             {
                 double log2PrimesProduct = 0.0;
                 for (auto& pj : _primes) {
-                    log2PrimesProduct += Givaro::logtwo(Integer(pj));
+                    log2PrimesProduct += Givaro::logtwo(pj);
                 }
 
                 auto hb = RationalSolveHadamardBound(A, b);
@@ -223,6 +223,7 @@ namespace LinBox {
 
                 // _iterationsCount = log2(2 * N * D) / log2(p1 * p2 * ...)
                 _iterationsCount = std::ceil(_log2Bound / log2PrimesProduct);
+                std::cout << "_iterationsCount " << _iterationsCount << std::endl;
             }
 
             //----- Locals setup
@@ -231,6 +232,7 @@ namespace LinBox {
             _Q.reserve(_primesCount);
             _R.reserve(_primesCount);
             _Fc.reserve(_primesCount);
+            _FR.reserve(_primesCount);
             for (auto j = 0u; j < _primesCount; ++j) {
                 auto& F = _fields[j];
 
@@ -238,6 +240,7 @@ namespace LinBox {
                 _Q.emplace_back(_ring, _n);
                 _R.emplace_back(_ring, _n);
                 _Fc.emplace_back(F, _n);
+                _FR.emplace_back(F, _n);
 
                 // Initialize all residues to b
                 _r.back() = _b; // Copying data
@@ -290,10 +293,8 @@ namespace LinBox {
         {
             VectorDomain<Ring> IVD(_ring);
 
-            commentator().start("[MultiModLifting] nextDigit");
-
-            // @fixme Should be done in parallel!
-            commentator().start("[MultiModLifting] Computing c");
+            // commentator().start("[MultiModLifting] Computing c");
+            #pragma omp parallel for
             for (auto j = 0u; j < _primesCount; ++j) {
                 auto pj = _primes[j];
                 auto& r = _r[j];
@@ -303,25 +304,22 @@ namespace LinBox {
                 // @note There is no VectorDomain::divmod yet.
                 // Euclidian division so that rj = pj Qj + Rj
                 for (auto i = 0u; i < _n; ++i) {
-                    // @fixme @cpernet Is this OK for any Ring or should we be sure we are using
-                    // Integers?
                     _ring.quoRem(Q[i], R[i], r[i], pj);
-                    // std::cout << "Q" << j << " " << Q[i] << std::endl;
-                    // std::cout << "R" << j << " " << R[i] << std::endl;
                 }
 
                 // Convert R to the field
-                // @fixme Put that FVector in already allocated memory, and not use a temporary here.
                 auto& F = _fields[j];
-                FVector FR(F, R); // rebind
-
+                auto& FR = _FR[j];
+                auto& digit = digits[j];
                 auto& B = _B[j];
                 auto& Fc = _Fc[j];
+                // @fixme Am I copying the data an extra time?
+                FR = FVector(F, R); // rebind
                 B.apply(Fc, FR);
 
                 // @fixme We might not need to store digits into IVectors, and returning _Fc
                 // would do the trick
-                digits[j] = IVector(_ring, Fc);
+                digit = IVector(_ring, Fc);
 
                 // Store the very same result in an RNS system,
                 // but fact is all the primes of the RNS system are bigger
@@ -331,23 +329,32 @@ namespace LinBox {
                     setRNSMatrixElementAllResidues(_rnsc, _primesCount, i, j, Fc[i]);
                 }
             }
-            commentator().stop("[MultiModLifting] c = A^{-1} r mod p");
+            // commentator().stop("[MultiModLifting] c = A^{-1} r mod p");
 
             // ----- Compute the next residues!
 
             // r <= Q + (R - A c) / p
 
             // By first computing R <= R - A c as a fgemm within the RNS domain.
-            // @fixme Use parallel helper!
-            commentator().start("[MultiModLifting] FGEMM R <= R - Ac");
-            FFLAS::fgemm(*_rnsDomain, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, _n, _primesCount,
-                         _n, _rnsDomain->mOne, _rnsA, _n, _rnsc, _primesCount, _rnsDomain->one,
-                         _rnsR, _primesCount);
-            commentator().stop("[MultiModLifting] FGEMM R <= R - Ac");
+            PAR_BLOCK
+            {
+                using RNSParallel = FFLAS::ParSeqHelper::Parallel<FFLAS::CuttingStrategy::RNSModulus, FFLAS::StrategyParameter::Threads>;
+                using FGEMMSequential = FFLAS::ParSeqHelper::Sequential;
+                using ComposedParSeqHelper = FFLAS::ParSeqHelper::Compose<RNSParallel, FGEMMSequential>;
+                using MMHelper = FFLAS::MMHelper<RNSDomain, FFLAS::MMHelperAlgo::Classic, FFLAS::ModeCategories::DefaultTag, ComposedParSeqHelper>;
+                ComposedParSeqHelper composedParSeqHelper(4, 4);
+                MMHelper mmHelper(*_rnsDomain, -1, composedParSeqHelper);
+
+                FFLAS::fgemm(*_rnsDomain, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, _n, _primesCount,
+                            _n, _rnsDomain->mOne, _rnsA, _n, _rnsc, _primesCount, _rnsDomain->one,
+                            _rnsR, _primesCount, mmHelper);
+            }
+            // commentator().stop("[MultiModLifting] FGEMM R <= R - Ac");
 
             // We divide each residues by the according pj, which is done by multiplying.
             // @fixme Could be done in parallel!
-            commentator().start("[MultiModLifting] MUL FOR INV R <= R / p");
+            // @fixme @cpernet Don't know why, can't make it parallel!
+            // commentator().start("[MultiModLifting] MUL FOR INV R <= R / p");
             for (auto j = 0u; j < _primesCount; ++j) {
                 for (auto i = 0u; i < _n; ++i) {
                     auto& rnsElement = _rnsR[i * _primesCount + j];
@@ -358,10 +365,10 @@ namespace LinBox {
                     }
                 }
             }
-            commentator().stop("[MultiModLifting] MUL FOR INV R <= R / p");
+            // commentator().stop("[MultiModLifting] MUL FOR INV R <= R / p");
 
-            // @fixme Could be done in parallel!
-            commentator().start("[MultiModLifting] CONVERT TO INTEGER r <= Q + R");
+            // commentator().start("[MultiModLifting] CONVERT TO INTEGER r <= Q + R");
+            #pragma omp parallel for
             for (auto j = 0u; j < _primesCount; ++j) {
                 auto& r = _r[j];
                 auto& Q = _Q[j];
@@ -369,14 +376,13 @@ namespace LinBox {
                 // r <- (R - Ac) / p
                 // @fixme @cpernet Don't know how to do that with one fconvert_rns!
                 for (auto i = 0u; i < _n; ++i) {
-                    FFLAS::fconvert_rns(*_rnsDomain, 1, 1, 0, &r[i], 1, _rnsR + (i * _primesCount + j));
+                    FFLAS::fconvert_rns(*_rnsDomain, 1, 1, 0, &r[i], 1,
+                                        _rnsR + (i * _primesCount + j));
                 }
 
                 IVD.addin(r, Q);
             }
-            commentator().stop("[MultiModLifting] CONVERT TO INTEGER r <= Q + R");
-
-            commentator().stop("[MultiModLifting] nextDigit");
+            // commentator().stop("[MultiModLifting] CONVERT TO INTEGER r <= Q + R");
 
             return true;
         }
@@ -385,7 +391,7 @@ namespace LinBox {
         // Helper function, setting all residues of a matrix element to the very same value.
         // This doesn't check the moduli.
         inline void setRNSMatrixElementAllResidues(RNSElementPtr& A, size_t lda, size_t i, size_t j,
-                                            double value)
+                                                   double value)
         {
             auto& Aij = A[i * lda + j];
             auto stride = Aij._stride;
@@ -439,9 +445,8 @@ namespace LinBox {
         std::vector<IVector> _r; // @todo Could be a matrix? Might not be useful, as it is never
                                  // used directly in computations.
         std::vector<IVector> _Q;
-        std::vector<IVector> _R; // @fixme This one should be expressed in a RNS system q, and
-                                 // HAS TO BE A MATRIX for gemm.
-        std::vector<FVector>
-            _Fc; // @note No need to be a matrix, as we will embed it into an RNS system later.
+        std::vector<IVector> _R; // Will be inited to RNS within _rnsR
+        std::vector<FVector> _Fc;
+        std::vector<FVector> _FR;
     };
 }

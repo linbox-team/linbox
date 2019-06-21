@@ -68,7 +68,11 @@ namespace LinBox
         template <class Vect>
 		Vect& result (Vect &num, Integer& den, const Integer& numBound)
 		{
+            commentator().start("[RationalCRABuilderFullMultip] CRT Reconstruction");
             Father_t::result(num, false);
+            commentator().stop("[RationalCRABuilderFullMultip] CRT Reconstruction");
+
+            commentator().start("[RationalCRABuilderFullMultip] Rational Reconstruction");
             den = 1;
             const auto& mod = Father_t::getModulus();
             Integer nd;
@@ -81,6 +85,7 @@ namespace LinBox
                     den *= nd;
                 }
             }
+            commentator().stop("[RationalCRABuilderFullMultip] Rational Reconstruction");
             return num;
         }
 
@@ -88,7 +93,8 @@ namespace LinBox
 		Integer& iterativeratrecon(Integer& u1, Integer& new_den, const Integer& old_den, const Integer& m1, const Integer& sn)
 		{
             // @note This interface of the rational does the RatRecon.
-            Givaro::Rational myRational(Integer::modin(u1 *= old_den, m1), m1, sn);
+            Integer::modin(u1 *= old_den, m1);
+            Givaro::Rational myRational(u1, m1, sn);
             u1 = myRational.nume();
             new_den = myRational.deno();
 			return u1;
