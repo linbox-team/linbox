@@ -129,12 +129,14 @@ namespace LinBox {
         } while (notfr);
 
         typedef DixonLiftingContainer<Ring, Field, IMatrix, BlasMatrix<Field>> LiftingContainer;
+        commentator().start("CLASSIC DIXON LIFTING");
         LiftingContainer lc(_ring, *F, A, *FMP, b, _prime);
         RationalReconstruction<LiftingContainer> re(lc);
         if (!re.getRational(num, den, 0)) {
             delete FMP;
             return SS_FAILED;
         }
+        commentator().stop("CLASSIC DIXON LIFTING");
 #ifdef RSTIMING
         ttNonsingularSolve.update(re, lc);
 #endif
@@ -703,6 +705,7 @@ namespace LinBox {
             // ----- Do lifting on sub matrix
 
             BlasMatrix<Ring> BBA_minor(A_minor);
+            commentator().start("CLASSIC DIXON LIFTING");
             LiftingContainer lc(_ring, _field, BBA_minor, *Ap_minor_inv, newb, _prime);
 
             // ----- Reconstruct rational
@@ -713,6 +716,7 @@ namespace LinBox {
                 // dirty, but should not be called
                 return SS_FAILED;
             }
+            commentator().stop("CLASSIC DIXON LIFTING");
 
 #ifdef RSTIMING
             ttSystemSolve.update(re, lc);

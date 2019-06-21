@@ -190,6 +190,7 @@ namespace LinBox {
                 _rnsA = FFLAS::fflas_new(*_rnsDomain, _n, _n);
                 _rnsc = FFLAS::fflas_new(*_rnsDomain, _n, _primesCount);
                 _rnsR = FFLAS::fflas_new(*_rnsDomain, _n, _primesCount);
+                _rnsPrimesInverses = FFLAS::fflas_new(*_rnsDomain, _primesCount);
 
                 // @note So that 2^(16*cmax) is the max element of A.
                 double cmax = logInfinityNormA / 16.;
@@ -202,11 +203,17 @@ namespace LinBox {
                 _primesRNSInverses.resize(_primesCount);
                 for (auto j = 0u; j < _primesCount; ++j) {
                     auto prime = _primes[j];
-                    _primesRNSInverses[j].resize(_rnsPrimesCount);
+
+                    auto& rnsPrimeInverse = _rnsPrimesInverses[j];
+                    auto stride = rnsPrimeInverse._stride;
+
+                    _primesRNSInverses[j].resize(_rnsPrimesCount); // @fixme TBR
+
                     for (auto h = 0u; h < _rnsPrimesCount; ++h) {
                         auto& rnsF = _rnsSystem->_field_rns[h];
                         auto& primeInverse = _primesRNSInverses[j][h];
                         rnsF.inv(primeInverse, prime);
+                        rnsPrimeInverse._ptr[h * stride] = primeInverse;
                     }
                 }
             }
@@ -357,25 +364,30 @@ namespace LinBox {
             // We divide each residues by the according pj, which is done by multiplying.
             // @fixme Could be done in parallel!
             // @fixme @cpernet Don't know why, can't make it parallel!
-            // commentator().start("[MultiModLifting] MUL FOR INV R <= R / p");
-            for (auto j = 0u; j < _primesCount; ++j) {
-                for (auto i = 0u; i < _n; ++i) {
-                    auto& rnsElement = _rnsR[i * _primesCount + j];
-                    auto stride = rnsElement._stride;
+            commentator().start("[MultiModLifting] MUL FOR INV R <= R / p");
+            for (auto i = 0u; i < _n; ++i) {
+                for (auto j = 0u; j < _primesCount; ++j) {
+                    auto& rnsPrimeInverse = _rnsPrimesInverses[j];
+                    auto& rnsR = _rnsR[i * _primesCount + j];
+
+                    // @fixme @cpernet Just doing _rnsDomain->mulin(rnsR, _rnsPrimesInverses[j]);
+                    // But mulin doesn't exist on that domain, and fgemm on 1x1 is much slower
+                    auto stridePrimeInverse = rnsPrimeInverse._stride;
+                    auto strideR = rnsR._stride;
                     for (auto h = 0u; h < _rnsPrimesCount; ++h) {
                         auto& rnsF = _rnsSystem->_field_rns[h];
-                        rnsF.mulin(rnsElement._ptr[h * stride], _primesRNSInverses[j][h]);
+                        rnsF.mulin(rnsR._ptr[h * strideR], rnsPrimeInverse._ptr[h * stridePrimeInverse]);
                     }
                 }
             }
-            // commentator().stop("[MultiModLifting] MUL FOR INV R <= R / p");
+            commentator().stop("[MultiModLifting] MUL FOR INV R <= R / p");
 
-            // commentator().start("[MultiModLifting] CONVERT TO INTEGER r <= Q + R");
+            commentator().start("[MultiModLifting] CONVERT TO INTEGER r <= Q + R");
             // @fixme @cpernet Is this parallel?
             FFLAS::fconvert_rns(*_rnsDomain, _n, _primesCount, 0, _rMatrix.getWritePointer(), _primesCount,
                                 _rnsR + 0);
             IMD.addin(_rMatrix, _qMatrix);
-            // commentator().stop("[MultiModLifting] CONVERT TO INTEGER r <= Q + R");
+            commentator().stop("[MultiModLifting] CONVERT TO INTEGER r <= Q + R");
 
             return true;
         }
@@ -423,8 +435,9 @@ namespace LinBox {
         size_t _rnsPrimesCount = 0u;
         // Stores the inverse of pj of the i-th RNS prime into _primesRNSInverses[j][i]
         std::vector<std::vector<FElement>> _primesRNSInverses;
+        RNSElementPtr _rnsPrimesInverses;
 
-        std::vector<FElement> _primes; // @fixme We might want something else as a type!
+        std::vector<double> _primes;
         std::vector<double> _rnsPrimes;
         // Length of the ci sequence. So that p^{k-1} > 2ND (Hadamard bound).
         size_t _iterationsCount = 0u;
