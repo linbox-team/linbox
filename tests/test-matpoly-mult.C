@@ -60,9 +60,9 @@ using namespace LinBox;
 
 template <typename Rand, typename Vect>
 void randomVect (Rand& r, Vect& v) {
-	size_t s = v.size();				   
+	size_t s = v.size();
 	for (size_t i = 0; i < s; ++i)
-		r.random(v[i]); 
+		r.random(v[i]);
 }
 
 template <typename Rand, typename Mat>
@@ -76,7 +76,7 @@ void randomMat (Rand& r, Mat& m) {
 template<typename Field, typename Rand>
 void randomMatPol(Rand& r,  PolynomialMatrix<PMType::matfirst,PMStorage::plain,Field>& A){
 	for(size_t i=0;i<A.size();i++)
-		randomMat(r, A[i]);       	
+		randomMat(r, A[i]);
 }
 
 template<typename Field, typename Rand>
@@ -86,7 +86,7 @@ void randomMatPol(Rand& r,  PolynomialMatrix<PMType::polfirst,PMStorage::plain,F
 }
 
 
-	
+
 template<typename MatPol>
 bool operator==(const MatPol& A, const MatPol& B){
 	MatrixDomain<typename MatPol::Field> MD(A.field());
@@ -106,7 +106,7 @@ bool operator==(const MatPol& A, const MatPol& B){
 
 
 template<typename MatrixP, typename Field, typename RandIter>
-bool check_matpol_mul(const Field& fld,  RandIter& Gen, size_t n, size_t d) {       
+bool check_matpol_mul(const Field& fld,  RandIter& Gen, size_t n, size_t d) {
 	MatrixP A(fld,n,n,d),B(fld,n,n,d),C(fld,n,n,2*d-1);
 
 	// Generate random matrix of polynomial
@@ -121,7 +121,7 @@ bool check_matpol_mul(const Field& fld,  RandIter& Gen, size_t n, size_t d) {
 
 template<typename MatrixP, typename Field, typename RandIter>
 bool check_matpol_midp(const Field& fld,  RandIter& Gen, size_t n, size_t d) {
-	MatrixP A(fld,n,n,d),C(fld,n,n,2*d-1);	
+	MatrixP A(fld,n,n,d),C(fld,n,n,2*d-1);
 	MatrixP B(fld,n,n,d);
 	// Generate random matrix of polynomial
 	randomMatPol(Gen,A);
@@ -138,7 +138,7 @@ bool check_matpol_midpgen(const Field& fld,  RandIter& Gen, size_t n, size_t d) 
 
 	d1=d/2;
 	d0=d-d1;
-	
+
 	MatrixP A(fld,n,n,d0+1),B(fld,n,n,d1),C(fld,n,n,d);
 
 	// Generate random matrix of polynomial
@@ -157,8 +157,8 @@ bool debug_midpgen_dlp(const Field& fld,  RandIter& Gen) {
 
 	n0=22;
 	n1=42;
-	
-		
+
+
 	MatrixP A(fld,48,48,22),B(fld,48,32,21),C(fld,48,32,42);
 
 	// Generate random matrix of polynomial
@@ -174,14 +174,15 @@ bool debug_midpgen_dlp(const Field& fld,  RandIter& Gen) {
 
 template<typename Field>
 bool launchTest(const Field& F, size_t n, long b, long d, long seed){
-	bool ok=true;
-	typename Field::RandIter G(F,b,seed);
+    bool ok=true;
+    Givaro::Integer samplesize(1); samplesize<<=b;
+    typename Field::RandIter G(F,seed,samplesize);
 	typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field> MatrixP;
 	ostream& report = LinBox::commentator().report();
 	report<<"Polynomial matrix (polfirst) testing over ";F.write(report)<<std::endl;
 	ok&=check_matpol_mul<MatrixP> (F,G,n,d);
 	ok&=check_matpol_midp<MatrixP> (F,G,n,d);
-	ok&=check_matpol_midpgen<MatrixP> (F,G,n,d); 
+	ok&=check_matpol_midpgen<MatrixP> (F,G,n,d);
 
 	//typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain,Field> PMatrix;
 	// std::cerr<<"Polynomial matrix (matfirst) testing:\n";F.write(std::cerr)<<std::endl;
@@ -204,10 +205,10 @@ bool runTest(uint64_t n, uint64_t d, long seed){
 		RandomFFTPrime::seeding (seed);
 		if (!RandomFFTPrime::randomPrime (p, 1<<bits, integer(d).bitsize()+1))
 			throw LinboxError ("RandomFFTPrime::randomPrime failed");
-		
+
 		Givaro::Modular<double> F((int32_t)p);
 		ok&=launchTest (F,n,bits,d,seed);
-		
+
 	}
 	// normal prime < 2^(53--log(n))/2
 	{
@@ -221,22 +222,22 @@ bool runTest(uint64_t n, uint64_t d, long seed){
 
 	// multi-precision prime
 	 {
-	 	size_t bits=114;
-	 	PrimeIterator<IteratorCategories::HeuristicTag> Rd(bits,seed);
-	 	integer p= *Rd;
+		size_t bits=114;
+		PrimeIterator<IteratorCategories::HeuristicTag> Rd(bits,seed);
+		integer p= *Rd;
 
-	 	Givaro::Modular<integer> F1(p);			
-	 	ok&=launchTest (F1,n,bits,d,seed);
-	 	Givaro::Modular<RecInt::ruint128,RecInt::ruint256> F2(p);
-	 	ok&=launchTest (F2,n,bits,d,seed);
-	
+		Givaro::Modular<integer> F1(p);
+		ok&=launchTest (F1,n,bits,d,seed);
+		Givaro::Modular<RecInt::ruint128,RecInt::ruint256> F2(p);
+		ok&=launchTest (F2,n,bits,d,seed);
+
 	 }
 
 	 // over the integer
 	{
 		Givaro::ZRing<integer> F;
 		ok&=launchTest (F,n,128,d,seed);
-	 }	
+	 }
 	return ok;
 }
 
@@ -244,7 +245,7 @@ int main(int argc, char** argv){
 	static size_t  n = 16; // matrix dimension
 	static size_t  d = 512; // polynomial size
 	static long    seed = time(NULL);
-	
+
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT,     &n },
 		{ 'd', "-d D", "Set degree of test matrices to D.", TYPE_INT,     &d },
@@ -254,7 +255,7 @@ int main(int argc, char** argv){
 	parseArguments (argc, argv, args);
 
 	return (runTest(n,d,seed)? 0: -1);
-} 
+}
 
 // Local Variables:
 // mode: C++
