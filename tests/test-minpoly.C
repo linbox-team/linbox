@@ -354,7 +354,7 @@ bool run_with_field(integer q, int e, size_t b, size_t n, int iter, int numVecto
             F = FFPACK::chooseField<Field>(q, b, ++seed); // F, characteristic q of b bits
             card = F->cardinality();
         }while (card < 2*n*n && card != 0); // ensures high probability of succes of the probabilistic algorithm
-		typename Field::RandIter G(*F, b, seed); //random generator over F
+		typename Field::RandIter G(*F, seed); //random generator over F
 		typename Field::NonZeroRandIter NzG(G); //non-zero random generator over F
 
 		if(F == nullptr)
