@@ -243,13 +243,11 @@ namespace LinBox {
             _qMatrix = IMatrix(_ring, _n, _primesCount);
 
             _R.reserve(_primesCount);
-            _Fc.reserve(_primesCount);
             _FR.reserve(_primesCount);
             for (auto j = 0u; j < _primesCount; ++j) {
                 auto& F = _fields[j];
 
                 _R.emplace_back(_ring, _n);
-                _Fc.emplace_back(F, _n);
                 _FR.emplace_back(F, _n);
 
                 // Initialize all residues to b
@@ -291,8 +289,8 @@ namespace LinBox {
         Integer denBound() const { return _denBound; }
 
         uint32_t primesCount() const { return _primesCount; }
-
         const FElement& prime(uint32_t index) const { return _primes.at(index); }
+        const std::vector<Field>& primesFields() const { return _fields; }
 
         // --------------
         // ----- Iterator
@@ -301,12 +299,12 @@ namespace LinBox {
          * Returns false if the next digit cannot be computed (bad modulus).
          * c is a vector of integers but all element are below p = p1 * ... * pl
          */
-        bool next(std::vector<IVector>& digits)
+        bool next(std::vector<FVector>& digits)
         {
             VectorDomain<Ring> IVD(_ring);
             BlasMatrixDomain<Ring> IMD(_ring);
 
-            // commentator().start("[MultiModLifting] Computing c");
+            commentator().start("[MultiModLifting] c = A^{-1} r mod p");
             #pragma omp parallel for
             for (auto j = 0u; j < _primesCount; ++j) {
                 auto pj = _primes[j];
@@ -314,6 +312,8 @@ namespace LinBox {
 
                 // @note There is no VectorDomain::divmod yet.
                 // Euclidian division so that rj = pj Qj + Rj
+                // @fixme Should use quoRem on unsigned int, making R an uint vector,
+                // because it will be converted anyway.
                 for (auto i = 0u; i < _n; ++i) {
                     _ring.quoRem(_qMatrix.refEntry(i, j), R[i], _rMatrix.getEntry(i, j), pj);
                 }
@@ -323,25 +323,20 @@ namespace LinBox {
                 auto& FR = _FR[j];
                 auto& digit = digits[j];
                 auto& B = _B[j];
-                auto& Fc = _Fc[j];
 
                 // @note The assignment will call the move one, not copying data twice.
                 FR = FVector(F, R); // rebind
-                B.apply(Fc, FR);
-
-                // @fixme We might not need to store digits into IVectors, and returning _Fc
-                // would do the trick
-                digit = IVector(_ring, Fc);
+                B.apply(digit, FR);
 
                 // Store the very same result in an RNS system,
                 // but fact is all the primes of the RNS system are bigger
-                // than the modulus used to compute _Fc, we just copy the result for everybody.
+                // than the modulus used to compute the digit, we just copy the result for everybody.
                 for (auto i = 0u; i < _n; ++i) {
                     setRNSMatrixElementAllResidues(_rnsR, _primesCount, i, j, FR[i]);
-                    setRNSMatrixElementAllResidues(_rnsc, _primesCount, i, j, Fc[i]);
+                    setRNSMatrixElementAllResidues(_rnsc, _primesCount, i, j, digit[i]);
                 }
             }
-            // commentator().stop("[MultiModLifting] c = A^{-1} r mod p");
+            commentator().stop("[MultiModLifting] c = A^{-1} r mod p");
 
             // ----- Compute the next residues!
 
@@ -451,7 +446,6 @@ namespace LinBox {
 
         //----- Iteration
         std::vector<IVector> _R; // Will be inited to RNS within _rnsR
-        std::vector<FVector> _Fc;
         std::vector<FVector> _FR;
         IMatrix _rMatrix;
         IMatrix _qMatrix;

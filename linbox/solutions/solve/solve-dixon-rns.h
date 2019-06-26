@@ -37,6 +37,8 @@ namespace LinBox {
         using Ring = typename LiftingContainer::Ring;
         using IElement = typename LiftingContainer::IElement;
         using IVector = typename LiftingContainer::IVector;
+        using FElement = typename LiftingContainer::FElement;
+        using FVector = typename LiftingContainer::FVector;
 
     public:
         MultiModRationalReconstruction(LiftingContainer& lc)
@@ -56,26 +58,32 @@ namespace LinBox {
             }
 
             commentator().start("[MultiModLifting] Lifting");
-            VectorDomain<Ring> IVD(_lc.ring());
 
-            // Stores each c0 + c1 pj + ... + ck pj^k for each pj
-            std::vector<IVector> padicAccumulations(_lc.primesCount(), _lc.ring());
             // Temporary structure to store a ci for each pj
-            std::vector<IVector> digits(_lc.primesCount(),
-                                        _lc.ring()); // @fixme Could be a Field Element?
+            std::vector<FVector> digits;
+            digits.reserve(_lc.primesCount());
+            for (auto& F : _lc.primesFields()) {
+                digits.emplace_back(F, _lc.size());
+            }
+
             // The pj^i for each pj
             std::vector<IElement> radices(_lc.primesCount(), 1);
 
+            // Stores each c0 + c1 pj + ... + ck pj^k for each pj
+            std::vector<IVector> padicAccumulations(_lc.primesCount(), _lc.ring());
             for (auto j = 0u; j < _lc.primesCount(); ++j) {
                 padicAccumulations[j].resize(_lc.size());
-                digits[j].resize(_lc.size());
             }
 
+            // @fixme Better use PolEval (or will it cause memory explosion?)
+            VectorDomain<Ring> IVD(_lc.ring());
             for (auto i = 0u; i < _lc.length(); ++i) {
                 _lc.next(digits);
 
-                // @fixme Better use PolEval (except memory explosion?)
                 for (auto j = 0u; j < _lc.primesCount(); ++j) {
+                    // @fixme @cpernet digits being a field vector, this will implicitly cast
+                    // each of its elements to a Integer, is there something better?
+                    // Or else, we just need an overload of Givaro::ZRing().axpyin() with a double as last parameter
                     IVD.axpyin(padicAccumulations[j], radices[j], digits[j]); // y <- y + p^i * ci
                     _lc.ring().mulin(radices[j], _lc.prime(j));
                 }
