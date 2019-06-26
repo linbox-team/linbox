@@ -167,21 +167,27 @@ namespace LinBox {
             // and pass through to the lifting container. Here, we could use that, but we have
             // to keep control of generated primes, so that the RNS base has bigger primes
             // than the .
+            commentator().start("[MMLifting][Init] A^{-1} mod pj precomputations");
             {
                 _B.reserve(_primesCount);
+                for (auto& F : _fields) {
+                    _B.emplace_back(A, F);
+                }
 
-                for (const auto& F : _fields) {
-                    _B.emplace_back(A, F); // Rebind into the field
-
+                // @fixme To be replaced with Paladin
+                #pragma omp parallel for
+                for (auto j = 0u; j < _primesCount; ++j) {
                     int nullity = 0;
+                    auto& F = _fields[j];
                     BlasMatrixDomain<Field> bmd(F);
-                    bmd.invin(_B.back(), nullity);
+                    bmd.invin(_B[j], nullity);
                     if (nullity > 0) {
                         // @fixme Should redraw another prime!
                         throw LinBoxError("Wrong prime, sorry.");
                     }
                 }
             }
+            commentator().stop("[MMLifting][Init] A^{-1} mod pj precomputations");
 
             // Making A into the RNS domain
             {
@@ -200,20 +206,16 @@ namespace LinBox {
 
             // Compute the inverses of pj for each RNS prime
             {
-                _primesRNSInverses.resize(_primesCount);
                 for (auto j = 0u; j < _primesCount; ++j) {
                     auto prime = _primes[j];
 
                     auto& rnsPrimeInverse = _rnsPrimesInverses[j];
                     auto stride = rnsPrimeInverse._stride;
 
-                    _primesRNSInverses[j].resize(_rnsPrimesCount); // @fixme TBR
-
                     for (auto h = 0u; h < _rnsPrimesCount; ++h) {
                         auto& rnsF = _rnsSystem->_field_rns[h];
-                        auto& primeInverse = _primesRNSInverses[j][h];
+                        auto& primeInverse = rnsPrimeInverse._ptr[h * stride];
                         rnsF.inv(primeInverse, prime);
-                        rnsPrimeInverse._ptr[h * stride] = primeInverse;
                     }
                 }
             }
@@ -352,7 +354,7 @@ namespace LinBox {
                 using FGEMMSequential = FFLAS::ParSeqHelper::Sequential;
                 using ComposedParSeqHelper = FFLAS::ParSeqHelper::Compose<RNSParallel, FGEMMSequential>;
                 using MMHelper = FFLAS::MMHelper<RNSDomain, FFLAS::MMHelperAlgo::Classic, FFLAS::ModeCategories::DefaultTag, ComposedParSeqHelper>;
-                ComposedParSeqHelper composedParSeqHelper(4, 4); // @fixme REPLACE THESE 444!
+                ComposedParSeqHelper composedParSeqHelper(_primes.size(), _primes.size());
                 MMHelper mmHelper(*_rnsDomain, -1, composedParSeqHelper);
 
                 FFLAS::fgemm(*_rnsDomain, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, _n, _primesCount,
@@ -364,7 +366,7 @@ namespace LinBox {
             // We divide each residues by the according pj, which is done by multiplying.
             // @fixme Could be done in parallel!
             // @fixme @cpernet Don't know why, can't make it parallel!
-            commentator().start("[MultiModLifting] MUL FOR INV R <= R / p");
+            // commentator().start("[MultiModLifting] MUL FOR INV R <= R / p");
             for (auto i = 0u; i < _n; ++i) {
                 for (auto j = 0u; j < _primesCount; ++j) {
                     auto& rnsPrimeInverse = _rnsPrimesInverses[j];
@@ -380,14 +382,14 @@ namespace LinBox {
                     }
                 }
             }
-            commentator().stop("[MultiModLifting] MUL FOR INV R <= R / p");
+            // commentator().stop("[MultiModLifting] MUL FOR INV R <= R / p");
 
-            commentator().start("[MultiModLifting] CONVERT TO INTEGER r <= Q + R");
+            // commentator().start("[MultiModLifting] CONVERT TO INTEGER r <= Q + R");
             // @fixme @cpernet Is this parallel?
             FFLAS::fconvert_rns(*_rnsDomain, _n, _primesCount, 0, _rMatrix.getWritePointer(), _primesCount,
                                 _rnsR + 0);
             IMD.addin(_rMatrix, _qMatrix);
-            commentator().stop("[MultiModLifting] CONVERT TO INTEGER r <= Q + R");
+            // commentator().stop("[MultiModLifting] CONVERT TO INTEGER r <= Q + R");
 
             return true;
         }
@@ -433,8 +435,7 @@ namespace LinBox {
         RNSElementPtr _rnsc;
         RNSElementPtr _rnsR;
         size_t _rnsPrimesCount = 0u;
-        // Stores the inverse of pj of the i-th RNS prime into _primesRNSInverses[j][i]
-        std::vector<std::vector<FElement>> _primesRNSInverses;
+        // Stores the inverse of pj within the RNS base prime into _rnsPrimesInverses[j]
         RNSElementPtr _rnsPrimesInverses;
 
         std::vector<double> _primes;
