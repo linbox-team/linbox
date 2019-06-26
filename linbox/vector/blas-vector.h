@@ -320,6 +320,24 @@ namespace LinBox { /* BlasVector */
 			return *this;
 		}
 
+
+		BlasVector<_Field,_blasRep>& operator= (BlasVector<_Field,_blasRep>&& V)
+		{
+			if ( &V == this)
+				return *this;
+
+			_size = V._size;
+			_1stride = V._1stride;
+			_rep = std::move(V._rep);
+			_ptr = _rep.data();
+			_field = V._field;
+
+			// Father_t is garbage until then:
+			setIterators();
+
+			return *this;
+		}
+
 		//! this should not exist.
 		BlasVector<_Field,_blasRep>& operator= (const std::vector<Element>& V)
 		{

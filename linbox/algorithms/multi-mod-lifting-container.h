@@ -324,7 +324,8 @@ namespace LinBox {
                 auto& digit = digits[j];
                 auto& B = _B[j];
                 auto& Fc = _Fc[j];
-                // @fixme Am I copying the data an extra time?
+
+                // @note The assignment will call the move one, not copying data twice.
                 FR = FVector(F, R); // rebind
                 B.apply(Fc, FR);
 
