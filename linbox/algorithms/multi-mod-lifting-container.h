@@ -242,12 +242,10 @@ namespace LinBox {
             _rMatrix = IMatrix(_ring, _n, _primesCount);
             _qMatrix = IMatrix(_ring, _n, _primesCount);
 
-            _R.reserve(_primesCount);
             _FR.reserve(_primesCount);
             for (auto j = 0u; j < _primesCount; ++j) {
                 auto& F = _fields[j];
 
-                _R.emplace_back(_ring, _n);
                 _FR.emplace_back(F, _n);
 
                 // Initialize all residues to b
@@ -308,24 +306,22 @@ namespace LinBox {
             #pragma omp parallel for
             for (auto j = 0u; j < _primesCount; ++j) {
                 auto pj = _primes[j];
-                auto& R = _R[j];
+                auto& FR = _FR[j];
+                uint64_t upj = pj;
 
                 // @note There is no VectorDomain::divmod yet.
                 // Euclidian division so that rj = pj Qj + Rj
-                // @fixme Should use quoRem on unsigned int, making R an uint vector,
-                // because it will be converted anyway.
+                uint64_t uR;
                 for (auto i = 0u; i < _n; ++i) {
-                    _ring.quoRem(_qMatrix.refEntry(i, j), R[i], _rMatrix.getEntry(i, j), pj);
+                    Integer::divmod(_qMatrix.refEntry(i, j), uR, _rMatrix.getEntry(i, j), upj);
+                    // @note No need to init, because we know that uR < pj,
+                    // so that would do an extra check.
+                    FR[i] = static_cast<FElement>(uR);
                 }
 
-                // Convert R to the field
-                auto& F = _fields[j];
-                auto& FR = _FR[j];
+                // digit = A^{-1} * R mod pj
                 auto& digit = digits[j];
                 auto& B = _B[j];
-
-                // @note The assignment will call the move one, not copying data twice.
-                FR = FVector(F, R); // rebind
                 B.apply(digit, FR);
 
                 // Store the very same result in an RNS system,
@@ -447,7 +443,7 @@ namespace LinBox {
         std::vector<Field> _fields; // All fields Modular<p[i]>
 
         //----- Iteration
-        std::vector<IVector> _R; // Will be inited to RNS within _rnsR
+
         std::vector<FVector> _FR;
         IMatrix _rMatrix;
         IMatrix _qMatrix;
