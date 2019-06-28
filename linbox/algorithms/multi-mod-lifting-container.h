@@ -167,7 +167,7 @@ namespace LinBox {
             // and pass through to the lifting container. Here, we could use that, but we have
             // to keep control of generated primes, so that the RNS base has bigger primes
             // than the .
-            commentator().start("[MMLifting][Init] A^{-1} mod pj precomputations");
+            // commentator().start("[MMLifting][Init] A^{-1} mod pj precomputations");
             {
                 _B.reserve(_primesCount);
                 for (auto& F : _fields) {
@@ -187,7 +187,7 @@ namespace LinBox {
                     }
                 }
             }
-            commentator().stop("[MMLifting][Init] A^{-1} mod pj precomputations");
+            // commentator().stop("[MMLifting][Init] A^{-1} mod pj precomputations");
 
             // Making A into the RNS domain
             {
@@ -304,7 +304,7 @@ namespace LinBox {
             VectorDomain<Ring> IVD(_ring);
             BlasMatrixDomain<Ring> IMD(_ring);
 
-            commentator().start("[MultiModLifting] c = A^{-1} r mod p");
+            // commentator().start("[MultiModLifting] c = A^{-1} r mod p");
             #pragma omp parallel for
             for (auto j = 0u; j < _primesCount; ++j) {
                 auto pj = _primes[j];
@@ -336,7 +336,7 @@ namespace LinBox {
                     setRNSMatrixElementAllResidues(_rnsc, _primesCount, i, j, digit[i]);
                 }
             }
-            commentator().stop("[MultiModLifting] c = A^{-1} r mod p");
+            // commentator().stop("[MultiModLifting] c = A^{-1} r mod p");
 
             // ----- Compute the next residues!
 

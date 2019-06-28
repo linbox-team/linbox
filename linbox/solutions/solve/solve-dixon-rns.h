@@ -80,6 +80,7 @@ namespace LinBox {
             for (auto i = 0u; i < _lc.length(); ++i) {
                 _lc.next(digits);
 
+                #pragma omp parallel for
                 for (auto j = 0u; j < _lc.primesCount(); ++j) {
                     // @fixme @cpernet digits being a field vector, this will implicitly cast
                     // each of its elements to a Integer, is there something better?
