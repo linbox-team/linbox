@@ -360,28 +360,30 @@ namespace LinBox {
             // commentator().stop("[MultiModLifting] FGEMM R <= R - Ac");
 
             // We divide each residues by the according pj, which is done by multiplying.
-            // @fixme Could be done in parallel!
-            // @fixme @cpernet Don't know why, can't make it parallel!
+            // @note The matrix _rnsR is RNS-major, meaning that it is stored
+            // as [R mod q0][R mod q1][...] where [R mod qh] represents a full matrix.
+            // We use this fact to keep better cache coherency.
             // commentator().start("[MultiModLifting] MUL FOR INV R <= R / p");
-            for (auto i = 0u; i < _n; ++i) {
+            auto rnsStride = 0u;
+            for (auto h = 0u; h < _rnsPrimesCount; ++h) {
+                auto& rnsF = _rnsSystem->_field_rns[h];
+
+                #pragma omp parallel for
                 for (auto j = 0u; j < _primesCount; ++j) {
                     auto& rnsPrimeInverse = _rnsPrimesInverses[j];
-                    auto& rnsR = _rnsR[i * _primesCount + j];
-
-                    // @fixme @cpernet Just doing _rnsDomain->mulin(rnsR, _rnsPrimesInverses[j]);
-                    // But mulin doesn't exist on that domain, and fgemm on 1x1 is much slower
                     auto stridePrimeInverse = rnsPrimeInverse._stride;
-                    auto strideR = rnsR._stride;
-                    for (auto h = 0u; h < _rnsPrimesCount; ++h) {
-                        auto& rnsF = _rnsSystem->_field_rns[h];
-                        rnsF.mulin(rnsR._ptr[h * strideR], rnsPrimeInverse._ptr[h * stridePrimeInverse]);
+                    auto rnsPrimeInverseForRnsPrimeH = rnsPrimeInverse._ptr[h * stridePrimeInverse];
+
+                    for (auto i = 0u; i < _n; ++i) {
+                        rnsF.mulin(_rnsR._ptr[rnsStride + (i * _primesCount + j)], rnsPrimeInverseForRnsPrimeH);
                     }
                 }
+
+                rnsStride += _rnsR._stride;
             }
             // commentator().stop("[MultiModLifting] MUL FOR INV R <= R / p");
 
             // commentator().start("[MultiModLifting] CONVERT TO INTEGER r <= Q + R");
-            // @fixme @cpernet Is this parallel?
             FFLAS::fconvert_rns(*_rnsDomain, _n, _primesCount, 0, _rMatrix.getWritePointer(), _primesCount,
                                 _rnsR + 0);
             IMD.addin(_rMatrix, _qMatrix);
