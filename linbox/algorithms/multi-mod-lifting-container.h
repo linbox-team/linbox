@@ -350,7 +350,7 @@ namespace LinBox {
                 using FGEMMSequential = FFLAS::ParSeqHelper::Sequential;
                 using ComposedParSeqHelper = FFLAS::ParSeqHelper::Compose<RNSParallel, FGEMMSequential>;
                 using MMHelper = FFLAS::MMHelper<RNSDomain, FFLAS::MMHelperAlgo::Classic, FFLAS::ModeCategories::DefaultTag, ComposedParSeqHelper>;
-                ComposedParSeqHelper composedParSeqHelper(_primes.size(), _primes.size());
+                ComposedParSeqHelper composedParSeqHelper(NUM_THREADS, NUM_THREADS);
                 MMHelper mmHelper(*_rnsDomain, -1, composedParSeqHelper);
 
                 FFLAS::fgemm(*_rnsDomain, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, _n, _primesCount,
