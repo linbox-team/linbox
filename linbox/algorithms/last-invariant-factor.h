@@ -361,7 +361,7 @@ namespace LinBox
 		/** \brief Compute the last invariant factor.
 		*/
 		template<class IMatrix>
-		Integer& lastInvariantFactor(Integer& lif, const IMatrix& A)  const
+		Integer& lastInvariantFactor(Integer& lif, const IMatrix& A)
 		{
 
 			DVect empty_v(r);
@@ -372,7 +372,7 @@ namespace LinBox
 		/** \brief Compute the last invariant factor with Bonus
 		*/
 		template<class IMatrix>
-		Integer& lastInvariantFactor_Bonus(Integer& lif, Integer& Bonus, const IMatrix& A)  const
+		Integer& lastInvariantFactor_Bonus(Integer& lif, Integer& Bonus, const IMatrix& A)
 		{
 
 			DVect empty_v(r);
