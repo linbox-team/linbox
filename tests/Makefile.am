@@ -75,6 +75,10 @@ BASIC_TESTS =            \
     test-solve-full             \
     test-smith-form-valence  \
     test-local-smith-form-sparseelim\
+    test-smith-form             \
+    test-smith-form-adaptive     \
+    test-smith-form-iliopoulos  \
+    test-smith-form-local        \
     test-qlup                    \
     test-det            \
     test-regression        \
@@ -172,11 +176,7 @@ FULLCHECK_TESTS =           \
     test-rat-minpoly            \
     test-rat-solve                \
     test-scalar-matrix            \
-    test-smith-form             \
-    test-smith-form-adaptive     \
     test-smith-form-binary      \
-    test-smith-form-iliopoulos  \
-    test-smith-form-local        \
     test-solve-nonsingular        \
     test-sparse                    \
     test-subiterator            \
