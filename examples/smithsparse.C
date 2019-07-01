@@ -128,7 +128,7 @@ int main(int argc, char* argv[])
 					L.push_back((SPIR::Element)p_it->second);
 			}
 			size_t M = (B.rowdim() > B.coldim() ? B.coldim() : B.rowdim());
-			size_t Min = (B.rowdim() < B.coldim() ? B.coldim() : B.rowdim());
+// 			size_t Min = (B.rowdim() < B.coldim() ? B.coldim() : B.rowdim());
 			for (size_t i = L.size(); i < M; ++i)
 				L.push_back(0);
 
