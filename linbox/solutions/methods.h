@@ -179,6 +179,17 @@ namespace LinBox {
     };
 
     /**
+     * When running FFLAS's fgemm on an RNS structure,
+     * how the composed ParSeqHelper should be configured.
+     */
+    enum class RnsFgemmType {
+        BothParallel,
+        BothSequential,
+        ParallelRnsOnly,
+        ParallelFgemmOnly,
+    };
+
+    /**
      * Holds everything a method needs to know about the problem.
      *
      * @note This "put everything in it" design is used so that
@@ -223,7 +234,8 @@ namespace LinBox {
                                                 //!  that the provided denominator is minimal.
 
         // ----- For DixonRNS method.
-        uint32_t primesCount = 16u; //!< How many primes to use lifting will be done over p = p1p2...pl.
+        uint32_t primesCount = 8u; //!< How many primes to use lifting will be done over p = p1p2...pl.
+        RnsFgemmType rnsFgemmType = RnsFgemmType::ParallelRnsOnly;
 
         // ----- For random-based systems.
         size_t trialsBeforeFailure = LINBOX_DEFAULT_TRIALS_BEFORE_FAILURE; //!< Maximum number of trials before giving up.

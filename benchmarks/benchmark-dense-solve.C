@@ -55,6 +55,7 @@ namespace {
         int bits = 10;
         std::string dispatchString = "Auto";
         std::string methodString = "Auto";
+        std::string rnsFgemmString = "ParallelRnsOnly";
     };
 
     template <typename Vector>
@@ -71,10 +72,10 @@ namespace {
 }
 
 template <typename Field, typename Vector = DenseVector<Field>>
-void benchmark(std::pair<double, double>& timebits, Arguments& args, MethodBase& method)
+void benchmark(std::array<double, 3>& timebits, Arguments& args, MethodBase& method)
 {
-    Field F(args.q);                                 // q is ignored for Integers
-    typename Field::RandIter randIter(F, args.bits); // bits is ignored for ModularRandIter
+    Field F(args.q);                                    // q is ignored for Integers
+    typename Field::RandIter randIter(F, 0, args.bits); // bits is ignored for ModularRandIter
 
 #ifdef _BENCHMARKS_DEBUG_
     std::clog << "Setting A ... " << std::endl;
@@ -128,12 +129,9 @@ void benchmark(std::pair<double, double>& timebits, Arguments& args, MethodBase&
     if (method.master()) {
         chrono.stop();
 
-#ifdef _BENCHMARKS_DEBUG_
-        printVector(std::clog << "(DenseElimination) Solution is ", F, X) << std::endl;
-#endif
-
-        setBitsize(timebits.second, args.q, X);
-        timebits.first = chrono.usertime();
+        timebits[0] = chrono.usertime();
+        timebits[1] = chrono.realtime();
+        setBitsize(timebits[2], args.q, X);
     }
 }
 
@@ -145,13 +143,16 @@ int main(int argc, char** argv)
                      {'n', "-n", "Set the matrix dimension.", TYPE_INT, &args.n},
                      {'b', "-b", "bit size", TYPE_INT, &args.bits},
                      {'d', "-d", "Dispatch mode (any of: Auto, Sequential, SMP, Distributed).", TYPE_STR, &args.dispatchString},
+                     {'r', "-r", "RNS-FGEMM type (either BothParallel, BothSequential, ParallelRnsOnly or ParallelFgemmOnly).", TYPE_STR, &args.rnsFgemmString},
                      {'M', "-M",
                       "Choose the solve method (any of: Auto, Elimination, DenseElimination, SparseElimination, "
-                      "Dixon, CRA, SymbolicNumericOverlap, SymbolicNumericNorm, "
+                      "Dixon, DixonRNS, CRA, SymbolicNumericOverlap, SymbolicNumericNorm, "
                       "Blackbox, Wiedemann, Lanczos).",
                       TYPE_STR, &args.methodString},
                      END_OF_ARGUMENTS};
     LinBox::parseArguments(argc, argv, as);
+
+    commentator().setReportStream(std::cout);
 
     // Setting up context
 
@@ -167,12 +168,21 @@ int main(int argc, char** argv)
     else if (args.dispatchString == "Distributed")  method.dispatch = Dispatch::Distributed;
     else                                            method.dispatch = Dispatch::Auto;
 
+    if (args.rnsFgemmString == "BothParallel")              method.rnsFgemmType = RnsFgemmType::BothParallel;
+    else if (args.rnsFgemmString == "BothSequential")       method.rnsFgemmType = RnsFgemmType::BothSequential;
+    else if (args.rnsFgemmString == "ParallelRnsOnly")      method.rnsFgemmType = RnsFgemmType::ParallelRnsOnly;
+    else if (args.rnsFgemmString == "ParallelFgemmOnly")    method.rnsFgemmType = RnsFgemmType::ParallelFgemmOnly;
+    else {
+        std::cerr << "-r RNS-FGEMM type should be either BothParallel, BothSequential, ParallelRnsOnly or ParallelFgemmOnly" << std::endl;
+        return EXIT_FAILURE;
+    }
+
     // Real benchmark
 
     bool isModular = false;
     if (args.q > 0) isModular = true;
 
-    using Timing = std::pair<double, double>;
+    using Timing = std::array<double, 3>;
     std::vector<Timing> timebits(args.nbiter);
     for (int iter = 0; iter < args.nbiter; ++iter) {
         if (isModular) {
@@ -185,13 +195,15 @@ int main(int argc, char** argv)
     }
 
 #ifdef _BENCHMARKS_DEBUG_
-    for (const auto& it : timebits) std::clog << it.first << "s, " << it.second << " bits" << std::endl;
+    for (const auto& it : timebits) std::clog << it[0] << "s, " << it[2] << " bits" << std::endl;
 #endif
 
     if (method.master()) {
-        std::sort(timebits.begin(), timebits.end(), [](const Timing& a, const Timing& b) -> bool { return a.first > b.first; });
+        std::sort(timebits.begin(), timebits.end(), [](const Timing& a, const Timing& b) -> bool { return a[0] > b[0]; });
 
-        std::cout << "Time: " << timebits[args.nbiter / 2].first << " Bitsize: " << timebits[args.nbiter / 2].second;
+        std::cout << "UserTime: " << timebits[args.nbiter / 2][0];
+        std::cout << " RealTime: " << timebits[args.nbiter / 2][1];
+        std::cout << " Bitsize: " << timebits[args.nbiter / 2][2];
 
         FFLAS::writeCommandString(std::cout, as) << std::endl;
     }

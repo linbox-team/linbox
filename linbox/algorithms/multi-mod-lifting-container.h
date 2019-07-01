@@ -90,6 +90,7 @@ namespace LinBox {
         MultiModLiftingContainer(const Ring& ring, PrimeGenerator primeGenerator, const IMatrix& A,
                                  const IVector& b, const Method::DixonRNS& m)
             : _ring(ring)
+            , _method(m)
             , _A(A)
             , _b(b)
             , _n(A.rowdim())
@@ -174,8 +175,8 @@ namespace LinBox {
                     _B.emplace_back(A, F);
                 }
 
-                // @fixme To be replaced with Paladin
-                #pragma omp parallel for
+// @fixme To be replaced with Paladin
+#pragma omp parallel for
                 for (auto j = 0u; j < _primesCount; ++j) {
                     int nullity = 0;
                     auto& F = _fields[j];
@@ -302,8 +303,8 @@ namespace LinBox {
             VectorDomain<Ring> IVD(_ring);
             BlasMatrixDomain<Ring> IMD(_ring);
 
-            // commentator().start("[MultiModLifting] c = A^{-1} r mod p");
-            #pragma omp parallel for
+// commentator().start("[MultiModLifting] c = A^{-1} r mod p");
+#pragma omp parallel for
             for (auto j = 0u; j < _primesCount; ++j) {
                 auto pj = _primes[j];
                 auto& FR = _FR[j];
@@ -326,7 +327,8 @@ namespace LinBox {
 
                 // Store the very same result in an RNS system,
                 // but fact is all the primes of the RNS system are bigger
-                // than the modulus used to compute the digit, we just copy the result for everybody.
+                // than the modulus used to compute the digit, we just copy the result for
+                // everybody.
                 for (auto i = 0u; i < _n; ++i) {
                     setRNSMatrixElementAllResidues(_rnsR, _primesCount, i, j, FR[i]);
                     setRNSMatrixElementAllResidues(_rnsc, _primesCount, i, j, digit[i]);
@@ -338,20 +340,40 @@ namespace LinBox {
 
             // r <= Q + (R - A c) / p
 
-            // By first computing R <= R - A c as a fgemm within the RNS domain.
+#define rns_fgemm(RnsParSeq, FgemmParSeq)                                                          \
+    using ComposedParSeqHelper = FFLAS::ParSeqHelper::Compose<RnsParSeq, FgemmParSeq>;             \
+    using MMHelper = FFLAS::MMHelper<RNSDomain, FFLAS::MMHelperAlgo::Classic,                      \
+                                     FFLAS::ModeCategories::DefaultTag, ComposedParSeqHelper>;     \
+    ComposedParSeqHelper composedParSeqHelper(NUM_THREADS, NUM_THREADS);                           \
+    MMHelper mmHelper(*_rnsDomain, -1, composedParSeqHelper);                                      \
+                                                                                                   \
+    FFLAS::fgemm(*_rnsDomain, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, _n, _primesCount, _n,      \
+                 _rnsDomain->mOne, _rnsA, _n, _rnsc, _primesCount, _rnsDomain->one, _rnsR,         \
+                 _primesCount, mmHelper);
+
+            using RNSParallel = FFLAS::ParSeqHelper::Parallel<FFLAS::CuttingStrategy::RNSModulus,
+                                                              FFLAS::StrategyParameter::Threads>;
+            using FGEMMParallel = FFLAS::ParSeqHelper::Parallel<FFLAS::CuttingStrategy::Block,
+                                                                FFLAS::StrategyParameter::Threads>;
+
+            // @fixme @cpernet @jgdumas Should we move that PAR_BLOCK outside of the function
+            // and let the user do it?
             // commentator().start("[MultiModLifting] FGEMM R <= R - Ac");
             PAR_BLOCK
             {
-                using RNSParallel = FFLAS::ParSeqHelper::Parallel<FFLAS::CuttingStrategy::RNSModulus, FFLAS::StrategyParameter::Threads>;
-                using FGEMMSequential = FFLAS::ParSeqHelper::Sequential;
-                using ComposedParSeqHelper = FFLAS::ParSeqHelper::Compose<RNSParallel, FGEMMSequential>;
-                using MMHelper = FFLAS::MMHelper<RNSDomain, FFLAS::MMHelperAlgo::Classic, FFLAS::ModeCategories::DefaultTag, ComposedParSeqHelper>;
-                ComposedParSeqHelper composedParSeqHelper(NUM_THREADS, NUM_THREADS);
-                MMHelper mmHelper(*_rnsDomain, -1, composedParSeqHelper);
-
-                FFLAS::fgemm(*_rnsDomain, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, _n, _primesCount,
-                            _n, _rnsDomain->mOne, _rnsA, _n, _rnsc, _primesCount, _rnsDomain->one,
-                            _rnsR, _primesCount, mmHelper);
+                // Firstly compute R <= R - A c as a fgemm within the RNS domain.
+                if (_method.rnsFgemmType == RnsFgemmType::BothSequential) {
+                    rns_fgemm(FFLAS::ParSeqHelper::Sequential, FFLAS::ParSeqHelper::Sequential)
+                }
+                else if (_method.rnsFgemmType == RnsFgemmType::BothParallel) {
+                    rns_fgemm(RNSParallel, FGEMMParallel)
+                }
+                else if (_method.rnsFgemmType == RnsFgemmType::ParallelFgemmOnly) {
+                    rns_fgemm(FFLAS::ParSeqHelper::Sequential, FGEMMParallel)
+                }
+                else if (_method.rnsFgemmType == RnsFgemmType::ParallelRnsOnly) {
+                    rns_fgemm(RNSParallel, FFLAS::ParSeqHelper::Sequential)
+                }
             }
             // commentator().stop("[MultiModLifting] FGEMM R <= R - Ac");
 
@@ -364,14 +386,15 @@ namespace LinBox {
             for (auto h = 0u; h < _rnsPrimesCount; ++h) {
                 auto& rnsF = _rnsSystem->_field_rns[h];
 
-                #pragma omp parallel for
+#pragma omp parallel for
                 for (auto j = 0u; j < _primesCount; ++j) {
                     auto& rnsPrimeInverse = _rnsPrimesInverses[j];
                     auto stridePrimeInverse = rnsPrimeInverse._stride;
                     auto rnsPrimeInverseForRnsPrimeH = rnsPrimeInverse._ptr[h * stridePrimeInverse];
 
                     for (auto i = 0u; i < _n; ++i) {
-                        rnsF.mulin(_rnsR._ptr[rnsStride + (i * _primesCount + j)], rnsPrimeInverseForRnsPrimeH);
+                        rnsF.mulin(_rnsR._ptr[rnsStride + (i * _primesCount + j)],
+                                   rnsPrimeInverseForRnsPrimeH);
                     }
                 }
 
@@ -380,8 +403,8 @@ namespace LinBox {
             // commentator().stop("[MultiModLifting] MUL FOR INV R <= R / p");
 
             // commentator().start("[MultiModLifting] CONVERT TO INTEGER r <= Q + R");
-            FFLAS::fconvert_rns(*_rnsDomain, _n, _primesCount, 0, _rMatrix.getWritePointer(), _primesCount,
-                                _rnsR + 0);
+            FFLAS::fconvert_rns(*_rnsDomain, _n, _primesCount, 0, _rMatrix.getWritePointer(),
+                                _primesCount, _rnsR + 0);
             IMD.addin(_rMatrix, _qMatrix);
             // commentator().stop("[MultiModLifting] CONVERT TO INTEGER r <= Q + R");
 
@@ -413,6 +436,7 @@ namespace LinBox {
 
     public: // @fixme BACK TO PRIVATE!
         const Ring& _ring;
+        Method::DixonRNS _method; // A copy of the user-provided method.
 
         // The problem: A^{-1} * b
         const IMatrix& _A;
