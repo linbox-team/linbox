@@ -33,6 +33,7 @@
 #pragma once
 
 #include <linbox/algorithms/cra-distributed.h>
+#include <linbox/algorithms/cra-hybrid.h>
 #include <linbox/algorithms/rational-cra-builder-early-multip.h>
 #include <linbox/algorithms/rational-cra-builder-full-multip.h>
 #include <linbox/algorithms/rational-cra.h>
@@ -177,6 +178,10 @@ namespace LinBox {
 #if defined(__LINBOX_HAVE_MPI)
         else if (dispatch == Dispatch::Distributed) {
             LinBox::ChineseRemainderDistributed<CRAAlgorithm> cra(hadamardLogBound, m.pCommunicator);
+            cra(num, den, iteration, primeGenerator);
+        }
+        else if (dispatch == Dispatch::Combined) {
+            LinBox::HybridChineseRemainder<CRAAlgorithm> cra(hadamardLogBound, m.pCommunicator);
             cra(num, den, iteration, primeGenerator);
         }
 #endif
