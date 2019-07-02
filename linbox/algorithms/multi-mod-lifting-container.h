@@ -340,17 +340,6 @@ namespace LinBox {
 
             // r <= Q + (R - A c) / p
 
-#define rns_fgemm(RnsParSeq, FgemmParSeq)                                                          \
-    using ComposedParSeqHelper = FFLAS::ParSeqHelper::Compose<RnsParSeq, FgemmParSeq>;             \
-    using MMHelper = FFLAS::MMHelper<RNSDomain, FFLAS::MMHelperAlgo::Classic,                      \
-                                     FFLAS::ModeCategories::DefaultTag, ComposedParSeqHelper>;     \
-    ComposedParSeqHelper composedParSeqHelper(NUM_THREADS, NUM_THREADS);                           \
-    MMHelper mmHelper(*_rnsDomain, -1, composedParSeqHelper);                                      \
-                                                                                                   \
-    FFLAS::fgemm(*_rnsDomain, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, _n, _primesCount, _n,      \
-                 _rnsDomain->mOne, _rnsA, _n, _rnsc, _primesCount, _rnsDomain->one, _rnsR,         \
-                 _primesCount, mmHelper);
-
             using RNSParallel = FFLAS::ParSeqHelper::Parallel<FFLAS::CuttingStrategy::RNSModulus,
                                                               FFLAS::StrategyParameter::Threads>;
             using FGEMMParallel = FFLAS::ParSeqHelper::Parallel<FFLAS::CuttingStrategy::Block,
@@ -359,22 +348,20 @@ namespace LinBox {
             // @fixme @cpernet @jgdumas Should we move that PAR_BLOCK outside of the function
             // and let the user do it?
             // commentator().start("[MultiModLifting] FGEMM R <= R - Ac");
-            PAR_BLOCK
-            {
-                // Firstly compute R <= R - A c as a fgemm within the RNS domain.
-                if (_method.rnsFgemmType == RnsFgemmType::BothSequential) {
-                    rns_fgemm(FFLAS::ParSeqHelper::Sequential, FFLAS::ParSeqHelper::Sequential)
-                }
-                else if (_method.rnsFgemmType == RnsFgemmType::BothParallel) {
-                    rns_fgemm(RNSParallel, FGEMMParallel)
-                }
-                else if (_method.rnsFgemmType == RnsFgemmType::ParallelFgemmOnly) {
-                    rns_fgemm(FFLAS::ParSeqHelper::Sequential, FGEMMParallel)
-                }
-                else if (_method.rnsFgemmType == RnsFgemmType::ParallelRnsOnly) {
-                    rns_fgemm(RNSParallel, FFLAS::ParSeqHelper::Sequential)
-                }
+            // Firstly compute R <= R - A c as a fgemm within the RNS domain.
+            if (_method.rnsFgemmType == RnsFgemmType::BothSequential) {
+                rns_fgemm<FFLAS::ParSeqHelper::Sequential, FFLAS::ParSeqHelper::Sequential>();
             }
+            else if (_method.rnsFgemmType == RnsFgemmType::BothParallel) {
+                rns_fgemm<RNSParallel, FGEMMParallel>();
+            }
+            else if (_method.rnsFgemmType == RnsFgemmType::ParallelFgemmOnly) {
+                rns_fgemm<FFLAS::ParSeqHelper::Sequential, FGEMMParallel>();
+            }
+            else if (_method.rnsFgemmType == RnsFgemmType::ParallelRnsOnly) {
+                rns_fgemm<RNSParallel, FFLAS::ParSeqHelper::Sequential>();
+            }
+
             // commentator().stop("[MultiModLifting] FGEMM R <= R - Ac");
 
             // We divide each residues by the according pj, which is done by multiplying.
@@ -424,14 +411,23 @@ namespace LinBox {
             }
         }
 
-        inline void logRNSMatrixElement(RNSElementPtr& A, size_t lda, size_t i, size_t j)
+        // @note This allows us to factor out some of the rns fgemm variants common code.
+        template <class RnsParSeq, class FgemmParSeq>
+        inline void rns_fgemm()
         {
-            auto& Aij = A[i * lda + j];
-            Integer reconstructedInteger;
-            FFLAS::fconvert_rns(*_rnsDomain, 1, 1, 0, &reconstructedInteger, 1, A + (i * lda + j));
-            std::cout << i << " " << j << " ";
-            _rnsDomain->write(std::cout, Aij);
-            std::cout << " -> " << reconstructedInteger << std::endl;
+            PAR_BLOCK
+            {
+                using ComposedParSeqHelper = FFLAS::ParSeqHelper::Compose<RnsParSeq, FgemmParSeq>;
+                using MMHelper =
+                    FFLAS::MMHelper<RNSDomain, FFLAS::MMHelperAlgo::Classic,
+                                    FFLAS::ModeCategories::DefaultTag, ComposedParSeqHelper>;
+                ComposedParSeqHelper composedParSeqHelper(NUM_THREADS, NUM_THREADS);
+                MMHelper mmHelper(*_rnsDomain, -1, composedParSeqHelper);
+
+                FFLAS::fgemm(*_rnsDomain, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, _n,
+                             _primesCount, _n, _rnsDomain->mOne, _rnsA, _n, _rnsc, _primesCount,
+                             _rnsDomain->one, _rnsR, _primesCount, mmHelper);
+            }
         }
 
     public: // @fixme BACK TO PRIVATE!

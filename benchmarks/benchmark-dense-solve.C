@@ -53,6 +53,7 @@ namespace {
         int nbiter = 3;
         int n = 500;
         int bits = 10;
+        int primesCount = 8;
         std::string dispatchString = "Auto";
         std::string methodString = "Auto";
         std::string rnsFgemmString = "ParallelRnsOnly";
@@ -137,6 +138,8 @@ void benchmark(std::array<double, 3>& timebits, Arguments& args, MethodBase& met
 
 int main(int argc, char** argv)
 {
+    int numThreads = 1;
+
     Arguments args;
     Argument as[] = {{'i', "-i", "Set number of repetitions.", TYPE_INT, &args.nbiter},
                      {'q', "-q", "Set the field characteristic (-1 for rationals).", TYPE_INTEGER, &args.q},
@@ -144,6 +147,8 @@ int main(int argc, char** argv)
                      {'b', "-b", "bit size", TYPE_INT, &args.bits},
                      {'d', "-d", "Dispatch mode (any of: Auto, Sequential, SMP, Distributed).", TYPE_STR, &args.dispatchString},
                      {'r', "-r", "RNS-FGEMM type (either BothParallel, BothSequential, ParallelRnsOnly or ParallelFgemmOnly).", TYPE_STR, &args.rnsFgemmString},
+                     {'p', "-p", "For multi-modular methods, how many primes to use.", TYPE_INT, &args.primesCount},
+		             {'t', "-t", "Number of threads.", TYPE_INT, &numThreads },
                      {'M', "-M",
                       "Choose the solve method (any of: Auto, Elimination, DenseElimination, SparseElimination, "
                       "Dixon, DixonRNS, CRA, SymbolicNumericOverlap, SymbolicNumericNorm, "
@@ -154,6 +159,8 @@ int main(int argc, char** argv)
 
     commentator().setReportStream(std::cout);
 
+    omp_set_num_threads(numThreads);
+
     // Setting up context
 
     Communicator communicator(&argc, &argv);
@@ -163,6 +170,7 @@ int main(int argc, char** argv)
 
     MethodBase method;
     method.pCommunicator = &communicator;
+    method.primesCount = args.primesCount;
     if (args.dispatchString == "Sequential")        method.dispatch = Dispatch::Sequential;
     else if (args.dispatchString == "SMP")          method.dispatch = Dispatch::SMP;
     else if (args.dispatchString == "Distributed")  method.dispatch = Dispatch::Distributed;
