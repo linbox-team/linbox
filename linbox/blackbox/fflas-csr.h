@@ -152,7 +152,6 @@ namespace LinBox
 		}
 	};
 	
-	template<>
 	template<class Field>
 	struct is_blockbb<FflasCsr<Field>> {
 		static const bool value = true;

@@ -43,7 +43,7 @@
 #include "linbox/matrix/matrix-domain.h"
 
 #include "linbox/algorithms/cra-domain.h"
-#include "linbox/algorithms/cra-full-multip-fixed.h"
+#include "linbox/algorithms/cra-builder-full-multip-fixed.h"
 #include "linbox/solutions/rank.h"
 
 namespace LinBox

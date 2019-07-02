@@ -47,8 +47,8 @@ SUBDIRS=data
 
 EXAMPLES=rank det minpoly valence solve dot-product echelon sparseelimdet \
 sparseelimrank checksolve doubledet smithvalence charpoly blassolve solverat \
-sparsesolverat poweroftwo_ranks power_rank genprime
-#polysmith bench-matpoly-mult
+sparsesolverat poweroftwo_ranks power_rank genprime smithsparse mats
+#polysmith bench-fft bench-matpoly-mult
 # EXAMPLES+=nulp yabla 
 GIVARONTL_EXAMPLES=smith graph-charpoly
 if LINBOX_HAVE_NTL
@@ -60,7 +60,7 @@ EXTRA_PROGRAMS= $(EXAMPLES) $(USE_GIVARONTL_EXAMPLES)
 
 CLEANFILES=$(EXTRA_PROGRAMS)
 
-EXTRA_DIST = examples.doxy smithvalence.h test.sh
+EXTRA_DIST = examples.doxy test.sh
 #map-sparse.h map-sparse.inl
 
 examples:  ${EXTRA_PROGRAMS}
@@ -76,6 +76,8 @@ det_SOURCES            = det.C
 genprime_SOURCES       = genprime.C
 rank_SOURCES           = rank.C
 smith_SOURCES          = smith.C
+smithsparse_SOURCES    = smithsparse.C
+mats_SOURCES           = mats.C
 minpoly_SOURCES        = minpoly.C
 valence_SOURCES        = valence.C
 solve_SOURCES          = solve.C

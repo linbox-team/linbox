@@ -26,22 +26,22 @@
 #define __LINBOX_rational_full_multip_cra_H
 
 #include "givaro/zring.h"
-#include "linbox/algorithms/cra-full-multip.h"
+#include "linbox/algorithms/cra-builder-full-multip.h"
 
 namespace LinBox
 {
 
 	template<class Domain_Type>
-	struct FullMultipRatCRA : public virtual FullMultipCRA<Domain_Type> {
+	struct RationalCRABuilderFullMultip : public virtual CRABuilderFullMultip<Domain_Type> {
 		typedef Domain_Type				Domain;
-		typedef FullMultipCRA<Domain> 			Father_t;
+		typedef CRABuilderFullMultip<Domain> 			Father_t;
 		typedef typename Father_t::DomainElement 	DomainElement;
-		typedef FullMultipRatCRA<Domain>		Self_t;
+		typedef RationalCRABuilderFullMultip<Domain>		Self_t;
 		Givaro::ZRing<Integer> _ZZ;
 	public:
 
-		FullMultipRatCRA(const double BOUND = 0.0) :
-			Father_t(BOUND)
+		RationalCRABuilderFullMultip(const double log2Bound = 0.0) :
+			Father_t(log2Bound)
 		{}
 
 

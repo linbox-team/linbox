@@ -708,7 +708,7 @@ namespace LinBox{
 
 		//! in-place Rank (the matrix is modified)
 		template <class Matrix>
-		unsigned int rankin(Matrix &A) const{
+		unsigned int rankInPlace(Matrix &A) const{
 			return BlasMatrixDomainRank<Field, Matrix>()(_F,A);
 		}
 
@@ -720,7 +720,7 @@ namespace LinBox{
 
 		//! in-place Determinant (the matrix is modified)
 		template <class Matrix>
-		Element detin(Matrix &A) const{
+		Element detInPlace(Matrix &A) const{
 			return BlasMatrixDomainDet<Field, Matrix>()(_F,A);
 		}
 		//@}

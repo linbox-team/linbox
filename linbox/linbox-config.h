@@ -83,6 +83,12 @@ using std::ptrdiff_t;
 #define __LINBOX_HAVE_SSE4_2_INSTRUCTIONS  1
 #endif
 
+
+/* 256 SIMD registers are not supported by gcc on CYGWIN
+ * See https://gcc.gnu.org/bugzilla/show_bug.cgi?id=54412
+ */
+#if not defined(__CYGWIN__) or not defined(__GNUC__)
+
 /* Define if avx instructions are supported */
 #ifdef __AVX__
 #define __LINBOX_HAVE_AVX_INSTRUCTIONS  1
@@ -102,6 +108,8 @@ using std::ptrdiff_t;
 #ifdef __FMA__
 #define __LINBOX_HAVE_FMA_INSTRUCTIONS  1
 #endif
+
+#endif // CYGWIN and GCC
 
 namespace LinBox {
 

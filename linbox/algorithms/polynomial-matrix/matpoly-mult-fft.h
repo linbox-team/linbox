@@ -327,11 +327,9 @@ namespace LinBox
   }
 
   void getFFTPrime(uint64_t prime_max, size_t lpts, integer bound, std::vector<integer> &bas, size_t k, size_t d){
-	  
-    RandomFFTPrime RdFFT(prime_max);
-    size_t nbp=0;
-	  
-    if (!RdFFT.generatePrimes(lpts,bound,bas)){ // not enough FFT prime found 
+	size_t nbp=0;
+	bool b = RandomFFTPrime::generatePrimes (bas, prime_max, bound, lpts);
+	if (!b){ /* not enough FFT prime found */
       integer MM=1;
       for(std::vector<integer>::size_type i=0;i<bas.size();i++){
 	MM*=bas[i];

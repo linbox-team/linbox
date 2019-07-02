@@ -102,7 +102,7 @@ namespace LinBox
 		 *  ignoring these factors of primes in PrimeL
 		 */
 		template<class IMatrix, class Vector, class VectorP>
-		Vector&  smithForm(Vector& sf, const IMatrix& A, const VectorP& PrimeL) const
+		Vector&  smithForm(Vector& sf, const IMatrix& A, const VectorP& PrimeL)
 		{
 
 			// check if there are enough spaces in sf to store all invariant factors of A
@@ -199,7 +199,7 @@ namespace LinBox
 		/** \brief compute the Smith Form of an integer matrix
 		*/
 		template<class IMatrix, class Vector>
-		Vector&  smithFormBinary(Vector& sf, const IMatrix& A) const
+		Vector&  smithFormBinary(Vector& sf, const IMatrix& A)
 		{
 
 			std::vector<Integer> empty_v;
@@ -216,7 +216,7 @@ namespace LinBox
 		 *  missing these factors of primes in PrimeL
 		 */
 		template<class IMatrix, class Vector>
-		Integer& firstInvariantFactor(Integer& fif, const IMatrix& A, const Vector& PrimeL) const
+		Integer& firstInvariantFactor(Integer& fif, const IMatrix& A, const Vector& PrimeL)
 		{
 
 			r.assign(fif,r.zero);
@@ -266,7 +266,7 @@ namespace LinBox
 		 */
 
 		template<class IMatrix, class Vector, class VectorP>
-		Vector& smithFormBinarySearch (Vector& sf, const IMatrix& A, int i, int j, const VectorP& PrimeL) const
+		Vector& smithFormBinarySearch (Vector& sf, const IMatrix& A, int i, int j, const VectorP& PrimeL)
 		{
 
 
@@ -315,7 +315,7 @@ namespace LinBox
 		 *  Using backward search descibed by B. D. Saunders.
 		 */
 		template<class IMatrix, class Vector, class VectorP>
-		Vector&  smithFormBackward(Vector& sf, const IMatrix& A, const VectorP& PrimeL) const
+		Vector&  smithFormBackward(Vector& sf, const IMatrix& A, const VectorP& PrimeL)
 		{
 
 			// check if there are enough spaces in sf to store all invariant factors of A
@@ -413,7 +413,7 @@ namespace LinBox
 		 * Using backward binary search.
 		 */
 		template<class IMatrix, class Vector>
-		Vector&  smithFormBackward(Vector& sf, const IMatrix& A) const
+		Vector&  smithFormBackward(Vector& sf, const IMatrix& A)
 		{
 
 			std::vector<Integer> empty_v;
@@ -432,7 +432,7 @@ namespace LinBox
 		 */
 
 		template<class IMatrix, class Vector, class VectorP>
-		Vector& smithFormBinarySearchBackward (Vector& sf, const IMatrix& A, int i, int j, int depth, const VectorP& PrimeL) const
+		Vector& smithFormBinarySearchBackward (Vector& sf, const IMatrix& A, int i, int j, int depth, const VectorP& PrimeL)
 		{
 
 

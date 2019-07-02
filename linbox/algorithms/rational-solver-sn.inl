@@ -326,26 +326,6 @@ inline void update_r_exact(IVector& r_exact, FVector& r, FVector& xs_int, IMatri
 	return;
 } // update_r_exact
 
-#if 0 /* no longer called...*/
-inline int HadamardBound(integer& B, FMatrix& DM)
-{
-	size_t n = DM.rowdim();
-	zw_hbound (B, n, n, &*DM.Begin()); // compute the Hadamard bound
-	B = B * B;
-	double mnorm_loc = zw_dOOnorm(&*DM.Begin(), n, n);
-
-	//! @bug this is not good.
-	// [don't know what this comment is about] should be a check for 2 * mnorm + zw_dmax (n, b, 1);
-	// TODO what is "b"? from copied code it is the RHS array of doubles
-	// zw_max just seems to get abs(max value of b)
-	// next line false, just to compile
-	double *b = NULL;
-	B *= 2 * mnorm_loc + zw_dmax (n, b, 1); // [don't know what this factor is about]
-	B <<= 1; // [extra factor of 2 for some reason... ]
-	return B;
-}
-#endif
-
 //update num, *num <- *num * 2^shift + d
 inline IVector& update_num (IVector& num, const FVector& d)
 {

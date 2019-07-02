@@ -32,7 +32,7 @@
 //#include "linbox/field/gmp-rational.h"
 #include "givaro/zring.h"
 #include "linbox/blackbox/rational-matrix-factory.h"
-#include "linbox/algorithms/cra-early-multip.h"
+#include "linbox/algorithms/cra-builder-early-multip.h"
 #include "linbox/algorithms/cra-domain.h"
 //#include "linbox/algorithms/rational-cra.h"
 #include "linbox/algorithms/rational-reconstruction-base.h"
@@ -161,7 +161,7 @@ namespace LinBox
 	template <class Rationals, template <class> class Vector, class MyMethod >
 	Vector<typename Rationals::Element>& rational_minpoly (Vector<typename Rationals::Element> &p,
 							       const BlasMatrix<Rationals > &A,
-							       const MyMethod &Met=  Method::Hybrid())
+							       const MyMethod &Met=  Method::Auto())
 	{
 		typedef typename Rationals::Element Quotient;
 
@@ -192,7 +192,7 @@ namespace LinBox
 		BlasMatrix<Givaro::ZRing<Integer> > Atilde(Z,A.rowdim(), A.coldim());
 		FA.makeAtilde(Atilde);
 
-		ChineseRemainder< EarlyMultipCRA<Field > > cra(4UL);
+		ChineseRemainder< CRABuilderEarlyMultip<Field > > cra(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD);
 		MyRationalModularMinpoly<BlasMatrix<Rationals > , MyMethod> iteration1(A, Met, M);
 		MyIntegerModularMinpoly<BlasMatrix<Givaro::ZRing<Integer> >, MyMethod> iteration2(Atilde, Met, Di, M);
 		MyModularMinpoly<MyRationalModularMinpoly<BlasMatrix<Rationals > , MyMethod>,

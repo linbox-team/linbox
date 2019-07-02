@@ -67,7 +67,7 @@ const double p = 0.026;
 /// no command line args
 int main (int argc, char **argv)
 {
-	unsigned long rank_A_Wiedemann, rank_A_elimination;
+	size_t rank_A_Wiedemann, rank_A_elimination;
 
 	commentator().setMaxDepth (2);
 	commentator().setReportStream (cout);

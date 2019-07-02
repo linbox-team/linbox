@@ -87,7 +87,7 @@ namespace LinBox
 	 * and partial template specialization.
 	 */
 	template<class Field, class Trait = typename VectorTraits<typename
-	LinBox::Vector<Field>::Dense>::VectorCategory > 
+	LinBox::Vector<Field>::Dense>::VectorCategory >
 	class Diagonal {
 	private:
 		/// empty constructor
@@ -98,7 +98,7 @@ namespace LinBox
 	  \brief Specialization of Diagonal for application to dense vectors
 	  */
 	template <class _Field>
-	class Diagonal<_Field, VectorCategories::DenseVectorTag> 
+	class Diagonal<_Field, VectorCategories::DenseVectorTag>
 	: public FIBB<_Field> {
 		typedef Diagonal<_Field, VectorCategories::DenseVectorTag> Self_t;
 	public:
@@ -245,17 +245,17 @@ namespace LinBox
 		Vector_t& getData() { return _v; }
 
 /* FIBB functions */
-/* rank, det, solveRight, solveLeft, solveMPRight, solveMPLeft, 
+/* rank, det, solveRight, solveLeft, solveMPRight, solveMPLeft,
 nullspaceRandomRight, nullspaceRandomLeft, nullspaceBasisRight, nullspaceBasisLeft */
 
 BBType bbTag() const { return diagonal; }
 
 size_t& rank(size_t& r) const
 { // assuming square
-	r = 0; 
+	r = 0;
 	Element x; field().init(x);
 	size_t n = (rowdim() > coldim()) ? rowdim() : coldim();
-	for (size_t i = 0; i < n; ++i) 
+	for (size_t i = 0; i < n; ++i)
 		if (not field().isZero(getEntry(x,i,i))) r++;
 	return r;
 }
@@ -264,7 +264,7 @@ Element& det( Element& d) const
 {	if (rowdim() != coldim()) return d = field().zero;
     Element x; field().init(x);
 	d = field().one;
-	for (size_t i = 0; i < rowdim(); ++i) 
+	for (size_t i = 0; i < rowdim(); ++i)
 		field().mulin(d, getEntry(x,i,i));
 	return d;
 }
@@ -283,17 +283,17 @@ Matrix& solveMPRight(Matrix& Y, const Matrix& X) const
 	Element y; field().init(y);
 	Element d; field().init(d);
 	Y.zero();
-	for (size_t i = 0; i < coldim(); ++ i) 
+	for (size_t i = 0; i < coldim(); ++ i)
 	{	if ( ! field().isZero( getEntry(x, i, i) ) )
-		{// Todo: do this as a matrix (or vector) level operation	
+		{// Todo: do this as a matrix (or vector) level operation
 			field().inv(d, x);
-			for (size_t j = 0; j < X.coldim(); ++ j) 
+			for (size_t j = 0; j < X.coldim(); ++ j)
 				Y.setEntry(i,j, field().mul(y, d, X.getEntry(x, i, j)));
 		/* this causes a deallocation error ??
 			Matrix Xrow(X, i, 0, 1, coldim());
 			Matrix Yrow(Y, i, 0, 1, coldim());
 			// there should be a scalar mul!
-			Matrix S(field(), 1, 1); 
+			Matrix S(field(), 1, 1);
 			S.setEntry(0,0,field().invin(x));
 			MD.mul(Yrow, S, Xrow);
 		*/
@@ -308,16 +308,16 @@ Matrix& solveMPLeft(Matrix& Y, const Matrix& X) const
 	Element y; field().init(y);
 	Element d; field().init(d);
 	Y.zero();
-	for (size_t j = 0; j < rowdim(); ++ j) 
+	for (size_t j = 0; j < rowdim(); ++ j)
 	{	if (! field().isZero( getEntry(x, j, j) ) )
-		{// Todo: do this as a matrix (or vector) level operation	
+		{// Todo: do this as a matrix (or vector) level operation
 			field().inv(d, x);
-			for (size_t i = 0; i < X.rowdim(); ++ i) 
+			for (size_t i = 0; i < X.rowdim(); ++ i)
 				Y.setEntry(i,j, field().mul(y, d, X.getEntry(x, i, j)));
 		/* this causes a deallocation error ??
 			Matrix Xcol(X, 0, j, rowdim(), 1);
 			Matrix Ycol(Y, 0, j, rowdim(), 1);
-			Matrix S(field(), 1, 1); 
+			Matrix S(field(), 1, 1);
 			S.setEntry(0,0,field().invin(x));
 			MD.mul(Ycol, Xcol, S);
 		*/
@@ -329,7 +329,7 @@ Matrix& solveMPLeft(Matrix& Y, const Matrix& X) const
 Matrix& nullspaceRandomRight(Matrix& N) const
 {	N.zero();
 	Element x; field().init(x);
-	for (size_t i = 0; i < rowdim(); ++ i) 
+	for (size_t i = 0; i < rowdim(); ++ i)
 	{	getEntry(x, i, i);
 		if (field().isZero(x))
 		{	Matrix Nrow(N, i, 0, 1, N.coldim());
@@ -339,10 +339,10 @@ Matrix& nullspaceRandomRight(Matrix& N) const
 	return N;
 }
 
-Matrix& nullspaceRandomLeft(Matrix& N) const 
+Matrix& nullspaceRandomLeft(Matrix& N) const
 {	N.zero();
 	Element x; field().init(x);
-	for (size_t i = 0; i < rowdim(); ++ i) 
+	for (size_t i = 0; i < rowdim(); ++ i)
 	{	getEntry(x, i, i);
 		if (field().isZero(x))
 		{	Matrix Ncol(N, 0, i, N.rowdim(), 1);
@@ -357,8 +357,8 @@ BlasMatrix<Field>& nullspaceBasisRight(BlasMatrix<Field>& N) const
 	N.resize(rowdim(), n-r, field().zero);
 	Element x; field().init(x);
 	size_t k = 0;
-	for (size_t i = 0; i < N.coldim(); ++i) 
-	{	if (field().isZero( getEntry(x,i,i) )) 
+	for (size_t i = 0; i < N.coldim(); ++i)
+	{	if (field().isZero( getEntry(x,i,i) ))
 			N.setEntry(i,k++, field().one);
 
 	}
@@ -370,7 +370,7 @@ BlasMatrix<Field>& nullspaceBasisLeft(BlasMatrix<Field>& N) const
 	N.resize(m-r, coldim(), field().zero);
 	Element x; field().init(x);
 	size_t k = 0;
-	for (size_t i = 0; i < N.rowdim(); ++i) 
+	for (size_t i = 0; i < N.rowdim(); ++i)
 	{	if (field().isZero( getEntry(x,i,i) ))
 			N.setEntry(i,k++, field().one);
 
@@ -489,7 +489,7 @@ BlasMatrix<Field>& nullspaceBasisLeft(BlasMatrix<Field>& N) const
 		typedef _Field Field;
 		typedef typename Field::Element    Element;
         typedef BlasVector<Field> Vector_t;
-        
+
 
 		Diagonal(const Vector_t& v);
 

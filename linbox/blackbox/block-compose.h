@@ -113,7 +113,6 @@ public:
 	}
 };
 
-template<>
 template<class A, class B>
 struct is_blockbb<BlockCompose<A, B>> {
 	static const bool value = true;

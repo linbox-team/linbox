@@ -32,8 +32,8 @@
 #include "linbox/solutions/methods.h"
 #include <vector>
 #include <utility>
-#include "linbox/algorithms/cra-single.h"
-#include "linbox/algorithms/cra-full-multip.h"
+#include "linbox/algorithms/cra-builder-single.h"
+#include "linbox/algorithms/cra-builder-full-multip.h"
 #include "linbox/algorithms/lazy-product.h"
 
 
@@ -44,7 +44,7 @@ namespace LinBox
 	 * Implements early terminated CRA with preconditioning of the result
 	 * factor | result should be given
 	 * does not detect bad factors but can run until full termination [for result] in this case
-	 * factor may be changed by changeFactor function, residues stored in FullMultipCRA are recomputed in this case,
+	 * factor may be changed by changeFactor function, residues stored in CRABuilderFullMultip are recomputed in this case,
 	 * FullMulpitCRA should consist of vectors of size 0, but errors happen.
 	 */
 
@@ -52,14 +52,14 @@ namespace LinBox
 	//typedef Integers::Element Integer;
 
 	template<class Domain_Type>
-	struct VarPrecEarlyMultipCRA: public EarlySingleCRA<Domain_Type>, FullMultipCRA<Domain_Type> {
+	struct CRABuilderVarPrecEarlyMultip: public CRABuilderEarlySingle<Domain_Type>, CRABuilderFullMultip<Domain_Type> {
 
 		typedef GMPRationalField Rationals;
 		typedef Rationals::Element Quotient;
 
 		typedef Domain_Type                     Domain;
 		typedef typename Domain::Element DomainElement;
-		typedef VarPrecEarlyMultipCRA<Domain> Self_t;
+		typedef CRABuilderVarPrecEarlyMultip<Domain> Self_t;
 
 	protected:
 		BlasVector< Givaro::ZRing<Integer> > vfactor_;
@@ -68,33 +68,33 @@ namespace LinBox
 		std::vector< size_t > randv;
 		Integer& result(Integer &d) {return d;}; // DON'T TOUCH
 	public:
-		VarPrecEarlyMultipCRA(const size_t EARLY = DEFAULT_EARLY_TERM_THRESHOLD, const double b=0.0,
+		CRABuilderVarPrecEarlyMultip(const size_t EARLY = LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD, const double b=0.0,
 				      const BlasVector<Givaro::ZRing<Integer> >& vf = BlasVector<Givaro::ZRing<Integer> >(Givaro::ZRing<Integer>()),
 				      const BlasVector<Givaro::ZRing<Integer> >& vm = BlasVector<Givaro::ZRing<Integer> >(Givaro::ZRing<Integer>())) :
-			EarlySingleCRA<Domain>(EARLY), FullMultipCRA<Domain>(b), vfactor_(vf), vmultip_(vm)
+			CRABuilderEarlySingle<Domain>(EARLY), CRABuilderFullMultip<Domain>(b), vfactor_(vf), vmultip_(vm)
 		{
 			for (int i=0; i < (int)vfactor_.size(); ++i) {
 				if (vfactor_[(size_t)i]==0) vfactor_[(size_t)i]=1;
 			}
 		}
 
-		VarPrecEarlyMultipCRA(VarPrecEarlyMultipCRA& other) :
-			EarlySingleCRA<Domain>(other.EARLY_TERM_THRESHOLD), FullMultipCRA<Domain>(other.LOGARITHMIC_UPPER_BOUND), vfactor_(other.vfactor_), vmultip_(other.vmultip_)
+		CRABuilderVarPrecEarlyMultip(CRABuilderVarPrecEarlyMultip& other) :
+			CRABuilderEarlySingle<Domain>(other.EARLY_TERM_THRESHOLD), CRABuilderFullMultip<Domain>(other.LOGARITHMIC_UPPER_BOUND), vfactor_(other.vfactor_), vmultip_(other.vmultip_)
 		{
 			for (int i=0; i < vfactor_.size(); ++i) {
 				if (vfactor_[(size_t)i]==0) vfactor_[(size_t)i]=1;
 			}
 		}
 
-		int getThreshold(int& t) {return t = (int)EarlySingleCRA<Domain>::EARLY_TERM_THRESHOLD;}
+		int getThreshold(int& t) {return t = (int)CRABuilderEarlySingle<Domain>::EARLY_TERM_THRESHOLD;}
 
-		Integer& getModulus(Integer& m) {EarlySingleCRA<Domain>::getModulus(m);return m;}
-		Integer& getResidue(Integer& r) {EarlySingleCRA<Domain>::getResidue(r);return r;}
+		Integer& getModulus(Integer& m) {CRABuilderEarlySingle<Domain>::getModulus(m);return m;}
+		Integer& getResidue(Integer& r) {CRABuilderEarlySingle<Domain>::getResidue(r);return r;}
 
 		template<class Vect>
 		Vect& getResidue(Vect& r) {
 			Vect z(r.field()),vf(r.field()), vm(r.field());
-			FullMultipCRA<Domain>::result(z);
+			CRABuilderFullMultip<Domain>::result(z);
 
 			typename Vect::const_iterator it,itf,itm;
 			Integer M; getModulus(M);
@@ -105,7 +105,7 @@ namespace LinBox
 			normproductin(r, z, M);
 			normproductin(r, vm, M);
 
-			//FullMultipCRA<Domain>::getResidue(r);
+			//CRABuilderFullMultip<Domain>::getResidue(r);
 			return r;
 		}
 
@@ -127,8 +127,8 @@ namespace LinBox
 			Integer z;
 			dot(z,D,vz,randv);
 
-			EarlySingleCRA<Domain>::initialize(D, z);
-			FullMultipCRA<Domain>::initialize(D, e);
+			CRABuilderEarlySingle<Domain>::initialize(D, z);
+			CRABuilderFullMultip<Domain>::initialize(D, e);
 		}
 
 		template<class Vect>
@@ -149,8 +149,8 @@ namespace LinBox
 			DomainElement z;
 			dot(z,D,vz,randv);
 
-			EarlySingleCRA<Domain>::initialize(D, z);
-			FullMultipCRA<Domain>::initialize(D, e);
+			CRABuilderEarlySingle<Domain>::initialize(D, z);
+			CRABuilderFullMultip<Domain>::initialize(D, e);
 		}
 
 		template<class Vect>
@@ -169,8 +169,8 @@ namespace LinBox
 			Integer z;
 			dot(z,D,vz,randv);
 
-			EarlySingleCRA<Domain>::progress(D, z);
-			FullMultipCRA<Domain>::progress(D, e);
+			CRABuilderEarlySingle<Domain>::progress(D, z);
+			CRABuilderFullMultip<Domain>::progress(D, e);
 		}
 
 		template<class Vect>
@@ -188,8 +188,8 @@ namespace LinBox
 			DomainElement z;
 			dot(z,D,vz,randv);
 
-			EarlySingleCRA<Domain>::progress(D, z);
-			FullMultipCRA<Domain>::progress(D, e);
+			CRABuilderEarlySingle<Domain>::progress(D, z);
+			CRABuilderFullMultip<Domain>::progress(D, e);
 		}
 
 		template<class OKDomain>
@@ -207,26 +207,26 @@ namespace LinBox
 			DomainElement z;
 			dot(z,D,vz,randv);
 
-			EarlySingleCRA<Domain>::progress(D, z);
-			FullMultipCRA<Domain>::progress(D, e);
+			CRABuilderEarlySingle<Domain>::progress(D, z);
+			CRABuilderFullMultip<Domain>::progress(D, e);
 		}
 
 		bool terminated() {
-			bool ET = EarlySingleCRA<Domain>::terminated();
-			if (FullMultipCRA<Domain>::LOGARITHMIC_UPPER_BOUND> 1.0) ET = ET || FullMultipCRA<Domain>::terminated();
+			bool ET = CRABuilderEarlySingle<Domain>::terminated();
+			if (CRABuilderFullMultip<Domain>::LOGARITHMIC_UPPER_BOUND> 1.0) ET = ET || CRABuilderFullMultip<Domain>::terminated();
 			return ET;
 		}
 
 		bool noncoprime(const Integer& i) const {
-			return EarlySingleCRA<Domain>::noncoprime(i);
+			return CRABuilderEarlySingle<Domain>::noncoprime(i);
 		}
 
 		//Integer& getFactor(Integer& f) {
-		//	return f = EarlySingleCRA<Domain>::factor_;
+		//	return f = CRABuilderEarlySingle<Domain>::factor_;
 		//}
 
 		//Integer& getMultip(Integer& m) {
-		//	return m=EarlySingleCRA<Domain>::multip_;
+		//	return m=CRABuilderEarlySingle<Domain>::multip_;
 		//}
 
 		template<class Vect>
@@ -265,7 +265,7 @@ namespace LinBox
 		}
 
 		//Quotient& getPreconditioner(Quotient& q) {
-		//	return q = EarlySingleCRA<Domain>::getPreconditioner(q);
+		//	return q = CRABuilderEarlySingle<Domain>::getPreconditioner(q);
 		//}
 
 		template<template<class, class> class Vect, template<class> class Alloc>
@@ -285,14 +285,14 @@ namespace LinBox
 
 		template<template<class, class> class Vect, template<class> class Alloc>
 		Vect<Integer, Alloc<Integer> >& result(Vect<Integer, Alloc<Integer> >& r) {
-			if ((FullMultipCRA<Domain>::LOGARITHMIC_UPPER_BOUND> 1.0) && ( FullMultipCRA<Domain>::terminated() )) {
-				FullMultipCRA<Domain>::result(r);
+			if ((CRABuilderFullMultip<Domain>::LOGARITHMIC_UPPER_BOUND> 1.0) && ( CRABuilderFullMultip<Domain>::terminated() )) {
+				CRABuilderFullMultip<Domain>::result(r);
 				return r ;
 			}
 			else {
 				//Integer M; getModulus(m);
 				Vect<Integer, Alloc<Integer> > z,vf, vm;
-				FullMultipCRA<Domain>::result(z);
+				CRABuilderFullMultip<Domain>::result(z);
 
 				typename Vect<Integer, Alloc<Integer> >::const_iterator it,itf,itm;
 
@@ -318,14 +318,14 @@ namespace LinBox
 		template<template<class,class> class Vect, template<class> class Alloc>
 		Vect<Integer, Alloc<Integer> >& result(Vect<Integer, Alloc<Integer> >& num, Integer& den)
 		{
-			if ((FullMultipCRA<Domain>::LOGARITHMIC_UPPER_BOUND> 1.0) && ( FullMultipCRA<Domain>::terminated() )) {
-				FullMultipCRA<Domain>::result(num);
+			if ((CRABuilderFullMultip<Domain>::LOGARITHMIC_UPPER_BOUND> 1.0) && ( CRABuilderFullMultip<Domain>::terminated() )) {
+				CRABuilderFullMultip<Domain>::result(num);
 				den = 1;
 				return num;
 			}
 			else {
 				Vect<Integer, Alloc<Integer> > z,vf, vm;
-				FullMultipCRA<Domain>::result(z);//vector of non prec results
+				CRABuilderFullMultip<Domain>::result(z);//vector of non prec results
 
 				typename Vect<Integer, Alloc<Integer> >::const_iterator it,itf,itm;
 				typename Vect<Integer, Alloc<Integer> >::iterator itt;
@@ -359,15 +359,15 @@ namespace LinBox
 
 		BlasVector<Givaro::ZRing<Integer> >& result(BlasVector<Givaro::ZRing<Integer> >& num, Integer& den)
 		{
-			if ((FullMultipCRA<Domain>::LOGARITHMIC_UPPER_BOUND> 1.0) && ( FullMultipCRA<Domain>::terminated() )) {
-				FullMultipCRA<Domain>::result(num);
+			if ((CRABuilderFullMultip<Domain>::LOGARITHMIC_UPPER_BOUND> 1.0) && ( CRABuilderFullMultip<Domain>::terminated() )) {
+				CRABuilderFullMultip<Domain>::result(num);
 				den = 1;
 				return num;
 			}
 			else {
 				Givaro::ZRing<Integer> Z;
 				BlasVector<Givaro::ZRing<Integer> > z(Z),vf(Z), vm(Z);
-				FullMultipCRA<Domain>::result(z);//vector of non prec results
+				CRABuilderFullMultip<Domain>::result(z);//vector of non prec results
 
 				typename BlasVector<Givaro::ZRing<Integer> >::const_iterator it,itf,itm;
 				typename BlasVector<Givaro::ZRing<Integer> >::iterator itt;
@@ -403,9 +403,9 @@ namespace LinBox
 		Vect<Quotient, Alloc<Quotient> >& result(Vect<Quotient, Alloc<Quotient> >& q)
 		{
 			q.clear();
-			if ((FullMultipCRA<Domain>::LOGARITHMIC_UPPER_BOUND> 1.0) && ( FullMultipCRA<Domain>::terminated() )) {
+			if ((CRABuilderFullMultip<Domain>::LOGARITHMIC_UPPER_BOUND> 1.0) && ( CRABuilderFullMultip<Domain>::terminated() )) {
 				std::vector<Integer> vz;
-				FullMultipCRA<Domain>::result(vz);
+				CRABuilderFullMultip<Domain>::result(vz);
 
 				typename Vect<Integer, Alloc<Integer> >::const_iterator it = vz.begin();
 				for (; it!= vz.end(); ++it) {
@@ -415,7 +415,7 @@ namespace LinBox
 			}
 			else {
 				Vect<Integer, Alloc<Integer> > z,vf, vm;
-				FullMultipCRA<Domain>::result(z);
+				CRABuilderFullMultip<Domain>::result(z);
 				typename Vect<Integer, Alloc<Integer> >::const_iterator it = z.begin(),itf,itm;
 
 				Integer M; getModulus(M);
@@ -439,7 +439,7 @@ namespace LinBox
 		template<class Vect>
 		bool changePreconditioner(const Vect& vf, const Vect& vm) {
 			//Warning does not detect unchanged preconditioners !!!
-			//if ((factor_ == f) && (multip_==m)) return EarlySingleCRA<Domain>::terminated();
+			//if ((factor_ == f) && (multip_==m)) return CRABuilderEarlySingle<Domain>::terminated();
 
 			typename Vect::const_iterator itf, itm, itf2, itm2;
 
@@ -453,14 +453,14 @@ namespace LinBox
 			Vect e(Z,vfactor_.size());
 
 			//clear CRAEarlySingle;
-			EarlySingleCRA<Domain>::occurency_ = 0;
-			EarlySingleCRA<Domain>::nextM_ = 1;
-			EarlySingleCRA<Domain>::primeProd_ = 1;
-			EarlySingleCRA<Domain>::residue_ = 0;
+			CRABuilderEarlySingle<Domain>::occurency_ = 0;
+			CRABuilderEarlySingle<Domain>::nextM_ = 1;
+			CRABuilderEarlySingle<Domain>::primeProd_ = 1;
+			CRABuilderEarlySingle<Domain>::residue_ = 0;
 
 			//Computation of residue_
-            for (auto it = FullMultipCRA<Domain>::shelves_begin();
-                 it != FullMultipCRA<Domain>::shelves_end();
+            for (auto it = CRABuilderFullMultip<Domain>::shelves_begin();
+                 it != CRABuilderFullMultip<Domain>::shelves_end();
                  ++it)
             {
                 if (it->occupied) {
@@ -474,23 +474,23 @@ namespace LinBox
 					dot(z,D, e_v, randv);
 
 
-				    auto prev_residue_ = EarlySingleCRA<Domain>::residue_;
-					EarlySingleCRA<Domain>::progress(D,z);
+				    auto prev_residue_ = CRABuilderEarlySingle<Domain>::residue_;
+					CRABuilderEarlySingle<Domain>::progress(D,z);
 
-					if (prev_residue_ == EarlySingleCRA<Domain>::residue_ ) {
-						EarlySingleCRA<Domain>::occurency_ += it->count;
+					if (prev_residue_ == CRABuilderEarlySingle<Domain>::residue_ ) {
+						CRABuilderEarlySingle<Domain>::occurency_ += it->count;
 					}
-					if ( EarlySingleCRA<Domain>::terminated() ) {
+					if ( CRABuilderEarlySingle<Domain>::terminated() ) {
 						return true;
 					}
                 }
             }
 
-			return EarlySingleCRA<Domain>::terminated();
+			return CRABuilderEarlySingle<Domain>::terminated();
 
-			//forall results in FullMultipCRA do
+			//forall results in CRABuilderFullMultip do
 			//	precondition
-			//	progress to  EarlySingleCRA
+			//	progress to  CRABuilderEarlySingle
 			//	check for termination
 			//recompute
 		}

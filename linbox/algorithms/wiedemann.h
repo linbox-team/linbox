@@ -101,21 +101,21 @@ namespace LinBox
 
 			Squarize<Blackbox> B(&A);
 			BlackboxContainer<Field, Squarize<Blackbox> > TF (&B, A.field(), i);
-			MasseyDomain< Field, BlackboxContainer<Field, Squarize<Blackbox> > > WD (&TF, M.earlyTermThreshold ());
+			MasseyDomain< Field, BlackboxContainer<Field, Squarize<Blackbox> > > WD (&TF, M.earlyTerminationThreshold);
 
 			WD.minpoly (P, deg);
 		}
-		else if (M.symmetric ()) {
+		else if (M.shapeFlags == Shape::Symmetric) {
 			typedef BlackboxContainerSymmetric<Field, Blackbox> BBContainerSym;
 			BBContainerSym TF (&A, A.field(), i);
-			MasseyDomain< Field, BBContainerSym > WD (&TF, M.earlyTermThreshold ());
+			MasseyDomain< Field, BBContainerSym > WD (&TF, M.earlyTerminationThreshold);
 
 			WD.minpoly (P, deg);
 		}
 		else {
 			typedef BlackboxContainer<Field, Blackbox> BBContainer;
 			BBContainer TF (&A, A.field(), i);
-			MasseyDomain< Field, BBContainer > WD (&TF, M.earlyTermThreshold ());
+			MasseyDomain< Field, BBContainer > WD (&TF, M.earlyTerminationThreshold);
 
 			WD.minpoly (P, deg);
 #ifdef INCLUDE_TIMING
@@ -129,6 +129,15 @@ namespace LinBox
 			<< "Time required for LSR fix:      " << WD.fixTime () << std::endl;
 #endif // INCLUDE_TIMING
 		}
+
+//             std::cerr << "P: " << P << std::endl;
+//             std::cerr << "WD deg: " << deg << std::endl;
+        if (!deg) {
+                // zero sequence, matrix minpoly is X
+            P.resize(2);
+            A.field().assign(P[0],A.field().zero);
+            A.field().assign(P[1],A.field().one);
+        }
 
 		commentator().stop ("done", NULL, "minpoly");
 
@@ -156,7 +165,7 @@ namespace LinBox
 			     Polynomial         &P,
 			     const Blackbox                            &A,
 			     const RingCategories::ModularTag          &tag,
-			     const Method::ExtensionWiedemann& M)
+			     const Method::WiedemannExtension& M)
 	{
 		typedef typename Blackbox::Field Field;
 		const Field& F = A.field();
@@ -206,7 +215,7 @@ namespace LinBox
 			     Polynomial         &P,
 			     const Blackbox                            &A,
 			     const RingCategories::ModularTag          &tag,
-			     const Method::ExtensionWiedemann& M)
+			     const Method::WiedemannExtension& M)
 	{
 		commentator().report (Commentator::LEVEL_ALWAYS,INTERNAL_WARNING) << " WARNING, no extension available, returning only a factor of the minpoly\n";
 		return minpoly(P, A, tag, Method::Wiedemann (M));
@@ -237,7 +246,7 @@ namespace LinBox
 		 * @param traits @ref SolverTraits  structure describing user
 		 *               options for the solver
 		 */
-		WiedemannSolver (const Field &F, const WiedemannTraits &traits) :
+		WiedemannSolver (const Field &F, const Method::Wiedemann &traits) :
 			_traits (traits), _field (&F), _randiter (F), _VD (F)
 		{}
 
@@ -249,7 +258,7 @@ namespace LinBox
 		 * @param r Random iterator to use for randomization
 		 */
 		WiedemannSolver (const Field &F,
-				 const WiedemannTraits &traits,
+				 const Method::Wiedemann &traits,
 				 typename Field::RandIter r) :
 			_traits (traits), _field (&F), _randiter (r), _VD (F)
 		{}
@@ -327,17 +336,17 @@ namespace LinBox
 						 const Prec1             *P,
 						 const Prec2             *Q);
 
-		/*! Get a random element of the right nullspace of A.
+		/*! Get a random element of the right nullspace of A of rank r.
 		 *
 		 * @param x Vector in which to store nullspace element
 		 * @param A Black box of which to find nullspace element
 		 */
 		template<class Blackbox, class Vector>
 		ReturnStatus findNullspaceElement (Vector                &x,
-						   const Blackbox        &A);
+						   const Blackbox        &A, const size_t r);
 
 		/*! Get a certificate \p u that the given system \f$Ax=b\f$ is
-		 * inconsistent, if one can be found.
+		 * of rank r and inconsistent, if one can be found.
 		 *
 		 * @param u Vector in which to store certificate
 		 * @param A Blackbox for the linear system
@@ -348,7 +357,7 @@ namespace LinBox
 		template<class Blackbox, class Vector>
 		bool certifyInconsistency (Vector                          &u,
 					   const Blackbox                  &A,
-					   const Vector                    &b);
+					   const Vector                    &b, const size_t r);
 
 		//@}
 
@@ -359,7 +368,7 @@ namespace LinBox
 		// Make an m x m lambda-sparse matrix, c.f. Mulders (2000)
 		SparseMatrix<Field> *makeLambdaSparseMatrix (size_t m);
 
-		WiedemannTraits                      _traits;
+		Method::Wiedemann                      _traits;
 		const Field                         *_field;
 		typename Field::RandIter             _randiter;
 		VectorDomain<Field>                  _VD;

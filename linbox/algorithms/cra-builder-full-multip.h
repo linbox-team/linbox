@@ -1,7 +1,7 @@
-/* linbox/algorithms/cra-full-multip.h
+/* linbox/algorithms/cra-builder-full-multip.h
  * Copyright (C) 1999-2010 The LinBox group
  *
- * Time-stamp: <15 Dec 10 15:54:00 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <09 May 19 16:50:52 Jean-Guillaume.Dumas@imag.fr>
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -22,7 +22,7 @@
  * ========LICENCE========
  */
 
-/*!@file algorithms/cra-full-multip.h
+/*!@file algorithms/cra-builder-full-multip.h
  * @ingroup algorithms
  * @brief NO DOC
  */
@@ -57,10 +57,10 @@ namespace LinBox
      * to another shelf, recursively.
 	 */
 	template<class Domain_Type>
-	struct FullMultipCRA {
+	struct CRABuilderFullMultip {
 		typedef Domain_Type			Domain;
 		typedef typename Domain::Element DomainElement;
-		typedef FullMultipCRA<Domain> 		Self_t;
+		typedef CRABuilderFullMultip<Domain>		Self_t;
 
     public:
         struct Shelf {
@@ -75,8 +75,8 @@ namespace LinBox
 
 	protected:
         std::vector<Shelf> shelves_;
-		const double				LOGARITHMIC_UPPER_BOUND;
-		double totalsize_ = 0.; // natural log of the current modulus
+		const double				LOGARITHMIC_UPPER_BOUND; // log2 of upper bound
+		double totalsize_ = 0.; // log2 of the current modulus
         size_t dimension_ = 0; // dimension of the vector being reconstructed
         bool collapsed_ = false;
         bool normalized_ = false;
@@ -88,7 +88,7 @@ namespace LinBox
          * @param bnd  upper bound on the natural logarithm of the result
          * @param dim  dimension of the vector to be reconstructed
          */
-		FullMultipCRA(const double bnd=0.0, size_t dim=0) :
+		CRABuilderFullMultip(const double bnd=0.0, size_t dim=0) :
 			LOGARITHMIC_UPPER_BOUND(bnd), dimension_(dim)
 		{}
 
@@ -147,7 +147,7 @@ namespace LinBox
             double logD = Givaro::naturallog(Dval);
             auto cur = getShelf(logD);
 
-            totalsize_ += logD;
+            totalsize_ += Givaro::logtwo(Dval);
 
             ensureShelf(cur, shelves_, dimension_);
             if (! shelves_[cur].occupied) {
@@ -406,6 +406,14 @@ namespace LinBox
             u1 += temp; // u1 <-- u1 + ((u0-u1)/m1 mod m0) * m1
             return u1;
         }
+
+#ifdef _LB_CRATIMING
+    public:
+        std::ostream& reportTimes(std::ostream& os) const
+        {
+            return os <<  "FullMultip CRA total size:" << totalsize_;
+        }
+#endif
 
 	};
 
