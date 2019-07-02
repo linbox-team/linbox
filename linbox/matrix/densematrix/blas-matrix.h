@@ -449,9 +449,9 @@ namespace LinBox
 		/*! @internal
 		 * Get read-only pointer to the matrix data.
 		 */
-		pointer getPointer() const ;
-
-		const_pointer &getConstPointer() const ;
+		pointer getPointer() ;
+		const_pointer getPointer() const ;
+		const_pointer getConstPointer() const ;
 
 		Rep & refRep() { return _rep ;}
 		const Rep & getRep() const { return _rep ;}
@@ -572,7 +572,7 @@ namespace LinBox
 		 * @param f write in some format (@ref Tag::FileFormat::Format). Default is Maple's.
 		 */
 		std::ostream &write (std::ostream &os,
-				     LINBOX_enum (Tag::FileFormat) f/* = Tag::FileFormat::Maple*/) const
+				     Tag::FileFormat f/* = Tag::FileFormat::Maple*/) const
 		{
 			constSubMatrixType B(*this, 0, 0, rowdim(), coldim());
 			return B.write(os, f);
@@ -713,7 +713,7 @@ namespace LinBox
 		template <class Vector>
 		Vector &columnDensity (Vector &v) const ;
 
-		size_t size()
+		size_t size() const
 		{
 			return _row * _col;
 		}
@@ -804,7 +804,7 @@ namespace LinBox
 	public :
 		typedef typename _Matrix::Field           Field;
 		typedef typename Field::Element         Element;    //!< Element type
-		typedef typename _Matrix::Rep               Rep;    
+		typedef typename _Matrix::Rep               Rep;
 		typedef BlasSubmatrix<_Matrix>              Self_t;         //!< Self type
 		typedef const BlasSubmatrix<typename _Matrix::constSelf_t>   constSelf_t;    //!< Self type (const)
 
@@ -980,7 +980,7 @@ namespace LinBox
 		 * @param f write in some format (@ref Tag::FileFormat::Format). Default is MM's.
 		 */
 		std::ostream &write (std::ostream &os,
-				     LINBOX_enum (Tag::FileFormat) f = Tag::FileFormat::MatrixMarket )const;
+				     Tag::FileFormat f = Tag::FileFormat::MatrixMarket )const;
 
 		//////////////////
 		//   ELEMENTS   //
@@ -989,9 +989,9 @@ namespace LinBox
 		/*! @internal
 		 * Get read-only pointer to the matrix data.
 		 */
-		pointer getPointer() const ;
-
-		const_pointer &getConstPointer() const ;
+		pointer getPointer() ;
+		const_pointer getPointer() const ;
+		const_pointer getConstPointer() const ;
 
 
 		/*! @internal
@@ -1151,8 +1151,8 @@ namespace LinBox
 
 	protected:
 
-		LINBOX_enum (Tag::Shape)          _uplo; //!< upper or lower triangular
-		LINBOX_enum (Tag::Diag)           _diag; //!< unit or non unit diagonal
+		Tag::Shape          _uplo; //!< upper or lower triangular
+		Tag::Diag           _diag; //!< unit or non unit diagonal
 
 	public:
 		typedef _Field                       Field;
@@ -1171,8 +1171,8 @@ namespace LinBox
 		 */
 		TriangularBlasMatrix (const Field & F,
 				      const size_t m, const size_t n,
-				      LINBOX_enum (Tag::Shape) x=Tag::Shape::Upper,
-				      LINBOX_enum (Tag::Diag) y= Tag::Diag::NonUnit) ;
+				      Tag::Shape x=Tag::Shape::Upper,
+				      Tag::Diag y= Tag::Diag::NonUnit) ;
 
 		/*! Constructor from a \c BlasMatrix (copy).
 		 * @param A matrix
@@ -1180,8 +1180,8 @@ namespace LinBox
 		 * @param x (upp/low)er matrix
 		 */
 		TriangularBlasMatrix (const BlasMatrix<Field,Rep>& A,
-				      LINBOX_enum (Tag::Shape) x=Tag::Shape::Upper,
-				      LINBOX_enum (Tag::Diag) y= Tag::Diag::NonUnit) ;
+				      Tag::Shape x=Tag::Shape::Upper,
+				      Tag::Diag y= Tag::Diag::NonUnit) ;
 
 		/*! Constructor from a \c BlasMatrix (no copy).
 		 * @param A matrix
@@ -1189,8 +1189,8 @@ namespace LinBox
 		 * @param x (upp/low)er matrix
 		 */
 		TriangularBlasMatrix (BlasMatrix<Field,Rep>& A,
-				      LINBOX_enum (Tag::Shape) x=Tag::Shape::Upper,
-				      LINBOX_enum (Tag::Diag) y= Tag::Diag::NonUnit) ;
+				      Tag::Shape x=Tag::Shape::Upper,
+				      Tag::Diag y= Tag::Diag::NonUnit) ;
 
 		/*! Constructor from a \c TriangularBlasMatrix (copy).
 		 * @param A matrix
@@ -1204,14 +1204,14 @@ namespace LinBox
 		 */
 		template<class Matrix>
 		TriangularBlasMatrix (const Matrix& A,
-				      LINBOX_enum (Tag::Shape) x=Tag::Shape::Upper,
-				      LINBOX_enum (Tag::Diag) y= Tag::Diag::NonUnit) ;
+				      Tag::Shape x=Tag::Shape::Upper,
+				      Tag::Diag y= Tag::Diag::NonUnit) ;
 
 		/// get the shape of the matrix (upper or lower)
-		LINBOX_enum (Tag::Shape) getUpLo() const ;
+		Tag::Shape getUpLo() const ;
 
 		/// Is the diagonal implicitly unit ?
-		LINBOX_enum (Tag::Diag) getDiag() const ;
+		Tag::Diag getDiag() const ;
 
 	}; // end of class TriangularBlasMatrix
 

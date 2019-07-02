@@ -133,12 +133,12 @@ namespace LinBox
 
 	inline std::istream &ZeroOne<GF2>::read (std::istream &is) {
 		// Reads a long int and take it mod 2 afterwards (v&1)
-		Givaro::ZRing<long> Ints;
-		MatrixStream<Givaro::ZRing<long> > S(Ints, is);
+		Givaro::ZRing<int64_t> Ints;
+		MatrixStream<Givaro::ZRing<int64_t> > S(Ints, is);
 		S.getDimensions( _rowdim, _coldim );
 		this->resize(_rowdim);
 		Index r, c;
-		long v;
+		int64_t v;
 		_nnz = 0;
 		while( S.nextTriple(r, c, v) ) {
 			if (v&1) {
@@ -151,7 +151,7 @@ namespace LinBox
 		return is;
 	}
 
-	inline std::ostream& ZeroOne<GF2>::write (std::ostream& out, LINBOX_enum(Tag::FileFormat) format) const
+	inline std::ostream& ZeroOne<GF2>::write (std::ostream& out, Tag::FileFormat format) const
 	{
 		if (format == Tag::FileFormat::Guillaume) {
 			out << _rowdim << ' ' << _coldim << " M\n";
@@ -174,14 +174,14 @@ namespace LinBox
 					out << ", [";
 
 				Row_t::const_iterator j = i->begin ();
-				for (long j_idx = 0; j_idx < static_cast<long>(_coldim); j_idx++) {
-					if (j == i->end () || j_idx != static_cast<long>(*j) )
+				for (int64_t j_idx = 0; j_idx < static_cast<int64_t>(_coldim); j_idx++) {
+					if (j == i->end () || j_idx != static_cast<int64_t>(*j) )
 						out << '0';
 					else {
 						out << '1';
 						++j;
 					}
-					if (j_idx < (static_cast<long>(_coldim)-1) )
+					if (j_idx < (static_cast<int64_t>(_coldim)-1) )
 						out << ',';
 				}
 
@@ -410,7 +410,7 @@ namespace LinBox
     {
         this->augment(A);
     }
-    
+
     template<>
     struct ZeroOne<GF2>::rebind<GF2> {
         typedef ZeroOne<GF2> other;

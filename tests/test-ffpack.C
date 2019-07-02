@@ -76,7 +76,7 @@ static bool testRank (const Field& F,size_t n, int iterations)
 	typedef typename Field::RandIter RandIter;
 	typedef typename Field::NonZeroRandIter NonZeroRandIter;
 
-	//Commentator commentator;
+        //Commentator commentator;
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 	commentator().start (pretty("Testing rank"),"testRank",(unsigned int)iterations);
@@ -95,7 +95,7 @@ static bool testRank (const Field& F,size_t n, int iterations)
 		Element * L = new Element[n*n];
 
 		r = (unsigned)( (size_t)rand() % n );
-		// create S as an upper triangular matrix with r nonzero rows
+            // create S as an upper triangular matrix with r nonzero rows
 		for (size_t i=0;i<r;++i){
 			for (size_t j=0;j<i;++j)
 				F.assign(*(S+j+i*n),F.zero);
@@ -107,7 +107,7 @@ static bool testRank (const Field& F,size_t n, int iterations)
 			for (size_t j=0;j<n;++j)
 				F.assign(*(S+j+i*n),F.zero);
 		}
-		// create L as a lower triangular matrix with nonzero elements on the diagonal
+            // create L as a lower triangular matrix with nonzero elements on the diagonal
 		for (size_t i=0;i<n;++i){
 			for (size_t j=0;j<i;++j)
 				G.random(*(L+i*n+j));
@@ -117,15 +117,15 @@ static bool testRank (const Field& F,size_t n, int iterations)
 
 		}
 
-		//  compute A=LS
+            //  compute A=LS
 		FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, n, n, n,
-			      F.one, L, n, S, n, F.zero, A, n );
+                      F.one, L, n, S, n, F.zero, A, n );
 		delete[] L;
 		delete[] S;
 
-		// compute the rank of A
+            // compute the rank of A
 		unsigned int rank= (unsigned int) FFPACK::Rank( F, n, n, A, n);
-                delete[] A;
+        delete[] A;
 		if (rank!=r)
 			ret=false;
 	}
@@ -148,7 +148,7 @@ static bool testDet (const Field& F,size_t n, int iterations)
 	typedef typename Field::RandIter RandIter;
 	typedef typename Field::NonZeroRandIter NonZeroRandIter;
 
-	//Commentator commentator;
+        //Commentator commentator;
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 	commentator().start (pretty("Testing determinant"),"testDet",(unsigned int)iterations);
@@ -171,8 +171,8 @@ static bool testDet (const Field& F,size_t n, int iterations)
 
 
 
-		// create S as an upper triangular matrix of full rank
-		// with diagonal's element equal to 1 except the first entry wich equals to d
+            // create S as an upper triangular matrix of full rank
+            // with diagonal's element equal to 1 except the first entry wich equals to d
 		for (size_t i=0;i<n;++i){
 			for (size_t j=0;j<i;++j)
 				F.assign(*(S+j+i*n),F.zero);
@@ -182,7 +182,7 @@ static bool testDet (const Field& F,size_t n, int iterations)
 		}
 		F.assign(*S,d);
 
-		// create L as a lower triangular matrix with only 1's on diagonal
+            // create L as a lower triangular matrix with only 1's on diagonal
 		for (size_t i=0;i<n;++i){
 			for (size_t j=0;j<i;++j)
 				G.random(*(L+i*n+j));
@@ -192,16 +192,17 @@ static bool testDet (const Field& F,size_t n, int iterations)
 		}
 
 
-		//  compute A=LS
+            //  compute A=LS
 		FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, n, n, n,
-			      F.one, L, n, S, n, F.zero, A, n );
+                      F.one, L, n, S, n, F.zero, A, n );
 		delete[] L;
 		delete[] S;
 
 
-		// compute the determinant of A
-		Element det= FFPACK::Det( F, n, n, A, n);
-    		delete[] A;
+            // compute the determinant of A
+        Element det; F.init(det);
+        FFPACK::Det( F, det, n, A, n);
+        delete[] A;
 
 
 		if (!F.areEqual(det,d))
@@ -224,7 +225,7 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations)
 	typedef typename Field::RandIter                RandIter;
 	typedef typename Field::NonZeroRandIter                NonZeroRandIter;
 
-	//Commentator commentator;
+        //Commentator commentator;
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 	commentator().start (pretty("Testing LQUP factorization"),"testLQUP",(unsigned int)iterations);
@@ -244,7 +245,7 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations)
 		Element * C = new Element[m*n];
 
 
-		// Create B a random matrix of rank n/2
+            // Create B a random matrix of rank n/2
 		for (size_t j=0;j<m;++j)
 			if ( j % 2 ){
 				for (size_t i=0;i<j;++i)
@@ -255,7 +256,7 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations)
 			else
 				for (size_t i=0;i<m;++i)
 					F.assign (*(B+i*m+j), F.zero);
-		// Create C a random matrix of rank n/2
+            // Create C a random matrix of rank n/2
 		for (size_t i = 0; i < m; ++i)
 			if ( i % 2 ){
 				for (size_t j = 0; j < i; ++j)
@@ -267,9 +268,9 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations)
 				for (size_t j = 0; j < n; ++j)
 					F.assign (*(C+i*n+j),F.zero);
 
-		// A = B*C
+            // A = B*C
 		FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, m, n, m,
-			      F.one, B, m, C, n, F.zero, A, n );
+                      F.one, B, m, C, n, F.zero, A, n );
 		delete[] B;
 		delete[] C;
 
@@ -280,11 +281,11 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations)
 		size_t * P = new size_t[n];
 		size_t * Q = new size_t[m];
 
-// 		write_field (F, cerr<<"A="<<endl, A, m, n, n);
+//		write_field (F, cerr<<"A="<<endl, A, m, n, n);
 		size_t r = FFPACK::LUdivine( F, FFLAS::FflasNonUnit, FFLAS::FflasNoTrans,
-					     m, n, A, n, P, Q);
-					     //m, n, A, n, P, Q, FFPACK::FfpackLQUP);
-// 		write_field (F, cerr<<"LQUP(A)="<<endl, A, m, n, n);
+                                     m, n, A, n, P, Q);
+            //m, n, A, n, P, Q, FFPACK::FfpackLQUP);
+//		write_field (F, cerr<<"LQUP(A)="<<endl, A, m, n, n);
 
 		Element * L = new Element[m*m];
 		Element * U = new Element[m*n];
@@ -300,7 +301,7 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations)
 				F.assign (*(L+i*m+j), F.zero );
 		}
 		FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasNoTrans,
-				m, 0,(int) r, L, m, Q);
+                        m, 0,(int) r, L, m, Q);
 		for (size_t i=0; i<m; ++i)
 			F.assign( *(L+i*m+i), F.one);
 		for (size_t i=0; i<m; ++i){
@@ -310,22 +311,22 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations)
 			for (size_t j=i; j<n; ++j)
 				F.assign( *(U+i*n+j), *(A+i*n+j) );
 		}
-// 		write_field (F, cerr<<"L="<<endl, L, m, m, m);
-// 		write_field (F, cerr<<"U"<<endl, U, m, n, n);
-		// C = U*P
+//		write_field (F, cerr<<"L="<<endl, L, m, m, m);
+//		write_field (F, cerr<<"U"<<endl, U, m, n, n);
+            // C = U*P
 		FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasNoTrans, m,
-				  0, (int) r, U, n, P);
-		//		write_field (F, cerr<<"UP"<<endl, U, m, n, n);
-		// C = Q*C
+                        0, (int) r, U, n, P);
+            //		write_field (F, cerr<<"UP"<<endl, U, m, n, n);
+            // C = Q*C
 		FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasTrans, n,
-				  0, (int) r, U, n, Q);
-		//		write_field (F, cerr<<"QUP"<<endl, U, m, n, n);
+                        0, (int) r, U, n, Q);
+            //		write_field (F, cerr<<"QUP"<<endl, U, m, n, n);
 
 		delete[] P;
 		delete[] Q;
-		// A = L*C
+            // A = L*C
 		FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, m, n, m,
-			      F.one, L, m, U, n, F.zero, A, n );
+                      F.one, L, m, U, n, F.zero, A, n );
 		delete[] L;
 		delete[] U;
 
@@ -337,10 +338,10 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations)
 		delete[] A;
 		delete[] Abis;
 		if (!ret){
-// 			write_field(F,std::cerr<<"A="<<endl,A,m,n,n);
-// 			write_field(F,std::cerr<<"Abis="<<endl,Abis,m,n,n);
-// 			write_field(F,std::cerr<<"B="<<endl,B,m,n,n);
-// 			write_field(F,std::cerr<<"C="<<endl,C,m,n,n);
+//			write_field(F,std::cerr<<"A="<<endl,A,m,n,n);
+//			write_field(F,std::cerr<<"Abis="<<endl,Abis,m,n,n);
+//			write_field(F,std::cerr<<"B="<<endl,B,m,n,n);
+//			write_field(F,std::cerr<<"C="<<endl,C,m,n,n);
 		}
 
 
@@ -359,7 +360,7 @@ static bool testMinPoly (const Field& F, size_t n, int iterations)
 	typedef typename Field::NonZeroRandIter                NonZeroRandIter;
 	typedef typename Givaro::Poly1Dom<Field> PolRing;
 	typedef typename PolRing::Element Polynomial;
-	//Commentator commentator;
+        //Commentator commentator;
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 	commentator().start (pretty("Testing minpoly"),"testMinPoly",(unsigned int)iterations);
@@ -373,11 +374,11 @@ static bool testMinPoly (const Field& F, size_t n, int iterations)
 		commentator().progress(k);
 
 		Element * A = new Element[n*n];
-// 		Element * X = new Element[n*(n+1)];
-// 		size_t * Perm = new size_t[n];
+//		Element * X = new Element[n*(n+1)];
+//		size_t * Perm = new size_t[n];
 
 		Polynomial P;
-		// Test MinPoly(In) = X-1
+            // Test MinPoly(In) = X-1
 		for (size_t i=0;i<n;++i){
 			for (size_t j=0;j<n;++j)
 				F.assign(*(A+j+i*n),F.zero);
@@ -393,7 +394,7 @@ static bool testMinPoly (const Field& F, size_t n, int iterations)
 		if ( !F.areEqual(P[1], F.one) )
 			ret = false;
 		if(!ret) cerr<<"MinP(In)!=X-1"<<endl;
-		// Test MinPoly(a*In) = X-a
+            // Test MinPoly(a*In) = X-a
 		G.random(tmp);
 
 		for (size_t i=0;i<n;++i){
@@ -457,7 +458,7 @@ static bool testCharPoly (const Field& F, size_t n, int iterations)
 	typedef typename Field::NonZeroRandIter         NonZeroRandIter;
 	typedef typename Givaro::Poly1Dom<Field> PolRing;
 	typedef typename PolRing::Element Polynomial;
-	//Commentator commentator;
+        //Commentator commentator;
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 	commentator().start (pretty("Testing charpoly"),"testCharPoly",(unsigned int)iterations);
@@ -474,13 +475,13 @@ static bool testCharPoly (const Field& F, size_t n, int iterations)
         typename Field::Element_ptr A = FFLAS::fflas_new(F, n,n);
 
 		std::list<Polynomial> P;
-		// Test CharPoly(In) = (X-1)^n
+            // Test CharPoly(In) = (X-1)^n
 		for (size_t i=0;i<n;++i){
 			for (size_t j=0;j<i;++j)
 				F.assign(*(A+i*n+j),F.zero);
 			F.assign(*(A+i*(n+1)),F.one);
 			for (size_t j=i+1;j<n;++j)
-				 F.assign(*(A+i*n+j),F.zero);
+                F.assign(*(A+i*n+j),F.zero);
 		}
 		P.clear();
 
@@ -502,7 +503,7 @@ static bool testCharPoly (const Field& F, size_t n, int iterations)
 			++P_it;
 		}
 
-		// Test CharPoly(a*In) = X-a
+            // Test CharPoly(a*In) = X-a
 		G.random(tmp);
 
 		for (size_t i=0;i<n;++i)
@@ -520,7 +521,7 @@ static bool testCharPoly (const Field& F, size_t n, int iterations)
 			if ( !F.areEqual(P_it->operator[](0), tmp) )
 				ret = false;
 			if ( !F.areEqual(P_it->operator[](1), F.one) )
-			ret = false;
+                ret = false;
 			++P_it;
 		}
         FFLAS::fflas_delete (A);
@@ -538,7 +539,7 @@ static bool testInv (const Field& F,size_t n, int iterations)
 	typedef typename Field::RandIter RandIter;
 	typedef typename Field::NonZeroRandIter NonZeroRandIter;
 
-	//Commentator commentator;
+        //Commentator commentator;
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 	commentator().start (pretty("Testing inverse"),"testInv",(unsigned int)iterations);
@@ -564,8 +565,8 @@ static bool testInv (const Field& F,size_t n, int iterations)
         typename Field::Element_ptr S = FFLAS::fflas_new(F, n,n);
 
 
-		// create S as an upper triangular matrix of full rank
-		// with nonzero random diagonal's element
+            // create S as an upper triangular matrix of full rank
+            // with nonzero random diagonal's element
 		for (size_t i=0;i<n;++i){
 			for (size_t j=0;j<i;++j)
 				F.assign(*(S+i*n+j),F.zero);
@@ -574,8 +575,8 @@ static bool testInv (const Field& F,size_t n, int iterations)
 				G.random(*(S+i*n+j));
 		}
 
-		// create L as a lower triangular matrix
-		// with only 1's on diagonal
+            // create L as a lower triangular matrix
+            // with only 1's on diagonal
 		for (size_t i=0;i<n;++i){
 			for (size_t j=0;j<i;++j)
 				G.random(*(L+i*n+j));
@@ -585,34 +586,34 @@ static bool testInv (const Field& F,size_t n, int iterations)
 
 		}
 
-		//  compute A=LS
+            //  compute A=LS
 
 		FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, n, n, n,
-			      F.one, L, n, S, n, F.zero, A, n );
+                      F.one, L, n, S, n, F.zero, A, n );
 
         typename Field::Element_ptr Ab = FFLAS::fflas_new(F, n,n);
         typename Field::Element_ptr invA = FFLAS::fflas_new(F, n,n);
 
 		for (size_t i = 0; i<n*n; ++i)
 			F.assign( *(Ab+i), *(A+i) );
-		// compute the inverse of A
+            // compute the inverse of A
 		int nullity;
 		FFPACK::Invert2 ( F, n, A, n, invA, n, nullity);
 
-		// compute Ainv*A and A*Ainv
+            // compute Ainv*A and A*Ainv
 
 		FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, n, n, n,
-			      F.one, Ab, n, invA, n, F.zero, L, n );
+                      F.one, Ab, n, invA, n, F.zero, L, n );
 
 		FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, n, n, n,
-			      F.one, invA, n, Ab, n, F.zero, S, n );
+                      F.one, invA, n, Ab, n, F.zero, S, n );
 
 		for (size_t i=0;i<n*n;++i)
 			if ( !F.areEqual(*(L+i),*(Id+i)) || !F.areEqual(*(S+i),*(Id+i)) )
 				ret =false;
 		if (!ret){
-			// write_field (F, cerr<<"ID1="<<endl, L, n,n,n);
-// 			write_field (F, cerr<<"ID2="<<endl, S, n,n,n);
+                // write_field (F, cerr<<"ID1="<<endl, L, n,n,n);
+//			write_field (F, cerr<<"ID2="<<endl, S, n,n,n);
 
 		}
         FFLAS::fflas_delete (L);
@@ -635,7 +636,7 @@ static bool testapplyP (const Field& F,size_t n, int iterations)
 	typedef typename Field::Element Element;
 	typedef typename Field::RandIter RandIter;
 
-	//Commentator commentator;
+        //Commentator commentator;
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 	commentator().start (pretty("Testing applyP"),"testapplyP",(unsigned int)iterations);
@@ -666,8 +667,8 @@ static bool testapplyP (const Field& F,size_t n, int iterations)
 				P[i] = i;
 		}
 
-		// create S as an upper triangular matrix of full rank
-		// with nonzero random diagonal's element
+            // create S as an upper triangular matrix of full rank
+            // with nonzero random diagonal's element
 		for (size_t i=0;i<n;++i){
 			for (size_t j=0;j<n;++j)
 				G.random(*(A+i*n+j));
@@ -676,16 +677,16 @@ static bool testapplyP (const Field& F,size_t n, int iterations)
 		for (size_t i = 0; i<n*n; ++i)
 			F.assign( *(Ab+i), *(A+i) );
 
-		//  compute A=LS
+            //  compute A=LS
 
 		FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasNoTrans,
-				n, 0,(int)  n, A, n, P );
+                        n, 0,(int)  n, A, n, P );
 		FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasNoTrans,
-				n, 0,(int)  n, A, n, P );
+                        n, 0,(int)  n, A, n, P );
 		FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasTrans,
-				n, 0,(int)  n, A, n, P );
+                        n, 0,(int)  n, A, n, P );
 		FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasTrans,
-				n, 0,(int)  n, A, n, P );
+                        n, 0,(int)  n, A, n, P );
 
 		for (size_t i=0;i<n*n;++i)
 			if ( !F.areEqual(*(Ab+i),*(A+i)) )
@@ -726,7 +727,7 @@ int main(int argc, char** argv)
 	commentator().start("ffpack test suite", "ffpack");
 
 
-	/* Givaro::Modular Double */
+        /* Givaro::Modular Double */
 	{
 		typedef Givaro::Modular<double> Field;
 
@@ -751,7 +752,7 @@ int main(int argc, char** argv)
 	}
 
 #ifdef _LB_FULL_TEST
-	/* Givaro::Modular Float */
+        /* Givaro::Modular Float */
 	{
 		typedef Givaro::Modular<float> Field;
 
@@ -774,7 +775,7 @@ int main(int argc, char** argv)
 		pass &= locpass ;
 	}
 
-	/* Givaro::Modular Balanced Double */
+        /* Givaro::Modular Balanced Double */
 	{
 		typedef Givaro::ModularBalanced<double> Field;
 
@@ -797,7 +798,7 @@ int main(int argc, char** argv)
 		pass &= locpass ;
 	}
 
-	/* Givaro::Modular Balanced Float */
+        /* Givaro::Modular Balanced Float */
 	{
 		typedef Givaro::ModularBalanced<float> Field;
 
@@ -819,7 +820,7 @@ int main(int argc, char** argv)
 		(!locpass)?(report << "FAIL" << std::endl):(report << "OK"<<std::endl);
 		pass &= locpass ;
 	}
-	/* Givaro::Modular int32_t */
+        /* Givaro::Modular int32_t */
 	{
 		typedef Givaro::Modular<int32_t> Field;
 
@@ -843,7 +844,7 @@ int main(int argc, char** argv)
 
 	}
 
-	/* Givaro::Modular Balanced int32_t */
+        /* Givaro::Modular Balanced int32_t */
 	{
 		typedef Givaro::ModularBalanced<int32_t > Field ;
 
@@ -865,7 +866,7 @@ int main(int argc, char** argv)
 		pass &= locpass ;
 	}
 
-	/* Givaro::Modular uint32_t */
+        /* Givaro::Modular uint32_t */
 	{
 		typedef Givaro::Modular<uint32_t> Field;
 
@@ -887,7 +888,7 @@ int main(int argc, char** argv)
 		pass &= locpass ;
 	}
 
-	/* Givaro::Modular int32_t */
+        /* Givaro::Modular int32_t */
 #if 0
 	{
 		typedef Givaro::Modular<int32_t> Field;

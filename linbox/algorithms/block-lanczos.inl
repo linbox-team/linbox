@@ -149,12 +149,12 @@ namespace LinBox
 		for (unsigned int i = 0; !success && i < _traits.maxTries (); ++i) {
 			std::ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
-			switch (_traits.preconditioner ()) {
-			case BlockLanczosTraits::NO_PRECONDITIONER:
+			switch (_traits.preconditioner) {
+			case Preconditioner::NO_PRECONDITIONER:
 				success = iterate (A, x, b);
 				break;
 
-			case BlockLanczosTraits::SYMMETRIZE:
+			case Preconditioner::SYMMETRIZE:
 				{
 					VectorWrapper::ensureDim (bp, A.coldim ());
 
@@ -168,7 +168,7 @@ namespace LinBox
 					break;
 				}
 
-			case BlockLanczosTraits::PARTIAL_DIAGONAL:
+			case Preconditioner::PARTIAL_DIAGONAL:
 				{
 					VectorWrapper::ensureDim (d1, A.coldim ());
 					VectorWrapper::ensureDim (y, A.coldim ());
@@ -187,7 +187,7 @@ namespace LinBox
 					break;
 				}
 
-			case BlockLanczosTraits::PARTIAL_DIAGONAL_SYMMETRIZE:
+			case Preconditioner::PARTIAL_DIAGONAL_SYMMETRIZE:
 				{
 					VectorWrapper::ensureDim (d1, A.rowdim ());
 					VectorWrapper::ensureDim (b1, A.rowdim ());
@@ -215,7 +215,7 @@ namespace LinBox
 					break;
 				}
 
-			case BlockLanczosTraits::FULL_DIAGONAL:
+			case Preconditioner::FULL_DIAGONAL:
 				{
 					VectorWrapper::ensureDim (d1, A.coldim ());
 					VectorWrapper::ensureDim (d2, A.rowdim ());
@@ -274,9 +274,9 @@ namespace LinBox
 			// if the result is not correct I try to negate !!!
 			VectorWrapper::ensureDim (Ax, A.rowdim ());
 
-			if ((_traits.preconditioner () == BlockLanczosTraits::SYMMETRIZE) ||
-			    (_traits.preconditioner () == BlockLanczosTraits::PARTIAL_DIAGONAL_SYMMETRIZE) ||
-			    (_traits.preconditioner () == BlockLanczosTraits::FULL_DIAGONAL))
+			if ((_traits.preconditioner == Preconditioner::SYMMETRIZE) ||
+			    (_traits.preconditioner == Preconditioner::PARTIAL_DIAGONAL_SYMMETRIZE) ||
+			    (_traits.preconditioner == Preconditioner::FULL_DIAGONAL))
 			{
 				VectorWrapper::ensureDim (ATAx, A.coldim ());
 				VectorWrapper::ensureDim (ATb, A.coldim ());
@@ -311,9 +311,9 @@ namespace LinBox
 				VectorWrapper::ensureDim (Ax, A.rowdim ());
 
 				if (_traits.checkResult () &&
-				    ((_traits.preconditioner () == BlockLanczosTraits::SYMMETRIZE) ||
-				     (_traits.preconditioner () == BlockLanczosTraits::PARTIAL_DIAGONAL_SYMMETRIZE) ||
-				     (_traits.preconditioner () == BlockLanczosTraits::FULL_DIAGONAL)))
+				    ((_traits.preconditioner == Preconditioner::SYMMETRIZE) ||
+				     (_traits.preconditioner == Preconditioner::PARTIAL_DIAGONAL_SYMMETRIZE) ||
+				     (_traits.preconditioner == Preconditioner::FULL_DIAGONAL)))
 				{
 					VectorWrapper::ensureDim (ATAx, A.coldim ());
 					VectorWrapper::ensureDim (ATb, A.coldim ());
@@ -379,12 +379,12 @@ namespace LinBox
 
 		bool      ret = true;
 
-		VectorWrapper::ensureDim (tmp, _traits.blockingFactor ());
-		VectorWrapper::ensureDim (tmp1, _traits.blockingFactor ());
+		VectorWrapper::ensureDim (tmp, _traits.blockingFactor);
+		VectorWrapper::ensureDim (tmp1, _traits.blockingFactor);
 		VectorWrapper::ensureDim (tmp2, A.rowdim ());
 
 		// How many iterations between each progress update
-		unsigned int progress_interval = A.rowdim () / _traits.blockingFactor () / 100;
+		unsigned int progress_interval = A.rowdim () / _traits.blockingFactor / 100;
 
 		// Make sure there are a minimum of ten
 		if (progress_interval == 0)

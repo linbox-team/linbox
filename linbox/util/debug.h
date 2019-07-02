@@ -153,6 +153,10 @@ namespace LinBox
 		 */
 		NotImplementedYet() {}
 
+		NotImplementedYet(const std::string& why)
+			: NotImplementedYet(why.c_str())
+		{}
+
 		NotImplementedYet( const char * why)
 		{
 			if (_errorStream == (std::ostream *) 0)
@@ -220,6 +224,14 @@ namespace LinBox
 	 */
 	class LinBoxError : public NotImplementedYet {
 	public:
+		LinBoxError(const std::string& what,
+				const char * function="\0",
+				const char* file="\0",
+				int line=-1)
+			: LinBoxError(what.c_str(), function, file, line)
+		{
+		}
+
 		/*! @internal
 		 * User failed.
 		 * The parameter help debugging/explaining.

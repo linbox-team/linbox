@@ -84,7 +84,7 @@ bool testIsPosSemidef(const Ring &Z, size_t n, unsigned int iterations, Method &
 		A.write( report ) << endl;
 		bool p;
 		p = isPositiveSemiDefinite(A, M);
-		report << "PositiveSemidefiniteness on I+(1,2) computed by default (Hybrid) method: " << p << endl;
+		report << "PositiveSemidefiniteness on I+(1,2) computed by default (Auto) method: " << p << endl;
 		if (!p) {report << "ERROR: should be pos semidef" << endl; ret = false;}
 
 		Z.negin(e);
@@ -94,7 +94,7 @@ bool testIsPosSemidef(const Ring &Z, size_t n, unsigned int iterations, Method &
 		p = isPositiveSemiDefinite(A, M);
 		report << "Matrix:\n";
 		A.write( report ) << endl;
-		report << "PositiveSemidefiniteness on indefinite example computed by default (Hybrid) method: " << p << endl;
+		report << "PositiveSemidefiniteness on indefinite example computed by default (Auto) method: " << p << endl;
 		if (p) {report << "ERROR: should not be pos semidef" << endl; ret = false;}
 
 		commentator().stop ("done");

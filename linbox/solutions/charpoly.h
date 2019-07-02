@@ -43,14 +43,14 @@ namespace LinBox
                                const Blackbox        &A,
                                const DomainCategory  &tag,
                                const MyMethod        &M);
-        
+
 
 	/*	//error handler for rational domain
 		template <class Blackbox, class Polynomial>
 		Polynomial &charpoly (Polynomial& P,
 		const Blackbox& A,
 		const RingCategories::RationalTag& tag,
-		const Method::Hybrid& M)
+		const Method::Auto& M)
 		{
 		throw LinboxError("LinBox ERROR: charpoly is not yet defined over a rational domain");
 		}
@@ -64,7 +64,7 @@ namespace LinBox
 	  Optional \param M - the method object.  Generally, the default
 	  object suffices and the algorithm used is determined by the class of M.
 	  Basic methods are Method::Blackbox, Method::Elimination, and
-	  Method::Hybrid (the default).
+	  Method::Auto (the default).
 	  See methods.h for more options.
 	  \return a reference to P.
 	  */
@@ -81,46 +81,38 @@ namespace LinBox
 	Polynomial& charpoly (Polynomial        & P,
                               const Blackbox    & A)
 	{
-		return charpoly (P, A, Method::Hybrid());
+		return charpoly (P, A, Method::Auto());
 	}
 
-	// The charpoly with Hybrid Method
-	//! @bug not Hybrid at all
+	// The charpoly with Auto Method
 	template <class Blackbox, class Polynomial>
 	Polynomial& charpoly (Polynomial                       & P,
                               const Blackbox                   & A,
                               const RingCategories::ModularTag & tag,
-                              const Method::Hybrid             & M)
+                              const Method::Auto             & M)
 	{
-		// not yet a hybrid
 		//return charpoly(P, A, tag, Method::Blackbox(M));
-		return charpoly(P, A, tag, Method::BlasElimination(M));
+		return charpoly(P, A, tag, Method::DenseElimination(M));
 	}
 
-	// The charpoly with Hybrid Method
-	//! @bug not Hybrid at all
+	// The charpoly with Auto Method
 	template <class Domain, class Polynomial>
 	Polynomial& charpoly (Polynomial                       & P,
 			      const SparseMatrix<Domain>       & A,
 			      const RingCategories::ModularTag & tag,
-			      const Method::Hybrid             & M)
+			      const Method::Auto             & M)
 	{
-		// not yet a hybrid
-                // bb method broken, default to dense method
-		return charpoly(P, A, tag, Method::BlasElimination(M));
-//		return charpoly(P, A, tag, Method::Blackbox(M));
+		return charpoly(P, A, tag, Method::Blackbox(M));
 	}
 
-	// The charpoly with Hybrid Method
-	//! @bug not Hybrid at all
+	// The charpoly with Auto Method
 	template<class Domain, class Polynomial>
 	Polynomial& charpoly (Polynomial                       & P,
 			      const BlasMatrix<Domain>         & A,
 			      const RingCategories::ModularTag & tag,
-			      const Method::Hybrid             & M)
+			      const Method::Auto             & M)
 	{
-		// not yet a hybrid
-		return charpoly(P, A, tag, Method::BlasElimination(M));
+		return charpoly(P, A, tag, Method::DenseElimination(M));
 	}
 
 	// The charpoly with Elimination Method
@@ -130,7 +122,7 @@ namespace LinBox
                               const RingCategories::ModularTag & tag,
                               const Method::Elimination        & M)
 	{
-		return charpoly(P, A, tag, Method::BlasElimination(M));
+		return charpoly(P, A, tag, Method::DenseElimination(M));
 	}
 
 
@@ -148,7 +140,7 @@ namespace LinBox
     Polynomial& charpoly (Polynomial                       & P,
                           const Blackbox                   & A,
                           const RingCategories::ModularTag & tag,
-                          const Method::BlasElimination    & M)
+                          const Method::DenseElimination    & M)
 	{
 		if (A.coldim() != A.rowdim())
 			throw LinboxError("LinBox ERROR: matrix must be square for characteristic polynomial computation\n");
@@ -165,8 +157,8 @@ namespace LinBox
 
 #include "linbox/algorithms/matrix-hom.h"
 
-#include "linbox/algorithms/rational-cra2.h"
-#include "linbox/algorithms/varprec-cra-early-multip.h"
+#include "linbox/algorithms/rational-cra-var-prec.h"
+#include "linbox/algorithms/cra-builder-var-prec-early-multip.h"
 #include "linbox/algorithms/charpoly-rational.h"
 
 namespace LinBox
@@ -198,69 +190,24 @@ namespace LinBox
 	Polynomial& charpoly (Polynomial                       & P,
 						  const Blackbox                   & A,
 						  const RingCategories::IntegerTag & tag,
-						  const Method::Hybrid	       & M)
+						  const Method::Auto	       & M)
 	{
 		commentator().start ("Integer Charpoly", "Icharpoly");
-		// bb method broken, default to dense method
-		if (1/* (A.rowdim() < 1000) && (A.coldim() <1000) */)
-			charpoly(P, A, tag, Method::BlasElimination(M) );
-		else
+		if (useBlackboxMethod(A))
 			charpoly(P, A, tag, Method::Blackbox(M) );
+		else
+			charpoly(P, A, tag, Method::DenseElimination(M) );
 		commentator().stop ("done", NULL, "Icharpoly");
 		return P;
 	}
 
 }
 
-#if 0 // CIA is buggy (try with matrix(ZZ,4,[1..16]) )
-//#if defined(__LINBOX_HAVE_NTL)
+#if defined(__LINBOX_HAVE_NTL)
 
 #include "linbox/algorithms/cia.h"
 namespace LinBox
 {
-#if 0
-
-	// The charpoly with Hybrid Method
-	template<class Blackbox, class Polynomial>
-	Polynomial& charpoly (Polynomial                        &P,
-			      const Blackbox                    &A,
-			      const RingCategories::IntegerTag  &tag,
-			      const Method::Hybrid              &M)
-	{
-		// not yet a hybrid
-                    // bb method broken, default to dense method
-                return charpoly(P, A, tag, Method::BlasElimination(M));
-//		return charpoly(P, A, tag, Method::Blackbox(M));
-	}
-#endif
-
-	template < class IntRing, class Polynomial>
-                   Polynomial& charpoly (Polynomial                       & P,
-			      const BlasMatrix<IntRing>         & A,
-			      const RingCategories::IntegerTag & tag,
-			      const Method::Hybrid             & M)
-	{
-		commentator().start ("BlasMatrix Integer Charpoly", "Icharpoly");
-		charpoly(P, A, tag, Method::BlasElimination(M) );
-		commentator().stop ("done", NULL, "Icharpoly");
-		return P;
-	}
-
-
-#if 0
-	template < class IntRing, class Polynomial >
-	Polynomial& charpoly (Polynomial                       & P,
-			      const BlasMatrix<IntRing>         & A,
-			      const RingCategories::IntegerTag & tag,
-			      const Method::Hybrid             & M)
-	{
-		commentator().start ("BlasMatrix Integer Charpoly", "Icharpoly");
-		charpoly(P, A, tag, Method::BlasElimination(M) );
-		commentator().stop ("done", NULL, "Icharpoly");
-		return P;
-	}
-#endif
-
 	/** @brief Compute the characteristic polynomial over {\bf Z}
 	 *
 	 * Compute the characteristic polynomial of a matrix using dense
@@ -275,13 +222,11 @@ namespace LinBox
 	Polynomial& charpoly (Polynomial                       & P,
 			      const Blackbox                   & A,
 			      const RingCategories::IntegerTag & tag,
-			      const Method::BlasElimination    & M)
+			      const Method::DenseElimination    & M)
 	{
 		if (A.coldim() != A.rowdim())
 			throw LinboxError("LinBox ERROR: matrix must be square for characteristic polynomial computation\n");
-		typename Givaro::Poly1Dom<typename Blackbox::Field, Givaro::Dense>::Element Pg;
-                std::cerr<<"CIA"<<std::endl;
-		return P = cia (Pg, A, M);
+		return cia (P, A, M);
 	}
 
 	/** Compute the characteristic polynomial over {\bf Z}
@@ -300,11 +245,7 @@ namespace LinBox
 	{
 		if (A.coldim() != A.rowdim())
 			throw LinboxError("LinBox ERROR: matrix must be square for characteristic polynomial computation\n");
-// 		typename Givaro::Poly1Dom<typename Blackbox::Field>::Element Pg;
-// 		return P = BBcharpoly::blackboxcharpoly (Pg, A, tag, M);
-                    // BB method broken: default to dense method
-                return charpoly(P, A, tag, Method::BlasElimination(M) );
-                    //return BBcharpoly::blackboxcharpoly (P, A, tag, M);
+        return BBcharpoly::blackboxcharpoly (P, A, tag, M);
 	}
 
 }
@@ -313,127 +254,39 @@ namespace LinBox
 
 #include "linbox/ring/modular.h"
 #include "linbox/algorithms/cra-domain.h"
-#include "linbox/algorithms/cra-full-multip.h"
-#include "linbox/algorithms/cra-early-multip.h"
+#include "linbox/algorithms/cra-builder-full-multip.h"
+#include "linbox/algorithms/cra-builder-early-multip.h"
 #include "linbox/algorithms/matrix-hom.h"
 
 namespace LinBox
 {
 
-#if 0
-#include "linbox/algorithms/rational-cra2.h"
-#include "linbox/algorithms/varprec-cra-early-multip.h"
-#include "linbox/algorithms/charpoly-rational.h"
-
-	namespace LinBox
-{
-	template <class Blackbox, class MyMethod>
-	struct IntegerModularCharpoly {
-		const Blackbox &A;
-		const MyMethod &M;
-
-		IntegerModularCharpoly(const Blackbox& b, const MyMethod& n) :
-			A(b), M(n)
-		{}
-
-		template<typename Polynomial, typename Field>
-		IterationResult operator()(Polynomial& P, const Field& F) const {
-			typedef typename Blackbox::template rebind<Field>::other FBlackbox;
-			FBlackbox * Ap;
-			MatrixHom::map(Ap, A, F);
-			charpoly( P, *Ap, typename FieldTraits<Field>::categoryTag(), M);
-			integer p;
-			F.characteristic(p);
-                            //std::cerr<<"Charpoly(A) mod "<<p<<" = "<<P;
-
-			delete Ap;
-			return IterationResult::CONTINUE;
-		}
-	};
-#endif
-
-	template <class Blackbox, class Polynomial>
+	template <class Matrix, class Polynomial, class Method>
 	Polynomial& charpoly (Polynomial                       & P,
-			      const Blackbox                   & A,
-			      const RingCategories::IntegerTag & tag,
-			      const Method::Blackbox           & M)
+                          const Matrix                     & A,
+                          const RingCategories::IntegerTag & tag,
+                          const Method                     & M)
 	{
 		if (A.coldim() != A.rowdim())
 			throw LinboxError("LinBox ERROR: matrix must be square for characteristic polynomial computation\n");
 
-		commentator().start ("Integer BlackBox Charpoly : No NTL installation -> chinese remaindering", "IbbCharpoly");
+		commentator().start ("Integer Charpoly : chinese remaindering", "IntCharpoly");
 
         typedef Givaro::ModularBalanced<double> Field;
 		PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
-#if 0
-		typename Blackbox::ConstIterator it = A.Begin();
-		typename Blackbox::ConstIterator it_end = A.End();
-		integer max = 1,min=0;
-		while( it != it_end ){
-			//      cerr<<"it="<<(*it)<<endl;
-			if (max < (*it))
-				max = *it;
-			if ( min > (*it))
-				min = *it;
-			it++;
-		}
-		if (max<-min)
-			max=-min;
-		size_t n=A.coldim();
-		double hadamarcp = n/2.0*(log(double(n))+2*log(double(max))+0.21163275)/log(2.0);
 
-		ChineseRemainder< FullMultipCRA<Field > > cra(hadamarcp);
+            // @todo: use a value for the switch provided by the method and not by a macro
+#ifdef __LINBOX_HEURISTIC_CRA
+		ChineseRemainder< CRABuilderEarlyMultip<Field > > cra(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD);
+#else
+        double hbound = FastCharPolyHadamardBound(A);
+		ChineseRemainder< CRABuilderFullMultip<Field > > cra(hbound);
 #endif
-		ChineseRemainder< EarlyMultipCRA<Field > > cra(3UL);
-
-		IntegerModularCharpoly<Blackbox,Method::Blackbox> iteration(A, M);
+		IntegerModularCharpoly<Matrix, Method> iteration(A, M);
 		cra.operator() (P, iteration, genprime);
 		commentator().stop ("done", NULL, "IbbCharpoly");
 #ifdef _LB_CRATIMING
-        cra.reportTimes(std::clog);
-#endif
-		return P;
-	}
-
-
-	template <class Blackbox, class Polynomial>
-	Polynomial& charpoly (Polynomial                       & P,
-			      const Blackbox                   & A,
-			      const RingCategories::IntegerTag & tag,
-			      const Method::BlasElimination    & M)
-	{
-		if (A.coldim() != A.rowdim())
-			throw LinboxError("LinBox ERROR: matrix must be square for characteristic polynomial computation\n");
-
-		commentator().start ("Integer Dense Charpoly : No NTL installation -> chinese remaindering", "IbbCharpoly");
-
-        typedef Givaro::ModularBalanced<double> Field;
-		PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
-#if 0
-		typename Blackbox::ConstIterator it = A.Begin();
-		typename Blackbox::ConstIterator it_end = A.End();
-		integer max = 1,min=0;
-		while( it != it_end ){
-			if (max < (*it))
-				max = *it;
-			if ( min > (*it))
-				min = *it;
-			it++;
-		}
-		if (max<-min)
-			max=-min;
-		size_t n=A.coldim();
-		double hadamarcp = n/2.0*(log(double(n))+2*log(double(max))+0.21163275)/log(2.0);
-
-
-		ChineseRemainder< FullMultipCRA<Field > > cra(hadamarcp);
-#endif
-		ChineseRemainder< EarlyMultipCRA<Field > > cra(3UL);
-        IntegerModularCharpoly<Blackbox,Method::BlasElimination> iteration(A, M);
-		cra (P, iteration, genprime);
-		commentator().stop ("done", NULL, "IbbCharpoly");
-#ifdef _LB_CRATIMING
-        cra.reportTimes(std::clog);
+        cra.reportTimes(std::clog) << std::endl;
 #endif
 		return P;
 	}
@@ -474,7 +327,7 @@ namespace LinBox
 
         typedef Givaro::ModularBalanced<double> Field;
 		PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
-		RationalRemainder2< VarPrecEarlyMultipCRA<Field > > rra(3UL);
+		RationalChineseRemainderVarPrec< CRABuilderVarPrecEarlyMultip<Field > > rra(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD);
 		IntegerModularCharpoly<Blackbox,MyMethod> iteration(A, M);
 
 		Givaro::ZRing<Integer> Z;

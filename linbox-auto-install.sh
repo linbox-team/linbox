@@ -1,4 +1,4 @@
-#!/bin/bash - 
+#!/bin/bash -
 
 # Copyright(c) 2011 LinBox
 # Written by Brice Boyer (briceboyer) <boyer.brice@gmail.com>
@@ -15,20 +15,26 @@
 # TODO : rpath instead of LD_LIBRARY_PATH ?
 
 #############################
-## Only for stable fetching 
+## Only for stable fetching
 #############################
-#### stable .tar.gz 
-STABLE_LB=1.5.2
-STABLE_FFLAS=2.3.2
-STABLE_GIVARO=4.0.4
-STABLE_OPENBLAS=0.3.0
-STABLE_BLIS=0.3.2
+#### stable .tar.gz
+STABLE_LB=1.6.3
+STABLE_FFLAS=2.4.1
+STABLE_GIVARO=4.1.1
+STABLE_OPENBLAS=0.3.6
+STABLE_BLIS=0.5.2
+STABLE_GMPLIB=6.1.2
 MD5SUFF=md5
 #############################
 
 function decompress {
 #tar xf $1
     gunzip -c $1 | tar xf -
+}
+
+function bzdecompress {
+#tar xf $1
+    bunzip2 -c $1 | tar xf -
 }
 
 
@@ -60,7 +66,9 @@ OPENBLAS=""
 OPENBLAS_VAR="false"
 BLIS=""
 BLIS_VAR="false"
-MAKEOPT= 
+GMPLIB=""
+GMPLIB_VAR="false"
+MAKEOPT=
 MAKE_VAR=""
 
 DONE="\033[0;36m done !\033[0m"
@@ -71,13 +79,13 @@ BEG="\033[1;32m * \033[0m"
 #########
 
 die() {
-    echo -ne "\n\033[1;31m * \033[0mfailed" ;   
+    echo -ne "\n\033[1;31m * \033[0mfailed" ;
     if [[ -n $1 ]] ; then
 	echo " ($1)"
-    else 
+    else
 	echo "."
     fi
-    exit -1 ;  
+    exit -1 ;
 }
 
 cool() {
@@ -100,10 +108,10 @@ help() {
     echo " --prefix=MY/PATH      : install all libraries under MY/PATH."
     echo "                         Default : /tmp"
     echo
-    echo " >> Libraries to search for <<" 
-    echo 
+    echo " >> Libraries to search for <<"
+    echo
     echo " If some library cannot be linked, don't forget to export LD_LIBRARY_PATH ! "
-    echo 
+    echo
     echo " --with-gmp=GMP/PATH   : tell where gmp is."
     echo "                         Default : /usr, /usr/local. No argument is Default"
     echo " --with-blas-libs=BLAS/PATH : same as GMP for BLAS. (will check anyway)"
@@ -121,6 +129,8 @@ help() {
     echo "                         Default : disabled (use local blas)."
     echo " --enable-blis         : fetch flame/blis."
     echo "                         Default : disabled (use local blas)."
+    echo " --enable-gmp          : fetch gmplib."
+    echo "                         Default : disabled (use local gmp)."
     echo " --enable-debug        : build in debugging mode."
     echo "                         Default : disabled."
     echo " --enable-check        : run make check."
@@ -131,16 +141,16 @@ help() {
     echo "                         Default : enabled."
     echo " --enable-drivers      : build with drivers support."
     echo "                         Default : disabled."
-    echo 
+    echo
     echo " >> calling helllp <<"
-    echo 
+    echo
     echo " --help, -h, -?        : print help and exit."
 }
 
 
 
 ############
-#  parser  # 
+#  parser  #
 ############
 
 # Recover command line, with double-quotes
@@ -155,13 +165,13 @@ for arg in "$@"
       CMDLINE="$CMDLINE $WHO=\"$WHAT\""
   fi
 done
-echo  "$0 $CMDLINE" | tee -a auto-install.log
+echo  "$0 $CMDLINE" | tee -a linbox-auto-install.log
 
 # Parse command line
 for i in "$@" ; do
     case "$i" in
 		# switches
-	"--help"|"-h"|"-?") 
+	"--help"|"-h"|"-?")
 	help
 	exit 0
 	;;
@@ -198,6 +208,11 @@ for i in "$@" ; do
 	BLIS="$i";
 	BLIS_VAR="true";
 	;;
+	"--enable-gmp")
+	if [ "x$GMPLIB_VAR" = "xfalse" ]  ; then  echo "enable-gmp or not ?" ;        help ; exit -1 ; fi
+	GMPLIB="$i";
+	GMPLIB_VAR="true";
+	;;
 	"--disable-debug")
 	if [ "x$DEBUG_VAR" = "xtrue" ]  ; then  echo "enable-debug or not ?" ;        help ; exit -1 ; fi
 	DEBUG_VAR="false";
@@ -221,6 +236,10 @@ for i in "$@" ; do
 	"--disable-blis")
 	if [ "x$BLIS_VAR" = "xtrue" ]  ; then  echo "enable-blis or not ?" ;        help ; exit -1 ; fi
 	BLIS_VAR="false";
+	;;
+	"--disable-gmp")
+	if [ "x$GMPLIB_VAR" = "xtrue" ]  ; then  echo "enable-gmp or not ?" ;        help ; exit -1 ; fi
+	GMPLIB_VAR="false";
 	;;
 	"--with-ntl")
 	if	[ "x$NTL_VAR" = "xfalse" ] ; then   echo "with-ntl or not ?";            help ; exit -1; fi
@@ -261,10 +280,10 @@ for i in "$@" ; do
 	case "$QUI" in
 	    "--stable")
 	    OK=2
-	    [[ "x$QUOI" = "xyes" ]]  &&  OK=1  
-	    [[ "x$QUOI" = "xno"  ]]  &&  OK=0   
-	    if [[ "$OK" = "2" ]] ; then 
-		echo "stable=[yes/no] !" ; help ; exit -1 ; 
+	    [[ "x$QUOI" = "xyes" ]]  &&  OK=1
+	    [[ "x$QUOI" = "xno"  ]]  &&  OK=0
+	    if [[ "$OK" = "2" ]] ; then
+		echo "stable=[yes/no] !" ; help ; exit -1 ;
 	    fi
 	    [[ "$OK" = "1" ]] && STABLE_VAR="true" || STABLE_VAR="false"
 	    ;;
@@ -318,7 +337,7 @@ for i in "$@" ; do
 	    [[ "$QUOI" =~ y|yes|Y|1 ]] && OK=1 || OK=0
 	    if		[ "x$OPENBLAS_VAR" = "xtrue"  -a "OK" = "0" ] ; then  echo "openblas or not openblas ?" ;      help ; exit -1; fi
 	    if		[ "x$OPENBLAS_VAR" = "xfalse" -a "OK" = "1" ] ; then  echo "openblas or not openblas ?" ;      help ; exit -1; fi
-	    if	[[ "x$OK" = "x1" ]] ; then  
+	    if	[[ "x$OK" = "x1" ]] ; then
 		OPENBLAS=$QUI ; OPENBLAS_VAR="true" ;
 	    else
 		OPENBLAS_VAR="false" ;
@@ -334,6 +353,16 @@ for i in "$@" ; do
 		BLIS_VAR="false" ;
 	    fi
 	    ;;
+	    "--enable-gmp")
+	    [[ "$QUOI" =~ y|yes|Y|1 ]] && OK=1 || OK=0
+	    if		[ "x$GMPLIB_VAR" = "xtrue"  -a "OK" = "0" ] ; then  echo "gmp or not gmp ?" ;      help ; exit -1; fi
+	    if		[ "x$GMPLIB_VAR" = "xfalse" -a "OK" = "1" ] ; then  echo "gmp or not gmp ?" ;      help ; exit -1; fi
+	    if	[[ "x$OK" = "x1" ]] ; then
+		GMPLIB=$QUI ; GMPLIB_VAR="true" ;
+	    else
+		GMPLIB_VAR="false" ;
+	    fi
+	    ;;
 	    "--enable-warnings")
 	    [[ "$QUOI" =~ y|yes|Y|1|full ]] && OK=1 || OK=0
 	    if [ "x$WARNING_VAR" = "xtrue"  -a "OK" = "0"  ] ; then  echo "warning or not warning ?" ;      help ; exit -1; fi
@@ -341,7 +370,7 @@ for i in "$@" ; do
 	    if [[ "x$OK" = "x1" ]] ; then
 		WARNINGS=$QUI ; WARNING_VAR="true"
 	    else
-		WARNING_VAR="false" 
+		WARNING_VAR="false"
 	    fi
 	    [[ "x$QUOI" = "xfull" ]] && WARNINGS=$i
 	    ;;
@@ -349,19 +378,19 @@ for i in "$@" ; do
 	    [[ "$QUOI" =~ y|yes|Y|1 ]] && OK=1 || OK=0
 	    if		[ "x$DEBUG_VAR" = "xtrue"  -a "OK" = "0"  ] ; then  echo "debug or not debug ?" ;      help ; exit -1; fi
 	    if		[ "x$DEBUG_VAR" = "xfalse" -a "OK" = "1"  ] ; then  echo "debug or not debug ?" ;      help ; exit -1; fi
-	    if		[[ "x$OK" = "x1" ]] ; then  
+	    if		[[ "x$OK" = "x1" ]] ; then
 		DEBUG=$QUI ; DEBUG_VAR="true"
 	    else
-		DEBUG_VAR="false" 
+		DEBUG_VAR="false"
 	    fi
 	    ;;
 	    "--enable-check")
 	    [[ "$QUOI" =~ y|yes|Y|1 ]] && OK=1 || OK=0
 	    if		[ "x$CHECK_VAR" = "xtrue"  -a "OK" = "0"  ] ; then  echo "check or not check ?" ;      help ; exit -1; fi
 	    if		[ "x$CHECK_VAR" = "xfalse" -a "OK" = "1"  ] ; then  echo "check or not check ?" ;      help ; exit -1; fi
-	    if		[[ "x$OK" = "x1" ]] ; then 
-		CHECK=$QUI ; CHECK_VAR="true" 
-	    else 
+	    if		[[ "x$OK" = "x1" ]] ; then
+		CHECK=$QUI ; CHECK_VAR="true"
+	    else
 		CHECK_VAR="false"
 	    fi
 	    ;;
@@ -369,10 +398,10 @@ for i in "$@" ; do
 	    [[ "$QUOI" =~ y|yes|Y|1 ]] && OK=1 || OK=0
 	    if		[ "x$OPTIM_VAR" = "xtrue"  -a "OK" = "0"  ] ; then  echo "drivers or not drivers ?" ;      help ; exit -1; fi
 	    if		[ "x$OPTIM_VAR" = "xfalse" -a "OK" = "1"  ] ; then  echo "drivers or not drivers ?" ;      help ; exit -1; fi
-	    if		[[ "x$OK" = "x1" ]] ; then 
+	    if		[[ "x$OK" = "x1" ]] ; then
 		DRIV=$QUI ; DRIV_VAR="true"
 	    else
-		DRIV_VAR="false" 
+		DRIV_VAR="false"
 	    fi
 	    ;;
 	    *)
@@ -387,9 +416,9 @@ done
 
 MAKEPROG="make ${MAKEOPT}"
 export PKG_CONFIG_PATH=${PKG_CONFIG_PATH}:${PREFIX_LOC}/lib/pkgconfig
-echo "PKG_CONFIG_PATH=$PKG_CONFIG_PATH"| tee -a auto-install.log
+echo "PKG_CONFIG_PATH=$PKG_CONFIG_PATH"| tee -a linbox-auto-install.log
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:$PREFIX_LOC/lib
-echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"| tee -a auto-install.log
+echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"| tee -a linbox-auto-install.log
 
 
 
@@ -400,38 +429,38 @@ echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"| tee -a auto-install.log
 if [ ! \( -x autogen.sh -o -x configure \) ] ; then
 
 ### Extract LinBox sources ###
-    echo -en "${BEG}fetching LinBox..."| tee -a auto-install.log
+    echo -en "${BEG}fetching LinBox..."| tee -a linbox-auto-install.log
     if [ "$STABLE_VAR" = "true" ]; then
 	if [ -f linbox-${STABLE_LB}.tar.gz ] ; then
-	    echo -ne " already there!\n"| tee -a auto-install.log
-	    echo -ne "${BEG}fetching md5sum" | tee -a auto-install.log;
-	    [ -f fflas-ffpack-${STABLE_FFLAS}.tar.gz.${MD5SUFF} ] && rm fflas-ffpack-${STABLE_FFLAS}.tar.gz.${MD5SUFF} ;
+	    echo -ne " already there!\n"| tee -a linbox-auto-install.log
+	    echo -ne "${BEG}fetching md5sum" | tee -a linbox-auto-install.log;
+	    [ -f linbox-${STABLE_FFLAS}.tar.gz.${MD5SUFF} ] && rm linbox-${STABLE_FFLAS}.tar.gz.${MD5SUFF} ;
 	    wget --no-check-certificate https://github.com/linbox-team/linbox/releases/download/v${STABLE_LB}/linbox-${STABLE_LB}.tar.gz.${MD5SUFF} >/dev/null 2>&1 || die
 	    [ -f linbox-${STABLE_LB}.tar.gz.${MD5SUFF} ] || die
-	    cool| tee -a auto-install.log
+	    cool| tee -a linbox-auto-install.log
 	    echo -ne "${BEG}"
 	    md5sum -c linbox-${STABLE_LB}.tar.gz.${MD5SUFF} || die
 	else
 	    wget https://github.com/linbox-team/linbox/releases/download/v${STABLE_LB}/linbox-${STABLE_LB}.tar.gz >/dev/null 2>&1 || die
 	    [ -f linbox-${STABLE_LB}.tar.gz ] &&  cool || die
-	    echo -ne "${BEG}fetching md5sum" | tee -a auto-install.log; 
+	    echo -ne "${BEG}fetching md5sum" | tee -a linbox-auto-install.log;
 	    wget --no-check-certificate https://github.com/linbox-team/linbox/releases/download/v${STABLE_LB}/linbox-${STABLE_LB}.tar.gz.${MD5SUFF} >/dev/null 2>&1 || die
-	    cool| tee -a auto-install.log
+	    cool| tee -a linbox-auto-install.log
 	    echo -ne "${BEG}"
 	    md5sum -c linbox-${STABLE_LB}.tar.gz.${MD5SUFF} || die
 	fi
 	OK=0
-	echo -en "${BEG}extracting LinBox..."
+	echo -en "${BEG}extracting LinBox..."| tee -a linbox-auto-install.log
 	decompress linbox-${STABLE_LB}.tar.gz  && OK=1
-	[ "$OK" = "1" ] &&  cool | tee -a auto-install.log  || die 
-	cd linbox-${STABLE_LB} &&  cool   || die 
+	[ "$OK" = "1" ] &&  cool | tee -a linbox-auto-install.log  || die
+	cd linbox-${STABLE_LB} &&  cool   || die
     else
 	OK=0 ;
 	git clone --depth 1 https://github.com/linbox-team/linbox.git 2>&1 >/dev/null && OK=1
-	[ "$OK" = "1" ] &&  cool | tee -a auto-install.log || die
-	cd linbox &&  cool   || die 
+	[ "$OK" = "1" ] &&  cool | tee -a linbox-auto-install.log || die
+	cd linbox &&  cool   || die
     fi
-    mv ../auto-install.log . || die
+    mv ../linbox-auto-install.log . || die
 fi
 
 ######################
@@ -439,7 +468,7 @@ fi
 ######################
 
 #first tee creates a new log.
-echo -en "${BEG}Preparing build directory..."| tee -a auto-install.log
+echo -en "${BEG}Preparing build directory..."| tee -a linbox-auto-install.log
 if [ -e build ] ; then
     if [ ! -d build ] ; then
 	rm -rf build ;
@@ -452,7 +481,7 @@ else
 	# echo -n "creating empty build directory..."
     mkdir build
 fi
-cool| tee -a auto-install.log
+cool| tee -a linbox-auto-install.log
 
 ####################
 #  fetch sources  #
@@ -462,39 +491,39 @@ cd build ;
 
 ### Givaro ###
 
-echo -en "${BEG}fetching Givaro..."| tee -a ../auto-install.log
+echo -en "${BEG}fetching Givaro..."| tee -a ../linbox-auto-install.log
 if [ "$STABLE_VAR" = "true" ]; then
     if [ -f givaro-${STABLE_GIVARO}.tar.gz ] ; then
-	echo -ne " already there!\n"
-	echo -ne "${BEG}fetching md5sum" ; 
+	echo -ne " already there!\n"| tee -a ../linbox-auto-install.log
+	echo -ne "${BEG}fetching md5sum"| tee -a ../linbox-auto-install.log ;
 	[ -f givaro-${STABLE_GIVARO}.tar.gz.${MD5SUFF} ] && rm givaro-${STABLE_GIVARO}.tar.gz.${MD5SUFF} ;
 	wget --no-check-certificate https://github.com/linbox-team/givaro/releases/download/v${STABLE_GIVARO}/givaro-${STABLE_GIVARO}.tar.gz.${MD5SUFF} >/dev/null 2>&1 || die
 	[ -f givaro-${STABLE_GIVARO}.tar.gz.${MD5SUFF} ] || die
-	cool| tee -a ../auto-install.log
+	cool| tee -a ../linbox-auto-install.log
 	echo -ne "${BEG}"
 	md5sum -c givaro-${STABLE_GIVARO}.tar.gz.${MD5SUFF} || die
     else
 	wget --no-check-certificate https://github.com/linbox-team/givaro/releases/download/v${STABLE_GIVARO}/givaro-${STABLE_GIVARO}.tar.gz >/dev/null 2>&1 || die
 	[ -f givaro-${STABLE_GIVARO}.tar.gz ] &&  cool || die
-	echo -ne "${BEG}fetching md5sum" ; 
+	echo -ne "${BEG}fetching md5sum"| tee -a ../linbox-auto-install.log ;
 	wget --no-check-certificate https://github.com/linbox-team/givaro/releases/download/v${STABLE_GIVARO}/givaro-${STABLE_GIVARO}.tar.gz.${MD5SUFF} >/dev/null 2>&1 || die
-	cool| tee -a ../auto-install.log
+	cool| tee -a ../linbox-auto-install.log
 	echo -ne "${BEG}"
 	md5sum -c givaro-${STABLE_GIVARO}.tar.gz.${MD5SUFF} || die
     fi
 else
     OK=0 ;
     git clone --depth 1 https://github.com/linbox-team/givaro.git 2>&1 >/dev/null && OK=1
-    [ "$OK" = "1" ] &&  cool | tee -a ../auto-install.log || die 
+    [ "$OK" = "1" ] &&  cool | tee -a ../linbox-auto-install.log || die
 fi
 
 ### Fflas-ffpack ###
 
-echo -en "${BEG}fetching Fflas-Ffpack..."| tee -a ../auto-install.log
+echo -en "${BEG}fetching Fflas-Ffpack..."| tee -a ../linbox-auto-install.log
 if [ "$STABLE_VAR" = "true" ]; then
     if [ -f fflas-ffpack-${STABLE_FFLAS}.tar.gz ] ; then
-	echo -ne " already there!\n"
-	echo -ne "${BEG}fetching md5sum" ; 
+	echo -ne " already there!\n"| tee -a ../linbox-auto-install.log
+	echo -ne "${BEG}fetching md5sum"| tee -a ../linbox-auto-install.log ;
 	[ -f fflas-ffpack-${STABLE_FFLAS}.tar.gz.${MD5SUFF} ] && rm fflas-ffpack-${STABLE_FFLAS}.tar.gz.${MD5SUFF} ;
 	wget --no-check-certificate https://github.com/linbox-team/fflas-ffpack/releases/download/v${STABLE_FFLAS}/fflas-ffpack-${STABLE_FFLAS}.tar.gz.${MD5SUFF} >/dev/null 2>&1 || die
 	[ -f fflas-ffpack-${STABLE_FFLAS}.tar.gz.${MD5SUFF} ] &&  cool || die
@@ -504,7 +533,7 @@ if [ "$STABLE_VAR" = "true" ]; then
     else
 	wget --no-check-certificate https://github.com/linbox-team/fflas-ffpack/releases/download/v${STABLE_FFLAS}/fflas-ffpack-${STABLE_FFLAS}.tar.gz >/dev/null 2>&1 || die
 	[ -f fflas-ffpack-${STABLE_FFLAS}.tar.gz ] &&  cool || die
-	echo -ne "${BEG}fetching md5sum" ; 
+	echo -ne "${BEG}fetching md5sum"| tee -a ../linbox-auto-install.log ;
 	wget --no-check-certificate https://github.com/linbox-team/fflas-ffpack/releases/download/v${STABLE_FFLAS}/fflas-ffpack-${STABLE_FFLAS}.tar.gz.${MD5SUFF} >/dev/null 2>&1 || die
 	cool
 	echo -ne "${BEG}"
@@ -513,16 +542,16 @@ if [ "$STABLE_VAR" = "true" ]; then
 else
     OK=0 ;
     git clone --depth=1 https://github.com/linbox-team/fflas-ffpack.git 2>&1 >/dev/null && OK=1
-    [ "$OK" = "1" ] &&  cool | tee -a ../auto-install.log || die
+    [ "$OK" = "1" ] &&  cool | tee -a ../linbox-auto-install.log || die
 fi
 
 
 ### OpenBlas ###
 if [ "$OPENBLAS_VAR" = "true" ]; then
-    echo -en "${BEG}fetching OpenBlas..."| tee -a ../auto-install.log
+    echo -en "${BEG}fetching OpenBlas..."| tee -a ../linbox-auto-install.log
     if [ "$STABLE_VAR" = "true" ]; then
 	if [ -f v${STABLE_OPENBLAS}.tar.gz ] ; then
-	    echo -ne " already there!\n"
+	    echo -ne " already there!\n"| tee -a ../linbox-auto-install.log
 	else
 	    wget --no-check-certificate http://github.com/xianyi/OpenBLAS/archive/v${STABLE_OPENBLAS}.tar.gz >/dev/null 2>&1 || die
 	    [ -f v${STABLE_OPENBLAS}.tar.gz ] &&  cool || die
@@ -530,16 +559,16 @@ if [ "$OPENBLAS_VAR" = "true" ]; then
     else
 	OK=0 ;
 	git clone --depth=1 https://github.com/xianyi/OpenBLAS.git 2>&1 >/dev/null && OK=1
-	[ "$OK" = "1" ] &&  cool | tee -a ../auto-install.log || die
+	[ "$OK" = "1" ] &&  cool | tee -a ../linbox-auto-install.log || die
     fi
 fi
 
 ### flame/blis ###
 if [ "$BLIS_VAR" = "true" ]; then
-    echo -en "${BEG}fetching FLAME/Blis..."| tee -a ../auto-install.log
+    echo -en "${BEG}fetching FLAME/Blis..."| tee -a ../linbox-auto-install.log
     if [ "$STABLE_VAR" = "true" ]; then
 	if [ -f ${STABLE_BLIS}.tar.gz ] ; then
-	    echo -ne " already there!\n"
+	    echo -ne " already there!\n"| tee -a ../linbox-auto-install.log
 	else
 	    wget --no-check-certificate https://github.com/flame/blis/archive/${STABLE_BLIS}.tar.gz >/dev/null 2>&1 || die
 	    [ -f ${STABLE_BLIS}.tar.gz ] &&  cool || die
@@ -547,7 +576,18 @@ if [ "$BLIS_VAR" = "true" ]; then
     else
 	OK=0 ;
 	git clone --depth=1 https://github.com/flame/blis.git 2>&1 >/dev/null && OK=1
-	[ "$OK" = "1" ] &&  cool | tee -a ../auto-install.log || die
+	[ "$OK" = "1" ] &&  cool | tee -a ../linbox-auto-install.log || die
+    fi
+fi
+
+### gmp ###
+if [ "$GMPLIB_VAR" = "true" ]; then
+    echo -en "${BEG}fetching GMP..."| tee -a ../linbox-auto-install.log
+    if [ -f ${STABLE_GMPLIB}.tar.bz2 ] ; then
+	echo -ne " already there!\n"| tee -a ../linbox-auto-install.log
+    else
+	wget --no-check-certificate https://gmplib.org/download/gmp/gmp-${STABLE_GMPLIB}.tar.bz2 >/dev/null 2>&1 || die
+	[ -f gmp-${STABLE_GMPLIB}.tar.bz2 ] &&  cool || die
     fi
 fi
 
@@ -559,18 +599,18 @@ fi
 
 OK=0
 if [ "$STABLE_VAR" = "true" ]; then
-    echo -en "${BEG}extracting Givaro..."| tee -a ../auto-install.log
+    echo -en "${BEG}extracting Givaro..."| tee -a ../linbox-auto-install.log
     decompress givaro-${STABLE_GIVARO}.tar.gz  && OK=1
-    [ "$OK" = "1" ] &&  cool | tee -a ../auto-install.log  || die 
+    [ "$OK" = "1" ] &&  cool | tee -a ../linbox-auto-install.log  || die
 fi
 
 ### Fflas-ffpack ###
 
 OK=0
 if [ "$STABLE_VAR" = "true" ]; then
-    echo -en "${BEG}extracting Fflas-Ffpack..."| tee -a ../auto-install.log
+    echo -en "${BEG}extracting Fflas-Ffpack..."| tee -a ../linbox-auto-install.log
     decompress fflas-ffpack-${STABLE_FFLAS}.tar.gz  && OK=1
-    [ "$OK" = "1" ] &&  cool  | tee -a ../auto-install.log || die
+    [ "$OK" = "1" ] &&  cool  | tee -a ../linbox-auto-install.log || die
 fi
 
 ### OpenBlas ###
@@ -578,9 +618,9 @@ fi
 if [ "$OPENBLAS_VAR" = "true" ]; then
     OK=0
     if [ "$STABLE_VAR" = "true" ]; then
-	echo -en "${BEG}extracting OpenBlas..."| tee -a ../auto-install.log
+	echo -en "${BEG}extracting OpenBlas..."| tee -a ../linbox-auto-install.log
 	decompress v${STABLE_OPENBLAS}.tar.gz  && OK=1
-	[ "$OK" = "1" ] &&  cool | tee -a ../auto-install.log  || die
+	[ "$OK" = "1" ] &&  cool | tee -a ../linbox-auto-install.log  || die
     fi
 fi
 
@@ -589,11 +629,73 @@ fi
 if [ "$BLIS_VAR" = "true" ]; then
     OK=0
     if [ "$STABLE_VAR" = "true" ]; then
-	echo -en "${BEG}extracting Blis..."| tee -a ../auto-install.log
+	echo -en "${BEG}extracting Blis..."| tee -a ../linbox-auto-install.log
 	decompress ${STABLE_BLIS}.tar.gz  && OK=1
-	[ "$OK" = "1" ] &&  cool | tee -a ../auto-install.log  || die
+	[ "$OK" = "1" ] &&  cool | tee -a ../linbox-auto-install.log  || die
     fi
 fi
+
+### GMP ###
+
+if [ "$GMPLIB_VAR" = "true" ]; then
+    OK=0
+    echo -en "${BEG}extracting GMP..."| tee -a ../linbox-auto-install.log
+    bzdecompress gmp-${STABLE_GMPLIB}.tar.bz2  && OK=1
+    [ "$OK" = "1" ] &&  cool | tee -a ../linbox-auto-install.log  || die
+fi
+
+######################
+#  install GMP      #
+######################
+
+if [ "$GMPLIB_VAR" = "true" ]; then
+
+    cd gmp-${STABLE_GMPLIB} || die
+
+    if [ -f Makefile ] ; then
+	echo -e "${BEG}cleaning GMP..."| tee -a ../../linbox-auto-install.log
+	${MAKEPROG} clean | tee -a ../../linbox-auto-install.log|| die
+	${MAKEPROG} distclean | tee -a ../../linbox-auto-install.log|| die
+	# ${MAKEPROG} unistall || die
+	cool
+    fi
+
+    echo -e "${BEG}configuring GMP..."| tee -a ../../linbox-auto-install.log
+
+    echo "./configure  $PREFIX $DEBUG $WARNINGS --enable-cxx"| tee -a ../../linbox-auto-install.log
+    echo "./configure  $PREFIX $DEBUG $WARNINGS --enable-cxx" > configure.gmp.exe
+    chmod +x configure.gmp.exe
+    ./configure.gmp.exe | tee -a ../../linbox-auto-install.log
+    rm -rf configure.gmp.exe
+
+    echo -e "${BEG}building GMP..."| tee -a ../../linbox-auto-install.log
+    GMPLIB_FLAGS=""
+
+    echo "${MAKEPROG} ${GMPLIB_FLAGS} CXXFLAGS+=\"$EXTRA\" LDFLAGS+=\"-Wl,-rpath,$PREFIX_LOC\""| tee -a ../../linbox-auto-install.log
+    if [ -n "$EXTRA" ] ; then
+	${MAKEPROG} ${GMPLIB_FLAGS} "CXXFLAGS+=\"$EXTRA\" LDFLAGS+=\"-Wl,-rpath,$PREFIX_LOC\"" | tee -a ../../linbox-auto-install.log|| die
+    else
+	${MAKEPROG} ${GMPLIB_FLAGS} | tee -a ../../linbox-auto-install.log|| die
+    fi
+
+
+    if [ "$CHECK_VAR" = "true" ] ; then
+	echo -e "${BEG}checking GMP..."| tee -a ../../linbox-auto-install.log
+	${MAKEPROG} ${GMPLIB_FLAGS} check | tee -a ../../linbox-auto-install.log|| die
+    fi
+
+    echo -e "${BEG}installing GMP..."| tee -a ../../linbox-auto-install.log
+    ${MAKEPROG} ${GMPLIB_FLAGS} install | tee -a ../../linbox-auto-install.log|| die
+
+#return in build
+    cd ..
+
+    cool| tee -a ../linbox-auto-install.log
+
+    GMP="--with-gmp=${PREFIX_LOC}"
+    GMP_VAR=true
+    echo "${BEG}gmp flags: $GMP."| tee -a ../../linbox-auto-install.log
+ fi
 
 ####################
 #  install Givaro  #
@@ -606,52 +708,52 @@ else
 fi
 
 if [ -f Makefile ] ; then
-    echo -e "${BEG}cleaning Givaro..."| tee -a ../../auto-install.log
-    ${MAKEPROG} clean | tee -a ../../auto-install.log|| die
-    ${MAKEPROG} distclean | tee -a ../../auto-install.log|| die 
+    echo -e "${BEG}cleaning Givaro..."| tee -a ../../linbox-auto-install.log
+    ${MAKEPROG} clean | tee -a ../../linbox-auto-install.log|| die
+    ${MAKEPROG} distclean | tee -a ../../linbox-auto-install.log|| die
 	# ${MAKEPROG} unistall || die
     cool
 fi
 
-echo -e "${BEG}configuring Givaro..."
+echo -e "${BEG}configuring Givaro..."| tee -a ../../linbox-auto-install.log
 
 if [ "$STABLE_VAR" = "true" ]; then
-    echo "./configure  $PREFIX $DEBUG $OPTIM $GMP $WARNINGS "
+    echo "./configure  $PREFIX $DEBUG $OPTIM $GMP $WARNINGS "| tee -a ../../linbox-auto-install.log
     echo "./configure  $PREFIX $DEBUG $OPTIM $GMP $WARNINGS " > configure.givaro.exe
     chmod +x configure.givaro.exe
-    ./configure.givaro.exe | tee -a ../../auto-install.log
+    ./configure.givaro.exe | tee -a ../../linbox-auto-install.log
     rm -rf configure.givaro.exe
 	#./configure  $PREFIX $DEBUG $OPTIM $GMP $WARNINGS || die
 else
-    echo "./autogen.sh $PREFIX $DEBUG $OPTIM $GMP $WARNINGS"
+    echo "./autogen.sh $PREFIX $DEBUG $OPTIM $GMP $WARNINGS"| tee -a ../../linbox-auto-install.log
     echo "./autogen.sh $PREFIX $DEBUG $OPTIM $GMP $WARNINGS" > autogen.givaro.exe
     chmod +x autogen.givaro.exe
-    ./autogen.givaro.exe| tee -a ../../auto-install.log
+    ./autogen.givaro.exe| tee -a ../../linbox-auto-install.log
     rm -rf autogen.givaro.exe
 	#./autogen.sh $PREFIX $DEBUG $OPTIM $GMP $WARNINGS || die
 fi
 
-echo -e "${BEG}building Givaro..."| tee -a ../../auto-install.log
-echo "${MAKEPROG} CXXFLAGS+=\"$EXTRA\" LDFLAGS+=\"-Wl,-rpath,$PREFIX_LOC\""| tee -a ../../auto-install.log
+echo -e "${BEG}building Givaro..."| tee -a ../../linbox-auto-install.log
+echo "${MAKEPROG} CXXFLAGS+=\"$EXTRA\" LDFLAGS+=\"-Wl,-rpath,$PREFIX_LOC\""| tee -a ../../linbox-auto-install.log
 
 if [ -n "$EXTRA" ] ; then
-    ${MAKEPROG} "CXXFLAGS+=\"$EXTRA\" LDFLAGS+=\"-Wl,-rpath,$PREFIX_LOC\"" | tee -a ../../auto-install.log|| die
+    ${MAKEPROG} "CXXFLAGS+=\"$EXTRA\" LDFLAGS+=\"-Wl,-rpath,$PREFIX_LOC\"" | tee -a ../../linbox-auto-install.log|| die
 else
-    ${MAKEPROG} | tee -a ../../auto-install.log|| die
+    ${MAKEPROG} | tee -a ../../linbox-auto-install.log|| die
 fi
 
 if [ "$CHECK_VAR" = "true" ] ; then
-    echo -e "${BEG}checking Fflas-Ffpack..."| tee -a ../../auto-install.log
-    ${MAKEPROG} check | tee -a ../../auto-install.log|| die
+    echo -e "${BEG}checking Givaro..."| tee -a ../../linbox-auto-install.log
+    ${MAKEPROG} check | tee -a ../../linbox-auto-install.log|| die
 fi
 
-echo -e "${BEG}installing Givaro..."| tee -a ../../auto-install.log
-${MAKEPROG} install | tee -a ../../auto-install.log|| die
+echo -e "${BEG}installing Givaro..."| tee -a ../../linbox-auto-install.log
+${MAKEPROG} install | tee -a ../../linbox-auto-install.log|| die
 
 #return in build
 cd ..
 
-cool| tee -a ../auto-install.log
+cool| tee -a ../linbox-auto-install.log
 
 ######################
 #  install OpenBlas  #
@@ -664,33 +766,33 @@ if [ "$OPENBLAS_VAR" = "true" ]; then
     else
 	cd OpenBLAS/ || die
     fi
-    
+
     if [ -f Makefile ] ; then
-	echo -e "${BEG}cleaning OpenBLAS..."| tee -a ../../auto-install.log
-	${MAKEPROG} clean | tee -a ../../auto-install.log|| die
-	${MAKEPROG} distclean | tee -a ../../auto-install.log|| die 
+	echo -e "${BEG}cleaning OpenBLAS..."| tee -a ../../linbox-auto-install.log
+	${MAKEPROG} clean | tee -a ../../linbox-auto-install.log|| die
+	${MAKEPROG} distclean | tee -a ../../linbox-auto-install.log|| die
 	# ${MAKEPROG} unistall || die
 	cool
     fi
-    
-    OPENBLAS_FLAGS="USE_THREADS=0 USE_THREAD=0 CC=gcc FC=gfortran PREFIX=$PREFIX_LOC"
-    
-    echo -e "${BEG}building OpenBLAS..."| tee -a ../../auto-install.log
-    echo "${MAKEPROG} ${OPENBLAS_FLAGS} CXXFLAGS+=\"$EXTRA\" LDFLAGS+=\"-Wl,-rpath,$PREFIX_LOC\""| tee -a ../../auto-install.log
-    
+
+    OPENBLAS_FLAGS="CC=gcc FC=gfortran PREFIX=$PREFIX_LOC"
+
+    echo -e "${BEG}building OpenBLAS..."| tee -a ../../linbox-auto-install.log
+    echo "${MAKEPROG} ${OPENBLAS_FLAGS} CXXFLAGS+=\"$EXTRA\" LDFLAGS+=\"-Wl,-rpath,$PREFIX_LOC\""| tee -a ../../linbox-auto-install.log
+
     if [ -n "$EXTRA" ] ; then
-	${MAKEPROG} ${OPENBLAS_FLAGS} "CXXFLAGS+=\"$EXTRA\" LDFLAGS+=\"-Wl,-rpath,$PREFIX_LOC\"" | tee -a ../../auto-install.log|| die
+	${MAKEPROG} ${OPENBLAS_FLAGS} "CXXFLAGS+=\"$EXTRA\" LDFLAGS+=\"-Wl,-rpath,$PREFIX_LOC\"" | tee -a ../../linbox-auto-install.log|| die
     else
-	${MAKEPROG} ${OPENBLAS_FLAGS} | tee -a ../../auto-install.log|| die
+	${MAKEPROG} ${OPENBLAS_FLAGS} | tee -a ../../linbox-auto-install.log|| die
     fi
-    
-    echo -e "${BEG}installing OpenBLAS..."| tee -a ../../auto-install.log
-    ${MAKEPROG} ${OPENBLAS_FLAGS} install | tee -a ../../auto-install.log|| die
-    
+
+    echo -e "${BEG}installing OpenBLAS..."| tee -a ../../linbox-auto-install.log
+    ${MAKEPROG} ${OPENBLAS_FLAGS} install | tee -a ../../linbox-auto-install.log|| die
+
 #return in build
     cd ..
-    
-    cool| tee -a ../auto-install.log
+
+    cool| tee -a ../linbox-auto-install.log
 
     if [ "$BLAS_VAR" = "false" ]; then
 	BLAS="--with-blas-libs="\""-L${PREFIX_LOC}/lib -lopenblas -lpthread -lgfortran"\"
@@ -712,38 +814,38 @@ if [ "$BLIS_VAR" = "true" ]; then
     fi
 
     if [ -f Makefile ] ; then
-	echo -e "${BEG}cleaning Blis..."| tee -a ../../auto-install.log
-	${MAKEPROG} clean | tee -a ../../auto-install.log|| die
-	${MAKEPROG} distclean | tee -a ../../auto-install.log|| die
+	echo -e "${BEG}cleaning Blis..."| tee -a ../../linbox-auto-install.log
+	${MAKEPROG} clean | tee -a ../../linbox-auto-install.log|| die
+	${MAKEPROG} distclean | tee -a ../../linbox-auto-install.log|| die
 	# ${MAKEPROG} unistall || die
 	cool
     fi
 
-    echo -e "${BEG}configuring Blis..."
+    echo -e "${BEG}configuring Blis..."| tee -a ../../linbox-auto-install.log
 
-    echo "./configure  $PREFIX $DEBUG $WARNINGS --enable-cblas auto"
+    echo "./configure  $PREFIX $DEBUG $WARNINGS --enable-cblas auto"| tee -a ../../linbox-auto-install.log
     echo "./configure  $PREFIX $DEBUG $WARNINGS --enable-cblas auto " > configure.blis.exe
     chmod +x configure.blis.exe
-    ./configure.blis.exe | tee -a ../../auto-install.log
+    ./configure.blis.exe | tee -a ../../linbox-auto-install.log
     rm -rf configure.blis.exe
 
-    echo -e "${BEG}building Blis..."| tee -a ../../auto-install.log
+    echo -e "${BEG}building Blis..."| tee -a ../../linbox-auto-install.log
     BLIS_FLAGS=""
 
-    echo "${MAKEPROG} ${BLIS_FLAGS} CXXFLAGS+=\"$EXTRA\" LDFLAGS+=\"-Wl,-rpath,$PREFIX_LOC\""| tee -a ../../auto-install.log
+    echo "${MAKEPROG} ${BLIS_FLAGS} CXXFLAGS+=\"$EXTRA\" LDFLAGS+=\"-Wl,-rpath,$PREFIX_LOC\""| tee -a ../../linbox-auto-install.log
     if [ -n "$EXTRA" ] ; then
-	${MAKEPROG} ${BLIS_FLAGS} "CXXFLAGS+=\"$EXTRA\" LDFLAGS+=\"-Wl,-rpath,$PREFIX_LOC\"" | tee -a ../../auto-install.log|| die
+	${MAKEPROG} ${BLIS_FLAGS} "CXXFLAGS+=\"$EXTRA\" LDFLAGS+=\"-Wl,-rpath,$PREFIX_LOC\"" | tee -a ../../linbox-auto-install.log|| die
     else
-	${MAKEPROG} ${BLIS_FLAGS} | tee -a ../../auto-install.log|| die
+	${MAKEPROG} ${BLIS_FLAGS} | tee -a ../../linbox-auto-install.log|| die
     fi
 
-    echo -e "${BEG}installing Blis..."| tee -a ../../auto-install.log
-    ${MAKEPROG} ${BLIS_FLAGS} install | tee -a ../../auto-install.log|| die
+    echo -e "${BEG}installing Blis..."| tee -a ../../linbox-auto-install.log
+    ${MAKEPROG} ${BLIS_FLAGS} install | tee -a ../../linbox-auto-install.log|| die
 
 #return in build
     cd ..
 
-    cool| tee -a ../auto-install.log
+    cool| tee -a ../linbox-auto-install.log
 
     if [ "$BLAS_VAR" = "false" ]; then
 	BLAS="--with-blas-libs="\""-L${PREFIX_LOC}/lib -lblis -lpthread"\"
@@ -764,49 +866,49 @@ fi
 
 
 if [ -f Makefile ] ; then
-    echo -e "${BEG}cleaning Fflas-Ffpack..."| tee -a ../../auto-install.log
-    ${MAKEPROG} clean | tee -a ../../auto-install.log|| die
-    ${MAKEPROG} distclean | tee -a ../../auto-install.log|| die 
+    echo -e "${BEG}cleaning Fflas-Ffpack..."| tee -a ../../linbox-auto-install.log
+    ${MAKEPROG} clean | tee -a ../../linbox-auto-install.log|| die
+    ${MAKEPROG} distclean | tee -a ../../linbox-auto-install.log|| die
 	# ${MAKEPROG} unistall || die
-    cool| tee -a ../../auto-install.log
+    cool| tee -a ../../linbox-auto-install.log
 fi
 
-echo -e "${BEG}configuring Fflas-Ffpack..."| tee -a ../../auto-install.log
+echo -e "${BEG}configuring Fflas-Ffpack..."| tee -a ../../linbox-auto-install.log
 
 if [ "$STABLE_VAR" = "true" ]; then
-    echo "./configure  $PREFIX $DEBUG $OPTIM $BLAS $WARNINGS"| tee -a ../../auto-install.log
+    echo "./configure  $PREFIX $DEBUG $OPTIM $BLAS $WARNINGS"| tee -a ../../linbox-auto-install.log
     echo "./configure  $PREFIX $DEBUG $OPTIM $BLAS $WARNINGS" > configure.fflas.exe
     chmod +x configure.fflas.exe
-    ./configure.fflas.exe| tee -a ../../auto-install.log
+    ./configure.fflas.exe| tee -a ../../linbox-auto-install.log
     rm -rf configure.fflas.exe
 	#./configure  "$PREFIX" "$DEBUG" "$OPTIM" "$BLAS"  "$WARNINGS" || die
 else
-    echo "./autogen.sh $PREFIX $DEBUG $OPTIM $BLAS $WARNINGS"| tee -a ../../auto-install.log
+    echo "./autogen.sh $PREFIX $DEBUG $OPTIM $BLAS $WARNINGS"| tee -a ../../linbox-auto-install.log
     echo "./autogen.sh $PREFIX $DEBUG $OPTIM $BLAS $WARNINGS" > configure.fflas.exe
     chmod +x configure.fflas.exe
-    ./configure.fflas.exe| tee -a ../../auto-install.log
+    ./configure.fflas.exe| tee -a ../../linbox-auto-install.log
     rm -rf configure.fflas.exe
 	#./autogen.sh "$PREFIX" "$DEBUG" "$OPTIM" "$BLAS"  "$WARNINGS" || die
 fi
 
-echo -e "${BEG}building Fflas-Ffpack..."| tee -a ../../auto-install.log
-echo "${MAKEPROG} CXXFLAGS+=\"$EXTRA\""
+echo -e "${BEG}building Fflas-Ffpack..."| tee -a ../../linbox-auto-install.log
+echo "${MAKEPROG} CXXFLAGS+=\"$EXTRA\""| tee -a ../../linbox-auto-install.log
 if [ -n "$EXTRA" ] ; then
-    ${MAKEPROG} "CXXFLAGS+=\"$EXTRA\"" | tee -a ../../auto-install.log|| die
+    ${MAKEPROG} "CXXFLAGS+=\"$EXTRA\"" | tee -a ../../linbox-auto-install.log|| die
 else
-    ${MAKEPROG} | tee -a ../../auto-install.log|| die
+    ${MAKEPROG} | tee -a ../../linbox-auto-install.log|| die
 fi
 
 if [ "$CHECK_VAR" = "true" ] ; then
-    echo -e "${BEG}checking Fflas-Ffpack..."| tee -a ../../auto-install.log
-    ${MAKEPROG} check | tee -a ../../auto-install.log|| die
+    echo -e "${BEG}checking Fflas-Ffpack..."| tee -a ../../linbox-auto-install.log
+    ${MAKEPROG} check | tee -a ../../linbox-auto-install.log|| die
 fi
 
 
-echo -e "${BEG}installing Fflas-Ffpack..."
-${MAKEPROG} install | tee -a ../../auto-install.log|| die
+echo -e "${BEG}installing Fflas-Ffpack..."| tee -a ../../linbox-auto-install.log
+${MAKEPROG} install | tee -a ../../linbox-auto-install.log|| die
 
-cool| tee -a ../../auto-install.log
+cool| tee -a ../../linbox-auto-install.log
 #return in build
 cd ..
 
@@ -819,54 +921,54 @@ cd ..
 #####################
 
 if [ -f Makefile ] ; then
-    echo -e "${BEG}cleaning LinBox..."| tee -a ./auto-install.log
-    ${MAKEPROG} clean | tee -a ./auto-install.log|| die
-    ${MAKEPROG} distclean | tee -a ./auto-install.log|| die 
+    echo -e "${BEG}cleaning LinBox..."| tee -a ./linbox-auto-install.log
+    ${MAKEPROG} clean | tee -a ./linbox-auto-install.log|| die
+    ${MAKEPROG} distclean | tee -a ./linbox-auto-install.log|| die
 	# ${MAKEPROG} unistall || die
-    cool| tee -a ./auto-install.log
+    cool| tee -a ./linbox-auto-install.log
 fi
 
-echo -e "${BEG}configuring LinBox..."| tee -a ./auto-install.log
+echo -e "${BEG}configuring LinBox..."| tee -a ./linbox-auto-install.log
 
-echo ""| tee -a ./auto-install.log
-echo -e "${BEG}Don't forget to run something like"| tee -a ./auto-install.log
-echo -e " *   'export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:$PREFIX_LOC/lib'"| tee -a ./auto-install.log
-echo -e " * to ensure you don't get undefined symbols !"| tee -a ./auto-install.log
-echo  ""| tee -a ./auto-install.log
+echo ""| tee -a ./linbox-auto-install.log
+echo -e "${BEG}Don't forget to run something like"| tee -a ./linbox-auto-install.log
+echo -e " *   'export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:$PREFIX_LOC/lib'"| tee -a ./linbox-auto-install.log
+echo -e " * to ensure you don't get undefined symbols !"| tee -a ./linbox-auto-install.log
+echo  ""| tee -a ./linbox-auto-install.log
 
-if [ -x autogen.sh ] ;  then 
-    echo "./autogen.sh $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $WARNINGS $IML $DRIV"| tee -a ./auto-install.log
-    ./autogen.sh "$PREFIX" "$DEBUG" "$OPTIM" "$GMP" "$BLAS" "$NTL" "$WARNINGS" "$IML" "$DRIV" | tee -a ./auto-install.log|| die
+if [ -x autogen.sh ] ;  then
+    echo "./autogen.sh $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $WARNINGS $IML $DRIV"| tee -a ./linbox-auto-install.log
+    ./autogen.sh "$PREFIX" "$DEBUG" "$OPTIM" "$GMP" "$BLAS" "$NTL" "$WARNINGS" "$IML" "$DRIV" | tee -a ./linbox-auto-install.log|| die
 else
-    echo "./configure $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $WARNINGS $IML $DRIV"| tee -a ./auto-install.log
+    echo "./configure $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $WARNINGS $IML $DRIV"| tee -a ./linbox-auto-install.log
 	# ./configure $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $WARNINGS  $IML $DRIV || die
-    ./configure "$PREFIX" "$DEBUG" "$OPTIM" "$GMP" "$BLAS" "$NTL" "$WARNINGS" "$IML" "$DRIV" | tee -a ./auto-install.log|| die
+    ./configure "$PREFIX" "$DEBUG" "$OPTIM" "$GMP" "$BLAS" "$NTL" "$WARNINGS" "$IML" "$DRIV" | tee -a ./linbox-auto-install.log|| die
 fi
 
-echo -e "${BEG}building LinBox..."| tee -a ./auto-install.log
-echo "${MAKEPROG} CXXFLAGS+=\"$EXTRA\" LDFLAGS+=\"-Wl,-rpath,$PREFIX_LOC\""| tee -a ./auto-install.log
+echo -e "${BEG}building LinBox..."| tee -a ./linbox-auto-install.log
+echo "${MAKEPROG} CXXFLAGS+=\"$EXTRA\" LDFLAGS+=\"-Wl,-rpath,$PREFIX_LOC\""| tee -a ./linbox-auto-install.log
 
 if [ -n "$EXTRA" ] ; then
-    ${MAKEPROG} "CXXFLAGS+=\"$EXTRA\" LDFLAGS+=\"-Wl,-rpath,$PREFIX_LOC\"" | tee -a ./auto-install.log|| die
+    ${MAKEPROG} "CXXFLAGS+=\"$EXTRA\" LDFLAGS+=\"-Wl,-rpath,$PREFIX_LOC\"" | tee -a ./linbox-auto-install.log|| die
 else
-    ${MAKEPROG} "LDFLAGS+=\"-Wl,-rpath,$PREFIX_LOC\""| tee -a ./auto-install.log|| die
+    ${MAKEPROG} "LDFLAGS+=\"-Wl,-rpath,$PREFIX_LOC\""| tee -a ./linbox-auto-install.log|| die
 fi
 
 if [ "$CHECK_VAR" = "true" ] ; then
-    echo -e "${BEG}checking LinBox..."| tee -a auto-install.log
-    ${MAKEPROG} check | tee -a auto-install.log|| die
+    echo -e "${BEG}checking LinBox..."| tee -a linbox-auto-install.log
+    ${MAKEPROG} check | tee -a linbox-auto-install.log|| die
 fi
 
-echo -e "${BEG}installing LinBox..."| tee -a auto-install.log
-${MAKEPROG} install | tee -a auto-install.log|| die
+echo -e "${BEG}installing LinBox..."| tee -a linbox-auto-install.log
+${MAKEPROG} install | tee -a linbox-auto-install.log|| die
 
-cool| tee -a auto-install.log
+cool| tee -a linbox-auto-install.log
 
-echo    " " | tee -a auto-install.log
-echo -e "${BEG}Don't forget to run something like"| tee -a auto-install.log
-echo -e " *   'export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:$PREFIX_LOC/lib'"| tee -a auto-install.log
-echo -e " * to ensure you don't get undefined symbols !"| tee -a auto-install.log
-echo  "" | tee -a auto-install.log
-echo -e " * Happy LinBoxing ! (installed in $PREFIX_LOC)"| tee -a auto-install.log
-echo " "| tee -a auto-install.log
-cool| tee -a auto-install.log
+echo    " " | tee -a linbox-auto-install.log
+echo -e "${BEG}Don't forget to run something like"| tee -a linbox-auto-install.log
+echo -e " *   'export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:$PREFIX_LOC/lib'"| tee -a linbox-auto-install.log
+echo -e " * to ensure you don't get undefined symbols !"| tee -a linbox-auto-install.log
+echo  "" | tee -a linbox-auto-install.log
+echo -e " * Happy LinBoxing ! (installed in $PREFIX_LOC)"| tee -a linbox-auto-install.log
+echo " "| tee -a linbox-auto-install.log
+cool| tee -a linbox-auto-install.log

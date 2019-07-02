@@ -46,7 +46,7 @@
 
 #include "fflas-ffpack/utils/align-allocator.h"
 
-#ifdef __LINBOX_HAVE_SSE4_1_INSTRUCTIONS
+#if defined (__LINBOX_HAVE_SSE4_1_INSTRUCTIONS) and defined (__x86_64__)
 
 //#include "linbox/algorithms/polynomial-matrix/simd.h"
 
@@ -60,9 +60,10 @@ typedef __m256i  _vect256_t;
 
 #endif
 
+#ifdef __LINBOX_HAVE_SSE_INSTRUCTIONS
 // define 128 bits simd vector type
 typedef __m128i  _vect128_t;
-
+#endif
 #endif
 
 namespace LinBox {
@@ -239,7 +240,7 @@ namespace LinBox {
 
 		
 		void FFT_DIF_Harvey (uint32_t *fft) {
-#ifdef __LINBOX_HAVE_SSE4_1_INSTRUCTIONS
+#if defined (__LINBOX_HAVE_SSE4_1_INSTRUCTIONS) and defined (__x86_64__)
 #ifdef __LINBOX_HAVE_AVX2_INSTRUCTIONS
 			FFT_DIF_Harvey_mod2p_iterative8x1_AVX(fft);
 			if (n>=8){
@@ -272,7 +273,7 @@ namespace LinBox {
 		}
 		
 		void FFT_DIT_Harvey (uint32_t *fft) {
-#ifdef __LINBOX_HAVE_SSE4_1_INSTRUCTIONS
+#if defined (__LINBOX_HAVE_SSE4_1_INSTRUCTIONS) and defined (__x86_64__)
 #ifdef __LINBOX_HAVE_AVX2_INSTRUCTIONS
 			FFT_DIT_Harvey_mod4p_iterative8x1_AVX(fft);
 			if (n>=8){
@@ -361,6 +362,7 @@ namespace LinBox {
 		template <class T>
 		inline void Butterfly_DIF_mod2p(T& A, T& B, const uint32_t& alpha, const uint32_t& alphap);
 
+#ifdef __LINBOX_HAVE_SSE_INSTRUCTIONS
 		inline void reduce128_modp(uint32_t*, const __m128i&);
 		inline void Butterfly_DIF_mod2p_4x1_SSE(uint32_t* ABCD, uint32_t* EFGH,const uint32_t* alpha, const uint32_t* alphap, const __m128i& P, const __m128i& P2);
 		inline void Butterfly_DIF_mod2p_4x1_SSE_laststep(uint32_t* ABCD, uint32_t* EFGH, const __m128i& P2);
@@ -374,6 +376,7 @@ namespace LinBox {
 												const uint32_t* alphap,const __m128i& P, const __m128i& P2);
 		inline void Butterfly_DIT_mod4p_4x2_SSE_first2step(uint32_t* ABCD, uint32_t* EFGH, const __m128i& W,
 														   const __m128i& Wp, const __m128i& P, const __m128i& P2);
+#endif
 #ifdef __LINBOX_HAVE_AVX2_INSTRUCTIONS
 		inline void reduce256_modp(uint32_t*, const __m256i&);
 		inline void Butterfly_DIF_mod2p_8x1_AVX(uint32_t* ABCD, uint32_t* EFGH, const uint32_t* alpha,const uint32_t* alphap,const __m256i& P, const __m256i& P2);
@@ -411,7 +414,7 @@ namespace LinBox {
 } // end of namespace LinBox
 
 #include "linbox/algorithms/polynomial-matrix/polynomial-fft-transform.inl"
-#ifdef __LINBOX_HAVE_SSE4_1_INSTRUCTIONS
+#if defined (__LINBOX_HAVE_SSE4_1_INSTRUCTIONS) and defined (__x86_64__)
 #include "linbox/algorithms/polynomial-matrix/polynomial-fft-transform-simd.inl"
 #endif
 #endif // __LINBOX_FFT_H

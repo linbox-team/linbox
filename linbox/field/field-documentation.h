@@ -1,4 +1,4 @@
-/* linbox/field/field-interface.h
+/* linbox/field/field-documentation.h
  * Copyright (C) 2002 David Saunders
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -20,15 +20,15 @@
 
  */
 
-#ifndef __LINBOX_field_interface_H
-#define __LINBOX_field_interface_H
+#ifndef __LINBOX_field_documentation_H
+#define __LINBOX_field_documentation_H
 
 namespace LinBox
 {
-	// LinBox Field Interface
+	// LinBox Field Documentation
 	/*
-	 * The LinBox {@link Fields field} common object {@link Interfaces interface}.
-	 * The field interface includes the following public members:
+	 * The LinBox {@link Fields field} common object {@link Documentations documentation}.
+	 * The field documentation includes the following public members:
 	 *
 	 * Types: \c Element and \c RandIter.
 	 *
@@ -49,12 +49,12 @@ namespace LinBox
 	 *   \c read() and \c write() for I/O of the field itself and for I/O of its elements.
 	 *
 	 * The field archetype class is is the reference instantiation of this
-	 * interface and contains the generic specifications of the member functions.
+	 * documentation and contains the generic specifications of the member functions.
 	 * Documentation in other field classes is more limited. It serves primarily to explain special properties
-	 * specific to the class of the interface member functions and to explain any constructors
+	 * specific to the class of the documentation member functions and to explain any constructors
 	 * or other functionality unique to the class.
 	 *
-	 *  @see Interfaces
+	 *  @see Documentations
 	 */
 	/**
 	 * \brief This field base class exists solely to aid documentation organization.
@@ -64,7 +64,7 @@ namespace LinBox
 	 *  @link FieldArchetype FieldArchetype@endlink. For specific properties of individual representations consult the specific field classes.
 	 \ingroup field
 	 */
-	class FieldInterface {
+	class FieldDocumentation {
 #if 0
 	public:
 		// this just demo's that some declarations could be here.
@@ -75,7 +75,7 @@ namespace LinBox
 
 } // namespace LinBox
 
-#endif // __LINBOX_field_interface_H
+#endif // __LINBOX_field_documentation_H
 
 // Local Variables:
 // mode: C++

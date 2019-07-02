@@ -32,7 +32,7 @@
 #include <iostream>
 
 #include "linbox/integer.h"
-#include "linbox/field/field-interface.h"
+#include "linbox/field/field-documentation.h"
 #include "linbox/field/field-traits.h"
 
 // Namespace in which all LinBox code resides
@@ -46,7 +46,7 @@ namespace LinBox
 	 * field.  Doubles within this fuzz value are considered to be equal.
 	 \ingroup field
 	 */
-	class ParamFuzzy : public FieldInterface {
+	class ParamFuzzy : public FieldDocumentation {
 	public:
 
 		/** element type.

@@ -121,10 +121,10 @@ namespace LinBox
 
 			std::ostream& write(std::ostream& os)
 			{
-				return os<<"  FieldPoly --> "<<fieldP
-				<<"  IntPoly --> "<<intP
+				return os<<"  FieldPoly(" << fieldP << ") --> "<< *fieldP
+				<<"  IntPoly(" << intP << ") --> "<< *intP
 				<<"  multiplicity --> "<<multiplicity<<std::endl
-				<<"  dep --> "<<dep<<std::endl;
+				<<"  dep --> "<< dep<<std::endl;
 
 			}
 		};
@@ -182,7 +182,7 @@ namespace LinBox
 			/* Factorization over the integers */
 			std::vector<IntPoly> intFactors;
 			std::vector<uint64_t> exp;
-			IPD.factor (intFactors, exp, IntPoly(intMinPoly.getRep().begin(),intMinPoly.getRep().end()));
+			IPD.factor (intFactors, exp, intMinPoly);
 			size_t factnum = intFactors.size();
 
 			/* Choose a modular prime field */
@@ -195,14 +195,17 @@ namespace LinBox
 
 			for (size_t i = 0; i < intFactors.size(); ++i) {
 				uint64_t deg =  (intFactors[i].size()-1);
+
+
 				FactorMult<FieldPoly,IntPoly>* FFM=NULL;
 				if (exp[i] > 1) {
 					IntPoly *tmp = new IntPoly(intFactors[i]);
 					FM* depend = NULL;
 					for (size_t j = 1; j <= exp[i]; ++j){
 						IntPoly * tmp2 = new IntPoly(*tmp);
-						FieldPoly *tmp2p = new FieldPoly(tmp2->size());
-						typename IntPoly::template rebind<Field>() (*tmp2p, *tmp2, F);
+// 						FieldPoly *tmp2p = new FieldPoly(tmp2->size());
+// 						typename IntPoly::template rebind<Field>() (*tmp2p, *tmp2, F);
+						FieldPoly *tmp2p = new FieldPoly(*tmp2, F);
 
 						FFM = new FM (tmp2p, tmp2, 0, depend);
 						factCharPoly.insert (std::pair<size_t, FM*> (deg, FFM));
@@ -219,8 +222,10 @@ namespace LinBox
 					leadingBlocks.insert (std::pair<FM*,bool>(FFM,false));
 				}
 				else {
-					FieldPoly* fp=new FieldPoly(intFactors[i].size());
-					typename IntPoly::template rebind<Field>() (*fp, (intFactors[i]), F);
+// 					FieldPoly* fp=new FieldPoly(intFactors[i].size());
+// 					typename IntPoly::template rebind<Field>() (*fp, (intFactors[i]), F);
+					FieldPoly* fp=new FieldPoly(intFactors[i], F);
+
 					FFM = new FM (fp,&intFactors[i],1,NULL);
 					factCharPoly.insert (std::pair<size_t, FM* > (intFactors[i].size()-1, FFM));
 					leadingBlocks.insert (std::pair<FM*,bool>(FFM,false));
@@ -228,7 +233,9 @@ namespace LinBox
 				}
 			}
 
-			FieldBlackBox Ap(A, F);
+                // CP: const_cast is here only to please clang who would otherwise fail to compile
+                // claiming (mistakingly) that there is an ambiguous specialization
+			FieldBlackBox Ap(A, const_cast<const Field&>(F));
 
 			findMultiplicities (Ap, factCharPoly, leadingBlocks, goal, M);
 
@@ -237,6 +244,8 @@ namespace LinBox
 			IntPoly tmpP;
 			intRing.assign(intCharPoly[0], intRing.one);
 			for (FactPolyIterator it_f = factCharPoly.begin(); it_f != factCharPoly.end(); ++it_f){
+//                 it_f->second->write(std::clog) << std::endl;
+
 				IPD.pow (tmpP, *it_f->second->intP, (long) it_f->second->multiplicity);
 				IPD.mulin (intCharPoly, tmpP);
 				delete it_f->second->intP;
@@ -245,7 +254,7 @@ namespace LinBox
 			}
 			commentator().stop ("done", NULL, "IbbCharpoly");
 
-			return P = Polynomial(A.field(), typename Polynomial::Rep(intCharPoly.begin(),intCharPoly.end()));
+			return P = Polynomial(A.field(), intCharPoly);
 		}
 
 		/** Algorithm computing the  characteristic polynomial
@@ -261,11 +270,10 @@ namespace LinBox
 			commentator().start ("Givaro::Modular BlackBox Charpoly ", "MbbCharpoly");
 			typedef typename BlackBox::Field Field;
 			typedef PolynomialRing<Field, Givaro::Dense> PolyDom;
-			typedef typename PolyDom::Element FieldPoly;
 			// Set of factors-multiplicities sorted by degree
-			typedef std::multimap<size_t,FactorMult<FieldPoly>* > FactPoly;
+			typedef std::multimap<size_t,FactorMult<Polynomial>* > FactPoly;
 			typedef typename FactPoly::iterator FactPolyIterator;
-			std::multimap<FactorMult<FieldPoly>*,bool> leadingBlocks;
+			std::multimap<FactorMult<Polynomial>*,bool> leadingBlocks;
 			//typename std::multimap<FactorMult<Polynomial>*,bool>::iterator lead_it;
 
 			Field F = A.field();
@@ -276,70 +284,83 @@ namespace LinBox
 			/* Computation of the minimal polynomial */
 			Polynomial minPoly(F);
 			minpoly (minPoly, A, M);
-			//std::cerr<<"Minpoly = "<<minPoly;
+//             PD.write(std::cerr<<"Minpoly = ",minPoly) << std::endl;
+
 			if (minPoly.size() == n+1){
 				commentator().stop ("done", NULL, "MbbCharpoly");
 				return P = minPoly;
 			}
 
+            
 
-			FieldPoly charPoly (n+1);
+			Polynomial charPoly (F);
 
-			{	/* Factorization over the field */
-				std::vector<FieldPoly> factors;
-				std::vector<uint64_t> exp;
+                /* Factorization over the field */
+            std::vector<Polynomial> factors;
+            std::vector<uint64_t> exp;
 
-				PD.factor (factors, exp, minPoly);
-				size_t factnum = factors.size();
+            PD.factor (factors, exp, minPoly);
+            size_t factnum = factors.size();
+//             std::cerr<<"factnum = "<<factnum<<std::endl;
 
 				/* Building the structure of factors */
-				int goal = (int)n;
+            int goal = (int)n;
 
-				for (size_t i = 0; i < factors.size(); ++i) {
-					uint64_t deg =  (factors[i].size()-1);
-					FactorMult<FieldPoly>* FFM=NULL;
-					if (exp[i] > 1) {
-                                            FieldPoly* tmp = new FieldPoly(factors[i]);
-						FactorMult<FieldPoly>* depend = NULL;
-						for (size_t j = 1; j <= exp[i]; ++j){
-							FieldPoly* tmp2 = new FieldPoly(*tmp);
-							FFM = new FactorMult<FieldPoly> (tmp2, tmp2, 0, depend);
+            for (size_t i = 0; i < factors.size(); ++i) {
+                uint64_t deg =  (factors[i].size()-1);
+
+                    // Normalize factors
+                for(size_t j=0; j<=deg; ++j)
+                    F.divin(factors[i][j],factors[i][deg]);
+
+
+                FactorMult<Polynomial>* FFM=NULL;
+                if (exp[i] > 1) {
+                    Polynomial* tmp = new Polynomial(factors[i]);
+                    FactorMult<Polynomial>* depend = NULL;
+                    for (size_t j = 1; j <= exp[i]; ++j){
+                            // tmp2 is deleted after charPoly construction
+                        Polynomial* tmp2 = new Polynomial(*tmp);
+                        FFM = new FactorMult<Polynomial> (tmp2, tmp2, 0, depend);
 							//	std::cerr<<"Inserting new factor (exp>1): "<<(*tmp2)<<std::endl;
 
-							factCharPoly.insert (std::pair<size_t, FactorMult<FieldPoly>* > (deg, FFM));
-							++factnum;
-							depend = FFM;
-							deg += factors[i].size()-1;
-							if (j < exp[i])
-								PD.mul (*tmp, *tmp2, factors[i]);
-						}
-						delete tmp;
-						--factnum;
-						FFM->multiplicity = 1; // The last factor is present in minpoly
-						goal -= (int)(deg-factors[i].size())+1;
-						leadingBlocks.insert (std::pair<FactorMult<FieldPoly>*,bool>(FFM,false));
-					}
-					else {
-						FFM = new FactorMult<FieldPoly> (&factors[i],&factors[i],1U,NULL);
+                        factCharPoly.insert (std::pair<size_t, FactorMult<Polynomial>* > (deg, FFM));
+                        ++factnum;
+                        depend = FFM;
+                        deg += factors[i].size()-1;
+                        if (j < exp[i])
+                            PD.mul (*tmp, *tmp2, factors[i]);
+                    }
+                    delete tmp;
+                    --factnum;
+                    FFM->multiplicity = 1; // The last factor is present in minpoly
+                    goal -= (int)(deg-factors[i].size())+1;
+                    leadingBlocks.insert (std::pair<FactorMult<Polynomial>*,bool>(FFM,false));
+                }
+                else {
+                        // tmp2 is deleted after charPoly construction
+                    Polynomial* tmp2 = new Polynomial(factors[i]);
+                    FFM = new FactorMult<Polynomial> (tmp2,tmp2,1U,NULL);
 						//std::cerr<<"Inserting new factor : "<<*factors[i]<<std::endl;
-						factCharPoly.insert (std::pair<size_t, FactorMult<FieldPoly>* > (factors[i].size()-1, FFM));
-						leadingBlocks.insert (std::pair<FactorMult<FieldPoly>*,bool>(FFM,false));
-						goal -= (int)deg;
-					}
-				}
-				findMultiplicities ( A, factCharPoly, leadingBlocks, goal, M);
+                    factCharPoly.insert (std::pair<size_t, FactorMult<Polynomial>* > (factors[i].size()-1, FFM));
+                    leadingBlocks.insert (std::pair<FactorMult<Polynomial>*,bool>(FFM,false));
+                    goal -= (int)deg;
+                }
+            }
+            findMultiplicities ( A, factCharPoly, leadingBlocks, goal, M);
 
 				// Building the product
-				FieldPoly tmpP(F);
-				F.assign(charPoly[0], F.one);
-				for (FactPolyIterator it_f = factCharPoly.begin(); it_f != factCharPoly.end(); ++it_f){
-					PD.pow (tmpP, *it_f->second->fieldP,(long) it_f->second->multiplicity);
-					PD.mulin (charPoly, tmpP);
-					delete it_f->second->fieldP;
-					delete it_f->second;
+            Polynomial tmpP(F);
+            PD.assign(charPoly, PD.one);
+            for (FactPolyIterator it_f = factCharPoly.begin(); it_f != factCharPoly.end(); ++it_f){
 
-				}
-			}
+                PD.pow (tmpP, *it_f->second->fieldP,(long) it_f->second->multiplicity);
+                PD.mulin (charPoly, tmpP);
+
+                delete it_f->second->fieldP;
+                delete it_f->second;
+
+            }
 
 			commentator().stop ("done", NULL, "MbbCharpoly");
 
@@ -388,7 +409,7 @@ namespace LinBox
 				lead_it = leadingBlocks.find(itf->second);
 				if ( lead_it != leadingBlocks.end())
 					lead_it->second = true;
-				long unsigned int r;
+				size_t r;
 
 				/* The matrix Pi (A) */
 				if (F.isZero (itf->second->fieldP->operator[](0))){
@@ -413,7 +434,7 @@ namespace LinBox
 					lead_it->second = true;
 
 				PolynomialBB<BlackBox, FieldPoly > PA (A, *itf->second->fieldP);
-				long unsigned int r;
+				size_t r;
 				rank (r, PA,  M);
 
 				itf->second->multiplicity =(size_t)r;
@@ -441,7 +462,7 @@ namespace LinBox
 
 						// Need one more computation:
 						PolynomialBB<BlackBox, FieldPoly > PA (A, *currFFM->fieldP);
-						long unsigned int r;
+						size_t r;
 						rank (r, PA, M) ;
 						//std::cerr<<"extra factor : "<<*currFFM->fieldP<<" --> "<<r<<std::endl;
 

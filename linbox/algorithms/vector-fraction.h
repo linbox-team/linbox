@@ -82,7 +82,7 @@ namespace LinBox
 	class VectorFraction{
 	public:
 		typedef typename Domain::Element              Element;
-		typedef typename std::pair<Element, Element> Fraction;
+		typedef typename std::pair<Element, Element>  Fraction;
 		typedef typename std::vector<Fraction>        FVector;
 		typedef BlasVector<Domain>   Vector;
 
@@ -139,6 +139,8 @@ namespace LinBox
 		{
 			copy(VF);
 		}
+
+        size_t size() const { return numer.size(); }
 
 		/** copy without construction */
 		void copy(const VectorFraction<Domain>& VF)
@@ -336,6 +338,10 @@ namespace LinBox
 			}
 			return os << "]/" << denom;
 		}
+
+        std::ostream& operator<<(std::ostream& os) const {
+            return write(os);
+        }
 
 		/** convert to 'answer' type of lifting container */
 		FVector& toFVector(FVector& result) const

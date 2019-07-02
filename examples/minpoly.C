@@ -43,6 +43,7 @@ void printPolynomial (const Field &F, const Polynomial &v)
 #include <linbox/ring/modular.h>
 #include <linbox/matrix/sparse-matrix.h>
 #include <linbox/blackbox/compose.h>
+#include <linbox/polynomial/dense-polynomial.h>
 #include <linbox/solutions/minpoly.h>
 
 using namespace LinBox;
@@ -95,7 +96,7 @@ int main (int argc, char **argv)
 		if(process == 0)
 			cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 
-		DenseVector<Givaro::ZRing<Integer> > m_A(ZZ);
+		DensePolynomial<Givaro::ZRing<Integer> > m_A(ZZ);
 		minpoly (m_A, A, M);
 
 		if(process == 0){
@@ -103,7 +104,7 @@ int main (int argc, char **argv)
 			printPolynomial (ZZ, m_A);
 		}
 
-		//            minpoly (m_A, A, Method::BlasElimination() );
+		//            minpoly (m_A, A, Method::DenseElimination() );
 
 		//            if(process == 0){
 		//                cout << "Minimal Polynomial is ";
@@ -119,13 +120,13 @@ int main (int argc, char **argv)
 		B.read (input);
 		cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
 
-		DenseVector<Field> m_B(F);
+		DensePolynomial<Field> m_B(F);
 		minpoly (m_B, B);
 
 		cout << "Minimal Polynomial is ";
 		printPolynomial (F, m_B);
 
-		//                 minpoly (m_A, A, Method::BlasElimination() );
+		//                 minpoly (m_A, A, Method::DenseElimination() );
 		//  		cout << "Minimal Polynomial is ";
 		// 		printPolynomial (F, m_B);
 

@@ -47,7 +47,7 @@
 #include "linbox/linbox-config.h"
 #include "linbox/util/error.h"
 #include "linbox/util/debug.h"
-#include "linbox/field/field-interface.h"
+#include "linbox/field/field-documentation.h"
 #include "linbox/field/abstract.h"
 #include "linbox/field/envelope.h"
 #include "linbox/element/archetype.h"
@@ -77,7 +77,7 @@ namespace LinBox
 	 * stand point to include them.  However, because of archetype use three,
 	 * the elements themselves cannot be contained, but rather pointers to them.
 	 */
-	class FieldArchetype : public FieldInterface {
+	class FieldArchetype : public FieldDocumentation {
 	public:
 
 		/** @name Common Object Interface for a LinBox Field.
@@ -165,6 +165,22 @@ namespace LinBox
 			return *this;
 		}
 
+		/** \brief Initialization of field element.
+		 *
+		 * Empty constructor
+		 *
+		 * @return reference to x.
+		 * @param x output field element.
+		 * @param n input integer.
+		 */
+		Element &init (Element &x) const
+		{
+			if (x._elem_ptr == 0)
+                x._elem_ptr = _elem_ptr->clone ();
+			_field_ptr->init (*x._elem_ptr);
+			return x;
+		}
+
 		/** \brief Initialization of field element from an integer.
 		 *
 		 * x becomes the image of n under the natural map from the integers
@@ -181,7 +197,7 @@ namespace LinBox
 		 * @param x output field element.
 		 * @param n input integer.
 		 */
-		Element &init (Element &x, const integer &n = 0 ) const
+		Element &init (Element &x, const integer &n) const
 		{
 			// if (x._elem_ptr != 0) delete x._elem_ptr;
 			// x._elem_ptr = _elem_ptr->clone ();
@@ -394,6 +410,36 @@ namespace LinBox
 			return r;
 		}
 
+		/** \brief Field element AXMY, r  <-- a * x - y.
+		 *
+		 * This function assumes all field elements have already been
+		 * constructed and initialized.
+		 * @return reference to r.
+		 */
+		Element &axmy (Element       &r,
+			       const Element &a,
+			       const Element &x,
+			       const Element &y) const
+		{
+			_field_ptr->axmy (*r._elem_ptr, *a._elem_ptr, *x._elem_ptr,  *y._elem_ptr);
+			return r;
+		}
+
+		/** \brief Field element MAXPY, r  <-- y - a * x.
+		 *
+		 * This function assumes all field elements have already been
+		 * constructed and initialized.
+		 * @return reference to r.
+		 */
+		Element &maxpy (Element       &r,
+			       const Element &a,
+			       const Element &x,
+			       const Element &y) const
+		{
+			_field_ptr->maxpy (*r._elem_ptr, *a._elem_ptr, *x._elem_ptr,  *y._elem_ptr);
+			return r;
+		}
+
 		//@} Arithmetic Operations
 
 		/** @name Predicates
@@ -591,6 +637,35 @@ namespace LinBox
 			return r;
 		}
 
+		/** Inplace AXMY.
+		 * r  = a * x - r 
+		 * This function assumes all field elements have already been
+		 * constructed and initialized.
+		 * @return reference to r.
+		 * @param  r field element (reference returned).
+		 * @param  a field element.
+		 * @param  x field element.
+		 */
+		Element &axmyin (Element &r, const Element &a, const Element &x) const
+		{
+			_field_ptr->axmyin (*r._elem_ptr, *a._elem_ptr, *x._elem_ptr);
+			return r;
+		}
+
+		/** Inplace MAXPY.
+		 * r  -= a * x
+		 * This function assumes all field elements have already been
+		 * constructed and initialized.
+		 * @return reference to r.
+		 * @param  r field element (reference returned).
+		 * @param  a field element.
+		 * @param  x field element.
+		 */
+		Element &maxpyin (Element &r, const Element &a, const Element &x) const
+		{
+			_field_ptr->maxpyin (*r._elem_ptr, *a._elem_ptr, *x._elem_ptr);
+			return r;
+		}
 		//@} Inplace Arithmetic Operations
 
 		/** @name Input/Output Operations */

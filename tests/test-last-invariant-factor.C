@@ -51,7 +51,7 @@ using namespace LinBox;
 
 template <class Ring, class LIF, class Vector>
 bool testRandom(const Ring& R,
-		const LIF& lif,
+		LIF& lif,
 		LinBox::VectorStream<Vector>& stream1)
 {
 
@@ -207,8 +207,8 @@ int main(int argc, char** argv)
 
         RandomDenseStream<Ring> s1 (R, gen, n, iterations);
 
-	typedef RationalSolver<Ring, Givaro::Modular<int32_t>, PrimeIterator<IteratorCategories::HeuristicTag> > Solver;
-        // typedef RationalSolver<Ring, Givaro::Modular<double>, LinBox::PrimeIterator<IteratorCategories::HeuristicTag> > Solver;
+	typedef DixonSolver<Ring, Givaro::Modular<int32_t>, PrimeIterator<IteratorCategories::HeuristicTag> > Solver;
+        // typedef DixonSolver<Ring, Givaro::Modular<double>, LinBox::PrimeIterator<IteratorCategories::HeuristicTag> > Solver;
 
 	typedef LastInvariantFactor<Ring, Solver> LIF;
 

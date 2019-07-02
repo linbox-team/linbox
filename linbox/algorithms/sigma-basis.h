@@ -38,7 +38,7 @@
 #include "linbox/matrix/factorized-matrix.h"
 
 #include "linbox/algorithms/matpoly-mult.h"
-#include "linbox/algorithms/echelon-form.h"
+#include "linbox/solutions/echelon.h"
 #include "linbox/vector/subvector.h"
 #include "linbox/util/timer.h"
 
@@ -1433,8 +1433,7 @@ namespace LinBox
 #endif
 
 				/* new version : use of columnReducedEchelon */
-				EchelonFormDomain<Field>  EFD(field());
-				size_t rank = EFD.columnReducedEchelon(Discrepancy);
+				size_t rank = reducedColEchelonize(Discrepancy);
 
 
 				// compute permutation such that all pivots are on the principal minor

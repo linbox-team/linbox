@@ -88,11 +88,11 @@ static bool testRandomSolve (const Field           &F,
 	report << "Input matrix A:" << endl;
 	A.write (report);
 
-	typename Field::RandIter ri (F, 0, time (NULL));
+	typename Field::RandIter ri (F);
 
-	BlockLanczosTraits traits;
-	traits.preconditioner (BlockLanczosTraits::NO_PRECONDITIONER);
-	traits.blockingFactor (N);
+	Method::BlockLanczos traits;
+	traits.preconditioner = Preconditioner::None;
+	traits.blockingFactor = N;
 	//traits.maxTries (1);
 
 	LABLSolver lablsolver (F, traits, ri);
@@ -156,11 +156,11 @@ static bool testSampleNullspace (const Field           &F,
 	report << "Input matrix A:" << endl;
 	A.write (report);
 
-	typename Field::RandIter ri (F, 0, time (NULL));
+	typename Field::RandIter ri (F);
 
-	BlockLanczosTraits traits;
-	traits.preconditioner (BlockLanczosTraits::NO_PRECONDITIONER);
-	traits.blockingFactor (N);
+	Method::BlockLanczos traits;
+	traits.preconditioner = Preconditioner::None;
+	traits.blockingFactor = N;
 	//traits.maxTries (1);
 
 	LABLSolver lablsolver (F, traits, ri);
@@ -214,11 +214,11 @@ static bool testRank (const Field           &F,
 	report << "Input matrix A:" << endl;
 	A.write (report);
 
-	typename Field::RandIter ri (F, 0, time (NULL));
+	typename Field::RandIter ri (F);
 
-	BlockLanczosTraits traits;
-	traits.preconditioner (BlockLanczosTraits::NO_PRECONDITIONER);
-	traits.blockingFactor (N);
+	Method::BlockLanczos traits;
+	traits.preconditioner = Preconditioner::None;
+	traits.blockingFactor = N;
 	//traits.maxTries (1);
 
 	LABLSolver lablsolver (F, traits, ri);

@@ -28,6 +28,7 @@
 #ifndef __LINBOX_matrix_inverse_H
 #define __LINBOX_matrix_inverse_H
 
+#include "linbox/field/multimod-field.h"
 #include "linbox/util/debug.h"
 #include "linbox/util/error.h"
 #include <vector>

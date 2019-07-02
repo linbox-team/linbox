@@ -117,7 +117,7 @@ template <class Field>
 static bool testPermutation (const Field& F, size_t m, int iterations)
 ;
 template <class Field>
-static bool testLQUP (const Field& F, size_t m, size_t n, int iterations)
+static bool testPLUQ (const Field& F, size_t m, size_t n, int iterations)
 ;
 template <class Field>
 static bool testMinPoly (const Field& F, size_t n, int iterations)
@@ -406,7 +406,7 @@ bool CheckMulAdd(const Field& Zp, const Integer & alpha ,
 }
 
 // tests MulAdd for various parameters alpha and beta.
-// This test ignores Field F.  It tests only integer matrices.  
+// This test ignores Field F.  It tests only integer matrices.
 // It should not really be included in launch_tests<Field>.
 // For now we'll call it when characteristic is zero.
 template <class Field>
@@ -425,24 +425,6 @@ static bool testMulAddAgain (const Field& F, size_t n, int iterations)
 
 	size_t ll = 17 ;
 	Integer::seeding();
-#if 0
-	size_t lA = 15 ;
-	size_t lB = 18 ;
-	size_t lC = 19 ;
-
-	Givaro::ZRing<Integer> ZZ ;
-
-	typedef RandomIntegerIterator<>                       IntRandIter ;
-	typedef RandomDenseMatrix<IntRandIter, Givaro::ZRing<Integer> > IntRand_t;
-
-	IntRandIter RA(ZZ,lA);
-	IntRandIter RB(ZZ,lB);
-	IntRandIter RC(ZZ,lC);
-
-	IntRand_t Arand (ZZ,RA);
-	IntRand_t Brand (ZZ,RB);
-	IntRand_t Crand (ZZ,RC);
-#endif
 
 	for (int k=0;k<iterations; ++k) {
 
@@ -754,7 +736,7 @@ static bool testRank (const Field& F,size_t n, int iterations)
                 BMD.write(commentator().report(), A) << std::endl;
 
 		// compute the rank of A
-		unsigned int rank= BMD.rankin(A);
+		unsigned int rank= BMD.rankInPlace(A);
 		commentator().report() << "Rank " << rank << " should be " << r << std::endl;
 
 		if (rank!=r)
@@ -819,7 +801,7 @@ static bool testDet (const Field& F,size_t n, int iterations)
 		BMD.mul(A,L,S);
 
 		// compute the determinant of A
-		Element det= BMD.detin(A);
+		Element det= BMD.detInPlace(A);
 
 		if (!F.areEqual(det,d))
 			ret=false;
@@ -858,7 +840,7 @@ static bool testInv (const Field& F,size_t n, int iterations)
 	for (size_t i=0;i<n;++i)
 		Id.setEntry(i,i,F.one);
 
-	if (n < 10) 
+	if (n < 10)
 		Id.write(mycommentator().report() << "Id" << std::endl) << std::endl;
 	for (int k=0;k<iterations;++k) {
 
@@ -888,29 +870,29 @@ static bool testInv (const Field& F,size_t n, int iterations)
 		//for (size_t i=0;i<n;++i){A.setEntry(i,i,F.one); }
 		//A.setEntry(0, n-1, F.mOne);
 
-	if (n < 10) 
+	if (n < 10)
 		A.write(mycommentator().report() << "A") << std::endl;
 
 		// compute the inverse of A
-		Matrix invA(A);
-	if (n < 10) 
+    Matrix invA(A);
+	if (n < 10)
 		invA.write(mycommentator().report() << "before inversion, invA") << std::endl;
 	//int nullity;
 	//FFPACK::Invert2 (F, invA.rowdim(), A.getPointer(), A.getStride(), invA.getPointer(), invA.getStride(), nullity);
-		BMD.invin(invA);
-	if (n < 10) 
+    BMD.invin(invA);
+	if (n < 10)
 		invA.write(mycommentator().report() << "invA") << std::endl;
 
 		// compute Ainv*A and A*Ainv
-		BMD.mul(L,invA,A);
-	if (n < 10) 
+    BMD.mul(L,invA,A);
+	if (n < 10)
 		L.write(mycommentator().report() << "invA*A") << std::endl;
-		BMD.mul(S,A,invA);
-	if (n < 10) 
+    BMD.mul(S,A,invA);
+	if (n < 10)
 		S.write(mycommentator().report() << "A*invA") << std::endl;
 
-		if (!BMD.areEqual(L,Id) || !BMD.areEqual(S,Id))
-			ret=false;
+    if (!BMD.areEqual(L,Id) || !BMD.areEqual(S,Id))
+        ret=false;
 	}
 
 	mycommentator().stop(MSG_STATUS (ret), (const char *) 0, "testInv");
@@ -1441,16 +1423,16 @@ static bool testPermutation (const Field& F, size_t m, int iterations)
 		if (!BMD.areEqual(D,B))
 			ret=false;
 	}
-	mycommentator().stop(MSG_STATUS (ret), (const char *) 0, "testLQUP");
+	mycommentator().stop(MSG_STATUS (ret), (const char *) 0, "testPLUQ");
 
 	return ret;
 }
 
 /*
- * Test of the LQUPMatrix class
+ * Test of the PLUQMatrix class
  */
 template <class Field>
-static bool testLQUP (const Field& F, size_t m, size_t n, int iterations)
+static bool testPLUQ (const Field& F, size_t m, size_t n, int iterations)
 {
 
 	typedef typename Field::Element                  Element;
@@ -1460,7 +1442,7 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations)
 	//Commentator mycommentator;
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	mycommentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	mycommentator().start (pretty("Testing LQUP factorization"),"testLQUP",(unsigned int)iterations);
+	mycommentator().start (pretty("Testing PLUQ factorization"),"testPLUQ",(unsigned int)iterations);
 
 	RandIter G(F);
 	Givaro::GeneralRingNonZeroRandIter<Field> Gn(G);
@@ -1498,8 +1480,8 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations)
 
 		Abis = A;
 
-		BlasPermutation<size_t>  P(A.coldim()),Q(A.rowdim());
-		LQUPMatrix<Field> X(A,P,Q);
+		BlasPermutation<size_t>  P(A.rowdim()),Q(A.coldim());
+		PLUQMatrix<Field> X(A,P,Q);
 
 		TriangularBlasMatrix<Field> L(F,m,m,Tag::Shape::Lower,Tag::Diag::Unit);
 		TriangularBlasMatrix<Field> U(F,m,n,Tag::Shape::Upper,Tag::Diag::NonUnit);
@@ -1509,12 +1491,12 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations)
 
 		Q=X.getQ();
 
-		// C = U*P
-		BMD.mul( C, U, P);
-		// C = Q*C
-		BMD.mulin_right( Q, C);
+		// C = U*Q
+		BMD.mul( C, U, Q);
 		// A = L*C
 		BMD.mul( A, L, C);
+		// C = P*C
+		BMD.mulin_right( P, C);
 
 		if (!BMD.areEqual(A,Abis))
 			ret=false;
@@ -1525,7 +1507,7 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations)
 
 		Abis = A;
 
-		LQUPMatrix<Field> Y(A,P,Q);
+		PLUQMatrix<Field> Y(A,P,Q);
 
 		TriangularBlasMatrix<Field> L2(F,m,m,Tag::Shape::Lower,Tag::Diag::Unit);
 		TriangularBlasMatrix<Field> U2(F,m,n,Tag::Shape::Upper,Tag::Diag::NonUnit);
@@ -1535,18 +1517,18 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations)
 
 		Q=Y.getQ();
 
-		// C = Q*U2
-		BMD.mul( C,Q,U2);
-		// C = Q*C
-		BMD.mulin_left(  C,P);
-		// A = L*C
-		BMD.mul( A, L2, C);
+		// C = L2*U2
+		BMD.mul( C,L2,U2);
+		// C = C*Q
+		BMD.mulin_left(  C,Q);
+		// A = P*C
+		BMD.mul( A, P, C);
 
 		if (!BMD.areEqual(A,Abis))
 			ret=false;
 	}
 
-	mycommentator().stop(MSG_STATUS (ret), (const char *) 0, "testLQUP");
+	mycommentator().stop(MSG_STATUS (ret), (const char *) 0, "testPLUQ");
 
 	return ret;
 }
@@ -1781,7 +1763,7 @@ int launch_tests(Field & F, size_t n, int iterations)
  	if (!testTriangularSolve (F,n,n,iterations))          pass=false;
  	if (!testSolve (F,n,n,iterations))                    pass=false;
  	if (!testPermutation (F,n,iterations))                pass=false;
- 	if (!testLQUP (F,n,n,iterations))                     pass=false;
+ 	if (!testPLUQ (F,n,n,iterations))                     pass=false;
  	if (!testMinPoly (F,n,iterations))                    pass=false;
 	if (!testCharPoly (F,n,iterations))                   pass=false;
 	//

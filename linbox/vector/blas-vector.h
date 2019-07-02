@@ -183,8 +183,8 @@ namespace LinBox { /* BlasVector */
 		}
 
 
-            // This constructor is templated because if SizeType was a size_t, then calling it with a signed const litteral 
-            // (e.g. v(F,3)) would fail to launch this constructor, but rather go in the templated one (_Field, VectorBase) 
+            // This constructor is templated because if SizeType was a size_t, then calling it with a signed const litteral
+            // (e.g. v(F,3)) would fail to launch this constructor, but rather go in the templated one (_Field, VectorBase)
             // on OSX where long can not be cast to size_t).
         template<class SizeType, typename std::enable_if<std::is_arithmetic<SizeType>::value, int>::type=0>
 		BlasVector (const _Field &F, const SizeType &m, const Element e=Element())  :
@@ -241,7 +241,7 @@ namespace LinBox { /* BlasVector */
 			linbox_check(_size==0 || _ptr != NULL);
 		}
 
-		BlasVector (const BlasMatrix<Field,Rep> &A, size_t k, LINBOX_enum (Tag::Direction) f )  :
+		BlasVector (const BlasMatrix<Field,Rep> &A, size_t k, Tag::Direction f )  :
 			Father_t(),
 			_size((f == Tag::Direction::Row)?(A.rowdim()):(A.coldim())),_1stride(1),_rep(_size, A.field().zero),_ptr(_rep.data()),_field(&(A.field()))
 			{
@@ -258,7 +258,7 @@ namespace LinBox { /* BlasVector */
 			}
 
 		template<class _Matrix>
-		BlasVector (const BlasSubmatrix<_Matrix> &A, size_t k, LINBOX_enum (Tag::Direction) f )  :
+		BlasVector (const BlasSubmatrix<_Matrix> &A, size_t k, Tag::Direction f )  :
 			Father_t(),
 			_size((f==Tag::Direction::Row)?(A.rowdim()):(A.coldim())),_1stride(1),_rep(_size, A.field().zero),_ptr(_rep.data()),_field(&(A.field()))
 			{
@@ -371,7 +371,7 @@ namespace LinBox { /* BlasVector */
 
 
 		// write
-		std::ostream &write ( std::ostream &os, LINBOX_enum(Tag::FileFormat) fmt = Tag::FileFormat::Pretty ) const
+		std::ostream &write ( std::ostream &os, Tag::FileFormat fmt = Tag::FileFormat::Pretty ) const
 		{
 			switch(fmt) {
 			case (Tag::FileFormat::Pretty) :
@@ -463,12 +463,17 @@ namespace LinBox { /* BlasVector */
 
 		const Rep &getRep() const { return _rep ; }
 
-		pointer getPointer() const
+		pointer getPointer()
 		{
 			return _ptr;
 		}
 
-		const_pointer &getConstPointer() const
+        const_pointer getPointer() const
+		{
+			return (const_pointer)_ptr;
+		}
+
+		const_pointer getConstPointer() const
 		{
 			return (const_pointer)_ptr;
 		}
@@ -712,7 +717,7 @@ namespace LinBox { /*  BlasSubvector */
 #if 0 /*  from BlasMatrix (should be a Row/Col in BlasMatrix, not here... */
 		BlasSubvector (const BlasMatrix<Field,Rep> &M
 			       , size_t ibeg
-			       , LINBOX_enum (Tag::Direction) f ) :
+			       , Tag::Direction f ) :
 			Father_t(),
 			_Vec (const_cast<Rep&>(M.refRep()))
 			,_size((f==Tag::Direction::Row)?(M.coldim()):(M.rowdim()))
@@ -726,7 +731,7 @@ namespace LinBox { /*  BlasSubvector */
 		template<class _Matrix>
 		BlasSubvector (const BlasSubmatrix<_Matrix> &M
 			       , size_t ibeg
-			       , LINBOX_enum (Tag::Direction) f ) :
+			       , Tag::Direction f ) :
 			Father_t(),
 			_Vec (const_cast<Rep&>(M.refRep()))
 			,_size((f==Tag::Direction::Row)?(M.coldim()):(M.rowdim()))
@@ -781,9 +786,10 @@ namespace LinBox { /*  BlasSubvector */
 		//   ELEMENTS   //
 		//////////////////
 
-		pointer getPointer() const { return &(_Vec[_i0]); }
+		pointer getPointer() { return &(_Vec[_i0]); }
+		const_pointer getPointer() const { return &(_Vec[_i0]); }
 
-		const_pointer &getConstPointer() const { return &(_Vec[_i0]); }
+		const_pointer getConstPointer() const { return &(_Vec[_i0]); }
 
 
 		pointer& getWritePointer() { return &(_Vec[_i0]); }
@@ -828,7 +834,7 @@ namespace LinBox { /*  BlasSubvector */
 		// Field & field() { return _field; }
 
 		// write (same as BlasVector)
-		std::ostream &write ( std::ostream &os, LINBOX_enum(Tag::FileFormat) fmt = Tag::FileFormat::Pretty ) const
+		std::ostream &write ( std::ostream &os, Tag::FileFormat fmt = Tag::FileFormat::Pretty ) const
 		{
 			switch(fmt) {
 			case (Tag::FileFormat::Pretty) :

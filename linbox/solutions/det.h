@@ -59,8 +59,8 @@ namespace LinBox
 	 * @param d    Field element into which to store the result
 	 * @param A    Black box of which to compute the determinant
 	 * @param tag  optional tag.  Specifies Integer, Rational or modular ring/field
-	 * @param M    optional method.  The default is Method::Hybrid(), Other options
-	 include Blackbox, Elimination, Wiedemann, BlasElimination and SparseElimination.
+	 * @param M    optional method.  The default is Method::Auto(), Other options
+	 include Blackbox, Elimination, Wiedemann, DenseElimination and SparseElimination.
 	 Sometimes it helps to 	 indicate properties of the matrix in the method object
 	 (for instance symmetry). See class Method for details.
 	 \ingroup solutions
@@ -74,7 +74,7 @@ namespace LinBox
 	// The det where A can be modified in place
 	// Default is to use the generic det (might copy)
 	template< class Blackbox, class DetMethod, class DomainCategory>
-	typename Blackbox::Field::Element &detin (typename Blackbox::Field::Element	&d,
+	typename Blackbox::Field::Element &detInPlace (typename Blackbox::Field::Element	&d,
 						  Blackbox                             	&A,
 						  const DomainCategory			&tag,
 						  const DetMethod			&Meth)
@@ -87,15 +87,15 @@ namespace LinBox
 	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element	&d,
 						const Blackbox				&A)
 	{
-		return det(d, A, Method::Hybrid());
+		return det(d, A, Method::Auto());
 	}
 
 	// The det where A can be modified in place
 	template<class Blackbox>
-	typename Blackbox::Field::Element &detin (typename Blackbox::Field::Element	&d,
+	typename Blackbox::Field::Element &detInPlace (typename Blackbox::Field::Element	&d,
 						  Blackbox				&A)
 	{
-		return detin(d, A, Method::Hybrid());
+		return detInPlace(d, A, Method::Auto());
 	}
 
 	// The det with category specializer
@@ -109,60 +109,57 @@ namespace LinBox
 
 	// The in place det with category specializer
 	template <class Blackbox, class MyMethod>
-	typename Blackbox::Field::Element &detin (typename Blackbox::Field::Element     &d,
+	typename Blackbox::Field::Element &detInPlace (typename Blackbox::Field::Element     &d,
 						  Blackbox                              &A,
 						  const MyMethod                        &Meth)
 	{
-		return detin(d, A, typename FieldTraits<typename Blackbox::Field>::categoryTag(), Meth);
+		return detInPlace(d, A, typename FieldTraits<typename Blackbox::Field>::categoryTag(), Meth);
 	}
 
-	// The det with Hybrid Method
+	// The det with Auto Method
 	template<class Blackbox>
 	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element	&d,
 						const Blackbox				&A,
 						const RingCategories::ModularTag	&tag,
-						const Method::Hybrid			&Meth)
+						const Method::Auto			&Meth)
 	{
-		// not yet a hybrid
-
-		if (useBB(A))
+		if (useBlackboxMethod(A))
 			return det(d, A, tag, Method::Blackbox(Meth));
 		else
 
 			return det(d, A, tag, Method::Elimination(Meth));
 	}
 	template<class Blackbox>
-	typename Blackbox::Field::Element &detin (typename Blackbox::Field::Element	&d,
+	typename Blackbox::Field::Element &detInPlace (typename Blackbox::Field::Element	&d,
 						  Blackbox				&A,
 						  const RingCategories::ModularTag	&tag,
-						  const Method::Hybrid			&Meth)
+						  const Method::Auto			&Meth)
 	{
-		// not yet a hybrid
 		/*
-		   if (useBB(A))
+		   if (useBlackboxMethod(A))
 		   return det(d, A, tag, Method::Blackbox(Meth));
 		   else
 		   */
-		return detin(d, A, tag, Method::Elimination(Meth));
+		return detInPlace(d, A, tag, Method::Elimination(Meth));
 	}
 
-	// The det with Hybrid Method on BlasMatrix
+	// The det with Auto Method on BlasMatrix
 	template<class Field>
 	typename Field::Element &det (typename Field::Element         	&d,
 				      const BlasMatrix<Field>		&A,
 				      const RingCategories::ModularTag	&tag,
-				      const Method::Hybrid		&Meth)
+				      const Method::Auto		&Meth)
 	{
 		return det(d, A, tag, Method::Elimination(Meth));
 	}
 
 	template<class Field>
-	typename Field::Element &detin (typename Field::Element         	&d,
+	typename Field::Element &detInPlace (typename Field::Element         	&d,
 					BlasMatrix<Field>			&A,
 					const RingCategories::ModularTag	&tag,
-					const Method::Hybrid			&Meth)
+					const Method::Auto			&Meth)
 	{
-		return detin(d, A, tag, Method::Elimination(Meth));
+		return detInPlace(d, A, tag, Method::Elimination(Meth));
 	}
 
 	// Forward declaration saves us from including blackbox/toeplitz.h
@@ -178,7 +175,7 @@ namespace LinBox
 		return A.det(res);
 	}
 	template<class CField, class PField >
-	typename CField::Element& detin(typename CField::Element	& res,
+	typename CField::Element& detInPlace(typename CField::Element	& res,
 					Toeplitz<CField,PField>		& A )
 	{
 		if (A.coldim() != A.rowdim())
@@ -211,7 +208,7 @@ namespace LinBox
 		Field F = A.field();
 		typedef BlasVector<Field> Polynomial;
 
-		if(Meth.symmetric()) {
+		if(Meth.shapeFlags == Shape::Symmetric) {
 			commentator().start ("Symmetric Wiedemann Determinant", "sdet");
 			linbox_check (A.coldim () == A.rowdim ());
 			Polynomial               phi(F);
@@ -242,7 +239,7 @@ namespace LinBox
 
 				BlackboxContainerSymmetric<Field, Blackbox1> TF (&B, F, iter);
 
-				MasseyDomain<Field, BlackboxContainerSymmetric<Field, Blackbox1> > WD (&TF, Meth.earlyTermThreshold ());
+				MasseyDomain<Field, BlackboxContainerSymmetric<Field, Blackbox1> > WD (&TF, Meth.earlyTerminationThreshold);
 
 				WD.minpoly (phi, deg);
 #if 0
@@ -301,7 +298,7 @@ namespace LinBox
 
 				BlackboxContainer<Field, Blackbox1> TF (&B, F, iter);
 
-				MasseyDomain<Field, BlackboxContainer<Field, Blackbox1> > WD (&TF, Meth.earlyTermThreshold ());
+				MasseyDomain<Field, BlackboxContainer<Field, Blackbox1> > WD (&TF, Meth.earlyTerminationThreshold);
 
 				WD.minpoly (phi, deg);
 
@@ -327,7 +324,7 @@ namespace LinBox
 	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element       &d,
 						const Blackbox                          &A,
 						const RingCategories::ModularTag        &tag,
-						const Method::BlasElimination           &Meth)
+						const Method::DenseElimination           &Meth)
 	{
 		if (A.coldim() != A.rowdim())
 			throw LinboxError("LinBox ERROR: matrix must be square for determinant computation\n");
@@ -341,7 +338,7 @@ namespace LinBox
 
 		BlasMatrix<Field> B(A);
 		BlasMatrixDomain<Field> BMD(F);
-		d= BMD.detin(B);
+		d= BMD.detInPlace(B);
 		commentator().stop ("done", NULL, "blasdet");
 
 		return d;
@@ -365,7 +362,7 @@ namespace LinBox
 			for(size_t j = 0; j < A.coldim(); ++j)
 				A1.setEntry(i,j,getEntry(tmp, A, i, j));
 		GaussDomain<Field> GD ( A1.field() );
-		GD.detin (d, A1, Meth.strategy ());
+		GD.detInPlace (d, A1, Meth.pivotStrategy);
 		commentator().stop ("done", NULL, "SEDet");
 		return d;
 
@@ -384,13 +381,13 @@ namespace LinBox
 		// We make a copy as these data will be destroyed
 		SparseMatrix<Field, SparseMatrixFormat::SparseSeq> A1 (A);
 		GaussDomain<Field> GD ( A.field() );
-		GD.detin (d, A1, Meth.strategy ());
+		GD.detInPlace (d, A1, Meth.pivotStrategy);
 		commentator().stop ("done", NULL, "SEdet");
 		return d;
 	}
 
 	template <class Field>
-	typename Field::Element &detin (typename Field::Element         	&d,
+	typename Field::Element &detInPlace (typename Field::Element         	&d,
 					SparseMatrix<Field, SparseMatrixFormat::SparseSeq>  &A,
 					const RingCategories::ModularTag  	&tag,
 					const Method::SparseElimination     	&Meth)
@@ -399,7 +396,7 @@ namespace LinBox
 			throw LinboxError("LinBox ERROR: matrix must be square for determinant computation\n");
 		commentator().start ("Sparse Elimination Determinant in place", "SEDetin");
 		GaussDomain<Field> GD ( A.field() );
-		GD.detin (d, A, Meth.strategy ());
+		GD.detInPlace (d, A, Meth.pivotStrategy);
 		commentator().stop ("done", NULL, "SEdetin");
 		return d;
 	}
@@ -417,16 +414,16 @@ namespace LinBox
 
 
 	template <class Field>
-	typename Field::Element &detin (typename Field::Element         	&d,
+	typename Field::Element &detInPlace (typename Field::Element         	&d,
 					SparseMatrix<Field, SparseMatrixFormat::SparseSeq>  &A,
 					const RingCategories::ModularTag  	&tag,
 					const Method::Elimination     		&Meth)
 	{
-		return detin(d, A, tag, Method::SparseElimination(Meth));
+		return detInPlace(d, A, tag, Method::SparseElimination(Meth));
 	}
 
 	template<class Field, class Vector>
-	typename Field::Element &detin (typename Field::Element			&d,
+	typename Field::Element &detInPlace (typename Field::Element			&d,
 					SparseMatrix<Field, Vector> 		&A,
 					const RingCategories::ModularTag      	&tag,
 					const Method::Elimination		&Meth)
@@ -436,7 +433,7 @@ namespace LinBox
 		const Field& F = A.field();
 		integer c; F.characteristic(c);
 		if ((c < LinBox::BlasBound) && ((A.rowdim() < 300) || (A.coldim() < 300) || (A.size() > (A.coldim()*A.rowdim()/100))))
-			return det(d, A, tag, Method::BlasElimination(Meth));
+			return det(d, A, tag, Method::DenseElimination(Meth));
 		else
 			return det(d, A, tag, Method::SparseElimination(Meth));
 	}
@@ -451,12 +448,12 @@ namespace LinBox
 	{
 		// Matrix is not of type SparseMatrix otherwise previous specialization would occur
 		// will copy A into BlasMatrix
-		return det(d, A, tag, Method::BlasElimination(Meth));
+		return det(d, A, tag, Method::DenseElimination(Meth));
 	}
 
 
 	template<class Blackbox>
-	typename Blackbox::Field::Element &detin (typename Blackbox::Field::Element	&d,
+	typename Blackbox::Field::Element &detInPlace (typename Blackbox::Field::Element	&d,
 						  Blackbox                            	&A,
 						  const RingCategories::ModularTag      &tag,
 						  const Method::Elimination		&Meth)
@@ -464,25 +461,25 @@ namespace LinBox
 		// Matrix is not of type SparseMatrix not of type BlasMatrix
                 // otherwise previous specialization would occur
 		// will copy A into BlasMatrix
-		return det(d, A, tag, Method::BlasElimination(Meth));
+		return det(d, A, tag, Method::DenseElimination(Meth));
 	}
 
 	template<class Field>
-	typename Field::Element &detin (typename Field::Element			&d,
+	typename Field::Element &detInPlace (typename Field::Element			&d,
                                         BlasMatrix<Field>			&A,
                                         const RingCategories::ModularTag	&tag,
 					const Method::Elimination		&Meth)
 	{
-		return detin(d, A);
+		return detInPlace(d, A);
 	}
 
 	template<class Field>
-	typename Field::Element &detin (typename Field::Element			&d,
+	typename Field::Element &detInPlace (typename Field::Element			&d,
                                         BlasMatrix<Field>			&A,
                                         const RingCategories::ModularTag	&tag,
-					const Method::BlasElimination		&Meth)
+					const Method::DenseElimination		&Meth)
 	{
-		return detin(d, A);
+		return detInPlace(d, A);
 	}
 
 
@@ -496,7 +493,7 @@ namespace LinBox
 	  * \return \p d
 	  */
 	template <class Field>
-	typename Field::Element &detin (typename Field::Element             &d,
+	typename Field::Element &detInPlace (typename Field::Element             &d,
 					BlasMatrix<Field>                  &A)
 	{
 		if (A.coldim() != A.rowdim())
@@ -504,12 +501,12 @@ namespace LinBox
 
 		Field F = A.field();
 
-		commentator().start ("Determinant", "detin");
+		commentator().start ("Determinant", "detInPlace");
 		linbox_check (A.coldim () == A.rowdim ());
 
 		BlasMatrixDomain<Field> BMD(F);
-		d= BMD.detin(static_cast<BlasMatrix<Field>& > (A));
-		commentator().stop ("done", NULL, "detin");
+		d= BMD.detInPlace(static_cast<BlasMatrix<Field>& > (A));
+		commentator().stop ("done", NULL, "detInPlace");
 
 		return d;
 	}
@@ -519,7 +516,7 @@ namespace LinBox
 //#include "linbox/field/givaro-zpz.h"
 
 #ifdef __LINBOX_HAVE_MPI
-#include "linbox/algorithms/cra-mpi.h"
+#include "linbox/algorithms/cra-distributed.h"
 #else
 #ifdef __LINBOX_HAVE_KAAPI //use the kaapi version instead of the usual version if this macro is defined
 #include "linbox/algorithms/cra-kaapi.h"
@@ -528,7 +525,7 @@ namespace LinBox
 #endif
 #endif
 
-#include "linbox/algorithms/cra-single.h"
+#include "linbox/algorithms/cra-builder-single.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/matrix-hom.h"
 
@@ -545,12 +542,12 @@ namespace LinBox
 		{}
 
 
-		template<typename Field>
-		IterationResult operator()(typename Field::Element& d, const Field& F) const
+		template<class Element, typename Field>
+		IterationResult operator()(Element& d, const Field& F) const
 		{
 			typedef typename Blackbox::template rebind<Field>::other FBlackbox;
 			FBlackbox Ap(A, F);
-			detin( d, Ap, RingCategories::ModularTag(), M);
+			detInPlace( d, Ap, RingCategories::ModularTag(), M);
 			return IterationResult::CONTINUE;
 		}
 	};
@@ -580,14 +577,14 @@ namespace LinBox
 
 		//  will call regular cra if C=0
 #ifdef __LINBOX_HAVE_MPI
-		MPIChineseRemainder< EarlySingleCRA< Field > > cra(4UL, C);
+		ChineseRemainderDistributed< CRABuilderEarlySingle< Field > > cra(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD, C);
 		cra(dd, iteration, genprime);
 		if(!C || C->rank() == 0){
 			A.field().init(d, dd); // convert the result from integer to original type
 			commentator().stop ("done", NULL, "det");
 		}
 #else
-		ChineseRemainder< EarlySingleCRA< Field > > cra(4UL);
+		ChineseRemainder< CRABuilderEarlySingle< Field > > cra(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD);
 		cra(dd, iteration, genprime);
 		A.field().init(d, dd); // convert the result from integer to original type
 		commentator().stop ("done", NULL, "idet");
@@ -606,8 +603,8 @@ namespace LinBox
 # define SOLUTION_CRA_DET cra_det
 #endif
 
-#include "linbox/algorithms/rational-cra2.h"
-#include "linbox/algorithms/varprec-cra-early-single.h"
+#include "linbox/algorithms/rational-cra-var-prec.h"
+#include "linbox/algorithms/cra-builder-var-prec-early-single.h"
 #include "linbox/algorithms/det-rational.h"
 namespace LinBox
 {
@@ -639,7 +636,7 @@ namespace LinBox
 		IntegerModularDet<Blackbox, MyMethod> iteration(A, Meth);
                 typedef Givaro::ModularBalanced<double> Field;
 		PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
-		RationalRemainder2< VarPrecEarlySingleCRA< Field > > rra(4UL);
+		RationalChineseRemainderVarPrec< CRABuilderVarPrecEarlySingle< Field > > rra(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD);
 
 		rra(num,den, iteration, genprime);
 
@@ -677,7 +674,7 @@ namespace LinBox
 						const Blackbox                          &A,
 						/*const*/ Communicator			&C)
 	{
-		return det(d, A, Method::Hybrid(C));
+		return det(d, A, Method::Auto(C));
 	}
 }
 #endif //__LINBOX_HAVE_MPI

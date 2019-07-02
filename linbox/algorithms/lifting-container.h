@@ -37,6 +37,8 @@
 #include "linbox/util/debug.h"
 
 #include "linbox/blackbox/apply.h"
+#include "linbox/blackbox/diagonal.h"
+#include "linbox/algorithms/matrix-hom.h"
 #include "linbox/algorithms/blackbox-container.h"
 #include "linbox/algorithms/massey-domain.h"
 #include "linbox/algorithms/blackbox-block-container.h"
@@ -49,255 +51,11 @@
 #include "linbox/field/hom.h"
 #include "linbox/matrix/transpose-matrix.h"
 #include "linbox/blackbox/transpose.h"
+#include "linbox/solutions/hadamard-bound.h"
 //#include "linbox/algorithms/vector-hom.h"
 
 namespace LinBox
 {
-
-	/** @brief BoundBlackbox.
-	 * BoundBlackbox: Sets
-	 *      H_col_sqr <- H_col(A)^2,   short_col_sqr <- short_col(A)^2
-	 * where H_col(A) is prod_j sqrt(sum_i a_ij^2)     ('Hadamard column bound')
-	 *   short_col(A) is min_j  sqrt(sum_i a_ij^2)     ('shortest nonzero column')
-	 *
-	 * @note H_col is not actually a norm! but it is what we need for lifting bound computation
-         * @ note: in the presence of zero columns (happening with underdetermined system)
-         * the norm of the zero vector is excluded from the norm.
-	 */
-	template <class Ring, class ItMatrix>
-	void SpecialBound(const Ring& R, typename Ring::Element& H_col_sqr,
-			  typename Ring::Element& short_col_sqr, const ItMatrix& A)
-	{
-
-		typedef typename Ring::Element Integer_t;
-		//Integer_t sqsum;
-		//size_t m, n, col=0;
-		//n=A.coldim();
-		//m=A.rowdim();
-		typename ItMatrix::ConstRowIterator row= A.rowBegin();
-		std::vector<Integer_t> tmp(A.coldim(), R.zero);
-		for (; row != A.rowEnd(); ++row){
-			typename ItMatrix::ConstRow::const_iterator elm= row->begin();
-			for (size_t i=0; elm != row->end(); ++elm, ++i) {
-				R.axpyin(tmp[i], *elm, *elm);
-            }
-		}
-
-		R.assign(H_col_sqr, R.one);
-		R.assign (short_col_sqr, R.zero);
-		for (size_t i=0;i<A.coldim();++i) {
-			if (!R.isZero(tmp[i])){
-				R.mulin(H_col_sqr,tmp[i]);
-                if (R.isZero(short_col_sqr) || (short_col_sqr > tmp[i])) R.assign(short_col_sqr,tmp[i]);
-			}
-		}
-		// short_col_sqr= *(std::min_element(tmp.begin(),tmp.end()));
-
-		/* at this point RowIterator is better than ColIterator
-		   typename ItMatrix::ConstColIterator colIter;
-		   colIter = A.colBegin();
-
-		   for (; colIter != A.colEnd(); ++colIter, ++col) {
-		   typename ItMatrix::ConstCol::const_iterator elm;
-		   R.assign(sqsum, R.zero);
-		   for (elm = colIter->begin(); elm != colIter->end(); ++elm)
-		   R.axpyin(sqsum, *elm, *elm);
-		   R.mulin(H_col_sqr, sqsum);
-		   if (col == 0 || sqsum < short_col_sqr)
-		   short_col_sqr = sqsum;
-		   }
-		   */
-
-	}
-
-	template <class Ring>
-	void BoundBlackbox(const Ring& R, typename Ring::Element& H_col_sqr,
-			   typename Ring::Element& short_col_sqr,
-			   const BlasMatrix<Ring>& A)
-	{
-		SpecialBound(R, H_col_sqr, short_col_sqr, A);
-	}
-
-	// in other solvers we generally use BlasMatrix which inherits from BlasSubmatrix
-	template <class Matrix>
-	void BoundBlackbox(const typename Matrix::Field& R, typename Matrix::Element& H_col_sqr,
-			   typename Matrix::Element& short_col_sqr,
-			   const BlasSubmatrix<Matrix>& A)
-	{
-		SpecialBound(R, H_col_sqr, short_col_sqr, A);
-	}
-
-	template <class Ring>
-	void BoundBlackbox(const Ring& R, typename Ring::Element& H_col_sqr,
-			   typename Ring::Element& short_col_sqr,
-			   const SparseMatrix<Ring>& A)
-	{
-		typedef typename Ring::Element Integer_t;
-
-		std::vector<Integer_t> tmp(A.coldim(), R.zero);
-		for(auto indices = A.IndexedBegin(); indices != A.IndexedEnd() ; ++indices )
-			R.axpyin(tmp[indices.colIndex()], indices.value(), indices.value());
-		R.assign (H_col_sqr, R.one);
-		R.assign (short_col_sqr, R.zero);
-		for (size_t i=0;i<A.coldim();++i) {
-			// Generalization of the Hadamard's bound: product of the norm of all non-zero columns
-			if (!R.isZero(tmp[i])){
-				R.mulin (H_col_sqr,tmp[i]);
-                if (R.isZero(short_col_sqr) || (short_col_sqr > tmp[i])) R.assign(short_col_sqr,tmp[i]);
-			}
-        }
-            //short_col_sqr= *(std::min_element(tmp.begin(),tmp.end()));
-	}
-
-	template < class Ring, class Blackbox>
-	void BoundBlackbox (const Ring& R, typename Ring::Element& H_col_sqr,
-			    typename Ring::Element& short_col_sqr,
-			    const Blackbox& A)
-	{
-
-		typedef typename Ring::Element Integer_t;
-		Integer_t sqsum;
-		size_t m,n;
-		n=A.coldim();
-		m=A.rowdim();
-		R.assign(H_col_sqr, R.one);
-		typename std::vector<Integer_t>::const_iterator iter;
-		std::vector<Integer_t> e(n,R.zero),tmp(m);
-
-		for (size_t i=0;i<n;++i){
-			e[i]=R.one;
-			A.apply(tmp,e);
-            sqsum=R.zero;
-//             std::cerr<<"apply number "<<i<<std::endl;
-			for (iter=tmp.begin();iter!=tmp.end();++iter){
-				sqsum += (*iter)*(*iter);
-			}
-			R.mulin(H_col_sqr, sqsum);
-			if (i==0 || R.isZero(short_col_sqr) || sqsum < short_col_sqr)
-				R.assign(short_col_sqr,sqsum);
-			e[i]=R.zero;
-		}
-	}
-
-	template < class Ring, class Matrix1, class Matrix2>
-	void BoundBlackbox (const Ring& R, typename Ring::Element& H_col_sqr,
-			    typename Ring::Element& short_col_sqr,
-			    const Compose<Matrix1,Matrix2> & A)
-	{
-		typedef typename Ring::Element Integer_t;
-		Integer_t sqsum;
-		size_t m,n;
-		n=A.coldim();
-		m=A.rowdim();
-		R.assign(H_col_sqr, R.one);
-		typename std::vector<Integer_t>::const_iterator iter;
-		std::vector<Integer_t> e(n,R.zero),tmp(m);
-		for (size_t i=0;i<n;++i){
-			e[i]=R.one;
-			A.apply(tmp,e);
-			sqsum=R.zero;
-			for (iter=tmp.begin();iter!=tmp.end();++iter)
-				sqsum += (*iter)*(*iter);
-			R.mulin(H_col_sqr, sqsum);
-			if (i==0 || R.isZero(short_col_sqr) || sqsum < short_col_sqr)
-				R.assign(short_col_sqr,sqsum);
-			e[i]=R.zero;
-		}
-	}
-
-	template < class Ring, class Matrix>
-	void BoundBlackbox (const Ring& R, typename Ring::Element& H_col_sqr,
-			    typename Ring::Element& short_col_sqr,
-			    const Transpose<Matrix> & A)
-	{
-		typedef typename Ring::Element Integer_t;
-		Integer_t sqsum;
-		size_t m,n;
-		n=A.coldim();
-		m=A.rowdim();
-		R.assign(H_col_sqr, R.one);
-		typename std::vector<Integer_t>::const_iterator iter;
-		std::vector<Integer_t> e(n,R.zero),tmp(m);
-		for (size_t i=0;i<n;++i){
-			e[i]=R.one;
-			A.applyTranspose(tmp,e);
-			sqsum=R.zero;
-			for (iter=tmp.begin();iter!=tmp.end();++iter)
-				sqsum += (*iter)*(*iter);
-			R.mulin(H_col_sqr, sqsum);
-			if (i==0 || R.isZero(short_col_sqr) || sqsum < short_col_sqr)
-				R.assign(short_col_sqr,sqsum);
-			e[i]=R.zero;
-		}
-	}
-
-
-	/*
-	 *  This should work with blackboxes. However it is much slower if
-	 *  column iterators are available.  Furthermore the compiler always
-	 *  binds to this instead of the above faster version; so some trickier
-	 *  kind of specialization may have to be done when BoundBlackBox is to
-	 *  be used with true blackboxes.  (Or is the plural Blackboxen?)
-	 */
-#if 0
-	   template < class Ring, class IMatrix>
-	   void BoundBlackbox (const Ring& R, typename Ring::Element& H_col_sqr,
-			       typename Ring::Element& short_col_sqr, const IMatrix& A) {
-		   typedef typename Ring::Element Integer_t;
-		   Integer_t sqsum;
-		   size_t m,n;
-		   n=A.coldim();
-		   m=A.rowdim();
-		   R.assign(H_col_sqr, R.one);
-		   typename std::vector<Integer_t>::const_iterator iter;
-		   std::vector<Integer_t> e(n,R.zero),tmp(m);
-		   for (size_t i=0;i<n;++i){
-			   e[i]=R.one;
-			   A.apply(tmp,e);
-			   sqsum=R.zero;
-			   for (iter=tmp.begin();iter!=tmp.end();++iter)
-				   sqsum += (*iter)*(*iter);
-			   R.mulin(H_col_sqr, sqsum);
-			   if (i==0 || sqsum < short_col_sqr)
-				   short_col_sqr = sqsum;
-			   e[i]=R.zero;
-		   }
-	   }
-#endif
-
-	/** @brief ApplyBound.
-	 * ApplyBound computes
-	 *         bound_A <- max_i(max(sum_{j|a_ij > 0} a_ij, sum_{j|a_ij < 0} |a_ij|))
-	 * this is useful because for all u, v >= 0:
-	 *     [b has all entries in -u..v]
-	 *       => [each entry of A.b is at most (u+v)*bound_A in absolute value]
-	 */
-	template <class Ring, class ItMatrix> //iterable matrix
-	void ApplyBound(const Ring& R, typename Ring::Element& bound_A, const ItMatrix& A)
-	{
-		typedef typename Ring::Element Integer_t;
-		Integer_t possum, negsum;
-		R.assign(bound_A, R.zero);
-
-		typename ItMatrix::ConstRowIterator rowIter;
-		rowIter = A.rowBegin();
-
-		for (; rowIter != A.rowEnd(); ++rowIter) {
-			typename ItMatrix::ConstRow::const_iterator elm;
-			R.assign(possum, R.zero);
-			R.assign(negsum, R.zero);
-			for (elm = rowIter->begin(); elm != rowIter->end(); ++elm)
-				if (*elm > R.zero)
-					R.addin(possum, *elm);
-				else
-					R.subin(negsum, *elm);
-
-			if (possum > bound_A)
-				R.assign(bound_A, possum);
-			if (negsum > bound_A)
-				R.assign(bound_A, negsum);
-		}
-	}
 
 	template< class _Ring>
 	class LiftingContainer {
@@ -393,33 +151,24 @@ namespace LinBox
 				//this->_intRing.init(*res_iter, int64_t(*b_iter)); --> PG: this is bug the vector b is a multi-precision vector fixed-size cast is allowed here
                 this->_intRing.init(*res_iter, *b_iter);
 
-			Integer_t had_sq, short_sq;
-			BoundBlackbox(this->_intRing, had_sq, short_sq, A);
+            Integer N, D, L, Prime;
+            this->_intRing.convert(Prime,_p);
 
-			typename BlasVector<Ring>::const_iterator iterb = _b.begin();
-			Integer_t normb_sq;
-			this->_intRing.assign(normb_sq, this->_intRing.zero);
-			for (;iterb!=_b.end();++iterb)
-				normb_sq += (*iterb)*(*iterb);
+            auto hb = RationalSolveHadamardBound(A, b);
+            N = Integer(1) << static_cast<uint64_t>(std::ceil(hb.numLogBound));
+            D = Integer(1) << static_cast<uint64_t>(std::ceil(hb.denLogBound));
 
-			LinBox::integer had_sqi, short_sqi, normb_sqi, N, D, L, Prime;
-			this->_intRing.convert(had_sqi, had_sq);
-			this->_intRing.convert(short_sqi, short_sq);
-			this->_intRing.convert(normb_sqi, normb_sq);
-			this->_intRing.convert(Prime,_p);
-			D = sqrt(had_sqi) + 1;
-			N = sqrt(had_sqi * normb_sqi / short_sqi) + 1;
-			L = N * D * 2;
-                            //std::cerr<<"had_sqi = "<<had_sqi<<" normb_sqi = "<<normb_sqi<<" short_sqi = "<<short_sqi<<" N = "<<N<<" D = "<<D<<std::endl;
-			_length = (size_t)logp(L,Prime) + 1;   // round up instead of down
+            // L = N * D * 2
+            // _length = logp(L, Prime) = log2(L) * ln(2) / ln(Prime)
+            double primeLog2 = Givaro::logtwo(Prime);
+            _length = std::ceil((1 + hb.numLogBound + hb.denLogBound) / primeLog2); // round up instead of down
 #ifdef DEBUG_LC
 			std::cout<<" norms computed, p = "<<_p<<"\n";
 			std::cout<<" N = "<<N<<", D = "<<D<<", length = "<<_length<<"\n";
-			std::cout<<"A:=\n";
-			_matA.write(std::cout);
-			std::cout<<"b:=\n";
+			_matA.write(std::cout<<"A:=", Tag::FileFormat::Maple) << std::endl;
+			std::cout<<"b:=[";
 			for (size_t i=0;i<_b.size();++i) std::cout<<_b[i]<<" , ";
-			std::cout<<std::endl;
+			std::cout<<']'<<std::endl;
 #endif
 			this->_intRing.init(_numbound,N);
 			this->_intRing.init(_denbound,D);
@@ -673,14 +422,17 @@ namespace LinBox
 			ttGetDigitConvert.clear();
 #endif
 #ifdef DEBUG_LC
-			std::cout<<"Primes: ";
-			field().write(std::cout);
-			std::cout<<"\n Matrix: \n";
-			A.write(std::cout);
-			std::cout<<"\n Matrix mod p: \n";
-			Ap.write(std::cout);
-			std::cout<<"\n Matrix LCBASE: \n";
-			LiftingContainerBase<Ring,IMatrix>::_matA.write(std::cout);
+			field().write(std::cout<<"Primes: ") << std::endl;
+
+			A.write(std::cout << "Matrix:=", Tag::FileFormat::Maple)
+                              << ';' << std::endl;
+
+			Ap.write(std::cout << "Matrixmodp:=", Tag::FileFormat::Maple)
+                               << ';' << std::endl;
+
+			LiftingContainerBase<Ring,IMatrix>::_matA.write(
+                std::cout << "MatrixLCBASE:=", Tag::FileFormat::Maple)
+                          << ';' << std::endl;
 #endif
 
 		}
@@ -940,11 +692,11 @@ namespace LinBox
 	class BlockWiedemannLiftingContainer : public LiftingContainerBase<_Ring, _IMatrix> {
 
 	public:
-		typedef _Field                                	            Field;
-		typedef _Ring                                 	             Ring;
-		typedef _IMatrix                              	          IMatrix;
-		typedef _FMatrix                              	          FMatrix;
-		typedef typename Field::Element               	          Element;
+		typedef _Field	            Field;
+		typedef _Ring	             Ring;
+		typedef _IMatrix	          IMatrix;
+		typedef _FMatrix	          FMatrix;
+		typedef typename Field::Element	          Element;
 		typedef typename Ring::Element                            Integer_t;
 		typedef std::vector<Integer_t>                              IVector;
 		typedef std::vector<Element>                              FVector;
@@ -1275,8 +1027,7 @@ namespace LinBox
 			ttGetDigitConvert.clear();
 #endif
 #ifdef DEBUG_LC
-			std::cout<<"Primes: ";
-			field().write(std::cout);
+			field().write(std::cout << "Primes: ") << std::endl;
 #endif
 
 		}
@@ -1543,10 +1294,5 @@ namespace LinBox
 
 #endif //__LINBOX_lifting_container_H
 
-// Local Variables:
-// mode: C++
-// tab-width: 4
-// indent-tabs-mode: nil
-// c-basic-offset: 4
-// End:
+/* -*- mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 // vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

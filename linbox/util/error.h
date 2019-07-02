@@ -28,71 +28,98 @@
 #include <cstring>
 #include <iostream>
 
-namespace LinBox
-{
+namespace LinBox {
 
-	// ------------------------------- LinboxError
-	/** base class for execption handling in LinBox
-	  \ingroup util
-	  */
-	class LinboxError {
-		static const size_t max_error_string = 256;
-	public:
-		LinboxError (const char* msg = "\0") {
-			std::strncpy(strg, msg, max_error_string);
-			strg[max_error_string-1] = 0;
-		};
+    // ------------------------------- LinboxError
+    /** base class for execption handling in LinBox
+      \ingroup util
+      */
+    class LinboxError {
+        static const size_t max_error_string = 256;
 
+    public:
+        LinboxError(const std::string& msg)
+            : LinboxError(msg.c_str())
+        {
+        }
 
-		// -- virtual print of the error message
-		virtual std::ostream &print (std::ostream &o) const
-		{ return o << strg<<std::endl ; }
+        LinboxError(const char* msg = "\0")
+        {
+            std::strncpy(strg, msg, max_error_string);
+            strg[max_error_string - 1] = 0;
+        };
 
-		// -- non virtual output operator
-		friend std::ostream &operator << (std::ostream &o, const LinboxError &E);
+        const char* what() const { return strg; }
 
-		// - useful to setup a break point on it
-		static void throw_error (const LinboxError &err)
-		{ throw err; }
+        // -- virtual print of the error message
+        virtual std::ostream& print(std::ostream& o) const { return o << strg << std::endl; }
 
-		virtual ~LinboxError() {}
+        // -- non virtual output operator
+        friend std::ostream& operator<<(std::ostream& o, const LinboxError& E);
 
-	protected:
-		char strg[max_error_string];
-	};
+        // - useful to setup a break point on it
+        static void throw_error(const LinboxError& err) { throw err; }
 
-	class LinboxMathError : public LinboxError {
-	public:
-		LinboxMathError (const char* msg) :
-			LinboxError (msg)
-		{};
-	};
+        virtual ~LinboxError() {}
 
-	class LinboxMathDivZero : public LinboxMathError {
-	public:
-		LinboxMathDivZero (const char* msg) :
-			LinboxMathError (msg)
-		{};
-	};
+    protected:
+        char strg[max_error_string];
+    };
 
-	class LinboxMathInconsistentSystem : public LinboxMathError {
-	public:
-		LinboxMathInconsistentSystem (const char* msg) :
-			LinboxMathError (msg)
-		{};
-	};
+    class LinboxMathError : public LinboxError {
+    public:
+        LinboxMathError(const char* msg)
+            : LinboxError(msg){};
+    };
 
-	// -- Exception thrown in input of data structure
-	class LinboxBadFormat : public LinboxError {
-	public:
-		LinboxBadFormat (const char* msg) :
-			LinboxError (msg)
-		{};
-	};
+    class LinboxMathDivZero : public LinboxMathError {
+    public:
+        LinboxMathDivZero(const char* msg)
+            : LinboxMathError(msg){};
+    };
 
+    class LinboxMathInconsistentSystem : public LinboxMathError {
+    public:
+        LinboxMathInconsistentSystem(const char* msg)
+            : LinboxMathError(msg){};
+    };
+
+    // -- Exception thrown in input of data structure
+    class LinboxBadFormat : public LinboxError {
+    public:
+        LinboxBadFormat(const char* msg)
+            : LinboxError(msg){};
+    };
+
+    // -- Exception thrown when probabilistic solve fails
+    class SolveFailed : public LinboxError {
+    public:
+        SolveFailed(const char* msg)
+            : LinboxError(msg){};
+        SolveFailed()
+            : LinboxError(){};
+    };
+
+    /**
+     * Exception thrown when the system to be solved is
+     * inconsistent. Contains a certificate of inconsistency.
+     */
+    template <class Vector>
+    class InconsistentSystem {
+    public:
+        InconsistentSystem(const Vector& u)
+            : _u(u)
+        {
+        }
+
+        const Vector& certificate() const { return _u; }
+
+    private:
+        Vector _u;
+    };
 }
 
-#ifdef LinBoxSrcOnly       // for all-source compilation
+#ifdef LinBoxSrcOnly // for all-source compilation
 #include "linbox/util/error.C"
 #endif
 

@@ -99,7 +99,7 @@ namespace LinBox
 		 */
 		template<class IMatrix, class Vector>
 		Integer& lastInvariantFactor(Integer& lif, const IMatrix& A,
-					     const Vector& PrimeL) const
+					     const Vector& PrimeL)
 		{
 
 			r.assign(lif, r.one);
@@ -120,8 +120,8 @@ namespace LinBox
 			for (; count < threshold; ++ count) {
 				// assign b to be a random vector
 				for (b_p = b.begin(); b_p != b.end(); ++ b_p) {
-// 					* b_p = rand() % 268435456 - 134217728; // may need to change to use ring's random gen.
-// 					// dpritcha, 2004-07-26
+//					* b_p = rand() % 268435456 - 134217728; // may need to change to use ring's random gen.
+//					// dpritcha, 2004-07-26
                     _gen( itmp );
                     * b_p = (int)itmp;
 				}
@@ -160,7 +160,7 @@ namespace LinBox
 		 */
 		template<class IMatrix, class Vector>
 		Integer& lastInvariantFactor_Bonus(Integer& lif, Integer& Bonus, const IMatrix& A,
-						   const Vector& PrimeL) const
+						   const Vector& PrimeL)
 		{
 
 			r. assign(lif, r.one);
@@ -181,11 +181,11 @@ namespace LinBox
 			for (; count < (threshold + 1) / 2; ++ count) {
 				// assign b to be a random vector
 				for (b_p = b1. begin(); b_p != b1. end(); ++ b_p) {
-// 					* b_p = rand();
+//					* b_p = rand();
                                         *b_p = _gen.random();//(* b_p);
 				}
 				for (b_p = b2. begin(); b_p != b2. end(); ++ b_p) {
-// 					* b_p = rand();
+//					* b_p = rand();
                                         *b_p = _gen.random();//(* b_p);
 				}
 				// try to solve Ax = b1, b2 over Ring
@@ -210,8 +210,8 @@ namespace LinBox
 				int i;
 				for (i = 0; i < 20; ++ i) {
 					for (r1_p = r1. begin(), r2_p = r2. begin(); r1_p != r1. end(); ++ r1_p, ++ r2_p) {
-// 						r. init (*r1_p, rand());
-// 						r. init (*r2_p, rand());
+//						r. init (*r1_p, rand());
+//						r. init (*r2_p, rand());
 						r. init (*r1_p); _gen(*r1_p);
 						r. init (*r2_p); _gen(*r2_p);
 					}
@@ -267,7 +267,7 @@ namespace LinBox
 		}
 
 		template<class IMatrix, class Vector>
-		Integer& lastInvariantFactor1(Integer& lif, Vector& r_num, const IMatrix& A, const bool oldMatrix=false) const
+		Integer& lastInvariantFactor1(Integer& lif, Vector& r_num, const IMatrix& A, const bool oldMatrix=false)
 		{
 			//cout << "enetering lif\n";
 			SolverReturnStatus tmp;
@@ -282,10 +282,10 @@ namespace LinBox
 
 			// assign b to be a random vector
 			for (b_p = b.begin(); b_p != b.end(); ++ b_p) {
-// 				* b_p = rand() % 268435456 - 134217728; // may need to change to use ring's random gen.
-// 				// dpritcha, 2004-07-26
+//				* b_p = rand() % 268435456 - 134217728; // may need to change to use ring's random gen.
+//				// dpritcha, 2004-07-26
                 _gen( * b_p );
-                
+
 			}
 			//report <<"try to solve Ax = b over Ring";
 			// try to solve Ax = b over Ring
@@ -326,8 +326,8 @@ namespace LinBox
 			int i;
 			for (i = 0; i < 20; ++ i) {
 				for (r1_p = r1. begin(), r2_p = r2. begin(); r1_p != r1. end(); ++ r1_p, ++ r2_p) {
-// 					r. init (*r1_p, rand());
-// 					r. init (*r2_p, rand());
+//					r. init (*r1_p, rand());
+//					r. init (*r2_p, rand());
 					r. init (*r1_p); _gen(*r1_p);
 					r. init (*r2_p); _gen(*r2_p);
 				}
@@ -361,7 +361,7 @@ namespace LinBox
 		/** \brief Compute the last invariant factor.
 		*/
 		template<class IMatrix>
-		Integer& lastInvariantFactor(Integer& lif, const IMatrix& A)  const
+		Integer& lastInvariantFactor(Integer& lif, const IMatrix& A)
 		{
 
 			DVect empty_v(r);
@@ -372,7 +372,7 @@ namespace LinBox
 		/** \brief Compute the last invariant factor with Bonus
 		*/
 		template<class IMatrix>
-		Integer& lastInvariantFactor_Bonus(Integer& lif, Integer& Bonus, const IMatrix& A)  const
+		Integer& lastInvariantFactor_Bonus(Integer& lif, Integer& Bonus, const IMatrix& A)
 		{
 
 			DVect empty_v(r);

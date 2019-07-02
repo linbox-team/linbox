@@ -63,7 +63,7 @@ namespace LinBox
 	template <class Field>
 	Hankel<Field>::Hankel()
 	{
-		this->shape.shape(BlackboxSpecifier::HANKEL);
+		this->shape.shape(Method::Blackbox::HANKEL);
 #ifdef DBGMSGS
 		std::cout << "Hankel::Hankel():\tCreated a " << this->rowDim << "x"<< this->colDim<<
 						" Hankel matrix "<< std::endl;
@@ -207,55 +207,6 @@ namespace LinBox
 		}
 		return;
 	} // print(char *)
-
-
-
-	/*-----------------------------------------------------------------
-	 *    Make the matrix LOWER triangular with determinant 1.
-	 *    i.e. clear the last this->coldim-1 elements in the this->data vector
-	 *----------------------------------------------------------------*/
-#if 0
-	template <class Field>
-	void Hankel<Field>::setToUniModLT()
-	{
-		int L = int(this->rowDim-1)<<1;
-		this->shape.shape(BlackboxSpecifier::UNIMOD_LT);
-
-		for (int i= int(this->rowDim)-1; i <= L; i++ ) {
-			// zero out the below-diagonal entries
-			this->P.setCoeff(this->pdata,i,field().zero);
-		}
-		// set the antidiagonal to 1
-		this->P.setCoeff( this->pdata, this->rowDim-1, field().one);       // update the corresponding coeff of this->pdata
-		//reverse(rpdata,this->pdata);        // no need to construct the transpose
-		return;
-	}//
-
-
-
-	/*-----------------------------------------------------------------
-	 *    Make matrix a unimodular UPPER Triangular with det 1
-	 *    i.e. clear the first N-1 elements in the this->data vector
-	 *    and make the elements below the anti-diagonal all zero
-	 *----------------------------------------------------------------*/
-	template <class Field>
-	void Hankel<Field>::setToUniModUT()
-	{
-		this->shape.shape(BlackboxSpecifier::UNIMOD_UT);
-
-		for (size_t i=0; i < this->rowDim-1; i++ ) {
-			// zero out the below-antidiagonal entries
-			this->P.setCoeff(this->pdata, i , field().zero);
-		}
-
-		// set antidiagonal to 1
-		this->P.setCoeff(this->pdata,this->rowDim-1, field().one);      // update the corresponding coeff of this->pdata
-		//reverse(rpdata,this->pdata);    // no need to construct the transpose
-
-		return;
-	}//
-
-#endif
 
 	/*-----------------------------------------------------------------
 	 *    Apply the matrix to a vector Here the input and output

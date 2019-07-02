@@ -22,7 +22,7 @@
 pkgincludesubdir=$(pkgincludedir)/field
 
 BASIC_HDRS =            \
-    field-interface.h   \
+    field-documentation.h   \
     field-traits.h      \
     rebind.h            \
     abstract.h          \

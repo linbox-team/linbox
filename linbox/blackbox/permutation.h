@@ -32,20 +32,20 @@
 #include "linbox/linbox-config.h"
 #include "linbox/linbox-tags.h"
 #include "linbox/matrix/dense-matrix.h"
-#include "linbox/matrix/matrix-domain.h" 
+#include "linbox/matrix/matrix-domain.h"
 #include "linbox/randiter/mersenne-twister.h"
 #include "linbox/blackbox/fibb.h"
 
 namespace LinBox
 {
 
-	/** \brief 
+	/** \brief
 
 	  \ingroup blackbox
 	 */
 	template<class _Field, class _Matrix=DenseMatrix<_Field>>
 	class Permutation : public  FIBB<_Field>
-	{ 
+	{
 	public:
 		typedef _Field					Field;
 		typedef typename Field::Element	Element;
@@ -67,10 +67,10 @@ namespace LinBox
 			_field(F), _indices (indices)
 		{}
 
-		Self_t& init(size_t* P, size_t n) 
-		{	_indices.resize(n); 
-			for (size_t i = 0; i < n; ++i) 
-				_indices[i] = P[i]; 
+		Self_t& init(size_t* P, size_t n)
+		{	_indices.resize(n);
+			for (size_t i = 0; i < n; ++i)
+				_indices[i] = P[i];
 			return *this;
 		}
 
@@ -80,7 +80,7 @@ namespace LinBox
         }
 
 		/** \brief n x n permutation matrix, initially the identity.
-		 * @param n The dimension of the matrix 
+		 * @param n The dimension of the matrix
 		 * @param F field or ring
 		 */
 		Permutation (int n, const Field& F) : _field(F)
@@ -108,7 +108,7 @@ namespace LinBox
 			this->_indices.resize ((size_t)n);
 			for (typename Storage::value_type i=0; i < n; ++i)
 				_indices[(size_t)i] = i+1 % n;
-		} 
+		}
 
 		//void random(size_t n)
 		void random(unsigned int seed=(unsigned int)time(NULL))
@@ -203,7 +203,7 @@ namespace LinBox
 				Yrow.copy(Xrow); // right kind of copy?
 			}
 		*/
-			return Y; 
+			return Y;
 		}
 
             // Permutes the columns of X
@@ -220,30 +220,30 @@ namespace LinBox
 			{
 				Matrix Ycol(Y, 0, _indices[i], Y.rowdim(), 1);
 				Matrix Xcol(X, 0, i, X.rowdim(), 1);
-				Ycol.copy(Xcol); 
+				Ycol.copy(Xcol);
 			}
 		*/
-			return Y; 
+			return Y;
 		}
 		/* FIBB functions */
 
 		BBType bbTag() const { return permutation; }
 
-		size_t& rank(size_t& r) const 
+		size_t& rank(size_t& r) const
 		{ return r = rowdim(); }
 
 		Element& det(Element& d) const
 		{	size_t b = 0, i, j, k;
 			Storage marks(_indices.size());
-			for (i = 0; i < _indices.size(); ++i) 
-			if (not marks[i]) 
+			for (i = 0; i < _indices.size(); ++i)
+			if (not marks[i])
 			{	for (k = 1, j = _indices[i]; i != j; ++k, j = _indices[j])
-				;  
+				;
 				b &= k;
 			}
-			return d = b&1 ? field().mOne : field().one; 
+			return d = b&1 ? field().mOne : field().one;
 		}
-		
+
             // Inverse permutation on the rows
 		Matrix& solveRight(Matrix& Y, const Matrix& X) const
 		{	Element x; field().init(x);
@@ -257,10 +257,10 @@ namespace LinBox
 			{
 				Matrix Yrow(Y, _indices[i], 0, 1, Y.coldim());
 				Matrix Xrow(X, i, 0, 1, X.coldim());
-				Yrow.copy(Xrow); 
+				Yrow.copy(Xrow);
 			}
 		*/
-			return Y; 
+			return Y;
 		}
 
             // Inverse permutation on the columns
@@ -276,14 +276,14 @@ namespace LinBox
 			{
 				Matrix Ycol(Y, 0, i, Y.rowdim(), 1);
 				Matrix Xcol(X, 0, _indices[i], X.rowdim(), 1);
-				Ycol.copy(Xcol); 
+				Ycol.copy(Xcol);
 			}
 		*/
-			return Y; 
+			return Y;
 		}
-		Matrix& nullspaceRandomRight(Matrix& N) const 
+		Matrix& nullspaceRandomRight(Matrix& N) const
 		{	N.zero(); return N; }
-		Matrix& nullspaceRandomLeft(Matrix& N) const 
+		Matrix& nullspaceRandomLeft(Matrix& N) const
 		{	N.zero(); return N; }
 		Matrix& nullspaceBasisRight(Matrix& N) const
 		{	N.resize(rowdim(), 0); return N; }
@@ -324,7 +324,7 @@ namespace LinBox
 
 		/**
 		 * this <-- transposition(i,j)*this
-		 * indices (i = 0, j = 1): 
+		 * indices (i = 0, j = 1):
 		 * 0 2 1 * 1 0 2 = 1 2 0
 		 * matrices (corresponding):
 		 * 1 0 0   0 1 0   0 1 0
@@ -340,19 +340,19 @@ namespace LinBox
 
         size_t operator[](size_t i) const {
             return _indices[i];
-        }        
+        }
 
 		const Field& field() const { return _field; }
 
 		//!@bug needs a read. (needed by test-blackbox.h)
-		std::istream &read(std::istream &os) 
+		std::istream &read(std::istream &os)
 		{ return read(os, Tag::FileFormat::Plain); }
 
 		//!@bug needs a MM version
 		std::ostream &write(std::ostream &os) const
 		{ return write(os, Tag::FileFormat::Plain); }
 
-		std::ostream &write(std::ostream &os, LINBOX_enum(Tag::FileFormat) format) const
+		std::ostream &write(std::ostream &os, Tag::FileFormat format) const
 		{
 
 			// Avoid unneeded overhead in the case that this
@@ -426,7 +426,7 @@ namespace LinBox
 		}
 
 		//!@bug there is no read here. (needed by test-blackbox.h)
-		std::istream &read(std::istream &is, LINBOX_enum(Tag::FileFormat) format)
+		std::istream &read(std::istream &is, Tag::FileFormat format)
 		{
             switch (format) {
                 case Tag::FileFormat::Plain:
@@ -437,12 +437,12 @@ namespace LinBox
                     _indices.resize(0);
                     while( t != '}') {
                         is >> val;
-                        _indices.push_back(val);                        
-                        is >> t; 
+                        _indices.push_back(val);
+                        is >> t;
                         if (t!='}') is.putback (t);
                     }
                     break;
-                    
+
                 }
                 default:
                     throw NotImplementedYet();
