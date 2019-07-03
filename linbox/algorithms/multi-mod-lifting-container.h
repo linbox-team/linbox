@@ -174,19 +174,50 @@ namespace LinBox {
                 for (auto& F : _fields) {
                     _B.emplace_back(A, F);
                 }
-
+#if 0
 // @fixme To be replaced with Paladin
 #pragma omp parallel for
                 for (auto j = 0u; j < _primesCount; ++j) {
-                    int nullity = 0;
+                    int nullity = 0; //TODO: it may be necessary to replace nullity with a vector
                     auto& F = _fields[j];
                     BlasMatrixDomain<Field> bmd(F);
                     bmd.invin(_B[j], nullity);
-                    if (nullity > 0) {
+                    if (nullity > 0) {//TODO: it may be easier to move this condition check outside the parallel region => loop through the whole vector to add up all values as final value for the condition test which could be parallelized further more
                         // @fixme Should redraw another prime!
                         throw LinBoxError("Wrong prime, sorry.");
                     }
                 }
+#else 
+
+                PAR_BLOCK{
+                    std::vector<int> vnullity;vnullity.reserve(_primesCount);
+                    auto sp=SPLITTER(NUM_THREADS,FFLAS::CuttingStrategy::Row,FFLAS::StrategyParameter::Threads);
+                    int M = _primesCount;
+                    SYNCH_GROUP({
+                        FORBLOCK1D(iter, M, sp,
+                            TASK(MODE(CONSTREFERENCE(vnullity) ),
+                                for(auto j=iter.begin(); j!=iter.end(); ++j)
+                                {
+                                    auto& F = _fields[j];
+                                    BlasMatrixDomain<Field> bmd(F);
+                                    bmd.invin(_B[j], vnullity[j]);
+                                }
+                            )
+                        )
+                    });
+
+                    int nullity = 0;
+                    for (size_t i=0; i<_primesCount; ++i){
+                        nullity += vnullity[i];
+                    }
+                    if (nullity > 0) {
+                        // @fixme Should redraw another prime!
+                        throw LinBoxError("Wrong prime, sorry.");
+                    }
+                     
+                }
+#endif
+
             }
             // commentator().stop("[MMLifting][Init] A^{-1} mod pj precomputations");
 
@@ -304,6 +335,7 @@ namespace LinBox {
             BlasMatrixDomain<Ring> IMD(_ring);
 
 // commentator().start("[MultiModLifting] c = A^{-1} r mod p");
+#if 0
 #pragma omp parallel for
             for (auto j = 0u; j < _primesCount; ++j) {
                 auto pj = _primes[j];
@@ -334,6 +366,47 @@ namespace LinBox {
                     setRNSMatrixElementAllResidues(_rnsc, _primesCount, i, j, digit[i]);
                 }
             }
+#else
+            PAR_BLOCK{
+                auto sp=SPLITTER(NUM_THREADS,FFLAS::CuttingStrategy::Row,FFLAS::StrategyParameter::Threads);
+                int M = _primesCount;
+                //SYNCH_GROUP({
+                FORBLOCK1D(iter, M, sp,
+                    TASK(MODE(CONSTREFERENCE(digits) ),{
+                        for(auto j=iter.begin(); j!=iter.end(); ++j) {
+                            auto pj = _primes[j];
+                            auto& FR = _FR[j];
+                            uint64_t upj = pj;
+
+                            // @note There is no VectorDomain::divmod yet.
+                            // Euclidian division so that rj = pj Qj + Rj
+                            uint64_t uR;
+                            for (auto i = 0u; i < _n; ++i) {
+                                Integer::divmod(_qMatrix.refEntry(i, j), uR, _rMatrix.getEntry(i, j), upj);
+                                // @note No need to init, because we know that uR < pj,
+                                // so that would do an extra check.
+                                FR[i] = static_cast<FElement>(uR);
+                            }
+
+                            // digit = A^{-1} * R mod pj
+                            auto& digit = digits[j];
+                            auto& B = _B[j];
+                            B.apply(digit, FR);
+
+                            // Store the very same result in an RNS system,
+                            // but fact is all the primes of the RNS system are bigger
+                            // than the modulus used to compute the digit, we just copy the result for
+                            // everybody.
+                            for (auto i = 0u; i < _n; ++i) {
+                                setRNSMatrixElementAllResidues(_rnsR, _primesCount, i, j, FR[i]);
+                                setRNSMatrixElementAllResidues(_rnsc, _primesCount, i, j, digit[i]);
+                            }
+                        }
+                    })
+                )
+                //});                     
+            }
+#endif
             // commentator().stop("[MultiModLifting] c = A^{-1} r mod p");
 
             // ----- Compute the next residues!
@@ -372,7 +445,7 @@ namespace LinBox {
             auto rnsStride = 0u;
             for (auto h = 0u; h < _rnsPrimesCount; ++h) {
                 auto& rnsF = _rnsSystem->_field_rns[h];
-
+#if 0
 #pragma omp parallel for
                 for (auto j = 0u; j < _primesCount; ++j) {
                     auto& rnsPrimeInverse = _rnsPrimesInverses[j];
@@ -384,7 +457,28 @@ namespace LinBox {
                                    rnsPrimeInverseForRnsPrimeH);
                     }
                 }
+#else
+                PAR_BLOCK{
 
+                    auto sp=SPLITTER(NUM_THREADS,FFLAS::CuttingStrategy::Row,FFLAS::StrategyParameter::Threads);
+                    int M = _primesCount;
+                    //SYNCH_GROUP({
+                    FORBLOCK1D(iter, M, sp,
+                        TASK(MODE(CONSTREFERENCE(digits) ),{
+                            for(auto j=iter.begin(); j!=iter.end(); ++j) {
+                                auto& rnsPrimeInverse = _rnsPrimesInverses[j];
+                                auto stridePrimeInverse = rnsPrimeInverse._stride;
+                                auto rnsPrimeInverseForRnsPrimeH = rnsPrimeInverse._ptr[h * stridePrimeInverse];
+
+                                for (auto i = 0u; i < _n; ++i) {
+                                    rnsF.mulin(_rnsR._ptr[rnsStride + (i * _primesCount + j)],
+                                               rnsPrimeInverseForRnsPrimeH);
+                                }
+                            }
+                        })
+                    );
+                }
+#endif
                 rnsStride += _rnsR._stride;
             }
             // commentator().stop("[MultiModLifting] MUL FOR INV R <= R / p");
