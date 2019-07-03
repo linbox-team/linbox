@@ -50,11 +50,6 @@
 namespace LinBox
 {
 
-    /**
-     * @fixme This hybrid CRA does no work when lauched with mpirun -np 2.
-     * This might have been designed so that does not work, but if so, find out why and
-     * and a comment here.
-     */
 	template<class CRABase>
 	struct HybridChineseRemainder  {
 		typedef typename CRABase::Domain	Domain;
@@ -176,12 +171,11 @@ namespace LinBox
                               ElementContainer& VECTORresidues
                               )
         {
-
+//std::cout<<"Thread("<<omp_get_thread_num()<<")--------------------------------"<<std::endl;
             VECTORdomains[ omp_get_thread_num()] = Domain(m_primeiter);
-
-            Iteration(VECTORresidues, VECTORdomains[ omp_get_thread_num()]
-
-            );
+#pragma omp critical
+            //@fixme: The functor Iteration should be marked as critical to allow only one thread a time to call it otherwise a segmentation fault could be caused due to concurrent calls from different threads
+            Iteration(VECTORresidues, VECTORdomains[ omp_get_thread_num()] );
 
             VECTORresidues.push_back(m_primeiter);
 
@@ -194,19 +188,42 @@ namespace LinBox
                           std::vector<ElementContainer>& VECTORresidues, size_t Ntask)
         {
 
-            int Nthread = Ntask;
 
+#if 1
+            int Nthread = Ntask;
 #pragma omp parallel
-#pragma omp single
+{
             Nthread=omp_get_num_threads();
-//TODO: Replace the OMP directives with Paladin
-#pragma omp parallel for num_threads(Nthread) schedule(dynamic,1)
+            omp_set_num_threads(Nthread);
+#pragma omp for //num_threads(Nthread) schedule(dynamic,1)
             for(auto j=0u;j<Ntask;j++)
                 {
-#pragma omp critical //Usage of thread ID as index to access an array could help to get rid of critical section
                     solve_with_prime(m_primeiters[j], Iteration, VECTORdomains, VECTORresidues[j]);
                 }
-
+}
+#else
+/*
+        PAR_BLOCK{
+            auto sp=SPLITTER(NUM_THREADS,FFLAS::CuttingStrategy::Row,FFLAS::StrategyParameter::Threads);
+            SYNCH_GROUP({
+                FORBLOCK1D(iter, Ntask, sp,
+                    TASK(MODE(CONSTREFERENCE(m_primeiters,Iteration,VECTORresidues,VECTORdomains)),{
+                            for(auto j=iter.begin(); j!=iter.end(); ++j)
+                            {
+                                solve_with_prime(m_primeiters[j], Iteration, VECTORdomains, VECTORresidues[j]);
+                            }
+                     })
+                 );
+            });
+        }
+*/
+        PAR_BLOCK{
+            auto sp=SPLITTER(NUM_THREADS,FFLAS::CuttingStrategy::Row,FFLAS::StrategyParameter::Threads);
+             FOR1D(j, Ntask, sp,{
+                solve_with_prime(m_primeiters[j], Iteration, VECTORdomains[j], VECTORresidues[j]);
+               });
+        }
+#endif
         }
 
 

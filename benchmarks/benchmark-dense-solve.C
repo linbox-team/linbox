@@ -164,6 +164,7 @@ int main(int argc, char** argv)
     if (args.dispatchString == "Sequential")        method.dispatch = Dispatch::Sequential;
     else if (args.dispatchString == "SMP")          method.dispatch = Dispatch::SMP;
     else if (args.dispatchString == "Distributed")  method.dispatch = Dispatch::Distributed;
+    else if (args.dispatchString == "Combined")  method.dispatch = Dispatch::Combined;
     else                                            method.dispatch = Dispatch::Auto;
 
     // Real benchmark
