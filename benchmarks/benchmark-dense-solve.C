@@ -53,6 +53,7 @@ namespace {
         int nbiter = 3;
         int n = 500;
         int bits = 10;
+        int seed = -1;
         int primesCount = 8;
         std::string dispatchString = "Auto";
         std::string methodString = "Auto";
@@ -75,8 +76,8 @@ namespace {
 template <typename Field, typename Vector = DenseVector<Field>>
 void benchmark(std::array<double, 3>& timebits, Arguments& args, MethodBase& method)
 {
-    Field F(args.q);                                    // q is ignored for Integers
-    typename Field::RandIter randIter(F, 0, args.bits); // bits is ignored for ModularRandIter
+    Field F(args.q); // q is ignored for Integers
+    typename Field::RandIter randIter(F, args.seed, args.bits); // bits is ignored for ModularRandIter
 
 #ifdef _BENCHMARKS_DEBUG_
     std::clog << "Setting A ... " << std::endl;
@@ -145,6 +146,7 @@ int main(int argc, char** argv)
                      {'q', "-q", "Set the field characteristic (-1 for rationals).", TYPE_INTEGER, &args.q},
                      {'n', "-n", "Set the matrix dimension.", TYPE_INT, &args.n},
                      {'b', "-b", "bit size", TYPE_INT, &args.bits},
+                     {'s', "-s", "Seed for randomness.", TYPE_INT, &args.seed},
                      {'d', "-d", "Dispatch mode (any of: Auto, Sequential, SMP, Distributed).", TYPE_STR, &args.dispatchString},
                      {'r', "-r", "RNS-FGEMM type (either BothParallel, BothSequential, ParallelRnsOnly or ParallelFgemmOnly).", TYPE_STR, &args.rnsFgemmString},
                      {'p', "-p", "For multi-modular methods, how many primes to use.", TYPE_INT, &args.primesCount},
@@ -157,9 +159,11 @@ int main(int argc, char** argv)
                      END_OF_ARGUMENTS};
     LinBox::parseArguments(argc, argv, as);
 
-    commentator().setReportStream(std::cout);
-
     omp_set_num_threads(numThreads);
+
+    if (args.seed < 0) {
+        args.seed = time(nullptr);
+    }
 
     // Setting up context
 
