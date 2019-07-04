@@ -243,7 +243,7 @@ int main(int argc, char** argv)
     method.dispatch = Dispatch::Auto;
     if (dispatchString == "Distributed")
         method.dispatch = Dispatch::Distributed;
-    else if (dispatchString == "Combined")
+    else if (dispatchString == "Combined") //fixme: This multithreaded method could crash if Commentator is not disabled
         method.dispatch = Dispatch::Combined;
     else if (dispatchString == "Sequential")
         method.dispatch = Dispatch::Sequential;
@@ -286,7 +286,7 @@ int main(int argc, char** argv)
         // ----- Rational CRA
         // @fixme @bug When bitSize = 5 and vectorBitSize = 50, CRA fails
         ok = ok && test_dense_solve(Method::CRAAuto(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
-        ok = ok && test_sparse_solve(Method::CRAAuto(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
+        // ok = ok && test_sparse_solve(Method::CRAAuto(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
         // ok = ok && test_blackbox_solve(Method::CRAAuto(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
 /*
         //@fixme: Distributed and Combined(ie ybrid) method will not work for QQ field
