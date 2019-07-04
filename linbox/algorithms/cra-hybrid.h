@@ -1,8 +1,4 @@
 /* Copyright (C) 2007 LinBox
- * Updated by Hongguang ZHU
- * Written by bds and zw
- * author: B. David Saunders and Zhendong Wan
- * parallelized for BOINC computing by Bryan Youse
  *
  *
  * ========LICENCE========
@@ -174,7 +170,6 @@ namespace LinBox
             Domain D(m_primeiter);
             //@fixme: The commentator within the following function call to other functions will crash if not disable the commentator while compiling 
             Iteration(VECTORresidues, D );
-
             VECTORresidues.push_back(m_primeiter);
         }
 
@@ -192,7 +187,7 @@ namespace LinBox
                     TASK(MODE(CONSTREFERENCE(m_primeiters,Iteration,VECTORresidues)),{
                             for(auto j=iter.begin(); j!=iter.end(); ++j)
                             {
-                                solve_with_prime(m_primeiters[j], Iteration,  VECTORresidues[j]);
+                                solve_with_prime(m_primeiters[j], Iteration, VECTORresidues[j]);
                             }
                      })
                  });
