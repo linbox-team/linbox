@@ -167,15 +167,16 @@ namespace LinBox
 
         template< class Function, class Domain, class ElementContainer>
         void solve_with_prime(int m_primeiter,
-                              Function& Iteration, std::vector<Domain>& VECTORdomains,
+                              Function& Iteration,
                               ElementContainer& VECTORresidues
                               )
         {
 //std::cout<<"Thread("<<omp_get_thread_num()<<")--------------------------------"<<std::endl;
-            VECTORdomains[ omp_get_thread_num()] = Domain(m_primeiter);
+//            VECTORdomains[ omp_get_thread_num()] =
+            Domain D (m_primeiter);
 #pragma omp critical
             //@fixme: The functor Iteration should be marked as critical to allow only one thread a time to call it otherwise a segmentation fault could be caused due to concurrent calls from different threads
-            Iteration(VECTORresidues, VECTORdomains[ omp_get_thread_num()] );
+            Iteration(VECTORresidues, D /*VECTORdomains[ omp_get_thread_num()]*/ );
 
             VECTORresidues.push_back(m_primeiter);
 
@@ -184,7 +185,7 @@ namespace LinBox
 
         template<class pFunc, class Function,  class Domain, class ElementContainer>
         void compute_task(pFunc& pF, std::vector<int>& m_primeiters,
-                          Function& Iteration, std::vector<Domain>& VECTORdomains,
+                          Function& Iteration,
                           std::vector<ElementContainer>& VECTORresidues, size_t Ntask)
         {
 
@@ -198,7 +199,7 @@ namespace LinBox
 #pragma omp for //num_threads(Nthread) schedule(dynamic,1)
             for(auto j=0u;j<Ntask;j++)
                 {
-                    solve_with_prime(m_primeiters[j], Iteration, VECTORdomains, VECTORresidues[j]);
+                    solve_with_prime(m_primeiters[j], Iteration, VECTORresidues[j]);
                 }
 }
 #else
@@ -207,10 +208,10 @@ namespace LinBox
             auto sp=SPLITTER(NUM_THREADS,FFLAS::CuttingStrategy::Row,FFLAS::StrategyParameter::Threads);
             SYNCH_GROUP({
                 FORBLOCK1D(iter, Ntask, sp,
-                    TASK(MODE(CONSTREFERENCE(m_primeiters,Iteration,VECTORresidues,VECTORdomains)),{
+                    TASK(MODE(CONSTREFERENCE(m_primeiters,Iteration,VECTORresidues)),{
                             for(auto j=iter.begin(); j!=iter.end(); ++j)
                             {
-                                solve_with_prime(m_primeiters[j], Iteration, VECTORdomains, VECTORresidues[j]);
+                                solve_with_prime(m_primeiters[j], Iteration,  VECTORresidues[j]);
                             }
                      })
                  );
@@ -247,7 +248,6 @@ namespace LinBox
 }
 
             std::vector<BlasVector<Domain>> VECTORresidues;VECTORresidues.resize(Ntask);
-            std::vector<Domain> VECTORdomains;VECTORdomains.resize(Nthread);
             std::vector<int> m_primeiters;m_primeiters.reserve(Ntask);
 
                 for(auto j=0;j<Ntask;j++){
@@ -258,7 +258,7 @@ namespace LinBox
 
                 }
 
-            compute_task( (this->Builder_), m_primeiters, Iteration,  VECTORdomains, VECTORresidues, Ntask);
+            compute_task( (this->Builder_), m_primeiters, Iteration, VECTORresidues, Ntask);
 
                 for(long i=0; i<Ntask; i++){
                     _commPtr->send(VECTORresidues[i].begin(), VECTORresidues[i].end(), 0, 0);
