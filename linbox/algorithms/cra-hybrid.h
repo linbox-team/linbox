@@ -165,23 +165,23 @@ namespace LinBox
 		}
 
 
-        template< class Function, class Domain, class ElementContainer>
+        template< class Function, class ElementContainer>
         void solve_with_prime(int m_primeiter,
-                              Function& Iteration, std::vector<Domain>& VECTORdomains,
+                              Function& Iteration,
                               ElementContainer& VECTORresidues
                               )
         {
-            VECTORdomains[ omp_get_thread_num()] = Domain(m_primeiter);
             Domain D(m_primeiter);
             //@fixme: The commentator within the following function call to other functions will crash if not disable the commentator while compiling 
             Iteration(VECTORresidues, D );
+
             VECTORresidues.push_back(m_primeiter);
         }
 
 
-        template<class pFunc, class Function,  class Domain, class ElementContainer>
+        template<class pFunc, class Function, class ElementContainer>
         void compute_task(pFunc& pF, std::vector<int>& m_primeiters,
-                          Function& Iteration, std::vector<Domain>& VECTORdomains,
+                          Function& Iteration,
                           std::vector<ElementContainer>& VECTORresidues, size_t Ntask)
         {
 
@@ -189,10 +189,10 @@ namespace LinBox
             auto sp=SPLITTER(NUM_THREADS,FFLAS::CuttingStrategy::Row,FFLAS::StrategyParameter::Threads);
             SYNCH_GROUP({
                 FORBLOCK1D(iter, Ntask, sp,{
-                    TASK(MODE(CONSTREFERENCE(m_primeiters,Iteration,VECTORresidues,VECTORdomains)),{
+                    TASK(MODE(CONSTREFERENCE(m_primeiters,Iteration,VECTORresidues)),{
                             for(auto j=iter.begin(); j!=iter.end(); ++j)
                             {
-                                solve_with_prime(m_primeiters[j], Iteration, VECTORdomains, VECTORresidues[j]);
+                                solve_with_prime(m_primeiters[j], Iteration,  VECTORresidues[j]);
                             }
                      })
                  });
@@ -214,15 +214,7 @@ namespace LinBox
             if(Ntask!=0){
                 std::unordered_set<int> prime_used;
 
-			size_t Nthread = Ntask;
-#pragma omp parallel
-{
-#pragma omp single
-            Nthread=omp_get_num_threads();
-}
-
             std::vector<BlasVector<Domain>> VECTORresidues;VECTORresidues.resize(Ntask);
-            std::vector<Domain> VECTORdomains;VECTORdomains.resize(Nthread);
             std::vector<int> m_primeiters;m_primeiters.reserve(Ntask);
 
                 for(auto j=0;j<Ntask;j++){
@@ -233,7 +225,7 @@ namespace LinBox
 
                 }
 
-            compute_task( (this->Builder_), m_primeiters, Iteration,  VECTORdomains, VECTORresidues, Ntask);
+            compute_task( (this->Builder_), m_primeiters, Iteration, VECTORresidues, Ntask);
 
                 for(long i=0; i<Ntask; i++){
                     _commPtr->send(VECTORresidues[i].begin(), VECTORresidues[i].end(), 0, 0);
