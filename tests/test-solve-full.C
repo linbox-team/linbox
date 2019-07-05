@@ -221,7 +221,7 @@ int main(int argc, char** argv)
         {'B', "-B", "Vector bit size for rational solve tests (defaults to -b if not specified).", TYPE_INT, &vectorBitSize},
         {'m', "-m", "Row dimension of matrices.", TYPE_INT, &m},
         {'n', "-n", "Column dimension of matrices.", TYPE_INT, &n},
-        {'d', "-d", "Dispatch mode (either Auto, Sequential, SMP or Distributed).", TYPE_STR, &dispatchString},
+        {'d', "-d", "Dispatch mode (either Auto, Sequential, SMP, Paladin or Distributed).", TYPE_STR, &dispatchString},
         END_OF_ARGUMENTS};
 
     parseArguments(argc, argv, args);
@@ -239,8 +239,10 @@ int main(int argc, char** argv)
         method.dispatch = Dispatch::Sequential;
     else if (dispatchString == "SMP")
         method.dispatch = Dispatch::SMP;
+    else if (dispatchString == "Paladin")
+        method.dispatch = Dispatch::Paladin;
     else if (dispatchString != "Auto") {
-        std::cerr << "-d Dispatch mode should be either Auto, Sequential, SMP or Distributed" << std::endl;
+        std::cerr << "-d Dispatch mode should be either Auto, Sequential, SMP, Paladin or Distributed" << std::endl;
         return EXIT_FAILURE;
     }
 
@@ -262,6 +264,7 @@ int main(int argc, char** argv)
 
     bool ok = true;
     do {
+/*
         // ----- Rational Auto
         ok = ok && test_dense_solve(Method::Auto(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
         ok = ok && test_sparse_solve(Method::Auto(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
@@ -271,13 +274,13 @@ int main(int argc, char** argv)
         ok = ok && test_dense_solve(Method::Auto(method), QQ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
         ok = ok && test_sparse_solve(Method::Auto(method), QQ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
         // ok = ok && test_blackbox_solve(Method::Auto(method), QQ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
-
+*/
         // ----- Rational CRA
         // @fixme @bug When bitSize = 5 and vectorBitSize = 50, CRA fails
         ok = ok && test_dense_solve(Method::CRAAuto(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
-        ok = ok && test_sparse_solve(Method::CRAAuto(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
+//        ok = ok && test_sparse_solve(Method::CRAAuto(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
         // ok = ok && test_blackbox_solve(Method::CRAAuto(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
-
+/*
         ok = ok && test_dense_solve(Method::CRAAuto(method), QQ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
         ok = ok && test_sparse_solve(Method::CRAAuto(method), QQ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
         // ok = ok && test_blackbox_solve(Method::CRAAuto(method), QQ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
@@ -347,7 +350,7 @@ int main(int argc, char** argv)
         // ok = ok && test_dense_solve(Method::Coppersmith(method), F, F, m, n, 0, 0, seed, verbose);
         // ok = ok && test_sparse_solve(Method::Coppersmith(method), F, F, m, n, 0, 0, seed, verbose);
         // ok = ok && test_blackbox_solve(Method::Coppersmith(method), F, F, m, n, 0, 0, seed, verbose);
-
+*/
         if (!ok) {
             std::cerr << "Failed with seed: " << seed << std::endl;
         }

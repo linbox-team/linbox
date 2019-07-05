@@ -109,6 +109,7 @@ namespace LinBox {
         SMP,         //!< Use symmetric multiprocessing (Paladin) to do sub-computations.
         Distributed, //!< Use MPI to distribute sub-computations accross nodes.
         Combined,    //!< Use MPI then Paladin on each node.
+        Paladin,    //!< Use Paladin for multithreading.
     };
 
     /**

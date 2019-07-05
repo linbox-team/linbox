@@ -31,7 +31,7 @@
  */
 
 #pragma once
-
+#include <linbox/algorithms/cra-paladin.h>
 #include <linbox/algorithms/cra-distributed.h>
 #include <linbox/algorithms/rational-cra-builder-early-multip.h>
 #include <linbox/algorithms/rational-cra-builder-full-multip.h>
@@ -180,6 +180,10 @@ namespace LinBox {
             cra(num, den, iteration, primeGenerator);
         }
 #endif
+        else if (dispatch == Dispatch::Paladin) {
+            LinBox::ChineseRemainderOMP<CRAAlgorithm> cra(hadamardLogBound);
+            cra(num, den, iteration, primeGenerator);
+        }
         else {
             throw LinBox::NotImplementedYet("Integer CRA Solve with specified dispatch type is not implemented yet.");
         }
