@@ -20,7 +20,6 @@
  * ========LICENCE========
  */
 
-
 #pragma once
 
 #include <unordered_set>
@@ -36,7 +35,6 @@
 #include "linbox/util/mpicpp.h"
 #include "linbox/util/timer.h"
 
-
 #include <unordered_set>
 #include "linbox/randiter/random-prime.h"
 
@@ -45,7 +43,13 @@
 #if defined(__LINBOX_HAVE_MPI)
 namespace LinBox
 {
-
+    /* 
+     * The MPI standard imposes that if the following program is launched with only 2 processes, multithreading 
+     * will not be available.
+     * Multithreading is only active if launched with more than 2 processes if each process is mapped to one node.
+     * To use multithreading, user needs to set the environment useing export for the number of cores/threads on 
+     * each node if each process is mapped to a node
+     */
 	template<class CRABase>
 	struct HybridChineseRemainder  {
 		typedef typename CRABase::Domain	Domain;
@@ -168,7 +172,7 @@ namespace LinBox
                               )
         {
             Domain D(m_primeiter);
-            //@fixme: The commentator within the following function call to other functions will crash if not disable the commentator while compiling 
+            //@fixme: The commentator within the following function's function call hierarchy will raise a crash if the whole program is not compiled with all commentator disabled
             Iteration(VECTORresidues, D );
             VECTORresidues.push_back(m_primeiter);
         }
