@@ -143,7 +143,7 @@ int main(int argc, char** argv)
                      {'q', "-q", "Set the field characteristic (-1 for rationals).", TYPE_INTEGER, &args.q},
                      {'n', "-n", "Set the matrix dimension.", TYPE_INT, &args.n},
                      {'b', "-b", "bit size", TYPE_INT, &args.bits},
-                     {'d', "-d", "Dispatch mode (any of: Auto, Sequential, SMP, Distributed).", TYPE_STR, &args.dispatchString},
+                     {'d', "-d", "Dispatch mode (any of: Auto, Sequential, SMP, Distributed, Paladin).", TYPE_STR, &args.dispatchString},
                      {'M', "-M",
                       "Choose the solve method (any of: Auto, Elimination, DenseElimination, SparseElimination, "
                       "Dixon, CRA, SymbolicNumericOverlap, SymbolicNumericNorm, "
@@ -162,6 +162,7 @@ int main(int argc, char** argv)
     MethodBase method;
     method.pCommunicator = &communicator;
     if (args.dispatchString == "Sequential")        method.dispatch = Dispatch::Sequential;
+    else if (args.dispatchString == "Paladin")  method.dispatch = Dispatch::Paladin;
     else if (args.dispatchString == "SMP")          method.dispatch = Dispatch::SMP;
     else if (args.dispatchString == "Distributed")  method.dispatch = Dispatch::Distributed;
     else                                            method.dispatch = Dispatch::Auto;

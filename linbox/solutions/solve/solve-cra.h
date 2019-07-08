@@ -181,7 +181,7 @@ namespace LinBox {
         }
 #endif
         else if (dispatch == Dispatch::Paladin) {
-            LinBox::ChineseRemainderOMP<CRAAlgorithm> cra(hadamardLogBound);
+            LinBox::RationalChineseRemainderPaladin<CRAAlgorithm> cra(hadamardLogBound);
             cra(num, den, iteration, primeGenerator);
         }
         else {
