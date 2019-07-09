@@ -555,7 +555,7 @@ namespace LinBox
 		 *  (3) gcd(m, b) = gcd(a, b).
 		 */
 
-		inline long reconstructRational (Element& a, Element& b, const Element& x, const Element& m,
+		inline long RationalReconstruction (Element& a, Element& b, const Element& x, const Element& m,
 						 const Element& a_bound, const Element& b_bound) const
 		{
 

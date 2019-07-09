@@ -56,7 +56,7 @@ namespace LinBox
 			D.characteristic( this->nextM_ );
 			this->primeProd_ *= this->nextM_;
 			Integer a, b;
-			_ZZ.reconstructRational(a, b, this->residue_, this->primeProd_);
+			_ZZ.RationalReconstruction(a, b, this->residue_, this->primeProd_);
 			if ((a == Numer0) && (b == Denom0))
 				++this->occurency_;
 			else {
@@ -74,7 +74,7 @@ namespace LinBox
 			fieldreconstruct(this->residue_, D, e, u0, m0, Integer(this->residue_), this->primeProd_);
 			this->primeProd_ *= this->nextM_;
 			Integer a, b;
-			_ZZ.reconstructRational(a, b, this->residue_, this->primeProd_);
+			_ZZ.RationalReconstruction(a, b, this->residue_, this->primeProd_);
 			if ((a == Numer0) && (b == Denom0))
 				++this->occurency_;
 			else {
@@ -88,13 +88,13 @@ namespace LinBox
 		void initialize (const Domain& D, const DomainElement& e)
 		{
 			Father_t::initialize(D, e);
-			_ZZ.reconstructRational(Numer0, Denom0, this->residue_, this->primeProd_);
+			_ZZ.RationalReconstruction(Numer0, Denom0, this->residue_, this->primeProd_);
 		}
 
 		void initialize (const Integer& D, const Integer& e)
 	       	{
 			Father_t::initialize(D, e);
-			_ZZ.reconstructRational(Numer0, Denom0, this->residue_, this->primeProd_);
+			_ZZ.RationalReconstruction(Numer0, Denom0, this->residue_, this->primeProd_);
 		}
 
 		Integer& result(Integer& Num, Integer& Den)
