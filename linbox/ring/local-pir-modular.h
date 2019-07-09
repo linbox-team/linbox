@@ -44,7 +44,7 @@ namespace LinBox
 		typedef RingCategories::ModularTag categoryTag;
 	};
 
-	/// \ingroup ring
+        /// \ingroup ring
 	template <typename intType>
 	class LocalPIRModular : public Givaro::Modular<intType>  {
 
@@ -53,19 +53,18 @@ namespace LinBox
 		using Parent_t = Givaro::Modular<intType>;
 	
 		using typename Givaro::Modular<intType>::Element;
-		//typedef typename Givaro::Modular<intType>::Element Element;
+            //typedef typename Givaro::Modular<intType>::Element Element;
 
 		using typename Givaro::Modular<intType>::RandIter;
 
-		//No default cstor
+            //No default cstor
 
 		LocalPIRModular (intType value, uint32_t exp = 1) :
-			Givaro::Modular<intType>(Givaro::power(value, exp)), 
-			_irred(value), 
+                Givaro::Modular<intType>(Givaro::power(value, exp)), 
 			_exponent(exp)
-		{}
+            {}
         
-                ~LocalPIRModular() noexcept {};
+        ~LocalPIRModular() noexcept {};
         
         using Parent_t:: zero;
         using Parent_t:: one;
@@ -80,19 +79,19 @@ namespace LinBox
         using Parent_t:: maxCardinality;
         using Parent_t:: minCardinality;
 
-        // ----- Checkers
+            // ----- Checkers
         using Parent_t:: isZero;
         using Parent_t:: isOne ;
         using Parent_t:: isMOne;
         using Parent_t:: areEqual;
         using Parent_t:: length;
         
-        // ----- Ring-wise operators
+            // ----- Ring-wise operators
         using Parent_t:: operator==;
         using Parent_t:: operator!=;
         using Parent_t:: operator=;
 
-        // ----- Initialisation
+            // ----- Initialisation
         using Parent_t:: init ;
 
         using Parent_t:: assign ;
@@ -124,38 +123,70 @@ namespace LinBox
         using Parent_t:: maxpy;
         using Parent_t:: maxpyin;
 
-        // ----- Random generators
+            // ----- Random generators
         using typename Parent_t:: NonZeroRandIter;
         using Parent_t:: random;
         using Parent_t:: nonzerorandom;
 
-        // --- IO methods
-	using Parent_t:: read ;
-	using Parent_t:: write;
+            // --- IO methods
+        using Parent_t:: read ;
+        using Parent_t:: write;
 
         std::istream& read (std::istream& is)
-	{ std::string s; return Parent_t::read(is >> s)>> s >> _irred >> s >> _exponent; }
+            { std::string s; return Parent_t::read(is >> s)>> s >> Parent_t::residu() >> s >> _exponent; }
         std::ostream& write(std::ostream& os) const
-	{ return Parent_t::write(os<<"Local- ") << "irred: " << _irred << ", exponent: " << _exponent; }
+            { return Parent_t::write(os<<"Local- ") << "irred: " << Parent_t::residu() << ", exponent: " << _exponent; }
 
-	Element& gcdin (Element& a, const Element& b) const
-                {
-			Givaro::gcd(a, a, b);
-                        Givaro::gcd(a, a, Parent_t::residu()); 
-			return reduce(a);
-                }
+        Element& gcdin (Element& a, const Element& b) const {
+            Givaro::gcd(a, a, b);
+            Givaro::gcd(a, a, Parent_t::residu()); 
+            return reduce(a);
+        }
+        
+        Element& gcd(Element& g, const Element& a, const Element& b) const {
+            return Givaro::gcd(g,a,b);
+        }
+    
+        Element& xgcd(Element& g, Element& s, Element& t, const Element& a, const Element& b) const {
+            return Givaro::gcd(g,s,t,a,b);
+        }
+    
+        
+        bool isUnit(const Element& a) const {
+            Element g;
+            Givaro::gcd(g, a, Parent_t::residu());
+            return isOne(g);
+        }
 
+        bool isDivisor(const Element& a, const Element& b) const {
+            Element g;
+            if (this->isZero(a)) return false;
+            else if (this->isZero(b)) return true;
+            else {
+                Givaro::gcd(g, a, Parent_t::residu());
+                return this->isZero(b % g);
+            }
+        }
 
-	bool isUnit(const Element& a) const
-                {
-                        Element g;
-                        Givaro::gcd(g, a, _irred);
-                        return isOne(g);
-                }
+		Element& normal (Element& a, const Element& b) const
+		{
+
+			if (this->isZero(b)) 
+                return a = this->zero;
+			else
+				return this->gcd(a, b, Parent_t::residu() );
+		}
+
+		Element& normalIn (Element& a) const
+		{
+			if (this->isZero(a))
+                return a;
+            else 
+				return this->gcdin(a, Parent_t::residu() );
+		}
 
         
 	protected:
-		intType _irred;
 		uint32_t _exponent;
 	};
 
