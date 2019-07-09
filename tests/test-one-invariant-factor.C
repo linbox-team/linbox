@@ -53,7 +53,7 @@ using namespace LinBox;
 
 template <class Ring, class OIF, class Vector>
 bool testRandom(const Ring& R,
-		const OIF& oif,
+		OIF& oif,
 		Vector& d)
 		//LinBox::VectorStream<Vector>& stream1)
 {

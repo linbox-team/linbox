@@ -54,11 +54,13 @@ using namespace std;
 #include <linbox/util/timer.h>
 
 #include <linbox/ring/pir-modular-int32.h>
-#define SILENT 
-#define NOT_USING_OMP
-#include "smithvalence.h"
-#undef NOT_USING_OMP
-#undef SILENT 
+#include <linbox/algorithms/smith-form-valence.h>
+
+// #define SILENT 
+// #define NOT_USING_OMP
+// #include "smithvalence.h"
+// #undef NOT_USING_OMP
+// #undef SILENT 
 
 using namespace LinBox;
 
@@ -114,7 +116,7 @@ int main(int argc, char* argv[])
 
     		// using Sparse Elimination
 			LinBox::PowerGaussDomain< SPIR > PGD( R );
-			vector<pair<size_t,SPIR::Element> > vec;
+			vector<pair<SPIR::Element,size_t> > vec;
     		LinBox::Permutation<SPIR> Q(R,B.coldim());
 
 			PGD(vec, B, Q, (int32_t)m, (int32_t)p);
@@ -126,7 +128,7 @@ int main(int argc, char* argv[])
 					L.push_back((SPIR::Element)p_it->second);
 			}
 			size_t M = (B.rowdim() > B.coldim() ? B.coldim() : B.rowdim());
-			size_t Min = (B.rowdim() < B.coldim() ? B.coldim() : B.rowdim());
+// 			size_t Min = (B.rowdim() < B.coldim() ? B.coldim() : B.rowdim());
 			for (size_t i = L.size(); i < M; ++i)
 				L.push_back(0);
 
