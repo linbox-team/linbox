@@ -55,35 +55,6 @@
 #endif
 
 
-namespace Givaro
-{
-    inline void reconstructRational (Integer& a, Integer& b, const Integer& x, const Integer& m, const Integer& bound)
-    {
-        Rational rr(x,m,bound);
-        a = rr.nume();
-        b = rr.deno();
-    }
-
-    inline void reconstructRational (Integer& a, Integer& b, const Integer& x, const Integer& m)
-    {
-        reconstructRational(a,b, x, m, Givaro::sqrt(m));
-    }
-
-    inline bool reconstructRational (Integer& a, Integer& b,
-                                     const Integer& x, const Integer& m,
-                                     const Integer& a_bound, const Integer& b_bound)
-    {
-        Integer bound = x/b_bound;
-			// if (bound>a_bound) std::cerr << "a_bound: " << a_bound << ", x/b_bound: " << bound << std::endl;
-
-        reconstructRational(a,b,x,m, (bound>a_bound?bound:a_bound));
-
-        return b<= b_bound;
-    }
-
-}
-
-
 namespace LinBox
 {
 	long NumBytes(const Integer & m)
@@ -332,14 +303,14 @@ namespace LinBox
 					}
 
 					if (!_r. isZero (rem1)) {
-						int status = (int)Givaro::reconstructRational(tmp_num, tmp_den, c1, modulus, numbound, denbound);
+						int status = (int)Givaro::Rational::RationalReconstruction(tmp_num, tmp_den, c1, modulus, numbound, denbound);
 						if(status) {
 							_r. assign (c1_den, tmp_den); _r. assign (c1_num, tmp_num);
 						}
 					}
 
 					if (!_r. isZero (rem2)) {
-						int  status =(int) Givaro::reconstructRational(tmp_num, tmp_den, c2, modulus, numbound, denbound);
+						int  status =(int)Givaro::Rational::RationalReconstruction (tmp_num, tmp_den, c2, modulus, numbound, denbound);
 						if(status) {
 							_r. assign (c2_den, tmp_den); _r. assign (c2_num, tmp_num);
 						}
@@ -377,7 +348,7 @@ namespace LinBox
 				else if (_r. compare(abs_neg, numbound) < 0)
 					_r. assign (*num_p, neg_res);
 				else {
-					int status= (int)Givaro::reconstructRational(tmp_num, tmp_den, *res_p, modulus, numbound, denbound);
+					int status= (int)Givaro::Rational::RationalReconstruction(tmp_num, tmp_den, *res_p, modulus, numbound, denbound);
 					if (!status) {
 						commentator().report()
 						<< "ERROR in reconstruction ? (1)\n" << std::endl;
@@ -629,7 +600,7 @@ namespace LinBox
 						justConfirming = false;
 						// if no answer yet (or last answer became invalid)
 						// try to reconstruct a rational number
-						tmp = Givaro::reconstructRational(*num_p, tmp_den, *zz_p, modulus, numbound, denbound);
+						tmp = Givaro::Rational::RationalReconstruction(*num_p, tmp_den, *zz_p, modulus, numbound, denbound);
 						// update 'accuracy' according to whether it worked or not
 						if (tmp) {
 							linbox_check (!_r.isZero(tmp_den));
@@ -671,7 +642,7 @@ namespace LinBox
 							else {
 								// previous result is fake, reconstruct new answer
 								Integer tmp_den;
-								tmp = Givaro::reconstructRational(*num_p, tmp_den, *zz_p, modulus, numbound, denbound);
+								tmp = Givaro::Rational::RationalReconstruction(*num_p, tmp_den, *zz_p, modulus, numbound, denbound);
 								if (tmp) {
 									linbox_check (!_r.isZero(den));
 									if (! _r. areEqual (tmp_den, den)) {
@@ -925,7 +896,7 @@ namespace LinBox
 // 				typename Vector::iterator   iter_d  = den_r.begin();
 
 // 				for (size_t i=0; iter_a != real_approximation.end(); ++iter_a, ++ iter_n, ++iter_d, ++i){
-// 					if (!Givaro::reconstructRational(*iter_n, *iter_d,
+// 					if (!Givaro::Rational::RationalReconstruction(*iter_n, *iter_d,
 // 								    *iter_a, modulus, numbound, denbound))
 // 					{
 // 						commentator().report()
@@ -975,7 +946,7 @@ namespace LinBox
 					_r.assign(*iter_denom, _r.one);
 				}
 				else {
-					if  (!Givaro::reconstructRational(*iter_num, *iter_denom, *iter_approx, modulus, numbound, denbound))
+					if  (!Givaro::Rational::RationalReconstruction(*iter_num, *iter_denom, *iter_approx, modulus, numbound, denbound))
 					{
 #ifdef DEBUG_RR
 						std::cout << "ERROR in reconstruction ? (3)\n" << std::endl;
@@ -1160,7 +1131,7 @@ namespace LinBox
 					Integer zz_p_den (*zz_p);
 					_r. mulin (zz_p_den,den);
 					_r. modin (zz_p_den,modulus);
-					bool tmp = Givaro::reconstructRational(*num_p, tmp_den, zz_p_den, modulus);
+					bool tmp = Givaro::Rational::RationalReconstruction(*num_p, tmp_den, zz_p_den, modulus);
 #ifdef RSTIMING
 					++counter;
 #endif
@@ -1190,7 +1161,7 @@ namespace LinBox
 					_r. mulin (zz_p_den,den);
 					_r. modin (zz_p_den,modulus);
 
-					bool tmp = Givaro::reconstructRational(*num_p, tmp_den, zz_p_den, modulus, _lcontainer.numbound(), _lcontainer.denbound());
+					bool tmp = Givaro::Rational::RationalReconstruction(*num_p, tmp_den, zz_p_den, modulus, _lcontainer.numbound(), _lcontainer.denbound());
 #ifdef RSTIMING
 					++counter;
 #endif

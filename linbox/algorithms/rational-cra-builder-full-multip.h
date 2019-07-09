@@ -92,12 +92,9 @@ namespace LinBox
 	protected:
 		Integer& iterativeratrecon(Integer& u1, Integer& new_den, const Integer& old_den, const Integer& m1, const Integer& sn)
 		{
-            // @note This interface of the rational does the RatRecon.
-            Integer::modin(u1 *= old_den, m1);
-            Givaro::Rational myRational(u1, m1, sn);
-            u1 = myRational.nume();
-            new_den = myRational.deno();
-			return u1;
+			Integer a;
+			_ZZ.RationalReconstruction(a, new_den, u1*=old_den, m1, sn);
+			return u1=a;
 		}
 	};
 }
