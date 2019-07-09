@@ -36,6 +36,8 @@
 
 #include "linbox/linbox-config.h"
 #include "linbox/vector/vector-traits.h"
+#include "linbox/vector/dense-vector.h"
+#include "linbox/vector/dense-subvector.h"
 
 namespace LinBox { /* BlasVector */
 
@@ -45,14 +47,16 @@ namespace LinBox { /* BlasVector */
     template<class _Field, class _Rep=typename RawVector<typename _Field::Element>::Dense>
     class BlasVector ;
 
+    //template <typename _Field> struct DenseVectorChooser { typedef BlasVector<_Field> type; }; // to allow specialization of using DenseVector
     template <typename _Field> struct DenseVectorChooser { typedef BlasVector<_Field> type; }; // to allow specialization of using DenseVector
     template <typename _Field> using DenseVector = typename DenseVectorChooser<_Field>::type;
 
-    template <typename _Field> struct DenseSubVectorChooser { typedef BlasSubvector<DenseVector<_Field>> type; }; // to allow specialization of using DenseVector
+    //template <typename _Field> struct DenseSubVectorChooser { typedef BlasSubvector<DenseVector<_Field>> type; }; // to allow specialization of using DenseVector
+    template <typename _Field> struct DenseSubVectorChooser { typedef typename DenseVector<_Field>::subVectorType type; }; // to allow specialization of using DenseVector
     template <class _Field> using DenseSubvector = typename DenseSubVectorChooser<_Field>::type; 
 
 }
-
+ 
 #endif // __LINBOX_vector_dense_vector_H
 
 // Local Variables:

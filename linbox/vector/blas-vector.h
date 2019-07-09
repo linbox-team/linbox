@@ -31,6 +31,10 @@
  *
  */
 
+
+#ifndef OLD_BLAS_VECTOR
+#include "linbox/vector/dense-vector.h"
+#else
 #ifndef __LINBOX_vector_blas_vector_H
 #define __LINBOX_vector_blas_vector_H
 
@@ -902,7 +906,7 @@ namespace LinBox { /*  traits */
 #include "blas-vector.inl"
 
 #endif // __LINBOX_vector_blas_vector_H
-
+#endif
 // Local Variables:
 // mode: C++
 // tab-width: 4
