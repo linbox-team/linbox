@@ -29,7 +29,7 @@
 #include "linbox/util/error.h"
 #include "linbox/integer.h"
 #include <givaro/givcaster.h>
-#include <givaro/givrational.h>
+#include <givaro/qfield.h>
 #include <givaro/modular.h>
 #include <givaro/zring.h>
 

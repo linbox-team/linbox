@@ -45,7 +45,7 @@ namespace LinBox
 
 	/*
 	 * Class to be used for repeated rational reconstruction in schemes such as Rational CRA and p-adic lifting
-	 * together with method reconstructRational(a,b,x,m)
+	 * together with method RationalReconstruction(a,b,x,m)
 	 * implements scheduling INCREMENTAL, QUADRATIC, GEOMETRIC, CERTIFIED
 	 * implements vector reconstruction
 	 * _intRing is the integer ring used for reconstruction, default Givaro::ZRing<Integer>
@@ -119,7 +119,7 @@ namespace LinBox
 		}
 
 		template <class Vect>
-		bool reconstructRational(Vect& a, Element& b, const Vect& x, const Element m, const int inc = 1) const
+		bool RationalReconstruction(Vect& a, Element& b, const Vect& x, const Element m, const int inc = 1) const
 		{
 			++RecCounter;
 			b = 1;
@@ -141,7 +141,7 @@ namespace LinBox
 					else {
 						if (x_in > m) x_in %= m;
 					}
-					if (x_in > 0) res = res && _RR.reconstructRational(*it_a, new_den,x_in,m);
+					if (x_in > 0) res = res && _RR.RationalReconstruction(*it_a, new_den,x_in,m);
 					else {
 						res = true;
 						*it_a = 0;
@@ -172,7 +172,7 @@ namespace LinBox
 					else {
 						if (x_in > m) x_in %= m;
 					}
-					if (x_in > 0) res = res && _RR.reconstructRational(a[(size_t)i], new_den,x_in,m);
+					if (x_in > 0) res = res && _RR.RationalReconstruction(a[(size_t)i], new_den,x_in,m);
 					else {
 						res = true;
 						*it_a = 0;
@@ -199,7 +199,7 @@ namespace LinBox
 
 		}
 
-		bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m) const
+		bool RationalReconstruction(Element& a, Element& b, const Element& x, const Element& m) const
 		{
 			++RecCounter;
 			Element x_in(x);
@@ -215,13 +215,13 @@ namespace LinBox
 			}
 
 			bool res;
-			if (x_in >0) res = _RR.reconstructRational(a,b,x_in,m);
+			if (x_in >0) res = _RR.RationalReconstruction(a,b,x_in,m);
 			else { a = 0; b =1; res = true;}
 			//_RR.write(std::cout);
 			return res;
 		}
 
-		bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m, const Element& a_bound) const
+		bool RationalReconstruction(Element& a, Element& b, const Element& x, const Element& m, const Element& a_bound) const
 		{
 			++RecCounter;
 			Element x_in(x);
@@ -236,13 +236,13 @@ namespace LinBox
 					x_in %= m;
 			}
 			bool res;
-			if (x_in >0) res = _RR.reconstructRational(a,b,x_in,m,a_bound);
+			if (x_in >0) res = _RR.RationalReconstruction(a,b,x_in,m,a_bound);
 			else { a = 0; b =1; res = true;}
 			//_RR.write(std::cout);
 			return res;
 		}
 
-		bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m, const Element& a_bound, const Element& b_bound) const
+		bool RationalReconstruction(Element& a, Element& b, const Element& x, const Element& m, const Element& a_bound, const Element& b_bound) const
 		{
 			++RecCounter;
 			Element x_in(x);
@@ -257,7 +257,7 @@ namespace LinBox
 					x_in %= m;
 			}
 			Element bound = x_in/b_bound;
-			if (x_in > 0) _RR.reconstructRational(a,b,x_in,m,(bound>a_bound?bound:a_bound));
+			if (x_in > 0) _RR.RationalReconstruction(a,b,x_in,m,(bound>a_bound?bound:a_bound));
 			else  { a = 0; b =1; }
 			bool res=  (b > b_bound)? false: true;
 			//_RR.write(std::cout);
@@ -301,9 +301,9 @@ namespace LinBox
 			_intRing(RR._intRing)
 		{}
 
-		virtual bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m) const =0;
+		virtual bool RationalReconstruction(Element& a, Element& b, const Element& x, const Element& m) const =0;
 
-		virtual bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m, const Element& a_bound) const =0;
+		virtual bool RationalReconstruction(Element& a, Element& b, const Element& x, const Element& m, const Element& a_bound) const =0;
 
 		virtual ~RReconstructionBase() {}
 
@@ -331,15 +331,15 @@ namespace LinBox
 			_intRing(RR._intRing)
 		{}
 
-		bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m)
+		bool RationalReconstruction(Element& a, Element& b, const Element& x, const Element& m)
 		{
 			Element a_bound; _intRing.sqrt(a_bound,m/2);
-			return _intRing.reconstructRational(a,b,x,m,a_bound,a_bound);
+			return _intRing.RationalReconstruction(a,b,x,m,a_bound,a_bound);
 		}
 
-		bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m, const Element& a_bound)
+		bool RationalReconstruction(Element& a, Element& b, const Element& x, const Element& m, const Element& a_bound)
 		{
-			_intRing.reconstructRational(a,b,x,m,a_bound);
+			_intRing.RationalReconstruction(a,b,x,m,a_bound);
 			return true;
 		}
 
