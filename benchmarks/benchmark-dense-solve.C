@@ -139,7 +139,7 @@ void benchmark(std::array<double, 3>& timebits, Arguments& args, MethodBase& met
 
 int main(int argc, char** argv)
 {
-    int numThreads = 1;
+    int numThreads = 0;
 
     Arguments args;
     Argument as[] = {{'i', "-i", "Set number of repetitions.", TYPE_INT, &args.nbiter},
@@ -159,7 +159,9 @@ int main(int argc, char** argv)
                      END_OF_ARGUMENTS};
     LinBox::parseArguments(argc, argv, as);
 
-    omp_set_num_threads(numThreads);
+    if (numThreads > 0) {
+        omp_set_num_threads(numThreads);
+    }
 
     if (args.seed < 0) {
         args.seed = time(nullptr);
