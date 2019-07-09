@@ -129,7 +129,7 @@ namespace LinBox
 				if (RR_.scheduled((size_t)IterCounter-1)) {
 					Integer Mint ; Builder_.getModulus(Mint);
 					Integer rint ; Builder_.getResidue(rint);
-					if (RR_.reconstructRational(num,den,rint,Mint)) {
+					if (RR_.RationalReconstruction(num,den,rint,Mint)) {
 						Builder_.changePreconditioner(f_in*num,m_in*den);
 						int k ; Builder_.getThreshold(k);
 						if (this->operator()(k,num,den,Iteration,genprime)) break;
@@ -198,7 +198,7 @@ namespace LinBox
 
 				Integer r ; Builder_.getResidue(r);
 
-				if (RR_.reconstructRational(num,den,r,M)) {
+				if (RR_.RationalReconstruction(num,den,r,M)) {
 
 					if (Builder_.changePreconditioner(f_in*num,m_in*den)) break;
 
@@ -268,7 +268,7 @@ namespace LinBox
 						//early or full termination
 						Vect<Integer,Alloc<Integer> > r_v ;
 						Builder_.getResidue(r_v);
-						if (RR_.reconstructRational(num,den,r_v,Mint) ) {
+						if (RR_.RationalReconstruction(num,den,r_v,Mint) ) {
 							Vect<Integer,Alloc<Integer> > vnum(num),vden(m_in.size(),den);
 							for (int i=0; i < (int)vnum.size(); ++ i) {
 								if (vnum[(size_t)i]==0) vnum[(size_t)i] = 1; // no prec
@@ -296,7 +296,7 @@ namespace LinBox
 						Integer rint ;
 						Builder_.getResidue(rint);
 						Integer n,d;
-						if (RR_.reconstructRational(n,d,rint,Mint)) {
+						if (RR_.RationalReconstruction(n,d,rint,Mint)) {
 							Vect<Integer,Alloc<Integer> > vden(m_in.size(),d);
 							Builder_.productin(vden,m_in);
 							Builder_.changePreconditioner(f_in,vden);
@@ -364,7 +364,7 @@ namespace LinBox
 						//early or full termination
 						BlasVector<Givaro::ZRing<Integer> > r_v(Z) ;
 						Builder_.getResidue(r_v);
-						if (RR_.reconstructRational(num,den,r_v,Mint) ) {
+						if (RR_.RationalReconstruction(num,den,r_v,Mint) ) {
 							BlasVector<Givaro::ZRing<Integer> > vnum(num),vden(Z,m_in.size(),den);
 							for (int i=0; i < (int)vnum.size(); ++ i) {
 								if (vnum[(size_t)i]==0) vnum[(size_t)i] = 1; // no prec
@@ -392,7 +392,7 @@ namespace LinBox
 						Integer rint ;
 						Builder_.getResidue(rint);
 						Integer n,d;
-						if (RR_.reconstructRational(n,d,rint,Mint)) {
+						if (RR_.RationalReconstruction(n,d,rint,Mint)) {
 							BlasVector<Givaro::ZRing<Integer> > vden(Z,m_in.size(),d);
 							Builder_.productin(vden,m_in);
 							Builder_.changePreconditioner(f_in,vden);
@@ -460,7 +460,7 @@ namespace LinBox
 				Integer M ; Builder_.getModulus(M);
 				if ( Builder_.terminated() ) {
 					Vect<Integer> r ; Builder_.getResidue(r);
-					if (RR_.reconstructRational(num,den,r,M) ) {
+					if (RR_.RationalReconstruction(num,den,r,M) ) {
 						Vect<Integer> vnum(num),vden(m_in.size(),den);
 						Builder_.productin(vnum, f_in); Builder_.productin(vden,m_in);
 						if (Builder_.changePreconditioner(vnum,vden)) break;
@@ -470,7 +470,7 @@ namespace LinBox
 				else {
 					Integer r ; Builder_.getResidue(r);
 					Integer n,d;
-					if (RR_.reconstructRational(n,d,r,M)) {
+					if (RR_.RationalReconstruction(n,d,r,M)) {
 						Vect<Integer > vden(m_in.size(),d);
 						Builder_.productin(vden,m_in);
 						if (Builder_.changePreconditioner(f_in,vden)) break;
@@ -547,7 +547,7 @@ namespace LinBox
 				Integer M ; Builder_.getModulus(M);
 				if ( Builder_.terminated() ) {
 					BlasVector<Givaro::ZRing<Integer> > r ; Builder_.getResidue(r);
-					if (RR_.reconstructRational(num,den,r,M) ) {
+					if (RR_.RationalReconstruction(num,den,r,M) ) {
 						BlasVector<Givaro::ZRing<Integer> > vnum(num),vden(m_in.size(),den);
 						Builder_.productin(vnum, f_in); Builder_.productin(vden,m_in);
 						if (Builder_.changePreconditioner(vnum,vden)) break;
@@ -557,7 +557,7 @@ namespace LinBox
 				else {
 					Integer r ; Builder_.getResidue(r);
 					Integer n,d;
-					if (RR_.reconstructRational(n,d,r,M)) {
+					if (RR_.RationalReconstruction(n,d,r,M)) {
 						BlasVector<Givaro::ZRing<Integer> > vden(m_in.size(),d);
 						Builder_.productin(vden,m_in);
 						if (Builder_.changePreconditioner(f_in,vden)) break;

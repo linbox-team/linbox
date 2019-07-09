@@ -57,14 +57,14 @@ namespace LinBox
 
 		~FastRationalReconstruction() {}
 
-		bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m) const
+		bool RationalReconstruction(Element& a, Element& b, const Element& x, const Element& m) const
 		{
 			Element a_bound; _intRing.sqrt(a_bound, m/2);
-			reconstructRational(a,b,x,m,a_bound);
+			RationalReconstruction(a,b,x,m,a_bound);
 			return (a < a_bound);
 		}
 
-		bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m, const Element& a_bound ) const
+		bool RationalReconstruction(Element& a, Element& b, const Element& x, const Element& m, const Element& a_bound ) const
 		{
 			if (x < a_bound) {
 				//case (i)
@@ -81,7 +81,7 @@ namespace LinBox
 			Element bound = a_bound << 1;
 
 			if (m/bound > 1) {
-				fastReconstructRational(a,b,x,m,m/bound);
+				fastRationalReconstruction(a,b,x,m,m/bound);
 
 				if (_intRing.abs(a) < a_bound) {
 					return true;
@@ -130,7 +130,7 @@ namespace LinBox
 			return h;
 		}
 
-		bool fastReconstructRational(Element& n, Element& d, const Element& x, const Element& m, const Element& d_bound ) const
+		bool fastRationalReconstruction(Element& n, Element& d, const Element& x, const Element& m, const Element& d_bound ) const
 		{
 
 			size_t log_m = m.bitsize()-1;
@@ -736,16 +736,16 @@ namespace LinBox
 			,c(0)
 		{}
 
-		bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m) const
+		bool RationalReconstruction(Element& a, Element& b, const Element& x, const Element& m) const
 		{
-			bool res = fastQMaxReconstructRational(a,b,x,m);
+			bool res = fastQMaxRationalReconstruction(a,b,x,m);
 			return res;
 		}
 
-		bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m, const Element& a_bound) const
+		bool RationalReconstruction(Element& a, Element& b, const Element& x, const Element& m, const Element& a_bound) const
 		{
 			// bool res= false;
-			return /*  res = */ FastRationalReconstruction<Ring>::reconstructRational(a,b,x,m,a_bound);
+			return /*  res = */ FastRationalReconstruction<Ring>::RationalReconstruction(a,b,x,m,a_bound);
 		}
 
 	protected:
@@ -757,7 +757,7 @@ namespace LinBox
 		mutable int c;
 
 
-		bool fastQMaxReconstructRational(Element& n, Element& d, const Element& x, const Element& m) const
+		bool fastQMaxRationalReconstruction(Element& n, Element& d, const Element& x, const Element& m) const
 		{
 
 			T = m.bitsize();
