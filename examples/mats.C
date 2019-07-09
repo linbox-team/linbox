@@ -62,11 +62,6 @@ using namespace std;
 #include <linbox/util/timer.h>
 #include <linbox/matrix/dense-matrix.h>
 
-// place A: Edit here and at place B for ring change
-//#include <linbox/ring/pir-modular-int32.h>
-//#include <linbox/ring/pir-ntl-zz_p.h>
-#include <linbox/ring/pir-ntl-zz_p.h>
-
 using namespace LinBox;
 
 template <class PIR>
