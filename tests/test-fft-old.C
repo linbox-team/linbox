@@ -165,9 +165,10 @@ bool test_one_modular_implem (uint64_t bits, size_t k, unsigned long seed)
 {
 	typedef typename Givaro::Modular<T1, T2> ModImplem;
 
-	RandomFFTPrime RandomGen (1<<bits, seed);
-	T1 p = (T1) RandomGen.randomPrime (k);
-	ModImplem GFp(p);
+	integer p;
+	if (!RandomFFTPrime::randomPrime (p, integer(1)<<bits, k))
+		throw LinboxError ("RandomFFTPrime::randomPrime failed");
+	ModImplem GFp ((T1) p);
 	
 	cout << endl << string (80, '*') << endl;
 	cout << "Test FFT with Modular<" << TypeName<T1>() << ", ";
@@ -200,6 +201,8 @@ int main (int argc, char *argv[]) {
 
 	cout << "# To rerun this test: test-fft-old -s " << seed << endl;
 	cout << "# seed = " << seed << endl;
+
+    RandomFFTPrime::seeding (seed);
 
 	/* Test with Modular<uint32_t, uint64_t>, and 27-bit prime and k=10 */
 	pass &= test_one_modular_implem<uint32_t, uint64_t> (27, 10, seed);

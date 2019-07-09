@@ -47,6 +47,7 @@ template<template <typename...> class> const char *TypeName();
 #define REGISTER_TYPE_NAME(type) \
     template<> const char *TypeName<type>(){return #type;}
 
+REGISTER_TYPE_NAME(float);
 REGISTER_TYPE_NAME(double);
 REGISTER_TYPE_NAME(uint16_t);
 REGISTER_TYPE_NAME(uint32_t);
@@ -56,6 +57,19 @@ REGISTER_TYPE_NAME(Modular);
 REGISTER_TYPE_NAME(ModularExtended);
 
 /******************************************************************************/
+/* Basic class to access and test protected method of FFT__ class */ 
+template<typename Field, typename Simd>
+class FFT_checker : public FFT__<Field, Simd> {
+    private:
+        using base = FFT__<Field, Simd>;
+    public:
+        using base::DIF;
+        using base::DIT;
+        using base::DIF_reversed;
+        using base::DIT_reversed;
+        using base::base;
+};
+
 template<typename Field>
 struct Checker {
     typedef typename Field::Element Elt;
@@ -65,10 +79,9 @@ struct Checker {
     const Field& _F;
     size_t _k;
     size_t _n;
-    FFT_init<Field> _fft;
 
     /* ctor */
-    Checker (const Field& F, size_t k) : _F(F), _k(k), _n(1<<k), _fft(F,k) {
+    Checker (const Field& F, size_t k) : _F(F), _k(k), _n(1<<k) {
     }
 
     /* compute r = P evaluated at x using Horner method */
@@ -91,41 +104,72 @@ struct Checker {
         return r;
     }
 
+    template<typename Simd>
+    void
+    print_result_line (const char *name, bool b) {
+        size_t t = strlen(name) + Simd::type_string().size() + 40 + 10;
+        cout << "   " << string (80-t, ' ') << name << "<"
+             << Simd::type_string() << "> " << string (40, '.')
+             << (b ? " success" : " failure") << endl;
+    }
+
     /* check DIF and DIT */
-    template<template <typename Elt> class SimdType>
-    bool actual_check (const EltVector& in, const EltVector& in_br,
-                            const EltVector& out, const EltVector& out_br) {
-        FFT_algorithms<Field, SimdType<Elt>> fft_algo (_fft);
+    template<typename Simd>
+    bool actual_check (FFT_checker<Field, Simd> &fft, const EltVector& in,
+                       const EltVector& in_br, const EltVector& out,
+                       const EltVector& out_br) {
         EltVector v(_n);
-        string s;
-        s.append ("<"); s.append(SimdType<Elt>::type_string()); s.append ("> ");
-        s.append (string (80-(s.size()+16), '.'));
 
         /* DIF : natural order => bitreversed order */
         v = in;
-        fft_algo.DIF (v.data());
+        fft.DIF (v.data());
         bool bf = equal (v.begin(), v.end(), out_br.begin());
-        cout << "     DIF" << s << (bf ? " success" : " failure") << endl;
+        print_result_line<Simd> ("DIF", bf);
 
         /* DIF : bitreversed order => natural order */
         v = in_br;
-        fft_algo.DIF_reversed (v.data());
+        fft.DIF_reversed (v.data());
         bool bf2 = equal (v.begin(), v.end(), out.begin());
-        cout << "   DIF_r" << s << (bf2 ? " success" : " failure") << endl;
+        print_result_line<Simd> ("DIF_reversed", bf2);
 
         /* DIT : bitreversed order => natural order */
         v = in_br;
-        fft_algo.DIT (v.data());
+        fft.DIT (v.data());
         bool bt = equal (v.begin(), v.end(), out.begin());
-        cout << "     DIT" << s << (bt ? " success" : " failure") << endl;
+        print_result_line<Simd> ("DIT", bt);
 
         /* DIT : natural order => bitreversed order */
         v = in;
-        fft_algo.DIT_reversed (v.data());
+        fft.DIT_reversed (v.data());
         bool bt2 = equal (v.begin(), v.end(), out_br.begin());
-        cout << "   DIT_r" << s << (bt2 ? " success" : " failure") << endl;
+        print_result_line<Simd> ("DIT_reversed", bt2);
 
-        bool b = bt & bf & bt2 & bf2;
+        /* FFT_direct : natural order => bitreversed order */
+        v = in;
+        fft.FFT_direct (v.data());
+        bool bd = equal (v.begin(), v.end(), out_br.begin());
+        print_result_line<Simd> ("FFT_direct", bd);
+
+        /* FFT_inverse (without div): bitreversed order => natural order */
+        v = in_br;
+        fft.FFT_inverse (v.data(), false);
+        bool bi = equal (v.begin(), v.end(), out.begin());
+        print_result_line<Simd> ("FFT_inverse(nodiv)", bi);
+
+        /* FFT_inverse : bitreversed order => natural order */
+        v = in_br;
+        fft.FFT_inverse (v.data(), true);
+        bool bi2 = true;
+        Elt t;
+        fft.field().init (t);
+        for (size_t i = 0; i < v.size(); i++) {
+            fft.field().mul (t, v[i], v.size());
+            bi2 &= t == out[i];
+        }
+        print_result_line<Simd> ("FFT_inverse", bi2);
+
+
+        bool b = bt & bf & bt2 & bf2 & bd & bi & bi2;
         return b;
     }
 
@@ -133,6 +177,7 @@ struct Checker {
     bool check (unsigned long seed) {
         bool passed = true;
         EltVector in(_n), in_br(_n), out(_n), out_br(_n);
+        FFT_checker<Field, NoSimd<Elt>> fft_nosimd (_F, _k);
 
         /* Generate random input */
         typename Field::RandIter Gen (_F, 0, seed+_k); /*0 has no meaning here*/
@@ -142,7 +187,7 @@ struct Checker {
         /* Compute the out vector using a naive polynomial evaluation and set
          * the bitreversed version of in and out */
         Elt x(1);
-        const Elt & w = _fft.getRoot ();
+        const Elt & w = fft_nosimd.getRoot ();
         for (size_t i = 0; i < _n; _F.mulin (x, w), i++) {
             size_t i_br = bitreversed (i);
             in_br[i_br] = in[i];
@@ -151,21 +196,22 @@ struct Checker {
         }
 
         /* NoSimd */
-        passed &= actual_check<NoSimd> (in, in_br, out, out_br);
+        passed &= actual_check (fft_nosimd, in, in_br, out, out_br);
 
         /* Simd128 */
 #if defined(__FFLASFFPACK_HAVE_SSE4_1_INSTRUCTIONS)
-        if (Simd128<Elt>::vect_size == 4 || Simd128<Elt>::vect_size == 8)
-            passed &= actual_check<Simd128> (in, in_br, out, out_br);
+        FFT_checker<Field, Simd128<Elt>> fft_simd128 (_F, _k, w);
+        passed &= actual_check (fft_simd128, in, in_br, out, out_br);
 #endif
 
         /* Simd256 */
 #if defined(__FFLASFFPACK_HAVE_AVX2_INSTRUCTIONS)
-        if (Simd256<Elt>::vect_size == 4 || Simd256<Elt>::vect_size == 8)
-            passed &= actual_check<Simd256> (in, in_br, out, out_br);
+        FFT_checker<Field, Simd256<Elt>> fft_simd256 (_F, _k, w);
+        passed &= actual_check (fft_simd256, in, in_br, out, out_br);
 #endif
 
-        // XXX SIMD512 ??
+        // FIXME Simd512: which macro should be used to discriminate against
+        // simd512 for both floating and integral type ?
         return passed;
     }
 };
@@ -216,16 +262,20 @@ int main (int argc, char *argv[]) {
     cout << "# To rerun this test: test-fft-new -s " << seed << endl;
     cout << "# seed = " << seed << endl;
 
+    /* Test with Modular<float,double> */
+    /* with a 11-bit prime and k=7 */
+    pass &= test_one_modular_implem<Modular,float,double> (11, 7, seed);
+
     /* Test with Modular<double> */
     /* with a 22-bit prime and k=9 */
-    ////pass &= test_one_modular_implem<Modular,double> (22, 9, seed);
+    pass &= test_one_modular_implem<Modular,double> (22, 9, seed);
     /* with a 26-bit prime and k=10 */
     //XXX FAIL? pass &= test_one_modular_implem<Modular,double> (30, 10, seed);
 
     /* Test with ModularExtended<double> */
     // XXX limit is 2^50-1
     /* with a 51-bit prime and k=11 */
-    ////pass &= test_one_modular_implem<ModularExtended,double> (51, 11, seed);
+    pass &= test_one_modular_implem<ModularExtended,double> (51, 11, seed);
     /* with a 51-bit prime and k=11 */
     // XXX FAIL pass &= test_one_modular_implem<ModularExtended,double> (51, 11, seed);
 

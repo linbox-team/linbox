@@ -42,6 +42,11 @@
 
 namespace LinBox {
 
+    /**************************************************************************/
+    /**************************************************************************/
+    /**************************************************************************/
+    /**************************************************************************/
+    /**************************************************************************/
 	template<typename Field, typename simd = Simd<typename Field::Element>, uint8_t byn = simd::vect_size, typename Enable=void>
 	class FFT_butterflies : public FFT_init<Field> {
 	public:
@@ -82,7 +87,7 @@ namespace LinBox {
             A += tmp;
         }
 
-        /* Compute A+B, A-B*alpha using Harvey's algorithm.
+        /* Compute A+B, (A-B)*alpha using Harvey's algorithm.
          * Input must satisfy:
          *  - 0 <= A,B < 2*p
          *  - 0 <= alpha < p
@@ -223,6 +228,17 @@ namespace LinBox {
 			MemoryOp<Element,simd>::store(EFGH,T);
 		}
 
+        inline void
+        Butterfly_DIF_mod2p (vect_t &A, vect_t &B,
+                             const vect_t &W, const vect_t &Wp,
+                             const vect_t &P, const vect_t& P2) {
+            vect_t tmp = A;
+            A = SimdMod::add_mod (A, B, P2);
+            B = simd::sub (P2, B);
+            B = simd::add (tmp, B);
+            B = SimdMod::mul_mod (B, W, P, Wp);
+        }
+
 		inline void Butterfly_DIF_mod2p_laststeps(Element* ABCD, Element* EFGH,
 												  const vect_t& W,
 												  const vect_t& Wp,
@@ -274,7 +290,7 @@ namespace LinBox {
 			MemoryOp<Element,simd>::store(EFGH,V4);
 		}
 
-	}; // FFT_butterflies<Field, 4>
+	};
 
 
     /**************************************************************************/
@@ -499,7 +515,7 @@ namespace LinBox {
 		}
 
 
-	}; // FFT_butterflies<Field, 8>
+	};
 
     /**************************************************************************/
     /* NoSimd, floating *******************************************************/
@@ -529,7 +545,7 @@ namespace LinBox {
             this->fld->addin(A, tmp);
         }
 
-    }; // FFT_butterflies<Field, 1, IS_FLOATING>
+    };
 
     /**************************************************************************/
     /* Simd by 4, floating ****************************************************/
@@ -676,7 +692,7 @@ namespace LinBox {
 			MemoryOp<Element,simd>::store(EFGH,V4);
 		}
 
-	}; // FFT_butterflies<Field, 4>
+	};
 
 }
 

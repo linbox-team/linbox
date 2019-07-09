@@ -129,9 +129,13 @@ void bench_one_modular_implem (uint64_t bits, size_t k, unsigned long seed)
 {
 	typedef typename Givaro::Modular<T1, T2> ModImplem;
 
-	RandomFFTPrime RandomGen (1<<bits, seed);
-	T1 p = (T1) RandomGen.randomPrime (k);
+    integer p;
+    RandomFFTPrime::seeding (seed);
+	if (!RandomFFTPrime::randomPrime (p, integer(1)<<bits, k))
+		throw LinboxError ("RandomFFTPrime::randomPrime failed");
 	ModImplem GFp(p);
+
+    cout << endl << string (80, '*') << endl;
 
 	cout << endl << string (80, '*') << endl;
 	cout << "Bench FFT with Modular<" << TypeName<T1>() << ", ";

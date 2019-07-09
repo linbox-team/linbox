@@ -20,7 +20,7 @@
 #/
 
 SUBDIRS=data matrix
-DEFCPPFLAGS  = @DEFAULT_CFLAGS@   -DDISABLE_COMMENTATOR -DLinBoxSrcOnly
+DEFCPPFLAGS  = @DEFAULT_CFLAGS@  -DDISABLE_COMMENTATOR -DLinBoxSrcOnly
 AM_CPPFLAGS = -I$(top_srcdir)  $(DEFCPPFLAGS)  $(DEPS_CFLAGS)
 LDADD =   $(DEPS_LIBS) $(LDFLAGS)
 LDADD += $(top_builddir)/linbox/liblinbox.la
@@ -48,6 +48,8 @@ PERFPUBLISHERFILE=benchmarks-report.xml
 BENCH_BASIC=               \
 		benchmark-example\
 		benchmark-fft-new\
+		benchmark-fft-newnew\
+		benchmark-fft-Bastien\
 		benchmark-fft-old\
 		benchmark-dense-solve\
 		benchmark-order-basis \
@@ -107,6 +109,8 @@ benchmarks: ${EXTRA_PROGRAMS}
 benchmark_example_SOURCES       = benchmark-example.C
 benchmark_order_basis_SOURCES       = benchmark-order-basis.C
 benchmark_fft_new_SOURCES       = benchmark-fft-new.C
+benchmark_fft_newnew_SOURCES       = benchmark-fft-newnew.C
+benchmark_fft_Bastien_SOURCES       = benchmark-fft-Bastien.C
 benchmark_fft_old_SOURCES       = benchmark-fft-old.C
 benchmark_dense_solve_SOURCES       = benchmark-dense-solve.C
 benchmark_solve_cra_SOURCES       = benchmark-solve-cra.C
