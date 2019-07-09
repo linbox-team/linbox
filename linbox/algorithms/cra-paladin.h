@@ -67,7 +67,7 @@ namespace LinBox
 
             this->para_compute<Integer>(Iteration,primeiter);
 			// commentator().stop ("done", NULL, "mmcrait");
-            
+
 			return this->Builder_.result(res);
 		}
 
@@ -79,7 +79,7 @@ namespace LinBox
             this->para_compute<Container>(Iteration,primeiter);
 
 			// commentator().stop ("done", NULL, "mmcrait");
-            
+
 			return this->Builder_.result(res);
 		}
 
@@ -103,7 +103,7 @@ namespace LinBox
             this->para_compute<BlasVector<Domain>>(Iteration,primeiter); // @fixme Should be rebind of Vect into Domain
 
 			// commentator().stop ("done", NULL, "mmcrait");
-            
+
 			return this->Builder_.result(num,den);
 		}
 
