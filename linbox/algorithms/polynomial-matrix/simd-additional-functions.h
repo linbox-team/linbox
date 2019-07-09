@@ -29,6 +29,12 @@
 #include "linbox/util/debug.h"
 #include "linbox/linbox-config.h"
 #include "fflas-ffpack/fflas/fflas_simd.h"
+#include "linbox/algorithms/polynomial-matrix/polynomial-fft-utils.h"
+
+using std::enable_if;
+using std::is_same;
+using std::is_integral;
+using std::is_floating_point;
 
 #if defined(__GNUC__) || defined(__clang__) || defined(__INTEL_COMPILER)
 #define INLINE __attribute__((always_inline)) inline
@@ -55,6 +61,229 @@ namespace LinBox {
 	};
 #endif
 
+    namespace FFT {
+        template<typename Field, typename Simd = Simd<typename Field::Element>,
+                                 typename Enable = void>
+        struct SimdExtra;
+
+        template<typename Field, typename Simd>
+        struct SimdExtra<Field, Simd,
+                        FFT_utils::enable_if_same_element_t<Field, Simd>> {
+            using vect_t = typename Simd::vect_t;
+
+            /******************************************************************/
+            /******************************************************************/
+            /******************************************************************/
+            /* unpacklohi:
+             * Input (with n = Simd::vect_size):
+             *  a = [ a0, a1, ..., an-1 ]
+             *  b = [ b0, b1, ..., bn-1 ]
+             * Ouput (with l = n/2 = Simd::vect_size/2):
+             *  r1 = [ a0, b0, a1, b1, ..., al-1, bl-1 ]
+             *  r2 = [ al, bl, al+1, bl+1, ..., an-1, bn-1 ]
+             */
+            /* Simd128<float> */
+            template <typename S1 = Simd,
+                FFT_utils::enable_if_same_t<S1, Simd128<float>>* = nullptr>
+            static void unpacklohi (vect_t& r1, vect_t& r2, const vect_t a,
+                                                            const vect_t b) {
+                r1 = _mm_unpacklo_ps (a, b);
+                r2 = _mm_unpackhi_ps (a, b);
+            }
+            /* Simd128<double> */
+            template <typename S1 = Simd,
+                FFT_utils::enable_if_same_t<S1, Simd128<double>>* = nullptr>
+            static void unpacklohi (vect_t& r1, vect_t& r2, const vect_t a,
+                                                            const vect_t b) {
+                r1 = _mm_unpacklo_pd (a, b);
+                r2 = _mm_unpackhi_pd (a, b);
+            }
+            /* Simd128<uint16_t> */
+            template <typename S1 = Simd,
+                FFT_utils::enable_if_same_t<S1, Simd128<uint16_t>>* = nullptr>
+            static void unpacklohi (vect_t& r1, vect_t& r2, const vect_t a,
+                                                            const vect_t b) {
+                r1 = _mm_unpacklo_epi16 (a, b);
+                r2 = _mm_unpackhi_epi16 (a, b);
+            }
+            /* Simd128<uint32_t> */
+            template <typename S1 = Simd,
+                FFT_utils::enable_if_same_t<S1, Simd128<uint32_t>>* = nullptr>
+            static void unpacklohi (vect_t& r1, vect_t& r2, const vect_t a,
+                                                            const vect_t b) {
+                r1 = _mm_unpacklo_epi32 (a, b);
+                r2 = _mm_unpackhi_epi32 (a, b);
+            }
+            /* Simd128<uint64_t> */
+            template <typename S1 = Simd,
+                FFT_utils::enable_if_same_t<S1, Simd128<uint64_t>>* = nullptr>
+            static void unpacklohi (vect_t& r1, vect_t& r2, const vect_t a,
+                                                            const vect_t b) {
+                r1 = _mm_unpacklo_epi64 (a, b);
+                r2 = _mm_unpackhi_epi64 (a, b);
+            }
+            /* Simd256<float> */
+            template <typename S1 = Simd,
+                FFT_utils::enable_if_same_t<S1, Simd256<float>>* = nullptr>
+            static void unpacklohi (vect_t& r1, vect_t& r2, const vect_t a,
+                                                            const vect_t b) {
+                vect_t t1, t2;
+                /* 0xd8 = 3120 base_4 */
+			    t1 = _mm256_castpd_ps (_mm256_permute4x64_pd
+                                                  (_mm256_castps_pd (a), 0xd8));
+			    t2 = _mm256_castpd_ps (_mm256_permute4x64_pd
+                                                  (_mm256_castps_pd (b), 0xd8));
+                r1 = _mm256_unpacklo_ps (t1, t2);
+                r2 = _mm256_unpackhi_ps (t1, t2);
+            }
+            /* Simd256<double> */
+            template <typename S1 = Simd,
+                FFT_utils::enable_if_same_t<S1, Simd256<double>>* = nullptr>
+            static void unpacklohi (vect_t& r1, vect_t& r2, const vect_t a,
+                                                            const vect_t b) {
+                vect_t t1, t2;
+                /* 0xd8 = 3120 base_4 */
+			    t1 = _mm256_permute4x64_pd (a, 0xd8);
+			    t2 = _mm256_permute4x64_pd (b, 0xd8);
+                r1 = _mm256_unpacklo_pd (t1, t2);
+                r2 = _mm256_unpackhi_pd (t1, t2);
+            }
+            /* Simd256<uint16_t> */
+            template <typename S1 = Simd,
+                FFT_utils::enable_if_same_t<S1, Simd256<uint16_t>>* = nullptr>
+            static void unpacklohi (vect_t& r1, vect_t& r2, const vect_t a,
+                                                            const vect_t b) {
+                vect_t t1, t2;
+                /* 0xd8 = 3120 base_4 */
+			    t1 = _mm256_permute4x64_epi64 (a, 0xd8);
+			    t2 = _mm256_permute4x64_epi64 (b, 0xd8);
+                r1 = _mm256_unpacklo_epi16 (t1, t2);
+                r2 = _mm256_unpackhi_epi16 (t1, t2);
+            }
+            /* Simd256<uint32_t> */
+            template <typename S1 = Simd,
+                FFT_utils::enable_if_same_t<S1, Simd256<uint32_t>>* = nullptr>
+            static void unpacklohi (vect_t& r1, vect_t& r2, const vect_t a,
+                                                            const vect_t b) {
+                vect_t t1, t2;
+                /* 0xd8 = 3120 base_4 */
+			    t1 = _mm256_permute4x64_epi64 (a, 0xd8);
+			    t2 = _mm256_permute4x64_epi64 (b, 0xd8);
+                r1 = _mm256_unpacklo_epi32 (t1, t2);
+                r2 = _mm256_unpackhi_epi32 (t1, t2);
+            }
+            /* Simd256<uint64_t> */
+            template <typename S1 = Simd,
+                FFT_utils::enable_if_same_t<S1, Simd256<uint64_t>>* = nullptr>
+            static void unpacklohi (vect_t& r1, vect_t& r2, const vect_t a,
+                                                            const vect_t b) {
+                vect_t t1, t2;
+                /* 0xd8 = 3120 base_4 */
+			    t1 = _mm256_permute4x64_epi64 (a, 0xd8);
+			    t2 = _mm256_permute4x64_epi64 (b, 0xd8);
+                r1 = _mm256_unpacklo_epi64 (t1, t2);
+                r2 = _mm256_unpackhi_epi64 (t1, t2);
+            }
+
+            /******************************************************************/
+            /******************************************************************/
+            /******************************************************************/
+            /* pack:
+             * Input (with n = Simd::vect_size):
+             *  a = [ a0, a1, ..., an-1 ]
+             *  b = [ b0, b1, ..., bn-1 ]
+             * Ouput (with l = n/2 = Simd::vect_size/2):
+             *  r1 = [ a0, a2, ..., an-2, b0, b2, ..., bn-2 ]
+             *  r2 = [ a1, a3, ..., an-1, b1, b3, ..., bn-1 ]
+             */
+            /* Simd128<float> */
+            template <typename S1 = Simd,
+                FFT_utils::enable_if_same_t<S1, Simd128<float>>* = nullptr>
+            static void pack (vect_t& r1, vect_t& r2, const vect_t a,
+                                                            const vect_t b) {
+                /* 0xd8 = 3120 base_4 */
+                __m128d t1 = _mm_castps_pd (_mm_permute_ps (a, 0xd8));
+                __m128d t2 = _mm_castps_pd (_mm_permute_ps (b, 0xd8));
+                r1 = _mm_castpd_ps (_mm_unpacklo_pd (t1, t2));
+                r2 = _mm_castpd_ps (_mm_unpackhi_pd (t1, t2));
+            }
+            /* Simd128<double> */
+            template <typename S1 = Simd,
+                FFT_utils::enable_if_same_t<S1, Simd128<double>>* = nullptr>
+            static void pack (vect_t& r1, vect_t& r2, const vect_t a,
+                                                            const vect_t b) {
+                r1 = _mm_unpacklo_pd (a, b);
+                r2 = _mm_unpackhi_pd (a, b);
+            }
+            /* Simd128<uint16_t> */
+            template <typename S1 = Simd,
+                FFT_utils::enable_if_same_t<S1, Simd128<uint16_t>>* = nullptr>
+            static void pack (vect_t& r1, vect_t& r2, const vect_t a,
+                                                            const vect_t b) {
+                vect_t t1, t2, idx;
+                /* 0x =  base_16 */
+                idx = _mm_set_epi8 (15,14,11,10,7,6,3,2,13,12,9,8,5,4,1,0);
+                t1 = _mm_shuffle_epi8 (a, idx);
+                t2 = _mm_shuffle_epi8 (b, idx);
+                r1 = _mm_unpacklo_epi64 (t1, t2);
+                r2 = _mm_unpackhi_epi64 (t1, t2);
+            }
+            /* Simd128<uint32_t> */
+            template <typename S1 = Simd,
+                FFT_utils::enable_if_same_t<S1, Simd128<uint32_t>>* = nullptr>
+            static void pack (vect_t& r1, vect_t& r2, const vect_t a,
+                                                            const vect_t b) {
+                vect_t t1, t2;
+                /* 0xd8 = 3120 base_4 */
+                t1 = _mm_shuffle_epi32 (a, 0xd8);
+                t2 = _mm_shuffle_epi32 (b, 0xd8);
+                r1 = _mm_unpacklo_epi64 (t1, t2);
+                r2 = _mm_unpackhi_epi64 (t1, t2);
+            }
+            /* Simd128<uint64_t> */
+            template <typename S1 = Simd,
+                FFT_utils::enable_if_same_t<S1, Simd128<uint64_t>>* = nullptr>
+            static void pack (vect_t& r1, vect_t& r2, const vect_t a,
+                                                            const vect_t b) {
+                r1 = _mm_unpacklo_epi64 (a, b);
+                r2 = _mm_unpackhi_epi64 (a, b);
+            }
+            /* Simd256<double> */
+            template <typename S1 = Simd,
+                FFT_utils::enable_if_same_t<S1, Simd256<double>>* = nullptr>
+            static void pack (vect_t& r1, vect_t& r2, const vect_t a,
+                                                            const vect_t b) {
+                r1 = _mm256_unpacklo_pd (a, b);
+                r2 = _mm256_unpackhi_pd (a, b);
+                /* 0xd8 = 3120 base_4 */
+			    r1 = _mm256_permute4x64_pd (r1, 0xd8);
+			    r2 = _mm256_permute4x64_pd (r2, 0xd8);
+            }
+            /* Simd256<uint32_t> */
+            template <typename S1 = Simd,
+                FFT_utils::enable_if_same_t<S1, Simd256<uint32_t>>* = nullptr>
+            static void pack (vect_t& r1, vect_t& r2, const vect_t a,
+                                                            const vect_t b) {
+                vect_t t1, t2, idx;
+                idx = _mm256_set_epi32 (7, 5, 3, 1, 6, 4, 2, 0);
+                t1 = _mm256_permutevar8x32_epi32 (a, idx);
+                t2 = _mm256_permutevar8x32_epi32 (b, idx);
+                r1 = _mm256_permute2x128_si256 (t1, t2, 0x20);
+                r2 = _mm256_permute2x128_si256 (t1, t2, 0x31);
+            }
+            /* Simd256<uint64_t> */
+            template <typename S1 = Simd,
+                FFT_utils::enable_if_same_t<S1, Simd256<uint64_t>>* = nullptr>
+            static void pack (vect_t& r1, vect_t& r2, const vect_t a,
+                                                            const vect_t b) {
+                r1 = _mm256_unpacklo_epi64 (a, b);
+                r2 = _mm256_unpackhi_epi64 (a, b);
+                /* 0xd8 = 3120 base_4 */
+			    r1 = _mm256_permute4x64_epi64 (r1, 0xd8);
+			    r2 = _mm256_permute4x64_epi64 (r2, 0xd8);
+            }
+        };
+    }
 
 #define Simd_vect typename Simd::vect_t
 
@@ -429,12 +658,12 @@ namespace LinBox {
 #endif
 
 
-    template<class Field, class Simd>
+    template<class Field, class Simd,
+             typename enable_if<is_same<typename Field::Element, typename Simd::scalar_t>::value>::type* = nullptr>
     struct SimdModular {
         using Element = typename Field::Element;
         using vect_t = typename Simd::vect_t;
-        //TODO use compute type if possible
-        //using Compute = typename Field::Compute;
+        using Compute_t = typename Field::Compute_t;
 
         /* Reduce from [0..2p[ to [0..p[ */
         static INLINE vect_t
@@ -466,8 +695,32 @@ namespace LinBox {
         }
 
         /* mul mod for integral type */
-        template <class T=vect_t>
-        static INLINE typename std::enable_if<std::is_integral<typename Simd::scalar_t>::value, T>::type
+        /* Element and Compute has same size, Element can store a full mul */
+        template <class T=vect_t,
+            typename enable_if<is_integral<Element>::value, T>::type* = nullptr,
+            typename enable_if<sizeof(Element) == sizeof(Compute_t), T>::type* = nullptr>
+        static INLINE T
+        mul_mod (const vect_t& a, const vect_t& b, const vect_t& p,
+                 const vect_t& bp) {
+#if 0
+            vect_t q = Simd::mul (a, bp);
+            q = Simd::template sra<4*sizeof (Element)> (q);
+            vect_t c = Simd::mul (a, b);
+            vect_t t = Simd::mul (q, p);
+            return Simd::sub(c, t);
+#else
+            vect_t q = Simd::mulhi(a,bp);
+            vect_t c = Simd::mullo(a,b);
+            vect_t t = Simd::mullo(q,p);
+            return Simd::sub(c,t);
+#endif
+        }
+
+        /* Compute is twice as big as Compute */
+        template <class T=vect_t,
+            typename enable_if<is_integral<Element>::value, T>::type* = nullptr,
+            typename enable_if<sizeof(Element) != sizeof(Compute_t), T>::type* = nullptr>
+        static INLINE T
         mul_mod (const vect_t& a, const vect_t& b, const vect_t& p,
                  const vect_t& bp) {
             vect_t q = Simd::mulhi(a,bp);
@@ -477,8 +730,9 @@ namespace LinBox {
         }
 
         /* mul mod for floating type */
-        template <class T=vect_t>
-        static INLINE typename std::enable_if<std::is_floating_point<typename Simd::scalar_t>::value, T>::type
+        template <class T=vect_t,
+            typename enable_if<is_floating_point<Element>::value, T>::type* = nullptr>
+        static INLINE T
         mul_mod (const vect_t& x, const vect_t& y, const vect_t& p,
                  const vect_t& u) {
             // u = 1/p
@@ -518,6 +772,19 @@ namespace LinBox {
         }
     };
 
+    /*
+    //do not forget using Givaro::Modular;
+    template<class T1, class T2, class Simd>
+    static INLINE typename std::enable_if<std::is_floating_point<T1>::value, typename Simd::vect_t>::type
+    SimdModular<Modular<T1, T2>, Simd>::mul_mod (const typename Simd::vect_t& x, const typename Simd::vect_t& y, const typename Simd::vect_t& p,
+                 const typename Simd::vect_t& u) {
+            // u = 1/p
+            // TODO If fixed argument y, we can save a mul
+            typename Simd::vect_t xy = Simd::mul (x, y);
+            typename Simd::vect_t xyu = Simd::mul (xy, u);
+            typename Simd::vect_t q = Simd::floor (xyu);
+            return Simd::fnmadd (xy, q, p);
+    }*/
 }
 
 #endif // __LINBOX_simd_additional_functions_H

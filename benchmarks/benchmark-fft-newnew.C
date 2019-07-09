@@ -47,6 +47,7 @@ template<template <typename ...> class> const char *TypeName();
 #define REGISTER_TYPE_NAME(type) \
 	template<> const char *TypeName<type>(){return #type;}
 
+REGISTER_TYPE_NAME(float);
 REGISTER_TYPE_NAME(double);
 REGISTER_TYPE_NAME(uint16_t);
 REGISTER_TYPE_NAME(uint32_t);
@@ -56,107 +57,96 @@ REGISTER_TYPE_NAME(Modular);
 REGISTER_TYPE_NAME(ModularExtended);
 
 /******************************************************************************/
-template<typename Field>
-struct Benchs {
-	typedef typename Field::Element Elt;
-	typedef AlignedAllocator<Elt, Alignment::DEFAULT> _Alignement;
-	typedef typename std::vector<Elt, _Alignement> EltVector;
+template<typename Field, typename Simd>
+struct BenchFFT : public FFT__<Field, Simd> {
+    using base = FFT__<Field, Simd>;
+    using elt_vect_t = typename Simd::aligned_vector;
 
 	static const size_t min_run = 4; /* do at least this number of run of fft */
-	const Field& _F;
-	size_t _k;
-	size_t _n;
-	FFT_init<Field> _fft;
 
-	/* ctor */
-	Benchs (const Field& F, size_t k) : _F(F), _k(k), _n(1<<k), _fft(F,k) {
-	}
+    BenchFFT (const Field &F, size_t k, unsigned long seed) : base (F, k) {
 
-	/* bench DIF and DIT */
-	template<template <typename Elt> typename SimdType>
-	void actual_bench (const EltVector& in) {
-		Timer chrono;
-		double time, Miops;
-		size_t cnt;
-		FFT_algorithms<Field, SimdType<Elt>> fft_algo (_fft);
-		EltVector v(_n);
-		string s;
-		s.append ("<"); s.append(SimdType<Elt>::type_string()); s.append ("> ");
-		s.append (string (80-(s.size()+36), '.'));
+        elt_vect_t in (this->n), v(this->n);
+        Timer chrono;
+        double time;
+        size_t cnt;
+
+        /* Generate random input */
+        typename Field::RandIter Gen (F, 0, seed+k); /* 0 has no meaning here */
+        for (auto elt = in.begin(); elt < in.end(); elt++)
+            Gen.random (*elt);
 
 		/* DIF */
 		v = in;
 		chrono.start();
 		for (cnt = 0; cnt < min_run || chrono.realElapsedTime() < 1 ; cnt++)
-			fft_algo.DIF (v.data());
-		time = chrono.userElapsedTime()/cnt;
-		Miops = 17 * (_k<<(_k-1)) / (1e6 * time); /* 3/2 n log n */
-		cout << "  DIF" << s;
-		cout.precision(2); cout.width(10); cout<< scientific << time << " s, ";
-		cout.precision(2); cout.width(10); cout<<fixed<<Miops << " Miops";
-		cout << endl;
-
-		/* DIF_reversed */
-		v = in;
-		chrono.start();
-		for (cnt = 0; cnt < min_run || chrono.realElapsedTime() < 1 ; cnt++)
-			fft_algo.DIF_reversed (v.data());
-		time = chrono.userElapsedTime()/cnt;
-		Miops = 17 * (_k<<(_k-1)) / (1e6 * time); /* 3/2 n log n */
-		cout << " DIFr" << s;
-		cout.precision(2); cout.width(10); cout<< scientific << time << " s, ";
-		cout.precision(2); cout.width(10); cout<<fixed<<Miops << " Miops";
-		cout << endl;
-
-		/* DIT */
-		v = in;
-		chrono.start();
-		for (cnt = 0; cnt < min_run || chrono.realElapsedTime() < 1 ; cnt++)
-			fft_algo.DIT (v.data());
-		time = chrono.userElapsedTime()/cnt;
-		Miops = 17 * (_k<<(_k-1)) / (1e6 * time); /* 3/2 n log n */
-		cout << "  DIT" << s;
-		cout.precision(2); cout.width(10); cout<< scientific << time << " s, ";
-		cout.precision(2); cout.width(10); cout<<fixed<<Miops << " Miops";
-		cout << endl;
+			this->DIF (v.data());
+		time = chrono.userElapsedTime()/cnt; /* time per iteration */
+        print_result_line ("DIF", time);
 
 		/* DIT_reversed */
 		v = in;
 		chrono.start();
 		for (cnt = 0; cnt < min_run || chrono.realElapsedTime() < 1 ; cnt++)
-			fft_algo.DIT_reversed (v.data());
-		time = chrono.userElapsedTime()/cnt;
-		Miops = 17 * (_k<<(_k-1)) / (1e6 * time); /* 3/2 n log n */
-		cout << " DITr" << s;
+			this->DIT_reversed (v.data());
+		time = chrono.userElapsedTime()/cnt; /* time per iteration */
+        print_result_line ("DIT_reversed", time);
+
+		/* FFT direct */
+		v = in;
+		chrono.start();
+		for (cnt = 0; cnt < min_run || chrono.realElapsedTime() < 1 ; cnt++)
+			this->FFT_direct (v.data());
+		time = chrono.userElapsedTime()/cnt; /* time per iteration */
+        print_result_line ("FFT_direct", time);
+
+        cout << endl;
+
+		/* DIT */
+		v = in;
+		chrono.start();
+		for (cnt = 0; cnt < min_run || chrono.realElapsedTime() < 1 ; cnt++)
+			this->DIT (v.data());
+		time = chrono.userElapsedTime()/cnt; /* time per iteration */
+        print_result_line ("DIT", time);
+
+		/* DIF_reversed */
+		v = in;
+		chrono.start();
+		for (cnt = 0; cnt < min_run || chrono.realElapsedTime() < 1 ; cnt++)
+			this->DIF_reversed (v.data());
+		time = chrono.userElapsedTime()/cnt; /* time per iteration */
+        print_result_line ("DIF_reversed", time);
+
+		/* FFT inverse (without div) */
+		v = in;
+		chrono.start();
+		for (cnt = 0; cnt < min_run || chrono.realElapsedTime() < 1 ; cnt++)
+			this->FFT_inverse (v.data(), false);
+		time = chrono.userElapsedTime()/cnt; /* time per iteration */
+        print_result_line ("FFT_inverse(nodiv)", time);
+
+		/* FFT inverse */
+		v = in;
+		chrono.start();
+		for (cnt = 0; cnt < min_run || chrono.realElapsedTime() < 1 ; cnt++)
+			this->FFT_inverse (v.data(), true);
+		time = chrono.userElapsedTime()/cnt; /* time per iteration */
+        print_result_line ("FFT_inverse", time);
+
+    }
+
+    void
+    print_result_line (const char *name, double time) {
+        /* Miops = #operation (~3/2 n log n) / time / 1e6 */
+		double Miops = 17 * (this->l2n<<(this->l2n-1)) / (1e6 * time);
+        size_t t = strlen(name) + Simd::type_string().size() + 15 + 35;
+		cout << "  " << string (80-t, ' ') << name << "<";
+        cout << Simd::type_string() << "> " << string (15, '.');
 		cout.precision(2); cout.width(10); cout<< scientific << time << " s, ";
 		cout.precision(2); cout.width(10); cout<<fixed<<Miops << " Miops";
 		cout << endl;
-	}
-
-	/* draw random vector and bench DIF and DIT for all available SIMD implem */
-	void bench (unsigned long seed) {
-		EltVector in(_n);
-
-		/* Generate random input */
-		typename Field::RandIter Gen (_F, 0, seed+_k); /*0 has no meaning here*/
-		for (auto elt = in.begin(); elt < in.end(); elt++)
-			Gen.random (*elt);
-
-		/* NoSimd */
-		actual_bench<NoSimd> (in);
-
-		/* Simd128 */
-#if defined(__FFLASFFPACK_HAVE_SSE4_1_INSTRUCTIONS)
-		if (Simd128<Elt>::vect_size == 4 || Simd128<Elt>::vect_size == 8)
-			actual_bench<Simd128> (in);
-#endif
-
-		/* Simd256 */
-#if defined(__FFLASFFPACK_HAVE_AVX2_INSTRUCTIONS)
-		if (Simd256<Elt>::vect_size == 4 || Simd256<Elt>::vect_size == 8)
-			actual_bench<Simd256> (in);
-#endif
-	}
+    }
 };
 
 /* Bench FFT on polynomial with coefficients in ModImplem<Elt, C...> (i.e.,
@@ -197,8 +187,23 @@ void bench_one_modular_implem (uint64_t bits, size_t k, unsigned long seed)
         cout << ", " << TypeName<C...>();
     cout << ">, p=" << GFp.cardinality() << " (" << bits << " bits, ";
     cout << "n=2^" << k << " divides p-1)" << endl;
-    Benchs<ModImplem<Elt, C...>> Bench(GFp, k);
-    Bench.bench (seed);
+
+    BenchFFT<ModImplem<Elt, C...>, NoSimd<Elt>> BenchNoSimd (GFp, k, seed);
+
+    /* Simd128 */
+#if defined(__FFLASFFPACK_HAVE_SSE4_1_INSTRUCTIONS)
+    cout << string (15, ' ') << string (50, '-') << string (15, ' ') << endl;
+    BenchFFT<ModImplem<Elt, C...>, Simd128<Elt>> BenchSimd128 (GFp, k, seed);
+#endif
+
+    /* Simd256 */
+#if defined(__FFLASFFPACK_HAVE_AVX2_INSTRUCTIONS)
+    cout << string (15, ' ') << string (50, '-') << string (15, ' ') << endl;
+    BenchFFT<ModImplem<Elt, C...>, Simd256<Elt>> BenchSimd256 (GFp, k, seed);
+#endif
+
+    // FIXME Simd512: Which macro should be used to discriminate against
+    // simd512 for both floating and integral type ?
 }
 
 /******************************************************************************/
@@ -228,10 +233,13 @@ int main (int argc, char *argv[]) {
 	}
 
 	/* Bench with Modular<double, double> */
-	////bench_one_modular_implem<Modular, double> (bits, k, seed);
+	bench_one_modular_implem<Modular, double> (bits, k, seed);
+
+	/* Bench with Modular<double, double> */
+	bench_one_modular_implem<Modular, double> (bits, k, seed);
 
 	/* Bench with ModularExtended<double> */
-	////bench_one_modular_implem<ModularExtended, double> (bits, k, seed);
+	bench_one_modular_implem<ModularExtended, double> (bits, k, seed);
 
 	/* Bench with Modular<uint16_t,uint32_t> */
 	bench_one_modular_implem<Modular, uint16_t, uint32_t> (bits, k, seed);

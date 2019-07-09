@@ -41,17 +41,29 @@
 
 namespace LinBox {
 
-	template<typename Field, typename simd = Simd<typename Field::Element>, uint8_t vect_size = simd::vect_size, typename Enable = void>
-	class FFT_algorithms : public FFT_butterflies<Field, simd, vect_size> {
-	public:
-		using Element = typename Field::Element;
-		FFT_algorithms(const FFT_init<Field>& f_i) : FFT_butterflies<Field, simd, vect_size>(f_i) {}
-		//void DIF_mod2p (Element *fft);
-		//void DIT_mod4p (Element *fft);
-		void DIF (Element *fft);
-		void DIT (Element *fft);
-	}; // FFT_algorithms
+    template<typename Element, typename Residu>
+    static inline void
+    sub_if_greater (Element &e, const Residu p)
+    {
+        e -= (e >= p) ? p : 0;
+    }
 
+    /* */
+    template<typename Field, typename simd = Simd<typename Field::Element>, uint8_t vect_size = simd::vect_size, typename Enable = void>
+    class FFT_algorithms : public FFT_butterflies<Field, simd, vect_size> {
+        public:
+            using Element = typename Field::Element;
+            FFT_algorithms (const FFT_init<Field>& f_i) : FFT_butterflies<Field, simd, vect_size>(f_i) {}
+            void DIF (Element *fft);
+            void DIF_reversed (Element *fft);
+            void DIT (Element *fft);
+            void DIT_reversed (Element *fft);
+    };
+
+
+    /**************************************************************************/
+    /* NoSimd, integral *******************************************************/
+    /**************************************************************************/
 	template<typename Field>
 	class FFT_algorithms<Field, NoSimd<typename Field::Element>, 1, IS_INTEGRAL> : public FFT_butterflies<Field, NoSimd<typename Field::Element>, 1> {
 	public:
@@ -59,17 +71,71 @@ namespace LinBox {
 
 		FFT_algorithms(const FFT_init<Field>& f_i) : FFT_butterflies<Field, NoSimd<typename Field::Element>, 1>(f_i) {}
 
-		void DIF_mod2p (Element *fft) {
-			Element * tab_w = &(this->pow_w) [0];
-			Element * tab_wp= &(this->pow_wp)[0];
-			for (size_t w = this->n >> 1, f = 1; w != 0; tab_w+=w, tab_wp+=w, f <<= 1, w >>= 1){
-				// w : witdh of butterflies
-				// f : # families of butterflies
-				for (size_t i = 0; i < f; i++)
-					for (size_t j = 0; j < w; j++)
-						this->Butterfly_DIF_mod2p(fft[(i << 1)*w+j], fft[((i << 1)+1)*w+j], tab_w[j],tab_wp[j]);
-			}
-		}
+        void DIF_mod2p (Element *fft) {
+            Element * tab_w = this->pow_w.data();
+            Element * tab_wp= this->pow_wp.data();
+            /* n : number of elements of the array fft (always of power of 2)
+             * f : number of families of butterflies
+             * w : width of butterflies
+             */
+#if 1
+            for (size_t w = this->n >> 1, f = 1; w != 0;
+                                        tab_w+=w, tab_wp+=w, f <<= 1, w >>= 1){
+                for (size_t i = 0; i < f; i++)
+                    for (size_t j = 0; j < w; j++)
+                        this->Butterfly_DIF_mod2p (fft[(i << 1)*w+j],
+                                                    fft[((i << 1)+1)*w+j],
+                                                    tab_w[j], tab_wp[j]);
+            }
+#else
+            size_t w = this->n >> 1;
+            for (size_t f = 1; w > 1; tab_w+=w, tab_wp+=w,          w >>= 1,
+                                      tab_w+=w, tab_wp+=w, f <<= 2, w >>= 1){
+                for (size_t i = 0; i < f; i++) {
+                    Element *b0 = fft + (i << 1)*w;
+                    Element *b1 = b0 + (w >> 1);
+                    Element *b2 = b1 + (w >> 1);
+                    Element *b3 = b2 + (w >> 1);
+                    for (size_t j = 0; j < (w >> 1); j++) {
+                        size_t j2 = j + (w >> 1);
+                        this->Butterfly_DIF_mod2p (b0[j], b2[j],
+                                                    tab_w[j], tab_wp[j]);
+                        this->Butterfly_DIF_mod2p (b1[j], b3[j],
+                                                    tab_w[j2], tab_wp[j2]);
+
+                        this->Butterfly_DIF_mod2p (b0[j], b1[j],
+                                                    tab_w[w+j], tab_wp[w+j]);
+                        this->Butterfly_DIF_mod2p (b2[j], b3[j],
+                                                    tab_w[w+j], tab_wp[w+j]);
+                    }
+                }
+            }
+            if (w == 1) {
+                for (size_t i = 0; i < (this->n >> 1); i++) {
+                    this->Butterfly_DIF_mod2p (fft[(i << 1)],
+                                               fft[(i << 1)+1],
+                                               tab_w[0], tab_wp[0]);
+                }
+            }
+#endif
+        }
+
+        void DIF_reversed_mod2p (Element *fft) {
+            Element * tab_w = this->pow_w.data();
+            Element * tab_wp= this->pow_wp.data();
+            size_t m = this->n;
+            for (size_t k = 1; k < this->n; k <<= 1, tab_w+=m, tab_wp+=m) {
+                m >>= 1; /* divide by 2 */
+                for (size_t i = 0; i < m; i++) {
+                    size_t j1 = i * k * 2;
+                    size_t j2 = j1 + k;
+                    Element w = this->pow_w_br[this->n - 2*m + i];
+                    Element wp = this->pow_wp_br[this->n - 2*m + i];
+                    for (size_t j = j1; j < j2; j++)
+                        this->Butterfly_DIF_mod2p (fft[j], fft[j+k], w, wp);
+                }
+            }
+        }
 
 		void DIT_mod4p (Element *fft) {
 			Element * tab_w = &(this->pow_w) [this->n-2];
@@ -80,26 +146,55 @@ namespace LinBox {
 						this->Butterfly_DIT_mod4p(fft[(i << 1)*w+j], fft[((i << 1)+1)*w+j], tab_w[j], tab_wp[j]);
 		}
 
-		void DIF (Element *fft) {
-			DIF_mod2p(fft);
-			//DIF_mod2p_iterative(fft);
-			for (uint64_t i = 0; i < this->n; i++) {
-				//				if (fft[i] >= (_pl << 1)) fft[i] -= (_pl << 1);
-				if (fft[i] >= this->_pl) fft[i] -= this->_pl;
-			}
-		}
+        void DIT_reversed_mod4p (Element *fft) {
+            size_t k = this->n;
+            for (size_t m = 1; m < this->n; m <<= 1) {
+                k >>= 1; /* divide by 2 */
+                for (size_t i = 0; i < m; i++) {
+                    size_t j1 = i * k * 2;
+                    size_t j2 = j1 + k;
+                    Element w = this->pow_w_br[this->n - 2*m + i];
+                    Element wp = this->pow_wp_br[this->n - 2*m + i];
+                    for (size_t j = j1; j < j2; j++)
+                        this->Butterfly_DIT_mod4p (fft[j], fft[j+k], w, wp);
+                }
+            }
+        }
 
-		void DIT (Element *fft) {
-			DIT_mod4p(fft);
-			//DIF_mod2p_iterative(fft);
-			for (uint64_t i = 0; i < this->n; i++) {
-				if (fft[i] >= (this->_pl << 1)) fft[i] -= (this->_pl << 1);
-				if (fft[i] >= this->_pl) fft[i] -= this->_pl;
-			}
-		}
+        void DIF (Element *fft) {
+            DIF_mod2p(fft);
+            for (uint64_t i = 0; i < this->n; i++)
+                sub_if_greater (fft[i], this->_pl);
+        }
 
-	}; // FFT_algorithms<Field, NoSimd<typename Field::Element>, 1>
+        void DIF_reversed (Element *fft) {
+            DIF_reversed_mod2p(fft);
+            for (uint64_t i = 0; i < this->n; i++)
+                sub_if_greater (fft[i], this->_pl);
+        }
 
+
+        void DIT (Element *fft) {
+            DIT_mod4p(fft);
+            for (uint64_t i = 0; i < this->n; i++) {
+                sub_if_greater (fft[i], this->_dpl);
+                sub_if_greater (fft[i], this->_pl);
+            }
+        }
+
+        void DIT_reversed (Element *fft) {
+            DIT_reversed_mod4p(fft);
+            for (uint64_t i = 0; i < this->n; i++) {
+                sub_if_greater (fft[i], this->_dpl);
+                sub_if_greater (fft[i], this->_pl);
+            }
+        }
+
+	};
+
+    /**************************************************************************/
+    /* Simd by 4, integral ****************************************************/
+    /**************************************************************************/
 	template<typename Field, typename simd>
 	class FFT_algorithms<Field, simd, 4, IS_INTEGRAL> : public FFT_butterflies<Field, simd, 4> {
 	public:
@@ -160,6 +255,65 @@ namespace LinBox {
 			}
 		}
 
+        void DIF_reversed_mod2p (Element *fft) {
+			const vect_t P = simd::set1 (this->_pl);
+			const vect_t P2 = simd::set1(this->_dpl);
+            size_t m = this->n;
+            /* First two steps */
+#if 0
+			FFT_algorithms<Field, NoSimd<Element>, 1> fft_algo_1 (FFT_init<Field> (this->field(),this->ln,this->getRoot()));
+            for (size_t k = 1; k < 4; k <<= 1, tab_w+=m, tab_wp+=m) {
+                m >>= 1; /* divide by 2 */
+                for (size_t i = 0; i < m; i++) {
+                    size_t j1 = i * k * 2;
+                    size_t j2 = j1 + k;
+                    Element w = this->pow_w_br[this->n - 2*m + i];
+                    Element wp = this->pow_wp_br[this->n - 2*m + i];
+                    for (size_t j = j1; j < j2; j++)
+                        fft_algo_1.Butterfly_DIF_mod2p (fft[j], fft[j+k], w, wp);
+                }
+            }
+#else
+            m >>= 2;
+            for (size_t k = 4; k < 16; k <<= 1) {
+                m >>= 1; /* divide by 2 */
+                for (size_t i = 0; i < m; i++) {
+                    size_t j1 = i * k * 2;
+                    size_t j2 = j1 + k;
+                    const vect_t W = simd::set1 (this->pow_w_br[this->n-2*m+i]);
+                    const vect_t Wp =simd::set1(this->pow_wp_br[this->n-2*m+i]);
+                    for (size_t j = j1; j < j2; j+=4)
+                    {
+                        vect_t A = simd::load (&(fft[j]));
+                        vect_t B = simd::load (&(fft[j+k]));
+                        this->Butterfly_DIF_mod2p (A, B, W, Wp, P, P2);
+                        simd::store (&(fft[j]), A);
+                        simd::store (&(fft[j+k]), B);
+                    }
+                }
+            }
+            m = this->n >> 2;
+#endif
+            /* main loop */
+            for (size_t k = 4; k < this->n; k <<= 1) {
+                m >>= 1; /* divide by 2 */
+                for (size_t i = 0; i < m; i++) {
+                    size_t j1 = i * k * 2;
+                    size_t j2 = j1 + k;
+                    const vect_t W = simd::set1 (this->pow_w_br[this->n-2*m+i]);
+                    const vect_t Wp =simd::set1(this->pow_wp_br[this->n-2*m+i]);
+                    for (size_t j = j1; j < j2; j+=4)
+                    {
+                        vect_t A = simd::load (&(fft[j]));
+                        vect_t B = simd::load (&(fft[j+k]));
+                        this->Butterfly_DIF_mod2p (A, B, W, Wp, P, P2);
+                        simd::store (&(fft[j]), A);
+                        simd::store (&(fft[j+k]), B);
+                    }
+                }
+            }
+        }
+
 		void DIT_mod4p (Element *fft) {
 			const uint64_t& n = this->n;
 			const Residu_t& _pl = this->_pl;
@@ -215,9 +369,23 @@ namespace LinBox {
 				return;
 			} else {
 				for (uint64_t i = 0; i < this->n; i++)
-					if (fft[i] >= this->_pl) fft[i] -= this->_pl;
+					sub_if_greater (fft[i], this->_pl);
 			}
 		}
+
+        void DIF_reversed (Element *fft) {
+            DIF_reversed_mod2p (fft);
+
+            if (this->n >= 4) {
+                vect_t P;
+                P  = simd::set1 (this->_pl);
+                for (uint64_t i = 0; i < this->n; i += 4)
+                    SimdMod::reduce (&fft[i], P);
+            } else {
+                for (uint64_t i = 0; i < this->n; i++)
+                    sub_if_greater (fft[i], this->_pl);
+            }
+        }
 
 		void DIT (Element *fft) {
 			DIT_mod4p(fft);
@@ -234,14 +402,36 @@ namespace LinBox {
 
 			} else {
 				for (uint64_t i = 0; i < this->n; i++) {
-					if (fft[i] >= (this->_pl << 1)) fft[i] -= (this->_pl << 1);
-					if (fft[i] >= this->_pl) fft[i] -= this->_pl;
+					sub_if_greater (fft[i], this->_dpl);
+					sub_if_greater (fft[i], this->_pl);
 				}
 			}
 		}
 
-	}; // FFT_algorithms<Field, NoSimd<typename Field::Element>, 4>
+        void DIT_reversed (Element *fft) {
+            DIF_mod2p (fft);//DIT_reversed_mod4p(fft); // TODO
 
+            if (this->n >= 4) {
+                vect_t P, P2;
+                P  = simd::set1 (this->_pl);
+                P2 = simd::set1 (this->_dpl);
+                for (uint64_t i = 0; i < this->n; i += 4) {
+                    SimdMod::reduce (&fft[i], P2);
+                    SimdMod::reduce (&fft[i], P);
+                }
+            } else {
+                for (uint64_t i = 0; i < this->n; i++) {
+                    sub_if_greater (fft[i], this->_dpl);
+                    sub_if_greater (fft[i], this->_pl);
+                }
+            }
+        }
+
+	};
+
+    /**************************************************************************/
+    /* Simd by 8, integral ****************************************************/
+    /**************************************************************************/
 	template<typename Field, typename simd>
 	class FFT_algorithms<Field, simd, 8, IS_INTEGRAL> : public FFT_butterflies<Field, simd, 8> {
 	public:
@@ -378,7 +568,7 @@ namespace LinBox {
 
 			} else {
 				for (uint64_t i = 0; i < this->n; i++)
-					if (fft[i] >= this->_pl) fft[i] -= this->_pl;
+					sub_if_greater (fft[i], this->_pl);
 			}
 		}
 
@@ -397,14 +587,24 @@ namespace LinBox {
 
 			} else {
 				for (uint64_t i = 0; i < this->n; i++) {
-					if (fft[i] >= (this->_pl << 1)) fft[i] -= (this->_pl << 1);
-					if (fft[i] >= this->_pl) fft[i] -= this->_pl;
+					sub_if_greater (fft[i], this->_dpl);
+					sub_if_greater (fft[i], this->_pl);
 				}
 			}
 		}
 
-	}; // FFT_algorithms<Field, NoSimd<typename Field::Element>, 8>
+        void DIF_reversed (Element *fft) {
+            DIT (fft); // TODO
+        }
 
+        void DIT_reversed (Element *fft) {
+            DIF (fft); // TODO
+        }
+	};
+
+    /**************************************************************************/
+    /* NoSimd, floating *******************************************************/
+    /**************************************************************************/
 	template<typename Field>
 	class FFT_algorithms<Field, NoSimd<typename Field::Element>, 1, IS_FLOATING> : public FFT_butterflies<Field, NoSimd<typename Field::Element>, 1> {
 	public:
@@ -422,6 +622,23 @@ namespace LinBox {
 			}
 		}
 
+        void DIF_reversed (Element *fft) {
+            Element * tab_w = this->pow_w.data();
+            Element * tab_wp= this->pow_wp.data();
+            size_t m = this->n;
+            for (size_t k = 1, T=this->ln-1; k < this->n; k <<= 1, T--,
+                                                          tab_w+=m, tab_wp+=m) {
+                m >>= 1; /* divide by 2 */
+                for (size_t i = 0; i < m; i++) {
+                    size_t j1 = i * k * 2;
+                    size_t j2 = j1 + k;
+                    Element w = this->pow_w_br[this->n - 2*m + i];
+                    for (size_t j = j1; j < j2; j++)
+                        this->Butterfly_DIF (fft[j], fft[j+k], w);
+                }
+            }
+        }
+
 		void DIT (Element *fft) {
 			for (size_t w = 1, f = this->n >> 1; f >= 1; w <<= 1, f >>= 1)
 				for (size_t i = 0; i < f; i++)
@@ -429,8 +646,26 @@ namespace LinBox {
 						this->Butterfly_DIT(fft[(i << 1)*w+j], fft[((i << 1)+1)*w+j], (this->pow_w)[j*f]);
 		}
 
-	}; // FFT_algorithms<Field, NoSimd<typename Field::Element>, 1>
+        void DIT_reversed (Element *fft) {
+            size_t k = this->n;
+            for (size_t m = 1, T=0; m < this->n; m <<= 1, T++) {
+                k >>= 1; /* divide by 2 */
+                for (size_t i = 0; i < m; i++) {
+                    size_t j1 = i * k * 2;
+                    size_t j2 = j1 + k;
+                    Element w = this->pow_w_br[this->n - 2*m + i];
+                    for (size_t j = j1; j < j2; j++)
+                        this->Butterfly_DIT (fft[j], fft[j+k], w);
+                }
+            }
+        }
 
+	};
+
+
+    /**************************************************************************/
+    /* Simd by 4, floating ****************************************************/
+    /**************************************************************************/
 	template<typename Field, typename simd>
 	class FFT_algorithms<Field, simd, 4, IS_FLOATING> : public FFT_butterflies<Field, simd, 4> {
 	public:
@@ -530,7 +765,7 @@ namespace LinBox {
 			}
 		}
 
-	}; // FFT_algorithms<Field, NoSimd<typename Field::Element>, 4>
+	};
 }
 
 #undef IS_INTEGRAL
