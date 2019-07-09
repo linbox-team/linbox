@@ -313,9 +313,11 @@ namespace LinBox
              * a row vector in dense format
              */
             //@{
-        typedef Subvector<typename Storage::iterator, typename Storage::const_iterator> Row;
-        typedef Subvector<typename Storage::const_iterator>                    ConstRow;
-
+        // typedef Subvector<typename Storage::iterator, typename Storage::const_iterator> Row;
+        // typedef Subvector<typename Storage::const_iterator>                    ConstRow;
+        typedef typename BlasVector<Field,Storage>::subVectortype Row;
+        typedef typename BlasVector<Field,Storage>::constSubVectortype ConstRow;
+        
             /*!  Row Iterator.
              * @ingroup iterators
              * @brief NO DOC
