@@ -70,7 +70,7 @@ int main (int argc, char **argv)
 	t.start();
 
 	for (int i=0; i < 1 ; ++i) {
-		if (RR.reconstructRational(a,b,x,m,5)) {
+		if (RR.RationalReconstruction(a,b,x,m,5)) {
 			cout << "Found a,b: "<< a <<"=" << x << "x" << b << " mod " << m << endl << flush;
 			cout << "Does agree with bounds\n";
 		}
