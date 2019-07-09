@@ -75,6 +75,12 @@ BASIC_TESTS =            \
     test-solve-full             \
     test-smith-form-valence  \
     test-local-smith-form-sparseelim\
+    test-smith-form             \
+    test-smith-form-adaptive     \
+    test-smith-form-iliopoulos  \
+    test-smith-form-local        \
+    test-one-invariant-factor   \
+    test-last-invariant-factor  \
     test-qlup                    \
     test-det            \
     test-regression        \
@@ -104,7 +110,6 @@ BASIC_TESTS =            \
 # The checker.C determines which of these are built and run in "make fullcheck".
 FULLCHECK_TESTS =           \
     test-bitonic-sort       \
-    test-one-invariant-factor   \
     test-blackbox-block-container \
     test-sparse-map-map         \
     test-blas-domain            \
@@ -132,7 +137,6 @@ FULLCHECK_TESTS =           \
     test-image-field            \
     test-inverse                \
     test-la-block-lanczos        \
-    test-last-invariant-factor  \
     test-matpoly-mult            \
     test-matrix-domain            \
     test-matrix-stream            \
@@ -172,11 +176,7 @@ FULLCHECK_TESTS =           \
     test-rat-minpoly            \
     test-rat-solve                \
     test-scalar-matrix            \
-    test-smith-form             \
-    test-smith-form-adaptive     \
     test-smith-form-binary      \
-    test-smith-form-iliopoulos  \
-    test-smith-form-local        \
     test-solve-nonsingular        \
     test-sparse                    \
     test-subiterator            \
