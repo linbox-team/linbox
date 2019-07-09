@@ -51,7 +51,7 @@ namespace LinBox
 	public:
 
 		using Parent_t = Givaro::Modular<intType>;
-	
+
 		using typename Givaro::Modular<intType>::Element;
             //typedef typename Givaro::Modular<intType>::Element Element;
 
@@ -60,12 +60,12 @@ namespace LinBox
             //No default cstor
 
 		LocalPIRModular (intType value, uint32_t exp = 1) :
-                Givaro::Modular<intType>(Givaro::power(value, exp)), 
+                Givaro::Modular<intType>(Givaro::power(value, exp)),
 			_exponent(exp)
             {}
-        
+
         ~LocalPIRModular() noexcept {};
-        
+
         using Parent_t:: zero;
         using Parent_t:: one;
         using Parent_t:: mOne;
@@ -75,7 +75,7 @@ namespace LinBox
 
         using Parent_t:: characteristic;
         using Parent_t:: cardinality;
-        
+
         using Parent_t:: maxCardinality;
         using Parent_t:: minCardinality;
 
@@ -85,7 +85,7 @@ namespace LinBox
         using Parent_t:: isMOne;
         using Parent_t:: areEqual;
         using Parent_t:: length;
-        
+
             // ----- Ring-wise operators
         using Parent_t:: operator==;
         using Parent_t:: operator!=;
@@ -95,25 +95,23 @@ namespace LinBox
         using Parent_t:: init ;
 
         using Parent_t:: assign ;
-    
+
         using Parent_t:: convert;
 
         using Parent_t:: reduce ;
-        
+
         using Parent_t:: mul;
-        using Parent_t:: div;
         using Parent_t:: add;
         using Parent_t:: sub;
         using Parent_t:: neg;
         using Parent_t:: inv;
 
         using Parent_t:: mulin;
-        using Parent_t:: divin;
         using Parent_t:: addin;
         using Parent_t:: subin;
         using Parent_t:: negin;
         using Parent_t:: invin;
-        
+
         using Parent_t:: axpy  ;
         using Parent_t:: axpyin;
 
@@ -139,19 +137,19 @@ namespace LinBox
 
         Element& gcdin (Element& a, const Element& b) const {
             Givaro::gcd(a, a, b);
-            Givaro::gcd(a, a, Parent_t::residu()); 
+            Givaro::gcd(a, a, Parent_t::residu());
             return reduce(a);
         }
-        
+
         Element& gcd(Element& g, const Element& a, const Element& b) const {
             return Givaro::gcd(g,a,b);
         }
-    
+
         Element& xgcd(Element& g, Element& s, Element& t, const Element& a, const Element& b) const {
             return Givaro::gcd(g,s,t,a,b);
         }
-    
-        
+
+
         bool isUnit(const Element& a) const {
             Element g;
             Givaro::gcd(g, a, Parent_t::residu());
@@ -159,19 +157,33 @@ namespace LinBox
         }
 
         bool isDivisor(const Element& a, const Element& b) const {
-            Element g;
+            Integer g;
             if (this->isZero(a)) return false;
             else if (this->isZero(b)) return true;
             else {
-                Givaro::gcd(g, a, Parent_t::residu());
-                return this->isZero(b % g);
+                Givaro::gcd(g, Integer(a), Integer(Parent_t::residu()));
+                return this->isZero(Integer(b) % g);
             }
+        }
+        Element& div(Element& r, const Element& a, const Element& b) const {
+            Integer g, ia(a), ib(b);
+            Givaro::gcd(g, ia, ib);
+            ia /= g;
+            ib /= g;
+            Element iv;
+            this->inv(iv, ib);
+            return this->mul(r, ia, iv);
+        }
+
+        Element& divin(Element& r, const Element& b) const {
+            Element a(r); // @enhancement: could use inplace variants
+            return div(r,a,b);
         }
 
 		Element& normal (Element& a, const Element& b) const
 		{
 
-			if (this->isZero(b)) 
+			if (this->isZero(b))
                 return a = this->zero;
 			else
 				return this->gcd(a, b, Parent_t::residu() );
@@ -181,11 +193,11 @@ namespace LinBox
 		{
 			if (this->isZero(a))
                 return a;
-            else 
+            else
 				return this->gcdin(a, Parent_t::residu() );
 		}
 
-        
+
 	protected:
 		uint32_t _exponent;
 	};
