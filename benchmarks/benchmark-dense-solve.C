@@ -84,8 +84,12 @@ void benchmark(std::array<double, 3>& timebits, Arguments& args, MethodBase& met
     DenseMatrix<Field> A(F, args.n, args.n);
     DenseVector<Field> B(F, A.rowdim());
     Timer chrono;
-
+    double t1=0.0,t2=0.0;
     if (method.master()) {
+
+        if(args.dispatchString == "Distributed" || args.dispatchString == "Combined"){
+            t1 = MPI_Wtime();
+        }
         chrono.start();
         PAR_BLOCK { FFLAS::pfrand(F, randIter, args.n, args.n, A.getPointer(), args.n); }
         chrono.stop();
@@ -129,7 +133,10 @@ void benchmark(std::array<double, 3>& timebits, Arguments& args, MethodBase& met
         chrono.stop();
 
         timebits[0] = chrono.usertime();
-        timebits[1] = chrono.realtime();
+        if(args.dispatchString == "Distributed" || args.dispatchString == "Combined"){
+            t2 = MPI_Wtime();
+            timebits[1] = t2 - t1;
+        }else{  timebits[1] = chrono.realtime(); }
         setBitsize(timebits[2], args.q, X);
     }
 }
