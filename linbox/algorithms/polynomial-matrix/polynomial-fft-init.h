@@ -775,7 +775,67 @@ namespace LinBox {
             }
 
             template <typename S=Simd,
-                      FFT_utils::enable_if_t<S::vect_size >= 8>* = nullptr>
+                      FFT_utils::enable_if_t<S::vect_size == 8>* = nullptr>
+            void
+            DIT_core_firststeps (Element *coeffs, size_t &w, size_t &f,
+                                                    const Element *&pow) const {
+                const constexpr size_t incr = 2 * Simd::vect_size;
+                if (n < incr) {
+                    DIT_core_firststeps_fallback (coeffs, w, f, pow);
+                } else {
+                    f >>= 3;
+                    w <<= 3;
+                    pow -= 2;
+                    simd_vect_t W = Simd::set (pow[0], pow[0], pow[0], pow[0],
+                                               pow[1], pow[1], pow[1], pow[1]);
+                    pow -= 4;
+                    simd_vect_t W2 = Simd::set (pow[0], pow[0], pow[1], pow[1],
+                                                pow[2], pow[2], pow[3], pow[3]);
+                    for (size_t i = 0; i < f; i++, coeffs += incr) {
+                        simd_vect_t V1, V2, T;
+
+                        /* V1 = [A C E G I K M O], V2 = [B D F H J L N P] */
+                        V1 = Simd::set (coeffs[0], coeffs[2], coeffs[4],
+                                        coeffs[6], coeffs[8], coeffs[10],
+                                                   coeffs[12], coeffs[14]);
+                        V2 = Simd::set (coeffs[1], coeffs[3], coeffs[5],
+                                        coeffs[7], coeffs[9], coeffs[11],
+                                                   coeffs[13], coeffs[15]);
+
+                        /*** first step (special butterfly with mul by 1) *****/
+                        T = SimdMod::add_mod (V1, V2, this->P);
+                        V2 = SimdMod::sub_mod (V1, V2, this->P);
+
+                        /* transform into
+                         *      V1 = [A E I M B F J N], V2 = [C G K O D H L P]
+                         */
+                        SimdExtra::pack (V1, V2, T, V2);
+
+                        /*** second step **************************************/
+                        Butterfly_DIT (V1, V2, W);
+
+                        /* transform into
+                         *      V1 = [A I B J C K D L], V2 = [E M F N G O H P]
+                         */
+                        SimdExtra::pack (V1, V2, V1, V2);
+
+                        /*** third step ***************************************/
+                        Butterfly_DIT (V1, V2, W2);
+
+                        /* transform into
+                         *      V1 = [A B C D E F G H], V2 = [I J K L M N O P]
+                         */
+                        SimdExtra::pack (V1, V2, V1, V2);
+
+                        Simd::store (coeffs, V1);
+                        Simd::store (coeffs + Simd::vect_size, V2);
+                    }
+                    pow -= w;
+                }
+            }
+
+            template <typename S=Simd,
+                      FFT_utils::enable_if_t<S::vect_size >= 16>* = nullptr>
             void
             DIT_core_firststeps (Element *coeffs, size_t &w, size_t &f,
                                                  const Element *&pow) const {
