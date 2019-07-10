@@ -89,7 +89,7 @@ int main(int argc, char* argv[])
 	ifstream input(argv[1]);
 
 	if (argc > 2) { // so over Z_m
-		unsigned long m = atoi(argv[2]);
+		uint64_t m = atoi(argv[2]);
 		if (m > 4967296) {// too big
 			cerr << "Modulus too large for this example" << endl;
 			return -1;
@@ -182,7 +182,7 @@ int main(int argc, char* argv[])
 		vector<size_t> exponents;
 	 	Givaro::IntFactorDom<> FTD;
 	
-		typedef pair<integer,unsigned long> PairIntRk;
+		typedef pair<integer,uint64_t> PairIntRk;
 		vector< PairIntRk > smith;
 	
 	
@@ -193,7 +193,7 @@ int main(int argc, char* argv[])
 	
 		//cout << "integer rank: " << endl;
 	
-		unsigned long coprimeR; LRank(coprimeR, argv[1], coprimeV);
+		uint64_t coprimeR; LRank(coprimeR, argv[1], coprimeV);
 		smith.push_back(PairIntRk(coprimeV, coprimeR));
 		//         cerr << "Rank mod " << coprimeV << " is " << coprimeR << endl;
 	
