@@ -187,13 +187,11 @@ namespace LinBox {
             FFT_inverse (Element *coeffs, bool final_division = true) const {
                 DIT (coeffs); /* or DIF_reversed */
                 if (final_division) {
-                    /* TODO write Simd version */
                     /* divide by n */
                     Element inv_n;
                     this->fld->init (inv_n, n);
                     this->fld->invin (inv_n);
-                    for (size_t i = 0; i < n; i++)
-                        this->fld->mulin (coeffs[i], inv_n);
+                    scal_coeffs (coeffs, inv_n);
                 }
             }
 
@@ -234,6 +232,38 @@ namespace LinBox {
             Element
             set1 (const Element v) const {
                 return v;
+            }
+
+            /* scal_coeffs */
+            void
+            scal_coeffs_no_simd (Element *coeffs, const Element& m) const {
+                for (size_t i = 0; i < n; i++)
+                    this->fld->mulin (coeffs[i], m);
+            }
+
+            template <typename S=Simd,
+                      FFT_utils::enable_if_t<S::vect_size == 1>* = nullptr>
+            void
+            scal_coeffs (Element *coeffs, const Element& m) const {
+                scal_coeffs_no_simd (coeffs, m);
+            }
+
+            template <typename S=Simd,
+                      FFT_utils::enable_if_t<S::vect_size != 1>* = nullptr>
+            void
+            scal_coeffs (Element *coeffs, const Element& m) const {
+                if (n < Simd::vect_size) {
+                    scal_coeffs_no_simd (coeffs, m);
+                } else {
+                    simd_vect_t M = Simd::set1 (m);
+                    Element *cptr = coeffs;
+                    for (size_t i = 0; i < n; i += Simd::vect_size,
+                                                    cptr += Simd::vect_size) {
+                        simd_vect_t C = Simd::load (cptr);
+                        C = SimdMod::mul_mod (C, M, this->P, this->U);
+                        Simd::store (cptr, C);
+                    }
+                }
             }
 
             /* DIF ************************************************************/
@@ -1015,14 +1045,13 @@ namespace LinBox {
             FFT_inverse (Element *coeffs, bool final_division = true) const {
                 DIT (coeffs); /* or DIF_reversed */
                 if (final_division) {
-                    /* TODO write Simd version */
                     /* divide by n */
                     Element inv_n;
+                    typename Field::Compute_t precomp;
                     this->fld->init (inv_n, n);
                     this->fld->invin (inv_n);
-                    /* TODO use mul_precomp */
-                    for (size_t i = 0; i < n; i++)
-                        this->fld->mulin (coeffs[i], inv_n);
+                    this->fld->precomp_b (precomp, inv_n);
+                    scal_coeffs (coeffs, inv_n, static_cast<Element>(precomp));
                 }
             }
 
@@ -1069,6 +1098,45 @@ namespace LinBox {
             Element
             set1 (const Element v) const {
                 return v;
+            }
+
+            /* scal_coeffs */
+            /* TODO use mul_precomp */
+            void
+            scal_coeffs_no_simd (Element *coeffs, const Element& m,
+                                                  const Element& mp) const {
+                for (size_t i = 0; i < n; i++)
+                    this->fld->mul_precomp_b_without_reduction (coeffs[i],
+                                                                coeffs[i], m,
+                                                                            mp);
+            }
+
+            template <typename S=Simd,
+                      FFT_utils::enable_if_t<S::vect_size == 1>* = nullptr>
+            void
+            scal_coeffs (Element *coeffs, const Element& m,
+                                                  const Element& mp) const {
+                scal_coeffs_no_simd (coeffs, m, mp);
+            }
+
+            template <typename S=Simd,
+                      FFT_utils::enable_if_t<S::vect_size != 1>* = nullptr>
+            void
+            scal_coeffs (Element *coeffs, const Element& m,
+                                                  const Element& mp) const {
+                if (n < Simd::vect_size) {
+                    scal_coeffs_no_simd (coeffs, m, mp);
+                } else {
+                    simd_vect_t M = Simd::set1 (m);
+                    simd_vect_t Mp = Simd::set1 (mp);
+                    Element *cptr = coeffs;
+                    for (size_t i = 0; i < n; i += Simd::vect_size,
+                                                    cptr += Simd::vect_size) {
+                        simd_vect_t C = Simd::load (cptr);
+                        C = SimdMod::mul_mod (C, M, this->P, Mp);
+                        Simd::store (cptr, C);
+                    }
+                }
             }
 
             /* reduce */
