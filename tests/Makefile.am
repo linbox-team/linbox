@@ -79,7 +79,6 @@ BASIC_TESTS =            \
     test-smith-form-adaptive     \
     test-smith-form-iliopoulos  \
     test-smith-form-local        \
-    test-one-invariant-factor   \
     test-last-invariant-factor  \
     test-qlup                    \
     test-det            \
@@ -136,6 +135,7 @@ FULLCHECK_TESTS =           \
     test-hom                    \
     test-image-field            \
     test-inverse                \
+    test-one-invariant-factor   \
     test-la-block-lanczos        \
     test-matpoly-mult            \
     test-matrix-domain            \
