@@ -290,12 +290,39 @@ namespace LinBox {
             void
             Butterfly_DIF (simd_vect_t& A, simd_vect_t& B,
                                             const simd_vect_t& alpha) const {
-                simd_vect_t T = A;
-                A = SimdMod::add_mod (A, B, this->P);
-                B = SimdMod::sub_mod (T, B, this->P);
-                B = SimdMod::mul_mod (B, alpha, this->P, this->U);
+                simd_vect_t T1, T2;
+
+                /* A+B mod p */
+                T1 = SimdMod::add_mod (A, B, this->P);
+                /* A-B mod p */
+                T2 = SimdMod::sub_mod (A, B, this->P);
+                /* multiply A-B by alpha and store it in Bptr */
+                B = SimdMod::mul_mod (T2, alpha, this->P, this->U);
+
+                A = T1;
             }
 
+            /* Same as above but with input of type Element*, so we can
+             * interleave the store and some of the computation.
+             */
+            template <typename S=Simd,
+                      FFT_utils::enable_if_t<S::vect_size != 1>* = nullptr>
+            void
+            Butterfly_DIF (Element *Aptr, Element *Bptr,
+                                            const simd_vect_t& alpha) const {
+                simd_vect_t A, B, T1, T2, T3;
+                A = Simd::load (Aptr);
+                B = Simd::load (Bptr);
+
+                /* A+B mod p */
+                T1 = SimdMod::add_mod (A, B, this->P);
+                Simd::store (Aptr, T1);
+                /* A-B mod p */
+                T2 = SimdMod::sub_mod (A, B, this->P);
+                /* multiply A-B by alpha and store it in Bptr */
+                T3 = SimdMod::mul_mod (T2, alpha, this->P, this->U);
+                Simd::store (Bptr, T3);
+            }
             /* See DIF_core for the meaning of the parameter */
             /* no_simd version is defined for every type of Simd */
             void
@@ -342,12 +369,8 @@ namespace LinBox {
                 Element *Bptr = coeffs + w;
                 for (size_t i = 0; i < f; i++, Aptr += 2*w, Bptr += 2*w) {
                     for (size_t j = 0; j < w; j += Simd::vect_size) {
-                        simd_vect_t A = Simd::load (Aptr + j);
-                        simd_vect_t B = Simd::load (Bptr + j);
                         simd_vect_t alpha = Simd::load (pow + j);
-                        Butterfly_DIF (A, B, alpha);
-                        Simd::store (Aptr + j, A);
-                        Simd::store (Bptr + j, B);
+                        Butterfly_DIF (Aptr + j, Bptr + j, alpha);
                     }
                 }
             }
@@ -372,11 +395,7 @@ namespace LinBox {
                 for (size_t i = 0; i < f; i++, Aptr += 2*w, Bptr += 2*w) {
                     simd_vect_t alpha = Simd::set1 (pow[i]);
                     for (size_t j = 0; j < w; j += Simd::vect_size) {
-                        simd_vect_t A = Simd::load (Aptr + j);
-                        simd_vect_t B = Simd::load (Bptr + j);
-                        Butterfly_DIF (A, B, alpha);
-                        Simd::store (Aptr + j, A);
-                        Simd::store (Bptr + j, B);
+                        Butterfly_DIF (Aptr + j, Bptr + j, alpha);
                     }
                 }
             }
@@ -613,12 +632,39 @@ namespace LinBox {
             void
             Butterfly_DIT (simd_vect_t& A, simd_vect_t& B,
                                             const simd_vect_t& alpha) const {
-                simd_vect_t T;
-                T = SimdMod::mul_mod (alpha, B, this->P, this->U);
-                B = SimdMod::sub_mod (A, T, this->P);
-                A = SimdMod::add_mod (A, T, this->P);
+                simd_vect_t T1, T2;
+
+                /* B*alpha mod P */
+                T1 = SimdMod::mul_mod (B, alpha, this->P, this->U);
+                /* A+B*alpha */
+                T2 = SimdMod::add_mod (A, T1, this->P);
+                /* A-B*alpha */
+                B = SimdMod::sub_mod (A, T1, this->P);
+
+                A = T2;
             }
 
+            /* Same as above but with input of type Element*, so we can
+             * interleave the store and some of the computation.
+             */
+            template <typename S=Simd,
+                      FFT_utils::enable_if_t<S::vect_size != 1>* = nullptr>
+            void
+            Butterfly_DIT (Element *Aptr, Element *Bptr,
+                                            const simd_vect_t& alpha) const {
+                simd_vect_t A, B, T1, T2, T3;
+                A = Simd::load (Aptr);
+                B = Simd::load (Bptr);
+
+                /* B*alpha mod P */
+                T1 = SimdMod::mul_mod (B, alpha, this->P, this->U);
+                /* A+B*alpha */
+                T2 = SimdMod::add_mod (A, T1, this->P);
+                Simd::store (Aptr, T2);
+                /* A-B*alpha */
+                T3 = SimdMod::sub_mod (A, T1, this->P);
+                Simd::store (Bptr, T3);
+            }
             /* See DIT_core for the meaning of the parameter */
             /* No simd version is defined for every type of Simd */
             void
@@ -665,12 +711,8 @@ namespace LinBox {
                 Element *Bptr = coeffs + w;
                 for (size_t i = 0; i < f; i++, Aptr += 2*w, Bptr += 2*w) {
                     for (size_t j = 0; j < w; j += Simd::vect_size) {
-                        simd_vect_t A = Simd::load (Aptr + j);
-                        simd_vect_t B = Simd::load (Bptr + j);
                         simd_vect_t alpha = Simd::load (pow + j);
-                        Butterfly_DIT (A, B, alpha);
-                        Simd::store (Aptr + j, A);
-                        Simd::store (Bptr + j, B);
+                        Butterfly_DIT (Aptr + j, Bptr + j, alpha);
                     }
                 }
             }
@@ -695,11 +737,7 @@ namespace LinBox {
                 for (size_t i = 0; i < f; i++, Aptr += 2*w, Bptr += 2*w) {
                     simd_vect_t alpha = Simd::set1 (pow[i]);
                     for (size_t j = 0; j < w; j += Simd::vect_size) {
-                        simd_vect_t A = Simd::load (Aptr + j);
-                        simd_vect_t B = Simd::load (Bptr + j);
-                        Butterfly_DIT (A, B, alpha);
-                        Simd::store (Aptr + j, A);
-                        Simd::store (Bptr + j, B);
+                        Butterfly_DIT (Aptr + j, Bptr + j, alpha);
                     }
                 }
             }
@@ -1213,11 +1251,41 @@ namespace LinBox {
             Butterfly_DIF (simd_vect_t& A, simd_vect_t& B,
                                             const simd_vect_t& alpha,
                                             const simd_vect_t& alphap) const {
-                simd_vect_t T = A;
-                A = SimdMod::add_mod (A, B, this->P2);
-                B = Simd::sub (this->P2, B);
-                B = Simd::add (T, B);
-                B = SimdMod::mul_mod (B, alpha, this->P, alphap);
+                simd_vect_t T1, T2, T3;
+
+                /* A+B mod 2p */
+                T1 = SimdMod::add_mod (A, B, this->P2);
+                /* A-B mod 2p (computed as A+(2p-B)) */
+                T2 = Simd::sub (this->P2, B);
+                T3 = Simd::add (A, T2);
+                /* multiply A-B by alpha and store it in Bptr */
+                B = SimdMod::mul_mod (T3, alpha, this->P, alphap);
+
+                A = T1;
+            }
+
+            /* Same as above but with input of type Element*, so we can
+             * interleave the store and some of the computation.
+             */
+            template <typename S=Simd,
+                      FFT_utils::enable_if_t<S::vect_size != 1>* = nullptr>
+            void
+            Butterfly_DIF (Element *Aptr, Element *Bptr,
+                                            const simd_vect_t& alpha,
+                                            const simd_vect_t& alphap) const {
+                simd_vect_t A, B, T1, T2, T3, T4;
+                A = Simd::load (Aptr);
+                B = Simd::load (Bptr);
+
+                /* A+B mod 2p and store it in Aptr */
+                T1 = SimdMod::add_mod (A, B, this->P2);
+                Simd::store (Aptr, T1);
+                /* A-B mod 2p (computed as A+(2p-B)) */
+                T2 = Simd::sub (this->P2, B);
+                T3 = Simd::add (A, T2);
+                /* multiply A-B by alpha and store it in Bptr */
+                T4 = SimdMod::mul_mod (T3, alpha, this->P, alphap);
+                Simd::store (Bptr, T4);
             }
 
             /* See DIF_core for the meaning of the parameter */
@@ -1269,13 +1337,9 @@ namespace LinBox {
                 Element *Bptr = coeffs + w;
                 for (size_t i = 0; i < f; i++, Aptr += 2*w, Bptr += 2*w) {
                     for (size_t j = 0; j < w; j += Simd::vect_size) {
-                        simd_vect_t A = Simd::load (Aptr + j);
-                        simd_vect_t B = Simd::load (Bptr + j);
                         simd_vect_t alpha = Simd::load (pow + j);
                         simd_vect_t alphap = Simd::load (wp + j);
-                        Butterfly_DIF (A, B, alpha, alphap);
-                        Simd::store (Aptr + j, A);
-                        Simd::store (Bptr + j, B);
+                        Butterfly_DIF (Aptr + j, Bptr + j, alpha, alphap);
                     }
                 }
             }
@@ -1301,11 +1365,7 @@ namespace LinBox {
                     simd_vect_t alpha = Simd::set1 (pow[i]);
                     simd_vect_t alphap = Simd::set1 (wp[i]);
                     for (size_t j = 0; j < w; j += Simd::vect_size) {
-                        simd_vect_t A = Simd::load (Aptr + j);
-                        simd_vect_t B = Simd::load (Bptr + j);
-                        Butterfly_DIF (A, B, alpha, alphap);
-                        Simd::store (Aptr + j, A);
-                        Simd::store (Bptr + j, B);
+                        Butterfly_DIF (Aptr + j, Bptr + j, alpha, alphap);
                     }
                 }
             }
@@ -1566,12 +1626,40 @@ namespace LinBox {
             Butterfly_DIT (simd_vect_t& A, simd_vect_t &B,
                                             const simd_vect_t& alpha,
                                             const simd_vect_t& alphap) const {
-                simd_vect_t T1, T2;
-                A = SimdMod::reduce (A, P2); /* A -= 2*p if A >= 2p */
-                T1 = SimdMod::mul_mod (B, alpha, P, alphap);
-                T2 = Simd::sub (P2, T1);
-                B = Simd::add (A, T2);
-                A = Simd::add (A, T1);
+                simd_vect_t T1, T2, T3;
+                T1 = SimdMod::reduce (A, this->P2); /* A - 2*p if A >= 2p */
+                /* B*alpha */
+                T2 = SimdMod::mul_mod (B, alpha, this->P, alphap);
+                /* A+B*alpha */
+                A = Simd::add (T1, T2);
+                /* A-B*alpha (computed as A+(2p-B*alpha)) */
+                T3 = Simd::sub (this->P2, T2);
+                B = Simd::add (T1, T3);
+            }
+
+            /* Same as above but with input of type Element*, so we can
+             * interleave the store and some of the computation.
+             */
+            template <typename S=Simd,
+                      FFT_utils::enable_if_t<S::vect_size != 1>* = nullptr>
+            void
+            Butterfly_DIT (Element *Aptr, Element *Bptr,
+                                            const simd_vect_t& alpha,
+                                            const simd_vect_t& alphap) const {
+                simd_vect_t A, B, T1, T2, T3;
+                A = Simd::load (Aptr);
+                B = Simd::load (Bptr);
+
+                T1 = SimdMod::reduce (A, this->P2); /* A - 2*p if A >= 2p */
+                /* B*alpha */
+                T2 = SimdMod::mul_mod (B, alpha, this->P, alphap);
+                /* A+B*alpha */
+                A = Simd::add (T1, T2);
+                Simd::store (Aptr, A);
+                /* A-B*alpha (computed as A+(2p-B*alpha)) */
+                T3 = Simd::sub (this->P2, T2);
+                B = Simd::add (T1, T3);
+                Simd::store (Bptr, B);
             }
 
             /* See DIT_core for the meaning of the parameter */
@@ -1623,13 +1711,9 @@ namespace LinBox {
                 Element *Bptr = coeffs + w;
                 for (size_t i = 0; i < f; i++, Aptr += 2*w, Bptr += 2*w) {
                     for (size_t j = 0; j < w; j += Simd::vect_size) {
-                        simd_vect_t A = Simd::load (Aptr + j);
-                        simd_vect_t B = Simd::load (Bptr + j);
                         simd_vect_t alpha = Simd::load (pow + j);
                         simd_vect_t alphap = Simd::load (wp + j);
-                        Butterfly_DIT (A, B, alpha, alphap);
-                        Simd::store (Aptr + j, A);
-                        Simd::store (Bptr + j, B);
+                        Butterfly_DIT (Aptr + j, Bptr + j, alpha, alphap);
                     }
                 }
             }
@@ -1655,11 +1739,7 @@ namespace LinBox {
                     simd_vect_t alpha = Simd::set1 (pow[i]);
                     simd_vect_t alphap = Simd::set1 (wp[i]);
                     for (size_t j = 0; j < w; j += Simd::vect_size) {
-                        simd_vect_t A = Simd::load (Aptr + j);
-                        simd_vect_t B = Simd::load (Bptr + j);
-                        Butterfly_DIT (A, B, alpha, alphap);
-                        Simd::store (Aptr + j, A);
-                        Simd::store (Bptr + j, B);
+                        Butterfly_DIT (Aptr + j, Bptr + j, alpha, alphap);
                     }
                 }
             }
