@@ -310,7 +310,7 @@ int main(int argc, char** argv)
         // // ok = ok && test_blackbox_solve(Method::CRAAuto(method), QQ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
 
         // // ----- Rational Dixon
-        ok = ok && test_dense_solve(Method::Dixon(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
+        // ok = ok && test_dense_solve(Method::Dixon(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
         // ok = ok && test_sparse_solve(Method::Dixon(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
         // // @fixme Dixon<Wiedemann> does not compile
         // // ok = ok && test_blackbox_solve(Method::Dixon(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
