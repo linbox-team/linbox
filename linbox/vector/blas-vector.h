@@ -904,6 +904,7 @@ namespace LinBox { /*  traits */
 }
 
 #include "blas-vector.inl"
+#include "vector.h"
 
 #endif // __LINBOX_vector_blas_vector_H
 #endif

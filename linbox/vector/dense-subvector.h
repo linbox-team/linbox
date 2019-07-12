@@ -36,10 +36,16 @@
 #define __LINBOX_vector_dense_subvector_H
 
 #include "linbox/vector/subiterator.h"
+#include "linbox/field/rebind.h"
+#include <iostream>
+#include <vector>
 
 namespace LinBox {
 
-
+    // forward declaration
+    template <class Field, class Storage>
+    class BlasVector;
+    
 
     template <typename _Vector>
     class VectorEltPointer {
@@ -56,9 +62,9 @@ namespace LinBox {
     class BlasSubvector {
 
     public:
-        typedef typename _Vector::_Field                   Field;
+        typedef typename _Vector::Field                    Field;
         typedef typename Field::Element                  Element;    //!< Element type
-        typedef typename _Vector::Storage                Storage;    //!< Actually a <code>std::vector<Element></code> (or alike.)
+        typedef typename _Vector::Storage                Storage;    
         typedef BlasSubvector<_Vector>                    Self_t;    //!< Self type
         typedef typename VectorEltPointer<_Vector>::pointer                    pointer;    //!< pointer type to elements
         typedef typename VectorEltPointer<const _Vector>::pointer        const_pointer;    //!< const pointer type to elements
@@ -76,7 +82,7 @@ namespace LinBox {
 		pointer	     		    _ptr;
         size_t			       _size;
         size_t                  _inc;
-		const Field		     &_field;
+		Field		    const*_field;
 
     public:
 
@@ -85,47 +91,74 @@ namespace LinBox {
 		// CONSTRUCTORS //
 		//////////////////
 
+        BlasSubvector(){}
+        
         /** Constructor from an existing @ref BlasVector and dimensions.
          * \param V Pointer to @ref BlasVector of which to construct subvector
          * \param beg Starting idx
          * \param dim dimension
          * \param inc distance between two element
          */
-        BlasSubvector (vectorType &V,
-                        size_t beg,
-                        size_t dim,
-                        size_t inc);
-
+        BlasSubvector (vectorType &V, size_t beg, size_t dim, size_t inc) :
+            _ptr(V.getPointer()+beg), _size(dim), _inc(inc), _field(&V.field()) {}
+        
         /** Constructor from an existing @ref BlasSubvector and dimensions.
          * \param V Pointer to @ref DenseSubector of which to construct subvector
          * \param beg Starting idx
          * \param dim dimension
          * \param inc distance between two element
          */
-        BlasSubvector (Self_t &V,
-                        size_t beg,
-                        size_t dim,
-                        size_t inc);
+        BlasSubvector (Self_t &V, size_t beg, size_t dim, size_t inc) :
+            _ptr(V.data()+beg), _size(dim), _inc(inc), _field(&V.field()) {}
 
         
-        /** Constructor from an existing @ref BlasMatrix
+        /** Constructor from an existing @ref BlasVector
          * \param V Pointer to @ref BlasVector of which to construct submatrix
          */
-        BlasSubvector (vectorType &V);
+        BlasSubvector (vectorType &V) :
+            _ptr(V.getPointer()), _size(V.size()), _inc(V.getInc()), _field(&V.field()) {}
 
         /** Constructor from a raw pointer
          * \param ptr Pointer to @ref first element of the vector of which to construct submatrix
          */
-        BlasSubvector (const Field& F,
-                       pointer ptr,
-                       size_t dim,
-                       size_t inc);
+        BlasSubvector (const Field& F, pointer ptr, size_t dim, size_t inc) :
+            _ptr(ptr), _size(dim), _inc(inc), _field(&F) {}
+        
         
 
+        BlasSubvector (const Field& F, std::vector<Element>& v) :
+            _ptr(v.data()), _size(v.size()), _inc(1), _field(&F) 
+        {
+            std::cerr<<"WARNING __LINE__ (__FILE__) : creating a BlasSubvector from a std::vector -> MUST BE DEPRECTATED"<<std::endl;
+        }
+            
+        
+
+        /** Copy operator */
+        BlasSubvector& operator= (const BlasSubvector& V){
+            if (&V != this){
+                _ptr  = V._ptr;
+                _size = V._size;
+                _inc  = V._inc;                
+                }
+            return *this;
+        }
         
 		//! Rebind operator
-        template <typename _TP1, typename _Rep2 = typename Rebind<Storage, _TP1>::other >
-        struct rebind;
+        template<typename _Tp1, typename _Rep2 = typename Rebind<Storage, _Tp1>::other>
+		struct rebind {
+			typedef BlasVector<_Tp1, _Rep2> other;
+            
+			void operator() (other & Ap, const Self_t& A) {
+				typedef typename Self_t::const_iterator ConstSelfIterator ;
+				typedef typename other::iterator OtherIterator ;
+				OtherIterator    Ap_i = Ap.begin();
+				ConstSelfIterator A_i = A.begin();
+				Hom<Field, _Tp1> hom(A. field(), Ap. field()) ;
+				for ( ; A_i != A. end(); ++ A_i, ++ Ap_i)
+					hom.image (*Ap_i, *A_i);
+			}
+		};
 
         
 
@@ -133,7 +166,7 @@ namespace LinBox {
 		//  ACCESSORS  //
 		/////////////////
 
-        const Field& field() const { return _field;}
+        const Field& field() const { return *_field;}
         
         // dimension of the vector
         size_t size() const{ return _size; }
@@ -192,10 +225,10 @@ namespace LinBox {
         ///////////////////
 		//   ITERATORS   //
 		///////////////////
-		iterator               begin  (void)       { return iterator(_ptr,_inc); }
-		const_iterator         begin  (void) const { return iterator(_ptr,_inc); }
-		iterator               end    (void)       { return iterator(_ptr+_inc*_size,_inc); }
-		const_iterator         end    (void) const { return iterator(_ptr+_inc*size,_inc); }
+		iterator               begin  (void)       { return       iterator(_ptr,_inc); }
+		const_iterator         begin  (void) const { return const_iterator(_ptr,_inc); }
+		iterator               end    (void)       { return       iterator(_ptr+_inc*_size,_inc); }
+		const_iterator         end    (void) const { return const_iterator(_ptr+_inc*_size,_inc); }
 
 		// Element access
 		Element&       operator[] (size_t n)       { return _ptr[n*_inc]; }

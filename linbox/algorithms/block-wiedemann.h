@@ -88,7 +88,7 @@ namespace LinBox
             try {
                 solveNonSingular(x,B,y);
             }
-            catch (LinboxError e) {
+            catch (LinboxError& e) {
                 std::cerr<<e<<std::endl;
             }
             return x;
