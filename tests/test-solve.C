@@ -209,8 +209,8 @@ static bool testNonsingularSolve (const Field          &F,
 		report << "Right-hand side:  ";
 		VD.write (report, b);
 		report << endl;
-
-		BlasVector<Field> dd(F,d);
+		BlasVector<Field> dd(F,d.begin(),d.size());
+		//BlasVector<Field> dd(d,F);
 		Blackbox D (dd);
 
 		try {
@@ -295,7 +295,7 @@ static bool testSingularConsistentSolve (const Field          &F,
 
 	bool ret = true;
 
-	Vector d1, b1, d, b, x, y;
+	Vector d1(F), b1(F), d(F), b(F), x(F), y(F);
 
 	VectorWrapper::ensureDim (d, n);
 	VectorWrapper::ensureDim (b, n);
@@ -328,7 +328,7 @@ static bool testSingularConsistentSolve (const Field          &F,
 		VD.write (report, b);
 		report << endl;
 
-		typename Blackbox::Vector_t dd(F,d);
+		typename Blackbox::Vector_t dd(d,F);
 		Blackbox D (dd);
 		//Blackbox D (d);
 
@@ -417,7 +417,7 @@ static bool testSingularInconsistentSolve (const Field          &F,
 
 	bool ret = true;
 
-	Vector d1, d, b, x, y;
+	Vector d1(F), d(F), b(F), x(F), y(F);
 	typename Field::Element uTb;
 
 	VectorWrapper::ensureDim (d, stream2.dim ());
@@ -447,7 +447,7 @@ static bool testSingularInconsistentSolve (const Field          &F,
 		VD.write (report, b);
 		report << endl;
 
-		typename Blackbox::Vector_t dd(F,d);
+		typename Blackbox::Vector_t dd(d,F);
 		Blackbox D (dd);
 		//Blackbox D (d);
 
@@ -547,7 +547,7 @@ static bool testSingularPreconditionedSolve (const Field                  &F,
 	SparseVector d1;
 	typename Field::Element uTb;
 	typename LinBox::Vector<Field>::Dense d;
-	Vector b, x, y;
+	Vector b(F), x(F), y(F);
 
 	VectorWrapper::ensureDim (d, stream2.dim ());
 	VectorWrapper::ensureDim (b, stream2.dim ());
@@ -576,7 +576,7 @@ static bool testSingularPreconditionedSolve (const Field                  &F,
 		VD.write (report, b);
 		report << endl;
 
-		BlasVector<Field> dd(F,d);
+		BlasVector<Field> dd(F,d.begin(),d.size());
 		Diagonal<Field> A (dd);
 		//Diagonal<Field> A (F, d);
 
@@ -662,7 +662,7 @@ static bool testRandomSolve (const Field                  &F,
 	VectorDomain<Field> VD (F);
 	MatrixDomain<Field> MD (F);
 
-	Vector2 b, x, ATAx, ATb;
+	Vector2 b(F), x(F), ATAx(F), ATb(F);
 
 	VectorWrapper::ensureDim (b, b_stream.dim ());
 	VectorWrapper::ensureDim (x, A_stream.dim ());
@@ -746,7 +746,7 @@ static bool testBasicMethodsSolve (const Field &F, size_t n)
 	commentator().start ("Testing Basic Methods Solve");
 	ostream &report = commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
-	BlasVector<Field> xd(F,n), xh(F,n), xb(F,n), xe(F,n), xs(F,n), b(F,n, F.zero);
+	BlasVector<Field> xd(F,n), xh(F,n), xb(F,n), xe(F,n), xs(F,n), b(F,n);
 	for(size_t i = 0; i < n/2; ++i) b[i] = F.one;
 	//ScalarMatrix<Field> I(F, n/2, F.one), Z(F, n/2, F.zero);
 	ScalarMatrix<Field> I(F, n, n, F.one), Z(F, 0, 0, F.zero);

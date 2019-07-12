@@ -35,6 +35,7 @@
 
 #include "fflas-ffpack/fflas-ffpack.h"
 #include "linbox/field/rebind.h"
+#include "linbox/matrix/densematrix/blas-matrix-iterator.h"
 
 namespace LinBox
 {
@@ -76,6 +77,14 @@ namespace LinBox
         typedef  _Matrix                               matrixType;    //!< matrix type
         typedef Self_t                              subMatrixType;
         typedef BlasSubmatrix<const _Matrix>   constSubMatrixType;
+
+        // row and col types are unified to be a BlasSubvector
+        typedef typename Storage::subVectorType           subVectorType;             
+        typedef typename Storage::constSubVectorType constSubVectorType;
+        typedef subVectorType Row ;
+        typedef subVectorType Col;
+        typedef constSubVectorType ConstRow;
+        typedef constSubVectorType ConstCol;
 
 
     protected:
@@ -235,7 +244,7 @@ namespace LinBox
         Vector1&  apply (Vector1& y, const Vector2& x) const
         {
             FFLAS::fgemv(_field, FFLAS::FflasNoTrans, _row,_col, _field.one, _ptr, _stride,
-                         x.getPointer(), x.getStride(), _field.zero, y.getWritePointer(),y.getStride());
+                         x.getConstPointer(), x.getInc(), _field.zero, y.getPointer(),y.getInc());
             return y;
         }
         // NEED TO BE REMOVED -> just to be done after new-blas-subvector is merged
@@ -252,7 +261,7 @@ namespace LinBox
         Vector1&  applyTranspose (Vector1& y, const Vector2& x) const
         {
             FFLAS::fgemv(_field, FFLAS::FflasTrans, _row,_col, _field.one, _ptr, _stride,
-                         x.getPointer(), x.getStride(), _field.zero, y.getWritePointer(),y.getStride());
+                         x.getConstPointer(), x.getInc(), _field.zero, y.getPointer(),y.getInc());
             return y;
         }
         // NEED TO BE REMOVED -> just to be done after new-blas-subvector is merged
@@ -284,8 +293,6 @@ namespace LinBox
         //@{
         class Iterator  ;
         class ConstIterator ;
-        class IndexedIterator ;
-        class ConstIndexedIterator ;
         //@}
 
 
@@ -296,60 +303,51 @@ namespace LinBox
          * a row vector in dense format
          * @{
          */        
-        typedef Subvector<pointer>                 Row;
-		typedef Subvector<const_pointer>      ConstRow;
-        class RowIterator;
-        class ConstRowIterator;
-
+        using RowIterator      = BlasMatrixIterator<Field, Storage, subVectorType>;
+        using ConstRowIterator = BlasMatrixIterator<Field, Storage, constSubVectorType>;
+        
+        RowIterator      rowBegin ()       { return      RowIterator (field(), _ptr, _col, 1, _stride);}
+        ConstRowIterator rowBegin () const { return ConstRowIterator (field(), _ptr, _col, 1, _stride);}
+        RowIterator      rowEnd ()         { return      RowIterator (field(), _ptr+_row*_stride, _col, 1, _stride);}
+        ConstRowIterator rowEnd   () const { return ConstRowIterator (field(), _ptr+_row*_stride, _col, 1, _stride);}        
         //@} Row Iterators
-
+        
         /** @name typedef'd Column Iterators.
          *\brief
          * The columns iterator gives the columns of the
          * matrix in ascending order. Dereferencing the iterator yields
          * a column vector in dense format
          * @{
-         */
-        typedef Subvector<Subiterator<pointer > >            Col;
-		typedef Subvector<Subiterator<const_pointer> >  ConstCol;
-		typedef Col           Column;
-		typedef ConstCol ConstColumn;
-
-        class ColIterator;
-        class ConstColIterator;
+         */        
+        using ColIterator      = BlasMatrixIterator<Field, Storage, subVectorType>;
+        using ConstColIterator = BlasMatrixIterator<Field, Storage, constSubVectorType>;
         
+        ColIterator      colBegin ()       { return       ColIterator (field(), _ptr, _row, _stride, 1);}
+        ConstColIterator colBegin () const { return  ConstColIterator (field(), _ptr, _row, _stride, 1);}
+        ColIterator      colEnd ()         { return       ColIterator (field(), _ptr+_row*_stride, _row, _stride, 1);}
+        ConstColIterator colEnd ()   const { return  ConstColIterator (field(), _ptr+_row*_stride, _row, _stride, 1);}
         //@} // Column Iterators
-
-
-
-        RowIterator      rowBegin ();        //!< iterator to the begining of a row
-        RowIterator      rowEnd ();          //!< iterator to the end of a row
-        ConstRowIterator rowBegin () const;  //!< const iterator to the begining of a row
-        ConstRowIterator rowEnd ()   const;  //!< const iterator to the end of a row
-
-        ColIterator      colBegin ();
-        ColIterator      colEnd ();
-        ConstColIterator colBegin () const;
-        ConstColIterator colEnd ()   const;
-
+        
         Iterator      Begin ();
         Iterator      End ();
         ConstIterator Begin () const;
         ConstIterator End ()   const;
 
 
-
-        IndexedIterator      IndexedBegin();
-        IndexedIterator      IndexedEnd();
-        ConstIndexedIterator IndexedBegin() const;
-        ConstIndexedIterator IndexedEnd()   const;
+        using IndexedIterator      = BlasMatrixIndexedIterator<Field,       pointer,       Element>;
+        using ConstIndexedIterator = BlasMatrixIndexedIterator<Field, const_pointer, const Element>;
+        
+        IndexedIterator      IndexedBegin ()        { return      IndexedIterator (coldim (), _stride, 0, 0, _ptr);}
+        ConstIndexedIterator IndexedBegin () const  { return ConstIndexedIterator (coldim (), _stride, 0, 0, _ptr);}
+        IndexedIterator      IndexedEnd   ()        { return      IndexedIterator (coldim (), _stride, rowdim (), 0, _ptr);}
+        ConstIndexedIterator IndexedEnd   () const  { return ConstIndexedIterator (coldim (), _stride, rowdim (), 0, _ptr);}
 
         /*!  operator[].
          * Retrieve a reference to a row
          * @param i Row index
          */
-        Row      operator[] (size_t i) ;
-        ConstRow operator[] (size_t i) const ;
+        subVectorType      operator[] (size_t i)        { return      subVectorType (field(), _ptr+i*_stride, _col, 1);}
+        constSubVectorType operator[] (size_t i) const  { return constSubVectorType (field(), _ptr+i*_stride, _col, 1);}
 
     };
 

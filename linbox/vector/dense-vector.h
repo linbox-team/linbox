@@ -32,13 +32,16 @@
  *
  */
 
-#ifndef __LINBOX_vector_dense_vector_H
-#define __LINBOX_vector_dense_vector_H
+#ifndef __LINBOX_vector_blas_vector_H
+#define __LINBOX_vector_blas_vector_H
+
+#include <vector>
 
 #include "linbox/linbox-config.h"
 #include "linbox/util/debug.h"
 #include "linbox/linbox-tags.h"
 #include "linbox/field/hom.h"
+#include "linbox/field/rebind.h"
 #include "linbox/vector/dense-subvector.h"
 
 #include "fflas-ffpack/fflas/fflas.h"
@@ -52,6 +55,7 @@ namespace LinBox {
         typedef _Field                                   Field;
         typedef typename Field::Element                Element;    //!< Element type
         typedef typename Field::Element_ptr        Element_ptr;    //!< Element type
+        typedef Element_ptr                            pointer;
         typedef typename Field::ConstElement_ptr   ConstElement_ptr;    //!< Element type
         typedef _Storage                               Storage;    //!< Actually a <code>std::vector<Element></code> (or alike.)
         typedef BlasVector<_Field,_Storage>             Self_t;    //!< Self type
@@ -66,7 +70,7 @@ namespace LinBox {
 
 
     protected:
-        size_t			       _size;
+        size_t			       _size=0;
 		Storage	    	        _rep;
 		Element_ptr			    _ptr;
 		const Field		     &_field;
@@ -76,11 +80,21 @@ namespace LinBox {
         void resize (size_t n){
             _rep.resize(n);
             _ptr = _rep.data();
+            for (size_t i=_size;i<n;i++) 
+                field().init(_rep[i]);
             _size = n;
-            for (auto& it:_rep)
-                field().init(it);
         }
 
+        void resize (size_t n, const Element& val){
+            _rep.resize(n);
+            _ptr = _rep.data();
+            for (size_t i=_size;i<n;i++){ 
+                field().init(_rep[i]);
+                field().assign(_rep[i],val);
+            }
+            _size = n;
+        }
+ 
          //////////////////
 		// CONSTRUCTORS //
 		//////////////////
@@ -109,7 +123,7 @@ namespace LinBox {
 		 * @param m vector dimension
 		 */
         template<class SizeType, typename std::enable_if<std::is_arithmetic<SizeType>::value, int>::type=0>
-		BlasVector (const _Field &F, const SizeType &m) : _field(F) {
+		BlasVector (const _Field &F, const SizeType &m, const Element& e= Element()) : _field(F) {
             resize(m);
         }
 
@@ -122,6 +136,19 @@ namespace LinBox {
         template<typename ConstIterator>
 		BlasVector(const _Field & F, const ConstIterator& jt, const size_t m) :  _field(F) {
             resize(m);
+            ConstIterator jtt(jt);
+            for (auto it=_rep.begin();it!=_rep.end();it++,jtt++)
+                field().assign(*it,*jtt);        
+        }
+
+         /*! Create a BlasVector from a container of elements
+		 * @param F Field of the created vector
+		 * @param V iterator to be copied from
+		 */
+        template<class VectorBase, typename std::enable_if<!std::is_arithmetic<VectorBase>::value, int>::type=0>
+		BlasVector (const _Field & F, const VectorBase & V)  :  _field(F) {
+            resize(V.size());
+            typename VectorBase::const_iterator jt=V.begin();
             for (auto it=_rep.begin();it!=_rep.end();it++,jt++)
                 field().assign(*it,*jt);        
         }
@@ -140,7 +167,7 @@ namespace LinBox {
         //! operator = (copying data)
 		Self_t& operator= (const Self_t& A) {
             if (this!=&A){
-                _field=A.field();
+                linbox_check (_field == A.field());
                 resize(A.size());
                 FFLAS::fassign(field(),_size,_ptr,1,A._ptr,1);                               
             }
@@ -149,10 +176,10 @@ namespace LinBox {
         
         //! operator = (copying data from different vector type)
         template<class _Vector>
-        Self_t& operator= (const _Vector& A){
+        Self_t& operator= (const _Vector& A){            
             if (this!=&A){
-                _field=A.field();
-                resize(A.size());
+                linbox_check (_field !=A.field());
+                resize(A.size());              
                 for (auto it=_rep.begin(), jt=A.begin();it!=_rep.end();it++,jt++)
                     field().assign(*it,*jt);                        
             }
@@ -167,10 +194,10 @@ namespace LinBox {
 			void operator() (other & Ap, const Self_t& A) {
 				typedef typename Self_t::const_iterator ConstSelfIterator ;
 				typedef typename other::iterator OtherIterator ;
-				OtherIterator    Ap_i = Ap.Begin();
-				ConstSelfIterator A_i = A.Begin();
+				OtherIterator    Ap_i = Ap.begin();
+				ConstSelfIterator A_i = A.begin();
 				Hom<Field, _Tp1> hom(A. field(), Ap. field()) ;
-				for ( ; A_i != A. End(); ++ A_i, ++ Ap_i)
+				for ( ; A_i != A. end(); ++ A_i, ++ Ap_i)
 					hom.image (*Ap_i, *A_i);
 			}
 		};
@@ -191,6 +218,12 @@ namespace LinBox {
 		ConstElement_ptr getPointer() const { return _ptr; }
         Element_ptr      getPointer()       { return _ptr; }
         ConstElement_ptr getConstPointer() const { return _ptr;}
+
+        /** Get the increment in the vector
+         * @return the inc value of the subvector
+         */
+        size_t getInc() const {return 1;}
+        
         
         /** add an element at the end of the vector (possibly invalidate existing iterators)
 		 * @param e element to add
@@ -251,14 +284,14 @@ namespace LinBox {
         }
         
         //read
-		std::istream &read ( std::istream &os, Tag::FileFormat fmt = Tag::FileFormat::Pretty ) {
-
+		std::istream &read ( std::istream &is, Tag::FileFormat fmt = Tag::FileFormat::Pretty ) {
+            return is;
         }
 
         // Iterators
 		iterator               begin  (void)       { return _rep.begin(); }
 		const_iterator         begin  (void) const { return _rep.begin(); }
-		iterator               end    (void)       { return _rep._end(); }
+		iterator               end    (void)       { return _rep.end(); }
 		const_iterator         end    (void) const { return _rep.end(); }
 
 		// Element access
@@ -272,12 +305,30 @@ namespace LinBox {
 		const Element& front (void) const { return _rep.front(); }
 		Element&       back  (void)       { return _rep.back(); }
 		const Element& back  (void) const { return _rep.back; }
-        
+
+
+        // Miscelleanous
+        void random(){
+			typename _Field::Element x; field().init(x);
+			typename _Field::RandIter r(field());
+			for (size_t i = 0; i < size(); ++i)
+				setEntry(i, r.random(x));
+		}
+
+		template<class RandIter>
+		void random( RandIter r){
+			typename _Field::Element x; field().init(x);
+			for (size_t i = 0; i < size(); ++i)
+				setEntry(i, r.random(x));
+		}
+
+        Storage&       getRep()       { return _rep;}
+        const Storage& getRep() const { return _rep;}
     };
 
     
-	template <class Field, class _Rep>
-    bool operator==(const BlasVector<Field,Rep>& v1, const BlasVector<Field,Rep>& v2) {
+	template <class Field, class Storage>
+    bool operator==(const BlasVector<Field,Storage>& v1, const BlasVector<Field,Storage>& v2) {
                 if (v1.size() != v2.size()) return false;
                 auto i1=v1.begin();
                 auto i2=v2.begin();
@@ -286,10 +337,35 @@ namespace LinBox {
                 return true;
     }
 
-    template <class Field, class _Rep>
-    std::ostream& operator<< (std::ostream & os, const BlasVector<T> & V) {
+    template <class Field, class Storage>
+    std::ostream& operator<< (std::ostream & os, const BlasVector<Field,Storage> & V) {
 		return V.write(os);
 	}
+
+	template <class Field, class _Rep>
+	struct VectorTraits< BlasVector<Field,_Rep> > {
+		typedef typename VectorCategories::DenseVectorTag VectorCategory;
+		typedef BlasVector<Field,_Rep>                        VectorType;
+	};
+
+
+    template<class _Vector>
+	struct VectorTraits< BlasSubvector<_Vector> > {
+		typedef typename VectorCategories::DenseVectorTag VectorCategory;
+		typedef BlasSubvector<_Vector>                        VectorType;
+	};
+
+    
+	// this could also be a member of BlasVector
+	template<class _Field, class _Storage>
+	struct ContainerTraits<BlasVector<_Field,_Storage> > {
+		typedef ContainerCategories::Vector ContainerCategory ;
+	};
+
+	template<class _Vector>
+	struct ContainerTraits<BlasSubvector<_Vector> > {
+		typedef ContainerCategories::Vector ContainerCategory ;
+	};
 
 
 
