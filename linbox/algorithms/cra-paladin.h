@@ -144,6 +144,7 @@ namespace LinBox
         {
 
             long NN = this->Niter;
+#if 0
             PAR_BLOCK{
                         auto sp=SPLITTER(NUM_THREADS,FFLAS::CuttingStrategy::Row,FFLAS::StrategyParameter::Threads);
                         SYNCH_GROUP({
@@ -159,6 +160,16 @@ namespace LinBox
 
                          })
             }
+#else
+            PAR_BLOCK{
+                        auto sp=SPLITTER(NUM_THREADS,FFLAS::CuttingStrategy::Row,FFLAS::StrategyParameter::Threads);
+                            FOR1D(iter, NN, sp, MODE(CONSTREFERENCE(m_primeiters,Iteration,ROUNDresidues)),
+                            {
+                                        solve_with_prime(m_primeiters[iter], Iteration, ROUNDresidues[iter]);
+                            })
+
+            }
+#endif
             Domain D(m_primeiters[0]);
             this->Builder_.initialize( D, ROUNDresidues[0]);
             for(auto j=1;j<NN;j++){
