@@ -1,5 +1,5 @@
 /* Copyright (C) 2003 LinBox
- *  Author: Zhendong Wan
+ *  Author: Zhendong Wan, J-G Dumas
  *
  *
  *
@@ -39,6 +39,7 @@
 #include <vector>
 #include <algorithm>
 #include "linbox/randiter/random-prime.h"
+#include <fflas-ffpack/ffpack/ffpack.h>
 
 namespace LinBox
 {
@@ -146,7 +147,10 @@ namespace LinBox
 		 */
 		long rankIn(BlasMatrix<Field>& Ap) const
 		{
+            std::clog << "WAN RankIn ";
 
+            BlasMatrix<Field> Ac(Ap.field()); Ac=Ap;
+            std::clog << (long)FFPACK::Rank( Ac.field(), Ac.rowdim(), Ac.coldim(), Ac.getPointer(), Ac.rowdim());
 			typedef typename Field::Element Element;
 
 			Field F = Ap.field();
@@ -220,6 +224,7 @@ namespace LinBox
 				++ R;
 
 			}
+            std::clog << " == " << R << std::endl;
 			return R;
 		}
 
