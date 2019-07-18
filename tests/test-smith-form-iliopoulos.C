@@ -34,7 +34,6 @@
 #include <linbox/linbox-config.h>
 
 #include "givaro/zring.h"
-//#include "linbox/ring/pir-ntl-zz_p.h"
 #include "linbox/ring/pir-modular-int32.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/smith-form-iliopoulos.h"
@@ -44,12 +43,6 @@
 #include "linbox/algorithms/matrix-hom.h"
 #include "linbox/solutions/det.h"
 #include <iostream>
-
-#ifndef __LINBOX_HAVE_NTL
-#error "you can't compile this test without NTL enabled. Please make sure you configured Linbox with --with-ntl=path/to/ntl"
-#endif
-
-
 
 using namespace LinBox;
 
@@ -168,7 +161,6 @@ int main(int argc, char** argv)
         commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 
         Givaro::ZRing<Integer> R; // Ring of integers
-        //NTL_ZZ R;
 
         if (!testRandom(R, n)) pass = false;
 //        if (!testRead(R, "data/Ismith.mat")) pass = false;

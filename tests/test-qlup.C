@@ -1,7 +1,7 @@
 /* tests/test-qlup.C
  * Copyright (C) The LinBox group
  *
- * Time-stamp: <10 May 19 11:28:22 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <14 May 19 18:40:57 Jean-Guillaume.Dumas@imag.fr>
  * -----------------------------------------------------
  *
  * ========LICENCE========
@@ -68,7 +68,7 @@ bool testQLUP(const Field &F, size_t n, unsigned int iterations, int rseed, doub
 
 	size_t Ni = n;
 	size_t Nj = n;
-	typename Field::RandIter generator (F,0,rseed);
+	typename Field::RandIter generator (F,rseed);
 	RandStream stream (F, generator, sparsity, n, n);
 
 	for (size_t i = 0; i < iterations; ++i) {
@@ -170,11 +170,11 @@ bool testQLUPsolve(const Field &F, size_t n, unsigned int iterations, int rseed,
 
 	size_t Ni = n;
 	size_t Nj = n;
-	typename Field::RandIter generator (F,0,rseed);
+	typename Field::RandIter generator (F,rseed);
 	RandStream stream (F, generator, sparsity, n, n);
 
 	GF2 F2;
-	GF2::RandIter bitgenerator(F2,0,rseed);
+	GF2::RandIter bitgenerator(F2,rseed);
 	// GF2::Element randomsolve;
 
 	for (size_t i = 0; i < iterations; ++i) {
@@ -254,7 +254,7 @@ bool testQLUPnullspace(const Field &F, size_t n, unsigned int iterations, int rs
 
 	size_t Ni = n;
 	size_t Nj = n;
-	typename Field::RandIter generator (F,0,rseed);
+	typename Field::RandIter generator (F,rseed);
 	RandStream stream (F, generator, sparsity, n, n, rseed);
 
 	for (size_t i = 0; i < iterations; ++i) {

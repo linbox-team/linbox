@@ -129,7 +129,7 @@ bool runTest(uint64_t m,uint64_t n, uint64_t d, long seed){
 		if (!RandomFFTPrime::randomPrime (p, 1<<bits, integer(d).bitsize()+1))
 			throw LinboxError ("RandomFFTPrime::randomPrime failed");
 		SmallField  F((int32_t)p);
-        typename SmallField::RandIter G(F,0,seed);
+        typename SmallField::RandIter G(F,seed);
         report<<"   - checking with small FFT prime p="<<p<<endl;
         ok&=passed=check_sigma (F,G,m,n,d);
         report<<"   ---> "<<(passed?"done":"error")<<std::endl<<std::endl;
@@ -142,7 +142,7 @@ bool runTest(uint64_t m,uint64_t n, uint64_t d, long seed){
 		integer p;
 		p=*Rd;
         SmallField  F((int32_t)p);
-        typename SmallField::RandIter G(F,0,seed);
+        typename SmallField::RandIter G(F,seed);
         report<<"   - checking with small generic prime p="<<p<<std::endl;
 		ok&=passed=check_sigma (F,G,m,n,d);
         report<<"   ---> "<<(passed?"done":"error")<<std::endl<<std::endl;
@@ -155,13 +155,13 @@ bool runTest(uint64_t m,uint64_t n, uint64_t d, long seed){
 	 	integer p= *Rd;
         // Modular<integer>
         LargeField1  F1(p);
-        typename LargeField1::RandIter G1(F1,0,seed);
+        typename LargeField1::RandIter G1(F1,seed);
         report<<"   - checking with multiprecision prime (Modular<integer>) p="<<p<<std::endl;
 		ok&=passed=check_sigma (F1,G1,m,n,d);
         report<<"   ---> "<<(passed?"done":"error")<<std::endl<<std::endl;
         // Modular<recint<128 ,256 >>
         LargeField2  F2(p);
-        typename LargeField2::RandIter G2(F2,0,seed);
+        typename LargeField2::RandIter G2(F2,seed);
         report<<"   - checking with multiprecision prime (Modular<recint>) p="<<p<<std::endl;
 		ok&=passed=check_sigma (F2,G2,m,n,d);
         report<<"   ---> "<<(passed?"done":"error")<<std::endl<<std::endl;

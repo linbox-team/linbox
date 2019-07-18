@@ -30,12 +30,8 @@
 #include <iterator>
 #include "linbox/util/error.h"
 #include "linbox/algorithms/matrix-hom.h"
-//#ifdef __LINBOX_HAVE_NTL
 #include "linbox/algorithms/smith-form-adaptive.h"
-//#endif
 #include "givaro/zring.h"
-//#include "linbox/algorithms/smith-form.h"
-//#include "linbox/algorithms/smith-form-local.h"
 
 namespace LinBox
 {
@@ -139,18 +135,6 @@ namespace LinBox
 		return V;
 	}
 
-#if 0
-	// for specialization with respect to the DomainCategory
-	template< class Output, class Blackbox, class SmithMethod, class DomainCategory>
-	Output &smithForm(Output & S,
-			  const Blackbox        &A,
-			  const DomainCategory  &tag,
-			  const SmithMethod  &M)
-	{
-		throw LinBoxError( "Smith form solution implemented only for NTL.\n                 Please reconfigure LinBox with NTL enabled.");
-	}
-
-#endif
 	// The smithForm with default Method
 	template<class Blackbox>
 	SmithList<typename Blackbox::Field> &
@@ -213,8 +197,6 @@ namespace LinBox
 		return S;
 	}
 #endif
-
-//#ifdef __LINBOX_HAVE_NTL
 
 	/*template<>
 	std::list<std::pair<integer, size_t> > &
