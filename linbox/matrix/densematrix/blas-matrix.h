@@ -314,8 +314,8 @@ namespace LinBox
          * @param os Output stream to which to write
          * @param f write in some format (@ref Tag::FileFormat::Format). Default is Maple's.
          */
-        //std::ostream &write (std::ostream &os, Tag::FileFormat f = Tag::FileFormat::MatrixMarket) const;
-        std::ostream &write (std::ostream &os, Tag::FileFormat f = Tag::FileFormat::Plain) const;
+        std::ostream &write (std::ostream &os, Tag::FileFormat f = Tag::FileFormat::MatrixMarket) const;
+        //std::ostream &write (std::ostream &os, Tag::FileFormat f = Tag::FileFormat::Plain) const;
 
         
         ///////////////////

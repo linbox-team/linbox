@@ -269,10 +269,7 @@ namespace LinBox
     struct BlasMatrix< _Field, _Storage >::rebind {
 		typedef BlasMatrix<_Tp1, _Rep2> other;
 
-		void operator() (other & Ap, const Self_t& A) {
-            std::cout<<"GIORGI: BlasMatrix rebinding \n";
-            A.write(std::cout);
-            
+		void operator() (other & Ap, const Self_t& A) {            
 			// typedef Self_t::ConstIterator ConstSelfIterator ;
 			typedef typename BlasMatrix< _Field, _Storage >::ConstIterator ConstSelfIterator ;
 			typedef typename other::Iterator OtherIterator ;
@@ -303,7 +300,7 @@ namespace LinBox
     template < class _Field, class _Storage >
     std::ostream &BlasMatrix< _Field, _Storage >::write (std::ostream &os, Tag::FileFormat f) const
     {
-        std::cout<<"BlasMatrix write: "<<&(*_rep.getPointer())<<" "<<_rep<<std::endl;
+        //std::cout<<"BlasMatrix write: "<<&(*_rep.getPointer())<<" "<<_rep<<std::endl;
         constSubMatrixType B(*this);
         return B.write(os,f);
     }
