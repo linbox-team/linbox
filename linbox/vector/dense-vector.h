@@ -80,11 +80,13 @@ namespace LinBox {
     public:
 
         void resize (size_t n){
+            //std::cout<<"BlasVector resize: "<<_ptr<<" ("<<_size<<") to ";
             _rep.resize(n);
             _ptr = _rep.data();
             for (size_t i=_size;i<n;i++)
                 field().init(_rep[i]);
             _size = n;
+            //std::cout<<_ptr<<" ("<<n<<")"<<std::endl;
         }
 
         void resize (size_t n, const Element& val){
@@ -254,13 +256,16 @@ namespace LinBox {
             _ptr=_rep.data();
         }
 
-        void setEntry (size_t i, const Element &a_i){ field().assign(_ptr[i],a_i); }
+        void setEntry (size_t i, const Element &a_i){
+            //std::cout<<"BV: "<<" "<<&(*_ptr)<<" "<<i<<" "<<a_i<<std::endl; 
+            field().assign(_rep[i],a_i);
+        }
 
         Element &refEntry (size_t i){ return _ptr[i]; }
 
         const Element &getEntry (size_t i) const { return _ptr[i]; }
 
-        Element &getEntry (Element &x, size_t i) const{	return field().assign(x,_ptr[i]); }
+        Element &getEntry (Element &x, size_t i) const{ return field().assign(x,_ptr[i]); }
 
         // write
         std::ostream &write ( std::ostream &os, Tag::FileFormat fmt = Tag::FileFormat::Pretty ) const {

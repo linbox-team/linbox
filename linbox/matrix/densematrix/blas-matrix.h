@@ -256,6 +256,8 @@ namespace LinBox
          */
         void setEntry (size_t i, size_t j, const Element &a_ij)
         {
+            // std::cout<<"BlasMatrix setEntry : ("<< &(*_rep.getPointer()) <<")"<<i<<" "<<j<<" ";
+            // field().write(std::cout,a_ij);
             _rep.setEntry(i*_col+j,a_ij);
             //field().assign(_rep[i*_col+j],a_ij);
         }
@@ -312,8 +314,8 @@ namespace LinBox
          * @param os Output stream to which to write
          * @param f write in some format (@ref Tag::FileFormat::Format). Default is Maple's.
          */
-        std::ostream &write (std::ostream &os, Tag::FileFormat f = Tag::FileFormat::MatrixMarket) const;
-        //std::ostream &write (std::ostream &os, Tag::FileFormat f = Tag::FileFormat::Plain) const;
+        //std::ostream &write (std::ostream &os, Tag::FileFormat f = Tag::FileFormat::MatrixMarket) const;
+        std::ostream &write (std::ostream &os, Tag::FileFormat f = Tag::FileFormat::Plain) const;
 
         
         ///////////////////
