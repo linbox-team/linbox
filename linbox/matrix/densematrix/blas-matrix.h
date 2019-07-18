@@ -357,7 +357,7 @@ namespace LinBox
             //std::cout<<"**** colBegin const **** \n";write(std::cout)<<std::endl; std::cout<<"colBegin -> "<<_rep.getPointer()<<" "<<_row<<" "<<_col<<" "<< 1<<std::endl;
             return  ConstColIterator (field(), _rep.getPointer (), _row, _col, 1);
         }
-        ColIterator      colEnd ()         { return       ColIterator (field(), _rep.getPointer ()+_row*_col, _row, _col, 1);}
+        ColIterator      colEnd ()         { return       ColIterator (field(), _rep.getPointer ()+_col, _row, _col, 1);}
         ConstColIterator colEnd ()   const { return  ConstColIterator (field(), _rep.getPointer ()+_col, _row, _col, 1);}
         //@}
 
