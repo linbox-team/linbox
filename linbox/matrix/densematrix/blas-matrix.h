@@ -336,8 +336,7 @@ namespace LinBox
 
         
         RowIterator      rowBegin ()       {  return      RowIterator (field(), _rep.getPointer (), _col, 1, _col);}
-        ConstRowIterator rowBegin () const {  // std::cout<<"Matrix calling rowBegin -> "<<*this<<std::endl;
-            return ConstRowIterator (field(), _rep.getPointer (), _col, 1, _col);}
+        ConstRowIterator rowBegin () const {  return ConstRowIterator (field(), _rep.getPointer (), _col, 1, _col);}
         RowIterator      rowEnd ()         {  return      RowIterator (field(), _rep.getPointer ()+_row*_col, _col, 1, _col);}
         ConstRowIterator rowEnd   () const {  return ConstRowIterator (field(), _rep.getPointer ()+_row*_col, _col, 1, _col);}
         //@}
@@ -353,9 +352,7 @@ namespace LinBox
         using ConstColIterator = BlasMatrixIterator<Field, Storage, constSubVectorType>;
 
         ColIterator      colBegin ()       { return       ColIterator (field(), _rep.getPointer (), _row, _col, 1);}
-        ConstColIterator colBegin () const {
-            //std::cout<<"**** colBegin const **** \n";write(std::cout)<<std::endl; std::cout<<"colBegin -> "<<_rep.getPointer()<<" "<<_row<<" "<<_col<<" "<< 1<<std::endl;
-            return  ConstColIterator (field(), _rep.getPointer (), _row, _col, 1);
+        ConstColIterator colBegin () const { return  ConstColIterator (field(), _rep.getPointer (), _row, _col, 1);
         }
         ColIterator      colEnd ()         { return       ColIterator (field(), _rep.getPointer ()+_col, _row, _col, 1);}
         ConstColIterator colEnd ()   const { return  ConstColIterator (field(), _rep.getPointer ()+_col, _row, _col, 1);}
