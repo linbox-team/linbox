@@ -29,7 +29,6 @@
  *  Implementation of EGV and EGV+ algorithm
  */
 
-
 #include "linbox/util/debug.h"
 #include "linbox/algorithms/default.h"
 #include "linbox/util/commentator.h"
@@ -42,7 +41,7 @@ namespace LinBox
 	 * This is an implementation of EGV and EGV+ algorithms
 	 * See EGV (FOCS '00) and SW (ISSAC '04) papers.
 	 */
-	template<class _Ring, class _oneInvariantFactor, class _Rank>
+	template<class _Ring, class _oneInvariantFactor>
 	class SmithFormBinary {
 
 	public:
@@ -51,14 +50,11 @@ namespace LinBox
 
 		typedef _oneInvariantFactor oneInvariantFactor;
 
-		typedef _Rank Rank;
-
 		typedef typename Ring::Element Integer;
 
 	protected:
 
 		oneInvariantFactor oif;
-		Rank rank;
 		Ring r;
 
 	public:
@@ -66,11 +62,10 @@ namespace LinBox
 		/** \brief constructor
 		*/
 		SmithFormBinary(const oneInvariantFactor& _oif =oneInvariantFactor(),
-				const Rank& _rank =Rank(),
 				const Ring& _r = Ring(),
 				int _oifthreshold =DEFAULTOIFTHRESHOLD,
 				int _lifthreshold =DEFAULTLIFTHRESHOLD) :
-			oif(_oif),rank(_rank),r(_r)
+			oif(_oif),r(_r)
 		{
 
 			oif.setThreshold(_oifthreshold);
@@ -112,9 +107,7 @@ namespace LinBox
 
 			typename Vector::iterator p;
 
-
-			long Ar = rank.rank(A);
-
+			size_t Ar; integral_rank(Ar, A, Method::Auto());
 
 			report << "Rank = " << Ar <<'\n';
 
@@ -325,10 +318,7 @@ namespace LinBox
 
 			typename Vector::iterator p;
 
-
-			long Ar = rank.rank(A);
-
-
+            size_t Ar; integral_rank(Ar, A, Method::Auto());
 			report << "Rank = " << Ar <<'\n';
 
 
