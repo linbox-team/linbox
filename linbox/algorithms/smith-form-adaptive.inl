@@ -35,6 +35,7 @@
 #include "linbox/util/debug.h"
 #include "linbox/ring/pir-modular-int32.h"
 #include "linbox/ring/local2_32.h"
+#include "linbox/ring/local-pir-modular.h"
 #include "linbox/algorithms/smith-form-iliopoulos.h"
 #include "linbox/algorithms/smith-form-local.h"
 #include "linbox/algorithms/rational-solver-adaptive.h"
@@ -48,12 +49,6 @@
 #include "linbox/algorithms/smith-form-binary.h"
 #include "linbox/algorithms/smith-form-adaptive.inl"
 #include "linbox/solutions/valence.h"
-
-
-
-#ifdef __LINBOX_HAVE_NTL
-#include "linbox/ring/pir-ntl-zz_p.h"
-#endif
 
 namespace LinBox
 {
@@ -150,7 +145,6 @@ namespace LinBox
 
 	}
 
-#ifdef __LINBOX_HAVE_NTL
 	/* Compute the local smith form at prime p, when modular (p^e) doesnot fit in long
 	*/
 	template <class Matrix>
@@ -162,36 +156,23 @@ namespace LinBox
 		int order = (int)(A. rowdim() < A. coldim() ? A. rowdim() : A. coldim());
 		linbox_check ((s. size() >= (size_t) order) && (p > 0) && ( e >= 0));
 		integer T; T = order; T <<= 20; T = pow (T, (int) sqrt((double)order));
-		NTL::ZZ m;  NTL::conv(m, 1); int i = 0; for (i = 0; i < e; ++ i) m *= p;
-		//if (m < T)
-		if (1) {
-			report << "      Compute local Smith at " << p << '^' << e << " over PIR-ntl-ZZ_p\n";
-			PIR_ntl_ZZ_p R(m);
-			BlasMatrix <PIR_ntl_ZZ_p> A_local(R, A.rowdim(), A.coldim());
-			SmithFormLocal <PIR_ntl_ZZ_p> SF;
-			std::list <PIR_ntl_ZZ_p::Element> l;
-			MatrixHom::map (A_local, A);
-			SF (l, A_local, R);
-			std::list <PIR_ntl_ZZ_p::Element>::iterator l_p;
-			BlasVector<Givaro::ZRing<Integer> >::iterator s_p;
-			for (s_p = s. begin(), l_p = l. begin(); s_p != s. begin() +(ptrdiff_t) order; ++ s_p, ++ l_p)
-				R. convert(*s_p, *l_p);
-			report << "      Done \n";
-		}
-		else {
-			std::cerr << "Compute local smith at " << p << '^' << e << std::endl;
-			std::cerr << "Not implemented yet.\n";
-		}
+		Givaro::Integer m(Integer::one);  
+        for (int i = 0; i < e; ++ i) m *= p;
+        report << "      Compute local Smith at " << p << '^' << e << " over ZZ_p\n";
+        typedef LocalPIRModular<Givaro::Integer> GZZ_p;
+        GZZ_p R(m);
+        BlasMatrix <GZZ_p> A_local(R, A.rowdim(), A.coldim());
+        SmithFormLocal <GZZ_p> SF;
+        std::list <GZZ_p::Element> l;
+        MatrixHom::map (A_local, A);
+        SF (l, A_local, R);
+        std::list <GZZ_p::Element>::iterator l_p;
+        BlasVector<Givaro::ZRing<Integer> >::iterator s_p;
+        for (s_p = s. begin(), l_p = l. begin(); s_p != s. begin() +(ptrdiff_t) order; ++ s_p, ++ l_p)
+            R. convert(*s_p, *l_p);
+        report << "      Done \n";
 		return;
 	}
-#else
-	template <class Matrix>
-	void SmithFormAdaptive::compute_local_big (BlasVector<Givaro::ZRing<Integer> >& s, const Matrix& A, int64_t p, int64_t e)
-	{
-		throw(LinBoxError("you need NTL to use SmithFormAdaptive",LB_FILE_LOC));
-	}
-
-#endif
 
 	/* Compute the local smith form at prime p
 	*/
@@ -260,7 +241,6 @@ namespace LinBox
 	}
 
 
-#ifdef __LINBOX_HAVE_NTL
 	/* Compute the k-rough part of the invariant factor, where k = 100.
 	 * By EGV+ algorithm or Iliopoulos' algorithm for Smith form.
 	 */
@@ -309,8 +289,9 @@ namespace LinBox
 		}
 		else {
 			report << "    Elimination start:\n";
-			PIR_ntl_ZZ_p R (m);
-			BlasMatrix<PIR_ntl_ZZ_p> A_ilio(R, A.rowdim(), A.coldim());
+			typedef LocalPIRModular<Givaro::Integer> GZZ_p;
+            GZZ_p R (m);
+			BlasMatrix<GZZ_p> A_ilio(R, A.rowdim(), A.coldim());
 			MatrixHom::map (A_ilio, A);
 			SmithFormIliopoulos::smithFormIn (A_ilio);
 			int i; BlasVector<Givaro::ZRing<Integer> >::iterator s_p;
@@ -320,13 +301,6 @@ namespace LinBox
 		}
 		report << "Compuation of the k-rough part of the invariant factors finishes.\n";
 	}
-#else
-	template <class Matrix>
-	void SmithFormAdaptive::smithFormRough  (BlasVector<Givaro::ZRing<Integer> >& s, const Matrix& A, integer m)
-	{
-		throw(LinBoxError("you need NTL to use SmithFormAdaptive",LB_FILE_LOC));
-	}
-#endif
 
 	/* Compute the Smith form via valence algorithms
 	 * Compute the local Smtih form at each possible prime

@@ -1,5 +1,5 @@
 /*
- * examples/mats.C
+ * examples/matrices.C
  *
  * Copyright (C) 2017  D. Saunders, Z. Wang, J-G Dumas
  * ========LICENCE========
@@ -21,8 +21,8 @@
  * ========LICENCE========
  */
 
-/** \file examples/mats.C
- * @example  examples/mats.C
+/** \file examples/matrices.C
+ * @example  examples/matrices.C
  \brief example matrices that were chosen for Smith form testing.
  \ingroup examples
 
@@ -61,11 +61,6 @@ using namespace std;
 
 #include <linbox/util/timer.h>
 #include <linbox/matrix/dense-matrix.h>
-
-// place A: Edit here and at place B for ring change
-//#include <linbox/ring/pir-modular-int32.h>
-//#include <linbox/ring/pir-ntl-zz_p.h>
-#include <linbox/ring/pir-ntl-zz_p.h>
 
 using namespace LinBox;
 
@@ -233,7 +228,7 @@ void RandomFibMat(DenseMatrix<PIR>& M, PIR& R, int n) {
 
 
 //////////////////////////////////
-// special mats tref and krat
+// special matrices tref and krat
 
 // Trefethen's challenge #7 mat (primes on diag, 1's on 2^e bands).
 template <class PIR>
