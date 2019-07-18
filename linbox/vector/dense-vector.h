@@ -41,6 +41,7 @@
 #include "linbox/util/debug.h"
 #include "linbox/linbox-tags.h"
 #include "linbox/field/hom.h"
+#include "linbox/field/field-traits.h"
 #include "linbox/field/rebind.h"
 #include "linbox/vector/vector-traits.h"
 #include "linbox/vector/dense-subvector.h"
@@ -176,7 +177,7 @@ namespace LinBox {
         //! operator = (copying data)
         Self_t& operator= (const Self_t& A) {
             if (this!=&A){
-                linbox_check (_field == A.field());
+                linbox_check (areFieldEqual(_field, A.field()));
                 resize(A.size());
                 FFLAS::fassign(field(),_size,A._ptr,1,_ptr,1);
             }
