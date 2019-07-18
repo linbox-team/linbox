@@ -26,6 +26,7 @@ pkgincludesubdir=$(pkgincludedir)/matrix/densematrix
 pkgincludesub_HEADERS =         \
 		blas-matrix.h \
 		blas-matrix.inl \
+		blas-matrix-iterator.h\
 		blas-submatrix.h \
 		blas-submatrix.inl \
 		blas-triangularmatrix.inl \
