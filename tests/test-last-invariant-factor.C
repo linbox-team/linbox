@@ -36,7 +36,6 @@
 #include "givaro/zring.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/ring/modular.h"
-#include "linbox/algorithms/matrix-rank.h"
 #include "linbox/algorithms/last-invariant-factor.h"
 #include "linbox/blackbox/scompose.h"
 #include "linbox/blackbox/random-matrix.h"

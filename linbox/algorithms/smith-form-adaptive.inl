@@ -41,7 +41,6 @@
 #include "linbox/algorithms/rational-solver-adaptive.h"
 #include "linbox/algorithms/last-invariant-factor.h"
 #include "linbox/algorithms/one-invariant-factor.h"
-#include "linbox/algorithms/matrix-rank.h"
 #include "linbox/algorithms/matrix-hom.h"
 #include "linbox/blackbox/random-matrix.h"
 #include "linbox/blackbox/scompose.h"
@@ -109,13 +108,7 @@ namespace LinBox
 			std::cout << "Call of ffpack is done\n";
 			delete[] A_local;
 #endif
-			typedef Givaro::Modular<int32_t> Field;
-			typedef BlasMatrix<Field> FMatrix;
-			MatrixRank<typename Matrix::Field, Field> MR;
-			Field F(p);
-			FMatrix A_local(A, F);
-                                            
-			long rank = MR. rankIn (A_local);
+			size_t rank; integral_rank(rank, A, Method::Auto());
 
 			BlasVector<Givaro::ZRing<Integer> >::iterator s_p;
 			for (s_p = s. begin(); s_p != s. begin() + (long) rank; ++ s_p)
@@ -271,12 +264,11 @@ namespace LinBox
 		// else if bisection possible
 		else if (m > T)  {
 			report << "   Big rough part, bisection starts:\n";
-			typedef Givaro::Modular<int> Field;
 			typedef typename Matrix::Field Ring;
 			typedef RationalSolverAdaptive Solver;
 			typedef LastInvariantFactor<Ring, Solver> LIF;
 			typedef OneInvariantFactor<Ring, LIF, SCompose, RandomMatrix>  OIF;
-			SmithFormBinary<Ring, OIF, MatrixRank<Ring, Field > > sf;;
+			SmithFormBinary<Ring, OIF> sf;;
 			sf. setOIFThreshold (2);
 			sf. setLIFThreshold (2);
 			std::vector<int64_t> primeL (prime, prime + NPrime);
@@ -379,9 +371,7 @@ namespace LinBox
 		int order = (A. rowdim() < A. coldim()) ? (int)A. rowdim() : (int)A. coldim();
 		report << "Computation of the rank starts:\n";
 		typedef typename Matrix::Field Ring;
-		size_t r;
-		MatrixRank<Ring, Givaro::Modular<int32_t> > MR;
-		r = MR. rank (A);
+		size_t r; integral_rank(r, A, Method::Auto());
 		report << "   Matrix rank over a random prime field: " << r << '\n';
 		report << "Computation of the rank finished.\n";
 		const int64_t* prime_p;
@@ -503,9 +493,7 @@ namespace LinBox
 
 		report << "Computation of the rank starts:" << std::endl;
 		typedef typename BlasMatrix<IRing,_Rep>::Field Ring;
-		size_t r;
-		MatrixRank<Ring, Givaro::Modular<int32_t> > MR;
-		r = (size_t)MR. rank (A);
+		size_t r; integral_rank(r, A, Method::Auto());
 		report << "   Matrix rank over a random prime field: " << r << std::endl;
 		report << "Computation of the rank finished.\n";
 		// a hack
