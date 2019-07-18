@@ -28,10 +28,6 @@
  */
 
 #include "linbox/linbox-config.h"
-
-#ifdef __LINBOX_HAVE_NTL
-#include "linbox/ring/ntl.h"
-#endif
 #include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/matrix-rank.h"
 #include "linbox/algorithms/last-invariant-factor.h"
@@ -111,15 +107,12 @@ int main(int argc, char** argv)
 
 	}
 
-#if 0
-#ifdef __LINBOX_HAVE_NTL
-// NTL_ZZ not working here
 	{
-		typedef NTL_ZZ Ring;
+		typedef Givaro::ZRing<Givaro::Integer> Ring;
 
 		Ring R; Ring::RandIter gen(R);
 
-		commentator().report() << std::endl << "EGV++ algorithm test suite with NTL_ZZ :\n";
+		commentator().report() << std::endl << "EGV++ algorithm test suite with ZZ :\n";
 		commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 
 		//RandomDenseStream<Ring> s1 (R, gen, n, (unsigned int)iterations);
@@ -137,8 +130,6 @@ int main(int argc, char** argv)
 
 		if (!testRandom(R, sf, s1)) pass = false;
 	}
-#endif
-#endif
 
 	commentator().stop("SmithFormBinary test suite");
 	return pass ? 0 : -1;

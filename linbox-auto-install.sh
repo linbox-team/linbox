@@ -23,12 +23,18 @@ STABLE_FFLAS=2.4.1
 STABLE_GIVARO=4.1.1
 STABLE_OPENBLAS=0.3.6
 STABLE_BLIS=0.5.2
+STABLE_GMPLIB=6.1.2
 MD5SUFF=md5
 #############################
 
 function decompress {
 #tar xf $1
     gunzip -c $1 | tar xf -
+}
+
+function bzdecompress {
+#tar xf $1
+    bunzip2 -c $1 | tar xf -
 }
 
 
@@ -60,6 +66,8 @@ OPENBLAS=""
 OPENBLAS_VAR="false"
 BLIS=""
 BLIS_VAR="false"
+GMPLIB=""
+GMPLIB_VAR="false"
 MAKEOPT=
 MAKE_VAR=""
 
@@ -121,6 +129,8 @@ help() {
     echo "                         Default : disabled (use local blas)."
     echo " --enable-blis         : fetch flame/blis."
     echo "                         Default : disabled (use local blas)."
+    echo " --enable-gmp          : fetch gmplib."
+    echo "                         Default : disabled (use local gmp)."
     echo " --enable-debug        : build in debugging mode."
     echo "                         Default : disabled."
     echo " --enable-check        : run make check."
@@ -198,6 +208,11 @@ for i in "$@" ; do
 	BLIS="$i";
 	BLIS_VAR="true";
 	;;
+	"--enable-gmp")
+	if [ "x$GMPLIB_VAR" = "xfalse" ]  ; then  echo "enable-gmp or not ?" ;        help ; exit -1 ; fi
+	GMPLIB="$i";
+	GMPLIB_VAR="true";
+	;;
 	"--disable-debug")
 	if [ "x$DEBUG_VAR" = "xtrue" ]  ; then  echo "enable-debug or not ?" ;        help ; exit -1 ; fi
 	DEBUG_VAR="false";
@@ -221,6 +236,10 @@ for i in "$@" ; do
 	"--disable-blis")
 	if [ "x$BLIS_VAR" = "xtrue" ]  ; then  echo "enable-blis or not ?" ;        help ; exit -1 ; fi
 	BLIS_VAR="false";
+	;;
+	"--disable-gmp")
+	if [ "x$GMPLIB_VAR" = "xtrue" ]  ; then  echo "enable-gmp or not ?" ;        help ; exit -1 ; fi
+	GMPLIB_VAR="false";
 	;;
 	"--with-ntl")
 	if	[ "x$NTL_VAR" = "xfalse" ] ; then   echo "with-ntl or not ?";            help ; exit -1; fi
@@ -332,6 +351,16 @@ for i in "$@" ; do
 		BLIS=$QUI ; BLIS_VAR="true" ;
 	    else
 		BLIS_VAR="false" ;
+	    fi
+	    ;;
+	    "--enable-gmp")
+	    [[ "$QUOI" =~ y|yes|Y|1 ]] && OK=1 || OK=0
+	    if		[ "x$GMPLIB_VAR" = "xtrue"  -a "OK" = "0" ] ; then  echo "gmp or not gmp ?" ;      help ; exit -1; fi
+	    if		[ "x$GMPLIB_VAR" = "xfalse" -a "OK" = "1" ] ; then  echo "gmp or not gmp ?" ;      help ; exit -1; fi
+	    if	[[ "x$OK" = "x1" ]] ; then
+		GMPLIB=$QUI ; GMPLIB_VAR="true" ;
+	    else
+		GMPLIB_VAR="false" ;
 	    fi
 	    ;;
 	    "--enable-warnings")
@@ -551,6 +580,17 @@ if [ "$BLIS_VAR" = "true" ]; then
     fi
 fi
 
+### gmp ###
+if [ "$GMPLIB_VAR" = "true" ]; then
+    echo -en "${BEG}fetching GMP..."| tee -a ../linbox-auto-install.log
+    if [ -f ${STABLE_GMPLIB}.tar.bz2 ] ; then
+	echo -ne " already there!\n"| tee -a ../linbox-auto-install.log
+    else
+	wget --no-check-certificate https://gmplib.org/download/gmp/gmp-${STABLE_GMPLIB}.tar.bz2 >/dev/null 2>&1 || die
+	[ -f gmp-${STABLE_GMPLIB}.tar.bz2 ] &&  cool || die
+    fi
+fi
+
 #####################
 #  extract sources  #
 #####################
@@ -594,6 +634,68 @@ if [ "$BLIS_VAR" = "true" ]; then
 	[ "$OK" = "1" ] &&  cool | tee -a ../linbox-auto-install.log  || die
     fi
 fi
+
+### GMP ###
+
+if [ "$GMPLIB_VAR" = "true" ]; then
+    OK=0
+    echo -en "${BEG}extracting GMP..."| tee -a ../linbox-auto-install.log
+    bzdecompress gmp-${STABLE_GMPLIB}.tar.bz2  && OK=1
+    [ "$OK" = "1" ] &&  cool | tee -a ../linbox-auto-install.log  || die
+fi
+
+######################
+#  install GMP      #
+######################
+
+if [ "$GMPLIB_VAR" = "true" ]; then
+
+    cd gmp-${STABLE_GMPLIB} || die
+
+    if [ -f Makefile ] ; then
+	echo -e "${BEG}cleaning GMP..."| tee -a ../../linbox-auto-install.log
+	${MAKEPROG} clean | tee -a ../../linbox-auto-install.log|| die
+	${MAKEPROG} distclean | tee -a ../../linbox-auto-install.log|| die
+	# ${MAKEPROG} unistall || die
+	cool
+    fi
+
+    echo -e "${BEG}configuring GMP..."| tee -a ../../linbox-auto-install.log
+
+    echo "./configure  $PREFIX $DEBUG $WARNINGS --enable-cxx"| tee -a ../../linbox-auto-install.log
+    echo "./configure  $PREFIX $DEBUG $WARNINGS --enable-cxx" > configure.gmp.exe
+    chmod +x configure.gmp.exe
+    ./configure.gmp.exe | tee -a ../../linbox-auto-install.log
+    rm -rf configure.gmp.exe
+
+    echo -e "${BEG}building GMP..."| tee -a ../../linbox-auto-install.log
+    GMPLIB_FLAGS=""
+
+    echo "${MAKEPROG} ${GMPLIB_FLAGS} CXXFLAGS+=\"$EXTRA\" LDFLAGS+=\"-Wl,-rpath,$PREFIX_LOC\""| tee -a ../../linbox-auto-install.log
+    if [ -n "$EXTRA" ] ; then
+	${MAKEPROG} ${GMPLIB_FLAGS} "CXXFLAGS+=\"$EXTRA\" LDFLAGS+=\"-Wl,-rpath,$PREFIX_LOC\"" | tee -a ../../linbox-auto-install.log|| die
+    else
+	${MAKEPROG} ${GMPLIB_FLAGS} | tee -a ../../linbox-auto-install.log|| die
+    fi
+
+
+    if [ "$CHECK_VAR" = "true" ] ; then
+	echo -e "${BEG}checking GMP..."| tee -a ../../linbox-auto-install.log
+	${MAKEPROG} ${GMPLIB_FLAGS} check | tee -a ../../linbox-auto-install.log|| die
+    fi
+
+    echo -e "${BEG}installing GMP..."| tee -a ../../linbox-auto-install.log
+    ${MAKEPROG} ${GMPLIB_FLAGS} install | tee -a ../../linbox-auto-install.log|| die
+
+#return in build
+    cd ..
+
+    cool| tee -a ../linbox-auto-install.log
+
+    GMP="--with-gmp=${PREFIX_LOC}"
+    GMP_VAR=true
+    echo "${BEG}gmp flags: $GMP."| tee -a ../../linbox-auto-install.log
+ fi
 
 ####################
 #  install Givaro  #
@@ -641,7 +743,7 @@ else
 fi
 
 if [ "$CHECK_VAR" = "true" ] ; then
-    echo -e "${BEG}checking Fflas-Ffpack..."| tee -a ../../linbox-auto-install.log
+    echo -e "${BEG}checking Givaro..."| tee -a ../../linbox-auto-install.log
     ${MAKEPROG} check | tee -a ../../linbox-auto-install.log|| die
 fi
 

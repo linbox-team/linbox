@@ -53,6 +53,7 @@ namespace {
         int nbiter = 3;
         int n = 500;
         int bits = 10;
+        int seed = -1;
         std::string dispatchString = "Auto";
         std::string methodString = "Auto";
     };
@@ -71,10 +72,10 @@ namespace {
 }
 
 template <typename Field, typename Vector = DenseVector<Field>>
-void benchmark(std::pair<double, double>& timebits, Arguments& args, MethodBase& method)
+void benchmark(std::array<double, 3>& timebits, Arguments& args, MethodBase& method)
 {
-    Field F(args.q);                                 // q is ignored for Integers
-    typename Field::RandIter randIter(F, args.bits); // bits is ignored for ModularRandIter
+    Field F(args.q); // q is ignored for Integers
+    typename Field::RandIter randIter(F, args.seed, args.bits); // bits is ignored for ModularRandIter
 
 #ifdef _BENCHMARKS_DEBUG_
     std::clog << "Setting A ... " << std::endl;
@@ -127,23 +128,24 @@ void benchmark(std::pair<double, double>& timebits, Arguments& args, MethodBase&
     if (method.master()) {
         chrono.stop();
 
-#ifdef _BENCHMARKS_DEBUG_
-        printVector(std::clog << "(DenseElimination) Solution is ", F, X) << std::endl;
-#endif
-
-        setBitsize(timebits.second, args.q, X);
-        timebits.first = chrono.usertime();
+        timebits[0] = chrono.usertime();
+        timebits[1] = chrono.realtime();
+        setBitsize(timebits[2], args.q, X);
     }
 }
 
 int main(int argc, char** argv)
 {
+    int numThreads = 0;
+
     Arguments args;
     Argument as[] = {{'i', "-i", "Set number of repetitions.", TYPE_INT, &args.nbiter},
                      {'q', "-q", "Set the field characteristic (-1 for rationals).", TYPE_INTEGER, &args.q},
                      {'n', "-n", "Set the matrix dimension.", TYPE_INT, &args.n},
                      {'b', "-b", "bit size", TYPE_INT, &args.bits},
+                     {'s', "-s", "Seed for randomness.", TYPE_INT, &args.seed},
                      {'d', "-d", "Dispatch mode (any of: Auto, Sequential, SMP, Distributed).", TYPE_STR, &args.dispatchString},
+		             {'t', "-t", "Number of threads.", TYPE_INT, &numThreads },
                      {'M', "-M",
                       "Choose the solve method (any of: Auto, Elimination, DenseElimination, SparseElimination, "
                       "Dixon, CRA, SymbolicNumericOverlap, SymbolicNumericNorm, "
@@ -151,6 +153,14 @@ int main(int argc, char** argv)
                       TYPE_STR, &args.methodString},
                      END_OF_ARGUMENTS};
     LinBox::parseArguments(argc, argv, as);
+
+    if (numThreads > 0) {
+        omp_set_num_threads(numThreads);
+    }
+
+    if (args.seed < 0) {
+        args.seed = time(nullptr);
+    }
 
     // Setting up context
 
@@ -171,7 +181,7 @@ int main(int argc, char** argv)
     bool isModular = false;
     if (args.q > 0) isModular = true;
 
-    using Timing = std::pair<double, double>;
+    using Timing = std::array<double, 3>;
     std::vector<Timing> timebits(args.nbiter);
     for (int iter = 0; iter < args.nbiter; ++iter) {
         if (isModular) {
@@ -184,13 +194,15 @@ int main(int argc, char** argv)
     }
 
 #ifdef _BENCHMARKS_DEBUG_
-    for (const auto& it : timebits) std::clog << it.first << "s, " << it.second << " bits" << std::endl;
+    for (const auto& it : timebits) std::clog << it[0] << "s, " << it[2] << " bits" << std::endl;
 #endif
 
     if (method.master()) {
-        std::sort(timebits.begin(), timebits.end(), [](const Timing& a, const Timing& b) -> bool { return a.first > b.first; });
+        std::sort(timebits.begin(), timebits.end(), [](const Timing& a, const Timing& b) -> bool { return a[0] > b[0]; });
 
-        std::cout << "Time: " << timebits[args.nbiter / 2].first << " Bitsize: " << timebits[args.nbiter / 2].second;
+        std::cout << "UserTime: " << timebits[args.nbiter / 2][0];
+        std::cout << " RealTime: " << timebits[args.nbiter / 2][1];
+        std::cout << " Bitsize: " << timebits[args.nbiter / 2][2];
 
         FFLAS::writeCommandString(std::cout, as) << std::endl;
     }

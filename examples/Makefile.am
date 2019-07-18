@@ -47,7 +47,7 @@ SUBDIRS=data
 
 EXAMPLES=rank det minpoly valence solve dot-product echelon sparseelimdet \
 sparseelimrank checksolve doubledet smithvalence charpoly blassolve solverat \
-sparsesolverat poweroftwo_ranks power_rank genprime
+sparsesolverat poweroftwo_ranks power_rank genprime smithsparse matrices
 #polysmith bench-fft bench-matpoly-mult
 # EXAMPLES+=nulp yabla 
 GIVARONTL_EXAMPLES=smith graph-charpoly
@@ -76,6 +76,8 @@ det_SOURCES            = det.C
 genprime_SOURCES       = genprime.C
 rank_SOURCES           = rank.C
 smith_SOURCES          = smith.C
+smithsparse_SOURCES    = smithsparse.C
+matrices_SOURCES       = matrices.C
 minpoly_SOURCES        = minpoly.C
 valence_SOURCES        = valence.C
 solve_SOURCES          = solve.C

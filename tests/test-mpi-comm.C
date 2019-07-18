@@ -72,7 +72,7 @@ template <class Field, class Matrix>
 void genData(Field& F, Givaro::Integer q, Matrix& A, size_t seed, size_t bits)
 {
     typedef typename Field::RandIter RandIter;
-    RandIter RI(F, 0, seed);
+    RandIter RI(F, seed);
     LinBox::RandomDenseMatrix<RandIter, Field> RDM(F, RI);
     RDM.random(A);
 }
@@ -81,7 +81,7 @@ template <class Field>
 void genData(Field& F, Givaro::Integer q, BlasVector<Field>& B, size_t seed, size_t bits)
 {
     typedef typename Field::RandIter RandIter;
-    RandIter RI(F, 0, seed);
+    RandIter RI(F, seed);
     B.random(RI);
 }
 
