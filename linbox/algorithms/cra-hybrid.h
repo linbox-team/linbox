@@ -183,20 +183,20 @@ namespace LinBox
                           Function& Iteration,
                           std::vector<ElementContainer>& VECTORresidues, size_t Ntask)
         {
-
-        PAR_BLOCK{
-            auto sp=SPLITTER(NUM_THREADS,FFLAS::CuttingStrategy::Row,FFLAS::StrategyParameter::Threads);
-            SYNCH_GROUP({
-                FORBLOCK1D(iter, Ntask, sp,{
-                    TASK(MODE(CONSTREFERENCE(m_primeiters,Iteration,VECTORresidues)),{
-                            for(auto j=iter.begin(); j!=iter.end(); ++j)
-                            {
-                                solve_with_prime(m_primeiters[j], Iteration, VECTORresidues[j]);
-                            }
-                     })
-                 });
-            });
-        }
+            //@fixme: cannot use export OMP_NUM_THREADS to set the desired number of threads for more than one iterations and only omp_set_num_thread() can be used for this purpose, whick takes the option -t
+            PAR_BLOCK{
+                auto sp=SPLITTER(NUM_THREADS,FFLAS::CuttingStrategy::Row,FFLAS::StrategyParameter::Threads);
+                SYNCH_GROUP({
+                    FORBLOCK1D(iter, Ntask, sp,{
+                        TASK(MODE(CONSTREFERENCE(m_primeiters,Iteration,VECTORresidues)),{
+                                for(auto j=iter.begin(); j!=iter.end(); ++j)
+                                {
+                                    solve_with_prime(m_primeiters[j], Iteration, VECTORresidues[j]);
+                                }
+                         })
+                     });
+                });
+            }
 
         }
 
@@ -205,26 +205,26 @@ namespace LinBox
         void worker_process_task(Function& Iteration,  Vect &r)
         {
             int Ntask=0;
-            //LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   gen(_commPtr->rank(),_commPtr->size());
-            LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag>   gen(_commPtr->rank(),_commPtr->size());
+            LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   gen(_commPtr->rank(),_commPtr->size());
+            //LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag>   gen(_commPtr->rank(),_commPtr->size());
             ++gen;
             _commPtr->recv(Ntask, 0);
 
             if(Ntask!=0){
                 std::unordered_set<int> prime_used;
 
-            std::vector<BlasVector<Domain>> VECTORresidues;VECTORresidues.resize(Ntask);
-            std::vector<int> m_primeiters;m_primeiters.reserve(Ntask);
+                std::vector<BlasVector<Domain>> VECTORresidues;VECTORresidues.resize(Ntask);
+                std::vector<int> m_primeiters;m_primeiters.reserve(Ntask);
 
                 for(auto j=0;j<Ntask;j++){
                     ++gen;
-                    while(this->Builder_.noncoprime(*gen) )
+                    while(this->Builder_.noncoprime(*gen) || prime_used.find(*gen)!=prime_used.end())
                         ++gen;
                     m_primeiters.push_back(*gen);
-
+                    prime_used.insert(*gen);
                 }
 
-            compute_task( (this->Builder_), m_primeiters, Iteration, VECTORresidues, Ntask);
+                compute_task( (this->Builder_), m_primeiters, Iteration, VECTORresidues, Ntask);
 
                 for(long i=0; i<Ntask; i++){
                     _commPtr->send(VECTORresidues[i].begin(), VECTORresidues[i].end(), 0, 0);
