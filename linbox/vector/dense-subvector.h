@@ -51,11 +51,13 @@ namespace LinBox {
     class VectorEltPointer {
     public:
         typedef typename _Vector::Field::Element_ptr     pointer;
+        using Element=typename _Vector::Field::Element;
     };
     template <typename _Vector>
     class VectorEltPointer <const _Vector> {
     public:
-        typedef typename _Vector::Field::ConstElement_ptr pointer;
+        typedef typename _Vector::Field::ConstElement_ptr      pointer;
+        using Element=const typename _Vector::Field::Element;
     };
     
     template<class _Vector>
@@ -63,7 +65,8 @@ namespace LinBox {
 
     public:
         typedef typename _Vector::Field                    Field;
-        typedef typename Field::Element                  Element;    //!< Element type
+        typedef typename VectorEltPointer<_Vector>::Element                  Element;    //!< Element type
+        typedef Element                               value_type;
         typedef typename _Vector::Storage                Storage;    
         typedef BlasSubvector<_Vector>                    Self_t;    //!< Self type
         typedef typename VectorEltPointer<_Vector>::pointer                    pointer;    //!< pointer type to elements
@@ -76,7 +79,6 @@ namespace LinBox {
         /* Forward declaration of iterators */
         typedef Subiterator<pointer>             iterator;
         typedef Subiterator<const_pointer> const_iterator;
-
 
     protected:
 		pointer	     		    _ptr;
@@ -139,7 +141,8 @@ namespace LinBox {
             if (&V != this){
                 _ptr  = V._ptr;
                 _size = V._size;
-                _inc  = V._inc;                
+                _inc  = V._inc;
+                _field= V._field;
                 }
             return *this;
         }
@@ -232,7 +235,7 @@ namespace LinBox {
 
 		// Element access
 		Element&       operator[] (size_t n)       { return _ptr[n*_inc]; }
-		const Element& operator[] (size_t n) const { return _ptr[n*_inc]; }
+        const Element& operator[] (size_t n) const { return _ptr[n*_inc]; }
 
 		Element& at(size_t n) {
             if (n<_size)

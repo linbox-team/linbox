@@ -39,6 +39,10 @@
 
 namespace LinBox
 {
+    // Forward Declaration
+    template <class _Field, class _Storage>
+    class BlasMatrix;
+
     /* Blas Submatrix */
   /*! Dense Submatrix representation.
    * @ingroup matrix
@@ -70,7 +74,8 @@ namespace LinBox
     public :
         typedef typename _Matrix::Field                     Field;
         typedef typename Field::Element                   Element;    //!< Element type
-        typedef typename _Matrix::Storage                 Storage;    
+        typedef typename _Matrix::Storage                 Storage;
+        typedef typename _Matrix::RawStorage           RawStorage;    
         typedef BlasSubmatrix<_Matrix>                     Self_t;    //!< Self type
         typedef typename MatrixEltPointer<_Matrix>::pointer                    pointer;    //!< pointer type to elements
         typedef typename MatrixEltPointer<const _Matrix>::pointer        const_pointer;    //!< const pointer type to elements
@@ -145,7 +150,7 @@ namespace LinBox
                        size_t stride);
         
 
-        template <typename _TP1, typename _Rep2 = typename Rebind<Storage, _TP1>::other >
+        template <typename _TP1, typename _Rep2 = typename Rebind<RawStorage, _TP1>::other >
         struct rebind;
         /*  Members  */
 
@@ -324,14 +329,15 @@ namespace LinBox
         
         ColIterator      colBegin ()       { return       ColIterator (field(), _ptr, _row, _stride, 1);}
         ConstColIterator colBegin () const { return  ConstColIterator (field(), _ptr, _row, _stride, 1);}
-        ColIterator      colEnd ()         { return       ColIterator (field(), _ptr+_row*_stride, _row, _stride, 1);}
-        ConstColIterator colEnd ()   const { return  ConstColIterator (field(), _ptr+_row*_stride, _row, _stride, 1);}
+        ColIterator      colEnd ()         { return       ColIterator (field(), _ptr+_col, _row, _stride, 1);}
+        ConstColIterator colEnd ()   const { return  ConstColIterator (field(), _ptr+_col, _row, _stride, 1);}
         //@} // Column Iterators
-        
-        Iterator      Begin ();
-        Iterator      End ();
-        ConstIterator Begin () const;
-        ConstIterator End ()   const;
+
+
+        Iterator      Begin ()        { return      Iterator (_ptr, _col, _stride, 0); }
+        ConstIterator Begin () const  { return ConstIterator (_ptr, _col, _stride, 0); }
+        Iterator      End ()          { return      Iterator (_ptr+_row * _stride, _col, _stride, 0); }
+        ConstIterator End ()   const  { return ConstIterator (_ptr+_row * _stride, _col, _stride, 0); }
 
 
         using IndexedIterator      = BlasMatrixIndexedIterator<Field,       pointer,       Element>;

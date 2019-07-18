@@ -201,7 +201,7 @@ namespace LinBox
         _row(0),_col(0),_rep(ms.getField())
     {
         if( !ms.getArray(_rep) || !ms.getDimensions(_row, _col) )
-            throw ms.reportError(__FUNCTION__,__LINE__);     
+            throw ms.reportError(__FUNCTION__,__LINE__);
     }
 
     template < class _Field, class _Storage >
@@ -288,11 +288,11 @@ namespace LinBox
     std::istream &BlasMatrix< _Field, _Storage >::read (std::istream &file)
     {
         MatrixStream<Field> ms(field(), file);
-        if( !ms.getArray(_rep.getRep()) || !ms.getDimensions(_row, _col) ){
+        if( !ms.getArray(_rep) || !ms.getDimensions(_row, _col) ){
             throw ms.reportError(__FUNCTION__,__LINE__);
         }
-        return file;
-    }
+        return file;       
+    }       
 
     template < class _Field, class _Storage >
     std::ostream &BlasMatrix< _Field, _Storage >::write (std::ostream &os, Tag::FileFormat f) const
