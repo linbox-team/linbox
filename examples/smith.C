@@ -45,7 +45,7 @@
  Determinant plus ilio may be best for smaller matrices.
 
  This example was used during the design process of the adaptive algorithm.
- The matrix example generation code that was here is now in mats.C.
+ The matrix example generation code that was here is now in matrices.C.
 */
 
 #include <linbox/linbox-config.h>

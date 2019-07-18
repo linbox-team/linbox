@@ -81,7 +81,7 @@ int main(int argc, char* argv[])
 "  Use smithvalence.C to have more options and get more output info." << endl <<
 "  Given m, a prime power, local Smith form over Z_m is done via sparse elim." << endl <<
 "  Use power_ranks.C or poweroftwo_rank.C to have more options and get more output info." << endl <<
-"  See mats.C for some examples that have been used in smith form algorithm testing" << endl;
+"  See matrices.C for some examples that have been used in smith form algorithm testing" << endl;
 		return 0;
 	}
 

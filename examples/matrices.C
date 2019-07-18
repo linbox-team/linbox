@@ -1,5 +1,5 @@
 /*
- * examples/mats.C
+ * examples/matrices.C
  *
  * Copyright (C) 2017  D. Saunders, Z. Wang, J-G Dumas
  * ========LICENCE========
@@ -21,8 +21,8 @@
  * ========LICENCE========
  */
 
-/** \file examples/mats.C
- * @example  examples/mats.C
+/** \file examples/matrices.C
+ * @example  examples/matrices.C
  \brief example matrices that were chosen for Smith form testing.
  \ingroup examples
 
@@ -228,7 +228,7 @@ void RandomFibMat(DenseMatrix<PIR>& M, PIR& R, int n) {
 
 
 //////////////////////////////////
-// special mats tref and krat
+// special matrices tref and krat
 
 // Trefethen's challenge #7 mat (primes on diag, 1's on 2^e bands).
 template <class PIR>
