@@ -146,7 +146,8 @@ namespace LinBox
 		 */
 		long rankIn(BlasMatrix<Field>& Ap) const
 		{
-
+            std::cout<<"GIORGI -> rankIn "<<__FILE__<<std::endl;
+            Ap.write(std::cout);
 			typedef typename Field::Element Element;
 
 			Field F = Ap.field();

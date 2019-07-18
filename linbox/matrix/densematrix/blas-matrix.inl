@@ -225,6 +225,7 @@ namespace LinBox
     BlasMatrix< _Field, _Storage >::BlasMatrix (const OtherMatrix &A, const _Field &F) :
         _row(A.rowdim()), _col(A.coldim()), _rep(F, _row*_col)
     {
+        std::cout<<"GIORGI: BlasMatrix reducing mod \n";
 		typename OtherMatrix::template rebind<_Field>()(*this,A);        
     }
 
@@ -269,6 +270,9 @@ namespace LinBox
 		typedef BlasMatrix<_Tp1, _Rep2> other;
 
 		void operator() (other & Ap, const Self_t& A) {
+            std::cout<<"GIORGI: BlasMatrix rebinding \n";
+            A.write(std::cout);
+            
 			// typedef Self_t::ConstIterator ConstSelfIterator ;
 			typedef typename BlasMatrix< _Field, _Storage >::ConstIterator ConstSelfIterator ;
 			typedef typename other::Iterator OtherIterator ;
@@ -277,6 +281,7 @@ namespace LinBox
 			Hom<Field, _Tp1> hom(A. field(), Ap. field()) ;
 			for ( ; A_i != A. End(); ++ A_i, ++ Ap_i)
 				hom.image (*Ap_i, *A_i);
+            Ap.write(std::cout);
 		}
     };    
 
@@ -291,12 +296,14 @@ namespace LinBox
         if( !ms.getArray(_rep) || !ms.getDimensions(_row, _col) ){
             throw ms.reportError(__FUNCTION__,__LINE__);
         }
+        
         return file;       
     }       
 
     template < class _Field, class _Storage >
     std::ostream &BlasMatrix< _Field, _Storage >::write (std::ostream &os, Tag::FileFormat f) const
     {
+        std::cout<<"BlasMatrix write: "<<&(*_rep.getPointer())<<" "<<_rep<<std::endl;
         constSubMatrixType B(*this);
         return B.write(os,f);
     }
