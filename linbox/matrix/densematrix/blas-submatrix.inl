@@ -49,7 +49,7 @@ namespace LinBox {
         _col(Coldim),
         _stride(M.getStride()),
         _field(M.field())
-	{
+	{ 
         linbox_check ( rowbeg  <= M.rowdim() ); // allow for NULL matrix
 		linbox_check ( colbeg  <= M.coldim() );
         linbox_check ( rowbeg+Rowdim <= M.rowdim() );

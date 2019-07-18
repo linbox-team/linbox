@@ -54,7 +54,7 @@ bool testMatrix(const typename Matrix::Field & F, size_t m, size_t n, bool rw = 
         pass = pass && testBlackboxNoRW(B);
 	} 
     
-    BlasSubmatrix<Matrix> C(A,1,1, m, n);
+    BlasSubmatrix<Matrix> C(A,1,1, m-1, n-1);
 	if (std::min(m,n)>1) {
 		BlasSubmatrix<BlasSubmatrix<Matrix> > D(C,1,1,m/2,n/2);
 		pass = pass && testBlackboxNoRW(D);
