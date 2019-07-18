@@ -150,7 +150,7 @@ namespace LinBox
 		// Iteration operations
 
 		Subiterator& operator ++ ()
-		{ 
+		{
 			_iter += _stride;
 			return *this;
 		}

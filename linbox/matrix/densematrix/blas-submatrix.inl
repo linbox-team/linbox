@@ -78,7 +78,6 @@ namespace LinBox {
 		_stride(M.getStride()),
         _field(M.field())
     {
-
     }
     template < class _Matrix >
     BlasSubmatrix<_Matrix>::BlasSubmatrix (const typename BlasSubmatrix<_Matrix>::Field& F,
@@ -92,7 +91,6 @@ namespace LinBox {
 		_stride(stride),
         _field(F)
     {
-
     }
 
   
@@ -130,45 +128,19 @@ namespace LinBox {
 
     template < class _Matrix >
     std::istream& BlasSubmatrix<_Matrix>::read (std::istream &file)
-    {
+    {        
         MatrixStream<Field> ms(field(),file);
-		MatrixStreamError mse = GOOD;
         size_t c = 0,i,j;
 		Element v;
         do {
-            mse = ms.nextTriple(i,j,v);
+            ms.nextTriple(i,j,v);
             if ( (i<0 or i> _row) and (j<0 or j> _col)){
                 throw ms.reportError(__FUNCTION__,__LINE__);
             }
             setEntry(i,j,v);
-        }  while( mse <= END_OF_MATRIX);
+        }  while( ms.getError() <= END_OF_MATRIX);
 			        
-        /*        
-        // must be improved maybe to allow any matrix format
-		Iterator p;
-		int m,n;
-		char c;
-		file>>m>>n>>c;        		
-        linbox_check (m == _row);
-        linbox_check (m == _col);
-		
-		if ((c != 'M') && (c != 'm')) {
-            for (p = Begin (); p != End (); ++p) {
-                field().read (file, *p);
-			}
-		}
-		else { // sparse file format
-			int i=0, j=0;
-			while (true)
-                {
-                    file >> i >> j;
-                    if (i+j <= 0) break;
-                    field().read (file, _ptr+ (i-1)*_stride+(j-1));
-                }
-		}
-        */
-		return file;
-
+     	return file;
     }
 
     template < class _Matrix >
@@ -184,17 +156,11 @@ namespace LinBox {
         case (Tag::FileFormat::Plain) : /*  raw output */
             {
                 integer c;
-                int wid;
-
                 field().cardinality (c);
 
-                if (c >0)
-                    wid = (int) ceil (log ((double) c) / M_LN10);
-                else {
-                    wid=1000;
-                }
-                    
-                for (p = rowBegin (); p != rowEnd ();++p) {
+                if (c >0){
+                    int wid = (int) ceil (log ((double) c) / M_LN10);
+                    for (p = rowBegin (); p != rowEnd ();++p) {
                     typename ConstRow::const_iterator pe;
 
                     os << "  [ ";
@@ -205,6 +171,12 @@ namespace LinBox {
                         os << " ";
                     }
                     os << "]" << std::endl;
+                    }
+                }
+                else {
+                    for (p = rowBegin (); p != rowEnd ();++p) {
+                        os<<*p<<std::endl;
+                    }
                 }
             }
             break;

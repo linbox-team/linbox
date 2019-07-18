@@ -172,8 +172,11 @@ class MatrixStreamReader {
      * read in the whole matrix. Subclasses of dense formats should override
      * this behavior.
      * @param array The array to fill with entries. May be resized as needed.
+     * Vect type must ensure that the vector is resizable    
      */
-    	virtual MatrixStreamError getArray( std::vector<Element> &array );
+    //virtual MatrixStreamError getArray( std::vector<Element> &array );
+    template<class Vect>
+    MatrixStreamError getArray( Vect &array );
 
     /** Reads the next triple from the subclass nextTripleImpl method and saves
      * it to the savedTriples std::queue rather than returning it.  The error
@@ -277,8 +280,10 @@ class MatrixStream {
 
     /** Get the whole matrix as a dense (row-major) array of elements.
      * @param array The array to fill with entries. May be resized as needed.
+     * Vect type must ensure that the vector is resizable
      */
-    	bool getArray( std::vector<Element> &array );
+    template<class Vect>
+    bool getArray( Vect &array );
 
     /** Get the number of rows in the matrix and store it in the given size_t.
      * @return true iff the operation succeeded.
