@@ -214,10 +214,12 @@ NTL_TESTS =             \
     test-toeplitz-det        \
     test-weak-popov-form
 
-if LINBOX_HAVE_MPI
-MPI_TESTS =     \
-    test-mpi-comm
-endif
+# @note Fact is make check won't run the tests with mpirun,
+# so it will always fail
+# if LINBOX_HAVE_MPI
+# MPI_TESTS =     \
+#     test-mpi-comm
+# endif
 
 if LINBOX_HAVE_NTL
 USE_NTL_TESTS =     \
