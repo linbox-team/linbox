@@ -136,13 +136,16 @@ void benchmark(std::array<double, 3>& timebits, Arguments& args, MethodBase& met
 
 int main(int argc, char** argv)
 {
+    int numThreads = 0;
+
     Arguments args;
     Argument as[] = {{'i', "-i", "Set number of repetitions.", TYPE_INT, &args.nbiter},
                      {'q', "-q", "Set the field characteristic (-1 for rationals).", TYPE_INTEGER, &args.q},
                      {'n', "-n", "Set the matrix dimension.", TYPE_INT, &args.n},
                      {'b', "-b", "bit size", TYPE_INT, &args.bits},
                      {'s', "-s", "Seed for randomness.", TYPE_INT, &args.seed},
-                     {'d', "-d", "Dispatch mode (any of: Auto, Sequential, SMP, Paladin, Distributed).", TYPE_STR, &args.dispatchString},
+                     {'d', "-d", "Dispatch mode (any of: Auto, Sequential, SMP, Distributed).", TYPE_STR, &args.dispatchString},
+		             {'t', "-t", "Number of threads.", TYPE_INT, &numThreads },
                      {'M', "-M",
                       "Choose the solve method (any of: Auto, Elimination, DenseElimination, SparseElimination, "
                       "Dixon, CRA, SymbolicNumericOverlap, SymbolicNumericNorm, "
@@ -150,6 +153,11 @@ int main(int argc, char** argv)
                       TYPE_STR, &args.methodString},
                      END_OF_ARGUMENTS};
     LinBox::parseArguments(argc, argv, as);
+
+
+    if (numThreads > 0) {
+        omp_set_num_threads(numThreads);
+    }
 
     if (args.seed < 0) {
         args.seed = time(nullptr);
@@ -202,5 +210,5 @@ int main(int argc, char** argv)
     }
 
     return 0;
-}
 
+}

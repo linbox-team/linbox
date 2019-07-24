@@ -79,7 +79,6 @@ BASIC_TESTS =            \
     test-smith-form-adaptive     \
     test-smith-form-iliopoulos  \
     test-smith-form-local        \
-    test-one-invariant-factor   \
     test-last-invariant-factor  \
     test-qlup                    \
     test-det            \
@@ -136,6 +135,7 @@ FULLCHECK_TESTS =           \
     test-hom                    \
     test-image-field            \
     test-inverse                \
+    test-one-invariant-factor   \
     test-la-block-lanczos        \
     test-matpoly-mult            \
     test-matrix-domain            \
@@ -214,10 +214,12 @@ NTL_TESTS =             \
     test-toeplitz-det        \
     test-weak-popov-form
 
-if LINBOX_HAVE_MPI
-MPI_TESTS =     \
-    test-mpi-comm
-endif
+# @note Fact is make check won't run the tests with mpirun,
+# so it will always fail
+# if LINBOX_HAVE_MPI
+# MPI_TESTS =     \
+#     test-mpi-comm
+# endif
 
 if LINBOX_HAVE_NTL
 USE_NTL_TESTS =     \
