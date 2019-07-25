@@ -89,6 +89,9 @@ namespace LinBox {
                     _lc.ring().mulin(radices[j], _lc.prime(j));
                 }
             }
+            for (auto j = 0u; j < _lc.primesCount(); ++j) {
+                std::cout << "radices[" << j << "] " << radices[j] << std::endl;
+            }
             commentator().stop("[MultiModLifting] Lifting");
 
             // CRT reconstruction from paddicAccumulations
@@ -109,8 +112,9 @@ namespace LinBox {
             commentator().stop("[MultiModLifting] CRT Reconstruction Progress");
 
             // Rational reconstruction
-            // @note RR expects the bounds to be strict, this is why we add a + 1
-            craBuilder.result(xNum, xDen, _lc.numBound() + 1);
+            craBuilder.result(xNum, xDen, _lc.numBound());
+            std::cout << "xNum[0] " << xNum[0] << std::endl;
+            std::cout << "xDen " << xDen << std::endl;
 
             return true;
         }

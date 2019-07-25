@@ -97,14 +97,14 @@ bool check_result(ResultVector& x, Matrix& A, Vector& b, ResultMatrix& RA, Resul
 {
     std::cout << "Checking result..." << std::endl;
 
-    // ResultVector RAx(RA.field(), Rb.size());
-    // RA.apply(RAx, x);
+    ResultVector RAx(RA.field(), Rb.size());
+    RA.apply(RAx, x);
 
-    // VectorDomain<typename ResultMatrix::Field> VD(RA.field());
-    // if (!VD.areEqual(RAx, Rb)) {
-    //     print_error<SolveMethod>(x, A, b, "Ax != b");
-    //     return false;
-    // }
+    VectorDomain<typename ResultMatrix::Field> VD(RA.field());
+    if (!VD.areEqual(RAx, Rb)) {
+        print_error<SolveMethod>(x, A, b, "Ax != b");
+        return false;
+    }
 
     std::cout << "Result OK !" << std::endl;
 

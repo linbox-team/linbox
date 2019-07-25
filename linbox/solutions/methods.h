@@ -234,7 +234,9 @@ namespace LinBox {
                                                 //!  that the provided denominator is minimal.
 
         // ----- For DixonRNS method.
-        uint32_t primesCount = 8u; //!< How many primes to use lifting will be done over p = p1p2...pl.
+        //! How many primes to use lifting will be done over p = p1p2...pl.
+        //! -1 means automatically set to a heuristic value.
+        uint32_t primesCount = -1u;
         RnsFgemmType rnsFgemmType = RnsFgemmType::ParallelRnsOnly;
 
         // ----- For random-based systems.

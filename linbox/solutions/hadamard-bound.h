@@ -446,8 +446,9 @@ namespace LinBox {
             bNorm += 1;
         }
 
-        data.denBound = hadamardBound.bound;
-        data.numBound = hadamardBound.boundOverMinNorm * bNorm;
+        // @note RR expects the bounds to be strict, this is why we add a + 1
+        data.denBound = hadamardBound.bound + 1;
+        data.numBound = hadamardBound.boundOverMinNorm * bNorm + 1;
         if (data.denBound == 0 || data.numBound == 0) {
             data.solutionLogBound = 0.0;
         }
