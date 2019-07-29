@@ -43,10 +43,10 @@
 #if defined(__LINBOX_HAVE_MPI)
 namespace LinBox
 {
-    /* 
+    /*
      * The MPI standard imposes that if the following program is launched with only 2 processes, multithreading 
      * will not be available.
-     * Multithreading is only active if launched with more than 2 processes if each process is mapped to one node.
+     * Multithreading is only active if launched with more than 2 processes while each process is mapped to one node.
      * To use multithreading, user needs to set the environment useing export for the number of cores/threads on 
      * each node if each process is mapped to a node
      */
@@ -127,7 +127,7 @@ namespace LinBox
 		Vect & operator() (Vect& num,  Integer& den, Function& Iteration, PrimeIterator& primeg)
 		{
 			//  if there is no communicator or if there is only one process,
-			//  then proceed normally (without parallel)
+			//  then proceed sequentially (without parallel)
 			if(_commPtr == 0 || _commPtr->size() == 1) {
 
                 RationalChineseRemainder< CRABase > sequential(Builder_);
@@ -148,7 +148,7 @@ namespace LinBox
 		Vect & operator() (Vect& num, Function& Iteration, PrimeIterator& primeg)
 		{
 			//  if there is no communicator or if there is only one process,
-			//  then proceed normally (without parallel)
+			//  then proceed sequentially (without parallel)
 			if(_commPtr == 0 || _commPtr->size() == 1) {
 
                 ChineseRemainder< CRABase > sequential(Builder_);
@@ -172,7 +172,7 @@ namespace LinBox
                               )
         {
             Domain D(m_primeiter);
-            //@fixme: The commentator within the following function's function call hierarchy will raise a crash if the whole program is not compiled with all commentator disabled
+            //@warning: The commentator within the following function's function call hierarchy will raise a crash if the whole program is not compiled with all commentator disabled as the commentator is not thread safe
             Iteration(VECTORresidues, D );
             VECTORresidues.push_back(m_primeiter);
         }
@@ -334,7 +334,7 @@ namespace LinBox
 
             int Niter=this->getNiter();
 
-            //Compute nb of tasks ought to be realized for each process
+            //Compute and send nb of tasks ought to be realized for each worker process
             if(Niter<(procs-1)){
 
                 for(long i=1; i<Niter+1; i++){
