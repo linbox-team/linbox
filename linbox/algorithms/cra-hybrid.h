@@ -44,10 +44,10 @@
 namespace LinBox
 {
     /*
-     * The MPI standard imposes that if the following program is launched with only 2 processes, multithreading 
+     * The MPI standard imposes that if the following program is launched with only 2 processes, multithreading
      * will not be available.
      * Multithreading is only active if launched with more than 2 processes while each process is mapped to one node.
-     * To use multithreading, user needs to set the environment useing export for the number of cores/threads on 
+     * To use multithreading, user needs to set the environment useing export for the number of cores/threads on
      * each node if each process is mapped to a node
      */
 	template<class CRABase>
