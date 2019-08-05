@@ -138,9 +138,9 @@ namespace LinBox {
         }
     }
 
+    //Specialization for Bcast with only one boolean value data
     template <> void Communicator::bcast(bool& value, int src)
     {
-
         MPI_Bcast(&value, 1, MPI::BOOL, src, _comm);
 
     }
