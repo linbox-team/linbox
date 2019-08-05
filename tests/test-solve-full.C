@@ -93,9 +93,11 @@ namespace {
 }
 
 template <class SolveMethod, class Matrix, class Vector, class ResultMatrix, class ResultVector>
-bool check_result(ResultVector& x, Matrix& A, Vector& b, ResultMatrix& RA, ResultVector& Rb)
+bool check_result(ResultVector& x, Matrix& A, Vector& b, ResultMatrix& RA, ResultVector& Rb, bool verbose)
 {
-    std::cout << "Checking result..." << std::endl;
+    if (verbose) {
+        std::cout << "Checking result..." << std::endl;
+    }
 
     ResultVector RAx(RA.field(), Rb.size());
     RA.apply(RAx, x);
@@ -106,7 +108,9 @@ bool check_result(ResultVector& x, Matrix& A, Vector& b, ResultMatrix& RA, Resul
         return false;
     }
 
-    std::cout << "Result OK !" << std::endl;
+    if (verbose) {
+        std::cout << "Result OK !" << std::endl;
+    }
 
     return true;
 }
@@ -145,11 +149,11 @@ bool test_solve(const SolveMethod& method, Matrix& A, Vector& b, ResultDomain& R
     bool ok = true;
     try {
         solve(x, A, b, method);
-        ok = check_result<SolveMethod>(x, A, b, RA, Rb);
+        ok = check_result<SolveMethod>(x, A, b, RA, Rb, verbose);
 
         // if (ok) {
         //     solveInPlace(x, A, b, method);
-        //     ok = check_result<SolveMethod>(x, A, b, RA, Rb);
+        //     ok = check_result<SolveMethod>(x, A, b, RA, Rb, verbose);
         // }
     } catch (...) {
         print_error<SolveMethod>(x, A, b, "throws error");

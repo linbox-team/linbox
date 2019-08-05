@@ -108,7 +108,6 @@ namespace LinBox {
             if (_primesCount == -1u) {
                 PAR_BLOCK { _primesCount = 6 * NUM_THREADS; }
             }
-            std::cout << _primesCount << std::endl;
 
             _primes.resize(_primesCount);
 
@@ -248,7 +247,7 @@ namespace LinBox {
 
                 // _iterationsCount = log2(2 * N * D) / log2(p1 * p2 * ...)
                 _iterationsCount = std::ceil(_log2Bound / log2PrimesProduct);
-                std::cout << "_iterationsCount " << _iterationsCount << std::endl;
+                // std::cout << "_iterationsCount " << _iterationsCount << std::endl;
             }
 
             //----- Locals setup

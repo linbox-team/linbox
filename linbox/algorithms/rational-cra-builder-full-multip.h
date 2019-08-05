@@ -70,14 +70,11 @@ namespace LinBox
 		{
             commentator().start("[RationalCRABuilderFullMultip] CRT Reconstruction");
             Father_t::result(num, false);
-            std::cout << "num[0]: " << num[0] << std::endl;
-            std::cout << "numBound: " << numBound << std::endl;
             commentator().stop("[RationalCRABuilderFullMultip] CRT Reconstruction");
 
             commentator().start("[RationalCRABuilderFullMultip] Rational Reconstruction");
             den = 1;
             const auto& mod = Father_t::getModulus();
-            std::cout << "mod: " << mod << std::endl;
             Integer nd;
             for (auto num_it = num.begin(); num_it != num.end(); ++num_it) {
                 iterativeratrecon(*num_it, nd, den, mod, numBound);

@@ -80,7 +80,7 @@ namespace LinBox {
             for (auto i = 0u; i < _lc.length(); ++i) {
                 _lc.next(digits);
 
-                #pragma omp parallel for
+#pragma omp parallel for
                 for (auto j = 0u; j < _lc.primesCount(); ++j) {
                     // @fixme @cpernet digits being a field vector, this will implicitly cast
                     // each of its elements to a Integer, is there something better?
@@ -89,16 +89,12 @@ namespace LinBox {
                     _lc.ring().mulin(radices[j], _lc.prime(j));
                 }
             }
-            for (auto j = 0u; j < _lc.primesCount(); ++j) {
-                std::cout << "radices[" << j << "] " << radices[j] << std::endl;
-            }
             commentator().stop("[MultiModLifting] Lifting");
 
             // CRT reconstruction from paddicAccumulations
             commentator().start("[MultiModLifting] CRT Reconstruction Progress");
             using CRAField = Givaro::Modular<Integer>;
-            RationalCRABuilderFullMultip<CRAField> craBuilder(_lc.log2Bound()
-                                                              / 1.4427); // 1.4427 = 1 / log(2)
+            RationalCRABuilderFullMultip<CRAField> craBuilder(_lc.log2Bound() / 1.4427); // 1.4427 = 1 / log(2)
 
             {
                 CRAField field(radices[0]);
@@ -113,8 +109,6 @@ namespace LinBox {
 
             // Rational reconstruction
             craBuilder.result(xNum, xDen, _lc.numBound());
-            std::cout << "xNum[0] " << xNum[0] << std::endl;
-            std::cout << "xDen " << xDen << std::endl;
 
             return true;
         }
@@ -138,8 +132,8 @@ namespace LinBox {
          * Dense solving.
          */
         template <class RVector, class Vector>
-        void solve(RVector& xNum, typename RVector::Element& xDen, const DenseMatrix<Ring>& A,
-                   const Vector& b, const Method::DixonRNS& m)
+        void solve(RVector& xNum, typename RVector::Element& xDen, const DenseMatrix<Ring>& A, const Vector& b,
+                   const Method::DixonRNS& m)
         {
             // @fixme We should use some code from DixonSolver...
             // But that's hard so we just assume that A is square and invertible.
@@ -166,8 +160,8 @@ namespace LinBox {
      * \brief Solve specialisation for DixonRNS on dense matrices.
      */
     template <class RVector, class Ring, class Vector>
-    void solve(RVector& xNum, typename RVector::Element& xDen, const DenseMatrix<Ring>& A,
-               const Vector& b, const RingCategories::IntegerTag& tag, const Method::DixonRNS& m)
+    void solve(RVector& xNum, typename RVector::Element& xDen, const DenseMatrix<Ring>& A, const Vector& b,
+               const RingCategories::IntegerTag& tag, const Method::DixonRNS& m)
     {
         commentator().start("solve.dixon-rns.integer.dense");
 
