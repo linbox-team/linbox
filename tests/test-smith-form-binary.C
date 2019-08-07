@@ -41,7 +41,7 @@
 
 #include "linbox/util/commentator.h"
 //#include "linbox/vector/stream.h"
-//#include "test-common.h"
+//#include "test-field.h"
 using namespace LinBox;
 
 #include "test-smith-form.h"
@@ -88,25 +88,30 @@ int main(int argc, char** argv)
 	makeBumps(bumps, 0);
 	makeSNFExample(A,d,bumps,lumps);
 	sf.smithFormBinary (x, A);
-	pass = pass and checkSNFExample(d,x);
+	//pass = pass and checkSNFExample(d,x);
+	pass = checkSNFExample(d,x) and pass;
 
 	makeBumps(bumps, 1);
 	makeSNFExample(A,d,bumps,lumps);
 	sf.smithFormBinary (x, A);
-	pass = pass and checkSNFExample(d,x);
+	//pass = pass and checkSNFExample(d,x);
+	pass = checkSNFExample(d,x) and pass;
 
 	makeBumps(bumps, 2);
 	makeSNFExample(A,d,bumps,lumps);
 	sf.smithFormBinary (x, A);
-	pass = pass and checkSNFExample(d,x);
+	//pass = pass and checkSNFExample(d,x);
+	pass = checkSNFExample(d,x) and pass;
 
 	makeBumps(bumps, 3);
 	makeSNFExample(A,d,bumps,lumps);
 	sf.smithFormBinary (x, A);
-	pass = pass and checkSNFExample(d,x);
+	//pass = pass and checkSNFExample(d,x);
+	pass = checkSNFExample(d,x) and pass;
 
 	}
 
+/* I don't think this section adds significant value, so deleting.
 	{
 		typedef Givaro::ZRing<Givaro::Integer> Ring;
 
@@ -130,6 +135,7 @@ int main(int argc, char** argv)
 
 		if (!testRandom(R, sf, s1)) pass = false;
 	}
+*/
 
 	commentator().stop("SmithFormBinary test suite");
 	return pass ? 0 : -1;
