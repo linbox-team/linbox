@@ -137,7 +137,7 @@ namespace LinBox
 			size_t log_bound = d_bound.bitsize()-1;
 			Element ai, bi, ci, di;
 			ai=1;bi=0;ci=0;di=1;
-			Element bound;  _intRing.powtwo(bound, log_bound);
+			Element bound;  powtwo(bound, log_bound);
 
 			cur_ri = m;
 			cur_rinext = x;
