@@ -329,7 +329,7 @@ int main(int argc, char** argv)
         // seed, verbose);
 
         // ----- Rational DixonRNS
-        ok = ok && test_dense_solve(Method::DixonRNS(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
+        ok = ok && test_dense_solve(Method::Dixon(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
 
         // // ----- Modular Auto
         // ok = ok && test_dense_solve(Method::Auto(method), F, F, m, n, 0, 0, seed, verbose);

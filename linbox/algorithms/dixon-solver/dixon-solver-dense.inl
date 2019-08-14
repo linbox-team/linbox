@@ -24,8 +24,10 @@
 #include "linbox/util/debug.h"
 
 #include "linbox/algorithms/lifting-container.h"
+#include "linbox/algorithms/multi-mod-lifting-container.h"
 #include "linbox/algorithms/matrix-inverse.h"
 #include "linbox/algorithms/rational-reconstruction.h"
+#include "linbox/algorithms/multi-mod-rational-reconstruction.h"
 
 namespace LinBox {
 
@@ -128,15 +130,27 @@ namespace LinBox {
             }
         } while (notfr);
 
-        typedef DixonLiftingContainer<Ring, Field, IMatrix, BlasMatrix<Field>> LiftingContainer;
-        commentator().start("CLASSIC DIXON LIFTING");
-        LiftingContainer lc(_ring, *F, A, *FMP, b, _prime);
-        RationalReconstruction<LiftingContainer> re(lc);
-        if (!re.getRational(num, den, 0)) {
+        // commentator().start("CLASSIC DIXON LIFTING");
+        // typedef DixonLiftingContainer<Ring, Field, IMatrix, BlasMatrix<Field>> LiftingContainer;
+        // LiftingContainer lc(_ring, *F, A, *FMP, b, _prime);
+        // RationalReconstruction<LiftingContainer> re(lc);
+        // if (!re.getRational(num, den, 0)) {
+        //     delete FMP;
+        //     return SS_FAILED;
+        // }
+        // commentator().stop("CLASSIC DIXON LIFTING");
+
+        commentator().start("MULTI MOD DIXON LIFTING");
+        using LiftingContainer = MultiModLiftingContainer<Field, Ring, RandomPrime>;
+        Method::DixonRNS m; // @fixme Get from?
+        LiftingContainer lc(_ring, _genprime, A, b, m);
+        MultiModRationalReconstruction<LiftingContainer> re(lc);
+        if (!re.getRational(num, den)) {
             delete FMP;
             return SS_FAILED;
         }
-        commentator().stop("CLASSIC DIXON LIFTING");
+        commentator().stop("MULTI MOD DIXON LIFTING");
+
 #ifdef RSTIMING
         ttNonsingularSolve.update(re, lc);
 #endif

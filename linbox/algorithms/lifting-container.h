@@ -162,8 +162,8 @@ namespace LinBox
             // _length = logp(L, Prime) = log2(L) * ln(2) / ln(Prime)
             double primeLog2 = Givaro::logtwo(Prime);
             _length = std::ceil(hb.solutionLogBound / primeLog2); // round up instead of down
-			std::cout << "_length "<< _length << std::endl;
 #ifdef DEBUG_LC
+			std::cout << "_length "<< _length << std::endl;
 			std::cout<<" norms computed, p = "<<_p<<"\n";
 			std::cout<<" N = "<<N<<", D = "<<D<<", length = "<<_length<<"\n";
 			_matA.write(std::cout<<"A:=", Tag::FileFormat::Maple) << std::endl;

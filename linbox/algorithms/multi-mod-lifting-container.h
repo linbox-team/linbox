@@ -99,9 +99,9 @@ namespace LinBox {
         {
             linbox_check(A.rowdim() == A.coldim());
 
-            // std::cout << "----------" << std::endl;
-            // A.write(std::cout << "A: ", Tag::FileFormat::Maple) << std::endl;
-            // std::cout << "b: " << b << std::endl;
+            std::cout << "----------" << std::endl;
+            A.write(std::cout << "A: ", Tag::FileFormat::Maple) << std::endl;
+            std::cout << "b: " << b << std::endl;
 
             // This will contain the primes or our MultiMod basis
             _primesCount = m.primesCount;
@@ -109,6 +109,8 @@ namespace LinBox {
                 PAR_BLOCK { _primesCount = 6 * NUM_THREADS; }
             }
 
+            // @fixme !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            _primesCount = 2;
             _primes.resize(_primesCount);
 
             // Some preparation work
@@ -122,8 +124,9 @@ namespace LinBox {
                 double rnsBasisBitSize = std::ceil(1.0 + Givaro::logtwo(1 + infinityNormA * _n));
                 _rnsPrimesCount = std::ceil(rnsBasisBitSize / (primeGenerator.getBits() - 1));
                 _rnsPrimes.resize(_rnsPrimesCount);
-                // std::cout << "_rnsPrimesCount: " << _rnsPrimesCount << std::endl;
+                std::cout << "_rnsPrimesCount: " << _rnsPrimesCount << std::endl;
 
+                auto trialsLeft = m.trialsBeforeFailure;
                 std::vector<double> primes;
                 for (auto j = 0u; j < _primesCount + _rnsPrimesCount; ++j) {
                     auto p = *primeGenerator;
@@ -131,14 +134,20 @@ namespace LinBox {
 
                     // @note std::lower_bound finds the iterator where to put p in the sorted
                     // container. The name of the routine might be strange, but, hey, that's not my
-                    // fault.
+                    // fault. We check if the prime is already listed.
                     auto lb = std::lower_bound(primes.begin(), primes.end(), p);
                     if (lb != primes.end() && *lb == p) {
+                        if (trialsLeft == 0) {
+                            throw LinboxError("[MultiModLiftingContainer] Not enough primes.");
+                        }
+
                         --j;
+                        --trialsLeft;
                         continue;
                     }
 
                     // Inserting the primes at the right place to keep the array sorted
+                    std::cout << "Adding " << Integer(p) << std::endl;
                     primes.insert(lb, p);
                 }
 
@@ -165,6 +174,7 @@ namespace LinBox {
             // Setting fields up
             for (auto& pj : _primes) {
                 _fields.emplace_back(pj);
+                std::cout << Integer(pj) << std::endl;
             }
 
             // Initialize all inverses
@@ -247,7 +257,7 @@ namespace LinBox {
 
                 // _iterationsCount = log2(2 * N * D) / log2(p1 * p2 * ...)
                 _iterationsCount = std::ceil(_log2Bound / log2PrimesProduct);
-                // std::cout << "_iterationsCount " << _iterationsCount << std::endl;
+                std::cout << "_iterationsCount " << _iterationsCount << std::endl;
             }
 
             //----- Locals setup
@@ -321,40 +331,35 @@ namespace LinBox {
                 auto sp = SPLITTER(NUM_THREADS, FFLAS::CuttingStrategy::Row,
                                    FFLAS::StrategyParameter::Threads);
                 int M = _primesCount;
-                SYNCH_GROUP({
-                FORBLOCK1D(
-                    iter, M, sp, TASK(MODE(CONSTREFERENCE(digits)), {
-                        for (auto j = iter.begin(); j != iter.end(); ++j) {
-                            auto pj = _primes[j];
-                            auto& FR = _FR[j];
-                            uint64_t upj = pj;
+                FOR1D(j, M, sp, MODE(CONSTREFERENCE(digits)), {
+                    auto pj = _primes[j];
+                    auto& FR = _FR[j];
+                    uint64_t upj = pj;
 
-                            // @note There is no VectorDomain::divmod yet.
-                            // Euclidian division so that rj = pj Qj + Rj
-                            uint64_t uR;
-                            for (auto i = 0u; i < _n; ++i) {
-                                Integer::divmod(_qMatrix.refEntry(i, j), uR,
-                                                _rMatrix.getEntry(i, j), upj);
-                                // @note No need to init, because we know that uR < pj,
-                                // so that would do an extra check.
-                                FR[i] = static_cast<FElement>(uR);
-                            }
+                    // @note There is no VectorDomain::divmod yet.
+                    // Euclidian division so that rj = pj Qj + Rj
+                    uint64_t uR;
+                    for (auto i = 0u; i < _n; ++i) {
+                        Integer::divmod(_qMatrix.refEntry(i, j), uR,
+                                        _rMatrix.getEntry(i, j), upj);
+                        // @note No need to init, because we know that uR < pj,
+                        // so that would do an extra check.
+                        FR[i] = static_cast<FElement>(uR);
+                    }
 
-                            // digit = A^{-1} * R mod pj
-                            auto& digit = digits[j];
-                            auto& B = _B[j];
-                            B.apply(digit, FR);
+                    // digit = A^{-1} * R mod pj
+                    auto& digit = digits[j];
+                    auto& B = _B[j];
+                    B.apply(digit, FR);
 
-                            // Store the very same result in an RNS system,
-                            // but fact is all the primes of the RNS system are bigger
-                            // than the modulus used to compute the digit, we just copy
-                            // the result for everybody.
-                            for (auto i = 0u; i < _n; ++i) {
-                                setRNSMatrixElementAllResidues(_rnsR, _primesCount, i, j, FR[i]);
-                                setRNSMatrixElementAllResidues(_rnsc, _primesCount, i, j, digit[i]);
-                            }
-                        }
-                    }))
+                    // Store the very same result in an RNS system,
+                    // but fact is all the primes of the RNS system are bigger
+                    // than the modulus used to compute the digit, we just copy
+                    // the result for everybody.
+                    for (auto i = 0u; i < _n; ++i) {
+                        setRNSMatrixElementAllResidues(_rnsR, _primesCount, i, j, FR[i]);
+                        setRNSMatrixElementAllResidues(_rnsc, _primesCount, i, j, digit[i]);
+                    }
                 });
             }
             // commentator().stop("[MultiModLifting] c = A^{-1} r mod p");
@@ -368,8 +373,6 @@ namespace LinBox {
             using FGEMMParallel = FFLAS::ParSeqHelper::Parallel<FFLAS::CuttingStrategy::Block,
                                                                 FFLAS::StrategyParameter::Threads>;
 
-            // @fixme @cpernet @jgdumas Should we move that PAR_BLOCK outside of the function
-            // and let the user do it?
             // commentator().start("[MultiModLifting] FGEMM R <= R - Ac");
             // Firstly compute R <= R - A c as a fgemm within the RNS domain.
             if (_method.rnsFgemmType == RnsFgemmType::BothSequential) {
@@ -384,7 +387,6 @@ namespace LinBox {
             else if (_method.rnsFgemmType == RnsFgemmType::ParallelRnsOnly) {
                 rns_fgemm<RNSParallel, FFLAS::ParSeqHelper::Sequential>();
             }
-
             // commentator().stop("[MultiModLifting] FGEMM R <= R - Ac");
 
             // We divide each residues by the according pj, which is done by multiplying.
@@ -401,21 +403,18 @@ namespace LinBox {
                     auto sp = SPLITTER(NUM_THREADS, FFLAS::CuttingStrategy::Row,
                                        FFLAS::StrategyParameter::Threads);
                     int M = _primesCount;
-                    SYNCH_GROUP({
-                    FORBLOCK1D(iter, M, sp, TASK(MODE(CONSTREFERENCE(digits)), {
-                                   for (auto j = iter.begin(); j != iter.end(); ++j) {
-                                       auto& rnsPrimeInverse = _rnsPrimesInverses[j];
-                                       auto stridePrimeInverse = rnsPrimeInverse._stride;
-                                       auto rnsPrimeInverseForRnsPrimeH =
-                                           rnsPrimeInverse._ptr[h * stridePrimeInverse];
+                    FOR1D(j, M, sp, MODE(CONSTREFERENCE(digits)), {
+                        auto& rnsPrimeInverse = _rnsPrimesInverses[j];
+                        auto stridePrimeInverse = rnsPrimeInverse._stride;
+                        auto rnsPrimeInverseForRnsPrimeH =
+                            rnsPrimeInverse._ptr[h * stridePrimeInverse];
 
-                                       for (auto i = 0u; i < _n; ++i) {
-                                           rnsF.mulin(
-                                               _rnsR._ptr[rnsStride + (i * _primesCount + j)],
-                                               rnsPrimeInverseForRnsPrimeH);
-                                       }
-                                   }
-                               }))});
+                        for (auto i = 0u; i < _n; ++i) {
+                            rnsF.mulin(
+                                _rnsR._ptr[rnsStride + (i * _primesCount + j)],
+                                rnsPrimeInverseForRnsPrimeH);
+                        }
+                    });
                 }
 
                 rnsStride += _rnsR._stride;
