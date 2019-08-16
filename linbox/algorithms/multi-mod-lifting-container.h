@@ -99,9 +99,9 @@ namespace LinBox {
         {
             linbox_check(A.rowdim() == A.coldim());
 
-            std::cout << "----------" << std::endl;
-            A.write(std::cout << "A: ", Tag::FileFormat::Maple) << std::endl;
-            std::cout << "b: " << b << std::endl;
+            // std::cout << "----------" << std::endl;
+            // A.write(std::cout << "A: ", Tag::FileFormat::Maple) << std::endl;
+            // std::cout << "b: " << b << std::endl;
 
             // This will contain the primes or our MultiMod basis
             _primesCount = m.primesCount;
@@ -124,7 +124,7 @@ namespace LinBox {
                 double rnsBasisBitSize = std::ceil(1.0 + Givaro::logtwo(1 + infinityNormA * _n));
                 _rnsPrimesCount = std::ceil(rnsBasisBitSize / (primeGenerator.getBits() - 1));
                 _rnsPrimes.resize(_rnsPrimesCount);
-                std::cout << "_rnsPrimesCount: " << _rnsPrimesCount << std::endl;
+                // std::cout << "_rnsPrimesCount: " << _rnsPrimesCount << std::endl;
 
                 auto trialsLeft = m.trialsBeforeFailure;
                 std::vector<double> primes;
@@ -147,15 +147,22 @@ namespace LinBox {
                     }
 
                     // Inserting the primes at the right place to keep the array sorted
-                    std::cout << "Adding " << Integer(p) << std::endl;
                     primes.insert(lb, p);
                 }
 
                 // We take the smallest primes for our MultiMod basis
                 std::copy(primes.begin(), primes.begin() + _primesCount, _primes.begin());
 
+                // for (auto i = 0u; i < _primes.size(); ++i) {
+                //     std::cout << "p" << i << " = " << Integer(_primes[i]) << std::endl;
+                // }
+
                 // And the others for our RNS basis
                 std::copy(primes.begin() + _primesCount, primes.end(), _rnsPrimes.begin());
+
+                // for (auto i = 0u; i < _rnsPrimes.size(); ++i) {
+                //     std::cout << "q" << i << " = " << Integer(_rnsPrimes[i]) << std::endl;
+                // }
 
                 // We check that we really need all the primes within the RNS basis,
                 // as the first count was just an upper estimation.
@@ -174,7 +181,6 @@ namespace LinBox {
             // Setting fields up
             for (auto& pj : _primes) {
                 _fields.emplace_back(pj);
-                std::cout << Integer(pj) << std::endl;
             }
 
             // Initialize all inverses
@@ -257,7 +263,7 @@ namespace LinBox {
 
                 // _iterationsCount = log2(2 * N * D) / log2(p1 * p2 * ...)
                 _iterationsCount = std::ceil(_log2Bound / log2PrimesProduct);
-                std::cout << "_iterationsCount " << _iterationsCount << std::endl;
+                // std::cout << "_iterationsCount " << _iterationsCount << std::endl;
             }
 
             //----- Locals setup
@@ -325,10 +331,13 @@ namespace LinBox {
             VectorDomain<Ring> IVD(_ring);
             BlasMatrixDomain<Ring> IMD(_ring);
 
-// commentator().start("[MultiModLifting] c = A^{-1} r mod p");
+            // commentator().start("[MultiModLifting] c = A^{-1} r mod p");
             PAR_BLOCK
             {
-                auto sp = SPLITTER(NUM_THREADS, FFLAS::CuttingStrategy::Row,
+                // @fixme @zhuh Can't get that working with NUM_THREADS,
+                // any idea what makes it wrong?
+                // ./test-solve-full -n 1 -m 1 -b 50 -v -l
+                auto sp = SPLITTER(1 /* NUM_THREADS */, FFLAS::CuttingStrategy::Row,
                                    FFLAS::StrategyParameter::Threads);
                 int M = _primesCount;
                 FOR1D(j, M, sp, MODE(CONSTREFERENCE(digits)), {
@@ -403,7 +412,7 @@ namespace LinBox {
                     auto sp = SPLITTER(NUM_THREADS, FFLAS::CuttingStrategy::Row,
                                        FFLAS::StrategyParameter::Threads);
                     int M = _primesCount;
-                    FOR1D(j, M, sp, MODE(CONSTREFERENCE(digits)), {
+                    FOR1D(j, M, sp, {
                         auto& rnsPrimeInverse = _rnsPrimesInverses[j];
                         auto stridePrimeInverse = rnsPrimeInverse._stride;
                         auto rnsPrimeInverseForRnsPrimeH =
