@@ -272,7 +272,11 @@ int main(int argc, char** argv)
     }
 
     if (primesCount > 0) {
+        method.multiModularLifting = true;
         method.primesCount = primesCount;
+    }
+    else {
+        method.multiModularLifting = false;
     }
 
     if (vectorBitSize < 0) {
@@ -314,7 +318,7 @@ int main(int argc, char** argv)
         // // ok = ok && test_blackbox_solve(Method::CRAAuto(method), QQ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
 
         // // ----- Rational Dixon
-        // ok = ok && test_dense_solve(Method::Dixon(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
+        ok = ok && test_dense_solve(Method::Dixon(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
         // ok = ok && test_sparse_solve(Method::Dixon(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
         // // @fixme Dixon<Wiedemann> does not compile
         // // ok = ok && test_blackbox_solve(Method::Dixon(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
@@ -327,9 +331,6 @@ int main(int argc, char** argv)
         // @fixme Fails
         // ok = ok && test_sparse_solve(Method::SymbolicNumericNorm(method), ZZ, QQ, m, n, bitSize, vectorBitSize,
         // seed, verbose);
-
-        // ----- Rational DixonRNS
-        ok = ok && test_dense_solve(Method::Dixon(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
 
         // // ----- Modular Auto
         // ok = ok && test_dense_solve(Method::Auto(method), F, F, m, n, 0, 0, seed, verbose);

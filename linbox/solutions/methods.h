@@ -232,9 +232,12 @@ namespace LinBox {
         SingularSolutionType singularSolutionType = SingularSolutionType::Random;
         bool certifyMinimalDenominator = false; //!< Whether the solver should try to find a certificate
                                                 //!  that the provided denominator is minimal.
-
-        // ----- For DixonRNS method.
-        //! How many primes to use lifting will be done over p = p1p2...pl.
+        // @fixme Make a auto switch for multi modular lifting, based on matrix size.
+        // Whether to use the multi-modular Dixon lifter.
+        // (A BLAS Based C Library for Exact Linear Algebra on Integer Matrices - Chen, Storjohann ISSAC 2005)
+        // https://cs.uwaterloo.ca/~astorjoh/p92-chen.pdf
+        bool multiModularLifting = true;
+        //! How many primes to use, multi mod lifting will be done over p = p1p2...pl.
         //! -1 means automatically set to a heuristic value.
         uint32_t primesCount = -1u;
         RnsFgemmType rnsFgemmType = RnsFgemmType::ParallelRnsOnly;
@@ -283,11 +286,6 @@ namespace LinBox {
         // Method::Dixon uses Dixon's p-adic lifting.
         // (Numerische Mathematik - Dixon 1982)
         DEFINE_METHOD(Dixon, RingCategories::IntegerTag);
-
-        // Method::DixonRNS uses RNS features over Dixon's p-adic lifting.
-        // (A BLAS Based C Library for Exact Linear Algebra on Integer Matrices - Chen, Storjohann ISSAC 2005)
-        // https://cs.uwaterloo.ca/~astorjoh/p92-chen.pdf
-        DEFINE_METHOD(DixonRNS, RingCategories::IntegerTag);
 
         // Method::ChineseRemainder uses the chinese remainder algorithm
         // to solve the problem on multiple modular domains,

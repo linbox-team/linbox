@@ -57,7 +57,7 @@ namespace LinBox {
      *      (iii)   y = CRT_Reconstruct(y1, ..., yl)
      *      (iv)    x = Rational_Reconstruct(y)
      *
-     * One can configure how many primes are used with `Method::DixonRNS.primeBaseLength`.
+     * One can configure how many primes are used with `Method::Dixon.primesCount`.
      * According to the paper, a value of lp = 2 (ln(n) + log2(||A||)) or without the factor 2
      * can be used, but it depends on the problem, really.
      */
@@ -88,7 +88,7 @@ namespace LinBox {
 
         // @fixme Split to inline file
         MultiModLiftingContainer(const Ring& ring, PrimeGenerator primeGenerator, const IMatrix& A,
-                                 const IVector& b, const Method::DixonRNS& m)
+                                 const IVector& b, const Method::Dixon& m)
             : _ring(ring)
             , _method(m)
             , _A(A)
@@ -473,7 +473,7 @@ namespace LinBox {
 
     public: // @fixme BACK TO PRIVATE!
         const Ring& _ring;
-        Method::DixonRNS _method; // A copy of the user-provided method.
+        Method::Dixon _method; // A copy of the user-provided method.
 
         // The problem: A^{-1} * b
         const IMatrix& _A;

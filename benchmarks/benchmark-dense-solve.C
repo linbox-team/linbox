@@ -54,7 +54,7 @@ namespace {
         int n = 500;
         int bits = 10;
         int seed = -1;
-        int primesCount = 8;
+        int primesCount = -1;
         std::string dispatchString = "Auto";
         std::string methodString = "Auto";
         std::string rnsFgemmString = "ParallelRnsOnly";
@@ -117,7 +117,6 @@ void benchmark(std::array<double, 3>& timebits, Arguments& args, MethodBase& met
     else if (args.methodString == "DenseElimination")       solve(X, A, B, Method::DenseElimination(method));
     else if (args.methodString == "SparseElimination")      solve(X, A, B, Method::SparseElimination(method));
     else if (args.methodString == "Dixon")                  solve(X, A, B, Method::Dixon(method));
-    else if (args.methodString == "DixonRNS")               solve(X, A, B, Method::DixonRNS(method));
     else if (args.methodString == "CRA")                    solve(X, A, B, Method::CRAAuto(method));
     else if (args.methodString == "SymbolicNumericOverlap") solve(X, A, B, Method::SymbolicNumericOverlap(method));
     else if (args.methodString == "SymbolicNumericNorm")    solve(X, A, B, Method::SymbolicNumericNorm(method));
@@ -149,11 +148,11 @@ int main(int argc, char** argv)
                      {'s', "-s", "Seed for randomness.", TYPE_INT, &args.seed},
                      {'d', "-d", "Dispatch mode (any of: Auto, Sequential, SMP, Distributed).", TYPE_STR, &args.dispatchString},
                      {'r', "-r", "RNS-FGEMM type (either BothParallel, BothSequential, ParallelRnsOnly or ParallelFgemmOnly).", TYPE_STR, &args.rnsFgemmString},
-                     {'p', "-p", "For multi-modular methods, how many primes to use.", TYPE_INT, &args.primesCount},
+                     {'p', "-p", "Enable multi-modular method, and tells how many primes to use.", TYPE_INT, &args.primesCount},
 		             {'t', "-t", "Number of threads.", TYPE_INT, &numThreads },
                      {'M', "-M",
                       "Choose the solve method (any of: Auto, Elimination, DenseElimination, SparseElimination, "
-                      "Dixon, DixonRNS, CRA, SymbolicNumericOverlap, SymbolicNumericNorm, "
+                      "Dixon, CRA, SymbolicNumericOverlap, SymbolicNumericNorm, "
                       "Blackbox, Wiedemann, Lanczos).",
                       TYPE_STR, &args.methodString},
                      END_OF_ARGUMENTS};
@@ -176,7 +175,12 @@ int main(int argc, char** argv)
 
     MethodBase method;
     method.pCommunicator = &communicator;
-    method.primesCount = args.primesCount;
+    if (args.primesCount > 0) {
+        method.multiModularLifting = true;
+        method.primesCount = args.primesCount;
+    } else {
+        method.multiModularLifting = false;
+    }
     if (args.dispatchString == "Sequential")        method.dispatch = Dispatch::Sequential;
     else if (args.dispatchString == "SMP")          method.dispatch = Dispatch::SMP;
     else if (args.dispatchString == "Distributed")  method.dispatch = Dispatch::Distributed;

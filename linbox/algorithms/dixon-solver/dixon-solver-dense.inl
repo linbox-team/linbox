@@ -130,26 +130,23 @@ namespace LinBox {
             }
         } while (notfr);
 
-        // commentator().start("CLASSIC DIXON LIFTING");
-        // typedef DixonLiftingContainer<Ring, Field, IMatrix, BlasMatrix<Field>> LiftingContainer;
-        // LiftingContainer lc(_ring, *F, A, *FMP, b, _prime);
-        // RationalReconstruction<LiftingContainer> re(lc);
-        // if (!re.getRational(num, den, 0)) {
-        //     delete FMP;
-        //     return SS_FAILED;
-        // }
-        // commentator().stop("CLASSIC DIXON LIFTING");
-
-        commentator().start("MULTI MOD DIXON LIFTING");
-        using LiftingContainer = MultiModLiftingContainer<Field, Ring, RandomPrime>;
-        Method::DixonRNS m; // @fixme Get from?
-        LiftingContainer lc(_ring, _genprime, A, b, m);
-        MultiModRationalReconstruction<LiftingContainer> re(lc);
-        if (!re.getRational(num, den)) {
-            delete FMP;
-            return SS_FAILED;
+        if (_method.multiModularLifting) {
+            using LiftingContainer = MultiModLiftingContainer<Field, Ring, RandomPrime>;
+            LiftingContainer lc(_ring, _genprime, A, b, _method);
+            MultiModRationalReconstruction<LiftingContainer> re(lc);
+            if (!re.getRational(num, den)) {
+                delete FMP;
+                return SS_FAILED;
+            }
+        } else {
+            using LiftingContainer = DixonLiftingContainer<Ring, Field, IMatrix, BlasMatrix<Field>>;
+            LiftingContainer lc(_ring, *F, A, *FMP, b, _prime);
+            RationalReconstruction<LiftingContainer> re(lc);
+            if (!re.getRational(num, den, 0)) {
+                delete FMP;
+                return SS_FAILED;
+            }
         }
-        commentator().stop("MULTI MOD DIXON LIFTING");
 
 #ifdef RSTIMING
         ttNonsingularSolve.update(re, lc);
@@ -287,8 +284,6 @@ namespace LinBox {
     SolverReturnStatus DixonSolver<Ring, Field, RandomPrime, Method::DenseElimination>::solveApparentlyInconsistent(
         const BlasMatrix<Ring>& A, TAS& tas, BlasMatrix<Field>* Atp_minor_inv, size_t rank, const MethodBase& method)
     {
-        using LiftingContainer = DixonLiftingContainer<Ring, Field, BlasMatrix<Ring>, BlasMatrix<Field>>;
-
         if (!method.certifyInconsistency) return SS_INCONSISTENT;
 
         // @fixme Put these as class members!
@@ -311,15 +306,24 @@ namespace LinBox {
         ttCheckConsistency += tCheckConsistency;
 #endif
 
-        LiftingContainer lc(_ring, _field, At_minor, *Atp_minor_inv, zt, _prime);
-        RationalReconstruction<LiftingContainer> re(lc);
-
         BlasVector<Ring> shortNum(A.field(), rank);
         Integer shortDen;
 
-        // Dirty, but should not be called under normal circumstances
-        if (!re.getRational(shortNum, shortDen, 0)) {
-            return SS_FAILED;
+        if (_method.multiModularLifting) {
+            using LiftingContainer = MultiModLiftingContainer<Field, Ring, RandomPrime>;
+            LiftingContainer lc(_ring, _genprime, At_minor, zt, _method);
+            MultiModRationalReconstruction<LiftingContainer> re(lc);
+            if (!re.getRational(shortNum, shortDen)) {
+                return SS_FAILED;
+            }
+        }
+        else {
+            using LiftingContainer = DixonLiftingContainer<Ring, Field, BlasMatrix<Ring>, BlasMatrix<Field>>;
+            LiftingContainer lc(_ring, _field, At_minor, *Atp_minor_inv, zt, _prime);
+            RationalReconstruction<LiftingContainer> re(lc);
+            if (!re.getRational(shortNum, shortDen, 0)) {
+                return SS_FAILED;
+            }
         }
 
 #ifdef RSTIMING
@@ -597,8 +601,6 @@ namespace LinBox {
     SolverReturnStatus DixonSolver<Ring, Field, RandomPrime, Method::DenseElimination>::monolithicSolve(
         Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, Method::Dixon method)
     {
-        using LiftingContainer = DixonLiftingContainer<Ring, Field, BlasMatrix<Ring>, BlasMatrix<Field>>;
-
         if (method.certifyMinimalDenominator && !method.certifyInconsistency) {
             method.certifyInconsistency = true;
             std::cerr << "WARNING: forcing certifyInconsistency due to certifyMinimalDenominator" << std::endl;
@@ -716,21 +718,27 @@ namespace LinBox {
             BMDI.mulin_right(tas.Q, newb);
             newb.resize(rank);
 
-            // ----- Do lifting on sub matrix
+            // ----- Do lifting on sub matrix and reconstruct
 
             BlasMatrix<Ring> BBA_minor(A_minor);
-            commentator().start("CLASSIC DIXON LIFTING");
-            LiftingContainer lc(_ring, _field, BBA_minor, *Ap_minor_inv, newb, _prime);
-
-            // ----- Reconstruct rational
-
-            RationalReconstruction<LiftingContainer> re(lc);
             VectorFraction<Ring> resultVF(_ring, rank);
-            if (!re.getRational(resultVF.numer, resultVF.denom, 0)) {
-                // dirty, but should not be called
-                return SS_FAILED;
+
+            if (_method.multiModularLifting) {
+                using LiftingContainer = MultiModLiftingContainer<Field, Ring, RandomPrime>;
+                LiftingContainer lc(_ring, _genprime, BBA_minor, newb, _method);
+                MultiModRationalReconstruction<LiftingContainer> re(lc);
+                if (!re.getRational(resultVF.numer, resultVF.denom)) {
+                    return SS_FAILED;
+                }
             }
-            commentator().stop("CLASSIC DIXON LIFTING");
+            else {
+                using LiftingContainer = DixonLiftingContainer<Ring, Field, BlasMatrix<Ring>, BlasMatrix<Field>>;
+                LiftingContainer lc(_ring, _field, BBA_minor, *Ap_minor_inv, newb, _prime);
+                RationalReconstruction<LiftingContainer> re(lc);
+                if (!re.getRational(resultVF.numer, resultVF.denom, 0)) {
+                    return SS_FAILED;
+                }
+            }
 
 #ifdef RSTIMING
             ttSystemSolve.update(re, lc);

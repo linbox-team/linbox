@@ -89,6 +89,7 @@ namespace LinBox {
         mutable Prime _prime;
         Ring _ring;
         Field _field;
+        Method::Dixon _method;
 
         BlasMatrixDomain<Field> _bmdf;
 
@@ -113,10 +114,11 @@ namespace LinBox {
          * @param r   a Ring, set by default
          * @param rp  a RandomPrime generator, set by default
          */
-        DixonSolver(const Ring& r = Ring(), const RandomPrime& rp = RandomPrime())
+        DixonSolver(const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(), const Method::Dixon& method = Method::Dixon())
             : lastCertificate(r, 0)
             , _genprime(rp)
             , _ring(r)
+            , _method(method)
         {
             _genprime.setBits(FieldTraits<Field>::bestBitSize());
             _prime = *_genprime;

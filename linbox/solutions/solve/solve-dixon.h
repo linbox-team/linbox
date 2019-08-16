@@ -96,7 +96,7 @@ namespace LinBox {
         PrimeGenerator primeGenerator(FieldTraits<Field>::bestBitSize(A.coldim()));
 
         using Solver = DixonSolver<Ring, Field, PrimeGenerator, typename MethodForMatrix<Matrix>::type>;
-        Solver dixonSolve(A.field(), primeGenerator);
+        Solver dixonSolve(A.field(), primeGenerator, m);
 
         // Either A is known to be non-singular, or we just don't know yet.
         int maxTrials = m.trialsBeforeFailure;
