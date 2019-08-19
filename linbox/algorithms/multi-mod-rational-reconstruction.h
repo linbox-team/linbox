@@ -22,11 +22,13 @@
 
 #pragma once
 
+#include "./rational-cra-builder-full-multip.h"
+
 namespace LinBox {
     /**
      * From a MultiModLiftingContainer, will build
      * the solution on each prime, then will do a CRT reconstruction,
-     * before reconstructing the rational.
+     * before reconstructing the rational.95
      *
      * This does not do early termination.
      */
