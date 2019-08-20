@@ -89,7 +89,7 @@ namespace LinBox {
         commentator().start("solve.dixon.integer.dense");
         linbox_check((A.coldim() == xNum.size()) && (A.rowdim() == b.size()));
 
-        // @fixme Using Givaro::ModularBalanced<double> for the field makes Dixon fail...
+        // @note Using Givaro::ModularBalanced<double> would make Dixon and MultiModLiftingContainer fail...
         using Matrix = DenseMatrix<Ring>;
         using Field = Givaro::Modular<double>;
         using PrimeGenerator = PrimeIterator<IteratorCategories::HeuristicTag>;

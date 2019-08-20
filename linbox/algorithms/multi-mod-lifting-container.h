@@ -109,8 +109,6 @@ namespace LinBox {
                 PAR_BLOCK { _primesCount = 6 * NUM_THREADS; }
             }
 
-            // @fixme !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            _primesCount = 2;
             _primes.resize(_primesCount);
 
             // Some preparation work
@@ -337,7 +335,7 @@ namespace LinBox {
                 // @fixme @zhuh Can't get that working with NUM_THREADS,
                 // any idea what makes it wrong?
                 // ./test-solve-full -n 1 -m 1 -b 50 -v -l
-                auto sp = SPLITTER(1 /* NUM_THREADS */, FFLAS::CuttingStrategy::Row,
+                auto sp = SPLITTER(NUM_THREADS, FFLAS::CuttingStrategy::Row,
                                    FFLAS::StrategyParameter::Threads);
                 int M = _primesCount;
                 FOR1D(j, M, sp, MODE(CONSTREFERENCE(digits)), {
