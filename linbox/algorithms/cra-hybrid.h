@@ -68,7 +68,7 @@ namespace LinBox
 		{}
 
 		int getNiter(){
-		    return std::ceil(1.442695040889*HB/(double)(LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>(0,_commPtr->size()).getBits()-1));
+		    return std::ceil(HB/(double)(LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>(0,_commPtr->size()).getBits()-1));
 		}
 
 		/** \brief The CRA loop.
