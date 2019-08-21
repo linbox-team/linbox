@@ -43,12 +43,17 @@
 #if defined(__LINBOX_HAVE_MPI)
 namespace LinBox
 {
-    /*
+    /* @Warning /!\
      * The MPI standard imposes that if the following program is launched with only 2 processes, multithreading
      * will not be available.
-     * Multithreading is only active if launched with more than 2 processes while each process is mapped to one node.
+     * Multithreading is only active if launched with more than 2 processes while each process is mapped to
+     * one node.
      * To use multithreading, user needs to set the environment useing export for the number of cores/threads on
-     * each node if each process is mapped to a node
+     * each node if each process is mapped to a node however this only works for one run so this will not work
+     * for multiple executions where only the -t option is needed to set the number of threads
+     *
+     * For the execution on several nodes, each node needs to have at least 3 processes mapped otherwise no
+     * multithreading will be available according to the MPI standards
      */
 	template<class CRABase>
 	struct HybridChineseRemainder  {
@@ -68,7 +73,7 @@ namespace LinBox
 		{}
 
 		int getNiter(){
-		    return std::ceil(HB/(double)(LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>(0,_commPtr->size()).getBits()-1));
+		    return std::ceil(1.442695040889*HB/(double)(LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>(0,_commPtr->size()).getBits()-1));
 		}
 
 		/** \brief The CRA loop.
@@ -83,8 +88,6 @@ namespace LinBox
 		 * matrix \c mod \p p.
 		 @warning  we won't detect bad primes.
 		 *
-		 * \param primeg  RandIter object for generating primes.
-		 * \param[out] res an integer
 		 */
 		template<class Function, class PrimeIterator>
 		Integer & operator() (Integer& res, Function& Iteration, PrimeIterator& primeg)
@@ -205,8 +208,8 @@ namespace LinBox
         void worker_process_task(Function& Iteration,  Vect &r)
         {
             int Ntask=0;
-            LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   gen(_commPtr->rank(),_commPtr->size());
-            //LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag>   gen(_commPtr->rank(),_commPtr->size());
+            //LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>   gen(_commPtr->rank(),_commPtr->size());
+            LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::DeterministicTag>   gen(_commPtr->rank(),_commPtr->size());
             ++gen;
             _commPtr->recv(Ntask, 0);
 
