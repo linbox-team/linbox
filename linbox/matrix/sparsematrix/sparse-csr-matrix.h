@@ -1491,7 +1491,7 @@ namespace LinBox {
 	// 	FFLAS::VECT<typename Field::Element>  y ;
 	// 	y.inc = 1;
 	// 	y.m = Y.size();
-	// 	y.dat = Y.getWritePointer();
+	// 	y.dat = Y.getPointer();
 	// 	// std::cout << "called" << std::endl ;
 	// 	FFLAS::sp_fgemv(field(),  A, x, a, y);
 	// 	return Y ;

@@ -151,7 +151,7 @@ struct InteratorBlas : public Interator<IntVect> {
 	IterationResult operator()(Pointer& res, const Field& F) const
 	{
 		auto vit=this->_v.begin();
-		res = _vectC.getWritePointer();
+		res = _vectC.getPointer();
 		for( ; vit != this->_v.end(); ++vit, ++res)
 			F.init(*res, *vit);
 

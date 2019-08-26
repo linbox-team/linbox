@@ -408,7 +408,7 @@ namespace LinBox
 
 		typename Field::Element * Ker_ptr;
 		size_t ldk;
-		NullSpaceBasisIn(A.field(),Side,A.rowdim(),A.coldim(), A.getWritePointer(),A.getStride(), Ker_ptr,ldk,kerdim);
+		NullSpaceBasisIn(A.field(),Side,A.rowdim(),A.coldim(), A.getPointer(),A.getStride(), Ker_ptr,ldk,kerdim);
 		if (Side == Tag::Side::Right){
 			Ker.resize(A.coldim(),kerdim);
 		}

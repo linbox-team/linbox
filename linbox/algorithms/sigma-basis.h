@@ -598,7 +598,7 @@ namespace LinBox
 				// Compute the inverse of L
 				TriangularBlasMatrix<Field> invL(field(), m, m,
 								 Tag::Shape::Lower, Tag::Diag::Unit);
-				FFPACK::trinv_left((const Field &)field(),m,L.getPointer(),L.getStride(),invL.getWritePointer(),invL.getStride());
+				FFPACK::trinv_left((const Field &)field(),m,L.getPointer(),L.getStride(),invL.getPointer(),invL.getStride());
 
 #ifdef  _BM_TIMING
 				chrono.stop();
@@ -857,7 +857,7 @@ namespace LinBox
 				TriangularBlasMatrix<Field> invL (field(),m+n,m+n,
 								  Tag::Shape::Lower,Tag::Diag::Unit);
 				FFPACK::trinv_left((const Field &)field(),m+n, L.getPointer(), L.getStride(),
-						   invL.getWritePointer(), invL.getStride());
+						   invL.getPointer(), invL.getStride());
 
 
 				// SigmaBase =  BPerm2.Qt. L^(-1) . BPerm1 . SigmaBase
@@ -1080,7 +1080,7 @@ namespace LinBox
 				TriangularBlasMatrix<Field> invL (field(),m+n,m+n,
 								  Tag::Shape::Lower,Tag::Diag::Unit);
 				FFPACK::trinv_left(field(),m+n,L.getPointer(),L.getStride(),
-						   invL.getWritePointer(),invL.getStride());
+						   invL.getPointer(),invL.getStride());
 
 
 				// SigmaBase =  BPerm2.Qt. L^(-1) . BPerm1 . SigmaBase

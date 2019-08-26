@@ -23,7 +23,7 @@ namespace LinBox
 			}
 		}
 		int null;
-		FFPACK::Invert(TC.field(),E,TC.getPointer(),E,iTC.getWritePointer(),E,null);
+		FFPACK::Invert(TC.field(),E,TC.getPointer(),E,iTC.getPointer(),E,null);
 		return TC;
 	}
 
@@ -61,7 +61,7 @@ namespace LinBox
 					 TC.getPointer(),E,
 					 AMatBloc.getPointer(), m*k,
 					 F.zero,
-					 AEval.getWritePointer(), m*k);
+					 AEval.getPointer(), m*k);
 
 		FFLAS::fgemm(F,
 					 FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
@@ -70,7 +70,7 @@ namespace LinBox
 					 TC.getPointer(),E,
 					 BMatBloc.getPointer(), n*k,
 					 F.zero,
-					 BEval.getWritePointer(), n*k);
+					 BEval.getPointer(), n*k);
 
 		for (size_t i = 0 ; i < E ; ++i)
 		{
@@ -81,7 +81,7 @@ namespace LinBox
 						 AEval.getPointer()+i*m*k, k,
 						 BEval.getPointer()+i*n*k, n,
 						 F.zero,
-						 TMatBloc.getWritePointer()+i*m*n, n);
+						 TMatBloc.getPointer()+i*m*n, n);
 		}
 
 		FFLAS::fgemm(F,
@@ -89,9 +89,9 @@ namespace LinBox
 				     E, m * n, E,
 					 F.one,
 					 iTC.getPointer(),E, //lda
-					 TMatBloc.getWritePointer()+i*m*n, m*n, //ldb
+					 TMatBloc.getPointer()+i*m*n, m*n, //ldb
 					 F.zero,
-					 CMatBloc.getWritePointer()+i*m*n, m*n);
+					 CMatBloc.getPointer()+i*m*n, m*n);
 
 		return CMatBloc;
 	}
@@ -128,7 +128,7 @@ namespace LinBox
 						 Af.getPointer(), Am.getStride(), //lda
 						 Bf.getPointer(), Bm.getStride(), //ldb
 						 F.zero,
-						 Cf.getWritePointer(), Cm.getStride());
+						 Cf.getPointer(), Cm.getStride());
 			MatrixHom::map(Cm,Cf);
 			conversionCmtoC()(C, Cm); //change when convertation is done
 			return C;

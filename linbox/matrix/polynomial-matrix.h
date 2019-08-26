@@ -326,7 +326,7 @@ namespace LinBox{
                 	return os;
                 }
 
-		Element* getWritePointer(){return _rep.data();}
+		Element* getPointer(){return _rep.data();}
 		const Element* getPointer() const {return _rep.data();}
 
 		size_t realmeminfo()const {

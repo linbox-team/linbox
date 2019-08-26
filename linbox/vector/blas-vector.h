@@ -482,7 +482,7 @@ namespace LinBox { /* BlasVector */
 			return (const_pointer)_ptr;
 		}
 
-		pointer& getWritePointer()  //! @bug should be called refPointer()
+		pointer& getPointer()  //! @bug should be called refPointer()
 		{
 			return _ptr;
 		}
@@ -796,7 +796,7 @@ namespace LinBox { /*  BlasSubvector */
 		const_pointer getConstPointer() const { return &(_Vec[_i0]); }
 
 
-		pointer& getWritePointer() { return &(_Vec[_i0]); }
+		pointer& getPointer() { return &(_Vec[_i0]); }
 
 
 		const Element& setEntry (size_t i, const Element &a_i)

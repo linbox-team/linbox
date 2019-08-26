@@ -104,7 +104,7 @@ namespace LinBox
 				field().one, //const typename Field::Element alpha,
 				rep_->getPointer(), //typename Field::Element_ptr A,
 				rep_->getStride(), //const size_t lda,
-				B.getWritePointer(), //typename Field::Element_ptr B,
+				B.getPointer(), //typename Field::Element_ptr B,
 				B.getStride() //const size_t ldb)
 			);
 			return B;
