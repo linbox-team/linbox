@@ -77,8 +77,10 @@ namespace LinBox {
 
 
         /* Forward declaration of iterators */
-        typedef Subiterator<pointer>             iterator;
-        typedef Subiterator<const_pointer> const_iterator;
+        typedef Subiterator<pointer>                                 iterator;
+        typedef Subiterator<const_pointer>                     const_iterator;
+        typedef std::reverse_iterator<iterator>	             reverse_iterator;
+		typedef std::reverse_iterator<const_iterator>  const_reverse_iterator;
 
     protected:
 		pointer	     		    _ptr;
@@ -173,6 +175,7 @@ namespace LinBox {
         
         // dimension of the vector
         size_t size() const{ return _size; }
+        size_t max_size() const{ return _size; }
 
         /** Get access to the vector  data.
          * @return a pointer to the first element of the vector : constness is according to _Vector constness
@@ -232,6 +235,10 @@ namespace LinBox {
 		const_iterator         begin  (void) const { return const_iterator(_ptr,_inc); }
 		iterator               end    (void)       { return       iterator(_ptr+_inc*_size,_inc); }
 		const_iterator         end    (void) const { return const_iterator(_ptr+_inc*_size,_inc); }
+        reverse_iterator       rbegin (void)       { return reverse_iterator (end()); }
+		const_reverse_iterator rbegin (void) const { return reverse_iterator (end()); }
+		reverse_iterator       rend   (void)       { return reverse_iterator (begin()); }
+		const_reverse_iterator rend   (void) const { return reverse_iterator (begin()); }
 
 		// Element access
 		Element&       operator[] (size_t n)       { return _ptr[n*_inc]; }
@@ -253,8 +260,8 @@ namespace LinBox {
 		const Element& front (void) const { return *_ptr;}
 		Element&       back  (void)       { return *(_ptr+(_size-1)*_inc);}
 		const Element& back  (void) const { return *(_ptr+(_size-1)*_inc);}
-
-
+        
+        bool empty() const {return (_size==0);}
     };
     
     template <class Vector>

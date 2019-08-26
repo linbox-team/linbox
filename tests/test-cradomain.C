@@ -155,7 +155,7 @@ struct InteratorBlas : public Interator<IntVect> {
 		for( ; vit != this->_v.end(); ++vit, ++res)
 			F.init(*res, *vit);
 
-		res=_vectC.getWritePointer();
+		res=_vectC.getPointer();
 		return IterationResult::CONTINUE;
 	}
 
@@ -217,8 +217,8 @@ bool TestOneCRAWritePointer(std::ostream& report, Iter& iteration, RandGen& genp
 	LinBox::ChineseRemainder< Builder > cra( bound );
 	Givaro::ZRing<Integer> Z ;
 	LinBox::BlasMatrix<Givaro::ZRing<Integer> > Res(Z, (int)N, (int)N);
-	cra( Res.getWritePointer(), iteration, genprime);
-	bool locpass = std::equal( iteration.getVector().begin(), iteration.getVector().end(), Res.getWritePointer() );
+	cra( Res.getPointer(), iteration, genprime);
+	bool locpass = std::equal( iteration.getVector().begin(), iteration.getVector().end(), Res.getPointer() );
 
 	if (locpass) {
 		report << "ChineseRemainder<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << ", passed."  << std::endl;
