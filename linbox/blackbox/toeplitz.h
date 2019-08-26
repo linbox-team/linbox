@@ -29,6 +29,7 @@
 
 #include <iostream>
 #include <vector>
+#include "linbox/vector/vector.h"
 #include "linbox/vector/vector-traits.h"
 //#include "linbox/solutions/methods.h"  // for shape
 #include "linbox/solutions/solution-tags.h"  // to offer trace, det
