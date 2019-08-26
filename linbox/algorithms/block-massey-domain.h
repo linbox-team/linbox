@@ -396,7 +396,7 @@ namespace LinBox
 
 				// compute the inverse of L
 				TriangularBlasMatrix<Field> invL (field(),m+n,m+n, Tag::Shape::Lower,Tag::Diag::Unit);
-				FFPACK::trinv_left(field(),m+n,L.getPointer(),L.getStride(),invL.getWritePointer(),invL.getStride());
+				FFPACK::trinv_left(field(),m+n,L.getPointer(),L.getStride(),invL.getPointer(),invL.getStride());
 
 #ifdef 	__CHECK_TRANSFORMATION
 				report<<"invL"<<NN<<":=Matrix(";

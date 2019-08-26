@@ -191,7 +191,7 @@ namespace LinBox {
 			// for (size_t i = 0; i < m * n; i++)
 			// 	for (size_t j = 0; j < pts; j++)
 			// 		field().mulin(c.ref(i,j), inv_pts);
-			FFLAS::fscalin(field(),c.rowdim()*c.coldim()*c.size(), inv_pts,  c.getWritePointer(),1);
+			FFLAS::fscalin(field(),c.rowdim()*c.coldim()*c.size(), inv_pts,  c.getPointer(),1);
 
 			// std::cout<<"SCALIN:"<<std::endl;
 			// std::cout<<c<<std::endl;
@@ -314,7 +314,7 @@ namespace LinBox {
 			// for (size_t i = 0; i < m * n; i++)
 			// 	for (size_t j = 0; j < pts; j++)
 			// 		field().mulin(c.ref(i,j), inv_pts);
-			FFLAS::fscalin(field(),c.rowdim()*c.coldim()*c.size(), inv_pts,  c.getWritePointer(),1);
+			FFLAS::fscalin(field(),c.rowdim()*c.coldim()*c.size(), inv_pts,  c.getPointer(),1);
 			FFT_PROFILING(1,"scaling the result");
 		}
 	}; // end of class special FFT mul domain

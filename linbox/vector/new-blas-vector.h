@@ -221,7 +221,7 @@ namespace LinBox { /* BlasVector */
 		 * Get read-only access to the vector  data.
 		 */
 		Element_ptr getPointer() const { return _ptr; }
-        Element_ptr& getWritePointer() { return _ptr; }        
+        Element_ptr& getPointer() { return _ptr; }        
         
         /** add an element at the end of the vector (possibly invalidate existing iterators)
 		 * @param e element to add
@@ -525,7 +525,7 @@ namespace LinBox { /*  BlasSubvector */
 		const_pointer &getConstPointer() const { return &(_Vec[_i0]); }
 
 
-		pointer& getWritePointer() { return &(_Vec[_i0]); }
+		pointer& getPointer() { return &(_Vec[_i0]); }
 
 
 		const Element& setEntry (size_t i, const Element &a_i)
