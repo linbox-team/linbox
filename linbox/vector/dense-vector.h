@@ -36,7 +36,7 @@
 #define __LINBOX_vector_blas_vector_H
 
 #include <vector>
-
+#include <iterator>
 #include "linbox/linbox-config.h"
 #include "linbox/util/debug.h"
 #include "linbox/linbox-tags.h"
@@ -68,9 +68,10 @@ namespace LinBox {
 
 
         /* iterators */
-        typedef typename Storage::iterator             iterator;
-        typedef typename Storage::const_iterator const_iterator;
-
+        typedef typename Storage::iterator                           iterator;
+        typedef typename Storage::const_iterator               const_iterator;
+        typedef std::reverse_iterator<iterator>	             reverse_iterator;
+		typedef std::reverse_iterator<const_iterator>  const_reverse_iterator;
 
     protected:
         size_t                 _size=0;
@@ -79,7 +80,7 @@ namespace LinBox {
         const Field          &_field;
 
     public:
-
+        
         void resize (size_t n){
             //std::cout<<"BlasVector resize: "<<_ptr<<" ("<<_size<<") to ";
             _rep.resize(n);
@@ -221,6 +222,7 @@ namespace LinBox {
 
         // dimension of the vector
         size_t size() const{ return _size; }
+        size_t max_size() const{ return _size; }
 
         /*!_@internal
          * Get access to the vector  data.
@@ -306,6 +308,10 @@ namespace LinBox {
         const_iterator         begin  (void) const { return _rep.begin(); }
         iterator               end    (void)       { return _rep.end(); }
         const_iterator         end    (void) const { return _rep.end(); }
+        reverse_iterator       rbegin (void)       { return reverse_iterator (end()); }
+		const_reverse_iterator rbegin (void) const { return reverse_iterator (end()); }
+		reverse_iterator       rend   (void)       { return reverse_iterator (begin()); }
+		const_reverse_iterator rend   (void) const { return reverse_iterator (begin()); }
 
         // Element access
         Element&       operator[] (size_t n)       { return _rep[n]; }
@@ -319,6 +325,8 @@ namespace LinBox {
         Element&       back  (void)       { return _rep.back(); }
         const Element& back  (void) const { return _rep.back; }
 
+        bool empty() const {return _rep.empty();}
+        
 
         // Miscelleanous
         void random(){

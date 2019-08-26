@@ -518,7 +518,7 @@ namespace LinBox
                 }
 
 #ifdef LINBOX_pp_gauss_steps_OUT
-                std::cerr << "step[" << Ni-1 << "], pivot: " << c << std::endl;
+                Std::cerr << "step[" << Ni-1 << "], pivot: " << c << std::endl;
 #  ifdef LINBOX_pp_gauss_intermediate_OUT
                 LigneA.write(std::cerr, Tag::FileFormat::Maple ) << std::endl;
 #  endif

@@ -409,7 +409,7 @@ namespace LinBox
                           A_v.getPointer(), A_v.getStride(),
                           B_v.getPointer(), B_v.getStride(),
                           beta,
-                          D_v.getWritePointer(), D_v.getStride());
+                          D_v.getPointer(), D_v.getStride());
 			return D;
 		}
 
@@ -787,9 +787,9 @@ namespace LinBox
 				     A.rowdim(), A.coldim(),
 				     alpha,
 				     A.getPointer(), A.getStride(),
-				     b.getPointer(),b.getStride(),
+				     b.getPointer(), b.getInc(),
 				     beta,
-				     d.getPointer(),d.getStride());
+				     d.getPointer(), d.getInc());
 			return d;
 		}
 
@@ -807,10 +807,10 @@ namespace LinBox
 			FFLAS::fgemv( A.field(), FFLAS::FflasNoTrans,
 				     A.rowdim(), A.coldim(),
 				     alpha,
-				     A.getPointer(), A.getStride(),
-				     b.getPointer(),b.getStride(),
+                     A.getPointer(), A.getStride(),
+				     b.getPointer(), b.getInc(),
 				     beta,
-				     c.getPointer(),c.getStride());
+				     c.getPointer(), c.getInc());
 			return c;
 		}
 	};
@@ -907,9 +907,9 @@ namespace LinBox
 				     B.rowdim(), B.coldim(),
 				     alpha,
 				     B.getPointer(), B.getStride(),
-				     a.getPointer(),a.getStride(),
+				     a.getPointer(), a.getInc(),
 				     beta,
-				     c.getPointer(),c.getStride());
+				     c.getPointer(), c.getInc());
 			return c;
 		}
 	};
