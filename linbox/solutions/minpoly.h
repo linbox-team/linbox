@@ -250,9 +250,6 @@ namespace LinBox
         PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
 		IntegerModularMinpoly<Blackbox,MyMethod> iteration(A, M);
 
-#ifdef __LINBOX_HAVE_MPI
-		ChineseRemainderDistributed< CRABuilderEarlyMultip<Field > > cra(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD, c);
-#else
             // @todo: use a value for the switch provided by the method and not by a macro
 #  ifdef __LINBOX_HEURISTIC_CRA
 		ChineseRemainder< CRABuilderEarlyMultip<Field > > cra(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD);
@@ -260,11 +257,10 @@ namespace LinBox
         double hbound = FastCharPolyHadamardBound(A);
 		ChineseRemainder< CRABuilderFullMultip<Field > > cra(hbound);
 #  endif
-#endif
 		cra(P, iteration, genprime);
 
 #ifdef __LINBOX_HAVE_MPI
-		if(c || c->rank() == 0)
+		if(!c || c->rank() == 0)
 #endif
 			commentator().stop ("done", NULL, "Iminpoly");
 		return P;
