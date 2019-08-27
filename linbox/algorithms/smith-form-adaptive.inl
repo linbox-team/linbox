@@ -478,9 +478,7 @@ namespace LinBox
 	 */
 	template <class IRing, class _Rep>
 	void SmithFormAdaptive::smithForm (BlasVector<Givaro::ZRing<Integer> >& s, const BlasMatrix<IRing, _Rep>& A)
-	{
-
-         A.write(std::cout);
+	{        
 		//commentator().start ("Smith Form starts", "Smithform");
 		Givaro::ZRing<Integer> Z;
 

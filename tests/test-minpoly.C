@@ -228,7 +228,7 @@ bool testRandomMinpoly (Field                 &F,
 
 	VectorDomain<Field> VD (F);
 
-	Vector v, w;
+	Vector v(F), w(F);
 
 	VectorWrapper::ensureDim (v, v_stream.n ());
 	VectorWrapper::ensureDim (w, v_stream.n ());

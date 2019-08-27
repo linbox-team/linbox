@@ -279,7 +279,7 @@ namespace LinBox
 			for ( ; A_i != A. End(); ++ A_i, ++ Ap_i)
 				hom.image (*Ap_i, *A_i);
             //Ap.write(std::cout);
-		}
+		} 
     };    
 
     ///////////////////

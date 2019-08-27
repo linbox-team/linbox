@@ -111,9 +111,9 @@ namespace LinBox
       report<<"error with field : ";
       c.field().write(report);
       report<<std::endl;
-      /* std::cerr<<"A:="<<a<<";"<<std::endl; */
-      /* std::cerr<<"B:="<<b<<";"<<std::endl; */
-      /* std::cerr<<"C:="<<c<<";"<<std::endl; */
+      // std::cerr<<"A:="<<a<<";"<<std::endl;
+      // std::cerr<<"B:="<<b<<";"<<std::endl;
+      // std::cerr<<"C:="<<c<<";"<<std::endl;
     }
     return correct;
   }
@@ -155,9 +155,9 @@ namespace LinBox
       report<<"error with field : ";
       c.field().write(report);
       report<<std::endl;
-      /* std::cerr<<"A:="<<a<<";"<<std::endl; */
-      /* std::cerr<<"B:="<<b<<";"<<std::endl; */
-      /* std::cerr<<"C:="<<c<<";"<<std::endl; */
+      report<<"A:="<<a<<";"<<std::endl;
+      report<<"B:="<<b<<";"<<std::endl;
+      report<<"C:="<<c<<";"<<std::endl;
     }
     return correct;
   }
