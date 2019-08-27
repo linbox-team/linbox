@@ -124,6 +124,7 @@ namespace LinBox {
 			FFT_transform<Field> FFTinv (field(), lpts, FFTer.getInvRoot());
 			FFT_PROFILING(1,"init");
 
+            // std::cout<<"FFT prime: "<<_p<<std::endl;
 			// std::cout<<"FFT Root: "<<FFTer.getRoot()<<std::endl;
 			// std::cout<<"FFT InvRoot: "<<FFTer.getInvRoot()<<std::endl;
 			// std::cout<<a<<std::endl;
@@ -136,9 +137,9 @@ namespace LinBox {
 				FFTer.FFT_DIF(&(b.ref(i,0)));
 			FFT_PROFILING(1,"direct FFT_DIF");
 			
-			//std::cout<<"DIF:  w="<<FFTer._w<<std::endl;
-			//std::cout<<a<<std::endl;
-			//std::cout<<b<<std::endl;
+			// std::cout<<"DIF:  w="<<FFTer._w<<std::endl;
+			// std::cout<<a<<std::endl;
+			// std::cout<<b<<std::endl;
 			
 			
 			// convert the matrix representation to matfirst (with double coefficient)

@@ -117,8 +117,8 @@ void makeSNFExample(DenseMatrix<PIR>& A,
 	A.zero();
 	for(i = 0; i < d.size(); ++i) A.setEntry(i,i,d.getEntry(x,i));
 
-    A.write(std::cout);
-    std::cout<<"PPP\n";
+    //A.write(std::cout);
+    //std::cout<<"PPP\n";
 	L.zero();
 	for(i = 0; i < L.rowdim(); ++i) L.setEntry(i,i,R.one);
 	for (i = 0; i < L.rowdim(); ++ i)
@@ -140,6 +140,7 @@ void makeSNFExample(DenseMatrix<PIR>& A,
 		d.setEntry(i,R.abs(x, d.getEntry(x,i)));
 	// Now A is matrix equivalent to diag prefix product of bumps.
 	// Now d is SNF diagonal (vector of invariants) for A.
+
 }
 
 template <class PIR>

@@ -31,7 +31,7 @@
 #include <vector>
 
 #include "linbox/matrix/densematrix/blas-matrix.h"
-#include "linbox/matrix/matrixdomain/matrix-domain.h"
+//#include "linbox/matrix/matrixdomain/matrix-domain.h"
 
 #ifndef __LINBOX_weak_popov_form_domain_H
 #define __LINBOX_weak_popov_form_domain_H
@@ -47,18 +47,18 @@ namespace LinBox
 		typedef typename PolynomialRing::Coeff Coeff;
 		typedef typename PolynomialRing::CoeffField CoeffField;
 		
-		typedef MatrixDomain<PolynomialRing> MatrixDom;
+	  typedef MatrixDomain<PolynomialRing> MatrixDom;
 		
 		typedef typename MatrixDom::OwnMatrix OwnMatrix;
 		typedef typename MatrixDom::Matrix SubMatrix;
 
 	private:
 		PolynomialRing _R;
-		MatrixDom _MD;
+	        MatrixDom _MD; PG -> not used
 
 	public:
-		WeakPopovFormDomain(const PolynomialRing &R) : _R(R), _MD(R) {}
-		WeakPopovFormDomain(const WeakPopovFormDomain &D) : _R(D._R), _MD(D._R) {}
+	  WeakPopovFormDomain(const PolynomialRing &R) : _R(R), _MD(R) {}
+	  WeakPopovFormDomain(const WeakPopovFormDomain &D) : _R(D._R) , _MD(D._R) {}
 
 	// private:
 		
