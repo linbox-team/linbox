@@ -72,7 +72,7 @@ int main(int argc, char** argv)
 		typedef DixonSolver<PIR, Field, PrimeIterator<IteratorCategories::HeuristicTag> > Solver;
 		typedef LastInvariantFactor<PIR, Solver> LIF;
 		typedef OneInvariantFactor<PIR, LIF, SCompose, RandomMatrix>  OIF;
-		typedef SmithFormBinary<PIR, OIF, MatrixRank<PIR, Field > > SF;
+		typedef SmithFormBinary<PIR, OIF > SF;
 
 		SF sf;
 		sf. setOIFThreshold (30);
