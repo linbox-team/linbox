@@ -39,6 +39,7 @@
 #include <omp.h>
 #include <set>
 #include "linbox/algorithms/cra-domain-sequential.h"
+#include "linbox/algorithms/rational-cra.h"
 
 namespace LinBox
 {
@@ -90,10 +91,10 @@ namespace LinBox
 
 #pragma omp parallel for
 				for(size_t i=0;i<NN;++i) {
-					ROUNDresults[i] = Iteration(ROUNDresidues[i], ROUNDdomains[i]);
+					Iteration(ROUNDresidues[i], ROUNDdomains[i]);//ROUNDresults[i] = Iteration(ROUNDresidues[i], ROUNDdomains[i]);
 				}
 #pragma omp barrier
-
+/*
 				// if any thread says RESTART, then all CONTINUEs become SKIPs
 				bool anyrestart = false;
 				for (auto res : ROUNDresults) {
@@ -122,7 +123,7 @@ namespace LinBox
 					}
 				}
 				//std::cerr << "Computed: " << iterCount() << " primes." << std::endl;
-			}
+*/			}
 
 			// commentator().stop ("done", NULL, "mmcrait");
 			//std::cerr << "Used: " << this->iterCount() << " primes." << std::endl;

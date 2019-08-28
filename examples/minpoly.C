@@ -75,7 +75,7 @@ int main (int argc, char **argv)
 #ifdef __LINBOX_HAVE_MPI
 		Communicator C(&argc, &argv);
 		process = C.rank();
-		M.communicatorp(&C);
+		//M.communicatorp(&C);
 #endif
 
 		Givaro::ZRing<Integer> ZZ;

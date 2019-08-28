@@ -144,7 +144,7 @@ int main(int argc, char** argv)
                      {'n', "-n", "Set the matrix dimension.", TYPE_INT, &args.n},
                      {'b', "-b", "bit size", TYPE_INT, &args.bits},
                      {'s', "-s", "Seed for randomness.", TYPE_INT, &args.seed},
-                     {'d', "-d", "Dispatch mode (any of: Auto, Sequential, SMP, Distributed).", TYPE_STR, &args.dispatchString},
+                     {'d', "-d", "Dispatch mode (any of: Auto, Sequential, Distributed).", TYPE_STR, &args.dispatchString},
 		             {'t', "-t", "Number of threads.", TYPE_INT, &numThreads },
                      {'M', "-M",
                       "Choose the solve method (any of: Auto, Elimination, DenseElimination, SparseElimination, "
@@ -153,6 +153,7 @@ int main(int argc, char** argv)
                       TYPE_STR, &args.methodString},
                      END_OF_ARGUMENTS};
     LinBox::parseArguments(argc, argv, as);
+
 
     if (numThreads > 0) {
         omp_set_num_threads(numThreads);
@@ -172,7 +173,7 @@ int main(int argc, char** argv)
     MethodBase method;
     method.pCommunicator = &communicator;
     if (args.dispatchString == "Sequential")        method.dispatch = Dispatch::Sequential;
-    else if (args.dispatchString == "SMP")          method.dispatch = Dispatch::SMP;
+    else if (args.dispatchString == "Paladin")      method.dispatch = Dispatch::Paladin;
     else if (args.dispatchString == "Distributed")  method.dispatch = Dispatch::Distributed;
     else                                            method.dispatch = Dispatch::Auto;
 
@@ -208,4 +209,5 @@ int main(int argc, char** argv)
     }
 
     return 0;
+
 }

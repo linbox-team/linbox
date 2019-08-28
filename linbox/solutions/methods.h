@@ -106,9 +106,9 @@ namespace LinBox {
     enum class Dispatch {
         Auto,        //!< Let implementation decide what to use.
         Sequential,  //!< All sub-computations are done sequentially.
-        SMP,         //!< Use symmetric multiprocessing (Paladin) to do sub-computations.
         Distributed, //!< Use MPI to distribute sub-computations accross nodes.
         Combined,    //!< Use MPI then Paladin on each node.
+        Paladin,    //!< Use Paladin for multithreading.
     };
 
     /**
