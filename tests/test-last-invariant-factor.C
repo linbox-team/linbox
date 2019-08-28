@@ -51,19 +51,19 @@ using namespace LinBox;
 
 template <class Ring, class LIF, class Vector>
 bool testRandom(const Ring& R,
-		LIF& lif,
-		LinBox::VectorStream<Vector>& stream1)
+                LIF& lif,
+                LinBox::VectorStream<Vector>& stream1)
 {
 
 	std::ostringstream str;
 
 	str << "Testing last invariant factor:";
 
-        commentator().start (str.str ().c_str (), "testRandom", stream1.m ());
+    commentator().start (str.str ().c_str (), "testRandom", stream1.m ());
 
-        bool ret = true;
+    bool ret = true;
 
-        VectorDomain<Ring> VD (R);
+    VectorDomain<Ring> VD (R);
 
 	Vector d(R);
 
@@ -73,19 +73,19 @@ bool testRandom(const Ring& R,
 
 	int n = int(d. size());
 
-	 while (stream1) {
+    while (stream1) {
 
-		 commentator().startIteration ((unsigned)stream1.j ());
+        commentator().startIteration ((unsigned)stream1.j ());
 
-		 std::ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+        std::ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
-                bool iter_passed = true;
+        bool iter_passed = true;
 
 		stream1.next (d);
 
 		report << "Input vector:  ";
 		VD.write (report, d);
-                report << endl;
+        report << endl;
 
 		BlasMatrix<Ring> D(R, n, n), L(R, n, n), U(R, n, n), A(R,n,n);
 
@@ -117,8 +117,8 @@ bool testRandom(const Ring& R,
 			R.assign(e[(size_t)i],R.one);
 			U.apply(tmp1, e);
 			D.apply(tmp2, tmp1);
-			// LinBox::BlasSubvector<BlasVector<Ring> > col_p_v(R,*col_p);
-			// L.apply(col_p_v, tmp2);
+                // LinBox::BlasSubvector<BlasVector<Ring> > col_p_v(R,*col_p);
+                // L.apply(col_p_v, tmp2);
 			L.apply(*col_p, tmp2);
 			R.assign(e[(size_t)i],R.zero);
 		}
@@ -157,24 +157,24 @@ bool testRandom(const Ring& R,
 
 			ret = iter_passed = false;
 
-                if (!iter_passed)
+        if (!iter_passed)
 
-                        commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+            commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Computed last invariant factor is incorrect" << endl;
 
 
 
-                commentator().stop ("done");
+        commentator().stop ("done");
 
-                commentator().progress ();
+        commentator().progress ();
 
-	 }
+    }
 
-	 //stream1.reset ();
+        //stream1.reset ();
 
-	  commentator().stop (MSG_STATUS (ret), (const char *) 0, "testRandom");
+    commentator().stop (MSG_STATUS (ret), (const char *) 0, "testRandom");
 
-	  return ret;
+    return ret;
 
 }
 
@@ -182,30 +182,30 @@ int main(int argc, char** argv)
 {
 
 
-        bool pass = true;
+    bool pass = true;
 
-        static size_t n = 10;
+    static size_t n = 10;
 
 	static unsigned int iterations = 1;
 
-        static Argument args[] = {
-                { 'n', "-n N", "Set order of test matrices to N.", TYPE_INT,     &n },
-                { 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
+    static Argument args[] = {
+        { 'n', "-n N", "Set order of test matrices to N.", TYPE_INT,     &n },
+        { 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
 		END_OF_ARGUMENTS
 
-        };
+    };
 
 	parseArguments (argc, argv, args);
 
-        typedef Givaro::ZRing<Integer>      Ring;
+    typedef Givaro::ZRing<Integer>      Ring;
 
-        Ring R; Ring::RandIter gen(R);
+    Ring R; Ring::RandIter gen(R);
 
 	commentator().start("Last invariant factor test suite", "LIF");
 
-        commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
+    commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 
-        RandomDenseStream<Ring> s1 (R, gen, n, iterations);
+    RandomDenseStream<Ring> s1 (R, gen, n, iterations);
 
 	typedef DixonSolver<Ring, Givaro::Modular<int32_t>, PrimeIterator<IteratorCategories::HeuristicTag> > Solver;
         // typedef DixonSolver<Ring, Givaro::Modular<double>, LinBox::PrimeIterator<IteratorCategories::HeuristicTag> > Solver;
@@ -219,7 +219,7 @@ int main(int argc, char** argv)
 	if (!testRandom(R, lif, s1)) pass = false;
 
 	commentator().stop("Last invariant factor test suite");
-        return pass ? 0 : -1;
+    return pass ? 0 : -1;
 }
 
 // Local Variables:

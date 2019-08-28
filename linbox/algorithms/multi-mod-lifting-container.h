@@ -181,6 +181,7 @@ namespace LinBox {
                 _fields.emplace_back(pj);
             }
 
+
             // Initialize all inverses
             // @note An inverse mod some p within DixonSolver<Dense> was already computed,
             // and pass through to the lifting container. Here, we could use that, but we have
@@ -199,12 +200,11 @@ namespace LinBox {
                     auto sp = SPLITTER(NUM_THREADS, FFLAS::CuttingStrategy::Row,
                                        FFLAS::StrategyParameter::Threads);
                     int M = _primesCount;
-                    FOR1D(j, M, sp, MODE(CONSTREFERENCE(nullities)), {
+                    FOR1D(j, M, sp, MODE(WRITE(nullities)), {
                         auto& F = _fields[j];
                         BlasMatrixDomain<Field> bmd(F);
                         bmd.invin(_B[j], nullities[j]);
                     });
-
                     for (auto nullity : nullities) {
                         if (nullity > 0) {
                             // @fixme Should redraw another prime!
