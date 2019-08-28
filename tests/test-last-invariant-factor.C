@@ -49,8 +49,8 @@
 
 using namespace LinBox;
 
-template <class Ring, class LIF, class Vector>
-bool testRandom(const Ring& R,
+template <class Ring, class RandIter, class LIF, class Vector>
+bool testRandom(const Ring& R, RandIter& gen,
                 LIF& lif,
                 LinBox::VectorStream<Vector>& stream1)
 {
@@ -77,7 +77,8 @@ bool testRandom(const Ring& R,
 
         commentator().startIteration ((unsigned)stream1.j ());
 
-        std::ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+//         std::ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+        std::ostream &report = std::clog;
 
         bool iter_passed = true;
 
@@ -87,7 +88,7 @@ bool testRandom(const Ring& R,
 		VD.write (report, d);
         report << endl;
 
-		BlasMatrix<Ring> D(R, n, n), L(R, n, n), U(R, n, n), A(R,n,n);
+		DenseMatrix<Ring> D(R, n, n), L(R, n, n), U(R, n, n), A(R,n,n);
 
 		int i, j;
 
@@ -100,15 +101,14 @@ bool testRandom(const Ring& R,
 
 			for (j = 0; j < i; ++ j) {
 
-				R.init(L[(size_t)i][(size_t)j], int64_t(rand() % 10));
-
-				R.init(U[(size_t)j][(size_t)i], int64_t(rand() % 10));
+				gen.random(L[(size_t)i][(size_t)j]);
+                gen.random(U[(size_t)j][(size_t)i]);
 			}
 
 
-		BlasVector<Ring> tmp1(R,(size_t)n), tmp2(R,(size_t)n), e(R,(size_t)n);
+		DenseVector<Ring> tmp1(R,(size_t)n), tmp2(R,(size_t)n), e(R,(size_t)n);
 
-		typename BlasMatrix<Ring>::ColIterator col_p;
+		typename DenseMatrix<Ring>::ColIterator col_p;
 
 		i = 0;
 		for (col_p = A.colBegin();
@@ -117,8 +117,6 @@ bool testRandom(const Ring& R,
 			R.assign(e[(size_t)i],R.one);
 			U.apply(tmp1, e);
 			D.apply(tmp2, tmp1);
-                // LinBox::BlasSubvector<BlasVector<Ring> > col_p_v(R,*col_p);
-                // L.apply(col_p_v, tmp2);
 			L.apply(*col_p, tmp2);
 			R.assign(e[(size_t)i],R.zero);
 		}
@@ -183,23 +181,30 @@ int main(int argc, char** argv)
 
 
     bool pass = true;
-
+    int seed = -1;
     static size_t n = 10;
+    static size_t bits = 30;
 
 	static unsigned int iterations = 1;
 
     static Argument args[] = {
         { 'n', "-n N", "Set order of test matrices to N.", TYPE_INT,     &n },
+        { 'b', "-b B", "Set bit size to B.", TYPE_INT,     &bits },
         { 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
+        {'s', "-s", "Seed for randomness.", TYPE_INT, &seed},
 		END_OF_ARGUMENTS
 
     };
 
 	parseArguments (argc, argv, args);
 
+    if (seed < 0) {
+        seed = time(nullptr);
+    }
+
     typedef Givaro::ZRing<Integer>      Ring;
 
-    Ring R; Ring::RandIter gen(R);
+    Ring R; Ring::RandIter gen(R, seed, bits);
 
 	commentator().start("Last invariant factor test suite", "LIF");
 
@@ -214,11 +219,15 @@ int main(int argc, char** argv)
 
 	LIF lif;
 
-	lif.  setThreshold (30);
+	lif.setThreshold (30);
 
-	if (!testRandom(R, lif, s1)) pass = false;
+	if (!testRandom(R, gen, lif, s1)) pass = false;
 
-	commentator().stop("Last invariant factor test suite");
+    if (!pass) {
+        std::cerr << "Failed with seed: " << seed << std::endl;
+    }
+
+    commentator().stop("Last invariant factor test suite");
     return pass ? 0 : -1;
 }
 

@@ -124,6 +124,9 @@ namespace LinBox
 
 				// try to solve Ax = b over Ring
 				tmp = solver.solveNonsingular(r_num, r_den, A, b);
+
+                // std::clog << "r_den: " << r_den << std::endl;
+
 				// If no solution found
 				if (tmp != SS_OK) {
 					r.assign (lif, r.zero);

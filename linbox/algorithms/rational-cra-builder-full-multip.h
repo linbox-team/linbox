@@ -92,8 +92,24 @@ namespace LinBox
 	protected:
 		Integer& iterativeratrecon(Integer& u1, Integer& new_den, const Integer& old_den, const Integer& m1, const Integer& sn)
 		{
+/*            std::clog << "iterativeratrecon"
+                      << ", u1: " << u1
+                      << ", new_den: " << new_den 
+                      << ", old_den: " << old_den
+                      << ", m1: " << m1
+                      << ", sn: " << sn
+                      ;
+*/
 			Integer a;
-			_ZZ.RationalReconstruction(a, new_den, u1*=old_den, m1, sn);
+			bool success = _ZZ.RationalReconstruction(a, new_den, u1*=old_den, m1, sn, true, false);
+            if (! success) 
+                std::cerr << " ***** RationalReconstruction FAILURE ***** ";
+/*
+            std::clog << ", AFTER"
+                      << ", a: " << a
+                      << ", new_den: " << new_den 
+                      << std::endl;
+*/
 			return u1=a;
 		}
 	};
