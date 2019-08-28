@@ -323,6 +323,25 @@ namespace LinBox {
                 T3 = SimdMod::mul_mod (T2, alpha, this->P, this->U);
                 Simd::store (Bptr, T3);
             }
+            template <typename S=Simd,
+                      FFT_utils::enable_if_t<S::vect_size != 1>* = nullptr>
+            void
+            Butterfly_DIF (Element *Aptr, Element *Bptr,
+                                            const Element* alpha_ptr) const {
+                simd_vect_t A, B, T1, T2, T3, alpha;
+                A = Simd::load (Aptr);
+                B = Simd::load (Bptr);
+                alpha = Simd::load (alpha_ptr);
+
+                /* A+B mod p */
+                T1 = SimdMod::add_mod (A, B, this->P);
+                Simd::store (Aptr, T1);
+                /* A-B mod p */
+                T2 = SimdMod::sub_mod (A, B, this->P);
+                /* multiply A-B by alpha and store it in Bptr */
+                T3 = SimdMod::mul_mod (T2, alpha, this->P, this->U);
+                Simd::store (Bptr, T3);
+            }
             /* See DIF_core for the meaning of the parameter */
             /* no_simd version is defined for every type of Simd */
             void
@@ -331,9 +350,10 @@ namespace LinBox {
                                                                         const {
                 Element *Aptr = coeffs;
                 Element *Bptr = coeffs + w;
-                for (size_t i = 0; i < f; i++, Aptr += 2*w, Bptr += 2*w) {
+                for (size_t i = 0; i < f; i++) {
                     for (size_t j = 0; j < w; j += 1) {
-                        Butterfly_DIF (Aptr[j], Bptr[j], pow[j]);
+                        Butterfly_DIF (Aptr[(i<<1)*w+j], Bptr[(i<<1)*w+j],
+                                                                        pow[j]);
                     }
                 }
             }
@@ -344,10 +364,11 @@ namespace LinBox {
                                                                         const {
                 Element *Aptr = coeffs;
                 Element *Bptr = coeffs + w;
-                for (size_t i = 0; i < f; i++, Aptr += 2*w, Bptr += 2*w) {
+                for (size_t i = 0; i < f; i++) {
                     const Element alpha = pow[i];
                     for (size_t j = 0; j < w; j += 1) {
-                        Butterfly_DIF (Aptr[j], Bptr[j], alpha);
+                        Butterfly_DIF (Aptr[(i<<1)*w+j], Bptr[(i<<1)*w+j],
+                                                                        alpha);
                     }
                 }
             }
@@ -367,10 +388,9 @@ namespace LinBox {
                                                     const Element *pow) const {
                 Element *Aptr = coeffs;
                 Element *Bptr = coeffs + w;
-                for (size_t i = 0; i < f; i++, Aptr += 2*w, Bptr += 2*w) {
+                for (size_t i = 0; i < f; i++) {
                     for (size_t j = 0; j < w; j += Simd::vect_size) {
-                        simd_vect_t alpha = Simd::load (pow + j);
-                        Butterfly_DIF (Aptr + j, Bptr + j, alpha);
+                        Butterfly_DIF (Aptr+(i<<1)*w+j, Bptr+(i<<1)*w+j, pow+j);
                     }
                 }
             }
@@ -392,10 +412,10 @@ namespace LinBox {
                                                                         const {
                 Element *Aptr = coeffs;
                 Element *Bptr = coeffs + w;
-                for (size_t i = 0; i < f; i++, Aptr += 2*w, Bptr += 2*w) {
+                for (size_t i = 0; i < f; i++) {
                     simd_vect_t alpha = Simd::set1 (pow[i]);
                     for (size_t j = 0; j < w; j += Simd::vect_size) {
-                        Butterfly_DIF (Aptr + j, Bptr + j, alpha);
+                        Butterfly_DIF (Aptr+(i<<1)*w+j, Bptr+(i<<1)*w+j, alpha);
                     }
                 }
             }
@@ -665,6 +685,25 @@ namespace LinBox {
                 T3 = SimdMod::sub_mod (A, T1, this->P);
                 Simd::store (Bptr, T3);
             }
+            template <typename S=Simd,
+                      FFT_utils::enable_if_t<S::vect_size != 1>* = nullptr>
+            void
+            Butterfly_DIT (Element *Aptr, Element *Bptr,
+                                            const Element *alpha_ptr) const {
+                simd_vect_t A, B, T1, T2, T3, alpha;
+                A = Simd::load (Aptr);
+                B = Simd::load (Bptr);
+                alpha = Simd::load (alpha_ptr);
+
+                /* B*alpha mod P */
+                T1 = SimdMod::mul_mod (B, alpha, this->P, this->U);
+                /* A+B*alpha */
+                T2 = SimdMod::add_mod (A, T1, this->P);
+                Simd::store (Aptr, T2);
+                /* A-B*alpha */
+                T3 = SimdMod::sub_mod (A, T1, this->P);
+                Simd::store (Bptr, T3);
+            }
             /* See DIT_core for the meaning of the parameter */
             /* No simd version is defined for every type of Simd */
             void
@@ -673,9 +712,10 @@ namespace LinBox {
                                                                         const {
                 Element *Aptr = coeffs;
                 Element *Bptr = coeffs + w;
-                for (size_t i = 0; i < f; i++, Aptr += 2*w, Bptr += 2*w) {
+                for (size_t i = 0; i < f; i++) {
                     for (size_t j = 0; j < w; j += 1) {
-                        Butterfly_DIT (Aptr[j], Bptr[j], pow[j]);
+                        Butterfly_DIT (Aptr[(i<<1)*w+j], Bptr[(i<<1)*w+j],
+                                                                        pow[j]);
                     }
                 }
             }
@@ -686,10 +726,11 @@ namespace LinBox {
                                                                         const {
                 Element *Aptr = coeffs;
                 Element *Bptr = coeffs + w;
-                for (size_t i = 0; i < f; i++, Aptr += 2*w, Bptr += 2*w) {
+                for (size_t i = 0; i < f; i++) {
                     const Element alpha = pow[i];
                     for (size_t j = 0; j < w; j += 1) {
-                        Butterfly_DIT (Aptr[j], Bptr[j], alpha);
+                        Butterfly_DIT (Aptr[(i<<1)*w+j], Bptr[(i<<1)*w+j],
+                                                                        alpha);
                     }
                 }
             }
@@ -709,10 +750,9 @@ namespace LinBox {
                                                     const Element *pow) const {
                 Element *Aptr = coeffs;
                 Element *Bptr = coeffs + w;
-                for (size_t i = 0; i < f; i++, Aptr += 2*w, Bptr += 2*w) {
+                for (size_t i = 0; i < f; i++) {
                     for (size_t j = 0; j < w; j += Simd::vect_size) {
-                        simd_vect_t alpha = Simd::load (pow + j);
-                        Butterfly_DIT (Aptr + j, Bptr + j, alpha);
+                        Butterfly_DIT (Aptr+(i<<1)*w+j, Bptr+(i<<1)*w+j, pow+j);
                     }
                 }
             }
@@ -734,10 +774,10 @@ namespace LinBox {
                                                                         const {
                 Element *Aptr = coeffs;
                 Element *Bptr = coeffs + w;
-                for (size_t i = 0; i < f; i++, Aptr += 2*w, Bptr += 2*w) {
+                for (size_t i = 0; i < f; i++) {
                     simd_vect_t alpha = Simd::set1 (pow[i]);
                     for (size_t j = 0; j < w; j += Simd::vect_size) {
-                        Butterfly_DIT (Aptr + j, Bptr + j, alpha);
+                        Butterfly_DIT (Aptr+(i<<1)*w+j, Bptr+(i<<1)*w+j, alpha);
                     }
                 }
             }
@@ -1287,6 +1327,28 @@ namespace LinBox {
                 T4 = SimdMod::mul_mod (T3, alpha, this->P, alphap);
                 Simd::store (Bptr, T4);
             }
+            template <typename S=Simd,
+                      FFT_utils::enable_if_t<S::vect_size != 1>* = nullptr>
+            void
+            Butterfly_DIF (Element *Aptr, Element *Bptr,
+                                            const Element* alpha_ptr,
+                                            const Element* alphap_ptr) const {
+                simd_vect_t A, B, T1, T2, T3, T4, alpha, alphap;
+                A = Simd::load (Aptr);
+                B = Simd::load (Bptr);
+                alpha = Simd::load (alpha_ptr);
+                alphap = Simd::load (alphap_ptr);
+
+                /* A+B mod 2p and store it in Aptr */
+                T1 = SimdMod::add_mod (A, B, this->P2);
+                Simd::store (Aptr, T1);
+                /* A-B mod 2p (computed as A+(2p-B)) */
+                T2 = Simd::sub (this->P2, B);
+                T3 = Simd::add (A, T2);
+                /* multiply A-B by alpha and store it in Bptr */
+                T4 = SimdMod::mul_mod (T3, alpha, this->P, alphap);
+                Simd::store (Bptr, T4);
+            }
 
             /* See DIF_core for the meaning of the parameter */
             /* no_simd version is defined for every type of Simd */
@@ -1296,9 +1358,10 @@ namespace LinBox {
                                                     const Element *wp) const {
                 Element *Aptr = coeffs;
                 Element *Bptr = coeffs + w;
-                for (size_t i = 0; i < f; i++, Aptr += 2*w, Bptr += 2*w) {
+                for (size_t i = 0; i < f; i++) {
                     for (size_t j = 0; j < w; j += 1) {
-                        Butterfly_DIF (Aptr[j], Bptr[j], pow[j], wp[j]);
+                        Butterfly_DIF (Aptr[(i<<1)*w+j], Bptr[(i<<1)*w+j],
+                                                                pow[j], wp[j]);
                     }
                 }
             }
@@ -1309,11 +1372,12 @@ namespace LinBox {
                                                     const Element *wp) const {
                 Element *Aptr = coeffs;
                 Element *Bptr = coeffs + w;
-                for (size_t i = 0; i < f; i++, Aptr += 2*w, Bptr += 2*w) {
+                for (size_t i = 0; i < f; i++) {
                     const Element alpha = pow[i];
                     const Element alphap = wp[i];
                     for (size_t j = 0; j < w; j += 1) {
-                        Butterfly_DIF (Aptr[j], Bptr[j], alpha, alphap);
+                        Butterfly_DIF (Aptr[(i<<1)*w+j], Bptr[(i<<1)*w+j],
+                                                                alpha, alphap);
                     }
                 }
             }
@@ -1335,11 +1399,10 @@ namespace LinBox {
                                                     const Element *wp) const {
                 Element *Aptr = coeffs;
                 Element *Bptr = coeffs + w;
-                for (size_t i = 0; i < f; i++, Aptr += 2*w, Bptr += 2*w) {
+                for (size_t i = 0; i < f; i++) {
                     for (size_t j = 0; j < w; j += Simd::vect_size) {
-                        simd_vect_t alpha = Simd::load (pow + j);
-                        simd_vect_t alphap = Simd::load (wp + j);
-                        Butterfly_DIF (Aptr + j, Bptr + j, alpha, alphap);
+                        Butterfly_DIF (Aptr+(i<<1)*w+j, Bptr+(i<<1)*w+j, pow+j,
+                                                                         wp+j);
                     }
                 }
             }
@@ -1361,11 +1424,12 @@ namespace LinBox {
                                                     const Element *wp) const {
                 Element *Aptr = coeffs;
                 Element *Bptr = coeffs + w;
-                for (size_t i = 0; i < f; i++, Aptr += 2*w, Bptr += 2*w) {
+                for (size_t i = 0; i < f; i++) {
                     simd_vect_t alpha = Simd::set1 (pow[i]);
                     simd_vect_t alphap = Simd::set1 (wp[i]);
                     for (size_t j = 0; j < w; j += Simd::vect_size) {
-                        Butterfly_DIF (Aptr + j, Bptr + j, alpha, alphap);
+                        Butterfly_DIF (Aptr+(i<<1)*w+j, Bptr+(i<<1)*w+j, alpha,
+                                                                        alphap);
                     }
                 }
             }
@@ -1661,6 +1725,29 @@ namespace LinBox {
                 B = Simd::add (T1, T3);
                 Simd::store (Bptr, B);
             }
+            template <typename S=Simd,
+                      FFT_utils::enable_if_t<S::vect_size != 1>* = nullptr>
+            void
+            Butterfly_DIT (Element *Aptr, Element *Bptr,
+                                            const Element* alpha_ptr,
+                                            const Element* alphap_ptr) const {
+                simd_vect_t A, B, T1, T2, T3, alpha, alphap;
+                A = Simd::load (Aptr);
+                B = Simd::load (Bptr);
+                alpha = Simd::load (alpha_ptr);
+                alphap = Simd::load (alphap_ptr);
+
+                T1 = SimdMod::reduce (A, this->P2); /* A - 2*p if A >= 2p */
+                /* B*alpha */
+                T2 = SimdMod::mul_mod (B, alpha, this->P, alphap);
+                /* A+B*alpha */
+                A = Simd::add (T1, T2);
+                Simd::store (Aptr, A);
+                /* A-B*alpha (computed as A+(2p-B*alpha)) */
+                T3 = Simd::sub (this->P2, T2);
+                B = Simd::add (T1, T3);
+                Simd::store (Bptr, B);
+            }
 
             /* See DIT_core for the meaning of the parameter */
             /* No simd version is defined for every type of Simd */
@@ -1670,9 +1757,10 @@ namespace LinBox {
                                                     const Element *wp) const {
                 Element *Aptr = coeffs;
                 Element *Bptr = coeffs + w;
-                for (size_t i = 0; i < f; i++, Aptr += 2*w, Bptr += 2*w) {
+                for (size_t i = 0; i < f; i++) {
                     for (size_t j = 0; j < w; j += 1) {
-                        Butterfly_DIT (Aptr[j], Bptr[j], pow[j], wp[j]);
+                        Butterfly_DIT (Aptr[(i<<1)*w+j], Bptr[(i<<1)*w+j],
+                                                                pow[j], wp[j]);
                     }
                 }
             }
@@ -1683,11 +1771,12 @@ namespace LinBox {
                                                     const Element *wp) const {
                 Element *Aptr = coeffs;
                 Element *Bptr = coeffs + w;
-                for (size_t i = 0; i < f; i++, Aptr += 2*w, Bptr += 2*w) {
+                for (size_t i = 0; i < f; i++) {
                     const Element alpha = pow[i];
                     const Element alphap = wp[i];
                     for (size_t j = 0; j < w; j += 1) {
-                        Butterfly_DIT (Aptr[j], Bptr[j], alpha, alphap);
+                        Butterfly_DIT (Aptr[(i<<1)*w+j], Bptr[(i<<1)*w+j],
+                                                                alpha, alphap);
                     }
                 }
             }
@@ -1709,11 +1798,10 @@ namespace LinBox {
                                                     const Element *wp) const {
                 Element *Aptr = coeffs;
                 Element *Bptr = coeffs + w;
-                for (size_t i = 0; i < f; i++, Aptr += 2*w, Bptr += 2*w) {
+                for (size_t i = 0; i < f; i++) {
                     for (size_t j = 0; j < w; j += Simd::vect_size) {
-                        simd_vect_t alpha = Simd::load (pow + j);
-                        simd_vect_t alphap = Simd::load (wp + j);
-                        Butterfly_DIT (Aptr + j, Bptr + j, alpha, alphap);
+                        Butterfly_DIT (Aptr+(i<<1)*w+j, Bptr+(i<<1)*w+j, pow+j,
+                                                                         wp+j);
                     }
                 }
             }
@@ -1735,11 +1823,12 @@ namespace LinBox {
                                                     const Element *wp) const {
                 Element *Aptr = coeffs;
                 Element *Bptr = coeffs + w;
-                for (size_t i = 0; i < f; i++, Aptr += 2*w, Bptr += 2*w) {
+                for (size_t i = 0; i < f; i++) {
                     simd_vect_t alpha = Simd::set1 (pow[i]);
                     simd_vect_t alphap = Simd::set1 (wp[i]);
                     for (size_t j = 0; j < w; j += Simd::vect_size) {
-                        Butterfly_DIT (Aptr + j, Bptr + j, alpha, alphap);
+                        Butterfly_DIT (Aptr+(i<<1)*w+j, Bptr+(i<<1)*w+j,
+                                                                alpha, alphap);
                     }
                 }
             }
