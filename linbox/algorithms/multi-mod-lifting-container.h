@@ -314,7 +314,7 @@ namespace LinBox {
         Integer denBound() const { return _denBound; }
 
         uint32_t primesCount() const { return _primesCount; }
-        const FElement& prime(uint32_t index) const { return _primes.at(index); }
+        FElement prime(uint32_t index) const { return _primes.at(index); }
         const std::vector<Field>& primesFields() const { return _fields; }
 
         // --------------
@@ -328,10 +328,13 @@ namespace LinBox {
         {
             VectorDomain<Ring> IVD(_ring);
             BlasMatrixDomain<Ring> IMD(_ring);
+            size_t numthreads;
 
             // commentator().start("[MultiModLifting] c = A^{-1} r mod p");
             PAR_BLOCK
             {
+                numthreads = NUM_THREADS;
+
                 // @fixme @zhuh Can't get that working with NUM_THREADS,
                 // any idea what makes it wrong?
                 // ./test-solve-full -n 1 -m 1 -b 50 -v -l
@@ -383,16 +386,16 @@ namespace LinBox {
             // commentator().start("[MultiModLifting] FGEMM R <= R - Ac");
             // Firstly compute R <= R - A c as a fgemm within the RNS domain.
             if (_method.rnsFgemmType == RnsFgemmType::BothSequential) {
-                rns_fgemm<FFLAS::ParSeqHelper::Sequential, FFLAS::ParSeqHelper::Sequential>();
+                rns_fgemm<FFLAS::ParSeqHelper::Sequential, FFLAS::ParSeqHelper::Sequential>(1,1);
             }
             else if (_method.rnsFgemmType == RnsFgemmType::BothParallel) {
-                rns_fgemm<RNSParallel, FGEMMParallel>();
+                rns_fgemm<RNSParallel, FGEMMParallel>(numthreads,numthreads);
             }
             else if (_method.rnsFgemmType == RnsFgemmType::ParallelFgemmOnly) {
-                rns_fgemm<FFLAS::ParSeqHelper::Sequential, FGEMMParallel>();
+                rns_fgemm<FFLAS::ParSeqHelper::Sequential, FGEMMParallel>(1,numthreads);
             }
             else if (_method.rnsFgemmType == RnsFgemmType::ParallelRnsOnly) {
-                rns_fgemm<RNSParallel, FFLAS::ParSeqHelper::Sequential>();
+                rns_fgemm<RNSParallel, FFLAS::ParSeqHelper::Sequential>(numthreads,1);
             }
             // commentator().stop("[MultiModLifting] FGEMM R <= R - Ac");
 
@@ -452,7 +455,7 @@ namespace LinBox {
 
         // @note This allows us to factor out some of the rns fgemm variants common code.
         template <class RnsParSeq, class FgemmParSeq>
-        inline void rns_fgemm()
+        inline void rns_fgemm(size_t threads1, size_t threads2)
         {
             PAR_BLOCK
             {
@@ -460,7 +463,7 @@ namespace LinBox {
                 using MMHelper =
                     FFLAS::MMHelper<RNSDomain, FFLAS::MMHelperAlgo::Classic,
                                     FFLAS::ModeCategories::DefaultTag, ComposedParSeqHelper>;
-                ComposedParSeqHelper composedParSeqHelper(NUM_THREADS, NUM_THREADS);
+                ComposedParSeqHelper composedParSeqHelper(threads1, threads2);
                 MMHelper mmHelper(*_rnsDomain, -1, composedParSeqHelper);
 
                 FFLAS::fgemm(*_rnsDomain, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, _n,

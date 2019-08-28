@@ -89,6 +89,7 @@ namespace LinBox {
                     _lc.ring().mulin(radices[j], _lc.prime(j));
                 }
             }
+
             commentator().stop("[MultiModLifting] Lifting");
 
             // CRT reconstruction from paddicAccumulations
