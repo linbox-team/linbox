@@ -187,6 +187,7 @@ namespace LinBox
                           std::vector<ElementContainer>& VECTORresidues, size_t Ntask)
         {
             //@fixme: cannot use export OMP_NUM_THREADS to set the desired number of threads for more than one iterations and only omp_set_num_thread() can be used for this purpose, whick takes the option -t
+#if 0
             PAR_BLOCK{
                 auto sp=SPLITTER(NUM_THREADS,FFLAS::CuttingStrategy::Row,FFLAS::StrategyParameter::Threads);
                 SYNCH_GROUP({
@@ -200,7 +201,16 @@ namespace LinBox
                      });
                 });
             }
-
+#else
+            PAR_BLOCK{
+                auto sp=SPLITTER(NUM_THREADS,FFLAS::CuttingStrategy::Row,FFLAS::StrategyParameter::Threads);
+                SYNCH_GROUP({
+                    FOR1D(iter, Ntask, sp,MODE(CONSTREFERENCE(m_primeiters,Iteration,VECTORresidues)),{
+                                    solve_with_prime(m_primeiters[iter], Iteration, VECTORresidues[iter]);
+                     });
+                });
+            }
+#endif
         }
 
 
