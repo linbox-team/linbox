@@ -248,6 +248,20 @@ namespace LinBox {
                 r1 = _mm_unpacklo_epi64 (a, b);
                 r2 = _mm_unpackhi_epi64 (a, b);
             }
+            /* Simd256<float> */
+            template <typename S1 = Simd,
+                FFT_utils::enable_if_same_t<S1, Simd256<float>>* = nullptr>
+            static void pack (vect_t& r1, vect_t& r2, const vect_t a,
+                                                            const vect_t b) {
+                /* 0xd8 = 3120 base_4 */
+                __m256d t1 = _mm256_castps_pd (_mm256_permute_ps (a, 0xd8));
+                __m256d t2 = _mm256_castps_pd (_mm256_permute_ps (b, 0xd8));
+                __m256d p1 = _mm256_unpacklo_pd (t1, t2);
+                __m256d p2 = _mm256_unpackhi_pd (t1, t2);
+                /* 0xd8 = 3120 base_4 */
+			    r1 = _mm256_castpd_ps (_mm256_permute4x64_pd (p1, 0xd8));
+			    r2 = _mm256_castpd_ps (_mm256_permute4x64_pd (p2, 0xd8));
+            }
             /* Simd256<double> */
             template <typename S1 = Simd,
                 FFT_utils::enable_if_same_t<S1, Simd256<double>>* = nullptr>
