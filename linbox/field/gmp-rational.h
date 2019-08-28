@@ -87,6 +87,8 @@ namespace LinBox
 
 		/// pointer to element type.
 		typedef GMPRationalElement* Element_ptr;
+		/// const pointer to element type.
+		typedef const Element_ptr ConstElement_ptr;
 
         
 		/// Random iterator generator type.
