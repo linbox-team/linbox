@@ -45,7 +45,7 @@ template<typename ...> const char *TypeName();
 template<template <typename ...> class> const char *TypeName();
 
 #define REGISTER_TYPE_NAME(type) \
-	template<> const char *TypeName<type>(){return #type;}
+    template<> const char *TypeName<type>(){return #type;}
 
 REGISTER_TYPE_NAME(float);
 REGISTER_TYPE_NAME(double);
@@ -62,7 +62,7 @@ struct BenchFFT : public FFT__<Field, Simd> {
     using base = FFT__<Field, Simd>;
     using elt_vect_t = typename Simd::aligned_vector;
 
-	static const size_t min_run = 4; /* do at least this number of run of fft */
+    static const size_t min_run = 4; /* do at least this number of run of fft */
 
     BenchFFT (const Field &F, size_t k, unsigned long seed) : base (F, k) {
 
@@ -76,62 +76,94 @@ struct BenchFFT : public FFT__<Field, Simd> {
         for (auto elt = in.begin(); elt < in.end(); elt++)
             Gen.random (*elt);
 
-		/* DIF */
-		v = in;
-		chrono.start();
-		for (cnt = 0; cnt < min_run || chrono.realElapsedTime() < 1 ; cnt++)
-			this->DIF (v.data());
-		time = chrono.userElapsedTime()/cnt; /* time per iteration */
+        /* DIF */
+        v = in;
+        chrono.start();
+        for (cnt = 0; cnt < min_run || chrono.realElapsedTime() < 1 ; cnt++)
+            this->DIF (v.data());
+        time = chrono.userElapsedTime()/cnt; /* time per iteration */
         print_result_line ("DIF", time);
 
-		/* DIT_reversed */
-		v = in;
-		chrono.start();
-		for (cnt = 0; cnt < min_run || chrono.realElapsedTime() < 1 ; cnt++)
-			this->DIT_reversed (v.data());
-		time = chrono.userElapsedTime()/cnt; /* time per iteration */
+        /* DIF_core */
+        v = in;
+        chrono.start();
+        for (cnt = 0; cnt < min_run || chrono.realElapsedTime() < 1 ; cnt++)
+            this->DIF_core (v.data());
+        time = chrono.userElapsedTime()/cnt; /* time per iteration */
+        print_result_line ("DIF_core", time);
+
+        /* DIT_reversed */
+        v = in;
+        chrono.start();
+        for (cnt = 0; cnt < min_run || chrono.realElapsedTime() < 1 ; cnt++)
+            this->DIT_reversed (v.data());
+        time = chrono.userElapsedTime()/cnt; /* time per iteration */
         print_result_line ("DIT_reversed", time);
 
-		/* FFT direct */
-		v = in;
-		chrono.start();
-		for (cnt = 0; cnt < min_run || chrono.realElapsedTime() < 1 ; cnt++)
-			this->FFT_direct (v.data());
-		time = chrono.userElapsedTime()/cnt; /* time per iteration */
+        /* DIT_reversed_core */
+        v = in;
+        chrono.start();
+        for (cnt = 0; cnt < min_run || chrono.realElapsedTime() < 1 ; cnt++)
+            this->DIT_reversed_core (v.data());
+        time = chrono.userElapsedTime()/cnt; /* time per iteration */
+        print_result_line ("DIT_reversed_core", time);
+
+        /* FFT direct */
+        v = in;
+        chrono.start();
+        for (cnt = 0; cnt < min_run || chrono.realElapsedTime() < 1 ; cnt++)
+            this->FFT_direct (v.data());
+        time = chrono.userElapsedTime()/cnt; /* time per iteration */
         print_result_line ("FFT_direct", time);
 
         cout << endl;
 
-		/* DIT */
-		v = in;
-		chrono.start();
-		for (cnt = 0; cnt < min_run || chrono.realElapsedTime() < 1 ; cnt++)
-			this->DIT (v.data());
-		time = chrono.userElapsedTime()/cnt; /* time per iteration */
+        /* DIT */
+        v = in;
+        chrono.start();
+        for (cnt = 0; cnt < min_run || chrono.realElapsedTime() < 1 ; cnt++)
+            this->DIT (v.data());
+        time = chrono.userElapsedTime()/cnt; /* time per iteration */
         print_result_line ("DIT", time);
 
-		/* DIF_reversed */
-		v = in;
-		chrono.start();
-		for (cnt = 0; cnt < min_run || chrono.realElapsedTime() < 1 ; cnt++)
-			this->DIF_reversed (v.data());
-		time = chrono.userElapsedTime()/cnt; /* time per iteration */
+        /* DIT_core */
+        v = in;
+        chrono.start();
+        for (cnt = 0; cnt < min_run || chrono.realElapsedTime() < 1 ; cnt++)
+            this->DIT_core (v.data());
+        time = chrono.userElapsedTime()/cnt; /* time per iteration */
+        print_result_line ("DIT_core", time);
+
+        /* DIF_reversed_core */
+        v = in;
+        chrono.start();
+        for (cnt = 0; cnt < min_run || chrono.realElapsedTime() < 1 ; cnt++)
+            this->DIF_reversed_core (v.data());
+        time = chrono.userElapsedTime()/cnt; /* time per iteration */
+        print_result_line ("DIF_reversed_core", time);
+
+        /* DIF_reversed */
+        v = in;
+        chrono.start();
+        for (cnt = 0; cnt < min_run || chrono.realElapsedTime() < 1 ; cnt++)
+            this->DIF_reversed (v.data());
+        time = chrono.userElapsedTime()/cnt; /* time per iteration */
         print_result_line ("DIF_reversed", time);
 
-		/* FFT inverse (without div) */
-		v = in;
-		chrono.start();
-		for (cnt = 0; cnt < min_run || chrono.realElapsedTime() < 1 ; cnt++)
-			this->FFT_inverse (v.data(), false);
-		time = chrono.userElapsedTime()/cnt; /* time per iteration */
+        /* FFT inverse (without div) */
+        v = in;
+        chrono.start();
+        for (cnt = 0; cnt < min_run || chrono.realElapsedTime() < 1 ; cnt++)
+            this->FFT_inverse (v.data(), false);
+        time = chrono.userElapsedTime()/cnt; /* time per iteration */
         print_result_line ("FFT_inverse(nodiv)", time);
 
-		/* FFT inverse */
-		v = in;
-		chrono.start();
-		for (cnt = 0; cnt < min_run || chrono.realElapsedTime() < 1 ; cnt++)
-			this->FFT_inverse (v.data(), true);
-		time = chrono.userElapsedTime()/cnt; /* time per iteration */
+        /* FFT inverse */
+        v = in;
+        chrono.start();
+        for (cnt = 0; cnt < min_run || chrono.realElapsedTime() < 1 ; cnt++)
+            this->FFT_inverse (v.data(), true);
+        time = chrono.userElapsedTime()/cnt; /* time per iteration */
         print_result_line ("FFT_inverse", time);
 
     }
@@ -139,13 +171,13 @@ struct BenchFFT : public FFT__<Field, Simd> {
     void
     print_result_line (const char *name, double time) {
         /* Miops = #operation (~3/2 n log n) / time / 1e6 */
-		double Miops = 17 * (this->l2n<<(this->l2n-1)) / (1e6 * time);
+        double Miops = 17 * (this->l2n<<(this->l2n-1)) / (1e6 * time);
         size_t t = strlen(name) + Simd::type_string().size() + 15 + 35;
-		cout << "  " << string (80-t, ' ') << name << "<";
+        cout << "  " << string (80-t, ' ') << name << "<";
         cout << Simd::type_string() << "> " << string (15, '.');
-		cout.precision(2); cout.width(10); cout<< scientific << time << " s, ";
-		cout.precision(2); cout.width(10); cout<<fixed<<Miops << " Miops";
-		cout << endl;
+        cout.precision(2); cout.width(10); cout<< scientific << time << " s, ";
+        cout.precision(2); cout.width(10); cout<<fixed<<Miops << " Miops";
+        cout << endl;
     }
 };
 
@@ -156,16 +188,16 @@ struct BenchFFT : public FFT__<Field, Simd> {
 template<template<typename, typename...> class ModImplem, typename Elt, typename... C>
 void bench_one_modular_implem (uint64_t bits, size_t k, unsigned long seed)
 {
-	/* First, we check if this Modular implem can handle this many bits */
-	bool ok;
-	typename ModImplem<Elt, C...>::Residu_t s = 1;
-	for (uint64_t i = 0; i+1 < bits; i++, s<<=1); /* at the end s=2^(bits-1) */
-	if (s == 0)
-		ok = false;
-	else {
-		s <<= 1; s--; /* now s=2^bits-1 */
-		ok = (s <= ModImplem<Elt, C...>::maxCardinality());
-	}
+    /* First, we check if this Modular implem can handle this many bits */
+    bool ok;
+    typename ModImplem<Elt, C...>::Residu_t s = 1;
+    for (uint64_t i = 0; i+1 < bits; i++, s<<=1); /* at the end s=2^(bits-1) */
+    if (s == 0)
+        ok = false;
+    else {
+        s <<= 1; s--; /* now s=2^bits-1 */
+        ok = (s <= ModImplem<Elt, C...>::maxCardinality());
+    }
     if (!ok) {
         cout << endl << "# Skipping bench with " << TypeName<ModImplem>();
         cout << "<" << TypeName<Elt>();
@@ -177,8 +209,8 @@ void bench_one_modular_implem (uint64_t bits, size_t k, unsigned long seed)
 
     integer p;
     RandomFFTPrime::seeding (seed);
-	if (!RandomFFTPrime::randomPrime (p, integer(1)<<bits, k))
-		throw LinboxError ("RandomFFTPrime::randomPrime failed");
+    if (!RandomFFTPrime::randomPrime (p, integer(1)<<bits, k))
+        throw LinboxError ("RandomFFTPrime::randomPrime failed");
     ModImplem<Elt, C...> GFp ((Elt) p);
 
     cout << endl << string (80, '*') << endl;
@@ -210,49 +242,49 @@ void bench_one_modular_implem (uint64_t bits, size_t k, unsigned long seed)
 /************************************ main ************************************/
 /******************************************************************************/
 int main (int argc, char *argv[]) {
-	unsigned long bits = 27;
-	unsigned long k = 16;
-	unsigned long seed = time (NULL);
+    unsigned long bits = 27;
+    unsigned long k = 16;
+    unsigned long seed = time (NULL);
 
-	Argument args[] = {
-		{ 'b', "-b nbits", "number of bits of prime.", TYPE_INT, &bits },
-		{ 'k', "-k k", "bench FFT for n=2^k.", TYPE_INT, &k },
-		{ 's', "-s seed", "set the seed.", TYPE_INT, &seed },
-		END_OF_ARGUMENTS
-	};
+    Argument args[] = {
+        { 'b', "-b nbits", "number of bits of prime.", TYPE_INT, &bits },
+        { 'k', "-k k", "bench FFT for n=2^k.", TYPE_INT, &k },
+        { 's', "-s seed", "set the seed.", TYPE_INT, &seed },
+        END_OF_ARGUMENTS
+    };
 
-	parseArguments (argc, argv, args);
+    parseArguments (argc, argv, args);
 
-	cout << "# command: ";
-	FFLAS::writeCommandString (cout, args, "benchmark-fft-new") << endl;
+    cout << "# command: ";
+    FFLAS::writeCommandString (cout, args, "benchmark-fft-new") << endl;
 
-	if (k >= bits) {
-		cerr << "Error, k=" << k << " must be smaller than nbits=" << bits;
-		cerr << endl;
-		return 1;
-	}
+    if (k >= bits) {
+        cerr << "Error, k=" << k << " must be smaller than nbits=" << bits;
+        cerr << endl;
+        return 1;
+    }
 
-	/* Bench with Modular<double, double> */
-	bench_one_modular_implem<Modular, double> (bits, k, seed);
+    /* Bench with Modular<double, double> */
+    bench_one_modular_implem<Modular, float, double> (bits, k, seed);
 
-	/* Bench with Modular<double, double> */
-	bench_one_modular_implem<Modular, double> (bits, k, seed);
+    /* Bench with Modular<double, double> */
+    bench_one_modular_implem<Modular, double> (bits, k, seed);
 
-	/* Bench with ModularExtended<double> */
-	bench_one_modular_implem<ModularExtended, double> (bits, k, seed);
+    /* Bench with ModularExtended<double> */
+    bench_one_modular_implem<ModularExtended, double> (bits, k, seed);
 
-	/* Bench with Modular<uint16_t,uint32_t> */
-	bench_one_modular_implem<Modular, uint16_t, uint32_t> (bits, k, seed);
+    /* Bench with Modular<uint16_t,uint32_t> */
+    bench_one_modular_implem<Modular, uint16_t, uint32_t> (bits, k, seed);
 
-	/* Bench with Modular<uint32_t, uint64_t> */
-	bench_one_modular_implem<Modular, uint32_t, uint64_t> (bits, k, seed);
+    /* Bench with Modular<uint32_t, uint64_t> */
+    bench_one_modular_implem<Modular, uint32_t, uint64_t> (bits, k, seed);
 
 #ifdef __FFLASFFPACK_HAVE_INT128
-	/* Bench with Modular<uint64_t,uint128_t> */
-	bench_one_modular_implem<Modular, uint64_t, uint128_t> (bits, k, seed);
+    /* Bench with Modular<uint64_t,uint128_t> */
+    bench_one_modular_implem<Modular, uint64_t, uint128_t> (bits, k, seed);
 #endif
 
-	return 0;
+    return 0;
 }
 
 // Local Variables:
