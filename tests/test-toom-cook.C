@@ -37,6 +37,7 @@
 #include "linbox/ring/modular.h"
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/matrix/random-matrix.h"
+#include "linbox/solutions/hadamard-bound.h"
 // #include <fflas-ffpack/fflas/fflas.h>
 #include "givaro/modular.h"
 #include "linbox/util/timer.h"
@@ -155,9 +156,9 @@ namespace LinBox { namespace BLAS2 {
 	{
 
 
-		integer mA, mB ;
-		mA = A.magnitude();
-		mB = B.magnitude();
+		integer mA, mB, mC ;
+        mA = A.magnitude(); // PG: does not exist anymore in BlasVector, should define InfinityNorm in hadamard-bound.h
+		mB = B.magnitude(); // PG: does not exist anymore in BlasMatrix, should define InfinityNorm in hadamard-bound.h
 		integer cA = uint64_t(A.maxrow());
 		double logC = Givaro::naturallog(mA*mB*cA);
 
@@ -171,20 +172,19 @@ namespace LinBox { namespace BLAS2 {
             ChineseRemainder< CRABuilderFullMultipMatrix< ModularField > > cra( std::pair<size_t,double>(C.size(), logC) );
             Protected::IntegerSparseCraMatMul iteration(A,B);
 
-            cra(C, iteration, genprime);
-
+            cra(C, iteration, genprime);            
 #ifdef _LB_DEBUG
 #ifdef _LB_MM_TIMING
 #endif
 
-            Integer mC;
+
             mC = C.magnitude();
             report << "C max: " << logtwo(mC) <<  " (" << LinBox::naturallog(mC) << ')' << std::endl;
 #endif
 
 		}
 
-		report << mA << ',' << mB << ',' <<  C.magnitude() << std::endl;
+		report << mA << ',' << mB << ',' << C.magnitude() << std::endl;
 
 		return C;
 

@@ -125,7 +125,7 @@ namespace LinBox {
         /** Constructor from a raw pointer
          * \param ptr Pointer to @ref first element of the vector of which to construct submatrix
          */
-        BlasSubvector (const Field& F, pointer ptr, size_t dim, size_t inc) :
+        BlasSubvector (const Field& F, pointer ptr,  size_t dim, size_t inc) :
             _ptr(ptr), _size(dim), _inc(inc), _field(&F) {}
         
         
@@ -133,7 +133,7 @@ namespace LinBox {
         BlasSubvector (const Field& F, std::vector<Element>& v) :
             _ptr(v.data()), _size(v.size()), _inc(1), _field(&F) 
         {
-            std::cerr<<"WARNING __LINE__ (__FILE__) : creating a BlasSubvector from a std::vector -> MUST BE DEPRECTATED"<<std::endl;
+            std::cerr<<"WARNING "<<__LINE__<<" ("<<__FILE__<<") : creating a BlasSubvector from a std::vector -> MUST BE DEPRECATED"<<std::endl;
         }
             
         
