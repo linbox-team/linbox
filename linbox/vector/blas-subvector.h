@@ -51,12 +51,14 @@ namespace LinBox {
     class VectorEltPointer {
     public:
         typedef typename _Vector::Field::Element_ptr     pointer;
+        typedef typename _Vector::Storage::reference   reference;
         using Element=typename _Vector::Field::Element;
     };
     template <typename _Vector>
     class VectorEltPointer <const _Vector> {
     public:
         typedef typename _Vector::Field::ConstElement_ptr      pointer;
+        typedef typename _Vector::Storage::const_reference   reference;
         using Element=const typename _Vector::Field::Element;
     };
     
@@ -67,10 +69,13 @@ namespace LinBox {
         typedef typename _Vector::Field                    Field;
         typedef typename VectorEltPointer<_Vector>::Element                  Element;    //!< Element type
         typedef Element                               value_type;
-        typedef typename _Vector::Storage                Storage;    
+        typedef typename _Vector::Storage                Storage;
         typedef BlasSubvector<_Vector>                    Self_t;    //!< Self type
         typedef typename VectorEltPointer<_Vector>::pointer                    pointer;    //!< pointer type to elements
         typedef typename VectorEltPointer<const _Vector>::pointer        const_pointer;    //!< const pointer type to elements
+        typedef typename VectorEltPointer<_Vector>::reference                reference;
+        typedef typename VectorEltPointer<const _Vector>::reference    const_reference;
+
         typedef _Vector                               vectorType;    //!< vector type
         typedef Self_t                             subVectorType;    //!< SubVector type
         typedef BlasSubvector<const _Vector> constSubVectorType;    //!< const SubVector type
@@ -192,11 +197,11 @@ namespace LinBox {
 
 		void setEntry (size_t i, const Element &a_i){ field().assign(_ptr[i],a_i); }
 		
-		Element &refEntry (size_t i){ return _ptr[i]; }
+		reference refEntry (size_t i){ return _ptr[i]; }
 
-		const Element &getEntry (size_t i) const { return _ptr[i]; }
+		const_reference getEntry (size_t i) const { return _ptr[i]; }
 		
-		Element &getEntry (Element &x, size_t i) const{	return field().assign(x,_ptr[i]); }
+		Element& getEntry (Element &x, size_t i) const{	return field().assign(x,_ptr[i]); }
 
 		// write
 		std::ostream &write ( std::ostream &os, Tag::FileFormat fmt = Tag::FileFormat::Pretty ) const {
@@ -241,25 +246,25 @@ namespace LinBox {
 		const_reverse_iterator rend   (void) const { return reverse_iterator (begin()); }
 
 		// Element access
-		Element&       operator[] (size_t n)       { return _ptr[n*_inc]; }
-        const Element& operator[] (size_t n) const { return _ptr[n*_inc]; }
+		reference        operator[] (size_t n)       { return _ptr[n*_inc]; }
+        const_reference  operator[] (size_t n) const { return _ptr[n*_inc]; }
 
-		Element& at(size_t n) {
+		reference at(size_t n) {
             if (n<_size)
                 return _ptr[n*_inc];
             else throw std::out_of_range("out of range"); //out of range error message.
         }
 
-		const Element&  at(size_t n) const {
+		const_reference   at(size_t n) const {
             if (n<_size)
                 return _ptr[n*_inc];
             else throw std::out_of_range("out of range"); //out of range error message.
         }
 
-		Element&       front (void)       { return *_ptr;}
-		const Element& front (void) const { return *_ptr;}
-		Element&       back  (void)       { return *(_ptr+(_size-1)*_inc);}
-		const Element& back  (void) const { return *(_ptr+(_size-1)*_inc);}
+		reference        front (void)       { return _ptr[0];}
+		const_reference  front (void) const { return _ptr[0];}
+		reference        back  (void)       { return _ptr[(_size-1)*_inc];}
+		const_reference  back  (void) const { return _ptr[(_size-1)*_inc];}
         
         bool empty() const {return (_size==0);}
     };

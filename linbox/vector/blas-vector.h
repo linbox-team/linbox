@@ -61,6 +61,8 @@ namespace LinBox {
         typedef Element_ptr                            pointer;
         typedef typename Field::ConstElement_ptr   ConstElement_ptr;    //!< Element type
         typedef _Storage                               Storage;    //!< Actually a <code>std::vector<Element></code> (or alike.)
+        typedef typename Storage::reference          reference;
+        typedef typename Storage::const_reference  const_reference;
         typedef BlasVector<_Field,_Storage>             Self_t;    //!< Self type
         typedef Self_t                              vectorType;    //!< vector type
         typedef BlasSubvector<Self_t>            subVectorType;    //!< SubVector type
@@ -266,11 +268,11 @@ namespace LinBox {
             field().assign(_rep[i],a_i);
         }
 
-        Element &refEntry (size_t i){ return _ptr[i]; }
+        reference refEntry (size_t i){ return _ptr[i]; }
 
-        const Element &getEntry (size_t i) const { return _ptr[i]; }
+        const_reference getEntry (size_t i) const { return _ptr[i]; }
 
-        Element &getEntry (Element &x, size_t i) const{ return field().assign(x,_ptr[i]); }
+        Element& getEntry (Element &x, size_t i) const{ return field().assign(x,_ptr[i]); }
 
         // write
         std::ostream &write ( std::ostream &os, Tag::FileFormat fmt = Tag::FileFormat::Pretty ) const {
@@ -316,16 +318,16 @@ namespace LinBox {
 		const_reverse_iterator rend   (void) const { return reverse_iterator (begin()); }
 
         // Element access
-        Element&       operator[] (size_t n)       { return _rep[n]; }
-        const Element& operator[] (size_t n) const { return _rep[n]; }
+        reference       operator[] (size_t n)       { return _rep[n]; }
+        const_reference operator[] (size_t n) const { return _rep[n]; }
 
-        Element& at(size_t n) { return _rep.at(n);}
-        const Element& at(size_t n) const {return _rep.at(n);}
+        reference       at(size_t n) { return _rep.at(n);}
+        const_reference at(size_t n) const {return _rep.at(n);}
 
-        Element&       front (void)       { return _rep.front(); }
-        const Element& front (void) const { return _rep.front(); }
-        Element&       back  (void)       { return _rep.back(); }
-        const Element& back  (void) const { return _rep.back; }
+        reference       front (void)       { return _rep.front(); }
+        const_reference front (void) const { return _rep.front(); }
+        reference       back  (void)       { return _rep.back(); }
+        const_reference back  (void) const { return _rep.back; }
 
         bool empty() const {return _rep.empty();}
         
