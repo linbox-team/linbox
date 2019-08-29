@@ -73,7 +73,7 @@ namespace LinBox
 		{}
 
 		int getNiter(){
-		    return std::ceil(1.442695040889*HB/(double)(LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>(0,_commPtr->size()).getBits()-1));
+		    return std::ceil(HB/(double)(LinBox::MaskedPrimeIterator<LinBox::IteratorCategories::HeuristicTag>(0,_commPtr->size()).getBits()-1));
 		}
 
 		/** \brief The CRA loop.
@@ -187,21 +187,6 @@ namespace LinBox
                           std::vector<ElementContainer>& VECTORresidues, size_t Ntask)
         {
             //@fixme: cannot use export OMP_NUM_THREADS to set the desired number of threads for more than one iterations and only omp_set_num_thread() can be used for this purpose, whick takes the option -t
-#if 0
-            PAR_BLOCK{
-                auto sp=SPLITTER(NUM_THREADS,FFLAS::CuttingStrategy::Row,FFLAS::StrategyParameter::Threads);
-                SYNCH_GROUP({
-                    FORBLOCK1D(iter, Ntask, sp,{
-                        TASK(MODE(CONSTREFERENCE(m_primeiters,Iteration,VECTORresidues)),{
-                                for(auto j=iter.begin(); j!=iter.end(); ++j)
-                                {
-                                    solve_with_prime(m_primeiters[j], Iteration, VECTORresidues[j]);
-                                }
-                         })
-                     });
-                });
-            }
-#else
             PAR_BLOCK{
                 auto sp=SPLITTER(NUM_THREADS,FFLAS::CuttingStrategy::Row,FFLAS::StrategyParameter::Threads);
                 SYNCH_GROUP({
@@ -210,7 +195,6 @@ namespace LinBox
                      });
                 });
             }
-#endif
         }
 
 
