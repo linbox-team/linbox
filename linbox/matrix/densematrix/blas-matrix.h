@@ -40,7 +40,6 @@
 #include "linbox/util/debug.h"
 #include "linbox/linbox-tags.h"
 #include "linbox/vector/blas-vector.h"
-#include "linbox/vector/dense-vector.h"
 #include "linbox/vector/stream.h"
 #include "linbox/matrix/matrix-category.h"
 #include "linbox/matrix/matrix-traits.h"
