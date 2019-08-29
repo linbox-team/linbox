@@ -42,7 +42,7 @@ namespace LinBox {
          BlasMatrixIterator(){}
   
         BlasMatrixIterator (const _Field & F, typename _subVectorType::pointer ptr,  size_t size, size_t inc, size_t dist) :
-            _data(F, ptr, size, inc), _dist(dist) {
+            _data(F, ptr, inc, size), _dist(dist) {
             // std::cout<<"BLASMATRIX ITERATOR CST: "<<_data<<std::endl;
             //std::cout<<"BLASMATRIX ITERATOR CST: "<<ptr<<" "<<size<<" "<<inc<<" "<<dist<<" "<<&F<<std::endl;
         }
@@ -58,7 +58,7 @@ namespace LinBox {
         }
 
         BlasMatrixIterator& operator --() {
-            _data= _subVectorType (_data.field(), _data.getPointer() - _dist, _data.size(), _data.getInc());
+            _data= _subVectorType (_data.field(), _data.getPointer() - _dist, _data.getInc(), _data.size());
             return *this;
         }
 
@@ -72,7 +72,7 @@ namespace LinBox {
         BlasMatrixIterator& operator++ (){
             // std::cout<<"BLASMATRIX ITERATOR ++: "<<_data.getPointer() + _dist<<"->";
             // std::cout<<_data<<std::endl;
-            _data= _subVectorType (_data.field(), _data.getPointer() + _dist, _data.size(), _data.getInc());
+            _data= _subVectorType (_data.field(), _data.getPointer() + _dist, _data.getInc(), _data.size());
 
             return *this;
         }
@@ -88,12 +88,12 @@ namespace LinBox {
         }
 
         BlasMatrixIterator& operator += (int i) {
-            _data= _subVectorType(_data.field(), _data.getPointer() + i*_dist, _data.size (), _data.getInc());
+            _data= _subVectorType(_data.field(), _data.getPointer() + i*_dist, _data.getInc(), _data.size ());
             return *this;
         }
 
         _subVectorType operator[] (int i) const {
-            return _subVectorType (_data.field(), _data.getPointer() + i*_dist, _data.size (), _data.getInc());
+            return _subVectorType (_data.field(), _data.getPointer() + i*_dist, _data.getInc(), _data.size ());
         }
 
         _subVectorType* operator-> () { return &_data;}

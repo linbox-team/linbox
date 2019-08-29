@@ -575,9 +575,8 @@ static bool testSubvector3(Field &F, size_t n)
 	// Subiter sb(v.begin()+start, stride);
 	// Subiter se(sb+Length);
 
-	//subVector w(v, start, stride, Length);
-    subVector w(v, start, Length, stride);
-
+	subVector w(v, start, stride, Length);
+    
 	// implicit (not stored) stride of 1
 	Subvector<typename Vector::iterator>
 		z(v.begin(), v.end());
