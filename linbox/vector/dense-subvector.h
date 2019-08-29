@@ -25,15 +25,15 @@
  */
 
 
-/*! @file vector/dense-vector.h
+/*! @file vector/blas-subvector.h
  * @ingroup vector
- * A \c DenseVector<\c _Field > represents a vector as an array of
+ * A \c BlasSubector<\c _Field > represents a subvector of a BlasVector as a pointer together with a size and and increment value between data
  * <code>_Field::Element</code>s.
  *
  */
 
-#ifndef __LINBOX_vector_dense_subvector_H
-#define __LINBOX_vector_dense_subvector_H
+#ifndef __LINBOX_vector_blas_subvector_H
+#define __LINBOX_vector_blas_subvector_H
 
 #include "linbox/vector/subiterator.h"
 #include "linbox/field/rebind.h"

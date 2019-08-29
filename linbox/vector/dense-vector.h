@@ -25,9 +25,9 @@
  */
 
 
-/*! @file vector/dense-vector.h
+/*! @file vector/blas-vector.h
  * @ingroup vector
- * A \c DenseVector<\c _Field > represents a vector as an array of
+ * A \c BlasVector<\c _Field > represents a vector as an array of
  * <code>_Field::Element</code>s.
  *
  */
@@ -44,7 +44,7 @@
 #include "linbox/field/field-traits.h"
 #include "linbox/field/rebind.h"
 #include "linbox/vector/vector-traits.h"
-#include "linbox/vector/dense-subvector.h"
+#include "linbox/vector/blas-subvector.h"
 
 #include "fflas-ffpack/fflas/fflas.h"
 
