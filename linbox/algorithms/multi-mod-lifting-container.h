@@ -68,6 +68,8 @@ namespace LinBox {
     public:
         using Ring = _Ring;
         using Field = _Field;
+        // @fixme Currently not handling other cases...
+        static_assert(std::is_same<Field, Givaro::Modular<double>>::value, "MultiModLifting requires Modular<double>.");
         using PrimeGenerator = _PrimeGenerator;
 
         using RNSSystem = FFPACK::rns_double;

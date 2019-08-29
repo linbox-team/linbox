@@ -212,8 +212,8 @@ int main(int argc, char** argv)
 
     RandomDenseStream<Ring> s1 (R, gen, n, iterations);
 
-	typedef DixonSolver<Ring, Givaro::Modular<int32_t>, PrimeIterator<IteratorCategories::HeuristicTag> > Solver;
-        // typedef DixonSolver<Ring, Givaro::Modular<double>, LinBox::PrimeIterator<IteratorCategories::HeuristicTag> > Solver;
+	// typedef DixonSolver<Ring, Givaro::Modular<int32_t>, PrimeIterator<IteratorCategories::HeuristicTag> > Solver;
+	typedef DixonSolver<Ring, Givaro::Modular<double>, LinBox::PrimeIterator<IteratorCategories::HeuristicTag> > Solver;
 
 	typedef LastInvariantFactor<Ring, Solver> LIF;
 
