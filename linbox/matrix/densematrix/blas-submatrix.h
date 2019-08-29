@@ -352,8 +352,8 @@ namespace LinBox
          * Retrieve a reference to a row
          * @param i Row index
          */
-        subVectorType      operator[] (size_t i)        { return      subVectorType (field(), _ptr+i*_stride, _col, 1);}
-        constSubVectorType operator[] (size_t i) const  { return constSubVectorType (field(), _ptr+i*_stride, _col, 1);}
+        subVectorType      operator[] (size_t i)        { return      subVectorType (field(), _ptr+i*_stride, 1, _col);}
+        constSubVectorType operator[] (size_t i) const  { return constSubVectorType (field(), _ptr+i*_stride, 1, _col);}
 
     };
 

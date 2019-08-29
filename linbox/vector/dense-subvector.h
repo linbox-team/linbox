@@ -103,7 +103,7 @@ namespace LinBox {
          * \param dim dimension
          * \param inc distance between two element
          */
-        BlasSubvector (vectorType &V, size_t beg, size_t dim, size_t inc) :
+        BlasSubvector (vectorType &V, size_t beg, size_t inc, size_t dim) :
             _ptr(V.getPointer()+beg), _size(dim), _inc(inc), _field(&V.field()) {}
         
         /** Constructor from an existing @ref BlasSubvector and dimensions.
@@ -112,7 +112,7 @@ namespace LinBox {
          * \param dim dimension
          * \param inc distance between two element
          */
-        BlasSubvector (Self_t &V, size_t beg, size_t dim, size_t inc) :
+        BlasSubvector (Self_t &V, size_t beg, size_t inc, size_t dim) :
             _ptr(V.data()+beg), _size(dim), _inc(inc), _field(&V.field()) {}
 
         
@@ -125,7 +125,7 @@ namespace LinBox {
         /** Constructor from a raw pointer
          * \param ptr Pointer to @ref first element of the vector of which to construct submatrix
          */
-        BlasSubvector (const Field& F, pointer ptr,  size_t dim, size_t inc) :
+        BlasSubvector (const Field& F, pointer ptr, size_t inc,  size_t dim) :
             _ptr(ptr), _size(dim), _inc(inc), _field(&F) {}
         
         

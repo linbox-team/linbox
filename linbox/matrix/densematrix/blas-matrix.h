@@ -402,8 +402,8 @@ namespace LinBox
          * @bug Rows and Cols should be BlasVectors
          */
         //@{
-        subVectorType      operator[] (size_t i)        { return      subVectorType (field(), _rep.getPointer ()+i*_col, _col, 1);}
-        constSubVectorType operator[] (size_t i) const  { return constSubVectorType (field(), _rep.getPointer ()+i*_col, _col, 1);}
+        subVectorType      operator[] (size_t i)        { return      subVectorType (field(), _rep.getPointer ()+i*_col, 1, _col);}
+        constSubVectorType operator[] (size_t i) const  { return constSubVectorType (field(), _rep.getPointer ()+i*_col, 1, _col);}
         //@}
 
 
