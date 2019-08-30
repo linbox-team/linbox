@@ -42,8 +42,8 @@ bool test(const Ring& F, const TMatrix& A, const TVector& b)
     // ---- Determinant
 
     // Compute the bounds
-    double hb = HadamardBound(A);
-    double fastHb = FastHadamardBound(A);
+    double hb = HadamardLogBound(A);
+    double fastHb = FastHadamardLogBound(A);
 
     // Compute the effective determinant
     Integer detA;
@@ -73,17 +73,17 @@ bool test(const Ring& F, const TMatrix& A, const TVector& b)
     solve(num, den, A, b);
 
     for (size_t i = 0u; i < num.size(); ++i) {
-        if (Givaro::logtwo(Givaro::abs(num[i])) > rationalSolveHb.numLogBound + ESPILON) {
+        if (Givaro::abs(num[i]) > rationalSolveHb.numBound) {
             std::cerr << "The rational solve Hadamard bound does not bound the numerator." << std::endl;
-            std::cerr << "num[i]: " << Givaro::logtwo(Givaro::abs(num[i])) << " > " << rationalSolveHb.numLogBound
+            std::cerr << "num[i]: " << Givaro::abs(num[i]) << " > " << rationalSolveHb.numBound
                     << std::endl;
             return false;
         }
     }
 
-    if (Givaro::logtwo(Givaro::abs(den)) > rationalSolveHb.denLogBound + ESPILON) {
+    if (Givaro::abs(den) > rationalSolveHb.denBound) {
         std::cerr << "The rational solve Hadamard bound does not bound the denominator." << std::endl;
-        std::cerr << "den: " << Givaro::logtwo(den) << " > " << rationalSolveHb.denLogBound << std::endl;
+        std::cerr << "den: " << den << " > " << rationalSolveHb.denBound << std::endl;
         return false;
     }
 

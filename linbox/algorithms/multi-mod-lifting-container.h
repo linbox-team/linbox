@@ -337,13 +337,10 @@ namespace LinBox {
             {
                 numthreads = NUM_THREADS;
 
-                // @fixme @zhuh Can't get that working with NUM_THREADS,
-                // any idea what makes it wrong?
-                // ./test-solve-full -n 1 -m 1 -b 50 -v -l
                 auto sp = SPLITTER(NUM_THREADS, FFLAS::CuttingStrategy::Row,
                                    FFLAS::StrategyParameter::Threads);
                 int M = _primesCount;
-                FOR1D(j, M, sp, MODE(CONSTREFERENCE(digits)), {
+                FOR1D(j, M, sp, {
                     auto pj = _primes[j];
                     auto& FR = _FR[j];
                     uint64_t upj = pj;
@@ -360,8 +357,8 @@ namespace LinBox {
                     }
 
                     // digit = A^{-1} * R mod pj
+                    const auto& B = _B[j];
                     auto& digit = digits[j];
-                    auto& B = _B[j];
                     B.apply(digit, FR);
 
                     // Store the very same result in an RNS system,

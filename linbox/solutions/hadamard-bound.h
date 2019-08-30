@@ -249,6 +249,7 @@ namespace LinBox {
         Integer rowBound;
         HadamardRowBound(rowBound, A);
 #ifdef DEBUG_HADAMARD_BOUND
+        A.write(std::clog) << std::endl;
         std::clog << "rowBound:=" << rowBound << ';' << std::endl;
 #endif
 
@@ -283,13 +284,17 @@ namespace LinBox {
     /**
      * Precise Hadamard bound (bound on determinant) by taking the minimum
      * of the column-wise and the row-wise euclidean norm.
-     *
-     * The result is expressed as bit size.
      */
     template <class IMatrix>
-    double HadamardBound(const IMatrix& A)
+    Integer HadamardBound(const IMatrix& A)
     {
         return DetailedHadamardBound(A).bound;
+    }
+
+    template <class IMatrix>
+    double HadamardLogBound(const IMatrix& A)
+    {
+        return Givaro::logtwo(HadamardBound(A));
     }
 
     // ----- Fast Hadamard bound
