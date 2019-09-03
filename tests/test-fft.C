@@ -24,7 +24,7 @@
 
 #include "linbox/linbox-config.h"
 
-#include "linbox/algorithms/polynomial-matrix/polynomial-fft-algorithms.h"
+#include "linbox/algorithms/polynomial-matrix/polynomial-fft-init.h"
 #include "linbox/randiter/random-fftprime.h"
 #include "linbox/ring/modular.h"
 
@@ -57,11 +57,11 @@ REGISTER_TYPE_NAME(Modular);
 REGISTER_TYPE_NAME(ModularExtended);
 
 /******************************************************************************/
-/* Basic class to access and test protected method of FFT__ class */ 
+/* Basic class to access and test protected method of FFT class */ 
 template<typename Field, typename Simd>
-class FFT_checker : public FFT__<Field, Simd> {
+class FFT_checker : public FFT<Field, Simd> {
     private:
-        using base = FFT__<Field, Simd>;
+        using base = FFT<Field, Simd>;
     public:
         using base::DIF;
         using base::DIT;
@@ -150,26 +150,13 @@ struct Checker {
         bool bd = equal (v.begin(), v.end(), out_br.begin());
         print_result_line<Simd> ("FFT_direct", bd);
 
-        /* FFT_inverse (without div): bitreversed order => natural order */
+        /* FFT_inverse: bitreversed order => natural order */
         v = in_br;
-        fft.FFT_inverse (v.data(), false);
+        fft.FFT_inverse (v.data());
         bool bi = equal (v.begin(), v.end(), out.begin());
-        print_result_line<Simd> ("FFT_inverse(nodiv)", bi);
+        print_result_line<Simd> ("FFT_inverse", bi);
 
-        /* FFT_inverse : bitreversed order => natural order */
-        v = in_br;
-        fft.FFT_inverse (v.data(), true);
-        bool bi2 = true;
-        Elt t;
-        fft.field().init (t);
-        for (size_t i = 0; i < v.size(); i++) {
-            fft.field().mul (t, v[i], v.size());
-            bi2 &= t == out[i];
-        }
-        print_result_line<Simd> ("FFT_inverse", bi2);
-
-
-        bool b = bt & bf & bt2 & bf2 & bd & bi & bi2;
+        bool b = bt & bf & bt2 & bf2 & bd & bi;
         return b;
     }
 
