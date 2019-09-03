@@ -24,7 +24,7 @@
 
 #include "linbox/linbox-config.h"
 
-#include "linbox/algorithms/polynomial-matrix/polynomial-fft-algorithms.h"
+#include "linbox/algorithms/polynomial-matrix/polynomial-fft-init.h"
 #include "linbox/randiter/random-fftprime.h"
 #include "linbox/ring/modular.h"
 
@@ -58,8 +58,8 @@ REGISTER_TYPE_NAME(ModularExtended);
 
 /******************************************************************************/
 template<typename Field, typename Simd>
-struct BenchFFT : public FFT__<Field, Simd> {
-    using base = FFT__<Field, Simd>;
+struct BenchFFT : public FFT<Field, Simd> {
+    using base = FFT<Field, Simd>;
     using elt_vect_t = typename Simd::aligned_vector;
 
     static const size_t min_run = 4; /* do at least this number of run of fft */
@@ -84,14 +84,6 @@ struct BenchFFT : public FFT__<Field, Simd> {
         time = chrono.userElapsedTime()/cnt; /* time per iteration */
         print_result_line ("DIF", time);
 
-        /* DIF_core */
-        v = in;
-        chrono.start();
-        for (cnt = 0; cnt < min_run || chrono.realElapsedTime() < 1 ; cnt++)
-            this->DIF_core (v.data());
-        time = chrono.userElapsedTime()/cnt; /* time per iteration */
-        print_result_line ("DIF_core", time);
-
         /* DIT_reversed */
         v = in;
         chrono.start();
@@ -99,14 +91,6 @@ struct BenchFFT : public FFT__<Field, Simd> {
             this->DIT_reversed (v.data());
         time = chrono.userElapsedTime()/cnt; /* time per iteration */
         print_result_line ("DIT_reversed", time);
-
-        /* DIT_reversed_core */
-        v = in;
-        chrono.start();
-        for (cnt = 0; cnt < min_run || chrono.realElapsedTime() < 1 ; cnt++)
-            this->DIT_reversed_core (v.data());
-        time = chrono.userElapsedTime()/cnt; /* time per iteration */
-        print_result_line ("DIT_reversed_core", time);
 
         /* FFT direct */
         v = in;
@@ -126,22 +110,6 @@ struct BenchFFT : public FFT__<Field, Simd> {
         time = chrono.userElapsedTime()/cnt; /* time per iteration */
         print_result_line ("DIT", time);
 
-        /* DIT_core */
-        v = in;
-        chrono.start();
-        for (cnt = 0; cnt < min_run || chrono.realElapsedTime() < 1 ; cnt++)
-            this->DIT_core (v.data());
-        time = chrono.userElapsedTime()/cnt; /* time per iteration */
-        print_result_line ("DIT_core", time);
-
-        /* DIF_reversed_core */
-        v = in;
-        chrono.start();
-        for (cnt = 0; cnt < min_run || chrono.realElapsedTime() < 1 ; cnt++)
-            this->DIF_reversed_core (v.data());
-        time = chrono.userElapsedTime()/cnt; /* time per iteration */
-        print_result_line ("DIF_reversed_core", time);
-
         /* DIF_reversed */
         v = in;
         chrono.start();
@@ -154,18 +122,9 @@ struct BenchFFT : public FFT__<Field, Simd> {
         v = in;
         chrono.start();
         for (cnt = 0; cnt < min_run || chrono.realElapsedTime() < 1 ; cnt++)
-            this->FFT_inverse (v.data(), false);
-        time = chrono.userElapsedTime()/cnt; /* time per iteration */
-        print_result_line ("FFT_inverse(nodiv)", time);
-
-        /* FFT inverse */
-        v = in;
-        chrono.start();
-        for (cnt = 0; cnt < min_run || chrono.realElapsedTime() < 1 ; cnt++)
-            this->FFT_inverse (v.data(), true);
+            this->FFT_inverse (v.data());
         time = chrono.userElapsedTime()/cnt; /* time per iteration */
         print_result_line ("FFT_inverse", time);
-
     }
 
     void

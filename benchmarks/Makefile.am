@@ -47,8 +47,7 @@ PERFPUBLISHERFILE=benchmarks-report.xml
 
 BENCH_BASIC=               \
 		benchmark-example\
-		benchmark-fft-new\
-		benchmark-fft-newnew\
+		benchmark-fft\
 		benchmark-fft-Bastien\
 		benchmark-fft-old\
 		benchmark-dense-solve\
@@ -108,8 +107,7 @@ benchmarks: ${EXTRA_PROGRAMS}
 
 benchmark_example_SOURCES       = benchmark-example.C
 benchmark_order_basis_SOURCES       = benchmark-order-basis.C
-benchmark_fft_new_SOURCES       = benchmark-fft-new.C
-benchmark_fft_newnew_SOURCES       = benchmark-fft-newnew.C
+benchmark_fft_SOURCES       = benchmark-fft.C
 benchmark_fft_Bastien_SOURCES       = benchmark-fft-Bastien.C
 benchmark_fft_old_SOURCES       = benchmark-fft-old.C
 benchmark_dense_solve_SOURCES       = benchmark-dense-solve.C

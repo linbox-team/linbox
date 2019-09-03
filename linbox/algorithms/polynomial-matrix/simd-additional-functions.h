@@ -61,7 +61,7 @@ namespace LinBox {
 	};
 #endif
 
-    namespace FFT {
+    namespace FFT_utils {
         template<typename Field, typename Simd = Simd<typename Field::Element>,
                                  typename Enable = void>
         struct SimdExtra;
