@@ -197,8 +197,8 @@ namespace LinBox {
             /******************************************************************/
             const Field *fld;
             size_t l2n; /* log2 of size */
-            uint64_t n; /* 2^l2n */
-
+        //uint64_t n; /* 2^l2n */
+        size_t n;
             elt_vect_t pow_w; /* Table of roots of unity.
                                * If w = primitive n-th root, then the table is:
                                * 1, w, w^2, ..., w^{n/2-1},
@@ -1080,7 +1080,8 @@ namespace LinBox {
             /******************************************************************/
             const Field *fld;
             size_t l2n; /* log2 of size */
-            uint64_t n; /* 2^l2n */
+        //uint64_t n; /* 2^l2n */
+        size_t n;
             const Residu_t p; /* p = field characteristic */
             const Residu_t p2; /* p2 = 2*p */
 
