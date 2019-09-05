@@ -160,6 +160,7 @@ CHECKER_TESTS =           \
     test-plain-domain            \
     test-quad-matrix            \
     test-rational-matrix-factory \
+    test-rational-reconstruction-base \
     test-scalar-matrix            \
     test-smith-form-binary      \
     test-solve-nonsingular        \
@@ -187,7 +188,6 @@ FULLCHECK_TESTS = ${CHECKER_TESTS} \
     test-mpi-comm                \
     test-rat-solve                \
     test-rat-minpoly            \
-    test-rational-reconstruction-base \
     test-rat-charpoly            \
     test-poly-det                \
     test-sparse-map-map         \
