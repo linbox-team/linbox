@@ -60,7 +60,7 @@ namespace LinBox
 
 		// Basic constructors
 
-		Subiterator ()
+		Subiterator () : _iter(), _stride()
 		{
 		}
 
