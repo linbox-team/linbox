@@ -67,13 +67,13 @@ bool testFibb(FIBB<Field>& A, string title, const typename Field::Element& dt, i
 	size_t n = A.coldim();
 	report << "coldim " << n << std::endl;
 	size_t r = A.rank(r);
-	if (rk >= 0) pass = pass and r == rk;
-	if (m < 8  and n < 8) A.write(report << "A: " << std::endl) << std::endl;
+	if (rk >= 0u) pass = (pass and (int64_t(r) == rk));
+	if (m < 8u  and n < 8u) A.write(report << "A: " << std::endl) << std::endl;
 	report << "rank " << r << ", expected " << rk << std::endl;
 
 	Element d; F.init(d);
 	A.det(d);
-	if (rk == n and rk == m and F.isZero(dt))
+	if (rk == int64_t(n) and rk == int64_t(m) and F.isZero(dt))
 		F.write(report << "det ", d) << ", unchecked" << std::endl;
 	else 
 		F.write(F.write(report << "det ", d) << ", expected ", dt) << std::endl;

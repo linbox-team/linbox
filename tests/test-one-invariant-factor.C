@@ -75,7 +75,7 @@ bool testRandom(const Ring& R,
 
 //	VectorWrapper::ensureDim (d, stream1.n ());
 
-	int n = int(d. size());
+	size_t n = d. size();
 
 //	 while (stream1) {
 
@@ -94,7 +94,7 @@ bool testRandom(const Ring& R,
 		BlasMatrix<Ring> D(R, n, n), L(R, n, n), U(R, n, n), A(R,n,n),
 		L2(R, n, n), U2(R, n, n);
 
-		int i, j;
+		size_t i, j;
 
 		for(i = 0; i < n; ++i) {
 			R. assign (D[(size_t)i][(size_t)i], d[(size_t)i]);
@@ -232,8 +232,8 @@ int main(int argc, char** argv)
 	// Note:  oneInvariantFactor (used in smith-form-binary) is not designed to catch small prime factors
 	vector<Ring::Element> d(n);
 	d[0] = 1;
-	for (int i = 1; i < n/2; ++i) d[i] = 101*d[i-1];
-	for (int i = n/2; i < n; ++i) d[i] = d[i-1];
+	for (size_t i = 1; i < n/2; ++i) d[i] = 101*d[i-1];
+	for (size_t i = n/2; i < n; ++i) d[i] = d[i-1];
 	d[n-3] *= 2*103;
 	d[n-2] = 0;
 	d[n-1] = 0;
