@@ -152,7 +152,6 @@ CHECKER_TESTS =           \
     test-ntl-sylvester          \
     test-ntl-toeplitz           \
     test-ntl-zz_p               \
-    test-nullspace                \
     test-optimization            \
     test-order-basis            \
     test-param-fuzzy            \
@@ -169,7 +168,6 @@ CHECKER_TESTS =           \
     test-submatrix                \
     test-subvector                \
     test-sum                    \
-    test-toom-cook                \
     test-trace                    \
     test-transpose                \
     test-triplesbb                \
@@ -179,12 +177,14 @@ CHECKER_TESTS =           \
     test-blas-domain            \
     test-random-matrix            \
     test-zero-one                \
-    test-weak-popov-form        \
     test-toeplitz-det           \
     test-dense                    \
     test-toeplitz
 
 FULLCHECK_TESTS = ${CHECKER_TESTS} \
+    test-nullspace                \
+    test-weak-popov-form        \
+    test-toom-cook                \
     test-mpi-comm                \
     test-rat-solve                \
     test-rat-minpoly            \
