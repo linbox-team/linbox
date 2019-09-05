@@ -106,20 +106,16 @@ BASIC_TESTS =            \
     test-hadamard-bound     \
     test-serialization
 
+
 # All other tests.
 # The checker.C determines which of these are built and run in "make fullcheck".
-FULLCHECK_TESTS =           \
+CHECKER_TESTS =           \
     test-bitonic-sort       \
     test-blackbox-block-container \
-    test-sparse-map-map         \
-    test-blas-domain            \
-    test-block-ring                \
     test-block-wiedemann        \
     test-butterfly                \
     test-companion                \
     test-cradomain                \
-    test-dense                    \
-    test-dense-zero-one          \
     test-diagonal                \
     test-dif                    \
     test-direct-sum                \
@@ -128,30 +124,24 @@ FULLCHECK_TESTS =           \
     test-polynomial-ring        \
     test-ffpack                    \
     test-fibb                    \
-    test-ftrmm                    \
     test-getentry                \
     test-givaropoly                \
     test-gmp-rational            \
     test-hilbert                \
     test-hom                    \
-    test-image-field            \
     test-inverse                \
     test-one-invariant-factor   \
-    test-la-block-lanczos        \
     test-matpoly-mult            \
     test-matrix-domain            \
     test-matrix-stream            \
-    test-mg-block-lanczos        \
     test-minpoly                \
     test-modular                \
     test-modular-balanced-double \
     test-modular-balanced-float  \
     test-modular-balanced-int   \
-    test-modular-byte            \
     test-modular-double            \
     test-modular-float            \
     test-modular-int            \
-    test-modular-short            \
     test-moore-penrose            \
     test-ntl-hankel             \
     test-ntl-lzz_p              \
@@ -168,14 +158,8 @@ FULLCHECK_TESTS =           \
     test-param-fuzzy            \
     test-permutation            \
     test-plain-domain            \
-    test-poly-det                \
     test-quad-matrix            \
-    test-random-matrix            \
-    test-rat-charpoly            \
     test-rational-matrix-factory \
-    test-rational-reconstruction-base \
-    test-rat-minpoly            \
-    test-rat-solve                \
     test-scalar-matrix            \
     test-smith-form-binary      \
     test-solve-nonsingular        \
@@ -191,10 +175,29 @@ FULLCHECK_TESTS =           \
     test-triplesbb-omp            \
     test-tutorial                \
     test-vector-domain            \
+    test-blas-domain            \
     test-zero-one                \
     test-weak-popov-form        \
-    test-mpi-comm                \
     test-toeplitz
+
+FULLCHECK_TESTS = ${CHECKER_TESTS} \
+    test-mpi-comm                \
+    test-rat-solve                \
+    test-rat-minpoly            \
+    test-rational-reconstruction-base \
+    test-random-matrix            \
+    test-rat-charpoly            \
+    test-poly-det                \
+    test-sparse-map-map         \
+    test-block-ring                \
+    test-dense                    \
+    test-dense-zero-one          \
+    test-ftrmm                    \
+    test-image-field            \
+    test-la-block-lanczos        \
+    test-mg-block-lanczos        \
+    test-modular-byte            \
+    test-modular-short
 
 # Really just one or two of these would be enough for target check.
 # The rest can be in target fullcheck.
@@ -399,5 +402,5 @@ perfpublisher:
 %:%.C
 	$(CXX) $(CXXFLAGS) $(AM_CPPFLAGS)  ${INCLUDES} $(AM_CPPFLAGS) $*.C -o $@ $(LDADD)
 
-fullcheck: checker
+fullcheck: ${BASIC_TESTS} ${CHECKER_TESTS} checker
 	./checker
