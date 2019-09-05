@@ -637,8 +637,6 @@ bool testFourFourMatrix() {
     return success;
 }
 
-
-
 int main (int argc, char **argv)
 {
     bool pass = true;

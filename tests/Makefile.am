@@ -83,6 +83,7 @@ BASIC_TESTS =            \
     test-qlup                    \
     test-det            \
     test-regression        \
+    test-regression2       \
     test-rank-u32        \
     test-rank-md        \
     test-rank-Int        \
@@ -351,6 +352,7 @@ test_rational_solver_SOURCES =      test-rational-solver.C
 test_rat_minpoly_SOURCES =          test-rat-minpoly.C test-common.h
 test_rat_solve_SOURCES =        test-rat-solve.C test-common.h
 test_regression_SOURCES =           test-regression.C
+test_regression2_SOURCES =           test-regression2.C
 test_scalar_matrix_SOURCES =        test-scalar-matrix.C
 test_serialization_SOURCES =         test-serialization.C
 test_smith_form_adaptive_SOURCES =      test-smith-form-adaptive.C test-common.h
