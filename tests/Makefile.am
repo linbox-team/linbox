@@ -133,7 +133,6 @@ CHECKER_TESTS =                 \
     test-matpoly-mult           \
     test-matrix-domain          \
     test-matrix-stream          \
-    test-minpoly                \
     test-modular                \
     test-modular-balanced-double\
     test-modular-balanced-float \
@@ -185,6 +184,7 @@ CHECKER_NTL_TESTS =             \
 
 
 FULLCHECK_TESTS = ${CHECKER_TESTS} ${CHECKER_NTL_TESTS} \
+    test-minpoly                \
     test-nullspace              \
     test-weak-popov-form        \
     test-toom-cook              \
@@ -406,5 +406,5 @@ perfpublisher:
 %:%.C
 	$(CXX) $(CXXFLAGS) $(AM_CPPFLAGS)  ${INCLUDES} $(AM_CPPFLAGS) $*.C -o $@ $(LDADD)
 
-fullcheck: ${BASIC_TESTS} ${CHECKER_TESTS} checker
+fullcheck: ${TESTS} ${CHECKER_TESTS} checker
 	./checker
