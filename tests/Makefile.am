@@ -176,8 +176,11 @@ CHECKER_TESTS =           \
     test-tutorial                \
     test-vector-domain            \
     test-blas-domain            \
+    test-random-matrix            \
     test-zero-one                \
     test-weak-popov-form        \
+    test-toeplitz-det           \
+    test-dense                    \
     test-toeplitz
 
 FULLCHECK_TESTS = ${CHECKER_TESTS} \
@@ -185,12 +188,10 @@ FULLCHECK_TESTS = ${CHECKER_TESTS} \
     test-rat-solve                \
     test-rat-minpoly            \
     test-rational-reconstruction-base \
-    test-random-matrix            \
     test-rat-charpoly            \
     test-poly-det                \
     test-sparse-map-map         \
     test-block-ring                \
-    test-dense                    \
     test-dense-zero-one          \
     test-ftrmm                    \
     test-image-field            \
