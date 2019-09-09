@@ -24,7 +24,7 @@
 
 #include "linbox/linbox-config.h"
 
-#include "linbox/algorithms/polynomial-matrix/polynomial-fft-init.h"
+#include "linbox/algorithms/polynomial-matrix/fft.h"
 #include "linbox/randiter/random-fftprime.h"
 #include "linbox/ring/modular.h"
 
@@ -174,7 +174,7 @@ struct Checker {
         /* Compute the out vector using a naive polynomial evaluation and set
          * the bitreversed version of in and out */
         Elt x(1);
-        const Elt & w = fft_nosimd.getRoot ();
+        const Elt & w = fft_nosimd.root ();
         for (size_t i = 0; i < _n; _F.mulin (x, w), i++) {
             size_t i_br = bitreversed (i);
             in_br[i_br] = in[i];

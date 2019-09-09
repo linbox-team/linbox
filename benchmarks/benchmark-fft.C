@@ -24,7 +24,7 @@
 
 #include "linbox/linbox-config.h"
 
-#include "linbox/algorithms/polynomial-matrix/polynomial-fft-init.h"
+#include "linbox/algorithms/polynomial-matrix/fft.h"
 #include "linbox/randiter/random-fftprime.h"
 #include "linbox/ring/modular.h"
 
