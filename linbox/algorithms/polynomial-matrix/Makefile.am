@@ -33,9 +33,9 @@ pkgincludesub_HEADERS =         \
 	matpoly-mult-fft-multiprecision.inl	\
 	matpoly-mult-fft-recint.inl	\
 	polynomial-matrix-domain.h	\
-	polynomial-fft-algorithms.h	\
-	polynomial-fft-butterflies.h	\
-	polynomial-fft-init.h	\
-	simd-additional-functions.h	\
-        simd.h		\
+	fft.h	\
+	fft-utils.h	\
+	fft-floating.h	\
+	fft-integral.h	\
+	fft-simd.h	\
 	order-basis.h
