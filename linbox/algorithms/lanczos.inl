@@ -78,8 +78,9 @@ namespace LinBox
 
 		commentator().start ("Solving linear system (Lanczos)", "LanczosSolver::solve");
 
+
 		bool success = false;
-		LVector d1, d2, b1, b2, bp, y, Ax, ATAx, ATb;
+		LVector d1(field()), d2(field()), b1(field()), b2(field()), bp(field()), y(field()), Ax(field()), ATAx(field()), ATb(field());
 
 		VectorWrapper::ensureDim (_w[0], A.coldim ());
 		VectorWrapper::ensureDim (_w[1], A.coldim ());
@@ -306,8 +307,8 @@ namespace LinBox
 
 			report << "Total matrix-vector products so far: " << prods << std::endl;
 
-			// 		traceReport (report, field(), "alpha", iter, alpha);
-			// 		traceReport (report, field(), "beta", iter, alpha);
+			//		traceReport (report, field(), "alpha", iter, alpha);
+			//		traceReport (report, field(), "beta", iter, alpha);
 			traceReport (report, _VD, "w", iter - 1, _w[1 - j]);
 			traceReport (report, _VD, "w", iter, _w[j]);
 
@@ -324,8 +325,8 @@ namespace LinBox
 
 			_VD.dot (delta[j], _w[j], _Aw); // delta_j <- <w_j, Aw_j>
 
-			// 		traceReport (report, field(), "delta", iter - 1, delta[1 - j]);
-			// 		traceReport (report, field(), "delta", iter, delta[j]);
+			//		traceReport (report, field(), "delta", iter - 1, delta[1 - j]);
+			//		traceReport (report, field(), "delta", iter, delta[j]);
 
 			if (!field().isZero (delta[j])) {
 				_VD.dot (alpha, _Aw, _Aw);             // alpha <- -<Aw_j, Aw_j> / delta_j
