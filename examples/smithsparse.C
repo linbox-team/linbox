@@ -95,7 +95,8 @@ int main(int argc, char* argv[])
 			return -1;
 		} 
 		if (m%2 == 0) { // local at small power of 2.
-            runpoweroftworank<uint64_t, Givaro::ZRing<int64_t> >(input, 32, 0);
+            //runpoweroftworank<uint64_t, Givaro::ZRing<int64_t> >(input, 32, 0);
+            runpoweroftworank<size_t, Givaro::ZRing<size_t> >(input, 32, 0);
 		} else {  // local at general Z_p^e
 
 			typedef Givaro::Modular<int32_t> SPIR;
@@ -193,7 +194,7 @@ int main(int argc, char* argv[])
 	
 		//cout << "integer rank: " << endl;
 	
-		uint64_t coprimeR; LRank(coprimeR, argv[1], coprimeV);
+		size_t coprimeR; LRank(coprimeR, argv[1], coprimeV);
 		smith.push_back(PairIntRk(coprimeV, coprimeR));
 		//         cerr << "Rank mod " << coprimeV << " is " << coprimeR << endl;
 	
