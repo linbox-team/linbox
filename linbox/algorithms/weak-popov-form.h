@@ -24,17 +24,16 @@
  *.
  */
  
+#ifndef __LINBOX_weak_popov_form_domain_H
+#define __LINBOX_weak_popov_form_domain_H
+
 #include <iostream>
 #include <stdlib.h>
 #include <algorithm>
 #include <utility>
 #include <vector>
 
-#include "linbox/matrix/densematrix/blas-matrix.h"
-//#include "linbox/matrix/matrixdomain/matrix-domain.h"
-
-#ifndef __LINBOX_weak_popov_form_domain_H
-#define __LINBOX_weak_popov_form_domain_H
+#include "linbox/matrix/dense-matrix.h"
 
 namespace LinBox
 {
@@ -46,19 +45,13 @@ namespace LinBox
 		typedef typename PolynomialRing::Element Polynomial;
 		typedef typename PolynomialRing::Coeff Coeff;
 		typedef typename PolynomialRing::CoeffField CoeffField;
-		
-	  typedef MatrixDomain<PolynomialRing> MatrixDom;
-		
-		typedef typename MatrixDom::OwnMatrix OwnMatrix;
-		typedef typename MatrixDom::Matrix SubMatrix;
 
 	private:
 		PolynomialRing _R;
-	        MatrixDom _MD; // PG -> not used
 
 	public:
-	  WeakPopovFormDomain(const PolynomialRing &R) : _R(R), _MD(R) {}
-	  WeakPopovFormDomain(const WeakPopovFormDomain &D) : _R(D._R) , _MD(D._R) {}
+	  WeakPopovFormDomain(const PolynomialRing &R) : _R(R) {}
+	  WeakPopovFormDomain(const WeakPopovFormDomain &D) : _R(D._R)  {}
 
 	// private:
 		
@@ -184,10 +177,13 @@ namespace LinBox
 			M.getEntry(p1, row1, pivot_col);
 			M.getEntry(p2, row2, pivot_col);
 			
-			SubMatrix M1(M, row1, 0, 1, M.coldim());
-			SubMatrix M2(M, row2, 0, 1, M.coldim());
-			SubMatrix V1(V, row1, 0, 1, V.coldim());
-			SubMatrix V2(V, row2, 0, 1, V.coldim());
+			using SubMatrix1=DenseSubmatrix<typename Matrix1::Field>;
+			using SubMatrix2=DenseSubmatrix<typename Matrix2::Field>;
+
+			SubMatrix1 M1(M, row1, 0, 1, M.coldim());
+			SubMatrix1 M2(M, row2, 0, 1, M.coldim());
+			SubMatrix2 V1(V, row1, 0, 1, V.coldim());
+			SubMatrix2 V2(V, row2, 0, 1, V.coldim());
 			
 			size_t d1 = _R.deg(p1);
 			size_t d2 = _R.deg(p2);
@@ -259,6 +255,8 @@ namespace LinBox
 				return;
 			}
 			
+			using SubMatrix=DenseSubmatrix<typename Matrix::Field>;
+
 			SubMatrix M(T, 0, 0, T.rowdim(), T.coldim() - 1);
 			SubMatrix V(T, 0, T.coldim() - 1, T.rowdim(), 1);
 			
@@ -279,7 +277,7 @@ namespace LinBox
 		
 		template<typename Matrix>
 		void solveDet(Polynomial &det, const Matrix &T_in) const {
-			OwnMatrix T(T_in);
+			DenseMatrix<typename Matrix::Field> T(T_in);
 			_R.assign(det, _R.one);
 						
 			solveDetHelper(det, T);
