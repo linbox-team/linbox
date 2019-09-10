@@ -250,27 +250,29 @@ namespace LinBox
 		typedef typename _Blackbox::Element Element;
 
 
+        /** Constructor of C := A*B from blackbox matrices A and B.
+       * Build the product of any matrices of compatible dimensions.
+       * Requires A.coldim() equals B.rowdim().
+       */
 		Compose (const Blackbox& A, const Blackbox& B) {
 			_BlackboxL.push_back(&A);
 			_BlackboxL.push_back(&B);
 
-			_zl.resize(1);
+			_zl.clear();
+            _zl.emplace_back(B.field(), B.rowdim());
 
-			_zl.front().resize (A.coldim());
 		}
 
 		Compose (const Blackbox* Ap, const Blackbox* Bp) {
 			_BlackboxL.push_back(Ap);
 			_BlackboxL.push_back(Bp);
 
-			_zl.resize(1);
-
-			_zl.front().resize (Ap ->coldim());
+			_zl.clear();
+            _zl.emplace_back(Bp->field(), Bp->rowdim());
 		}
 
-		/** Constructor of C := A*B from blackbox matrices A and B.
-		 * Build the product A*B of any two black box matrices of compatible dimensions.
-		 * Requires A.coldim() equals B.rowdim().
+		/** Constructor of C := prod Ai from blackbox matrices Ai.
+		 * Build the product of any list of matrices of compatible dimensions.
 		 */
 		template<class BPVector>
 		Compose (const BPVector& v) :
@@ -278,13 +280,10 @@ namespace LinBox
 		{
 
 			linbox_check(v.size() > 0);
-			_zl.resize(v.size() - 1);
-			typename std::vector<const Blackbox*>::iterator b_p;
-			typename std::vector<std::vector<Element> >::iterator z_p;
+			_zl.clear();
 			// it would be good to use just 2 vectors and flip/flop.
-			for ( b_p = _BlackboxL.begin(), z_p = _zl.begin();
-			      z_p != _zl.end(); ++ b_p, ++ z_p)
-				z_p -> resize((*b_p) -> coldim());
+			for (const auto& b_p : _BlackboxL)
+                _zl.emplace_back( b_p.field(), b_p.coldim());
 		}
 
 		~Compose () {}
@@ -294,17 +293,17 @@ namespace LinBox
 		{
 
 			typename std::vector<const Blackbox*>::const_reverse_iterator b_p;
-			typename std::vector<std::vector<Element> >::reverse_iterator z_p, pz_p;
+			typename std::vector<DenseVector<Field> >::reverse_iterator z_p, pz_p;
 			b_p = _BlackboxL.rbegin();
 			pz_p = z_p = _zl.rbegin();
-			typedef BlasSubvector<BlasVector<Field, typename Vector<Field>::Dense> > BSub;
-			BSub pz_p_vec(field(),*pz_p);
+			typedef DenseSubvector<Field> BSub;
+			BSub pz_p_vec(*pz_p);
 
 			(*b_p) -> apply(pz_p_vec, x);
 			++ b_p;  ++ z_p;
 
 			for (; z_p != _zl.rend(); ++ b_p, ++ z_p, ++ pz_p) {
-				 BSub z_p_vec(field(),*z_p);
+				 BSub z_p_vec(*z_p);
 				(*b_p) -> apply (z_p_vec,pz_p_vec);
 			}
 
@@ -396,7 +395,7 @@ namespace LinBox
 		std::vector<const Blackbox*> _BlackboxL;
 
 		// local intermediate vector
-		mutable std::vector<std::vector<Element> > _zl;
+		mutable std::vector<DenseVector<Field> > _zl;
 	};
 
 	//@}
