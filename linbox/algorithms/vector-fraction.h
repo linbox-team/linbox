@@ -84,7 +84,7 @@ namespace LinBox
 		typedef typename Domain::Element              Element;
 		typedef typename std::pair<Element, Element>  Fraction;
 		typedef typename std::vector<Fraction>        FVector;
-		typedef BlasVector<Domain>   Vector;
+		typedef DenseVector<Domain>   Vector;
 
 		Vector numer;
 		Element denom;

@@ -118,7 +118,8 @@ namespace LinBox {
          */
         BlasVector (const Self_t &V) : _field(V.field()) {
             resize(V.size());
-            for (auto it=_rep.begin(), jt=V.begin();it!=_rep.end();it++,jt++)
+            auto jt(V.begin());
+            for (auto it=_rep.begin();it!=_rep.end();++it,++jt)
                 field().assign(*it,*jt);
         }
 
