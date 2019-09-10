@@ -128,8 +128,8 @@ namespace LinBox
 		 * @return pointer to new blackbox object
 		*/
 #if 0
-		 		BlackboxArchetype<_Vector> *clone () const
-		 			{ return new Compose (*this); }
+				BlackboxArchetype<_Vector> *clone () const
+					{ return new Compose (*this); }
 #endif
 
 		/** Matrix * column vector product.
