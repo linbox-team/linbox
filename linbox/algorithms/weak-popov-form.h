@@ -54,7 +54,7 @@ namespace LinBox
 
 	private:
 		PolynomialRing _R;
-	        MatrixDom _MD; PG -> not used
+	        MatrixDom _MD; // PG -> not used
 
 	public:
 	  WeakPopovFormDomain(const PolynomialRing &R) : _R(R), _MD(R) {}
