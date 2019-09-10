@@ -227,6 +227,7 @@ USE_NTL_TESTS =     \
     test-ntl-lzz_pex    \
     test-toeplitz-det
 CHECKER_TESTS += ${CHECKER_NTL_TESTS}
+FULLCHECK_TESTS += ${FULLCHECK_NTL_TESTS}
 endif
 
 # if LINBOX_HAVE_SAGE
