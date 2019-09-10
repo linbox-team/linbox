@@ -82,7 +82,7 @@ namespace LinBox {
         const Field          &_field;
 
     public:
-        
+
         void resize (size_t n){
             //std::cout<<"BlasVector resize: "<<_ptr<<" ("<<_size<<") to ";
             _rep.resize(n);
@@ -234,7 +234,7 @@ namespace LinBox {
         ConstElement_ptr getConstPointer() const { return _ptr;}
 
 		const Storage &getRep() const { return _rep ; }
-        
+
         /** Get the increment in the vector
          * @return the inc value of the subvector
          */
@@ -264,7 +264,7 @@ namespace LinBox {
         }
 
         void setEntry (size_t i, const Element &a_i){
-            //std::cout<<"BV: "<<" "<<&(*_ptr)<<" "<<i<<" "<<a_i<<std::endl; 
+            //std::cout<<"BV: "<<" "<<&(*_ptr)<<" "<<i<<" "<<a_i<<std::endl;
             field().assign(_rep[i],a_i);
         }
 
@@ -316,6 +316,10 @@ namespace LinBox {
 		const_reverse_iterator rbegin (void) const { return reverse_iterator (end()); }
 		reverse_iterator       rend   (void)       { return reverse_iterator (begin()); }
 		const_reverse_iterator rend   (void) const { return reverse_iterator (begin()); }
+        iterator               Begin  (void)       { return this->begin(); }
+        const_iterator         Begin  (void) const { return this->begin(); }
+        iterator               End    (void)       { return this->end(); }
+        const_iterator         End    (void) const { return this->end(); }
 
         // Element access
         reference       operator[] (size_t n)       { return _rep[n]; }
@@ -330,7 +334,7 @@ namespace LinBox {
         const_reference back  (void) const { return _rep.back; }
 
         bool empty() const {return _rep.empty();}
-        
+
 
         // Miscelleanous
         void random(){

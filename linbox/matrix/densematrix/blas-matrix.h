@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2004 Pascal Giorgi, Clément Pernet
  *               2013, 2014 the LinBox group
- *               2018 revamped by Pascal Giorgi 
+ *               2018 revamped by Pascal Giorgi
  * Written by :
  *               Pascal Giorgi  pascal.giorgi@lirmm.fr
  *               Clément Pernet clement.pernet@imag.fr
@@ -73,21 +73,21 @@ namespace LinBox
         typedef BlasSubmatrix<const Self_t>  constSubMatrixType;
 
         // row and col types are unified to be a BlasSubvector
-        typedef typename Storage::subVectorType           subVectorType;             
+        typedef typename Storage::subVectorType           subVectorType;
         typedef typename Storage::constSubVectorType constSubVectorType;
         typedef subVectorType Row ;
         typedef subVectorType Col;
         typedef constSubVectorType ConstRow;
         typedef constSubVectorType ConstCol;
 
-        
+
     protected:
         size_t                                         _row;
         size_t                                         _col;
         Storage                                        _rep;
         // Element_ptr                                    _ptr; -> PG no more needed, it is already embedeed in _rep
         // const Field&                                 _field; -> PG no more needed, it is already embedeed in _rep
-        
+
 
         /*! @internal
          * @name create BlasMatrix
@@ -123,7 +123,7 @@ namespace LinBox
         /// (Re)allocates a new \f$ m \times n\f$ zero matrix (shaped and ready).
         void init(const size_t & r = 0, const size_t & c = 0);
 
-        
+
         /** Resize the matrix to the given dimensions.
          * The state of the matrix's entries after a call to this method is
          * undefined
@@ -176,7 +176,7 @@ namespace LinBox
          */
         template <class Matrix>
         BlasMatrix (const Matrix& A, const size_t & i0, const size_t & j0, const size_t & m,  const size_t & n) ;
-     
+
         /** Constructor using a finite vector stream (stream of the rows).
          * @param  F The field of entries; passed so that arithmetic may be done
          *           on elements
@@ -203,7 +203,7 @@ namespace LinBox
          */
         template<class _Matrix>
         BlasMatrix  (const _Matrix &A, const _Field &F) ;
-        
+
         /// Destructor.
         ~BlasMatrix () {}
 
@@ -214,7 +214,7 @@ namespace LinBox
         template<class _Matrix>
         Self_t& operator= (const _Matrix& A) ;
 
-        
+
         //! Rebind operator
         template<typename _Tp1, typename _Rep2 = typename Rebind<RawStorage, _Tp1>::other>
         struct rebind ;
@@ -233,7 +233,7 @@ namespace LinBox
          */
         size_t coldim() const { return _col;}
 
-        /*! Get the stride of the matrix.*/      
+        /*! Get the stride of the matrix.*/
         size_t getStride() const { return _col;}
 
         /*! @internal
@@ -242,7 +242,7 @@ namespace LinBox
         ConstElement_ptr getPointer() const { return _rep.getPointer();}
         Element_ptr getPointer() { return _rep.getPointer();}
         ConstElement_ptr getConstPointer() const { return _rep.getConstPointer();}
-        
+
         //////////////////
         //   ELEMENTS   //
         //////////////////
@@ -269,7 +269,7 @@ namespace LinBox
         Element &refEntry (size_t i, size_t j)
         {
             return _rep[i*_col+j];
-        }    
+        }
 
         /** Get a read-only reference to the entry in the (i, j) position.
          * @param i Row index
@@ -294,11 +294,11 @@ namespace LinBox
             field().assign(x,_rep[i*_col+j]); return x;
         }
 
-        /** get a read only reference to the field of the matrix 
+        /** get a read only reference to the field of the matrix
          */
         const _Field& field() const {return _rep.field();}
-        
-        
+
+
         ///////////////////
         //      I/O      //
         ///////////////////
@@ -308,7 +308,7 @@ namespace LinBox
          * @param file Input stream from which to read
          */
         std::istream &read (std::istream &file);
-        
+
         /** Write the matrix to an output stream.
          * @param os Output stream to which to write
          * @param f write in some format (@ref Tag::FileFormat::Format). Default is Maple's.
@@ -316,7 +316,7 @@ namespace LinBox
         std::ostream &write (std::ostream &os, Tag::FileFormat f = Tag::FileFormat::MatrixMarket) const;
         //std::ostream &write (std::ostream &os, Tag::FileFormat f = Tag::FileFormat::Plain) const;
 
-        
+
         ///////////////////
         //   ITERATORS   //
         ///////////////////
@@ -333,7 +333,7 @@ namespace LinBox
         using ConstRowIterator = BlasMatrixIterator<Field, Storage, constSubVectorType>;
 
 
-        
+
         RowIterator      rowBegin ()       {  return      RowIterator (field(), _rep.getPointer (), _col, 1, _col);}
         ConstRowIterator rowBegin () const {  return ConstRowIterator (field(), _rep.getPointer (), _col, 1, _col);}
         RowIterator      rowEnd ()         {  return      RowIterator (field(), _rep.getPointer ()+_row*_col, _col, 1, _col);}
@@ -387,7 +387,7 @@ namespace LinBox
         //@{
         using IndexedIterator      = BlasMatrixIndexedIterator<Field,      Element_ptr,       Element>;
         using ConstIndexedIterator = BlasMatrixIndexedIterator<Field, ConstElement_ptr, const Element>;
-        
+
         IndexedIterator      IndexedBegin ()        { return      IndexedIterator (coldim (), coldim (), 0, 0, _rep.getPointer ());}
         ConstIndexedIterator IndexedBegin () const  { return ConstIndexedIterator (coldim (), coldim (), 0, 0, _rep.getPointer ());}
         IndexedIterator      IndexedEnd   ()        { return      IndexedIterator (coldim (), coldim (), rowdim (), 0, _rep.getPointer ());}
@@ -415,12 +415,12 @@ namespace LinBox
         template <class Vector>
         Vector &columnDensity (Vector &v) const
         {
-            std::fill (v.begin (), v.end (), _row);   return v;         
+            std::fill (v.begin (), v.end (), _row);   return v;
         }
-        /** Compute the number of non zero elt 
+        /** Compute the number of non zero elt
          */
         size_t size() const {return _row * _col;}
-        /** Finalize some optimization in the matrix storage 
+        /** Finalize some optimization in the matrix storage
          */
         void finalize() {}
 
@@ -433,7 +433,7 @@ namespace LinBox
         {
             constSubMatrixType A(*this,0,0,rowdim(),coldim()); return A.apply(y,x);
         }
-        
+
         template <class Vector1, class Vector2>
         Vector1&  applyTranspose (Vector1& y, const Vector2& x) const
         {
@@ -444,16 +444,16 @@ namespace LinBox
         {
             subMatrixType A(*this); return A.applyRight(Y,X);
         }
-        
+
         subMatrixType& applyLeft(subMatrixType& Y, const subMatrixType& X)
         {
             subMatrixType A(*this); return A.applyLeft(Y,X);
         }
-        
+
         // init to field zero elements
         void zero() {
             subMatrixType B(*this, 0, 0, rowdim(), coldim());
-            B.zero();            
+            B.zero();
         }
 
         // init to random field elements
@@ -462,7 +462,7 @@ namespace LinBox
             subMatrixType B(*this, 0, 0, rowdim(), coldim());
             B.random();
         }
-       
+
     }; // end of class BlasMatrix
 
 
