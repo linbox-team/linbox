@@ -118,6 +118,8 @@ int main(int argc, char* argv[]) {
 	ntl_tests.insert("test-ntl-lzz_pe");
 	ntl_tests.insert("test-ntl-lzz_px");
 	ntl_tests.insert("test-ntl-lzz_pex");
+	warn("test-toeplitz", "we should have a non NTL version.");
+	ntl_tests.insert("test-toeplitz");
 	warn("test-toeplitz-det", "we should have a non NTL version.");
 	ntl_tests.insert("test-toeplitz-det");
 	warn("test-ntl-rr", "floating point equality");
