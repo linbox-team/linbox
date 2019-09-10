@@ -5,9 +5,6 @@
 #include "linbox/ring/ntl.h"
 #include "linbox/algorithms/weak-popov-form.h"
 
-#include "linbox/matrix/densematrix/blas-matrix.h"
-#include "linbox/matrix/matrixdomain/matrix-domain.h"
-
 //#define LINBOX_USES_OMP 1
 #include "linbox/matrix/sparse-matrix.h"
 #include "linbox/matrix/dense-matrix.h"
