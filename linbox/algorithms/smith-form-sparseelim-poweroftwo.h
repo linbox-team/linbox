@@ -28,7 +28,7 @@
 #include <givaro/givconfig.h> // for Signed_Trait
 #include "linbox/algorithms/smith-form-sparseelim-local.h"
 
-#ifdef DEBUG
+#ifdef LINBOX_DEBUG
 #  ifndef LINBOX_pp_gauss_intermediate_OUT
 #    define LINBOX_pp_gauss_intermediate_OUT
 #  endif

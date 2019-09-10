@@ -106,6 +106,21 @@ BASIC_TESTS =            \
     test-hadamard-bound     \
     test-serialization
 
+# Really just one or two of these would be enough for target check.
+# The rest can be in target fullcheck.
+NTL_TESTS =                 \
+    test-smith-form         \
+    test-ntl-lzz_p          \
+    test-ntl-lzz_pe         \
+    test-ntl-lzz_px         \
+    test-ntl-lzz_pex        \
+    test-ntl-zz_p           \
+    test-ntl-toeplitz       \
+    test-ntl-hankel         \
+    test-ntl-sylvester      \
+    test-smith-form-iliopoulos  \
+    test-frobenius-small    \
+    test-toeplitz-det
 
 # All other tests.
 # The checker.C determines which of these are built and run in "make fullcheck".
@@ -169,21 +184,13 @@ CHECKER_TESTS =                 \
     test-toeplitz-det           \
     test-dense
 
-CHECKER_NTL_TESTS =             \
+CHECKER_NTL_TESTS =  ${NTL_TESTS}           \
     test-polynomial-ring        \
     test-toeplitz               \
-    test-ntl-hankel             \
-    test-ntl-lzz_p              \
-    test-ntl-lzz_pe             \
-    test-ntl-lzz_pex            \
-    test-ntl-lzz_px             \
-    test-ntl-rr                 \
-    test-ntl-sylvester          \
-    test-ntl-toeplitz           \
-    test-ntl-zz_p
+    test-ntl-rr
 
 
-FULLCHECK_TESTS = ${CHECKER_TESTS} ${CHECKER_NTL_TESTS} \
+FULLCHECK_TESTS = ${CHECKER_TESTS} \
     test-minpoly                \
     test-nullspace              \
     test-weak-popov-form        \
@@ -203,23 +210,9 @@ FULLCHECK_TESTS = ${CHECKER_TESTS} ${CHECKER_NTL_TESTS} \
     test-modular-byte           \
     test-modular-short
 
-# Really just one or two of these would be enough for target check.
-# The rest can be in target fullcheck.
-NTL_TESTS =                 \
-    test-smith-form         \
-    test-ntl-lzz_p          \
-    test-ntl-lzz_pe         \
-    test-ntl-lzz_px         \
-    test-ntl-lzz_pex        \
-    test-ntl-zz_p           \
-    test-ntl-toeplitz       \
-    test-ntl-hankel         \
-    test-ntl-sylvester      \
-    test-smith-form-iliopoulos  \
+FULLCHECK_NTL_TESTS = ${CHECKER_NTL_TESTS} \
     test-invariant-factors      \
     test-frobenius-large    \
-    test-frobenius-small    \
-    test-toeplitz-det       \
     test-weak-popov-form
 
 # @note Fact is make check won't run the tests with mpirun,
@@ -233,6 +226,7 @@ if LINBOX_HAVE_NTL
 USE_NTL_TESTS =     \
     test-ntl-lzz_pex    \
     test-toeplitz-det
+CHECKER_TESTS += ${CHECKER_NTL_TESTS}
 endif
 
 # if LINBOX_HAVE_SAGE

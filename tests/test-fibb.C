@@ -77,7 +77,7 @@ bool testFibb(FIBB<Field>& A, string title, const typename Field::Element& dt, i
 		F.write(report << "det ", d) << ", unchecked" << std::endl;
 	else 
 		F.write(F.write(report << "det ", d) << ", expected ", dt) << std::endl;
-	if (rk == n and not F.isZero(dt)) pass = pass and F.areEqual(d, dt);
+	if (rk == int64_t(n) and not F.isZero(dt)) pass = pass and F.areEqual(d, dt);
 	if (m == n)
 	{	typename Field::Element d; F.init(d);
 		if (r < m and not F.isZero(A.det(d))) 

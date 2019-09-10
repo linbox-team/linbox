@@ -139,6 +139,7 @@ namespace LinBox {
             _ptr(v.data()), _size(v.size()), _inc(1), _field(&F) 
         {
             std::cerr<<"WARNING "<<__LINE__<<" ("<<__FILE__<<") : creating a BlasSubvector from a std::vector -> MUST BE DEPRECATED"<<std::endl;
+            throw LinBoxError("Deprecated Subvector cstor from std::vector");
         }
             
         

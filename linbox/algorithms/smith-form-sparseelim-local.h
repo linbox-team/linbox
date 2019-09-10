@@ -31,7 +31,7 @@
 #include "linbox/solutions/smith-form.h"
 #include "linbox/algorithms/gauss.h"
 
-#ifdef DEBUG
+#ifdef LINBOX_DEBUG
 #  ifndef LINBOX_pp_gauss_intermediate_OUT
 #    define LINBOX_pp_gauss_intermediate_OUT
 #  endif
