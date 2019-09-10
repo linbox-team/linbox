@@ -249,42 +249,39 @@ int main (int argc, char *argv[]) {
     cout << "# To rerun this test: test-fft-new -s " << seed << endl;
     cout << "# seed = " << seed << endl;
 
-    /* Test with Modular<float,double> */
-    /* with a 11-bit prime and k=7 */
-    pass &= test_one_modular_implem<Modular,float,double> (11, 7, seed);
+    /* Test with Modular<float>, a 12-bit prime and k=7 */
+    pass &= test_one_modular_implem<Modular,float> (12, 7, seed);
 
-    /* Test with Modular<double> */
-    /* with a 22-bit prime and k=9 */
-    pass &= test_one_modular_implem<Modular,double> (22, 9, seed);
-    /* with a 26-bit prime and k=10 */
-    //XXX FAIL? pass &= test_one_modular_implem<Modular,double> (30, 10, seed);
+    /* Test with Modular<float,double>, a 23-bit prime and k=10 */
+    pass &= test_one_modular_implem<Modular,float,double> (23, 10, seed);
+    // FIXME: next line fails: instead an exception should be raised if modulus
+    // is too large
+    // pass &= test_one_modular_implem<Modular,float,double> (24, 10, seed);
 
-    /* Test with ModularExtended<double> */
-    // XXX limit is 2^50-1
-    /* with a 51-bit prime and k=11 */
-    pass &= test_one_modular_implem<ModularExtended,double> (51, 11, seed);
-    /* with a 51-bit prime and k=11 */
-    // XXX FAIL pass &= test_one_modular_implem<ModularExtended,double> (51, 11, seed);
+    /* Test with Modular<double>, a 26-bit prime and k=10 */
+    pass &= test_one_modular_implem<Modular,double> (26, 10, seed);
 
-    /* Test with Modular<uint16_t,uint32_t> */
-    /* with a 11-bit prime and k=7 */
-    pass &= test_one_modular_implem<Modular,uint16_t,uint32_t> (11, 7, seed);
-    /* with a 16-bit prime and k=9 */
-    // XXX FAIL?
-    //pass &= test_one_modular_implem<Modular,uint16_t,uint32_t> (16, 9, seed);
+    /* Test with ModularExtended<double>, a 51-bit prime and k=11 */
+    pass &= test_one_modular_implem<ModularExtended,double> (50, 11, seed);
 
-    /* Test with Modular<uint32_t, uint64_t> */
-    /* with a 27-bit prime and k=10 */
-    pass &= test_one_modular_implem<Modular,uint32_t,uint64_t> (27, 10, seed);
-    /* with a 32-bit prime and k=10 */
-    // XXX FAIL? pass &= test_one_modular_implem<Modular,uint32_t,uint64_t> (32, 10, seed);
+    /* Test with Modular<uint16_t,uint32_t>, a 14-bit prime and k=8 */
+    pass &= test_one_modular_implem<Modular,uint16_t,uint32_t> (14, 8, seed);
+    // FIXME: next line fails: instead an exception should be raised if modulus
+    // is too large (true for all Modular<uintN_t, uint2N_t>)
+    // pass &= test_one_modular_implem<Modular,uint16_t,uint32_t> (16, 9, seed);
+
+    /* Test with Modular<uint32_t>, a 16-bit prime and k=9 */
+    pass &= test_one_modular_implem<Modular,uint32_t> (14, 9, seed);
+    // FIXME: next line fails: instead an exception should be raised if modulus
+    // is too large (true for all Modular<uintN_t, uintN_t>)
+    // pass &= test_one_modular_implem<Modular,uint32_t> (16, 9, seed);
+
+    /* Test with Modular<uint32_t, uint64_t>, a 30-bit prime and k=10 */
+    pass &= test_one_modular_implem<Modular,uint32_t,uint64_t> (30, 10, seed);
 
 #ifdef __FFLASFFPACK_HAVE_INT128
-    /* Test with Modular<uint64_t,uint128_t> */
-    /* with a 59-bit prime and k=11 */
-    pass &= test_one_modular_implem<Modular,uint64_t,uint128_t> (59, 11, seed);
-    /* with a 64-bit prime and k=11 */
-    //XXX FAIL? pass &= test_one_modular_implem<Modular,uint64_t,uint128_t> (64, 11, seed);
+    /* Test with Modular<uint64_t,uint128_t>, a 62-bit prime and k=11 */
+    pass &= test_one_modular_implem<Modular,uint64_t,uint128_t> (62, 11, seed);
 #endif
 
     cout << endl << "Test " << (pass ? "passed" : "failed") << endl;
