@@ -103,7 +103,7 @@ namespace LinBox {
         static inline T
         mul_mod (const vect_t& a, const vect_t& b, const vect_t& p,
                  const vect_t& bp) {
-#if 0
+#if 1
             vect_t q = Simd::mul (a, bp);
             q = Simd::template sra<4*sizeof (Element)> (q);
             vect_t c = Simd::mul (a, b);
