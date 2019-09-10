@@ -79,7 +79,7 @@ namespace LinBox
 		commentator().start ("Solving linear system (Lanczos)", "LanczosSolver::solve");
 
 		bool success = false;
-		LVector d1, d2, b1, b2, bp, y, Ax, ATAx, ATb;
+		LVector d1(A.field()), d2(A.field()), b1(A.field()), b2(A.field()), bp(A.field()), y(A.field()), Ax(A.field()), ATAx(A.field()), ATb(A.field());
 
 		VectorWrapper::ensureDim (_w[0], A.coldim ());
 		VectorWrapper::ensureDim (_w[1], A.coldim ());
