@@ -71,9 +71,6 @@ namespace LinBox { namespace BLAS3 {
 							   const size_t n,
 							   const mulMethod::ToomCook<GFpe> & T)
 		{
-#if (__LINBOX_FFLAS_FFPACK_VERSION < 10501)
-#warning "Invert is buggy in your fflas-ffpack version. please consider upgrading to >=1.5.1."
-#endif
 			const Zpz & F  = CMatBloc.field();
 			const GFpe& GF = T._myF ;
 			// linbox_check(T._myF.characacteristic() == F.characteristic());
