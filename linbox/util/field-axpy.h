@@ -63,8 +63,8 @@ namespace LinBox
 		 * @param F field F in which arithmetic is done
 		 */
 		FieldAXPY (const Field &F) :
-		       	_field (&F)
-		{ field().assign(_y, field().zero); }
+            _field (&F), _y(F.zero)
+		{}
 
 		/** Copy constructor.
 		 * @param faxpy
