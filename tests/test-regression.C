@@ -427,14 +427,7 @@ bool testZeroDimensionalCharPoly(){
     DensePolynomial<Givaro::ZRing<Integer> > P (ZZ);
     PolynomialRing<Givaro::ZRing<Integer> > PR (ZZ);
     charpoly(P,A);
-    bool success = PR.isOne(P);
-    if (!success) {
-        if (writing) {
-            std::clog<<"**** ERROR **** Fail ZDCP " <<std::endl;
-            PR.write(std::clog << "P: ", P) << " must be 1"<< std::endl;
-        }
-    }
-    return success;
+    return PR.isOne(P);
 }
 
 bool testZeroDimensionalMinPoly(){
@@ -443,14 +436,7 @@ bool testZeroDimensionalMinPoly(){
     DensePolynomial<Givaro::ZRing<Integer> > P (ZZ);
     PolynomialRing<Givaro::ZRing<Integer> > PR (ZZ);
     minpoly(P,A);
-    bool success = PR.isOne(P);
-    if (!success) {
-        if (writing) {
-            std::clog<<"**** ERROR **** Fail ZDMP " <<std::endl;
-            PR.write(std::clog << "P: ", P) << " must be 1"<< std::endl;
-        }
-    }
-    return success;
+    return PR.isOne(P);
 }
 
 bool testBigScalarCharPoly(){
@@ -603,7 +589,7 @@ bool testZeroMatrixCharPoly() {
 
     if (!success) {
         if (writing) {
-            std::clog<<"**** ERROR **** Fail ZMCPq " <<std::endl;
+            std::clog<<"**** ERROR **** Fail ZMCP " <<std::endl;
 
             PZ.write(std::clog << "Ex: ", Ex) << std::endl;
             PZ.write(std::clog << "cA: ", c_A) << std::endl;
