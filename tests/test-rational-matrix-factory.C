@@ -66,12 +66,12 @@ using namespace LinBox;
  * Return true on success and false on failure
  */
 
-static bool testDiagonalMatrix (size_t n)
+static bool testDiagonalMatrix (uint64_t n)
 {
 	commentator().start ("Testing rational matrix factory for dense matrix", "testRationalMatrixFactory");
 
 	bool ret = true;
-	size_t j;
+	uint64_t j;
 
 	GMPRationalField Q;
 	BlasMatrix<GMPRationalField > A(Q,n,n);

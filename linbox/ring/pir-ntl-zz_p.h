@@ -124,9 +124,13 @@ namespace LinBox
 			return in;
 		}
 
+
+        inline Element& init (Element& x) const {return x;}
+            
 		/** @brief
 		 *  Init x from y.
 		 */
+        
 		template<class Element2>
 		inline Element& init (Element& x,  const Element2& y) const {
 

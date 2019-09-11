@@ -36,6 +36,7 @@
 #include <givaro/zring.h>
 #include "linbox/integer.h"
 #include <givaro/givpoly1factor.h>
+#include "linbox/field/field-traits.h"
 #include "linbox/polynomial/dense-polynomial.h"
 
 

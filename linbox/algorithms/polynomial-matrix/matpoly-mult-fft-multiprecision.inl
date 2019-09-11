@@ -261,7 +261,7 @@ namespace LinBox{
 	FFT_PROFILING(2,"linearization of results mod pi");
 
 	// reconstruct the result in C
-	RNS.convert(1,n_tc,0,c.getWritePointer(),n_tc, t_c_mod, n_tc);
+	RNS.convert(1,n_tc,0,c.getPointer(),n_tc, t_c_mod, n_tc);
 	ADD_MEM(n_tc*RNS._ldm*8);
 	DEL_MEM(n_tc*RNS._ldm*8);
 
@@ -391,7 +391,7 @@ namespace LinBox{
 	FFT_PROFILING(2,"linearization of results mod pi");
 
 	// reconstruct the result in C
-	RNS.convert(1,n_tc,0,c.getWritePointer(),n_tc, t_c_mod, n_tc);
+	RNS.convert(1,n_tc,0,c.getPointer(),n_tc, t_c_mod, n_tc);
 	ADD_MEM(n_tc*RNS._ldm*8);
 	DEL_MEM(n_tc*RNS._ldm*8);
 	
@@ -553,7 +553,7 @@ namespace LinBox{
 	FFT_PROFILING(2,"linearization of results mod pi");
 
 	// reconstruct the result in C
-	RNS.convert(1,n_tc,0,c.getWritePointer(),n_tc, t_c_mod, n_tc);
+	RNS.convert(1,n_tc,0,c.getPointer(),n_tc, t_c_mod, n_tc);
 	ADD_MEM(n_tc*RNS._ldm*8); // needed by RNS
 	DEL_MEM(n_tc*RNS._ldm*8);
 

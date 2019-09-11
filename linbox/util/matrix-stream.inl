@@ -89,8 +89,9 @@ namespace LinBox
 	}
 
 	template<class Field>
+    template<class Vect>
 	MatrixStreamError MatrixStreamReader<Field>::getArray
-	(std::vector<Element> &array)
+	(Vect &array)
 	{
 		MatrixStreamError mse = GOOD;
 		size_t c = 0,i,j;
@@ -252,7 +253,8 @@ namespace LinBox
 	}
 
 	template<class Field>
-	bool MatrixStream<Field>::getArray(std::vector<Element> &array)
+    template<class Vect>
+	bool MatrixStream<Field>::getArray(Vect &array)
 	{
 		if( currentError > GOOD || readAnythingYet ) return false;
 		currentError = reader->getArray(array);

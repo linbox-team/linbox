@@ -34,7 +34,8 @@
 #include <NTL/ZZ_p.h>
 
 #include "linbox/blackbox/blackbox-interface.h"
-#include "linbox/vector/vector-traits.h"
+#include "linbox/vector/vector.h"
+
 
 namespace LinBox
 {

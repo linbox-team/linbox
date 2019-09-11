@@ -129,14 +129,14 @@ bool CheckRank( const Field & F,
 		const BlasMatrix<Field> & A,
 		const size_t & alledged_rank)
 {
-	return CheckRank(F,A.getPointer(),A.rowdim(),A.coldim(),A.stride(),alledged_rank);
+	return CheckRank(F,A.getPointer(),A.rowdim(),A.coldim(),A.getStride(),alledged_rank);
 }
 template <class Field>
 bool CheckRank( const Field & F,
 		const BlasSubmatrix<Field> & A,
 		const size_t & alledged_rank)
 {
-	return CheckRank(F,A.getPointer(),A.rowdim(),A.coldim(),A.stride(),alledged_rank);
+	return CheckRank(F,A.getPointer(),A.rowdim(),A.coldim(),A.getStride(),alledged_rank);
 }
 
 

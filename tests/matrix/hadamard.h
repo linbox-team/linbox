@@ -31,7 +31,7 @@ void isPower2(size_t n){
 
 template<class Ring, class Matrix>
 Matrix& hadamard(const Ring& R, Matrix& Mat, size_t n){
-	size_t val = 1;
+	uint64_t val = 1;
 	typename Ring::Element tmp;
 
 	Mat.setEntry(0, 0, R.init(tmp, val));
