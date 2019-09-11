@@ -398,15 +398,23 @@ namespace LinBox
 		{
 			long dp = massey (phi, full_poly);
 			rank = (size_t) (v_degree(phi) - v_val (phi));
+            
+            if (dp==0){// zero sequence, matrix minpoly is X
+                std::cout<<"P="<<phi<<std::endl;
+                phi.resize(2);
+                field().assign(phi[0],field().zero);
+                field().assign(phi[1],field().one);
+                return;
+            }
+                    
 			if (phi.size () > 0) {
-				phi.resize ((size_t)dp+1);
+				phi.resize ((size_t)dp+1); 
 				for (long i = dp >> 1; i > 0; --i)
 					std::swap (phi[(size_t)i], phi[(size_t)(dp-i)]);
 				phi[0] = phi[(size_t)dp];
 				field().assign(phi[(size_t)dp], field().one);
 			}
-		}
-
+        }
 	};
 
 }
