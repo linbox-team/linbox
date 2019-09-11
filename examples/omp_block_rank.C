@@ -67,10 +67,10 @@
 // **********************************************************
 // Variable globale pour fixer le générateurs des FFT primes
 struct FFTSeeder {
-	unsigned long seed;
-	FFTSeeder(unsigned long s=0) : seed(s) {}
-	void setseed(unsigned long s=0) { seed=s; }
-	unsigned long operator()() const { return this->seed; }
+	uint64_t seed;
+	FFTSeeder(uint64_t s=0) : seed(s) {}
+	void setseed(uint64_t s=0) { seed=s; }
+	uint64_t operator()() const { return this->seed; }
 };
 FFTSeeder  FFTgenerator;
 #define FFT_PRIME_SEED FFTgenerator()
@@ -233,7 +233,7 @@ int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
 	OMPTimer chrono1,chrono2,chrono3,chrono4; chrono1.clear(); chrono2.clear(); chrono3.clear(); chrono4.clear();
 
 	Integer c; F.cardinality(c);
-	unsigned long seed = (argc>4?atoi(argv[4]):0);
+	uint64_t seed = (argc>4?atoi(argv[4]):0);
 	FFTgenerator.setseed(seed);
 
 	typename Field::RandIter generator (F,c,seed);
@@ -388,7 +388,7 @@ int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
 	extractLeftSigma(F, LS2, Sigma, defect, nb);
 	std::cerr<<"done with size: " << LS2.size() << std::endl;
 	std::cerr<<"Rank of the highest degree coefficient...";
-	unsigned long rdeg;
+	uint64_t rdeg;
 	LinBox::BlasMatrixDomain<Field> D(F);
 	rdeg = D.rank(LS2[LS2.size()-1]);
 	typename Field::Element d0,de;
@@ -544,14 +544,14 @@ int main (int argc, char **argv)
         // argv[4]: [optional] random generator seed
 
 	int c = (argc>2 ? atoi(argv[2]) : 65521);
-	unsigned long extend = (unsigned long)FF_EXPONENT_MAX(c,(int)LINBOX_EXTENSION_DEGREE_MAX);
+	uint64_t extend = (uint64_t)FF_EXPONENT_MAX(c,(int)LINBOX_EXTENSION_DEGREE_MAX);
 	if (extend > 1) {
 		std::cerr << "*** WARNING *** would be best using an extension field of degree " << extend << std::endl;
 	}
 #if 0
 	if (extend > 1) {
 		typedef Givaro::GFqDom<int64_t> Field;
-		Field EF( (unsigned long)c, extend);
+		Field EF( (uint64_t)c, extend);
 		EF.write(std::cerr << "Using an extension field ") << std::endl;
 		return OMP_BLOCK_RANK_main(EF,argc,argv);
 	}

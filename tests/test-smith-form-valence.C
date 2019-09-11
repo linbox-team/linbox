@@ -58,7 +58,6 @@ static bool testValenceSmith(const char * name,
 
     bool pass( checkSNFExample(correctSL, valenceSL, ZZ) );
     
-#ifdef __LINBOX_HAVE_NTL
 	const size_t k = std::min(A.rowdim(),A.coldim());
 	BlasVector<PIR> sfa(ZZ,k);
     smithForm(sfa,A);
@@ -67,7 +66,6 @@ static bool testValenceSmith(const char * name,
     sdz.resize(k);
 
     pass &= checkSNFExample(sfa,sdz);
-#endif
 
     return pass;
 }

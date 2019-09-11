@@ -63,7 +63,8 @@ namespace LinBox
 	template <class Field>
 	Hankel<Field>::Hankel()
 	{
-		this->shape.shape(Method::Blackbox::HANKEL);
+		this->shape = "Hankel";
+		//this->shape.shape(Method::Blackbox::HANKEL);
 #ifdef DBGMSGS
 		std::cout << "Hankel::Hankel():\tCreated a " << this->rowDim << "x"<< this->colDim<<
 						" Hankel matrix "<< std::endl;
@@ -93,6 +94,7 @@ namespace LinBox
 		this->rowDim = (1+v.size())/2; // The vector is 0..2n-2;
 		this->colDim = (1+v.size())/2;
 		this->sysDim = (1+v.size())/2;
+		this->shape = "Hankel";
 
 		this->pdata.SetMaxLength( (long) v.size());
 		//		rpdata.SetMaxLength( v.size());
@@ -127,6 +129,7 @@ namespace LinBox
 		this->rowDim = (1+v.size())/2; // The vector is 0..2n-2;
 		this->colDim = (1+v.size())/2;
 		this->sysDim = (1+v.size())/2;
+		this->shape = "Hankel";
 
 		this->pdata.SetMaxLength( (long) v.size());
 		for (unsigned int i=0; i< v.size(); i++)
@@ -150,7 +153,7 @@ namespace LinBox
 	{
 		size_t N;
 
-		os<< this->rowDim << " " << this->colDim << " " << this->shape.shape() << std::endl;
+		os<< this->rowDim << " " << this->colDim << " " << this->shape << std::endl;
 		N = (this->rowDim-1)<<1;
 
 		if ( N < 20 ) {            // Print small matrices in dense format
@@ -199,8 +202,8 @@ namespace LinBox
 			print();    // Print to stdout if no file is specified
 		else {
 			std::ofstream o_fp(outFileName, std::ios::out);
-			o_fp << this->rowDim << " " << this->colDim << " " << this->shape.shape() << std::endl ;
-			o_fp << "<Hankel<";
+			o_fp << this->rowDim << " " << this->colDim << " " << this->shape << std::endl ;
+			o_fp << "<Hankel<"; // ??
 			this->P.write(o_fp, this->pdata) << ">>\n";
 
 			o_fp.close();

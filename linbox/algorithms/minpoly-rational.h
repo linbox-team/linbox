@@ -234,7 +234,7 @@ namespace LinBox
 			Integer den,den1;
 			std::vector<Integer> num(A.rowdim()+1);
 			std::vector<Integer> num1(A.rowdim()+1);
-			if (RR.reconstructRational(num,den,PP,m,-1)) {//performs reconstruction strating form c[m], use c[(size_t)i] as prec for c[(size_t)i-1]
+			if (RR.RationalReconstruction(num,den,PP,m,-1)) {//performs reconstruction strating form c[m], use c[(size_t)i] as prec for c[(size_t)i-1]
 				cra(1,PP,iteration,genprime);
 				cra.getModulus(m);
 				for (int i=0; i < (int)PP.size(); ++i) {
@@ -242,7 +242,7 @@ namespace LinBox
 					inv(D_1,M[(size_t)i],m);
 					PP[(size_t)i] = (PP[(size_t)i]*D_1) % m;
 				}
-				if (RR.reconstructRational(num1,den1,PP,m,-1)) {
+				if (RR.RationalReconstruction(num1,den1,PP,m,-1)) {
 					bool terminated = true;
 					if (den==den1) {
 						for (int i=0; i < (int)num.size(); ++i) {
