@@ -102,9 +102,8 @@ namespace LinBox
 		const Field                       *_field;
 		typename Field::RandIter           _randiter;
 		VectorDomain<Field>                _VD;
-
-		Vector                     _Aw; // Temporaries used in the Lanczos iteration
         std::vector<Vector>         _w;
+		Vector                     _Aw; // Temporaries used in the Lanczos iteration
 	};
 
 }
