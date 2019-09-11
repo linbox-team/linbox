@@ -32,6 +32,8 @@
 #include "linbox/linbox-config.h"
 #include "linbox/util/error.h"
 
+#include "fflas-ffpack/fflas/fflas_simd.h"
+
 /* This file contains the specialization of FFT_base for Modular based on
  * floating point types */
 #include "fft-floating.inl"
@@ -42,7 +44,7 @@
 
 namespace LinBox {
 
-    template <typename Field, typename Simd>
+    template <typename Field, typename Simd= Simd<typename Field::Element> >
     class FFT : public FFT_base<Field, Simd>
     {
         private:
