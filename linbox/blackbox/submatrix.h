@@ -111,10 +111,10 @@ namespace LinBox
 		 * @param Coldim Column dimension
 		 */
 		Submatrix (const Blackbox *BB,
-			   size_t          row,
-			   size_t          col,
-			   size_t          Rowdim,
-			   size_t          Coldim) :
+                   size_t          row,
+                   size_t          col,
+                   size_t          Rowdim,
+                   size_t          Coldim) :
 			_BB (BB),
 			_row (row), _col (col), _rowdim (Rowdim), _coldim (Coldim),
 			_z (_BB->coldim ()), _y (_BB->rowdim ())
@@ -125,7 +125,7 @@ namespace LinBox
 		}
 
 		/** Destructor
-		*/
+         */
 		virtual ~Submatrix () {}
 
 		/** Application of BlackBox matrix.
@@ -254,10 +254,10 @@ namespace LinBox
 		 * @param Coldim Column dimension
 		 */
 		Submatrix (const Blackbox *BB,
-			   size_t          row,
-			   size_t          col,
-			   size_t          Rowdim,
-			   size_t          Coldim) :
+                   size_t          row,
+                   size_t          col,
+                   size_t          Rowdim,
+                   size_t          Coldim) :
 			Father_t(BB,row,col,Rowdim,Coldim)
 		{}
 	};
@@ -274,10 +274,9 @@ namespace LinBox
 		typedef BlasSubmatrix<Matrix> Father_t;
 
 	private:
-
-		Field f;
-
-		VectorDomain<Field> vd;
+        // not needed
+		//Field f;
+		//VectorDomain<Field> vd;
 
 	public:
 
@@ -291,12 +290,12 @@ namespace LinBox
 		 * @param Coldim Column dimension
 		 */
 		Submatrix (const BlasMatrix<Field> *Mat,
-			   size_t row,
-			   size_t col,
-			   size_t Rowdim,
-			   size_t Coldim) :
-            BlasSubmatrix<Matrix>(const_cast<BlasMatrix<Field>& >(*Mat), row, col, Rowdim, Coldim),
-			f(Mat -> field()), vd(Mat -> field())
+                   size_t row,
+                   size_t col,
+                   size_t Rowdim,
+                   size_t Coldim) :
+            BlasSubmatrix<Matrix>(const_cast<BlasMatrix<Field>& >(*Mat), row, col, Rowdim, Coldim)
+			//f(Mat -> field()), vd(Mat -> field())
 		{ }
 
 		/** Constructor from an existing \ref BlasMatrix  and dimensions
@@ -307,12 +306,12 @@ namespace LinBox
 		 * @param Coldim Column dimension
 		 */
 		Submatrix (const BlasMatrix<Field> &Mat,
-			   size_t row,
-			   size_t col,
-			   size_t Rowdim,
-			   size_t Coldim) :
-			BlasSubmatrix<Matrix>(const_cast<BlasMatrix<Field>& >(Mat), row, col, Rowdim, Coldim),
-			f(Mat.field()), vd(Mat.field())
+                   size_t row,
+                   size_t col,
+                   size_t Rowdim,
+                   size_t Coldim) :
+			BlasSubmatrix<Matrix>(const_cast<BlasMatrix<Field>& >(Mat), row, col, Rowdim, Coldim)
+			//f(Mat.field()), vd(Mat.field())
 		{ }
 
 		/** Constructor from an existing submatrix and dimensions
@@ -324,14 +323,13 @@ namespace LinBox
 		 * @param Coldim Column dimension
 		 */
 		Submatrix (const Submatrix<BlasMatrix<Field> > *SM,
-			   size_t row,
-			   size_t col,
-			   size_t Rowdim,
-			   size_t Coldim ) :
-			BlasSubmatrix<Matrix> (const_cast<Submatrix<BlasMatrix<Field> >&>(*SM), row, col, Rowdim, Coldim),
-			f (SM ->  field()), vd(SM -> field())
-		{
-			}
+                   size_t row,
+                   size_t col,
+                   size_t Rowdim,
+                   size_t Coldim ) :
+			BlasSubmatrix<Matrix> (const_cast<Submatrix<BlasMatrix<Field> >&>(*SM), row, col, Rowdim, Coldim)
+			//f (SM ->  field()), vd(SM -> field())
+		{ }
 
 		/** Constructor from an existing submatrix and dimensions
 		 * @param SM reference to Submatrix from which to
@@ -342,38 +340,35 @@ namespace LinBox
 		 * @param Coldim Column dimension
 		 */
 		Submatrix (const Submatrix<BlasMatrix<Field> >& SM,
-			   size_t row,
-			   size_t col,
-			   size_t Rowdim,
-			   size_t Coldim ) :
-			BlasSubmatrix<Matrix> (const_cast<Submatrix<BlasMatrix<Field> >&>(SM), row, col, Rowdim, Coldim),
-			f (SM. field()), vd(SM. field())
+                   size_t row,
+                   size_t col,
+                   size_t Rowdim,
+                   size_t Coldim ) :
+			BlasSubmatrix<Matrix> (const_cast<Submatrix<BlasMatrix<Field> >&>(SM), row, col, Rowdim, Coldim)
+			//f (SM. field()), vd(SM. field())
 		{ }
 
-		//! get the field
-		const Field& field() const
-		{
+            
+        using Father_t::field;
+        using Father_t::read;
+        using Father_t::write;
+        
+        //! get the field
+        //const Field& field() const {return f;}
+                   
+		// //! read
+		// std::istream& read (std::istream& is)
+		// {
+		// 	BlasSubmatrix<Matrix>::read (is, f);
+		// 	return is;
+		// }
 
-			return f;
-		}
-
-		//! read
-		std::istream& read (std::istream& is)
-		{
-
-			BlasSubmatrix<Matrix>::read (is, f);
-
-			return is;
-		}
-
-		//! write
-		std::ostream& write (std::ostream& os) const
-		{
-
-			BlasSubmatrix<Matrix>::write (os, f);
-
-			return os;
-		}
+		// //! write
+		// std::ostream& write (std::ostream& os) const
+		// {
+		// 	BlasSubmatrix<Matrix>::write (os, f);
+		// 	return os;
+		// }
 
 		size_t rowfirst() const
 		{
@@ -390,6 +385,9 @@ namespace LinBox
 			return static_cast<const Father_t*>(this);
 		}
 
+        using Father_t::apply;
+        using Father_t::applyTranspose;
+        
 		/** Generic matrix-vector apply
 		 * <code>y = A * x</code>.
 		 * This version of apply allows use of arbitrary input and output vector         * types.
@@ -397,20 +395,7 @@ namespace LinBox
 		 * @param x Input vector
 		 * @return Reference to output vector
 		 */
-		template<class Vect1, class Vect2>
-		Vect1 &apply (Vect1 &y, const Vect2 &x) const
-		{
-
-			typename BlasSubmatrix<Matrix>::ConstRowIterator p;
-
-			typename Vect1::iterator p_y = y.begin ();
-
-			for (p = this->rowBegin (); p != this->rowEnd (); ++p, ++p_y)
-				vd.dot (*p_y, *p, x);
-
-			return y;
-		}
-
+		
 		/** Generic matrix-vector transpose apply
 		 * <code>y = A^T * x</code>
 		 * This version of applyTranspose allows use of arbitrary input and
@@ -419,32 +404,7 @@ namespace LinBox
 		 * @param x Input vector
 		 * @return Reference to output vector
 		 */
-		template<class Vect1, class Vect2>
-		Vect1 &applyTranspose (Vect1 &y, const Vect2 &x) const
-		{
-
-			typename BlasSubmatrix<Matrix>::ConstColIterator colp;
-
-			typename Vect1::iterator p_y = y.begin ();
-
-			for (colp = this->colBegin (); colp != this->colEnd (); ++colp, ++p_y)
-				vd. dot (*p_y, *colp, x);
-
-			return y;
-		}
-
-		// template<typename _Tp1>
-		// struct rebind {
-		// 	typedef typename Matrix::template rebind<_Tp1> Rebinder;
-		// 	typedef SubmatrixOwner<typename Rebinder::other, VectorCategories::DenseVectorTag> other;
-		// 	void operator() (other & Ap, const Self_t& A)
-		// 	{
-		// 		Rebinder () ( Ap.getData(), *(A.getPtr()));
-
-                
-		// 	}
-		// };
-
+				
         template<typename _Tp1>
 		struct rebind {
 			typedef typename Father_t::template rebind<_Tp1> Rebinder;
@@ -482,10 +442,10 @@ namespace LinBox
 		 * @param Coldim Column dimension
 		 */
 		SubmatrixOwner (const Blackbox *BB,
-				size_t          row,
-				size_t          col,
-				size_t          Rowdim,
-				size_t          Coldim) :
+                        size_t          row,
+                        size_t          col,
+                        size_t          Rowdim,
+                        size_t          Coldim) :
 			_BB_data (*BB),
 			_row (row), _col (col), _rowdim (Rowdim), _coldim (Coldim),
 			_z (_BB_data.coldim ()), _y (_BB_data.rowdim ())
@@ -496,7 +456,7 @@ namespace LinBox
 		}
 
 		/** Destructor
-		*/
+         */
 		virtual ~SubmatrixOwner () {}
 
 		/** Application of BlackBox matrix.
