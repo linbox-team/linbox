@@ -84,11 +84,11 @@ namespace LinBox {
     struct ClassifyRing<Givaro::ZRing<Givaro::Integer>> {
             typedef RingCategories::IntegerTag categoryTag;
     };
-    // no more needed Givaro::IntegerDom is Givaro::ZRing<Givaro::Integer>
-    // template<>
-    // struct ClassifyRing<Givaro::IntegerDom> {
-    //         typedef RingCategories::IntegerTag categoryTag;
-    // };
+//     template<>
+//     struct ClassifyRing<Givaro::IntegerDom> {
+//             typedef RingCategories::IntegerTag categoryTag;
+//     };
+
 
 	using Givaro::Caster;
 

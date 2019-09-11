@@ -63,7 +63,7 @@ namespace LinBox {
             , _pCommunicator(c)
             , _hadamardLogBound(b)
         {
-            if (c->size() > 0) {
+            if (c && c->size() > 1) {
                 _workerHadamardLogBound = _hadamardLogBound / (c->size() - 1);
             }
         }
@@ -147,8 +147,8 @@ namespace LinBox {
             }
         }
 
-        template <class Vect, class PrimeIterator, class Function>
-        void worker_compute(PrimeIterator& gen, Function& Iteration, Vect& r)
+        template <class Any, class PrimeIterator, class Function>
+        void worker_compute(PrimeIterator& gen, Function& Iteration, Any& r)
         {
             // Process mutual independent prime number generation
             ++gen;
@@ -160,8 +160,8 @@ namespace LinBox {
             Iteration(r, D);
         }
 
-        template <class Vect, class Function>
-        void worker_process_task(Function& Iteration, Vect& r)
+        template <class Any, class Function>
+        void worker_process_task(Function& Iteration, Any& r)
         {
             MaskedPrimeGenerator gen(_pCommunicator->rank() - 1, _pCommunicator->size() - 1);
 
@@ -173,15 +173,15 @@ namespace LinBox {
                 uint64_t p = *gen;
                 primesLogSum += Givaro::logtwo(p);
                 _pCommunicator->send(p, 0);
-                _pCommunicator->send(r.begin(), r.end(), 0, 0);
+                _pCommunicator->send(r, 0);
             }
 
             uint64_t poisonPill = 0;
             _pCommunicator->send(poisonPill, 0);
         }
 
-        template <class Vect, class Function>
-        void master_process_task(Function& Iteration, Domain& D, Vect& r)
+        template <class Any, class Function>
+        void master_process_task(Function& Iteration, Domain& D, Any& r)
         {
             Iteration(r, D);
             Builder_.initialize(D, r);
@@ -197,7 +197,7 @@ namespace LinBox {
                 }
 
                 // Receive result vector and update builder
-                _pCommunicator->recv(r.begin(), r.end(), _pCommunicator->status().MPI_SOURCE, 0);
+                _pCommunicator->recv(r, _pCommunicator->status().MPI_SOURCE);
 
                 Domain D(p);
                 Builder_.progress(D, r);

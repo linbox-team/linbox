@@ -274,7 +274,7 @@ namespace LinBox
 			bool rrterm = false;
 
 			t1.start();
-			if ((rrterm = RR.reconstructRational(num,den,res1,m))) {
+			if ((rrterm = RR.RationalReconstruction(num,den,res1,m))) {
 				t1.stop();
 				cra.changePreconditioner(num*M,den*F);
 				if (cra(5,dd,iteration,genprime) ) {
@@ -287,7 +287,7 @@ namespace LinBox
 			else 	{//we use num approx by lif
 				t1.stop();
 				t2.start();
-				if ((rrterm = RR.reconstructRational(num,den,res,m))) {
+				if ((rrterm = RR.RationalReconstruction(num,den,res,m))) {
 					t2.stop();
 					cra.changePreconditioner(num*M,den*F*lif);
 					if (cra(5,dd,iteration,genprime) ) {

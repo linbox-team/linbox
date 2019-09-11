@@ -4,18 +4,18 @@
  * Written by bds.
  */
 /** @file tests/checker.C
-@brief script to run LinBox tests
+    @brief script to run LinBox tests
 
-Checker is compiled and run by the check macro invoked by "make fullcheck" in the top source dir or in tests/.
+    Checker is compiled and run by the check macro invoked by "make fullcheck" in the top source dir or in tests/.
 
-Run without args, 
-each test is build and run, with a one line report of success or failure.
-A summary at the end reports number of test failing to compile, failing at runtime, and skipped.
-There should be a 1-1 correspondence between files tests/test-*.C and report lines
+    Run without args,
+    each test is build and run, with a one line report of success or failure.
+    A summary at the end reports number of test failing to compile, failing at runtime, and skipped.
+    There should be a 1-1 correspondence between files tests/test-*.C and report lines
 
-A LinBox unit/regresssion test has a default behaviour -- when there are no command line file names -- in which nothing is written to any output stream and the return value is 0 for a passing test, nonzero for any failure.
+    A LinBox unit/regresssion test has a default behaviour -- when there are no command line file names -- in which nothing is written to any output stream and the return value is 0 for a passing test, nonzero for any failure.
 
-The current convention is that (1) linbox' checker.C, runs the tests with no command line parameters at all, and (2) if there is a command line file name, verbose diagnostic output is written to that file and more terse output may be written to standard output streams.  The second feature is intended to assist debugging with individual tests.
+    The current convention is that (1) linbox' checker.C, runs the tests with no command line parameters at all, and (2) if there is a command line file name, verbose diagnostic output is written to that file and more terse output may be written to standard output streams.  The second feature is intended to assist debugging with individual tests.
 
 */
 
@@ -62,52 +62,53 @@ int main(int argc, char* argv[]) {
 
 //// notes section (customize fullcheck here) ////
 
-if (honor_skips) {
-hide("test-block-ring", "non commutative rings not supported");
+    if (honor_skips) {
+        hide("test-block-ring", "non commutative rings not supported");
 //hide("test-ffpack", "testTURBO fails, move to ffpack tests?");
-skip("test-frobenius-small", "not unit/regression test conforming");
-skip("test-frobenius-large", "not unit/regression test conforming");
-hide("test-ftrmm", "should move to attic");
-skip("test-givaro-fields", "may fail on small fields because of supposed non-randomness or failure to find a non trivial element");
-hide("test-image-field", "deprecated");
-skip("test-invariant-factors", "not unit/regression test conforming");
+        skip("test-frobenius-small", "not unit/regression test conforming");
+        skip("test-frobenius-large", "not unit/regression test conforming");
+        hide("test-ftrmm", "should move to attic");
+        skip("test-givaro-fields", "may fail on small fields because of supposed non-randomness or failure to find a non trivial element");
+        hide("test-image-field", "deprecated");
+        skip("test-invariant-factors", "not unit/regression test conforming");
 //skip("test-isposdef", "intermittent inf loop");
 //skip("test-ispossemidef", "intermittent inf loop");
-hide("test-la-block-lanczos", "not maintained. operator >> missing");
-hide("test-mg-block-lanczos", "not maintained");
-hide("test-modular", "deprecated");
-hide("test-modular-byte",  "deprecated");
-hide("test-modular-short",  "deprecated");
+        hide("test-la-block-lanczos", "not maintained. operator >> missing");
+        hide("test-mg-block-lanczos", "not maintained");
+        hide("test-modular", "deprecated");
+        hide("test-modular-byte",  "deprecated");
+        hide("test-modular-short",  "deprecated");
 //skip("test-modular-balanced-int",  "test and modular-balanced disagree on init/convert");
 //skip("test-modular-balanced-double",  "test and modular-balanced disagree on init/convert");
 //skip("test-moore-penrose", "inf loop");
-skip("test-optimization", "not unit/regression test conforming");
-skip("test-quad-matrix", "depends on out-of-date blackbox/zo.h");
+        skip("test-optimization", "not unit/regression test conforming");
+        skip("test-quad-matrix", "depends on out-of-date blackbox/zo.h");
 //skip("test-rational-reconstruction-base", "inf loop");
-skip("test-rat-charpoly", "inf loop");
-skip("test-rat-minpoly", "stale test. solns over QQ need fresh tests"); // "intermittent failures")
-skip("test-rat-solve", "stale test. solns over QQ need fresh tests"); // "infinite loop")
-skip("test-poly-det", "incomplete test (if still relevant)");
-skip("test-sparse-map-map", "const issue in givranditer, curious use of nonexistant next() in Extension");
+        skip("test-rat-charpoly", "inf loop");
+        skip("test-rat-minpoly", "stale test. solns over QQ need fresh tests"); // "intermittent failures")
+        skip("test-rat-solve", "stale test. solns over QQ need fresh tests"); // "infinite loop")
+        skip("test-poly-det", "incomplete test (if still relevant)");
+        skip("test-sparse-map-map", "const issue in givranditer, curious use of nonexistant next() in Extension");
 //Tests requiring further development
-skip("test-dense-zero-one", "half baked, bds responsible");
-}
+        skip("test-dense-zero-one", "half baked, bds responsible");
+    }
 
 //warn("test-echelon-form", "new");
-warn("test-fibb",  "incomplete");
+    warn("test-fibb",  "incomplete");
 //warn("test-matrix-domain", "intermittent row permutation failure");
-warn("test-param-fuzzy", "Noncompliant field");
+    warn("test-param-fuzzy", "Noncompliant field");
 //		template <class F2Field> BitVector (const F2Field&) {}
 //warn("test-qlup", "GF2 fails to compile");
 //warn("test-rank-u32", "intermittent failure"/*, "vector (bb) responsible"*/);
-warn("test-rat-charpoly", "stale test. solns over QQ need fresh tests");//, "infinite loop, cp responsible?")
-warn("test-rat-solve", "infinite loop");
+    warn("test-rat-charpoly", "stale test. solns over QQ need fresh tests");//, "infinite loop, cp responsible?")
+    warn("test-rat-solve", "infinite loop");
 //warn("test-smith-form-local", "bds, intermittent failures");
-warn("test-solve", "most of the tests are commented out");
-warn("test-toom-cook", "one method does not work");
+    warn("test-solve", "most of the tests are commented out");
+    warn("test-toom-cook", "one method does not work");
 //warn("test-transpose", "sometimes fails on Sparsematrix/getEntry");
-warn("test-quad-matrix", "half baked, bds responsible");
-skip("test-smith-form-kannan-bachem", "not working anymore");
+    warn("test-quad-matrix", "half baked, bds responsible");
+    skip("test-smith-form-kannan-bachem", "not working anymore");
+    warn("test-one-invariant-factor", "probalistic algorithm, sometimes fails");
 
 
 //// optional package dependency section ////
@@ -125,37 +126,37 @@ skip("test-smith-form-kannan-bachem", "not working anymore");
 	ntl_tests.insert("test-ntl-toeplitz");
 	ntl_tests.insert("test-ntl-zz_p");
 
-	// are these really ntl dependent?
-	ntl_tests.insert("test-smith-form");
-	ntl_tests.insert("test-smith-form-adaptive");
-	ntl_tests.insert("test-smith-form-iliopoulos");
+        // are these really ntl dependent?
+//	ntl_tests.insert("test-smith-form");
+//	ntl_tests.insert("test-smith-form-adaptive");
+//	ntl_tests.insert("test-smith-form-iliopoulos");
 	ntl_tests.insert("test-polynomial-local-x");
 	ntl_tests.insert("test-weak-popov-form");
 	ntl_tests.insert("test-frobenius-large");
 	ntl_tests.insert("test-invariant-factors");
 	ntl_tests.insert("test-frobenius-small");
 	ntl_tests.insert("test-poly-smith-form");
-    
+
 	set< string> ocl_tests;
 	ocl_tests.insert("test-opencl-domain");
-    
+
     set<string> mpi_tests;
     mpi_tests.insert("test-mpi-comm");
 //// Things are automatic from here onward. ////
 
-	// process optional dependencies 
-	#ifndef LINBOX_HAVE_OCL
-    for (set< string>::iterator i = ocl_tests.begin(); i != ocl_tests.end(); ++i) 
+        // process optional dependencies
+#ifndef LINBOX_HAVE_OCL
+    for (set< string>::iterator i = ocl_tests.begin(); i != ocl_tests.end(); ++i)
 		skip(*i, "OpenCL not present");
-	#endif
-	#ifndef __LINBOX_HAVE_NTL
-    for (set< string>::iterator i = ntl_tests.begin(); i != ntl_tests.end(); ++i) 
+#endif
+#ifndef __LINBOX_HAVE_NTL
+    for (set< string>::iterator i = ntl_tests.begin(); i != ntl_tests.end(); ++i)
 		skip(*i, "NTL not present");
-	#endif
-	#ifndef LINBOX_HAVE_MPI
-    for (set< string>::iterator i = mpi_tests.begin(); i != mpi_tests.end(); ++i) 
+#endif
+#ifndef LINBOX_HAVE_MPI
+    for (set< string>::iterator i = mpi_tests.begin(); i != mpi_tests.end(); ++i)
 		skip(*i, "MPI not present");
-	#endif
+#endif
 // build and run the tests section
 	string t, cmd;
 	system("ls test-*C >.tmp-tests");
@@ -164,10 +165,10 @@ skip("test-smith-form-kannan-bachem", "not working anymore");
 	vector<string> all_tests;
 	while (tests >> t) {t.resize(t.size()-2); all_tests.push_back(t);}
 //#ifdef LINBOX_HAVE_OPENMP
-//#pragma omp parallel for 
+//#pragma omp parallel for
 //PARFOR1D(i, 0, all_tests.size(), SPLITTER(),
 //#endif
-	for (size_t i = 0; i < all_tests.size(); ++i) 
+	for (size_t i = 0; i < all_tests.size(); ++i)
 	{
 		t = all_tests[i];
 		if (hides.count(t) > 0) continue; // ignore entirely
@@ -182,12 +183,12 @@ skip("test-smith-form-kannan-bachem", "not working anymore");
 				cmd = "touch " + t + ".C";
 				system(cmd.c_str());
 			}
-			// build
+                // build
 			cmd = "make " + t + " 2> /dev/null > /dev/null";
 			report << "build ";
 			int status = system(cmd.c_str());
 //			#ifndef LINBOX_HAVE_OPENMP
-//			if (status == 2) break; 
+//			if (status == 2) break;
 //			#endif
 			if (status != 0) { // build failure
 				buildfail++;
@@ -211,20 +212,20 @@ skip("test-smith-form-kannan-bachem", "not working anymore");
 		}
 		if (reporting) cout << report.str() << endl;
 	} // for i
-	//); // parfor
+        //); // parfor
 
-	//// summary ////
+        //// summary ////
 	cout << "--------------------------------------------------------------------" << endl;
 	int total = pass + buildfail + runfail + skipped;
 	if (buildfail || runfail)
 		cout << "Of " << total << " tests, "
-		    << pass << " passed, "
-			<< buildfail << " failed to compile, "
-			<< runfail << " failed at runtime, " 
-			<< " and " << skipped << " were skipped." << endl;
+             << pass << " passed, "
+             << buildfail << " failed to compile, "
+             << runfail << " failed at runtime, "
+             << " and " << skipped << " were skipped." << endl;
 	else
 		cout << endl << "All " << total - skipped << " tests pass."
-			<< "  (There were " << skipped << " skipped tests.)" << endl;
+             << "  (There were " << skipped << " skipped tests.)" << endl;
 	cout << "--------------------------------------------------------------------" << endl;
 
 	return buildfail || runfail ? -1 : 0;
