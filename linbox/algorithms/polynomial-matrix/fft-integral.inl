@@ -56,7 +56,7 @@ namespace LinBox {
             /******************************************************************/
             const Field *fld;
             size_t l2n; /* log2 of size */
-            uint64_t n; /* 2^l2n */
+            size_t n; /* 2^l2n */
             const Residu_t p; /* p = field characteristic */
             const Residu_t p2; /* p2 = 2*p */
 
@@ -93,6 +93,43 @@ namespace LinBox {
                 init_powers (w);
             }
 
+        public:
+            void
+            DIF (Element *coeffs) const {
+                FFTSimdHelper<Simd::vect_size> h;
+                /* w = n/2, f = 1 */
+                DIF_core (coeffs, n >> 1, 1, pow_w.data(), pow_wp.data(), h);
+                reduce_coeffs_2p (coeffs, h);
+            }
+
+            void
+            DIT_reversed (Element *coeffs) const {
+                FFTSimdHelper<Simd::vect_size> h;
+                /* w = n/2, f = 1 */
+                DIT_reversed_core (coeffs, n >> 1, 1, pow_w_br.data()+ (n-2),
+                                                  pow_wp_br.data()+ (n-2), h);
+                reduce_coeffs_4p (coeffs, h);
+            }
+
+            void
+            DIT (Element *coeffs) const {
+                FFTSimdHelper<Simd::vect_size> h;
+                /* w = 1, f = n / 2 */
+                DIT_core (coeffs, 1, n >> 1, pow_w.data() + (n-2),
+                                             pow_wp.data() + (n-2), h);
+                reduce_coeffs_4p (coeffs, h);
+            }
+
+            void
+            DIF_reversed (Element *coeffs) const {
+                FFTSimdHelper<Simd::vect_size> h;
+                /* w = 1, f = n / 2 */
+                DIF_reversed_core (coeffs, 1, n >> 1, pow_w_br.data(),
+                                                      pow_wp_br.data(), h);
+                reduce_coeffs_2p (coeffs, h);
+            }
+
+        protected:
             /******************************************************************/
             /* reduce *********************************************************/
             /******************************************************************/
@@ -160,14 +197,6 @@ namespace LinBox {
              */
 
             /* DIF ************************************************************/
-            void
-            DIF (Element *coeffs) const {
-                FFTSimdHelper<Simd::vect_size> h;
-                /* w = n/2, f = 1 */
-                DIF_core (coeffs, n >> 1, 1, pow_w.data(), pow_wp.data(), h);
-                reduce_coeffs_2p (coeffs, h);
-            }
-
             /* Simd */
             template<size_t VecSize>
             void
@@ -204,15 +233,6 @@ namespace LinBox {
             }
 
             /* DIT reversed ***************************************************/
-            void
-            DIT_reversed (Element *coeffs) const {
-                FFTSimdHelper<Simd::vect_size> h;
-                /* w = n/2, f = 1 */
-                DIT_reversed_core (coeffs, n >> 1, 1, pow_w_br.data()+ (n-2),
-                                                  pow_wp_br.data()+ (n-2), h);
-                reduce_coeffs_4p (coeffs, h);
-            }
-
             /* Simd */
             template<size_t VecSize>
             void
@@ -257,15 +277,6 @@ namespace LinBox {
             }
 
             /* DIT ************************************************************/
-            void
-            DIT (Element *coeffs) const {
-                FFTSimdHelper<Simd::vect_size> h;
-                /* w = 1, f = n / 2 */
-                DIT_core (coeffs, 1, n >> 1, pow_w.data() + (n-2),
-                                             pow_wp.data() + (n-2), h);
-                reduce_coeffs_4p (coeffs, h);
-            }
-
             /* Simd */
             template<size_t VecSize>
             void
@@ -303,15 +314,6 @@ namespace LinBox {
             }
 
             /* DIF reversed ***************************************************/
-            void
-            DIF_reversed (Element *coeffs) const {
-                FFTSimdHelper<Simd::vect_size> h;
-                /* w = 1, f = n / 2 */
-                DIF_reversed_core (coeffs, 1, n >> 1, pow_w_br.data(),
-                                                      pow_wp_br.data(), h);
-                reduce_coeffs_2p (coeffs, h);
-            }
-
             /* Simd */
             template<size_t VecSize>
             void
@@ -666,7 +668,6 @@ namespace LinBox {
                     DIF_core_laststeps (coeffs, w, f, pow, powp, P, P2,
                                                             FFTSimdHelper<1>());
                 } else {
-#if 1
                     simd_vect_t W = Simd::set (pow[0], pow[0], pow[1], pow[1],
                                                pow[2], pow[2], pow[3], pow[3]);
                     simd_vect_t Wp = Simd::set (powp[0],powp[0],powp[1],powp[1],
@@ -712,89 +713,6 @@ namespace LinBox {
                         Simd::store (coeffs, V1);
                         Simd::store (coeffs + Simd::vect_size, V2);
                     }
-#else
-                    simd_vect_t W = Simd::set (pow[0], pow[1], pow[2], pow[3],
-                                               pow[0], pow[1], pow[2], pow[3]);
-                    simd_vect_t Wp = Simd::set (powp[0],powp[1],powp[2],powp[3],
-                                               powp[0],powp[1],powp[2],powp[3]);
-                    simd_vect_t W2 = Simd::set1 (pow[5]);
-                    simd_vect_t W2p = Simd::set1 (powp[5]);
-                    for (size_t i = 0; i < f; i += 2, coeffs += incr) {
-                        simd_vect_t V1, V2, V3, V4, V5, V6, V7, Q;
-
-                        // V1=[A B C D E F G H], V2=[I J K L M N O P]
-                        V1 = Simd::load (coeffs);
-                        V2 = Simd::load (coeffs + Simd::vect_size);
-
-                        /* 1st step */
-                        // V3=[A B C D I J K L] V4=[E F G H M N O P]
-                        V3 = Simd256<uint64_t>::unpacklo128(V1,V2);
-                        V4 = Simd256<uint64_t>::unpackhi128(V1,V2);
-
-                        Butterfly_DIF (V3, V4, W, Wp, P, P2);
-                        V1 = V3;
-                        V2 = V4;
-
-                        /* 2nd step */
-
-                        // V3=[A E B F I M J N] V4=[C G D H K O L P]
-                        V3 = Simd256<uint32_t>::unpacklo_twice(V1,V2);
-                        V4 = Simd256<uint32_t>::unpackhi_twice(V1,V2);
-
-                        // V1 = V3 + V4 mod 2P
-                        // P2 = [2p 2p 2p 2p]
-                        V1 = SimdExtra::add_mod (V3, V4, P2);
-
-                        // V2 = (V3+(2P-V4))alpha mod 2P
-                        // V7 =  (V3+(2P-V4)) mod 2P
-                        V5 = Simd256<uint32_t>::sub(V4,P2);
-                        V6 = Simd256<uint32_t>::sub(V3,V5);
-                        V7 = SimdExtra::reduce (V6, P2);
-
-                        // V4 = [D D H H L L P P ]
-                        V4 = Simd256<uint32_t>::unpackhi_twice(V7,V7);
-
-                        // Q = V4 * W2 mod 2^64 = [* Qd * Qh * Ql * Qp]
-                        // with W2p= [ W2p * W2p * W2p * W2p *]
-                        Q = Simd256<uint64_t>::mulx(V4,W2p);
-                        // V5 = [* Qd.P * Qh.P * Ql.P * Qp.P]
-                        V5 = Simd256<uint32_t>::mullo(Q,P);
-                        // V6 = V4 * W2 mod 2^32
-                        V6 = Simd256<uint32_t>::mullo(V4,W2);
-                        // V3 = V6 - V5 = [* (D.W2 mod p) * (H.W2 mod p) * (L.W2 mod p) * (P.W2 mod p)]
-                        V3 = Simd256<uint32_t>::sub(V6,V5);
-                        // V2=[* * D H * * L P]
-                        V2 = Simd256<uint32_t>::shuffle_twice<0xDD>(V3);
-
-                        /* 3nd step */
-                        // At this time I have V1=[A B E F I J M N], V7=[C G * * K O * *], V2=[* * D H * * L P]
-                        // I need V3 = [A C E G I K M O], V4=[B D F H J L N P]
-                        V3 = Simd256<uint32_t>::unpacklo_twice(V1,V7);
-                        V4 = Simd256<uint32_t>::unpackhi_twice(V1,V2);
-
-                        // V1 = V3 + V4 mod 2P
-                        V1 = SimdExtra::add_mod (V3,V4,P2);
-
-                        // V2 = V3 + (2P - V4) mod 2P
-                        V5 = Simd256<uint32_t>::sub(V4,P2);
-                        V6 = Simd256<uint32_t>::sub(V3,V5);
-                        V2 = SimdExtra::reduce (V6, P2);
-
-                        // Result in    V1=[A C E G I K M O] V2=[B D F H J L N P]
-                        // Transform to V3=[A B C D I J K L],V4=[E F G H M N O P]
-                        V3 = Simd256<uint32_t>::unpacklo_twice(V1,V2);
-                        V4 = Simd256<uint32_t>::unpackhi_twice(V1,V2);
-
-                        // Transform to V1=[A B C D E F G H], V2=[I J K L M N O P]
-                        V1 = Simd256<uint64_t>::unpacklo128(V3,V4);
-                        V2 = Simd256<uint64_t>::unpackhi128(V3,V4);
-
-                        // Store
-                        Simd::store (coeffs, V1);
-                        Simd::store (coeffs + Simd::vect_size, V2);
-            }
-
-#endif
                 }
             }
 
