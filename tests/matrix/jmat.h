@@ -23,11 +23,11 @@
 
 namespace LinBox{
 
-size_t lambda = 1000000000;
+uint64_t lambda = 1000000000;
 
 template<class Ring, class Matrix>
 Matrix& jordanform(const Ring& R, Matrix& Mat, size_t n){
-	size_t val = 1;
+	uint64_t val = 1;
 	typename Ring::Element one, lam;
 	R.init(one, val);
 	R.init(lam, lambda);

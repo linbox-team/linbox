@@ -32,7 +32,7 @@
  * @test no doc.
  */ 
 
-#ifdef DEBUG
+#ifdef LINBOX_DEBUG
 # ifndef LINBOX_LOCAL_SMITH_OUTPUT_
 # define LINBOX_LOCAL_SMITH_OUTPUT_
 # endif
@@ -218,7 +218,7 @@ bool test_sparse_local_smith(size_t seed, size_t R, size_t M, size_t N,
             }
         }
     }
-#ifdef DEBUG
+#ifdef LINBOX_DEBUG
         L.write(std::cerr<<"L:=",Tag::FileFormat::Maple) << ';' << std::endl;
 #endif
     DenseMatrix<ModRing> U(F,N,N);
@@ -227,13 +227,13 @@ bool test_sparse_local_smith(size_t seed, size_t R, size_t M, size_t N,
         for (size_t j= i+1; j<N ;++j)
             if (nonzero(gen)<density) G.random ( U.refEntry(i,j) );
     }
-#ifdef DEBUG
+#ifdef LINBOX_DEBUG
         U.write(std::cerr<<"U:=",Tag::FileFormat::Maple) << ';' << std::endl;
 #endif
 
     FFLAS::fgemm (F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, M,N,N, F.one, L.getPointer(), N, U.getPointer(), N, F.zero, A.getPointer(), N);
 
-#ifdef DEBUG
+#ifdef LINBOX_DEBUG
         A.write(std::cerr<<"A:=",Tag::FileFormat::Maple) << ';' << std::endl;
 #endif
 	commentator().stop (MSG_DONE, nullptr, "RSMRRPM");

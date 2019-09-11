@@ -29,7 +29,6 @@
 
 #include "linbox/linbox-config.h"
 #include "linbox/randiter/random-prime.h"
-#include "linbox/algorithms/matrix-rank.h"
 #include "linbox/algorithms/last-invariant-factor.h"
 #include "linbox/algorithms/one-invariant-factor.h"
 #include "linbox/algorithms/smith-form-binary.h"
@@ -73,7 +72,7 @@ int main(int argc, char** argv)
 		typedef DixonSolver<PIR, Field, PrimeIterator<IteratorCategories::HeuristicTag> > Solver;
 		typedef LastInvariantFactor<PIR, Solver> LIF;
 		typedef OneInvariantFactor<PIR, LIF, SCompose, RandomMatrix>  OIF;
-		typedef SmithFormBinary<PIR, OIF, MatrixRank<PIR, Field > > SF;
+		typedef SmithFormBinary<PIR, OIF > SF;
 
 		SF sf;
 		sf. setOIFThreshold (30);
@@ -82,8 +81,8 @@ int main(int argc, char** argv)
 	size_t k = std::min(m,n);
 	DenseMatrix<PIR> A(R,m,n);
 	BlasVector<PIR> d(R,k), x(R,k), bumps(R,k), lumps(R,19);
-	for (size_t i = 0; i <10; ++i) lumps[i] = i;
-	for (size_t i = 10; i <19; ++i) lumps[i] = i-19;
+	for (uint64_t i = 0; i <10; ++i) lumps[i] = i;
+	for (uint64_t i = 10; i <19; ++i) lumps[i] = i-19;
 
 	makeBumps(bumps, 0);
 	makeSNFExample(A,d,bumps,lumps);

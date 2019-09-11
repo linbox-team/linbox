@@ -29,7 +29,6 @@
 #ifndef __LINBOX_lanczos_H
 #define __LINBOX_lanczos_H
 
-#include <vector>
 #include <algorithm>
 
 #include "linbox/blackbox/archetype.h"
@@ -57,7 +56,7 @@ namespace LinBox
 		 *               options for the solver
 		 */
 		LanczosSolver (const Field &F, const Method::Lanczos &traits) :
-			_traits (traits), _field (&F), _randiter (F), _VD (F)
+			_traits (traits), _field (&F), _randiter (F), _VD (F), _w{F,F}, _Aw{F}
 		{}
 
 		/** @brief Constructor with a random iterator
@@ -67,7 +66,7 @@ namespace LinBox
 		 * @param r Random iterator to use for randomization
 		 */
 		LanczosSolver (const Field &F, const Method::Lanczos &traits, typename Field::RandIter r) :
-			_traits (traits), _field (&F), _randiter (r), _VD (F)
+			_traits (traits), _field (&F), _randiter (r), _VD (F), _w{F,F}, _Aw{F}
 		{}
 
 		/** Solve the linear system Ax = b.
@@ -102,8 +101,7 @@ namespace LinBox
 		const Field                       *_field;
 		typename Field::RandIter           _randiter;
 		VectorDomain<Field>                _VD;
-
-		Vector                    _w[2], _Aw; // Temporaries used in the Lanczos iteration
+		Vector _w[2], _Aw; // Temporaries used in the Lanczos iteration
 	};
 
 }

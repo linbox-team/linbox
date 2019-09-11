@@ -5,9 +5,6 @@
 #include "linbox/ring/ntl.h"
 #include "linbox/algorithms/weak-popov-form.h"
 
-#include "linbox/matrix/densematrix/blas-matrix.h"
-#include "linbox/matrix/matrixdomain/matrix-domain.h"
-
 //#define LINBOX_USES_OMP 1
 #include "linbox/matrix/sparse-matrix.h"
 #include "linbox/matrix/dense-matrix.h"
@@ -30,7 +27,7 @@ int main(int argc, char* argv[]) {
 	// text is written to cout iff a command line arg is present	
 	if (argc > 1) writing = true;
 
-	size_t p = 3;
+	uint64_t p = 3;
 	PolynomialRing R(p);
 	PolyMatrixDom MD(R);
 	WeakPopovFormDom PFD(R);
