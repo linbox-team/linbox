@@ -106,103 +106,9 @@ BASIC_TESTS =            \
     test-hadamard-bound     \
     test-serialization
 
-
-# All other tests.
-# The checker.C determines which of these are built and run in "make fullcheck".
-CHECKER_TESTS =           \
-    test-bitonic-sort       \
-    test-blackbox-block-container \
-    test-block-wiedemann        \
-    test-butterfly                \
-    test-companion                \
-    test-cradomain                \
-    test-diagonal                \
-    test-dif                    \
-    test-direct-sum                \
-    test-dyadic-to-rational      \
-    test-echelon-form            \
-    test-polynomial-ring        \
-    test-ffpack                    \
-    test-fibb                    \
-    test-getentry                \
-    test-givaropoly                \
-    test-gmp-rational            \
-    test-hilbert                \
-    test-hom                    \
-    test-inverse                \
-    test-one-invariant-factor   \
-    test-matpoly-mult            \
-    test-matrix-domain            \
-    test-matrix-stream            \
-    test-minpoly                \
-    test-modular                \
-    test-modular-balanced-double \
-    test-modular-balanced-float  \
-    test-modular-balanced-int   \
-    test-modular-double            \
-    test-modular-float            \
-    test-modular-int            \
-    test-moore-penrose            \
-    test-ntl-hankel             \
-    test-ntl-lzz_p              \
-    test-ntl-lzz_pe             \
-    test-ntl-lzz_pex            \
-    test-ntl-lzz_px             \
-    test-ntl-rr                    \
-    test-ntl-sylvester          \
-    test-ntl-toeplitz           \
-    test-ntl-zz_p               \
-    test-nullspace                \
-    test-optimization            \
-    test-order-basis            \
-    test-param-fuzzy            \
-    test-permutation            \
-    test-plain-domain            \
-    test-quad-matrix            \
-    test-rational-matrix-factory \
-    test-rational-reconstruction-base \
-    test-scalar-matrix            \
-    test-smith-form-binary      \
-    test-solve-nonsingular        \
-    test-sparse                    \
-    test-subiterator            \
-    test-submatrix                \
-    test-subvector                \
-    test-sum                    \
-    test-toom-cook                \
-    test-trace                    \
-    test-transpose                \
-    test-triplesbb                \
-    test-triplesbb-omp            \
-    test-tutorial                \
-    test-vector-domain            \
-    test-blas-domain            \
-    test-random-matrix            \
-    test-zero-one                \
-    test-weak-popov-form        \
-    test-toeplitz-det           \
-    test-dense                    \
-    test-toeplitz
-
-FULLCHECK_TESTS = ${CHECKER_TESTS} \
-    test-mpi-comm                \
-    test-rat-solve                \
-    test-rat-minpoly            \
-    test-rat-charpoly            \
-    test-poly-det                \
-    test-sparse-map-map         \
-    test-block-ring                \
-    test-dense-zero-one          \
-    test-ftrmm                    \
-    test-image-field            \
-    test-la-block-lanczos        \
-    test-mg-block-lanczos        \
-    test-modular-byte            \
-    test-modular-short
-
 # Really just one or two of these would be enough for target check.
 # The rest can be in target fullcheck.
-NTL_TESTS =             \
+NTL_TESTS =                 \
     test-smith-form         \
     test-ntl-lzz_p          \
     test-ntl-lzz_pe         \
@@ -213,10 +119,100 @@ NTL_TESTS =             \
     test-ntl-hankel         \
     test-ntl-sylvester      \
     test-smith-form-iliopoulos  \
+    test-frobenius-small    \
+    test-toeplitz-det
+
+# All other tests.
+# The checker.C determines which of these are built and run in "make fullcheck".
+CHECKER_TESTS =                 \
+    test-bitonic-sort           \
+    test-blackbox-block-container \
+    test-block-wiedemann        \
+    test-butterfly              \
+    test-companion              \
+    test-cradomain              \
+    test-diagonal               \
+    test-dif                    \
+    test-direct-sum             \
+    test-dyadic-to-rational     \
+    test-echelon-form           \
+    test-ffpack                 \
+    test-fibb                   \
+    test-getentry               \
+    test-givaropoly             \
+    test-gmp-rational           \
+    test-hilbert                \
+    test-hom                    \
+    test-inverse                \
+    test-one-invariant-factor   \
+    test-matpoly-mult           \
+    test-matrix-domain          \
+    test-matrix-stream          \
+    test-modular                \
+    test-modular-balanced-double\
+    test-modular-balanced-float \
+    test-modular-balanced-int   \
+    test-modular-double         \
+    test-modular-float          \
+    test-modular-int            \
+    test-moore-penrose          \
+    test-optimization           \
+    test-order-basis            \
+    test-param-fuzzy            \
+    test-permutation            \
+    test-plain-domain           \
+    test-quad-matrix            \
+    test-rational-matrix-factory\
+    test-rational-reconstruction-base \
+    test-scalar-matrix          \
+    test-smith-form-binary      \
+    test-solve-nonsingular      \
+    test-sparse                 \
+    test-subiterator            \
+    test-submatrix              \
+    test-subvector              \
+    test-sum                    \
+    test-trace                  \
+    test-transpose              \
+    test-triplesbb              \
+    test-triplesbb-omp          \
+    test-tutorial               \
+    test-vector-domain          \
+    test-blas-domain            \
+    test-random-matrix          \
+    test-zero-one               \
+    test-toeplitz-det           \
+    test-dense
+
+CHECKER_NTL_TESTS =  ${NTL_TESTS}           \
+    test-polynomial-ring        \
+    test-toeplitz               \
+    test-ntl-rr
+
+
+FULLCHECK_TESTS = ${CHECKER_TESTS} \
+    test-minpoly                \
+    test-nullspace              \
+    test-weak-popov-form        \
+    test-toom-cook              \
+    test-mpi-comm               \
+    test-rat-solve              \
+    test-rat-minpoly            \
+    test-rat-charpoly           \
+    test-poly-det               \
+    test-sparse-map-map         \
+    test-block-ring             \
+    test-dense-zero-one         \
+    test-ftrmm                  \
+    test-image-field            \
+    test-la-block-lanczos       \
+    test-mg-block-lanczos       \
+    test-modular-byte           \
+    test-modular-short
+
+FULLCHECK_NTL_TESTS = ${CHECKER_NTL_TESTS} \
     test-invariant-factors      \
     test-frobenius-large    \
-    test-frobenius-small    \
-    test-toeplitz-det        \
     test-weak-popov-form
 
 # @note Fact is make check won't run the tests with mpirun,
@@ -230,6 +226,8 @@ if LINBOX_HAVE_NTL
 USE_NTL_TESTS =     \
     test-ntl-lzz_pex    \
     test-toeplitz-det
+CHECKER_TESTS += ${CHECKER_NTL_TESTS}
+FULLCHECK_TESTS += ${FULLCHECK_NTL_TESTS}
 endif
 
 # if LINBOX_HAVE_SAGE
@@ -403,5 +401,5 @@ perfpublisher:
 %:%.C
 	$(CXX) $(CXXFLAGS) $(AM_CPPFLAGS)  ${INCLUDES} $(AM_CPPFLAGS) $*.C -o $@ $(LDADD)
 
-fullcheck: ${BASIC_TESTS} ${CHECKER_TESTS} checker
+fullcheck: ${TESTS} ${CHECKER_TESTS} checker
 	./checker

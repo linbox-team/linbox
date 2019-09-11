@@ -39,7 +39,7 @@ pkgincludesub_HEADERS=		\
 	bit-vector.h		\
 	bit-vector.inl		\
 	blas-vector.h		\
-	blas-vector.inl		\
+	blas-subvector.h	\
 	vector-domain.h		\
 	vector-domain-gf2.h	\
 	vector-domain.inl       \

@@ -47,8 +47,8 @@ void readMatrix(SparseMat &M, const std::string matrixFile) {
 }
 
 int main(int argc, char** argv) {
-	size_t p = 3;
-	size_t b = 8;
+	uint64_t p = 3;
+	//size_t b = 8;
 	size_t k = 0;
 	std::string matrixFile, outFile;
 	int seed = time(NULL);

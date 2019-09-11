@@ -228,7 +228,7 @@ bool testRandomMinpoly (Field                 &F,
 
 	VectorDomain<Field> VD (F);
 
-	Vector v, w;
+	Vector v(F), w(F);
 
 	VectorWrapper::ensureDim (v, v_stream.n ());
 	VectorWrapper::ensureDim (w, v_stream.n ());
@@ -237,7 +237,6 @@ bool testRandomMinpoly (Field                 &F,
 		commentator().startIteration ((unsigned int)i);
 
 		bool iter_passed = true;
-
 		A_stream.reset ();
 		Blackbox A (F, A_stream);
 
@@ -301,9 +300,10 @@ static bool testGramMinpoly (Field &F, size_t m, const Meth& M)
 {
 	commentator().start ("Testing gram minpoly", "testGramMinpoly");
 	typedef BlasVector<Field> Polynomial;
-	integer n;
-	F.characteristic(n); n += 1;
-	if (n > 30) n = 2;
+	integer p;
+    size_t n;
+	F.characteristic(p); p += 1;
+	if (p > integer(30)) n = 2;
 	Polynomial phi(F);
 	BlasMatrix<Field> A(F, n, n);
 	for (size_t i = 0; i < n; ++i) for (size_t j = 0; j < n; ++j) A.setEntry(i, j, F.one);
@@ -342,7 +342,7 @@ static bool testGramMinpoly (Field &F, size_t m, const Meth& M)
 }
 
 template <class Field>
-bool run_with_field(integer q, int e, size_t b, size_t n, int iter, int numVectors, int k, uint64_t seed){
+bool run_with_field(integer q, int e, uint64_t b, size_t n, int iter, int numVectors, int k, uint64_t seed){
 	bool ok = true;
 	int nbiter = iter;
 
@@ -353,8 +353,10 @@ bool run_with_field(integer q, int e, size_t b, size_t n, int iter, int numVecto
         do{
             F = FFPACK::chooseField<Field>(q, b, ++seed); // F, characteristic q of b bits
             card = F->cardinality();
-        }while (card < 2*n*n && card != 0); // ensures high probability of succes of the probabilistic algorithm
-		typename Field::RandIter G(*F, seed); //random generator over F
+        } while (card < 2*uint64_t(n)*uint64_t(n) && card != 0); // ensures high probability of succes of the probabilistic algorithm
+		//typename Field::RandIter G(*F, b, seed); //random generator over F
+        Givaro::Integer samplesize(1); samplesize<<=b;
+        typename Field::RandIter G(*F,seed,samplesize); //random generator over F
 		typename Field::NonZeroRandIter NzG(G); //non-zero random generator over F
 
 		if(F == nullptr)
@@ -384,9 +386,9 @@ bool run_with_field(integer q, int e, size_t b, size_t n, int iter, int numVecto
         RandomDenseStream<Field, DenseVector, typename Field::NonZeroRandIter> zv_stream (*F, NzG, n, numVectors);
         RandomSparseStream<Field, SparseVector, typename Field::NonZeroRandIter > zA_stream (*F, NzG, (double) k / (double) n, n, n);
 
-        ok &= testRandomMinpoly    (*F, n, zA_stream, zv_stream, Method::Auto());
-        ok &= testRandomMinpoly    (*F, n, zA_stream, zv_stream, Method::Elimination());
-        ok &= testRandomMinpoly    (*F, n, zA_stream, zv_stream, Method::Blackbox());
+        ok &= testRandomMinpoly    (*F, iter, zA_stream, zv_stream, Method::Auto());
+        ok &= testRandomMinpoly    (*F, iter, zA_stream, zv_stream, Method::Elimination());
+        ok &= testRandomMinpoly    (*F, iter, zA_stream, zv_stream, Method::Blackbox());
         if (card>0){
             ok &= testGramMinpoly      (*F, n, Method::Auto());
             ok &= testGramMinpoly      (*F, n, Method::Elimination());
@@ -443,7 +445,7 @@ int main (int argc, char **argv)
     pass &= run_with_field<Givaro::Modular<double> >(q,e,b,n,iterations,numVectors,k,seed);
     pass &= run_with_field<Givaro::Modular<int32_t> >(q,e,b,n,iterations,numVectors,k,seed);
     pass &= run_with_field<Givaro::Modular<Givaro::Integer> >(q,e,b?b:128,n/3+1,iterations,numVectors,k,seed);
-//     pass &= run_with_field<Givaro::GFqDom<int64_t> >(q,e,b,n,iterations,numVectors,k,seed);
+    //pass &= run_with_field<Givaro::GFqDom<int64_t> >(q,e,b,n,iterations,numVectors,k,seed);
     pass &= run_with_field<Givaro::ZRing<Givaro::Integer> >(0,e,b?b:128,n/3+1,iterations,numVectors,k,seed);
 
     return !pass;
