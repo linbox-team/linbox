@@ -70,8 +70,8 @@ namespace LinBox
 		 * @param faxpy
 		 */
 		FieldAXPY (const FieldAXPY<Field> &faxpy) :
-		       	_field (faxpy._field), _y (faxpy._y)
-	       	{}
+			_field (faxpy._field), _y (faxpy._y)
+		{}
 
 		/** Assignment operator
 		 * @param faxpy

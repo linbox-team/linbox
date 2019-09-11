@@ -26,7 +26,7 @@
  * ========LICENCE========
  *.
  */
- 
+
 #include "linbox/linbox-config.h"
 #include <givaro/modular.h>
 #include <givaro/modular-balanced.h>
@@ -48,18 +48,18 @@ bool testMatrix(const typename Matrix::Field & F, size_t m, size_t n, bool rw = 
 	Matrix A(F, m, n);
 	A.random();
 	pass = pass && testBlackbox(A,rw);
-    
+
     if (std::min(m,n)>1) {
         BlasSubmatrix<Matrix> B(A,1,1,m/2,n/2);
         pass = pass && testBlackboxNoRW(B);
-	} 
-    
+	}
+
     BlasSubmatrix<Matrix> C(A,1,1, m-1, n-1);
 	if (std::min(m,n)>1) {
 		BlasSubmatrix<BlasSubmatrix<Matrix> > D(C,1,1,m/2,n/2);
 		pass = pass && testBlackboxNoRW(D);
 	}
-    
+
 	return pass ;
 }
 
@@ -94,7 +94,7 @@ int main (int argc, char **argv)
 		Field F (q);
 		commentator().start("Givaro::Modular<float>");
 
-		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
+		typedef	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
 
 		pass = pass && testMatrix<Matrix>(F,m,n);
 
@@ -108,7 +108,7 @@ int main (int argc, char **argv)
 		Field F (q);
 		commentator().start("Givaro::ModularBalanced<float>");
 
-		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
+		typedef	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
 
 		pass = pass && testMatrix<Matrix>(F,m,n);
 		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Givaro::ModularBalanced<float>");
@@ -121,7 +121,7 @@ int main (int argc, char **argv)
 		Field F (q);
 		commentator().start("Givaro::Modular<double>");
 
-		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
+		typedef	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
 
 		pass = pass && testMatrix<Matrix>(F,m,n);
 
@@ -135,7 +135,7 @@ int main (int argc, char **argv)
 		Field F (q);
 		commentator().start("Givaro::ModularBalanced<double>");
 
-		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
+		typedef	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
 
 		pass = pass && testMatrix<Matrix>(F,m,n);
 		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Givaro::ModularBalanced<double>");
@@ -148,7 +148,7 @@ int main (int argc, char **argv)
 		Field F (q);
 		commentator().start("Givaro::Modular<int64_t>");
 
-		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
+		typedef	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
 
 		pass = pass && testMatrix<Matrix>(F,m,n);
 		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Givaro::Modular<int64_t>");
@@ -161,7 +161,7 @@ int main (int argc, char **argv)
 		Field F (q);
 		commentator().start("Givaro::ModularBalanced<int64_t>");
 
-		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
+		typedef	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
 
 		pass = pass && testMatrix<Matrix>(F,m,n);
 		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Givaro::ModularBalanced<int64_t>");
@@ -174,7 +174,7 @@ int main (int argc, char **argv)
 		Field F (q);
 		commentator().start("Givaro::Modular<uint64_t>");
 
-		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
+		typedef	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
 
 		pass = pass && testMatrix<Matrix>(F,m,n);
 		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Givaro::Modular<uint64_t>");
@@ -187,7 +187,7 @@ int main (int argc, char **argv)
 		Field F (q);
 		commentator().start("Givaro::Modular<int32_t>");
 
-		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
+		typedef	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
 
 		pass = pass && testMatrix<Matrix>(F,m,n);
 		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Givaro::Modular<int32_t>");
@@ -200,7 +200,7 @@ int main (int argc, char **argv)
 		Field F (q);
 		commentator().start("Givaro::ModularBalanced<int32_t>");
 
-		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
+		typedef	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
 
 		pass = pass && testMatrix<Matrix>(F,m,n);
 		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Givaro::ModularBalanced<int32_t>");
@@ -213,7 +213,7 @@ int main (int argc, char **argv)
 		Field F (q);
 		commentator().start("Givaro::Modular<uint32_t>");
 
-		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
+		typedef	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
 
 		pass = pass && testMatrix<Matrix>(F,m,n);
 		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Givaro::Modular<uint32_t>");
@@ -226,7 +226,7 @@ int main (int argc, char **argv)
 		Field F (q);
 		commentator().start("Givaro::Modular<int16_t>");
 
-		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
+		typedef	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
 
 		pass = pass && testMatrix<Matrix>(F,m,n);
 		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Givaro::Modular<int16_t>");
@@ -240,7 +240,7 @@ int main (int argc, char **argv)
 		Field F (q);
 		commentator().start("Givaro::ModularBalanced<int16_t>");
 
-		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
+		typedef	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
 
 		pass = pass && testMatrix<Matrix>(F,m,n);
 		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Givaro::ModularBalanced<int16_t>");
@@ -254,7 +254,7 @@ int main (int argc, char **argv)
 		Field F (q);
 		commentator().start("Givaro::Modular<uint16_t>");
 
-		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
+		typedef	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
 
 		pass = pass && testMatrix<Matrix>(F,m,n);
 		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Givaro::Modular<uint16_t>");
@@ -266,7 +266,7 @@ int main (int argc, char **argv)
 
 		Field F (q);
 
-		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
+		typedef	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
 
 		pass = pass && testMatrix<Matrix>(F,m,n);
 	}
@@ -278,7 +278,7 @@ int main (int argc, char **argv)
 		Field F (integer("123456789124"));
 		commentator().start("Givaro::Modular<integer>");
 
-		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
+		typedef	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
 
 		pass = pass && testMatrix<Matrix>(F,m,n);
 		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Givaro::Modular<integer>");
@@ -291,7 +291,7 @@ int main (int argc, char **argv)
 		Field F ;
 		commentator().start("Givaro::ZRing<Integer>");
 
-		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
+		typedef	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
 
 		pass = pass && testMatrix<Matrix>(F,m,n);
 		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Givaro::ZRing<Integer>");
@@ -304,7 +304,7 @@ int main (int argc, char **argv)
 		Field F(103,4) ;
 		commentator().start("Givaro::Extension<>");
 
-		typedef 	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
+		typedef	BlasMatrix<Field,Vector<Field>::Dense>  Matrix ;
 
 		pass = pass && testMatrix<Matrix>(F,m,n, false);
 		commentator().stop(MSG_STATUS (pass), (const char *) 0,"Givaro::Extension<>");

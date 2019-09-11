@@ -141,7 +141,7 @@ namespace LinBox { namespace BLAS3 {
 		BMD.Magnitude(mA,A);
 		BMD.Magnitude(mB,B);
 		double logC = Givaro::naturallog(mA*mB*uint64_t(A.coldim()));
-        
+
 		typedef Givaro::Modular<double> ModularField ;
 
 		{
