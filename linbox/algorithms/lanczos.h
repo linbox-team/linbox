@@ -29,7 +29,6 @@
 #ifndef __LINBOX_lanczos_H
 #define __LINBOX_lanczos_H
 
-#include <vector>
 #include <algorithm>
 
 #include "linbox/blackbox/archetype.h"
@@ -102,8 +101,7 @@ namespace LinBox
 		const Field                       *_field;
 		typename Field::RandIter           _randiter;
 		VectorDomain<Field>                _VD;
-        std::vector<Vector>         _w;
-		Vector                     _Aw; // Temporaries used in the Lanczos iteration
+		Vector _w[2], _Aw; // Temporaries used in the Lanczos iteration
 	};
 
 }
