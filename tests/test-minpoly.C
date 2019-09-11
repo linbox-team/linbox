@@ -436,7 +436,7 @@ int main (int argc, char **argv)
 		END_OF_ARGUMENTS
 	};
 
-
+    commentator().start ("Testing suite for minpoly", "testMinpoly", 1);
 	parseArguments (argc, argv, args);
 	commentator().getMessageClass (TIMING_MEASURE).setMaxDepth (10);
 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
@@ -447,9 +447,10 @@ int main (int argc, char **argv)
     pass &= run_with_field<Givaro::Modular<Givaro::Integer> >(q,e,b?b:128,n/3+1,iterations,numVectors,k,seed);
     //pass &= run_with_field<Givaro::GFqDom<int64_t> >(q,e,b,n,iterations,numVectors,k,seed);
     pass &= run_with_field<Givaro::ZRing<Givaro::Integer> >(0,e,b?b:128,n/3+1,iterations,numVectors,k,seed);
+    commentator().stop(MSG_STATUS(pass),(const char *) 0,"testMinpoly");
 
     return !pass;
-}
+} 
 
 // Local Variables:
 // mode: C++
