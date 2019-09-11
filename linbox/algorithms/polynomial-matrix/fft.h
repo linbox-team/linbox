@@ -92,6 +92,16 @@ namespace LinBox {
                 return *(this->fld);
             }
 
+            size_t
+            size () const {
+                return this->n;
+            }
+
+            size_t
+            log2_size () const {
+                return this->l2n;
+            }
+
             const Element &
             root() const
             {
@@ -101,17 +111,18 @@ namespace LinBox {
                     return this->pow_w[1];
             }
 
-// TODO
-#if 0
             const Element
             invroot() const
             {
                 if (this->l2n == 1) /* if n=2^ln equals 2, return -1 */
                     return this->fld->mOne;
-                else
-                    return this->pow_w[1];
+                else { /* w^-1 = w^(n/2) * w^(n/2-1) = -1 * w^(n/2-1) */
+                    Element r;
+                    this->fld->assign (r, this->pow_w[(this->n>>1)-1]);
+                    this->fld->negin (r);
+                    return r;
+                }
             }
-#endif
 
         private:
             static Element

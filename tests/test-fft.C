@@ -26,9 +26,10 @@
 
 #include "linbox/algorithms/polynomial-matrix/fft.h"
 #include "linbox/randiter/random-fftprime.h"
-#include "linbox/ring/modular.h"
 
+#include <givaro/modular.h>
 #include <givaro/modular-extended.h>
+#include <fflas-ffpack/utils/args-parser.h>
 
 #include <functional>
 #include <iostream>
@@ -39,6 +40,7 @@ using namespace std;
 using namespace LinBox;
 using Givaro::Modular;
 using Givaro::ModularExtended;
+using FFLAS::parseArguments;
 
 /* For pretty printing type */
 template<typename...> const char *TypeName();
@@ -57,19 +59,6 @@ REGISTER_TYPE_NAME(Modular);
 REGISTER_TYPE_NAME(ModularExtended);
 
 /******************************************************************************/
-/* Basic class to access and test protected method of FFT class */ 
-template<typename Field, typename Simd>
-class FFT_checker : public FFT<Field, Simd> {
-    private:
-        using base = FFT<Field, Simd>;
-    public:
-        using base::DIF;
-        using base::DIT;
-        using base::DIF_reversed;
-        using base::DIT_reversed;
-        using base::base;
-};
-
 template<typename Field>
 struct Checker {
     typedef typename Field::Element Elt;
@@ -115,7 +104,7 @@ struct Checker {
 
     /* check DIF and DIT */
     template<typename Simd>
-    bool actual_check (FFT_checker<Field, Simd> &fft, const EltVector& in,
+    bool actual_check (FFT<Field, Simd> &fft, const EltVector& in,
                        const EltVector& in_br, const EltVector& out,
                        const EltVector& out_br) {
         EltVector v(_n);
@@ -164,7 +153,7 @@ struct Checker {
     bool check (unsigned long seed) {
         bool passed = true;
         EltVector in(_n), in_br(_n), out(_n), out_br(_n);
-        FFT_checker<Field, NoSimd<Elt>> fft_nosimd (_F, _k);
+        FFT<Field, NoSimd<Elt>> fft_nosimd (_F, _k);
 
         /* Generate random input */
         typename Field::RandIter Gen (_F, 0, seed+_k); /*0 has no meaning here*/
@@ -187,13 +176,13 @@ struct Checker {
 
         /* Simd128 */
 #if defined(__FFLASFFPACK_HAVE_SSE4_1_INSTRUCTIONS)
-        FFT_checker<Field, Simd128<Elt>> fft_simd128 (_F, _k, w);
+        FFT<Field, Simd128<Elt>> fft_simd128 (_F, _k, w);
         passed &= actual_check (fft_simd128, in, in_br, out, out_br);
 #endif
 
         /* Simd256 */
 #if defined(__FFLASFFPACK_HAVE_AVX2_INSTRUCTIONS)
-        FFT_checker<Field, Simd256<Elt>> fft_simd256 (_F, _k, w);
+        FFT<Field, Simd256<Elt>> fft_simd256 (_F, _k, w);
         passed &= actual_check (fft_simd256, in, in_br, out, out_br);
 #endif
 

@@ -55,7 +55,7 @@ namespace LinBox {
             /******************************************************************/
             const Field *fld;
             size_t l2n; /* log2 of size */
-            uint64_t n; /* 2^l2n */
+            size_t n; /* 2^l2n */
 
             /* pow_w is the table of roots of unity. Its size is n-1.
              * If w = primitive n-th root, then the table is:
@@ -81,7 +81,36 @@ namespace LinBox {
                                               pow_w(n-1) , pow_w_br(n-1) {
                 init_powers (w);
             }
+        public:
+            void
+            DIF (Element *coeffs) const {
+                /* w = n/2, f = 1 */
+                DIF_core (coeffs, n >> 1, 1, pow_w.data(),
+                                            FFTSimdHelper<Simd::vect_size>());
+            }
 
+            void
+            DIT_reversed (Element *coeffs) const {
+                /* w = n/2, f = 1 */
+                DIT_reversed_core (coeffs, n >> 1, 1, pow_w_br.data()+ (n-2),
+                                            FFTSimdHelper<Simd::vect_size>());
+            }
+
+            void
+            DIT (Element *coeffs) const {
+                /* w = 1, f = n / 2 */
+                DIT_core (coeffs, 1, n >> 1, pow_w.data() + (n-2),
+                                            FFTSimdHelper<Simd::vect_size>());
+            }
+
+            void
+            DIF_reversed (Element *coeffs) const {
+                /* w = 1, f = n / 2 */
+                DIF_reversed_core (coeffs, 1, n >> 1, pow_w_br.data(),
+                                            FFTSimdHelper<Simd::vect_size>());
+            }
+
+        protected:
             /******************************************************************/
             /* Core functions *************************************************/
             /******************************************************************/
@@ -93,13 +122,6 @@ namespace LinBox {
              */
 
             /* DIF ************************************************************/
-            void
-            DIF (Element *coeffs) const {
-                /* w = n/2, f = 1 */
-                DIF_core (coeffs, n >> 1, 1, pow_w.data(),
-                                            FFTSimdHelper<Simd::vect_size>());
-            }
-
             /* Simd */
             template<size_t VecSize>
             void
@@ -135,13 +157,6 @@ namespace LinBox {
             }
 
             /* DIT reversed ***************************************************/
-            void
-            DIT_reversed (Element *coeffs) const {
-                /* w = n/2, f = 1 */
-                DIT_reversed_core (coeffs, n >> 1, 1, pow_w_br.data()+ (n-2),
-                                            FFTSimdHelper<Simd::vect_size>());
-            }
-
             /* Simd */
             template<size_t VecSize>
             void
@@ -183,13 +198,6 @@ namespace LinBox {
             }
 
             /* DIT ************************************************************/
-            void
-            DIT (Element *coeffs) const {
-                /* w = 1, f = n / 2 */
-                DIT_core (coeffs, 1, n >> 1, pow_w.data() + (n-2),
-                                            FFTSimdHelper<Simd::vect_size>());
-            }
-
             /* Simd */
             template<size_t VecSize>
             void
@@ -227,13 +235,6 @@ namespace LinBox {
             }
 
             /* DIF reversed ***************************************************/
-            void
-            DIF_reversed (Element *coeffs) const {
-                /* w = 1, f = n / 2 */
-                DIF_reversed_core (coeffs, 1, n >> 1, pow_w_br.data(),
-                                            FFTSimdHelper<Simd::vect_size>());
-            }
-
             /* Simd */
             template<size_t VecSize>
             void
