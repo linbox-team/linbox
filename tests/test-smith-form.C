@@ -65,8 +65,8 @@ int main(int argc, char** argv)
 	size_t k = std::min(m,n);
 	DenseMatrix<PIR> A(R,m,n);
 	BlasVector<PIR> d(R,k), x(R,k), bumps(R,k), lumps(R,19);
-	for (size_t i = 0; i <10; ++i) lumps[i] = i;
-	for (size_t i = 10; i <19; ++i) lumps[i] = i-19;
+	for (uint64_t i = 0; i <10; ++i) lumps[i] = i;
+	for (uint64_t i = 10; i <19; ++i) lumps[i] = i-19;
 
 	makeBumps(bumps, 0);
 	makeSNFExample(A,d,bumps,lumps);

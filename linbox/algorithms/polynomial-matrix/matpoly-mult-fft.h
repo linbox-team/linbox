@@ -111,9 +111,9 @@ namespace LinBox
       report<<"error with field : ";
       c.field().write(report);
       report<<std::endl;
-      /* std::cerr<<"A:="<<a<<";"<<std::endl; */
-      /* std::cerr<<"B:="<<b<<";"<<std::endl; */
-      /* std::cerr<<"C:="<<c<<";"<<std::endl; */
+      // std::cerr<<"A:="<<a<<";"<<std::endl;
+      // std::cerr<<"B:="<<b<<";"<<std::endl;
+      // std::cerr<<"C:="<<c<<";"<<std::endl;
     }
     return correct;
   }
@@ -132,17 +132,17 @@ namespace LinBox
     // C1 = c(1)
     for (size_t i=0;i<c.rowdim()*c.coldim();i++)
       for (size_t k=0;k<deg;k++)
-	c.field().addin(C1.getWritePointer()[i], c.get(i,k));
+	c.field().addin(C1.getPointer()[i], c.get(i,k));
 
     // A1=a(1)
     for (size_t i=0;i<a.rowdim()*a.coldim();i++)
       for (size_t k=0;k<a.size();k++)
-	a.field().addin(A1.getWritePointer()[i], a.get(i,k));
+	a.field().addin(A1.getPointer()[i], a.get(i,k));
 
     // B1=b(1)
     for (size_t i=0;i<b.rowdim()*b.coldim();i++)
       for (size_t k=0;k<b.size();k++)
-	b.field().addin(B1.getWritePointer()[i], b.get(i,k));
+	b.field().addin(B1.getPointer()[i], b.get(i,k));
     
     BMD.mul(C2,A1,B1);
     bool correct=BMD.areEqual(C1,C2);
@@ -155,9 +155,9 @@ namespace LinBox
       report<<"error with field : ";
       c.field().write(report);
       report<<std::endl;
-      /* std::cerr<<"A:="<<a<<";"<<std::endl; */
-      /* std::cerr<<"B:="<<b<<";"<<std::endl; */
-      /* std::cerr<<"C:="<<c<<";"<<std::endl; */
+      report<<"A:="<<a<<";"<<std::endl;
+      report<<"B:="<<b<<";"<<std::endl;
+      report<<"C:="<<c<<";"<<std::endl;
     }
     return correct;
   }

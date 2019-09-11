@@ -6,7 +6,7 @@
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
-  * LinBox is free software: you can redistribute it and/or modify
+ * LinBox is free software: you can redistribute it and/or modify
  * it under the terms of the  GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
@@ -44,15 +44,15 @@
 
 #include "linbox/util/timer.h"
 
-// #define  __CHECK_RESULT
-// #define __DEBUG_MAPLE
-// #define __CHECK_LOOP
-// #define __CHECK_DISCREPANCY
+//  #define  __CHECK_RESULT
+//  #define __DEBUG_MAPLE
+//  #define __CHECK_LOOP
+//  #define __CHECK_DISCREPANCY
 // #define __CHECK_TRANSFORMATION
 //  #define __CHECK_SIGMA_RESULT
-//  #define __PRINT_SEQUENCE
-//  #define __PRINT_SIGMABASE
-// #define __PRINT_MINPOLY
+//#define __PRINT_SEQUENCE
+//#define __PRINT_SIGMABASE
+//#define __PRINT_MINPOLY
 
 //#define _BM_TIMING
 #define DEFAULT_BLOCK_EARLY_TERM_THRESHOLD 10
@@ -60,27 +60,27 @@
 namespace LinBox
 {
 	template<class Field, class Coefficient>
-		void write_maple(const Field& F, const std::vector<Coefficient> & P)
-		{
-			std::cout<<"Matrix([";
-			for (size_t i=0;i< P[0].rowdim();++i){
-				std::cout<<"[";
-				for (size_t j=0;j< P[0].coldim();++j){
-					F.write(std::cout,P[0].getEntry(i,j));
-					for (size_t k=1;k<P.size();++k){
-						std::cout<<"+ x^"<<k<<"*";
-						F.write(std::cout,P[k].getEntry(i,j));
-					}
-					if (j != P[0].coldim()-1)
-						std::cout<<",";
-				}
-				if (i != P[0].rowdim()-1)
-					std::cout<<"],";
-				else
-					std::cout<<"]";
-			}
-			std::cout<<"]);\n";
-		}
+    void write_maple(const Field& F, const std::vector<Coefficient> & P)
+    {
+        std::cout<<"Matrix([";
+        for (size_t i=0;i< P[0].rowdim();++i){
+            std::cout<<"[";
+            for (size_t j=0;j< P[0].coldim();++j){
+                F.write(std::cout,P[0].getEntry(i,j));
+                for (size_t k=1;k<P.size();++k){
+                    std::cout<<"+ x^"<<k<<"*";
+                    F.write(std::cout,P[k].getEntry(i,j));
+                }
+                if (j != P[0].coldim()-1)
+                    std::cout<<",";
+            }
+            if (i != P[0].rowdim()-1)
+                std::cout<<"],";
+            else
+                std::cout<<"]";
+        }
+        std::cout<<"]);\n";
+    }
 
 
 
@@ -101,7 +101,7 @@ namespace LinBox
 		typedef typename Field::Element        Element;
 		typedef _Sequence                     Sequence;
 		typedef BlasMatrix<Field>          Coefficient;
-                typedef BlasSubmatrix<Coefficient>   CoeffView;
+        typedef BlasSubmatrix<Coefficient>   CoeffView;
 
 
 	private:
@@ -151,7 +151,7 @@ namespace LinBox
 			ttUpdateSerie.clear();
 			ttBasisMultiplication.clear();
 			ttCopyingData.clear(),
-			Total.clear();
+                Total.clear();
 		}
 
 		void print(Timer& T, const  char* timer, const char* title)
@@ -250,7 +250,7 @@ namespace LinBox
 
 		std::vector<size_t> masseyblock_left (std::vector<Coefficient> &P)
 		{
-                        std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+            std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 			const size_t length = _container->size ();
 			const size_t m = _container->rowdim();
@@ -264,7 +264,7 @@ namespace LinBox
 			typename Sequence::const_iterator _iter (_container->begin ());
 
 			// Reservation of memory for the entire sequence
-                        const Coefficient Zeromn(field(),m,n);
+            const Coefficient Zeromn(field(),m,n);
 			std::vector<Coefficient> S (length,Zeromn);
 
 
@@ -326,23 +326,23 @@ namespace LinBox
 				typename CoeffView::Iterator _iter_Discr = Discr.Begin();
 				while (_iter_Discr != Discr.End() && (field().isZero(*_iter_Discr)))
 					++_iter_Discr;
-                                if (_iter_Discr!=Discr.End())
-                                        early_stop=0;
-                                else
-                                        early_stop++;
+                if (_iter_Discr!=Discr.End())
+                    early_stop=0;
+                else
+                    early_stop++;
 
 				// maybe there is something to do here
 				// increase the last n rows of orders
 				// multiply by X the last n rows of SigmaBase
 				//if (_iter_Discr != Discr.End())
 
-                                /*
-                                Coefficient ZeroD(field(),m+n,n);
-                                if (_MD.areEqual(Discrepancy,ZeroD)) 
-                                        early_stop=0;
-                                else
-                                        early_stop++;
-                                */
+                /*
+                  Coefficient ZeroD(field(),m+n,n);
+                  if (_MD.areEqual(Discrepancy,ZeroD)) 
+                  early_stop=0;
+                  else
+                  early_stop++;
+                */
 
 				// Computation of the permutation BPerm1 such that BPerm1.order is in increasing order.
 				// order=Perm.order
@@ -396,7 +396,7 @@ namespace LinBox
 
 				// compute the inverse of L
 				TriangularBlasMatrix<Field> invL (field(),m+n,m+n, Tag::Shape::Lower,Tag::Diag::Unit);
-				FFPACK::trinv_left(field(),m+n,L.getPointer(),L.getStride(),invL.getWritePointer(),invL.getStride());
+				FFPACK::trinv_left(field(),m+n,L.getPointer(),L.getStride(),invL.getPointer(),invL.getStride());
 
 #ifdef 	__CHECK_TRANSFORMATION
 				report<<"invL"<<NN<<":=Matrix(";
@@ -433,11 +433,11 @@ namespace LinBox
 				}
 				size_t size=SigmaBase.size();
 				if (SigmaBase.size()<= (size_t)max_degree)
-				{
-					SigmaBase.resize(size+1,Zero);
-					//report << size << std::endl;
-					size++;
-				}
+                    {
+                        SigmaBase.resize(size+1,Zero);
+                        //report << size << std::endl;
+                        size++;
+                    }
 				//report << "size going in" << size << std::endl;
 				for (int i= (int)size-2;i>=0;i--)
 					for (size_t j=0;j<n;j++)
@@ -492,7 +492,7 @@ namespace LinBox
 				_BMD.mulin_right(BPerm2,Discrepancy);
 			}
 
-                        if ( early_stop == EARLY_TERM_THRESHOLD)
+            if ( early_stop == EARLY_TERM_THRESHOLD)
 				report<<"Early termination is used: stop at "<<NN<<" from "<<length<<" iterations\n\n";
 
 #ifdef __PRINT_SEQUENCE
@@ -518,7 +518,7 @@ namespace LinBox
 			long max= *std::max_element(degree.begin(),degree.end());
 
 			Coefficient tmp(field(),m,m);
-                        P = std::vector<Coefficient> (max+1,tmp);
+            P = std::vector<Coefficient> (max+1,tmp);
 			for (size_t i=0;i<m;i++)
 				for (long j=0;j<=degree[i];j++)
 					for (size_t k=0;k<m;k++)
@@ -559,22 +559,27 @@ namespace LinBox
 
 		std::vector<size_t> masseyblock_left_rec (std::vector<Coefficient> &lingen)
 		{
-#ifdef __CHECK_RESULT
+#if (defined  __CHECK_RESULT) or (defined __PRINT_SEQUENCE)
 			//std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-                        std::ostream& report = std::cout;
+            std::ostream& report = std::cout;
 #endif
 			// Get information of the Sequence (U.A^i.V)
 			size_t length = _container->size();
 			size_t m, n, mn;
 			m = _container->rowdim();
 			n = _container->coldim();
-                        mn=m+n;
+
+			// Set some useful constant
+			const Coefficient Zero(field(),2*m,2*m);
+            const Coefficient Zeromn(field(),2*m,n);
+
+            mn=m+n;
                         
                         
 			// Make the Power Serie from  Sequence (U.A^i.V) and Identity
 			//_container->recompute(); // make sure sequence is already computed			
-                        typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain, Field> PMatrix;
-                        PMatrix PowerSerie(field(),mn,n,length);
+            typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain, Field> PMatrix;
+            PMatrix PowerSerie(field(),mn,n,length);
                         
 			typename Sequence::const_iterator _iter (_container->begin ());
 			for (size_t i=0;i< length; ++i, ++_iter)
@@ -588,16 +593,16 @@ namespace LinBox
 			PowerSerie.write(report);
 #endif
 
-                        // set the shift to [ 0 .. 0 1 .. 1]
-                        std::vector<size_t> shift(mn,0);
-                        std::fill(shift.begin()+m,shift.end(),1);
+            // set the shift to [ 0 .. 0 1 .. 1]
+            std::vector<size_t> shift(mn,0);
+            std::fill(shift.begin()+m,shift.end(),1);
 
 			// Prepare SigmaBase
 			PMatrix SigmaBase(field(),mn,mn,length);
 
 			// Compute OrderBasis up to the order length 
-                        OrderBasis<Field> SB(field());
-                        SB.PM_Basis(SigmaBase, PowerSerie, length, shift);
+            OrderBasis<Field> SB(field());
+            SB.PM_Basis(SigmaBase, PowerSerie, length, shift);
 
 
 			// take the m rows which have lowest defect
@@ -614,11 +619,11 @@ namespace LinBox
 				Perm[i]=idx_min;
 			}
 
-                        // convert to polynomial of matrices
-                        PolynomialMatrix<PMType::matfirst,PMStorage::plain, Field> Sigma (field(), mn,mn,SigmaBase.size());                        
-                        Sigma.copy(SigmaBase);
+            // convert to polynomial of matrices
+            PolynomialMatrix<PMType::matfirst,PMStorage::plain, Field> Sigma (field(), mn,mn,SigmaBase.size());                        
+            Sigma.copy(SigmaBase);
 
-                        BlasPermutation<size_t> BPerm(Perm);
+            BlasPermutation<size_t> BPerm(Perm);
 
 			// Apply BPerm to the Sigma Base
 			for (size_t i=0;i<Sigma.size();++i)
@@ -627,25 +632,25 @@ namespace LinBox
 
                         
 #ifdef __PRINT_SIGMABASE
-                        report<<"order is "<<length-1<<std::endl;
+            report<<"order is "<<length-1<<std::endl;
 			report<<"SigmaBase:=";
-                        Sigma.write(report);
-                        report<<"shift:=[";
-                        std::ostream_iterator<int> out_it (report,", ");
-                        std::copy ( shift.begin(), shift.end(), out_it );
-                        report<<"];\n";
+            Sigma.write(report);
+            report<<"shift:=[";
+            std::ostream_iterator<int> out_it (report,", ");
+            std::copy ( shift.begin(), shift.end(), out_it );
+            report<<"];\n";
                         
 #endif
 
-                        // Compute the reverse polynomial of Sigma according to row shift 
-                        size_t max= *std::max_element(shift.begin(),shift.begin()+m);
-                        //PMatrix lingen(field(),m,m,max+1);
-                        Coefficient Zeromm(field(),m,m);
-                        lingen.resize(max+1,Zeromm);
-                        for (size_t i=0;i<m;i++)
-                                for (size_t j=0;j<=shift[i];j++)
-                                        for (size_t k=0;k<m;k++)
-                                                field().assign(lingen[shift[i]-j].refEntry(i,k), Sigma.ref(i,k,j));
+            // Compute the reverse polynomial of Sigma according to row shift 
+            size_t max= *std::max_element(shift.begin(),shift.begin()+m);
+            //PMatrix lingen(field(),m,m,max+1);
+            Coefficient Zeromm(field(),m,m);
+            lingen.resize(max+1,Zeromm);
+            for (size_t i=0;i<m;i++)
+                for (size_t j=0;j<=shift[i];j++)
+                    for (size_t k=0;k<m;k++)
+                        field().assign(lingen[shift[i]-j].refEntry(i,k), Sigma.ref(i,k,j));
 
 
                      
@@ -663,7 +668,7 @@ namespace LinBox
 				for (size_t j=0;j<m*n;++j)
 					if (!field().isZero(*(res.getPointer()+j)))
 						valid= false;
-                        }
+            }
 			if (valid)
 				report<<"minpoly is correct\n";
 			else
@@ -672,7 +677,7 @@ namespace LinBox
 
 #ifdef __PRINT_MINPOLY
 			report<<"MinPoly:=";
-                        write_maple(field(),lingen);
+            write_maple(field(),lingen);
 #endif
 			std::vector<size_t> degree(m);
 			for (size_t i=0;i<m;++i)

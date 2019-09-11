@@ -214,7 +214,7 @@ namespace LinBox
 }
 
 
-// #include "linbox/vector/blas-vector.h"
+//#include "linbox/vector/blas-vector.h"
 // Dense
 namespace LinBox
 {

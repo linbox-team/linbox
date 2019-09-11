@@ -60,7 +60,7 @@ namespace LinBox
 
 		// Basic constructors
 
-		Subiterator ()
+		Subiterator () : _iter(), _stride()
 		{
 		}
 
@@ -150,7 +150,7 @@ namespace LinBox
 		// Iteration operations
 
 		Subiterator& operator ++ ()
-		{ 
+		{
 			_iter += _stride;
 			return *this;
 		}

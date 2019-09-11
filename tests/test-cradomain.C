@@ -133,7 +133,7 @@ template<typename Field, class IntVect = BlasVector<Givaro::ZRing<Integer>>>
 struct InteratorBlas : public Interator<IntVect> {
 	typedef typename Field::Element Element;
 	typedef LinBox::BlasMatrix<Givaro::ZRing<Element> > Matrix;
-	typedef typename Matrix::pointer Pointer;
+	typedef typename Matrix::Element_ptr Pointer;
 	typename Givaro::ZRing<Element> _field;
 	mutable Matrix _vectC;
 
@@ -151,11 +151,11 @@ struct InteratorBlas : public Interator<IntVect> {
 	IterationResult operator()(Pointer& res, const Field& F) const
 	{
 		auto vit=this->_v.begin();
-		res = _vectC.getWritePointer();
+		res = _vectC.getPointer();
 		for( ; vit != this->_v.end(); ++vit, ++res)
 			F.init(*res, *vit);
 
-		res=_vectC.getWritePointer();
+		res=_vectC.getPointer();
 		return IterationResult::CONTINUE;
 	}
 
@@ -217,8 +217,8 @@ bool TestOneCRAWritePointer(std::ostream& report, Iter& iteration, RandGen& genp
 	LinBox::ChineseRemainder< Builder > cra( bound );
 	Givaro::ZRing<Integer> Z ;
 	LinBox::BlasMatrix<Givaro::ZRing<Integer> > Res(Z, (int)N, (int)N);
-	cra( Res.getWritePointer(), iteration, genprime);
-	bool locpass = std::equal( iteration.getVector().begin(), iteration.getVector().end(), Res.getWritePointer() );
+	cra( Res.getPointer(), iteration, genprime);
+	bool locpass = std::equal( iteration.getVector().begin(), iteration.getVector().end(), Res.getPointer() );
 
 	if (locpass) {
 		report << "ChineseRemainder<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << ", passed."  << std::endl;
