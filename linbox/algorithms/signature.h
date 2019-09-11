@@ -166,8 +166,10 @@ namespace LinBox
                     for (cur_r = PM. rowBegin(); cur_r != PM. rowEnd(); ++ cur_r, ++j) {
                         typename Matrix::ConstRowIterator m_r = M. rowBegin() + P[(size_t)j];
                         for (size_t k = 0; k < P.size(); ++ k)
-                            R. assign (cur_r -> operator[] (k),
-                                       m_r -> operator[] ((size_t)P[(size_t)k]));
+                            R. assign ((*cur_r)[k],
+                                       (*m_r)[(size_t)P[(size_t)k]]);
+                        // R. assign (cur_r -> operator[] (k),
+                        //                m_r -> operator[] ((size_t)P[(size_t)k]));
                     }
                     semiD (D, PM);
                 }

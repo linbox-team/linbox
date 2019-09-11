@@ -65,9 +65,9 @@ int main (int argc, char **argv)
 	size_t * P = new size_t[G.rowdim()];
 	size_t * Q = new size_t[G.coldim()];
 	/*  size_t r = (size_t)*/
-	size_t r= FFPACK::ReducedRowEchelonForm (F, G.rowdim(), G.coldim(), G.getWritePointer(), G.coldim(), P, Q,false);
+	size_t r= FFPACK::ReducedRowEchelonForm (F, G.rowdim(), G.coldim(), G.getPointer(), G.coldim(), P, Q,false);
 	FFPACK::getReducedEchelonForm (F, FFLAS::FflasUpper, G.rowdim(), G.coldim(), r,
-                                   Q, G.getWritePointer(), G.coldim());
+                                   Q, G.getPointer(), G.coldim());
 
 	if (G.coldim() <20)
 		G.write(cerr<<"FFPACK::Echelon = "<<endl)<<endl;

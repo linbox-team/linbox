@@ -1059,7 +1059,7 @@ namespace LinBox
 		else {
 			_rank= FFPACK::PLUQ (_field, FFLAS::FflasNonUnit, _m, _n,
 						 _factLU.getPointer(),_factLU.getStride(),
-						 _permP.getWritePointer(), _permQ.getWritePointer());
+						 _permP.getPointer(), _permQ.getPointer());
 		}
 	}
 
@@ -1079,7 +1079,7 @@ namespace LinBox
 		else {
 			_rank= FFPACK::PLUQ( _field,FFLAS::FflasNonUnit, _m, _n,
 						 _factLU.getPointer(),_factLU.getStride(),
-						 _permP.getWritePointer(), _permQ.getWritePointer());
+						 _permP.getPointer(), _permQ.getPointer());
 		}
 	}
 
@@ -1099,7 +1099,7 @@ namespace LinBox
 
 		_rank= FFPACK::PLUQ( _field,FFLAS::FflasNonUnit, _m, _n,
 					 _factLU.getPointer(),_factLU.getStride(),
-					 _permP.getWritePointer(), _permQ.getWritePointer());
+					 _permP.getPointer(), _permQ.getPointer());
 	}
 
 	template <class Field>
@@ -1116,7 +1116,7 @@ namespace LinBox
 
 		_rank= FFPACK::PLUQ<Field>( _field,FFLAS::FflasNonUnit, _m, _n,
                                                 _factLU.getPointer(),_factLU.getStride(),
-                                                _permP.getWritePointer(), _permQ.getWritePointer());
+                                                _permP.getPointer(), _permQ.getPointer());
 	}
 
 	template <class Field>
@@ -1224,7 +1224,7 @@ namespace LinBox
 // #endif
 
         FFPACK::getTriangular (_field, FFLAS::FflasLower, FFLAS::FflasUnit, _m, _n, _rank,
-                               _factLU.getPointer(), _factLU.getStride(), L.getWritePointer(), L.getStride(), false);
+                               _factLU.getPointer(), _factLU.getStride(), L.getPointer(), L.getStride(), false);
 // #if 1 /*  slower */
 // 		for ( size_t i=0; i<_m; ++i ){
 // 			size_t j=0;
@@ -1238,17 +1238,17 @@ namespace LinBox
 // 		if (!_permQ.isIdentity())
 // 			FFPACK::applyP( _field, FFLAS::FflasRight, FFLAS::FflasNoTrans,
 // 					_m,0,(int)_permQ.getOrder(),
-// 					L.getWritePointer(), _m, _permQ.getPointer() );
+// 					L.getPointer(), _m, _permQ.getPointer() );
 // 		for ( size_t i=0; i<_m; ++i )
 // 			L.setEntry( i, i, _field.one );
 // 		if (_QLUP) {
 // 			if (!_permQ.isIdentity()) {
 // 				FFPACK::applyP( _field, FFLAS::FflasLeft, FFLAS::FflasNoTrans,
 // 						_m,0,(int)_permQ.getOrder(),
-// 						L.getWritePointer(), _m, _permQ.getPointer() );
+// 						L.getPointer(), _m, _permQ.getPointer() );
 // 				FFPACK::applyP( _field, FFLAS::FflasRight, FFLAS::FflasTrans,
 // 						_m,0,(int)_permQ.getOrder(),
-// 						L.getWritePointer(), _m, _permQ.getPointer() );
+// 						L.getPointer(), _m, _permQ.getPointer() );
 
 // 			}
 // 		}
@@ -1269,7 +1269,7 @@ namespace LinBox
 		linbox_check( U.getUpLo() == Tag::Shape::Upper);
 		linbox_check( U.getDiag() == Tag::Diag::NonUnit);
         FFPACK::getTriangular (_field, FFLAS::FflasUpper, FFLAS::FflasNonUnit, _m, _n, _rank,
-                               _factLU.getPointer(), _factLU.getStride(), U.getWritePointer(), U.getStride(), false);
+                               _factLU.getPointer(), _factLU.getStride(), U.getPointer(), U.getStride(), false);
         return U;
 	}
 
@@ -1292,7 +1292,7 @@ namespace LinBox
 	// 	if (!_permQ.isIdentity())
 	// 		FFPACK::applyP( _field, FFLAS::FflasLeft, FFLAS::FflasTrans,
 	// 				_n, 0,(int) _permQ.getOrder(),
-	// 				S.getWritePointer(), _n, _permQ.getPointer() );
+	// 				S.getPointer(), _n, _permQ.getPointer() );
 	// 	return S;
 	// }
 

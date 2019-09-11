@@ -106,6 +106,7 @@ void makeSNFExample(DenseMatrix<PIR>& A,
 	//LinBox::VectorWrapper::ensureDim (d, std::min(A.rowdim(), A.coldim()));
 	prefixProduct(d, bumps);
 
+    //    std::cout<<"d="<<d<<std::endl;
 	// make A = UDL for random unimodular L,U
 	const PIR & R = A.field();
 	DenseMatrix<PIR> L(R, A.coldim(), A.coldim()), 
@@ -116,7 +117,8 @@ void makeSNFExample(DenseMatrix<PIR>& A,
 	A.zero();
 	for(i = 0; i < d.size(); ++i) A.setEntry(i,i,d.getEntry(x,i));
 
-
+    //A.write(std::cout);
+    //std::cout<<"PPP\n";
 	L.zero();
 	for(i = 0; i < L.rowdim(); ++i) L.setEntry(i,i,R.one);
 	for (i = 0; i < L.rowdim(); ++ i)
@@ -138,6 +140,7 @@ void makeSNFExample(DenseMatrix<PIR>& A,
 		d.setEntry(i,R.abs(x, d.getEntry(x,i)));
 	// Now A is matrix equivalent to diag prefix product of bumps.
 	// Now d is SNF diagonal (vector of invariants) for A.
+
 }
 
 template <class PIR>

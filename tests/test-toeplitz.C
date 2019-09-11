@@ -120,7 +120,7 @@ public:
 int main(int argc, char **argv) {
     
     size_t rowdim = 3, coldim = 4;
-    size_t p = 10007;
+    uint64_t p = 10007;
     
     static Argument args[] = {
         { 'n', "-n N", "Set row dimension of test matrices.", TYPE_INT, &rowdim },
