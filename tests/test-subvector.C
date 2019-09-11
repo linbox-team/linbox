@@ -63,7 +63,7 @@ int main(int argc, char** argv)
     static size_t n = 8;
     static Argument args[] =
     {
- 		{ 'n', "-n N", "Set size of vector to N.", TYPE_INT, &n},
+		{ 'n', "-n N", "Set size of vector to N.", TYPE_INT, &n},
 		END_OF_ARGUMENTS
     };
     parseArguments (argc, argv, args);
@@ -555,9 +555,9 @@ static bool testSubvector3(Field &F, size_t n)
 	typedef BlasVector<Field>	Vector;
 	typedef BlasSubvector<Vector>	subVector;
     //typedef typename Vector::iterator       Iter;
-	typedef typename subVector::iterator 	Subiter;
+	typedef typename subVector::iterator	Subiter;
 	typedef typename LinBox::Subvector<Subiter>	Subvect;
-    	//typedef typename LinBox::Subvector<Vector, Subiter>	Subvect;
+	//typedef typename LinBox::Subvector<Vector, Subiter>	Subvect;
 	// typedef typename Subvect::const_iterator	ConstSubiterator;
 
 	// typedef typename Subvect::reverse_iterator	ReverseIterator;
@@ -576,7 +576,7 @@ static bool testSubvector3(Field &F, size_t n)
 	// Subiter se(sb+Length);
 
 	subVector w(v, start, stride, Length);
-    
+
 	// implicit (not stored) stride of 1
 	Subvector<typename Vector::iterator>
 		z(v.begin(), v.end());

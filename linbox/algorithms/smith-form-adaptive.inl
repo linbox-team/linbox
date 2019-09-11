@@ -150,7 +150,7 @@ namespace LinBox
 		int order = (int)(A. rowdim() < A. coldim() ? A. rowdim() : A. coldim());
 		linbox_check ((s. size() >= (size_t) order) && (p > 0) && ( e >= 0));
 		integer T; T = order; T <<= 20; T = pow (T, (int) sqrt((double)order));
-		Givaro::Integer m(Integer::one);  
+		Givaro::Integer m(Integer::one);
         for (int i = 0; i < e; ++ i) m *= p;
         report << "      Compute local Smith at " << p << '^' << e << " over ZZ_p\n";
         typedef LocalPIRModular<Givaro::Integer> GZZ_p;
@@ -478,7 +478,7 @@ namespace LinBox
 	 */
 	template <class IRing, class _Rep>
 	void SmithFormAdaptive::smithForm (BlasVector<Givaro::ZRing<Integer> >& s, const BlasMatrix<IRing, _Rep>& A)
-	{        
+	{
 		//commentator().start ("Smith Form starts", "Smithform");
 		Givaro::ZRing<Integer> Z;
 

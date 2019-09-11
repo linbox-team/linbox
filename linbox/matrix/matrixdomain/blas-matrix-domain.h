@@ -317,7 +317,7 @@ namespace LinBox
 	// template< class Field, class Matrix, class _Vrep>
 	// class BlasMatrixDomainCharpoly<Field,BlasVector<Field,_Vrep>,Matrix> {
 	// public:
-	// 	BlasVector<Field,_Vrep>&  operator() (const Field &F, BlasVector<Field,_Vrep>& P, const Matrix& A) const;
+	//	BlasVector<Field,_Vrep>&  operator() (const Field &F, BlasVector<Field,_Vrep>& P, const Matrix& A) const;
 	// };
 
 	/**

@@ -81,7 +81,7 @@ namespace LinBox { namespace Protected {
 
 	// rank
 	template <class Matrix>
-	class 	BlasMatrixDomainRank<typename Matrix::Field, BlasSubmatrix<Matrix> > {
+	class	BlasMatrixDomainRank<typename Matrix::Field, BlasSubmatrix<Matrix> > {
 	public:
 		inline unsigned int operator() (const typename Matrix::Field &F,
                                         BlasSubmatrix<Matrix>  &A) const
@@ -317,7 +317,7 @@ namespace LinBox
 	// D= b11eta.C + alpha.A*B
 #if 0
 	template<class Field>
-	class 	BlasMatrixDomainMulAdd<BlasMatrix<Field, _Rep>, BlasMatrix<Field, _Rep>, BlasMatrix<Field, _Rep> > {
+	class	BlasMatrixDomainMulAdd<BlasMatrix<Field, _Rep>, BlasMatrix<Field, _Rep>, BlasMatrix<Field, _Rep> > {
 	public:
 		BlasMatrix<Field, _Rep>&
 		operator()(//const Field                              & F,
@@ -374,7 +374,7 @@ namespace LinBox
 
 #if 1
 	template<class Matrix1, class Matrix2, class Matrix3>
-	class 	BlasMatrixDomainMulAdd {
+	class	BlasMatrixDomainMulAdd {
 	public:
 		typedef typename Matrix1::Field Field;
 
@@ -445,7 +445,7 @@ namespace LinBox
 	// One specialization with BlasSubmatrix (needed by BlockMasseyDomain
 	// other specialisation need to be done ...
 	template<class Matrix, class _Rep>
-	class 	BlasMatrixDomainMulAdd<BlasSubmatrix<Matrix>, BlasSubmatrix<Matrix>, BlasMatrix<typename Matrix::Field, _Rep> > {
+	class	BlasMatrixDomainMulAdd<BlasSubmatrix<Matrix>, BlasSubmatrix<Matrix>, BlasMatrix<typename Matrix::Field, _Rep> > {
 	public:
 		typedef typename Matrix::Field Field;
 		BlasSubmatrix<Matrix>&
@@ -498,7 +498,7 @@ namespace LinBox
 	};
 
 	template<class Matrix>
-	class 	BlasMatrixDomainMulAdd<BlasSubmatrix<Matrix>, BlasSubmatrix<Matrix>, BlasSubmatrix<Matrix> > {
+	class	BlasMatrixDomainMulAdd<BlasSubmatrix<Matrix>, BlasSubmatrix<Matrix>, BlasSubmatrix<Matrix> > {
 	public:
 		typedef typename Matrix::Field Field;
 		BlasSubmatrix<Matrix>&
@@ -552,7 +552,7 @@ namespace LinBox
 
 
 	template<class Field, class _Rep>
-	class 	BlasMatrixDomainMulAdd< BlasMatrix<Field, _Rep>, TransposedBlasMatrix<BlasMatrix<Field, _Rep> >, BlasMatrix<Field, _Rep> > {
+	class	BlasMatrixDomainMulAdd< BlasMatrix<Field, _Rep>, TransposedBlasMatrix<BlasMatrix<Field, _Rep> >, BlasMatrix<Field, _Rep> > {
 	public:
 		BlasMatrix<Field, _Rep>&
 		operator()( BlasMatrix<Field, _Rep>                              & D,
@@ -605,7 +605,7 @@ namespace LinBox
 	};
 
 	template<class Field, class _Rep>
-	class 	BlasMatrixDomainMulAdd< BlasMatrix<Field, _Rep>, TransposedBlasMatrix<BlasMatrix<Field, _Rep> >, TransposedBlasMatrix<BlasMatrix<Field, _Rep> > > {
+	class	BlasMatrixDomainMulAdd< BlasMatrix<Field, _Rep>, TransposedBlasMatrix<BlasMatrix<Field, _Rep> >, TransposedBlasMatrix<BlasMatrix<Field, _Rep> > > {
 	public:
 		BlasMatrix<Field, _Rep>&
 		operator()( BlasMatrix<Field, _Rep>                              & D,
@@ -657,7 +657,7 @@ namespace LinBox
 	};
 
 	template<class Field, class _Rep>
-	class 	BlasMatrixDomainMulAdd< BlasMatrix<Field, _Rep>, BlasMatrix<Field, _Rep>, TransposedBlasMatrix<BlasMatrix<Field, _Rep> > > {
+	class	BlasMatrixDomainMulAdd< BlasMatrix<Field, _Rep>, BlasMatrix<Field, _Rep>, TransposedBlasMatrix<BlasMatrix<Field, _Rep> > > {
 	public:
 		BlasMatrix<Field, _Rep>&
 		operator()( BlasMatrix<Field, _Rep>                              & D,
@@ -2043,7 +2043,7 @@ namespace LinBox
 
 	template<class Field, class Polynomial, class Matrix>
 	Polynomial &
-	BlasMatrixDomainCharpoly<Field,Polynomial,Matrix>::operator() ( 
+	BlasMatrixDomainCharpoly<Field,Polynomial,Matrix>::operator() (
         const Field    &F, Polynomial    &P, Matrix   &A) const
 	{
 		size_t n = A.coldim();

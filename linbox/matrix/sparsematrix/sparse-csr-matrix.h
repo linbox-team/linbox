@@ -1388,7 +1388,7 @@ namespace LinBox {
 			if (_data.size() == 0) return IndexedEnd();
 			// Take care for empty first row(s).
 			index_t i = 0;
-			while (i+1<_start.size() && _start[i] == _start[i+1]) ++i; 
+			while (i+1<_start.size() && _start[i] == _start[i+1]) ++i;
 			return IndexedIterator(this, i, 0);
 
 			// bug for empty first row
@@ -1475,37 +1475,37 @@ namespace LinBox {
 	// template<class inVector, class outVector>
 	// outVector & SparseMatrix<Givaro::Modular<double>, SparseMatrixFormat::CSR >::apply(outVector &Y, const inVector& X, const Element & a ) const
 	// {
-	// 	FFLAS::CSR_sub<typename Field::Element> A ;
-	// 	// FFLAS::CSR_sub<typename Field::Element> A ;
-	// 	A.m = rowdim();
-	// 	A.n = coldim();
-	// 	A.st = const_cast<index_t*>(&_start[0]);
-	// 	A.col = const_cast<index_t*>(&_colid[0]);
-	// 	A.dat = const_cast<typename Field::Element*>(&_data[0]);
-	// 	// A.i0 = 0 ;
-	// 	// A.j0 = 0 ;
-	// 	FFLAS::VECT<typename Field::Element>  x ;
-	// 	x.inc = 1 ;
-	// 	x.m = X.size();
-	// 	x.dat = X.getPointer();
-	// 	FFLAS::VECT<typename Field::Element>  y ;
-	// 	y.inc = 1;
-	// 	y.m = Y.size();
-	// 	y.dat = Y.getPointer();
-	// 	// std::cout << "called" << std::endl ;
-	// 	FFLAS::sp_fgemv(field(),  A, x, a, y);
-	// 	return Y ;
+	//	FFLAS::CSR_sub<typename Field::Element> A ;
+	//	// FFLAS::CSR_sub<typename Field::Element> A ;
+	//	A.m = rowdim();
+	//	A.n = coldim();
+	//	A.st = const_cast<index_t*>(&_start[0]);
+	//	A.col = const_cast<index_t*>(&_colid[0]);
+	//	A.dat = const_cast<typename Field::Element*>(&_data[0]);
+	//	// A.i0 = 0 ;
+	//	// A.j0 = 0 ;
+	//	FFLAS::VECT<typename Field::Element>  x ;
+	//	x.inc = 1 ;
+	//	x.m = X.size();
+	//	x.dat = X.getPointer();
+	//	FFLAS::VECT<typename Field::Element>  y ;
+	//	y.inc = 1;
+	//	y.m = Y.size();
+	//	y.dat = Y.getPointer();
+	//	// std::cout << "called" << std::endl ;
+	//	FFLAS::sp_fgemv(field(),  A, x, a, y);
+	//	return Y ;
 	// }
 
 	// template<>
 	// Integer SparseMatrix<Givaro::ZRing<Integer>, SparseMatrixFormat::CSR >::magnitude() const
 	// {
-	// 	// XXX this is a vector magnitude
-	// 	Integer max_elt(0);
-	// 	for (size_t i = 0 ; i < _nbnz ; ++i)
-	// 		if (max_elt < Givaro::abs(_data[i]))
-	// 			max_elt = Givaro::abs(_data[i]) ;
-	// 	return max_elt ;
+	//	// XXX this is a vector magnitude
+	//	Integer max_elt(0);
+	//	for (size_t i = 0 ; i < _nbnz ; ++i)
+	//		if (max_elt < Givaro::abs(_data[i]))
+	//			max_elt = Givaro::abs(_data[i]) ;
+	//	return max_elt ;
 	// }
 #endif
 
