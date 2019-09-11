@@ -35,7 +35,7 @@ pkgincludesub_HEADERS =         \
 	polynomial-matrix-domain.h	\
 	fft.h	\
 	fft-utils.h	\
-	fft-floating.h	\
-	fft-integral.h	\
+	fft-floating.inl	\
+	fft-integral.inl	\
 	fft-simd.h	\
 	order-basis.h
