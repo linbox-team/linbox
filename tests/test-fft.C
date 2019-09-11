@@ -26,21 +26,22 @@
 
 #include "linbox/algorithms/polynomial-matrix/fft.h"
 #include "linbox/randiter/random-fftprime.h"
+#include <linbox/util/commentator.h>
 
 #include <givaro/modular.h>
 #include <givaro/modular-extended.h>
-#include <fflas-ffpack/utils/args-parser.h>
+//#include <fflas-ffpack/utils/args-parser.h>
 
 #include <functional>
 #include <iostream>
-#include <string>
+#include <string> 
 #include <vector>
 
 using namespace std;
 using namespace LinBox;
 using Givaro::Modular;
 using Givaro::ModularExtended;
-using FFLAS::parseArguments;
+//using FFLAS::parseArguments;
 
 /* For pretty printing type */
 template<typename...> const char *TypeName();
@@ -97,7 +98,8 @@ struct Checker {
     void
     print_result_line (const char *name, bool b) {
         size_t t = strlen(name) + Simd::type_string().size() + 40 + 10;
-        cout << "   " << string (80-t, ' ') << name << "<"
+        std::ostream &report = commentator().report (Commentator::LEVEL_ALWAYS, INTERNAL_DESCRIPTION);
+        report << "   " << string (80-t, ' ') << name << "<"
              << Simd::type_string() << "> " << string (40, '.')
              << (b ? " success" : " failure") << endl;
     }
@@ -199,21 +201,22 @@ struct Checker {
 template<template<typename, typename...> class ModImplem, typename Elt, typename... C>
 bool test_one_modular_implem (uint64_t bits, size_t k, unsigned long seed)
 {
+    std::ostream &report = commentator().report (Commentator::LEVEL_ALWAYS, INTERNAL_DESCRIPTION);
 	integer p;
 	if (!RandomFFTPrime::randomPrime (p, integer(1)<<bits, k))
 		throw LinboxError ("RandomFFTPrime::randomPrime failed");
     ModImplem<Elt, C...> GFp ((Elt) p);
 
-    cout << endl << string (80, '*') << endl;
-    cout << "Test FFT with " << TypeName<ModImplem>() << "<" << TypeName<Elt>();
+    report << endl << string (80, '*') << endl;
+    report << "Test FFT with " << TypeName<ModImplem>() << "<" << TypeName<Elt>();
     if (sizeof...(C) > 0)
-        cout << ", " << TypeName<C...>();
-    cout << ">, p=" << GFp.cardinality() << " (" << bits << " bits, 2^" << k;
-    cout << " divides p-1)" << endl;
+        report << ", " << TypeName<C...>();
+    report << ">, p=" << GFp.cardinality() << " (" << bits << " bits, 2^" << k;
+    report << " divides p-1)" << endl;
 
     bool b = true;
     for (size_t kc = 1; kc <= k; kc++) {
-        cout << "** with n=2^" << kc << endl;
+        report << "** with n=2^" << kc << endl;
         Checker<ModImplem<Elt, C...>> Test(GFp, kc);
         b &= Test.check (seed);
     }
@@ -235,9 +238,11 @@ int main (int argc, char *argv[]) {
 
     parseArguments (argc, argv, args);
 
-    cout << "# To rerun this test: test-fft-new -s " << seed << endl;
-    cout << "# seed = " << seed << endl;
+    std::ostream &report = commentator().report (Commentator::LEVEL_ALWAYS, INTERNAL_DESCRIPTION);
+    report << "# To rerun this test: test-fft-new -s " << seed << endl;
+    report << "# seed = " << seed << endl;
 
+    commentator().start ("Testing polynomial fft transforms", "test-fft", 1);
     /* Test with Modular<float>, a 12-bit prime and k=7 */
     pass &= test_one_modular_implem<Modular,float> (12, 7, seed);
 
@@ -273,7 +278,9 @@ int main (int argc, char *argv[]) {
     pass &= test_one_modular_implem<Modular,uint64_t,uint128_t> (62, 11, seed);
 #endif
 
-    cout << endl << "Test " << (pass ? "passed" : "failed") << endl;
+    report << endl << "Test " << (pass ? "passed" : "failed") << endl;
+    
+    commentator().stop(MSG_STATUS(pass),(const char *) 0,"test-fft");
     return pass ? 0 : 1;
 }
 
