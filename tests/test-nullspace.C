@@ -83,7 +83,7 @@ static bool testNullSpaceBasis (const Field& F, size_t m, size_t n, size_t rank,
 		commentator().progress(k);
 		BlasMatrix<Field> A(F,m,n+5);
 		BlasMatrix<Field> Aref(A,0,0,m,n);
-		RandomMatrixWithRank(F,A.getWritePointer(),m,n,n+5,rank);
+		RandomMatrixWithRank(F,A.getPointer(),m,n,n+5,rank);
 
 		//tests on a submatrix (more general/prone to errors)
 		BlasSubmatrix<BlasMatrix<Field> > Abis(A,0,0,m,n);

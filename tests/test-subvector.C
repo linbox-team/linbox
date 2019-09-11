@@ -63,7 +63,7 @@ int main(int argc, char** argv)
     static size_t n = 8;
     static Argument args[] =
     {
- 		{ 'n', "-n N", "Set size of vector to N.", TYPE_INT, &n},
+		{ 'n', "-n N", "Set size of vector to N.", TYPE_INT, &n},
 		END_OF_ARGUMENTS
     };
     parseArguments (argc, argv, args);
@@ -554,8 +554,8 @@ static bool testSubvector3(Field &F, size_t n)
 	typedef typename Field::Element Element;
 	typedef BlasVector<Field>	Vector;
 	typedef BlasSubvector<Vector>	subVector;
-	// typedef typename Vector::iterator       Iter;
-	typedef typename subVector::iterator 	Subiter;
+    //typedef typename Vector::iterator       Iter;
+	typedef typename subVector::iterator	Subiter;
 	typedef typename LinBox::Subvector<Subiter>	Subvect;
 	//typedef typename LinBox::Subvector<Vector, Subiter>	Subvect;
 	// typedef typename Subvect::const_iterator	ConstSubiterator;
@@ -583,7 +583,7 @@ static bool testSubvector3(Field &F, size_t n)
 	// fixme: at least constructor compiles.
 
 	// explicit (stored) stride of 1
-	Subvect zz(v.begin(), v.end());
+	//Subvect zz(v.begin(), v.end());  PG -> make no sense type Subvect does not share same iterator as v
 	// fixme: at least constructor compiles.
 
 
@@ -714,7 +714,8 @@ static bool testSubvector3(Field &F, size_t n)
 
 	report << "w.size() = 3 = " << w.size() << endl;
 	ret = ret && w.size() == 3;
-	report << "w.max_size() = 3 = " << w.max_size() << endl;
+
+    report << "w.max_size() = 3 = " << w.max_size() << endl;
 	ret = ret && w.max_size() == 3;
 
 	report << "w.front() = 1 = " << w.front() << endl;

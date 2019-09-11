@@ -48,7 +48,8 @@
 
 #include "linbox/blackbox/archetype.h"
 #include "linbox/matrix/matrix-traits.h"
-// #include "linbox/vector/blas-vector.h"
+
+#include "linbox/vector/blas-vector.h"
 
 namespace LinBox
 {
@@ -440,11 +441,12 @@ namespace LinBox
 		// Y <- Y + aX
 		template <class Matrix1, class Matrix3>
 		inline Matrix1 &saxpyin (Matrix1 &Y, const Element &a, const Matrix3 &X) const
-		{	// a crude hack for now
-			Element x, y;
+		{	
+			//Element x, y;
 			for (size_t i = 0; i < X.rowdim(); ++i)
 			for (size_t j = 0; j < X.coldim(); ++j)
-				Y.setEntry(i,j,field().axpyin(Y.getEntry(y,i,j), a, X.getEntry(x, i, j)));
+				//Y.setEntry(i,j,field().axpyin(Y.getEntry(y,i,j), a, X.getEntry(x, i, j)));
+                field().axpyin(Y.refEntry(i,j), a, X.getEntry(i, j));                
 			return Y;
 		}
 

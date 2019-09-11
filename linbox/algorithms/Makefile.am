@@ -107,7 +107,6 @@ pkgincludesub_HEADERS =            \
 	matpoly-mult.h                     \
 	matrix-hom.h                       \
 	matrix-inverse.h                   \
-	matrix-rank.h                      \
 	mg-block-lanczos.h                 \
 	mg-block-lanczos.inl               \
 	minpoly-integer.h                  \

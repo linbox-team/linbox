@@ -125,8 +125,8 @@ void generateProblem(const Ring& R, Matrix &D, Vector &b,
 		case I:
 		case diag: stream2.next (b);
 			//  special case?
-			if (n == 4) for (size_t i = 0; i < b.size(); ++i) b[(size_t)i] = 2*(i+1);
-			for (size_t i = 0; i < b.size(); ++i) b[(size_t)i] %= randLim;
+			if (n == 4) for (uint64_t i = 0; i < b.size(); ++i) b[(size_t)i] = 2*(i+1);
+			for (uint64_t i = 0; i < b.size(); ++i) b[(size_t)i] %= randLim;
 			break;
 		//  RHS with just first element 1
 		//case zo:

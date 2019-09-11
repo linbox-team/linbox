@@ -45,15 +45,15 @@ namespace LinBox { namespace BLAS3 {
 		linbox_check(TC.rowdim() == TC.coldim());
 		size_t l = TC.rowdim();
 
-		for (size_t i = 0 ; i < l ; ++i)
-			for (size_t j = 0 ; j < l ; ++j) {
+		for (uint64_t i = 0 ; i < l ; ++i)
+			for (uint64_t j = 0 ; j < l ; ++j) {
 				TC.field().init(TC.refEntry(i,j), pow((Integer)i,j));
 			}
 		BlasMatrixDomain<Zpz> BMD(TC.field()) ;
 		// TC.write(std::cout << "TC ") << std::endl;
 		// BMD.invert(iTC, TC);
 		int null;
-		FFPACK::Invert(TC.field(),l,TC.getPointer(),l,iTC.getWritePointer(),l,null);
+		FFPACK::Invert(TC.field(),l,TC.getPointer(),l,iTC.getPointer(),l,null);
 		// iTC.write(std::cout << "TC^(-1) ") << std::endl;
 		// TC.write(std::cout << "TC ") << std::endl;
 		return TC;
@@ -71,9 +71,6 @@ namespace LinBox { namespace BLAS3 {
 							   const size_t n,
 							   const mulMethod::ToomCook<GFpe> & T)
 		{
-#if (__LINBOX_FFLAS_FFPACK_VERSION < 10501)
-#warning "Invert is buggy in your fflas-ffpack version. please consider upgrading to >=1.5.1."
-#endif
 			const Zpz & F  = CMatBloc.field();
 			const GFpe& GF = T._myF ;
 			// linbox_check(T._myF.characacteristic() == F.characteristic());
@@ -104,7 +101,7 @@ namespace LinBox { namespace BLAS3 {
 								 AMatBloc.getPointer(), m*k,
 								 TC.getPointer()+ i*l, 1,
 								 F.zero,
-								 AEval.getWritePointer(), 1);
+								 AEval.getPointer(), 1);
 
 					FFLAS::fgemv(F, FFLAS::FflasTrans,
 								 e, k*n,
@@ -112,7 +109,7 @@ namespace LinBox { namespace BLAS3 {
 								 BMatBloc.getPointer(), k*n,
 								 TC.getPointer()+ i*l, 1,
 								 F.zero,
-								 BEval.getWritePointer(), 1);
+								 BEval.getPointer(), 1);
 
 					FFLAS::fgemm(F,
 								 FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
@@ -122,7 +119,7 @@ namespace LinBox { namespace BLAS3 {
 								 AEval.getPointer(), AEval.coldim(), //lda
 								 BEval.getPointer(), BEval.coldim(), //ldb
 								 F.zero,
-								 TMatBloc.getWritePointer()+i*m*n, n);
+								 TMatBloc.getPointer()+i*m*n, n);
 				}
 			}
 			else { /* time efficient (matmul) */
@@ -139,8 +136,8 @@ namespace LinBox { namespace BLAS3 {
 							 TC.getPointer(),l,
 							 AMatBloc.getPointer(), m*k,
 							 F.zero,
-							 AEval.getWritePointer(), m*k);
-				// TMatBloc.getWritePointer()+i*m*n, n);
+							 AEval.getPointer(), m*k);
+				// TMatBloc.getPointer()+i*m*n, n);
 
 				FFLAS::fgemm(F,
 							 FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
@@ -151,7 +148,7 @@ namespace LinBox { namespace BLAS3 {
 							 TC.getPointer(),l,
 							 BMatBloc.getPointer(), n*k,
 							 F.zero,
-							 BEval.getWritePointer(), n*k);
+							 BEval.getPointer(), n*k);
 
 				for (size_t i = 0 ; i < l ; ++i) {
 
@@ -163,7 +160,7 @@ namespace LinBox { namespace BLAS3 {
 								 AEval.getPointer()+i*m*k, k, //lda
 								 BEval.getPointer()+i*n*k, n, //ldb
 								 F.zero,
-								 TMatBloc.getWritePointer()+i*m*n, n);
+								 TMatBloc.getPointer()+i*m*n, n);
 				}
 			}
 
@@ -206,7 +203,7 @@ namespace LinBox { namespace BLAS3 {
 						 CompMat.getPointer(), l,
 						 iTC.getPointer(), l,
 						 F.zero,
-						 iEval.getWritePointer(), l);
+						 iEval.getPointer(), l);
 
 
 			// Y = [sum(BCK[i,j]*Y[j] for j in range(l)) for i in range(l)]
@@ -217,7 +214,7 @@ namespace LinBox { namespace BLAS3 {
 						 iEval.getPointer(), l,
 						 TMatBloc.getPointer(), m*n,
 						 F.zero,
-						 CMatBloc.getWritePointer(), m*n);
+						 CMatBloc.getPointer(), m*n);
 			return CMatBloc;
 
 		}
@@ -295,7 +292,7 @@ namespace LinBox { namespace BLAS3 {
 						 Af.getPointer(), A.getStride(), //lda
 						 Bf.getPointer(), B.getStride(), //ldb
 						 F.zero,
-						 Cf.getWritePointer(), C.getStride());
+						 Cf.getPointer(), C.getStride());
 			MatrixHom::map(C,Cf);
 			return C;
 		}

@@ -107,6 +107,7 @@ namespace LinBox {
             singular = (status != SS_OK);
         }
 
+
         // Either A is known to be singular, or we just failed trying to solve it as non-singular.
         if (singular) {
             if (m.singularSolutionType == SingularSolutionType::Diophantine) {

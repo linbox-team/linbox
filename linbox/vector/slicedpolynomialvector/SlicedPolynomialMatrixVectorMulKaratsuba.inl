@@ -18,7 +18,7 @@ namespace LinBox
 		{
 			for (int i = 0; i <B.size(); i++)
 			{
-				FFLAS::fgemv(F, FflasNoTrans, rd, cd, F.one, A[0].getPointer(), cd, B[i].getPointer(), 1, F.zero, C[i].getWritePointer(), 1);
+				FFLAS::fgemv(F, FflasNoTrans, rd, cd, F.one, A[0].getPointer(), cd, B[i].getPointer(), 1, F.zero, C[i].getPointer(), 1);
 			}
 			return C;
 		}
@@ -26,7 +26,7 @@ namespace LinBox
 		{
 			for (int i = 0; i < A.size(); i++)
 			{
-				FFLAS::fgemv(F, FflasNoTrans, rd, cd, F.one, A[i].getPointer(), cd, B[0].getPointer(), 1, F.zero, C[i].getWritePointer(), 1);
+				FFLAS::fgemv(F, FflasNoTrans, rd, cd, F.one, A[i].getPointer(), cd, B[0].getPointer(), 1, F.zero, C[i].getPointer(), 1);
 			}
 			return C;
 		}

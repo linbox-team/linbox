@@ -37,6 +37,7 @@
 #include "linbox/ring/modular.h"
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/matrix/random-matrix.h"
+#include "linbox/solutions/hadamard-bound.h"
 // #include <fflas-ffpack/fflas/fflas.h>
 #include "givaro/modular.h"
 #include "linbox/util/timer.h"
@@ -55,8 +56,8 @@ namespace LinBox { namespace Protected {
 		typedef Givaro::Modular<double>         Field;
 		typedef Field::Element          Element;
 		typedef SparseMatrix<Field,spfmt>       ModularMatrix ;
-		typedef BlasVector<Field>               ModularVector;
-		typedef BlasVector<Givaro::ZRing<Integer> >         IntegerVector;
+		typedef DenseVector<Field>               ModularVector;
+		typedef DenseVector<Givaro::ZRing<Integer> >         IntegerVector;
 		typedef SparseMatrix<Givaro::ZRing<Integer>,spfmt> IntegerMatrix ;
 
 #ifdef _LB_MM_TIMING
@@ -145,7 +146,21 @@ namespace LinBox { namespace Protected {
 } // Protected
 } // LinBox
 
-namespace LinBox { namespace BLAS2 {
+
+namespace LinBox {
+
+template<typename Container>
+Integer& magnitude(Integer& max_elt, const Container& v) {
+    max_elt = integer(0);
+    for(const auto& iter: v)
+			if (max_elt < Givaro::abs(iter))
+				max_elt = Givaro::abs(iter) ;
+    return max_elt;
+}
+
+
+
+namespace BLAS2 {
 
 	template<class _anyVector>
 	_anyVector & mul (_anyVector& C,
@@ -155,10 +170,10 @@ namespace LinBox { namespace BLAS2 {
 	{
 
 
-		integer mA, mB ;
-		mA = A.magnitude();
-		mB = B.magnitude();
-		integer cA = (integer) A.maxrow();
+		integer mA, mB, mC ;
+        mA = A.magnitude();
+		magnitude(mB, B);
+		integer cA = uint64_t(A.maxrow());
 		double logC = Givaro::naturallog(mA*mB*cA);
 
 		typedef Givaro::Modular<double> ModularField ;
@@ -173,18 +188,15 @@ namespace LinBox { namespace BLAS2 {
 
             cra(C, iteration, genprime);
 
-#ifdef _LB_DEBUG
-#ifdef _LB_MM_TIMING
-#endif
-
-            Integer mC;
-            mC = C.magnitude();
-            report << "C max: " << logtwo(mC) <<  " (" << LinBox::naturallog(mC) << ')' << std::endl;
-#endif
 
 		}
 
-		report << mA << ',' << mB << ',' <<  C.magnitude() << std::endl;
+        magnitude(mC, C);
+#ifdef _LB_DEBUG
+            report << "C max: " << logtwo(mC) <<  " (" << LinBox::naturallog(mC) << ')' << std::endl;
+#endif
+
+		report << mA << ',' << mB << ',' << mC << std::endl;
 
 		return C;
 
@@ -230,9 +242,9 @@ int main(int ac, char ** av) {
 		GF.write(report << "This is the field with " << (Integer)pow((Integer)p,e) << " elements: ") << ", using: "   << GF.irreducible() << " as irreducible polynomial" << std::endl;
 		report << "matrices are " << m << 'x' << k << " and " << k << 'x' << n <<  std::endl;
 
-		BlasMatrix<GFpe> A(GF,m,k);
-		BlasMatrix<GFpe> B(GF,k,n);
-		BlasMatrix<GFpe> C(GF,m,n);
+		DenseMatrix<GFpe> A(GF,m,k);
+		DenseMatrix<GFpe> B(GF,k,n);
+		DenseMatrix<GFpe> C(GF,m,n);
 
 		typedef GFpe::RandIter Randiter;
 		Randiter R(GF);
@@ -249,7 +261,7 @@ int main(int ac, char ** av) {
 
 		{
 			report << "ToomCook low mem" << std::endl;
-			BlasMatrix<GFpe> D(GF,m,n);
+			DenseMatrix<GFpe> D(GF,m,n);
 			Tim.clear(); Tim.start();
 			BLAS3::mul(D,A,B,BLAS3::mulMethod::ToomCook<GFpe>(GF,false));
 			Tim.stop();
@@ -263,7 +275,7 @@ int main(int ac, char ** av) {
 
 		{
 			report << "ToomCook high mem" << std::endl;
-			BlasMatrix<GFpe> D(GF,m,n);
+			DenseMatrix<GFpe> D(GF,m,n);
 			Tim.clear(); Tim.start();
 			BLAS3::mul(D,A,B,BLAS3::mulMethod::ToomCook<GFpe>(GF,true));
 			Tim.stop();
@@ -277,7 +289,7 @@ int main(int ac, char ** av) {
 
 		{
 			report << "Matrix Domain" << std::endl;
-			BlasMatrix<GFpe> D(GF,m,n);
+			DenseMatrix<GFpe> D(GF,m,n);
 			Tim.clear(); Tim.start();
 			MD.mul(D,A,B);
 			Tim.stop();
@@ -294,12 +306,14 @@ int main(int ac, char ** av) {
 
             Givaro::ZRing<Integer> ZZ ;
 		MatrixDomain<Givaro::ZRing<Integer> > MD(ZZ);
-		BlasMatrix<Givaro::ZRing<Integer> > A(ZZ,m,k) ;
-		BlasMatrix<Givaro::ZRing<Integer> > B(ZZ,k,n) ;
-		BlasMatrix<Givaro::ZRing<Integer> > C(ZZ,m,n) ;
+		DenseMatrix<Givaro::ZRing<Integer> > A(ZZ,m,k) ;
+		DenseMatrix<Givaro::ZRing<Integer> > B(ZZ,k,n) ;
+		DenseMatrix<Givaro::ZRing<Integer> > C(ZZ,m,n) ;
 
-		A.random((unsigned)b);
-		B.random((unsigned)b);
+		//A.random((unsigned)b);
+		//B.random((unsigned)b);
+		A.random(); // BUG: b is ignored but was already the case before
+		B.random();
 
 		report << "Naïve " << std::endl ;
 		Tim.clear() ; Tim.start() ;
@@ -310,7 +324,7 @@ int main(int ac, char ** av) {
 #ifdef __LINBOX_HAVE_FLINT
 		{
 			report << "FLINT " << std::endl;
-			BlasMatrix<Givaro::ZRing<Integer> > D(ZZ,m,n);
+			DenseMatrix<Givaro::ZRing<Integer> > D(ZZ,m,n);
 			Tim.clear(); Tim.start();
 			BLAS3::mul(D,A,B,BLAS3::mulMethod::FLINT());
 			Tim.stop();
@@ -325,7 +339,7 @@ int main(int ac, char ** av) {
 
 		{
 			report << "Matrix Domain" << std::endl;
-			BlasMatrix<Givaro::ZRing<Integer> > D(ZZ,m,n);
+			DenseMatrix<Givaro::ZRing<Integer> > D(ZZ,m,n);
 			Tim.clear(); Tim.start();
 			MD.mul(D,A,B);
 			Tim.stop();
@@ -339,7 +353,7 @@ int main(int ac, char ** av) {
 
 		{
 			report << "CRA " << std::endl;
-			BlasMatrix<Givaro::ZRing<Integer> > D(ZZ,m,n);
+			DenseMatrix<Givaro::ZRing<Integer> > D(ZZ,m,n);
 			Tim.clear(); Tim.start();
 			BLAS3::mul(D,A,B,BLAS3::mulMethod::CRA());
 			Tim.stop();
@@ -369,7 +383,7 @@ int main(int ac, char ** av) {
 
 		BlackBox A (ZZ, stream);
 
-		typedef BlasVector<Field> Vector ;
+		typedef DenseVector<Field> Vector ;
 		Vector x(ZZ,k);
 		Vector y(ZZ,m);
 
@@ -388,7 +402,7 @@ int main(int ac, char ** av) {
 		{
 
 
-			BlasVector<Givaro::ZRing<Integer> > z(ZZ,m);
+			DenseVector<Givaro::ZRing<Integer> > z(ZZ,m);
 			Tim.clear(); Tim.start();
 			BLAS2::mul(z,A,x,BLAS3::mulMethod::CRA());
 			Tim.stop();

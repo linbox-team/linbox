@@ -39,7 +39,7 @@
 
 namespace LinBox { /*  forward declarations */
 
-	template <class _Field, class _blasRep=typename Vector<_Field>::Dense >
+	template <class _Field, class _Storage=typename Vector<_Field>::Dense >
 	class BlasMatrix ;
 
 	template <class _Field>
