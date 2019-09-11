@@ -302,7 +302,7 @@ namespace LinBox {
             DIT_core (Element *coeffs, size_t w, size_t f, const Element *pow,
                         const Element *powp, FFTSimdHelper<1>,
                         size_t bound = 0) const {
-                bound = bound ? std::min (uint64_t(bound), n) : n;
+                bound = bound ? std::min (bound, n) : n;
                 for ( ; w < bound; w <<= 1, f >>= 1, pow -= w, powp -= w) {
                     Element *Aptr = coeffs;
                     Element *Bptr = coeffs + w;
@@ -343,7 +343,7 @@ namespace LinBox {
             DIF_reversed_core (Element *coeffs, size_t w, size_t f,
                                 const Element *pow, const Element *powp,
                                 FFTSimdHelper<1>, size_t bound = 0) const {
-                bound = bound ? std::min (uint64_t(bound), n) : n;
+                bound = bound ? std::min (bound, n) : n;
                 for ( ; w < bound; pow += f, powp += f, w <<= 1, f >>= 1) {
                     Element *Aptr = coeffs;
                     Element *Bptr = coeffs + w;
