@@ -26,9 +26,10 @@
 
 #include "linbox/algorithms/polynomial-matrix/fft.h"
 #include "linbox/randiter/random-fftprime.h"
-#include "linbox/ring/modular.h"
 
+#include <givaro/modular.h>
 #include <givaro/modular-extended.h>
+#include <fflas-ffpack/utils/args-parser.h>
 
 #include <functional>
 #include <iostream>
@@ -39,6 +40,7 @@ using namespace std;
 using namespace LinBox;
 using Givaro::Modular;
 using Givaro::ModularExtended;
+using FFLAS::parseArguments;
 
 /* For pretty printing type */
 template<typename ...> const char *TypeName();
@@ -58,15 +60,14 @@ REGISTER_TYPE_NAME(ModularExtended);
 
 /******************************************************************************/
 template<typename Field, typename Simd>
-struct BenchFFT : public FFT<Field, Simd> {
-    using base = FFT<Field, Simd>;
-    using elt_vect_t = typename Simd::aligned_vector;
-
+struct BenchFFT {
     static const size_t min_run = 4; /* do at least this number of run of fft */
 
-    BenchFFT (const Field &F, size_t k, unsigned long seed) : base (F, k) {
+    FFT<Field, Simd> fft;
 
-        elt_vect_t in (this->n), v(this->n);
+    BenchFFT (const Field &F, size_t k, unsigned long seed) : fft (F, k) {
+
+        typename Simd::aligned_vector in (fft.size()), v(fft.size());
         Timer chrono;
         double time;
         size_t cnt;
@@ -80,7 +81,7 @@ struct BenchFFT : public FFT<Field, Simd> {
         v = in;
         chrono.start();
         for (cnt = 0; cnt < min_run || chrono.realElapsedTime() < 1 ; cnt++)
-            this->DIF (v.data());
+            fft.DIF (v.data());
         time = chrono.userElapsedTime()/cnt; /* time per iteration */
         print_result_line ("DIF", time);
 
@@ -88,7 +89,7 @@ struct BenchFFT : public FFT<Field, Simd> {
         v = in;
         chrono.start();
         for (cnt = 0; cnt < min_run || chrono.realElapsedTime() < 1 ; cnt++)
-            this->DIT_reversed (v.data());
+            fft.DIT_reversed (v.data());
         time = chrono.userElapsedTime()/cnt; /* time per iteration */
         print_result_line ("DIT_reversed", time);
 
@@ -96,7 +97,7 @@ struct BenchFFT : public FFT<Field, Simd> {
         v = in;
         chrono.start();
         for (cnt = 0; cnt < min_run || chrono.realElapsedTime() < 1 ; cnt++)
-            this->FFT_direct (v.data());
+            fft.FFT_direct (v.data());
         time = chrono.userElapsedTime()/cnt; /* time per iteration */
         print_result_line ("FFT_direct", time);
 
@@ -106,7 +107,7 @@ struct BenchFFT : public FFT<Field, Simd> {
         v = in;
         chrono.start();
         for (cnt = 0; cnt < min_run || chrono.realElapsedTime() < 1 ; cnt++)
-            this->DIT (v.data());
+            fft.DIT (v.data());
         time = chrono.userElapsedTime()/cnt; /* time per iteration */
         print_result_line ("DIT", time);
 
@@ -114,7 +115,7 @@ struct BenchFFT : public FFT<Field, Simd> {
         v = in;
         chrono.start();
         for (cnt = 0; cnt < min_run || chrono.realElapsedTime() < 1 ; cnt++)
-            this->DIF_reversed (v.data());
+            fft.DIF_reversed (v.data());
         time = chrono.userElapsedTime()/cnt; /* time per iteration */
         print_result_line ("DIF_reversed", time);
 
@@ -122,7 +123,7 @@ struct BenchFFT : public FFT<Field, Simd> {
         v = in;
         chrono.start();
         for (cnt = 0; cnt < min_run || chrono.realElapsedTime() < 1 ; cnt++)
-            this->FFT_inverse (v.data());
+            fft.FFT_inverse (v.data());
         time = chrono.userElapsedTime()/cnt; /* time per iteration */
         print_result_line ("FFT_inverse", time);
     }
@@ -130,7 +131,8 @@ struct BenchFFT : public FFT<Field, Simd> {
     void
     print_result_line (const char *name, double time) {
         /* Miops = #operation (~3/2 n log n) / time / 1e6 */
-        double Miops = 17 * (this->l2n<<(this->l2n-1)) / (1e6 * time);
+        size_t l2n = fft.log2_size();
+        double Miops = 17 * (l2n<<(l2n-1)) / (1e6 * time);
         size_t t = strlen(name) + Simd::type_string().size() + 15 + 35;
         cout << "  " << string (80-t, ' ') << name << "<";
         cout << Simd::type_string() << "> " << string (15, '.');
