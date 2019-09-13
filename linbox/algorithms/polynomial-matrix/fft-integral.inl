@@ -612,7 +612,9 @@ namespace LinBox {
                 }
             }
 
-            /* For vect_size == 4 */
+            /* For vect_size == 4 and Field != Modular<uint32_t, uint64_t> */
+            template <typename E=Element, typename C=typename Field::Compute_t,
+                      typename std::enable_if<!std::is_same<E, uint32_t>::value || !std::is_same<C, uint64_t>::value>::type* = nullptr>
             void
             DIF_core_laststeps (Element *coeffs, size_t w, size_t f,
                                 const Element *pow, const Element *powp,
@@ -625,6 +627,7 @@ namespace LinBox {
                 } else {
                     simd_vect_t W = Simd::set (pow[0], pow[0], pow[1], pow[1]);
                     simd_vect_t Wp = Simd::set(powp[0],powp[0],powp[1],powp[1]);
+
                     for (size_t i = 0; i < f; i += 2, coeffs += incr) {
                         simd_vect_t V1, V2, T;
 
@@ -657,7 +660,69 @@ namespace LinBox {
                 }
             }
 
-            /* For vect_size == 8 */
+            /* For vect_size == 4 and Field == Modular<uint32_t, uint64_t> */
+            template <typename E=Element, typename C=typename Field::Compute_t,
+                      typename std::enable_if<std::is_same<E, uint32_t>::value && std::is_same<C, uint64_t>::value>::type* = nullptr>
+            void
+            DIF_core_laststeps (Element *coeffs, size_t w, size_t f,
+                                const Element *pow, const Element *powp,
+                                const simd_vect_t& P, const simd_vect_t& P2,
+                                FFTSimdHelper<4>) const {
+                const constexpr size_t incr = Simd::vect_size << 1;
+                if (n < incr) {
+                    DIF_core_laststeps (coeffs, w, f, pow, powp, P, P2,
+                                                            FFTSimdHelper<1>());
+                } else {
+                    simd_vect_t W = Simd::set1 (pow[1]);
+                    simd_vect_t Wp = Simd::set1 (powp[1]);
+
+                    for (size_t i = 0; i < f; i += 2, coeffs += incr) {
+                        simd_vect_t V1, V2, V3, V4, V5, V6, V7, T;
+
+                        V1 = Simd::load (coeffs);
+                        V2 = Simd::load (coeffs + Simd::vect_size);
+
+                        /* transform V1 = [A B C D], V2 = [E F G H]
+                         *      into V1 = [A E B F], V2 = [C G D H]
+                         */
+                        SimdExtra::unpacklohi (V1, V2, V1, V2);
+
+                        /*** last but one step ********************************/
+                        T = SimdExtra::add_mod (V1, V2, P2);
+                        V2 = SimdExtra::sub_mod (V1, V2, P2);
+
+                        /* V4 = [D D H H] */
+                        V4 = Simd::unpackhi (V2, V2);
+                        /* Using extended mul (mulx) to compute V4*Wp as we only
+                         * need to compute the product for half of the entries.
+                         */
+                        V7 = Simd128<uint64_t>::mulx (V4, Wp);
+                        V5 = Simd::mullo (V7, P);
+                        V6 = Simd::mullo (V4, W);
+                        V4 = Simd::sub (V6, V5);
+                        /* V3 = [ ? ? D H ] */
+                        V3 = Simd::template shuffle<0xDD> (V4);
+                        /* We need V1 = [A C E G], V2 = [B D F H] */
+                        V1 = Simd::unpacklo (T, V2);
+                        V2 = Simd::unpackhi (T, V3);
+
+                        /*** last step (special butterfly with mul by 1) ******/
+                        T = SimdExtra::add_mod (V1, V2, P2);
+                        V2 = SimdExtra::sub_mod (V1, V2, P2);
+
+                        /* transform  T = [A C E G], V2 = [B D F H]
+                         *      into V1 = [A B C D], V2 = [E F G H] and store
+                         */
+                        SimdExtra::unpacklohi (V1, V2, T, V2);
+                        Simd::store (coeffs, V1);
+                        Simd::store (coeffs + Simd::vect_size, V2);
+                    }
+                }
+            }
+
+            /* For vect_size == 8 and Field != Modular<uint32_t, uint64_t> */
+            template <typename E=Element, typename C=typename Field::Compute_t,
+                      typename std::enable_if<!std::is_same<E, uint32_t>::value || !std::is_same<C, uint64_t>::value>::type* = nullptr>
             void
             DIF_core_laststeps (Element *coeffs, size_t w, size_t f,
                                 const Element *pow, const Element *powp,
@@ -676,6 +741,7 @@ namespace LinBox {
                                                 pow[5], pow[5], pow[5], pow[5]);
                     simd_vect_t W2p = Simd::set(powp[4],powp[4],powp[4],powp[4],
                                                powp[5],powp[5],powp[5],powp[5]);
+
                     for (size_t i = 0; i < f; i += 2, coeffs += incr) {
                         simd_vect_t V1, V2, T;
 
@@ -700,6 +766,84 @@ namespace LinBox {
                          *      V1 = [A C E G I K M O], V2 = [B D F H J L N P]
                          */
                         SimdExtra::unpacklohi (V1, V2, V1, V2);
+
+                        /*** last step (special butterfly with mul by 1) ******/
+                        T = SimdExtra::add_mod (V1, V2, P2);
+                        V2 = SimdExtra::sub_mod (V1, V2, P2);
+
+                        /* transform into
+                         *      V1 = [A B C D E F G H], V2 = [I J K L M N O P]
+                         */
+                        SimdExtra::unpacklohi (V1, V2, T, V2);
+
+                        Simd::store (coeffs, V1);
+                        Simd::store (coeffs + Simd::vect_size, V2);
+                    }
+                }
+            }
+
+            /* For vect_size == 8 and Field == Modular<uint32_t, uint64_t> */
+            template <typename E=Element, typename C=typename Field::Compute_t,
+                      typename std::enable_if<std::is_same<E, uint32_t>::value && std::is_same<C, uint64_t>::value>::type* = nullptr>
+            void
+            DIF_core_laststeps (Element *coeffs, size_t w, size_t f,
+                                const Element *pow, const Element *powp,
+                                const simd_vect_t& P, const simd_vect_t& P2,
+                                FFTSimdHelper<8>) const {
+                const constexpr size_t incr = Simd::vect_size << 1;
+                if (n < incr) {
+                    DIF_core_laststeps (coeffs, w, f, pow, powp, P, P2,
+                                                            FFTSimdHelper<1>());
+                } else {
+                    simd_vect_t W = Simd::set (pow[0], pow[1], pow[2], pow[3],
+                                               pow[0], pow[1], pow[2], pow[3]);
+                    simd_vect_t Wp = Simd::set (powp[0],powp[1],powp[2],powp[3],
+                                               powp[0],powp[1],powp[2],powp[3]);
+                    simd_vect_t W2 = Simd::set1 (pow[5]);
+                    simd_vect_t W2p = Simd::set1 (powp[5]);
+
+                    for (size_t i = 0; i < f; i += 2, coeffs += incr) {
+                        simd_vect_t V1, V2, T;
+                        simd_vect_t V3, V4, V5, V6, V7, Q;
+
+                        V1 = Simd::load (coeffs);
+                        V2 = Simd::load (coeffs + Simd::vect_size);
+
+                        /* transform into
+                         *      V3 = [A B C D I J K L], V4 = [E F G H M N O P]
+                         */
+                        V3 = Simd256<uint64_t>::unpacklo128 (V1, V2);
+                        V4 = Simd256<uint64_t>::unpackhi128 (V1, V2);
+
+                        /*** step *********************************************/
+                        Butterfly_DIF (V3, V4, W, Wp, P, P2);
+
+                        /* transform into
+                         *      V1 = [A E B F I M J N], V2 = [C G D H K O L P]
+                         */
+                        V1 = Simd::unpacklo_twice (V3, V4);
+                        V2 = Simd::unpackhi_twice (V3, V4);
+
+                        /*** last but one step ********************************/
+                        T = SimdExtra::add_mod (V1, V2, P2);
+                        V7 = SimdExtra::sub_mod (V1, V2, P2);
+
+                        /* V4 = [D D H H L L P P ] */
+                        V4 = Simd::unpackhi_twice (V7, V7);
+                        /* Using extended mul (mulx) to compute V4*Wp as we only
+                         * need to compute the product for half of the entries.
+                         */
+                        Q = Simd256<uint64_t>::mulx (V4, W2p);
+                        V5 = Simd::mullo (Q, P);
+                        V6 = Simd::mullo (V4, W2);
+                        V3 = Simd::sub (V6, V5);
+                        /* V2 = [* * D H * * L P] */
+                        V2 = Simd::template shuffle_twice<0xDD> (V3);
+                        /* We need
+                         *      V3 = [A C E G I K M O], V4 = [B D F H J L N P]
+                         */
+                        V1 = Simd::unpacklo_twice (T, V7);
+                        V2 = Simd::unpackhi_twice (T, V2);
 
                         /*** last step (special butterfly with mul by 1) ******/
                         T = SimdExtra::add_mod (V1, V2, P2);
@@ -795,7 +939,9 @@ namespace LinBox {
                 }
             }
 
-            /* For vect_size == 4 */
+            /* For vect_size == 4 and Field != Modular<uint32_t, uint64_t> */
+            template <typename E=Element, typename C=typename Field::Compute_t,
+                      typename std::enable_if<!std::is_same<E, uint32_t>::value || !std::is_same<C, uint64_t>::value>::type* = nullptr>
             void
             DIT_core_firststeps (Element *coeffs, size_t &w, size_t &f,
                                     const Element *&pow, const Element *&powp,
@@ -852,7 +998,85 @@ namespace LinBox {
                 }
             }
 
-            /* For vect_size == 8 */
+            /* For vect_size == 4 and Field == Modular<uint32_t, uint64_t> */
+            template <typename E=Element, typename C=typename Field::Compute_t,
+                      typename std::enable_if<std::is_same<E, uint32_t>::value && std::is_same<C, uint64_t>::value>::type* = nullptr>
+            void
+            DIT_core_firststeps (Element *coeffs, size_t &w, size_t &f,
+                                    const Element *&pow, const Element *&powp,
+                                    const simd_vect_t& P, const simd_vect_t& P2,
+                                    FFTSimdHelper<4>) const {
+                const constexpr size_t incr = Simd::vect_size << 1;
+                if (n < incr) {
+                    DIT_core_firststeps (coeffs, w, f, pow, powp, P, P2,
+                                                            FFTSimdHelper<1>());
+                } else {
+                    f >>= 2;
+                    w <<= 2;
+                    pow -= 2;
+                    powp -= 2;
+                    simd_vect_t W = Simd::set1 (pow[1]);
+                    simd_vect_t Wp = Simd::set1 (powp[1]);
+                    for (size_t i = 0; i < f; i++, coeffs += incr) {
+                        simd_vect_t V1, V2, V3, V4, T1, T2, T3, T4;
+
+                        V1 = Simd::load (coeffs);
+                        V2 = Simd::load (coeffs + Simd::vect_size);
+
+                        /* transform V1 = [A B C D], V2 = [E F G H]
+                         *      into V1 = [A E C G], V2 = [B F D H]
+                         */
+                        T1 = Simd::template shuffle<0xD8> (V1);
+                        T2 = Simd::template shuffle<0xD8> (V2);
+                        V1 = Simd::unpacklo (T1, T2);
+                        V2 = Simd::unpackhi (T1, T2);
+
+                        /*** first step (special butterfly with mul by 1) *****/
+                        /* We know that entries of V1 and V2 are < P (because
+                         * this is the first step), so the addition and the
+                         * substration can be done with P, not P2.
+                         */
+                        V3 = Simd::add (V1, V2);
+                        V4 = SimdExtra::sub_mod (V1, V2, P);
+
+                        /*** second step **************************************/
+                        /* T1 = [D D H H] */
+                        T1 = Simd::unpackhi (V4, V4);
+                        /* Using extended mul (mulx) to compute T1*Wp as we only
+                         * need to compute the product for half of the entries.
+                         */
+                        T2 = Simd128<uint64_t>::mulx (T1, Wp);
+                        T3 = Simd::mullo (T2, P);
+                        T4 = Simd::mullo (T1, W);
+                        T1 = Simd::sub (T4, T3);
+                        /* T2 = [ ? ? D H ] */
+                        T2 = Simd::template shuffle<0xDD> (T1);
+                        /* We need V1 = [A B E F], V2 = [C D G H] */
+                        V1 = Simd::unpacklo (V3, V4);
+                        V2 = Simd::unpackhi (V3, T2);
+
+                        T1 = Simd::add (V1, V2);
+                        T2 = SimdExtra::sub_mod (V1, V2, P2);
+
+                        /* transform T1 = [A B E F], T2 = [C D G H]
+                         *      into V1 = [A B C D], V2 = [E F G H] and store
+                         */
+                        V1 = Simd::unpacklo (T1, T2);
+                        V2 = Simd::unpackhi (T1, T2);
+                        T1 = Simd::template shuffle<0xD8> (V1);
+                        T2 = Simd::template shuffle<0xD8> (V2);
+
+                        Simd::store (coeffs, T1);
+                        Simd::store (coeffs + Simd::vect_size, T2);
+                    }
+                    pow -= w;
+                    powp -= w;
+                }
+            }
+
+            /* For vect_size == 8 and Field != Modular<uint32_t, uint64_t> */
+            template <typename E=Element, typename C=typename Field::Compute_t,
+                      typename std::enable_if<!std::is_same<E, uint32_t>::value || !std::is_same<C, uint64_t>::value>::type* = nullptr>
             void
             DIT_core_firststeps (Element *coeffs, size_t &w, size_t &f,
                                     const Element *&pow, const Element *&powp,
@@ -917,6 +1141,100 @@ namespace LinBox {
                          *      V1 = [A B C D E F G H], V2 = [I J K L M N O P]
                          */
                         SimdExtra::pack (V1, V2, V1, V2);
+
+                        Simd::store (coeffs, V1);
+                        Simd::store (coeffs + Simd::vect_size, V2);
+                    }
+                    pow -= w;
+                    powp -= w;
+                }
+            }
+
+            /* For vect_size == 8 and Field == Modular<uint32_t, uint64_t> */
+            template <typename E=Element, typename C=typename Field::Compute_t,
+                      typename std::enable_if<std::is_same<E, uint32_t>::value && std::is_same<C, uint64_t>::value>::type* = nullptr>
+            void
+            DIT_core_firststeps (Element *coeffs, size_t &w, size_t &f,
+                                    const Element *&pow, const Element *&powp,
+                                    const simd_vect_t& P, const simd_vect_t& P2,
+                                    FFTSimdHelper<8>) const {
+                const constexpr size_t incr = Simd::vect_size << 1;
+                if (n < incr) {
+                    DIT_core_firststeps (coeffs, w, f, pow, powp, P, P2,
+                                                            FFTSimdHelper<1>());
+                } else {
+                    f >>= 3;
+                    w <<= 3;
+                    pow -= 2;
+                    powp -= 2;
+                    simd_vect_t W = Simd::set1 (pow[1]);
+                    simd_vect_t Wp = Simd::set1 (powp[1]);
+                    pow -= 4;
+                    powp -= 4;
+                    simd_vect_t W2 = Simd::set (pow[0], pow[1], pow[2], pow[3],
+                                                pow[0], pow[1], pow[2], pow[3]);
+                    simd_vect_t W2p = Simd::set(powp[0],powp[1],powp[2],powp[3],
+                                               powp[0],powp[1],powp[2],powp[3]);
+                    for (size_t i = 0; i < f; i++, coeffs += incr) {
+                        simd_vect_t V1, V2, V3, V4, V5, V6, V7, Q;
+
+                        V1 = Simd::load (coeffs);
+                        V2 = Simd::load (coeffs + Simd::vect_size);
+
+                        /* transform into
+                         *      V3 = [A I C K E M G O], V4 = [B J D L F N H P]
+                         */
+                        V6 = Simd::unpacklo_twice(V1,V2);
+                        V7 = Simd::unpackhi_twice(V1,V2);
+                        V3 = Simd256<uint64_t>::unpacklo_twice(V6,V7);
+                        V4 = Simd256<uint64_t>::unpackhi_twice(V6,V7);
+
+                        /*** first step (special butterfly with mul by 1) *****/
+                        /* We know that entries of V1 and V2 are < P (because
+                         * this is the first step), so the addition and the
+                         * substration can be done with P, not P2.
+                         */
+                        V1 = Simd::add(V3,V4);
+                        V2 = SimdExtra::sub_mod (V3, V4, P);
+
+                        /*** second step **************************************/
+                        /* V5 = [D D L L H H P P] */
+                        V5 = Simd::unpackhi_twice (V2, V2);
+                        /* Using extended mul (mulx) to compute V5*Wp as we only
+                         * need to compute the product for half of the entries.
+                         */
+                        Q = Simd256<uint64_t>::mulx (V5, Wp);
+                        V6 = Simd::mullo (Q, P);
+                        V7 = Simd::mullo (V5, W);
+                        V3 = Simd::sub (V7, V6);
+                        /* V7 = [D L * * H P * *] */
+                        V7 = Simd::template shuffle_twice<0xFD> (V3);
+                        /* We need
+                         *      V3 = [A B I J E F M N], V4 = [C D K L G H O P]
+                         */
+                        V6 = Simd256<uint64_t>::unpacklo_twice (V2, V7);
+                        V3 = Simd::unpacklo_twice (V1, V6);
+                        V4 = Simd::unpackhi_twice (V1, V6);
+
+                        V1 = Simd::add (V3, V4);
+                        V2 = SimdExtra::sub_mod (V3, V4, P2);
+
+                        /* transform into
+                         *      V3 = [A B C D I J K L], V4 = [E F G H M N O P]
+                         */
+                        V6 = Simd256<uint64_t>::unpacklo_twice (V1, V2);
+                        V7 = Simd256<uint64_t>::unpackhi_twice (V1, V2);
+                        V3 = Simd256<uint64_t>::unpacklo128 (V6, V7);
+                        V4 = Simd256<uint64_t>::unpackhi128 (V6, V7);
+
+                        /*** third step ***************************************/
+                        Butterfly_DIT (V3, V4, W2, W2p, P, P2);
+
+                        /* transform into
+                         *      V1 = [A B C D E F G H], V2 = [I J K L M N O P]
+                         */
+                        V1 = Simd256<uint64_t>::unpacklo128 (V3, V4);
+                        V2 = Simd256<uint64_t>::unpackhi128 (V3, V4);
 
                         Simd::store (coeffs, V1);
                         Simd::store (coeffs + Simd::vect_size, V2);
