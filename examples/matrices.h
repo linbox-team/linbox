@@ -78,7 +78,7 @@ void scramble(LinBox::DenseMatrix<Ring>& M)
 template <class PIR>
 void RandomRoughMat(LinBox::DenseMatrix<PIR>& M, PIR& R, int n) {
 	M.resize((size_t)n, (size_t)n, R.zero);
-	if (n > 10000) {cerr << "n too big" << endl; exit(-1);}
+	if (n > 10000) {std::cerr << "n too big" << std::endl; exit(-1);}
 	int jth_factor[130] =
         {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67,
          71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149,
@@ -194,9 +194,10 @@ void TrefMat(LinBox::DenseMatrix<PIR>& M, PIR& R, int n) {
 
 struct pwrlist
 {
-	vector<Givaro::Integer> m;
+	std::vector<Givaro::Integer> m;
 	pwrlist(Givaro::Integer q)
-        { m.push_back(1); m.push_back(q); //cout << "pwrlist " << m[0] << " " << m[1] << endl;
+        { m.push_back(1); m.push_back(q); 
+//cout << "pwrlist " << m[0] << " " << m[1] << endl;
         }
 	Givaro::Integer operator[](int e)
         {
@@ -208,13 +209,13 @@ struct pwrlist
 // Read "1" or "q" or "q^e", for some (small) exponent e.
 // Return value of the power of q at q = _q.
 template <class num>
-num& qread(num& Val, pwrlist& M, istream& in)
+num& qread(num& Val, pwrlist& M, std::istream& in)
 {
 	char c;
 	in >> c; // next nonwhitespace
 	if (c == '0') return Val = 0;
 	if (c == '1') return Val = 1;
-	if (c != 'p' && c != 'q') { cout << "exiting due to unknown char " << c << endl; exit(-1);}
+	if (c != 'p' && c != 'q') { std::cerr << "exiting due to unknown char " << c << std::endl; exit(-1);}
 	in.get(c);
 	if (c !='^') {in.putback(c); return Val = M[1];}
 	else
@@ -231,9 +232,41 @@ void KratMat(LinBox::DenseMatrix<PIR>& M, PIR& R, int q)
 
 		for ( unsigned int j = 0; j < M.coldim(); ++ j) {
 			int Val;
-			qread(Val, pwrs, cin);
+			qread(Val, pwrs, std::cin);
 			R. init (M[(size_t)i][(size_t)j], Val);
 		}
 }
 
 ///// end krat ////////////////////////////
+
+
+
+template <class PIR>
+void MolerMat(LinBox::DenseMatrix<PIR>& A, PIR& R, int n)
+{
+    typename PIR::Element tmp; R.init(tmp);
+    
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < i; ++j)
+            A.setEntry( i, j, R.init(tmp, j-1) );
+        A.setEntry(i,i, R.init(tmp, i+1) );
+        for (int j = i+1; j < n; ++j)
+            A.setEntry( i, j, R.init(tmp, i-1) );
+    }    
+}
+
+//  n-by-n matrix of 0's and 1's defined by 
+//  A(i,j) = 1, if j = 1 or if i divides j, 
+//  and A(i,j) = 0 otherwise.
+template <class PIR>
+void RedhefferMat(LinBox::DenseMatrix<PIR>& A, PIR& R, int n)
+{
+    for (int i = 0; i < n; ++i) {
+        A.setEntry(i,0, R.one);
+        for (int j = 1; j < n; ++j)
+            if ( ((j+1)%(i+1)) == 0 )
+                A.setEntry( i, j, R.one );
+    }
+}
+
+
