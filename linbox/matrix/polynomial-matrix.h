@@ -23,6 +23,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  * ========LICENCE========
  */
+#ifndef __OLD_POLYNOMIAL_MATRIX
+#include "linbox/matrix/new-polynomial-matrix.h"
+#else
+
 #ifndef __LINBOX_polynomial_matrix_H
 #define __LINBOX_polynomial_matrix_H
 #include <vector>
@@ -751,6 +755,8 @@ namespace LinBox{
 } //end of namespace LinBox
 
 #endif // __LINBOX_polynomial_matrix_H
+
+#endif //__OLD_POLYNOMIAL_MATRIX
 
 // Local Variables:
 // mode: C++
