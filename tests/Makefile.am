@@ -156,6 +156,7 @@ CHECKER_TESTS =                 \
     test-modular-float          \
     test-modular-int            \
     test-moore-penrose          \
+    test-nullspace              \
     test-optimization           \
     test-order-basis            \
     test-param-fuzzy            \
@@ -181,6 +182,7 @@ CHECKER_TESTS =                 \
     test-blas-domain            \
     test-random-matrix          \
     test-zero-one               \
+    test-toom-cook              \
     test-toeplitz-det           \
     test-dense
 
@@ -192,9 +194,7 @@ CHECKER_NTL_TESTS =  ${NTL_TESTS}           \
 
 FULLCHECK_TESTS = ${CHECKER_TESTS} \
     test-minpoly                \
-    test-nullspace              \
     test-weak-popov-form        \
-    test-toom-cook              \
     test-mpi-comm               \
     test-rat-solve              \
     test-rat-minpoly            \
