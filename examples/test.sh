@@ -21,14 +21,11 @@ success() {
 pass="true"
 
 echo -n "check rank ... "
-rank_cmd="Rank\sis\s"
-./rank  data/test.matrix 7 > linbox-tmp.data
-result=`cat linbox-tmp.data | grep ${rank_cmd} | $SED 's/'"$rank_cmd"'\([0-9]*\).*/\1/'`
+result=`./rank  data/test.matrix 7`
 [ "$result" -eq "9" ] && success || { fail ;  pass="false" ; }
 
 echo -n "check rank ... "
-./rank  data/test.matrix > linbox-tmp.data
-result=`cat linbox-tmp.data | grep ${rank_cmd} | $SED 's/'"$rank_cmd"'\([0-9]*\).*/\1/'`
+result=`./rank  data/test.matrix`
 [ "$result" -eq "10" ] && success || { fail ; pass="false" ; }
 
 

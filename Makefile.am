@@ -109,7 +109,7 @@ git:
 	git commit -a; git pull; git push
 
 
-VERSION=1.6.3
+VERSION=1.7.0alpha0
 
 EXTRA_DIST= \
 	linbox-auto-install.sh \
