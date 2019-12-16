@@ -51,60 +51,29 @@ namespace LinBox{
     template<class MatPoly>
 	class SubPolynomialMatrix;
     
+    
+	// Class for Polynomial Matrix stored as a Matrix of Polynomials
 	template<class _Field>
-	class PolynomialMatrixBase<_Field> {
+	class PolynomialMatrix<_Field, PMType::polfirst> {
     public:
         typedef _Field                         Field;
 		typedef typename Field::Element      Element;
 		typedef std::vector<Element,AlignedAllocator<Element, Alignment::DEFAULT>> VECT;
-        typedef BlasVector<Field>                    Data;        
-        typedef BlasMatrix<Field>                           Matrix;
-        typedef BlasSubmatrix<Matrix>                    SubMatrix;
-        typedef BlasSubmatrix<const Matrix>         constSubMatrix;
-        typedef BlasVector<Field>                       Polynomial;
-        typedef BlasSubvector<Data>                  SubPolynomial;
-        typedef const BlasSubvector<const Data> constSubPolynomial;        
+        typedef BlasVector<Field>                             Data;        
 
+        typedef BlasSubmatrix<BlasMatrix<Field>>                    Matrix;
+        typedef BlasSubmatrix<const BlasMatrix<Field>>         constMatrix;
+        typedef BlasSubvector<Data>                             Polynomial;
+        typedef const BlasSubvector<const Data>            constPolynomial;        
+
+		typedef PolynomialMatrix<Field, PMType::polfirst>  Self_t;
+        typedef SubPolynomialMatrix<Self_t>                  view;
+        typedef SubPolynomialMatrix<const Self_t>      const_view;
+        
 		// construct a polynomial matrix in f[x]^(m x n) of degree (s-1)
-		PolynomialMatrixBase(const Field& f, size_t r, size_t c, size_t s)
+		PolynomialMatrix(const Field& f, size_t r, size_t c, size_t s)
             : _rep(f,r*c*s), _row(r), _col(c), _size(s) {}
 
-
-
-        size_t rowdim()  const {return _row;}
-		size_t coldim()  const {return _col;}
-		size_t degree()  const {return _size-1;}
-		size_t size()    const {return _size;}
-		size_t storage() const {return _store;}
-        
-		const Field& field()  const {return _rep.field();}        
-
-
-    protected:
-        Data     _rep;
-        size_t   _row;
-		size_t   _col;
-		size_t  _size;
-        size_t _store;
-    };
-    
-	// Class for Polynomial Matrix stored as a Matrix of Polynomials
-	template<class _Field>
-	class PolynomialMatrix<_Field, PMType::polfirst>
-        : public PolynomialMatrixBase<Field> {
-    public:
-		typedef PolynomialMatrix<_Field, PMType::polfirs>  Self_t;
-        using typename PolynomialMatrixBase<Field>::Field;
-        using typename PolynomialMatrixBase<Field>::Element;
-        typedef typename PolynomialMatrixBase<Field>::Matrix                      Matrix;
-        typedef typename PolynomialMatrixBase<Field>::SubPolynomial           Polynomial;
-        typedef typename PolynomialMatrixBase<Field>::constSubPolynomial constPolynomial;
-        typedef SubPolynomialMatrix<Selft>                                          view;
-        typedef SubPolynomialMatrix<const Selft>                              const_view;
-        
-		// construct a polynomial matrix in f[x]^(m x n) of degree (s-1)
-		//PolynomialMatrix(const Field& f, size_t r, size_t c, size_t s, size_t stor=0);
-        using typename PolynomialMatrixBase<_Field>::PolynomialMatrixBase<_Field>;
 
         /*******************************
          * Data access functionnalities*
@@ -180,8 +149,25 @@ namespace LinBox{
 				}
 			}
 		}
+		// copy elt from M[beg..end], _size must be >= end-beg+1
+		// M is stored as a Polynomial of Matrices with a different field
 		template<typename OtherField>
-		void copy(const PolynomialMatrix<PMType::polfirst,OtherField> & M, size_t beg, size_t end){
+		void copy(const PolynomialMatrix<OtherField, PMType::matfirst> & M, size_t beg, size_t end){
+			//std::cout<<"copying.....matfirst to polfirst.....other field"<<std::endl;
+			const size_t ls = COPY_BLOCKSIZE;
+			Hom<OtherField,Field> hom(M.field(),field()) ;
+			for (size_t i = beg; i <= end; i+=ls)
+				for (size_t j = 0; j < _col * _row; j+=ls)
+					for (size_t _i = i; _i < std::min(end+1, i + ls); _i++) {
+						for (size_t _j = j; _j < std::min(_col * _row, j + ls);++_j)
+							hom.image(ref(_j,_i-beg),M.get(_j,_i) );
+					}
+		}
+
+
+
+        template<typename OtherField>
+		void copy(const PolynomialMatrix<OtherField, PMType::polfirst> & M, size_t beg, size_t end){
 			//cout<<"copying.....polfirst to polfirst.....other field"<<endl;
 			Hom<OtherField,Field> hom(M.field(),field()) ;
 			for (size_t k=0;k<_row*_col;k++){
@@ -194,8 +180,7 @@ namespace LinBox{
 
 		// copy elt from M[beg..end], _size must be >= end-beg+1
 		// M is stored as a Polynomial of Matrices
-		template <size_t storage>
-		void copy(const PolynomialMatrix<PMType::matfirst,storage,Field>& M, size_t beg, size_t end){
+		void copy(const PolynomialMatrix<Field, PMType::matfirst>& M, size_t beg, size_t end){
 			//std::cout<<"copying.....matfirst to polfirst.....same field"<<std::endl;
 			const size_t ls = COPY_BLOCKSIZE;
 			for (size_t i = beg; i <= end; i+=ls)
@@ -206,20 +191,6 @@ namespace LinBox{
 							ref(_j,_i-beg)= M.get(_j,_i);
 		}
 
-		// copy elt from M[beg..end], _size must be >= end-beg+1
-		// M is stored as a Polynomial of Matrices with a different field
-		template<size_t storage, typename OtherField>
-		void copy(const PolynomialMatrix<PMType::matfirst,storage,OtherField> & M, size_t beg, size_t end){
-			//std::cout<<"copying.....matfirst to polfirst.....other field"<<std::endl;
-			const size_t ls = COPY_BLOCKSIZE;
-			Hom<OtherField,Field> hom(M.field(),field()) ;
-			for (size_t i = beg; i <= end; i+=ls)
-				for (size_t j = 0; j < _col * _row; j+=ls)
-					for (size_t _i = i; _i < std::min(end+1, i + ls); _i++) {
-						for (size_t _j = j; _j < std::min(_col * _row, j + ls);++_j)
-							hom.image(ref(_j,_i-beg),M.get(_j,_i) );
-					}
-		}
 
 		template<typename Mat>
 		void copy(const Mat& M){
@@ -230,8 +201,8 @@ namespace LinBox{
 		// rebind functor to change base field (e.g. apply modulo reduction)
 		template<typename _Tp1>
 		struct rebind {
-			typedef PolynomialMatrix<PMType::polfirst, Field> Self_t;
-			typedef PolynomialMatrix<PMType::polfirst, _Tp1> Other_t;
+			typedef PolynomialMatrix<Field, PMType::polfirst> Self_t;
+			typedef PolynomialMatrix<_Tp1, PMType::polfirst> Other_t;
 
 			void operator() (Other_t& Ap,
                              const Self_t&  A){
@@ -286,28 +257,47 @@ namespace LinBox{
 		
             return os;
         }
+
+        size_t rowdim()  const {return _row;}
+		size_t coldim()  const {return _col;}
+		size_t degree()  const {return _size-1;}
+		size_t size()    const {return _size;}
+		size_t storage() const {return _store;}
+        size_t poly_stride() const {return 1;}
+		const Field& field()  const {return _rep.field();}        
+
+
+    private:
+        Data     _rep;
+        size_t   _row;
+		size_t   _col;
+		size_t  _size;
+        size_t _store;
+
 	};
 
-	// Class for Polynomial Matrix stored as a Polynomial of Matrices
-	template<class _Field>
-	class PolynomialMatrix<PMType::matfirst,_Field>
-        : public PolynomialMatrixBase<Field> {
+    // Class for Polynomial Matrix stored as a Polynomial of Matrices
+    template<class _Field>
+	class PolynomialMatrix<_Field, PMType::matfirst> {
     public:
-		typedef PolynomialMatrix<_Field, PMType::polfirst>  Self_t;
-        using typename PolynomialMatrixBase<Field>::Field;
-        using typename PolynomialMatrixBase<Field>::Element;
+        typedef _Field                         Field;
+		typedef typename Field::Element      Element;
+		typedef std::vector<Element,AlignedAllocator<Element, Alignment::DEFAULT>> VECT;
+        typedef BlasVector<Field>                             Data;        
 
-        typedef typename PolynomialMatrixBase<Field>::subMatrix                   Matrix;
-        typedef typename PolynomialMatrixBase<Field>::constSubMatrix         constMatrix;
-        typedef typename PolynomialMatrixBase<Field>::SubPolynomial           Polynomial;
-        typedef typename PolynomialMatrixBase<Field>::constSubPolynomial constPolynomial; 
-        typedef SubPolynomialMatrix<Selft>                                          view;
-        typedef SubPolynomialMatrix<const Selft>                              const_view;
+        typedef BlasSubmatrix<BlasMatrix<Field>>                    Matrix;
+        typedef BlasSubmatrix<const BlasMatrix<Field>>         constMatrix;
+        typedef BlasSubvector<Data>                             Polynomial;
+        typedef const BlasSubvector<const Data>            constPolynomial;        
+
+		typedef PolynomialMatrix<_Field, PMType::matfirst>  Self_t;
+        typedef SubPolynomialMatrix<Self_t>                   view;
+        typedef SubPolynomialMatrix<const Self_t>       const_view;
         
 		// construct a polynomial matrix in f[x]^(m x n) of degree (s-1)
-		//PolynomialMatrix(const Field& f, size_t r, size_t c, size_t s, size_t stor=0);
-        using typename PolynomialMatrixBase<_Field>::PolynomialMatrixBase<_Field>;
-       
+        PolynomialMatrix(const Field& f, size_t r, size_t c, size_t s)
+            : _rep(f,r*c*s), _row(r), _col(c), _size(s) {}
+
 
         /*******************************
          * Data access functionnalities*
@@ -348,14 +338,13 @@ namespace LinBox{
 		}
 		
 		// copy elt from M[beg..end], _size must be >= j-i
-		template <size_t storage>
-		void copy(const PolynomialMatrix<PMType::matfirst,storage,Field>& M, size_t beg, size_t end, size_t start=0){
+		void copy(const PolynomialMatrix<Field, PMType::matfirst>& M, size_t beg, size_t end, size_t start=0){
 			//cout<<"copying.....matfirst to matfirst.....same field"<<endl;
             FFLAS::fassign(field(), (end-beg+1)*_row*_col, M.getPointer()+beg*_row*_col,1, getPointer()+start,1);
 		}
         
-		template<size_t storage, typename OtherField>
-		void copy(const PolynomialMatrix<PMType::matfirst,storage,OtherField> & M, size_t beg, size_t end, size_t start=0){
+		template<typename OtherField>
+		void copy(const PolynomialMatrix<OtherField, PMType::matfirst> & M, size_t beg, size_t end, size_t start=0){
 			//cout<<"copying.....matfirst to matfirst.....other field"<<endl;
 			Hom<OtherField,Field> hom(M.field(),field()) ;
 			for (size_t i=beg;i<=end;i++)
@@ -365,7 +354,7 @@ namespace LinBox{
 
 		// copy elt from M[beg..end], _size must be >= end-beg+1
 		// M is stored as a Matrix of Polynomials
-		void copy(const Other_t& M, size_t beg, size_t end, size_t start=0){
+		void copy(const PolynomialMatrix<Field, PMType::polfirst>& M, size_t beg, size_t end, size_t start=0){
 			//cout<<"copying.....polfirst to matfirst.....same field"<<endl;
 			const size_t ls = COPY_BLOCKSIZE; // Loop unrooling to be more cache-friendly (cache block transposition)
 			for(size_t i = beg; i < end+1; i+=ls)
@@ -379,7 +368,7 @@ namespace LinBox{
 		// copy elt from M[beg..end], _size must be >= end-beg+1
 		// M is stored as a Matrix of Polynomials with a different field
 		template<typename OtherField>
-		void copy(const PolynomialMatrix<PMType::polfirst,OtherField> & M, size_t beg, size_t end, size_t start=0){
+		void copy(const PolynomialMatrix<OtherField, PMType::polfirst> & M, size_t beg, size_t end, size_t start=0){
 			//cout<<"copying.....polfirst to matfirst.....other field"<<endl;
 			const size_t ls = COPY_BLOCKSIZE;
 			Hom<OtherField,Field> hom(M.field(),field()) ;
@@ -400,12 +389,11 @@ namespace LinBox{
 		// rebind functor to change base field (e.g. apply modulo reduction)
 		template<typename _Tp1>
 		struct rebind {
-			typedef PolynomialMatrix<PMType::matfirst,Field>  Self_t;
-			typedef PolynomialMatrix<PMType::matfirst,_Tp1>  Other_t;
+			typedef PolynomialMatrix<Field, PMType::matfirst>  Self_t;
+			typedef PolynomialMatrix<_Tp1, PMType::matfirst>  Other_t;
 
-			template<size_t storage>
-			void operator() (PolynomialMatrix<PMType::matfirst, storage,_Tp1>& Ap,
-                             const PolynomialMatrix<PMType::matfirst, storage,Field>&  A){
+			void operator() (PolynomialMatrix<_Tp1, PMType::matfirst>& Ap,
+                             const PolynomialMatrix<Field, PMType::matfirst>&  A){
 				Hom<Field, _Tp1> hom(A.field(), Ap.field()) ;
 				for (size_t j = 0; j < A._size; j++)
 					for (size_t i = 0; i < A._row * A._col; i++)
@@ -417,7 +405,7 @@ namespace LinBox{
         size_t real_degree() const {
 			MatrixDomain<Field> MD(field());
 			size_t d= _size-1;
-			while(d>0 && MD.isZero(operator[d])) d--;
+			while(d>0 && MD.isZero(operator[](d))) d--;
 			return d;
 		}
 
@@ -476,11 +464,28 @@ namespace LinBox{
 		// NEED FOR YUHASZ
 		typedef typename std::vector<Matrix>::const_iterator const_iterator;
 		const_iterator begin() const {return _rep.begin();}
+
+        size_t rowdim()  const {return _row;}
+		size_t coldim()  const {return _col;}
+		size_t degree()  const {return _size-1;}
+		size_t size()    const {return _size;}
+		size_t storage() const {return _store;}
+        size_t poly_stride() const {return _row*_col;}
         
+		const Field& field()  const {return _rep.field();}        
+
+
+    private:
+        Data     _rep;
+        size_t   _row;
+		size_t   _col;
+		size_t  _size;
+        size_t _store;
+
 	};
 
-	template<typename _Field, size_t T, size_t S>
-	std::ostream& operator<<(std::ostream& os, const PolynomialMatrix<T,S,_Field>& P) {
+	template<typename _Field, LinBox::PMType T>
+	std::ostream& operator<<(std::ostream& os, const PolynomialMatrix<_Field,T>& P) {
 		return P.write(os);
 	}
     
@@ -489,10 +494,12 @@ namespace LinBox{
 	template<class MatPoly>
 	class SubPolynomialMatrix {
 	public:
-        typedef SubPolynomialMatrix<MatPoly> Self_t;
-        typedef typename MaPoly::Matrix Matrix;
-        typedef typename MaPoly::Polynomial Polynomial;
-        typedef typename MatPoly::view view;
+        typedef SubPolynomialMatrix<MatPoly>     Self_t;
+        typedef typename MatPoly::Field           Field;
+        typedef typename MatPoly::Element       Element;
+        typedef typename MatPoly::Matrix         Matrix;
+        typedef typename MatPoly::Polynomial Polynomial;
+        typedef typename MatPoly::view             view;
         typedef typename MatPoly::const_view const_view;
         
 		SubPolynomialMatrix() {}
@@ -512,15 +519,8 @@ namespace LinBox{
 
 		// retrieve the polynomial at entry (i,j) in the matrix
         Polynomial    operator()(size_t i, size_t j){
-            return Polynomial(??? );
+            return Polynomial(_ptr->operator()(i,j),i, _ptr->poly_stride(), j-i+1);
         }
-        
-        //     return Polynomial(field()
-		// 	Polynomial A(_size, Matrix(_ptr->field()));
-		// 	for(size_t k=0;k<_size;k++)
-		// 		A[k]=(*_ptr)[k+_shift].refEntry(i,j);
-		// 	return A;
-		// }
 
         Element get(size_t i, size_t k) const { return 	_ptr->get(i,k+_shift);}
 
