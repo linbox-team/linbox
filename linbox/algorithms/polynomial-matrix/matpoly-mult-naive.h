@@ -73,11 +73,6 @@ namespace LinBox
 			size_t deg  = ((n1==0)?2*hdeg-1:n1);
             //cout<<"("<<hdeg-1<<","<<deg-1<<")"<<endl;
             if (smallLeft){
-                // for (size_t k=hdeg-1;k<std::min(a.size()+b.size()-1,deg);k++){
-                //         _BMD.mul(c[k-hdeg+1],a[0],b[k]);
-                //         for (size_t j=1;j<std::min(hdeg,a.size());++j)
-                //                 _BMD.axpyin(c[k-hdeg+1],a[j],b[k-j]);
-                //}
                 for (size_t k=hdeg-1;k<std::min(a.size()+b.size()-1,deg);k++){
                     size_t idx_b=std::min(k,b.size()-1);
                     size_t idx_a=k-idx_b;
