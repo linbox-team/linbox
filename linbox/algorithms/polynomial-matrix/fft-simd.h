@@ -243,6 +243,8 @@ namespace LinBox {
                     enable_if_same_t<S, Simd256<float>>* = nullptr>
         static inline void
         unpacklohi (vect_t& r1, vect_t& r2, const vect_t a, const vect_t b) {
+/* _mm256_permute4x64_pd needs AVX2 but Simd256<float> only needs AVX */
+#ifdef __FFLASFFPACK_HAVE_AVX2_INSTRUCTIONS
             vect_t t1, t2;
             /* 0xd8 = 3120 base_4 */
             t1 = _mm256_castpd_ps (_mm256_permute4x64_pd
@@ -251,18 +253,34 @@ namespace LinBox {
                                                 (_mm256_castps_pd (b), 0xd8));
             r1 = _mm256_unpacklo_ps (t1, t2);
             r2 = _mm256_unpackhi_ps (t1, t2);
+#else /* __FFLASFFPACK_HAVE_AVX2_INSTRUCTIONS not defined */
+            vect_t t1, t2;
+            t1 = _mm256_unpacklo_ps (a, b);
+            t2 = _mm256_unpackhi_ps (a, b);
+            r1 = _mm256_permute2f128_ps (t1, t2, 0x20);
+            r2 = _mm256_permute2f128_ps (t1, t2, 0x31);
+#endif /* __FFLASFFPACK_HAVE_AVX2_INSTRUCTIONS */
         }
         /* Simd256<double> */
         template <typename S = Simd,
                     enable_if_same_t<S, Simd256<double>>* = nullptr>
         static inline void
         unpacklohi (vect_t& r1, vect_t& r2, const vect_t a, const vect_t b) {
+/* _mm256_permute4x64_pd needs AVX2 but Simd256<double> only needs AVX */
+#ifdef __FFLASFFPACK_HAVE_AVX2_INSTRUCTIONS
             vect_t t1, t2;
             /* 0xd8 = 3120 base_4 */
             t1 = _mm256_permute4x64_pd (a, 0xd8);
             t2 = _mm256_permute4x64_pd (b, 0xd8);
             r1 = _mm256_unpacklo_pd (t1, t2);
             r2 = _mm256_unpackhi_pd (t1, t2);
+#else /* __FFLASFFPACK_HAVE_AVX2_INSTRUCTIONS not defined */
+            vect_t t1, t2;
+            t1 = _mm256_unpacklo_pd (a, b);
+            t2 = _mm256_unpackhi_pd (a, b);
+            r1 = _mm256_permute2f128_pd (t1, t2, 0x20);
+            r2 = _mm256_permute2f128_pd (t1, t2, 0x31);
+#endif /* __FFLASFFPACK_HAVE_AVX2_INSTRUCTIONS */
         }
         /* Simd256<uint16_t> */
         template <typename S = Simd,
@@ -369,6 +387,8 @@ namespace LinBox {
                     enable_if_same_t<S, Simd256<float>>* = nullptr>
         static inline void
         pack (vect_t& r1, vect_t& r2, const vect_t a, const vect_t b) {
+/* _mm256_permute4x64_pd needs AVX2 but Simd256<float> only needs AVX */
+#ifdef __FFLASFFPACK_HAVE_AVX2_INSTRUCTIONS
             /* 0xd8 = 3120 base_4 */
             __m256d t1 = _mm256_castps_pd (_mm256_permute_ps (a, 0xd8));
             __m256d t2 = _mm256_castps_pd (_mm256_permute_ps (b, 0xd8));
@@ -377,17 +397,33 @@ namespace LinBox {
             /* 0xd8 = 3120 base_4 */
             r1 = _mm256_castpd_ps (_mm256_permute4x64_pd (p1, 0xd8));
             r2 = _mm256_castpd_ps (_mm256_permute4x64_pd (p2, 0xd8));
+#else /* __FFLASFFPACK_HAVE_AVX2_INSTRUCTIONS not defined */
+            vect_t t1, t2;
+            t1 = _mm256_unpacklo_pd (a, b);
+            t2 = _mm256_unpackhi_pd (a, b);
+            r1 = _mm256_unpacklo_pd (t1, t2);
+            r2 = _mm256_unpackhi_pd (t1, t2);
+#endif /* __FFLASFFPACK_HAVE_AVX2_INSTRUCTIONS */
         }
         /* Simd256<double> */
         template <typename S = Simd,
                     enable_if_same_t<S, Simd256<double>>* = nullptr>
         static inline void
         pack (vect_t& r1, vect_t& r2, const vect_t a, const vect_t b) {
+/* _mm256_permute4x64_pd needs AVX2 but Simd256<double> only needs AVX */
+#ifdef __FFLASFFPACK_HAVE_AVX2_INSTRUCTIONS
             r1 = _mm256_unpacklo_pd (a, b);
             r2 = _mm256_unpackhi_pd (a, b);
             /* 0xd8 = 3120 base_4 */
             r1 = _mm256_permute4x64_pd (r1, 0xd8);
             r2 = _mm256_permute4x64_pd (r2, 0xd8);
+#else /* __FFLASFFPACK_HAVE_AVX2_INSTRUCTIONS not defined */
+            vect_t t1, t2;
+            t1 = _mm256_permute2f128_pd (a, b, 0x20);
+            t2 = _mm256_permute2f128_pd (a, b, 0x31);
+            r1 = _mm256_unpacklo_pd (t1, t2);
+            r2 = _mm256_unpackhi_pd (t1, t2);
+#endif /* __FFLASFFPACK_HAVE_AVX2_INSTRUCTIONS */
         }
         /* Simd256<uint32_t> */
         template <typename S = Simd,
