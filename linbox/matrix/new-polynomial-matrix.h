@@ -103,15 +103,17 @@ namespace LinBox{
         const_view at(size_t i, size_t j)const {return const_view(*this,i,j);}
 
         // copy the matrix of degree k into A
-		Matrix& getMatrix(Matrix& A, size_t k) const {
+        template<typename DenseMatrix>
+		DenseMatrix& getMatrix(DenseMatrix& A, size_t k) const {
 			auto it=A.Begin();
 			for(size_t i=0;i<_row*_col;i++,it++)
 				*it = get(i,k);
             return A;
 		}
 
-        // copy the matrix A into the matrix of degree 
-		void setMatrix(const Matrix& A, size_t k)  {
+        // copy the matrix A into the matrix of degree
+        template<typename DenseMatrix>
+		void setMatrix(const DenseMatrix& A, size_t k)  {
 			auto it=A.Begin();
 			for(size_t i=0;i<_row*_col;i++,it++)
 				ref(i,k)=*it ; 		
@@ -334,16 +336,21 @@ namespace LinBox{
 		//Matrix       operator[](size_t k)       {return      Matrix(field(), getPointer()+k*_row*_col, _row,_col,_col);}
 
         // copy the matrix of degree k into A
-		Matrix& getMatrix(Matrix& A, size_t k) const {
+        template<typename DenseMatrix>
+		DenseMatrix& getMatrix(DenseMatrix& A, size_t k) const {
 			return A= Matrix(field(), getPointer()+k*_row*_col, _row,_col,_col);            
         }
 
-        // copy the matrix A into the matrix of degree 
-		void setMatrix(const Matrix& A, size_t k)  {
+        // copy the matrix A into the matrix of degree
+        template<typename DenseMatrix>
+		void setMatrix(const DenseMatrix& A, size_t k)  {
             if (A.getPointer() != getPointer()+k*_row*_col){
                 auto it=A.Begin();
                 for(size_t i=0;i<_row*_col;i++,it++)
                     ref(i,k)=*it ;
+            }
+            else{
+                std::cout<<"setMatrix with view OK"<<std::endl;
             }
 		}
 
@@ -481,21 +488,14 @@ namespace LinBox{
             }
 			os<<"]);";
 			return os;
-        }
-        
-		
-		// NEED FOR YUHASZ
-		typedef typename std::vector<Matrix>::const_iterator const_iterator;
-		const_iterator begin() const {return _rep.begin();}
+        }        	
 
         size_t rowdim()  const {return _row;}
 		size_t coldim()  const {return _col;}
 		size_t degree()  const {return _size-1;}
 		size_t size()    const {return _size;}
-        size_t poly_stride() const {return _row*_col;}
-        
+        size_t poly_stride() const {return _row*_col;}        
 		const Field& field()  const {return _rep.field();}        
-
 
     private:
         Data     _rep;
@@ -510,6 +510,25 @@ namespace LinBox{
 	}
     
 
+
+    template<typename MatPoly>
+    struct SubPolyConst{
+        typedef typename MatPoly::Matrix         Matrix;
+        typedef typename MatPoly::constMatrix    constMatrix;
+        typedef typename MatPoly::view             view;
+        typedef typename MatPoly::const_view const_view;                
+    };
+
+    template<typename MatPoly>
+    struct SubPolyConst <const MatPoly>{
+        typedef typename MatPoly::constMatrix    constMatrix;
+        typedef typename MatPoly::constMatrix         Matrix;
+        typedef typename MatPoly::const_view        view;
+        typedef typename MatPoly::const_view const_view;                
+    };
+
+    
+    
 	// Class to handle the view of a Polynomial Matrix according to some degree range
 	template<class MatPoly>
 	class SubPolynomialMatrix {
@@ -517,25 +536,44 @@ namespace LinBox{
         typedef SubPolynomialMatrix<MatPoly>     Self_t;
         typedef typename MatPoly::Field           Field;
         typedef typename MatPoly::Element       Element;
-        typedef typename MatPoly::Matrix         Matrix;
-        typedef typename MatPoly::Polynomial Polynomial;
-        typedef typename MatPoly::view             view;
-        typedef typename MatPoly::const_view const_view;
+        typedef typename MatPoly::Polynomial Polynomial;        
+        typedef typename SubPolyConst<MatPoly>::Matrix            Matrix;
+        typedef typename SubPolyConst<MatPoly>::constMatrix  constMatrix;
+        typedef typename SubPolyConst<MatPoly>::view             view;
+        typedef typename SubPolyConst<MatPoly>::const_view const_view;
         
 		SubPolynomialMatrix() {}
 
 		// constructor of a view between i and j from a plain Polynomial Matrix
 		SubPolynomialMatrix(MatPoly& M, size_t i,size_t j)
 			: _ptr(&M), _size(j-i+1), _shift(i)
-		{linbox_check(i<M.size() && i<=j && j< M.size());}
+		{
+            linbox_check(i<M.size() && i<=j && j< M.size());
+            //if (i>=M.size() || (i>j)) {_size=0;}
+        }
 
 		// constructor of a view between i and j from a Sub Polynomial Matrix
 		SubPolynomialMatrix(Self_t & M, size_t i,size_t j)
 			: _ptr(M._ptr), _size(j-i+1), _shift(i+M._shift)
-		{linbox_check(i<M.size() && i<=j && j< M.size());}
+		{
+            linbox_check(i<M.size() && i<=j && j< M.size());
+            //if (i>=M.size() || (i>j)) {_size=0;}
+        }
 
+         // copy the matrix of degree k into A
+        template<typename DenseMatrix>
+		DenseMatrix& getMatrix(DenseMatrix& A, size_t k) const {
+            return _ptr->getMatrix(A,k+_shift);
+        }
+
+        // copy the matrix A into the matrix of degree 
+        template<typename DenseMatrix>
+		void setMatrix(const DenseMatrix& A, size_t k)  {
+            return _ptr->setMatrix(A,k+_shift);
+        }
+        
 		// retrieve the matrix of degree k in the polynomial matrix
-        Matrix  operator[](size_t k)const {return (*_ptr)[k+_shift];}
+        Matrix  operator[](size_t k) const {return _ptr->operator[](k+_shift);}
 
 		// retrieve the polynomial at entry (i,j) in the matrix
         Polynomial    operator()(size_t i, size_t j){
@@ -556,7 +594,7 @@ namespace LinBox{
         const_view at(size_t i, size_t j) const {return const_view(*_ptr,i+_shift,j+_shift);}
         view       at(size_t i, size_t j)       {return       view(*_ptr,i+_shift,j+_shift);}
         
-		std::ostream& write(std::ostream& os) const { return _ptr->write(os,_shift,_shift+_size-1);}
+		std::ostream& write(std::ostream& os) const { if (_size!=0) return _ptr->write(os,_shift,_shift+_size-1); else return os;}
 
 	private:
 		MatPoly* _ptr;
