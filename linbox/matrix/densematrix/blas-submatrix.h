@@ -128,7 +128,7 @@ namespace LinBox
          * @param Rowdim Row dimension
          * @param Coldim Column dimension
          */
-        BlasSubmatrix (Self_t  &SM,
+        BlasSubmatrix (Self_t    &SM,
                        size_t rowbeg,
                        size_t colbeg,
                        size_t Rowdim,
