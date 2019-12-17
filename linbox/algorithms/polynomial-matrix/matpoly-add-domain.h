@@ -42,10 +42,13 @@ namespace LinBox {
 		// add function (c must be allocated with the right size)
 		template<typename PMatrix1,typename PMatrix2,typename PMatrix3>
 		void add(PMatrix1 &c, const PMatrix2 &a, const PMatrix3 &b) const {
+            std::clog<<"Add matpoly:"<<std::endl;
+            std::clog<<"A="<<a<<std::endl;
+            std::clog<<"B="<<b<<std::endl;
 			size_t i=0;
 			for(;i<std::min(a.size(),b.size());i++){
                 auto c_tmp=c[i];
-                _BMD.add(c_tmp,b[i],c[i]);
+                _BMD.add(c_tmp,a[i],b[i]);
                 c.setMatrix(c_tmp,i);
             }
 			if (a.size()>b.size()){
@@ -56,6 +59,9 @@ namespace LinBox {
 				for(;i<c.size();i++)
                     c.setMatrix(b[i],i);                    
 			}
+            std::clog<<"C="<<c<<std::endl;
+            std::clog<<"-----------"<<std::endl;
+            
 		}
   
 		// addin function (a must be allocated with the right size)
@@ -74,7 +80,7 @@ namespace LinBox {
             size_t i=0;
 			for(;i<std::min(a.size(),b.size());i++){
                 auto c_tmp=c[i];
-                _BMD.sub(c_tmp,b[i],c[i]);
+                _BMD.sub(c_tmp,a[i],b[i]);
                 c.setMatrix(c_tmp,i);
             }
 			if (a.size()>b.size()){
