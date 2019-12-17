@@ -61,8 +61,8 @@ namespace LinBox{
 		typedef std::vector<Element,AlignedAllocator<Element, Alignment::DEFAULT>> VECT;
         typedef BlasVector<Field>                             Data;        
 
-        typedef BlasSubmatrix<BlasMatrix<Field>>                    Matrix;
-        typedef BlasSubmatrix<const BlasMatrix<Field>>         constMatrix;
+        typedef BlasMatrix<Field>                                   Matrix;
+        typedef const BlasMatrix<Field>                        constMatrix;
         typedef BlasSubvector<Data>                             Polynomial;
         typedef const BlasSubvector<const Data>            constPolynomial;        
 
@@ -72,7 +72,7 @@ namespace LinBox{
         
 		// construct a polynomial matrix in f[x]^(m x n) of degree (s-1)
 		PolynomialMatrix(const Field& f, size_t r, size_t c, size_t s)
-            : _rep(f,r*c*s), _row(r), _col(c), _size(s) {}
+            : _rep(f,r*c*s), _row(r), _col(c), _size(s), _store(s) {}
 
 
         /*******************************
@@ -102,16 +102,25 @@ namespace LinBox{
         view       at(size_t i, size_t j)      {return view(*this,i,j);}
         const_view at(size_t i, size_t j)const {return const_view(*this,i,j);}
 
-        // set the matrix A to the matrix of degree k in the polynomial matrix
-		void setMatrix(Matrix& A, size_t k) const {
-			typename Matrix::Iterator it=A.Begin();
+        // copy the matrix of degree k into A
+		Matrix& getMatrix(Matrix& A, size_t k) const {
+			auto it=A.Begin();
 			for(size_t i=0;i<_row*_col;i++,it++)
-				*it = get(i,k);			
+				*it = get(i,k);
+            return A;
 		}
-		// retrieve the matrix of degree k in the polynomial matrix
+
+        // copy the matrix A into the matrix of degree 
+		void setMatrix(const Matrix& A, size_t k)  {
+			auto it=A.Begin();
+			for(size_t i=0;i<_row*_col;i++,it++)
+				ref(i,k)=*it ; 		
+		}
+
+        // retrieve the matrix of degree k in the polynomial matrix
 		Matrix     operator[](size_t k) const {
 			Matrix A(field(), _row, _col);
-			setMatrix(A,k);
+			getMatrix(A,k);
 			return A;
 		}
         
@@ -235,7 +244,7 @@ namespace LinBox{
                 b= ((int) ceil (log ((double) _size) / M_LN10));
                 wid*=10*(b*(b-1)/2.);
             }
-            std::cout<<"Matrix([";
+            os<<"Matrix([";
             for (size_t i = 0; i< _row;++i) {
                 os << "  [ ";
                 for (size_t j = 0;j<_col;++j){
@@ -253,7 +262,7 @@ namespace LinBox{
                 }
                 os << (i<_row-1?"],":"]" )<< std::endl;
             }
-			std::cout<<"]);";
+			os<<"]);";
 		
             return os;
         }
@@ -310,7 +319,7 @@ namespace LinBox{
         // retrieve the polynomial at the position i in the storage of the matrix
 		Polynomial       operator()(size_t i)      {return      Polynomial(_rep, i,_row*_col,_size);}
 		constPolynomial  operator()(size_t i)const {return constPolynomial(_rep, i,_row*_col,_size);}
-
+        
 		// get write access to the the k-th coeff  of the ith matrix entry
 		Element& ref(size_t i, size_t k)      {return _rep[i+k*_row*_col];}
         // get read access to the the k-th coeff  of the ith matrix entry
@@ -325,7 +334,23 @@ namespace LinBox{
 
 		
 		// retrieve the matrix of degree k in the polynomial matrix
-		Matrix       operator[](size_t k)       {return      Matrix(field(), getPointer()+k*_row*_col, _row,_col,_col);}
+		//Matrix       operator[](size_t k)       {return      Matrix(field(), getPointer()+k*_row*_col, _row,_col,_col);}
+
+        // copy the matrix of degree k into A
+		Matrix& getMatrix(Matrix& A, size_t k) const {
+			return A= Matrix(field(), getPointer()+k*_row*_col, _row,_col,_col);            
+        }
+
+        // copy the matrix A into the matrix of degree 
+		void setMatrix(const Matrix& A, size_t k)  {
+            if (A.getPointer() != getPointer()+k*_row*_col){
+                auto it=A.Begin();
+                for(size_t i=0;i<_row*_col;i++,it++)
+                    ref(i,k)=*it ;
+            }
+		}
+
+        Matrix  operator[](size_t k)            {return Matrix(field(), getPointer()+k*_row*_col, _row,_col,_col);}
 		constMatrix  operator[](size_t k) const {return constMatrix(field(), getPointer()+k*_row*_col, _row,_col,_col);}
 
         view       at(size_t i, size_t j)       {return view(*this,i,j);}
@@ -429,11 +454,11 @@ namespace LinBox{
             if (c >0)
                 wid = (int) ceil (log ((double) c) / M_LN10);
 			else
-				wid=(int) ceil (log ((double) _rep[0].getEntry(0,0)) / M_LN10);
+				wid=(int) ceil (log ((double) get(0,0,0)) / M_LN10);
 
 			b= ((int) ceil (log ((double) (deg_max-deg_min+1)) / M_LN10));
 			wid*=10*(b*(b-1)/2.);
-			std::cout<<"Matrix([";
+			os<<"Matrix([";
 			for (size_t i = 0; i< _row;++i) {
                 os << "  [ ";
                 for (size_t j = 0;j<_col;++j){
@@ -456,7 +481,7 @@ namespace LinBox{
                 }
                 os << (i<_row-1?"],":"]" )<< std::endl;
             }
-			std::cout<<"]);";
+			os<<"]);";
 			return os;
         }
         
@@ -543,6 +568,11 @@ namespace LinBox{
 		size_t  _size;
 		size_t _shift;
 	};
+
+	template<typename MatPoly>      
+	std::ostream& operator<<(std::ostream& os, const SubPolynomialMatrix<MatPoly>& P) {
+		return P.write(os);
+	}
 
 
 

@@ -89,7 +89,7 @@ BASIC_TESTS =            \
     test-rank-Int        \
     test-frobenius          \
     test-rational-solver    \
-    test-polynomial-matrix.cpp\
+    test-polynomial-matrix\
     test-rational-solver-adaptive \
     test-randiter-nonzero-prime    \
     test-cra            \
