@@ -39,50 +39,65 @@ namespace LinBox {
 		PolynomialMatrixAddDomain(const Field& F)
 			: _BMD(F) {}
 
-		// add function (a must be allocated with the right size)
+		// add function (c must be allocated with the right size)
 		template<typename PMatrix1,typename PMatrix2,typename PMatrix3>
-		void add(PMatrix1 &a, const PMatrix2 &b, const PMatrix3 &c) const {
+		void add(PMatrix1 &c, const PMatrix2 &a, const PMatrix3 &b) const {
 			size_t i=0;
-			for(;i<std::min(b.size(),c.size());i++)
-				_BMD.add(a[i],b[i],c[i]);
-			if (b.size()>c.size()){
-				for(;i<b.size();i++)
-					a[i]=b[i];                                
+			for(;i<std::min(a.size(),b.size());i++){
+                auto c_tmp=c[i];
+                _BMD.add(c_tmp,b[i],c[i]);
+                c.setMatrix(c_tmp,i);
+            }
+			if (a.size()>b.size()){
+				for(;i<a.size();i++)
+                    c.setMatrix(a[i],i);                    
 			}
 			else{
 				for(;i<c.size();i++)
-					a[i]=c[i];                                
+                    c.setMatrix(b[i],i);                    
 			}
 		}
   
 		// addin function (a must be allocated with the right size)
 		template<typename PMatrix1,typename PMatrix2>
 		void addin(PMatrix1 &a, const PMatrix2 &b) const {	
-			for(size_t i=0;i<b.size();i++)
-				_BMD.addin(a[i],b[i]);
+			for(size_t i=0;i<b.size();i++){
+                auto a_tmp=a[i];
+				_BMD.addin(a_tmp,b[i]);
+                a.setMatrix(a[i],i);                    
+            }
 		}
   
-		// sub function (a must be allocated with the right size)
+		// sub function (c must be allocated with the right size)
 		template<typename PMatrix1,typename PMatrix2,typename PMatrix3>
-		void sub(PMatrix1 &a, const PMatrix2 &b, const PMatrix3 &c) const {
-			size_t i=0;
-			for(;i<std::min(b.size(),c.size());i++)
-				_BMD.sub(a[i],b[i],c[i]);
-			if (b.size()>c.size()){
-				for(;i<b.size();i++)
-					a[i]=b[i];                                
+		void sub(PMatrix1 &c, const PMatrix2 &a, const PMatrix3 &b) const {
+            size_t i=0;
+			for(;i<std::min(a.size(),b.size());i++){
+                auto c_tmp=c[i];
+                _BMD.sub(c_tmp,b[i],c[i]);
+                c.setMatrix(c_tmp,i);
+            }
+			if (a.size()>b.size()){
+				for(;i<a.size();i++)
+                    c.setMatrix(a[i],i);                    
 			}
-			else{ 
-				for(;i<c.size();i++)
-					_BMD.neg(a[i],c[i]);                                
+			else{
+				for(;i<b.size();i++){
+                    auto c_tmp=c[i];
+                    _BMD.neg(c_tmp,b[i]);                                
+                    c.setMatrix(c_tmp,i);
+                }
 			}
 		}
 
 		// subin function (a must be allocated with the right size)
 		template<typename PMatrix1,typename PMatrix2>
 		void subin(PMatrix1 &a, const PMatrix2 &b) const {
-			for(size_t i=0;i<b.size();i++)
-				_BMD.subin(a[i],b[i]);
+			for(size_t i=0;i<b.size();i++){
+                auto a_tmp=a[i];
+                _BMD.subin(a_tmp,b[i]);
+                a.setMatrix(a[i],i);           
+            }
 		}
 	};
 }
