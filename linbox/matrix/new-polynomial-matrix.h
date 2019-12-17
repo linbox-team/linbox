@@ -72,7 +72,7 @@ namespace LinBox{
         
 		// construct a polynomial matrix in f[x]^(m x n) of degree (s-1)
 		PolynomialMatrix(const Field& f, size_t r, size_t c, size_t s)
-            : _rep(f,r*c*s), _row(r), _col(c), _size(s), _store(s) {}
+            : _rep(f,r*c*s), _row(r), _col(c), _size(s) {}
 
 
         /*******************************
@@ -84,17 +84,17 @@ namespace LinBox{
         constPolynomial&  operator()(size_t i, size_t j)const {return operator()(i*_col+j);}
 
         // retrieve the polynomial at the position i in the storage of the matrix
-        Polynomial&       operator()(size_t i)      {return      Polynomial(_rep, i*_store,1,_size);}
-        constPolynomial&  operator()(size_t i)const {return constPolynomial(_rep, i*_store,1,_size);}
+        Polynomial&       operator()(size_t i)      {return      Polynomial(_rep, i*_size,1,_size);}
+        constPolynomial&  operator()(size_t i)const {return constPolynomial(_rep, i*_size,1,_size);}
 
 		// get write access to the the k-th coeff  of the ith matrix entry
-        Element& ref(size_t i, size_t k)      {return _rep[i*_store+k];}
+        Element& ref(size_t i, size_t k)      {return _rep[i*_size+k];}
         // get read access to the the k-th coeff  of the ith matrix entry
-        Element  get(size_t i, size_t k) const {return _rep[i*_store+k];}
+        Element  get(size_t i, size_t k) const {return _rep[i*_size+k];}
         // get write access to the the k-th coeff  of the entry (i,j) in matrix 
-        Element& ref(size_t i, size_t j, size_t k)      { return _rep[(i*_col+j)*_store+k];}
+        Element& ref(size_t i, size_t j, size_t k)      { return _rep[(i*_col+j)*_size+k];}
         // get read access to the the k-th coeff  of the entry (i,j) in matrix 
-        Element  get(size_t i, size_t j, size_t k) const { return _rep[(i*_col+j)*_store+k];}
+        Element  get(size_t i, size_t j, size_t k) const { return _rep[(i*_col+j)*_size+k];}
 
 		Element*       getPointer()       {return _rep.getPointer();}
 		const Element* getPointer() const {return _rep.getConstPointer();}
@@ -126,24 +126,24 @@ namespace LinBox{
         
 		// resize the polynomial length of the polynomial matrix
 		void resize(size_t s){
-			if (s==_store) return;
-			if (s>_store){
+			if (s==_size) return;
+			if (s>_size){
 				_rep.resize(s*_row*_col, field().zero);
 				size_t k=s*_row*_col-1;
 				for(size_t i=0;i<_row*_col;i++){
 					size_t j=_size;
 					for(;j>size_t(-1);j--,k--)
-						_rep[k]=_rep[i*_store+j];
+						_rep[k]=_rep[i*_size+j];
 				}
 			}
 			else {
 				size_t k=0;
 				for(size_t i=0;i<_row*_col;i++)
 					for (size_t j=0;j<s;j++,k++)
-						_rep[k]=_rep[i*_store+j];
+						_rep[k]=_rep[i*_size+j];
 				_rep.resize(s*_row*_col);
 			}
-			_store=s;
+			_size=s;
 		}	
 		
 		
@@ -271,7 +271,6 @@ namespace LinBox{
 		size_t coldim()  const {return _col;}
 		size_t degree()  const {return _size-1;}
 		size_t size()    const {return _size;}
-		size_t storage() const {return _store;}
         size_t poly_stride() const {return 1;}
 		const Field& field()  const {return _rep.field();}        
 
@@ -281,8 +280,6 @@ namespace LinBox{
         size_t   _row;
 		size_t   _col;
 		size_t  _size;
-        size_t _store;
-
 	};
 
     // Class for Polynomial Matrix stored as a Polynomial of Matrices
@@ -359,7 +356,8 @@ namespace LinBox{
 
 		// resize the polynomial length of the polynomial matrix
 		void resize(size_t s){
-			_rep.resize(s,field().zero);
+			_rep.resize(s*_row*_col,field().zero);
+            _size=s;
 		}
 		
 		// copy elt from M[beg..end], _size must be >= j-i
@@ -494,7 +492,6 @@ namespace LinBox{
 		size_t coldim()  const {return _col;}
 		size_t degree()  const {return _size-1;}
 		size_t size()    const {return _size;}
-		size_t storage() const {return _store;}
         size_t poly_stride() const {return _row*_col;}
         
 		const Field& field()  const {return _rep.field();}        
@@ -505,8 +502,6 @@ namespace LinBox{
         size_t   _row;
 		size_t   _col;
 		size_t  _size;
-        size_t _store;
-
 	};
 
 	template<typename _Field, LinBox::PMType T>
