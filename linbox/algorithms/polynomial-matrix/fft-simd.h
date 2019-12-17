@@ -398,11 +398,14 @@ namespace LinBox {
             r1 = _mm256_castpd_ps (_mm256_permute4x64_pd (p1, 0xd8));
             r2 = _mm256_castpd_ps (_mm256_permute4x64_pd (p2, 0xd8));
 #else /* __FFLASFFPACK_HAVE_AVX2_INSTRUCTIONS not defined */
-            vect_t t1, t2;
-            t1 = _mm256_unpacklo_pd (a, b);
-            t2 = _mm256_unpackhi_pd (a, b);
-            r1 = _mm256_unpacklo_pd (t1, t2);
-            r2 = _mm256_unpackhi_pd (t1, t2);
+            /* 0xd8 = 3120 base_4 */
+            __m256d pa = _mm256_castps_pd (_mm256_permute_ps (a, 0xd8));
+            __m256d pb = _mm256_castps_pd (_mm256_permute_ps (b, 0xd8));
+            __m256d t1 = _mm256_permute2f128_pd (pa, pb, 0x20);
+            __m256d t2 = _mm256_permute2f128_pd (pa, pb, 0x31);
+            r1 = _mm256_castpd_ps (_mm256_unpacklo_pd (t1, t2));
+            r2 = _mm256_castpd_ps (_mm256_unpackhi_pd (t1, t2));
+
 #endif /* __FFLASFFPACK_HAVE_AVX2_INSTRUCTIONS */
         }
         /* Simd256<double> */
