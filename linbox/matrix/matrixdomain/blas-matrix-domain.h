@@ -311,13 +311,13 @@ namespace LinBox
 	template< class Field, class Polynomial, class Matrix>
 	class BlasMatrixDomainCharpoly {
 	public:
-		Polynomial& operator() (const Field &F, Polynomial& P, const Matrix& A) const;
+		Polynomial& operator() (const Field &F, Polynomial& P, Matrix& A) const; // PG: A seems to be modified by FFPACK -> removed constness
 	};
 
 	// template< class Field, class Matrix, class _Vrep>
 	// class BlasMatrixDomainCharpoly<Field,BlasVector<Field,_Vrep>,Matrix> {
 	// public:
-	// 	BlasVector<Field,_Vrep>&  operator() (const Field &F, BlasVector<Field,_Vrep>& P, const Matrix& A) const;
+	//	BlasVector<Field,_Vrep>&  operator() (const Field &F, BlasVector<Field,_Vrep>& P, const Matrix& A) const;
 	// };
 
 	/**
@@ -736,7 +736,7 @@ namespace LinBox
 
 		//! characteristic polynomial computation.
 		template <class Polynomial, class Matrix >
-		Polynomial& charpoly (Polynomial& P, const Matrix& A ) const
+		Polynomial& charpoly (Polynomial& P,  Matrix& A ) const // PG: remove constness of A as required by FFPACK
 		{
 			commentator().start ("Givaro::Modular Dense Charpoly ", "MDCharpoly");
 			BlasMatrixDomainCharpoly<Field, Polynomial, Matrix>()(field(),P,A);

@@ -601,6 +601,7 @@ namespace LinBox {
     SolverReturnStatus DixonSolver<Ring, Field, RandomPrime, Method::DenseElimination>::monolithicSolve(
         Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, Method::Dixon method)
     {
+        using LiftingContainer = DixonLiftingContainer<Ring, Field, BlasMatrix<Ring>, BlasMatrix<Field>>;
         if (method.certifyMinimalDenominator && !method.certifyInconsistency) {
             method.certifyInconsistency = true;
             std::cerr << "WARNING: forcing certifyInconsistency due to certifyMinimalDenominator" << std::endl;
@@ -801,9 +802,9 @@ namespace LinBox {
 #endif
 
             // ----- We have the result values!
-
             num = resultVF.numer;
             den = resultVF.denom;
+
 
             // ----- Checking minimal denominator
 

@@ -28,7 +28,7 @@
 #include "linbox/linbox-config.h"
 #include "linbox/util/debug.h"
 #include <stdio.h>
-#include "linbox/vector/blas-vector.h"
+#include "linbox/vector/vector.h"
 #include "linbox/vector/vector-traits.h"
 
 namespace LinBox
@@ -84,7 +84,7 @@ namespace LinBox
 		typedef typename Domain::Element              Element;
 		typedef typename std::pair<Element, Element>  Fraction;
 		typedef typename std::vector<Fraction>        FVector;
-		typedef BlasVector<Domain>   Vector;
+		typedef DenseVector<Domain>   Vector;
 
 		Vector numer;
 		Element denom;

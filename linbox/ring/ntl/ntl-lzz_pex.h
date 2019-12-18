@@ -159,49 +159,13 @@ namespace LinBox
              * of the vector corresponds to the leading coefficients.  That is,
              * v[i] = coefficient of x^i.
              */
-		template <class ANY>
-		Element& init( Element& p, const std::vector<ANY>& v ) const
+		template <class ANY1, class ANY2, template <class T1, class T2> class Vect>
+		Element& init( Element& p, const Vect<ANY1,ANY2>& v ) const
             {
                 p = 0;
                 Coeff temp;
-                for( long i = 0; i < (long)v.size(); ++i ) {
-                    _CField.init( temp, v[ (size_t) i ] );
-                    if( !_CField.isZero(temp) )
-                        NTL::SetCoeff( p, i, temp );
-                }
-                return p;
-            }
-		template <class ANY>
-		Element& init( Element& p, const BlasVector<ANY>& v ) const
-            {
-                p = 0;
-                Coeff temp;
-                for( long i = 0; i < (long)v.size(); ++i ) {
-                    _CField.init( temp, v[ (size_t) i ] );
-                    if( !_CField.isZero(temp) )
-                        NTL::SetCoeff( p, i, temp );
-                }
-                return p;
-            }
-		template <class ANY>
-		Element& init( Element& p, const BlasSubvector<ANY>& v ) const
-            {
-                p = 0;
-                Coeff temp;
-                for( long i = 0; i < (long)v.size(); ++i ) {
-                    _CField.init( temp, v[ (size_t) i ] );
-                    if( !_CField.isZero(temp) )
-                        NTL::SetCoeff( p, i, temp );
-                }
-                return p;
-            }
-		template <class ANY>
-		Element& init( Element& p, const Subvector<ANY>& v ) const
-            {
-                p = 0;
-                Coeff temp;
-                for( long i = 0; i < (long)v.size(); ++i ) {
-                    _CField.init( temp, v[ (size_t) i ] );
+                for( size_t i = 0; i < v.size(); ++i ) {
+                    _CField.init( temp, v[i] );
                     if( !_CField.isZero(temp) )
                         NTL::SetCoeff( p, i, temp );
                 }
@@ -218,8 +182,8 @@ namespace LinBox
 		Element& init( Element& p, const std::vector<Coeff>& v ) const
             {
                 p = 0;
-                for( long i = 0; i < (long)v.size(); ++i )
-                    NTL::SetCoeff( p, i, v[ (size_t) i ] );
+                for( size_t i = 0; i < v.size(); ++i )
+                    NTL::SetCoeff( p, i, v[i] );
                 return p;
             }
 

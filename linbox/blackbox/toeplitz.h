@@ -29,8 +29,9 @@
 
 #include <iostream>
 #include <vector>
+#include "linbox/vector/vector.h"
 #include "linbox/vector/vector-traits.h"
-#include "linbox/solutions/methods.h"  // for shape
+//#include "linbox/solutions/methods.h"  // for shape
 #include "linbox/solutions/solution-tags.h"  // to offer trace, det
 #include "linbox/linbox-config.h"
 #include "linbox/blackbox/blackbox-interface.h"
@@ -109,7 +110,7 @@ namespace LinBox
 
 		static const int UnimodUT=1;
 		static const int UnimodLT=2;
-		Method::Blackbox shape; // Helps us deduce what our shape is
+		std::string shape;
 		//std::vector<NTL::ZZ_p> data;    // The vector of coeffs of the polynomial
 
 		/* These were only used by the XML stuff and are more or less

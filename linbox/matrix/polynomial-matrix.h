@@ -28,6 +28,7 @@
 #include <vector>
 #include "linbox/vector/subvector.h"
 #include "linbox/matrix/dense-matrix.h"
+#include "linbox/matrix/matrix-domain.h"
 #include "linbox/field/hom.h"
 #include "fflas-ffpack/utils/align-allocator.h"
 #include "givaro/modular.h"
@@ -302,30 +303,30 @@ namespace LinBox{
                                 b= ((int) ceil (log ((double) _size) / M_LN10));
                                 wid*=10*(b*(b-1)/2.);
                         }
-			std::cout<<"Matrix([";
+                        std::cout<<"Matrix([";
                         for (size_t i = 0; i< _row;++i) {
-                                os << "  [ ";
-                                for (size_t j = 0;j<_col;++j){
-                                        os.width (wid);
-                                        field().write(os,get(i,j,deg_min));
-					for (size_t k=deg_min+1;k<deg_max;++k){
-                                                os<<"+";
-                                                field().write(os,get(i,j,k))<<"*x^"<<k-deg_min;
-                                        }
-                                        if (deg_max-deg_min>0){
-                                                os<<"+";
-                                                field().write(os,get(i,j,deg_max))<<"*x^"<<deg_max-deg_min;
-                                        }
-					os<<(j<_col-1?",":"" );
+                            os << "  [ ";
+                            for (size_t j = 0;j<_col;++j){
+                                os.width (wid);
+                                field().write(os,get(i,j,deg_min));
+                                for (size_t k=deg_min+1;k<deg_max;++k){
+                                    os<<"+";
+                                    field().write(os,get(i,j,k))<<"*x^"<<k-deg_min;
                                 }
-				os << (i<_row-1?"],":"]" )<< std::endl;
+                                if (deg_max-deg_min>0){
+                                    os<<"+";
+                                    field().write(os,get(i,j,deg_max))<<"*x^"<<deg_max-deg_min;
+                                }
+                                os<<(j<_col-1?",":"" );
+                            }
+                            os << (i<_row-1?"],":"]" )<< std::endl;
                         }
 			std::cout<<"]);";
 		
                 	return os;
                 }
 
-		Element* getWritePointer(){return _rep.data();}
+		Element* getPointer(){return _rep.data();}
 		const Element* getPointer() const {return _rep.data();}
 
 		size_t realmeminfo()const {
@@ -368,7 +369,7 @@ namespace LinBox{
 			_rep(s,Matrix(f)), _row(r), _col(c), _size(s), _fld(&f) {
 			//_row(r), _col(c), _size(s), _fld(&f) {			
 			for(size_t i=0;i<s;i++)
-				_rep[i].init(f,r,c);
+				_rep[i].init(r,c);
 			//integer p;
 			//std::cout<<"(ALLOC) matfirst at "<<this<<" : "<<r<<"x"<<c<<" - size= "<<s<<" ==> "<<MB(realmeminfo())<<" Mo"<<std::endl;
 			ADD_MEM(realmeminfo());
@@ -410,7 +411,7 @@ namespace LinBox{
 			_rep.resize(s,Matrix(*_fld));
 			if (s>_size){
 				for(size_t i=_size;i<s;i++)
-					_rep[i].init(field(),_row,_col);
+					_rep[i].init(_row,_col);
 			}
 			_size=s;
 		}
@@ -495,8 +496,8 @@ namespace LinBox{
 
 		// get access to the the k-th coeff  of the ith matrix entry
 		inline Element& ref(size_t i, size_t k){
-			return 	_rep[k].refRep()[i];
-			//return *(_rep[k].Begin()+i);
+			//return 	_rep[k].refRep()[i];
+			return *(_rep[k].getPointer()+i); 
 		}
 		inline Element& ref(size_t i, size_t j, size_t k){
 			return ref(i*_col+j,k);
@@ -552,12 +553,16 @@ namespace LinBox{
                                         os.width (wid);
                                         field().write(os,_rep[deg_min].getEntry(i,j));
                                         for (size_t k=deg_min+1;k<deg_max;++k){
+                                            if (!field().isZero(_rep[k].getEntry(i,j))){
                                                 os<<"+";
                                                 field().write(os,_rep[k].getEntry(i,j))<<"*x^"<<k-deg_min;
+                                            }
                                         }
                                         if (deg_max-deg_min>0){
+                                            if (!field().isZero(_rep[deg_max].getEntry(i,j))){
                                                 os<<"+";
                                                 field().write(os,_rep[deg_max].getEntry(i,j))<<"*x^"<<deg_max-deg_min;
+                                            }
                                         }
 					os<<(j<_col-1?",":"" );
                                 }

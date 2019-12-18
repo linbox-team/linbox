@@ -53,6 +53,9 @@ namespace {
         std::cerr << "/!\\ " << SolveMethod::name() << " on " << type_to_string(A) << " over ";
         A.field().write(std::cerr);
         std::cerr << " of size " << A.rowdim() << "x" << A.coldim() << " FAILS (" << reason << ")" << std::endl;
+	A.write(std::cerr)<<std::endl;
+	x.write(std::cerr)<<std::endl;
+	b.write(std::cerr)<<std::endl;
     }
 
     template <class Matrix, class Domain>
@@ -297,27 +300,28 @@ int main(int argc, char** argv)
 
     bool ok = true;
     do {
-        // // ----- Rational Auto
-        // ok = ok && test_dense_solve(Method::Auto(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
-        // ok = ok && test_sparse_solve(Method::Auto(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
-        // // @fixme Dixon<Wiedemann> does not compile
-        // // ok = ok && test_blackbox_solve(Method::Auto(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
+        // ----- Rational Auto
+        ok = ok && test_dense_solve(Method::Auto(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
+#if 0
+        ok = ok && test_sparse_solve(Method::Auto(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
+        // @fixme Dixon<Wiedemann> does not compile
+        // ok = ok && test_blackbox_solve(Method::Auto(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
 
-        // ok = ok && test_dense_solve(Method::Auto(method), QQ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
-        // ok = ok && test_sparse_solve(Method::Auto(method), QQ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
-        // // ok = ok && test_blackbox_solve(Method::Auto(method), QQ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
+        ok = ok && test_dense_solve(Method::Auto(method), QQ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
+        ok = ok && test_sparse_solve(Method::Auto(method), QQ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
+        // ok = ok && test_blackbox_solve(Method::Auto(method), QQ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
 
-        // // ----- Rational CRA
-        // // @fixme @bug When bitSize = 5 and vectorBitSize = 50, CRA fails
-        // ok = ok && test_dense_solve(Method::CRAAuto(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
-        // ok = ok && test_sparse_solve(Method::CRAAuto(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
-        // // ok = ok && test_blackbox_solve(Method::CRAAuto(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
+        // ----- Rational CRA
+        // @fixme @bug When bitSize = 5 and vectorBitSize = 50, CRA fails
+        ok = ok && test_dense_solve(Method::CRAAuto(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
+        ok = ok && test_sparse_solve(Method::CRAAuto(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
+        // ok = ok && test_blackbox_solve(Method::CRAAuto(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
 
-        // ok = ok && test_dense_solve(Method::CRAAuto(method), QQ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
-        // ok = ok && test_sparse_solve(Method::CRAAuto(method), QQ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
-        // // ok = ok && test_blackbox_solve(Method::CRAAuto(method), QQ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
+        ok = ok && test_dense_solve(Method::CRAAuto(method), QQ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
+        ok = ok && test_sparse_solve(Method::CRAAuto(method), QQ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
+        // ok = ok && test_blackbox_solve(Method::CRAAuto(method), QQ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
 
-        // // ----- Rational Dixon
+        // ----- Rational Dixon
         ok = ok && test_dense_solve(Method::Dixon(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
         // ok = ok && test_sparse_solve(Method::Dixon(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
         // // @fixme Dixon<Wiedemann> does not compile
@@ -382,7 +386,7 @@ int main(int argc, char** argv)
         // ok = ok && test_dense_solve(Method::Coppersmith(method), F, F, m, n, 0, 0, seed, verbose);
         // ok = ok && test_sparse_solve(Method::Coppersmith(method), F, F, m, n, 0, 0, seed, verbose);
         // ok = ok && test_blackbox_solve(Method::Coppersmith(method), F, F, m, n, 0, 0, seed, verbose);
-
+#endif
         if (!ok) {
             std::cerr << "Failed with seed: " << seed << std::endl;
         }

@@ -277,7 +277,7 @@ namespace LinBox{
 				FFT_PROFILING(2,"linearization of results mod pi");
 
 				// reconstruct the result in C
-				RNS.convert(1,n_tc,0,c.getWritePointer(),n_tc, t_c_mod, n_tc, _maxnorm);
+				RNS.convert(1,n_tc,0,c.getPointer(),n_tc, t_c_mod, n_tc, _maxnorm);
 				//std::cout<<"RNS OUT COMP done: "<<STR_MEMINFO<<std::endl;      
 				DEL_MEM(8*n_tc*num_primes);
 				delete[] t_c_mod;
@@ -297,7 +297,7 @@ namespace LinBox{
 									t_c_mod[l*n_tc_small + (j+i*s_small)]= c_i[l]->get(i,memiter*s_small+j);
 						}	
 						// reconstruct the result in C
-						RNS.convert(m*n,s_small,0,c.getWritePointer()+memiter*s_small,s, t_c_mod, n_tc_small, _maxnorm);
+						RNS.convert(m*n,s_small,0,c.getPointer()+memiter*s_small,s, t_c_mod, n_tc_small, _maxnorm);
 						//std::cout<<"RNS OUT COMP done: "<<STR_MEMINFO<<std::endl;      
 					}
 					DEL_MEM(8*n_tc_small*num_primes);
@@ -314,7 +314,7 @@ namespace LinBox{
 						delete c_i[l];
 					}	  
 					// reconstruct the result in C
-					RNS.convert(m*n,s_last,0,c.getWritePointer()+(MEMFACTOR-1)*s_small,s, t_c_mod, n_tc_last, _maxnorm);
+					RNS.convert(m*n,s_last,0,c.getPointer()+(MEMFACTOR-1)*s_small,s, t_c_mod, n_tc_last, _maxnorm);
 					DEL_MEM(8*n_tc_last*num_primes);
 					delete[] t_c_mod;
 				}
@@ -547,7 +547,7 @@ namespace LinBox{
 				FFT_PROFILING(2,"linearization of results mod pi");
 
 				// reconstruct the result in C
-				RNS.convert(1,n_tc,0,c.getWritePointer(),n_tc, t_c_mod, n_tc, _maxnorm);
+				RNS.convert(1,n_tc,0,c.getPointer(),n_tc, t_c_mod, n_tc, _maxnorm);
 				DEL_MEM(8*n_tc*num_primes);
 				delete[] t_c_mod;
 #else
@@ -565,7 +565,7 @@ namespace LinBox{
 									t_c_mod[l*n_tc_small + (j+i*s_small)]= c_i[l]->get(i,memiter*s_small+j);
 						}	
 						// reconstruct the result in C
-						RNS.convert(m*n,s_small,0,c.getWritePointer()+memiter*s_small,s, t_c_mod, n_tc_small, _maxnorm);
+						RNS.convert(m*n,s_small,0,c.getPointer()+memiter*s_small,s, t_c_mod, n_tc_small, _maxnorm);
 					}
 					DEL_MEM(8*n_tc_small*num_primes);
 					delete[] t_c_mod;
@@ -581,7 +581,7 @@ namespace LinBox{
 						delete c_i[l];
 					}	  
 					// reconstruct the result in C
-					RNS.convert(m*n,s_last,0,c.getWritePointer()+(MEMFACTOR-1)*s_small,s, t_c_mod, n_tc_last, _maxnorm);
+					RNS.convert(m*n,s_last,0,c.getPointer()+(MEMFACTOR-1)*s_small,s, t_c_mod, n_tc_last, _maxnorm);
 					DEL_MEM(8*n_tc_last*num_primes);
 					delete[] t_c_mod;
 				}

@@ -24,6 +24,7 @@
 
 #include <linbox/algorithms/rns.h>
 #include <linbox/solutions/methods.h>
+#include <vector>
 
 namespace LinBox {
     /**
@@ -191,9 +192,9 @@ namespace LinBox {
             // than the .
             // commentator().start("[MMLifting][Init] A^{-1} mod pj precomputations");
             {
-                _B.reserve(_primesCount);
+                _BB.reserve(_primesCount);
                 for (auto& F : _fields) {
-                    _B.emplace_back(A, F);
+                    _BB.emplace_back(A, F);
                 }
 
                 PAR_BLOCK
@@ -205,7 +206,7 @@ namespace LinBox {
                     FOR1D(j, M, sp, MODE(WRITE(nullities)), {
                         auto& F = _fields[j];
                         BlasMatrixDomain<Field> bmd(F);
-                        bmd.invin(_B[j], nullities[j]);
+                        bmd.invin(_BB[j], nullities[j]);
                     });
                     for (auto nullity : nullities) {
                         if (nullity > 0) {
@@ -357,7 +358,7 @@ namespace LinBox {
                     }
 
                     // digit = A^{-1} * R mod pj
-                    const auto& B = _B[j];
+                    const auto& B = _BB[j];
                     auto& digit = digits[j];
                     B.apply(digit, FR);
 
@@ -500,7 +501,7 @@ namespace LinBox {
         size_t _n = 0u;           // Row/column dimension of A.
         size_t _primesCount = 0u; // How many primes. Equal to _primes.size().
 
-        std::vector<FMatrix> _B;    // Inverses of A mod p[i]
+        std::vector<FMatrix> _BB;    // Inverses of A mod p[i]
         std::vector<Field> _fields; // All fields Modular<p[i]>
 
         //----- Iteration

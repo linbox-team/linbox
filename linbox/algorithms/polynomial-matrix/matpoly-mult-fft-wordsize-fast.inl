@@ -124,6 +124,7 @@ namespace LinBox {
 			FFT_transform<Field> FFTinv (field(), lpts, FFTer.getInvRoot());
 			FFT_PROFILING(1,"init");
 
+            // std::cout<<"FFT prime: "<<_p<<std::endl;
 			// std::cout<<"FFT Root: "<<FFTer.getRoot()<<std::endl;
 			// std::cout<<"FFT InvRoot: "<<FFTer.getInvRoot()<<std::endl;
 			// std::cout<<a<<std::endl;
@@ -136,9 +137,9 @@ namespace LinBox {
 				FFTer.FFT_DIF(&(b.ref(i,0)));
 			FFT_PROFILING(1,"direct FFT_DIF");
 			
-			//std::cout<<"DIF:  w="<<FFTer._w<<std::endl;
-			//std::cout<<a<<std::endl;
-			//std::cout<<b<<std::endl;
+			// std::cout<<"DIF:  w="<<FFTer._w<<std::endl;
+			// std::cout<<a<<std::endl;
+			// std::cout<<b<<std::endl;
 			
 			
 			// convert the matrix representation to matfirst (with double coefficient)
@@ -191,7 +192,7 @@ namespace LinBox {
 			// for (size_t i = 0; i < m * n; i++)
 			// 	for (size_t j = 0; j < pts; j++)
 			// 		field().mulin(c.ref(i,j), inv_pts);
-			FFLAS::fscalin(field(),c.rowdim()*c.coldim()*c.size(), inv_pts,  c.getWritePointer(),1);
+			FFLAS::fscalin(field(),c.rowdim()*c.coldim()*c.size(), inv_pts,  c.getPointer(),1);
 
 			// std::cout<<"SCALIN:"<<std::endl;
 			// std::cout<<c<<std::endl;
@@ -314,7 +315,7 @@ namespace LinBox {
 			// for (size_t i = 0; i < m * n; i++)
 			// 	for (size_t j = 0; j < pts; j++)
 			// 		field().mulin(c.ref(i,j), inv_pts);
-			FFLAS::fscalin(field(),c.rowdim()*c.coldim()*c.size(), inv_pts,  c.getWritePointer(),1);
+			FFLAS::fscalin(field(),c.rowdim()*c.coldim()*c.size(), inv_pts,  c.getPointer(),1);
 			FFT_PROFILING(1,"scaling the result");
 		}
 	}; // end of class special FFT mul domain

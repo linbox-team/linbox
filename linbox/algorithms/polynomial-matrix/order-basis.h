@@ -23,6 +23,8 @@
  * ========LICENCE========
  */
 
+//#define __CHECK_ORDERBASIS
+//#define __DEBUG_MBASIS
 
 
 #ifndef __LINBOX_ORDER_BASIS
@@ -58,7 +60,7 @@ namespace LinBox {
 #define  PROFILE_PMBASIS
 #endif
 
-        
+
 #ifdef __CHECK_ORDERBASIS
 #define __CHECK_MBASIS
 #define __CHECK_PMBASIS
@@ -446,9 +448,14 @@ namespace LinBox {
                                 // Compute a column reduced basis of the nullspace of delta
                                 // -> [ L2 I ]                                 
                                 rank= FFPACK::PLUQ (field(), FFLAS::FflasNonUnit, m, n,
-                                                    delta_copy.getWritePointer(),delta_copy.getStride(),
-                                                    Qt.getWritePointer(), P.getWritePointer());
+                                                    delta_copy.getPointer(),delta_copy.getStride(),
+                                                    Qt.getPointer(), P.getPointer());
 #ifdef __DEBUG_MBASIS
+                                std::cout<<"delta :\n";
+                                delta.write(std::cout,Tag::FileFormat::Maple);
+                                std::cout<<std::endl;
+
+                                std::cout<<"delta copy :\n";
                                 delta_copy.write(std::cout,Tag::FileFormat::Maple);
                                 std::cout<<std::endl;                                
 #endif
@@ -456,10 +463,18 @@ namespace LinBox {
                                 View L2(delta_copy,rank,0,m-rank,rank);
                                 FFLAS::ftrsm(field(),FFLAS::FflasRight,FFLAS::FflasLower,
                                              FFLAS::FflasNoTrans,FFLAS::FflasUnit,
-                                             m-rank,rank, field().mOne, L1.getPointer(),L1.getStride(), L2.getWritePointer(),L2.getStride());
+                                             m-rank,rank, field().mOne, L1.getPointer(),L1.getStride(), L2.getPointer(),L2.getStride());
 #ifdef __DEBUG_MBASIS
+                                std::cout<<"delta :\n";
+                                delta.write(std::cout,Tag::FileFormat::Maple);
+                                std::cout<<std::endl;
+                                std::cout<<"delta copy :\n";
                                 delta_copy.write(std::cout,Tag::FileFormat::Maple);
-                                std::cout<<std::endl;                                
+                                std::cout<<std::endl;
+                                std::cout<<"L2=:\n";
+                                L2.write(std::cout,Tag::FileFormat::Maple);
+                                std::cout<<std::endl;
+                                
 #endif
 
                                 
@@ -475,7 +490,7 @@ namespace LinBox {
                                 View L2(L,rank,0,m-rank,rank);
                                 FFLAS::ftrsm(field(),FFLAS::FflasRight,FFLAS::FflasLower,
                                              FFLAS::FflasNoTrans,FFLAS::FflasUnit,
-                                             m-rank,rank, field().mOne, L1.getPointer(),m, L2.getWritePointer(),m);
+                                             m-rank,rank, field().mOne, L1.getPointer(),m, L2.getPointer(),m);
 #endif
                                 
                                 // update sigma by L^(-1) (rank sensitive -> use only the left kernel basis)
