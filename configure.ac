@@ -34,6 +34,7 @@ AX_PREFIX_CONFIG_H(linbox/config.h, __LINBOX)
 AC_CONFIG_LINKS([tests/data/sms.matrix:tests/data/sms.matrix])
 AC_CONFIG_LINKS([tests/data/30_30_27.sms:tests/data/30_30_27.sms])
 AC_CONFIG_LINKS([tests/data/fib25.sms:tests/data/fib25.sms])
+AC_CONFIG_LINKS([tests/data/rk9_7_10.sms:tests/data/rk9_7_10.sms])
 
 AM_PROG_AR
 
