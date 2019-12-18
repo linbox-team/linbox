@@ -114,9 +114,13 @@ namespace LinBox{
         // copy the matrix A into the matrix of degree
         template<typename DenseMatrix>
 		void setMatrix(const DenseMatrix& A, size_t k)  {
+            std::cout<<"SET MATRIX: "<<std::endl;
 			auto it=A.Begin();
-			for(size_t i=0;i<_row*_col;i++,it++)
-				ref(i,k)=*it ; 		
+			for(size_t i=0;i<_row*_col;i++,it++){
+                std::cout<<*it<<" ";
+                ref(i,k)=*it ;
+            }
+            std::cout<<std::endl;
 		}
 
         // retrieve the matrix of degree k in the polynomial matrix
@@ -262,7 +266,7 @@ namespace LinBox{
                     }
                     os<<(j<_col-1?",":"" );
                 }
-                os << (i<_row-1?"],":"]" )<< std::endl;
+                os << (i<_row-1?"],":"]" );//<< std::endl;
             }
 			os<<"]);";
 		
@@ -345,12 +349,13 @@ namespace LinBox{
         template<typename DenseMatrix>
 		void setMatrix(const DenseMatrix& A, size_t k)  {
             if (A.getPointer() != getPointer()+k*_row*_col){
+                std::cout<<"NEW MAtPol setMatrix: "<<A.getPointer()<<"<>"<<getPointer()+k*_row*_col<<std::endl;
                 auto it=A.Begin();
                 for(size_t i=0;i<_row*_col;i++,it++)
                     ref(i,k)=*it ;
             }
-            else{
-                std::cout<<"setMatrix with view OK"<<std::endl;
+            else {
+                std::cout<<"NEW MAtPol setMatrix: does nothing\n";
             }
 		}
 
@@ -484,7 +489,7 @@ namespace LinBox{
                     }
 					os<<(j<_col-1?",":"" );
                 }
-                os << (i<_row-1?"],":"]" )<< std::endl;
+                os << (i<_row-1?"],":"]" );//<< std::endl;
             }
 			os<<"]);";
 			return os;

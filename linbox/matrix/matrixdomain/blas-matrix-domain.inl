@@ -428,7 +428,7 @@ namespace LinBox
 			constSubMatrixType A_v(A);
 			constSubMatrixType B_v(B);
 			subMatrixType C_v(C);
-
+            //std::cout<<"BLAsMatrixDomain Mul"<<__LINE__<<A<<" x "<<B<<std::endl<<A_v<<" x"<<B_v<<std::endl;
 			FFLAS::fgemm( C.field(), FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
 				     C_v.rowdim(), C_v.coldim(), A_v.coldim(),
 				     alpha,

@@ -52,16 +52,23 @@ namespace LinBox
         template<typename Matrix1,typename Matrix2,typename Matrix3>
         void mul(Matrix1& c, const Matrix2&  a, const Matrix3&  b) const
         {
+            std::clog<<"Mul matpoly:"<<std::endl;
+            std::clog<<"A="<<a<<std::endl;
+            std::clog<<"B="<<b<<std::endl;
+            std::clog<<"C="<<c<<std::endl;
+            
             for (size_t k=0;k<a.size()+b.size()-1;k++){
                 auto c_tmp=c[k];
                 size_t idx_min= (k+1<b.size()?0:k+1-b.size());
                 size_t idx_max=std::min(k,a.size()-1);
-                _BMD.mul(c_tmp,a[idx_min],b[k-idx_min]);
+                _BMD.mul(c_tmp,a[idx_min],b[k-idx_min]);               
                 for (size_t i=idx_min+1;i<=idx_max;i++){ 
                     _BMD.axpyin(c_tmp,a[i],b[k-i]);
                 }
-                c.setMatrix(c_tmp,k);
+                c.setMatrix(c_tmp,k); 
             }
+            std::clog<<"C="<<c<<std::endl;
+            std::clog<<"-----------"<<std::endl;
         }                          
         
         template<typename Matrix1,typename Matrix2,typename Matrix3>
