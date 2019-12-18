@@ -92,7 +92,6 @@ power_rank_SOURCES     = power_rank.C
 poweroftwo_ranks_SOURCES=poweroftwo_ranks.C
 #smithformlocal_SOURCES = smith-form-local.C
 #polysmith_SOURCES      = poly-smith.C
-#bench_fft_SOURCES       = bench-fft.C
 #bench_matpoly_mult_SOURCES = bench-matpoly-mult.C
 
 LINBOX=@prefix@

@@ -30,7 +30,7 @@
 #include "fflas-ffpack/fflas-ffpack.h"
 #include "linbox/matrix/polynomial-matrix.h"
 #include "linbox/matrix/matrix-domain.h"
-#include "linbox/algorithms/polynomial-matrix/polynomial-fft-transform.h"
+#include "linbox/algorithms/polynomial-matrix/fft.h"
 
 namespace LinBox {
 
@@ -120,8 +120,9 @@ namespace LinBox {
 				std::cout<<"nbr points="<<pts<<std::endl;
 				throw LinboxError("LinBox ERROR: bad FFT Prime\n");
 			}
-			FFT_transform<Field> FFTer (field(), lpts);
-			FFT_transform<Field> FFTinv (field(), lpts, FFTer.getInvRoot());
+            FFT<Field> FFTer(field(), lpts);
+            FFT<Field> FFTinv (field(), lpts, FFTer.invroot());
+            
 			FFT_PROFILING(1,"init");
 
             // std::cout<<"FFT prime: "<<_p<<std::endl;
@@ -132,9 +133,9 @@ namespace LinBox {
 			
 			// FFT transformation on the input matrices
 			for (size_t i = 0; i < m * k; i++)
-				FFTer.FFT_DIF(&(a.ref(i,0)));
+				FFTer.FFT_direct(&(a.ref(i,0)));
 			for (size_t i = 0; i < k * n; i++)
-				FFTer.FFT_DIF(&(b.ref(i,0)));
+				FFTer.FFT_direct(&(b.ref(i,0)));
 			FFT_PROFILING(1,"direct FFT_DIF");
 			
 			// std::cout<<"DIF:  w="<<FFTer._w<<std::endl;
@@ -179,7 +180,7 @@ namespace LinBox {
 			
 			// Inverse FFT on the output matrix
 			for (size_t i = 0; i < m * n; i++)
-				FFTinv.FFT_DIT(&(c.ref(i,0)));
+				FFTinv.FFT_inverse(&(c.ref(i,0)));
 			FFT_PROFILING(1,"inverse FFT_DIT");
 
 			// std::cout<<"DIT:"<<std::endl;
@@ -266,22 +267,22 @@ namespace LinBox {
 				std::cout<<"nbr points="<<pts<<std::endl;
 				throw LinboxError("LinBox ERROR: bad FFT Prime\n");
 			}
-			FFT_transform<Field> FFTer (field(), lpts);
-			FFT_transform<Field> FFTinv(field(), lpts, FFTer.getInvRoot());
+			FFT<Field> FFTer (field(), lpts);
+			FFT<Field> FFTinv(field(), lpts, FFTer.invroot());
 			FFT_PROFILING(1,"init");
 
 			// FFT transformation on the input matrices
 			if (smallLeft){
 				for (size_t i = 0; i < m * k; i++)
-					FFTer.FFT_DIF(&(a(i)[0]));
+					FFTer.FFT_direct(&(a(i)[0]));
 				for (size_t i = 0; i < k * n; i++)
-					FFTinv.FFT_DIF(&(b(i)[0]));
+					FFTinv.FFT_direct(&(b(i)[0]));
 			}
 			else {
 				for (size_t i = 0; i < m * k; i++)
-					FFTinv.FFT_DIF(&(a(i)[0]));
+					FFTinv.FFT_direct(&(a(i)[0]));
 				for (size_t i = 0; i < k * n; i++)
-					FFTer.FFT_DIF(&(b(i)[0]));
+					FFTer.FFT_direct(&(b(i)[0]));
 			}
 			FFT_PROFILING(1,"direct FFT_DIF");
 
@@ -305,7 +306,7 @@ namespace LinBox {
 
 			// Inverse FFT on the output matrix
 			for (size_t i = 0; i < m * n; i++)
-				FFTer.FFT_DIT(&(c(i)[0]));
+				FFTer.FFT_inverse(&(c(i)[0]));
 			FFT_PROFILING(1,"inverse FFT_DIT");
 
 			// Divide by pts = 2^ltps

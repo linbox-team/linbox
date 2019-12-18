@@ -28,7 +28,6 @@
 #include "fflas-ffpack/fflas-ffpack.h"
 #include "linbox/matrix/polynomial-matrix.h"
 #include "linbox/matrix/matrix-domain.h"
-#include "linbox/algorithms/polynomial-matrix/polynomial-fft-transform.h"
 #include "linbox/algorithms/polynomial-matrix/matpoly-mult-fft-wordsize-fast.inl"
 #include "linbox/randiter/random-fftprime.h"
 #include <cmath>
