@@ -198,7 +198,7 @@ struct pwrlist
 {
 	std::vector<Givaro::Integer> m;
 	pwrlist(Givaro::Integer q)
-        { m.push_back(1); m.push_back(q); 
+        { m.push_back(1); m.push_back(q);
 //cout << "pwrlist " << m[0] << " " << m[1] << endl;
         }
 	Givaro::Integer operator[](int e)
@@ -247,18 +247,18 @@ template <class PIR>
 void MolerMat(LinBox::DenseMatrix<PIR>& A, PIR& R, int n)
 {
     typename PIR::Element tmp; R.init(tmp);
-    
+
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < i; ++j)
             A.setEntry( i, j, R.init(tmp, j-1) );
         A.setEntry(i,i, R.init(tmp, i+1) );
         for (int j = i+1; j < n; ++j)
             A.setEntry( i, j, R.init(tmp, i-1) );
-    }    
+    }
 }
 
-//  n-by-n matrix of 0's and 1's defined by 
-//  A(i,j) = 1, if j = 1 or if i divides j, 
+//  n-by-n matrix of 0's and 1's defined by
+//  A(i,j) = 1, if j = 1 or if i divides j,
 //  and A(i,j) = 0 otherwise.
 template <class PIR>
 void RedhefferMat(LinBox::DenseMatrix<PIR>& A, PIR& R, int n)
