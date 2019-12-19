@@ -51,7 +51,7 @@ doc/linbox-dev-html/pages.html:
 	(cd doc; ${MAKE} docs_dev)
 
 examples:
-	(cp  -R $(top_srcdir)/examples/{data,test.sh} examples; cd examples; ${MAKE} examples; SED="${SED}" ./test.sh)
+	(cd examples; ${MAKE} examples)
 
 benchmarks:
 	(cd benchmarks; ${MAKE} benchmarks)
