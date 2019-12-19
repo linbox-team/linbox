@@ -26,7 +26,7 @@ AC_INIT([LinBox], [1.7.0],[linbox-use@googlegroups.com],[linbox],
 
 AC_CONFIG_MACRO_DIR([macros])
 AC_CONFIG_AUX_DIR([build-aux])
-AM_INIT_AUTOMAKE([1.10 -Wall -Wno-portability foreign])
+AM_INIT_AUTOMAKE([1.10 -Wall -Wno-portability foreign subdir-objects])
 AC_CONFIG_HEADERS([config.h])
 AX_PREFIX_CONFIG_H(linbox/config.h, __LINBOX)
 
@@ -350,6 +350,11 @@ macros/CodeChunk/Makefile
 benchmarks/Makefile
 benchmarks/data/Makefile
 benchmarks/matrix/Makefile
+programs/Makefile
+programs/kernelvector/Makefile
+programs/kernelvector/bin/Makefile
+programs/kernelvector/src/Makefile
+programs/kernelvector/include/Makefile
 linbox.pc
 ])
 # linbox/algorithms/IML/Makefile
