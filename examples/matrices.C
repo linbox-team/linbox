@@ -84,7 +84,7 @@ int main(int argc, char* argv[])
 	//typedef PIRModular<int32_t> PIR;
 	typedef Givaro::ZRing<Givaro::Integer> PIR;
 	PIR R;
-	LinBox::DenseMatrix<PIR> M(R);
+	LinBox::DenseMatrix<PIR> M(R,n,n, R.zero);
 
 	Mat(M,R,n,type);
 
