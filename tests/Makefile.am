@@ -84,6 +84,7 @@ BASIC_TESTS =            \
     test-det            \
     test-regression        \
     test-regression2       \
+    test-rank-ex        \
     test-rank-u32        \
     test-rank-md        \
     test-rank-Int        \
@@ -345,6 +346,7 @@ test_qlup_SOURCES =                     test-qlup.C
 test_quad_matrix_SOURCES =              test-quad-matrix.C
 test_randiter_nonzero_prime_SOURCES =   test-randiter-nonzero-prime.C
 test_random_matrix_SOURCES =        test-random-matrix.C
+test_rank_ex_SOURCES =         test-rank-ex.C
 test_rank_Int_SOURCES =         test-rank-Int.C test-rank.h
 test_rank_md_SOURCES =          test-rank-md.C test-rank.h
 test_rank_u32_SOURCES =         test-rank-u32.C test-rank.h
