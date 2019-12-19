@@ -198,6 +198,7 @@ namespace LinBox {
             *  r1 = [ a0, b0, a1, b1, ..., al-1, bl-1 ]
             *  r2 = [ al, bl, al+1, bl+1, ..., an-1, bn-1 ]
             */
+#ifdef __FFLASFFPACK_HAVE_SSE4_1_INSTRUCTIONS
         /* Simd128<float> */
         template <typename S = Simd,
                     enable_if_same_t<S, Simd128<float>>* = nullptr>
@@ -238,6 +239,8 @@ namespace LinBox {
             r1 = _mm_unpacklo_epi64 (a, b);
             r2 = _mm_unpackhi_epi64 (a, b);
         }
+#endif /* __FFLASFFPACK_HAVE_SSE4_1_INSTRUCTIONS */
+#ifdef __FFLASFFPACK_HAVE_AVX_INSTRUCTIONS
         /* Simd256<float> */
         template <typename S = Simd,
                     enable_if_same_t<S, Simd256<float>>* = nullptr>
@@ -282,6 +285,8 @@ namespace LinBox {
             r2 = _mm256_permute2f128_pd (t1, t2, 0x31);
 #endif /* __FFLASFFPACK_HAVE_AVX2_INSTRUCTIONS */
         }
+#endif /* __FFLASFFPACK_HAVE_AVX_INSTRUCTIONS */
+#ifdef __FFLASFFPACK_HAVE_AVX2_INSTRUCTIONS
         /* Simd256<uint16_t> */
         template <typename S = Simd,
                     enable_if_same_t<S, Simd256<uint16_t>>* = nullptr>
@@ -318,6 +323,7 @@ namespace LinBox {
             r1 = _mm256_unpacklo_epi64 (t1, t2);
             r2 = _mm256_unpackhi_epi64 (t1, t2);
         }
+#endif /* __FFLASFFPACK_HAVE_AVX2_INSTRUCTIONS */
 
         /******************************************************************/
         /******************************************************************/
@@ -330,6 +336,7 @@ namespace LinBox {
             *  r1 = [ a0, a2, ..., an-2, b0, b2, ..., bn-2 ]
             *  r2 = [ a1, a3, ..., an-1, b1, b3, ..., bn-1 ]
             */
+#ifdef __FFLASFFPACK_HAVE_SSE4_1_INSTRUCTIONS
         /* Simd128<float> */
         template <typename S = Simd,
                     enable_if_same_t<S, Simd128<float>>* = nullptr>
@@ -382,6 +389,8 @@ namespace LinBox {
             r1 = _mm_unpacklo_epi64 (a, b);
             r2 = _mm_unpackhi_epi64 (a, b);
         }
+#endif /* __FFLASFFPACK_HAVE_SSE4_1_INSTRUCTIONS */
+#ifdef __FFLASFFPACK_HAVE_AVX_INSTRUCTIONS
         /* Simd256<float> */
         template <typename S = Simd,
                     enable_if_same_t<S, Simd256<float>>* = nullptr>
@@ -428,6 +437,8 @@ namespace LinBox {
             r2 = _mm256_unpackhi_pd (t1, t2);
 #endif /* __FFLASFFPACK_HAVE_AVX2_INSTRUCTIONS */
         }
+#endif /* __FFLASFFPACK_HAVE_AVX_INSTRUCTIONS */
+#ifdef __FFLASFFPACK_HAVE_AVX2_INSTRUCTIONS
         /* Simd256<uint32_t> */
         template <typename S = Simd,
                     enable_if_same_t<S, Simd256<uint32_t>>* = nullptr>
@@ -454,6 +465,7 @@ namespace LinBox {
             r1 = _mm256_permute4x64_epi64 (r1, 0xd8);
             r2 = _mm256_permute4x64_epi64 (r2, 0xd8);
         }
+#endif /* __FFLASFFPACK_HAVE_AVX2_INSTRUCTIONS */
     };
 }
 
