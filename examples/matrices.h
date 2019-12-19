@@ -229,6 +229,7 @@ num& qread(num& Val, pwrlist& M, std::istream& in)
 template <class PIR>
 void KratMat(LinBox::DenseMatrix<PIR>& M, PIR& R, int q)
 {
+	M.resize((size_t)q, (size_t)q, R.zero);
 	pwrlist pwrs(q);
 	for (unsigned int i = 0; i < M.rowdim(); ++ i)
 
@@ -246,7 +247,9 @@ void KratMat(LinBox::DenseMatrix<PIR>& M, PIR& R, int q)
 template <class PIR>
 void MolerMat(LinBox::DenseMatrix<PIR>& A, PIR& R, int n)
 {
+    A.resize((size_t)n, (size_t)n, R.zero);
     typename PIR::Element tmp; R.init(tmp);
+std::cout << A.rowdim() << 'x' << A.coldim() << std::endl;
 
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < i; ++j)
@@ -263,6 +266,7 @@ void MolerMat(LinBox::DenseMatrix<PIR>& A, PIR& R, int n)
 template <class PIR>
 void RedhefferMat(LinBox::DenseMatrix<PIR>& A, PIR& R, int n)
 {
+    A.resize((size_t)n, (size_t)n, R.zero);
     for (int i = 0; i < n; ++i) {
         A.setEntry(i,0, R.one);
         for (int j = 1; j < n; ++j)
