@@ -20,6 +20,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  * ========LICENCE========
  */
+#ifndef __LinBox_Matrices_H_
+#define __LinBox_Matrices_H_
 
 #include <linbox/matrix/dense-matrix.h>
 
@@ -270,3 +272,4 @@ void RedhefferMat(LinBox::DenseMatrix<PIR>& A, PIR& R, int n)
 }
 
 
+#endif

@@ -54,6 +54,8 @@
 using namespace std;
 
 #include <linbox/util/timer.h>
+#include <linbox/matrix/dense-matrix.h>
+
 #include "matrices.h"
 
 template <class PIR>
