@@ -79,7 +79,6 @@ void scramble(LinBox::DenseMatrix<Ring>& M)
 // each repeated twice), involving the s primes 101, 103, ...
 template <class PIR>
 void RandomRoughMat(LinBox::DenseMatrix<PIR>& M, PIR& R, int n) {
-	M.resize((size_t)n, (size_t)n, R.zero);
 	if (n > 10000) {std::cerr << "n too big" << std::endl; exit(-1);}
 	int jth_factor[130] =
         {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67,
@@ -107,7 +106,6 @@ void RandomRoughMat(LinBox::DenseMatrix<PIR>& M, PIR& R, int n) {
 // diag(1,2,3,5,8, ... 999, 0, 1, 2, ...).
 template <class PIR>
 void RandomFromDiagMat(LinBox::DenseMatrix<PIR>& M, PIR& R, int n) {
-	M.resize((size_t)n,(size_t) n, R.zero);
 
 	for (int i= 0 ; i < n; ++i)
 
@@ -124,7 +122,6 @@ void RandomFromDiagMat(LinBox::DenseMatrix<PIR>& M, PIR& R, int n) {
 // the last block may be truncated, thus repeating an earlier fibonacci number.
 template <class PIR>
 void RandomFibMat(LinBox::DenseMatrix<PIR>& M, PIR& R, int n) {
-	M.resize((size_t)n,(size_t) n, R.zero);
 
 	typename PIR::Element pmone; R.assign(pmone, R.one);
 
@@ -161,7 +158,6 @@ void RandomFibMat(LinBox::DenseMatrix<PIR>& M, PIR& R, int n) {
 // Trefethen's challenge #7 mat (primes on diag, 1's on 2^e bands).
 template <class PIR>
 void TrefMat(LinBox::DenseMatrix<PIR>& M, PIR& R, int n) {
-	M.resize((size_t)n, (size_t)n, R.zero);
 
 	std::vector<int> power2;
 
