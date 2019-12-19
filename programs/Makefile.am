@@ -1,4 +1,5 @@
 SUBDIRS=smith kernelvector
 
 programs:
-	$(foreach dir, $(SUBDIRS), (cd $dir; ${MAKE} programs))	
+	(cd kernelvector; ${MAKE} programs)
+	(cd smith; ${MAKE} programs)	
