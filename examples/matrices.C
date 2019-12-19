@@ -67,7 +67,9 @@ int main(int argc, char* argv[])
 
 		cout << "usage: " << argv[0] << " type n [filename]"  << endl;
 
-		cout << " type = `random', `random-rough', `tref', or `fib',"
+		cout << " type = `random', `random-rough', `tref',"
+             << " 'moler', 'redheffer', "
+             << " or `fib',"
 			 << " and n is the dimension" << endl;
 		cout  << " If filename is present, matrix is written there, else to cout." << endl;
 
@@ -129,6 +131,10 @@ void Mat(LinBox::DenseMatrix<PIR>& M, PIR& R, int & n,
 	else if (src == "tref") TrefMat(M, R, n);
 
 	else if (src == "krat") KratMat(M, R, n);
+
+	else if (src == "moler") MolerMat(M, R, n);
+
+	else if (src == "redheffer") RedhefferMat(M, R, n);
 
 	else { // from cin, mostly pointless, but may effect a file format change.
 
