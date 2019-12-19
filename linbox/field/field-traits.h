@@ -89,6 +89,7 @@ namespace LinBox {
 //             typedef RingCategories::IntegerTag categoryTag;
 //     };
 
+
 	using Givaro::Caster;
 
 	template <class Ring>

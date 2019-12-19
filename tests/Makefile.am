@@ -84,6 +84,7 @@ BASIC_TESTS =            \
     test-det            \
     test-regression        \
     test-regression2       \
+    test-rank-ex        \
     test-rank-u32        \
     test-rank-md        \
     test-rank-Int        \
@@ -137,6 +138,7 @@ CHECKER_TESTS =                 \
     test-dyadic-to-rational     \
     test-echelon-form           \
     test-ffpack                 \
+    test-fft                    \
     test-fibb                   \
     test-getentry               \
     test-givaropoly             \
@@ -156,6 +158,7 @@ CHECKER_TESTS =                 \
     test-modular-float          \
     test-modular-int            \
     test-moore-penrose          \
+    test-nullspace              \
     test-optimization           \
     test-order-basis            \
     test-param-fuzzy            \
@@ -181,6 +184,7 @@ CHECKER_TESTS =                 \
     test-blas-domain            \
     test-random-matrix          \
     test-zero-one               \
+    test-toom-cook              \
     test-toeplitz-det           \
     test-dense
 
@@ -192,9 +196,7 @@ CHECKER_NTL_TESTS =  ${NTL_TESTS}           \
 
 FULLCHECK_TESTS = ${CHECKER_TESTS} \
     test-minpoly                \
-    test-nullspace              \
     test-weak-popov-form        \
-    test-toom-cook              \
     test-mpi-comm               \
     test-rat-solve              \
     test-rat-minpoly            \
@@ -286,6 +288,7 @@ test_dif_SOURCES =              test-dif.C
 test_direct_sum_SOURCES =           test-direct-sum.C
 test_dyadic_to_rational_SOURCES =       test-dyadic-to-rational.C
 test_echelon_form_SOURCES =         test-echelon-form.C
+test_fft_SOURCES =                  test-fft.C
 test_ffpack_SOURCES =           test-ffpack.C
 test_fibb_SOURCES =             test-fibb.C
 test_frobenius_SOURCES =        test-frobenius.C
@@ -343,6 +346,7 @@ test_qlup_SOURCES =                     test-qlup.C
 test_quad_matrix_SOURCES =              test-quad-matrix.C
 test_randiter_nonzero_prime_SOURCES =   test-randiter-nonzero-prime.C
 test_random_matrix_SOURCES =        test-random-matrix.C
+test_rank_ex_SOURCES =         test-rank-ex.C
 test_rank_Int_SOURCES =         test-rank-Int.C test-rank.h
 test_rank_md_SOURCES =          test-rank-md.C test-rank.h
 test_rank_u32_SOURCES =         test-rank-u32.C test-rank.h
