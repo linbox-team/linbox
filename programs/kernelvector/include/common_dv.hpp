@@ -49,8 +49,19 @@ bool isNullVector(const Modulus_t& p, const Vector_t& v) {
 //         }
 //     }
 //     for(auto vals:v) if (! (vals%p)) return false;
-    for(auto vals:v) if (! ( (vals%p)==Modulus_t(0))) return false;
+  for(auto vals:v) if (! ( (vals%p)==Modulus_t(0))) return false;
     return true;
+    
+
+    // bool check=true;
+    // for(auto& vals:v) {
+    //   if (! ( (vals%p)==Modulus_t(0))) {
+    // 	std::cerr <<"Kernel["<<&vals-v.data()<<"] -> value: " << vals << " mod " << p << " is " << (vals%p) << " !=0"<< std::endl;
+    // 	check=false;
+    //   }
+    // }
+    // return check;;
+
 }
     
 #include <givaro/udl.h>

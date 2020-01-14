@@ -67,7 +67,7 @@ if [ "$startingstep" -lt 2 ]; then
     echo -n "[KERN] ($2/verif_log.txt): Verifying sequence and checkpoints ... "
     ./bin/verif_precompute -d $2 2> $2/verif_log_prec.txt
     NCHECKPOINTS=$(cat $2/chk_header.sdmp | cut -d' ' -f3)
-    ./verif_par_verif -d $2 -i $NCHECKPOINTS 2> $2/verif_log_par.txt
+    ./bin/verif_par_verif -d $2 -i $NCHECKPOINTS 2> $2/verif_log_par.txt
     cat $2/verif_log_prec.txt $2/verif_log_par.txt > $2/verif_log.txt
     echo "DONE"
 

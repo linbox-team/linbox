@@ -278,6 +278,13 @@ int main(int argc, char **argv)
         std::cerr << "/!\\ Number of rows is not an exact multiple of the SIMD step." << std::endl;
     
 
+
+    // PG: Some info on the matrix
+    // -> maximum of ones per row
+    std::cerr<<"[GMAT] Matrix Info: Maximum number of ones on each row : "<< (*std::max_element(matrix.ones.begin(),matrix.ones.end(), [](SVectorOnes_t& a, SVectorOnes_t& b){return a.size()<b.size();})).size()<<std::endl;;
+    // -> maximum of mones per row
+    std::cerr<<"[GMAT] Matrix Info: Maximum number of mones on each row : "<< (*std::max_element(matrix.mOnes.begin(),matrix.mOnes.end(), [](SVectorOnes_t& a, SVectorOnes_t& b){return a.size()<b.size();})).size()<<std::endl;;
+
     // Right matrix
     DMatrix_t V;
     if (restart == 0)
