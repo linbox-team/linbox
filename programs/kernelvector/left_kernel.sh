@@ -18,6 +18,7 @@ if [ "$#" -eq 7 ]; then
 fi
 
 matrix_file=$1
+matrix_name=`basename $1`
 rowcol=(`head -1 $matrix_file | awk '{print $1,$2}'`)
 row=${rowcol[0]}
 col=${rowcol[1]}
@@ -34,7 +35,8 @@ if [ "$startingstep" -lt 1 ]; then
     fi
 
     # compute the transpose matrix and call right kernel script
-    new_matrix_file=`echo $matrix_file | sed 's/\.[^\.]*$/-trans\.sms/'`
+    new_matrix_file="$2/`echo $matrix_name | sed 's/\.[^\.]*$/\-trans\.sms/'`"
+    #new_matrix_file=`echo $matrix_file | sed 's/\.[^\.]*$/-trans\.sms/'`
     echo "Transposing the matrix into file $new_matrix_file ($col x $row)"
     ./bin/sequence_transpose $matrix_file > $new_matrix_file 2> $2/transpose_log.txt
 fi

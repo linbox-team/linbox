@@ -27,7 +27,7 @@ int main(int argc, char **argv)
 	{ 'd', "-d FOLDER",  "The directory where kernel.dv is stored.", TYPE_STR, &folder },
 	{ 'r', "-r R1", "Set the maximal number of reapplication of A.", TYPE_INT, &retries },
 	END_OF_ARGUMENTS
-    };
+    };  
 
     FFLAS::parseArguments(argc, argv, as);
 
@@ -64,10 +64,14 @@ int main(int argc, char **argv)
 
     bool kernelfound(isNullVector(p,Y));
     DVector_t Z(X.size());
-    std::ofstream kernelvecStream(folder + "/kernel.dv");
-    writeDV(kernelvecStream,Y);
-
-    for(Size_t i=0; (!kernelfound) && (i< retries); ++i) {
+    {
+      std::ofstream kernelvecStream(folder + "/kernel.dv");
+      writeDV(kernelvecStream,Y);
+      kernelvecStream.close();
+    }
+      
+    size_t i;
+    for( i=0; (!kernelfound) && (i< retries); ++i) {
 
 
       std::clog << "[FCHK] attempt " << (i+1) <<  " failed : the computed vector is not from the kernel..." << std::endl;
@@ -75,17 +79,27 @@ int main(int argc, char **argv)
 
       std::string cmd= "cp "; cmd+= folder + "/kernel.dv "; cmd+= folder + "/try" + std::to_string(i) + "Z.dv";
       system(cmd.c_str());
-      writeDV(kernelvecStream,Y);
+      //writeDV(kernelvecStream,Y);
+      {
+	std::ofstream kernelvecStream(folder + "/kernel.dv");
+	writeDV(kernelvecStream,Y);
+	kernelvecStream.close();
+      }
 
       PAR_BLOCK { spmv(p, Z, A, Y); }
       kernelfound = isNullVector(p,Z);
 
-      if (kernelfound) break;
+      if (kernelfound) {i++;break;}
 
       std::clog<<"[FCHK] trying to apply A another time on the vector... "<<std::endl;
       cmd= "cp "; cmd+= folder + "/kernel.dv "; cmd+= folder + "/try" + std::to_string(i) + "Y.dv";
       system(cmd.c_str());
-      writeDV(kernelvecStream,Z);
+      //writeDV(kernelvecStream,Z);
+      {
+	std::ofstream kernelvecStream(folder + "/kernel.dv");
+	writeDV(kernelvecStream,Z);
+	kernelvecStream.close();
+      }
 
       PAR_BLOCK { spmv(p, Y, A, Z); }
       kernelfound = isNullVector(p,Y);
@@ -93,13 +107,13 @@ int main(int argc, char **argv)
     }
 
     if (kernelfound) {
-      std::cerr<<"[SUCCESS] A * kernelvec is a vector from the kernel of A"<<std::endl;
+      std::cerr<<"[SUCCESS] A^("<<i<<") * kernelvec is a vector from the kernel of A"<<std::endl;
       std::cerr<<"[INFO] Saving the result in kernel.dv"<<std::endl;
     } else {
       std::cerr<<"[ERROR] still not a vector from the Kernel. Sorry. Try again."<<std::endl;
     }
 
-    std::cerr << "/!\\ ALL IS OK! a non-null kernel vector has been found !" << std::endl;
+    //std::cerr << "/!\\ ALL IS OK! a non-null kernel vector has been found !" << std::endl;
 
     return EXIT_SUCCESS;
 }

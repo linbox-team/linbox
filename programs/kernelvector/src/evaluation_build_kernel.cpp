@@ -79,8 +79,8 @@ int main(int argc, char **argv)
 
     
     if (! isNullVector(p,Y)) {
-        writeDV(std::cout,Y);
-        std::cerr << "/!\\ Nah, the computed vector is not from kernel of B... Sorry. Game over..." << std::endl;
+      //writeDV(std::cout,Y);
+        std::cerr << "[ERROR] the computed vector is not from kernel of B... Sorry. Game over..." << std::endl;
         return EXIT_FAILURE;
     }
     
@@ -160,11 +160,12 @@ int main(int argc, char **argv)
     PAR_BLOCK { spmv(p, Y, M, Z); }
 
      if (! isNullVector(p,Y)) {
-         writeDV(std::cout << "ERROR:\n",Y);
-        std::cerr << "/!\\ Nah, the computed vector is not from kernel of B... Sorry. Game over..." << std::endl;
+       //writeDV(std::cout << "ERROR:\n",Y);
+        std::cerr << "[ERROR] the computed vector is not from the kernel of the original matrix... Sorry. Game over..." << std::endl;
         return EXIT_FAILURE;
     }
-    
+
+     std::cerr << "/!\\ ALL IS OK! a non-null kernel vector has been found !" << std::endl;
      //std::cerr << "[FINAL]/!\\ ALL IS OK! It's a non-null kernel vector !!!" << std::endl;
 
    
