@@ -135,7 +135,7 @@ if [ "$startingstep" -lt 5 ]; then
     
     # Final checks
     echo -n "[KERN] ($2/evaluation_log.txt): Final checks ... "
-    ./bin/evaluation_finalchecks -d $2 2>> $2/evaluation_log.txt
+    ./bin/evaluation_finalchecks -d $2 -r $4 2>> $2/evaluation_log.txt
     echo "DONE"
 
     stopping $2/evaluation_log.txt "building kernel vector"
