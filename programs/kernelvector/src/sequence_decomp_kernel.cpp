@@ -90,13 +90,15 @@ int main(int argc, char ** argv)
 //         [ 0 B | Z2 ]
 // It might be sufficient to solve for B x = 0 ...
 
-    if (argc != 2) {
-        std::cerr << "[DECO] usage: " << argv[0] << " filename" << std::endl;
+    if (argc != 3) {
+        std::cerr << "[DECO] usage: " << argv[0] << " [filename] [working dir]" << std::endl;
         exit(EXIT_FAILURE);
     }
 
     std::ifstream input (argv[1]);
-    std::string filename=removeExtension(argv[1]);
+    //std::string filename=removeExtension(argv[1]);
+    std::string filename=std::string(argv[2])+std::string("/")+removeExtension(basename(argv[1]));
+    
     Ring ZZ;
     Ring::Element val;
     size_t i,j; char t;

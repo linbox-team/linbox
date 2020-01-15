@@ -35,10 +35,14 @@ if [ "$#" -eq 7 ]; then
 fi
 
 matrix_file=$1
+original_matrix_file=$1
+matrix_path=`dirname $1`
+matrix_name=`basename $1`
+
 rowcol=(`head -1 $matrix_file | awk '{print $1,$2}'`)
 row=${rowcol[0]}
 col=${rowcol[1]}
-echo "[INFO]: Matrix ($row x $col) found"
+echo "[INFO]: Matrix ($row x $col) '$matrix_name' found"
 
 ##### 1 Sequence ######
 if [ "$startingstep" -lt 1 ]; then
@@ -50,9 +54,10 @@ if [ "$startingstep" -lt 1 ]; then
     fi    
     if [ $row -ne $col ]; then
 	echo -n "[INFO] ($2/sequence_log.txt): extracting a square submatrix into"
-	./bin/sequence_decomp_kernel $matrix_file 2> $2/sequence_log.txt
-	matrix_file=`echo $matrix_file | sed 's/\.[^\.]*$/\.matB\.sms/'`
-	echo "$matrix_file ... DONE"
+	./bin/sequence_decomp_kernel $matrix_file $2 2> $2/sequence_log.txt
+	#matrix_file=`echo $matrix_file | sed 's/\.[^\.]*$/\.matB\.sms/'`
+	matrix_file="$2/`echo $matrix_name | sed 's/\.[^\.]*$/\.matB\.sms/'`"
+	echo " $matrix_file ... DONE"
     fi	    
     echo -n "[KERN] ($2/sequence_log.txt): Generating sequence and checkpoints files ... "
     ./bin/sequence_sequence -f $matrix_file -d $2 -q $3 -s $4 -t $5 -B 2>> $2/sequence_log.txt
@@ -122,23 +127,33 @@ if [ "$startingstep" -lt 5 ]; then
     stopping $2/evaluation_log.txt "building g0 kernel"
     
     # Eval on each node
-    echo -n "[KERN] ($2/evaluation_log.txt): Building the kernel vector ... "
+    echo -n "[KERN] ($2/evaluation_log.txt): Building the kernel vector of the square submatrix ... "
    ./bin/evaluation_evaluation -d $2  2>> $2/evaluation_log.txt
    echo "DONE"
   
 
     
-# Final checks
+    # Final checks
     echo -n "[KERN] ($2/evaluation_log.txt): Final checks ... "
     ./bin/evaluation_finalchecks -d $2 2>> $2/evaluation_log.txt
     echo "DONE"
 
     stopping $2/evaluation_log.txt "building kernel vector"
 
+
+    # Building the kernel of the initial matrix (not only its main square submatrix)
+    echo -n "[KERN] ($2/evaluation_log.txt): Building the kernel vector from the original matrix ... "
+    ./bin/evaluation_build_kernel -d $2 -f $original_matrix_file -p $3  2>> $2/evaluation_log.txt
+    echo "DONE"
+
+    stopping $2/evaluation_log.txt "building original kernel vector"
+    
     RESULT=$(cat $2/evaluation_log.txt | grep "/!")
+    
     echo -e "\n--> $RESULT\n"
     
-    echo "Done! Saved result in $2/kernel.dv."    
+    echo "Done! Saved result in $2/kernel.dv."
+    
 fi
 
 

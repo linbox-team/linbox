@@ -49,7 +49,8 @@ int main(int argc, char **argv)
 
     FFLAS::parseArguments(argc, argv, as);
     Modulus_t p((Modulus_t)ip);
-    std::string filename=removeExtension(matrixFile);
+    //std::string filename=removeExtension(matrixFile);
+    std::string filename=folder+std::string("/")+removeExtension(basename(matrixFile));
     
     std::cerr << "[FCHK] Checking that the computed vector for B is correct..." << std::endl;
 
@@ -93,7 +94,6 @@ int main(int argc, char **argv)
     Y.resize(M.nRows);
 
     PAR_BLOCK { spmv(p, Y, M, X); }
-
     
     std::cerr << "[REKE] Cv computed." << std::endl;
     typedef  Givaro::ZRing<Modulus_t> ZDom;
@@ -165,7 +165,7 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
     
-    std::cerr << "/!\\ ALL IS OK! It's a non-null kernel vector !!!" << std::endl;
+     //std::cerr << "[FINAL]/!\\ ALL IS OK! It's a non-null kernel vector !!!" << std::endl;
 
    
 

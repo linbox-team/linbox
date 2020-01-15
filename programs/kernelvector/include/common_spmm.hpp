@@ -211,9 +211,9 @@ inline
 void spmv_add(Element_t* const Z, const SMatrixOnes_t& A, const Element_t* const Y,
               const Index_t offset, const Index_t length)
 {
-    for (Index_t i = 0u; i < length; ++i)
+  for (Index_t i = 0u; i < length; ++i)
     for (const auto c : A.at(offset + i))
-        Z[i] += Y[c];
+      Z[i] += Y[c];
 }
 
 //! Z <- Z - A * Y
@@ -222,6 +222,7 @@ inline
 void spmv_sub(Element_t* const Z, const SMatrixOnes_t& A, const Element_t* const Y,
               const Index_t offset, const Index_t length)
 {
+
     for (Index_t i = 0u; i < length; ++i)
     for (const auto c : A.at(offset + i))
         Z[i] -= Y[c];
@@ -232,19 +233,33 @@ inline
 void spmv(const Modulus_t p, DVector_t& Z, const SMatrix_t& A, const DVector_t& Y)
 {
     const Element_t* const pY = Y.data();
-    Size_t refa = ((A.nRows / DLP_TASKS) / __SIMD_STEP) * __SIMD_STEP;
-    Size_t refb = refa + __SIMD_STEP;
-    Size_t rest = (A.nRows - refa*DLP_TASKS) / __SIMD_STEP;
-    Size_t LaunchTasks = DLP_TASKS;
 
+    // PG: There is no SIMD used, no reason to use SIMD STEP below
+    //
+    // Size_t refa = ((A.nRows / DLP_TASKS) / __SIMD_STEP) * __SIMD_STEP;
+    // Size_t refb = refa + __SIMD_STEP;
+    // Size_t rest = (A.nRows - refa*DLP_TASKS) / __SIMD_STEP;
+    // Size_t LaunchTasks = DLP_TASKS;
+    // if (refa == 0) {
+    //     LaunchTasks = A.nRows/__SIMD_STEP;
+    //     refa = __SIMD_STEP;
+    //     refb = refa + __SIMD_STEP;
+    //     rest = (A.nRows - refa*LaunchTasks);
+    //     if (rest) ++LaunchTasks;
+    // }
+
+    Size_t refa = (A.nRows / DLP_TASKS);
+    Size_t refb = refa + 1;
+    Size_t rest = (A.nRows - refa*DLP_TASKS);
+    Size_t LaunchTasks = DLP_TASKS;
     if (refa == 0) {
-        LaunchTasks = A.nRows/__SIMD_STEP;
-        refa = __SIMD_STEP;
-        refb = refa + __SIMD_STEP;
+        LaunchTasks = A.nRows;
+        refa = 1;
+        refb = refa + 1;
         rest = (A.nRows - refa*LaunchTasks);
         if (rest) ++LaunchTasks;
     }
-        
+    
     for (Index_t l = 0; l < LaunchTasks; ++l) {
     #pragma omp task shared(Z, A, Y)
     {
@@ -262,18 +277,17 @@ void spmv(const Modulus_t p, DVector_t& Z, const SMatrix_t& A, const DVector_t& 
                 length = refa;
             }
         }
-        
         Element_t* const pZ = Z.data() + offset;
     
         // Reset
         memset(pZ, 0, length * sizeof(Element_t));
-            
+
         // Ones
         spmv_add(pZ, A.ones, pY, offset, length);
 
-        // Mones
+        // Mones	
         spmv_sub(pZ, A.mOnes, pY, offset, length);
-            
+
         // Reduce          
         for (Index_t i = 0u; i < length; ++i) {
             pZ[i] %= p;
