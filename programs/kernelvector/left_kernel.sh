@@ -2,9 +2,10 @@
 
 # Run all the kernel evaluation on a matrix file
 
+
 # Check and create folder if needed
-if [ "$#" -lt 6 ]; then
-    echo "Usage: $0 <matrixFile> <outputFolder> <fieldCharacteristic> <leftBlockSize> <rightBlockSize> <nodes> [step]"
+if [ "$#" -lt 7 ]; then
+    echo "Usage: $0 <matrixFile> <outputFolder> <fieldCharacteristic> <leftBlockSize> <rightBlockSize> <nodes> <maxThread> [step]"
     exit 1
 fi
 echo "command-line: $0 $*"
@@ -41,5 +42,5 @@ if [ "$startingstep" -lt 1 ]; then
     ./bin/sequence_transpose $matrix_file > $new_matrix_file 2> $2/transpose_log.txt
 fi
 
-./right_kernel.sh $new_matrix_file $2 $3 $4 $5 $6 $startingstep
+./right_kernel.sh $new_matrix_file $2 $3 $4 $5 $6 $7 $startingstep
 

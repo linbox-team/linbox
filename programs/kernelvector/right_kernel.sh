@@ -8,15 +8,19 @@ stopping() {
     fi
 }
 
-
+SECONDS=0
+export OMP_NUM_THREADS=$7
 # Run all the kernel evaluation on a matrix file
 
 # Check and create folder if needed
-if [ "$#" -lt 6 ]; then
-    echo "Usage: $0 <matrixFile> <outputFolder> <fieldCharacteristic> <leftBlockSize> <rightBlockSize> <nodes> [step]"
+if [ "$#" -lt 7 ]; then
+    echo "Usage: $0 <matrixFile> <outputFolder> <fieldCharacteristic> <leftBlockSize> <rightBlockSize> <nodes> <maxThread> [step]"
     exit 1
 fi
 echo "command-line: $0 $*"
+
+
+
 
 ##### prime is bounded by 2^63 -> to go up to 128bit needs to define FLAG128=-D__USE_128bits -D__USE_SIMD=0 in Makefile.am
 prime="$3"
@@ -29,8 +33,8 @@ fi
 mkdir -p $2
 
 startingstep=0
-if [ "$#" -eq 7 ]; then
-    startingstep=$7
+if [ "$#" -eq 8 ]; then
+    startingstep=$8
     echo "[INFO]: Starting at step $startingstep"
 fi
 
@@ -155,6 +159,10 @@ if [ "$startingstep" -lt 5 ]; then
     echo "Done! Saved result in $2/kernel.dv."
     
 fi
+
+
+duration=$SECONDS
+echo -e "\nComputation time: $(($duration / 60)) minutes and $(($duration % 60)) seconds elapsed."
 
 
 
