@@ -13,8 +13,8 @@ echo "command-line: $0 $*"
 mkdir -p $2
 
 startingstep=0
-if [ "$#" -eq 7 ]; then
-    startingstep=$7
+if [ "$#" -eq 8 ]; then
+    startingstep=$8
     echo "Starting at step $startingstep"
 fi
 
