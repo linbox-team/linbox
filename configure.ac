@@ -352,6 +352,10 @@ benchmarks/Makefile
 benchmarks/data/Makefile
 benchmarks/matrix/Makefile
 programs/Makefile
+programs/kernelvector/Makefile
+programs/kernelvector/bin/Makefile
+programs/kernelvector/src/Makefile
+programs/kernelvector/include/Makefile
 programs/smith/Makefile
 linbox.pc
 ])

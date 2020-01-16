@@ -26,6 +26,18 @@
 //#define __CHECK_ORDERBASIS
 //#define __DEBUG_MBASIS
 
+#ifdef __MINPOLY_SETTING
+#define PROFILE_PMBASIS
+#define LOW_MEMORY_PMBASIS
+#define TRACK_MEMORY_MATPOL
+// #define __CHECK_PMBASIS
+// #define __PROBA_CHECK
+// #define __CHECK_PMBASIS_THRESHOLD 1023
+// #define 
+// #define __DUMP_ORDERBASIS    
+#endif
+
+
 
 #ifndef __LINBOX_ORDER_BASIS
 #define __LINBOX_ORDER_BASIS
@@ -52,13 +64,7 @@
 namespace LinBox {
 
 
-#ifdef __MINPOLY_SETTING
-#define __CHECK_PMBASIS
-#define __PROBA_CHECK
-#define __DUMP_ORDERBASIS
-#define __CHECK_PMBASIS_THRESHOLD 1023
-#define  PROFILE_PMBASIS
-#endif
+
 
 
 #ifdef __CHECK_ORDERBASIS
