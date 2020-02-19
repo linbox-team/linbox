@@ -732,7 +732,7 @@ if [ "$GMPLIB_VAR" = "true" ]; then
 
     GMP="--with-gmp=${PREFIX_LOC}"
     GMP_VAR=true
-    echo "${BEG}gmp flags: $GMP."| tee -a ../../linbox-auto-install.log
+    echo "${BEG}gmp flags: $GMP."| tee -a ../linbox-auto-install.log
  fi
 
 ######################
@@ -744,38 +744,38 @@ if [ "$NTLLIB_VAR" = "true" ]; then
     cd ntl-${STABLE_NTLLIB}/src || die
 
     if [ -f ntl.a ] ; then
-	echo -e "${BEG}cleaning NTL..."| tee -a ../../linbox-auto-install.log
-	${MAKEPROG} clean | tee -a ../../linbox-auto-install.log|| die
-	${MAKEPROG} clobber | tee -a ../../linbox-auto-install.log|| die
+	echo -e "${BEG}cleaning NTL..."| tee -a ../../../linbox-auto-install.log
+	${MAKEPROG} clean | tee -a ../../../linbox-auto-install.log|| die
+	${MAKEPROG} clobber | tee -a ../../../linbox-auto-install.log|| die
 	cool
     fi
 
-    echo -e "${BEG}configuring NTL..."| tee -a ../../linbox-auto-install.log
+    echo -e "${BEG}configuring NTL..."| tee -a ../../../linbox-auto-install.log
 
-    echo "./configure NTL_GMP_LIP=on NTL_TBL_REM=on NTL_AVOID_BRANCHING=on PREFIX=${PREFIX_LOC} GMP_PREFIX=${PREFIX_LOC}"| tee -a ../../linbox-auto-install.log
+    echo "./configure NTL_GMP_LIP=on NTL_TBL_REM=on NTL_AVOID_BRANCHING=on PREFIX=${PREFIX_LOC} GMP_PREFIX=${PREFIX_LOC}"| tee -a ../../../linbox-auto-install.log
     echo "./configure NTL_GMP_LIP=on NTL_TBL_REM=on NTL_AVOID_BRANCHING=on PREFIX=${PREFIX_LOC} GMP_PREFIX=${PREFIX_LOC}" > configure.ntl.exe
     chmod +x configure.ntl.exe
-    ./configure.ntl.exe | tee -a ../../linbox-auto-install.log
+    ./configure.ntl.exe | tee -a ../../../linbox-auto-install.log
     rm -rf configure.ntl.exe
 
-    echo -e "${BEG}building NTL..."| tee -a ../../linbox-auto-install.log
+    echo -e "${BEG}building NTL..."| tee -a ../../../linbox-auto-install.log
     NTLLIB_FLAGS=""
 
-    echo "${MAKEPROG} ${NTLLIB_FLAGS} CXXFLAGS+=\"$EXTRA\" LDFLAGS+=\"-Wl,-rpath,$PREFIX_LOC\""| tee -a ../../linbox-auto-install.log
+    echo "${MAKEPROG} ${NTLLIB_FLAGS} CXXFLAGS+=\"$EXTRA\" LDFLAGS+=\"-Wl,-rpath,$PREFIX_LOC\""| tee -a ../../../linbox-auto-install.log
     if [ -n "$EXTRA" ] ; then
-	${MAKEPROG} ${NTLLIB_FLAGS} "CXXFLAGS+=\"$EXTRA\" LDFLAGS+=\"-Wl,-rpath,$PREFIX_LOC\"" | tee -a ../../linbox-auto-install.log|| die
+	${MAKEPROG} ${NTLLIB_FLAGS} "CXXFLAGS+=\"$EXTRA\" LDFLAGS+=\"-Wl,-rpath,$PREFIX_LOC\"" | tee -a ../../../linbox-auto-install.log|| die
     else
-	${MAKEPROG} ${NTLLIB_FLAGS} | tee -a ../../linbox-auto-install.log|| die
+	${MAKEPROG} ${NTLLIB_FLAGS} | tee -a ../../../linbox-auto-install.log|| die
     fi
 
 
     if [ "$CHECK_VAR" = "true" ] ; then
-	echo -e "${BEG}checking NTL..."| tee -a ../../linbox-auto-install.log
-	${MAKEPROG} ${NTLLIB_FLAGS} check | tee -a ../../linbox-auto-install.log|| die
+	echo -e "${BEG}checking NTL..."| tee -a ../../../linbox-auto-install.log
+	${MAKEPROG} ${NTLLIB_FLAGS} check | tee -a ../../../linbox-auto-install.log|| die
     fi
 
-    echo -e "${BEG}installing NTL..."| tee -a ../../linbox-auto-install.log
-    ${MAKEPROG} ${NTLLIB_FLAGS} install | tee -a ../../linbox-auto-install.log|| die
+    echo -e "${BEG}installing NTL..."| tee -a ../../../linbox-auto-install.log
+    ${MAKEPROG} ${NTLLIB_FLAGS} install | tee -a ../../../linbox-auto-install.log|| die
 
 #return in build
     cd ../..
@@ -784,7 +784,7 @@ if [ "$NTLLIB_VAR" = "true" ]; then
 
     NTL="--with-ntl=${PREFIX_LOC}"
     NTL_VAR=true
-    echo "${BEG}ntl flags: $NTL."| tee -a ../../linbox-auto-install.log
+    echo "${BEG}ntl flags: $NTL."| tee -a ../linbox-auto-install.log
  fi
 
 ####################
