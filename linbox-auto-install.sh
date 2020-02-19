@@ -254,11 +254,11 @@ for i in "$@" ; do
 	GMP="$i"
 	GMP_VAR="true"
 	;;
-	;;
 	"--with-ntl")
 	if	[ "x$NTL_VAR" = "xfalse" ] ; then   echo "with-ntl or not ?";            help ; exit -1; fi
 	NTL="$i";
 	NTL_VAR="true";
+	;;
 	"--with-iml")
 	if	[ "x$IML_VAR" = "xfalse" ] ; then   echo "with-iml or not ?";            help ; exit -1; fi
 	IML="$i "
@@ -752,8 +752,8 @@ if [ "$NTLLIB_VAR" = "true" ]; then
 
     echo -e "${BEG}configuring NTL..."| tee -a ../../linbox-auto-install.log
 
-    echo "./configure  $PREFIX $DEBUG $WARNINGS GMP_PREFIX=${PREFIX_LOC}"| tee -a ../../linbox-auto-install.log
-    echo "./configure  $PREFIX $DEBUG $WARNINGS GMP_PREFIX=${PREFIX_LOC}" > configure.ntl.exe
+    echo "./configure NTL_GMP_LIP=on NTL_TBL_REM=on NTL_AVOID_BRANCHING=on PREFIX=${PREFIX_LOC} GMP_PREFIX=${PREFIX_LOC}"| tee -a ../../linbox-auto-install.log
+    echo "./configure NTL_GMP_LIP=on NTL_TBL_REM=on NTL_AVOID_BRANCHING=on PREFIX=${PREFIX_LOC} GMP_PREFIX=${PREFIX_LOC}" > configure.ntl.exe
     chmod +x configure.ntl.exe
     ./configure.ntl.exe | tee -a ../../linbox-auto-install.log
     rm -rf configure.ntl.exe
@@ -778,7 +778,7 @@ if [ "$NTLLIB_VAR" = "true" ]; then
     ${MAKEPROG} ${NTLLIB_FLAGS} install | tee -a ../../linbox-auto-install.log|| die
 
 #return in build
-    cd ..
+    cd ../..
 
     cool| tee -a ../linbox-auto-install.log
 
