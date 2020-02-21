@@ -175,11 +175,11 @@ LT_INIT([win32-dll])
 AC_CANONICAL_HOST
 case "${host_os}" in
     cygwin*|mingw*)
-        LINBOX_LDFLAGS=-no-undefined
-        ;;
+	LINBOX_LDFLAGS=-no-undefined
+	;;
     *)
-        LINBOX_LDFLAGS=""
-        ;;
+	LINBOX_LDFLAGS=""
+	;;
 esac
 AC_SUBST([LINBOX_LDFLAGS])
 
@@ -194,6 +194,12 @@ AC_SUBST(SIMD_FLAGS)
 
 dnl gcc-4.9.2 bug See https://trac.sagemath.org/ticket/17635#comment:178
 AS_IF([ test  "x$CCNAM" = "xgcc492" ],[CXXFLAGS="${CXXFLAGS} -fpermissive"],[])
+
+# With GCC 4.x, the default ABI version is 2. With this version, __m128 and
+# __m256 are the same types and therefore we cannot have overloads for both
+# types without linking error. It is fixed in ABI version 4.
+# FIXME: Why do we set ABI version to 6 ?
+AS_IF([test "x$CCNAM" = "xgccl5"],[REQUIRED_FLAGS+=" -fabi-version=6"])
 
 
 echo "-----------------------------------------------"
