@@ -46,8 +46,6 @@ and by transitivity:
 - NTL, 
 - IML, 
 - FLINT, 
-- M4RI, 
-- M4RIE 
 
 See  doc/install*html for details.
 
