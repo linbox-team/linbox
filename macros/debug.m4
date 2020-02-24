@@ -121,61 +121,37 @@ dnl 3.1 < CLANG <=  3.8 ?
 		])
 
 
-dnl GCC >= 4.8 ?
-		AS_IF([ test -z "${CCNAM}"], [
-			AC_TRY_RUN( [
-				#ifdef __GNUC__
-				   int main() { return !(__GNUC__ >= 5 || (__GNUC__ == 4  && __GNUC_MINOR__ > 7 )) ; }
-				#else
-				   pas gcc non plus ???
-				#endif], [
-		CCNOM=gcc
-		AS_IF([ test -n "${CC}" ], [CCNOM="`$CC --version 2>&1|  awk 'NR<2{print $1}'`"])
-		CCNAM=gcc48
-		AC_SUBST(CCNAM)
-		AC_MSG_RESULT($CCNOM)
-		])
-		])
-dnl GCC > 4.4 ?
-		AS_IF([ test -z "${CCNAM}"], [
-			AC_TRY_RUN( [
-				#ifdef __GNUC__
-				   int main() { return !( __GNUC__ == 4 && __GNUC_MINOR__ == 4 ) ; }
-				#else
-				   pas gcc non plus ???
-				#endif], [
-		CCNOM=gcc
-		AS_IF([ test -n "${CC}" ], [CCNOM="`$CC --version 2>&1|  awk 'NR<2{print $1}'`"])
-		CCNAM=gcc44
-		AC_SUBST(CCNAM)
-		AC_MSG_RESULT($CCNOM)
-		])
-		])
-dnl GCC > 4.2 ?
-		AS_IF([ test -z "${CCNAM}"], [
-			AC_TRY_RUN( [
-				#ifdef __GNUC__
-				   int main() { return !(__GNUC__ == 4 && __GNUC_MINOR__ > 2) ; }
-				#else
-				   pas gcc non plus ???
-				#endif], [
-		CCNOM=gcc
-		AS_IF([ test -n "${CC}" ], [CCNOM="`$CC --version 2>&1|  awk 'NR<2{print $1}'`"])
-		CCNAM=gcc
-		AC_SUBST(CCNAM)
-		AC_MSG_RESULT($CCNOM)
-		])
-		])
-
-    dnl GCC <= 5 ?
+    dnl GCC >= 5 ?
     AS_IF([ test -z "${CCNAM}"], [
         AC_TRY_RUN( [
             #ifdef __GNUC__
-                int main() { return !(__GNUC__ < 5))) ; }
+                int main() { return !(__GNUC__ >= 5 ) ; }
+            #else
+                not gcc neither.
+            #endif],
+            [ CCNAM=gcc ])
+        ])
+
+    dnl 4.3 <= GCC < 5 ?
+    AS_IF([ test -z "${CCNAM}"], [
+        AC_TRY_RUN( [
+            #ifdef __GNUC__
+                int main() { return !(__GNUC__ == 4 && __GNUC_MINOR__ >= 3) ; }
             #else
                not gcc neither.
             #endif],
-            [ CCNAM=gccl5 ])
+            [ CCNAM=gcc4 ])
+        ])
+
+    dnl GCC == 4.9.2 ?
+    AS_IF([ test -z "${CCNAM}"], [
+        AC_TRY_RUN( [
+            #ifdef __GNUC__
+                int main() { return !(__GNUC__ == 4  && __GNUC_MINOR__ == 9 && __GNUC_PATCHLEVEL__ == 2 ) ; }
+            #else
+               not gcc neither.
+            #endif],
+            [ CCNAM=gcc492 ])
         ])
 
 		dnl  autre ?
