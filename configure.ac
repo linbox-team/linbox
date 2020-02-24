@@ -199,7 +199,7 @@ AS_IF([ test  "x$CCNAM" = "xgcc492" ],[CXXFLAGS="${CXXFLAGS} -fpermissive"],[])
 # __m256 are the same types and therefore we cannot have overloads for both
 # types without linking error. It is fixed in ABI version 4.
 # FIXME: Why do we set ABI version to 6 ?
-AS_IF([test "x$CCNAM" = "xgccl5"],[REQUIRED_FLAGS+=" -fabi-version=6"])
+AS_CASE([$CCNAM], [gcc4*], [REQUIRED_FLAGS+=" -fabi-version=6"])
 
 
 echo "-----------------------------------------------"
