@@ -20,27 +20,18 @@
 #/
 
 SUBDIRS=data matrix
-DEFCPPFLAGS  = @DEFAULT_CFLAGS@  -DDISABLE_COMMENTATOR -DLinBoxSrcOnly
-AM_CPPFLAGS = -I$(top_srcdir)  $(DEFCPPFLAGS)  $(DEPS_CFLAGS)
-LDADD =   $(DEPS_LIBS) $(LDFLAGS)
-LDADD += $(top_builddir)/linbox/liblinbox.la
+
+AM_CPPFLAGS=-I$(top_srcdir) -DDISABLE_COMMENTATOR -DLinBoxSrcOnly
+AM_CXXFLAGS=$(LINBOX_CXXFLAGS) $(FFLAS_FFPACK_CFLAGS) $(LINBOX_DEPS_CFLAGS)
+LDADD=$(top_builddir)/linbox/liblinbox.la $(FFLAS_FFPACK_LIBS) $(LINBOX_LDFLAGS) $(LINBOX_DEPS_LIBS)
+
+AM_LDFLAGS=.libs/libbenchmarks.la
+
 pkgincludesubdir=$(pkgincludedir)/benchmarks
 
 noinst_LTLIBRARIES=libbenchmarks.la
 libbenchmarks_la_SOURCES= benchmark.C
-libbenchmarks_la_LDFLAGS=$(LDFLAGS) $(DEPS_LIBS)
-libbenchmarks_la_LIBADD=$(top_builddir)/linbox/liblinbox.la
-#libbenchmarks_la_LIBADD+=$(top_builddir)/linbox/util/.libs/libutil.la
-
-
-# AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/linbox
-# AM_CPPFLAGS +=  $(NTL_CFLAGS) $(IML_CFLAGS) $(PARFLAGS)
-# AM_CXXFLAGS = @DEFAULT_CFLAGS@ -DDISABLE_COMMENTATOR -DLinBoxSrcOnly
-# LDADD =  $(NTL_LIBS) $(MPFR_LIBS) $(FPLLL_LIBS) $(LDFLAGS) $(IML_LIBS) $(XML_LIBS) $(PARLIBS)
-#  AM_LDFLAGS=-static $(LDFLAGS)
- AM_LDFLAGS = .libs/libbenchmarks.la
-#  AM_LDFLAGS = .libs/benchmark.o
-
+libbenchmarks_la_LDFLAGS=
 
 PERFPUBLISHERFILE=benchmarks-report.xml
 

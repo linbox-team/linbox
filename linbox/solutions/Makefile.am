@@ -19,7 +19,10 @@
 # ========LICENCE========
 #/
 
-AM_CXXFLAGS = @DEFAULT_CFLAGS@ -DLinBoxSrcOnly
+AM_CPPFLAGS=-DLinBoxSrcOnly
+AM_CXXFLAGS=$(LINBOX_CXXFLAGS) $(FFLAS_FFPACK_CFLAGS) $(LINBOX_DEPS_CFLAGS)
+LDADD=$(FFLAS_FFPACK_LIBS) $(LINBOX_LDFLAGS) $(LINBOX_DEPS_LIBS)
+
 pkgincludesubdir=$(pkgincludedir)/solutions
 
 SUBDIRS=solve echelon

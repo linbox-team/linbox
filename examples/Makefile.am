@@ -19,13 +19,9 @@
 # ========LICENCE========
 #/
 
-#  -DLinBoxSrcOnly
-DEFCPPFLAGS  = @DEFAULT_CFLAGS@   -DDISABLE_COMMENTATOR
-AM_CPPFLAGS = -I$(top_srcdir) $(DEFCPPFLAGS) $(DEPS_CFLAGS)
-AM_CPPFLAGS += $(OPTFLAGS) 
-LDADD = $(DEPS_LIBS) $(LDFLAGS)
-LDADD += $(top_builddir)/linbox/liblinbox.la
-LDADD += $(OPTLIBES)
+AM_CPPFLAGS=-I$(top_srcdir) -DDISABLE_COMMENTATOR
+AM_CXXFLAGS=$(LINBOX_CXXFLAGS) $(FFLAS_FFPACK_CFLAGS) $(LINBOX_DEPS_CFLAGS)
+LDADD=$(top_builddir)/linbox/liblinbox.la $(FFLAS_FFPACK_LIBS) $(LINBOX_LDFLAGS) $(LINBOX_DEPS_LIBS)
 
 
 #  SUBDIRS=fields solver data blackbox

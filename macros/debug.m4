@@ -1,37 +1,38 @@
 dnl Copyright(c)'2011 LinBox
 dnl Written by Brice Boyer (briceboyer) <boyer.brice@gmail.com>
-dnl This file is part of LinBox.
+dnl
+dnl ========LICENCE========
+dnl This file is part of the library LinBox.
+dnl
+dnl LinBox is free software: you can redistribute it and/or modify
+dnl it under the terms of the  GNU Lesser General Public
+dnl License as published by the Free Software Foundation; either
+dnl version 2.1 of the License, or (at your option) any later version.
+dnl
+dnl This library is distributed in the hope that it will be useful,
+dnl but WITHOUT ANY WARRANTY; without even the implied warranty of
+dnl MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+dnl Lesser General Public License for more details.
+dnl
+dnl You should have received a copy of the GNU Lesser General Public
+dnl License along with this library; if not, write to the Free Software
+dnl Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+dnl ========LICENCE========
+dnl/
 
- dnl ========LICENCE========
- dnl This file is part of the library LinBox.
- dnl
- dnl LinBox is free software: you can redistribute it and/or modify
- dnl it under the terms of the  GNU Lesser General Public
- dnl License as published by the Free Software Foundation; either
- dnl version 2.1 of the License, or (at your option) any later version.
- dnl
- dnl This library is distributed in the hope that it will be useful,
- dnl but WITHOUT ANY WARRANTY; without even the implied warranty of
- dnl MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- dnl Lesser General Public License for more details.
- dnl
- dnl You should have received a copy of the GNU Lesser General Public
- dnl License along with this library; if not, write to the Free Software
- dnl Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- dnl ========LICENCE========
- dnl.
+
 
 dnl enable basic debug mode.
 AC_DEFUN([AC_DEBUG],
 [AC_MSG_CHECKING([whether to enable debugging options in the library])
   AC_ARG_ENABLE(debug,
-[AC_HELP_STRING([--enable-debug=yes|no], [enable debugging options in library])],
+  [AC_HELP_STRING([--enable-debug=yes|no], [enable debugging options in library])],
       USE_DEBUG=$enableval,
       USE_DEBUG=no)
   AC_MSG_RESULT([$USE_DEBUG])
   AM_CONDITIONAL(DEBUG, [test x$USE_DEBUG = xyes])
-  DBG=$USE_DEBUG
-  AC_SUBST(DBG)dnl
+  AM_COND_IF(DEBUG,[AC_DEFINE(DEBUG,1,[Define whether to compile in DEBUG mode])],[])
+  AC_SUBST(USE_DEBUG)dnl
 ]
 )
 
@@ -67,59 +68,52 @@ If full is given, we become paranoïd about warnings and treat them as errors.])
 CCNAM=""
 
 AC_DEFUN([AC_COMPILER_NAME], [
-		AC_MSG_CHECKING(for family name of compiler)
+    AC_MSG_CHECKING(for family name of compiler)
 
-		dnl CHECKING for various compilers
-		dnl ICC ?
-		AC_TRY_RUN( [
-           #ifdef __INTEL_COMPILER
-				int main() { return 0 ; }
-			#else
-			   pas intel
-		   #endif],
-		[ AC_MSG_RESULT(icc)
-		CCNAM=icc
-		AC_SUBST(CCNAM)
-		])
+    dnl CHECKING for various compilers
+    dnl ICC ?
+    AS_IF([ test -z "${CCNAM}"], [
+        AC_TRY_RUN( [
+            #ifdef __INTEL_COMPILER
+                int main() { return 0 ; }
+            #else
+                not intel
+            #endif],
+            [ CCNAM=icc ])
+        ])
 
-dnl PATHSCALE > 4 ?
-		AS_IF([ test -z "${CCNAM}"], [
-			AC_TRY_RUN( [
-				#ifdef __PATHSCALE__
-				   int main() { return !(__PATHCC__ >= 4) ; }
-			   #else
-				   pas ekopath non plus.
-				#endif], [
-		AC_MSG_RESULT(eko)
-		CCNAM=eko
-		AC_SUBST(CCNAM) ])
-		])
+    dnl PATHSCALE > 4 ?
+    AS_IF([ test -z "${CCNAM}"], [
+        AC_TRY_RUN( [
+            #ifdef __PATHSCALE__
+               int main() { return !(__PATHCC__ >= 4) ; }
+            #else
+               not ekopath either.
+            #endif],
+            [ CCNAM=eko ])
+        ])
 
-dnl CLANG >= 3.9 ?
-		AS_IF([ test -z "${CCNAM}"], [
-			AC_TRY_RUN( [
-				#ifdef __clang__
-				   int main() { return !((__clang_major__ >= 4) || (__clang_major__  >=3 && __clang_minor__ >= 9)) ; }
-			   #else
-				   not clang3.9
-				#endif], [
-		AC_MSG_RESULT(clang)
-		CCNAM=clang
-		AC_SUBST(CCNAM) ])
-		])
-dnl 3.1 < CLANG <=  3.8 ?
-		AS_IF([ test -z "${CCNAM}"], [
-			AC_TRY_RUN( [
-				#ifdef __clang__
-				   int main() { return !(__clang_major__  ==3 && __clang_minor__ >=1 && __clang_minor__ <=8) ; }
-			   #else
-				   not clang3.8s
-				#endif], [
-		AC_MSG_RESULT(clang38)
-		CCNAM=clang38
-		AC_SUBST(CCNAM) ])
-		])
+    dnl CLANG >= 3.9 ?
+    AS_IF([ test -z "${CCNAM}"], [
+        AC_TRY_RUN( [
+            #ifdef __clang__
+                int main() { return !((__clang_major__ >= 4) || (__clang_major__ == 3 && __clang_minor__ >= 9)) ; }
+            #else
+                not clang3.9
+            #endif],
+            [ CCNAM=clang ])
+        ])
 
+    dnl 3.1 < CLANG <=  3.8 ?
+    AS_IF([ test -z "${CCNAM}"], [
+        AC_TRY_RUN( [
+            #ifdef __clang__
+                int main() { return !(__clang_major__ == 3 && __clang_minor__ >= 1 && __clang_minor__ <= 8) ; }
+            #else
+                not clang3.8
+            #endif],
+            [ CCNAM=clang38 ])
+        ])
 
     dnl GCC >= 5 ?
     AS_IF([ test -z "${CCNAM}"], [
@@ -154,15 +148,16 @@ dnl 3.1 < CLANG <=  3.8 ?
             [ CCNAM=gcc492 ])
         ])
 
-		dnl  autre ?
+    dnl other ?
+    AS_IF([ test -z "${CCNAM}"],
+            [
+            CCNAM=unknow
+            AC_MSG_RESULT($CCNAM)
+            AS_BOX([*** unknown compiler, please file a bug. ***], [*])
+            ],
+            [
+            AC_MSG_RESULT($CCNAM)
+            ])
 
-		AS_IF([ test -z "${CCNAM}"],
-				[ AC_MSG_RESULT(unknown)
-				CCNAM=unknown
-				AC_SUBST(CCNAM)
-				echo
-				echo " *** unknow compiler. please file a bug "
-				echo
-				])
+    AC_SUBST(CCNAM)
 ])
-
