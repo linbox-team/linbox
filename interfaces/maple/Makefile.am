@@ -22,15 +22,15 @@
 if LINBOX_HAVE_MAPLE
 pkgincludesubdir=$(includedir)/interfaces/maple/new
 
-AM_CPPFLAGS =-I$(top_srcdir) -I. -I../../linbox
 
-AM_CXXFLAGS = @DEFAULT_CFLAGS@ -DDISABLE_COMMENTATOR -I../driver  $(NTL_CFLAGS) $(MAPLE_CFLAGS) 
+AM_CPPFLAGS=-I$(top_srcdir) -I. -I../../linbox -I../driver -DDISABLE_COMMENTATOR
+AM_CXXFLAGS=$(LINBOX_CXXFLAGS) $(FFLAS_FFPACK_CFLAGS) $(LINBOX_DEPS_CFLAGS) $(MAPLE_CFLAGS)
 
 lib_LTLIBRARIES=liblbmaple.la
 
 liblbmaple_la_SOURCES= lb-maple.C
 
-liblbmaple_la_LDFLAGS=  $(NTL_LIBS) $(MAPLE_LIBS) $(top_srcdir)/interfaces/driver/liblbdriver.la -Wl,-zmuldefs $(LDFLAGS) $(LINBOX_LDFLAGS)
+liblbmaple_la_LDFLAGS=$(FFLAS_FFPACK_LIBS) $(LINBOX_LDFLAGS) $(LINBOX_DEPS_LIBS) $(MAPLE_LIBS) $(top_srcdir)/interfaces/driver/liblbdriver.la -Wl,-zmuldefs
 
 pkginclude_HEADERS =lb-maple.h lb-maple-utilities.h
 

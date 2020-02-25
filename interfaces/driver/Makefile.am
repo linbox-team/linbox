@@ -20,18 +20,10 @@
 if LINBOX_COMPILE_DRIVERS
 pkgincludesubdir=$(includedir)/interfaces/driver
 
-AM_CPPFLAGS=-I$(top_srcdir) -I. -I../../linbox
-
-AM_CXXFLAGS = @DEFAULT_CFLAGS@ -DDISABLE_COMMENTATOR   
-
-#ifdef HAVE_NTL
-AM_CXXFLAGS +=$(NTL_CFLAGS)
-#endif
-
-#LDADD= $(GMP_LIBS) $(NTL_LIBS)  $(MAPLE_LIBS)  "../../linbox/liblinbox.la -z muldefs"
+AM_CPPFLAGS=-I$(top_srcdir) -I. -I../../linbox -DDISABLE_COMMENTATOR
+AM_CXXFLAGS=$(LINBOX_CXXFLAGS) $(FFLAS_FFPACK_CFLAGS) $(LINBOX_DEPS_CFLAGS)
 
 lib_LTLIBRARIES=liblbdriver.la
-
 
 liblbdriver_la_SOURCES= lb-element.C 	\
 			lb-domain.C     \
@@ -46,8 +38,7 @@ liblbdriver_la_SOURCES= lb-element.C 	\
 # \
 			#  lb-solve.C
 
-liblbdriver_la_LDFLAGS=  $(NTL_LIBS) $(LDFLAGS) $(LINBOX_LDFLAGS) $(top_srcdir)/linbox/liblinbox.la -Wl,-zmuldefs
-
+liblbdriver_la_LDFLAGS=$(top_srcdir)/linbox/liblinbox.la $(FFLAS_FFPACK_LIBS) $(LINBOX_LDFLAGS) $(LINBOX_DEPS_LIBS) -Wl,-zmuldefs
 
 
 pkginclude_HEADERS=\
