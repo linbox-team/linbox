@@ -26,7 +26,7 @@ AC_INIT([LinBox], [1.7.0],[linbox-use@googlegroups.com],[linbox],
 
 AC_CONFIG_MACRO_DIR([macros])
 AC_CONFIG_AUX_DIR([build-aux])
-AM_INIT_AUTOMAKE([1.10 -Wall -Wno-portability foreign])
+AM_INIT_AUTOMAKE([1.10 -Wall -Wno-portability foreign subdir-objects])
 AC_CONFIG_HEADERS([config.h])
 AX_PREFIX_CONFIG_H(linbox/config.h, __LINBOX)
 
@@ -34,6 +34,7 @@ AX_PREFIX_CONFIG_H(linbox/config.h, __LINBOX)
 AC_CONFIG_LINKS([tests/data/sms.matrix:tests/data/sms.matrix])
 AC_CONFIG_LINKS([tests/data/30_30_27.sms:tests/data/30_30_27.sms])
 AC_CONFIG_LINKS([tests/data/fib25.sms:tests/data/fib25.sms])
+AC_CONFIG_LINKS([tests/data/rk9_7_10.sms:tests/data/rk9_7_10.sms])
 
 AM_PROG_AR
 
@@ -350,6 +351,8 @@ macros/CodeChunk/Makefile
 benchmarks/Makefile
 benchmarks/data/Makefile
 benchmarks/matrix/Makefile
+programs/Makefile
+programs/smith/Makefile
 linbox.pc
 ])
 # linbox/algorithms/IML/Makefile
