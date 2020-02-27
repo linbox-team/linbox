@@ -33,7 +33,7 @@ See INSTALL for generic installation information.
 From github.com/linbox-team
 
 
-# Requirements
+## Requirements
 - fflas-ffpack
 and by transitivity:
 - any BLAS (Fortran or C): e.g. ATLAS, OpenBLAS, ...
@@ -42,7 +42,7 @@ and by transitivity:
 
 
 
-# Optional Dependencies 
+## Optional Dependencies 
 - NTL, 
 - IML, 
 - FLINT, 
@@ -54,6 +54,23 @@ See  doc/install*html for details.
 This library requires the GNU C++ compiler (gcc-4.3 or newer) or any 
 compiler supporting advanced template features.
 
+## AUTHORS
+
+The LinBox group (see AUTHORS file for a list of contributors).
+
+## Citing LinBox
+
+If your research depends on the LinBox library, please consider citing the project as
+
+```
+@manual{linbox,
+title = {{LinBox}},
+author = {The {LinBox} group},
+edition = {v1.6.3},
+year = {2019},
+url = {http://github.com/linbox-team/linbox}
+}
+```
 ## Contact and discussions
 
 Corrections, suggestions and comments to linbox-use@googlegroups.com

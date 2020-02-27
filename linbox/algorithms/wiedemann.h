@@ -246,7 +246,7 @@ namespace LinBox
 		 * @param traits @ref SolverTraits  structure describing user
 		 *               options for the solver
 		 */
-		WiedemannSolver (const Field &F, const Method::Wiedemann &traits) :
+		WiedemannSolver (const Field &F, const Method::Wiedemann &traits = Method::Wiedemann() ) :
 			_traits (traits), _field (&F), _randiter (F), _VD (F)
 		{}
 
