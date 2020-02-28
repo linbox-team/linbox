@@ -26,6 +26,8 @@
 #ifndef __LINBOX_MATPOLY_MUL_NAIVE_H
 #define __LINBOX_MATPOLY_MUL_NAIVE_H
 
+#include <typeinfo>
+
 #include "linbox/util/error.h"
 #include "linbox/util/debug.h"
 #include "linbox/matrix/matrix-domain.h"
@@ -65,6 +67,7 @@ namespace LinBox
                 for (size_t i=idx_min+1;i<=idx_max;i++){ 
                     _BMD.axpyin(c_tmp,a[i],b[k-i]);
                 }
+                std::clog<<"c_tmp["<<k<<"]="<<c_tmp<<std::endl;
                 c.setMatrix(c_tmp,k); 
             }
             std::clog<<"C="<<c<<std::endl;

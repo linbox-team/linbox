@@ -66,6 +66,7 @@ namespace LinBox
 		
         // void mul(PMatrix &c, const PMatrix &a, const PMatrix &b) const {
 			linbox_check(c.size() >= (a.size()+b.size()-1));
+            //PMatrix t(*_field,c.rowdim(),c.coldim(),std::max(a.size(),b.size()));
             MatrixP t(*_field,c.rowdim(),c.coldim(),std::max(a.size(),b.size()));
             std::cout<<"KAra Mul TMP="<<t<<std::endl;
 #ifdef KARA_TIMING
