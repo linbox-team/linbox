@@ -397,7 +397,6 @@ namespace LinBox
 
 			// D.copy(C); ->< remove and replace with operator=
             D=C;
-
 			constSubMatrixType A_v(A);
 			constSubMatrixType B_v(B);
 			constSubMatrixType C_v(C);
@@ -514,7 +513,6 @@ namespace LinBox
 			linbox_check( C.coldim() == B.coldim());
 			linbox_check( D.rowdim() == C.rowdim());
 			linbox_check( D.coldim() == C.coldim());
-
 			D.copy(C);
 
 			FFLAS::fgemm( C.field(), FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
@@ -538,7 +536,6 @@ namespace LinBox
 			linbox_check( A.coldim() == B.rowdim());
 			linbox_check( C.rowdim() == A.rowdim());
 			linbox_check( C.coldim() == B.coldim());
-
 			FFLAS::fgemm( C.field(), FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
 				     C.rowdim(), C.coldim(), A.coldim(),
 				     alpha,
