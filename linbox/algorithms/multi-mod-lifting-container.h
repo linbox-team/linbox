@@ -48,7 +48,7 @@ namespace LinBox {
      *                  |   for i = 1 .. l:
      *                  |   |   (Qi, Ri) = such that ri = pi Qi + Ri with |Ri| < pi
      *                  |   |   ci = Bi ri mod pi                   < Matrix-vector in Z/pZ
-     *                  |   |   yi = yi + ci * pi^(i-1)             < Done over ZZ
+     *                  |   |   yi = yi + ci * pi^(j-1)             < Done over ZZ
      *                  |   V = [R1|...|Rl] - A [c1|...|cl]         < Matrix-matrix in ZZ
      *                  |   for i = 1 .. l:
      *                  |   |   ri = Qi + (Vi / pi)
