@@ -60,6 +60,10 @@ namespace LinBox
 			return _Mat;
 		}
 
+        size_t rowdim() const { return _Mat.coldim();}
+
+        size_t coldim() const { return _Mat.rowdim();}
+        
 	protected:
 		Matrix& _Mat; //!< NO DOC
 	};
@@ -84,7 +88,9 @@ namespace LinBox
 		TransposedBlasMatrix ( const Matrix& Mat ) :
 			Matrix(Mat)
 		{}
-
+	protected:
+		Matrix& _Mat; //!< NO DOC
+        
 	};
 
 
