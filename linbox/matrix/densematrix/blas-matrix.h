@@ -213,7 +213,8 @@ namespace LinBox
         //! operator = (copying data from different matrix type)
         template<class _Matrix>
         Self_t& operator= (const _Matrix& A) ;
-
+        
+        Self_t& copy(const Self_t& A) { return *this=A;}
 
         //! Rebind operator
         template<typename _Tp1, typename _Rep2 = typename Rebind<RawStorage, _Tp1>::other>
@@ -313,8 +314,8 @@ namespace LinBox
          * @param os Output stream to which to write
          * @param f write in some format (@ref Tag::FileFormat::Format). Default is Maple's.
          */
-        std::ostream &write (std::ostream &os, Tag::FileFormat f = Tag::FileFormat::MatrixMarket) const;
-        //std::ostream &write (std::ostream &os, Tag::FileFormat f = Tag::FileFormat::Plain) const;
+        //std::ostream &write (std::ostream &os, Tag::FileFormat f = Tag::FileFormat::MatrixMarket) const;
+        std::ostream &write (std::ostream &os, Tag::FileFormat f = Tag::FileFormat::Plain) const;
 
 
         ///////////////////
@@ -462,7 +463,14 @@ namespace LinBox
             subMatrixType B(*this, 0, 0, rowdim(), coldim());
             B.random();
         }
+        template<class RandIter>
+        void random(RandIter &I)
+        {
+            subMatrixType B(*this, 0, 0, rowdim(), coldim());
+            B.random(I);
+        }
 
+        
     }; // end of class BlasMatrix
 
 
