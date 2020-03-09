@@ -71,13 +71,17 @@ namespace LinBox {
     }
 
     template < class _Matrix >
-    BlasSubmatrix<_Matrix>::BlasSubmatrix (typename BlasSubmatrix<_Matrix>::matrixType &M):        
+    BlasSubmatrix<_Matrix>::BlasSubmatrix (_Matrix &M):        
         _ptr(M.getPointer()),
         _row (M.rowdim()),
         _col (M.coldim()),
 		_stride(M.getStride()),
         _field(M.field())
     {
+        //std::cout<<"BlasSubMatrix @# constructor: "<<getPointer()<<" ="<<M.getPointer()<<"--->"<<&M<<std::endl;
+        //std::cout<<M<<std::endl;
+        //std::cout<<*this<<std::endl;
+
     }
     template < class _Matrix >
     BlasSubmatrix<_Matrix>::BlasSubmatrix (const typename BlasSubmatrix<_Matrix>::Field& F,
@@ -93,8 +97,60 @@ namespace LinBox {
     {
     }
 
-  
+     template < class _Matrix >
+     BlasSubmatrix<_Matrix>::BlasSubmatrix(const constSubMatrixType &M) :
+         _ptr(M.getPointer()),
+         _row (M.rowdim()),
+         _col(M.coldim()),
+         _stride(M.getStride()),
+         _field(M.field())
+     {
+         //std::cout<<"BlasSubMatrix Copy constructor: "<<getPointer()<<" ="<<M.getPointer()<<"--->"<<&M<<std::endl;
+         // std::cout<<M<<std::endl;
+         // std::cout<<*this<<std::endl;
+     }
+    
+    template < class _Matrix >
+    BlasSubmatrix<_Matrix>::BlasSubmatrix(nonconstSubMatrixType &M) :
+        _ptr(M.getPointer()),
+        _row (M.rowdim()),
+        _col(M.coldim()),
+        _stride(M.getStride()),
+        _field(M.field())
+    {
+        //std::cout<<"BlasSubMatrix Copy constructor 2: "<<getPointer()<<" ="<<M.getPointer()<<"--->"<<&M<<std::endl;
+        // std::cout<<M<<std::endl;
+        // std::cout<<*this<<std::endl;
+    }
 
+    template < class _Matrix >
+    BlasSubmatrix<_Matrix>::BlasSubmatrix(const nonconstSubMatrixType &M) :
+        _ptr(M.getPointer()),
+        _row (M.rowdim()),
+        _col(M.coldim()),
+        _stride(M.getStride()),
+        _field(M.field())
+    {
+        //std::cout<<"BlasSubMatrix Copy constructor 3: "<<getPointer()<<" ="<<M.getPointer()<<"--->"<<&M<<std::endl;
+        // std::cout<<M<<std::endl;
+        // std::cout<<*this<<std::endl;
+    }
+    
+    
+    template < class _Matrix >
+    BlasSubmatrix<_Matrix>& BlasSubmatrix<_Matrix>::copy (const BlasSubmatrix<_Matrix> & M){
+        //std::cout<<"BlasSubMatrix Copy Method\n";
+        if (_row == M.rowdim() && _col == M.coldim()){
+            for (size_t i=0;i<_row;i++)
+                for(size_t j=0;j<_col;j++)
+                    setEntry(i,j,M.getEntry(i,j));
+        }
+        else
+            throw LinBoxError("Calling copy from BlasSubMatrix with matrices of different dimension ... not allowed");
+        return *this;
+    }
+    
+    
     //////////////////
     //   ELEMENTS   //
     //////////////////
@@ -425,6 +481,8 @@ namespace LinBox {
 	};
 
 
+
+   
 	template <class _Matrix>
 	template<typename _Tp1, typename _Rep2>
 	struct BlasSubmatrix< _Matrix>::rebind {
