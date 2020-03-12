@@ -38,7 +38,7 @@ liblbdriver_la_SOURCES= lb-element.C 	\
 # \
 			#  lb-solve.C
 
-liblbdriver_la_LDFLAGS=$(top_srcdir)/linbox/liblinbox.la $(FFLAS_FFPACK_LIBS) $(LINBOX_LDFLAGS) $(LINBOX_DEPS_LIBS) -Wl,-zmuldefs
+liblbdriver_la_LDFLAGS=$(top_srcdir)/linbox/liblinbox.la $(LINBOX_DEPS_LIBS) $(FFLAS_FFPACK_LIBS) $(LINBOX_LDFLAGS) -Wl,-zmuldefs
 
 
 pkginclude_HEADERS=\

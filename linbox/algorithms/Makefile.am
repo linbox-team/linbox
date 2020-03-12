@@ -21,7 +21,7 @@ pkgincludesubdir=$(pkgincludedir)/algorithms
 
 AM_CPPFLAGS=-I$(top_srcdir)
 AM_CXXFLAGS=$(LINBOX_CXXFLAGS) $(FFLAS_FFPACK_CFLAGS) $(LINBOX_DEPS_CFLAGS)
-LDADD=$(FFLAS_FFPACK_LIBS) $(LINBOX_LDFLAGS) $(LINBOX_DEPS_LIBS)
+LDADD=$(LINBOX_DEPS_LIBS) $(FFLAS_FFPACK_LIBS) $(LINBOX_LDFLAGS)
 
 SUBDIRS=dixon-solver gauss opencl-kernels matrix-blas3 polynomial-matrix
 #  IML
