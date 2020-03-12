@@ -89,6 +89,7 @@ BASIC_TESTS =            \
     test-givaro-interfaces        \
     test-echelon-form       \
     test-hadamard-bound     \
+    test-fft                    \
     test-serialization
 
 # Really just one or two of these would be enough for target check.
@@ -122,7 +123,6 @@ CHECKER_TESTS =                 \
     test-dyadic-to-rational     \
     test-echelon-form           \
     test-ffpack                 \
-    test-fft                    \
     test-fibb                   \
     test-getentry               \
     test-givaropoly             \
