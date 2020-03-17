@@ -19,19 +19,14 @@
 # ========LICENCE========
 #/
 
-#  AM_CPPFLAGS=-I$(top_srcdir)
+AM_CPPFLAGS=-DLinBoxSrcOnly -DEXAMPLE_DATADIR=\"$(srcdir)/data\"
+AM_CXXFLAGS=$(LINBOX_CXXFLAGS) $(FFLAS_FFPACK_CFLAGS) $(LINBOX_DEPS_CFLAGS)
+LDADD=$(LINBOX_DEPS_LIBS) $(FFLAS_FFPACK_LIBS) $(LINBOX_LDFLAGS)
 
 EXTRA_PROGRAMS =		\
 	ex-fields 		\
 	ex-fields-archetype	\
 	modular-int
-
-#AM_CPPFLAGS=$(GMP_CFLAGS) $(NTL_CFLAGS) -DEXAMPLE_DATADIR=\"$(srcdir)/data\"
-#LDADD = $(top_builddir)/linbox/liblinbox.a $(GMP_LIBS) $(NTL_LIBS)
-AM_CXXFLAGS = @DEFAULT_CFLAGS@ -DLinBoxSrcOnly
-AM_CPPFLAGS+= -DLinBoxSrcOnly  $(NTL_CFLAGS) \
-			 -DEXAMPLE_DATADIR=\"$(srcdir)/data\"
-LDADD =  $(NTL_LIBS) $(LDFLAGS)
 
 ex_fields_SOURCES           = ex-fields.C
 ex_fields_archetype_SOURCES = ex-fields-archetype.C
