@@ -158,8 +158,9 @@ std::vector<size_t>& PRank(std::vector<size_t>& ranks, size_t& effective_exponen
 		int64_t lp(p);
 		Givaro::Integer q = pow(p,uint64_t(e)); int64_t lq(q);
 		if (q > Ring::maxCardinality()) {
-			if (__VALENCE_REPORTING__)
+#if __VALENCE_REPORTING__
                 logreport << "Power rank might need extra large composite (" << p << '^' << e << ")." << std::endl;
+#endif
 			q = p;
 			for(effective_exponent=1; q <= Ring::maxCardinality(); ++effective_exponent) {
 				q *= p;
@@ -170,15 +171,18 @@ std::vector<size_t>& PRank(std::vector<size_t>& ranks, size_t& effective_exponen
                     // Not able to use Modular<int64_t>,
                     // modulus is ok, but is already too large when squared
                     // Return that no prime power was performed
-                if (__VALENCE_REPORTING__) {
+#if __VALENCE_REPORTING__
+                {
                     logreport << "Exceeding int64_t ... power rank useless, nothing done." << std::endl;
                     std::clog << logreport.str();
                 }
+#endif
                 effective_exponent=1;
                 return ranks;
             }
-			if (__VALENCE_REPORTING__)
+#if __VALENCE_REPORTING__
                 logreport << "First trying: " << lq << " (=" << p << '^' << effective_exponent << ", without further warning this will be sufficient)." << std::endl;
+#endif
 		}
 		Ring F(lq);
 		std::ifstream input(filename);
@@ -192,22 +196,25 @@ std::vector<size_t>& PRank(std::vector<size_t>& ranks, size_t& effective_exponen
 		Timer tim; tim.clear(); tim.start();
 		PGD.prime_power_rankin( lq, lp, ranks, A, Q, A.rowdim(), A.coldim(), std::vector<size_t>());
 		tim.stop();
-		if (__VALENCE_REPORTING__) {
+#if __VALENCE_REPORTING__
+		{
 			F.write(logreport << "Ranks over ") << " are " ;
 			for(auto const & rit:ranks) logreport << rit << ' ';
 			logreport << ' ' << tim <<  " on T" << THREAD_NUM << std::endl;
 		}
+#endif
 	} else {
             // Not able to use Modular<int64_t>, modulus too large
             // Return that no prime power was performed
-        if (__VALENCE_REPORTING__)
+#if __VALENCE_REPORTING__
             logreport << "Exceeding int64_t ... even for the prime, nothing done." << std::endl;
+#endif
         effective_exponent=1;
 	}
 
-    if (__VALENCE_REPORTING__) {
+#if __VALENCE_REPORTING__
         std::clog << logreport.str();
-    }
+#endif
 	return ranks;
 }
 }
@@ -224,10 +231,12 @@ std::vector<size_t>& PRankPowerOfTwo(std::vector<size_t>& ranks, size_t& effecti
 #endif
 	effective_exponent = e;
 	if (e > 63) {
-		if (__VALENCE_REPORTING__) {
+#if __VALENCE_REPORTING__
+		{
             logreport << "Power rank power of two might need extra large composite (2^" << e << ")." << std::endl;
             logreport << "First trying: 63, without further warning this will be sufficient)." << std::endl;
         }
+#endif
 		effective_exponent = 63;
 	}
 
@@ -245,12 +254,14 @@ std::vector<size_t>& PRankPowerOfTwo(std::vector<size_t>& ranks, size_t& effecti
 	Timer tim; tim.clear(); tim.start();
 	PGD.prime_power_rankin( effective_exponent, ranks, A, Q, A.rowdim(), A.coldim(), std::vector<size_t>());
 	tim.stop();
-	if (__VALENCE_REPORTING__) {
+#if __VALENCE_REPORTING__
+	{
 		F.write(logreport << "Ranks over ") << " modulo 2^" << effective_exponent << " are " ;
 		for(auto const& rit: ranks) logreport << rit << ' ';
 		logreport<< ' ' << tim <<  " on T" << THREAD_NUM << std::endl;
         std::clog << logreport.str();
 	}
+#endif
 	return ranks;
 }
 
