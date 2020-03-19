@@ -211,6 +211,17 @@ namespace LinBox
 
 
 	};
+
+    template<typename I >
+	class TransposedBlasMatrix<BlasPermutation<I>> {
+	public:
+        TransposedBlasMatrix (BlasPermutation<I>& Mat) :	_Mat(Mat) {}
+
+        BlasPermutation<I>& getMatrix() const {return _Mat;}
+
+    protected:
+        BlasPermutation<I>& _Mat;
+    };
 } // LinBox
 
 // MatrixPermutation
