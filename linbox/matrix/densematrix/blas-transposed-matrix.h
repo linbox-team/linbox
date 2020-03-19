@@ -43,27 +43,45 @@ namespace LinBox
 	 */
 	template< class Matrix >
 	class TransposedBlasMatrix {
-
 	public:
+        typedef TransposedBlasMatrix<Matrix> Self_t;
+        typedef typename Matrix::Field                    Field;
+        typedef typename Field::Element                 Element;  
+        typedef typename Field::Element_ptr         Element_ptr;      //!< Pointer to Element type
+        typedef typename Field::ConstElement_ptr   ConstElement_ptr; //!< Pointer to const Element type
+        
 
-		/*! NO DOC
-		 * @param Mat
-		 */
-		TransposedBlasMatrix ( Matrix& Mat ) :
-			_Mat(Mat)
-		{}
-
-		/*! NO DOC
-		*/
-		Matrix& getMatrix() const
-		{
-			return _Mat;
-		}
+		TransposedBlasMatrix ( Matrix& Mat ) :	_Mat(Mat) {}
 
         size_t rowdim() const { return _Mat.coldim();}
 
         size_t coldim() const { return _Mat.rowdim();}
+
+        Self_t& copy(const Self_t& A) { return *this=A;}
+
+        size_t getStride() const { return _Mat.getStride();}
         
+        ConstElement_ptr getPointer() const { return _Mat.getPointer();}
+        Element_ptr getPointer() { return _Mat.getPointer();}
+        ConstElement_ptr getConstPointer() const { return _Mat.getConstPointer();}
+
+        void setEntry (size_t i, size_t j, const Element &a_ij) { _Mat.setEntry(j,i,a_ij);}
+        Element&  refEntry (size_t i, size_t j) {return _Mat.refEntry(j,i);}
+        Element&  getfEntry (size_t i, size_t j) const {return _Mat.getEntry(j,i);}
+        Element&  getfEntry (Element& x, size_t i, size_t j) const {return _Mat.getEntry(x,j,i);}
+        const Field& field() const {return _Mat.field();}
+
+        template <class Vector1, class Vector2>
+        Vector1&  apply (Vector1& y, const Vector2& x) const { return _Mat.applyTranpose(y,x);}
+
+        template <class Vector1, class Vector2>
+        Vector1&  applyTranpose (Vector1& y, const Vector2& x) const { return _Mat.apply(y,x);}
+
+        void random() { _Mat.random();}
+        template<typename RandIter>
+        void random(RandIter& G) { _Mat.random(G);}
+
+        Matrix& getMatrix() const { return _Mat;}
 	protected:
 		Matrix& _Mat; //!< NO DOC
 	};
@@ -92,6 +110,7 @@ namespace LinBox
 		Matrix& _Mat; //!< NO DOC
         
 	};
+
 
 
 }
