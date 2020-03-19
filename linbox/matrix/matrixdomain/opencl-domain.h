@@ -489,7 +489,7 @@ namespace LinBox{
 		//! C = A*B
 		template <class Operand1, class Operand2, class Operand3>
 		Operand1& mul(Operand1& C, const Operand2& A, const Operand3& B) const{
-			return BlasMatrixDomainMul<Field,Operand1,Operand2,Operand3>()(_F,C,A,B);
+			return BlasMatrixDomainMul<Operand1,Operand2,Operand3>()(C,A,B);
 		}
 
 		//! addition.
@@ -543,14 +543,14 @@ namespace LinBox{
 		//! A = A*B
 		template <class Operand1, class Operand2>
 		Operand1& mulin_left(Operand1& A, const Operand2& B) const{
-			return BlasMatrixDomainMulin<Field,Operand1,Operand2>()(_F,A,B);
+			return BlasMatrixDomainMulin<Operand1,Operand2>()(A,B);
 		}
 
 		//! In place multiplication.
 		//! B = A*B
 		template <class Operand1, class Operand2>
 		Operand2& mulin_right(const Operand1& A, Operand2& B) const{
-			return BlasMatrixDomainMulin<Field,Operand2,Operand1>()(_F,A,B);
+			return BlasMatrixDomainMulin<Operand2,Operand1>()(A,B);
 		}
 
 		//! axpy.
@@ -612,16 +612,16 @@ namespace LinBox{
 
 		//!  general matrix-matrix multiplication and addition with scaling.
 		//! D= beta.C + alpha.A*B
-		template <class Operand1, class Operand2, class Operand3>
+		template <class Operand1, class Operand2, class Operand3,class Operand4>
 		Operand1& muladd(
 			Operand1& D,
 			const Element& beta,
-			const Operand1& C,
+			const Operand2& C,
 			const Element& alpha,
-			const Operand2& A,
-			const Operand3& B) const{
+			const Operand3& A,
+			const Operand4& B) const{
 
-			return BlasMatrixDomainMulAdd<Operand1,Operand2,Operand3>()(
+			return BlasMatrixDomainMulAdd<Operand1,Operand2,Operand3,Operand4>()(
 				D,
 				beta,
 				C,
@@ -640,7 +640,7 @@ namespace LinBox{
 			const Operand2& A,
 			const Operand3& B) const{
 
-			return BlasMatrixDomainMulAdd<Operand1,Operand2,Operand3>()(
+			return BlasMatrixDomainMulAdd<Operand1,Operand1,Operand2,Operand3>()(
 				_F,
 				beta,
 				C,
