@@ -65,7 +65,7 @@ namespace LinBox
 	 *     -  D = beta.C + alpha. A*B
 	 *     -  C = beta.C + alpha. A*B
 	 */
-	template<class Operand1, class Operand2, class Operand3/*, class MatrixVectorType*/>
+	template<class Operand1, class Operand2, class Operand3, class Operand4/*, class MatrixVectorType*/>
 	class BlasMatrixDomainMulAdd
 #if 0
 	{
@@ -152,13 +152,12 @@ namespace LinBox
 	/*!@internal
 	 * multiplying two matrices.
 	 */
-	template< class Field, class Operand1, class Operand2, class Operand3>
+	template< class Operand1, class Operand2, class Operand3>
 	class BlasMatrixDomainMul {
 	public:
-		Operand1 &operator() (const Field &F,
-				      Operand1 &C, const Operand2 &A, const Operand3 &B) const
+		Operand1 &operator() (Operand1 &C, const Operand2 &A, const Operand3 &B) const
 		{
-			return BlasMatrixDomainMulAdd<Operand1,Operand2,Operand3/*,Operand1::MatrixVectorType*/>()(  F.zero, C, F.one, A, B );
+			return BlasMatrixDomainMulAdd<Operand1,Operand1,Operand2,Operand3/*,Operand1::MatrixVectorType*/>()(  C.field().zero, C, C.field().one, A, B );
 		}
 	};
 
@@ -177,28 +176,26 @@ namespace LinBox
 	 */
 	// Operand 2 is always the type of the matrix which is not modified
 	// ( for example: BlasPermutation TriangularBlasMatrix )
-	template< class Field, class Operand1, class Operand2>
+	template< class Operand1, class Operand2>
 	class BlasMatrixDomainMulin {
 	public:
 		// Defines a dummy mulin over generic matrices using a temporary
-		Operand1 &operator() (const Field &F,
-				      Operand1 &A, const Operand2 &B) const
+		Operand1 &operator() (Operand1 &A, const Operand2 &B) const
 		{
 			Operand1* tmp = new Operand1(A);
 			// Effective copy of A
 			*tmp = A;
-			BlasMatrixDomainMulAdd<Operand1,Operand1,Operand2/*,Operand1::MatrixVectorType()*/>()( F.zero, A, F.one, *tmp, B );
+			BlasMatrixDomainMulAdd<Operand1,Operand1,Operand1,Operand2>()( A.field().zero, A, A.field().one, *tmp, B );
 			delete tmp;
 			return A;
 		}
 
-		Operand1 &operator() (const Field &F,
-				      const Operand2 &A, Operand1 &B ) const
+		Operand1 &operator() (const Operand2 &A, Operand1 &B ) const
 		{
 			Operand1* tmp = new Operand1(B);
 			// Effective copy of B
 			*tmp = B;
-			BlasMatrixDomainMulAdd<Operand1,Operand1,Operand2/*,Operand1::MatrixVectorType()*/>()(  F.zero, B, F.one, A, *tmp );
+			BlasMatrixDomainMulAdd<Operand1,Operand1,Operand2,Operand1>()(  A.field().zero, B, A.field().one, A, *tmp );
 			delete tmp;
 			return B;
 		}
@@ -441,7 +438,7 @@ namespace LinBox
 		template <class Operand1, class Operand2, class Operand3>
 		Operand1& mul(Operand1& C, const Operand2& A, const Operand3& B) const
 		{
-			return BlasMatrixDomainMul<Field,Operand1,Operand2,Operand3>()(field(),C,A,B);
+			return BlasMatrixDomainMul<Operand1,Operand2,Operand3>()(C,A,B);
 		}
 
 		//! addition.
@@ -478,10 +475,10 @@ namespace LinBox
 
 		//! addition (in place)
 		//! C += B
-		template <class Operand1, class Operand3>
-		Operand1& addin(Operand1& C, const Operand3& B) const
+		template <class Operand1, class Operand2>
+		Operand1& addin(Operand1& C, const Operand2& B) const
 		{
-			return BlasMatrixDomainAddin<Field,Operand1,Operand3>()(field(),C,B);
+			return BlasMatrixDomainAddin<Field,Operand1,Operand2>()(field(),C,B);
 		}
 
 		//! multiplication with scaling.
@@ -497,7 +494,7 @@ namespace LinBox
 		template <class Operand1, class Operand2>
 		Operand1& mulin_left(Operand1& A, const Operand2& B ) const
 		{
-			return BlasMatrixDomainMulin<Field,Operand1,Operand2>()(field(),A,B);
+			return BlasMatrixDomainMulin<Operand1,Operand2>()(A,B);
 		}
 
 		//! In place multiplication.
@@ -505,7 +502,7 @@ namespace LinBox
 		template <class Operand1, class Operand2>
 		Operand2& mulin_right(const Operand1& A, Operand2& B ) const
 		{
-			return BlasMatrixDomainMulin<Field,Operand2,Operand1>()(field(),A,B);
+			return BlasMatrixDomainMulin<Operand2,Operand1>()(A,B);
 		}
 
 		template <class Matrix1, class Matrix2>
@@ -516,8 +513,8 @@ namespace LinBox
 
 		//! axpy.
 		//! D = A*B + C
-		template <class Operand1, class Operand2, class Operand3>
-		Operand1& axpy(Operand1& D, const Operand2& A, const Operand3& B, const Operand1& C) const
+		template <class Operand1, class Operand2, class Operand3, class Operand4>
+		Operand1& axpy(Operand1& D, const Operand2& A, const Operand3& B, const Operand4& C) const
 		{
 			return muladd(D,field().one,C,field().one,A,B);
 		}
@@ -548,8 +545,8 @@ namespace LinBox
 
 		//! axmy.
 		//! D= A*B - C
-		template <class Operand1, class Operand2, class Operand3>
-		Operand1& axmy(Operand1& D, const Operand2& A, const Operand3& B, const Operand1& C) const
+		template <class Operand1, class Operand2, class Operand3, class Operand4>
+		Operand1& axmy(Operand1& D, const Operand2& A, const Operand3& B, const Operand4& C) const
 		{
 			return muladd(D,field().mOne,C,field().one,A,B);
 		}
@@ -564,20 +561,20 @@ namespace LinBox
 
 		//!  general matrix-matrix multiplication and addition with scaling.
 		//! D= beta.C + alpha.A*B
-		template <class Operand1, class Operand2, class Operand3>
-		Operand1& muladd(Operand1& D, const Element& beta, const Operand1& C,
-				 const Element& alpha, const Operand2& A, const Operand3& B) const
+		template <class Operand1, class Operand2, class Operand3, class Operand4>
+		Operand1& muladd(Operand1& D, const Element& beta, const Operand2& C,
+                         const Element& alpha, const Operand3& A, const Operand4& B) const
 		{
-			return BlasMatrixDomainMulAdd<Operand1,Operand2,Operand3/*,Operand1::MatrixVectorType()*/>()(D,beta,C,alpha,A,B);
+			return BlasMatrixDomainMulAdd<Operand1,Operand2,Operand3,Operand4>()(D,beta,C,alpha,A,B);
 		}
 
 		//! muladdin.
 		//! C= beta.C + alpha.A*B.
 		template <class Operand1, class Operand2, class Operand3>
 		Operand1& muladdin(const Element& beta, Operand1& C,
-				   const Element& alpha, const Operand2& A, const Operand3& B) const
+                           const Element& alpha, const Operand2& A, const Operand3& B) const
 		{
-			return BlasMatrixDomainMulAdd<Operand1,Operand2,Operand3/*,Operand1::MatrixVectorType()*/>()(beta,C,alpha,A,B);
+			return BlasMatrixDomainMulAdd<Operand1,Operand1,Operand2,Operand3>()(beta,C,alpha,A,B);
 		}
 
 
