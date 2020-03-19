@@ -200,6 +200,12 @@ namespace LinBox {
             return *this;
         }
 
+
+        template<class _Vector>
+        Self_t& copy(const _Vector& A){
+            return *this=A;
+        }
+        
         //! Rebind operator
         template<typename _Tp1, typename _Rep2 = typename Rebind<Storage, _Tp1>::other>
         struct rebind {
@@ -342,14 +348,15 @@ namespace LinBox {
             typename _Field::Element x; field().init(x);
             typename _Field::RandIter r(field());
             for (size_t i = 0; i < size(); ++i)
-                setEntry(i, r.random(x));
+                setEntry(i, r.random(x));                
         }
 
         template<class RandIter>
         void random( RandIter r){
             typename _Field::Element x; field().init(x);
-            for (size_t i = 0; i < size(); ++i)
+            for (size_t i = 0; i < size(); ++i){
                 setEntry(i, r.random(x));
+            }
         }
 
     };
