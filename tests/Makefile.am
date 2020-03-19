@@ -181,6 +181,7 @@ CHECKER_TESTS =                 \
     test-triplesbb-omp          \
     test-tutorial               \
     test-vector-domain          \
+    test-blas-domain-mul        \
     test-blas-domain            \
     test-random-matrix          \
     test-zero-one               \
@@ -271,6 +272,7 @@ CLEANFILES= checker     \
 test_bitonic_sort_SOURCES =         test-bitonic-sort.C
 test_blackbox_block_container_SOURCES = test-blackbox-block-container.C
 test_blas_domain_SOURCES =          test-blas-domain.C
+test_blas_domain_mul_SOURCES =      test-blas-domain-mul.C
 test_blas_matrix_SOURCES =          test-blas-matrix.C
 test_block_ring_SOURCES =           test-block-ring.C
 test_block_wiedemann_SOURCES =      test-block-wiedemann.C
