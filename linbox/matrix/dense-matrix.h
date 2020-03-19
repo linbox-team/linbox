@@ -176,6 +176,11 @@ namespace LinBox { /*  ContainerTraits */
 		typedef ContainerCategories::Matrix ContainerCategory ;
 	};
 
+	template<class _Matrix>
+	struct ContainerTraits<TransposedBlasMatrix<_Matrix> > {
+		typedef ContainerCategories::Matrix ContainerCategory ;
+	};
+
 }
 
 #endif // __LINBOX_matrix_dense_matrix_H
