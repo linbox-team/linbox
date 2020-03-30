@@ -23,7 +23,7 @@
 
 ACLOCAL_AMFLAGS = -I macros
 
-SUBDIRS=linbox benchmarks macros tests interfaces doc examples
+SUBDIRS=linbox benchmarks tests interfaces doc examples
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = linbox.pc
