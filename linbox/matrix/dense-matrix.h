@@ -178,7 +178,8 @@ namespace LinBox { /*  ContainerTraits */
 
 	template<class _Matrix>
 	struct ContainerTraits<TransposedBlasMatrix<_Matrix> > {
-		typedef ContainerCategories::Matrix ContainerCategory ;
+		//typedef ContainerCategories::Matrix ContainerCategory ;
+        typedef typename ContainerTraits<_Matrix>::ContainerCategory ContainerCategory;
 	};
 
 }

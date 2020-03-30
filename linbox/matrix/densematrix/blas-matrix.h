@@ -488,11 +488,14 @@ namespace LinBox
         Tag::Diag           _diag; //!< unit or non unit diagonal
 
     public:
-        typedef _Field                       Field;
-        typedef _Storage                         Rep;
-        typedef typename Field::Element      Element;      //!< Element type
+        typedef _Field                             Field;
+        typedef _Storage                             Rep;
+        typedef typename Field::Element          Element;      //!< Element type
         typedef BlasMatrix<Field,Rep>           Father_t;
-        typedef TriangularBlasMatrix<Field,Rep> Self_t;
+        typedef TriangularBlasMatrix<Field,Rep>   Self_t;
+        typedef Self_t                        matrixType;
+        typedef BlasSubmatrix< Self_t>            subMatrixType;
+        typedef BlasSubmatrix<const Self_t>  constSubMatrixType;
 
 
         /*! Constructor for a new \c TriangularBlasMatrix.
