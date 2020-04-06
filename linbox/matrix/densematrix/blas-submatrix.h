@@ -309,7 +309,7 @@ namespace LinBox
 		void random()
 		{
             typename Field::RandIter G(field());
-            FFLAS::frand(field(),G, _row,_col,_ptr,_stride);
+            random(G);
         }
         template<class RandIter>
 		void random(RandIter& G)
