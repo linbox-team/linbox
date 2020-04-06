@@ -58,25 +58,25 @@ namespace LinBox
         return FFPACK::Det(A.field(), det, A.coldim(), A.getPointer(), A.getStride());
 	}
 
-	template< class Field, class _Rep>
-    class BlasMatrixDomainDet<TriangularBlasMatrix<Field,_Rep> >{
+	template< class Matrix>
+    class BlasMatrixDomainDet<TriangularBlasMatrix<Matrix> >{
     public:
-        typename Field::Element operator() (const TriangularBlasMatrix<Field,_Rep> & A) const
+        typename Matrix::Field::Element operator() (const TriangularBlasMatrix<Matrix> & A) const
         {
             if (A.rowdim() != A.coldim())
                 return A.field().zero;
             if (A.getDiag() == Tag::Diag::Unit)
                 return A.field().one;
-            typename Field::Element d ;
+            typename Matrix::Field::Element d ;
             A.field().init(d);A.field().assign(d,A.field().one);                
             for (size_t i=0;i<A.rowdim();i++)
                 A.field().mulin(d,A.getEntry(i,i));
             return d;        
         }
         
-        typename Field::Element operator() (TriangularBlasMatrix<Field,_Rep> & A) const
+        typename Matrix::Field::Element operator() (TriangularBlasMatrix<Matrix> & A) const
         {
-            return (*this)(const_cast<TriangularBlasMatrix<Field,_Rep> &>(A));
+            return (*this)(const_cast<TriangularBlasMatrix<Matrix> &>(A));
         }
     };
 } // LinBox
@@ -232,56 +232,58 @@ namespace LinBox
 	 */
   
     
-	template <class Matrix, class Field, class _Rep>
-    class BlasMatrixDomainLeftSolve<Matrix, TriangularBlasMatrix<Field,_Rep>, Matrix> {
+	template <class Matrix1, class Matrix2, class Matrix3>
+    class BlasMatrixDomainLeftSolve<Matrix1, TriangularBlasMatrix<Matrix2>, Matrix3> {
     public:
-        Matrix& operator() (Matrix& X, const TriangularBlasMatrix<Field,_Rep>& A, const Matrix& B) const
+        Matrix1& operator() (Matrix1& X, const TriangularBlasMatrix<Matrix2>& A, const Matrix3& B) const
         {
             linbox_check( X.rowdim() == B.rowdim());
             linbox_check( X.coldim() == B.coldim());
             X.copy(B);        
             return (*this)(A, X);
         }        
-        Matrix& operator() (const TriangularBlasMatrix<Field,_Rep>& A, Matrix& B) const
+        Matrix3& operator() (const TriangularBlasMatrix<Matrix2>& A, Matrix3& B) const
         {
             linbox_check( A.rowdim() == A.coldim());
             linbox_check( A.coldim() == B.rowdim());
-            FFLAS::ftrsm( A.field(), FFLAS::FflasLeft, (FFLAS::FFLAS_UPLO) A.getUpLo(),FFLAS::FflasNoTrans,(FFLAS::FFLAS_DIAG) A.getDiag(),
+            FFLAS::ftrsm( A.field(), FFLAS::FflasLeft, (FFLAS::FFLAS_UPLO) A.getUpLo(),isTransposed<Matrix3>::value,(FFLAS::FFLAS_DIAG) A.getDiag(),
                           A.rowdim(), B.coldim(), A.field().one, A.getPointer(), A.getStride(), B.getPointer(), B.getStride());
             return B;
         }
     };
     
-	template <class Matrix, class Field, class _Rep>
-	class BlasMatrixDomainRightSolve<Matrix, TriangularBlasMatrix<Field,_Rep>, Matrix> {
+
+    template <class Matrix1, class Matrix2, class Matrix3>
+	class BlasMatrixDomainRightSolve<Matrix1, TriangularBlasMatrix<Matrix3>, Matrix2> {
     public:
-        Matrix&operator() (Matrix& X, const TriangularBlasMatrix<Field,_Rep>& A, const Matrix& B) const
+        Matrix1&operator() (Matrix1& X, const TriangularBlasMatrix<Matrix3>& A, const Matrix2& B) const
         {
             linbox_check( X.rowdim() == B.rowdim());
             linbox_check( X.coldim() == B.coldim());
             X.copy(B);        
             return (*this)(A, X);
         }        
-        Matrix& operator() (const TriangularBlasMatrix<Field,_Rep>& A, Matrix& B) const
+        Matrix2& operator() (const TriangularBlasMatrix<Matrix3>& A, Matrix2& B) const
         {
             linbox_check( A.rowdim() == A.coldim());
             linbox_check( A.coldim() == B.rowdim());
-            FFLAS::ftrsm( A.field(), FFLAS::FflasRight, (FFLAS::FFLAS_UPLO) A.getUpLo(),FFLAS::FflasNoTrans,(FFLAS::FFLAS_DIAG) A.getDiag(),
+            FFLAS::ftrsm( A.field(), FFLAS::FflasRight, (FFLAS::FFLAS_UPLO) A.getUpLo(),isTransposed<Matrix2>::value,(FFLAS::FFLAS_DIAG) A.getDiag(),
                           A.rowdim(), B.coldim(), A.field().one, A.getPointer(), A.getStride(), B.getPointer(), B.getStride());
             return B;
         }
     };
 
-    template <class Field, class _Rep>    
-    class BlasMatrixDomainLeftSolve<BlasVector<Field>, TriangularBlasMatrix<Field,_Rep> > {
+    template <class Matrix>    
+    class BlasMatrixDomainLeftSolve<BlasVector<typename Matrix::Field>, TriangularBlasMatrix<Matrix> > {
     public:
-        BlasVector<Field>& operator() (BlasVector<Field>& x,const TriangularBlasMatrix<Field,_Rep>& A,  const BlasVector<Field>& b) const {
+        typedef typename Matrix::Field Field;
+        BlasVector<Field>& operator() (BlasVector<Field>& x,const TriangularBlasMatrix<Matrix>& A,  const BlasVector<Field>& b) const {
             linbox_check( x.rowdim() == b.rowdim());
             linbox_check( x.coldim() == b.coldim());
             x.copy(b);        
             return (*this)(A, x);
         }      
-        BlasVector<Field>& operator() (const TriangularBlasMatrix<Field,_Rep>& A,  BlasVector<Field>& b) const
+        BlasVector<Field>& operator() (const TriangularBlasMatrix<Matrix>& A,  BlasVector<Field>& b) const
         {
             linbox_check( A.rowdim() == A.coldim());
             linbox_check( A.rowdim() == b.size());
@@ -291,16 +293,17 @@ namespace LinBox
     };
     
 
-    template <class Field, class _Rep>
-    class BlasMatrixDomainRightSolve<BlasVector<Field>, TriangularBlasMatrix<Field,_Rep> >{
+    template <class Matrix>
+    class BlasMatrixDomainRightSolve<BlasVector<typename Matrix::Field>, TriangularBlasMatrix<Matrix> >{
     public:
-        BlasVector<Field>& operator() (BlasVector<Field>& x, const TriangularBlasMatrix<Field,_Rep>& A, const BlasVector<Field>& b) const {
+        typedef typename Matrix::Field Field;
+        BlasVector<Field>& operator() (BlasVector<Field>& x, const TriangularBlasMatrix<Matrix>& A, const BlasVector<Field>& b) const {
             linbox_check( x.rowdim() == b.rowdim());
             linbox_check( x.coldim() == b.coldim());
             x.copy(b);        
             return (*this)(A, x);
         }
-        BlasVector<Field>& operator() (const TriangularBlasMatrix<Field,_Rep>& A, BlasVector<Field>& b) const
+        BlasVector<Field>& operator() (const TriangularBlasMatrix<Matrix>& A, BlasVector<Field>& b) const
         {
             linbox_check( A.rowdim() == A.coldim());
             linbox_check( A.rowdim() == b.size());
@@ -310,16 +313,16 @@ namespace LinBox
     };
 
     
-    template <class Field, class _Rep, class Vect>
-    class  BlasMatrixDomainLeftSolve<BlasSubvector<Vect>, TriangularBlasMatrix<Field,_Rep> >{
+    template <class Matrix, class Vect>
+    class  BlasMatrixDomainLeftSolve<BlasSubvector<Vect>, TriangularBlasMatrix<Matrix> >{
     public:
-        BlasSubvector<Vect>& operator() (BlasSubvector<Vect>& x,const TriangularBlasMatrix<Field,_Rep>& A,  const BlasSubvector<Vect>& b) const{
+        BlasSubvector<Vect>& operator() (BlasSubvector<Vect>& x,const TriangularBlasMatrix<Matrix>& A,  const BlasSubvector<Vect>& b) const{
             linbox_check( x.rowdim() == b.rowdim());
             linbox_check( x.coldim() == b.coldim());
             x.copy(b);        
             return (*this)(A, x);
         }            
-        BlasSubvector<Vect>& operator() (const TriangularBlasMatrix<Field,_Rep>& A,  BlasSubvector<Vect>& b) const
+        BlasSubvector<Vect>& operator() (const TriangularBlasMatrix<Matrix>& A,  BlasSubvector<Vect>& b) const
         {
 			linbox_check( A.rowdim() == A.coldim());
 			linbox_check( A.rowdim() == b.size());
@@ -329,16 +332,16 @@ namespace LinBox
     };
     
     
-	template <class Field, class _Rep, class Vect>
-    class BlasMatrixDomainRightSolve<BlasSubvector<Vect>, TriangularBlasMatrix<Field,_Rep> >{
+	template <class Matrix, class Vect>
+    class BlasMatrixDomainRightSolve<BlasSubvector<Vect>, TriangularBlasMatrix<Matrix> >{
     public:
-        BlasSubvector<Vect>& operator() (BlasSubvector<Vect>& x,const TriangularBlasMatrix<Field,_Rep>& A,  const BlasSubvector<Vect>& b) const{
+        BlasSubvector<Vect>& operator() (BlasSubvector<Vect>& x,const TriangularBlasMatrix<Matrix>& A,  const BlasSubvector<Vect>& b) const{
             linbox_check( x.rowdim() == b.rowdim());
             linbox_check( x.coldim() == b.coldim());
             x.copy(b);        
             return (*this)(A, x);
         }            
-        BlasSubvector<Vect>& operator() (const TriangularBlasMatrix<Field,_Rep>& A, BlasSubvector<Vect>& b) const
+        BlasSubvector<Vect>& operator() (const TriangularBlasMatrix<Matrix>& A, BlasSubvector<Vect>& b) const
         {
 			linbox_check( A.rowdim() == A.coldim());
 			linbox_check( A.rowdim() == b.size());
