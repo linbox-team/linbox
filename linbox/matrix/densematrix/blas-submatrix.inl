@@ -141,9 +141,10 @@ namespace LinBox {
     BlasSubmatrix<_Matrix>& BlasSubmatrix<_Matrix>::copy (const BlasSubmatrix<_Matrix> & M){
         //std::cout<<"BlasSubMatrix Copy Method\n";
         if (_row == M.rowdim() && _col == M.coldim()){
-            for (size_t i=0;i<_row;i++)
-                for(size_t j=0;j<_col;j++)
-                    setEntry(i,j,M.getEntry(i,j));
+            // for (size_t i=0;i<_row;i++)
+            //     for(size_t j=0;j<_col;j++)
+            //         setEntry(i,j,M.getEntry(i,j));
+            FFLAS::fassign(_field, _row, _col, M._ptr, M._stride , _ptr, _stride); 
         }
         else
             throw LinBoxError("Calling copy from BlasSubMatrix with matrices of different dimension ... not allowed");
