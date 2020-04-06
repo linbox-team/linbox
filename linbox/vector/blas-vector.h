@@ -147,7 +147,7 @@ namespace LinBox {
          * @param m vector dimension
          * @param inc increment value for iterating
          */
-        template<typename ConstIterator>
+        template<typename ConstIterator, typename std::enable_if<!std::is_arithmetic<ConstIterator>::value, int>::type=0>
         BlasVector(const _Field & F, const ConstIterator& jt, const size_t m) :  _field(F) {
             resize(m);
             ConstIterator jtt(jt);
