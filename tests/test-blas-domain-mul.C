@@ -308,7 +308,7 @@ static bool testTriangMulShapeTrans (const Field &F, size_t m, size_t n, uint64_
     commentator().start (msg.c_str(),"testTriangMulShapeTrans");
 
 	typedef BlasMatrix<Field>                                   Matrix ;
-	typedef TriangularBlasMatrix<Field>               TriangularMatrix ;
+	typedef TriangularBlasMatrix<Matrix>               TriangularMatrix ;
 	typedef TransposedBlasMatrix<TriangularMatrix > TransposedTriangular ;
 	typedef typename Field::RandIter                            RandIter ;
 

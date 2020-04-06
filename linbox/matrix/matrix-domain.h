@@ -41,7 +41,8 @@ namespace LinBox {
 	template<class Field, class Rep> class BlasMatrix;
 	template<class Matrix> class BlasSubmatrix;
 	template<class _Field, class _Rep> class BlasVector ;
-	template<class Field, class _Rep> class TriangularBlasMatrix ;
+	//template<class Field, class _Rep> class TriangularBlasMatrix ;
+    template<class Matrix> class TriangularBlasMatrix ;
 	template<class Matrix> class TransposedBlasMatrix ;
 #endif
 

@@ -51,11 +51,17 @@ namespace LinBox { /*  forward declarations */
 	template <class _Field>
 	using DenseSubmatrix = BlasSubmatrix<DenseMatrix<_Field> > ;
 
-	template <class _Field, class _Storage=typename Vector<_Field>::Dense >
+	template <class _Matrix>
 	class TriangularBlasMatrix ;
 
-	template <class _Field>
-	using TriangularMatrix = TriangularBlasMatrix<_Field> ;
+    template <class _Matrix>
+	class TransposedBlasMatrix ;
+
+    // template <class _Field, class _Storage=typename Vector<_Field>::Dense >
+	// class TriangularBlasMatrix ;
+    
+	// template <class _Field>
+	// using TriangularMatrix = TriangularBlasMatrix<_Field> ;
 
 	/*! Write a matrix to a stream.
 	 * The \c C++ way using <code>operator<< </code>

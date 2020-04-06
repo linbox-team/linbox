@@ -54,9 +54,9 @@
 #include "linbox/ring/modular.h"
 #include <givaro/modular-balanced.h>
 
-#ifdef __LINBOX_HAVE_NTL
-#include "linbox/ring/ntl.h"
-#endif
+// #ifdef __LINBOX_HAVE_NTL
+// #include "linbox/ring/ntl.h"
+// #endif
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/matrix/matrix-domain.h"
 #include <givaro/givranditer.h>
@@ -588,7 +588,7 @@ static bool testTriangMulShapeTrans (const Field &F, size_t m, size_t n, int ite
 
 	// typedef typename Field::Element                               Element;
 	typedef BlasMatrix<Field>                                   Matrix ;
-	typedef TriangularBlasMatrix<Field>               TriangularMatrix ;
+	typedef TriangularBlasMatrix<Matrix>               TriangularMatrix ;
 	// typedef TransposedBlasMatrix<Matrix>                TransposedMatrix ;
 	typedef TransposedBlasMatrix<TriangularMatrix > TransposedTriangular ;
 	typedef typename Field::RandIter                            Randiter ;
@@ -923,7 +923,7 @@ static bool testTriangularSolve (const Field& F, size_t m, size_t n, int iterati
 
 	typedef typename Field::Element                  Element;
 	typedef BlasMatrix<Field>                       Matrix;
-	typedef TriangularBlasMatrix<Field>   TriangularMatrix;
+	typedef TriangularBlasMatrix<Matrix>   TriangularMatrix;
 	typedef typename Field::RandIter                RandIter;
 
 	//Commentator mycommentator;
@@ -948,14 +948,11 @@ static bool testTriangularSolve (const Field& F, size_t m, size_t n, int iterati
 		BlasVector<Field> b(F,m),x(F,m),c(F,m);
 
 		// Create B a random matrix
-		for (size_t i=0;i<m;++i)
-			for (size_t j=0;j<m;++j)
-				B.setEntry(i,j,G.random(tmp));
+		B.random(G);
 
 		//create random vector b
-		for( size_t i=0;i<m;++i)
-			F.init(b[i],G.random(tmp));
-
+        b.random(G);
+        
 		// Create Au a random full rank upper triangular matrix
 		for (size_t i=0;i<m;++i){
 			Au.setEntry(i,i,Gn.random(tmp));
@@ -977,46 +974,46 @@ static bool testTriangularSolve (const Field& F, size_t m, size_t n, int iterati
 		BMD.left_solve(X,TAl,B);
 		BMD.mul(C,Al,X);
 		if (!BMD.areEqual(C,B))
-			ret=false;
+			{ret=false; std::cerr<<"error 1\n";}
 
 		BMD.left_solve(X,TAu,B);
 		BMD.mul(C,Au,X);
 		if (!BMD.areEqual(C,B))
-			ret=false;
+			{ret=false;std::cerr<<"error 2\n";}
 
 		// testing solver with matrix left hand side
 		BMD.right_solve(X,TAl,B);
 		BMD.mul(C,X,Al);
 		if (!BMD.areEqual(C,B))
-			ret=false;
+			{ret=false;std::cerr<<"error 3\n";}
 
 		BMD.right_solve(X,TAu,B);
 		BMD.mul(C,X,Au);
 		if (!BMD.areEqual(C,B))
-			ret=false;
+			{ret=false;std::cerr<<"error 4\n";}
 
 
 		// testing solver with vector right hand side
 		BMD.left_solve(x,TAl,b);
 		BMD.mul(c,Al,x);
 		if (!localAreEqual(c,b))
-			ret=false;
+			{ret=false;std::cerr<<"error 5\n";}
 
 		BMD.left_solve(x,TAu,b);
 		BMD.mul(c,Au,x);
 		if (!localAreEqual(c,b))
-			ret=false;
+			{ret=false;std::cerr<<"error 6\n";}
 
 		// testing solver with vector left hand side
 		BMD.right_solve(x,TAl,b);
 		BMD.mul(c,x,Al);
 		if (!localAreEqual(c,b))
-			ret=false;
+			{ret=false;std::cerr<<"error 7\n"; F.write(std::cerr);std::cerr<<Al<<"\n x="<<x<<"\n b="<<b<<"\n c="<<c<<"\n";}
 
 		BMD.right_solve(x,TAu,b);
 		BMD.mul(c,x,Au);
 		if (!localAreEqual(c,b))
-			ret=false;
+			{ret=false;std::cerr<<"error 8\n";}
 	}
 
 	mycommentator().stop(MSG_STATUS (ret), (const char *) 0, "testTriangularSolve");
@@ -1496,8 +1493,9 @@ static bool testPLUQ (const Field& F, size_t m, size_t n, int iterations)
 		BlasPermutation<size_t>  P(A.rowdim()),Q(A.coldim());
 		PLUQMatrix<Field> X(A,P,Q);
 
-		TriangularBlasMatrix<Field> L(F,m,m,Tag::Shape::Lower,Tag::Diag::Unit);
-		TriangularBlasMatrix<Field> U(F,m,n,Tag::Shape::Upper,Tag::Diag::NonUnit);
+        BlasMatrix<Field> Ldata(F,m,m), Udata(F,m,n);        
+		TriangularBlasMatrix< BlasMatrix<Field> > L(Ldata,Tag::Shape::Lower,Tag::Diag::Unit);
+		TriangularBlasMatrix< BlasMatrix<Field> > U(Udata,Tag::Shape::Upper,Tag::Diag::NonUnit);
 		X.getL(L);
 		X.getU(U);
 		P=X.getP();
@@ -1521,9 +1519,11 @@ static bool testPLUQ (const Field& F, size_t m, size_t n, int iterations)
 		Abis = A;
 
 		PLUQMatrix<Field> Y(A,P,Q);
+        
+        BlasMatrix<Field> L2data(F,m,m), U2data(F,m,n);        
+		TriangularBlasMatrix< BlasMatrix<Field> > L2(L2data,Tag::Shape::Lower,Tag::Diag::Unit);
+		TriangularBlasMatrix< BlasMatrix<Field> > U2(U2data,Tag::Shape::Upper,Tag::Diag::NonUnit);
 
-		TriangularBlasMatrix<Field> L2(F,m,m,Tag::Shape::Lower,Tag::Diag::Unit);
-		TriangularBlasMatrix<Field> U2(F,m,n,Tag::Shape::Upper,Tag::Diag::NonUnit);
 		Y.getL(L2);
 		Y.getU(U2);
 		P=Y.getP();
@@ -1751,11 +1751,12 @@ int launch_tests(Field & F, size_t n, int iterations)
 	bool pass = true ;
 	//report << "no blas tests for now" << std::endl;
 	// no slow test while I work on io
-	if (!testBlasMatrixConstructors(F, n, n))             pass=false;
-	if (!testMulAdd (F,n,iterations))                     pass=false;
-	if (0==F.characteristic()) if
-                                   (!testMulAddAgain (F,n,iterations))                pass=false;
-	size_t m = n+n/2 ; size_t k = 2*n+1 ;
+	// if (!testBlasMatrixConstructors(F, n, n))             pass=false;
+	// if (!testMulAdd (F,n,iterations))                     pass=false;
+	// if (0==F.characteristic()) if
+    //                                (!testMulAddAgain (F,n,iterations))                pass=false;
+	// 
+    size_t m = n+n/2 ; size_t k = 2*n+1 ;
 	if (!testMulAddShapeTrans (F,n,m,k,iterations))       pass=false;
 	if (!testMulAddShapeTrans (F,n,k,m,iterations))       pass=false;
 	if (!testMulAddShapeTrans (F,m,n,k,iterations))       pass=false;
@@ -1779,8 +1780,8 @@ int launch_tests(Field & F, size_t n, int iterations)
  	if (!testPLUQ (F,n,n,iterations))                     pass=false;
  	if (!testMinPoly (F,n,iterations))                    pass=false;
 	if (!testCharPoly (F,n,iterations))                   pass=false;
-	//
-	//
+	
+	
 	if (not pass) F.write(report) << endl;
 	return pass ;
 

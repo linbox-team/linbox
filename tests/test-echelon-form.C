@@ -206,8 +206,9 @@ static bool testPLUQ (const Field& F, size_t m, size_t n, int iterations = 1)
 		BlasPermutation<size_t>  P(A.coldim()),Q(A.rowdim());
 		PLUQMatrix<Field> X(A,P,Q);
 
-		TriangularBlasMatrix<Field> L(F,m,m,Tag::Shape::Lower,Tag::Diag::Unit);
-		TriangularBlasMatrix<Field> U(F,m,n,Tag::Shape::Upper,Tag::Diag::NonUnit);
+        Matrix Ldata(F,m,m), Udata(F,m,n);
+		TriangularBlasMatrix<Matrix> L(Ldata,Tag::Shape::Lower,Tag::Diag::Unit);
+		TriangularBlasMatrix<Matrix> U(Udata,Tag::Shape::Upper,Tag::Diag::NonUnit);
 		X.getL(L);
 		X.getU(U);
 		P=X.getP();
@@ -232,8 +233,11 @@ static bool testPLUQ (const Field& F, size_t m, size_t n, int iterations = 1)
 
 		PLUQMatrix<Field> Y(A,P,Q);
 
-		TriangularBlasMatrix<Field> L2(F,m,m,Tag::Shape::Lower,Tag::Diag::Unit);
-		TriangularBlasMatrix<Field> U2(F,m,n,Tag::Shape::Upper,Tag::Diag::NonUnit);
+        Matrix L2data(F,m,m), U2data(F,m,n);
+		TriangularBlasMatrix<Matrix> L2(L2data,Tag::Shape::Lower,Tag::Diag::Unit);
+		TriangularBlasMatrix<Matrix> U2(U2data,Tag::Shape::Upper,Tag::Diag::NonUnit);
+
+	
 		Y.getL(L2);
 		Y.getU(U2);
 		P=Y.getP();
