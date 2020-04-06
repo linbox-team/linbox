@@ -44,7 +44,7 @@
 // #include "linbox/vector/subvector.h"
 #include "linbox/matrix/matrix-traits.h"
 // #include "linbox/vector/stream.h"
-#include "linbox/matrix/matrix-domain.h"
+//#include "linbox/matrix/matrix-domain.h"
 
 namespace LinBox
 {
@@ -83,8 +83,8 @@ namespace LinBox
 	template <class Matrix, class Trait = typename MatrixTraits<Matrix>::MatrixCategory>
 	class TransposeMatrix {
 	public:
-
-		typedef typename Matrix::Element Element;
+        typedef typename Matrix::Field Field;
+		typedef typename Field::Element Element;
 
 		typedef typename Matrix::ColIterator RowIterator;
 		typedef typename Matrix::RowIterator ColIterator;
@@ -112,6 +112,12 @@ namespace LinBox
 			_Mat (Mat._Mat)
 		{}
 
+
+        /** Get the field of  the matrix
+		 * @return field of the matrix
+		 */
+        inline const Field& field() const {return _Mat.field();}
+        
 		/** Get the number of rows in the matrix
 		 * @return Number of rows in matrix
 		 */
@@ -301,8 +307,8 @@ namespace LinBox
 	template <class Matrix>
 	class TransposeMatrix<Matrix, MatrixCategories::RowColMatrixTag> {
 	public:
-
-		typedef typename Matrix::Element Element;
+        typedef typename Matrix::Field Field;
+		typedef typename Field::Element Element;
 
 		typedef typename Matrix::ColIterator RowIterator;
 		typedef typename Matrix::RowIterator ColIterator;
@@ -324,6 +330,8 @@ namespace LinBox
 		TransposeMatrix (const TransposeMatrix &Mat) :
 			_Mat (Mat._Mat)
 		{}
+
+        inline const Field& field() const {return _Mat.field();}
 
 		inline size_t rowdim () const
 		{
@@ -434,9 +442,8 @@ namespace LinBox
 	template <class Matrix>
 	class TransposeMatrix<Matrix, MatrixCategories::RowMatrixTag> {
 	public:
-
-		typedef typename Matrix::Element Element;
-
+        typedef typename Matrix::Field Field;
+		typedef typename Field::Element Element;
 		typedef typename Matrix::RowIterator ColIterator;
 		typedef typename Matrix::Iterator Iterator;
 		typedef typename Matrix::IndexedIterator IndexedIterator;
@@ -455,6 +462,8 @@ namespace LinBox
 		TransposeMatrix (const TransposeMatrix &Mat) :
 			_Mat (Mat._Mat)
 		{}
+
+        inline const Field& field() const {return _Mat.field();}
 
 		inline size_t rowdim () const
 		{
@@ -548,9 +557,8 @@ namespace LinBox
 	template <class Matrix>
 	class TransposeMatrix<Matrix, MatrixCategories::ColMatrixTag> {
 	public:
-
-		typedef typename Matrix::Element Element;
-
+        typedef typename Matrix::Field Field;
+		typedef typename Field::Element Element;
 		typedef typename Matrix::ColIterator RowIterator;
 		typedef typename Matrix::Iterator Iterator;
 		typedef typename Matrix::IndexedIterator IndexedIterator;
@@ -566,6 +574,8 @@ namespace LinBox
 		TransposeMatrix (const TransposeMatrix &Mat) :
 			_Mat (Mat._Mat)
 		{}
+
+        inline const Field& field() const {return _Mat.field();}
 
 		inline size_t rowdim () const
 		{
