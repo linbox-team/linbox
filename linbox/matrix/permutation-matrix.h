@@ -67,6 +67,7 @@ namespace LinBox
 	template<class _UnsignedInt> // unsigned * ou Integer
 	class BlasPermutation /*  : PermutationInterface<_UnsignedInt> */ {
 		typedef BlasPermutation<_UnsignedInt> BlasPerm ;
+		const Givaro::ZRing<_UnsignedInt> _field;
 	public :
 		BlasPermutation() ;
 		~BlasPermutation() ;
@@ -77,6 +78,7 @@ namespace LinBox
 		BlasPermutation(const std::vector<_UnsignedInt> & V);
 		BlasPermutation(const MatrixPermutation<_UnsignedInt> &M);
 
+		const Givaro::ZRing<_UnsignedInt> & field() const { return _field; }
 
 		//! copy operator (with copy)
 		BlasPermutation<_UnsignedInt>& operator= (const BlasPermutation<_UnsignedInt> & P)
@@ -211,6 +213,17 @@ namespace LinBox
 
 
 	};
+
+    template<typename I >
+	class TransposedBlasMatrix<BlasPermutation<I>> {
+	public:
+        TransposedBlasMatrix (BlasPermutation<I>& Mat) :	_Mat(Mat) {}
+
+        BlasPermutation<I>& getMatrix() const {return _Mat;}
+
+    protected:
+        BlasPermutation<I>& _Mat;
+    };
 } // LinBox
 
 // MatrixPermutation

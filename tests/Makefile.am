@@ -18,7 +18,7 @@
 # ========LICENCE========
 
 # All tests should appear in one of the lists of this makefile (and sources given).
-# Tests not used for target "check" can be in the FULLCHECK_TESTS list.
+# Tests not used for target "check can be in the FULLCHECK_TESTS list.
 # All tests will be processed by checker.C (target fullcheck),
 # where skips can be specified, warnings issued, package dependency handled.
 
@@ -88,6 +88,8 @@ BASIC_TESTS =            \
     test-givaro-zpzuns        \
     test-givaro-interfaces        \
     test-echelon-form       \
+    test-blas-domain-mul        \
+    test-blas-domain            \
     test-hadamard-bound     \
     test-fft                    \
     test-serialization
@@ -165,7 +167,6 @@ CHECKER_TESTS =                 \
     test-triplesbb-omp          \
     test-tutorial               \
     test-vector-domain          \
-    test-blas-domain            \
     test-random-matrix          \
     test-zero-one               \
     test-toom-cook              \
@@ -255,6 +256,7 @@ CLEANFILES= checker     \
 test_bitonic_sort_SOURCES =         test-bitonic-sort.C
 test_blackbox_block_container_SOURCES = test-blackbox-block-container.C
 test_blas_domain_SOURCES =          test-blas-domain.C
+test_blas_domain_mul_SOURCES =      test-blas-domain-mul.C
 test_blas_matrix_SOURCES =          test-blas-matrix.C
 test_block_ring_SOURCES =           test-block-ring.C
 test_block_wiedemann_SOURCES =      test-block-wiedemann.C
@@ -377,6 +379,7 @@ test_frobenius_large_SOURCES =      test-frobenius-large.C
 test_weak_popov_form_SOURCES =      test-weak-popov-form.C
 test_mpi_comm_SOURCES =         test-mpi-comm.C
 test_toeplitz_SOURCES =                 test-toeplitz.C
+checker_SOURCES      =    checker.C 
 
 # Perfpublisher script interaction - AB 2014/12/11
 perfpublisher:
@@ -387,7 +390,7 @@ perfpublisher:
 
 # for compilation of non-enumerated programs
 %:%.C
-	$(CXX) $(CXXFLAGS) $(AM_CPPFLAGS)  ${INCLUDES} $(AM_CPPFLAGS) $*.C -o $@ $(LDADD)
+	$(CXX) $(CXXFLAGS) $(AM_CPPFLAGS)  ${INCLUDES} $(AM_CXXFLAGS) $*.C -o $@ $(LDADD)
 
 fullcheck: ${TESTS} ${CHECKER_TESTS} checker
 	./checker
