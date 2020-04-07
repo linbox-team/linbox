@@ -278,8 +278,9 @@ namespace LinBox
     public:
         typedef typename Matrix::Field Field;
         BlasVector<Field>& operator() (BlasVector<Field>& x,const TriangularBlasMatrix<Matrix>& A,  const BlasVector<Field>& b) const {
-            linbox_check( x.rowdim() == b.rowdim());
-            linbox_check( x.coldim() == b.coldim());
+            linbox_check( A.rowdim() == b.size());
+            linbox_check( A.coldim() == x.size());
+            linbox_check( x.size() == b.size());
             x.copy(b);        
             return (*this)(A, x);
         }      
@@ -298,8 +299,9 @@ namespace LinBox
     public:
         typedef typename Matrix::Field Field;
         BlasVector<Field>& operator() (BlasVector<Field>& x, const TriangularBlasMatrix<Matrix>& A, const BlasVector<Field>& b) const {
-            linbox_check( x.rowdim() == b.rowdim());
-            linbox_check( x.coldim() == b.coldim());
+            linbox_check( A.rowdim() == b.size());
+            linbox_check( A.coldim() == x.size());
+            linbox_check( x.size() == b.size());
             x.copy(b);        
             return (*this)(A, x);
         }
@@ -317,8 +319,9 @@ namespace LinBox
     class  BlasMatrixDomainLeftSolve<BlasSubvector<Vect>, TriangularBlasMatrix<Matrix> >{
     public:
         BlasSubvector<Vect>& operator() (BlasSubvector<Vect>& x,const TriangularBlasMatrix<Matrix>& A,  const BlasSubvector<Vect>& b) const{
-            linbox_check( x.rowdim() == b.rowdim());
-            linbox_check( x.coldim() == b.coldim());
+            linbox_check( A.rowdim() == b.size());
+            linbox_check( A.coldim() == x.size());
+            linbox_check( x.size() == b.size());
             x.copy(b);        
             return (*this)(A, x);
         }            
@@ -336,8 +339,9 @@ namespace LinBox
     class BlasMatrixDomainRightSolve<BlasSubvector<Vect>, TriangularBlasMatrix<Matrix> >{
     public:
         BlasSubvector<Vect>& operator() (BlasSubvector<Vect>& x,const TriangularBlasMatrix<Matrix>& A,  const BlasSubvector<Vect>& b) const{
-            linbox_check( x.rowdim() == b.rowdim());
-            linbox_check( x.coldim() == b.coldim());
+            linbox_check( A.rowdim() == b.size());
+            linbox_check( A.coldim() == x.size());
+            linbox_check( x.size() == b.size());
             x.copy(b);        
             return (*this)(A, x);
         }            
