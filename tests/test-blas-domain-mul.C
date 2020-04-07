@@ -544,7 +544,7 @@ int launch_tests(const Field & F, size_t n, uint64_t b, size_t iter, size_t seed
 int main(int argc, char **argv)
 {
 
-	static size_t  n = 32;    // matrix dimension
+	static size_t  n = 33;    // matrix dimension
 	static integer q = 65537; // field size
 	static int iterations = 1; //nbr iterartion
     static long seed = time(NULL);

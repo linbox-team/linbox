@@ -23,7 +23,7 @@ SUBDIRS=data matrix
 
 AM_CPPFLAGS=-I$(top_srcdir) -DDISABLE_COMMENTATOR -DLinBoxSrcOnly
 AM_CXXFLAGS=$(LINBOX_CXXFLAGS) $(FFLAS_FFPACK_CFLAGS) $(LINBOX_DEPS_CFLAGS)
-LDADD=$(top_builddir)/linbox/liblinbox.la $(LINBOX_DEPS_LIBS) $(FFLAS_FFPACK_LIBS) $(LINBOX_LDFLAGS)
+LDADD=$(top_builddir)/linbox/liblinbox.la $(LINBOX_DEPS_LIBS) $(FFLAS_FFPACK_LIBS) $(LINBOX_LDFLAGS) $(XML_LIBS)
 
 AM_LDFLAGS=.libs/libbenchmarks.la
 
