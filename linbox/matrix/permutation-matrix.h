@@ -67,7 +67,7 @@ namespace LinBox
 	template<class _UnsignedInt> // unsigned * ou Integer
 	class BlasPermutation /*  : PermutationInterface<_UnsignedInt> */ {
 		typedef BlasPermutation<_UnsignedInt> BlasPerm ;
-		static const Givaro::ZRing<_UnsignedInt> _field;
+		const Givaro::ZRing<_UnsignedInt> _field;
 	public :
 		BlasPermutation() ;
 		~BlasPermutation() ;

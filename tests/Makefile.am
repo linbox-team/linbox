@@ -88,6 +88,8 @@ BASIC_TESTS =            \
     test-givaro-zpzuns        \
     test-givaro-interfaces        \
     test-echelon-form       \
+    test-blas-domain-mul        \
+    test-blas-domain            \
     test-hadamard-bound     \
     test-fft                    \
     test-serialization
@@ -165,8 +167,6 @@ CHECKER_TESTS =                 \
     test-triplesbb-omp          \
     test-tutorial               \
     test-vector-domain          \
-    test-blas-domain-mul        \
-    test-blas-domain            \
     test-random-matrix          \
     test-zero-one               \
     test-toom-cook              \
