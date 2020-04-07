@@ -156,8 +156,9 @@ namespace LinBox {
 
                 EarlyTerm():  _count(0),_val(0){}
 
-                void update(size_t r, const std::vector<size_t>& u){
-                        std::vector<size_t> v(u);
+            template< typename VECT>
+                void update(size_t r, const VECT& u){
+                        VECT v(u);
                         sort(v.begin(),v.end());
                         size_t x=0;
                         for (size_t i=0;i<r;i++)
@@ -347,7 +348,7 @@ namespace LinBox {
                 size_t M_Basis(PMatrix1              &sigma,
                                const PMatrix2        &serie,
                                size_t                 order,
-                               std::vector<size_t>   &shift)
+                               std::vector<size_t>   &shift2) // shift should be a BlasVector -> done by copying shift2 to shift
                 {
 #ifdef __DEBUG_MBASIS
                         std::cout<<"------------- mba : "<<order<<std::endl;
@@ -358,7 +359,13 @@ namespace LinBox {
                         size_t rank=0;
                         BlasMatrix<Field> delta(field(),m,n);
                         size_t max_degree=0;        // a bound on the row degree of sigma
-                        std::vector<size_t> degree(m,0); // a bound on each row degree of sigma
+                        Givaro::ZRing<size_t> Zint;
+                        BlasMatrixDomain<Givaro::ZRing<size_t> > TTT(Zint);
+
+                        //std::vector<size_t> degree(m,0); // a bound on each row degree of sigma
+                        BlasVector< Givaro::ZRing<size_t> > degree(Zint,m,0);
+                        BlasVector< Givaro::ZRing<size_t> > shift(Zint,shift2); // make shift to be a BlasVector
+                        
                         //auto degree=shift;
                         //size_t max_degree=*std::max_element(degree.begin(),degree.end());
 
@@ -481,7 +488,8 @@ namespace LinBox {
 #else
                                 LQUPMatrix<Field> LQUP(delta_copy,P,Qt);
                                 // Get L from LQUP
-                                TriangularBlasMatrix<Field> L(field(), m, m, Tag::Shape::Lower, Tag::Diag::Unit);
+                                BlasMatrix<Field> Ldata(field(), m, m);
+                                TriangularBlasMatrix<Field> L(Ldata, Tag::Shape::Lower, Tag::Diag::Unit);
                                 LQUP.getL(L);
                                 rank=LQUP.getRank();  // the first rank entries of Qt give the pivot row
                                 // inverse L in-place (COULD BE IMPROVED -> only compute the left kernel by trsm)
@@ -531,8 +539,6 @@ namespace LinBox {
 #else
 
                                 size_t dmax=0;
-                                Givaro::ZRing<size_t> Zint;
-                                BlasMatrixDomain<Givaro::ZRing<size_t> > TTT(Zint);
 
                                 TTT.mulin_right(Qt, degree);
                                 TTT.mulin_right(Qt, shift);
@@ -587,6 +593,9 @@ namespace LinBox {
                         }
                          
                         sigma.resize(max_degree+1);
+                        // update shift2 from shift value
+                        std::copy(shift.begin(),shift.end(), shift2.begin());
+                        
                         return max_degree;
                 }
 

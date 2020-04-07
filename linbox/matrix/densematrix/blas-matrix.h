@@ -213,7 +213,8 @@ namespace LinBox
         //! operator = (copying data from different matrix type)
         template<class _Matrix>
         Self_t& operator= (const _Matrix& A) ;
-
+        
+        Self_t& copy(const Self_t& A) { return *this=A;}
 
         //! Rebind operator
         template<typename _Tp1, typename _Rep2 = typename Rebind<RawStorage, _Tp1>::other>
@@ -314,7 +315,7 @@ namespace LinBox
          * @param f write in some format (@ref Tag::FileFormat::Format). Default is Maple's.
          */
         std::ostream &write (std::ostream &os, Tag::FileFormat f = Tag::FileFormat::MatrixMarket) const;
-        //std::ostream &write (std::ostream &os, Tag::FileFormat f = Tag::FileFormat::Plain) const;
+        // std::ostream &write (std::ostream &os, Tag::FileFormat f = Tag::FileFormat::Plain) const; -> does not pas the check of reading after writing (Plain format is not readable)
 
 
         ///////////////////
@@ -462,7 +463,14 @@ namespace LinBox
             subMatrixType B(*this, 0, 0, rowdim(), coldim());
             B.random();
         }
+        template<class RandIter>
+        void random(RandIter &I)
+        {
+            subMatrixType B(*this, 0, 0, rowdim(), coldim());
+            B.random(I);
+        }
 
+        
     }; // end of class BlasMatrix
 
 
@@ -471,8 +479,9 @@ namespace LinBox
 namespace LinBox
 { /* Triangular Matrix */
     //! Triangular BLAS matrix.
-    template <class _Field, class _Storage >
-    class TriangularBlasMatrix: public BlasMatrix<_Field,_Storage> {
+    // This class adds triangular tags to a BlasMatrix or BlasSubMatrix (no data modification)
+    template <class Matrix>
+    class TriangularBlasMatrix: public BlasSubmatrix<Matrix> {
 
     protected:
 
@@ -480,70 +489,39 @@ namespace LinBox
         Tag::Diag           _diag; //!< unit or non unit diagonal
 
     public:
-        typedef _Field                       Field;
-        typedef _Storage                         Rep;
-        typedef typename Field::Element      Element;      //!< Element type
-        typedef BlasMatrix<Field,Rep>           Father_t;
-        typedef TriangularBlasMatrix<Field,Rep> Self_t;
+        typedef typename Matrix::Field                    Field;
+        typedef typename Field::Element                 Element;      //!< Element type
+        typedef Matrix                                 Father_t;
+        typedef TriangularBlasMatrix<Matrix>             Self_t;
+        typedef Self_t                               matrixType;
+        typedef BlasSubmatrix< Matrix>            subMatrixType;
+        typedef BlasSubmatrix<const Matrix>  constSubMatrixType;        
 
 
-        /*! Constructor for a new \c TriangularBlasMatrix.
-         * @param F
-         * @param m rows
-         * @param n cols
-         * @param y (non)unit diagonal
-         * @param x (upp/low)er matrix
-         */
-        TriangularBlasMatrix (const Field & F,
-                              const size_t m, const size_t n,
-                              Tag::Shape x=Tag::Shape::Upper,
-                              Tag::Diag y= Tag::Diag::NonUnit) ;
 
-        /*! Constructor from a \c BlasMatrix (copy).
+        /*! Constructor from a \c Matrix (share data from the matrix)
          * @param A matrix
          * @param y (non)unit diagonal
          * @param x (upp/low)er matrix
          */
-        TriangularBlasMatrix (const BlasMatrix<Field,Rep>& A,
-                              Tag::Shape x=Tag::Shape::Upper,
-                              Tag::Diag y= Tag::Diag::NonUnit) ;
-
-        /*! Constructor from a \c BlasMatrix (no copy).
-         * @param A matrix
-         * @param y (non)unit diagonal
-         * @param x (upp/low)er matrix
-         */
-        TriangularBlasMatrix (BlasMatrix<Field,Rep>& A,
-                              Tag::Shape x=Tag::Shape::Upper,
-                              Tag::Diag y= Tag::Diag::NonUnit) ;
-
-        /*! Constructor from a \c TriangularBlasMatrix (copy).
-         * @param A matrix
-         */
-        TriangularBlasMatrix (const TriangularBlasMatrix<Field,Rep>& A) ;
-
-        /*! Generic constructor from a \c Matrix (no copy).
-         * @param A matrix
-         * @param y (non)unit diagonal
-         * @param x (upp/low)er matrix
-         */
-        template<class Matrix>
-        TriangularBlasMatrix (const Matrix& A,
-                              Tag::Shape x=Tag::Shape::Upper,
-                              Tag::Diag y= Tag::Diag::NonUnit) ;
+        TriangularBlasMatrix (Matrix& A, Tag::Shape x=Tag::Shape::Upper,Tag::Diag y= Tag::Diag::NonUnit)
+            : BlasSubmatrix<Matrix>(A,0,0,
+                                    (x == Tag::Shape::Upper)? std::min(A.rowdim(),A.coldim()): A.rowdim(),
+                                    (x == Tag::Shape::Upper)? A.coldim():std::min(A.coldim(),A.rowdim()))
+            , _uplo(x), _diag(y) {}    
 
         /// get the shape of the matrix (upper or lower)
-        Tag::Shape getUpLo() const ;
+        Tag::Shape getUpLo() const {return _uplo;}
 
         /// Is the diagonal implicitly unit ?
-        Tag::Diag getDiag() const ;
+        Tag::Diag getDiag() const {return _diag;}
 
     }; // end of class TriangularBlasMatrix
 
 } // LinBox
 
 #include "linbox/matrix/densematrix/blas-matrix.inl"
-#include "linbox/matrix/densematrix/blas-triangularmatrix.inl"
+//#include "linbox/matrix/densematrix/blas-triangularmatrix.inl"
 
 #endif // __LINBOX_densematrix_blas_matrix_H
 
