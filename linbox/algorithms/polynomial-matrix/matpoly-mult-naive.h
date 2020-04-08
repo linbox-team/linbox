@@ -67,7 +67,7 @@ namespace LinBox
                 for (size_t i=idx_min+1;i<=idx_max;i++){ 
                     _BMD.axpyin(c_tmp,a[i],b[k-i]);
                 }
-                std::clog<<"c_tmp["<<k<<"]="<<c_tmp<<std::endl;
+                std::clog<<"c_tmp["<<k<<"]=";c_tmp.write(std::clog, Tag::FileFormat::Plain)<<std::endl;
                 c.setMatrix(c_tmp,k); 
             }
             std::clog<<"C="<<c<<std::endl;
