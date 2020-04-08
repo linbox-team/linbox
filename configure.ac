@@ -26,194 +26,88 @@ AC_INIT([LinBox], [1.7.0],[linbox-use@googlegroups.com],[linbox],
 
 AC_CONFIG_MACRO_DIR([macros])
 AC_CONFIG_AUX_DIR([build-aux])
-AM_INIT_AUTOMAKE([1.10 -Wall -Wno-portability foreign subdir-objects])
 AC_CONFIG_HEADERS([config.h])
+
+AC_CANONICAL_TARGET
+
+AM_INIT_AUTOMAKE([1.10 -Wall -Wno-portability foreign subdir-objects])
 AX_PREFIX_CONFIG_H(linbox/config.h, __LINBOX)
 
-# symlinks to matrix files for the testsuite
-AC_CONFIG_LINKS([tests/data/sms.matrix:tests/data/sms.matrix])
-AC_CONFIG_LINKS([tests/data/30_30_27.sms:tests/data/30_30_27.sms])
-AC_CONFIG_LINKS([tests/data/fib25.sms:tests/data/fib25.sms])
-AC_CONFIG_LINKS([tests/data/rk9_7_10.sms:tests/data/rk9_7_10.sms])
+# Set CXXFLAGS to an empty string if not defined, and save it. We must do it
+# before calling AC_PROG_CXX that sets it to '-O2 -g' if not defined
+: ${CXXFLAGS=""}
+ORIGINAL_CXXFLAGS="${CXXFLAGS}"
 
+# We set the language to C++
+AC_LANG([C++])
+AC_PROG_CXX
+
+#
 AM_PROG_AR
 
-AM_ACLOCAL_INCLUDE(macros)
+# Libtool
+AC_PROG_LIBTOOL
+LT_PREREQ([2.4.3])
+LT_INIT([win32-dll])
 
-AC_LANG([C++])
+# Look for headers
+AC_HEADER_STDC
+AC_CHECK_HEADERS([float.h limits.h stddef.h stdlib.h string.h sys/time.h stdint.h pthread.h])
 
-echo "-----------------------------------------------"
+#
+AC_PROG_EGREP
+AC_PROG_SED
 
-AC_DEBUG
-AC_PROFILE
-AC_WARNINGS
-
-echo "-----------------------------------------------"
-
-# CFLAGS=${CFLAGS:-$DEFAULT_CFLAGS}
-# CXXFLAGS=${CXXFLAGS:-$DEFAULT_CXXFLAGS}
-
-######################################################
-# Try and pass different flags according to compiler #
-######################################################
-
-
-# disable default -g -O2 CXXFLAGS
-: ${CXXFLAGS=""}
-
-#set CXX
-AC_PROG_CXX
+#################################################
+AS_BOX([          START LINBOX CONFIG          ])
+#################################################
 
 AC_COMPILER_NAME
 
-STDFLAG=${CXXFLAGS}
-
-CXXFLAGS=""
-
 # We need a C++11 compiler now - AB 2014-12-12
 # clang-3.8 does not support __float128 without explicitly passing it -std=c++11
-if test "x${CCNAM}" = "xclang38" ; then
-   AX_CXX_COMPILE_STDCXX_11([noext],[mandatory])
-else
-   AX_CXX_COMPILE_STDCXX_11([ext],[mandatory])
-fi
+AS_IF([test "x${CCNAM}" = "xclang38"],
+      [AX_CXX_COMPILE_STDCXX_11([noext],[mandatory])],
+      [AX_CXX_COMPILE_STDCXX_11([ext],[mandatory])]
+      )
+REQUIRED_FLAGS="${CXX11FLAGS}"
+# Add the c++11 flags for the configure compilations as clang needs it to work properly with a glibc++ compiled with gcc
+CXXFLAGS="${CXX11FLAGS} ${CXXFLAGS}"
 
-AC_SUBST([DEFAULT_CFLAGS])
-AC_SUBST([DEBUG_CFLAGS])
-AC_SUBST([TESTS_CFLAGS])
+AS_ECHO([---------------------------------------])
 
-TESTS_CFLAGS="-O2"
-DEBUG_CFLAGS="-g"
-DEFAULT_CFLAGS=""
-WARN_CFLAGS="-Wall"
+# Set OPTIM_FLAGS, DEBUG_FLAGS depending on compiler and command line arguments
+SET_FLAGS
 
-#TODO use -fast for icc, -ipa for eko...
-if test "x$DBG" = "xyes" ; then
-	DEFAULT_CFLAGS="-O0 ${DEFAULT_CFLAGS} " #those are CXXFLAGS
-	DEBUG_CFLAGS="${DEBUG_CFLAGS} -DDEBUG -D_LB_DEBUG"
-else
-	DEFAULT_CFLAGS="-O2 ${DEFAULT_CFLAGS} "
-	DEBUG_CFLAGS="${DEBUG_CFLAGS} -DNDEBUG -U_LB_DEBUG"
-fi
+# Append -march=native to OPTIM_FLAGS if not present in CXXFLAGS and
+# not cross-compiling and --no-marchnative is not set
+ARCH_FLAGS
 
-if test "x$PROF" = "xyes" ; then
-	DEFAULT_CFLAGS="${DEFAULT_CFLAGS} -pg"
-fi
+# Append -mfpmath=sse to OPTIM_FLAGS on i386 and i686 architecture with SSE
+FPMATH_FLAGS
 
-if test "x$WARN" = "xyes" -o "x$WARN" = "xfull" ; then
-	case x${CCNAM} in
-		xicc)
-		WARN_CFLAGS="${WARN_CFLAGS} -Wcheck"
-		WARN_CFLAGS="${WARN_CFLAGS} -Wall -Wno-unused-parameter -Wuninitialized -Wconversion -Wcast-qual -pedantic -Wshadow -Wpointer-arith -Wwrite-strings -Wno-long-long"
-		WARN_CFLAGS="${WARN_CFLAGS} -Wextra -ansi"
-			;;
-		xeko)
-			WARN_CFLAGS="${WARN_CFLAGS} -Wno-unused-parameter"
-			;;
-		xgcc|xgcc44)
-			WARN_CFLAGS="${WARN_CFLAGS} -Wextra -Wno-unused-parameter"
-			if test "x${WARN}" = "xfull" ; then
-				WARN_CFLAGS="${WARN_CFLAGS} -Wuninitialized -Wconversion -Wcast-qual -pedantic -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings -Wno-long-long  -Wno-variadic-macros -Wno-vla"
-			fi
-			if test "x${HAVE_CXX11}" = "x0" ; then
-				WARN_CFLAGS="${WARN_CFLAGS} -ansi"
-			fi
-			;;
-		xgcc48)
-			WARN_CFLAGS="${WARN_CFLAGS} -Wextra -Wno-unused-parameter"
-			if test "x${WARN}" = "xfull" ; then
-				WARN_CFLAGS="${WARN_CFLAGS} -Wuninitialized -Wconversion -Wcast-qual -pedantic -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings -Wno-long-long  -Wno-variadic-macros -Wno-vla"
-				# WARN_CFLAGS="${WARN_CFLAGS} -fsanitize=address"
-			fi
-			if test "x${HAVE_CXX11}" = "x0" ; then
-				WARN_CFLAGS="${WARN_CFLAGS} -ansi"
-			fi
-
-			;;
-
-		xclang)
-			WARN_CFLAGS="${WARN_CFLAGS} -Wextra -Wno-unused-parameter"
-			if test "x${WARN}" = "xfull" ; then
-				WARN_CFLAGS="${WARN_CFLAGS} -Wuninitialized -Wconversion -Wcast-qual -pedantic -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings -Wno-long-long -Wno-vla-extension -Wno-variadic-macros"
-				WARN_CFLAGS="${WARN_CFLAGS} -D__STRICT_ANSI__"
-			fi
-			;;
-		xclang31)
-			WARN_CFLAGS="${WARN_CFLAGS} -Wextra -Wno-unused-parameter"
-			if test "x${WARN}" = "xfull" ; then
-				WARN_CFLAGS="${WARN_CFLAGS} -Wuninitialized -Wconversion -Wcast-qual -pedantic -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings -Wno-long-long  -g -Wno-vla-extension -Wno-variadic-macros"
-				WARN_CFLAGS="${WARN_CFLAGS} -D__STRICT_ANSI__"
-				# WARN_CFLAGS="${WARN_CFLAGS} -fsanitize=address"
-			fi
-			;;
-
-		*)
-			echo
-			echo "*******************************************************"
-			echo "unsupported compiler ($CCNAM). Please file a bug."
-			echo "*******************************************************"
-			echo
-			WARN_CFLAGS="${WARN_CFLAGS}"
-	esac
-fi
-
-
-DEFAULT_CFLAGS="${DEFAULT_CFLAGS} ${WARN_CFLAGS} ${DEBUG_CFLAGS}"
-TESTS_CFLAGS="${TESTS_CFLAGS} ${WARN_CFLAGS} ${DEBUG_CFLAGS}"
-
-
-AC_HEADER_STDC
-AC_PROG_LIBTOOL
-AC_PROG_SED
-
-# newer libtool...
-LT_PREREQ([2.4.2])
-LT_INIT([win32-dll])
-
-
-# needed for building interfaces as shared libs on Windows
-AC_CANONICAL_HOST
-case "${host_os}" in
-    cygwin*|mingw*)
-        LINBOX_LDFLAGS=-no-undefined
-        ;;
-    *)
-        LINBOX_LDFLAGS=""
-        ;;
-esac
-AC_SUBST([LINBOX_LDFLAGS])
-
-
-echo "-----------------------------------------------"
-echo "        START  LINBOX CONFIG                   "
-echo "-----------------------------------------------"
-
-# Checks which SIMD optimization flags to use and set SIMD_CFLAGS accordingly
-INSTR_SET
-AC_SUBST(SIMD_FLAGS)
+# With GCC 4.x, the default ABI version is 2. With this version, __m128 and
+# __m256 are the same types and therefore we cannot have overloads for both
+# types without linking error. It is fixed in ABI version 4.
+# FIXME: Why do we set ABI version to 6
+AS_CASE([$CCNAM], [gcc4*], [REQUIRED_FLAGS+=" -fabi-version=6"])
 
 dnl gcc-4.9.2 bug See https://trac.sagemath.org/ticket/17635#comment:178
-AS_IF([ test  "x$CCNAM" = "xgcc492" ],[CXXFLAGS="${CXXFLAGS} -fpermissive"],[])
+AS_CASE([$CCNAM], [gcc492], [REQUIRED_FLAGS+=" -fpermissive"])
 
-
-echo "-----------------------------------------------"
-LB_OMP
-echo "-----------------------------------------------"
-AC_SUBST([PARFLAGS],['${OMPFLAGS}'])
-AC_SUBST([PARLIBS],['${OMPFLAGS}'])
-
+AS_ECHO([---------------------------------------])
 # Machine characteristics
 
-AC_CHECK_SIZEOF(char, 8)
-AC_CHECK_SIZEOF(short, 16)
-AC_CHECK_SIZEOF(int, 32)
-AC_CHECK_SIZEOF(long, 32)
-AC_CHECK_SIZEOF(long long, 64)
-AC_CHECK_SIZEOF(__int64, 64)
+# Size of some types
+AC_CHECK_SIZEOF(char)
+AC_CHECK_SIZEOF(short)
+AC_CHECK_SIZEOF(int)
+AC_CHECK_SIZEOF(long)
+AC_CHECK_SIZEOF(long long)
+AC_CHECK_SIZEOF(__int64_t)
 
-# Checks for header files.
-AC_HEADER_STDC
-AC_CHECK_HEADERS([float.h limits.h stddef.h stdlib.h string.h sys/time.h stdint.h pthread.h])
+# Looking for int128
+AC_CHECK_TYPE([__int128_t], [AC_DEFINE(HAVE_INT128, 1, [Define that compiler allows int128_t types])])
 
 
 # check endianness of the architecture
@@ -222,90 +116,75 @@ AC_C_BIGENDIAN(
   [AC_DEFINE(HAVE_LITTLE_ENDIAN, 1, [Define that architecture uses little endian storage])],
   [])
 
-echo "-----------------------------------------------"
+AS_ECHO([---------------------------------------])
+
 # Feature checks
 LB_MISC
 LB_DRIVER
 
-
-echo "-----------------------------------------------"
-
-# Now getting GMP and Givaro from FFLAS-FFPACK - AB 2014-12-10
+# Looking for FFLAS-FFPACK.
+# We get the flags for OpenMP, Givaro and GMP at the same time
 PKG_CHECK_MODULES([FFLAS_FFPACK], [fflas-ffpack >= 2.4.0])
-PKG_CHECK_MODULES([GIVARO], [givaro >= 4.1.0])
+AC_SUBST(FFLAS_FFPACK_CFLAGS)
+AC_SUBST(FFLAS_FFPACK_LIBS)
 
-dnl LB_CHECK_FFLAS_FFPACK(,,[
-dnl echo ''
-dnl echo '*******************************************************************************'
-dnl echo ' ERROR: Fflas-Ffpack not found!'
-dnl echo
-dnl echo ' Fflas-Ffpack routines are required for this library to compile. Please'
-dnl echo ' make sure they are installed and specify its location with the option'
-dnl echo ' --with-fflas-ffpack=<lib> when running configure.'
-dnl echo ' Also make sure your compiler supports cxx-11...'
-dnl echo '*******************************************************************************'
-dnl exit 1
-dnl ])
+AS_ECHO([---------------------------------------])
 
 LB_CHECK_LAPACK
 
-# AC_MSG_RESULT($BLAS_LIBS)
-# AC_MSG_RESULT($BLAS_CFLAGS)
-
-LB_CHECK_IML
-LB_CHECK_M4RI
-LB_CHECK_M4RIE
-LB_CHECK_MPFR
-# we nedd mpfr next :
-LB_CHECK_FPLLL
-LB_CHECK_FLINT
-
 LB_CHECK_NTL
+LB_CHECK_MPFR
+LB_CHECK_FPLLL
+LB_CHECK_IML
+LB_CHECK_FLINT
 
 LB_CHECK_SACLIB
 LB_CHECK_MAPLE
 
-LB_CHECK_EXPAT
+AS_ECHO([---------------------------------------])
 
 LB_BENCH
 LB_CHECK_XML
 # LB_OPT
 LB_DOC
 
+AS_ECHO([---------------------------------------])
+
 LB_CHECK_OCL
 LB_CHECK_MPI
 
-if test ! -d ./benchmarks/data ; then
-	echo "Creating data dir in benchmark" ;
-	mkdir ./benchmarks/data ;
-fi
+AS_ECHO([---------------------------------------])
 
-DEPS_CFLAGS="${FFLAS_FFPACK_CFLAGS} ${NTL_CFLAGS} ${MPFR_CFLAGS} ${FPLLL_CFLAGS} ${IML_CFLAGS} ${FLINT_CFLAGS}"
-DEPS_LIBS=" ${NTL_LIBS} ${MPFR_LIBS} ${FPLLL_LIBS} ${IML_LIBS} ${FLINT_LIBS} ${OCL_LIBS} ${FFLAS_FFPACK_LIBS} ${XML_LIBS}"
+# needed for building interfaces as shared libs on Windows
+AC_CANONICAL_HOST
+AS_CASE([$host_os], [cygwin*|mingw*], [ LINBOX_LDFLAGS="-no-undefined" ],
+                                      [ LINBOX_LDFLAGS="" ])
+AC_SUBST([LINBOX_LDFLAGS])
 
-CXXFLAGS="${CXXFLAGS} ${STDFLAG}"
-CXXFLAGS="${CXXFLAGS} ${SIMD_CFLAGS}"
+AS_ECHO([---------------------------------------])
 
-AC_SUBST(CXXFLAGS)
-AC_SUBST(DEPS_CFLAGS)
-AC_SUBST(DEPS_LIBS)
+CXXFLAGS="${ORIGINAL_CXXFLAGS}"
+LINBOX_CXXFLAGS="${REQUIRED_FLAGS} ${OPTIM_FLAGS} ${DEBUG_FLAGS}"
+AS_ECHO(["LINBOX_CXXFLAGS = ${LINBOX_CXXFLAGS}"])
 
-echo "-----------------------------------------------"
+AC_SUBST(LINBOX_CXXFLAGS)
+AC_SUBST(REQUIRED_FLAGS)
 
-dnl MYLIBS="${FFLAS_FFPACK_LIBS} ${NTL_LIBS} ${MPFR_LIBS} ${FPLLL_LIBS} ${IML_LIBS} ${FLINT_LIBS} ${LDFLAGS} ${OCL_LIBS}"
-dnl MYLIBS="${LIBS}"
-dnl MYFLAGS="${FFLAS_FFPACK_CFLAGS} ${NTL_CFLAGS} ${MPFR_CFLAGS} ${FPLLL_CFLAGS} ${IML_CFLAGS} ${FLINT_CFLAGS} ${OPT_FLAGS}"
+LINBOX_DEPS_CFLAGS="${NTL_CFLAGS} ${MPFR_CFLAGS} ${FPLLL_CFLAGS} ${IML_CFLAGS} ${FLINT_CFLAGS} ${OCL_CFLAGS}"
+LINBOX_DEPS_LIBS="${NTL_LIBS} ${MPFR_LIBS} ${FPLLL_LIBS} ${IML_LIBS} ${FLINT_LIBS} ${OCL_LIBS}"
 
-echo "CXXFLAGS       = ${CXXFLAGS}"
-echo "LIBS           = ${LIBS}"
-echo "DEPS_CFLAGS    = ${DEPS_CFLAGS}"
-echo "DEPS_LIBS      = ${DEPS_LIBS}"
-echo "DEFAULT CFLAGS = ${DEFAULT_CFLAGS}"
-echo "TESTS CFLAGS   = ${TESTS_CFLAGS}"
+AC_SUBST(LINBOX_DEPS_CFLAGS)
+AC_SUBST(LINBOX_DEPS_LIBS)
 
-echo "-----------------------------------------------"
-echo "         END   LINBOX CONFIG                   "
-echo "-----------------------------------------------"
+#################################################
+AS_BOX([           END LINBOX CONFIG           ])
+#################################################
+
+# symlinks to matrix files for the testsuite
+AC_CONFIG_LINKS([tests/data/sms.matrix:tests/data/sms.matrix])
+AC_CONFIG_LINKS([tests/data/30_30_27.sms:tests/data/30_30_27.sms])
+AC_CONFIG_LINKS([tests/data/fib25.sms:tests/data/fib25.sms])
+AC_CONFIG_LINKS([tests/data/rk9_7_10.sms:tests/data/rk9_7_10.sms])
 
 AC_CONFIG_FILES([
 Makefile
@@ -346,8 +225,6 @@ interfaces/Makefile
 interfaces/driver/Makefile
 interfaces/maple/Makefile
 interfaces/kaapi/Makefile
-macros/Makefile
-macros/CodeChunk/Makefile
 benchmarks/Makefile
 benchmarks/data/Makefile
 benchmarks/matrix/Makefile
@@ -355,7 +232,6 @@ programs/Makefile
 programs/smith/Makefile
 linbox.pc
 ])
-# linbox/algorithms/IML/Makefile
 
 # examples/Readme-make
 # examples/field
@@ -364,5 +240,3 @@ linbox.pc
 # examples/data
 
 AC_OUTPUT
-
-echo "-----------------------------------------------"

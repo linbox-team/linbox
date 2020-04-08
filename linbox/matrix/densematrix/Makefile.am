@@ -29,7 +29,6 @@ pkgincludesub_HEADERS =         \
 		blas-matrix-iterator.h\
 		blas-submatrix.h \
 		blas-submatrix.inl \
-		blas-triangularmatrix.inl \
 		blas-transposed-matrix.h \
 		blas-matrix-multimod.h
 

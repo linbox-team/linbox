@@ -1,29 +1,26 @@
 #!/bin/bash -
 
-# Copyright(c) 2011 LinBox
+# Copyright(c) 2011-2020 LinBox
 # Written by Brice Boyer (briceboyer) <boyer.brice@gmail.com>
 #         Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
 # see COPYING for more details.
 
-
 # TODO : create .extracted, .configured, .build, .installed and use a switch
 # (like --force) when you want to rebuild
 # TODO : manage icc/gcc
-# TODO : add gmp in givaro and use auto-install in givaro
 # TODO : use an optionnal message in die function.
-# TODO : put openblas and use auto-install in fflas-ffpack
-# TODO : rpath instead of LD_LIBRARY_PATH ?
 
 #############################
 ## Only for stable fetching
 #############################
 #### stable .tar.gz
 STABLE_LB=1.6.3
-STABLE_FFLAS=2.4.1
+STABLE_FFLAS=2.4.3
 STABLE_GIVARO=4.1.1
-STABLE_OPENBLAS=0.3.6
-STABLE_BLIS=0.5.2
-STABLE_GMPLIB=6.1.2
+STABLE_OPENBLAS=0.3.8
+STABLE_BLIS=0.6.1
+STABLE_GMPLIB=6.2.0
+STABLE_NTLLIB=11.4.3
 MD5SUFF=md5
 #############################
 
@@ -54,8 +51,10 @@ PREFIX_VAR=""
 PREFIX="--prefix=$PREFIX_LOC"
 BLAS=""
 BLAS_VAR="false"
-NTL="--with-ntl"
-NTL_VAR=""
+GMPLIB=""
+GMPLIB_VAR="false"
+NTLLIB=""
+NTLLIB_VAR="false"
 EXTRA=""
 EXTRA_VAR=""
 IML="--with-iml"
@@ -66,8 +65,6 @@ OPENBLAS=""
 OPENBLAS_VAR="false"
 BLIS=""
 BLIS_VAR="false"
-GMPLIB=""
-GMPLIB_VAR="false"
 MAKEOPT=
 MAKE_VAR=""
 
@@ -131,6 +128,8 @@ help() {
     echo "                         Default : disabled (use local blas)."
     echo " --enable-gmp          : fetch gmplib."
     echo "                         Default : disabled (use local gmp)."
+    echo " --enable-ntl          : fetch NTL."
+    echo "                         Default : disabled (use local ntl)."
     echo " --enable-debug        : build in debugging mode."
     echo "                         Default : disabled."
     echo " --enable-check        : run make check."
@@ -213,6 +212,11 @@ for i in "$@" ; do
 	GMPLIB="$i";
 	GMPLIB_VAR="true";
 	;;
+	"--enable-ntl")
+	if [ "x$NTLLIB_VAR" = "xfalse" ]  ; then  echo "enable-ntl or not ?" ;        help ; exit -1 ; fi
+	NTLLIB="$i";
+	NTLLIB_VAR="true";
+	;;
 	"--disable-debug")
 	if [ "x$DEBUG_VAR" = "xtrue" ]  ; then  echo "enable-debug or not ?" ;        help ; exit -1 ; fi
 	DEBUG_VAR="false";
@@ -241,15 +245,19 @@ for i in "$@" ; do
 	if [ "x$GMPLIB_VAR" = "xtrue" ]  ; then  echo "enable-gmp or not ?" ;        help ; exit -1 ; fi
 	GMPLIB_VAR="false";
 	;;
-	"--with-ntl")
-	if	[ "x$NTL_VAR" = "xfalse" ] ; then   echo "with-ntl or not ?";            help ; exit -1; fi
-	NTL="$i";
-	NTL_VAR="true";
+	"--disable-ntl")
+	if [ "x$NTLLIB_VAR" = "xtrue" ]  ; then  echo "enable-ntl or not ?" ;        help ; exit -1 ; fi
+	NTLLIB_VAR="false";
 	;;
 	"--with-gmp")
 	if	[ "x$GMP_VAR" = "xfalse" ] ; then   echo "with-gmp or not ?";            help ; exit -1; fi
 	GMP="$i"
 	GMP_VAR="true"
+	;;
+	"--with-ntl")
+	if	[ "x$NTL_VAR" = "xfalse" ] ; then   echo "with-ntl or not ?";            help ; exit -1; fi
+	NTL="$i";
+	NTL_VAR="true";
 	;;
 	"--with-iml")
 	if	[ "x$IML_VAR" = "xfalse" ] ; then   echo "with-iml or not ?";            help ; exit -1; fi
@@ -303,15 +311,15 @@ for i in "$@" ; do
 	    MAKEOPT="$QUOI"
 	    MAKE_VAR="true"
 	    ;;
-	    "--with-gmp")
-	    if		[ "x$GMP_VAR" = "xtrue" ] ; then  echo "GMP path already set ?" ;      help ; exit -1; fi
-	    GMP="$i"
-	    GMP_VAR="true"
-	    ;;
 	    "--with-blas-libs")
 	    if	[ "x$BLAS_VAR" = "xtrue" ] ; then  echo "BLAS path already set ?" ;      help ; exit -1; fi
 	    BLAS=$QUI=\"$QUOI\"
 	    BLAS_VAR="true"
+	    ;;
+	    "--with-gmp")
+	    if		[ "x$GMP_VAR" = "xtrue" ] ; then  echo "GMP path already set ?" ;      help ; exit -1; fi
+	    GMP="$i"
+	    GMP_VAR="true"
 	    ;;
 	    "--with-ntl")
 	    if		[ "x$NTL_VAR" = "xtrue" ] ; then  echo "NTL path already set ?" ;      help ; exit -1; fi
@@ -361,6 +369,16 @@ for i in "$@" ; do
 		GMPLIB=$QUI ; GMPLIB_VAR="true" ;
 	    else
 		GMPLIB_VAR="false" ;
+	    fi
+	    ;;
+	    "--enable-ntl")
+	    [[ "$QUOI" =~ y|yes|Y|1 ]] && OK=1 || OK=0
+	    if		[ "x$NTLLIB_VAR" = "xtrue"  -a "OK" = "0" ] ; then  echo "NTL or not NTL ?" ;      help ; exit -1; fi
+	    if		[ "x$NTLLIB_VAR" = "xfalse" -a "OK" = "1" ] ; then  echo "NTL or not NTL ?" ;      help ; exit -1; fi
+	    if	[[ "x$OK" = "x1" ]] ; then
+		NTLLIB=$QUI ; NTLLIB_VAR="true" ;
+	    else
+		NTLLIB_VAR="false" ;
 	    fi
 	    ;;
 	    "--enable-warnings")
@@ -583,11 +601,22 @@ fi
 ### gmp ###
 if [ "$GMPLIB_VAR" = "true" ]; then
     echo -en "${BEG}fetching GMP..."| tee -a ../linbox-auto-install.log
-    if [ -f ${STABLE_GMPLIB}.tar.bz2 ] ; then
+    if [ -f gmp-${STABLE_GMPLIB}.tar.bz2 ] ; then
 	echo -ne " already there!\n"| tee -a ../linbox-auto-install.log
     else
 	wget --no-check-certificate https://gmplib.org/download/gmp/gmp-${STABLE_GMPLIB}.tar.bz2 >/dev/null 2>&1 || die
 	[ -f gmp-${STABLE_GMPLIB}.tar.bz2 ] &&  cool || die
+    fi
+fi
+
+### NTL ###
+if [ "$NTLLIB_VAR" = "true" ]; then
+    echo -en "${BEG}fetching NTL..."| tee -a ../linbox-auto-install.log
+    if [ -f ntl-${STABLE_NTLLIB}.tar.gz ] ; then
+	echo -ne " already there!\n"| tee -a ../linbox-auto-install.log
+    else
+	wget --no-check-certificate https://www.shoup.net/ntl/ntl-${STABLE_NTLLIB}.tar.gz >/dev/null 2>&1 || die
+	[ -f ntl-${STABLE_NTLLIB}.tar.gz ] &&  cool || die
     fi
 fi
 
@@ -644,6 +673,15 @@ if [ "$GMPLIB_VAR" = "true" ]; then
     [ "$OK" = "1" ] &&  cool | tee -a ../linbox-auto-install.log  || die
 fi
 
+### NTL ###
+
+if [ "$NTLLIB_VAR" = "true" ]; then
+    OK=0
+    echo -en "${BEG}extracting NTL..."| tee -a ../linbox-auto-install.log
+    decompress ntl-${STABLE_NTLLIB}.tar.gz && OK=1
+    [ "$OK" = "1" ] &&  cool | tee -a ../linbox-auto-install.log  || die
+fi
+
 ######################
 #  install GMP      #
 ######################
@@ -694,7 +732,59 @@ if [ "$GMPLIB_VAR" = "true" ]; then
 
     GMP="--with-gmp=${PREFIX_LOC}"
     GMP_VAR=true
-    echo "${BEG}gmp flags: $GMP."| tee -a ../../linbox-auto-install.log
+    echo "${BEG}gmp flags: $GMP."| tee -a ../linbox-auto-install.log
+ fi
+
+######################
+#  install NTL       #
+######################
+
+if [ "$NTLLIB_VAR" = "true" ]; then
+
+    cd ntl-${STABLE_NTLLIB}/src || die
+
+    if [ -f ntl.a ] ; then
+	echo -e "${BEG}cleaning NTL..."| tee -a ../../../linbox-auto-install.log
+	${MAKEPROG} clean | tee -a ../../../linbox-auto-install.log|| die
+	${MAKEPROG} clobber | tee -a ../../../linbox-auto-install.log|| die
+	cool
+    fi
+
+    echo -e "${BEG}configuring NTL..."| tee -a ../../../linbox-auto-install.log
+
+    echo "./configure NTL_GMP_LIP=on NTL_TBL_REM=on NTL_AVOID_BRANCHING=on PREFIX=${PREFIX_LOC} GMP_PREFIX=${PREFIX_LOC}"| tee -a ../../../linbox-auto-install.log
+    echo "./configure NTL_GMP_LIP=on NTL_TBL_REM=on NTL_AVOID_BRANCHING=on PREFIX=${PREFIX_LOC} GMP_PREFIX=${PREFIX_LOC}" > configure.ntl.exe
+    chmod +x configure.ntl.exe
+    ./configure.ntl.exe | tee -a ../../../linbox-auto-install.log
+    rm -rf configure.ntl.exe
+
+    echo -e "${BEG}building NTL..."| tee -a ../../../linbox-auto-install.log
+    NTLLIB_FLAGS=""
+
+    echo "${MAKEPROG} ${NTLLIB_FLAGS} CXXFLAGS+=\"$EXTRA\" LDFLAGS+=\"-Wl,-rpath,$PREFIX_LOC\""| tee -a ../../../linbox-auto-install.log
+    if [ -n "$EXTRA" ] ; then
+	${MAKEPROG} ${NTLLIB_FLAGS} "CXXFLAGS+=\"$EXTRA\" LDFLAGS+=\"-Wl,-rpath,$PREFIX_LOC\"" | tee -a ../../../linbox-auto-install.log|| die
+    else
+	${MAKEPROG} ${NTLLIB_FLAGS} | tee -a ../../../linbox-auto-install.log|| die
+    fi
+
+
+    if [ "$CHECK_VAR" = "true" ] ; then
+	echo -e "${BEG}checking NTL..."| tee -a ../../../linbox-auto-install.log
+	${MAKEPROG} ${NTLLIB_FLAGS} check | tee -a ../../../linbox-auto-install.log|| die
+    fi
+
+    echo -e "${BEG}installing NTL..."| tee -a ../../../linbox-auto-install.log
+    ${MAKEPROG} ${NTLLIB_FLAGS} install | tee -a ../../../linbox-auto-install.log|| die
+
+#return in build
+    cd ../..
+
+    cool| tee -a ../linbox-auto-install.log
+
+    NTL="--with-ntl=${PREFIX_LOC}"
+    NTL_VAR=true
+    echo "${BEG}ntl flags: $NTL."| tee -a ../linbox-auto-install.log
  fi
 
 ####################
