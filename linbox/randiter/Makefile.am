@@ -18,14 +18,12 @@
 # ========LICENCE========
 
 
-AM_CPPFLAGS= -I$(top_srcdir) $(DEPS_CFLAGS)
-LDADD = $(DEPS_LIBS) $(LDFLAGS)
+AM_CPPFLAGS=-I$(top_srcdir)
+AM_CXXFLAGS=$(LINBOX_CXXFLAGS) $(FFLAS_FFPACK_CFLAGS) $(LINBOX_DEPS_CFLAGS)
+LDADD=$(LINBOX_DEPS_LIBS) $(FFLAS_FFPACK_LIBS) $(LINBOX_LDFLAGS)
 
 pkgincludesubdir=$(pkgincludedir)/randiter
  
-#AM_CPPFLAGS=-I$(top_srcdir)/linbox
-#AM_CXXFLAGS = @DEFAULT_CFLAGS@ -DDISABLE_COMMENTATOR $(GMP_CFLAGS) $(NTL_CFLAGS) $(ATLAS_CFLAGS)   
-
 BASIC_HDRS =            \
     abstract.h          \
     archetype.h         \

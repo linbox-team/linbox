@@ -19,11 +19,9 @@
 # ========LICENCE========
 #/
 
-AM_CPPFLAGS= -I$(top_srcdir)/linbox $(DEPS_CFLAGS) $(DEFAULT_CFLAGS)
-LDADD = $(DEPS_LIBS) $(LDFLAGS)
-
-#AM_CPPFLAGS = -I@includedir@ -I$(top_srcdir)/linbox -I$(top_srcdir) $(DEFCPPFLAGS) $(OPTFLAGS) $(FFLAS_FFPACK_CFLAGS) $(NTL_CFLAGS) $(MPFR_CFLAGS) $(FPLLL_CFLAGS) $(IML_CFLAGS) $(FLINT_CFLAGS) $(PARFLAGS)
-#LDADD = $(FFLAS_FFPACK_LIBS) $(NTL_LIBS) $(MPFR_LIBS) $(FPLLL_LIBS) $(IML_LIBS) $(FLINT_LIBS) $(OCL_LIBS)
+AM_CPPFLAGS=-I$(top_srcdir)/linbox
+AM_CXXFLAGS=$(LINBOX_CXXFLAGS) $(FFLAS_FFPACK_CFLAGS) $(LINBOX_DEPS_CFLAGS)
+LDADD=$(LINBOX_DEPS_LIBS) $(FFLAS_FFPACK_LIBS) $(LINBOX_LDFLAGS)
 
 SUBDIRS=util element field randiter vector matrix blackbox algorithms solutions ring polynomial
 
@@ -58,11 +56,7 @@ liblinbox_la_LIBADD =           \
     util/libutil.la             \
     randiter/libranditer.la     \
     algorithms/libalgorithms.la \
-    $(MPFR_LIBS) $(IML_LIBS) $(OCL_LIBS)
-
-#Cygwin ?
-liblinbox_la_LDFLAGS = $(DEPS_LIBS) $(LDFLAGS) -no-undefined
-
+    $(LINBOX_DEPS_LIBS)
 
 #  $(top_srcdir)/benchmarks/libbenchmarks.la \
 #
