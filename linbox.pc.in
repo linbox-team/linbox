@@ -1,4 +1,3 @@
-/------------------ linbox.pc ------------------------
 prefix=@prefix@
 exec_prefix=@prefix@
 libdir=@libdir@
@@ -11,4 +10,3 @@ Version: @VERSION@
 Requires: fflas-ffpack >= 2.4.0
 Libs: -L${libdir} -llinbox @LINBOX_DEPS_LIBS@
 Cflags: -I${includedir} -DDISABLE_COMMENTATOR @LINBOX_DEPS_CFLAGS@ @REQUIRED_FLAGS@
-\-------------------------------------------------------
