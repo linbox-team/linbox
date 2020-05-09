@@ -101,6 +101,10 @@ bool check_result(ResultVector& x, Matrix& A, Vector& b, ResultMatrix& RA, Resul
     ResultVector RAx(RA.field(), Rb.size());
     RA.apply(RAx, x);
 
+    //std::cout << "RA " << RA << std::endl;
+    //std::cout << "Rb " << Rb << std::endl;
+    //std::cout << "x " << x << std::endl;
+
     VectorDomain<typename ResultMatrix::Field> VD(RA.field());
     if (!VD.areEqual(RAx, Rb)) {
         print_error<SolveMethod>(x, A, b, "Ax != b");
@@ -115,7 +119,7 @@ bool test_solve(const SolveMethod& method, Matrix& A, Vector& b, ResultDomain& R
 {
     using ResultVector = DenseVector<ResultDomain>;
 
-    if (verbose) {
+    if (verbose && method.master()) {
         std::cout << "--- Testing " << SolveMethod::name() << " on " << type_to_string(A) << " over ";
         A.field().write(std::cout) << " of size " << A.rowdim() << "x" << A.coldim() << std::endl;
     }
@@ -144,10 +148,14 @@ bool test_solve(const SolveMethod& method, Matrix& A, Vector& b, ResultDomain& R
     bool ok = true;
     try {
         solve(x, A, b, method);
-        ok = ok && check_result<SolveMethod>(x, A, b, RA, Rb);
+        if (method.master()) {
+            ok = ok && check_result<SolveMethod>(x, A, b, RA, Rb);
+        }
 
         solveInPlace(x, A, b, method);
-        ok = ok && check_result<SolveMethod>(x, A, b, RA, Rb);
+        if (method.master()) {
+            ok = ok && check_result<SolveMethod>(x, A, b, RA, Rb);
+        }
     } catch (...) {
         print_error<SolveMethod>(x, A, b, "throws error");
         return false;
@@ -224,7 +232,7 @@ int main(int argc, char** argv)
         {'B', "-B", "Vector bit size for rational solve tests (defaults to -b if not specified).", TYPE_INT, &vectorBitSize},
         {'m', "-m", "Row dimension of matrices.", TYPE_INT, &m},
         {'n', "-n", "Column dimension of matrices.", TYPE_INT, &n},
-        {'d', "-d", "Dispatch mode (either Auto, Sequential, SMP or Distributed).", TYPE_STR, &dispatchString},
+        {'d', "-d", "Dispatch mode (either Auto, Sequential, Combined or Distributed).", TYPE_STR, &dispatchString},
         END_OF_ARGUMENTS};
 
     parseArguments(argc, argv, args);
@@ -238,12 +246,12 @@ int main(int argc, char** argv)
     method.dispatch = Dispatch::Auto;
     if (dispatchString == "Distributed")
         method.dispatch = Dispatch::Distributed;
+    else if (dispatchString == "Combined") //fixme: This multithreaded method could crash if Commentator is not disabled
+        method.dispatch = Dispatch::Combined;
     else if (dispatchString == "Sequential")
         method.dispatch = Dispatch::Sequential;
-    else if (dispatchString == "SMP")
-        method.dispatch = Dispatch::SMP;
     else if (dispatchString != "Auto") {
-        std::cerr << "-d Dispatch mode should be either Auto, Sequential, SMP or Distributed" << std::endl;
+        std::cerr << "-d Dispatch mode should be either Auto, Sequential, Combined or Distributed" << std::endl;
         return EXIT_FAILURE;
     }
 
@@ -265,6 +273,7 @@ int main(int argc, char** argv)
 
     bool ok = true;
     do {
+
         // ----- Rational Auto
         ok = ok && test_dense_solve(Method::Auto(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
 #if 0
@@ -279,9 +288,10 @@ int main(int argc, char** argv)
         // ----- Rational CRA
         // @fixme @bug When bitSize = 5 and vectorBitSize = 50, CRA fails
         ok = ok && test_dense_solve(Method::CRAAuto(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
-        ok = ok && test_sparse_solve(Method::CRAAuto(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
+        // ok = ok && test_sparse_solve(Method::CRAAuto(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
         // ok = ok && test_blackbox_solve(Method::CRAAuto(method), ZZ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
 
+        //@fixme: Distributed and Combined(ie hybrid) method will not work for QQ field
         ok = ok && test_dense_solve(Method::CRAAuto(method), QQ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
         ok = ok && test_sparse_solve(Method::CRAAuto(method), QQ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);
         // ok = ok && test_blackbox_solve(Method::CRAAuto(method), QQ, QQ, m, n, bitSize, vectorBitSize, seed, verbose);

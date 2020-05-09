@@ -170,16 +170,17 @@ namespace LinBox {
 
         solve(xNum, xDen, A, b, tag, m);
 
-        // The denominator being zero means computation failure
-        if (b.field().isZero(xDen)) {
-            throw LinboxError("Rational solve failed.");
-        }
-
-        // Copy result back to RatVector
-        auto iXNum = xNum.begin();
-        for (auto iX = x.begin(); iX != x.end(); ++iX) {
-            *iX = typename RatVector::value_type(*iXNum, xDen);
-            ++iXNum;
+        if (m.master()) {
+            // The denominator being zero means computation failure
+            if (b.field().isZero(xDen)) {
+                throw LinboxError("Rational solve failed.");
+            }
+            // Copy result back to RatVector
+            auto iXNum = xNum.begin();
+            for (auto iX = x.begin(); iX != x.end(); ++iX) {
+                *iX = typename RatVector::value_type(*iXNum, xDen);
+                ++iXNum;
+            }
         }
 
         return x;

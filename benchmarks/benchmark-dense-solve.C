@@ -86,6 +86,7 @@ void benchmark(std::array<double, 3>& timebits, Arguments& args, MethodBase& met
     Timer chrono;
 
     if (method.master()) {
+
         chrono.start();
         PAR_BLOCK { FFLAS::pfrand(F, randIter, args.n, args.n, A.getPointer(), args.n); }
         chrono.stop();
@@ -144,7 +145,7 @@ int main(int argc, char** argv)
                      {'n', "-n", "Set the matrix dimension.", TYPE_INT, &args.n},
                      {'b', "-b", "bit size", TYPE_INT, &args.bits},
                      {'s', "-s", "Seed for randomness.", TYPE_INT, &args.seed},
-                     {'d', "-d", "Dispatch mode (any of: Auto, Sequential, SMP, Distributed).", TYPE_STR, &args.dispatchString},
+                     {'d', "-d", "Dispatch mode (any of: Auto, Sequential, Combined or Distributed).", TYPE_STR, &args.dispatchString},
 		             {'t', "-t", "Number of threads.", TYPE_INT, &numThreads },
                      {'M', "-M",
                       "Choose the solve method (any of: Auto, Elimination, DenseElimination, SparseElimination, "
@@ -172,8 +173,8 @@ int main(int argc, char** argv)
     MethodBase method;
     method.pCommunicator = &communicator;
     if (args.dispatchString == "Sequential")        method.dispatch = Dispatch::Sequential;
-    else if (args.dispatchString == "SMP")          method.dispatch = Dispatch::SMP;
     else if (args.dispatchString == "Distributed")  method.dispatch = Dispatch::Distributed;
+    else if (args.dispatchString == "Combined")  method.dispatch = Dispatch::Combined;
     else                                            method.dispatch = Dispatch::Auto;
 
     // Real benchmark
