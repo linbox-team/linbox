@@ -169,6 +169,15 @@ namespace LinBox
 		_row(m),_col(n),_rep(F,_row*_col){}
 
 
+    template < class _Field, class _Storage >
+    BlasMatrix< _Field, _Storage >::BlasMatrix(MatrixStream<_Field>& ms) :
+        _row(0),_col(0),_rep(ms.getField())
+    {
+        if( !ms.getArray(_rep) || !ms.getDimensions(_row, _col) )
+            throw ms.reportError(__FUNCTION__,__LINE__);
+    }
+
+
 	template < class _Field, class _Storage >
 	template <class Matrix>
 	BlasMatrix< _Field, _Storage >::BlasMatrix (const Matrix &A) : 
@@ -194,14 +203,6 @@ namespace LinBox
         _row(m), _col(n),_rep(F, _row*_col)
     {
         createBlasMatrix(it);
-    }
-
-    template < class _Field, class _Storage >
-    BlasMatrix< _Field, _Storage >::BlasMatrix(MatrixStream<_Field>& ms) :
-        _row(0),_col(0),_rep(ms.getField())
-    {
-        if( !ms.getArray(_rep) || !ms.getDimensions(_row, _col) )
-            throw ms.reportError(__FUNCTION__,__LINE__);
     }
 
     template < class _Field, class _Storage >
@@ -235,7 +236,6 @@ namespace LinBox
 	{
         createBlasMatrix(A,0,0,_row,_col,MatrixContainerCategory::BlasContainer());
 	}
-
     
     
     template < class _Field, class _Storage >
