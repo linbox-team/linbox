@@ -23,9 +23,9 @@
 
 /**\file examples/ratdet.C
  * @example  examples/ratdet.C
-  \brief Determinant of rational matrix
-  \ingroup examples
-  */
+ \brief Determinant of rational matrix
+ \ingroup examples
+*/
 
 #include <linbox/linbox-config.h>
 #include <iostream>
@@ -41,50 +41,50 @@ typedef Givaro::QField<Givaro::Rational> Rationals;
 template<typename RMatrix>
 int ratdet(int argc, char **argv) {
 
-	std::ifstream input (argv[1]);
-	if (!input) {
-		std::cerr << "Error opening matrix file: " << argv[1] << std::endl;
-		return -1;
-	}
+    std::ifstream input (argv[1]);
+    if (!input) {
+        std::cerr << "Error opening matrix file: " << argv[1] << std::endl;
+        return -1;
+    }
 
-	Rationals QQ;
-	MatrixStream<Rationals> ms (QQ, input);
- 	RMatrix A ( ms );
+    Rationals QQ;
+    MatrixStream<Rationals> ms (QQ, input);
+    RMatrix A ( ms );
 
     Rationals::Element det_A;
 
-	LinBox::Timer tim ; tim.clear() ; tim.start();
+    LinBox::Timer tim ; tim.clear() ; tim.start();
     det (det_A, A);
-	tim.stop();
+    tim.stop();
 
     std::cout << "Determinant is ";
     QQ.write(std::cout, det_A) << ':' << std::flush;
-	std::clog << tim << std::endl;
+    std::clog << tim << std::endl;
 
-	return 0;
+    return 0;
 }
 
 
 int main (int argc, char **argv)
 {
-	commentator().setMaxDetailLevel (-1);
-	commentator().setMaxDepth (-1);
-	commentator().setReportStream (std::cerr);
+    commentator().setMaxDetailLevel (-1);
+    commentator().setMaxDepth (-1);
+    commentator().setReportStream (std::cerr);
 
-	bool dense=true;
-	if (argc < 2 || argc > 3) {
-		std::cerr << "Usage: ratdet <matrix-file-in-supported-format> [d/s]" << std::endl;
-		return -1;
-	}
+    bool dense=true;
+    if (argc < 2 || argc > 3) {
+        std::cerr << "Usage: ratdet <matrix-file-in-supported-format> [d/s]" << std::endl;
+        return -1;
+    }
 
-	if (argc == 3) {
-		if (argv[2][0] != 'd') dense=false;
-	}
+    if (argc == 3) {
+        if (argv[2][0] != 'd') dense=false;
+    }
 
-	if (dense)
-		return ratdet< DenseMatrix<Rationals> >(argc,argv);
-	else
-		return ratdet< SparseMatrix<Rationals, SparseStorage> >(argc, argv);
+    if (dense)
+        return ratdet< DenseMatrix<Rationals> >(argc,argv);
+    else
+        return ratdet< SparseMatrix<Rationals, SparseStorage> >(argc, argv);
 }
 
 // Local Variables:
