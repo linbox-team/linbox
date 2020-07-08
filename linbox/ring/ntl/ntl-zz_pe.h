@@ -218,137 +218,137 @@ namespace LinBox
 
 
 
-#ifdef __LINBOX_XMLENABLED
+// #ifdef __LINBOX_XMLENABLED
 
 
-	bool toTag(LinBox::Writer &W) const
-	{
-		std::string s;
-		NTL::ZZ_pX poly = Element::modulus();
-		long i;
+// 	bool toTag(LinBox::Writer &W) const
+// 	{
+// 		std::string s;
+// 		NTL::ZZ_pX poly = Element::modulus();
+// 		long i;
 
-		W.setTagName("field");
-		W.setAttribute("implDetail", "ntl-ZZpE");
-		W.setAttribute("cardinality", LinBox::Writer::numToString(s, _card));
+// 		W.setTagName("field");
+// 		W.setAttribute("implDetail", "ntl-ZZpE");
+// 		W.setAttribute("cardinality", LinBox::Writer::numToString(s, _card));
 
-		W.addTagChild();
-		W.setTagName("finite");
+// 		W.addTagChild();
+// 		W.setTagName("finite");
 
-		W.addTagChild();
-		W.setTagName("characteristic");
-		W.addNum(_p);
-		W.upToParent();
+// 		W.addTagChild();
+// 		W.setTagName("characteristic");
+// 		W.addNum(_p);
+// 		W.upToParent();
 
-		W.addTagChild();
-		W.setTagName("extension");
-		W.addNum(deg(poly) + 1);
-		W.upToParent();
+// 		W.addTagChild();
+// 		W.setTagName("extension");
+// 		W.addNum(deg(poly) + 1);
+// 		W.upToParent();
 
-		W.addTagChild();
-		W.setTagName("polynomial");
+// 		W.addTagChild();
+// 		W.setTagName("polynomial");
 
-		for(i = 0; i <= deg(poly); ++i) {
-			W.addNum(coeff(poly, i));
-		}
-		W.upToParent();
-		W.upToParent();
-		W.upToParent();
+// 		for(i = 0; i <= deg(poly); ++i) {
+// 			W.addNum(coeff(poly, i));
+// 		}
+// 		W.upToParent();
+// 		W.upToParent();
+// 		W.upToParent();
 
-		return true;
-	}
-
-
-	std::ostream &write(std::ostream &os) const
-	{
-		LinBox::Writer W;
-		if( toTag(W) )
-			W.write(os);
-
-		return os;
-	}
+// 		return true;
+// 	}
 
 
-	// Elemnt Reading & writing functions
-	// BIG NOTE:  It was decided that for extension fields, the elements
-	// would be represented using a single number that has the following
-	// property:  for an element e in ZZp[x], with e = a0 + a1x + a2x^2 + ...,
-	// represent e as "<cn>n</cn>" where n = a0 + a1 * p + a2 * p^2 + ...
-	//
+// 	std::ostream &write(std::ostream &os) const
+// 	{
+// 		LinBox::Writer W;
+// 		if( toTag(W) )
+// 			W.write(os);
+
+// 		return os;
+// 	}
 
 
-	bool toTag(LinBox::Writer &W, const Element &e) const
-	{
-		NTL::ZZ_pX poly = rep(e);
-		NTL::ZZ accum, base = NTL::ZZ_p::modulus();
-		long i;
-		std::string s;
-
-		accum = 0;
-		for(i = deg(poly); i >= 0; --i) {
-			accum *= base;
-			accum += rep(coeff(poly, i));
-		}
+// 	// Elemnt Reading & writing functions
+// 	// BIG NOTE:  It was decided that for extension fields, the elements
+// 	// would be represented using a single number that has the following
+// 	// property:  for an element e in ZZp[x], with e = a0 + a1x + a2x^2 + ...,
+// 	// represent e as "<cn>n</cn>" where n = a0 + a1 * p + a2 * p^2 + ...
+// 	//
 
 
-		W.setTagName("cn");
-		W.addDataChild(LinBox::Writer::numToString(s, accum));
+// 	bool toTag(LinBox::Writer &W, const Element &e) const
+// 	{
+// 		NTL::ZZ_pX poly = rep(e);
+// 		NTL::ZZ accum, base = NTL::ZZ_p::modulus();
+// 		long i;
+// 		std::string s;
 
-		return true;
-	}
-
-
-	std::ostream &write(std::ostream &os, const Element &e) const
-	{
-
-		LinBox::Writer W;
-		if( toTag(W, e))
-			W.write(os);
-
-		return os;
-	}
+// 		accum = 0;
+// 		for(i = deg(poly); i >= 0; --i) {
+// 			accum *= base;
+// 			accum += rep(coeff(poly, i));
+// 		}
 
 
+// 		W.setTagName("cn");
+// 		W.addDataChild(LinBox::Writer::numToString(s, accum));
+
+// 		return true;
+// 	}
 
 
-	bool fromTag(LinBox::Reader &R, Element &e) const
-	{
-		NTL::ZZ total, base = NTL::ZZ_p::modulus(), rem;
-		std::stringstream ss;
+// 	std::ostream &write(std::ostream &os, const Element &e) const
+// 	{
 
-		if(!R.expectTagName("cn") || !R.expectChildTextNum(total))
-			return false;
+// 		LinBox::Writer W;
+// 		if( toTag(W, e))
+// 			W.write(os);
 
-		ss << "[";
-		while(total > 0) {
-			rem = total % base;
-			total /= base;
-			ss << rem;
-			if(total > 0) ss << " ";
-		}
-
-		ss << "]";
-
-		ss >> e; // use the extraction stream operator
-
-		return true;
-	}
+// 		return os;
+// 	}
 
 
-	std::istream &read(std::istream &is, Element &e) const
-	{
-		LinBox::Reader R(is);
-		if( !fromTag(R, e)) {
-			is.setstate(std::istream::failbit);
-			if(!R.initalized()) {
-				is.setstate(std::istream::badbit);
-			}
-		}
-
-		return is;
-	}
 
 
-#endif
+// 	bool fromTag(LinBox::Reader &R, Element &e) const
+// 	{
+// 		NTL::ZZ total, base = NTL::ZZ_p::modulus(), rem;
+// 		std::stringstream ss;
+
+// 		if(!R.expectTagName("cn") || !R.expectChildTextNum(total))
+// 			return false;
+
+// 		ss << "[";
+// 		while(total > 0) {
+// 			rem = total % base;
+// 			total /= base;
+// 			ss << rem;
+// 			if(total > 0) ss << " ";
+// 		}
+
+// 		ss << "]";
+
+// 		ss >> e; // use the extraction stream operator
+
+// 		return true;
+// 	}
+
+
+// 	std::istream &read(std::istream &is, Element &e) const
+// 	{
+// 		LinBox::Reader R(is);
+// 		if( !fromTag(R, e)) {
+// 			is.setstate(std::istream::failbit);
+// 			if(!R.initalized()) {
+// 				is.setstate(std::istream::badbit);
+// 			}
+// 		}
+
+// 		return is;
+// 	}
+
+
+// #endif
 
 
 	}; // end of class NTL_ZZ_pE
@@ -378,9 +378,10 @@ namespace LinBox
 	class UnparametricRandIter<NTL::ZZ_pE> {
 	public:
 		typedef NTL::ZZ_pE Element;
-		UnparametricRandIter<NTL::ZZ_pE>(const NTL_ZZ_pE & F ,
-						 const int32_t& size =0,
-						 const uint64_t & seed =0
+        typedef int32_t Residu_t;
+        UnparametricRandIter<NTL::ZZ_pE>(const NTL_ZZ_pE & F ,
+						 const uint64_t & seed =0,
+						 const Residu_t& size =0
 						) :
                 _size(size), _seed(seed), _ring(F)
 		{
@@ -396,17 +397,18 @@ namespace LinBox
 		}
 
         const NTL_ZZ_pE& ring() const { return _ring; }
-#ifdef __LINBOX_XMLENABLED
-		UnparametricRandIter<NTL::ZZ_pE>(LinBox::Reader &R)
-		{
-			if(!R.expectTagName("randiter")) return;
-			if(!R.expectAttributeNum("seed", _seed) || !R.expectAttributeNum("size", _size)) return;
 
-			if(_seed == 0) _seed = time(NULL);
+// #ifdef __LINBOX_XMLENABLED
+// 		UnparametricRandIter<NTL::ZZ_pE>(LinBox::Reader &R)
+// 		{
+// 			if(!R.expectTagName("randiter")) return;
+// 			if(!R.expectAttributeNum("seed", _seed) || !R.expectAttributeNum("size", _size)) return;
 
-			NTL::SetSeed(NTL::to_ZZ(_seed));
-		}
-#endif
+// 			if(_seed == 0) _seed = time(NULL);
+
+// 			NTL::SetSeed(NTL::to_ZZ(_seed));
+// 		}
+// #endif
 
 
 		UnparametricRandIter<NTL::ZZ_pE>(const UnparametricRandIter<NTL::ZZ_pE>& R) :
