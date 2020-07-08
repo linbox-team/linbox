@@ -187,7 +187,7 @@ namespace LinBox {
     std::istream& BlasSubmatrix<_Matrix>::read (std::istream &file)
     {        
         MatrixStream<Field> ms(field(),file);
-        size_t c = 0,i,j;
+        size_t i,j;
 		Element v;
         do {
             ms.nextTriple(i,j,v);
