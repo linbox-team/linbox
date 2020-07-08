@@ -96,8 +96,6 @@ static bool testIdentitySolve (const Field          &F,
 	// VectorWrapper::ensureDim (v, stream.n ());
 	// VectorWrapper::ensureDim (w, stream.n ());
 
-	MethodTraits traits (method);
-
 	while (stream) {
 		commentator().startIteration ((unsigned)stream.j ());
 
@@ -188,8 +186,6 @@ static bool testNonsingularSolve (const Field          &F,
 	// VectorWrapper::ensureDim (b, stream1.n ());
 	// VectorWrapper::ensureDim (x, stream1.n ());
 	// VectorWrapper::ensureDim (y, stream1.n ());
-
-	MethodTraits traits (method);
 
 	while (stream1 && stream2) {
 		commentator().startIteration ((unsigned)stream1.j ());
