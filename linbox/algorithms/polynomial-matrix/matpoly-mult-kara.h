@@ -35,17 +35,19 @@
 
 namespace LinBox
 {
-	template<class Field>
+	template<class _Field>
 	class PolynomialMatrixKaraDomain {
 	private:
-        const Field                            *_field;
-        PolynomialMatrixAddDomain<Field>          _PMD;
-        PolynomialMatrixNaiveMulDomain<Field>     _NMD;
+        const _Field                            *_field;
+        PolynomialMatrixAddDomain<_Field>          _PMD;
+        PolynomialMatrixNaiveMulDomain<_Field>     _NMD;
         double _timeMul, _timeAdd;
 	public:
+        typedef _Field Field;
 		typedef PolynomialMatrix<Field, PMType::polfirst> MatrixP;
         typedef PolynomialMatrix<Field, PMType::matfirst> PMatrix;
-                
+
+        
         const Field & field() const { return *_field; }
 
         PolynomialMatrixKaraDomain(const Field &F) :
@@ -66,9 +68,12 @@ namespace LinBox
 		
         // void mul(PMatrix &c, const PMatrix &a, const PMatrix &b) const {
 			linbox_check(c.size() >= (a.size()+b.size()-1));
+
+            if (b.coldim()!=a.rowdim() || a.rowdim()!= a.coldim()) // ony square matrix for memory purpose
+                throw ::LinBox::PreconditionFailed (__func__, __FILE__, __LINE__, "Polynomial Matrix Error -> multiplication with Karatsuba only works for square matrices\n");
             //PMatrix t(*_field,c.rowdim(),c.coldim(),std::max(a.size(),b.size()));
             MatrixP t(*_field,c.rowdim(),c.coldim(),std::max(a.size(),b.size()));
-            std::cout<<"KAra Mul TMP="<<t<<std::endl;
+            //std::cout<<"KAra Mul TMP="<<t<<std::endl;
 #ifdef KARA_TIMING
             _timeMul=_timeAdd=0.;
             Givaro::Timer chrono;
@@ -125,8 +130,8 @@ namespace LinBox
         // PG -> does not work if A and B have different size NEED TO BE MODIFIED
 		template<typename PMatrix1,typename PMatrix2,typename PMatrix3, typename PMatrix4>
         void Karatsuba_mul(PMatrix1 &C, const PMatrix2 &A, const PMatrix3& B, PMatrix4 &TMP) const {		
-            //cout<<A.size()<<"x"<<B.size()<<"->"<<C.size()<<" ("<<TMP.size()<<")"<<endl;
-
+            //cout<<"Kar mul: "<<A.size()<<"x"<<B.size()<<"->"<<C.size()<<" ("<<TMP.size()<<")"<<endl;
+            //cout<<"Kar:"<< A.rowdim()<<"x"<<A.coldim()<< "by "<<B.rowdim()<<"x"<<B.coldim()<<endl;            
             if ((A.size() <=KARA_DEG_THRESHOLD) || (B.size()<=KARA_DEG_THRESHOLD)) {
 #ifdef KARA_TIMING
                 Givaro::Timer chrono;

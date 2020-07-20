@@ -37,16 +37,16 @@ namespace LinBox {
 	/***********************************************************************************
 	 **** Polynomial Matrix Multiplication over Zp[x] with p (FFTPrime, FFLAS prime) ***
 	 ***********************************************************************************/
-	template<class Field>
+	template<class _Field>
 	class PolynomialMatrixFFTPrimeMulDomain {
 
-		//typedef Givaro::Modular<T>    Field;
 	public:
+        typedef _Field Field;
 		// Polynomial matrix stored as a matrix of polynomial
-		typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field> MatrixP;
+		typedef PolynomialMatrix<Field,PMType::polfirst> MatrixP;
 		// Polynomial matrix stored as a polynomial of matrix
-		typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain,Field> PMatrix;
-
+		typedef PolynomialMatrix<Field,PMType::matfirst> PMatrix;
+        
 	private:
 		const Field              *_field;  // Read only
 		uint64_t                      _p;
@@ -167,8 +167,11 @@ namespace LinBox {
 			FFT_PROFILING(1,"Polfirst to Matfirst");
 
 			// Pointwise multiplication
-			for (size_t i = 0; i < pts; ++i)
-				_BMD.mul(vm_c[i], vm_a[i], vm_b[i]);
+			for (size_t i = 0; i < pts; ++i){
+                auto vm_c_i = vm_c[i];
+				_BMD.mul(vm_c_i, vm_a[i], vm_b[i]);
+                vm_c.setMatrix(vm_c_i,i); // normally does nothing
+            }
 			FFT_PROFILING(1,"Pointwise mult");
 #endif			
 			// Transformation into matrix of polynomials (with int32_t coefficient)
@@ -296,8 +299,11 @@ namespace LinBox {
 			FFT_PROFILING(1,"Polfirst to Matfirst");
 
 			// Pointwise multiplication
-			for (size_t i = 0; i < pts; ++i)
-				_BMD.mul(vm_c[i], vm_a[i], vm_b[i]);
+			for (size_t i = 0; i < pts; ++i){
+                auto vm_c_i = vm_c[i];
+				_BMD.mul(vm_c_i, vm_a[i], vm_b[i]);
+                vm_c.setMatrix(vm_c_i,i); // normally does nothing
+            }
 			FFT_PROFILING(1,"pointwise mult");
 
 			// Transformation into matrix of polynomials (with int32_t coefficient)

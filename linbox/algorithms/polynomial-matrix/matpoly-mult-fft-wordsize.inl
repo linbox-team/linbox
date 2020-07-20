@@ -42,8 +42,8 @@ namespace LinBox {
         typedef Givaro::Modular<T1,T2>                Field;
         typedef Givaro::Modular<integer>         LargeField;
         typedef typename Field::Element             Element;
-        typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field>        MatrixP;
-        typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,LargeField> MatrixP_L;
+        typedef PolynomialMatrix<Field,PMType::polfirst>         MatrixP;
+        typedef PolynomialMatrix<LargeField,PMType::polfirst>  MatrixP_L;
 
     private:
         const Field            *_field;  // Read only

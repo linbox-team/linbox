@@ -34,6 +34,16 @@
 #include "givaro/modular.h"
 #include <algorithm>
 
+#ifdef TRACK_MEMORY_MATPOL
+uint64_t max_memory=0, cur_memory=0;
+#define ADD_MEM(x) {cur_memory+=x; max_memory=std::max(max_memory,cur_memory);}
+#define DEL_MEM(x) {cur_memory-=x;}
+#define STR_MEMINFO std::right<<"\033[31m [ MEM: cur="<<cur_memory/1000000.<<" Mo --- max="<<max_memory/1000000.<<" Mo \033[0m]"
+#define PRINT_MEMINFO std::cerr<<"\033[31m[ MEM: cur="<<cur_memory/1000000.<<" Mo --- max="<<max_memory/1000000.<<" Mo ]\033[0m"<<std::endl;
+#else
+#define ADD_MEM(X) ;
+#define DEL_MEM(X) ;     
+#endif
 
 
 
@@ -80,12 +90,12 @@ namespace LinBox{
          ******************************/
         
         // retrieve the polynomial at entry (i,j) in the matrix
-        Polynomial&       operator()(size_t i, size_t j)      {return operator()(i*_col+j);}
-        constPolynomial&  operator()(size_t i, size_t j)const {return operator()(i*_col+j);}
+        Polynomial       operator()(size_t i, size_t j)      {return operator()(i*_col+j);}
+        constPolynomial  operator()(size_t i, size_t j)const {return operator()(i*_col+j);}
 
         // retrieve the polynomial at the position i in the storage of the matrix
-        Polynomial&       operator()(size_t i)      {return      Polynomial(_rep, i*_size,1,_size);}
-        constPolynomial&  operator()(size_t i)const {return constPolynomial(_rep, i*_size,1,_size);}
+        Polynomial       operator()(size_t i)      {return      Polynomial(_rep, i*_size,1,_size);}
+        constPolynomial  operator()(size_t i)const {return constPolynomial(_rep, i*_size,1,_size);}
 
 		// get write access to the the k-th coeff  of the ith matrix entry
         Element& ref(size_t i, size_t k)      {return _rep[i*_size+k];}
@@ -104,7 +114,7 @@ namespace LinBox{
 
         // copy the matrix of degree k into A
         template<typename DenseMatrix>
-		DenseMatrix& getMatrix(DenseMatrix& A, size_t k) const {
+		DenseMatrix& getMatrix(DenseMatrix& A, size_t k) const {            
 			auto it=A.Begin();
 			for(size_t i=0;i<_row*_col;i++,it++)
 				*it = get(i,k);
@@ -114,13 +124,13 @@ namespace LinBox{
         // copy the matrix A into the matrix of degree
         template<typename DenseMatrix>
 		void setMatrix(const DenseMatrix& A, size_t k)  {
-            std::cout<<"SET MATRIX: "<<std::endl;
+            //std::cout<<"SET MATRIX: "<<std::endl;
 			auto it=A.Begin();
 			for(size_t i=0;i<_row*_col;i++,it++){
-                std::cout<<*it<<" ";
+                //std::cout<<*it<<" ";
                 ref(i,k)=*it ;
             }
-            std::cout<<std::endl;
+            //std::cout<<std::endl;
 		}
 
         // retrieve the matrix of degree k in the polynomial matrix
@@ -154,12 +164,12 @@ namespace LinBox{
 		
 		
 		// copy elt from M[beg..end], _size must be >= j-i
-		void copy(const Self_t& M, size_t beg, size_t end){
+		void copy(const Self_t& M, size_t beg, size_t end, size_t start=0){
 			//cout<<"copying.....polfirst to polfirst.....same field"<<endl;
 			for (size_t k=0;k<_row*_col;k++){
 				size_t j=0;
 				for (size_t i=beg;i<=end;i++){
-					ref(k,j)=M.get(k,i);
+					ref(k,start+j)=M.get(k,i);
 					j++;
 				}
 			}
@@ -167,7 +177,7 @@ namespace LinBox{
 		// copy elt from M[beg..end], _size must be >= end-beg+1
 		// M is stored as a Polynomial of Matrices with a different field
 		template<typename OtherField>
-		void copy(const PolynomialMatrix<OtherField, PMType::matfirst> & M, size_t beg, size_t end){
+		void copy(const PolynomialMatrix<OtherField, PMType::matfirst> & M, size_t beg, size_t end, size_t start=0){
 			//std::cout<<"copying.....matfirst to polfirst.....other field"<<std::endl;
 			const size_t ls = COPY_BLOCKSIZE;
 			Hom<OtherField,Field> hom(M.field(),field()) ;
@@ -175,27 +185,27 @@ namespace LinBox{
 				for (size_t j = 0; j < _col * _row; j+=ls)
 					for (size_t _i = i; _i < std::min(end+1, i + ls); _i++) {
 						for (size_t _j = j; _j < std::min(_col * _row, j + ls);++_j)
-							hom.image(ref(_j,_i-beg),M.get(_j,_i) );
+							hom.image(ref(_j,start+_i-beg),M.get(_j,_i) );
 					}
 		}
 
 
 
         template<typename OtherField>
-		void copy(const PolynomialMatrix<OtherField, PMType::polfirst> & M, size_t beg, size_t end){
+		void copy(const PolynomialMatrix<OtherField, PMType::polfirst> & M, size_t beg, size_t end, size_t start=0){
 			//cout<<"copying.....polfirst to polfirst.....other field"<<endl;
 			Hom<OtherField,Field> hom(M.field(),field()) ;
 			for (size_t k=0;k<_row*_col;k++){
 				size_t j=0;
 				for (size_t i=beg;i<=end;i++,j++){
-					hom.image(ref(k,j),M.get(k,i));
+					hom.image(ref(k,start+j),M.get(k,i));
 				}
 			}
 		}
 
 		// copy elt from M[beg..end], _size must be >= end-beg+1
 		// M is stored as a Polynomial of Matrices
-		void copy(const PolynomialMatrix<Field, PMType::matfirst>& M, size_t beg, size_t end){
+		void copy(const PolynomialMatrix<Field, PMType::matfirst>& M, size_t beg, size_t end, size_t start=0){
 			//std::cout<<"copying.....matfirst to polfirst.....same field"<<std::endl;
 			const size_t ls = COPY_BLOCKSIZE;
 			for (size_t i = beg; i <= end; i+=ls)
@@ -203,7 +213,7 @@ namespace LinBox{
 					// Rk: the two loop must be interchanged in some cases
 					for (size_t _i = i; _i < std::min(end+1, i + ls); _i++)
 						for (size_t _j = j; _j < std::min(_col * _row, j + ls);++_j)
-							ref(_j,_i-beg)= M.get(_j,_i);
+							ref(_j,start+_i-beg)= M.get(_j,_i);
 		}
 
 
@@ -213,6 +223,13 @@ namespace LinBox{
 			copy(M,0,M.size()-1);
 		}
 
+
+        template<class MatPoly>
+        void copy(const SubPolynomialMatrix<MatPoly>& M, size_t beg, size_t end, size_t start=0){
+            copy(*M._ptr, beg+M._shift, end+M._shift,start);
+        }
+
+        
 		// rebind functor to change base field (e.g. apply modulo reduction)
 		template<typename _Tp1>
 		struct rebind {
@@ -229,6 +246,8 @@ namespace LinBox{
 		};
 
 
+    
+        
 		void dump(std::ostream& os) const {
 			os<<_row<<" "<<_col<<" "<<_size<<std::endl;
 			for(size_t i=0;i<_row*_col;i++)
@@ -349,17 +368,18 @@ namespace LinBox{
         template<typename DenseMatrix>
 		void setMatrix(const DenseMatrix& A, size_t k)  {
             if (A.getPointer() != getPointer()+k*_row*_col){
-                std::cout<<"NEW MAtPol setMatrix: "<<A.getPointer()<<"<>"<<getPointer()+k*_row*_col<<std::endl;
+                //std::cout<<"NEW MAtPol setMatrix: "<<A.getPointer()<<"<>"<<getPointer()+k*_row*_col<<std::endl;
                 auto it=A.Begin();
                 for(size_t i=0;i<_row*_col;i++,it++)
                     ref(i,k)=*it ;
             }
             else {
-                std::cout<<"NEW MAtPol setMatrix: does nothing\n";
+                //std::cout<<"NEW MAtPol setMatrix: does nothing\n";
             }
-		}
+		} 
 
-        Matrix  operator[](size_t k)            {return Matrix(field(), getPointer()+k*_row*_col, _row,_col,_col);}
+        //Matrix&&  operator[](size_t k)          {Matrix tmp(field(), getPointer()+k*_row*_col, _row,_col,_col); return std::move(tmp);}
+        Matrix       operator[](size_t k)          {return Matrix(field(), getPointer()+k*_row*_col, _row,_col,_col);}
 		constMatrix  operator[](size_t k) const {return constMatrix(field(), getPointer()+k*_row*_col, _row,_col,_col);}
 
         view       at(size_t i, size_t j)       {return view(*this,i,j);}
@@ -421,6 +441,14 @@ namespace LinBox{
 			copy(M,0,M.size()-1);
 		}
 
+
+        template<class MatPoly>
+        void copy(const SubPolynomialMatrix<MatPoly>& M, size_t beg, size_t end, size_t start=0){
+            copy(*M._ptr, beg+M._shift, end+M._shift,start);
+        }
+
+        
+        
 		// rebind functor to change base field (e.g. apply modulo reduction)
 		template<typename _Tp1>
 		struct rebind {
@@ -576,6 +604,26 @@ namespace LinBox{
 		void setMatrix(const DenseMatrix& A, size_t k)  {
             return _ptr->setMatrix(A,k+_shift);
         }
+
+        // only shrink down the size, increase is not possible
+		void resize(size_t s){
+            if (s<=_size) _size=s;
+            else{
+                std::cerr<<"LinBox -> SubPolynomialMatrix: resizing with larger size than available, exiting ..."<<std::endl;
+                throw LinboxError("SubPolynomialMatrix: resizing with larger size than available, exiting ...");
+            }
+        }
+
+        template <typename Mat>
+        void copy(const Mat & M, size_t beg, size_t end){
+            _ptr->copy(M,beg,end,_shift);
+		}
+        
+		template<typename Mat>
+        void copy(const Mat& M){
+            copy(M,0,M.size()-1);
+        }
+
         
 		// retrieve the matrix of degree k in the polynomial matrix
         Matrix  operator[](size_t k) const {return _ptr->operator[](k+_shift);}
@@ -601,7 +649,13 @@ namespace LinBox{
         
 		std::ostream& write(std::ostream& os) const { if (_size!=0) return _ptr->write(os,_shift,_shift+_size-1); else return os;}
 
-	private:
+        
+
+        // give friendship access to the main PolynomialMatrix classes
+        template<class Field, enum PMType>
+        friend class PolynomialMatrix;
+
+	protected:
 		MatPoly* _ptr;
 		size_t  _size;
 		size_t _shift;

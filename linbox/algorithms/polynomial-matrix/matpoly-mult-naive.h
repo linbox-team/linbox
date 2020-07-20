@@ -36,13 +36,14 @@
 namespace LinBox
 {
         
-	template <class Field>
+	template <class _Field>
 	class PolynomialMatrixNaiveMulDomain {
 	private:
-		const Field            *_field;
-		BlasMatrixDomain<Field>   _BMD;
+		const _Field            *_field;
+		BlasMatrixDomain<_Field>   _BMD;
 
 	public:
+        typedef _Field Field; 
 
         inline const Field& field() const { return *_field; }
 
@@ -54,24 +55,30 @@ namespace LinBox
         template<typename Matrix1,typename Matrix2,typename Matrix3>
         void mul(Matrix1& c, const Matrix2&  a, const Matrix3&  b) const
         {
-            std::clog<<"Mul matpoly:"<<std::endl;
-            std::clog<<"A="<<a<<std::endl;
-            std::clog<<"B="<<b<<std::endl;
-            std::clog<<"C="<<c<<std::endl;
+            //std::clog<<"Mul matpoly: "<<a.rowdim()<<"x"<<a.coldim()<<" by "<<b.rowdim()<<"x"<<b.coldim()<<std::endl;
+            // std::clog<<"A="<<a<<std::endl;
+            // std::clog<<"B="<<b<<std::endl;
+            // std::clog<<"C="<<c<<std::endl;
             
             for (size_t k=0;k<a.size()+b.size()-1;k++){
                 auto c_tmp=c[k];
                 size_t idx_min= (k+1<b.size()?0:k+1-b.size());
                 size_t idx_max=std::min(k,a.size()-1);
+                // a[idx_min].write(std::clog, Tag::FileFormat::Plain)<<std::endl;
+                // b[k-idx_min].write(std::clog, Tag::FileFormat::Plain)<<std::endl;;
+
                 _BMD.mul(c_tmp,a[idx_min],b[k-idx_min]);               
-                for (size_t i=idx_min+1;i<=idx_max;i++){ 
+                for (size_t i=idx_min+1;i<=idx_max;i++){
+                    // std::clog<<"MUL["<<k<<"]=";
+                    // a[i].write(std::clog, Tag::FileFormat::Plain)<<std::endl;
+                    // b[k-i].write(std::clog, Tag::FileFormat::Plain)<<std::endl;;
                     _BMD.axpyin(c_tmp,a[i],b[k-i]);
                 }
-                std::clog<<"c_tmp["<<k<<"]=";c_tmp.write(std::clog, Tag::FileFormat::Plain)<<std::endl;
+                // std::clog<<"c_tmp["<<k<<"]=";c_tmp.write(std::clog, Tag::FileFormat::Plain)<<std::endl;
                 c.setMatrix(c_tmp,k); 
             }
-            std::clog<<"C="<<c<<std::endl;
-            std::clog<<"-----------"<<std::endl;
+            // std::clog<<"C="<<c<<std::endl;
+            // std::clog<<"-----------"<<std::endl;
         }                          
         
         template<typename Matrix1,typename Matrix2,typename Matrix3>
