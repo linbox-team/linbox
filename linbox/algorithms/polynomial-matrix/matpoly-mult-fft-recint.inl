@@ -52,8 +52,8 @@ namespace LinBox{
 		typedef RecInt::ruint<K>    Element;
 		//typedef Givaro::Modular<uint32_t>     ModField;
 		typedef Givaro::Modular<double>         ModField;
-		typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,ModField> MatrixP_F; // Polynomial matrix stored as a matrix of polynomials
-		typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,IntField> MatrixP_I; // Polynomial matrix stored as a matrix of polynomials
+		typedef PolynomialMatrix<ModField,PMType::polfirst>  MatrixP_F; // Polynomial matrix stored as a matrix of polynomials
+		typedef PolynomialMatrix<IntField,PMType::polfirst>  MatrixP_I; // Polynomial matrix stored as a matrix of polynomials
 
 	private:
 		const IntField     *_field;
@@ -604,9 +604,9 @@ namespace LinBox{
 		typedef Givaro::ZRing<RecInt::ruint<L>>  IntField;
 
 		// Polynomial matrix stored as a polynomial of matrix
-		typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field> MatrixP_F;
+		typedef PolynomialMatrix<Field,PMType::polfirst> MatrixP_F;
 		// Polynomial matrix stored as a polynomial of matrix
-		typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,IntField> MatrixP_I;
+		typedef PolynomialMatrix<IntField,PMType::polfirst> MatrixP_I;
 
 	private:
 		const Field            *_field;  // Read only

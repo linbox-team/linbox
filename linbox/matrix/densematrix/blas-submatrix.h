@@ -155,7 +155,19 @@ namespace LinBox
          */
         BlasSubmatrix(const constSubMatrixType &M);
         BlasSubmatrix(nonconstSubMatrixType &M);
-        BlasSubmatrix(const nonconstSubMatrixType &M);
+        // BlasSubmatrix(const nonconstSubMatrixType &M); // not needed
+        BlasSubmatrix(Self_t && M) :
+            _ptr(M.getPointer()),
+            _row (M.rowdim()),
+            _col(M.coldim()),
+            _stride(M.getStride()),
+            _field(M.field())
+        {
+            std::cout<<"BlasSubmatrix move cstor\n";
+            M._ptr=nullptr;
+            _row=0;_col=0;_stride=0;
+        }
+        
         
         //! (copying data) -> works only if dimensions are the same
         Self_t& copy (const Self_t& M) ;

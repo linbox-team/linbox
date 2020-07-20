@@ -42,9 +42,9 @@ namespace LinBox {
 		// add function (c must be allocated with the right size)
 		template<typename PMatrix1,typename PMatrix2,typename PMatrix3>
 		void add(PMatrix1 &c, const PMatrix2 &a, const PMatrix3 &b) const {
-            std::clog<<"Add matpoly:"<<std::endl;
-            std::clog<<"A="<<a<<std::endl;
-            std::clog<<"B="<<b<<std::endl;
+            // std::clog<<"Add matpoly:"<<std::endl;
+            // std::clog<<"A="<<a<<std::endl;
+            // std::clog<<"B="<<b<<std::endl;
 			size_t i=0;
 			for(;i<std::min(a.size(),b.size());i++){
                 auto c_tmp=c[i];
@@ -59,25 +59,25 @@ namespace LinBox {
 				for(;i<c.size();i++)
                     c.setMatrix(b[i],i);                    
 			}
-            std::clog<<"C="<<c<<std::endl;
-            std::clog<<"-----------"<<std::endl;
+            // std::clog<<"C="<<c<<std::endl;
+            // std::clog<<"-----------"<<std::endl;
             
 		}
   
 		// addin function (a must be allocated with the right size)
 		template<typename PMatrix1,typename PMatrix2>
 		void addin(PMatrix1 &a, const PMatrix2 &b) const {
-            std::clog<<"Addin matpoly:"<<std::endl;
-            std::clog<<"A="<<a<<std::endl;
-            std::clog<<"B="<<b<<std::endl;
+            // std::clog<<"Addin matpoly:"<<std::endl;
+            // std::clog<<"A="<<a<<std::endl;
+            // std::clog<<"B="<<b<<std::endl;
 
 			for(size_t i=0;i<b.size();i++){
                 auto a_tmp=a[i];
 				_BMD.addin(a_tmp,b[i]);
                 a.setMatrix(a_tmp,i);                    
             }
-            std::clog<<"A="<<a<<std::endl;
-            std::clog<<"-----------"<<std::endl;       
+            // std::clog<<"A="<<a<<std::endl;
+            // std::clog<<"-----------"<<std::endl;       
 		}
   
 		// sub function (c must be allocated with the right size)
@@ -107,9 +107,9 @@ namespace LinBox {
 		// subin function (a must be allocated with the right size)
 		template<typename PMatrix1,typename PMatrix2>
 		void subin(PMatrix1 &a, const PMatrix2 &b) const {
-            std::clog<<"Subin matpoly:"<<std::endl;
-            std::clog<<"A="<<a<<std::endl;
-            std::clog<<"B="<<b<<std::endl;
+            // std::clog<<"Subin matpoly:"<<std::endl;
+            // std::clog<<"A="<<a<<std::endl;
+            // std::clog<<"B="<<b<<std::endl;
 
 
 			for(size_t i=0;i<b.size();i++){
@@ -117,8 +117,8 @@ namespace LinBox {
                 _BMD.subin(a_tmp,b[i]);
                 a.setMatrix(a_tmp,i);           
             }
-            std::clog<<"A="<<a<<std::endl;
-            std::clog<<"-----------"<<std::endl;           
+            // std::clog<<"A="<<a<<std::endl;
+            // std::clog<<"-----------"<<std::endl;           
 		}
 	};
 }

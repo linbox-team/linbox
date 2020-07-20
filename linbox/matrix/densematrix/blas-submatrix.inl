@@ -119,10 +119,12 @@ namespace LinBox {
         _field(M.field())
     {
         //std::cout<<"BlasSubMatrix Copy constructor 2: "<<getPointer()<<" ="<<M.getPointer()<<"--->"<<&M<<std::endl;
-        // std::cout<<M<<std::endl;
+        // std::cout<<M<<std::Endl;
         // std::cout<<*this<<std::endl;
     }
 
+    // this constructor make compilation issues (anyway it seems that it is useless as constructing a blassub<non const> from a blassub<const> is not allowed) 
+#if 0
     template < class _Matrix >
     BlasSubmatrix<_Matrix>::BlasSubmatrix(const nonconstSubMatrixType &M) :
         _ptr(M.getPointer()),
@@ -135,7 +137,7 @@ namespace LinBox {
         // std::cout<<M<<std::endl;
         // std::cout<<*this<<std::endl;
     }
-    
+#endif    
     
     template < class _Matrix >
     BlasSubmatrix<_Matrix>& BlasSubmatrix<_Matrix>::copy (const BlasSubmatrix<_Matrix> & M){
@@ -442,7 +444,7 @@ namespace LinBox {
 				++_cur; ++_c_idx;
 			}
 			else {
-				linbox_check(_stride > _c_dim);
+				linbox_check(_stride >= _c_dim);
 				_cur = _cur + (ptrdiff_t)(_stride - _c_dim + 1);
 				_c_idx = 0;
 			}
