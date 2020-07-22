@@ -118,9 +118,14 @@ bool checkMatPolMul(const PolMatMulDomain& PMMD, size_t m,size_t n, size_t d, lo
         report<<"A1:="<<A1<<endl;
         report<<"B1:="<<B1<<endl;
         report<<"C1:="<<C1<<endl;
+        report<<"---------------"<<endl;
         report<<"A2:="<<A2<<endl;
         report<<"B2:="<<B2<<endl;
         report<<"C2:="<<C2<<endl;
+        report<<"---------------"<<endl;
+        report<<"A3:="<<A3<<endl;
+        report<<"B3:="<<B3<<endl;
+        report<<"C3:="<<C3<<endl;
         report<<endl<<endl;
     }
     
@@ -151,9 +156,14 @@ bool checkMatPolMul(const PolMatMulDomain& PMMD, size_t m,size_t n, size_t d, lo
             report<<"AA1:="<<AA1<<endl;
             report<<"BB1:="<<BB1<<endl;
             report<<"CC1:="<<CC1<<endl;
+            report<<"---------------"<<endl;
             report<<"AA2:="<<AA2<<endl;
             report<<"BB2:="<<BB2<<endl;
             report<<"CC2:="<<CC2<<endl;
+            report<<"---------------"<<endl;
+            report<<"AA3:="<<AA3<<endl;
+            report<<"BB3:="<<BB3<<endl;
+            report<<"CC3:="<<CC3<<endl;
             report<<endl<<endl;
         }
         
@@ -183,9 +193,14 @@ bool checkMatPolMul(const PolMatMulDomain& PMMD, size_t m,size_t n, size_t d, lo
             report<<"A1:="<<A1<<endl;
             report<<"B1:="<<B1<<endl;
             report<<"C1:="<<C1<<endl;
+            report<<"---------------"<<endl;
             report<<"A2:="<<A2<<endl;
             report<<"B2:="<<B2<<endl;
             report<<"C2:="<<C2<<endl;
+            report<<"---------------"<<endl;
+            report<<"A3:="<<A3<<endl;
+            report<<"B3:="<<B3<<endl;
+            report<<"C3:="<<C3<<endl;
             report<<endl<<endl;
         }  
     }
