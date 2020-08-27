@@ -1,7 +1,7 @@
 /* linbox/algorithms/gauss-gf2.inl
  * Copyright (C) 2009 The LinBox group
  *
- * Time-stamp: <27 Jul 17 10:04:10 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <27 Aug 20 15:19:20 Jean-Guillaume.Dumas@imag.fr>
  *
  *
  * ========LICENCE========
@@ -223,9 +223,6 @@ namespace LinBox
 		linbox_check( P.coldim() == P.rowdim() );
 		linbox_check( Q.coldim() == LigneL.size() );
 
-		typedef typename SparseSeqMatrix::value_type Vector;
-		typedef typename Vector::value_type E;
-
 		// Requirements : LigneA is an array of sparse rows
 		// In place (LigneA is modified)
 		// With reordering (D is a density type. Density is allocated here)
@@ -312,7 +309,7 @@ namespace LinBox
 
 				if (p != k) {
 					//                         std::cerr << "Permuting rows: " << k << " <--> " << p << std::endl;
-					invQ.push_front( std::pair<size_t,size_t>((size_t)k,(size_t)p) );
+					invQ.emplace_front((size_t)k, (size_t)p);
 					std::swap( *LigneA_k, LigneA[(size_t)p]);
 					std::swap( LigneL[(size_t)k], LigneL[(size_t)p]);
 				}
@@ -329,9 +326,9 @@ namespace LinBox
 					}
 					long npiv=(long)LigneA_k->size();
 					for (ll = k+1; ll < static_cast<long>(Ni); ++ll) {
-						E hc; hc=Rank-1; bool elim=false;
+						bool elim=false;
 						eliminateBinary (elim, LigneA[(size_t)ll], *LigneA_k, Rank, c, (size_t)npiv, col_density);
-						if(elim) LigneL[(size_t)ll].push_back(hc);
+						if(elim) LigneL[(size_t)ll].emplace_back(Rank-1);
 					}
 				}
 
@@ -340,7 +337,7 @@ namespace LinBox
 				nbelem += LigneA_k->size ();
 #endif
 			}
-			LigneL[(size_t)k].push_back((size_t)k);
+			LigneL[(size_t)k].emplace_back((size_t)k);
 			//  LigneL.write(rep << "L:= ", Tag::FileFormat::Maple) << std::endl;
 			//  LigneA.write(rep << "U:= ", Tag::FileFormat::Maple) << std::endl;
 		}//for k
@@ -354,7 +351,7 @@ namespace LinBox
 			}
 		}
 
-		LigneL[(size_t)last].push_back((size_t)last);
+		LigneL[(size_t)last].emplace_back((size_t)last);
 
 #ifdef __LINBOX_COUNT__
 		nbelem += LigneA[(size_t)last].size ();

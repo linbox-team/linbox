@@ -195,7 +195,7 @@ int main(int argc, char* argv[])
 		//cout << "integer rank: " << endl;
 	
 		size_t coprimeR; LRank(coprimeR, argv[1], coprimeV);
-		smith.push_back(PairIntRk(coprimeV, coprimeR));
+		smith.emplace_back(coprimeV, coprimeR);
 		//         cerr << "Rank mod " << coprimeV << " is " << coprimeR << endl;
 	
 		//cout << "Some factors (5000 factoring loop bound): ";
@@ -212,7 +212,7 @@ int main(int argc, char* argv[])
 		    mit != Moduli.end(); ++mit) {
 			size_t r; LRank(r, argv[1], *mit);
 			//             cerr << "Rank mod " << *mit << " is " << r << endl;
-			smith.push_back(PairIntRk(*mit, r));
+			smith.emplace_back(*mit, r);
 			for(size_t i=r; i < coprimeR; ++i)
 				SmithDiagonal[i] *= *mit;
 		}
@@ -293,12 +293,12 @@ void distinct (I1 a, I1 b, Lp& c)
 	while (a != b)
 	{  if (*a == e) ++count;
     else
-    { c.push_back(typename Lp::value_type(e, count));
+    { c.emplace_back(e, count);
     e = *a; count = 1;
     }
     ++a;
 	}
-	c.push_back(typename Lp::value_type(e, count));
+	c.emplace_back(e, count);
 	return;
 }
 
