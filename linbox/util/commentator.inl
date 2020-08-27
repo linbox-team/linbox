@@ -200,28 +200,32 @@ namespace LinBox
 
         _activities.pop ();
 
-        if (isPrinted (_activities.size (), LEVEL_IMPORTANT, BRIEF_REPORT, fn))
+        if (isPrinted (_activities.size (), LEVEL_UNIMPORTANT, BRIEF_REPORT, fn))
         {
             finishActivityReport (*top_act, msg);
         }
 
-        if (isPrinted (_activities.size () + 1, LEVEL_IMPORTANT, INTERNAL_DESCRIPTION, fn)) {
-            std::ostream &output = report (LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+        if (isPrinted (_activities.size () + 1, LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION, fn)) {
+            std::ostream &output = report (LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
             output.precision (4);
-            output << "Finished activity (rea: " << realtime << "s, cpu: ";
-            //output.precision (4);
-            //output << usertime << "s, sys: ";
-            //output.precision (4);
-            //output << systime << "s): " << long_msg << std::endl;
+            output << "Finished activity (rea: " << realtime;
+//             output << "s, cpu: ";
+//             output.precision (4);
+//             output << usertime << "s, sys: ";
+//             output.precision (4);
+//             output << systime;
+            output << "s): " << long_msg << std::endl;
         }
-        else if (isPrinted (_activities.size (), LEVEL_IMPORTANT, INTERNAL_DESCRIPTION, fn)) {
-            std::ostream &output = report (LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+        else if (isPrinted (_activities.size (), LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION, fn)) {
+            std::ostream &output = report (LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
             output.precision (4);
-            output << "Completed activity: " << top_act->_desc << " (r: " << realtime << "s, u: ";
-            //output.precision (4);
-            //output << usertime << "s, s: ";
-            //output.precision (4);
-            //output << systime << "s) " << long_msg << std::endl;
+            output << "Completed activity: " << top_act->_desc << " (r: " << realtime;
+//             output << "s, u: ";
+//             output.precision (4);
+//             output << usertime << "s, s: ";
+//             output.precision (4);
+//             output << systime;
+            output << "s) " << long_msg << std::endl;
         }
 
         delete top_act;
@@ -262,7 +266,7 @@ namespace LinBox
         linbox_check (msg_class != (const char *) 0);
 
         _report << "$$(" << _activities.size () << ", " << level << ", " << msg_class << ")";
-#if 0
+#if 1
         if (!isPrinted (_activities.size (), level, msg_class,
                         (_activities.size () > 0) ? _activities.top ()->_fn : (const char *) 0))
             return cnull;
@@ -270,8 +274,9 @@ namespace LinBox
         MessageClass &messageClass = getMessageClass (msg_class);
 
         return messageClass._stream;
-#endif
+#else
         return _report;
+#endif
     }
 
     void Commentator::indent (std::ostream &stream) const
@@ -306,9 +311,12 @@ namespace LinBox
         MessageClass &briefReportClass = getMessageClass (BRIEF_REPORT);
         std::map <const char *, MessageClass *, C_str_Less>::iterator i;
 
-        for (i = _messageClasses.begin (); i != _messageClasses.end (); ++i)
+        for (i = _messageClasses.begin (); i != _messageClasses.end (); ++i) {
             if (i->second != &briefReportClass)
                 i->second->setMaxDepth (depth);
+//             std::cerr << "Class: " << i->first << ' '; i->second->dumpConfig();
+        }
+
     }
 
     void Commentator::setMaxDetailLevel (long level)
@@ -608,6 +616,7 @@ namespace LinBox
 
     bool MessageClass::isPrinted (unsigned long depth, unsigned long level, const char *fn)
     {
+#if 1
         return
         checkConfig (_configuration[""], depth, level)
         ||
@@ -615,19 +624,18 @@ namespace LinBox
             &&
             checkConfig (_configuration[fn], depth, level)
         );
-#if 0
-
+#else
         if (checkConfig (_configuration[""], depth, level))
             return true;
         else if (fn != (const char *) 0)
             //return checkConfig (_configuration[fn], depth, level);
         { bool ans = checkConfig (_configuration[fn], depth, level);
             if (ans)
-            {	//std::cerr << " fn=" << fn << ", d " << depth << ", l " << level << " true" << std::endl;
+            {	std::cerr << " fn=" << fn << ", d " << depth << ", l " << level << " true" << std::endl;
                 return true;
             }
             else
-            {	//std::cerr << " fn=" << fn << ", d " << depth << ", l " << level << " false" << std::endl;
+            {	std::cerr << " fn=" << fn << ", d " << depth << ", l " << level << " false" << std::endl;
                 return false;
             }
         }
@@ -661,13 +669,11 @@ namespace LinBox
 
     bool MessageClass::checkConfig (std::list <std::pair <unsigned long, unsigned long> > &config,
                                     unsigned long depth,
-                                    unsigned long ) //lvl
+                                    unsigned long level)
     {
-        std::list <std::pair <unsigned long, unsigned long> >::iterator i;
-
-        for ( i = config.begin (); i != config.end (); ++i) {
+        for (auto i = config.begin (); i != config.end (); ++i) {
             if (depth < i->first) {
-#if 0
+#if 1
                 // uninitialized value error goes away if we ignore level.
                 if (level <= i->second)
                     return true;
@@ -757,8 +763,8 @@ namespace LinBox
         return int(n);
     }
 
-    // 	// Default global commentator
-    // 	Commentator commentator ;
+    //	// Default global commentator
+    //	Commentator commentator ;
 }
 
 // Local Variables:

@@ -56,10 +56,12 @@ int rhs(DVector& B, const EDom& DD, bool createB, std::ifstream& invect) {
 int main (int argc, char **argv)
 {
 
-	commentator().setMaxDetailLevel (-1);
+        // set 2 to see Q L U P factorization; 
+        // see fill-in with 2 and __LINBOX_ALL__ or __LINBOX_FILLIN__ defined
+	commentator().setMaxDetailLevel (1); 
 	commentator().setMaxDepth (-1);
 	commentator().setReportStream (std::clog);
-
+//     commentator().setDefaultReportFile("/dev/stdout"); // to see activities
 
 	if (argc < 2 || argc > 4) {
 		std::cerr << "Usage: solve <matrix-file-in-supported-format> [<dense-vector-file>] [0/1 <integer solve>]" << std::endl;
