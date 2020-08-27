@@ -1,6 +1,6 @@
 /* Copyright (C) 2010 LinBox
  *
- * Time-stamp: <05 Apr 11 11:01:44 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <27 Aug 20 16:33:07 Jean-Guillaume.Dumas@imag.fr>
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -40,26 +40,17 @@
 
 using namespace LinBox;
 
-template <class IntVect>
-inline IntVect create_int_vect(size_t size, Givaro::ZRing<Integer> F = Givaro::ZRing<Integer>());
-
-template <class IntVect>
-inline IntVect create_int_vect(size_t size, Givaro::ZRing<Integer>)
-{ return IntVect(size); }
-
-template <>
-BlasVector<Givaro::ZRing<Integer>> create_int_vect(size_t size, Givaro::ZRing<Integer> F)
-{ return BlasVector<Givaro::ZRing<Integer>>(F, size); }
-
-
 template <class IntVect_t = BlasVector<Givaro::ZRing<Integer>>>
 struct Interator {
     using IntVect = IntVect_t;
+    using Field = typename IntVect_t::Field;
+    
+    Field _f;
 	IntVect _v;
 	double maxsize;
 
 	Interator(const IntVect& v) :
-		_v(v), maxsize(0.0)
+            _f(v.field()), _v(v), maxsize(0.0)
 	{
 		for(auto it=_v.begin(); it != _v.end(); ++it) {
 			//!@bug bb: *it < 0 ?
@@ -69,7 +60,7 @@ struct Interator {
 	}
 
 	Interator(int n, int s) :
-		_v(create_int_vect<IntVect>(n)), maxsize(0.0)
+            _f(), _v(_f,n), maxsize(0.0)
 	{
 		for(auto it=_v.begin(); it != _v.end(); ++it) {
 			Integer::random<false>(*it, s);
@@ -169,7 +160,7 @@ bool TestOneCRA(std::ostream& report, Iter& iteration, RandGen& genprime, size_t
 {
 	report << "ChineseRemainder<" << typeid(Builder).name() << ">(" << bound << ')' << std::endl;
 	LinBox::ChineseRemainder< Builder > cra( bound );
-    auto Res = create_int_vect<typename Iter::IntVect>(N);
+    typename Iter::IntVect Res( typename Iter::Field(), N);
 	cra( Res, iteration, genprime);
 	bool locpass = std::equal( Res.begin(), Res.end(), iteration.getVector().begin() );
 	if (locpass) report << "ChineseRemainder<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << ", passed."  << std::endl;
@@ -298,7 +289,7 @@ bool TestCra(size_t N, int S, size_t seed)
 
 	// XXX fixed prime set doesn't work with openmp version
 #ifndef LINBOX_USES_OPENMP
-        auto PrimeSet = create_int_vect<IntVect>(0,Z);
+        IntVect PrimeSet(Z,0);
         double PrimeSize = 0.0;
         for( ; PrimeSize < (iterationIt.getLogSize()+1); ++genprime ) {
             if (std::find(PrimeSet.begin(), PrimeSet.end(), *genprime) == PrimeSet.end()) {
