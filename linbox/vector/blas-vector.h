@@ -84,13 +84,14 @@ namespace LinBox {
     public:
 
         void resize (size_t n){
-            //std::cout<<"BlasVector resize: "<<_ptr<<" ("<<_size<<") to ";
+// std::cout<<"BlasVector resize: "<<_ptr<<" ("<<_size<<") to ";
             _rep.resize(n);
             _ptr = _rep.data();
+// std::cout<<_ptr<<" ("<<n<<")"<<std::endl;
             for (size_t i=_size;i<n;i++)
                 field().init(_rep[i]);
             _size = n;
-            //std::cout<<_ptr<<" ("<<n<<")"<<std::endl;
+// std::cout<<"BlasVector resize end."<<std::endl;
         }
 
         void resize (size_t n, const Element& val){
@@ -205,7 +206,7 @@ namespace LinBox {
         Self_t& copy(const _Vector& A){
             return *this=A;
         }
-        
+
         //! Rebind operator
         template<typename _Tp1, typename _Rep2 = typename Rebind<Storage, _Tp1>::other>
         struct rebind {
@@ -348,7 +349,7 @@ namespace LinBox {
             typename _Field::Element x; field().init(x);
             typename _Field::RandIter r(field());
             for (size_t i = 0; i < size(); ++i)
-                setEntry(i, r.random(x));                
+                setEntry(i, r.random(x));
         }
 
         template<class RandIter>
