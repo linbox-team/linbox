@@ -2,7 +2,7 @@
  * Copyright (C) 1999 Jean-Guillaume Dumas
  *
  * Written by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
- * Time-stamp: <27 Aug 20 14:03:42 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <27 Aug 20 15:18:19 Jean-Guillaume.Dumas@imag.fr>
  *
  *
  * ========LICENCE========
@@ -177,7 +177,7 @@ namespace LinBox
 
                 if (p != k) {
                     // std::cerr << "Permuting rows: " << k << " <--> " << p << std::endl;
-                    invQ.push_front( std::pair<size_t,size_t>((size_t)k,(size_t)p) );
+                    invQ.emplace_front((size_t)k,(size_t)p);
                     field().negin(determinant);
                     std::swap( *LigneA_k, LigneA[(size_t)p]);
                     std::swap( LigneL[(size_t)k], LigneL[(size_t)p]);
@@ -414,7 +414,7 @@ namespace LinBox
             // Left-Trans: P2^T * G
         for (int i=sNi;--i>=0;)
             if(i != static_cast<int>(P2[i])) {
-                dinvQ.push_front( std::pair<size_t,size_t>(Rank+(size_t)i,Rank+P2[i]) );
+                dinvQ.emplace_front( Rank+(size_t)i, Rank+P2[i] );
                 this->field().negin(determinant);
                 std::swap(dLigneL[i+Rank],dLigneL[P2[i]+Rank]);
             }
