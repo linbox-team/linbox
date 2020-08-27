@@ -2,7 +2,7 @@
  * Copyright (C) 1999 Jean-Guillaume Dumas
  *
  * Written by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
- * Time-stamp: <24 Aug 17 18:25:58 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <27 Aug 20 12:39:35 Jean-Guillaume.Dumas@imag.fr>
  *
  *
  * ========LICENCE========
@@ -114,6 +114,7 @@ namespace LinBox
 #ifdef __LINBOX_OFTEN__
         long sstep = last/40;
         if (sstep > __LINBOX_OFTEN__) sstep = __LINBOX_OFTEN__;
+        if (sstep <= 0) sstep = 1;
 #else
 #  ifdef __LINBOX_FILLIN__
         long sstep = 100;
@@ -526,6 +527,7 @@ namespace LinBox
 #ifdef __LINBOX_OFTEN__
         long sstep = last/40;
         if (sstep > __LINBOX_OFTEN__) sstep = __LINBOX_OFTEN__;
+        if (sstep <= 0) sstep = 1;
 #else
         long sstep = 1000;
 #endif
@@ -666,6 +668,7 @@ namespace LinBox
 #ifdef __LINBOX_OFTEN__
         long sstep = last/40;
         if (sstep > __LINBOX_OFTEN__) sstep = __LINBOX_OFTEN__;
+        if (sstep <= 0) sstep = 1;
 #else
         long sstep = 1000;
 #endif
