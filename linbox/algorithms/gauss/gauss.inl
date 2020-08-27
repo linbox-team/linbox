@@ -2,7 +2,7 @@
  * Copyright (C) 1999 Jean-Guillaume Dumas
  *
  * Written by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
- * Time-stamp: <27 Aug 20 12:39:35 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <27 Aug 20 13:49:06 Jean-Guillaume.Dumas@imag.fr>
  *
  *
  * ========LICENCE========
@@ -148,7 +148,7 @@ namespace LinBox
                     for (size_t l = 0; l < Ni; ++l)
                         sl +=(long) LigneA[(size_t)l].size ();
 
-                    commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
+                    commentator().report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT)
                     << "Fillin (" << Rank << "/" << Ni << ") = "
                     << sl
                     << " (" << double(sl)*100.0/double(Ni-k)/double(Nj-k) << "%, "
@@ -248,7 +248,7 @@ namespace LinBox
         for (size_t l=0; l < Ni; ++l)
             sl += (long) LigneA[(size_t)l].size ();
 
-        commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
+        commentator().report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT)
         << "Fillin (" << Rank << "/" << Ni << ") = " << sl
         << std::endl;
 #endif
@@ -256,7 +256,6 @@ namespace LinBox
         if ((Rank < Ni) || (Rank < Nj) || (Ni == 0) || (Nj == 0))
             field().assign(determinant,field().zero);
 
-        integer card;
         field().write(field().write(commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
                   << "Determinant : ", determinant)
         << " over ") << std::endl;
@@ -265,15 +264,16 @@ namespace LinBox
             Q.permute( it->first, it->second );
 
 
-        std::ostream& rep = commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT);
+        std::ostream& rep = commentator().report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT);
         Q.write(rep << "Q:= ", Tag::FileFormat::Maple) << ':' << std::endl;
         LigneL.write(rep << "L:= ", Tag::FileFormat::Maple) << ':' << std::endl;
         LigneA.write(rep << "U:= ", Tag::FileFormat::Maple) << ':' << std::endl;
         P.write(rep << "P:= ", Tag::FileFormat::Maple) << ':' << std::endl;
 
-        commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
-        << "Rank : " << Rank
-        << " over GF (" << card << ")" << std::endl;
+        field().write(
+            commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
+            << "Rank : " << Rank
+            << " over ") << std::endl;
         commentator().stop ("done", 0, "IPLR");
 
 
@@ -543,7 +543,7 @@ namespace LinBox
                 for (sl = 0, l = 0; l < Ni; ++l)
                     sl += (long)LigneA[(size_t)l].size ();
 
-                commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
+                commentator().report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT)
                 << "Fillin (" << Rank << "/" << Ni << ") = "
                 << sl
                 << " (" << double(sl)*100.0/double(Ni-k)/double(Nj-k) << "%, "
@@ -605,7 +605,7 @@ namespace LinBox
         for (size_t l=0; l < Ni; ++l)
             sl += (long)LigneA[(size_t)l].size ();
 
-        commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
+        commentator().report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT)
         << "Fillin (" << Rank << "/" << Ni << ") = " << sl
         << std::endl;
 #endif
@@ -685,7 +685,7 @@ namespace LinBox
                 for (sl = 0, l = 0; l < Ni; ++l)
                     sl +=(long) LigneA[(size_t)l].size ();
 
-                commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
+                commentator().report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT)
                 << "Fillin (" << Rank << "/" << Ni << ") = "
                 << sl
                 << " (" << double(sl)*100.0/double(Ni-k)/double(Nj-k) << "%, "
@@ -760,7 +760,7 @@ namespace LinBox
         for (size_t l=0; l < Ni; ++l)
             sl +=(long) LigneA[(size_t)l].size ();
 
-        commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
+        commentator().report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT)
         << "Fillin (" << Rank << "/" << Ni << ") = " << sl
         << std::endl;
 #endif
