@@ -38,6 +38,9 @@
 
 namespace LinBox {
 
+    /**************************************************************************/
+    /**************************************************************************/
+    /**************************************************************************/
     template <typename Field, typename Simd>
     class FFT_base<Field, Simd,
                 typename std::enable_if<Field::is_elt_integral_v
@@ -1301,6 +1304,489 @@ namespace LinBox {
                 }
                 while (l) ;
             }
+    };
+
+    /**************************************************************************/
+    /**************************************************************************/
+    /**************************************************************************/
+    template <typename Field, typename Simd>
+    class FFT_multi_base<Field, Simd,
+                typename std::enable_if<Field::is_elt_integral_v
+                    && Simd::template is_same_element<Field>::value>::type> {
+        protected:
+            /******************************************************************/
+            /* Types **********************************************************/
+            /******************************************************************/
+            using Element = typename Field::Element;
+            using Residu_t = typename Field::Residu_t;
+            using simd_vect_t = typename Simd::vect_t;
+            using SimdExtra = SimdFFT<Field, Simd>;
+
+            /******************************************************************/
+            /* Attributes *****************************************************/
+            /******************************************************************/
+            const Field *fld;
+            size_t l2n; /* log2 of size */
+            size_t n; /* 2^l2n */
+            size_t stride;
+            const Residu_t p; /* p = field characteristic */
+            const Residu_t p2; /* p2 = 2*p */
+
+            /* pow_w is the table of roots of unity. Its size is n-1.
+             * If w = primitive n-th root, then the table is:
+             *  1, w, w^2, ..., w^{n/2-1},        [ #elements = n/2 ]
+             *  1, w^2, w^4, ..., w^{n/2-2},      [ #elements = n/4 ]
+             *  1, w^4, w^8, ..., w^{n/2-4},      [ #elements = n/8 ]
+             *  ...
+             *  1, w^{n/8}, w^{n/4}, w^{3n/8},    [ #elements = 4 ]
+             *  1, w^{n/4},                       [ #elements = 2 ]
+             *  1.                                [ #elements = 1 ]
+             *
+             * pow_w_br is the same as pow_w with each subarray in bitreverse
+             * order.
+             *
+             * pow_wp[i] := precomp_b (pow_w[i])
+             * pow_wp_br[i] := precomp_b (pow_w_br[i])
+             */
+            typename Simd::aligned_vector pow_w;
+            typename Simd::aligned_vector pow_w_br;
+            typename Simd::aligned_vector pow_wp;
+            typename Simd::aligned_vector pow_wp_br;
+
+            /******************************************************************/
+            /* constructor ****************************************************/
+            /******************************************************************/
+            FFT_multi_base (const Field& F, size_t k, size_t s, Element w)
+                                            : fld(&F), l2n(k), n(1UL << l2n),
+                                              stride(s),
+                                              p(F.characteristic()), p2(p << 1),
+                                              pow_w(n-1), pow_w_br(n-1),
+                                              pow_wp(n-1), pow_wp_br(n-1) {
+                // TODO check size of p for integral
+                init_powers (w);
+            }
+
+        public:
+            void
+            DIF (Element *coeffs) const {
+                FFTSimdHelper<Simd::vect_size> h;
+                /* w = n/2, f = 1 */
+                DIF_core (coeffs, n >> 1, 1, pow_w.data(), pow_wp.data(), h);
+                reduce_coeffs_2p (coeffs, h);
+            }
+
+            void
+            DIT_reversed (Element *coeffs) const {
+                FFTSimdHelper<Simd::vect_size> h;
+                /* w = n/2, f = 1 */
+                DIT_reversed_core (coeffs, n >> 1, 1, pow_w_br.data()+ (n-2),
+                                                  pow_wp_br.data()+ (n-2), h);
+                reduce_coeffs_4p (coeffs, h);
+            }
+
+            void
+            DIT (Element *coeffs) const {
+                FFTSimdHelper<Simd::vect_size> h;
+                /* w = 1, f = n / 2 */
+                DIT_core (coeffs, 1, n >> 1, pow_w.data() + (n-2),
+                                             pow_wp.data() + (n-2), h);
+                reduce_coeffs_4p (coeffs, h);
+            }
+
+            void
+            DIF_reversed (Element *coeffs) const {
+                FFTSimdHelper<Simd::vect_size> h;
+                /* w = 1, f = n / 2 */
+                DIF_reversed_core (coeffs, 1, n >> 1, pow_w_br.data(),
+                                                      pow_wp_br.data(), h);
+                reduce_coeffs_2p (coeffs, h);
+            }
+
+       protected:
+            /******************************************************************/
+            /* reduce *********************************************************/
+            /******************************************************************/
+            /* NoSimd */
+            void
+            reduce (Element &v, const Residu_t m) const {
+                v -= (v >= m) ? m : 0;
+            }
+
+            void
+            reduce_coeffs_2p (Element *coeffs, FFTSimdHelper<1>) const {
+                for (size_t i = 0; i < n*stride; i++)
+                    reduce (coeffs[i], p);
+            }
+
+            void
+            reduce_coeffs_4p (Element *coeffs, FFTSimdHelper<1>) const {
+                for (size_t i = 0; i < n*stride; i++) {
+                    reduce (coeffs[i], p2);
+                    reduce (coeffs[i], p);
+                }
+            }
+
+            /* Simd */
+            template <size_t VecSize>
+            void
+            reduce_coeffs_2p (Element *coeffs, FFTSimdHelper<VecSize>) const {
+                simd_vect_t P = Simd::set1 (p);
+                size_t i = 0;
+                for ( ; i+Simd::vect_size <= n*stride ; i += Simd::vect_size) {
+                    simd_vect_t T = Simd::loadu (coeffs+i);
+                    T = SimdExtra::reduce (T, P);
+                    Simd::storeu (coeffs+i, T);
+                }
+                for ( ; i < n*stride; i++)
+                    reduce (coeffs[i], p);
+            }
+
+            template <size_t VecSize>
+            void
+            reduce_coeffs_4p (Element *coeffs, FFTSimdHelper<VecSize>) const {
+                simd_vect_t P = Simd::set1 (p);
+                simd_vect_t P2 = Simd::set1 (p2);
+                size_t i = 0;
+                for ( ; i+Simd::vect_size <= n*stride ; i += Simd::vect_size) {
+                    simd_vect_t T = Simd::loadu (coeffs+i);
+                    T = SimdExtra::reduce (T, P2);
+                    T = SimdExtra::reduce (T, P);
+                    Simd::storeu (coeffs+i, T);
+                }
+                for ( ; i < n*stride; i++) {
+                    reduce (coeffs[i], p2);
+                    reduce (coeffs[i], p);
+                }
+            }
+
+            /******************************************************************/
+            /* Core functions *************************************************/
+            /******************************************************************/
+            /* In the _core functions:
+             *   n : length of the array 'coeffs' (always of power of 2)
+             *   f : number of families of butterflies
+             *   w : width of butterflies
+             *   (outmost) loop invariant : 2*f*w == n
+             */
+
+            /* DIF ************************************************************/
+            /* Simd */
+            template<size_t VecSize>
+            void
+            DIF_core (Element *coeffs, size_t w, size_t f, const Element *pow,
+                        const Element *powp, FFTSimdHelper<VecSize> h) const {
+                simd_vect_t P = Simd::set1 (fld->characteristic());
+                simd_vect_t P2 = Simd::set1 (fld->characteristic() << 1);
+
+                for ( ; w > 0; pow += w, powp += w, f <<= 1, w >>= 1) {
+                    Element *Aptr = coeffs;
+                    Element *Bptr = coeffs + w*stride;
+                    for (size_t i = 0; i < f; i++)
+                        for (size_t j = 0; j < w; j += 1) {
+                            simd_vect_t alpha = Simd::set1 (pow[j]);
+                            simd_vect_t alphap = Simd::set1 (powp[j]);
+                            size_t l = 0;
+                            for ( ; l + Simd::vect_size <= stride; l += Simd::vect_size)
+                                Butterfly_DIF (Aptr+(((i<<1)*w+j)*stride+l),
+                                               Bptr+(((i<<1)*w+j)*stride+l),
+                                                        alpha, alphap, P, P2);
+                            for ( ; l < stride; l++)
+                                Butterfly_DIF (Aptr[((i<<1)*w+j)*stride+l],
+                                               Bptr[((i<<1)*w+j)*stride+l],
+                                                        pow[j], powp[j], p2);
+                        }
+                }
+            }
+
+            /* NoSimd */
+            void
+            DIF_core (Element *coeffs, size_t w, size_t f, const Element *pow,
+                        const Element *powp, FFTSimdHelper<1>) const {
+                for ( ; w > 0; pow += w, powp += w, f <<= 1, w >>= 1) {
+                    Element *Aptr = coeffs;
+                    Element *Bptr = coeffs + w*stride;
+                    for (size_t i = 0; i < f; i++)
+                        for (size_t j = 0; j < w; j += 1)
+                            for (size_t l = 0; l < stride; l++)
+                                Butterfly_DIF (Aptr[((i<<1)*w+j)*stride+l],
+                                               Bptr[((i<<1)*w+j)*stride+l],
+                                                        pow[j], powp[j], p2);
+                }
+            }
+
+            /* DIT reversed ***************************************************/
+            /* Simd */
+            template<size_t VecSize>
+            void
+            DIT_reversed_core (Element *coeffs, size_t w, size_t f,
+                                const Element *pow, const Element *powp,
+                                FFTSimdHelper<VecSize> h) const {
+                simd_vect_t P = Simd::set1 (fld->characteristic());
+                simd_vect_t P2 = Simd::set1 (fld->characteristic() << 1);
+
+                for ( ; w > 0; f <<= 1, w >>= 1, pow -= f, powp -= f) {
+                    Element *Aptr = coeffs;
+                    Element *Bptr = coeffs + w*stride;
+                    for (size_t i = 0; i < f; i++) {
+                        simd_vect_t alpha = Simd::set1 (pow[i]);
+                        simd_vect_t alphap = Simd::set1 (powp[i]);
+                        size_t j = 0;
+                        for ( ; j + Simd::vect_size <= w*stride; j += Simd::vect_size)
+                            Butterfly_DIT (Aptr+(i<<1)*w*stride+j,
+                                           Bptr+(i<<1)*w*stride+j,
+                                                        alpha, alphap, P, P2);
+                        for ( ; j < w*stride; j++)
+                            Butterfly_DIT (Aptr[(i<<1)*w*stride+j],
+                                           Bptr[(i<<1)*w*stride+j],
+                                                        pow[i], powp[i], p2);
+                    }
+                }
+            }
+
+            /* NoSimd */
+            void
+            DIT_reversed_core (Element *coeffs, size_t w, size_t f,
+                                const Element *pow, const Element *powp,
+                                FFTSimdHelper<1>) const {
+                for ( ; w > 0; f <<= 1, w >>= 1, pow -= f, powp -= f) {
+                    Element *Aptr = coeffs;
+                    Element *Bptr = coeffs + w*stride;
+                    for (size_t i = 0; i < f; i++) {
+                        Element alpha = pow[i];
+                        Element alphap = powp[i];
+                        for (size_t j = 0; j < w; j += 1)
+                            for (size_t l = 0; l < stride; l++)
+                                Butterfly_DIT (Aptr[((i<<1)*w+j)*stride+l],
+                                               Bptr[((i<<1)*w+j)*stride+l],
+                                                             alpha, alphap, p2);
+                    }
+                }
+            }
+
+            /* DIT ************************************************************/
+            /* Simd */
+            template<size_t VecSize>
+            void
+            DIT_core (Element *coeffs, size_t w, size_t f, const Element *pow,
+                        const Element *powp, FFTSimdHelper<VecSize> h) const {
+                simd_vect_t P = Simd::set1 (fld->characteristic());
+                simd_vect_t P2 = Simd::set1 (fld->characteristic() << 1);
+
+                for ( ; w < n; w <<= 1, f >>= 1, pow -= w, powp -= w) {
+                    Element *Aptr = coeffs;
+                    Element *Bptr = coeffs + w*stride;
+                    for (size_t i = 0; i < f; i++)
+                        for (size_t j = 0; j < w; j += 1) {
+                            simd_vect_t alpha = Simd::set1 (pow[j]);
+                            simd_vect_t alphap = Simd::set1 (powp[j]);
+                            size_t l = 0;
+                            for ( ; l + Simd::vect_size <= stride; l += Simd::vect_size)
+                                Butterfly_DIT (Aptr+((i<<1)*w+j)*stride+l,
+                                               Bptr+((i<<1)*w+j)*stride+l,
+                                                        alpha, alphap, P, P2);
+                            for ( ; l < stride; l++)
+                                Butterfly_DIT (Aptr[((i<<1)*w+j)*stride+l],
+                                               Bptr[((i<<1)*w+j)*stride+l],
+                                                        pow[j], powp[j], p2);
+                        }
+                }
+            }
+
+            /* NoSimd */
+            void
+            DIT_core (Element *coeffs, size_t w, size_t f, const Element *pow,
+                        const Element *powp, FFTSimdHelper<1>) const {
+                for ( ; w < n; w <<= 1, f >>= 1, pow -= w, powp -= w) {
+                    Element *Aptr = coeffs;
+                    Element *Bptr = coeffs + w*stride;
+                    for (size_t i = 0; i < f; i++)
+                        for (size_t j = 0; j < w; j += 1)
+                            for (size_t l = 0; l < stride; l++)
+                                Butterfly_DIT (Aptr[((i<<1)*w+j)*stride+l],
+                                               Bptr[((i<<1)*w+j)*stride+l],
+                                                        pow[j], powp[j], p2);
+                }
+            }
+
+            /* DIF reversed ***************************************************/
+            /* Simd */
+            template<size_t VecSize>
+            void
+            DIF_reversed_core (Element *coeffs, size_t w, size_t f,
+                                const Element *pow, const Element *powp,
+                                FFTSimdHelper<VecSize> h) const {
+                simd_vect_t P = Simd::set1 (fld->characteristic());
+                simd_vect_t P2 = Simd::set1 (fld->characteristic() << 1);
+
+                for ( ; w < n; pow += f, powp += f, w <<= 1, f >>= 1) {
+                    Element *Aptr = coeffs;
+                    Element *Bptr = coeffs + w*stride;
+                    for (size_t i = 0; i < f; i++) {
+                        simd_vect_t alpha = Simd::set1 (pow[i]);
+                        simd_vect_t alphap = Simd::set1 (powp[i]);
+                        size_t j = 0;
+                        for ( ; j + Simd::vect_size <= w*stride; j += Simd::vect_size)
+                            Butterfly_DIF (Aptr+(i<<1)*w*stride+j,
+                                           Bptr+(i<<1)*w*stride+j,
+                                                        alpha, alphap, P, P2);
+                        for ( ; j < w*stride; j++)
+                            Butterfly_DIF (Aptr[(i<<1)*w*stride+j],
+                                           Bptr[(i<<1)*w*stride+j],
+                                                        pow[i], powp[i], p2);
+                    }
+                }
+            }
+
+            /* NoSimd */
+            void
+            DIF_reversed_core (Element *coeffs, size_t w, size_t f,
+                                const Element *pow, const Element *powp,
+                                FFTSimdHelper<1>) const {
+                for ( ; w < n; pow += f, powp += f, w <<= 1, f >>= 1) {
+                    Element *Aptr = coeffs;
+                    Element *Bptr = coeffs + w*stride;
+                    for (size_t i = 0; i < f; i++) {
+                        Element alpha = pow[i];
+                        Element alphap = powp[i];
+                        for (size_t j = 0; j < w; j += 1)
+                            for (size_t l = 0; l < stride; l++)
+                                Butterfly_DIF (Aptr[((i<<1)*w+j)*stride+l],
+                                               Bptr[((i<<1)*w+j)*stride+l],
+                                                             alpha, alphap, p2);
+                    }
+                }
+            }
+
+            /******************************************************************/
+            /* Butterflies ****************************************************/
+            /******************************************************************/
+            /* Compute A[i]+B[i], (A[i]-B[i])*alpha[i] using Harvey's algorithm,
+             * for 0 <= i < Simd::vect_size
+             * Input must satisfy:
+             *  - 0 <= A[i],B[i] < 2*p
+             *  - 0 <= alpha[i] < p
+             *  - p < 2^#nbits(Element) / 4
+             *  - alphap[i] = Floor(alpha[i] * 2^#nbits(Element) / p)
+             * Ensure that output satisfy:
+             *  - 0 <= A[i],B[i] < 2*p
+             *
+             * Note: maybe 2^#nbits(Element) should be maxCardinality ? (in p<)
+             */
+            void
+            Butterfly_DIF (Element& A, Element& B, const Element& alpha,
+                                                const Element& alphap,
+                                                const Element& p2) const {
+                Element tmp = A;
+                A += B;
+                reduce (A, p2); /* A -= 2p if A >= 2p */
+                B = tmp + (p2 - B);
+                this->fld->mul_precomp_b_without_reduction (B, B, alpha, alphap);
+            }
+
+            void
+            Butterfly_DIF (Element *Aptr, Element *Bptr,
+                            const simd_vect_t& alpha, const simd_vect_t& alphap,
+                            const simd_vect_t& P, const simd_vect_t& P2) const {
+                simd_vect_t A, B, T1, T2, T3, T4;
+                A = Simd::loadu (Aptr);
+                B = Simd::loadu (Bptr);
+
+                /* A+B mod 2p and store it in Aptr */
+                T1 = SimdExtra::add_mod (A, B, P2);
+                Simd::storeu (Aptr, T1);
+                /* A-B mod 2p (computed as A+(2p-B)) */
+                T2 = Simd::sub (P2, B);
+                T3 = Simd::add (A, T2);
+                /* multiply A-B by alpha and store it in Bptr */
+                T4 = SimdExtra::mul_mod (T3, alpha, P, alphap);
+                Simd::storeu (Bptr, T4);
+            }
+
+            /* Compute A[i]+B[i]*alpha[i], A[i]-B[i]*alpha[i] using Harvey's
+             * algorithm, for 0 <= i < simd::vect_size.
+             * Input must satisfy:
+             *  - 0 <= A[i],B[i] < 4*p
+             *  - 0 <= alpha[i] < p
+             *  - p < 2^#nbits(Element) / 4
+             *  - alphap[i] = Floor(alpha[i] * 2^#nbits(Element) / p)
+             * Ensure that output satisfy:
+             *  - 0 <= A[i],B[i] < 4*p
+             *
+             * Note: maybe 2^#nbits(Element) should be maxCardinality ? (in p<)
+             */
+            void
+            Butterfly_DIT (Element& A, Element& B, const Element& alpha,
+                                                const Element& alphap,
+                                                const Element& p2) const {
+                reduce (A, p2); /* A -= 2p if A >= 2p */
+                Element tmp;
+                this->fld->mul_precomp_b_without_reduction (tmp, B, alpha, alphap);
+                B = A + (p2 - tmp);
+                A += tmp;
+            }
+
+            void
+            Butterfly_DIT (Element *Aptr, Element *Bptr,
+                            const simd_vect_t& alpha, const simd_vect_t& alphap,
+                            const simd_vect_t& P, const simd_vect_t& P2) const {
+                simd_vect_t A, B, T1, T2, T3;
+                A = Simd::loadu (Aptr);
+                B = Simd::loadu (Bptr);
+
+                T1 = SimdExtra::reduce (A, P2); /* A - 2*p if A >= 2p */
+                /* B*alpha */
+                T2 = SimdExtra::mul_mod (B, alpha, P, alphap);
+                /* A+B*alpha */
+                A = Simd::add (T1, T2);
+                Simd::storeu (Aptr, A);
+                /* A-B*alpha (computed as A+(2p-B*alpha)) */
+                T3 = Simd::sub (P2, T2);
+                B = Simd::add (T1, T3);
+                Simd::storeu (Bptr, B);
+            }
+
+            /******************************************************************/
+            /* Utils **********************************************************/
+            /******************************************************************/
+            void
+            init_powers (const Element & w) {
+                typename Field::Compute_t t;
+                /* compute w^i and set first subarray */
+                this->fld->assign (pow_w[0], this->fld->one);
+                this->fld->precomp_b (t, pow_w[0]);
+                pow_wp[0] = static_cast<Element> (t);
+                for (size_t i = 1; i < n/2; i++) {
+                    this->fld->mul (pow_w[i], pow_w[i-1], w);
+                    this->fld->precomp_b (t, pow_w[i]);
+                    pow_wp[i] = static_cast<Element> (t);
+                }
+
+                /* Other elements can be set from previously computed values */
+                size_t idx = n/2; /* index for next value to be written in */
+                for (size_t k=2; k <= n/2; k<<=1)
+                    for(size_t i = 0; i < n/2; i+=k, idx++) {
+                        pow_w[idx] = pow_w[i];
+                        pow_wp[idx] = pow_wp[i];
+                    }
+
+                /* init powers in bitreverse order */
+                size_t l = l2n, len = n >> 1, base_idx = 0;
+                do
+                {
+                    l--;
+                    for (size_t i = 0; i < len; i++)
+                    {
+                        size_t i_br = FFT_utils::bitreverse (i, l);
+                        pow_w_br[base_idx + i] = pow_w[base_idx + i_br];
+                        pow_wp_br[base_idx + i] = pow_wp[base_idx + i_br];
+                    }
+                    base_idx += len;
+                    len >>= 1;
+                }
+                while (l) ;
+            }
+
+
     };
 }
 #endif /* __LINBOX_fft_integral_INL */
