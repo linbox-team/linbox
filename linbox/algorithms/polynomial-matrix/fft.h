@@ -155,8 +155,8 @@ namespace LinBox {
             using Element = typename Field::Element;
 
         public:
-            FFT_multi (const Field& F, size_t k, size_t s, Element w = 0)
-                : FFT_multi_base<Field, Simd>(F, k, s, check_args(F, k, s, w)) {
+            FFT_multi (const Field& F, size_t k, Element w = 0)
+                : FFT_multi_base<Field, Simd>(F, k, check_args(F, k, w)) {
             }
 
             /******************************************************************/
@@ -172,8 +172,8 @@ namespace LinBox {
              *  - is written in bitreversed order.
              */
             void
-            FFT_direct (Element *coeffs) const {
-                this->DIF (coeffs); /* or DIT_reversed */
+            FFT_direct (Element *coeffs, size_t stride) const {
+                this->DIF (coeffs, stride); /* or DIT_reversed */
             }
 
             /* Perform an inverse FFT in place on the array 'coeffs' of size n.
@@ -185,8 +185,8 @@ namespace LinBox {
              *  - is written in natural order
              */
             void
-            FFT_inverse (Element *coeffs) const {
-                this->DIT (coeffs); /* or DIF_reversed */
+            FFT_inverse (Element *coeffs, size_t stride) const {
+                this->DIT (coeffs, stride); /* or DIF_reversed */
             }
 
 
@@ -206,11 +206,6 @@ namespace LinBox {
             size_t
             log2_size () const {
                 return this->l2n;
-            }
-
-            size_t
-            stride () const {
-                return this->stride;
             }
 
             const Element &
@@ -237,11 +232,9 @@ namespace LinBox {
 
         private:
             static Element
-            check_args (const Field& fld, size_t k, size_t s, Element w) {
+            check_args (const Field& fld, size_t k, Element w) {
                 if (!k)
                     throw LinBoxError ("FFT_multi: k must be positive");
-                if (!s)
-                    throw LinBoxError ("FFT_multi: stride must be positive");
 
                 if (w == 0)
                     return FFT_utils::compute_primitive_root (fld, k);
