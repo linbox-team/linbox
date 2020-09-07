@@ -1328,7 +1328,6 @@ namespace LinBox {
             const Field *fld;
             size_t l2n; /* log2 of size */
             size_t n; /* 2^l2n */
-            size_t stride;
             const Residu_t p; /* p = field characteristic */
             const Residu_t p2; /* p2 = 2*p */
 
@@ -1356,9 +1355,8 @@ namespace LinBox {
             /******************************************************************/
             /* constructor ****************************************************/
             /******************************************************************/
-            FFT_multi_base (const Field& F, size_t k, size_t s, Element w)
+            FFT_multi_base (const Field& F, size_t k, Element w)
                                             : fld(&F), l2n(k), n(1UL << l2n),
-                                              stride(s),
                                               p(F.characteristic()), p2(p << 1),
                                               pow_w(n-1), pow_w_br(n-1),
                                               pow_wp(n-1), pow_wp_br(n-1) {
@@ -1368,38 +1366,40 @@ namespace LinBox {
 
         public:
             void
-            DIF (Element *coeffs) const {
+            DIF (Element *coeffs, size_t stride) const {
                 FFTSimdHelper<Simd::vect_size> h;
                 /* w = n/2, f = 1 */
-                DIF_core (coeffs, n >> 1, 1, pow_w.data(), pow_wp.data(), h);
-                reduce_coeffs_2p (coeffs, h);
+                DIF_core (coeffs, n >> 1, 1, stride, pow_w.data(),
+                                                     pow_wp.data(), h);
+                reduce_coeffs_2p (coeffs, stride, h);
             }
 
             void
-            DIT_reversed (Element *coeffs) const {
+            DIT_reversed (Element *coeffs, size_t stride) const {
                 FFTSimdHelper<Simd::vect_size> h;
                 /* w = n/2, f = 1 */
-                DIT_reversed_core (coeffs, n >> 1, 1, pow_w_br.data()+ (n-2),
-                                                  pow_wp_br.data()+ (n-2), h);
-                reduce_coeffs_4p (coeffs, h);
+                DIT_reversed_core (coeffs, n >> 1, 1, stride,
+                                                    pow_w_br.data()+ (n-2),
+                                                    pow_wp_br.data()+ (n-2), h);
+                reduce_coeffs_4p (coeffs, stride, h);
             }
 
             void
-            DIT (Element *coeffs) const {
+            DIT (Element *coeffs, size_t stride) const {
                 FFTSimdHelper<Simd::vect_size> h;
                 /* w = 1, f = n / 2 */
-                DIT_core (coeffs, 1, n >> 1, pow_w.data() + (n-2),
-                                             pow_wp.data() + (n-2), h);
-                reduce_coeffs_4p (coeffs, h);
+                DIT_core (coeffs, 1, n >> 1, stride, pow_w.data() + (n-2),
+                                                     pow_wp.data() + (n-2), h);
+                reduce_coeffs_4p (coeffs, stride, h);
             }
 
             void
-            DIF_reversed (Element *coeffs) const {
+            DIF_reversed (Element *coeffs, size_t stride) const {
                 FFTSimdHelper<Simd::vect_size> h;
                 /* w = 1, f = n / 2 */
-                DIF_reversed_core (coeffs, 1, n >> 1, pow_w_br.data(),
-                                                      pow_wp_br.data(), h);
-                reduce_coeffs_2p (coeffs, h);
+                DIF_reversed_core (coeffs, 1, n >> 1, stride, pow_w_br.data(),
+                                                        pow_wp_br.data(), h);
+                reduce_coeffs_2p (coeffs, stride, h);
             }
 
        protected:
@@ -1413,13 +1413,15 @@ namespace LinBox {
             }
 
             void
-            reduce_coeffs_2p (Element *coeffs, FFTSimdHelper<1>) const {
+            reduce_coeffs_2p (Element *coeffs, size_t stride,
+                                                    FFTSimdHelper<1>) const {
                 for (size_t i = 0; i < n*stride; i++)
                     reduce (coeffs[i], p);
             }
 
             void
-            reduce_coeffs_4p (Element *coeffs, FFTSimdHelper<1>) const {
+            reduce_coeffs_4p (Element *coeffs, size_t stride,
+                                                    FFTSimdHelper<1>) const {
                 for (size_t i = 0; i < n*stride; i++) {
                     reduce (coeffs[i], p2);
                     reduce (coeffs[i], p);
@@ -1429,7 +1431,8 @@ namespace LinBox {
             /* Simd */
             template <size_t VecSize>
             void
-            reduce_coeffs_2p (Element *coeffs, FFTSimdHelper<VecSize>) const {
+            reduce_coeffs_2p (Element *coeffs, size_t stride,
+                                                FFTSimdHelper<VecSize>) const {
                 simd_vect_t P = Simd::set1 (p);
                 size_t i = 0;
                 for ( ; i+Simd::vect_size <= n*stride ; i += Simd::vect_size) {
@@ -1443,7 +1446,8 @@ namespace LinBox {
 
             template <size_t VecSize>
             void
-            reduce_coeffs_4p (Element *coeffs, FFTSimdHelper<VecSize>) const {
+            reduce_coeffs_4p (Element *coeffs, size_t stride,
+                                                FFTSimdHelper<VecSize>) const {
                 simd_vect_t P = Simd::set1 (p);
                 simd_vect_t P2 = Simd::set1 (p2);
                 size_t i = 0;
@@ -1473,8 +1477,9 @@ namespace LinBox {
             /* Simd */
             template<size_t VecSize>
             void
-            DIF_core (Element *coeffs, size_t w, size_t f, const Element *pow,
-                        const Element *powp, FFTSimdHelper<VecSize> h) const {
+            DIF_core (Element *coeffs, size_t w, size_t f, size_t stride,
+                                        const Element *pow, const Element *powp,
+                                        FFTSimdHelper<VecSize> h) const {
                 simd_vect_t P = Simd::set1 (fld->characteristic());
                 simd_vect_t P2 = Simd::set1 (fld->characteristic() << 1);
 
@@ -1500,8 +1505,9 @@ namespace LinBox {
 
             /* NoSimd */
             void
-            DIF_core (Element *coeffs, size_t w, size_t f, const Element *pow,
-                        const Element *powp, FFTSimdHelper<1>) const {
+            DIF_core (Element *coeffs, size_t w, size_t f, size_t stride,
+                                        const Element *pow, const Element *powp,
+                                        FFTSimdHelper<1>) const {
                 for ( ; w > 0; pow += w, powp += w, f <<= 1, w >>= 1) {
                     Element *Aptr = coeffs;
                     Element *Bptr = coeffs + w*stride;
@@ -1519,8 +1525,9 @@ namespace LinBox {
             template<size_t VecSize>
             void
             DIT_reversed_core (Element *coeffs, size_t w, size_t f,
-                                const Element *pow, const Element *powp,
-                                FFTSimdHelper<VecSize> h) const {
+                                        size_t stride,
+                                        const Element *pow, const Element *powp,
+                                        FFTSimdHelper<VecSize> h) const {
                 simd_vect_t P = Simd::set1 (fld->characteristic());
                 simd_vect_t P2 = Simd::set1 (fld->characteristic() << 1);
 
@@ -1546,8 +1553,9 @@ namespace LinBox {
             /* NoSimd */
             void
             DIT_reversed_core (Element *coeffs, size_t w, size_t f,
-                                const Element *pow, const Element *powp,
-                                FFTSimdHelper<1>) const {
+                                        size_t stride,
+                                        const Element *pow, const Element *powp,
+                                        FFTSimdHelper<1>) const {
                 for ( ; w > 0; f <<= 1, w >>= 1, pow -= f, powp -= f) {
                     Element *Aptr = coeffs;
                     Element *Bptr = coeffs + w*stride;
@@ -1567,8 +1575,9 @@ namespace LinBox {
             /* Simd */
             template<size_t VecSize>
             void
-            DIT_core (Element *coeffs, size_t w, size_t f, const Element *pow,
-                        const Element *powp, FFTSimdHelper<VecSize> h) const {
+            DIT_core (Element *coeffs, size_t w, size_t f, size_t stride,
+                                        const Element *pow, const Element *powp,
+                                        FFTSimdHelper<VecSize> h) const {
                 simd_vect_t P = Simd::set1 (fld->characteristic());
                 simd_vect_t P2 = Simd::set1 (fld->characteristic() << 1);
 
@@ -1594,8 +1603,9 @@ namespace LinBox {
 
             /* NoSimd */
             void
-            DIT_core (Element *coeffs, size_t w, size_t f, const Element *pow,
-                        const Element *powp, FFTSimdHelper<1>) const {
+            DIT_core (Element *coeffs, size_t w, size_t f, size_t stride,
+                                        const Element *pow, const Element *powp,
+                                        FFTSimdHelper<1>) const {
                 for ( ; w < n; w <<= 1, f >>= 1, pow -= w, powp -= w) {
                     Element *Aptr = coeffs;
                     Element *Bptr = coeffs + w*stride;
@@ -1613,8 +1623,9 @@ namespace LinBox {
             template<size_t VecSize>
             void
             DIF_reversed_core (Element *coeffs, size_t w, size_t f,
-                                const Element *pow, const Element *powp,
-                                FFTSimdHelper<VecSize> h) const {
+                                        size_t stride,
+                                        const Element *pow, const Element *powp,
+                                        FFTSimdHelper<VecSize> h) const {
                 simd_vect_t P = Simd::set1 (fld->characteristic());
                 simd_vect_t P2 = Simd::set1 (fld->characteristic() << 1);
 
@@ -1640,8 +1651,9 @@ namespace LinBox {
             /* NoSimd */
             void
             DIF_reversed_core (Element *coeffs, size_t w, size_t f,
-                                const Element *pow, const Element *powp,
-                                FFTSimdHelper<1>) const {
+                                        size_t stride,
+                                        const Element *pow, const Element *powp,
+                                        FFTSimdHelper<1>) const {
                 for ( ; w < n; pow += f, powp += f, w <<= 1, f >>= 1) {
                     Element *Aptr = coeffs;
                     Element *Bptr = coeffs + w*stride;
