@@ -39,6 +39,7 @@ PERFPUBLISHERFILE=benchmarks-report.xml
 BENCH_BASIC=               \
 		benchmark-example\
 		benchmark-fft\
+		benchmark-polynomial-matrix-mul-fft \
 		benchmark-dense-solve\
 		benchmark-order-basis \
 	        benchmark-solve-cra
@@ -97,6 +98,7 @@ benchmarks: ${EXTRA_PROGRAMS}
 benchmark_example_SOURCES       = benchmark-example.C
 benchmark_order_basis_SOURCES       = benchmark-order-basis.C
 benchmark_fft_SOURCES       = benchmark-fft.C
+benchmark_polynomial_matrix_mul_fft_SOURCES       = benchmark-polynomial-matrix-mul-fft.C
 benchmark_dense_solve_SOURCES       = benchmark-dense-solve.C
 benchmark_solve_cra_SOURCES       = benchmark-solve-cra.C
 
