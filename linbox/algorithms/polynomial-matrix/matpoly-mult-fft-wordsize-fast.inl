@@ -59,57 +59,23 @@ namespace LinBox {
 			: _field(&F), _p(field().cardinality()),  _BMD(F){}
 
 		template<typename Matrix1, typename Matrix2, typename Matrix3>
-		void mul (Matrix1 &c, const Matrix2 &a, const Matrix3 &b,
-                                                size_t max_rowdeg=0) const {
+        void mul (Matrix1 &c, const Matrix2 &a, const Matrix3 &b,
+                                                    size_t max_rowdeg=0) const {
             linbox_check(a.coldim()==b.rowdim());
-			size_t m = a.rowdim();
-			size_t n = a.coldim();
-			size_t k = b.coldim();
-			size_t deg  = (max_rowdeg ? max_rowdeg : a.size()+b.size()-2);
-			size_t lpts = 0;
-			size_t pts  = 1; while (pts <= deg) { pts= pts<<1; ++lpts; }
+            size_t deg  = (max_rowdeg ? max_rowdeg : a.size()+b.size()-2);
+            size_t lpts = 0;
+            size_t pts  = 1; while (pts <= deg) { pts= pts<<1; ++lpts; }
 
-            /* Carry the computation with polynomial of matrices */
-            PMatrix A (field(), a.rowdim(), a.coldim(), pts);
-            PMatrix B (field(), b.rowdim(), b.coldim(), pts);
-            PMatrix C (field(), c.rowdim(), c.coldim(), pts);
-            A.copy (a, 0, a.size()-1);
-            B.copy (b, 0, b.size()-1);
-
-            /* check FFT is possible */
-			if ((_p-1) % pts != 0) {
-				std::cout<<"Error the prime is not a FFTPrime or it has too small power of 2\n";
-				std::cout<<"prime="<<_p<<std::endl;
-				std::cout<<"nbr points="<<pts<<std::endl;
-				throw LinboxError("LinBox ERROR: bad FFT Prime\n");
-			}
-
-            /* */
-            FFT_multi<Field> FFTer (field(), lpts);
-            FFT_multi<Field> FFTinv (field(), lpts, FFTer.invroot());
-
-			/* FFT transformation on the input matrices */
-            FFTer.FFT_direct (A.getPointer(), m*n);
-            FFTer.FFT_direct (B.getPointer(), n*k);
-
-			/* Pointwise multiplication */
-			for (size_t i = 0; i < pts; i++) {
-                auto Mci = C[i];
-				_BMD.mul(Mci, A[i], B[i]);
-                C.setMatrix (Mci, i); /* normally does nothing */
-            }
-
-			/* Inverse FFT on the output matrix */
-			FFTinv.FFT_inverse (C.getPointer(), m*k);
-
-			/* Divide by pts = 2^lpts */
-			typename Field::Element inv_pts;
-			field().init(inv_pts, pts);
-			field().invin(inv_pts);
-			FFLAS::fscalin(field(), m*k*(deg+1), inv_pts, C.getPointer(), 1);
-
-            /* */
-            c.copy (C, 0, deg);
+            /* padd the input a and b to 2^lpts and convert to MatrixP
+             * representation if necessary.
+             */
+            MatrixP a2(field(),a.rowdim(),a.coldim(),pts);
+            MatrixP b2(field(),b.rowdim(),b.coldim(),pts);
+            a2.copy(a,0,a.size()-1);
+            b2.copy(b,0,b.size()-1);
+            MatrixP c2(field(),c.rowdim(),c.coldim(),pts);
+            mul_fft (lpts, c2, a2, b2);
+            c.copy(c2,0,deg);
         }
 
 		// a,b and c must have size: 2^lpts
@@ -126,7 +92,7 @@ namespace LinBox {
 			MatrixP a_copy(field(),a.rowdim(),a.coldim(),pts);
 			MatrixP b_copy(field(),b.rowdim(),b.coldim(),pts);
 			a_copy.copy(a);
-			b_copy.copy(b);		       
+			b_copy.copy(b);
 #endif
 
 #ifdef FFT_PROFILER
