@@ -212,10 +212,11 @@ namespace LinBox {
                                                                    w >>= 1) {
                     Element *Aptr = coeffs;
                     Element *Bptr = coeffs + w;
-                    for (size_t i = 0; i < f; i++)
-                        for (size_t j = 0; j < w; j += Simd::vect_size)
-                            Butterfly_DIF (Aptr+(i<<1)*w+j, Bptr+(i<<1)*w+j,
-                                                        pow+j, powp+j, P, P2);
+                    for (size_t i = 0; i < f; i++, Aptr += w, Bptr += w)
+                        for (size_t j = 0; j < w; j += Simd::vect_size,
+                                                    Aptr += Simd::vect_size,
+                                                    Bptr += Simd::vect_size)
+                            Butterfly_DIF (Aptr, Bptr, pow+j, powp+j, P, P2);
                 }
 
                 DIF_core_laststeps (coeffs, w, f, pow, powp, P, P2, h);
@@ -228,10 +229,9 @@ namespace LinBox {
                 for ( ; w > 0; pow += w, powp += w, f <<= 1, w >>= 1) {
                     Element *Aptr = coeffs;
                     Element *Bptr = coeffs + w;
-                    for (size_t i = 0; i < f; i++)
-                        for (size_t j = 0; j < w; j += 1)
-                            Butterfly_DIF (Aptr[(i<<1)*w+j], Bptr[(i<<1)*w+j],
-                                                        pow[j], powp[j], p2);
+                    for (size_t i = 0; i < f; i++, Aptr += w, Bptr += w)
+                        for (size_t j = 0; j < w; j++, Aptr++, Bptr++)
+                            Butterfly_DIF (*Aptr, *Bptr, pow[j], powp[j], p2);
                 }
             }
 
@@ -249,12 +249,13 @@ namespace LinBox {
                                                                 powp -= f) {
                     Element *Aptr = coeffs;
                     Element *Bptr = coeffs + w;
-                    for (size_t i = 0; i < f; i++) {
+                    for (size_t i = 0; i < f; i++, Aptr += w, Bptr += w) {
                         simd_vect_t alpha = Simd::set1 (pow[i]);
                         simd_vect_t alphap = Simd::set1 (powp[i]);
-                        for (size_t j = 0; j < w; j += Simd::vect_size)
-                            Butterfly_DIT (Aptr+(i<<1)*w+j, Bptr+(i<<1)*w+j,
-                                                        alpha, alphap, P, P2);
+                        for (size_t j = 0; j < w; j += Simd::vect_size,
+                                                    Aptr += Simd::vect_size,
+                                                    Bptr += Simd::vect_size)
+                            Butterfly_DIT (Aptr, Bptr, alpha, alphap, P, P2);
                     }
                 }
 
@@ -269,12 +270,11 @@ namespace LinBox {
                 for ( ; w > 0; f <<= 1, w >>= 1, pow -= f, powp -= f) {
                     Element *Aptr = coeffs;
                     Element *Bptr = coeffs + w;
-                    for (size_t i = 0; i < f; i++) {
+                    for (size_t i = 0; i < f; i++, Aptr += w, Bptr += w) {
                         Element alpha = pow[i];
                         Element alphap = powp[i];
-                        for (size_t j = 0; j < w; j += 1)
-                            Butterfly_DIT (Aptr[(i<<1)*w+j], Bptr[(i<<1)*w+j],
-                                                             alpha, alphap, p2);
+                        for (size_t j = 0; j < w; j++, Aptr++, Bptr++)
+                            Butterfly_DIT (*Aptr, *Bptr, alpha, alphap, p2);
                     }
                 }
             }
@@ -293,10 +293,11 @@ namespace LinBox {
                 for ( ; w < n; w <<= 1, f >>= 1, pow -= w, powp -= w) {
                     Element *Aptr = coeffs;
                     Element *Bptr = coeffs + w;
-                    for (size_t i = 0; i < f; i++)
-                        for (size_t j = 0; j < w; j += Simd::vect_size)
-                            Butterfly_DIT (Aptr+(i<<1)*w+j, Bptr+(i<<1)*w+j,
-                                            pow+j, powp+j, P, P2);
+                    for (size_t i = 0; i < f; i++, Aptr += w, Bptr += w)
+                        for (size_t j = 0; j < w; j += Simd::vect_size,
+                                                    Aptr += Simd::vect_size,
+                                                    Bptr += Simd::vect_size)
+                            Butterfly_DIT (Aptr, Bptr, pow+j, powp+j, P, P2);
                 }
             }
 
@@ -309,10 +310,9 @@ namespace LinBox {
                 for ( ; w < bound; w <<= 1, f >>= 1, pow -= w, powp -= w) {
                     Element *Aptr = coeffs;
                     Element *Bptr = coeffs + w;
-                    for (size_t i = 0; i < f; i++)
-                        for (size_t j = 0; j < w; j += 1)
-                            Butterfly_DIT (Aptr[(i<<1)*w+j], Bptr[(i<<1)*w+j],
-                                                        pow[j], powp[j], p2);
+                    for (size_t i = 0; i < f; i++, Aptr += w, Bptr += w)
+                        for (size_t j = 0; j < w; j++, Aptr++, Bptr++)
+                            Butterfly_DIT (*Aptr, *Bptr, pow[j], powp[j], p2);
                 }
             }
 
@@ -331,12 +331,13 @@ namespace LinBox {
                 for ( ; w < n; pow += f, powp += f, w <<= 1, f >>= 1) {
                     Element *Aptr = coeffs;
                     Element *Bptr = coeffs + w;
-                    for (size_t i = 0; i < f; i++) {
+                    for (size_t i = 0; i < f; i++, Aptr += w, Bptr += w) {
                         simd_vect_t alpha = Simd::set1 (pow[i]);
                         simd_vect_t alphap = Simd::set1 (powp[i]);
-                        for (size_t j = 0; j < w; j += Simd::vect_size)
-                            Butterfly_DIF (Aptr+(i<<1)*w+j, Bptr+(i<<1)*w+j,
-                                                        alpha, alphap, P, P2);
+                        for (size_t j = 0; j < w; j += Simd::vect_size,
+                                                    Aptr += Simd::vect_size,
+                                                    Bptr += Simd::vect_size)
+                            Butterfly_DIF (Aptr, Bptr, alpha, alphap, P, P2);
                     }
                 }
             }
@@ -350,12 +351,11 @@ namespace LinBox {
                 for ( ; w < bound; pow += f, powp += f, w <<= 1, f >>= 1) {
                     Element *Aptr = coeffs;
                     Element *Bptr = coeffs + w;
-                    for (size_t i = 0; i < f; i++) {
+                    for (size_t i = 0; i < f; i++, Aptr += w, Bptr += w) {
                         Element alpha = pow[i];
                         Element alphap = powp[i];
-                        for (size_t j = 0; j < w; j += 1)
-                            Butterfly_DIF (Aptr[(i<<1)*w+j], Bptr[(i<<1)*w+j],
-                                                             alpha, alphap, p2);
+                        for (size_t j = 0; j < w; j++, Aptr++, Bptr++)
+                            Butterfly_DIF (*Aptr, *Bptr, alpha, alphap, p2);
                     }
                 }
             }
@@ -876,6 +876,163 @@ namespace LinBox {
                 DIT_reversed_core (coeffs, w, f, pow, powp, FFTSimdHelper<1>());
             }
 
+            /* For vect_size == 2 */
+            void
+            DIT_reversed_core_laststeps (Element *coeffs, size_t w, size_t f,
+                                    const Element *pow, const Element *powp,
+                                    const simd_vect_t& P, const simd_vect_t& P2,
+                                    FFTSimdHelper<2>) const {
+                const constexpr size_t incr = Simd::vect_size << 1;
+                if (n < incr) {
+                    DIT_reversed_core_laststeps (coeffs, w, f, pow, powp, P, P2,
+                                                            FFTSimdHelper<1>());
+                } else {
+                    for (size_t i = 0; i < f; i += 2, coeffs += incr) {
+                        simd_vect_t V1, V2, W, Wp;
+
+                        V1 = Simd::load (coeffs);
+                        V2 = Simd::load (coeffs + Simd::vect_size);
+                        W = Simd::load (pow+i);
+                        Wp = Simd::load (powp+i);
+
+                        /* transform V1 = [A B], V2 = [C D]
+                         *      into V1 = [A C], V2 = [B D]
+                         */
+                        SimdExtra::unpacklohi (V1, V2, V1, V2);
+
+                        /*** last step ****************************************/
+                        Butterfly_DIT (V1, V2, W, Wp, P, P2);
+
+                        /* Result in T = [A C]  and V2 = [B D]
+                         * Transform to V1 = [A B], V2 = [C D] and store
+                         */
+                        SimdExtra::unpacklohi (V1, V2, V1, V2);
+                        Simd::store (coeffs, V1);
+                        Simd::store (coeffs + Simd::vect_size, V2);
+                    }
+                }
+            }
+
+            /* For vect_size == 4 */
+            void
+            DIT_reversed_core_laststeps (Element *coeffs, size_t w, size_t f,
+                                    const Element *pow, const Element *powp,
+                                    const simd_vect_t& P, const simd_vect_t& P2,
+                                    FFTSimdHelper<4>) const {
+                const constexpr size_t incr = Simd::vect_size << 1;
+                if (n < incr) {
+                    DIT_reversed_core_laststeps (coeffs, w, f, pow, powp, P, P2,
+                                                        FFTSimdHelper<1>());
+                } else {
+                    const Element *pow0 = pow - (f << 1);
+                    const Element *powp0 = powp - (f << 1);
+                    for (size_t i = 0; i < f; i += 2, coeffs += incr,
+                                                    pow0 += Simd::vect_size,
+                                                    powp0 += Simd::vect_size) {
+                        simd_vect_t V1, V2, W, Wp;
+
+                        V1 = Simd::load (coeffs);
+                        V2 = Simd::load (coeffs + Simd::vect_size);
+                        W = Simd::set (pow[i], pow[i+1], pow[i], pow[i+1]);
+                        Wp = Simd::set (powp[i], powp[i+1], powp[i], powp[i+1]);
+
+                        /* transform V1 = [A B C D], V2 = [E F G H]
+                         *      into V1 = [A E B F], V2 = [C G D H]
+                         */
+                        SimdExtra::unpacklohi (V1, V2, V1, V2);
+
+                        /*** last but one step ********************************/
+                        Butterfly_DIT (V1, V2, W, Wp, P, P2);
+                        /* transform V1 = [A E B F], V2 = [C G D H]
+                         *      into V1 = [A C E G], V2 = [B D F H]
+                         */
+                        SimdExtra::unpacklohi (V1, V2, V1, V2);
+
+                        /*** last step ****************************************/
+                        W = Simd::load (pow0);
+                        Wp = Simd::load (powp0);
+                        Butterfly_DIT (V1, V2, W, Wp, P, P2);
+
+                        /* transform  T = [A C E G], V2 = [B D F H]
+                         *      into V1 = [A B C D], V2 = [E F G H] and store
+                         */
+                        SimdExtra::unpacklohi (V1, V2, V1, V2);
+                        Simd::store (coeffs, V1);
+                        Simd::store (coeffs + Simd::vect_size, V2);
+                    }
+                }
+            }
+
+            /* For vect_size == 8 */
+            void
+            DIT_reversed_core_laststeps (Element *coeffs, size_t w, size_t f,
+                                    const Element *pow, const Element *powp,
+                                    const simd_vect_t& P, const simd_vect_t& P2,
+                                    FFTSimdHelper<8>) const {
+                const constexpr size_t incr = Simd::vect_size << 1;
+                if (n < incr) {
+                    DIT_reversed_core_laststeps (coeffs, w, f, pow, powp, P, P2,
+                                                        FFTSimdHelper<1>());
+                } else {
+                    const Element *pow1 = pow - (f << 1);
+                    const Element *powp1 = powp - (f << 1);
+                    const Element *pow0 = pow1 - (f << 2);
+                    const Element *powp0 = powp1 - (f << 2);
+                    for (size_t i = 0; i < f; i += 2, coeffs += incr,
+                                                    pow0 += Simd::vect_size,
+                                                    powp0 += Simd::vect_size) {
+                        simd_vect_t V1, V2, W, Wp;
+
+                        V1 = Simd::load (coeffs);
+                        V2 = Simd::load (coeffs + Simd::vect_size);
+                        W = Simd::set (pow[i], pow[i+1], pow[i], pow[i+1],
+                                            pow[i], pow[i+1], pow[i], pow[i+1]);
+                        Wp = Simd::set (powp[i], powp[i+1], powp[i], powp[i+1],
+                                        powp[i], powp[i+1], powp[i], powp[i+1]);
+
+                        /* transform into
+                         *      V1 = [A I B J C K D L], V2 = [E M F N G O H P]
+                         */
+                        SimdExtra::unpacklohi (V1, V2, V1, V2);
+
+                        /*** step *********************************************/
+                        Butterfly_DIT (V1, V2, W, Wp, P, P2);
+                        /* transform into
+                         *      V1 = [A E I M B F J N], V2 = [C G K O D H L P]
+                         */
+                        SimdExtra::unpacklohi (V1, V2, V1, V2);
+
+                        /*** last but one step ********************************/
+                        W = Simd::set (pow1[2*i], pow1[2*i+1], pow1[2*i+2],
+                                                                    pow1[2*i+3],
+                                       pow1[2*i], pow1[2*i+1], pow1[2*i+2],
+                                                                pow1[2*i+3]);
+                        Wp = Simd::set (powp1[2*i], powp1[2*i+1], powp1[2*i+2],
+                                                                powp1[2*i+3],
+                                        powp1[2*i], powp1[2*i+1], powp1[2*i+2],
+                                                                powp1[2*i+3]);
+                        Butterfly_DIT (V1, V2, W, Wp, P, P2);
+                        /* transform into
+                         *      V1 = [A C E G I K M O], V2 = [B D F H J L N P]
+                         */
+                        SimdExtra::unpacklohi (V1, V2, V1, V2);
+
+                        /*** last step (special butterfly with mul by 1) ******/
+                        W = Simd::load (pow0);
+                        Wp = Simd::load (powp0);
+                        Butterfly_DIT (V1, V2, W, Wp, P, P2);
+
+                        /* transform into
+                         *      V1 = [A B C D E F G H], V2 = [I J K L M N O P]
+                         */
+                        SimdExtra::unpacklohi (V1, V2, V1, V2);
+
+                        Simd::store (coeffs, V1);
+                        Simd::store (coeffs + Simd::vect_size, V2);
+                    }
+                }
+            }
+
             /******************************************************************/
             /* Firststeps for DIT and DIF reversed ****************************/
             /******************************************************************/
@@ -1264,6 +1421,189 @@ namespace LinBox {
                 for ( ; w < Simd::vect_size; pow+=f, powp+=f, w <<= 1, f >>= 1);
             }
 
+            /* For vect_size == 2 */
+            void
+            DIF_reversed_core_firststeps (Element *coeffs, size_t &w, size_t &f,
+                                    const Element *&pow, const Element *&powp,
+                                    const simd_vect_t& P, const simd_vect_t& P2,
+                                    FFTSimdHelper<2>) const {
+                const constexpr size_t incr = Simd::vect_size << 1;
+                if (n < incr) {
+                    DIF_reversed_core_firststeps (coeffs, w, f, pow, powp, P,
+                                                        P2, FFTSimdHelper<1>());
+                } else {
+                    for (size_t i = 0; i < f; i += 2, coeffs += incr) {
+                        simd_vect_t V1, V2, W, Wp;
+
+                        V1 = Simd::load (coeffs);
+                        V2 = Simd::load (coeffs + Simd::vect_size);
+                        W = Simd::load (pow+i);
+                        Wp = Simd::load (powp+i);
+
+                        /* transform V1 = [A B], V2 = [C D]
+                         *      into V1 = [A C], V2 = [B D]
+                         */
+                        SimdExtra::pack (V1, V2, V1, V2);
+
+                        /*** first step ***************************************/
+                        Butterfly_DIF (V1, V2, W, Wp, P, P2);
+
+                        /* Result in V1 = [A C]  and V2 = [B D]
+                         * Transform to V1 = [A B], V2 = [C D] and store
+                         */
+                        SimdExtra::pack (V1, V2, V1, V2);
+                        Simd::store (coeffs, V1);
+                        Simd::store (coeffs + Simd::vect_size, V2);
+                    }
+                    pow += f;
+                    powp += f;
+                    w <<= 1;
+                    f >>= 1;
+                }
+            }
+
+            /* For vect_size == 4 */
+            void
+            DIF_reversed_core_firststeps (Element *coeffs, size_t &w, size_t &f,
+                                    const Element *&pow, const Element *&powp,
+                                    const simd_vect_t& P, const simd_vect_t& P2,
+                                    FFTSimdHelper<4>) const {
+                const constexpr size_t incr = Simd::vect_size << 1;
+                if (n < incr) {
+                    DIF_reversed_core_firststeps (coeffs, w, f, pow, powp, P,
+                                                        P2, FFTSimdHelper<1>());
+                } else {
+                    const Element *pow0 = pow;
+                    const Element *powp0 = powp;
+                    pow += f;
+                    powp += f;
+                    f >>= 1;
+                    w <<= 2;
+                    for (size_t i = 0; i < f; i += 2, coeffs += incr,
+                                                    pow0 += Simd::vect_size,
+                                                    powp0 += Simd::vect_size) {
+                        simd_vect_t V1, V2, W, Wp;
+
+                        V1 = Simd::load (coeffs);
+                        V2 = Simd::load (coeffs + Simd::vect_size);
+                        W = Simd::load (pow0);
+                        Wp = Simd::load (powp0);
+
+                        /* transform V1 = [A B C D], V2 = [E F G H]
+                         *      into V1 = [A C E G], V2 = [B D F H]
+                         */
+                        SimdExtra::pack (V1, V2, V1, V2);
+
+
+                        /*** first step ***************************************/
+                        Butterfly_DIF (V1, V2, W, Wp, P, P2);
+
+                        /* transform  T = [A C E G], V2 = [B D F H]
+                         *      into V1 = [A E B F], V2 = [C G D H]
+                         */
+                        SimdExtra::pack (V1, V2, V1, V2);
+
+                        /*** second step **************************************/
+                        W = Simd::set (pow[i], pow[i+1], pow[i], pow[i+1]);
+                        Wp = Simd::set (powp[i], powp[i+1], powp[i], powp[i+1]);
+                        Butterfly_DIF (V1, V2, W, Wp, P, P2);
+
+                        /* transform V1 = [A E B F], V2 = [C G D H]
+                         *      into V1 = [A B C D], V2 = [E F G H] and store
+                         */
+                        SimdExtra::pack (V1, V2, V1, V2);
+                        Simd::store (coeffs, V1);
+                        Simd::store (coeffs + Simd::vect_size, V2);
+                    }
+                    pow += f;
+                    powp += f;
+                    f >>= 1;
+                }
+            }
+
+            /* For vect_size == 8 */
+            void
+            DIF_reversed_core_firststeps (Element *coeffs, size_t &w, size_t &f,
+                                    const Element *&pow, const Element *&powp,
+                                    const simd_vect_t& P, const simd_vect_t& P2,
+                                    FFTSimdHelper<8>) const {
+                const constexpr size_t incr = Simd::vect_size << 1;
+                if (n < incr) {
+                    DIF_reversed_core_firststeps (coeffs, w, f, pow, powp, P,
+                                                        P2, FFTSimdHelper<1>());
+                } else {
+                    const Element *pow0 = pow;
+                    const Element *powp0 = powp;
+                    pow += f;
+                    powp += f;
+                    f >>= 1;
+                    const Element *pow1 = pow;
+                    const Element *powp1 = powp;
+                    pow += f;
+                    powp += f;
+                    f >>= 1;
+                    w <<= 3;
+                    for (size_t i = 0; i < f; i += 2, coeffs += incr,
+                                                    pow0 += Simd::vect_size,
+                                                    powp0 += Simd::vect_size) {
+                        simd_vect_t V1, V2, W, Wp;
+
+                        V1 = Simd::load (coeffs);
+                        V2 = Simd::load (coeffs + Simd::vect_size);
+                        W = Simd::load (pow0);
+                        Wp = Simd::load (powp0);
+
+                        /* transform into
+                         *      V1 = [A C E G I K M O], V2 = [B D F H J L N P]
+                         */
+                        SimdExtra::pack (V1, V2, V1, V2);
+
+                        /*** first step ***************************************/
+                        Butterfly_DIF (V1, V2, W, Wp, P, P2);
+
+                        /* transform into
+                         *      V1 = [A E I M B F J N], V2 = [C G K O D H L P]
+                         */
+                        SimdExtra::pack (V1, V2, V1, V2);
+
+                        /*** second step **************************************/
+                        W = Simd::set (pow1[2*i], pow1[2*i+1], pow1[2*i+2],
+                                                                    pow1[2*i+3],
+                                       pow1[2*i], pow1[2*i+1], pow1[2*i+2],
+                                                                pow1[2*i+3]);
+                        Wp = Simd::set (powp1[2*i], powp1[2*i+1], powp1[2*i+2],
+                                                                powp1[2*i+3],
+                                       powp1[2*i], powp1[2*i+1], powp1[2*i+2],
+                                                                powp1[2*i+3]);
+                        Butterfly_DIF (V1, V2, W, Wp, P, P2);
+
+                        /* transform into
+                         *      V1 = [A I B J C K D L], V2 = [E M F N G O H P]
+                         */
+                        SimdExtra::pack (V1, V2, V1, V2);
+
+                        /*** third step ***************************************/
+                        W = Simd::set (pow[i], pow[i+1], pow[i], pow[i+1],
+                                            pow[i], pow[i+1], pow[i], pow[i+1]);
+                        Wp = Simd::set (powp[i], powp[i+1], powp[i], powp[i+1],
+                                        powp[i], powp[i+1], powp[i], powp[i+1]);
+                        Butterfly_DIF (V1, V2, W, Wp, P, P2);
+
+                        /* transform into
+                         *      V1 = [A B C D E F G H], V2 = [I J K L M N O P]
+                         */
+                        SimdExtra::pack (V1, V2, V1, V2);
+
+                        Simd::store (coeffs, V1);
+                        Simd::store (coeffs + Simd::vect_size, V2);
+                    }
+                    pow += f;
+                    powp += f;
+                    f >>= 1;
+                }
+            }
+
+
             /******************************************************************/
             /* Utils **********************************************************/
             /******************************************************************/
@@ -1484,21 +1824,21 @@ namespace LinBox {
                 simd_vect_t P2 = Simd::set1 (fld->characteristic() << 1);
 
                 for ( ; w > 0; pow += w, powp += w, f <<= 1, w >>= 1) {
+                    size_t ws = w*stride;
                     Element *Aptr = coeffs;
-                    Element *Bptr = coeffs + w*stride;
-                    for (size_t i = 0; i < f; i++)
+                    Element *Bptr = coeffs + ws;
+                    for (size_t i = 0; i < f; i++, Aptr += ws, Bptr += ws)
                         for (size_t j = 0; j < w; j += 1) {
                             simd_vect_t alpha = Simd::set1 (pow[j]);
                             simd_vect_t alphap = Simd::set1 (powp[j]);
                             size_t l = 0;
-                            for ( ; l + Simd::vect_size <= stride; l += Simd::vect_size)
-                                Butterfly_DIF (Aptr+(((i<<1)*w+j)*stride+l),
-                                               Bptr+(((i<<1)*w+j)*stride+l),
-                                                        alpha, alphap, P, P2);
-                            for ( ; l < stride; l++)
-                                Butterfly_DIF (Aptr[((i<<1)*w+j)*stride+l],
-                                               Bptr[((i<<1)*w+j)*stride+l],
-                                                        pow[j], powp[j], p2);
+                            for ( ; l + Simd::vect_size <= stride;
+                                                        l += Simd::vect_size,
+                                                        Aptr += Simd::vect_size,
+                                                        Bptr += Simd::vect_size)
+                                Butterfly_DIF (Aptr, Bptr, alpha, alphap, P,P2);
+                            for ( ; l < stride; l++, Aptr++, Bptr++)
+                                Butterfly_DIF (*Aptr, *Bptr, pow[j],powp[j],p2);
                         }
                 }
             }
@@ -1509,14 +1849,13 @@ namespace LinBox {
                                         const Element *pow, const Element *powp,
                                         FFTSimdHelper<1>) const {
                 for ( ; w > 0; pow += w, powp += w, f <<= 1, w >>= 1) {
+                    size_t ws = w*stride;
                     Element *Aptr = coeffs;
-                    Element *Bptr = coeffs + w*stride;
-                    for (size_t i = 0; i < f; i++)
+                    Element *Bptr = coeffs + ws;
+                    for (size_t i = 0; i < f; i++, Aptr += ws, Bptr += ws)
                         for (size_t j = 0; j < w; j += 1)
-                            for (size_t l = 0; l < stride; l++)
-                                Butterfly_DIF (Aptr[((i<<1)*w+j)*stride+l],
-                                               Bptr[((i<<1)*w+j)*stride+l],
-                                                        pow[j], powp[j], p2);
+                            for (size_t l = 0; l < stride; l++, Aptr++, Bptr++)
+                                Butterfly_DIF (*Aptr, *Bptr, pow[j],powp[j],p2);
                 }
             }
 
@@ -1532,20 +1871,19 @@ namespace LinBox {
                 simd_vect_t P2 = Simd::set1 (fld->characteristic() << 1);
 
                 for ( ; w > 0; f <<= 1, w >>= 1, pow -= f, powp -= f) {
+                    size_t ws = w*stride;
                     Element *Aptr = coeffs;
-                    Element *Bptr = coeffs + w*stride;
-                    for (size_t i = 0; i < f; i++) {
+                    Element *Bptr = coeffs + ws;
+                    for (size_t i = 0; i < f; i++, Aptr += ws, Bptr += ws) {
                         simd_vect_t alpha = Simd::set1 (pow[i]);
                         simd_vect_t alphap = Simd::set1 (powp[i]);
                         size_t j = 0;
-                        for ( ; j + Simd::vect_size <= w*stride; j += Simd::vect_size)
-                            Butterfly_DIT (Aptr+(i<<1)*w*stride+j,
-                                           Bptr+(i<<1)*w*stride+j,
-                                                        alpha, alphap, P, P2);
-                        for ( ; j < w*stride; j++)
-                            Butterfly_DIT (Aptr[(i<<1)*w*stride+j],
-                                           Bptr[(i<<1)*w*stride+j],
-                                                        pow[i], powp[i], p2);
+                        for ( ; j + Simd::vect_size <= ws; j += Simd::vect_size,
+                                                        Aptr += Simd::vect_size,
+                                                        Bptr += Simd::vect_size)
+                            Butterfly_DIT (Aptr, Bptr, alpha, alphap, P, P2);
+                        for ( ; j < ws; j++, Aptr++, Bptr++)
+                            Butterfly_DIT (*Aptr, *Bptr, pow[i], powp[i], p2);
                     }
                 }
             }
@@ -1557,16 +1895,14 @@ namespace LinBox {
                                         const Element *pow, const Element *powp,
                                         FFTSimdHelper<1>) const {
                 for ( ; w > 0; f <<= 1, w >>= 1, pow -= f, powp -= f) {
+                    size_t ws = w*stride;
                     Element *Aptr = coeffs;
-                    Element *Bptr = coeffs + w*stride;
-                    for (size_t i = 0; i < f; i++) {
+                    Element *Bptr = coeffs + ws;
+                    for (size_t i = 0; i < f; i++, Aptr += ws, Bptr += ws) {
                         Element alpha = pow[i];
                         Element alphap = powp[i];
-                        for (size_t j = 0; j < w; j += 1)
-                            for (size_t l = 0; l < stride; l++)
-                                Butterfly_DIT (Aptr[((i<<1)*w+j)*stride+l],
-                                               Bptr[((i<<1)*w+j)*stride+l],
-                                                             alpha, alphap, p2);
+                        for (size_t j = 0; j < ws; j += 1, Aptr++, Bptr++)
+                            Butterfly_DIT (*Aptr, *Bptr, alpha, alphap, p2);
                     }
                 }
             }
@@ -1582,21 +1918,21 @@ namespace LinBox {
                 simd_vect_t P2 = Simd::set1 (fld->characteristic() << 1);
 
                 for ( ; w < n; w <<= 1, f >>= 1, pow -= w, powp -= w) {
+                    size_t ws = w*stride;
                     Element *Aptr = coeffs;
-                    Element *Bptr = coeffs + w*stride;
-                    for (size_t i = 0; i < f; i++)
+                    Element *Bptr = coeffs + ws;
+                    for (size_t i = 0; i < f; i++, Aptr += ws, Bptr += ws)
                         for (size_t j = 0; j < w; j += 1) {
                             simd_vect_t alpha = Simd::set1 (pow[j]);
                             simd_vect_t alphap = Simd::set1 (powp[j]);
                             size_t l = 0;
-                            for ( ; l + Simd::vect_size <= stride; l += Simd::vect_size)
-                                Butterfly_DIT (Aptr+((i<<1)*w+j)*stride+l,
-                                               Bptr+((i<<1)*w+j)*stride+l,
-                                                        alpha, alphap, P, P2);
-                            for ( ; l < stride; l++)
-                                Butterfly_DIT (Aptr[((i<<1)*w+j)*stride+l],
-                                               Bptr[((i<<1)*w+j)*stride+l],
-                                                        pow[j], powp[j], p2);
+                            for ( ; l + Simd::vect_size <= stride;
+                                                        l += Simd::vect_size,
+                                                        Aptr += Simd::vect_size,
+                                                        Bptr += Simd::vect_size)
+                                Butterfly_DIT (Aptr, Bptr, alpha, alphap, P,P2);
+                            for ( ; l < stride; l++, Aptr++, Bptr++)
+                                Butterfly_DIT (*Aptr, *Bptr, pow[j],powp[j],p2);
                         }
                 }
             }
@@ -1607,14 +1943,13 @@ namespace LinBox {
                                         const Element *pow, const Element *powp,
                                         FFTSimdHelper<1>) const {
                 for ( ; w < n; w <<= 1, f >>= 1, pow -= w, powp -= w) {
+                    size_t ws = w*stride;
                     Element *Aptr = coeffs;
-                    Element *Bptr = coeffs + w*stride;
-                    for (size_t i = 0; i < f; i++)
+                    Element *Bptr = coeffs + ws;
+                    for (size_t i = 0; i < f; i++, Aptr += ws, Bptr += ws)
                         for (size_t j = 0; j < w; j += 1)
-                            for (size_t l = 0; l < stride; l++)
-                                Butterfly_DIT (Aptr[((i<<1)*w+j)*stride+l],
-                                               Bptr[((i<<1)*w+j)*stride+l],
-                                                        pow[j], powp[j], p2);
+                            for (size_t l = 0; l < stride; l++, Aptr++, Bptr++)
+                                Butterfly_DIT (*Aptr, *Bptr, pow[j],powp[j],p2);
                 }
             }
 
@@ -1630,20 +1965,19 @@ namespace LinBox {
                 simd_vect_t P2 = Simd::set1 (fld->characteristic() << 1);
 
                 for ( ; w < n; pow += f, powp += f, w <<= 1, f >>= 1) {
+                    size_t ws = w*stride;
                     Element *Aptr = coeffs;
-                    Element *Bptr = coeffs + w*stride;
-                    for (size_t i = 0; i < f; i++) {
+                    Element *Bptr = coeffs + ws;
+                    for (size_t i = 0; i < f; i++, Aptr += ws, Bptr += ws) {
                         simd_vect_t alpha = Simd::set1 (pow[i]);
                         simd_vect_t alphap = Simd::set1 (powp[i]);
                         size_t j = 0;
-                        for ( ; j + Simd::vect_size <= w*stride; j += Simd::vect_size)
-                            Butterfly_DIF (Aptr+(i<<1)*w*stride+j,
-                                           Bptr+(i<<1)*w*stride+j,
-                                                        alpha, alphap, P, P2);
-                        for ( ; j < w*stride; j++)
-                            Butterfly_DIF (Aptr[(i<<1)*w*stride+j],
-                                           Bptr[(i<<1)*w*stride+j],
-                                                        pow[i], powp[i], p2);
+                        for ( ; j + Simd::vect_size <= ws; j += Simd::vect_size,
+                                                        Aptr += Simd::vect_size,
+                                                        Bptr += Simd::vect_size)
+                            Butterfly_DIF (Aptr, Bptr, alpha, alphap, P, P2);
+                        for ( ; j < ws; j++, Aptr++, Bptr++)
+                            Butterfly_DIF (*Aptr, *Bptr, pow[i], powp[i], p2);
                     }
                 }
             }
@@ -1655,16 +1989,14 @@ namespace LinBox {
                                         const Element *pow, const Element *powp,
                                         FFTSimdHelper<1>) const {
                 for ( ; w < n; pow += f, powp += f, w <<= 1, f >>= 1) {
+                    size_t ws = w*stride;
                     Element *Aptr = coeffs;
-                    Element *Bptr = coeffs + w*stride;
-                    for (size_t i = 0; i < f; i++) {
+                    Element *Bptr = coeffs + ws;
+                    for (size_t i = 0; i < f; i++, Aptr += ws, Bptr += ws) {
                         Element alpha = pow[i];
                         Element alphap = powp[i];
-                        for (size_t j = 0; j < w; j += 1)
-                            for (size_t l = 0; l < stride; l++)
-                                Butterfly_DIF (Aptr[((i<<1)*w+j)*stride+l],
-                                               Bptr[((i<<1)*w+j)*stride+l],
-                                                             alpha, alphap, p2);
+                        for (size_t j = 0; j < ws; j += 1, Aptr++, Bptr++)
+                            Butterfly_DIF (*Aptr, *Bptr, alpha, alphap, p2);
                     }
                 }
             }
