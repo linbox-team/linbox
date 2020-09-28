@@ -51,6 +51,7 @@ uint64_t max_memory=0, cur_memory=0;
 
 namespace LinBox{
 
+    
 	enum PMType {polfirst, matfirst, matrowfirst};
 
     // matrix example
@@ -187,7 +188,7 @@ namespace LinBox{
 		
 		
 		// copy elt from M[beg..end], _size must be >= j-i
-		void copy(const Self_t& M, size_t beg, size_t end, size_t start=0){
+		void copy(const PolynomialMatrix<Field, PMType::polfirst>& M, size_t beg, size_t end, size_t start=0){
 			//cout<<"copying.....polfirst to polfirst.....same field"<<endl;
 			for (size_t k=0;k<_row*_col;k++){
 				size_t j=0;
@@ -197,6 +198,35 @@ namespace LinBox{
 				}
 			}
 		}
+
+        // copy elt from M[beg..end], _size must be >= end-beg+1
+		// M is stored as a Polynomial of Matrices
+		void copy(const PolynomialMatrix<Field, PMType::matfirst>& M, size_t beg, size_t end, size_t start=0){
+			//std::cout<<"copying.....matfirst to polfirst.....same field"<<std::endl;
+			const size_t ls = COPY_BLOCKSIZE;
+			for (size_t i = beg; i <= end; i+=ls)
+				for (size_t j = 0; j < _col * _row; j+=ls)
+					// Rk: the two loop must be interchanged in some cases
+					for (size_t _i = i; _i < std::min(end+1, i + ls); _i++)
+						for (size_t _j = j; _j < std::min(_col * _row, j + ls);++_j)
+							ref(_j,start+_i-beg)= M.get(_j,_i);
+		}
+
+        // copy elt from M[beg..end], _size must be >= end-beg+1
+		// M is stored with the hybrid format matrowfirst
+		void copy(const PolynomialMatrix<Field, PMType::matrowfirst>& M, size_t beg, size_t end, size_t start=0){
+			//std::cout<<"copying.....matrowfirst to polfirst.....same field"<<std::endl;
+			const size_t ls = COPY_BLOCKSIZE;
+            for(size_t k=0;k<_row;k++){
+                for (size_t i = beg; i <= end; i+=ls)
+                    for (size_t j = 0; j < _col; j+=ls)        
+                        for (size_t _i = i; _i < std::min(end+1, i + ls); _i++)
+                            for (size_t _j = j; _j < std::min(_col, j + ls);++_j)
+                                ref(k,_j,start+_i-beg)= M.get(k,_j,_i);
+            }
+        }
+
+        
 		// copy elt from M[beg..end], _size must be >= end-beg+1
 		// M is stored as a Polynomial of Matrices with a different field
 		template<typename OtherField>
@@ -226,19 +256,23 @@ namespace LinBox{
 			}
 		}
 
-		// copy elt from M[beg..end], _size must be >= end-beg+1
-		// M is stored as a Polynomial of Matrices
-		void copy(const PolynomialMatrix<Field, PMType::matfirst>& M, size_t beg, size_t end, size_t start=0){
-			//std::cout<<"copying.....matfirst to polfirst.....same field"<<std::endl;
+                // copy elt from M[beg..end], _size must be >= end-beg+1
+		// M is stored with the hybrid format matrowfirst
+		template<typename OtherField>
+		void copy(const PolynomialMatrix<OtherField, PMType::matrowfirst> & M, size_t beg, size_t end, size_t start=0){
+			//std::cout<<"copying.....matrowfirst to polfirst.....same field"<<std::endl;
+			Hom<OtherField,Field> hom(M.field(),field()) ;
 			const size_t ls = COPY_BLOCKSIZE;
-			for (size_t i = beg; i <= end; i+=ls)
-				for (size_t j = 0; j < _col * _row; j+=ls)
-					// Rk: the two loop must be interchanged in some cases
-					for (size_t _i = i; _i < std::min(end+1, i + ls); _i++)
-						for (size_t _j = j; _j < std::min(_col * _row, j + ls);++_j)
-							ref(_j,start+_i-beg)= M.get(_j,_i);
-		}
+            for(size_t k=0;k<_row;k++){
+                for (size_t i = beg; i <= end; i+=ls)
+                    for (size_t j = 0; j < _col; j+=ls)        
+                        for (size_t _i = i; _i < std::min(end+1, i + ls); _i++)
+                            for (size_t _j = j; _j < std::min(_col, j + ls);++_j)
+                                hom.image(ref(k,_j,start+_i-beg), M.get(k,_j,_i));
+            }
+        }
 
+	
 
 		template<typename Mat>
 		void copy(const Mat& M){
@@ -420,6 +454,21 @@ namespace LinBox{
 			//cout<<"copying.....matfirst to matfirst.....same field"<<endl;
             FFLAS::fassign(field(), (end-beg+1)*_row*_col, M.getPointer()+beg*_row*_col,1, getPointer()+start,1);
 		}
+
+        // copy elt from M[beg..end], _size must be >= end-beg+1
+		// M is stored with the hybrid format matrowfirst
+		void copy(const PolynomialMatrix<Field, PMType::matrowfirst>& M, size_t beg, size_t end, size_t start=0){
+			//std::cout<<"copying.....matrowfirst to polfirst.....same field"<<std::endl;
+			const size_t ls = COPY_BLOCKSIZE;
+                for (size_t i = beg; i <= end; i+=ls)
+                    for (size_t j = 0; j < _row; j+=ls)        
+                        for (size_t _i = i; _i < std::min(end+1, i + ls); _i++)
+                            for (size_t _j = j; _j < std::min(_row, j + ls);++_j)
+                                for(size_t k=0;k<_col;k++)
+                                    ref(k,_j,start+_i-beg)= M.get(k,_j,_i);            
+        }
+
+
         
 		template<typename OtherField>
 		void copy(const PolynomialMatrix<OtherField, PMType::matfirst> & M, size_t beg, size_t end, size_t start=0){
@@ -597,9 +646,9 @@ namespace LinBox{
 		constPolynomial  operator()(size_t i)const {return constPolynomial(_rep, i,_row,_size);}
         
 		// get write access to the the k-th coeff  of the ith matrix entry
-		Element& ref(size_t i, size_t k)      {return _rep[i+k*_col];}
+		Element& ref(size_t i, size_t k)      {return ref(i/_col, i%_col, k);}
         // get read access to the the k-th coeff  of the ith matrix entry
-		Element  get(size_t i, size_t k) const {return _rep[i+k*_col];}
+		Element  get(size_t i, size_t k) const {return get(i/_col, i%_col, k);}
         // get write access to the the k-th coeff  of the entry (i,j) in matrix 
 		Element& ref(size_t i, size_t j, size_t k)      { return _rep[i*_stride+j+k*_col];}
         // get read access to the the k-th coeff  of the entry (i,j) in matrix 

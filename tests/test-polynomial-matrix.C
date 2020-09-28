@@ -71,7 +71,7 @@ bool checkMatPolMul(const PolMatMulDomain& PMMD, size_t m,size_t n, size_t d, lo
     typename Field::RandIter G(F,seed);
     typedef PolynomialMatrix<Field, PMType::polfirst> MatrixP;
     typedef PolynomialMatrix<Field, PMType::matfirst> PMatrix;
-    typedef PolynomialMatrix<Field, PMType::matfirst> PMatrixP;
+    typedef PolynomialMatrix<Field, PMType::matrowfirst> PMatrixP;
 
     
     MatrixP A1(F,m,n,d),B1(F,n,n,d), C1(F,m,n,2*d-1);
@@ -83,8 +83,8 @@ bool checkMatPolMul(const PolMatMulDomain& PMMD, size_t m,size_t n, size_t d, lo
     A2.copy(A1);  
     B2.copy(B1);
     A3.copy(A1);  
-    B3.copy(B2);
-
+    B3.copy(B1);
+    
     //A2[0].copy(A2[1]);
     //A1[0].copy(A1[1]);
     
