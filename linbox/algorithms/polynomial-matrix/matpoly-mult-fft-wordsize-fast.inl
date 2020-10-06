@@ -61,6 +61,7 @@ namespace LinBox {
 		template<typename Matrix1, typename Matrix2, typename Matrix3>
         void mul (Matrix1 &c, const Matrix2 &a, const Matrix3 &b,
                                                     size_t max_rowdeg=0) const {
+			FFT_PROFILE_START(1);
             linbox_check(a.coldim()==b.rowdim());
             size_t deg  = (max_rowdeg ? max_rowdeg : a.size()+b.size()-2);
             size_t lpts = 0;
@@ -74,8 +75,10 @@ namespace LinBox {
             a2.copy(a,0,a.size()-1);
             b2.copy(b,0,b.size()-1);
             MatrixP c2(field(),c.rowdim(),c.coldim(),pts);
+            FFT_PROFILING(1,"padding input/output to 2^k");
             mul_fft (lpts, c2, a2, b2);
             c.copy(c2,0,deg);
+            FFT_PROFILING(1,"copying back the result");
         }
 
 		// a,b and c must have size: 2^lpts
@@ -180,7 +183,7 @@ namespace LinBox {
 			typename Field::Element inv_pts;
 			field().init(inv_pts, pts);
 			field().invin(inv_pts);
-			// for (size_t i = 0; i < m * n; i++)
+			// for (size_t i = 0; i < m * n; i++) 
 			// 	for (size_t j = 0; j < pts; j++)
 			// 		field().mulin(c.ref(i,j), inv_pts);
 			FFLAS::fscalin(field(),c.rowdim()*c.coldim()*c.size(), inv_pts,  c.getPointer(),1);
