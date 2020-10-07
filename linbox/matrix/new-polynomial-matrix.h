@@ -727,10 +727,10 @@ namespace LinBox{
 		void copy(const PolynomialMatrix<Field, PMType::matfirst>& M, size_t beg, size_t end, size_t start=0){
             // 1st version, write access compliant
             for (size_t i=0;i<_row;i++)
-                FFLAS::fassign(field(), (end-beg+1),_col, M.getPointer()+beg*_row*_col, _row*_col, getPointer()+start,_col);
+                FFLAS::fassign(field(), (end-beg+1),_col, M.getPointer()+beg*_row*_col+i*_col, _row*_col, getPointer()+start+i*_stride,_col);
             // 2nd version, read access compliant
-            //for (size_t i=beg;i<end;i++)
-            //    FFLAS::fassign(field(), _row, _col, M.getPointer()+beg*_row*_col, _col, getPointer()+start,_stride);
+            // for (size_t i=beg;i<end;i++)
+            //     FFLAS::fassign(field(), _row, _col, M.getPointer()+beg*_row*_col, _col, getPointer()+start+(beg-i),_stride);
             
 		}        
 		

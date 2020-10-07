@@ -30,6 +30,7 @@
 #include <iomanip>
 using namespace std;
 
+#define FFT_PROFILER
 #include <linbox/ring/modular.h>
 #include <linbox/randiter/random-prime.h>
 #include <linbox/randiter/random-fftprime.h>
@@ -175,10 +176,10 @@ void bench_one_modular_implem_fft (uint64_t bits, unsigned int m,
 
     /* matrowfirst */
     /* TODO: does not compile */
-    //time = bench_one<PMatrixP> (PMMD_fft, 20, 20, 2000, seed);
-    //cout << "  matrowfirst " << string (80-25-3, ' ');
-    //cout.precision(2); cout.width(10); cout<< scientific << time << " s";
-    //cout << endl;
+    time = bench_one<PMatrixP> (PMMD_fft, m, n, k, d, seed);
+    cout << "  matrowfirst " << string (80-25-3, ' ');
+    cout.precision(2); cout.width(10); cout<< scientific << time << " s";
+    cout << endl;
 }
 
 /******************************************************************************/
