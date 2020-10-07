@@ -56,6 +56,177 @@ void test(T& x){
     x.ref(0,0)++;
 }
 
+template <typename Field, PMType T1, PMType T2>
+bool operator!= (const PolynomialMatrix<Field, T1>& A,
+                 const PolynomialMatrix<Field, T2>& B)
+{
+    if ( A.field() !=B.field() || A.degree()  != B.degree() || A.coldim()!= B.coldim() || A.rowdim() != B. rowdim()) return true;
+
+    for(size_t i=0;i<A.rowdim();i++)
+        for(size_t j=0;j<A.coldim();j++)
+            for(size_t k=0;k<A.degree();k++)
+                if (!A.field().areEqual(A.get(i,j,k), B.get(i,j,k))) return true;
+    return false;
+}
+
+template <typename T1, typename T2 >
+bool operator!= (const SubPolynomialMatrix<T1>& A,
+                 const SubPolynomialMatrix<T2>& B)
+{
+    if ( A.field() !=B.field() || A.degree()  != B.degree() || A.coldim()!= B.coldim() || A.rowdim() != B. rowdim()) return true;
+
+    for(size_t i=0;i<A.rowdim();i++)
+        for(size_t j=0;j<A.coldim();j++)
+            for(size_t k=0;k<A.degree();k++)
+                if (!A.field().areEqual(A.get(i,j,k), B.get(i,j,k))) return true;
+    return false;
+}
+
+template<typename Field>
+bool checkCopy(const Field& F, size_t m,size_t n, size_t d, long seed){
+    commentator().start ("Testing polynomial matrix copy (changing the representation)", "testMatpolyCopy", 1);
+    bool finalok=true;
+    bool pass= true;
+  
+    ostream& report = LinBox::commentator().report();
+    //ostream& report =std::cout;
+    report<<endl;
+
+    typename Field::RandIter G(F,seed);
+    typedef PolynomialMatrix<Field, PMType::polfirst> MatrixP;
+    typedef PolynomialMatrix<Field, PMType::matfirst> PMatrix;
+    typedef PolynomialMatrix<Field, PMType::matrowfirst> PMatrixP;
+
+    
+    MatrixP A1(F,m,n,d),B1(F,m,n,d);
+    PMatrix A2(F,m,n,d),B2(F,m,n,d);
+    PMatrixP A3(F,m,n,d),B3(F,m,n,d);
+    
+    randomMatPol(G,A1);    
+    randomMatPol(G,A2);
+    randomMatPol(G,A3);    
+
+
+    // polfirst -> matfirst -> polfirst
+    pass=true;
+    B2.copy(A1); 
+    B1.copy(B2);    
+    if (A1!=B1 || B1!=B2) {
+        pass=false;
+        report<<"A1:="<<A1<<endl;
+        report<<"B2:="<<B2<<endl;
+        report<<"B1:="<<B1<<endl;
+        report<<"---------------"<<endl;
+        report<<endl;
+    }
+    finalok&=pass;
+    report<<"   - Polynomial Matrix copy (polfirst <-> matfirst)    :"; 
+    if (pass)
+        report<<"OK"<<endl;
+    else
+        report<<"KO"<<endl;
+
+    // matfirst -> polfirst -> matfirst 
+    pass=true;
+    B1.copy(A2);
+    B2.copy(B1);
+    if (A2!=B2 || B1!=B2){
+        pass=false;
+        report<<"A2:="<<A2<<endl;
+        report<<"B1:="<<B1<<endl;
+        report<<"B2:="<<B2<<endl;
+        report<<"---------------"<<endl;
+        report<<endl;
+    }
+    finalok&=pass;
+    report<<"   - Polynomial Matrix copy (matfirst <-> polfirst )   :"; 
+    if (pass)
+        report<<"OK"<<endl;
+    else
+        report<<"KO"<<endl;
+
+
+    // polfirst -> matrowfirst -> polfirst
+    pass=true;
+    B3.copy(A1); 
+    B1.copy(B3);    
+    if (A1!=B1 || B1!=B3){
+        pass=false;
+        report<<"A1:="<<A1<<endl;
+        report<<"B3:="<<B3<<endl;
+        report<<"B1:="<<B1<<endl;
+        report<<"---------------"<<endl;
+        report<<endl;
+    }
+    finalok&=pass;
+    report<<"   - Polynomial Matrix copy (polfirst <-> matrowfirst ):"; 
+    if (pass)
+        report<<"OK"<<endl;
+    else
+        report<<"KO"<<endl;
+
+    // matrowfirst -> polfirst -> matrowfirst
+    pass=true;
+    B1.copy(A3);
+    B3.copy(B1);
+    if (A3!=B3 || B1!=B3) {
+        pass=false;
+        report<<"A3:="<<A3<<endl;
+        report<<"B1:="<<B1<<endl;
+        report<<"B3:="<<B3<<endl;
+        report<<"---------------"<<endl;
+        report<<endl;
+    }
+    finalok&=pass;
+    report<<"   - Polynomial Matrix copy (matrowfirst <-> polfirst ):"; 
+    if (pass)
+        report<<"OK"<<endl;
+    else
+        report<<"KO"<<endl;
+
+
+    // matfirst -> matrowfirst -> matfirst
+    pass=true;
+    B3.copy(A2); 
+    B2.copy(B3);    
+    if (A2!=B2 || B2!=B3){
+        pass=false;
+        report<<"A2:="<<A2<<endl;
+        report<<"B3:="<<B3<<endl;
+        report<<"B2:="<<B2<<endl;
+        report<<"---------------"<<endl;
+        report<<endl;
+    }
+    finalok&=pass;
+    report<<"   - Polynomial Matrix copy (matfirst <-> matrowfirst ):"; 
+    if (pass)
+        report<<"OK"<<endl;
+    else
+        report<<"KO"<<endl;
+
+    // matrowfirst -> matfirst -> matrowfirst 
+    B2.copy(A3);
+    B3.copy(B2);
+    if (A3!=B3 || B2!=B3) {
+        pass=false;
+        report<<"A3:="<<A3<<endl;
+        report<<"B2:="<<B2<<endl;
+        report<<"B3:="<<B3<<endl;
+        report<<"---------------"<<endl;
+        report<<endl;
+    }
+    finalok&=pass;
+    report<<"   - Polynomial Matrix copy (matrowfirst <-> matfirst ):"; 
+    if (pass)
+        report<<"OK"<<endl;
+    else
+        report<<"KO"<<endl;
+
+
+    commentator().stop(MSG_STATUS(pass),(const char *) 0,"testMatpolyCopy");
+    return finalok;
+}
+    
 template<typename PolMatMulDomain>
 bool checkMatPolMul(const PolMatMulDomain& PMMD, size_t m,size_t n, size_t d, long seed, string algo){
     
@@ -82,7 +253,7 @@ bool checkMatPolMul(const PolMatMulDomain& PMMD, size_t m,size_t n, size_t d, lo
     randomMatPol(G,B1);
     A2.copy(A1);  
     B2.copy(B1);
-    A3.copy(A1);  
+    A3.copy(A2);  
     B3.copy(B1);
     
     //A2[0].copy(A2[1]);
@@ -101,12 +272,10 @@ bool checkMatPolMul(const PolMatMulDomain& PMMD, size_t m,size_t n, size_t d, lo
     PMMD.mul(C1,A1,B1);
     PMMD.mul(C2,A2,B2);
     PMMD.mul(C3,A3,B3);
-    for(size_t i=0;i<m*n;i++)
-        for(size_t k=0;k<2*d-1;k++)
-            if (!F.areEqual(C1.get(i,k),C2.get(i,k)) || !F.areEqual(C1.get(i,k),C3.get(i,k)))
-                pass=false;
-
+    pass= true;
+    if (C1!=C2 and C1!=C3) pass=false;            
     finalok&=pass;
+
     report << std::endl;
     report<<"   - Polynomial Matrix (plain)    :"; 
     if (pass)
@@ -140,12 +309,9 @@ bool checkMatPolMul(const PolMatMulDomain& PMMD, size_t m,size_t n, size_t d, lo
         PMMD.mul(CC3,AA3,BB3);
   
         pass= true;
-        for(size_t i=0;i<m*n;i++)
-            for(size_t k=0;k<d-1;k++)
-                if (!F.areEqual(CC1.get(i,k),CC2.get(i,k))  || !F.areEqual(C1.get(i,k),C3.get(i,k)))
-                    pass=false;
-
+        if (CC1!=CC2 and C1!=C3) pass=false;            
         finalok&=pass;
+        
         report<<"   - Polynomial Matrix (view)     :"; 
         if (pass)
             report<<"OK"<<endl;
@@ -176,11 +342,7 @@ bool checkMatPolMul(const PolMatMulDomain& PMMD, size_t m,size_t n, size_t d, lo
         PMMD.mul(C3,A3,B3);
         
         pass= true;
-        for(size_t i=0;i<m*n;i++)
-            for(size_t k=0;k<(d2<<1)-1;k++)
-                if (!F.areEqual(C1.get(i,k),C2.get(i,k)) || !F.areEqual(C1.get(i,k),C3.get(i,k)))
-                    pass=false;
-        
+        if (C1!=C2 and C1!=C3) pass=false;
         finalok&=pass;
         
         report<<"   - Polynomial Matrix (resizing) :"; 
@@ -241,6 +403,7 @@ int main(int argc, char** argv){
     ostream & report = commentator().report();
     
     report<<"Polynomial matrix testing over ";F.write(report)<<std::endl;
+    pass &= checkCopy(F,m,m,d,seed);
     pass &= checkMatPolMul(PMMD_naive,m,m,d,seed, "Naive");
     pass &= checkMatPolMul(PMMD_kara,m,m,d,seed, "Karatsuba");
     pass &= checkMatPolMul(PMMD_fft,m,m,d,seed, "FFT");
