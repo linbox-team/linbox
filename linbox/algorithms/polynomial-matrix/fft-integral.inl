@@ -660,6 +660,7 @@ namespace LinBox {
                 }
             }
 
+#ifdef __FFLASFFPACK_HAVE_SSE4_1_INSTRUCTIONS
             /* For vect_size == 4 and Field == Modular<uint32_t, uint64_t> */
             template <typename E=Element, typename C=typename Field::Compute_t,
                       typename std::enable_if<std::is_same<E, uint32_t>::value && std::is_same<C, uint64_t>::value>::type* = nullptr>
@@ -719,6 +720,7 @@ namespace LinBox {
                     }
                 }
             }
+#endif
 
             /* For vect_size == 8 and Field != Modular<uint32_t, uint64_t> */
             template <typename E=Element, typename C=typename Field::Compute_t,
@@ -1000,6 +1002,7 @@ namespace LinBox {
                 }
             }
 
+#ifdef __FFLASFFPACK_HAVE_SSE4_1_INSTRUCTIONS
             /* For vect_size == 4 and Field == Modular<uint32_t, uint64_t> */
             template <typename E=Element, typename C=typename Field::Compute_t,
                       typename std::enable_if<std::is_same<E, uint32_t>::value && std::is_same<C, uint64_t>::value>::type* = nullptr>
@@ -1075,6 +1078,7 @@ namespace LinBox {
                     powp -= w;
                 }
             }
+#endif
 
             /* For vect_size == 8 and Field != Modular<uint32_t, uint64_t> */
             template <typename E=Element, typename C=typename Field::Compute_t,
