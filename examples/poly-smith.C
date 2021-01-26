@@ -30,13 +30,13 @@ template<class MatrixDom, class Matrix>
 void printMatrix(MatrixDom MD, Matrix A)
 {
 	typename MatrixDom::Field::Element tmp;
-	
+
 	cout << "<";
 	for (size_t i = 0; i < A.rowdim(); i++)
 	{
 		if (i != 0)
 			cout << ",";
-		
+
 		MD.field().write(cout << "<", A.getEntry(tmp, i, 0));
 		for (size_t j = 1; j < A.coldim(); j++)
 		{
@@ -50,7 +50,7 @@ void printMatrix(MatrixDom MD, Matrix A)
 /// Prints a vector as a list
 template<class Field, class Vector>
 void printVector(Field F, Vector S)
-{	
+{
 	F.write(cout << "[", S[0]);
 	for (size_t i = 1; i < S.size(); i++)
 		F.write(cout << ",", S[i]);
@@ -62,7 +62,7 @@ template<class PolyDom, class Vector>
 void normalize(PolyDom &PD, Vector &S)
 {
 	typedef typename PolyDom::Type_t Scalar;
-	
+
 	for (size_t i = 0; i < S.size(); i++)
 	{
 		Scalar lcoef;
@@ -78,27 +78,27 @@ int main(int argc, char **argv)
 	typedef GivaroPoly<PolyDom> Field;
 	typedef MatrixDomain<Field> MatrixDom;
 	typedef DenseMatrix<Field> Matrix;
-	
+
 	if (argc < 4)
 	{
 		cout << "Generates a random GF(p)^(n-by-n) with polynomial coefficients with degree=d" << endl;
 		cout << "Use: ./polysmith <p> <n> <d>" << endl;
 		return 1;
 	}
-	
+
 	int p = atoi(argv[1]);
 	int n = atoi(argv[2]);
 	int d = atoi(argv[3]);
-	
+
 	BaseDom BD(p);
 	PolyDom PD(BD, "x");
 	Field F(PD);
 	MatrixDom MD(F);
-	
+
 	Matrix M(F, n, n);
-	
+
 	GivaroPolyRandIter<Field> Rand(F);
-	
+
 	for (int i = 0; i < n; i++)
 	{
 		for (int j = 0; j < n; j++)
@@ -108,35 +108,35 @@ int main(int argc, char **argv)
 			M.setEntry(i, j, tmp);
 		}
 	}
-	
+
 	printMatrix(MD, M);
-	
+
 	// Text Book SF Domain
 	// Comment out this block if things are getting too slow
 	SmithFormTextbookDomain<MatrixDom> SFD(MD);
 	DenseVector<Field> S1(F, n, F.zero);
-	
+
 	Givaro::Timer t1;
 	t1.start();
 	SFD.solve(S1, M);
 	t1.stop();
 	normalize(F, S1);
 	printVector(F, S1);
-	
-	// Kannan-Bachem w/ Chou-Collins Improvement Domain 
+
+	// Kannan-Bachem w/ Chou-Collins Improvement Domain
 	SmithFormKannanBachemDomain<MatrixDom> SFKB(MD);
 	DenseVector<Field> S2(F, n, F.zero);
-	
+
 	Givaro::Timer t2;
 	t2.start();
 	SFKB.solve(S2, M);
 	t2.stop();
 	normalize(F, S2);
 	printVector(F, S2);
-	
+
 	cout << "SFD: " << n << " " << p << " " << d << " " << t1.usertime() << endl;
 	cout << "SFK: " << n << " " << p << " " << d << " " << t2.usertime() << endl;
-	
+
 	return 0;
 }
 

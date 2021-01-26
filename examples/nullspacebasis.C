@@ -37,8 +37,7 @@ using namespace LinBox;
 
 int main (int argc, char **argv)
 {
-
-	if ( argc <  2 || argc > 4) {
+	if ( argc <  3 || argc > 4) {
 		std::cerr << "Usage to get a random null space basis over GF(p,k):  <matrix-file-in-SMS-format> p [k]" << std::endl;
 		return -1;
 	}
@@ -55,15 +54,15 @@ int main (int argc, char **argv)
 
     DenseMatrix<Field> NullSpace(F,B.coldim(),B.coldim());
     GaussDomain<Field> GD(F);
-    
+
     GD.nullspacebasisin(NullSpace, B);
-    
+
     NullSpace.write( std::cerr << "X:=", Tag::FileFormat::Maple ) << ';' << std::endl;
 
     std::cerr << "NullsSpace dimensions:" << NullSpace.rowdim() << 'x' << NullSpace.coldim() << std::endl;
-    
+
     return 0;
-    
+
 
 }
 
