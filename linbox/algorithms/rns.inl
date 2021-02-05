@@ -56,7 +56,7 @@ namespace LinBox
 				if (curint>maxint)
 					break;
 				PrimeIterator<IteratorCategories::HeuristicTag> genprimes( (unsigned int) (_ps_+penalty) );
-				size_t p = genprimes.randomPrime() ;
+				size_t p = *genprimes ;
 				++genprimes;
 				primeset.insert(p);
 				if (lg < primeset.size()) {
@@ -102,6 +102,21 @@ namespace LinBox
 		CRTSystem CRT( _PrimeDoms_ );
 		_CRT_ = CRT  ;
 		return ;
+	}
+
+	template <bool Unsigned>
+	template <class T>
+	void RNS<Unsigned>::init(const std::vector<T>& primes)
+	{
+		_size_ = primes.size();
+		_primes_.resize(_size_);
+		_PrimeDoms_.resize(_size_);
+		for (auto i = 0u; i < _size_; ++i) {
+			_primes_[i] = size_t(primes[i]);
+			_PrimeDoms_[i] = Field(primes[i]);
+		}
+
+		_CRT_ = CRTSystem(_PrimeDoms_);
 	}
 
 	template<bool Unsigned>
@@ -183,7 +198,7 @@ namespace LinBox
 				if (curint>maxint)
 					break;
 				PrimeIterator<IteratorCategories::HeuristicTag> genprimes((unsigned int) (_ps_+penalty) );
-				size_t p = genprimes.randomPrime() ;
+				size_t p = *genprimes ;
 				++genprimes;
 				primeset.insert(p);
 				if (lg < primeset.size()) {

@@ -155,14 +155,15 @@ namespace LinBox
             this->_intRing.convert(Prime,_p);
 
             auto hb = RationalSolveHadamardBound(A, b);
-            N = Integer(1) << static_cast<uint64_t>(std::ceil(hb.numLogBound));
-            D = Integer(1) << static_cast<uint64_t>(std::ceil(hb.denLogBound));
+            N = hb.numBound;
+            D = hb.denBound;
 
             // L = N * D * 2
             // _length = logp(L, Prime) = log2(L) * ln(2) / ln(Prime)
             double primeLog2 = Givaro::logtwo(Prime);
-            _length = std::ceil((1 + hb.numLogBound + hb.denLogBound) / primeLog2); // round up instead of down
+            _length = std::ceil(hb.solutionLogBound / primeLog2); // round up instead of down
 #ifdef DEBUG_LC
+			std::cout << "_length "<< _length << std::endl;
 			std::cout<<" norms computed, p = "<<_p<<"\n";
 			std::cout<<" N = "<<N<<", D = "<<D<<", length = "<<_length<<"\n";
 			_matA.write(std::cout<<"A:=", Tag::FileFormat::Maple) << std::endl;
@@ -226,7 +227,7 @@ namespace LinBox
 
 				// compute v2 = _matA * digit
 				IVector v2 (_lc.ring(),_lc._matA.rowdim());
-				_lc._MAD.applyV(v2,digit, _res);
+				_lc._MAD.applyV(v2,digit, _res); // @fixme This third parameter makes no sense!
 
 #ifdef DEBUG_LC
 
@@ -284,34 +285,6 @@ namespace LinBox
 			}
 
 		};
-
-		/*- @brief Bit manipulation function for possible use in optimization.
-		 * efficiently pulls out continuous blocks of bits, from lsb to msb inclusive
-		 * least significant bits start at index 0, so msb >= lsb
-		 * if any bits with index >= 8*numBytes are asked for they will be zeroes
-		 */
-#if 0
-		static long long bytesToBits(unsigned char * byteArray, size_t numBytes, size_t lsb, size_t msb) {
-			linbox_check(msb >= lsb);
-			size_t lsbi = lsb >> 3;
-			size_t msbi = msb >> 3;
-			if (msbi == lsbi)
-				if (msbi >= numBytes)
-					return 0;
-				else
-					return (byteArray[lsbi] >> (lsb & 7)) & ((1 << (msb - lsb + 1)) - 1);
-
-			long long result = (msbi < numBytes) ? (byteArray[msbi] & ((1 << ((msb & 7)+1)) - 1)) : 0;
-			for (size_t i=msbi-1; i>lsbi; i--) {
-				result <<= 8;
-				result |= (i < numBytes) ? byteArray[i] : 0;
-			}
-			result <<= 8 - (lsb & 7);
-			result |= (lsbi < numBytes) ? (byteArray[lsbi] >> (lsb & 7)) : 0;
-
-			return result;
-		}
-#endif
 
 		const_iterator begin() const
 		{

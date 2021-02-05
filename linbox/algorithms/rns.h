@@ -78,6 +78,7 @@ namespace LinBox
 		 * @param l  max recoverable bits
 		 * @param ps bitsize of the primes (defaulting to 21 because...)
 		 */
+		RNS() {}
 		RNS(size_t l, size_t ps=21) ;
 		/*x Create a RNS with given primes.
 		 * @param primes given basis of primes
@@ -97,26 +98,19 @@ namespace LinBox
 		/*! Inits cra.
 		 */
 		void initCRA() ;
+		template <class T>
+		void init(const std::vector<T>& primes);
+
 		/*! Computes \c result corresponding to the \c residues.
 		 *
 		 */
 		void cra(integer & result, const std::vector<double> & residues);
-		/*! Computes \c result corresponding to the \c residues.
-		 *
-		 */
-		void cra(std::vector<integer> & result, const std::vector<std::vector<double> > & residues);
 
 		/*! Computes \c result corresponding to the iteration.
 		 *
 		 */
 		template<typename Iteration>
 		void cra(Ivect & result, Iteration & iter) ;
-
-		template<class Tinteger, class Tresidue>
-		void cra(Tinteger & result, Tresidue & residues);
-
-		template<class Tinteger, class Tresidue>
-		void convert(Tinteger & result, Tresidue & residues) ;
 
 		// mixed radix
 	};

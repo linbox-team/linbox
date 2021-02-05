@@ -533,15 +533,6 @@ namespace LinBox
 			return B.swap(A);
 		}
 
-
-		//- Inversion w singular check
-		// template <class Matrix>
-		// Matrix& inv( Matrix &Ainv, const Matrix &A, int& nullity) const
-		// {
-			// nullity = BlasMatrixDomainInv<Field,Matrix,Matrix>()(field(),Ainv,A);
-			// return Ainv;
-		// }
-
 		//! Inversion w singular check
 		template <class Matrix1, class Matrix2>
 		Matrix1& inv( Matrix1 &Ainv, const Matrix2 &A, int& nullity) const
@@ -550,13 +541,23 @@ namespace LinBox
 			return Ainv;
 		}
 
-
 		//! Inversion (the matrix A is modified) w singular check
 		template <class Matrix1, class Matrix2>
 		Matrix1& invin( Matrix1 &Ainv, Matrix2 &A, int& nullity) const
 		{
 			nullity = BlasMatrixDomainInv<Matrix1,Matrix2>()(Ainv,A);
 			return Ainv;
+		}
+
+		//! Inversion (the matrix A is modified) w singular check
+		template <class Matrix>
+		Matrix& invin(Matrix& A, int& nullity) const
+		{
+			// @fixme @cpernet Apparently FFLAS has a new method that does
+			// inversion really in place, we should update this code.
+			Matrix tmp(A);
+			nullity = BlasMatrixDomainInv<Field,Matrix,Matrix>()(field(),A,tmp);
+			return A;
 		}
 
 		//! Rank

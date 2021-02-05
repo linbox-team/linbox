@@ -54,8 +54,10 @@ namespace {
         int n = 500;
         int bits = 10;
         int seed = -1;
+        int primesCount = -1;
         std::string dispatchString = "Auto";
         std::string methodString = "Auto";
+        std::string rnsFgemmString = "ParallelRnsOnly";
     };
 
     template <typename Vector>
@@ -145,6 +147,8 @@ int main(int argc, char** argv)
                      {'b', "-b", "bit size", TYPE_INT, &args.bits},
                      {'s', "-s", "Seed for randomness.", TYPE_INT, &args.seed},
                      {'d', "-d", "Dispatch mode (any of: Auto, Sequential, SMP, Distributed).", TYPE_STR, &args.dispatchString},
+                     {'r', "-r", "RNS-FGEMM type (either BothParallel, BothSequential, ParallelRnsOnly or ParallelFgemmOnly).", TYPE_STR, &args.rnsFgemmString},
+                     {'p', "-p", "Enable multi-modular method, and tells how many primes to use.", TYPE_INT, &args.primesCount},
 		             {'t', "-t", "Number of threads.", TYPE_INT, &numThreads },
                      {'M', "-M",
                       "Choose the solve method (any of: Auto, Elimination, DenseElimination, SparseElimination, "
@@ -171,10 +175,25 @@ int main(int argc, char** argv)
 
     MethodBase method;
     method.pCommunicator = &communicator;
+    if (args.primesCount > 0) {
+        method.multiModularLifting = true;
+        method.primesCount = args.primesCount;
+    } else {
+        method.multiModularLifting = false;
+    }
     if (args.dispatchString == "Sequential")        method.dispatch = Dispatch::Sequential;
     else if (args.dispatchString == "SMP")          method.dispatch = Dispatch::SMP;
     else if (args.dispatchString == "Distributed")  method.dispatch = Dispatch::Distributed;
     else                                            method.dispatch = Dispatch::Auto;
+
+    if (args.rnsFgemmString == "BothParallel")              method.rnsFgemmType = RnsFgemmType::BothParallel;
+    else if (args.rnsFgemmString == "BothSequential")       method.rnsFgemmType = RnsFgemmType::BothSequential;
+    else if (args.rnsFgemmString == "ParallelRnsOnly")      method.rnsFgemmType = RnsFgemmType::ParallelRnsOnly;
+    else if (args.rnsFgemmString == "ParallelFgemmOnly")    method.rnsFgemmType = RnsFgemmType::ParallelFgemmOnly;
+    else {
+        std::cerr << "-r RNS-FGEMM type should be either BothParallel, BothSequential, ParallelRnsOnly or ParallelFgemmOnly" << std::endl;
+        return EXIT_FAILURE;
+    }
 
     // Real benchmark
 

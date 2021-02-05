@@ -179,6 +179,17 @@ namespace LinBox {
     };
 
     /**
+     * When running FFLAS's fgemm on an RNS structure,
+     * how the composed ParSeqHelper should be configured.
+     */
+    enum class RnsFgemmType {
+        BothParallel,
+        BothSequential,
+        ParallelRnsOnly,
+        ParallelFgemmOnly,
+    };
+
+    /**
      * Holds everything a method needs to know about the problem.
      *
      * @note This "put everything in it" design is used so that
@@ -221,6 +232,15 @@ namespace LinBox {
         SingularSolutionType singularSolutionType = SingularSolutionType::Random;
         bool certifyMinimalDenominator = false; //!< Whether the solver should try to find a certificate
                                                 //!  that the provided denominator is minimal.
+        // @fixme Make a auto switch for multi modular lifting, based on matrix size.
+        // Whether to use the multi-modular Dixon lifter.
+        // (A BLAS Based C Library for Exact Linear Algebra on Integer Matrices - Chen, Storjohann ISSAC 2005)
+        // https://cs.uwaterloo.ca/~astorjoh/p92-chen.pdf
+        bool multiModularLifting = true;
+        //! How many primes to use, multi mod lifting will be done over p = p1p2...pl.
+        //! -1 means automatically set to a heuristic value.
+        uint32_t primesCount = -1u;
+        RnsFgemmType rnsFgemmType = RnsFgemmType::ParallelRnsOnly;
 
         // ----- For random-based systems.
         size_t trialsBeforeFailure = LINBOX_DEFAULT_TRIALS_BEFORE_FAILURE; //!< Maximum number of trials before giving up.

@@ -89,14 +89,14 @@ namespace LinBox {
         commentator().start("solve.dixon.integer.dense");
         linbox_check((A.coldim() == xNum.size()) && (A.rowdim() == b.size()));
 
-        // @fixme Using Givaro::ModularBalanced<double> for the field makes Dixon fail...
+        // @note Using Givaro::ModularBalanced<double> would make Dixon and MultiModLiftingContainer fail...
         using Matrix = DenseMatrix<Ring>;
         using Field = Givaro::Modular<double>;
         using PrimeGenerator = PrimeIterator<IteratorCategories::HeuristicTag>;
         PrimeGenerator primeGenerator(FieldTraits<Field>::bestBitSize(A.coldim()));
 
         using Solver = DixonSolver<Ring, Field, PrimeGenerator, typename MethodForMatrix<Matrix>::type>;
-        Solver dixonSolve(A.field(), primeGenerator);
+        Solver dixonSolve(A.field(), primeGenerator, m);
 
         // Either A is known to be non-singular, or we just don't know yet.
         int maxTrials = m.trialsBeforeFailure;

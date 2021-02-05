@@ -51,7 +51,7 @@ namespace LinBox
 
 	protected:
 
-		typedef BlasVector<Ring>         DVect;
+		typedef DenseVector<Ring>         DVect;
 		Ring        r;
         mutable typename Ring::RandIter _gen;
 		Solver solver;
@@ -110,24 +110,23 @@ namespace LinBox
 			Integer r_den;
 			//std::vector<std::pair<Integer, Integer> > result (A.coldim());
 			//typename std::vector<std::pair<Integer, Integer> >::iterator result_p;
-			// vector b, RHS, 32-bit int is good enough
-			std::vector<int> b(A.rowdim());
-			typename std::vector<int>::iterator b_p;
-			typename Vector::const_iterator Prime_p;
+			DenseVector<Ring> b(r, A.rowdim());
 
 			Integer pri, quo, rem, itmp;
 
 			for (; count < threshold; ++ count) {
 				// assign b to be a random vector
-				for (b_p = b.begin(); b_p != b.end(); ++ b_p) {
-//					* b_p = rand() % 268435456 - 134217728; // may need to change to use ring's random gen.
-//					// dpritcha, 2004-07-26
-                    _gen( itmp );
-                    * b_p = (int)itmp;
+				for (auto b_p = b.begin(); b_p != b.end(); ++ b_p) {
+                   _gen( itmp );
+                        //@enhancement vector b, RHS, 32-bit is good enough
+                   * b_p = Integer((int32_t)itmp);
 				}
 
 				// try to solve Ax = b over Ring
 				tmp = solver.solveNonsingular(r_num, r_den, A, b);
+
+                // std::clog << "r_den: " << r_den << std::endl;
+
 				// If no solution found
 				if (tmp != SS_OK) {
 					r.assign (lif, r.zero);
@@ -138,7 +137,7 @@ namespace LinBox
 			}
 			// filter out primes in PRIMEL from lif.
 			if (!r. isZero (lif))
-				for ( Prime_p = PrimeL.begin();
+				for ( auto Prime_p = PrimeL.begin();
 				      Prime_p != PrimeL.end();
 				      ++ Prime_p) {
 					r.init (pri, *Prime_p);
@@ -172,21 +171,17 @@ namespace LinBox
 			Integer r1_den, r2_den;
 			//std::vector<std::pair<Integer, Integer> > result (A.coldim());
 			//typename std::vector<std::pair<Integer, Integer> >::iterator result_p;
-			// vector b, RHS, 32-bit int is good enough
-			std::vector<int> b1(A. rowdim()), b2(A. rowdim());
-			typename std::vector<int>::iterator b_p;
-			typename Vector::const_iterator Prime_p;
+			//@enhancement vector b, RHS, 32-bit instead would be good enough
+            DenseVector<Ring> b1(r, A. rowdim()), b2(r, A. rowdim());
 			Integer pri, quo, rem;
 
 			for (; count < (threshold + 1) / 2; ++ count) {
 				// assign b to be a random vector
-				for (b_p = b1. begin(); b_p != b1. end(); ++ b_p) {
-//					* b_p = rand();
-                                        *b_p = _gen.random();//(* b_p);
+				for (auto b_p = b1. begin(); b_p != b1. end(); ++ b_p) {
+                    _gen.random(*b_p);
 				}
-				for (b_p = b2. begin(); b_p != b2. end(); ++ b_p) {
-//					* b_p = rand();
-                                        *b_p = _gen.random();//(* b_p);
+				for (auto b_p = b2. begin(); b_p != b2. end(); ++ b_p) {
+                    _gen.random(*b_p);
 				}
 				// try to solve Ax = b1, b2 over Ring
 				tmp1 = solver. solveNonsingular(r1_num, r1_den, A, b1);
@@ -243,7 +238,7 @@ namespace LinBox
 
 			// filter out primes in PRIMEL from lif.
 			if (!r. isZero (lif))
-				for ( Prime_p = PrimeL.begin(); Prime_p != PrimeL.end(); ++ Prime_p) {
+				for ( auto Prime_p = PrimeL.begin(); Prime_p != PrimeL.end(); ++ Prime_p) {
 					r.init (pri, *Prime_p);
 					do {
 						r.quoRem(quo,rem,lif,pri);
@@ -253,7 +248,7 @@ namespace LinBox
 				}
 			r. gcdin (Bonus, lif);
 			if (!r. isZero (Bonus))
-				for ( Prime_p = PrimeL.begin(); Prime_p != PrimeL.end(); ++ Prime_p) {
+				for ( auto Prime_p = PrimeL.begin(); Prime_p != PrimeL.end(); ++ Prime_p) {
 					r.init (pri, *Prime_p);
 					do {
 						r.quoRem(quo,rem,Bonus,pri);
@@ -275,13 +270,11 @@ namespace LinBox
 			if (r_num.size()!=A. coldim()) return lif=0;
 			Integer r_den;
 			DVect b(r,A.rowdim());
-			typename DVect::iterator b_p;
-			//typename Vector::const_iterator Prime_p;
 
 			Integer pri, quo, rem;
 
 			// assign b to be a random vector
-			for (b_p = b.begin(); b_p != b.end(); ++ b_p) {
+			for (auto b_p = b.begin(); b_p != b.end(); ++ b_p) {
 //				* b_p = rand() % 268435456 - 134217728; // may need to change to use ring's random gen.
 //				// dpritcha, 2004-07-26
                 _gen( * b_p );
