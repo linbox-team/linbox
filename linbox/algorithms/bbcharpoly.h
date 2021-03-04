@@ -181,7 +181,7 @@ namespace LinBox
 				return P = intMinPoly;
 			}
 			/* Factorization over the integers */
-			std::vector<IntPoly> intFactors;
+			std::vector<IntPoly> intFactors(0, intRing);
 			std::vector<uint64_t> exp;
 			IPD.factor (intFactors, exp, intMinPoly);
 			size_t factnum = intFactors.size();
@@ -200,10 +200,10 @@ namespace LinBox
 
 				FactorMult<FieldPoly,IntPoly>* FFM=NULL;
 				if (exp[i] > 1) {
-					IntPoly *tmp = new IntPoly(intRing, intFactors[i]);
+					IntPoly *tmp = new IntPoly(intFactors[i]);
 					FM* depend = NULL;
 					for (size_t j = 1; j <= exp[i]; ++j){
-						IntPoly * tmp2 = new IntPoly(intRing, *tmp);
+						IntPoly * tmp2 = new IntPoly(*tmp);
 // 						FieldPoly *tmp2p = new FieldPoly(tmp2->size());
 // 						typename IntPoly::template rebind<Field>() (*tmp2p, *tmp2, F);
 						FieldPoly *tmp2p = new FieldPoly(*tmp2, F);
@@ -225,9 +225,10 @@ namespace LinBox
 				else {
 // 					FieldPoly* fp=new FieldPoly(intFactors[i].size());
 // 					typename IntPoly::template rebind<Field>() (*fp, (intFactors[i]), F);
+                    IntPoly * ip=new IntPoly(intFactors[i]);
 					FieldPoly* fp=new FieldPoly(intFactors[i], F);
 
-					FFM = new FM (fp,&intFactors[i],1,NULL);
+					FFM = new FM (fp,ip,1,NULL);
 					factCharPoly.insert (std::pair<size_t, FM* > (intFactors[i].size()-1, FFM));
 					leadingBlocks.insert (std::pair<FM*,bool>(FFM,false));
 					goal -= (int)deg;
@@ -249,7 +250,7 @@ namespace LinBox
 
 				IPD.pow (tmpP, *it_f->second->intP, (long) it_f->second->multiplicity);
 				IPD.mulin (intCharPoly, tmpP);
-                if (it_f->second->multiplicity>1) delete it_f->second->intP;
+                delete it_f->second->intP;
                 delete it_f->second->fieldP;
 				delete it_f->second;
 			}
@@ -317,7 +318,7 @@ namespace LinBox
 
                 FactorMult<Polynomial>* FFM=NULL;
                 if (exp[i] > 1) {
-                    Polynomial* tmp = new Polynomial(F, factors[i]);
+                    Polynomial* tmp = new Polynomial(factors[i]);
                     FactorMult<Polynomial>* depend = NULL;
                     for (size_t j = 1; j <= exp[i]; ++j){
                             // tmp2 is deleted after charPoly construction
@@ -340,7 +341,7 @@ namespace LinBox
                 }
                 else {
                         // tmp2 is deleted after charPoly construction
-                    Polynomial* tmp2 = new Polynomial(F, factors[i]);
+                    Polynomial* tmp2 = new Polynomial(factors[i]);
                     FFM = new FactorMult<Polynomial> (tmp2,tmp2,1U,NULL);
 						//std::cerr<<"Inserting new factor : "<<*factors[i]<<std::endl;
                     factCharPoly.insert (std::pair<size_t, FactorMult<Polynomial>* > (factors[i].size()-1, FFM));
