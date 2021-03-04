@@ -155,10 +155,11 @@ namespace LinBox
 		{
 			commentator().start ("Integer BlackBox Charpoly ", "IbbCharpoly");
 
-			typename BlackBox::Field intRing = A.field();
+			typedef typename BlackBox::Field Ring_t;
+			const Ring_t& intRing = A.field();
 			typedef Givaro::Modular<uint32_t> Field;
 			typedef typename BlackBox::template rebind<Field>::other FieldBlackBox;
-			typedef PolynomialRing<typename BlackBox::Field, Givaro::Dense> IntPolyDom;
+			typedef PolynomialRing<Ring_t, Givaro::Dense> IntPolyDom;
 			typedef typename IntPolyDom::Element IntPoly;
 			typedef typename PolynomialRing<Field,Givaro::Dense>::Element FieldPoly;
 			// Set of factors-multiplicities sorted by degree
@@ -173,7 +174,7 @@ namespace LinBox
 			IntPolyDom IPD(intRing);
 
 			/* Computation of the integer minimal polynomial */
-			Polynomial intMinPoly(A.field());
+			Polynomial intMinPoly(intRing);
 			minpoly (intMinPoly, A, M);
 			if (intMinPoly.size() == n+1){
 				commentator().stop ("done", NULL, "IbbCharpoly");
@@ -199,10 +200,10 @@ namespace LinBox
 
 				FactorMult<FieldPoly,IntPoly>* FFM=NULL;
 				if (exp[i] > 1) {
-					IntPoly *tmp = new IntPoly(intFactors[i]);
+					IntPoly *tmp = new IntPoly(intRing, intFactors[i]);
 					FM* depend = NULL;
 					for (size_t j = 1; j <= exp[i]; ++j){
-						IntPoly * tmp2 = new IntPoly(*tmp);
+						IntPoly * tmp2 = new IntPoly(intRing, *tmp);
 // 						FieldPoly *tmp2p = new FieldPoly(tmp2->size());
 // 						typename IntPoly::template rebind<Field>() (*tmp2p, *tmp2, F);
 						FieldPoly *tmp2p = new FieldPoly(*tmp2, F);
@@ -240,16 +241,16 @@ namespace LinBox
 			findMultiplicities (Ap, factCharPoly, leadingBlocks, goal, M);
 
 			// Building the integer charpoly
-			IntPoly intCharPoly (n+1);
-			IntPoly tmpP;
+			IntPoly intCharPoly (intRing, n+1);
+			IntPoly tmpP(intRing);
 			intRing.assign(intCharPoly[0], intRing.one);
 			for (FactPolyIterator it_f = factCharPoly.begin(); it_f != factCharPoly.end(); ++it_f){
 //                 it_f->second->write(std::clog) << std::endl;
 
 				IPD.pow (tmpP, *it_f->second->intP, (long) it_f->second->multiplicity);
 				IPD.mulin (intCharPoly, tmpP);
-				delete it_f->second->intP;
-				delete it_f->second->fieldP;
+                if (it_f->second->multiplicity>1) delete it_f->second->intP;
+                delete it_f->second->fieldP;
 				delete it_f->second;
 			}
 			commentator().stop ("done", NULL, "IbbCharpoly");
@@ -316,7 +317,7 @@ namespace LinBox
 
                 FactorMult<Polynomial>* FFM=NULL;
                 if (exp[i] > 1) {
-                    Polynomial* tmp = new Polynomial(factors[i]);
+                    Polynomial* tmp = new Polynomial(F, factors[i]);
                     FactorMult<Polynomial>* depend = NULL;
                     for (size_t j = 1; j <= exp[i]; ++j){
                             // tmp2 is deleted after charPoly construction
@@ -339,7 +340,7 @@ namespace LinBox
                 }
                 else {
                         // tmp2 is deleted after charPoly construction
-                    Polynomial* tmp2 = new Polynomial(factors[i]);
+                    Polynomial* tmp2 = new Polynomial(F, factors[i]);
                     FFM = new FactorMult<Polynomial> (tmp2,tmp2,1U,NULL);
 						//std::cerr<<"Inserting new factor : "<<*factors[i]<<std::endl;
                     factCharPoly.insert (std::pair<size_t, FactorMult<Polynomial>* > (factors[i].size()-1, FFM));
@@ -359,7 +360,6 @@ namespace LinBox
 
                 delete it_f->second->fieldP;
                 delete it_f->second;
-
             }
 
 			commentator().stop ("done", NULL, "MbbCharpoly");
