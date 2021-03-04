@@ -272,7 +272,8 @@ namespace LinBox {
         }
 
         void setEntry (size_t i, const Element &a_i){
-            //std::cout<<"BV: "<<" "<<&(*_ptr)<<" "<<i<<" "<<a_i<<std::endl;
+// std::cout<<"BV: "<<" "<<&(*_ptr)<<" "<<i<<" "<<a_i<<std::endl;
+//             field().assign(_rep.at(i),a_i);
             field().assign(_rep[i],a_i);
         }
 
