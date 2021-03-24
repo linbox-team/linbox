@@ -124,7 +124,7 @@ LB_DRIVER
 
 # Looking for FFLAS-FFPACK.
 # We get the flags for OpenMP, Givaro and GMP at the same time
-PKG_CHECK_MODULES([FFLAS_FFPACK], [fflas-ffpack >= 2.4.0])
+PKG_CHECK_MODULES([FFLAS_FFPACK], [fflas-ffpack >= 2.5.0])
 AC_SUBST(FFLAS_FFPACK_CFLAGS)
 AC_SUBST(FFLAS_FFPACK_LIBS)
 
