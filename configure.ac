@@ -79,8 +79,9 @@ AS_ECHO([---------------------------------------])
 # Set OPTIM_FLAGS, DEBUG_FLAGS depending on compiler and command line arguments
 SET_FLAGS
 
-# Append -march=native to OPTIM_FLAGS if not present in CXXFLAGS and
-# not cross-compiling and --no-marchnative is not set
+# Append -march=native or -mcpu=native (if recognized by the compiler) to
+# OPTIM_FLAGS if not present in CXXFLAGS and not cross-compiling and
+# --without-archnative is not set
 ARCH_FLAGS
 
 # Append -mfpmath=sse to OPTIM_FLAGS on i386 and i686 architecture with SSE
