@@ -126,28 +126,6 @@ AC_DEFUN([AC_COMPILER_NAME], [
             [ CCNAM=gcc ])
         ])
 
-    dnl 4.3 <= GCC < 5 ?
-    AS_IF([ test -z "${CCNAM}"], [
-        AC_TRY_RUN( [
-            #ifdef __GNUC__
-                int main() { return !(__GNUC__ == 4 && __GNUC_MINOR__ >= 3) ; }
-            #else
-               not gcc neither.
-            #endif],
-            [ CCNAM=gcc4 ])
-        ])
-
-    dnl GCC == 4.9.2 ?
-    AS_IF([ test -z "${CCNAM}"], [
-        AC_TRY_RUN( [
-            #ifdef __GNUC__
-                int main() { return !(__GNUC__ == 4  && __GNUC_MINOR__ == 9 && __GNUC_PATCHLEVEL__ == 2 ) ; }
-            #else
-               not gcc neither.
-            #endif],
-            [ CCNAM=gcc492 ])
-        ])
-
     dnl other ?
     AS_IF([ test -z "${CCNAM}"],
             [
