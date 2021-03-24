@@ -228,6 +228,8 @@ interfaces/kaapi/Makefile
 benchmarks/Makefile
 benchmarks/data/Makefile
 benchmarks/matrix/Makefile
+programs/Makefile
+programs/smith/Makefile
 linbox.pc
 ])
 
