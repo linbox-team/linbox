@@ -223,9 +223,6 @@ benchmarks/matrix/Makefile
 linbox.pc
 ])
 
-#programs/Makefile
-#programs/smith/Makefile
-
 # examples/Readme-make
 # examples/field
 # examples/solver
