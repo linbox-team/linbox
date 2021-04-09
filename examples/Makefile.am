@@ -42,7 +42,7 @@ EXTRA_PROGRAMS= $(EXAMPLES) $(USE_GIVARONTL_EXAMPLES)
 
 CLEANFILES=$(EXTRA_PROGRAMS)
 
-EXTRA_DIST = examples.doxy
+EXTRA_DIST = examples.doxy matrices.h matrices.C
 #map-sparse.h map-sparse.inl
 
 examples:  ${EXTRA_PROGRAMS}
