@@ -82,7 +82,6 @@ int main(int argc, char* argv[]) {
 //skip("test-modular-balanced-double",  "test and modular-balanced disagree on init/convert");
 //skip("test-moore-penrose", "inf loop");
         skip("test-optimization", "not unit/regression test conforming");
-        skip("test-quad-matrix", "depends on out-of-date blackbox/zo.h");
 //skip("test-rational-reconstruction-base", "inf loop");
         skip("test-rat-charpoly", "inf loop");
         skip("test-rat-minpoly", "stale test. solns over QQ need fresh tests"); // "intermittent failures")
@@ -90,7 +89,6 @@ int main(int argc, char* argv[]) {
         skip("test-poly-det", "incomplete test (if still relevant)");
         skip("test-sparse-map-map", "const issue in givranditer, curious use of nonexistant next() in Extension");
 //Tests requiring further development
-        skip("test-dense-zero-one", "half baked, bds responsible");
     }
 
 //warn("test-echelon-form", "new");
@@ -106,7 +104,10 @@ int main(int argc, char* argv[]) {
     warn("test-solve", "most of the tests are commented out");
     warn("test-toom-cook", "one method does not work");
 //warn("test-transpose", "sometimes fails on Sparsematrix/getEntry");
+/* Quad matrix is a dormant project. Eventual revival is expected. Test works.
     warn("test-quad-matrix", "half baked, bds responsible");
+*/
+
     skip("test-smith-form-kannan-bachem", "not working anymore");
     warn("test-one-invariant-factor", "probalistic algorithm, sometimes fails");
 
