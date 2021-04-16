@@ -39,9 +39,15 @@ using namespace LinBox;
 using Ring = Givaro::ZRing<Integer>;
 
 #if defined(__LINBOX_HAVE_MPI)
-#define getWTime(...) MPI_Wtime(__VA_ARGS__);
+#define getWTime(...) MPI_Wtime(__VA_ARGS__)
+#define Time2Seconds(start,end) static_cast<double>(end-start)
+#elif defined(__LINBOX_HAVE_OMP)
+#define getWTime(...) omp_get_wtime(__VA_ARGS__)
+#define Time2Seconds(start,end) static_cast<double>(end-start)
 #else
-#define getWTime(...) omp_get_wtime(__VA_ARGS__);
+#include <chrono>
+#define getWTime(...) std::chrono::high_resolution_clock::now()
+#define Time2Seconds(start,end) std::chrono::duration_cast<std::chrono::duration<double>>(end-start).count()
 #endif
 
 template <class Matrix>
@@ -78,15 +84,15 @@ bool benchmark(size_t niter, BlasVector<Ring>& x, BlasMatrix<Ring>& A, BlasVecto
 {
     Ring::Element d;
 
-    double startTime = getWTime();
+    auto startTime = getWTime();
     Method::CRAAuto method;
     method.pCommunicator = &communicator;
     solve(x, d, A, B, method);
 
     bool ok = false;
     if (communicator.master()) {
-        double endTime = getWTime();
-        std::cout << "CPU time (seconds): " << (endTime - startTime) / double(niter) << std::endl;
+        auto endTime = getWTime();
+        std::cout << "CPU time (seconds): " << Time2Seconds(startTime,endTime) / double(niter) << std::endl;
         ok = checkResult(A, B, x, d);
     }
 
@@ -132,7 +138,7 @@ int main(int argc, char** argv)
     bool ok = true;
     for (size_t j = 0u; loop | (j < niter); j++) {
         if (communicator.master()) {
-            Ring::RandIter randIter(ZZ, bits, seed);
+            Ring::RandIter randIter(ZZ, seed, bits);
             genData(ZZ, randIter, A, b);
         }
 
