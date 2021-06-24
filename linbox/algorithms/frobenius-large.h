@@ -33,7 +33,6 @@
 #include <iostream>
 
 #include "linbox/matrix/matrix-domain.h"
-#include "linbox/matrix/random-matrix.h"
 
 #include "linbox/algorithms/blackbox-block-container.h"
 #include "linbox/algorithms/wiedemann.h"
@@ -176,6 +175,11 @@ public:
 		}
 	}
 	
+	/** fs is the distinct invariant factors of A in nonincreasing order by degree.
+    *  ms[i] is the index where the first occurrence of Fs[i] would be in a list 
+    *  of all invariants, including repeats. 
+    *  If limit is positive, only the first limit invariants are found.
+    */ 
 	template<class Blackbox>
 	void solve(
 		std::vector<Polynomial> &fs,
@@ -206,6 +210,30 @@ public:
 		
 		thresholdSearch(fs, ms, A, 1, f1, n, _R.one);
 	}
+
+	/** fs is the invariant factor list of A in nonincreasing order by degree.
+    *  If limit is positive, only the first limit invariants are found.
+    */
+	template<class Blackbox>
+	void frobeniusInvariants(
+		std::vector<Polynomial> &fs,
+		const Blackbox &A,
+		size_t limit = 0)
+   {  solve(fs, A, limit);  }
+
+	template<class Blackbox>
+	void solve(
+		std::vector<Polynomial> &fs,
+		const Blackbox &A,
+		size_t limit = 0)
+	{
+		std::vector<Polynomial> fsu;
+		std::vector<size_t> ms;
+	   solve(fsu, ms, A, limit);
+      for (size_t i = 0; i < fsu.size(); ++i)
+         for (size_t j = 0; j < ms[i]; ++j)
+            fs.push_back(fsu[i]);
+   }
 };
 
 }
