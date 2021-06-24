@@ -160,6 +160,7 @@ public:
 		
 		Polynomial det;
 		_SFD.detLocalX(det, G);
+		
 		_SFD.solve(lifs, G, det);	
 		
 		return lifs;
@@ -228,6 +229,20 @@ public:
 		return lifs;
 	}
 	
+   /// lifs is the first k invariant factors of A in nonincreasing order by degree.
+	template<class Blackbox>
+	std::vector<Polynomial> &frobeniusInvariants(
+		std::vector<Polynomial> &lifs,
+		const Blackbox &A,
+      size_t k) const
+   {
+      // b is a fudge for now.  Todo: make a full FNF based on blockwied
+      size_t b = (k == 0 ? A.rowdim() : k+2); 
+      largestInvariantFactors(lifs, A, b);
+      std::reverse(lifs.begin(),lifs.end());
+      return lifs;
+   }
+
 	template<class Blackbox>
 	std::vector<Polynomial> &lifsit(
 		std::vector<Polynomial> &lifs,

@@ -150,7 +150,17 @@ namespace LinBox {
             throw LinBoxError("Calling copy from BlasSubMatrix with matrices of different dimension ... not allowed");
         return *this;
     }
-    
+
+// a kludge because (blas-)matrix-domain assumes a swap function
+    template < class _Matrix >
+    BlasSubmatrix<_Matrix>& BlasSubmatrix<_Matrix>::swap (BlasSubmatrix<_Matrix> & M){
+       _Matrix X(this->field(), this->rowdim(), this->coldim());
+       BlasSubmatrix<_Matrix> Y(X);
+       Y.copy(*this);
+       this->copy(M);
+       M.copy(Y);
+       return *this;
+    }
     
     //////////////////
     //   ELEMENTS   //
@@ -187,8 +197,8 @@ namespace LinBox {
     std::istream& BlasSubmatrix<_Matrix>::read (std::istream &file)
     {        
         MatrixStream<Field> ms(field(),file);
-        size_t c = 0,i,j;
-		Element v;
+        size_t /*c = 0,*/i,j;
+		  Element v;
         do {
             ms.nextTriple(i,j,v);
             if ( (i<0 or i> _row) and (j<0 or j> _col)){

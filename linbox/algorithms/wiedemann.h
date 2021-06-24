@@ -130,14 +130,15 @@ namespace LinBox
 #endif // INCLUDE_TIMING
 		}
 
-//             std::cerr << "P: " << P << std::endl;
-//             std::cerr << "WD deg: " << deg << std::endl;
+/* This bit of code makes incorrect results on nilpotent matrices, for instance in test-minpoly.
+We should trust WD.minpoly, fix there - not here - if necessary, methinks (bds).
         if (!deg) {
                 // zero sequence, matrix minpoly is X
             P.resize(2);
             A.field().assign(P[0],A.field().zero);
             A.field().assign(P[1],A.field().one);
         }
+        */
 
 		commentator().stop ("done", NULL, "minpoly");
 

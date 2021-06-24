@@ -4,28 +4,18 @@
 #include <iostream>
 #include <vector>
 
-#include "givaro/givtimer.h"
+//#include "givaro/givtimer.h"
 
-#include "givaro/gfqext.h"
 #include "linbox/ring/modular.h"
+#include "linbox/util/commentator.h"
 #include "linbox/ring/ntl.h"
-#include "linbox/ring/polynomial-ring.h"
-
-#include "linbox/matrix/sparse-matrix.h"
-#include "linbox/matrix/matrix-domain.h"
 
 #include "linbox/algorithms/invariant-factors.h"
+#include "test-frobenius.h"
 
 using namespace LinBox;
 
-typedef Givaro::Modular<double> Field;
-typedef Field::Element Element;
-typedef SparseMatrix<Field, SparseMatrixFormat::CSR> SparseMat;
-
-typedef NTL_zz_pX Ring;
-typedef typename Ring::Element Polynomial;
-typedef BlasMatrix<Ring> PolyMatrix;
-
+#if 0
 Givaro::Timer TW;
 
 void time2(std::function<bool()> fun) {
@@ -58,18 +48,41 @@ void readMatrix(SparseMat &M, const std::string matrixFile) {
 	M.finalize();
 	iF.close();
 }
+#endif
 
 int main(int argc, char** argv) {
 	size_t p = 3;
+	size_t k = 0;
+	int seed = time(NULL);
+
+	static Argument args[] = {
+		{ 'k', "-k K", "Number of invariant factors to compute (default k=0 for all)", TYPE_INT, &k},
+		{ 'p', "-p P", "Set the field GF(p)", TYPE_INT, &p},
+		{ 'r', "-r R", "Random seed", TYPE_INT, &seed},
+		END_OF_ARGUMENTS
+	};
+
+	parseArguments(argc,argv,args);
+	srand(seed);
+
+   typedef Givaro::Modular<double> Field;
+	Field F(p);
+
+   typedef NTL_zz_pX PolyRing;
+	PolyRing R(p);
+
+	InvariantFactors<Field, PolyRing> IFD(F, R);
+
+   bool pass = testFrobenius(IFD, F, R, k);
+   return pass ? 0 : -1;
+
+#if 0
 	size_t b = 4;
-	
 	int precond = 0;
 	size_t s = 0;
-	
 	std::string matrixFile;
 	std::string outFile;
 	
-	int seed = time(NULL);
 
 	static Argument args[] = {
 		{ 'p', "-p P", "Set the field GF(p)", TYPE_INT, &p},
@@ -83,18 +96,11 @@ int main(int argc, char** argv) {
 	};
 
 	parseArguments(argc,argv,args);
-	
 	if (matrixFile == "") {
 		std::cout << "an input matrix must be provided" << std::endl;
 		return -1;
 	}
 	
-	srand(seed);
-
-	Field F(p);
-	Ring R(p);
-	MatrixDomain<Field> MD(F);
-	InvariantFactors<Field, Ring> IFD(F, R);
 	PolySmithFormDomain<Ring> PSFD(R);
 	
 	typename Field::RandIter RI(F);
@@ -126,4 +132,5 @@ int main(int argc, char** argv) {
 	}
 	
 	return 0;
+#endif
 }

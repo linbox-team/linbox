@@ -39,6 +39,8 @@ namespace LinBox
 		typedef typename Field::Element Polynomial;
 		typedef typename Field::CoeffField CoeffField;
 		typedef typename Field::Coeff Coeff;
+      typedef typename Field::Element_ptr Element_ptr;
+      typedef typename Field::ConstElement_ptr ConstElement_ptr;
 		
 		// f(x) * x^e ; x does not divide f(x)
 		typedef struct {
@@ -393,6 +395,8 @@ namespace LinBox
 		typedef typename Field::Element Polynomial;
 		typedef typename Field::CoeffField CoeffField;
 		typedef typename Field::Coeff Coeff;
+      typedef typename Field::Element_ptr Element_ptr;
+      typedef typename Field::ConstElement_ptr ConstElement_ptr;
 		
 		// f(x) * x^e ; x does not divide f(x)
 		typedef typename Field::Element Element;

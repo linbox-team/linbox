@@ -26,15 +26,13 @@
  * @brief testing Msith Form computations via the Valence algorithm
  */
 
-#ifndef DISABLE_COMMENTATOR
-#define DISABLE_COMMENTATOR
-#endif
+#include <linbox/linbox-config.h>
+#include <linbox/solutions/smith-form.h>
+#include <linbox/algorithms/smith-form-valence.h>
+using namespace LinBox;
 
 #include "test-smith-form.h"
-#include <linbox/algorithms/smith-form-valence.h>
 
-
-using namespace LinBox;
 typedef Givaro::ZRing<Integer> PIR;
 typedef SparseMatrix<PIR>  Blackbox;
 
@@ -73,6 +71,8 @@ static bool testValenceSmith(const char * name,
 
 int main(int argc, char** argv)
 {
+	commentator().start("Smith form valence algorithm test suite", "SNFV");
+
     bool pass(true);
     const SmithList<PIR> smsSL{ {1,8},{1440000,1},{0,2} };
     pass &= testValenceSmith("data/sms.matrix", smsSL);
@@ -82,6 +82,8 @@ int main(int argc, char** argv)
 
     const SmithList<PIR> thirtySL{{1,22},{2,1},{66,2},{198,1},{15444,1},{0,3}};
     pass &= testValenceSmith("data/30_30_27.sms", thirtySL);
+
+	commentator().stop(MSG_STATUS(pass));
 
     return pass ? 0 : -1;
 }

@@ -45,8 +45,8 @@ namespace LinBox
 	/*-----------------------------------------------------------------
 	 *----    Destructor
 	 *----------------------------------------------------------------*/
-	template <class Field>
-	inline Hankel<Field>::~Hankel()
+	template <class Field, class PolyRing>
+	inline Hankel<Field,PolyRing>::~Hankel()
 	{
 #ifdef DBGMSGS
 		std::cout << "Hankel::~Hankel():\tDestroyed a " << this->rowDim << "x"<< this->colDim<<
@@ -79,8 +79,8 @@ namespace LinBox
 	/*-----------------------------------------------------------------
 	 *----- Constructor With User-Supplied First Row And Column
 	 *----------------------------------------------------------------*/
-	template <class Field>
-	Hankel<Field>::Hankel( const Field F,
+	template <class Field, class PolyRing>
+	Hankel<Field, PolyRing>::Hankel( const Field F,
 			       const std::vector<typename Field::Element>&v) : Father_t(F)
 	{
 		// Assumes that the input is a vector of ZZ_p else things will FAIL
@@ -114,8 +114,8 @@ namespace LinBox
 	/*-----------------------------------------------------------------
 	 *----- Constructor With User-Supplied First Row And Column
 	 *----------------------------------------------------------------*/
-	template <class Field>
-	Hankel<Field>::Hankel( const BlasVector<Field>&v ) :
+	template <class Field, class PolyRing>
+	Hankel<Field, PolyRing>::Hankel( const BlasVector<Field>&v ) :
 	       	Father_t(v.field())
 	{
 		//! @warning Assumes that the input is a vector of ZZ_p else things will FAIL
@@ -148,8 +148,8 @@ namespace LinBox
 	/*-----------------------------------------------------------------
 	 *-----    Print The Matrix To Screen
 	 *----------------------------------------------------------------*/
-	template <class Field>
-	void Hankel<Field>::print(std::ostream& os) const
+	template <class Field, class PolyRing>
+	void Hankel<Field, PolyRing>::print(std::ostream& os) const
 	{
 		size_t N;
 
@@ -191,8 +191,8 @@ namespace LinBox
 	/*-----------------------------------------------------------------
 	 *----    Save To File, Given Destination Filename
 	 *----------------------------------------------------------------*/
-	template <class Field>
-	void Hankel<Field>::print( char *outFileName) const
+	template <class Field, class PolyRing>
+	void Hankel<Field, PolyRing>::print( char *outFileName) const
 	{
 		// int i, j, N;
 
@@ -216,9 +216,9 @@ namespace LinBox
 	 *    vectors are both over the SAME prime ZZ_p field as the
 	 *    Hankel matrix itself.
 	 *----------------------------------------------------------------*/
-	template <class Field>
+	template <class Field, class PolyRing>
 	template<class OutVector, class InVector>
-	OutVector& Hankel<Field>::apply( OutVector &v_out,
+	OutVector& Hankel<Field, PolyRing>::apply( OutVector &v_out,
 					 const InVector& v_in) const
 	{
 		if (v_out.size() != this->rowdim())
@@ -259,9 +259,9 @@ namespace LinBox
 	 *    Hankel matrix itself. Calls the multiply from the Toeplitz matrix
 	 *    Since Hankel is symmetric, this is the same as apply
 	 *----------------------------------------------------------------*/
-	template <class Field>
+	template <class Field, class PolyRing>
 	template <class OutVector, class InVector>
-	OutVector& Hankel<Field>::applyTranspose( OutVector &v_out,
+	OutVector& Hankel<Field, PolyRing>::applyTranspose( OutVector &v_out,
 						  const InVector& v_in) const
 	{
 		return(v_out = apply(v_out,v_in));

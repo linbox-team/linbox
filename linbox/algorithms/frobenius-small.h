@@ -362,6 +362,12 @@ protected:
 	}
 	
 public:
+   /** fs is the leading invariant factors of A in nonincreasing order by degree.
+    *  If limit is positive, only the leading limit invariants are obtained.
+    */
+	void frobeniusInvariants(std::vector<Polynomial> &fs, const Blackbox &A, size_t limit) {		
+      solve(fs, A, limit);
+   }
 	void solve(std::vector<Polynomial> &fs, const Blackbox &A, size_t limit) {		
 		size_t n = A.rowdim();
 		size_t k = 0;
