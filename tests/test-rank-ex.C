@@ -54,6 +54,7 @@ bool runrank (const char * name, size_t irank, int32_t mod)
 
 	std::ifstream input (name);
 	if (!input) {
+      if (writing)
 		std::cerr << "Error opening matrix file: " << name << std::endl;
 		return false;
 	}
@@ -96,16 +97,18 @@ bool runrank (const char * name, size_t irank, int32_t mod)
 
     bool pass = (r == irank);
 
-    if (pass) {
-        std::clog << "[PASS]: " << name << " rank " << r;
-        if (mod >0) std::clog << " mod " << mod;
-        std::clog << std::endl;
-    } else {
-        std::cerr << "[FAILED]: Rank found " << std::flush;
-        std::cerr << r << std::flush;
-        if (mod >0) std::cerr << " mod " << mod;
-        std::cerr << " where " << irank << " expected.";
-        std::cerr << " (" << tim << " )" << std::endl;
+    if (writing) {
+       if (pass) {
+           std::clog << "[PASS]: " << name << " rank " << r;
+           if (mod >0) std::clog << " mod " << mod;
+           std::clog << std::endl;
+       } else {
+           std::cerr << "[FAILED]: Rank found " << std::flush;
+           std::cerr << r << std::flush;
+           if (mod >0) std::cerr << " mod " << mod;
+           std::cerr << " where " << irank << " expected.";
+           std::cerr << " (" << tim << " )" << std::endl;
+       }
     }
     
     return pass;

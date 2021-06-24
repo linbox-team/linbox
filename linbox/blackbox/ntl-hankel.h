@@ -40,13 +40,13 @@
 namespace LinBox
 {
 	/// \ingroup blackbox
-	template <class _Field>
-	class Hankel: public Toeplitz<_Field> {
+	template <class _Field, class PolyRing>
+	class Hankel: public Toeplitz<_Field,PolyRing> {
 	public:
 		typedef _Field Field;
 		typedef typename Field::Element Element;
 
-		typedef Toeplitz<_Field> TBase;
+		typedef Toeplitz<_Field, PolyRing> TBase;
 		typedef TBase Father_t;
                 using TBase::P;
                 using TBase::rowDim;
@@ -59,9 +59,9 @@ namespace LinBox
                 using TBase::field;
 
 
-		template<typename _Tp1>
+		template<typename _Tp1, class Ring>
 		struct rebind
-		{ typedef Hankel<_Tp1> other; };
+		{ typedef Hankel<_Tp1, Ring> other; };
 
 		//------- CONSTRUCTORS AND DESTRUCTORS
 

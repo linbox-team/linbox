@@ -157,8 +157,9 @@ namespace LinBox
         BlasSubmatrix(nonconstSubMatrixType &M);
         BlasSubmatrix(const nonconstSubMatrixType &M);
         
-        //! (copying data) -> works only if dimensions are the same
+        //! (copying/swapping data) -> works only if dimensions are the same
         Self_t& copy (const Self_t& M) ;
+        Self_t& swap (Self_t& M) ;
 
         Self_t& operator=(const Self_t& M)=delete;
         // {

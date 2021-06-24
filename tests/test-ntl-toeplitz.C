@@ -85,6 +85,7 @@ int main(int argc, char* argv[])
 	report  <<"     \tDimension= " << n << "\t modulus= " << q << endl;
 
 	typedef LinBox::NTL_ZZ_p Field;
+	typedef LinBox::NTL_ZZ_pX PolyRing;
 	// typedef Field::Element element;
 	typedef LinBox::BlasVector<Field> Vector;
 
@@ -92,7 +93,7 @@ int main(int argc, char* argv[])
 	Field F(q);
 
 	// Use the default constructor to create a matrix
-	LinBox::Toeplitz<Field> T(F);
+	LinBox::Toeplitz<Field, PolyRing> T(F);
 
 	// Use a special constructor to construct a matrix of dim TSIZE
 	size_t TSIZE = 2*(n)-1;
@@ -104,7 +105,7 @@ int main(int argc, char* argv[])
 	}
 	report << std::endl;
 
-	LinBox::Toeplitz<Field> TT(F,tdata);
+	LinBox::Toeplitz<Field, PolyRing> TT(F,tdata);
 	report << "The matrix is: " << std::endl;
 	TT.write(report);
 

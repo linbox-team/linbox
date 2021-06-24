@@ -147,7 +147,8 @@ namespace LinBox
 	 * FFT based for large n, apply will run in O(n lg(n)) time.
 	 */
 #ifdef __LINBOX_HAVE_NTL
-	template< class _CField, class _PRing = NTL_ZZ_pX >
+	template< class _CField, class _PRing>
+	//template< class _CField, class _PRing = NTL_ZZ_pX >
 	#else
 	template< class _CField, class _PRing >
 	#endif

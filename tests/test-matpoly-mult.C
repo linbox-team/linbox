@@ -175,7 +175,8 @@ bool debug_midpgen_dlp(const Field& fld,  RandIter& Gen) {
 template<typename Field>
 bool launchTest(const Field& F, size_t n, uint64_t b, long d, long seed){
     bool ok=true;
-    Givaro::Integer samplesize(1); samplesize<<=b;
+    //Givaro::Integer samplesize(1); samplesize<<=b;
+    typename Field::RandIter::Residu_t samplesize(1); samplesize<<=b;
     typename Field::RandIter G(F,seed,samplesize);
 	typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field> MatrixP;
 	ostream& report = LinBox::commentator().report();
@@ -210,12 +211,13 @@ bool runTest(uint64_t n, uint64_t d, long seed){
 
 		Givaro::Modular<double> F((int32_t)p);
 		ok&=launchTest (F,n,bits,d,seed);
-        commentator().stop(MSG_STATUS (ok), (const char *) 0,"Half wordsize Fourrier prime");
+        commentator().stop(MSG_STATUS (ok), (const char *) 0);//,"Half wordsize Fourrier prime");
 
 	}
 	// normal prime < 2^(53--log(n))/2
 	{
         commentator().start("Half wordsize normal prime");
+   report << "got to 3" << std::endl;
 		typedef Givaro::Modular<double> Field;
 		PrimeIterator<IteratorCategories::HeuristicTag> Rd(FieldTraits<Field>::bestBitSize(n),seed);
 		integer p;
@@ -223,7 +225,7 @@ bool runTest(uint64_t n, uint64_t d, long seed){
         report<<"prime bits : "<<p.bitsize()<<std::endl;
 		Field F((int32_t)p);
 		ok&=launchTest (F,n,bits,d,seed);
-        commentator().stop(MSG_STATUS (ok), (const char *) 0,"Half wordsize generic prime");
+        commentator().stop(MSG_STATUS (ok), (const char *) 0);//,"Half wordsize normal prime");
 	}
 
 	// multi-precision prime
@@ -238,7 +240,7 @@ bool runTest(uint64_t n, uint64_t d, long seed){
 	 	ok&=launchTest (F1,n,bits,d,seed);
 	 	Givaro::Modular<RecInt::ruint128,RecInt::ruint256> F2(p);
 	 	ok&=launchTest (F2,n,bits,d,seed);
-	    commentator().stop(MSG_STATUS (ok), (const char *) 0,"Multiprecision generic prime");
+	    commentator().stop(MSG_STATUS (ok), (const char *) 0);//,"Multiprecision generic prime");
 	 }
 
 	 // over the integer

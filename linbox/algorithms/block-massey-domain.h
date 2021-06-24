@@ -633,7 +633,7 @@ namespace LinBox
                         
 #ifdef __PRINT_SIGMABASE
             report<<"order is "<<length-1<<std::endl;
-			report<<"SigmaBase:=";
+			   report<<"SigmaBase:=";
             Sigma.write(report);
             report<<"shift:=[";
             std::ostream_iterator<int> out_it (report,", ");
@@ -651,8 +651,6 @@ namespace LinBox
                 for (size_t j=0;j<=shift[i];j++)
                     for (size_t k=0;k<m;k++)
                         field().assign(lingen[shift[i]-j].refEntry(i,k), Sigma.ref(i,k,j));
-
-
                      
 #ifdef __CHECK_RESULT
 			report<<"Check minimal polynomial application\n";
@@ -679,11 +677,11 @@ namespace LinBox
 			report<<"MinPoly:=";
             write_maple(field(),lingen);
 #endif
-			std::vector<size_t> degree(m);
-			for (size_t i=0;i<m;++i)
-				degree[i] = shift[i];
-			return degree;
-		}
+			   std::vector<size_t> degree(m);
+			   for (size_t i=0;i<m;++i)
+			   	degree[i] = shift[i];
+			   return degree;
+   	}
 
 	}; //end of class BlockMasseyDomain
 

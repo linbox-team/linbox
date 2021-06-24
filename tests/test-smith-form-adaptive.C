@@ -51,8 +51,8 @@ int main(int argc, char** argv)
 	static size_t m = 3;
 	static size_t n = 35;
 	static Argument args[] = {
-		{ 'm', "-m M", "Set order of test matrices to M.", TYPE_INT,  &m },
-		{ 'n', "-n N", "Set order of test matrices to N.", TYPE_INT,  &n },
+		{ 'm', "-m M", "Set rowdim of test matrices to M.", TYPE_INT,  &m },
+		{ 'n', "-n N", "Set coldim of test matrices to N.", TYPE_INT,  &n },
 		END_OF_ARGUMENTS
 	};
 
