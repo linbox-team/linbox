@@ -28,7 +28,8 @@ LDADD=$(top_builddir)/linbox/liblinbox.la $(LINBOX_DEPS_LIBS) $(FFLAS_FFPACK_LIB
 SUBDIRS=data
 
 EXAMPLES=rank det minpoly valence solve dot-product echelon sparseelimdet \
-sparseelimrank checksolve doubledet smithvalence charpoly blassolve solverat \
+sparseelimrank checksolve doubledet smithvalence charpoly blassolve \
+dixonsparseelim dixondenseLU \
 ratdet sparsesolverat poweroftwo_ranks power_rank genprime smithsparse matrices
 #polysmith bench-fft bench-matpoly-mult
 # EXAMPLES+=nulp yabla 
@@ -65,7 +66,8 @@ echelon_SOURCES        = echelon.C
 smithvalence_SOURCES   = smithvalence.C
 sparseelimdet_SOURCES  = sparseelimdet.C
 sparseelimrank_SOURCES = sparseelimrank.C
-solverat_SOURCES       = solverat.C
+dixonsparseelim_SOURCES  = dixonsparseelim.C
+dixondenseLU_SOURCES = dixondenseLU.C
 ratdet_SOURCES       = ratdet.C
 sparsesolverat_SOURCES = sparsesolverat.C
 blassolve_SOURCES      = blassolve.C
