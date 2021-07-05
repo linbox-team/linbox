@@ -31,6 +31,7 @@ BASIC_HDRS =            \
     abstract.h          \
     archetype.h         \
     envelope.h          \
+    givaro-poly-local.h \
     polynomial-local-x.h
 
 NTL_HDRS =              \
