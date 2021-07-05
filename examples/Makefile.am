@@ -29,8 +29,8 @@ SUBDIRS=data
 
 EXAMPLES=rank det minpoly valence solve dot-product echelon sparseelimdet \
 sparseelimrank checksolve doubledet smithvalence charpoly blassolve \
-dixonsparseelim dixondenseLU \
-ratdet sparsesolverat poweroftwo_ranks power_rank genprime smithsparse matrices
+dixonsparseelim dixondenseLU sparsesolverat densesolverat \
+ratdet poweroftwo_ranks power_rank genprime smithsparse matrices
 #polysmith bench-fft bench-matpoly-mult
 # EXAMPLES+=nulp yabla 
 GIVARONTL_EXAMPLES=smith graph-charpoly
@@ -70,6 +70,7 @@ dixonsparseelim_SOURCES  = dixonsparseelim.C
 dixondenseLU_SOURCES = dixondenseLU.C
 ratdet_SOURCES       = ratdet.C
 sparsesolverat_SOURCES = sparsesolverat.C
+densesolverat_SOURCES = densesolverat.C
 blassolve_SOURCES      = blassolve.C
 power_rank_SOURCES     = power_rank.C
 poweroftwo_ranks_SOURCES=poweroftwo_ranks.C

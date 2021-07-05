@@ -1,7 +1,4 @@
-/*
- * examples/solverat.C
- *
- * Copyright (C) 2012 J-G Dumas
+/* Copyright (C) The LinBox group
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
@@ -21,104 +18,176 @@
  * ========LICENCE========
  */
 
-/** @file examples/solve.C
- * @ingroup examples
- * @brief Blackbox solvers.
- * @warning some are commented out...
- * @example  examples/solve.C
+/**\file examples/dixondenseelim.C
+ @example examples/dixondenseelim.C
+ @author Jean-Guillaume.Dumas@univ-grenoble-alpes.fr
+ * \brief Dixon System Solving Lifting using dense LU
+ * \ingroup examples
  */
-
 #include <iostream>
-
-
-#include "givaro/modular.h"
-
-#include "linbox/matrix/sparse-matrix.h"
+#include <omp.h>
+#include "linbox/matrix/dense-matrix.h"
 #include "linbox/solutions/solve.h"
 #include "linbox/util/matrix-stream.h"
 #include "linbox/solutions/methods.h"
 
 using namespace LinBox;
-using namespace std;
+typedef Givaro::ZRing<Givaro::Integer> Ints;
+typedef DenseVector<Ints> ZVector;
 
 
-int main (int argc, char **argv)
-{
+struct FixPrime {
+    typedef Givaro::Integer Prime_Type;
+    const Prime_Type _myprime;
+    FixPrime(const Givaro::Integer& i) : _myprime(i) {}
+    inline FixPrime &operator ++ () { return *this; }
+    const Prime_Type &operator * () const { return randomPrime(); }
+    const Prime_Type & randomPrime() const { return _myprime; }
+    void setBits(uint64_t bits) {}
+    template<class _ModField> void setBitsField() { }
+};    
 
-	commentator().setMaxDetailLevel (-1);
-	commentator().setMaxDepth (-1);
-	commentator().setReportStream (std::cerr);
 
+int main (int argc, char **argv) {
+        // Usage
+    if (argc < 2 || argc > 4) {
+        std::cerr << "Usage: solve <matrix-file-in-supported-format> [<dense-vector-file>]" << std::endl;
+        return 0;
+    }
 
-	if (argc < 2 || argc > 4) {
-		cerr << "Usage: solve <matrix-file-in-supported-format> [<dense-vector-file>]" << endl;
-		return 0;
-	}
-	std::ifstream input (argv[1]);
-	if (!input) { cerr << "Error opening matrix file " << argv[1] << endl; return -1; }
-	std::ifstream invect;
+        // File
+    std::ifstream input (argv[1]);
+    if (!input) { std::cerr << "Error opening matrix file " << argv[1] << std::endl; return -1; }
 
-	bool createB = false;
-	if (argc == 2) {
-		createB = true;
-	}
-
-	if (argc == 3) {
-		invect.open (argv[2], std::ifstream::in);
-		if (!invect) {
-			createB = true;
-		}
-		else {
-			createB = false;
-		}
-	}
-
+    
+    std::ifstream invect;
+    bool createB = false;
+    if (argc == 2) {
+        createB = true;
+    }
+    if (argc == 3) {
+        invect.open (argv[2], std::ifstream::in);
+        if (!invect) { 
+            createB = true;
+        } else {
+            createB = false;
+        }
+    }       
+    
+        // Read Integral matrix from File
+    Ints ZZ;
+    MatrixStream< Ints > ms( ZZ, input );
+    DenseMatrix<Ints> A (ms);
+    Ints::Element d;
+    std::cout << "A is " << A.rowdim() << " by " << A.coldim() << std::endl;
+    
     {
-        typedef Givaro::QField<Givaro::Rational> Rats;
-        Rats QQ;
-        typedef DenseVector<Rats> RVector;
+            // Print Matrix
+        
+            // Matrix Market
+            // std::cout << "A is " << A << std::endl;
+        
+            // Maple
+        A.write(std::cout << "Pretty A is ", Tag::FileFormat::Maple) << std::endl;
+    }
+    
+        // Vectors
+    ZVector X(ZZ, A.coldim()),B(ZZ, A.rowdim());
+    
+    if (createB) {
+        std::cerr << "Creating a random {-1,1} vector " << std::endl;
+        srand48( BaseTimer::seed() );
+        for(ZVector::iterator it=B.begin();
+            it != B.end(); ++it)
+            if (drand48() <0.5)
+                *it = -1;
+            else
+                *it = 1;
+    } else {
+        for(ZVector::iterator it=B.begin();
+            it != B.end(); ++it)
+            invect >> *it;
+    }
+    
+    {
+            // Print RHS
+        
+        std::cout << "B is [";
+        for(auto it:B) ZZ.write(std::cout, it) << " ";
+        std::cout << "]" << std::endl;
+    }
+    
+    std::cout << "B is " << B.size() << "x1" << std::endl;
+    
+    Timer chrono; 
 
-        MatrixStream<Rats> ms( QQ, input );
-        DenseMatrix<Rats> A ( ms );
-		std::cout << "A is " << A.rowdim() << " by " << A.coldim() << std::endl;
+        // BlasElimination
+    Method::DenseElimination M;
+    M.singularity = Singularity::NonSingular;
 
-		RVector X(QQ, A.coldim()),B(QQ, A.rowdim());
+        //====================================================
+        // BEGIN Replacement solve with fixed prime
+    Method::Dixon m(M);
+    typedef Givaro::Modular<double> Field;
+		// 0.7213475205 is an upper approximation of 1/(2log(2))
+    size_t bitsize((size_t)( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)));
+    Givaro::Integer randomPrime( *(PrimeIterator<>(bitsize)) );
 
-		if (createB) {
-			cerr << "Creating a random {-1,1} vector " << endl;
-			for(auto it=B.begin(); it != B.end(); ++it)
-				if (drand48() <0.5)
-					*it = -1;
-				else
-					*it = 1;
-		} else {
-			for(auto&& it:B) invect >> it;
-            invect.close();
-		}
-
-		std::cout << "B is [";
-		for(auto it:B) QQ.write(cout, it) << ' ';
-		std::cout << ']' << std::endl;
-
-		Timer chrono;
-
-            // DenseElimination dense
-		std::cout << "DenseElimination" << std::endl;
-		chrono.start();
-		solve (X, A, B, Method::DenseElimination());
-		chrono.stop();
-
-		std::cout << "(DenseElimination) Solution is [";
-		for(auto it:X) QQ.write(cout, it) << " ";
-		std::cout << ']' << std::endl;
-
-		std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
+    FixPrime fixedprime( randomPrime );
+    DixonSolver<Ints, Field, FixPrime, Method::DenseElimination> rsolve(A.field(), fixedprime);
+    std::cout << "Using: " << *fixedprime << " as the fixed p-adic." << std::endl;
 
 
-	}
+    chrono.start();
+    rsolve.solveNonsingular(X, d, A, B, false,(int)m.trialsBeforeFailure);
 
-	return 0;
+        // END Replacement solve with fixed prime
+        //====================================================
+//     solve (X, d, A, B, M);
+    chrono.stop();
+
+    std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
+    
+    {
+            // Solution size 
+
+        std::cout<<"Reduced solution: \n";
+        size_t maxbits=0;
+        for (size_t i=0;i<A.coldim();++i){
+            maxbits=(maxbits > X[i].bitsize() ? maxbits: X[i].bitsize());
+        }
+        std::cout<<" numerators of size   "<<maxbits<<" bits" << std::endl
+                 <<" denominators hold over "<<d.bitsize()<<" bits\n";	
+    }
+    
+    
+    {
+			// Check Solution
+
+        VectorDomain<Ints> VD(ZZ);
+        MatrixDomain<Ints> MD(ZZ);
+        ZVector LHS(ZZ, A.rowdim()), RHS(ZZ, B);
+            // check that Ax = d.b
+        MD.vectorMul(LHS, A, X);
+        VD.mulin(RHS, d);
+        if (VD.areEqual(LHS, RHS))
+            std::cout << "Ax=b : Yes" << std::endl;
+        else
+            std::cout << "Ax=b : No" << std::endl;
+    }
+    
+    {
+            // Print Solution
+        
+        std::cout << "(DenseElimination) Solution is [";
+        for(auto it:X) ZZ.write(std::cout, it) << " ";
+        std::cout << "] / ";
+        ZZ.write(std::cout, d)<< std::endl;		
+    }
+    
+    return 0;
 }
+
 
 // Local Variables:
 // mode: C++

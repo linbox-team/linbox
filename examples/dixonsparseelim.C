@@ -18,16 +18,16 @@
  * ========LICENCE========
  */
 
-/**\file examples/dionsparseelim.C
- @example examples/dionsparseelim.C
+/**\file examples/dixonsparseelim.C
+ @example examples/dixonsparseelim.C
  @author Jean-Guillaume.Dumas@univ-grenoble-alpes.fr
- * \brief Dixon System Solving using sparse LU
+ * \brief Dixon System Solving Lifting using sparse LU
  *        (direct match to dixendenseLU)
  * \ingroup examples
  */
 #include <iostream>
 #include <omp.h>
-#include "linbox/matrix/dense-matrix.h"
+#include "linbox/matrix/sparse-matrix.h"
 #include "linbox/solutions/solve.h"
 #include "linbox/util/matrix-stream.h"
 #include "linbox/solutions/methods.h"
@@ -78,7 +78,7 @@ int main (int argc, char **argv) {
         // Read Integral matrix from File
     Ints ZZ;
     MatrixStream< Ints > ms( ZZ, input );
-    DenseMatrix<Ints> A (ms);
+    SparseMatrix<Ints> A (ms);
     Ints::Element d;
     std::cout << "A is " << A.rowdim() << " by " << A.coldim() << std::endl;
     
@@ -123,7 +123,7 @@ int main (int argc, char **argv) {
     Timer chrono; 
 
         // BlasElimination
-    Method::DenseElimination M;
+    Method::SparseElimination M;
     M.singularity = Singularity::NonSingular;
 
         //====================================================
@@ -135,12 +135,12 @@ int main (int argc, char **argv) {
     Givaro::Integer randomPrime( *(PrimeIterator<>(bitsize)) );
 
     FixPrime fixedprime( randomPrime );
-    DixonSolver<Ints, Field, FixPrime, Method::DenseElimination> rsolve(A.field(), fixedprime);
+    DixonSolver<Ints, Field, FixPrime, Method::SparseElimination> rsolve(A.field(), fixedprime);
     std::cout << "Using: " << *fixedprime << " as the fixed p-adic." << std::endl;
 
 
     chrono.start();
-    rsolve.solveNonsingular(X, d, A, B, false,(int)m.trialsBeforeFailure);
+    rsolve.solve(X, d, A, B);
 
         // END Replacement solve with fixed prime
         //====================================================
@@ -180,7 +180,7 @@ int main (int argc, char **argv) {
     {
             // Print Solution
         
-        std::cout << "(DenseElimination) Solution is [";
+        std::cout << "(SparseElimination) Solution is [";
         for(auto it:X) ZZ.write(std::cout, it) << " ";
         std::cout << "] / ";
         ZZ.write(std::cout, d)<< std::endl;		
@@ -188,3 +188,12 @@ int main (int argc, char **argv) {
     
     return 0;
 }
+
+
+// Local Variables:
+// mode: C++
+// tab-width: 4
+// indent-tabs-mode: nil
+// c-basic-offset: 4
+// End:
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
