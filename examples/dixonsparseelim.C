@@ -89,7 +89,8 @@ int main (int argc, char **argv) {
             // std::cout << "A is " << A << std::endl;
         
             // Maple
-        A.write(std::cout << "Pretty A is ", Tag::FileFormat::Maple) << std::endl;
+        if ( (A.rowdim() < 100) && (A.coldim() < 100) )
+            A.write(std::cout << "Pretty A is ", Tag::FileFormat::Maple) << std::endl;
     }
     
         // Vectors
