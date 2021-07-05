@@ -1,7 +1,4 @@
-/*
- * examples/blassolve.C
- *
- * Copyright (C) J-G Dumas
+/* Copyright (C) The LinBox group
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
@@ -21,6 +18,13 @@
  * ========LICENCE========
  */
 
+/**\file examples/dionsparseelim.C
+ @example examples/dionsparseelim.C
+ @author Jean-Guillaume.Dumas@univ-grenoble-alpes.fr
+ * \brief Dixon System Solving using sparse LU
+ *        (direct match to dixendenseLU)
+ * \ingroup examples
+ */
 #include <iostream>
 #include <omp.h>
 #include "linbox/matrix/dense-matrix.h"
