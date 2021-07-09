@@ -45,7 +45,7 @@ int main (int argc, char **argv)
 	// 	commentator().setReportStream (std::cerr);
 
 
-	if (argc < 2 || argc > 4) {
+	if (argc != 4) {
 		std::cerr << "Usage: checksolve <matrix-file-in-supported-format> <dense-vector-file> <p>" << std::endl;
 		return 0;
 	}

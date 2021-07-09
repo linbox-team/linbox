@@ -48,6 +48,11 @@ int main (int argc, char **argv)
 		return -1;
 	}
 
+    ifstream input (argv[1]);
+    if (!input) {
+        cerr << "Error opening matrix file " << argv[1] << endl;
+        return -1;
+    }
 	if (argc == 2 ) {
 
 		// For a small integer matrix test, do "det data/mat2S".
@@ -56,11 +61,6 @@ int main (int argc, char **argv)
 		typedef Givaro::ZRing<Integer> Integers;
 		Integers ZZ;
 
-		ifstream input (argv[1]);
-		if (!input)
-		{ cerr << "Error opening matrix file " << argv[1] << endl;
-			return -1;
-		}
 		DenseMatrix<Integers> A(ZZ); A.read(input);
 		cout << "Matrix is " << A.rowdim() << " by " << A.coldim() << endl;
 
@@ -76,11 +76,6 @@ int main (int argc, char **argv)
 		double q = atof(argv[2]);
 		Field F(q);
 
-		ifstream input (argv[1]);
-		if (!input)
-		{ cerr << "Error opening matrix file " << argv[1] << endl;
-			return -1;
-		}
 		SparseMatrix<Field> B (F); B.read(input);
 		cout << "Matrix is " << B.rowdim() << " by " << B.coldim() << endl;
 

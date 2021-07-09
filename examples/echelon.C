@@ -41,7 +41,7 @@ using namespace std;
 
 int main (int argc, char **argv)
 {
-	if (argc < 3 || argc > 3) {
+	if (argc != 3) {
 		cerr << "Usage: echelon <matrix-file-in-SMS-format> <p>" << endl;
 		return -1;
 	}
