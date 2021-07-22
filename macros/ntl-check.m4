@@ -69,10 +69,10 @@ for NTL_HOME in ${NTL_HOME_PATH}
 if test -r "$NTL_HOME/include/NTL/ZZ.h"; then
 
 	if test "x$NTL_HOME" != "x/usr" -a "x$NTL_HOME" != "x/usr/local"; then
-		NTL_CFLAGS="-I${NTL_HOME}/include"
+		NTL_CFLAGS="-I${NTL_HOME}/include -pthread"
 		NTL_LIBS="-L${NTL_HOME}/lib -lntl"
 	else
-		NTL_CFLAGS=
+		NTL_CFLAGS="-pthread"
 		NTL_LIBS="-lntl"
 	fi
 	CXXFLAGS="${BACKUP_CXXFLAGS} ${NTL_CFLAGS} ${FFLAS_FFPACK_CFLAGS}"
