@@ -9,13 +9,29 @@ See doc/mainpage.doxy for more info.
 
 ## Quick Install
 
-Download [linbox-auto-install.sh](https://github.com/linbox-team/linbox/raw/master/linbox-auto-install.sh) and run it!
+Download [linbox-auto-install.sh](https://github.com/linbox-team/linbox/raw/master/linbox-auto-install.sh), make it executable, and run it!
 
+To get a list of options:
+```
+./linbox-auto-install.sh --help
+```
+
+Requirements:
+- GNU software building tools (e.g. Debian packages `autotools-dev` and `dh-autoreconf`),
+- possibly a gfortran compiler, if Fortran-based BLAS (such as OpenBLAS) are built via this script.
+
+Examples:
 For instance, on a machine with an installation of GMP and OpenBLAS in the standard search paths:
 ```
 ./linbox-auto-install.sh --stable=yes --make-flags="-j 3" --with-blas-libs="-lopenblas"
 ```
-This script will install stable versions of Givaro, fflas-ffpack and then LinBox.
+This script will install stable versions of Givaro, fflas-ffpack, and then LinBox, in the default path (`/tmp/lib/`).
+
+To change this default folder:
+```
+./linbox-auto-install.sh --prefix="/path/to"
+```
+This will install the development versions of Givaro, fflas-ffpack, and then LinBox, in the folder `/path/to/lib/`.
 
 Here is another example fetching and installing the latest versions of GMP, Givaro, OpenBLAS, fflas-ffpack and then LinBox.
 ```
