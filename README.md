@@ -25,13 +25,13 @@ For instance, on a machine with an installation of GMP and OpenBLAS in the stand
 ```
 ./linbox-auto-install.sh --stable=yes --make-flags="-j 3" --with-blas-libs="-lopenblas"
 ```
-This script will install stable versions of Givaro, fflas-ffpack, and then LinBox, in the default path (`/tmp/lib/`).
+This script will install stable versions of Givaro, fflas-ffpack, and then LinBox, in the default path (`/tmp/`).
 
 To change this default folder, use the `--prefix` option:
 ```
 ./linbox-auto-install.sh --prefix="/path/to"
 ```
-This will install the development versions of Givaro, fflas-ffpack, and then LinBox, in the folder `/path/to/lib/`.
+This will install the development versions of Givaro, fflas-ffpack, and then LinBox, in the folder `/path/to/`.
 
 Here is another example fetching and installing the latest versions of GMP, Givaro, OpenBLAS, fflas-ffpack and then LinBox.
 ```
@@ -85,6 +85,7 @@ year = {2019},
 url = {http://github.com/linbox-team/linbox}
 }
 ```
+
 ## Contact and discussions
 
 Corrections, suggestions and comments to linbox-use@googlegroups.com
