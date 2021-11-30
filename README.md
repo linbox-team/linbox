@@ -9,7 +9,7 @@ See doc/mainpage.doxy for more info.
 
 ## Quick Install
 
-Download [linbox-auto-install.sh](linbox-auto-install.sh) and run it!
+Download [linbox-auto-install.sh](https://github.com/linbox-team/linbox/raw/master/linbox-auto-install.sh) and run it!
 
 For instance, on a machine with an installation of GMP and OpenBLAS in the standard search paths:
 ```
