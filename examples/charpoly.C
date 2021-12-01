@@ -1,4 +1,5 @@
 #define _LB_CRATIMING 1
+//#define __LINBOX_HEURISTIC_CRA
 /*
  * examples/charpoly.C
  *

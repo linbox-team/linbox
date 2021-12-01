@@ -79,21 +79,13 @@ AS_ECHO([---------------------------------------])
 # Set OPTIM_FLAGS, DEBUG_FLAGS depending on compiler and command line arguments
 SET_FLAGS
 
-# Append -march=native to OPTIM_FLAGS if not present in CXXFLAGS and
-# not cross-compiling and --no-marchnative is not set
+# Append -march=native or -mcpu=native (if recognized by the compiler) to
+# OPTIM_FLAGS if not present in CXXFLAGS and not cross-compiling and
+# --without-archnative is not set
 ARCH_FLAGS
 
 # Append -mfpmath=sse to OPTIM_FLAGS on i386 and i686 architecture with SSE
 FPMATH_FLAGS
-
-# With GCC 4.x, the default ABI version is 2. With this version, __m128 and
-# __m256 are the same types and therefore we cannot have overloads for both
-# types without linking error. It is fixed in ABI version 4.
-# FIXME: Why do we set ABI version to 6
-AS_CASE([$CCNAM], [gcc4*], [REQUIRED_FLAGS+=" -fabi-version=6"])
-
-dnl gcc-4.9.2 bug See https://trac.sagemath.org/ticket/17635#comment:178
-AS_CASE([$CCNAM], [gcc492], [REQUIRED_FLAGS+=" -fpermissive"])
 
 AS_ECHO([---------------------------------------])
 # Machine characteristics
@@ -124,7 +116,7 @@ LB_DRIVER
 
 # Looking for FFLAS-FFPACK.
 # We get the flags for OpenMP, Givaro and GMP at the same time
-PKG_CHECK_MODULES([FFLAS_FFPACK], [fflas-ffpack >= 2.4.0])
+PKG_CHECK_MODULES([FFLAS_FFPACK], [fflas-ffpack >= 2.5.0])
 AC_SUBST(FFLAS_FFPACK_CFLAGS)
 AC_SUBST(FFLAS_FFPACK_LIBS)
 
@@ -228,8 +220,6 @@ interfaces/kaapi/Makefile
 benchmarks/Makefile
 benchmarks/data/Makefile
 benchmarks/matrix/Makefile
-programs/Makefile
-programs/smith/Makefile
 linbox.pc
 ])
 

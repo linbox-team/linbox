@@ -1,6 +1,6 @@
 /* Copyright (C) 2010 LinBox
  *
- * Time-stamp: <05 Apr 11 11:01:44 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <27 Aug 20 17:09:01 Jean-Guillaume.Dumas@imag.fr>
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -40,26 +40,17 @@
 
 using namespace LinBox;
 
-template <class IntVect>
-inline IntVect create_int_vect(size_t size, Givaro::ZRing<Integer> F = Givaro::ZRing<Integer>());
-
-template <class IntVect>
-inline IntVect create_int_vect(size_t size, Givaro::ZRing<Integer>)
-{ return IntVect(size); }
-
-template <>
-BlasVector<Givaro::ZRing<Integer>> create_int_vect(size_t size, Givaro::ZRing<Integer> F)
-{ return BlasVector<Givaro::ZRing<Integer>>(F, size); }
-
-
 template <class IntVect_t = BlasVector<Givaro::ZRing<Integer>>>
 struct Interator {
     using IntVect = IntVect_t;
+    using Field = typename IntVect_t::Field;
+
+    Field _f;
 	IntVect _v;
 	double maxsize;
 
 	Interator(const IntVect& v) :
-		_v(v), maxsize(0.0)
+            _f(v.field()), _v(v), maxsize(0.0)
 	{
 		for(auto it=_v.begin(); it != _v.end(); ++it) {
 			//!@bug bb: *it < 0 ?
@@ -69,7 +60,7 @@ struct Interator {
 	}
 
 	Interator(int n, int s) :
-		_v(create_int_vect<IntVect>(n)), maxsize(0.0)
+            _f(), _v(_f,n), maxsize(0.0)
 	{
 		for(auto it=_v.begin(); it != _v.end(); ++it) {
 			Integer::random<false>(*it, s);
@@ -80,11 +71,11 @@ struct Interator {
 
 	const IntVect& getVector() const
 	{
-	       	return _v;
+		return _v;
     }
 	double getLogSize() const
 	{
-	       	return maxsize;
+		return maxsize;
 	}
 
 	template<typename Vect, typename Field>
@@ -169,9 +160,18 @@ bool TestOneCRA(std::ostream& report, Iter& iteration, RandGen& genprime, size_t
 {
 	report << "ChineseRemainder<" << typeid(Builder).name() << ">(" << bound << ')' << std::endl;
 	LinBox::ChineseRemainder< Builder > cra( bound );
-    auto Res = create_int_vect<typename Iter::IntVect>(N);
+    typename Iter::IntVect Res( typename Iter::Field(), N);
 	cra( Res, iteration, genprime);
-	bool locpass = std::equal( Res.begin(), Res.end(), iteration.getVector().begin() );
+
+
+    Integer base; cra.getModulus(base);
+    auto Riter(Res.begin());
+    auto Iiter(iteration.getVector().begin());
+    bool locpass=true;
+    for( ; Riter != Res.end(); ++Riter, ++Iiter) {
+        locpass &= isZero( ( *Riter - *Iiter ) % base );
+    }
+
 	if (locpass) report << "ChineseRemainder<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << ", passed."  << std::endl;
 	else {
 		report << "***ERROR***: ChineseRemainder<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << "***ERROR***"  << std::endl;
@@ -179,10 +179,8 @@ bool TestOneCRA(std::ostream& report, Iter& iteration, RandGen& genprime, size_t
 		auto Oit=iteration.getVector().begin();
 		for( ; Rit!=Res.end(); ++Rit, ++Oit)
 			if (*Rit != *Oit) {
-				report << *Rit <<  " != " << * Oit << std::endl;
-                { Integer a = *Rit, b; cra.getModulus(b); a += b; report << "adding mod: " << a<< std::endl; }
+				report << *Rit <<  " != " << *Oit << std::endl;
             }
-
 	}
 	return locpass;
 }
@@ -191,15 +189,25 @@ template<typename Builder, typename Iter, typename RandGen, typename BoundType>
 bool TestOneCRAbegin(std::ostream& report, Iter& iteration, RandGen& genprime, size_t N, const BoundType& bound)
 {
 	Givaro::ZRing<Integer> Z;
-	report << "ChineseRemainder<" << typeid(Builder).name() << ">(" << bound << ')' << std::endl;
+	report << "ChineseRemainderBeg<" << typeid(Builder).name() << ">(" << bound << ')' << std::endl;
 	LinBox::ChineseRemainder< Builder > cra( bound );
 	BlasVector<Givaro::ZRing<Integer> > Res(Z,N);
 	BlasVector<Givaro::ZRing<Integer> >::iterator ResIT= Res.begin();
 	cra( ResIT, iteration, genprime);
-	bool locpass = std::equal( Res.begin(), Res.end(), iteration.getVector().begin() );
-	if (locpass) report << "ChineseRemainder<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << ", passed."  << std::endl;
+
+    Integer base; cra.getModulus(base);
+    auto Riter(Res.begin()) ;
+    auto Iiter(iteration.getVector().begin());
+    bool locpass=true;
+    for( ; Riter != Res.end(); ++Riter, ++Iiter) {
+        locpass &= isZero( ( *Riter - *Iiter ) % base );
+    }
+
+
+//	bool locpass = std::equal( Res.begin(), Res.end(), iteration.getVector().begin() );
+	if (locpass) report << "ChineseRemainderBeg<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << ", passed."  << std::endl;
 	else {
-		report << "***ERROR***: ChineseRemainder<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << "***ERROR***"  << std::endl;
+		report << "***ERROR***: ChineseRemainderBeg<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << "***ERROR***"  << std::endl;
 		BlasVector<Givaro::ZRing<Integer> >::const_iterator Rit=Res.begin();
 		BlasVector<Givaro::ZRing<Integer> >::const_iterator Oit=iteration.getVector().begin();
 		for( ; Rit!=Res.end(); ++Rit, ++Oit)
@@ -213,18 +221,27 @@ bool TestOneCRAbegin(std::ostream& report, Iter& iteration, RandGen& genprime, s
 template<typename Builder, typename Iter, typename RandGen, typename BoundType>
 bool TestOneCRAWritePointer(std::ostream& report, Iter& iteration, RandGen& genprime, size_t N, const BoundType& bound)
 {
-	report << "ChineseRemainder<" << typeid(Builder).name() << ">(" << bound << ')' << std::endl;
+	report << "ChineseRemainderWP<" << typeid(Builder).name() << ">(" << bound << ')' << std::endl;
 	LinBox::ChineseRemainder< Builder > cra( bound );
 	Givaro::ZRing<Integer> Z ;
 	LinBox::BlasMatrix<Givaro::ZRing<Integer> > Res(Z, (int)N, (int)N);
 	cra( Res.getPointer(), iteration, genprime);
-	bool locpass = std::equal( iteration.getVector().begin(), iteration.getVector().end(), Res.getPointer() );
+
+    Integer base; cra.getModulus(base);
+    auto Riter(Res.getPointer());
+    auto Iiter(iteration.getVector().begin());
+    bool locpass=true;
+    for( ; Iiter != iteration.getVector().end(); ++Riter, ++Iiter) {
+        locpass &= isZero( ( *Riter - *Iiter ) % base );
+    }
+
+//	bool locpass = std::equal( iteration.getVector().begin(), iteration.getVector().end(), Res.getPointer() );
 
 	if (locpass) {
-		report << "ChineseRemainder<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << ", passed."  << std::endl;
+		report << "ChineseRemainderWP<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << ", passed."  << std::endl;
 	}
 	else {
-		report << "***ERROR***: ChineseRemainder<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << "***ERROR***"  << std::endl;
+		report << "***ERROR***: ChineseRemainderWP<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << "***ERROR***"  << std::endl;
 	}
 	return locpass;
 }
@@ -298,7 +315,7 @@ bool TestCra(size_t N, int S, size_t seed)
 
 	// XXX fixed prime set doesn't work with openmp version
 #ifndef LINBOX_USES_OPENMP
-        auto PrimeSet = create_int_vect<IntVect>(0,Z);
+        IntVect PrimeSet(Z,0);
         double PrimeSize = 0.0;
         for( ; PrimeSize < (iterationIt.getLogSize()+1); ++genprime ) {
             if (std::find(PrimeSet.begin(), PrimeSet.end(), *genprime) == PrimeSet.end()) {
@@ -326,6 +343,11 @@ bool TestCra(size_t N, int S, size_t seed)
 
 int main (int argc, char **argv)
 {
+
+//     commentator().setMaxDetailLevel (1);
+//     commentator().setMaxDepth (-1);
+//     commentator().setReportStream (std::clog);
+
 	static size_t n = 10;
 	static size_t s = 30;
 	static size_t seed = 0;

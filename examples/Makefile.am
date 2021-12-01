@@ -29,7 +29,7 @@ SUBDIRS=data
 
 EXAMPLES=rank det minpoly valence solve dot-product echelon sparseelimdet \
 sparseelimrank checksolve doubledet smithvalence charpoly blassolve solverat \
-sparsesolverat poweroftwo_ranks power_rank genprime smithsparse matrices
+ratdet sparsesolverat poweroftwo_ranks power_rank genprime smithsparse matrices
 #polysmith bench-fft bench-matpoly-mult
 # EXAMPLES+=nulp yabla 
 GIVARONTL_EXAMPLES=smith graph-charpoly
@@ -42,7 +42,7 @@ EXTRA_PROGRAMS= $(EXAMPLES) $(USE_GIVARONTL_EXAMPLES)
 
 CLEANFILES=$(EXTRA_PROGRAMS)
 
-EXTRA_DIST = examples.doxy
+EXTRA_DIST = examples.doxy matrices.h matrices.C
 #map-sparse.h map-sparse.inl
 
 examples:  ${EXTRA_PROGRAMS}
@@ -66,6 +66,7 @@ smithvalence_SOURCES   = smithvalence.C
 sparseelimdet_SOURCES  = sparseelimdet.C
 sparseelimrank_SOURCES = sparseelimrank.C
 solverat_SOURCES       = solverat.C
+ratdet_SOURCES       = ratdet.C
 sparsesolverat_SOURCES = sparsesolverat.C
 blassolve_SOURCES      = blassolve.C
 power_rank_SOURCES     = power_rank.C

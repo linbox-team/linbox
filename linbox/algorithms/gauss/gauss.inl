@@ -2,7 +2,7 @@
  * Copyright (C) 1999 Jean-Guillaume Dumas
  *
  * Written by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
- * Time-stamp: <24 Aug 17 18:25:58 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <27 Aug 20 15:18:19 Jean-Guillaume.Dumas@imag.fr>
  *
  *
  * ========LICENCE========
@@ -114,6 +114,7 @@ namespace LinBox
 #ifdef __LINBOX_OFTEN__
         long sstep = last/40;
         if (sstep > __LINBOX_OFTEN__) sstep = __LINBOX_OFTEN__;
+        if (sstep <= 0) sstep = 1;
 #else
 #  ifdef __LINBOX_FILLIN__
         long sstep = 100;
@@ -147,7 +148,7 @@ namespace LinBox
                     for (size_t l = 0; l < Ni; ++l)
                         sl +=(long) LigneA[(size_t)l].size ();
 
-                    commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
+                    commentator().report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT)
                     << "Fillin (" << Rank << "/" << Ni << ") = "
                     << sl
                     << " (" << double(sl)*100.0/double(Ni-k)/double(Nj-k) << "%, "
@@ -176,7 +177,7 @@ namespace LinBox
 
                 if (p != k) {
                     // std::cerr << "Permuting rows: " << k << " <--> " << p << std::endl;
-                    invQ.push_front( std::pair<size_t,size_t>((size_t)k,(size_t)p) );
+                    invQ.emplace_front((size_t)k,(size_t)p);
                     field().negin(determinant);
                     std::swap( *LigneA_k, LigneA[(size_t)p]);
                     std::swap( LigneL[(size_t)k], LigneL[(size_t)p]);
@@ -206,8 +207,7 @@ namespace LinBox
                 nbelem += LigneA_k->size ();
 #endif
             }
-            E one((unsigned)k,field().one);
-            LigneL[(size_t)k].push_back(one);
+            LigneL[(size_t)k].emplace_back((unsigned)k,field().one);
 
 
 //             LigneL.write(std::cerr << "L:= ", Tag::FileFormat::Maple) << std::endl;
@@ -215,23 +215,6 @@ namespace LinBox
 
         }//for k
 
-//         if (std::is_base_of<Givaro::FiniteRingInterface<Element>,_Field>::value && degeneratedense) {
-//             DenseQLUPin(Rank,determinant,invQ,LigneL,LigneA,P,Ni,Nj);
-
-//         } else {
-
-//             SparseFindPivot ( LigneA[(size_t)last], Rank, c, determinant);
-//             if (c != -1) {
-//                 if ( c != (static_cast<long>(Rank)-1) ) {
-//                     P.permute(Rank-1,(size_t)c);
-//                     for (long ll=0      ; ll < last ; ++ll)
-//                         permute( LigneA[(size_t)ll], Rank, c);
-//                 }
-//             }
-
-//             E one((unsigned)last,field().one);
-//             LigneL[(size_t)last].push_back(one);
-//         }
         Continuation<_Matrix,Perm,
             std::is_base_of<Givaro::FiniteRingInterface<Element>,_Field>::value>
             ()(*this, Rank,determinant,invQ,LigneL,LigneA,P,Ni,Nj,degeneratedense);
@@ -247,15 +230,16 @@ namespace LinBox
         for (size_t l=0; l < Ni; ++l)
             sl += (long) LigneA[(size_t)l].size ();
 
-        commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
+        commentator().report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT)
         << "Fillin (" << Rank << "/" << Ni << ") = " << sl
         << std::endl;
 #endif
 
+        commentator().progress (Ni);
+
         if ((Rank < Ni) || (Rank < Nj) || (Ni == 0) || (Nj == 0))
             field().assign(determinant,field().zero);
 
-        integer card;
         field().write(field().write(commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
                   << "Determinant : ", determinant)
         << " over ") << std::endl;
@@ -264,15 +248,16 @@ namespace LinBox
             Q.permute( it->first, it->second );
 
 
-        std::ostream& rep = commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT);
+        std::ostream& rep = commentator().report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT);
         Q.write(rep << "Q:= ", Tag::FileFormat::Maple) << ':' << std::endl;
         LigneL.write(rep << "L:= ", Tag::FileFormat::Maple) << ':' << std::endl;
         LigneA.write(rep << "U:= ", Tag::FileFormat::Maple) << ':' << std::endl;
         P.write(rep << "P:= ", Tag::FileFormat::Maple) << ':' << std::endl;
 
-        commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
-        << "Rank : " << Rank
-        << " over GF (" << card << ")" << std::endl;
+        field().write(
+            commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
+            << "Rank : " << Rank
+            << " over ") << std::endl;
         commentator().stop ("done", 0, "IPLR");
 
 
@@ -293,9 +278,6 @@ namespace LinBox
                      size_t Ni,
                      size_t Nj) const
     {
-        typedef typename _Matrix::Row        Vector;
-        typedef typename Vector::value_type E;
-
         const long last = Ni-1;
         long c;
         SparseFindPivot ( LigneA[(size_t)last], Rank, c, determinant);
@@ -307,8 +289,7 @@ namespace LinBox
             }
         }
 
-        E one((unsigned)last,field().one);
-        LigneL[(size_t)last].push_back(one);
+        LigneL[(size_t)last].emplace_back((unsigned)last,field().one);
         return Rank;
     }
 
@@ -433,7 +414,7 @@ namespace LinBox
             // Left-Trans: P2^T * G
         for (int i=sNi;--i>=0;)
             if(i != static_cast<int>(P2[i])) {
-                dinvQ.push_front( std::pair<size_t,size_t>(Rank+(size_t)i,Rank+P2[i]) );
+                dinvQ.emplace_front( Rank+(size_t)i, Rank+P2[i] );
                 this->field().negin(determinant);
                 std::swap(dLigneL[i+Rank],dLigneL[P2[i]+Rank]);
             }
@@ -442,16 +423,16 @@ namespace LinBox
         for(size_t i=0; i<sNi; ++i)
             for(size_t j=0; j<i; ++j)
                 if (!this->field().isZero(A.getEntry(i,j)))
-                    dLigneL[Rank+i].push_back(std::pair<size_t, Element>(Rank+j,A.getEntry(i,j)));
+                    dLigneL[Rank+i].emplace_back(Rank+j,A.getEntry(i,j));
         for(size_t i=0; i<R2; ++i)
-            dLigneL[Rank+i].push_back(std::pair<size_t, Element>(Rank+i,this->field().one));
+            dLigneL[Rank+i].emplace_back(Rank+i,this->field().one);
 
 
             // Put U2 in bottom right corner
         for(size_t i=0; i<sNi; ++i)
             for(size_t j=i; j<sNj; ++j)
                 if (!this->field().isZero(A.getEntry(i,j)))
-                    dLigneA[Rank+i].push_back(std::pair<size_t, Element>(Rank+j,A.getEntry(i,j)));
+                    dLigneA[Rank+i].emplace_back(Rank+j,A.getEntry(i,j));
         for(size_t i=0; i<R2; ++i)
             this->field().mulin(determinant,A.getEntry(i,i));
 
@@ -526,6 +507,7 @@ namespace LinBox
 #ifdef __LINBOX_OFTEN__
         long sstep = last/40;
         if (sstep > __LINBOX_OFTEN__) sstep = __LINBOX_OFTEN__;
+        if (sstep <= 0) sstep = 1;
 #else
         long sstep = 1000;
 #endif
@@ -541,7 +523,7 @@ namespace LinBox
                 for (sl = 0, l = 0; l < Ni; ++l)
                     sl += (long)LigneA[(size_t)l].size ();
 
-                commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
+                commentator().report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT)
                 << "Fillin (" << Rank << "/" << Ni << ") = "
                 << sl
                 << " (" << double(sl)*100.0/double(Ni-k)/double(Nj-k) << "%, "
@@ -603,7 +585,7 @@ namespace LinBox
         for (size_t l=0; l < Ni; ++l)
             sl += (long)LigneA[(size_t)l].size ();
 
-        commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
+        commentator().report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT)
         << "Fillin (" << Rank << "/" << Ni << ") = " << sl
         << std::endl;
 #endif
@@ -666,6 +648,7 @@ namespace LinBox
 #ifdef __LINBOX_OFTEN__
         long sstep = last/40;
         if (sstep > __LINBOX_OFTEN__) sstep = __LINBOX_OFTEN__;
+        if (sstep <= 0) sstep = 1;
 #else
         long sstep = 1000;
 #endif
@@ -682,7 +665,7 @@ namespace LinBox
                 for (sl = 0, l = 0; l < Ni; ++l)
                     sl +=(long) LigneA[(size_t)l].size ();
 
-                commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
+                commentator().report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT)
                 << "Fillin (" << Rank << "/" << Ni << ") = "
                 << sl
                 << " (" << double(sl)*100.0/double(Ni-k)/double(Nj-k) << "%, "
@@ -757,7 +740,7 @@ namespace LinBox
         for (size_t l=0; l < Ni; ++l)
             sl +=(long) LigneA[(size_t)l].size ();
 
-        commentator().report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
+        commentator().report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT)
         << "Fillin (" << Rank << "/" << Ni << ") = " << sl
         << std::endl;
 #endif
