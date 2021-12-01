@@ -30,7 +30,7 @@
 #include <iomanip>
 using namespace std;
 
-#define FFT_PROFILER
+//#define FFT_PROFILER
 #include <linbox/ring/modular.h>
 #include <linbox/randiter/random-prime.h>
 #include <linbox/randiter/random-fftprime.h>

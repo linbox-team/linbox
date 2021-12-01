@@ -392,7 +392,8 @@ int main(int argc, char** argv){
     commentator().start ("Testing polynomial matrix", "testMatpoly", 1);
     bool pass=true;
 
-    typedef Givaro::Modular<double> Field;
+    //typedef Givaro::Modular<double> Field;
+    typedef Givaro::Modular<Givaro::Integer> Field;
     //typedef Givaro::Modular<uint32_t> Field;
 
     Field F(q);

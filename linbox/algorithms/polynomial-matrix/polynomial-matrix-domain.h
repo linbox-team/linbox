@@ -26,8 +26,8 @@
 #ifndef __LINBOX_POLYNOMIAL_MATRIX_DOMAIN_H
 #define __LINBOX_POLYNOMIAL_MATRIX_DOMAIN_H
 
-#define KARA_DEG_THRESHOLD  10
-#define FFT_DEG_THRESHOLD   200
+#define KARA_DEG_THRESHOLD  2 
+#define FFT_DEG_THRESHOLD   2
 
 #include "linbox/algorithms/polynomial-matrix/matpoly-mult-naive.h"
 #include "linbox/algorithms/polynomial-matrix/matpoly-mult-kara.h"
@@ -38,7 +38,7 @@
         
 namespace LinBox
 {     
-	template <class _Field>
+	template <class _Field> 
 	class PolynomialMatrixMulDomain {
 	public:
 		PolynomialMatrixKaraDomain<_Field>       _kara;

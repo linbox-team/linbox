@@ -1,9 +1,7 @@
 /*
- * Copyright (C) 2013  Pascal Giorgi
- *                     Romain Lebreton
+ * Copyright (C) 2020  Pascal Giorgi
  *
  * Written by Pascal Giorgi <pascal.giorgi@lirmm.fr>
- *            Romain Lebreton <lebreton@lirmm.fr>
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -28,6 +26,7 @@
 #include <vector>
 #include "linbox/vector/vector.h"
 #include "linbox/matrix/dense-matrix.h"
+#include "linbox/matrix/matrix-domain.h"
 
 #include "linbox/field/hom.h"
 #include "fflas-ffpack/utils/align-allocator.h"
@@ -54,6 +53,7 @@ namespace LinBox{
     
 	enum PMType {polfirst, matfirst, matrowfirst};
 
+
     // matrix example
     /*  [ 1+2X+3X^2  4+5X+6X^2 ]
      *  [ 7+8X+9X^2  10+11X+12X^2 ]
@@ -76,8 +76,14 @@ namespace LinBox{
      *
      */
      
+    // PG: the following does not make sense with characteristic 0 field !!! 
+	template<typename Field> uint64_t element_storage(const Field& F)      {
+        integer p;F.characteristic(p);
+        if (p==0) throw LinboxError("PolynomialMatrix: use of element_storage with characterisrtic zero field is not allowed, aborting ...");
+        return length(p);}
+	template<> uint64_t element_storage(const Givaro::Modular<Givaro::Integer> &F) { integer p;F.characteristic(p); return length(p)+sizeof(Givaro::Integer);}
     
-
+    
 	// Generic handler class for Polynomial Matrix
 	template<class Field, enum PMType>
 	class PolynomialMatrix;
@@ -304,7 +310,10 @@ namespace LinBox{
 
 
     
-        
+        size_t realmeminfo()const {			
+			return _rep.size()*element_storage(field());
+		}
+
 		void dump(std::ostream& os) const {
 			os<<_row<<" "<<_col<<" "<<_size<<std::endl;
 			for(size_t i=0;i<_row*_col;i++)
@@ -542,6 +551,10 @@ namespace LinBox{
 			size_t d= _size-1;
 			while(d>0 && MD.isZero(operator[](d))) d--;
 			return d;
+		}
+
+        size_t realmeminfo()const {			
+			return _rep.size()*element_storage(field());
 		}
 
         
@@ -801,6 +814,10 @@ namespace LinBox{
 			size_t d= _size-1;
 			while(d>0 && MD.isZero(operator[](d))) d--;
 			return d;
+		}
+
+		size_t realmeminfo()const {			
+			return _rep.size()*element_storage(field());
 		}
 
         
