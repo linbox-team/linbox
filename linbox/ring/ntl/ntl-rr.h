@@ -278,6 +278,9 @@ namespace LinBox
 
 	template <>
 	class UnparametricRandIter<NTL::RR> {
+		typedef NTL::RR Element ;
+        typedef Element Residu_t;
+
 	protected:
 		integer _size;
         uint64_t _seed;

@@ -481,7 +481,7 @@ namespace LinBox
 
 	public:
         typedef NTL::ZZ_p Element;
-        typedef integer Residu_t;
+        typedef Element::rep_type Residu_t;
 
 		UnparametricRandIter<NTL::ZZ_p> (const NTL_ZZ_p & F,
 						 const uint64_t seed = 0,
