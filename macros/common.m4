@@ -82,23 +82,52 @@ AC_DEFUN([SET_FLAGS],[
           ])
     ])
 
+AC_DEFUN([AX_CHECK_COMPILE_FLAG],
+[dnl
+AS_VAR_PUSHDEF([CACHEVAR],[ax_cv_check_[]_AC_LANG_ABBREV[]flags_$4_$1])dnl
+AC_CACHE_CHECK([whether _AC_LANG compiler accepts $1], CACHEVAR, [
+  ax_check_save_flags=$[]_AC_LANG_PREFIX[]FLAGS
+  _AC_LANG_PREFIX[]FLAGS="$[]_AC_LANG_PREFIX[]FLAGS $4 $1"
+  AC_COMPILE_IFELSE([AC_LANG_SOURCE(m4_default([$5],[AC_LANG_PROGRAM()]))],
+    [AS_VAR_SET(CACHEVAR,[yes])],
+    [AS_VAR_SET(CACHEVAR,[no])])
+  _AC_LANG_PREFIX[]FLAGS=$ax_check_save_flags])
+AS_VAR_IF(CACHEVAR,yes,
+  [m4_default([$2], :)],
+  [m4_default([$3], :)])
+AS_VAR_POPDEF([CACHEVAR])dnl
+])dnl AX_CHECK_COMPILE_FLAGS
 
 
-dnl Append -march=native to OPTIM_FLAGS if not present in CXXFLAGS and
-dnl target==host and --no-marchnative is not set
+dnl Append -march=native or -mcpu=native (if recognized by the compiler) to
+dnl OPTIM_FLAGS if not present in CXXFLAGS and not cross-compiling and
+dnl --without-archnative is not set
 AC_DEFUN([ARCH_FLAGS],[
     AC_ARG_WITH(archnative, [AC_HELP_STRING([--without-archnative],
-        [do not use -march=native (default is to use it if -march is not present in CXXFLAGS)])])
+        [do not use -march=native or -mcpu=native (default is to use it if not already present in CXXFLAGS)])])
 
-    AS_CASE([$CXXFLAGS],
-            [*-march=*], [], # do nothing if already set in CXXFLAGS
-            [AS_IF([test "x${with_archnative}" == "xno"],
-                [], # do nothing if option is set to no
-                [AS_IF([test "${host}" != "${build}" -o "${host}" != "${target}"],
-                    [AC_MSG_NOTICE("For efficiency you may want to add a '-march=...' flag in CXXFLAGS")],
-                    [AC_MSG_NOTICE("Adding '-march=native' to OPTIM_FLAGS")
-                    OPTIM_FLAGS+=" -march=native"])])])
-    ])
+    AX_CHECK_COMPILE_FLAG([-march=native], [
+        AS_CASE([$CXXFLAGS],
+                [*-march=*], [], # do nothing if already set in CXXFLAGS
+                [AS_IF([test "x${with_archnative}" == "xno"],
+                    [], # do nothing if option is set to no
+                    [AS_IF([test "${host}" != "${build}" -o "${host}" != "${target}"],
+                        [AC_MSG_NOTICE("For efficiency you may want to add a '-march=...' flag in CXXFLAGS")],
+                        [AC_MSG_NOTICE("Adding '-march=native' to OPTIM_FLAGS")
+                        OPTIM_FLAGS+=" -march=native"])])])
+    ], [
+        AX_CHECK_COMPILE_FLAG([-mcpu=native], [
+            AS_CASE([$CXXFLAGS],
+                    [*-cpu=*], [], # do nothing if already set in CXXFLAGS
+                    [AS_IF([test "x${with_archnative}" == "xno"],
+                        [], # do nothing if option is set to no
+                        [AS_IF([test "${host}" != "${build}" -o "${host}" != "${target}"],
+                            [AC_MSG_NOTICE("For efficiency you may want to add a '-cpu=...' flag in CXXFLAGS")],
+                            [AC_MSG_NOTICE("Adding '-mcpu=native' to OPTIM_FLAGS")
+                            OPTIM_FLAGS+=" -mcpu=native"])])])
+        ], [], [], [])
+    ], [], [])
+])
 
 dnl Append -mfpmath=sse to OPTIM_FLAGS on i386 and i686 architecture with SSE
 AC_DEFUN([FPMATH_FLAGS],[

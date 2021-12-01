@@ -336,8 +336,9 @@ namespace LinBox
 	template<>
 	class UnparametricRandIter<NTL::zz_p> {
 	public:
-        typedef NTL::zz_p Element;
-        typedef integer Residu_t;
+		typedef NTL::zz_p Element;
+        typedef Element::rep_type Residu_t;
+
             /// Constructor for random field element generator
 
 		UnparametricRandIter<NTL::zz_p> (const NTL_zz_p & F,

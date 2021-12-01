@@ -39,11 +39,14 @@
 #include <utility>
 #include <sstream>
 
+#include <fflas-ffpack/paladin/parallel.h>
+
 #include "linbox/ring/modular.h"
 #include "linbox/matrix/sparse-matrix.h"
 #include "linbox/matrix/sparsematrix/sparse-tpl-matrix-omp.h"
 // #include "linbox/blackbox/triplesbb-omp.h"
 // #include "linbox/blackbox/triplesbb.h"
+#include "linbox/matrix/sparsematrix/sparse-tpl-matrix-omp.h"
 #include "linbox/blackbox/transpose.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/matrix/dense-matrix.h"
@@ -196,7 +199,7 @@ bool runIdentTest(int n,
 {
         typedef SparseMatrix<Field,SparseMatrixFormat::TPL_omp> OMPBlackbox;
 
-        omp_set_num_threads(numThreads);
+        SET_THREADS(numThreads);
 
         Field F(q);
         MapSparse<Field> A(F,n,m),X,YTest,YRef;
@@ -254,7 +257,7 @@ bool runRandTest(int n,
         typedef SparseMatrix<Field,SparseMatrixFormat::TPL_omp> OMPBlackbox;
         typedef SparseMatrix<Field,SparseMatrixFormat::TPL> SeqBlackbox;
 
-        omp_set_num_threads(numThreads);
+        SET_THREADS(numThreads);
 
         double matSize=n*m;
         int nnz=(int) (density*matSize);

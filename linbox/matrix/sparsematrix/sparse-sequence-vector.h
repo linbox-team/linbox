@@ -679,8 +679,7 @@ namespace LinBox
 				typename _Tp1::Element e;
 
 				Hom<typename Self_t::Field, _Tp1> hom(A.field(), Ap.field());
-				for( typename Self_t::ConstIndexedIterator
-				     indices = A.IndexedBegin();
+				for( auto indices = A.IndexedBegin();
 				     (indices != A.IndexedEnd()) ;
 				     ++indices ) {
 					// hom. image (e, A.getEntry(indices.rowIndex(),indices.colIndex()) );
