@@ -1,6 +1,6 @@
 /* linbox/solutions/det.h
  * Copyright (C) 2001, 2002 LinBox
- * Time-stamp: <06 Dec 16 13:03:05 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <27 Aug 20 14:37:44 Jean-Guillaume.Dumas@imag.fr>
  *
  *
  * ========LICENCE========
@@ -61,7 +61,7 @@ namespace LinBox
 	 * @param tag  optional tag.  Specifies Integer, Rational or modular ring/field
 	 * @param M    optional method.  The default is Method::Auto(), Other options
 	 include Blackbox, Elimination, Wiedemann, DenseElimination and SparseElimination.
-	 Sometimes it helps to 	 indicate properties of the matrix in the method object
+	 Sometimes it helps to	 indicate properties of the matrix in the method object
 	 (for instance symmetry). See class Method for details.
 	 \ingroup solutions
 	 */
@@ -75,7 +75,7 @@ namespace LinBox
 	// Default is to use the generic det (might copy)
 	template< class Blackbox, class DetMethod, class DomainCategory>
 	typename Blackbox::Field::Element &detInPlace (typename Blackbox::Field::Element	&d,
-						  Blackbox                             	&A,
+						  Blackbox	&A,
 						  const DomainCategory			&tag,
 						  const DetMethod			&Meth)
 	{
@@ -145,7 +145,7 @@ namespace LinBox
 
 	// The det with Auto Method on BlasMatrix
 	template<class Field>
-	typename Field::Element &det (typename Field::Element         	&d,
+	typename Field::Element &det (typename Field::Element	&d,
 				      const BlasMatrix<Field>		&A,
 				      const RingCategories::ModularTag	&tag,
 				      const Method::Auto		&Meth)
@@ -154,7 +154,7 @@ namespace LinBox
 	}
 
 	template<class Field>
-	typename Field::Element &detInPlace (typename Field::Element         	&d,
+	typename Field::Element &detInPlace (typename Field::Element	&d,
 					BlasMatrix<Field>			&A,
 					const RingCategories::ModularTag	&tag,
 					const Method::Auto			&Meth)
@@ -209,7 +209,7 @@ namespace LinBox
 		typedef BlasVector<Field> Polynomial;
 
 		if(Meth.shapeFlags == Shape::Symmetric) {
-			commentator().start ("Symmetric Wiedemann Determinant", "sdet");
+            commentator().start ("Symmetric Wiedemann Determinant", "sdet");
 			linbox_check (A.coldim () == A.rowdim ());
 			Polynomial               phi(F);
 			size_t            deg;
@@ -258,18 +258,18 @@ namespace LinBox
 
 
 				// Divided twice since multiplied twice by the diagonal matrix
-				F.div (d, phi[0], pi);
-				F.divin (d, pi);
+            F.div (d, phi[0], pi);
+            F.divin (d, pi);
 
-				if ( (deg & 1) == 1)
-					F.negin (d);
+            if ( (deg & 1) == 1)
+                F.negin (d);
 
-				commentator().stop ("done", NULL, "sdet");
+            commentator().stop ("done", NULL, "sdet");
 
-				return d;
+            return d;
 		}
 		else {
-			commentator().start ("Wiedemann Determinant", "wdet");
+            commentator().start ("Wiedemann Determinant", "wdet");
 			linbox_check (A.coldim () == A.rowdim ());
 
 			Polynomial               phi(F);
@@ -305,15 +305,15 @@ namespace LinBox
 				++iternum;
 			} while ( (phi.size () < A.coldim () + 1) && ( !F.isZero (phi[0]) ) );
 
-				F.div (d, phi[0], pi);
+            F.div (d, phi[0], pi);
 
-				if ( (deg & 1) == 1)
-					F.negin (d);
+            if ( (deg & 1) == 1)
+                F.negin (d);
 
 
-				commentator().stop ("done", NULL, "wdet");
+            commentator().stop ("done", NULL, "wdet");
 
-				return d;
+            return d;
 		}
 	}
 
@@ -346,8 +346,8 @@ namespace LinBox
 
 	template <class Blackbox>
 	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element	&d,
-						const Blackbox  			&A,
-						const RingCategories::ModularTag  	&tag,
+						const Blackbox			&A,
+						const RingCategories::ModularTag	&tag,
 						const Method::SparseElimination		&Meth)
 	{
 		if (A.coldim() != A.rowdim())
@@ -372,7 +372,7 @@ namespace LinBox
 	template <class Field, class Vector>
 	typename Field::Element &det (typename Field::Element	&d,
 				      const SparseMatrix<Field, Vector>	&A,
-				      const RingCategories::ModularTag  	&tag,
+				      const RingCategories::ModularTag	&tag,
 				      const Method::SparseElimination		&Meth)
 	{
 		if (A.coldim() != A.rowdim())
@@ -382,22 +382,22 @@ namespace LinBox
 		SparseMatrix<Field, SparseMatrixFormat::SparseSeq> A1 (A);
 		GaussDomain<Field> GD ( A.field() );
 		GD.detInPlace (d, A1, Meth.pivotStrategy);
-		commentator().stop ("done", NULL, "SEdet");
+		commentator().stop ("done", NULL, "SEDet");
 		return d;
 	}
 
 	template <class Field>
-	typename Field::Element &detInPlace (typename Field::Element         	&d,
+	typename Field::Element &detInPlace (typename Field::Element	&d,
 					SparseMatrix<Field, SparseMatrixFormat::SparseSeq>  &A,
-					const RingCategories::ModularTag  	&tag,
-					const Method::SparseElimination     	&Meth)
+					const RingCategories::ModularTag	&tag,
+					const Method::SparseElimination	&Meth)
 	{
 		if (A.coldim() != A.rowdim())
 			throw LinboxError("LinBox ERROR: matrix must be square for determinant computation\n");
-		commentator().start ("Sparse Elimination Determinant in place", "SEDetin");
+        commentator().start ("Sparse Elimination Determinant in place", "SEDetin", A.rowdim() );
 		GaussDomain<Field> GD ( A.field() );
 		GD.detInPlace (d, A, Meth.pivotStrategy);
-		commentator().stop ("done", NULL, "SEdetin");
+        commentator().stop ("done", NULL, "SEDetin");
 		return d;
 	}
 
@@ -414,18 +414,18 @@ namespace LinBox
 
 
 	template <class Field>
-	typename Field::Element &detInPlace (typename Field::Element         	&d,
+	typename Field::Element &detInPlace (typename Field::Element	&d,
 					SparseMatrix<Field, SparseMatrixFormat::SparseSeq>  &A,
-					const RingCategories::ModularTag  	&tag,
-					const Method::Elimination     		&Meth)
+					const RingCategories::ModularTag	&tag,
+					const Method::Elimination		&Meth)
 	{
 		return detInPlace(d, A, tag, Method::SparseElimination(Meth));
 	}
 
 	template<class Field, class Vector>
 	typename Field::Element &detInPlace (typename Field::Element			&d,
-					SparseMatrix<Field, Vector> 		&A,
-					const RingCategories::ModularTag      	&tag,
+					SparseMatrix<Field, Vector>		&A,
+					const RingCategories::ModularTag	&tag,
 					const Method::Elimination		&Meth)
 	{
 		// Matrix is not of type SparseMatrix<..SparseSeq> otherwise previous specialization would occur
@@ -454,7 +454,7 @@ namespace LinBox
 
 	template<class Blackbox>
 	typename Blackbox::Field::Element &detInPlace (typename Blackbox::Field::Element	&d,
-						  Blackbox                            	&A,
+						  Blackbox	&A,
 						  const RingCategories::ModularTag      &tag,
 						  const Method::Elimination		&Meth)
 	{
@@ -568,7 +568,7 @@ namespace LinBox
 #ifdef __LINBOX_HAVE_MPI
 		if(!C || C->rank() == 0)
 #endif
-			commentator().start ("Integer Determinant", "idet");
+            commentator().start ("Integer Determinant", "idet");
 		// 0.7213475205 is an upper approximation of 1/(2log(2))
 		IntegerModularDet<Blackbox, MyMethod> iteration(A, Meth);
                 typedef Givaro::ModularBalanced<double> Field;
@@ -581,13 +581,13 @@ namespace LinBox
 		cra(dd, iteration, genprime);
 		if(!C || C->rank() == 0){
 			A.field().init(d, dd); // convert the result from integer to original type
-			commentator().stop ("done", NULL, "det");
+            commentator().stop ("done", NULL, "idet");
 		}
 #else
 		ChineseRemainder< CRABuilderEarlySingle< Field > > cra(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD);
 		cra(dd, iteration, genprime);
 		A.field().init(d, dd); // convert the result from integer to original type
-		commentator().stop ("done", NULL, "idet");
+        commentator().stop ("done", NULL, "idet");
 #endif
 
 		return d;

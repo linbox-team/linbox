@@ -158,7 +158,8 @@ namespace LinBox {
         template<class Vect>
         Self_t& copy(const Vect& A){
             assert(_size == A.size());            
-            for (auto it=A.begin(), jt=begin();it!=A.end();it++,jt++)
+            auto it=A.begin(); auto jt=begin();
+			for( ; it!=A.end();++it,++jt)
                 field().assign(*jt,*it);
             return *this;
         }

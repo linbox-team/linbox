@@ -191,7 +191,6 @@ FULLCHECK_TESTS = ${CHECKER_TESTS} \
     test-poly-det               \
     test-sparse-map-map         \
     test-block-ring             \
-    test-dense-zero-one         \
     test-ftrmm                  \
     test-image-field            \
     test-la-block-lanczos       \
@@ -269,7 +268,6 @@ test_companion_SOURCES =        test-companion.C
 test_cradomain_SOURCES =        test-cradomain.C test-common.h
 test_cra_SOURCES =              test-cra.C test-common.h
 test_dense_SOURCES =            test-dense.C test-common.h
-test_dense_zero_one_SOURCES =       test-dense-zero-one.C
 test_det_SOURCES =              test-det.C
 test_diagonal_SOURCES =         test-diagonal.C
 test_dif_SOURCES =              test-dif.C

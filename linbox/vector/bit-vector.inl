@@ -46,7 +46,7 @@ namespace std
 		typedef LinBox::BitVector::reference reference;
 		typedef bool *pointer;
 		typedef bool value_type;
-		typedef long difference_type;
+		typedef std::ptrdiff_t difference_type;
 	};
 
 	template <>
@@ -56,7 +56,7 @@ namespace std
 		typedef LinBox::BitVector::const_reference reference;
 		typedef const bool *pointer;
 		typedef bool value_type;
-		typedef long difference_type;
+		typedef std::ptrdiff_t difference_type;
 	};
 }
 

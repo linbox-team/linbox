@@ -227,9 +227,9 @@ namespace LinBox {
                     for (pe = p->begin (); pe != p->end (); ++pe) {
                         os.width (wid);
                         field().write (os, *pe);
-                        os << " ";
+                        os << ' ';
                     }
-                    os << "]" << std::endl;
+                    os << ']' << std::endl;
                     }
                 }
                 else {
@@ -239,29 +239,55 @@ namespace LinBox {
                 }
             }
             break;
+        case (Tag::FileFormat::Pretty) : /* pretty is close to Maple */
         case (Tag::FileFormat::Maple) : /*  maple format */
             {
-
-                os << "Matrix( " << rowdim() << ',' << coldim() << ",\n[" ;
+                const bool isMaple(f == Tag::FileFormat::Maple ? true:false);
+                if (isMaple) 
+                    os << "Matrix( " << rowdim() << ',' << coldim() << ",\n[" ;
                 for (p = rowBegin (); p != rowEnd (); ) {
                     typename ConstRow::const_iterator pe;
-                    if (p!=rowBegin()) os << ' ';
+                    if ( (!isMaple) || (p!=rowBegin())) os << ' ';
                     os << "[ ";
                         
                     for (pe = p->begin (); pe != p->end (); ) {
                         field().write (os, *pe);
                         ++pe ;
-                        if (pe != p->end())
-                            os << ", ";
+                        if (pe != p->end()) {
+                            if (isMaple)
+                                os << ',';
+                            os << ' ';
+                        }
                     }
 
                     os << "]" ;
                     ++p ;
-                    if (p != rowEnd() )
-                        os << ',' << std::endl;;
+                    if (p != rowEnd() ) {
+                        if (isMaple)
+                            os << ',';
+                        os << '\n';
+                    }
 
                 }
-                os << "])" ;
+                if (isMaple)
+                    os << "])" ;
+            }
+            break;
+        case (Tag::FileFormat::Guillaume) : /*  sms format */
+            {
+
+                os << rowdim() << ' ' << coldim() << " M\n" ;
+                size_t i(0);
+                for (p = rowBegin (); p != rowEnd (); ++i,++p) {
+                    typename ConstRow::const_iterator pe;
+                    size_t j(0);
+                    for (pe = p->begin (); pe != p->end (); ++j,++pe) {
+                        if ( !(field().isZero(*pe))) {
+                            field().write (os << (i+1) << ' ' << (j+1) << ' ', *pe) << '\n';
+                        }
+                    }
+                }
+                os << "0 0 0" ;
             }
             break;
         case (Tag::FileFormat::HTML) : /*  HTML format */

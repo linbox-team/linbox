@@ -2,7 +2,7 @@
  * Copyright (C) LinBox 2008
  *
  * Written by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
- * Time-stamp: <13 Nov 17 16:58:56 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <27 Aug 20 15:17:09 Jean-Guillaume.Dumas@imag.fr>
  *
  *
  * ========LICENCE========
@@ -71,7 +71,7 @@ namespace LinBox
 					// Solve for upper part of basis
 					upperTriangularSparseSolve(W1Ti, Rank, U, U2T[i]);
 					// Add identity for lower part
-					W1Ti.push_back( typename SparseVect::Element((unsigned)(Rank+i), field().one ) );
+					W1Ti.emplace_back((unsigned)(Rank+i), field().one );
 
 					for(size_t j=0; j<W1Ti.size(); ++j) {
 						// P.applyTranspose(x[i],W1T[i]);

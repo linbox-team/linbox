@@ -177,7 +177,7 @@ namespace LinBox
 		{	domain_ = &D;
 			if (rows_*cols_ != m*n) // must replace current mem.
 			{	if (rep_) delete(rep_);
-				rep_ = new(Entry[m*n]);
+				rep_ = new Entry[m*n];
 			}
 			rows_ = m; cols_ = n; row_stride_ = 1;
 		}
