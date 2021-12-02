@@ -172,9 +172,9 @@ int main (int argc, char **argv) {
         MD.vectorMul(LHS, A, X);
         VD.mulin(RHS, d);
         if (VD.areEqual(LHS, RHS))
-            std::cout << "Ax=b : Yes" << std::endl;
+            std::cout << "Ax=d.b : Yes" << std::endl;
         else
-            std::cout << "Ax=b : No" << std::endl;
+            std::cout << "Ax=d.b : No" << std::endl;
     }
     
     {
