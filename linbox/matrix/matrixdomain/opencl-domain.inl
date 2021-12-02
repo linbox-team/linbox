@@ -74,8 +74,7 @@ namespace LinBox
 		//If it is not capable or not setup properly use default implementation
 		if(!setupCorrect || !doubleSupported || !kernelsAvailable){
 			return BlasMatrixDomainMul<Operand1,Operand2,Operand3>()(
-				_F,
-				C,
+                                C,
 				A,
 				B);
 		}
@@ -269,8 +268,7 @@ namespace LinBox
 		//If it is not capable or not setup properly use default implementation
 		if(!setupCorrect || !kernelsAvailable){
 			return BlasMatrixDomainMul<Operand1,Operand2,Operand3>()(
-				_F,
-				C,
+                                C,
 				A,
 				B);
 		}
