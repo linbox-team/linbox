@@ -92,8 +92,8 @@ int main (int argc, char **argv)
 
 	PolynomialRing<IRing_t>(ZZ,'X').write(
         cout<< "Characteristic Polynomial is ", c_A) << std::endl;
-    
-    
+
+
 	return 0;
 }
 
