@@ -23,7 +23,7 @@
 
 ACLOCAL_AMFLAGS = -I macros
 
-SUBDIRS=linbox benchmarks macros tests interfaces doc examples
+SUBDIRS=linbox benchmarks tests interfaces doc examples
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = linbox.pc
@@ -51,7 +51,7 @@ doc/linbox-dev-html/pages.html:
 	(cd doc; ${MAKE} docs_dev)
 
 examples:
-	(cp  -R $(top_srcdir)/examples/{data,test.sh} examples; cd examples; ${MAKE} examples; SED="${SED}" ./test.sh)
+	(cd examples; ${MAKE} examples)
 
 benchmarks:
 	(cd benchmarks; ${MAKE} benchmarks)
@@ -109,7 +109,7 @@ git:
 	git commit -a; git pull; git push
 
 
-VERSION=1.7.0alpha0
+VERSION=1.7.0rc0
 
 EXTRA_DIST= \
 	linbox-auto-install.sh \

@@ -18,32 +18,16 @@
 # ========LICENCE========
 
 # All tests should appear in one of the lists of this makefile (and sources given).
-# Tests not used for target "check" can be in the FULLCHECK_TESTS list.
+# Tests not used for target "check can be in the FULLCHECK_TESTS list.
 # All tests will be processed by checker.C (target fullcheck),
 # where skips can be specified, warnings issued, package dependency handled.
 
-#AM_CPPFLAGS=-I$(top_srcdir) -I$(top_srcdir)/linbox -I${PREFIX}/include
-# AM_LDFLAGS = -llapack -lcblas -latlas
-#  AM_LDFLAGS = $(top_srcdir)/linbox/.libs/liblinbox.a
-#AM_LDFLAGS = $(top_srcdir)/linbox/liblinbox.la
-#  SAFER_FLAGS = -g -Wall -Wextra -Wno-unused-parameter
-# bds: no need to optimize for unit/regression tests, and opt adds a lot to compilation time
-#AM_CXXFLAGS = @TESTS_CFLAGS@ -DLinBoxTestOnly
-#  AM_CXXFLAGS = $(SAFER_FLAGS) -DLinBoxTestOnly
-#AM_CXXFLAGS = $(SAFER_FLAGS) -DLinBoxTestOnly -O2
-#  AM_CXXFLAGS = -g -DLinBoxTestOnly -Wall -DDEBUG -O0
-
-AM_CPPFLAGS = -DLinBoxTestOnly $(TESTS_CFLAGS) $(DEBUG_CFLAGS)
-
-# AM_CXXFLAGS = -g -DLinBoxTestOnly -Wall -D__LINBOX_HAVE_DGETRF -D__LINBOX_HAVE_DGETRI
-# AM_CFLAGS = -g -Wall
+AM_CPPFLAGS=-I$(top_srcdir) -DLinBoxTestOnly
+AM_CXXFLAGS=$(LINBOX_CXXFLAGS) $(FFLAS_FFPACK_CFLAGS) $(LINBOX_DEPS_CFLAGS)
+LDADD=$(LINBOX_DEPS_LIBS) $(FFLAS_FFPACK_LIBS) $(LINBOX_LDFLAGS)
+AM_LDFLAGS=$(top_builddir)/linbox/liblinbox.la
 
 SUBDIRS = data matrix
-
-AM_CPPFLAGS+= -I$(top_srcdir) $(DEPS_CFLAGS)
-LDADD = $(DEPS_LIBS) $(LDFLAGS)
-AM_LDFLAGS = $(top_builddir)/linbox/liblinbox.la
-#  AM_LDFLAGS+=-static -Wl,-rpath -Wl,
 
 PERFPUBLISHERFILE = tests-report.xml
 
@@ -84,6 +68,7 @@ BASIC_TESTS =            \
     test-det            \
     test-regression        \
     test-regression2       \
+    test-rank-ex        \
     test-rank-u32        \
     test-rank-md        \
     test-rank-Int        \
@@ -103,7 +88,10 @@ BASIC_TESTS =            \
     test-givaro-zpzuns        \
     test-givaro-interfaces        \
     test-echelon-form       \
+    test-blas-domain-mul        \
+    test-blas-domain            \
     test-hadamard-bound     \
+    test-fft                    \
     test-serialization
 
 # Really just one or two of these would be enough for target check.
@@ -156,6 +144,7 @@ CHECKER_TESTS =                 \
     test-modular-float          \
     test-modular-int            \
     test-moore-penrose          \
+    test-nullspace              \
     test-optimization           \
     test-order-basis            \
     test-param-fuzzy            \
@@ -178,9 +167,9 @@ CHECKER_TESTS =                 \
     test-triplesbb-omp          \
     test-tutorial               \
     test-vector-domain          \
-    test-blas-domain            \
     test-random-matrix          \
     test-zero-one               \
+    test-toom-cook              \
     test-toeplitz-det           \
     test-dense
 
@@ -192,9 +181,7 @@ CHECKER_NTL_TESTS =  ${NTL_TESTS}           \
 
 FULLCHECK_TESTS = ${CHECKER_TESTS} \
     test-minpoly                \
-    test-nullspace              \
     test-weak-popov-form        \
-    test-toom-cook              \
     test-mpi-comm               \
     test-rat-solve              \
     test-rat-minpoly            \
@@ -202,7 +189,6 @@ FULLCHECK_TESTS = ${CHECKER_TESTS} \
     test-poly-det               \
     test-sparse-map-map         \
     test-block-ring             \
-    test-dense-zero-one         \
     test-ftrmm                  \
     test-image-field            \
     test-la-block-lanczos       \
@@ -269,6 +255,7 @@ CLEANFILES= checker     \
 test_bitonic_sort_SOURCES =         test-bitonic-sort.C
 test_blackbox_block_container_SOURCES = test-blackbox-block-container.C
 test_blas_domain_SOURCES =          test-blas-domain.C
+test_blas_domain_mul_SOURCES =      test-blas-domain-mul.C
 test_blas_matrix_SOURCES =          test-blas-matrix.C
 test_block_ring_SOURCES =           test-block-ring.C
 test_block_wiedemann_SOURCES =      test-block-wiedemann.C
@@ -279,13 +266,13 @@ test_companion_SOURCES =        test-companion.C
 test_cradomain_SOURCES =        test-cradomain.C test-common.h
 test_cra_SOURCES =              test-cra.C test-common.h
 test_dense_SOURCES =            test-dense.C test-common.h
-test_dense_zero_one_SOURCES =       test-dense-zero-one.C
 test_det_SOURCES =              test-det.C
 test_diagonal_SOURCES =         test-diagonal.C
 test_dif_SOURCES =              test-dif.C
 test_direct_sum_SOURCES =           test-direct-sum.C
 test_dyadic_to_rational_SOURCES =       test-dyadic-to-rational.C
 test_echelon_form_SOURCES =         test-echelon-form.C
+test_fft_SOURCES =                  test-fft.C
 test_ffpack_SOURCES =           test-ffpack.C
 test_fibb_SOURCES =             test-fibb.C
 test_frobenius_SOURCES =        test-frobenius.C
@@ -343,6 +330,7 @@ test_qlup_SOURCES =                     test-qlup.C
 test_quad_matrix_SOURCES =              test-quad-matrix.C
 test_randiter_nonzero_prime_SOURCES =   test-randiter-nonzero-prime.C
 test_random_matrix_SOURCES =        test-random-matrix.C
+test_rank_ex_SOURCES =         test-rank-ex.C
 test_rank_Int_SOURCES =         test-rank-Int.C test-rank.h
 test_rank_md_SOURCES =          test-rank-md.C test-rank.h
 test_rank_u32_SOURCES =         test-rank-u32.C test-rank.h
@@ -389,6 +377,7 @@ test_frobenius_large_SOURCES =      test-frobenius-large.C
 test_weak_popov_form_SOURCES =      test-weak-popov-form.C
 test_mpi_comm_SOURCES =         test-mpi-comm.C
 test_toeplitz_SOURCES =                 test-toeplitz.C
+checker_SOURCES      =    checker.C 
 
 # Perfpublisher script interaction - AB 2014/12/11
 perfpublisher:
@@ -399,7 +388,7 @@ perfpublisher:
 
 # for compilation of non-enumerated programs
 %:%.C
-	$(CXX) $(CXXFLAGS) $(AM_CPPFLAGS)  ${INCLUDES} $(AM_CPPFLAGS) $*.C -o $@ $(LDADD)
+	$(CXX) $(CXXFLAGS) $(AM_CPPFLAGS)  ${INCLUDES} $(AM_CXXFLAGS) $*.C -o $@ $(LDADD)
 
 fullcheck: ${TESTS} ${CHECKER_TESTS} checker
 	./checker

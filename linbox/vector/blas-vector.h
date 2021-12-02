@@ -84,13 +84,14 @@ namespace LinBox {
     public:
 
         void resize (size_t n){
-            //std::cout<<"BlasVector resize: "<<_ptr<<" ("<<_size<<") to ";
+// std::cout<<"BlasVector resize: "<<_ptr<<" ("<<_size<<") to ";
             _rep.resize(n);
             _ptr = _rep.data();
+// std::cout<<_ptr<<" ("<<n<<")"<<std::endl;
             for (size_t i=_size;i<n;i++)
                 field().init(_rep[i]);
             _size = n;
-            //std::cout<<_ptr<<" ("<<n<<")"<<std::endl;
+// std::cout<<"BlasVector resize end."<<std::endl;
         }
 
         void resize (size_t n, const Element& val){
@@ -147,7 +148,7 @@ namespace LinBox {
          * @param m vector dimension
          * @param inc increment value for iterating
          */
-        template<typename ConstIterator>
+        template<typename ConstIterator, typename std::enable_if<!std::is_arithmetic<ConstIterator>::value, int>::type=0>
         BlasVector(const _Field & F, const ConstIterator& jt, const size_t m) :  _field(F) {
             resize(m);
             ConstIterator jtt(jt);
@@ -198,6 +199,12 @@ namespace LinBox {
                     field().assign(*it,*jt);
             }
             return *this;
+        }
+
+
+        template<class _Vector>
+        Self_t& copy(const _Vector& A){
+            return *this=A;
         }
 
         //! Rebind operator
@@ -265,7 +272,8 @@ namespace LinBox {
         }
 
         void setEntry (size_t i, const Element &a_i){
-            //std::cout<<"BV: "<<" "<<&(*_ptr)<<" "<<i<<" "<<a_i<<std::endl;
+// std::cout<<"BV: "<<" "<<&(*_ptr)<<" "<<i<<" "<<a_i<<std::endl;
+//             field().assign(_rep.at(i),a_i);
             field().assign(_rep[i],a_i);
         }
 
@@ -348,8 +356,9 @@ namespace LinBox {
         template<class RandIter>
         void random( RandIter r){
             typename _Field::Element x; field().init(x);
-            for (size_t i = 0; i < size(); ++i)
+            for (size_t i = 0; i < size(); ++i){
                 setEntry(i, r.random(x));
+            }
         }
 
     };

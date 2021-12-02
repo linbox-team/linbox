@@ -137,6 +137,14 @@ namespace LinBox
 			ENSURE( size() == (oldsize+1) );
 			ENSURE( allocated >= size() );
 		}
+
+        template< class... Args >
+        void emplace_back( Args&&... args )
+        {
+                // no emplace_back
+			push_back( Elem{args...} );
+        }
+
 		void pop_back()
 		{
 			STATE( size_t  oldsize = size() );

@@ -32,9 +32,10 @@ pkgincludesub_HEADERS =         \
 	matpoly-mult-fft-wordsize-three-primes.inl	\
 	matpoly-mult-fft-multiprecision.inl	\
 	matpoly-mult-fft-recint.inl	\
-	polynomial-fft-transform-simd.inl	\
-	polynomial-fft-transform.h	\
-	polynomial-fft-transform.inl	\
 	polynomial-matrix-domain.h	\
-        simd.h		\
+	fft.h	\
+	fft-utils.h	\
+	fft-floating.inl	\
+	fft-integral.inl	\
+	fft-simd.h	\
 	order-basis.h

@@ -44,7 +44,7 @@ namespace LinBox
 	{
 		typedef Field_			Field;
 	protected:
-		typedef TriangularBlasMatrix<Field> Rep_t;
+		typedef TriangularBlasMatrix<BlasMatrix<Field>> Rep_t;
 		Rep_t * rep_;
 		const Field* field_;
 	public:

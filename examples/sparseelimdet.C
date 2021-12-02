@@ -47,7 +47,7 @@ int main (int argc, char **argv)
 {
 	commentator().setMaxDetailLevel (-1);
 	commentator().setMaxDepth (-1);
-	commentator().setReportStream (std::cerr);
+	commentator().setReportStream (std::clog);
 
 	if (argc < 2 || argc > 3)
 	{	cerr << "Usage: sparseelimdet <matrix-file-in-supported-format> [<p>]" << endl; return -1; }

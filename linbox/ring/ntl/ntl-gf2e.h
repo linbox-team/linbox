@@ -204,6 +204,8 @@ public :
 	class UnparametricRandIter<NTL::GF2E> {
 	public:
 		typedef NTL::GF2E Element;
+        typedef Element::rep_type Residu_t;
+
 		UnparametricRandIter<NTL::GF2E>(const NTL_GF2E & F,
                                         const size_t& size = 0,
                                         const uint64_t seed = 0

@@ -69,7 +69,8 @@ namespace LinBox
 	public:
 		typedef typename Field::Element Element;
 		//typedef std::vector<size_t> BlasPermutation;
-
+        typedef  BlasMatrix<Field,typename Vector<Field>::Dense > matrixType;
+        typedef  TriangularBlasMatrix<matrixType>  TriangularMatrix;
 	protected:
 
 		Field                     _field;
@@ -88,7 +89,7 @@ namespace LinBox
 		template<class _Rep>
 		PLUQMatrix (const BlasMatrix<Field,_Rep>& A) ;
 
-		//! Contruction of PLUQ factorization of A (in-place in A)
+		//! Contruction of PLUQ factorization of A (in-place in A) 
 		template<class _Rep>
 		PLUQMatrix (BlasMatrix<Field,_Rep>& A) ;
 
@@ -158,15 +159,13 @@ namespace LinBox
 		 * else \c L is form \c PLUQ decomposition.
 		 * @pre \c L has unit diagonal
 		 */
-
-		template<class _Rep>
-		TriangularBlasMatrix<Field,_Rep>& getL(TriangularBlasMatrix<Field,_Rep>& L, bool _QLUP = false) const;
+        
+        TriangularMatrix& getL(TriangularMatrix& L, bool _QLUP = false) const;
 
 		/*! get the matrix  \c  U.
 		 * @pre \c   U has non-unit diagonal
 		 */
-		template<class _Rep>
-		TriangularBlasMatrix<Field,_Rep>& getU(TriangularBlasMatrix<Field,_Rep>& U) const;
+		TriangularMatrix& getU(TriangularMatrix& U) const;
 
 		// /*! get the matrix S.
 		//  *  from the LSP factorization of A deduced from PLUQ)
