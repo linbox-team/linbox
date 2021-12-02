@@ -140,7 +140,7 @@ int main (int argc, char **argv) {
 
 
     chrono.start();
-    rsolve.solveNonsingular(X, d, A, B, false,(int)m.trialsBeforeFailure);
+    rsolve.solve(X, d, A, B, false,(int)m.trialsBeforeFailure);
 
         // END Replacement solve with fixed prime
         //====================================================
