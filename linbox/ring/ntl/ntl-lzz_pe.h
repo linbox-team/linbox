@@ -393,7 +393,7 @@ namespace LinBox
 	class UnparametricRandIter<NTL::zz_pE> {
 	public:
 		typedef NTL::zz_pE Element;
-        typedef Element::rep_type Residu_t;
+        typedef size_t Residu_t;
 
 		UnparametricRandIter<NTL::zz_pE>(const NTL_zz_pE & F ,
                                          const uint64_t seed = 0,
