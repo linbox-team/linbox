@@ -82,7 +82,7 @@ struct  cra_det_task {
 
 int main (int argc, char **argv)
 {
-	if(argc<2) {
+	if (argc < 2) {
 		cerr << "not enough args : usage = athadet file" << endl;
 		return 1;
 	}
