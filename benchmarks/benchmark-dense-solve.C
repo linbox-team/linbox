@@ -174,21 +174,18 @@ int main(int argc, char** argv)
     bool isModular = false;
     if (args.q > 0) isModular = true;
 
-    // create the two rings, although only one will be used
-    Mods Fq(args.q);
-    Mods::RandIter randIterFq(Fq, args.seed);
-
-    Ints ZZ;
-    Ints::RandIter randIterZZ(ZZ, args.seed);
-    randIterZZ.setBits(args.bits);
-
     using Timing = std::array<double, 3>;
     std::vector<Timing> timebits(args.nbiter);
     for (int iter = 0; iter < args.nbiter; ++iter) {
         if (isModular) {
+            Mods Fq(args.q);
+            Mods::RandIter randIterFq(Fq, args.seed);
             benchmark<Mods, DenseVector<Mods>>(randIterFq, timebits[iter], args, method);
         }
         else {
+            Ints ZZ;
+            Ints::RandIter randIterZZ(ZZ, args.seed);
+            randIterZZ.setBitsize(args.bits);
             benchmark<Ints, VectorFractionInts>(randIterZZ, timebits[iter], args, method);
         }
     }
