@@ -399,7 +399,7 @@ namespace LinBox
 			long dp = massey (phi, full_poly);
 			rank = (size_t) (v_degree(phi) - v_val (phi));
 
-            if (dp==0){// zero sequence, its minpoly is 1		
+            if (dp==0){// empty sequence, its minpoly is 1		
                  phi.resize(1);		
                  field().assign(phi[0],field().one);		
                  return;		
