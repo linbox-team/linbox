@@ -473,16 +473,16 @@ namespace LinBox{
 	}
 
 	template <class Field>
-	template <class Operand1, class Operand2, class Operand3>
+	template <class Operand1, class Operand2, class Operand3, class Operand4>
 	std::vector<int> OpenCLMatrixDomain<Field>::oclPartition(
 		Operand1& D,
-		const Operand2& A,
-		const Operand3& B,
-		const Operand1& C,
+		const Operand3& A,
+		const Operand4& B,
+		const Operand2& C,
 		std::vector<SubmatrixAdapter<Operand1> >& VD,
-		std::vector<SubmatrixAdapter<Operand2> >& VA,
-		std::vector<SubmatrixAdapter<Operand3> >& VB,
-		std::vector<SubmatrixAdapter<Operand1> >& VC) const{
+		std::vector<SubmatrixAdapter<Operand3> >& VA,
+		std::vector<SubmatrixAdapter<Operand4> >& VB,
+		std::vector<SubmatrixAdapter<Operand2> >& VC) const{
 
 		//Compute if the OpenCL device is capable of working with the required ammounts of memory
 		bool memLevelsAllowed = oclMemCheck<Operand1,Operand2,Operand3>(D,A,B,C);
