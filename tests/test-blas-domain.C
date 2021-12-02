@@ -54,9 +54,9 @@
 #include "linbox/ring/modular.h"
 #include <givaro/modular-balanced.h>
 
-#ifdef __LINBOX_HAVE_NTL
-#include "linbox/ring/ntl.h"
-#endif
+// #ifdef __LINBOX_HAVE_NTL
+// #include "linbox/ring/ntl.h"
+// #endif
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/matrix/matrix-domain.h"
 #include <givaro/givranditer.h>
@@ -78,64 +78,64 @@ const int maxpretty = 35;
 string blank;
 
 const char* pretty(string a)
-;
+    ;
 
 template <class Vector>
 bool localAreEqual(
-	const Vector& a,
-	const Vector& b)
-;
+                   const Vector& a,
+                   const Vector& b)
+    ;
 
 template <class Field>
 static bool testMulAdd (const Field& F, size_t n, int iterations)
-;
+    ;
 template <class Field>
 static bool testMulAddAgain (const Field& Zp, size_t n, int iterations)
-;
+    ;
 template <class Field>
 static bool testMulAddShapeTrans (const Field &F, size_t m, size_t n, size_t k, int iterations)
-;
+    ;
 template<class Field, bool LeftSide, bool UnitDiag>
 static bool testTriangMulShapeTrans (const Field &F, size_t m, size_t n, int iterations)
-;
+    ;
 template <class Field>
 static bool testRank (const Field& F,size_t n, int iterations)
-;
+    ;
 template <class Field>
 static bool testDet (const Field& F,size_t n, int iterations)
-;
+    ;
 template <class Field>
 static bool testInv (const Field& F,size_t n, int iterations)
-;
+    ;
 template <class Field>
 static bool testTriangularSolve (const Field& F, size_t m, size_t n, int iterations)
-;
+    ;
 template <class Field>
 static bool testSolve (const Field& F, size_t m, size_t n, int iterations)
-;
+    ;
 template <class Field>
 static bool testPermutation (const Field& F, size_t m, int iterations)
-;
+    ;
 template <class Field>
 static bool testPLUQ (const Field& F, size_t m, size_t n, int iterations)
-;
+    ;
 template <class Field>
 static bool testMinPoly (const Field& F, size_t n, int iterations)
-;
+    ;
 template <class Field>
 static bool testCharPoly (const Field& F, size_t n, int iterations)
-;
+    ;
 template<class Field>
 static bool testBlasMatrixConstructors(const Field& Fld, size_t m, size_t n)
-;
+    ;
 template<class Field>
 int launch_tests(Field & F, size_t n, int iterations)
-;
+    ;
 bool launch_gf2_tests(GF2 & F, size_t n)
-;
+    ;
 #if 0
 bool launch_gf3_tests(GF3 & F, size_t n)
-;
+    ;
 #endif
 
 
@@ -161,10 +161,10 @@ int main(int argc, char **argv)
 	static int iterations = 1;
 
     static Argument args[] = {
-        { 'n', "-n N", "Set dimension of test matrices to NxN", TYPE_INT,     &n },
-        { 'q', "-q Q", "Operate over the \"field\" GF(Q) [1]",  TYPE_INTEGER, &q },
-        { 'i', "-i I", "Perform each test for I iterations",    TYPE_INT,     &iterations },
-	END_OF_ARGUMENTS
+                              { 'n', "-n N", "Set dimension of test matrices to NxN", TYPE_INT,     &n },
+                              { 'q', "-q Q", "Operate over the \"field\" GF(Q) [1]",  TYPE_INTEGER, &q },
+                              { 'i', "-i I", "Perform each test for I iterations",    TYPE_INT,     &iterations },
+                              END_OF_ARGUMENTS
     };
 
 	parseArguments (argc, argv, args);
@@ -187,7 +187,7 @@ int main(int argc, char **argv)
 
 	pass &= launch_tests(F1,n,iterations);
 
-        pass &= launch_gf2_tests(F2,n);
+    pass &= launch_gf2_tests(F2,n);
 
 #pragma message "#warning GF3 -> working on sliced wrapper"
 	//pass &= launch_gf3_tests(F3,n);
@@ -196,17 +196,17 @@ int main(int argc, char **argv)
 
 	pass &= launch_tests(F5,n,iterations);
 
-        pass &= launch_tests(F6,n,iterations);
+    pass &= launch_tests(F6,n,iterations);
 
-//#pragma message "#warning Givaro::Modular<bool> is not working"
+    //#pragma message "#warning Givaro::Modular<bool> is not working"
 	//pass &= launch_tests(F7,n,iterations);
 
-#ifdef __LINBOX_HAVE_NTL
-#pragma message "#warning NTL_ZZp is not working at all"
-        NTL::ZZ_p::init(NTL::to_ZZ((unsigned long)(uint64_t)q));
-	NTL_ZZ_p F8;
-	// pass &= launch_tests(F8,n,iterations);
-#endif
+// #ifdef __LINBOX_HAVE_NTL
+// #pragma message "#warning NTL_ZZp is not working at all"
+//     NTL::ZZ_p::init(NTL::to_ZZ((unsigned long)(uint64_t)q));
+// 	NTL_ZZ_p F8;
+// 	// pass &= launch_tests(F8,n,iterations);
+// #endif
 
 	commentator().stop(MSG_STATUS (pass), (const char *) 0,"BlasMatrixDomain test suite");
 	return pass ? 0 : -1;
@@ -219,16 +219,16 @@ const char* pretty(string a)
 	int msgsize= maxpretty - (int)blank.size();
 	string dot(".");
 	for (int i=0;i<msgsize ;++i)
-		 blank+=dot;
-	 return blank.c_str();
+        blank+=dot;
+    return blank.c_str();
 }
 #define mycommentator commentator
 ostream & report = mycommentator().report();
 
 template<class Vector>
- bool localAreEqual(
-	const Vector& a,
-	const Vector& b)
+bool localAreEqual(
+                   const Vector& a,
+                   const Vector& b)
 {
 	if ( a.size() != b.size() )
 		return false;
@@ -337,10 +337,10 @@ static bool testMulAdd (const Field& F, size_t n, int iterations)
 // actually we check the mod p muladd here...
 template <class Field>
 bool CheckMulAdd(const Field& Zp, const Integer & alpha ,
-		  const BlasMatrix<Givaro::ZRing<Integer> > & A ,
-		  const BlasMatrix<Givaro::ZRing<Integer> > & B ,
-		  const Integer & beta ,
-		  const BlasMatrix<Givaro::ZRing<Integer> > & C)
+                 const BlasMatrix<Givaro::ZRing<Integer> > & A ,
+                 const BlasMatrix<Givaro::ZRing<Integer> > & B ,
+                 const Integer & beta ,
+                 const BlasMatrix<Givaro::ZRing<Integer> > & C)
 {
 
 	size_t M = C.rowdim();
@@ -355,11 +355,11 @@ bool CheckMulAdd(const Field& Zp, const Integer & alpha ,
 
 	BlasMatrix<Givaro::ZRing<Integer> > D(ZZ,M,N);
 
-/*
-	Integer p = Integer::random_between(10,12) ;
-	nextprime(p,p); //!@bug si p n'est pas premier, fgemm fait n'importe quoi (division par alpha)
-	Field Zp (p);
-*/
+    /*
+      Integer p = Integer::random_between(10,12) ;
+      nextprime(p,p); //!@bug si p n'est pas premier, fgemm fait n'importe quoi (division par alpha)
+      Field Zp (p);
+    */
 
 	BlasMatrixDomain<Field> BMD (Zp);
 
@@ -588,7 +588,7 @@ static bool testTriangMulShapeTrans (const Field &F, size_t m, size_t n, int ite
 
 	// typedef typename Field::Element                               Element;
 	typedef BlasMatrix<Field>                                   Matrix ;
-	typedef TriangularBlasMatrix<Field>               TriangularMatrix ;
+	typedef TriangularBlasMatrix<Matrix>               TriangularMatrix ;
 	// typedef TransposedBlasMatrix<Matrix>                TransposedMatrix ;
 	typedef TransposedBlasMatrix<TriangularMatrix > TransposedTriangular ;
 	typedef typename Field::RandIter                            Randiter ;
@@ -626,11 +626,11 @@ static bool testTriangMulShapeTrans (const Field &F, size_t m, size_t n, int ite
 	{
 		/*  L */
 		TriangularMatrix L (A, Tag::Shape::Lower,
-				    (UnitDiag?Tag::Diag::Unit:Tag::Diag::NonUnit));
+                            (UnitDiag?Tag::Diag::Unit:Tag::Diag::NonUnit));
 
 		/*  U */
 		TriangularMatrix U (A, Tag::Shape::Upper,
-				    (!UnitDiag?Tag::Diag::Unit:Tag::Diag::NonUnit));
+                            (!UnitDiag?Tag::Diag::Unit:Tag::Diag::NonUnit));
 
 		/*  make product */
 		E = B ;
@@ -660,11 +660,11 @@ static bool testTriangMulShapeTrans (const Field &F, size_t m, size_t n, int ite
 	{
 		/*  L */
 		TriangularMatrix L1 (A1, Tag::Shape::Lower,
-				    (UnitDiag?Tag::Diag::Unit:Tag::Diag::NonUnit));
+                             (UnitDiag?Tag::Diag::Unit:Tag::Diag::NonUnit));
 
 		/*  U */
 		TriangularMatrix U1 (A1, Tag::Shape::Upper,
-				    (!UnitDiag?Tag::Diag::Unit:Tag::Diag::NonUnit));
+                             (!UnitDiag?Tag::Diag::Unit:Tag::Diag::NonUnit));
 
 		TransposedTriangular L(L1);
 		TransposedTriangular U(U1);
@@ -721,7 +721,7 @@ static bool testRank (const Field& F,size_t n, int iterations)
 	BlasMatrixDomain<Field> BMD(F);
 
 	for (int k=0;k<iterations; ++k) {
-	unsigned int r;
+        unsigned int r;
 
 		mycommentator().progress(k);
 		BlasMatrix<Field> A(F,n,n),S(F,n,n), L(F,n,n);
@@ -733,7 +733,7 @@ static bool testRank (const Field& F,size_t n, int iterations)
 			for (size_t j=i+1;j<n;++j)
 				S.setEntry(i,j,G.random(tmp));
 		}
-                BMD.write(commentator().report(), S) << std::endl;
+        BMD.write(commentator().report(), S) << std::endl;
 
 
 		// create L as a lower triangular matrix with nonzero elements on the diagonal
@@ -742,11 +742,11 @@ static bool testRank (const Field& F,size_t n, int iterations)
 				L.setEntry(i,j,G.random(tmp));
 			L.setEntry(i,i,Gn.random(tmp));
 		}
-                BMD.write(commentator().report(), L) << std::endl;
+        BMD.write(commentator().report(), L) << std::endl;
 
 		//  compute A=LS
 		BMD.mul(A,L,S);
-                BMD.write(commentator().report(), A) << std::endl;
+        BMD.write(commentator().report(), A) << std::endl;
 
 		// compute the rank of A
 		unsigned int rank= BMD.rankInPlace(A);
@@ -883,29 +883,29 @@ static bool testInv (const Field& F,size_t n, int iterations)
 		//for (size_t i=0;i<n;++i){A.setEntry(i,i,F.one); }
 		//A.setEntry(0, n-1, F.mOne);
 
-	if (n < 10)
-		A.write(mycommentator().report() << "A") << std::endl;
+        if (n < 10)
+            A.write(mycommentator().report() << "A") << std::endl;
 
 		// compute the inverse of A
-    Matrix invA(A);
-	if (n < 10)
-		invA.write(mycommentator().report() << "before inversion, invA") << std::endl;
-	//int nullity;
-	//FFPACK::Invert2 (F, invA.rowdim(), A.getPointer(), A.getStride(), invA.getPointer(), invA.getStride(), nullity);
-    BMD.invin(invA);
-	if (n < 10)
-		invA.write(mycommentator().report() << "invA") << std::endl;
+        Matrix invA(A);
+        if (n < 10)
+            invA.write(mycommentator().report() << "before inversion, invA") << std::endl;
+        //int nullity;
+        //FFPACK::Invert2 (F, invA.rowdim(), A.getPointer(), A.getStride(), invA.getPointer(), invA.getStride(), nullity);
+        BMD.invin(invA);
+        if (n < 10)
+            invA.write(mycommentator().report() << "invA") << std::endl;
 
 		// compute Ainv*A and A*Ainv
-    BMD.mul(L,invA,A);
-	if (n < 10)
-		L.write(mycommentator().report() << "invA*A") << std::endl;
-    BMD.mul(S,A,invA);
-	if (n < 10)
-		S.write(mycommentator().report() << "A*invA") << std::endl;
+        BMD.mul(L,invA,A);
+        if (n < 10)
+            L.write(mycommentator().report() << "invA*A") << std::endl;
+        BMD.mul(S,A,invA);
+        if (n < 10)
+            S.write(mycommentator().report() << "A*invA") << std::endl;
 
-    if (!BMD.areEqual(L,Id) || !BMD.areEqual(S,Id))
-        ret=false;
+        if (!BMD.areEqual(L,Id) || !BMD.areEqual(S,Id))
+            ret=false;
 	}
 
 	mycommentator().stop(MSG_STATUS (ret), (const char *) 0, "testInv");
@@ -923,7 +923,7 @@ static bool testTriangularSolve (const Field& F, size_t m, size_t n, int iterati
 
 	typedef typename Field::Element                  Element;
 	typedef BlasMatrix<Field>                       Matrix;
-	typedef TriangularBlasMatrix<Field>   TriangularMatrix;
+	typedef TriangularBlasMatrix<Matrix>   TriangularMatrix;
 	typedef typename Field::RandIter                RandIter;
 
 	//Commentator mycommentator;
@@ -948,14 +948,11 @@ static bool testTriangularSolve (const Field& F, size_t m, size_t n, int iterati
 		BlasVector<Field> b(F,m),x(F,m),c(F,m);
 
 		// Create B a random matrix
-		for (size_t i=0;i<m;++i)
-			for (size_t j=0;j<m;++j)
-				B.setEntry(i,j,G.random(tmp));
+		B.random(G);
 
 		//create random vector b
-		for( size_t i=0;i<m;++i)
-			F.init(b[i],G.random(tmp));
-
+        b.random(G);
+        
 		// Create Au a random full rank upper triangular matrix
 		for (size_t i=0;i<m;++i){
 			Au.setEntry(i,i,Gn.random(tmp));
@@ -977,46 +974,46 @@ static bool testTriangularSolve (const Field& F, size_t m, size_t n, int iterati
 		BMD.left_solve(X,TAl,B);
 		BMD.mul(C,Al,X);
 		if (!BMD.areEqual(C,B))
-			ret=false;
+			{ret=false; std::cerr<<"error 1\n";}
 
 		BMD.left_solve(X,TAu,B);
 		BMD.mul(C,Au,X);
 		if (!BMD.areEqual(C,B))
-			ret=false;
+			{ret=false;std::cerr<<"error 2\n";}
 
 		// testing solver with matrix left hand side
 		BMD.right_solve(X,TAl,B);
 		BMD.mul(C,X,Al);
 		if (!BMD.areEqual(C,B))
-			ret=false;
+			{ret=false;std::cerr<<"error 3\n";}
 
 		BMD.right_solve(X,TAu,B);
 		BMD.mul(C,X,Au);
 		if (!BMD.areEqual(C,B))
-			ret=false;
+			{ret=false;std::cerr<<"error 4\n";}
 
 
 		// testing solver with vector right hand side
 		BMD.left_solve(x,TAl,b);
 		BMD.mul(c,Al,x);
 		if (!localAreEqual(c,b))
-			ret=false;
+			{ret=false;std::cerr<<"error 5\n";}
 
 		BMD.left_solve(x,TAu,b);
 		BMD.mul(c,Au,x);
 		if (!localAreEqual(c,b))
-			ret=false;
+			{ret=false;std::cerr<<"error 6\n";}
 
 		// testing solver with vector left hand side
 		BMD.right_solve(x,TAl,b);
 		BMD.mul(c,x,Al);
 		if (!localAreEqual(c,b))
-			ret=false;
+			{ret=false;std::cerr<<"error 7\n"; F.write(std::cerr);std::cerr<<Al<<"\n x="<<x<<"\n b="<<b<<"\n c="<<c<<"\n";}
 
 		BMD.right_solve(x,TAu,b);
 		BMD.mul(c,x,Au);
 		if (!localAreEqual(c,b))
-			ret=false;
+			{ret=false;std::cerr<<"error 8\n";}
 	}
 
 	mycommentator().stop(MSG_STATUS (ret), (const char *) 0, "testTriangularSolve");
@@ -1171,11 +1168,11 @@ static bool testPermutation (const Field& F, size_t m, int iterations)
 		// RandIter G2(Z2);
 
 		// for (size_t i=0; i<m; ++i){
-			// G.random(tmp);
-			// if ( Z2.isZero(G2.random(tmp2) ) )
-				// P[i] = i + ( (size_t) random() % (m-i) );
-			// else
-				// P[i] = i;
+        // G.random(tmp);
+        // if ( Z2.isZero(G2.random(tmp2) ) )
+        // P[i] = i + ( (size_t) random() % (m-i) );
+        // else
+        // P[i] = i;
 		// }
 
 		//report<<P<<std::endl;
@@ -1339,7 +1336,7 @@ static bool testPermutation (const Field& F, size_t m, int iterations)
 		// D = C.A (=B)
 		BMD.mul(D, C, A);
 		if (!BMD.areEqual(D,B))
-		  ret=false;
+            ret=false;
 
 		/*
 		 * Test B.A.P^t.(A.P)^-1 == B
@@ -1414,7 +1411,7 @@ static bool testPermutation (const Field& F, size_t m, int iterations)
 		// D = C.A (=B)
 		BMD.mul(D, C, A);
 		if (!BMD.areEqual(D,B))
-		  ret=false;
+            ret=false;
 
 		/*
 		 * Test B.A.P.(A.P^t)^-1 == B
@@ -1475,10 +1472,10 @@ static bool testPLUQ (const Field& F, size_t m, size_t n, int iterations)
 		for (size_t j=0;j<m;++j)
 			if ( j % 2 )
 				for (size_t i=0;i<m;++i)
-				  B.setEntry(i,j,G.random(tmp));
+                    B.setEntry(i,j,G.random(tmp));
 			else
-			  for (size_t i=0;i<m;++i)
-			    B.setEntry(i,j,F.zero);
+                for (size_t i=0;i<m;++i)
+                    B.setEntry(i,j,F.zero);
 		// Create C a random matrix of rank n/2
 		for (size_t i=0;i<m;++i)
 			if ( i % 2 )
@@ -1496,8 +1493,9 @@ static bool testPLUQ (const Field& F, size_t m, size_t n, int iterations)
 		BlasPermutation<size_t>  P(A.rowdim()),Q(A.coldim());
 		PLUQMatrix<Field> X(A,P,Q);
 
-		TriangularBlasMatrix<Field> L(F,m,m,Tag::Shape::Lower,Tag::Diag::Unit);
-		TriangularBlasMatrix<Field> U(F,m,n,Tag::Shape::Upper,Tag::Diag::NonUnit);
+        BlasMatrix<Field> Ldata(F,m,m), Udata(F,m,n);        
+		TriangularBlasMatrix< BlasMatrix<Field> > L(Ldata,Tag::Shape::Lower,Tag::Diag::Unit);
+		TriangularBlasMatrix< BlasMatrix<Field> > U(Udata,Tag::Shape::Upper,Tag::Diag::NonUnit);
 		X.getL(L);
 		X.getU(U);
 		P=X.getP();
@@ -1521,9 +1519,11 @@ static bool testPLUQ (const Field& F, size_t m, size_t n, int iterations)
 		Abis = A;
 
 		PLUQMatrix<Field> Y(A,P,Q);
+        
+        BlasMatrix<Field> L2data(F,m,m), U2data(F,m,n);        
+		TriangularBlasMatrix< BlasMatrix<Field> > L2(L2data,Tag::Shape::Lower,Tag::Diag::Unit);
+		TriangularBlasMatrix< BlasMatrix<Field> > U2(U2data,Tag::Shape::Upper,Tag::Diag::NonUnit);
 
-		TriangularBlasMatrix<Field> L2(F,m,m,Tag::Shape::Lower,Tag::Diag::Unit);
-		TriangularBlasMatrix<Field> U2(F,m,n,Tag::Shape::Upper,Tag::Diag::NonUnit);
 		Y.getL(L2);
 		Y.getU(U2);
 		P=Y.getP();
@@ -1688,7 +1688,7 @@ static bool testCharPoly (const Field& F, size_t n, int iterations)
 			if ( !F.areEqual(P_it->operator[](0), tmp) )
 				ret = false;
 			if ( !F.areEqual(P_it->operator[](1), F.one) )
-			ret = false;
+                ret = false;
 			++P_it;
 		}
 	}
@@ -1713,9 +1713,9 @@ static bool testBlasMatrixConstructors(const Field& Fld, size_t m, size_t n)
 	BlasMatrix<Field> C(Fld,m,n);
 	pass = pass and BMD.areEqual(B, C);
 
-//	MatrixStream<Field> ms; ...
-//	BlasMatrix<Field> D(ms);
-//	pass = pass and BMD.areEqual(B, D);
+    //	MatrixStream<Field> ms; ...
+    //	BlasMatrix<Field> D(ms);
+    //	pass = pass and BMD.areEqual(B, D);
 
 	ScalarMatrix<Field> Eo(Fld, n, n, Fld.zero);
 	BlasMatrix<Field> E(Eo); // copy a bb
@@ -1723,7 +1723,7 @@ static bool testBlasMatrixConstructors(const Field& Fld, size_t m, size_t n)
 
 #if 0
 	ScalarMatrix<Field> Fo(Fld, 2*m, 2*m, Fld.zero);
-        BlasMatrix F(Fo, m, 0, m, n) ; // copy subm of a bb
+    BlasMatrix F(Fo, m, 0, m, n) ; // copy subm of a bb
 	pass = pass and BMD.areEqual(B, F);
 
 	BlasMatrix<Field> G(Eo, Fld); // other field?
@@ -1751,11 +1751,12 @@ int launch_tests(Field & F, size_t n, int iterations)
 	bool pass = true ;
 	//report << "no blas tests for now" << std::endl;
 	// no slow test while I work on io
-	if (!testBlasMatrixConstructors(F, n, n))             pass=false;
-	if (!testMulAdd (F,n,iterations))                     pass=false;
-	if (0==F.characteristic()) if
-	    (!testMulAddAgain (F,n,iterations))                pass=false;
-	size_t m = n+n/2 ; size_t k = 2*n+1 ;
+	// if (!testBlasMatrixConstructors(F, n, n))             pass=false;
+	// if (!testMulAdd (F,n,iterations))                     pass=false;
+	// if (0==F.characteristic()) if
+    //                                (!testMulAddAgain (F,n,iterations))                pass=false;
+	// 
+    size_t m = n+n/2 ; size_t k = 2*n+1 ;
 	if (!testMulAddShapeTrans (F,n,m,k,iterations))       pass=false;
 	if (!testMulAddShapeTrans (F,n,k,m,iterations))       pass=false;
 	if (!testMulAddShapeTrans (F,m,n,k,iterations))       pass=false;
@@ -1779,8 +1780,8 @@ int launch_tests(Field & F, size_t n, int iterations)
  	if (!testPLUQ (F,n,n,iterations))                     pass=false;
  	if (!testMinPoly (F,n,iterations))                    pass=false;
 	if (!testCharPoly (F,n,iterations))                   pass=false;
-	//
-	//
+	
+	
 	if (not pass) F.write(report) << endl;
 	return pass ;
 

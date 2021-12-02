@@ -154,6 +154,15 @@ namespace LinBox {
                 }
             return *this;
         }
+
+        template<class Vect>
+        Self_t& copy(const Vect& A){
+            assert(_size == A.size());            
+            auto it=A.begin(); auto jt=begin();
+			for( ; it!=A.end();++it,++jt)
+                field().assign(*jt,*it);
+            return *this;
+        }
         
 		//! Rebind operator
         template<typename _Tp1, typename _Rep2 = typename Rebind<Storage, _Tp1>::other>
@@ -274,6 +283,16 @@ namespace LinBox {
     std::ostream& operator<< (std::ostream & os, const BlasSubvector<Vector> & V) {
 		return V.write(os);
 	}
+
+    template <class Vector>
+    bool operator==(const BlasSubvector<Vector>& v1, const BlasSubvector<Vector>& v2) {
+                if (v1.size() != v2.size()) return false;
+                auto i1=v1.begin();
+                auto i2=v2.begin();
+                for( ; i1 != v1.end(); ++i1, ++i2)
+                        if (*i1 != *i2) return false;
+                return true;
+    }
 
 
 

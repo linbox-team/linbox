@@ -82,6 +82,7 @@ namespace LinBox
         typedef  _Matrix                               matrixType;    //!< matrix type
         typedef Self_t                              subMatrixType;
         typedef BlasSubmatrix<const _Matrix>   constSubMatrixType;
+        typedef BlasSubmatrix<typename std::remove_const<_Matrix>::type>  nonconstSubMatrixType;
 
         // row and col types are unified to be a BlasSubvector
         typedef typename Storage::subVectorType           subVectorType;             
@@ -138,8 +139,8 @@ namespace LinBox
         /** Constructor from an existing @ref BlasMatrix
          * \param M Pointer to @ref BlasMatrix of which to construct submatrix
          */
-        BlasSubmatrix (matrixType &M);
-
+        BlasSubmatrix (matrixType &M);        
+        
         /** Constructor from a raw pointer
          * \param M Pointer to @ref BlasMatrix of which to construct submatrix
          */
@@ -148,8 +149,30 @@ namespace LinBox
                        size_t Rowdim,
                        size_t Coldim,
                        size_t stride);
-        
 
+
+        /** Copy constructor (virtual copy)
+         */
+        BlasSubmatrix(const constSubMatrixType &M);
+        BlasSubmatrix(nonconstSubMatrixType &M);
+        BlasSubmatrix(const nonconstSubMatrixType &M);
+        
+        //! (copying data) -> works only if dimensions are the same
+        Self_t& copy (const Self_t& M) ;
+
+        Self_t& operator=(const Self_t& M)=delete;
+        // {
+        //     if (&M!=this){
+        //         _ptr = M.getPointer();
+        //         _row = M.rowdim();
+        //         _col = M.coldim();
+        //         _stride= M.getStride();
+        //         _field = M.field();
+        //         std::cout<<"BlasSubmatrix operator=\n";
+        //     }
+        //     return *this;
+        // }
+        
         template <typename _TP1, typename _Rep2 = typename Rebind<RawStorage, _TP1>::other >
         struct rebind;
         /*  Members  */
@@ -200,8 +223,8 @@ namespace LinBox
          * @param os Output stream to which to write
          * @param f write in some format (@ref Tag::FileFormat::Format). Default is MM's.
          */
-        std::ostream &write (std::ostream &os,Tag::FileFormat f = Tag::FileFormat::MatrixMarket )const;
-
+        //std::ostream &write (std::ostream &os,Tag::FileFormat f = Tag::FileFormat::MatrixMarket )const;
+        std::ostream &write (std::ostream &os, Tag::FileFormat f = Tag::FileFormat::Plain) const;
         //////////////////
         //   ELEMENTS   //
         //////////////////
@@ -286,6 +309,11 @@ namespace LinBox
 		void random()
 		{
             typename Field::RandIter G(field());
+            random(G);
+        }
+        template<class RandIter>
+		void random(RandIter& G)
+		{
             FFLAS::frand(field(),G, _row,_col,_ptr,_stride);
         }
 

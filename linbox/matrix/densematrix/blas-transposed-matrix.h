@@ -34,61 +34,61 @@
 
 #ifndef __LINBOX_matrix_densematrix_blas_transposed_matrix_H
 #define __LINBOX_matrix_densematrix_blas_transposed_matrix_H
-
+#include "linbox/matrix/transpose-matrix.h"
 
 namespace LinBox
-{ /*  Transposed Matrix */
+{ /*  Transposed Matrix */    
 	/*! TransposedBlasMatrix.
 	 * NO DOC
 	 */
 	template< class Matrix >
-	class TransposedBlasMatrix {
-
+	class TransposedBlasMatrix : public TransposeMatrix<Matrix> { // most methods are inherited 
 	public:
+        typedef TransposedBlasMatrix<Matrix>                Self_t;
+        typedef typename Matrix::Field                       Field;
+        typedef typename Field::Element                    Element;  
+        typedef typename Field::Element_ptr            Element_ptr;      //!< Pointer to Element type
+        typedef typename Field::ConstElement_ptr   ConstElement_ptr; //!< Pointer to const Element type
+        
+        using TransposeMatrix<Matrix>::TransposeMatrix; // use cstor from TransposeMatrix
+        
+        Self_t& copy(const Self_t& A) { return *this=A;}
 
-		/*! NO DOC
-		 * @param Mat
-		 */
-		TransposedBlasMatrix ( Matrix& Mat ) :
-			_Mat(Mat)
-		{}
+        size_t getStride() const { return TransposeMatrix<Matrix>::_Mat.getStride();}
+        
+        ConstElement_ptr getPointer()      const { return TransposeMatrix<Matrix>::_Mat.getPointer();}
+        Element_ptr      getPointer()            { return TransposeMatrix<Matrix>::_Mat.getPointer();}
+        ConstElement_ptr getConstPointer() const { return TransposeMatrix<Matrix>::_Mat.getConstPointer();}
 
-		/*! NO DOC
-		*/
-		Matrix& getMatrix() const
-		{
-			return _Mat;
-		}
+        template <class Vector1, class Vector2>
+        Vector1&  apply (Vector1& y, const Vector2& x) const { return TransposeMatrix<Matrix>::_Mat.applyTranpose(y,x);}
 
-	protected:
-		Matrix& _Mat; //!< NO DOC
+        template <class Vector1, class Vector2>
+        Vector1&  applyTranpose (Vector1& y, const Vector2& x) const { return TransposeMatrix<Matrix>::_Mat.apply(y,x);}
+
+        void random() { TransposeMatrix<Matrix>::_Mat.random();}
+        template<typename RandIter>
+        void random(RandIter& G) { TransposeMatrix<Matrix>::_Mat.random(G);}
+
+        Matrix& getMatrix() const { return TransposeMatrix<Matrix>::_Mat;}
 	};
-
-	/*! TransposedBlasMatrix.
-	 * NO DOC
-	 */
-	template< class Matrix >
-	class TransposedBlasMatrix< TransposedBlasMatrix< Matrix > > : public Matrix {
-
-	public:
-		/*! TransposedBlasMatrix.
-		 * NO DOC
-		 */
-		TransposedBlasMatrix ( Matrix& Mat ) :
-			Matrix(Mat)
-		{}
-
-		/*! TransposedBlasMatrix.
-		 * NO DOC
-		 */
-		TransposedBlasMatrix ( const Matrix& Mat ) :
-			Matrix(Mat)
-		{}
-
-	};
-
-
+    
+     template <class T>
+    struct isTransposed {
+        static const auto value=FFLAS::FflasNoTrans;
+    };
+    template <class M>
+    struct isTransposed<TransposedBlasMatrix<M>> {
+        static const auto value=FFLAS::FflasTrans;
+    };
+    template <class M>
+    struct isTransposed<TransposedBlasMatrix<TransposedBlasMatrix<M>>> {
+        static const auto value=isTransposed<M>::value;
+    };
 }
+
+
+  
 
 #endif // __LINBOX_matrix_densematrix_blas_transposed_matrix_H
 

@@ -19,5 +19,10 @@
 # ========LICENCE========
 #/
 
-EXTRA_DIST = \
-	test.matrix
+EXTRA_DIST =       \
+	lowmat.sms \
+	mat.txt    \
+	mat2.txt   \
+	symmat.sms \
+	wikivote   \
+	zeromat.sms

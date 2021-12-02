@@ -1182,9 +1182,8 @@ namespace LinBox
 
 	// get the Matrix L
 	template <class Field>
-    template<class _Rep>
-	inline TriangularBlasMatrix<Field,_Rep>&
-	PLUQMatrix<Field>::getL( TriangularBlasMatrix<Field,_Rep>& L, bool _QLUP ) const
+	inline typename PLUQMatrix<Field>::TriangularMatrix&
+	PLUQMatrix<Field>::getL( typename PLUQMatrix<Field>::TriangularMatrix& L, bool _QLUP ) const
 	{
 
 		linbox_check( L.coldim() == _m);
@@ -1259,9 +1258,8 @@ namespace LinBox
 
 	// get the matrix U
 	template <class Field>
-		template<class _Rep>
-	inline TriangularBlasMatrix<Field,_Rep>&
-	PLUQMatrix<Field>::getU( TriangularBlasMatrix<Field,_Rep>& U ) const
+	inline  typename PLUQMatrix<Field>::TriangularMatrix&
+	PLUQMatrix<Field>::getU(  typename PLUQMatrix<Field>::TriangularMatrix& U ) const
 	{
 
 		linbox_check( U.rowdim() == _m);

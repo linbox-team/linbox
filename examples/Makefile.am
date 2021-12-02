@@ -19,35 +19,17 @@
 # ========LICENCE========
 #/
 
-# DEFAULT_INCLUDES=-I@includedir@
+AM_CPPFLAGS=-I$(top_srcdir) -DDISABLE_COMMENTATOR
+AM_CXXFLAGS=$(LINBOX_CXXFLAGS) $(FFLAS_FFPACK_CFLAGS) $(LINBOX_DEPS_CFLAGS)
+LDADD=$(top_builddir)/linbox/liblinbox.la $(LINBOX_DEPS_LIBS) $(FFLAS_FFPACK_LIBS) $(LINBOX_LDFLAGS)
 
-#  -DLinBoxSrcOnly
-DEFCPPFLAGS  = @DEFAULT_CFLAGS@   -DDISABLE_COMMENTATOR
-AM_CPPFLAGS = -I$(top_srcdir) $(DEFCPPFLAGS) $(DEPS_CFLAGS)
-AM_CPPFLAGS += $(OPTFLAGS) 
-LDADD = $(DEPS_LIBS) $(LDFLAGS)
-LDADD += $(top_builddir)/linbox/liblinbox.la
-LDADD += $(OPTLIBES)
-#  AM_LDFLAGS=-static
-
-#AM_LDFLAGS=-L@libdir@ -llinbox
-
-# if LINBOX_HAVE_OCL
-# AM_CPPFLAGS += $(OCL_CFLAGS)
-# LDADD += $(OCL_LIBS)
-# endif
-
-
-
-#EX_LDADD = $(NTL_LIBS)
-#LDADD = $(LINBOX_LIBS) $(EX_LDADD)
 
 #  SUBDIRS=fields solver data blackbox
 SUBDIRS=data
 
 EXAMPLES=rank det minpoly valence solve dot-product echelon sparseelimdet \
 sparseelimrank checksolve doubledet smithvalence charpoly blassolve solverat \
-sparsesolverat poweroftwo_ranks power_rank genprime smithsparse matrices
+ratdet sparsesolverat poweroftwo_ranks power_rank genprime smithsparse matrices
 #polysmith bench-fft bench-matpoly-mult
 # EXAMPLES+=nulp yabla 
 GIVARONTL_EXAMPLES=smith graph-charpoly
@@ -60,15 +42,13 @@ EXTRA_PROGRAMS= $(EXAMPLES) $(USE_GIVARONTL_EXAMPLES)
 
 CLEANFILES=$(EXTRA_PROGRAMS)
 
-EXTRA_DIST = examples.doxy test.sh
+EXTRA_DIST = examples.doxy matrices.h matrices.C
 #map-sparse.h map-sparse.inl
 
 examples:  ${EXTRA_PROGRAMS}
 
 dot_product_SOURCES    = dot-product.C
 doubledet_SOURCES      = doubledet.C
-#linbox_program_SOURCES = \
-#	linbox-program.C
 checksolve_SOURCES     = checksolve.C
 charpoly_SOURCES       = charpoly.C
 graph_charpoly_SOURCES = graph-charpoly.C
@@ -86,13 +66,13 @@ smithvalence_SOURCES   = smithvalence.C
 sparseelimdet_SOURCES  = sparseelimdet.C
 sparseelimrank_SOURCES = sparseelimrank.C
 solverat_SOURCES       = solverat.C
+ratdet_SOURCES       = ratdet.C
 sparsesolverat_SOURCES = sparsesolverat.C
 blassolve_SOURCES      = blassolve.C
 power_rank_SOURCES     = power_rank.C
 poweroftwo_ranks_SOURCES=poweroftwo_ranks.C
 #smithformlocal_SOURCES = smith-form-local.C
 #polysmith_SOURCES      = poly-smith.C
-#bench_fft_SOURCES       = bench-fft.C
 #bench_matpoly_mult_SOURCES = bench-matpoly-mult.C
 
 LINBOX=@prefix@

@@ -260,7 +260,7 @@ int main (int argc, char **argv)
 	report << "Done with diag and permutation products" << std::endl;
 #if 1
 	typedef DenseMatrix<Field> Matrix;
-	typedef TriangularBlasMatrix<Field> TriangularMatrix;
+	typedef TriangularBlasMatrix<Matrix> TriangularMatrix;
 	Matrix M(F, n, n); 
 	//M.random();
 	for (size_t i = 0; i < n; ++i)

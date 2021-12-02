@@ -17,9 +17,11 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 # ========LICENCE========
 
-
-
 pkgincludesubdir=$(pkgincludedir)/algorithms
+
+AM_CPPFLAGS=-I$(top_srcdir)
+AM_CXXFLAGS=$(LINBOX_CXXFLAGS) $(FFLAS_FFPACK_CFLAGS) $(LINBOX_DEPS_CFLAGS)
+LDADD=$(LINBOX_DEPS_LIBS) $(FFLAS_FFPACK_LIBS) $(LINBOX_LDFLAGS)
 
 SUBDIRS=dixon-solver gauss opencl-kernels matrix-blas3 polynomial-matrix
 #  IML
@@ -27,13 +29,6 @@ SUBDIRS=dixon-solver gauss opencl-kernels matrix-blas3 polynomial-matrix
 noinst_LTLIBRARIES=libalgorithms.la
 
 libalgorithms_la_SOURCES= diophantine-solver.C
-
-#  AM_CPPFLAGS= $(CBLAS_FLAG) $(GMP_CFLAGS) $(NTL_CFLAGS)
-
-AM_CPPFLAGS= -I$(top_srcdir) $(DEPS_CFLAGS) $(DEFAULT_CFLAGS)
-LDADD = $(DEPS_LIBS) $(LDFLAGS)
-
-#AM_CXXFLAGS = @DEFAULT_CFLAGS@ -DDISABLE_COMMENTATOR   $(NTL_CFLAGS) $(ATLAS_CFLAGS)  $(FPLLL_CFLAGS) $(OCL_CFLAGS) $(OMPFLAGS)
 
 OCL_HDRS =                                  \
     opencl-resource-controller.h            \

@@ -71,13 +71,17 @@ namespace LinBox {
     }
 
     template < class _Matrix >
-    BlasSubmatrix<_Matrix>::BlasSubmatrix (typename BlasSubmatrix<_Matrix>::matrixType &M):        
+    BlasSubmatrix<_Matrix>::BlasSubmatrix (_Matrix &M):        
         _ptr(M.getPointer()),
         _row (M.rowdim()),
         _col (M.coldim()),
 		_stride(M.getStride()),
         _field(M.field())
     {
+        //std::cout<<"BlasSubMatrix @# constructor: "<<getPointer()<<" ="<<M.getPointer()<<"--->"<<&M<<std::endl;
+        //std::cout<<M<<std::endl;
+        //std::cout<<*this<<std::endl;
+
     }
     template < class _Matrix >
     BlasSubmatrix<_Matrix>::BlasSubmatrix (const typename BlasSubmatrix<_Matrix>::Field& F,
@@ -93,8 +97,61 @@ namespace LinBox {
     {
     }
 
-  
+     template < class _Matrix >
+     BlasSubmatrix<_Matrix>::BlasSubmatrix(const constSubMatrixType &M) :
+         _ptr(M.getPointer()),
+         _row (M.rowdim()),
+         _col(M.coldim()),
+         _stride(M.getStride()),
+         _field(M.field())
+     {
+         //std::cout<<"BlasSubMatrix Copy constructor: "<<getPointer()<<" ="<<M.getPointer()<<"--->"<<&M<<std::endl;
+         // std::cout<<M<<std::endl;
+         // std::cout<<*this<<std::endl;
+     }
+    
+    template < class _Matrix >
+    BlasSubmatrix<_Matrix>::BlasSubmatrix(nonconstSubMatrixType &M) :
+        _ptr(M.getPointer()),
+        _row (M.rowdim()),
+        _col(M.coldim()),
+        _stride(M.getStride()),
+        _field(M.field())
+    {
+        //std::cout<<"BlasSubMatrix Copy constructor 2: "<<getPointer()<<" ="<<M.getPointer()<<"--->"<<&M<<std::endl;
+        // std::cout<<M<<std::endl;
+        // std::cout<<*this<<std::endl;
+    }
 
+    template < class _Matrix >
+    BlasSubmatrix<_Matrix>::BlasSubmatrix(const nonconstSubMatrixType &M) :
+        _ptr(M.getPointer()),
+        _row (M.rowdim()),
+        _col(M.coldim()),
+        _stride(M.getStride()),
+        _field(M.field())
+    {
+        //std::cout<<"BlasSubMatrix Copy constructor 3: "<<getPointer()<<" ="<<M.getPointer()<<"--->"<<&M<<std::endl;
+        // std::cout<<M<<std::endl;
+        // std::cout<<*this<<std::endl;
+    }
+    
+    
+    template < class _Matrix >
+    BlasSubmatrix<_Matrix>& BlasSubmatrix<_Matrix>::copy (const BlasSubmatrix<_Matrix> & M){
+        //std::cout<<"BlasSubMatrix Copy Method\n";
+        if (_row == M.rowdim() && _col == M.coldim()){
+            // for (size_t i=0;i<_row;i++)
+            //     for(size_t j=0;j<_col;j++)
+            //         setEntry(i,j,M.getEntry(i,j));
+            FFLAS::fassign(_field, _row, _col, M._ptr, M._stride , _ptr, _stride); 
+        }
+        else
+            throw LinBoxError("Calling copy from BlasSubMatrix with matrices of different dimension ... not allowed");
+        return *this;
+    }
+    
+    
     //////////////////
     //   ELEMENTS   //
     //////////////////
@@ -168,9 +225,9 @@ namespace LinBox {
                     for (pe = p->begin (); pe != p->end (); ++pe) {
                         os.width (wid);
                         field().write (os, *pe);
-                        os << " ";
+                        os << ' ';
                     }
-                    os << "]" << std::endl;
+                    os << ']' << std::endl;
                     }
                 }
                 else {
@@ -180,29 +237,55 @@ namespace LinBox {
                 }
             }
             break;
+        case (Tag::FileFormat::Pretty) : /* pretty is close to Maple */
         case (Tag::FileFormat::Maple) : /*  maple format */
             {
-
-                os << "Matrix( " << rowdim() << ',' << coldim() << ",\n[" ;
+                const bool isMaple(f == Tag::FileFormat::Maple ? true:false);
+                if (isMaple) 
+                    os << "Matrix( " << rowdim() << ',' << coldim() << ",\n[" ;
                 for (p = rowBegin (); p != rowEnd (); ) {
                     typename ConstRow::const_iterator pe;
-                    if (p!=rowBegin()) os << ' ';
+                    if ( (!isMaple) || (p!=rowBegin())) os << ' ';
                     os << "[ ";
                         
                     for (pe = p->begin (); pe != p->end (); ) {
                         field().write (os, *pe);
                         ++pe ;
-                        if (pe != p->end())
-                            os << ", ";
+                        if (pe != p->end()) {
+                            if (isMaple)
+                                os << ',';
+                            os << ' ';
+                        }
                     }
 
                     os << "]" ;
                     ++p ;
-                    if (p != rowEnd() )
-                        os << ',' << std::endl;;
+                    if (p != rowEnd() ) {
+                        if (isMaple)
+                            os << ',';
+                        os << '\n';
+                    }
 
                 }
-                os << "])" ;
+                if (isMaple)
+                    os << "])" ;
+            }
+            break;
+        case (Tag::FileFormat::Guillaume) : /*  sms format */
+            {
+
+                os << rowdim() << ' ' << coldim() << " M\n" ;
+                size_t i(0);
+                for (p = rowBegin (); p != rowEnd (); ++i,++p) {
+                    typename ConstRow::const_iterator pe;
+                    size_t j(0);
+                    for (pe = p->begin (); pe != p->end (); ++j,++pe) {
+                        if ( !(field().isZero(*pe))) {
+                            field().write (os << (i+1) << ' ' << (j+1) << ' ', *pe) << '\n';
+                        }
+                    }
+                }
+                os << "0 0 0" ;
             }
             break;
         case (Tag::FileFormat::HTML) : /*  HTML format */
@@ -425,6 +508,8 @@ namespace LinBox {
 	};
 
 
+
+   
 	template <class _Matrix>
 	template<typename _Tp1, typename _Rep2>
 	struct BlasSubmatrix< _Matrix>::rebind {
