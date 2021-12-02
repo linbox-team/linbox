@@ -45,7 +45,7 @@ struct FixPrime {
     const Prime_Type & randomPrime() const { return _myprime; }
     void setBits(uint64_t bits) {}
     template<class _ModField> void setBitsField() { }
-};    
+};
 
 
 int main (int argc, char **argv) {
@@ -59,7 +59,7 @@ int main (int argc, char **argv) {
     std::ifstream input (argv[1]);
     if (!input) { std::cerr << "Error opening matrix file " << argv[1] << std::endl; return -1; }
 
-    
+
     std::ifstream invect;
     bool createB = false;
     if (argc == 2) {
@@ -67,64 +67,63 @@ int main (int argc, char **argv) {
     }
     if (argc == 3) {
         invect.open (argv[2], std::ifstream::in);
-        if (!invect) { 
+        if (!invect) {
             createB = true;
         } else {
             createB = false;
         }
-    }       
-    
+    }
+
         // Read Integral matrix from File
     Ints ZZ;
     MatrixStream< Ints > ms( ZZ, input );
     DenseMatrix<Ints> A (ms);
     Ints::Element d;
     std::cout << "A is " << A.rowdim() << " by " << A.coldim() << std::endl;
-    
+
     {
             // Print Matrix
-        
+
             // Matrix Market
             // std::cout << "A is " << A << std::endl;
-        
+
             // Maple
         if ( (A.rowdim() < 100) && (A.coldim() < 100) )
             A.write(std::cout << "Pretty A is ", Tag::FileFormat::Maple) << std::endl;
     }
-    
+
         // Vectors
-    ZVector X(ZZ, A.coldim()),B(ZZ, A.rowdim());
-    
+    ZVector X(ZZ, A.coldim()),U(ZZ, A.coldim()),B(ZZ, A.rowdim());
+
     if (createB) {
-        std::cerr << "Creating a random {-1,1} vector " << std::endl;
+        std::cerr << "Creating a random consistant {-1,1} vector " << std::endl;
         srand48( BaseTimer::seed() );
-        for(ZVector::iterator it=B.begin();
-            it != B.end(); ++it)
+        for(auto& it:U)
             if (drand48() <0.5)
-                *it = -1;
+                it = -1;
             else
-                *it = 1;
+                it = 1;
+        A.apply(B,U);
     } else {
         for(ZVector::iterator it=B.begin();
             it != B.end(); ++it)
             invect >> *it;
     }
-    
+
     {
             // Print RHS
-        
+
         std::cout << "B is [";
         for(auto it:B) ZZ.write(std::cout, it) << " ";
         std::cout << "]" << std::endl;
     }
-    
+
     std::cout << "B is " << B.size() << "x1" << std::endl;
-    
-    Timer chrono; 
+
+    Timer chrono;
 
         // BlasElimination
     Method::DenseElimination M;
-    M.singularity = Singularity::NonSingular;
 
         //====================================================
         // BEGIN Replacement solve with fixed prime
@@ -138,19 +137,14 @@ int main (int argc, char **argv) {
     DixonSolver<Ints, Field, FixPrime, Method::DenseElimination> rsolve(A.field(), fixedprime);
     std::cout << "Using: " << *fixedprime << " as the fixed p-adic." << std::endl;
 
-
     chrono.start();
     rsolve.solve(X, d, A, B, false,(int)m.trialsBeforeFailure);
-
-        // END Replacement solve with fixed prime
-        //====================================================
-//     solve (X, d, A, B, M);
     chrono.stop();
 
     std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
-    
+
     {
-            // Solution size 
+            // Solution size
 
         std::cout<<"Reduced solution: \n";
         size_t maxbits=0;
@@ -158,10 +152,10 @@ int main (int argc, char **argv) {
             maxbits=(maxbits > X[i].bitsize() ? maxbits: X[i].bitsize());
         }
         std::cout<<" numerators of size   "<<maxbits<<" bits" << std::endl
-                 <<" denominators hold over "<<d.bitsize()<<" bits\n";	
+                 <<" denominators hold over "<<d.bitsize()<<" bits\n";
     }
-    
-    
+
+
     {
 			// Check Solution
 
@@ -176,16 +170,16 @@ int main (int argc, char **argv) {
         else
             std::cout << "Ax=d.b : No" << std::endl;
     }
-    
+
     {
             // Print Solution
-        
+
         std::cout << "(DenseElimination) Solution is [";
         for(auto it:X) ZZ.write(std::cout, it) << " ";
         std::cout << "] / ";
-        ZZ.write(std::cout, d)<< std::endl;		
+        ZZ.write(std::cout, d)<< std::endl;
     }
-    
+
     return 0;
 }
 
