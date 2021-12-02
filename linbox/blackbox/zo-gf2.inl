@@ -375,12 +375,22 @@ namespace LinBox
 
 	inline ZeroOne<GF2>::IndexedIterator ZeroOne<GF2>::indexBegin()
 	{
-		return ZeroOne<GF2>::IndexedIterator(0, this->begin(), this->end(), this->front().front(), this->front().begin() );
+        size_t i=0;
+        for(auto & nzrow(this->begin()); nzrow != this->end(); ++nzrow,++i) {
+            if (nzrow->size()>0)
+                return ZeroOne<GF2>::IndexedIterator(i, this->begin(), this->end(), nzrow.front(), nzrow->begin() );
+        }
+        return this->indexEnd();
 	}
 
 	inline const ZeroOne<GF2>::IndexedIterator ZeroOne<GF2>::indexBegin() const
 	{
-		return ZeroOne<GF2>::IndexedIterator(0, this->begin(), this->end(), this->front().front(), this->front().begin() );
+        size_t i=0;
+        for(auto & nzrow(this->begin()); nzrow != this->end(); ++nzrow,++i) {
+            if (nzrow->size()>0)
+                return ZeroOne<GF2>::IndexedIterator(i, this->begin(), this->end(), nzrow.front(), nzrow->begin() );
+        }
+        return this->indexEnd();
 	}
 
 	inline ZeroOne<GF2>::IndexedIterator ZeroOne<GF2>::indexEnd()
