@@ -54,6 +54,7 @@
 
 
 #include "linbox/integer.h"
+#include "ntl-zz.h"
 
 namespace Givaro
 {
@@ -322,7 +323,7 @@ namespace LinBox
 		 * Returns the modulus of the field, which should be prime.
 		 * @return integer representing cardinality of the field
 		 */
-		integer& cardinality(integer& c) const
+		template <typename Residu_t> Residu_t &cardinality(Residu_t& c) const
 		{
 			return characteristic(c);
 		}
@@ -478,13 +479,14 @@ namespace LinBox
 		integer _size;
         uint64_t _seed;
         const NTL_ZZ_p & _ring;
+
 	public:
         typedef NTL::ZZ_p Element;
-        typedef Element::rep_type Residu_t;
+        typedef integer Residu_t;
 
 		UnparametricRandIter<NTL::ZZ_p> (const NTL_ZZ_p & F,
-						 const integer& size = 0,
-						 const uint64_t seed = 0) :
+						 const uint64_t seed = 0,
+						 const Residu_t& size = 0) :
                 _size(size), _seed(seed), _ring(F)
 		{
 			if (_seed == 0) _seed = uint64_t(time(NULL));
@@ -523,7 +525,7 @@ namespace LinBox
 				return x = NTL::random_ZZ_p();
 			}
 			else {
-				return x = NTL::to_ZZ_p(NTL::RandomBnd(static_cast<int32_t>(_size)));
+				return x = NTL::to_ZZ_p(NTL::RandomBnd(Caster<NTL::ZZ,Residu_t>(_size)));
 			}
 		}
 
