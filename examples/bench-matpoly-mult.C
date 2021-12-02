@@ -90,9 +90,9 @@ using namespace LinBox;
 
 template <typename Rand, typename Vect>
 void randomVect (Rand& r, Vect& v) {
-	size_t s = v.size();				   
+	size_t s = v.size();
 	for (size_t i = 0; i < s; ++i)
-		r.random(v[i]); 
+		r.random(v[i]);
 }
 
 template <typename Rand, typename Mat>
@@ -151,7 +151,7 @@ void check_matpol_mul(const Field& fld,  RandIter& Gen, size_t n, size_t d) {
 
 	// product m*n n*m
 	size_t m=n;
-	
+
 	PMatrix A(fld,m,n,d),B(fld,n,m,d),C(fld,m,m,2*d-1);
 	MatrixP AA(fld,m,n,d),BB(fld,n,m,d),CC(fld,m,m,2*d-1);
 	// Generate random matrix of polynomial
@@ -167,7 +167,7 @@ void check_matpol_mul(const Field& fld,  RandIter& Gen, size_t n, size_t d) {
 	Naive NMD(fld);
 	Kara PMKD(fld);
 	FFT  PMFFT(fld);
-	
+
 	// compute the correct result
 	for (size_t r=0;r<m;r++)
 		for (size_t c=0;c<m;c++)
@@ -185,7 +185,7 @@ void check_matpol_mul(const Field& fld,  RandIter& Gen, size_t n, size_t d) {
 	AA.copy(A);
 	BB.copy(B);
 	CC.copy(C);
-	
+
 	// check fft
 	MATPOLMUL_sanity_check(PMFFT,CC,AA,BB, "FFT Multiplication");
 
@@ -291,8 +291,8 @@ void bench_matpol_mul(const Field& fld,  RandIter& Gen, size_t n, size_t d) {
 	chrono.stop();
 	cout<<"FLINT Multiplication E/I: "<<chrono.usertime()<<" s"<<endl;
 #endif
-	
-	
+
+
 	cout<<endl;
 }
 
@@ -328,7 +328,7 @@ void profile_matpol_mulfft(const Field& fld,  RandIter& Gen, size_t n, size_t d)
 	//cout<<chrono.realElapsedTime()/count<<") ";
 	//cout<<chrono.gettime()/count<<" ";
 	cout<<chrono<<" ";
-	
+
 #ifdef BENCH_FLINT
 	nmod_poly_mat_t AA,BB,CC;
 	nmod_poly_mat_init(AA,n,n,(uint64_t)fld.cardinality());
@@ -350,7 +350,7 @@ void profile_matpol_mulfft(const Field& fld,  RandIter& Gen, size_t n, size_t d)
 	//    <<costFFT/(1e6*chrono.userElapsedTime())<<" Miops"<<endl;
 
 #endif
-	
+
 #ifdef BENCH_MMX
 	{
 		mmx::threads_set_number (1);
@@ -430,7 +430,7 @@ void profile_matpol_mul(const Field& fld,  RandIter& Gen, size_t n, size_t d) {
 	}
 	for (size_t i=0;i<n*k;i++)
 		randomVect(Gen,B(i));
-	
+
 	typedef PolynomialMatrixDomain<Field>    PolMatDom;
 	PolMatDom  PMD(fld);
 	Timer chrono;
@@ -443,7 +443,7 @@ void profile_matpol_mul(const Field& fld,  RandIter& Gen, size_t n, size_t d) {
 template<typename Field>
 void runTest(const Field& F, size_t n, long b, long d, long seed, std::string test){
 	typename Field::RandIter G(F,b,seed);
-	//typename Field::RandIter G(F,seed);	
+	//typename Field::RandIter G(F,seed);
 	if (test == "check"|| test == "all")
 		check_matpol_mul(F,G,n,d);
 	if (test == "bench" || test == "all")
@@ -460,7 +460,7 @@ void runTest(const Field& F, size_t n, long b, long d, long seed, std::string te
 		profile_matpol_mulkara(F,G,n,d);
 	if (test == "mul")
 		profile_matpol_mul(F,G,n,d);
-	
+
 }
 
 int main(int argc, char** argv){
@@ -486,7 +486,7 @@ int main(int argc, char** argv){
 
 	if (z){
 #ifdef FFT_PROFILER
-		FFT_PROF_LEVEL=2;		
+		FFT_PROF_LEVEL=2;
 #endif
 		cout<<"Computation over Z[x]  "<<endl;
 		cout<<"++++++++++++++++++++++++++++++++++++"<<endl;
@@ -495,20 +495,20 @@ int main(int argc, char** argv){
 	}
 	else {
 		if (b > 29){
-#ifdef FFT_PROFILER		
+#ifdef FFT_PROFILER
 			FFT_PROF_LEVEL=2;
 #endif
 			PrimeIterator<IteratorCategories::HeuristicTag> Rd(b,seed);
 			integer p= *Rd;
-			Givaro::Modular<integer> F(p);			
+			Givaro::Modular<integer> F(p);
 			//Givaro::Modular<RecInt::ruint128,RecInt::ruint256> F(p);
 			cout<<"Computation over Fp[x] with p=  "<<p<<" (Generic prime)"<<endl;
 			cout<<"++++++++++++++++++++++++++++++++++++"<<endl;
 			runTest (F,n,b,d,seed,test);
 		}
 		else {
-#ifdef FFT_PROFILER 
-			FFT_PROF_LEVEL=1; 
+#ifdef FFT_PROFILER
+			FFT_PROF_LEVEL=1;
 #endif
 			if (fourier){
 				integer p;
@@ -533,8 +533,8 @@ int main(int argc, char** argv){
 			}
 		}
 	}
-	return 0; 
-} 
+	return 0;
+}
 
 // Local Variables:
 // mode: C++
