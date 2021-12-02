@@ -155,7 +155,9 @@ namespace LinBox
          */
         BlasSubmatrix(const constSubMatrixType &M);
         BlasSubmatrix(nonconstSubMatrixType &M);
-        // BlasSubmatrix(const nonconstSubMatrixType &M); // not needed
+        BlasSubmatrix(const nonconstSubMatrixType &M); 
+
+        /*  
         BlasSubmatrix(Self_t && M) :
             _ptr(M.getPointer()),
             _row (M.rowdim()),
@@ -167,10 +169,16 @@ namespace LinBox
             M._ptr=nullptr;
             _row=0;_col=0;_stride=0;
         }
-        
+        */
+
+         /** Move constructor / Move operator 
+         */
+        BlasSubmatrix(Self_t &&M)=default;
+        Self_t& operator=(Self_t&& M)=default;
         
         //! (copying data) -> works only if dimensions are the same
-        Self_t& copy (const Self_t& M) ;
+        template<class _AnyMatrix>
+        Self_t& copy (const _AnyMatrix& A);
 
         Self_t& operator=(const Self_t& M)=delete;
         // {
