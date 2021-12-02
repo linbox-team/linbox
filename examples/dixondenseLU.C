@@ -30,6 +30,8 @@
 #include "linbox/solutions/solve.h"
 #include "linbox/util/matrix-stream.h"
 #include "linbox/solutions/methods.h"
+#include "linbox/util/args-parser.h"
+#include "linbox/algorithms/rational-solver.h"
 
 using namespace LinBox;
 typedef Givaro::ZRing<Givaro::Integer> Ints;
@@ -49,28 +51,38 @@ struct FixPrime {
 
 
 int main (int argc, char **argv) {
-        // Usage
-    if (argc < 2 || argc > 4) {
-        std::cerr << "Usage: solve <matrix-file-in-supported-format> [<dense-vector-file>]" << std::endl;
-        return 0;
-    }
 
-        // File
-    std::ifstream input (argv[1]);
+    // TODO : seed ?
+    std::string matrix_file = "";
+    std::string vector_file = "";
+    bool inv = false;
+    bool pp = false;
+
+    Argument as[] = {
+        { 'm', "-m FILE", "Set the input file for the matrix.",  TYPE_STR , &matrix_file },
+        { 'v', "-v FILE", "Set the input file for the vector.",  TYPE_STR , &vector_file },
+        { 'i', "-i"     , "whether the matrix is invertible.",  TYPE_BOOL , &inv },
+        { 'p', "-p"     , "whether you want to pretty print the matrix.",  TYPE_BOOL , &pp },
+        END_OF_ARGUMENTS
+    };
+
+    FFLAS::parseArguments(argc,argv,as);
+
+    // Matrix File
+    if (matrix_file.empty()) {
+        std::cerr << "You must specify an input file for the matrix with -m" << std::endl;
+        exit(-1);
+    }
+    std::ifstream input (matrix_file);
     if (!input) { std::cerr << "Error opening matrix file " << argv[1] << std::endl; return -1; }
 
-
+    // Vector File 
     std::ifstream invect;
-    bool createB = false;
-    if (argc == 2) {
-        createB = true;
-    }
-    if (argc == 3) {
-        invect.open (argv[2], std::ifstream::in);
+    bool createB = vector_file.empty();
+    if (!createB) {
+        invect.open (vector_file, std::ifstream::in);
         if (!invect) {
             createB = true;
-        } else {
-            createB = false;
         }
     }
 
@@ -81,6 +93,7 @@ int main (int argc, char **argv) {
     Ints::Element d;
     std::cout << "A is " << A.rowdim() << " by " << A.coldim() << std::endl;
 
+    if (pp)
     {
             // Print Matrix
 
@@ -88,36 +101,45 @@ int main (int argc, char **argv) {
             // std::cout << "A is " << A << std::endl;
 
             // Maple
-        if ( (A.rowdim() < 100) && (A.coldim() < 100) )
-            A.write(std::cout << "Pretty A is ", Tag::FileFormat::Maple) << std::endl;
+        A.write(std::cout << "A:=", Tag::FileFormat::Maple) << ';' << std::endl;
     }
 
         // Vectors
     ZVector X(ZZ, A.coldim()),U(ZZ, A.coldim()),B(ZZ, A.rowdim());
 
     if (createB) {
-        std::cerr << "Creating a random consistant {-1,1} vector " << std::endl;
-        srand48( BaseTimer::seed() );
-        for(auto& it:U)
-            if (drand48() <0.5)
-                it = -1;
-            else
-                it = 1;
-        A.apply(B,U);
+        if (inv) {
+            std::cerr << "Creating a random {-1,1} vector " << std::endl;
+            srand48( BaseTimer::seed() );
+            for(auto& it:B)
+                if (drand48() <0.5)
+                    it = -1;
+                else
+                    it = 1;
+        } else {
+            std::cerr << "Creating a random consistant {-1,1} vector " << std::endl;
+            srand48( BaseTimer::seed() );
+            for(auto& it:U)
+                if (drand48() <0.5)
+                    it = -1;
+                else
+                    it = 1;
+            
+            // B = A U
+            A.apply(B,U);
+        }
     } else {
         for(ZVector::iterator it=B.begin();
             it != B.end(); ++it)
             invect >> *it;
     }
 
+    if(pp)
     {
             // Print RHS
-
-        std::cout << "B is [";
-        for(auto it:B) ZZ.write(std::cout, it) << " ";
-        std::cout << "]" << std::endl;
+        B.write(std::cout << "B:=", Tag::FileFormat::Maple) << ';' << std::endl;
     }
-
+    
     std::cout << "B is " << B.size() << "x1" << std::endl;
 
     Timer chrono;
@@ -138,7 +160,26 @@ int main (int argc, char **argv) {
     std::cout << "Using: " << *fixedprime << " as the fixed p-adic." << std::endl;
 
     chrono.start();
-    rsolve.solve(X, d, A, B, false,(int)m.trialsBeforeFailure);
+    if (inv)
+    {
+        SolverReturnStatus ss = rsolve.solveNonsingular(X, d, A, B, false,(int)m.trialsBeforeFailure);
+        if (ss != SS_OK) {
+            std::cerr << "Error during solveNonsingular (possibly singular matrix or p-adic precision too small)" << std::endl;
+            exit(-1);
+        }
+    }
+    else
+    {
+        SolverReturnStatus ss = rsolve.solve(X, d, A, B, false,(int)m.trialsBeforeFailure);
+        if (ss == SS_FAILED){
+            std::cerr << "Error during solve (all primes used were bad)" << std::endl;
+            exit(-1);
+        }
+        if (ss == SS_INCONSISTENT){
+            std::cerr << "Error: system appeared inconsistent" << std::endl;
+            exit(-1);
+        }
+    }
     chrono.stop();
 
     std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;

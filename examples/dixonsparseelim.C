@@ -31,6 +31,7 @@
 #include "linbox/solutions/solve.h"
 #include "linbox/util/matrix-stream.h"
 #include "linbox/solutions/methods.h"
+#include "linbox/util/error.h"
 
 using namespace LinBox;
 typedef Givaro::ZRing<Givaro::Integer> Ints;
@@ -95,7 +96,9 @@ int main (int argc, char **argv) {
     
         // Vectors
     ZVector X(ZZ, A.coldim()),B(ZZ, A.rowdim());
+    ZVector U(ZZ, A.coldim());
     
+    // B = A U
     if (createB) {
         std::cerr << "Creating a random {-1,1} vector " << std::endl;
         srand48( BaseTimer::seed() );
@@ -105,6 +108,8 @@ int main (int argc, char **argv) {
                 *it = -1;
             else
                 *it = 1;
+        
+        A.apply(B, U);
     } else {
         for(ZVector::iterator it=B.begin();
             it != B.end(); ++it)
@@ -141,7 +146,16 @@ int main (int argc, char **argv) {
 
 
     chrono.start();
-    rsolve.solve(X, d, A, B);
+    try
+    {
+        rsolve.solve(X, d, A, B);
+    } 
+    catch(LinboxError& e)
+    {
+        std::cerr << e << '\n';
+        return -1;
+    }
+    
 
         // END Replacement solve with fixed prime
         //====================================================
