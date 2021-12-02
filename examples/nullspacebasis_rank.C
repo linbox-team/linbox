@@ -37,7 +37,7 @@ using namespace LinBox;
 
 int main (int argc, char **argv)
 {
-  if ( argc <  2 || argc > 4) {
+  if ( argc < 3 || argc > 4) {
     std::cerr << "Usage to get a random null space basis over GF(p,k):  <matrix-file-in-SMS-format> p [k]" << std::endl;
     return -1;
   }

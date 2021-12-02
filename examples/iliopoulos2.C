@@ -56,7 +56,7 @@ IliopoulosDom ID(Z);
 void printMatrix(Matrix &A) {
 	size_t m = A.rowdim();
 	size_t n = A.coldim();
-	
+
 	std::cout << "matrix(ZZ, " << m << "," << n << ", [" << std::endl;
 	for (size_t i = 0; i < m; i++) {
 		Element tmp;
@@ -71,12 +71,12 @@ void printMatrix(Matrix &A) {
 
 void randomL(Matrix &L) {
 	size_t n = L.rowdim();
-	
+
 	RDM.random(L);
-	
+
 	for (size_t i = 0; i < n; i++) {
 		L.setEntry(i, i, Z.one);
-		
+
 		for (size_t j = i+1; j < n; j++) {
 			L.setEntry(i, j, Z.zero);
 		}
@@ -85,12 +85,12 @@ void randomL(Matrix &L) {
 
 void randomU(Matrix &U) {
 	size_t n = U.rowdim();
-	
+
 	RDM.random(U);
-	
+
 	for (size_t i = 0; i < n; i++) {
 		U.setEntry(i, i, Z.one);
-		
+
 		for (size_t j = 0; j < i; j++) {
 			U.setEntry(i, j, Z.zero);
 		}
@@ -100,37 +100,37 @@ void randomU(Matrix &U) {
 int main(int argc, char** argv)
 {
 	Matrix A(Z, 4, 4);
-	
+
 	//RDM.random(A);
 	A.setEntry(0,0,Integer(2));
 	A.setEntry(1,1,Integer(6));
 	A.setEntry(2,2,Integer(12));
 	printMatrix(A);
-	
+
 	Matrix L1(Z, 4, 4);
 	randomL(L1);
-	
+
 	Matrix U1(Z, 4, 4);
 	randomU(U1);
-	
+
 	Matrix L2(Z, 4, 4);
 	randomL(L2);
-	
+
 	Matrix U2(Z, 4, 4);
 	randomU(U2);
-	
+
 	Matrix B(Z, 4, 4);
-	
+
 	MD.mul(B, U1, A);
 	MD.leftMulin(B, L1);
 	MD.rightMulin(B, U2);
 	MD.rightMulin(B, L2);
-	
+
 	printMatrix(B);
-	
+
 	ID.smithFormIn(B, Integer(2 * 6 * 12));
 	printMatrix(B);
-	
+
 	return 0;
 }
 

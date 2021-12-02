@@ -43,6 +43,7 @@
 
 #include "linbox/ring/modular.h"
 #include "linbox/matrix/sparse-matrix.h"
+#include "linbox/matrix/sparsematrix/sparse-tpl-matrix-omp.h"
 // #include "linbox/blackbox/triplesbb-omp.h"
 // #include "linbox/blackbox/triplesbb.h"
 #include "linbox/matrix/sparsematrix/sparse-tpl-matrix-omp.h"

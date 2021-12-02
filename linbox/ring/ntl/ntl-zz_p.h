@@ -478,13 +478,14 @@ namespace LinBox
 		integer _size;
         uint64_t _seed;
         const NTL_ZZ_p & _ring;
+
 	public:
         typedef NTL::ZZ_p Element;
         typedef Element::rep_type Residu_t;
 
 		UnparametricRandIter<NTL::ZZ_p> (const NTL_ZZ_p & F,
-						 const integer& size = 0,
-						 const uint64_t seed = 0) :
+						 const uint64_t seed = 0,
+						 const Residu_t& size = 0) :
                 _size(size), _seed(seed), _ring(F)
 		{
 			if (_seed == 0) _seed = uint64_t(time(NULL));

@@ -338,11 +338,12 @@ namespace LinBox
 	public:
 		typedef NTL::zz_p Element;
         typedef Element::rep_type Residu_t;
+
             /// Constructor for random field element generator
 
 		UnparametricRandIter<NTL::zz_p> (const NTL_zz_p & F,
-                                         const integer& size=0,
-                                         const uint64_t seed=0) :
+                                         const uint64_t seed=0,
+                                         const Residu_t& size=0) :
                 _size(size), _seed(seed), _ring(F)
             {
                 if (_seed == 0) _seed = time(NULL);
