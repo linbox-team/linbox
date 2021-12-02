@@ -34,13 +34,6 @@
 #include "linbox/integer.h"
 #include "linbox/linbox-config.h"
 
-#ifdef __LINBOX_XMLENABLED
-
-#include "linbox/util/xml/linbox-reader.h"
-#include "linbox/util/xml/linbox-writer.h"
-
-#endif
-
 #include <givaro/ring-interface.h>
 
 namespace LinBox
@@ -459,7 +452,8 @@ namespace LinBox
 					 const Element &x) const = 0;
 
 		//@} Inplace Arithmetic Operations
-#ifndef __LINBOX_XMLENABLED
+
+
 		/** @name Input/Output Operations */
 		//@{
 
@@ -491,14 +485,6 @@ namespace LinBox
 		virtual std::istream &read (std::istream &is, Element &x) const = 0;
 
 		//@}
-#else
-		virtual std::ostream &write(std::ostream &os) const = 0;
-		virtual bool toTag(Writer &W) const = 0;
-		virtual std::ostream &write(std::ostream &os, const Element &e) const = 0;
-		virtual bool toTag(Writer &W, const Element &e) const = 0;
-		virtual std::istream &read(std::istream &is, Element &e) const = 0;
-		virtual bool fromTag(Reader &R, Element &e) const = 0;
-#endif
 #endif
 	    protected:
 

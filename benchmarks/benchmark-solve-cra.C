@@ -138,7 +138,8 @@ int main(int argc, char** argv)
     bool ok = true;
     for (size_t j = 0u; loop | (j < niter); j++) {
         if (communicator.master()) {
-            Ring::RandIter randIter(ZZ, seed, bits);
+            Ring::RandIter randIter(ZZ, seed);
+            randIter.setBitsize(bits);
             genData(ZZ, randIter, A, b);
         }
 
