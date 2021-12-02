@@ -45,6 +45,7 @@
 using namespace LinBox;
 
 using Ints = Givaro::ZRing<Givaro::Integer>;
+using Mods = Givaro::Modular<double>;
 using VectorFractionInts = VectorFraction<Ints>;
 
 namespace {
@@ -71,11 +72,10 @@ namespace {
     }
 }
 
-template <typename Field, typename Vector = DenseVector<Field>>
-void benchmark(std::array<double, 3>& timebits, Arguments& args, MethodBase& method)
+template <typename Field, typename Vector>
+void benchmark(typename Field::RandIter &randIter, std::array<double, 3>& timebits, Arguments& args, MethodBase& method)
 {
-    Field F(args.q); // q is ignored for Integers
-    typename Field::RandIter randIter(F, args.seed, args.bits); // bits is ignored for ModularRandIter
+    const Field &F = randIter.ring();
 
 #ifdef _BENCHMARKS_DEBUG_
     std::clog << "Setting A ... " << std::endl;
@@ -174,15 +174,22 @@ int main(int argc, char** argv)
     bool isModular = false;
     if (args.q > 0) isModular = true;
 
+    // create the two rings, although only one will be used
+    Mods Fq(args.q);
+    Mods::RandIter randIterFq(Fq, args.seed);
+
+    Ints ZZ;
+    Ints::RandIter randIterZZ(ZZ, args.seed);
+    randIterZZ.setBits(args.bits);
+
     using Timing = std::array<double, 3>;
     std::vector<Timing> timebits(args.nbiter);
     for (int iter = 0; iter < args.nbiter; ++iter) {
         if (isModular) {
-            benchmark<Givaro::Modular<double>>(timebits[iter], args, method);
-            // benchmark<Givaro::ModularBalanced<double>>(timebits[iter],n,q,bits,p);
+            benchmark<Mods, DenseVector<Mods>>(randIterFq, timebits[iter], args, method);
         }
         else {
-            benchmark<Ints, VectorFractionInts>(timebits[iter], args, method);
+            benchmark<Ints, VectorFractionInts>(randIterZZ, timebits[iter], args, method);
         }
     }
 
