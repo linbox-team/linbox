@@ -92,7 +92,7 @@ namespace LinBox
 	{
 		typedef typename Blackbox::Field Field;
 		typename Field::RandIter i (A.field());
-		size_t            deg;
+		size_t            seqrank;
 
 		commentator().start ("Wiedemann Minimal polynomial", "minpoly");
 
@@ -103,21 +103,21 @@ namespace LinBox
 			BlackboxContainer<Field, Squarize<Blackbox> > TF (&B, A.field(), i);
 			MasseyDomain< Field, BlackboxContainer<Field, Squarize<Blackbox> > > WD (&TF, M.earlyTerminationThreshold);
 
-			WD.minpoly (P, deg);
+			WD.minpoly (P, seqrank);
 		}
 		else if (M.shapeFlags == Shape::Symmetric) {
 			typedef BlackboxContainerSymmetric<Field, Blackbox> BBContainerSym;
 			BBContainerSym TF (&A, A.field(), i);
 			MasseyDomain< Field, BBContainerSym > WD (&TF, M.earlyTerminationThreshold);
 
-			WD.minpoly (P, deg);
+			WD.minpoly (P, seqrank);
 		}
 		else {
 			typedef BlackboxContainer<Field, Blackbox> BBContainer;
 			BBContainer TF (&A, A.field(), i);
 			MasseyDomain< Field, BBContainer > WD (&TF, M.earlyTerminationThreshold);
 
-			WD.minpoly (P, deg);
+			WD.minpoly (P, seqrank);
 #ifdef INCLUDE_TIMING
 			commentator().report (Commentator::LEVEL_IMPORTANT, TIMING_MEASURE)
 			<< "Time required for applies:      " << TF.applyTime () << std::endl;
@@ -129,16 +129,7 @@ namespace LinBox
 			<< "Time required for LSR fix:      " << WD.fixTime () << std::endl;
 #endif // INCLUDE_TIMING
 		}
-
-//             std::cerr << "P: " << P << std::endl;
-//             std::cerr << "WD deg: " << deg << std::endl;
-        if (!deg) {
-                // zero sequence, matrix minpoly is X
-            P.resize(2);
-            A.field().assign(P[0],A.field().zero);
-            A.field().assign(P[1],A.field().one);
-        }
-
+               
 		commentator().stop ("done", NULL, "minpoly");
 
 		return P;
