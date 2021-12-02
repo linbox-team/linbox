@@ -46,6 +46,7 @@
 
 
 #include "linbox/integer.h"
+#include "ntl-zz.h"
 
 namespace Givaro
 {
@@ -378,7 +379,7 @@ namespace LinBox
 	class UnparametricRandIter<NTL::ZZ_pE> {
 	public:
 		typedef NTL::ZZ_pE Element;
-        typedef Element::rep_type Residu_t;
+        typedef integer Residu_t;
         UnparametricRandIter<NTL::ZZ_pE>(const NTL_ZZ_pE & F ,
 						 const uint64_t & seed =0,
 						 const Residu_t& size =0
@@ -388,11 +389,7 @@ namespace LinBox
 			if(_seed == 0)
 				NTL::SetSeed(NTL::to_ZZ(time(0)));
 			else {
-				NTL::ZZ x;
-				std::stringstream s;
-				s << seed;
-				s >> x;
-				NTL::SetSeed( x ); //NTL::to_ZZ(static_cast<long>(seed)) );
+				NTL::SetSeed( Caster<NTL::ZZ,uint64_t>(seed));
 			}
 		}
 
@@ -418,7 +415,7 @@ namespace LinBox
 			if(_seed == 0)
 				NTL::SetSeed(NTL::to_ZZ(time(0)));
 			else
-				NTL::SetSeed(NTL::to_ZZ( static_cast<long>(_seed)) );
+				NTL::SetSeed(Caster<NTL::ZZ,uint64_t>(_seed));
 		}
 
 		NTL::ZZ_pE& random (NTL::ZZ_pE& x) const
@@ -428,7 +425,7 @@ namespace LinBox
 		}
 
 	protected:
-		size_t _size;
+		Residu_t _size;
 		uint64_t _seed;
         const NTL_ZZ_pE& _ring; 
 	};
