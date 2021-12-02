@@ -418,6 +418,7 @@ namespace LinBox {
                                 //if (k==0 || lll!=m){
                                 if (k==0 ){ //|| !Qt.isIdentity()){
                                     auto sigma0=sigma[0]; // needed due to the new polynomial matrix API
+                                    
                                     _BMD.mulin_right(Bperm, sigma0);
                                     _BMD.mul(delta,sigma[0],serie[k]);
                                     for(size_t i=1;i<=std::min(k,max_degree);i++){

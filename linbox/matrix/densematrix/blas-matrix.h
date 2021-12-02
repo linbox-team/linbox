@@ -214,7 +214,10 @@ namespace LinBox
         template<class _Matrix>
         Self_t& operator= (const _Matrix& A) ;
         
-        Self_t& copy(const Self_t& A) { return *this=A;}
+        template<class _Matrix>
+        Self_t& copy (const _Matrix& A) { return *this=A;}
+        
+        //Self_t& copy(const Self_t& A) { return *this=A;}
 
         //! Rebind operator
         template<typename _Tp1, typename _Rep2 = typename Rebind<RawStorage, _Tp1>::other>
