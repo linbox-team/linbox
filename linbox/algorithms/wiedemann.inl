@@ -197,7 +197,7 @@ namespace LinBox
 		commentator().start ("Solving nonsingular system (Wiedemann)", "WiedemannSolver::solveNonsingular");
 
 		Polynomial m_A(A.field());
-		Vector     z(A.field());
+		Vector     z(A.field(),0);
 		bool       ret = true;
 
 		{
@@ -289,7 +289,7 @@ namespace LinBox
 	{
 		commentator().start ("Solving singular system (Wiedemann)", "WiedemannSolver::solveSingular");
 
-		Vector Ax(A.field());
+		Vector Ax(A.field(),0);
 		ReturnStatus status = OK, sfrs = OK;
 
 
@@ -430,7 +430,7 @@ namespace LinBox
 		commentator().start ("Solving singular system with generic rank profile (Wiedemann)",
 				   "WiedemannSolver::findRandomSolution");
 
-		Vector v(A.field()), Avpb(A.field()), PAvpb(A.field()), bp(A.field()), xp(A.field()), Qinvx(A.field());
+		Vector v(A.field(),0), Avpb(A.field(),0), PAvpb(A.field(),0), bp(A.field(),0), xp(A.field(),0), Qinvx(A.field(),0);
 
 		RandomDenseStream<Field, Vector> stream (field(), _randiter, A.coldim ());
 
@@ -503,7 +503,7 @@ namespace LinBox
 	{
 		commentator().start ("Finding a nullspace element (Wiedemann)", "WiedemannSolver::findNullspaceElement");
 
-		Vector v(A.field()), Av(A.field()), PAv(A.field()), vp(A.field()), xp(A.field()), Qinvx(A.field());
+		Vector v(A.field(),0), Av(A.field(),0), PAv(A.field(),0), vp(A.field(),0), xp(A.field(),0), Qinvx(A.field(),0);
 
 		RandomDenseStream<Field, Vector> stream (field(), _randiter, A.coldim ());
 

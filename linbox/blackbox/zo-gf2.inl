@@ -376,9 +376,9 @@ namespace LinBox
 	inline ZeroOne<GF2>::IndexedIterator ZeroOne<GF2>::indexBegin()
 	{
         size_t i=0;
-        for(auto & nzrow(this->begin()); nzrow != this->end(); ++nzrow,++i) {
+        for(auto nzrow(this->begin()); nzrow != this->end(); ++nzrow,++i) {
             if (nzrow->size()>0)
-                return ZeroOne<GF2>::IndexedIterator(i, this->begin(), this->end(), nzrow.front(), nzrow->begin() );
+                return ZeroOne<GF2>::IndexedIterator(i, this->begin(), this->end(), nzrow->front(), nzrow->begin() );
         }
         return this->indexEnd();
 	}
@@ -386,9 +386,9 @@ namespace LinBox
 	inline const ZeroOne<GF2>::IndexedIterator ZeroOne<GF2>::indexBegin() const
 	{
         size_t i=0;
-        for(auto & nzrow(this->begin()); nzrow != this->end(); ++nzrow,++i) {
+        for(auto nzrow(this->begin()); nzrow != this->end(); ++nzrow,++i) {
             if (nzrow->size()>0)
-                return ZeroOne<GF2>::IndexedIterator(i, this->begin(), this->end(), nzrow.front(), nzrow->begin() );
+                return ZeroOne<GF2>::IndexedIterator(i, this->begin(), this->end(), nzrow->front(), nzrow->begin() );
         }
         return this->indexEnd();
 	}
