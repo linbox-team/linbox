@@ -99,7 +99,7 @@ bool test_with_matrix_vector(size_t n, size_t bitSize, int* seed)
     *seed += 1;
     srand(*seed);
     Ring::RandIter randIter(F, *seed);
-    randIter.setBits(bitSize);
+    randIter.setBitsize(bitSize);
 
     // Generate a full rank matrix
     RandomDenseMatrix<Ring::RandIter, Ring> RDM(F, randIter);
