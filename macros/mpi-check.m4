@@ -69,7 +69,7 @@ AC_DEFUN([LB_CHECK_MPI], [
                 ]
             )
         ],
-        [ AC_MSG_RESULT("no") ]
+        [ AC_MSG_RESULT(not found) ]
     )
 
     AM_CONDITIONAL(LINBOX_HAVE_MPI, test "x$HAVE_MPI" = "xyes")
