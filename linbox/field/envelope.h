@@ -36,12 +36,6 @@
 #include "linbox/randiter/envelope.h"
 
 #include "linbox/linbox-config.h"
-#ifdef __LINBOX_XMLENABLED
-
-#include "linbox/util/xml/linbox-reader.h"
-#include "linbox/util/xml/linbox-writer.h"
-
-#endif //__LINBOX_XMLENABLED
 
 // Namespace in which all LinBox code resides
 namespace LinBox
@@ -105,11 +99,11 @@ namespace LinBox
 			,one((E.one)),zero((E.zero)),mOne((E.mOne))
 		{}
 
-#ifdef __LINBOX_XMLENABLED
-		FieldEnvelope(Reader &R) :
-			_field(R)
-		{}
-#endif
+// #ifdef __LINBOX_XMLENABLED
+// 		FieldEnvelope(Reader &R) :
+// 			_field(R)
+// 		{}
+// #endif
 
 
 		/** Virtual copy constructor.
@@ -602,7 +596,6 @@ namespace LinBox
 
 		//@} Inplace Arithmetic Operations
 
-#ifndef __LINBOX_XMLENABLED
 		/** @name Input/Output Operations */
 		//@{
 
@@ -633,38 +626,6 @@ namespace LinBox
 		{ return _field.read (is, static_cast<ElementEnvelope<Field>&> (x)._elem); }
 
 		//@}
-#else
-		std::ostream &write(ostream &os) const {
-			return _field.write(os);
-		}
-
-		bool toTag(Writer &W) const {
-			return _field.toTag(W);
-		}
-
-		std::ostream &write(ostream &os, const ElementAbstract &x) const
-		{
-			return _field.write(os, static_cast<const ElementEnvelope<Field>&>(x)._elem);
-		}
-
-		bool toTag(Writer &W, const ElementAbstract &x) const
-		{
-			return _field.toTag(W, static_cast<const ElementEnvelope<Field>&>(x)._elem);
-		}
-
-		std::istream &read(istream &is, ElementAbstract &x) const
-		{
-			return _field.read(is, static_cast<ElementEnvelope<Field>&>(x)._elem);
-		}
-
-		bool fromTag(Reader &R, ElementAbstract &x) const
-		{
-			return _field.fromTag(R, static_cast<ElementEnvelope<Field>&>(x)._elem);
-		}
-#endif
-
-
-
 
 	protected:
 
