@@ -640,7 +640,7 @@ namespace LinBox {
                         /* transform V1 = [A B], V2 = [C D]
                          *      into V1 = [A C], V2 = [B D]
                          */
-                        SimdExtra::unpacklohi (V1, V2, V1, V2);
+                        Simd::unpacklohi (V1, V2, V1, V2);
 
                         /*** last step ****************************************/
                         Butterfly_DIT (V1, V2, W, P, U);
@@ -648,7 +648,7 @@ namespace LinBox {
                         /* Result in T = [A C]  and V2 = [B D]
                          * Transform to V1 = [A B], V2 = [C D] and store
                          */
-                        SimdExtra::unpacklohi (V1, V2, V1, V2);
+                        Simd::unpacklohi (V1, V2, V1, V2);
                         Simd::store (coeffs, V1);
                         Simd::store (coeffs + Simd::vect_size, V2);
                     }
@@ -678,14 +678,14 @@ namespace LinBox {
                         /* transform V1 = [A B C D], V2 = [E F G H]
                          *      into V1 = [A E B F], V2 = [C G D H]
                          */
-                        SimdExtra::unpacklohi (V1, V2, V1, V2);
+                        Simd::unpacklohi (V1, V2, V1, V2);
 
                         /*** last but one step ********************************/
                         Butterfly_DIT (V1, V2, W, P, U);
                         /* transform V1 = [A E B F], V2 = [C G D H]
                          *      into V1 = [A C E G], V2 = [B D F H]
                          */
-                        SimdExtra::unpacklohi (V1, V2, V1, V2);
+                        Simd::unpacklohi (V1, V2, V1, V2);
 
                         /*** last step ****************************************/
                         W = Simd::load (pow0);
@@ -694,7 +694,7 @@ namespace LinBox {
                         /* transform  T = [A C E G], V2 = [B D F H]
                          *      into V1 = [A B C D], V2 = [E F G H] and store
                          */
-                        SimdExtra::unpacklohi (V1, V2, V1, V2);
+                        Simd::unpacklohi (V1, V2, V1, V2);
                         Simd::store (coeffs, V1);
                         Simd::store (coeffs + Simd::vect_size, V2);
                     }
@@ -726,14 +726,14 @@ namespace LinBox {
                         /* transform into
                          *      V1 = [A I B J C K D L], V2 = [E M F N G O H P]
                          */
-                        SimdExtra::unpacklohi (V1, V2, V1, V2);
+                        Simd::unpacklohi (V1, V2, V1, V2);
 
                         /*** step *********************************************/
                         Butterfly_DIT (V1, V2, W, P, U);
                         /* transform into
                          *      V1 = [A E I M B F J N], V2 = [C G K O D H L P]
                          */
-                        SimdExtra::unpacklohi (V1, V2, V1, V2);
+                        Simd::unpacklohi (V1, V2, V1, V2);
 
                         /*** last but one step ********************************/
                         W = Simd::set (pow1[2*i], pow1[2*i+1], pow1[2*i+2],
@@ -744,7 +744,7 @@ namespace LinBox {
                         /* transform into
                          *      V1 = [A C E G I K M O], V2 = [B D F H J L N P]
                          */
-                        SimdExtra::unpacklohi (V1, V2, V1, V2);
+                        Simd::unpacklohi (V1, V2, V1, V2);
 
                         /*** last step (special butterfly with mul by 1) ******/
                         W = Simd::load (pow0);
@@ -753,7 +753,7 @@ namespace LinBox {
                         /* transform into
                          *      V1 = [A B C D E F G H], V2 = [I J K L M N O P]
                          */
-                        SimdExtra::unpacklohi (V1, V2, V1, V2);
+                        Simd::unpacklohi (V1, V2, V1, V2);
 
                         Simd::store (coeffs, V1);
                         Simd::store (coeffs + Simd::vect_size, V2);
@@ -970,7 +970,7 @@ namespace LinBox {
                         /* transform V1 = [A B], V2 = [C D]
                          *      into V1 = [A C], V2 = [B D]
                          */
-                        SimdExtra::pack (V1, V2, V1, V2);
+                        Simd::pack (V1, V2, V1, V2);
 
                         /*** first step ***************************************/
                         Butterfly_DIF (V1, V2, W, P, U);
@@ -978,7 +978,7 @@ namespace LinBox {
                         /* Result in V1 = [A C]  and V2 = [B D]
                          * Transform to V1 = [A B], V2 = [C D] and store
                          */
-                        SimdExtra::pack (V1, V2, V1, V2);
+                        Simd::pack (V1, V2, V1, V2);
                         Simd::store (coeffs, V1);
                         Simd::store (coeffs + Simd::vect_size, V2);
                     }
@@ -1014,7 +1014,7 @@ namespace LinBox {
                         /* transform V1 = [A B C D], V2 = [E F G H]
                          *      into V1 = [A C E G], V2 = [B D F H]
                          */
-                        SimdExtra::pack (V1, V2, V1, V2);
+                        Simd::pack (V1, V2, V1, V2);
 
 
                         /*** first step ***************************************/
@@ -1023,7 +1023,7 @@ namespace LinBox {
                         /* transform  T = [A C E G], V2 = [B D F H]
                          *      into V1 = [A E B F], V2 = [C G D H]
                          */
-                        SimdExtra::pack (V1, V2, V1, V2);
+                        Simd::pack (V1, V2, V1, V2);
 
                         /*** second step **************************************/
                         W = Simd::set (pow[i], pow[i+1], pow[i], pow[i+1]);
@@ -1032,7 +1032,7 @@ namespace LinBox {
                         /* transform V1 = [A E B F], V2 = [C G D H]
                          *      into V1 = [A B C D], V2 = [E F G H] and store
                          */
-                        SimdExtra::pack (V1, V2, V1, V2);
+                        Simd::pack (V1, V2, V1, V2);
                         Simd::store (coeffs, V1);
                         Simd::store (coeffs + Simd::vect_size, V2);
                     }
@@ -1070,7 +1070,7 @@ namespace LinBox {
                         /* transform into
                          *      V1 = [A C E G I K M O], V2 = [B D F H J L N P]
                          */
-                        SimdExtra::pack (V1, V2, V1, V2);
+                        Simd::pack (V1, V2, V1, V2);
 
                         /*** first step ***************************************/
                         Butterfly_DIF (V1, V2, W, P, U);
@@ -1078,7 +1078,7 @@ namespace LinBox {
                         /* transform into
                          *      V1 = [A E I M B F J N], V2 = [C G K O D H L P]
                          */
-                        SimdExtra::pack (V1, V2, V1, V2);
+                        Simd::pack (V1, V2, V1, V2);
 
                         /*** second step **************************************/
                         W = Simd::set (pow1[2*i], pow1[2*i+1], pow1[2*i+2],
@@ -1090,7 +1090,7 @@ namespace LinBox {
                         /* transform into
                          *      V1 = [A I B J C K D L], V2 = [E M F N G O H P]
                          */
-                        SimdExtra::pack (V1, V2, V1, V2);
+                        Simd::pack (V1, V2, V1, V2);
 
                         /*** third step ***************************************/
                         W = Simd::set (pow[i], pow[i+1], pow[i], pow[i+1],
@@ -1100,7 +1100,7 @@ namespace LinBox {
                         /* transform into
                          *      V1 = [A B C D E F G H], V2 = [I J K L M N O P]
                          */
-                        SimdExtra::pack (V1, V2, V1, V2);
+                        Simd::pack (V1, V2, V1, V2);
 
                         Simd::store (coeffs, V1);
                         Simd::store (coeffs + Simd::vect_size, V2);
