@@ -567,7 +567,7 @@ namespace LinBox
 	/*
 	 * Specialization for Sparse Elimination method
 	 */
-	// solve non singular system using Sparse LU
+	// solve any system using Sparse LU
 	// max prime is not use. only check with one prime
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>
