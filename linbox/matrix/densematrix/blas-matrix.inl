@@ -52,7 +52,7 @@ namespace LinBox
 
 	template<class _Field, class _Storage>
     template <class constIterator>
-	void BlasMatrix< _Field, _Storage >::createBlasMatrix (const constIterator& v)
+	void BlasMatrix< _Field, _Storage >::createBlasMatrix (constIterator v)
 	{
 		constIterator v_end = v+(_col*_row) ;
 		Element_ptr iter_addr = getPointer();
