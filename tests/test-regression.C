@@ -600,6 +600,37 @@ bool testZeroMatrixCharPoly() {
 
     return success;
 }
+bool testZeroSymmetricMatrixCharPoly() {
+    bool success;
+	using Ring = Givaro::Modular<double>;
+	using Matrix = SparseMatrix<Ring>;
+    Ring R(3);
+
+    Matrix A(R, 1, 1);
+    A.setEntry(0, 0, R.zero);
+
+    PolynomialRing<Ring>::Element c_A, Ex;
+
+
+    charpoly(c_A, A, RingCategories::ModularTag(), Method::Blackbox(Shape::Symmetric));
+
+    PolynomialRing<Ring> PZ(R,'X'); PZ.assign(Ex, Givaro::Degree(1), R.one);
+
+    success = PZ.areEqual(c_A, Ex);
+
+    if (!success) {
+        if (writing) {
+            std::clog<<"**** ERROR **** Fail ZSMCP " <<std::endl;
+
+            PZ.write(std::clog << "Ex: ", Ex) << std::endl;
+            PZ.write(std::clog << "cA: ", c_A) << std::endl;
+        }
+        return false;
+    } else
+        if (writing) std::cout << "ZSMCP: PASSED" << std::endl;
+
+    return success;
+}
 
 bool testFourFourMatrix() {
     bool success;
@@ -676,6 +707,7 @@ int main (int argc, char **argv)
     pass &= testZeroDimensionalCharPoly ();
     pass &= testZeroDimensionalMinPoly ();
     pass &= testZeroMatrixCharPoly();
+    pass &= testZeroSymmetricMatrixCharPoly();  
     pass &= testBigScalarCharPoly ();
     pass &= testLocalSmith ();
     pass &= testInconsistent<DenseMatrix<ZRingInts>> (Method::DenseElimination());

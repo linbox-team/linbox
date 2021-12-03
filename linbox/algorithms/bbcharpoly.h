@@ -285,8 +285,8 @@ namespace LinBox
 
 			/* Computation of the minimal polynomial */
 			Polynomial minPoly(F);
-			minpoly (minPoly, A, M);
-//             PD.write(std::cerr<<"Minpoly = ",minPoly) << std::endl;
+			minpoly (minPoly, A, M);            
+            //PD.write(std::cerr<<"Minpoly = ",minPoly) << std::endl;
 
 			if (minPoly.size() == n+1){
 				commentator().stop ("done", NULL, "MbbCharpoly");
