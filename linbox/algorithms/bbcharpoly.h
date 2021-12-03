@@ -204,8 +204,8 @@ namespace LinBox
 					FM* depend = NULL;
 					for (size_t j = 1; j <= exp[i]; ++j){
 						IntPoly * tmp2 = new IntPoly(*tmp);
-// 						FieldPoly *tmp2p = new FieldPoly(tmp2->size());
-// 						typename IntPoly::template rebind<Field>() (*tmp2p, *tmp2, F);
+//						FieldPoly *tmp2p = new FieldPoly(tmp2->size());
+//						typename IntPoly::template rebind<Field>() (*tmp2p, *tmp2, F);
 						FieldPoly *tmp2p = new FieldPoly(*tmp2, F);
 
 						FFM = new FM (tmp2p, tmp2, 0, depend);
@@ -223,8 +223,8 @@ namespace LinBox
 					leadingBlocks.insert (std::pair<FM*,bool>(FFM,false));
 				}
 				else {
-// 					FieldPoly* fp=new FieldPoly(intFactors[i].size());
-// 					typename IntPoly::template rebind<Field>() (*fp, (intFactors[i]), F);
+//					FieldPoly* fp=new FieldPoly(intFactors[i].size());
+//					typename IntPoly::template rebind<Field>() (*fp, (intFactors[i]), F);
                     IntPoly * ip=new IntPoly(intFactors[i]);
 					FieldPoly* fp=new FieldPoly(intFactors[i], F);
 
@@ -285,7 +285,7 @@ namespace LinBox
 
 			/* Computation of the minimal polynomial */
 			Polynomial minPoly(F);
-			minpoly (minPoly, A, M);            
+			minpoly (minPoly, A, M);
             //PD.write(std::cerr<<"Minpoly = ",minPoly) << std::endl;
 
 			if (minPoly.size() == n+1){
@@ -293,7 +293,7 @@ namespace LinBox
 				return P = minPoly;
 			}
 
-            
+
 
 			Polynomial charPoly (F);
 
