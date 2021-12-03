@@ -32,7 +32,7 @@
 // - wait   : waits for the end of the current computation
 // ================================================================
 
-
+#include "linbox/solutions/constants.h"
 #include "linbox/vector/vector-domain.h"
 
 namespace LinBox
