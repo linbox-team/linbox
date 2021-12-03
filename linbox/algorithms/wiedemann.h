@@ -129,7 +129,7 @@ namespace LinBox
 			<< "Time required for LSR fix:      " << WD.fixTime () << std::endl;
 #endif // INCLUDE_TIMING
 		}
-               
+
 		commentator().stop ("done", NULL, "minpoly");
 
 		return P;
