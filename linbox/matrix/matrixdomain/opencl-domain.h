@@ -414,16 +414,16 @@ namespace LinBox{
 			std::vector<SubmatrixAdapter<Operand2> >& VA,
 			std::vector<SubmatrixAdapter<Operand3> >& VB) const;
 
-		template <class Operand1, class Operand2, class Operand3>
+                template <class Operand1, class Operand2, class Operand3, class Operand4>
 		std::vector<int> oclPartition(
 			Operand1& D,
-			const Operand2& A,
-			const Operand3& B,
-			const Operand1& C,
+			const Operand3& A,
+			const Operand4& B,
+			const Operand2& C,
 			std::vector<SubmatrixAdapter<Operand1> >& VD,
-			std::vector<SubmatrixAdapter<Operand2> >& VA,
-			std::vector<SubmatrixAdapter<Operand3> >& VB,
-			std::vector<SubmatrixAdapter<Operand1> >& VC) const;
+			std::vector<SubmatrixAdapter<Operand3> >& VA,
+			std::vector<SubmatrixAdapter<Operand4> >& VB,
+			std::vector<SubmatrixAdapter<Operand2> >& VC) const;
 
 		void printClErrstring(cl_int err) const;
 #else
@@ -555,15 +555,14 @@ namespace LinBox{
 
 		//! axpy.
 		//! D = A*B + C
-		template <class Operand1, class Operand2, class Operand3>
-		Operand1& axpy(
-			Operand1& D,
-			const Operand2& A,
-			const Operand3& B,
-			const Operand1& C) const{
-
-			return muladd(D,_F.one,C,_F.one,A,B);
-		}
+                template <class Operand1, class Operand2, class Operand3, class Operand4>
+                Operand1& axpy(
+                    Operand1& D,
+                    const Operand3& A,
+                    const Operand4& B,
+                    const Operand2& C) const{
+                    return muladd(D,_F.one,C,_F.one,A,B);
+                }
 
 		//! axpyin.
 		//! C += A*B
@@ -574,12 +573,12 @@ namespace LinBox{
 
 		//! maxpy.
 		//! D = C - A*B
-		template <class Operand1, class Operand2, class Operand3>
+            template <class Operand1, class Operand2, class Operand3, class Operand4>
 		Operand1& maxpy(
 			Operand1& D,
-			const Operand2& A,
-			const Operand3& B,
-			const Operand1& C) const{
+			const Operand3& A,
+			const Operand4& B,
+			const Operand2& C) const{
 
 			return muladd(D,_F.one,C,_F.mOne,A,B);
 		}
@@ -593,12 +592,12 @@ namespace LinBox{
 
 		//! axmy.
 		//! D= A*B - C
-		template <class Operand1, class Operand2, class Operand3>
+                template <class Operand1, class Operand2, class Operand3, class Operand4>
 		Operand1& axmy(
 			Operand1& D,
-			const Operand2& A,
-			const Operand3& B,
-			const Operand1& C) const{
+			const Operand3& A,
+			const Operand4& B,
+			const Operand2& C) const{
 
 			return muladd(D,_F.mOne,C,_F.one,A,B);
 		}
