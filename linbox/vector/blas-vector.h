@@ -241,7 +241,8 @@ namespace LinBox {
         Element_ptr      getPointer()       { return _ptr; }
         ConstElement_ptr getConstPointer() const { return _ptr;}
 
-		const Storage &getRep() const { return _rep ; }
+        Storage &refRep() { return _rep ; }
+        const Storage &getRep() const { return _rep ; }
 
         /** Get the increment in the vector
          * @return the inc value of the subvector
