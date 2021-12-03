@@ -87,8 +87,6 @@ int main (int argc, char **argv)
         commentator().setReportStream(std::cout);
     }
 
-    using GFt = GF2;
-    using ZMatrix=ZeroOne<GFt>;
     using GMd = Givaro::Modular<double>;
     using MMatrix = SparseMatrix<GMd>;
 
@@ -96,7 +94,9 @@ int main (int argc, char **argv)
     pass &= testWiedemannSingular<GMd,MMatrix>();
 
         // Still failing: see https://github.com/linbox-team/linbox/issues/233
-//     pass &= testWiedemannSingular<GFt,ZMatrix>();
+    // using GFt = GF2;
+    // using ZMatrix=ZeroOne<GFt>;
+    // pass &= testWiedemannSingular<GFt,ZMatrix>();
 
     return pass ? 0 : -1;
 }

@@ -34,8 +34,6 @@
 
 #include <time.h>
 #include "linbox/linbox-config.h"
-#include "linbox/integer.h"
-// #include "linbox/field/modular.h"
 #include "linbox/element/abstract.h"
 #include "linbox/element/envelope.h"
 #include "linbox/util/commentator.h"
@@ -48,6 +46,7 @@ namespace LinBox
 	class GF2RandIter {
 	public:
 		typedef bool Element;
+		typedef size_t Residu_t;
 
 		/** Constructor from field, sampling size, and seed.
 		 * The random field element iterator works in the field F, is seeded
@@ -63,13 +62,13 @@ namespace LinBox
 		 *             generator (default = 0)
 		 */
 		GF2RandIter (const GF2 & F,
-			     const integer &size  = 0 ,
-			     const integer &seed = 0)
+			     const size_t &seed = 0,
+			     const size_t &size = 0)
 		{
-			int32_t _seed = seed;
+			size_t _seed = seed;
 
-			if (_seed == 0) _seed = (int32_t)time (NULL);
-			MT.setSeed ((uint32_t)_seed);
+			if (_seed == 0) _seed = (size_t)time (NULL);
+			MT.setSeed (_seed);
 		}
 
 		/// constructor
@@ -132,7 +131,7 @@ namespace LinBox
 		}
 
 
-		uint32_t& random (uint32_t& a)  const
+		size_t& random (size_t& a)  const
 		{ return a = MT.randomInt(); }
 
 		MersenneTwister& getMT() { return MT; }
