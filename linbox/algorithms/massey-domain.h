@@ -348,7 +348,6 @@ namespace LinBox
 
 			commentator().stop ("done", NULL, "masseyd");
 			//		commentator().stop ("Done", "Done", "LinBox::MasseyDomain::massey");
-            std::cerr<<"SEQ: "<<S<<std::endl;
 			return L;
 		}
 

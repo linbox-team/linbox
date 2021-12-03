@@ -570,7 +570,8 @@ bool testDixonSmallFat() {
     return success = ZZ.areEqual(r[0], b[0]);
 }
 
-bool testZeroMatrixCharPoly() {
+template<typename CMethod=Method::Blackbox>
+bool testZeroMatrixCharPoly(const CMethod& cMeth=CMethod()) {
     bool success;
 	using Ring = Givaro::Modular<double>;
 	using Matrix = SparseMatrix<Ring>;
@@ -581,7 +582,7 @@ bool testZeroMatrixCharPoly() {
 
     PolynomialRing<Ring>::Element c_A, Ex;
 
-    charpoly(c_A, A);
+    charpoly(c_A, A, RingCategories::ModularTag(), cMeth );
 
     PolynomialRing<Ring> PZ(R,'X'); PZ.assign(Ex, Givaro::Degree(1), R.one);
 
@@ -596,38 +597,7 @@ bool testZeroMatrixCharPoly() {
         }
         return false;
     } else
-        if (writing) std::cout << "ZMCP: PASSED" << std::endl;
-
-    return success;
-}
-bool testZeroSymmetricMatrixCharPoly() {
-    bool success;
-	using Ring = Givaro::Modular<double>;
-	using Matrix = SparseMatrix<Ring>;
-    Ring R(3);
-
-    Matrix A(R, 1, 1);
-    A.setEntry(0, 0, R.zero);
-
-    PolynomialRing<Ring>::Element c_A, Ex;
-
-
-    charpoly(c_A, A, RingCategories::ModularTag(), Method::Blackbox(Shape::Symmetric));
-
-    PolynomialRing<Ring> PZ(R,'X'); PZ.assign(Ex, Givaro::Degree(1), R.one);
-
-    success = PZ.areEqual(c_A, Ex);
-
-    if (!success) {
-        if (writing) {
-            std::clog<<"**** ERROR **** Fail ZSMCP " <<std::endl;
-
-            PZ.write(std::clog << "Ex: ", Ex) << std::endl;
-            PZ.write(std::clog << "cA: ", c_A) << std::endl;
-        }
-        return false;
-    } else
-        if (writing) std::cout << "ZSMCP: PASSED" << std::endl;
+        if (writing) std::cout << "ZMCP" << cMeth.name() << cMeth.shapeFlags.flags << " : PASSED" << std::endl;
 
     return success;
 }
@@ -706,8 +676,10 @@ int main (int argc, char **argv)
     pass &= testSparseDiagDet(46);
     pass &= testZeroDimensionalCharPoly ();
     pass &= testZeroDimensionalMinPoly ();
-    pass &= testZeroMatrixCharPoly();
-    pass &= testZeroSymmetricMatrixCharPoly();  
+    pass &= testZeroMatrixCharPoly<>();
+    pass &= testZeroMatrixCharPoly(Method::Blackbox(Shape::Symmetric));
+    pass &= testZeroMatrixCharPoly(Method::DenseElimination());
+//     pass &= testZeroMatrixCharPoly(Method::SparseElimination());
     pass &= testBigScalarCharPoly ();
     pass &= testLocalSmith ();
     pass &= testInconsistent<DenseMatrix<ZRingInts>> (Method::DenseElimination());
