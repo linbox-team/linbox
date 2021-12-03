@@ -636,6 +636,30 @@ namespace LinBox
 			return SS_OK;
 	}
 
+	template <class Ring, class Field, class RandomPrime>
+	template <class IMatrix, class Vector1, class Vector2>
+	SolverReturnStatus
+	DixonSolver<Ring,Field,RandomPrime,Method::SparseElimination>::solveNonsingular(Vector1& num,
+                                                                          Integer& den,
+                                                                          const IMatrix& A,
+                                                                          const Vector2& b,
+                                                                          int maxPrimes) const
+	{
+		return solve(num, den, A, b, maxPrimes);
+	}
+
+	template <class Ring, class Field, class RandomPrime>
+	template <class IMatrix, class Vector1, class Vector2>
+	SolverReturnStatus
+	DixonSolver<Ring,Field,RandomPrime,Method::SparseElimination>::solveSingular(Vector1& num,
+                                                                          Integer& den,
+                                                                          const IMatrix& A,
+                                                                          const Vector2& b,
+                                                                          int maxPrimes) const
+	{
+		return solve(num, den, A, b, maxPrimes);
+	}
+
 } //end of namespace LinBox
 
 //BB : moved the following "guarded" code in a new file, verbatim :
