@@ -33,6 +33,7 @@
 #include "linbox/randiter/archetype.h"
 #include "linbox/algorithms/blackbox-container-base.h"
 #include "linbox/util/timer.h"
+#include "linbox/solutions/constants.h"
 
 namespace LinBox
 {
