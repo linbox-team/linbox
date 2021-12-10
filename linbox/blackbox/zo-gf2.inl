@@ -243,7 +243,7 @@ namespace LinBox
 
 		value_type operator*() const
 		{
-		       	return _elem;
+			return _elem;
 		}
 
 	private:
@@ -298,16 +298,18 @@ namespace LinBox
 			_row(rowidx),
 			_col(colidx)
 		{
-
 			if( _rowbeg == _rowend ) return;
 
 			while ( _colbeg == _rowbeg->end() ) {
 
 				if (++_rowbeg == _rowend) return;
 
+                ++_row;
+
 				_colbeg = _rowbeg->begin();
 
 			}
+            _col = *_colbeg;
 
 		}
 
@@ -375,12 +377,12 @@ namespace LinBox
 
 	inline ZeroOne<GF2>::IndexedIterator ZeroOne<GF2>::indexBegin()
 	{
-		return ZeroOne<GF2>::IndexedIterator(0, this->begin(), this->end(), this->front().front(), this->front().begin() );
+        return ZeroOne<GF2>::IndexedIterator(0, this->begin(), this->end(), 0, this->front().begin() );
 	}
 
 	inline const ZeroOne<GF2>::IndexedIterator ZeroOne<GF2>::indexBegin() const
 	{
-		return ZeroOne<GF2>::IndexedIterator(0, this->begin(), this->end(), this->front().front(), this->front().begin() );
+        return ZeroOne<GF2>::IndexedIterator(0, this->begin(), this->end(), 0, this->front().begin() );
 	}
 
 	inline ZeroOne<GF2>::IndexedIterator ZeroOne<GF2>::indexEnd()

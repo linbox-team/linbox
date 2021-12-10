@@ -107,7 +107,7 @@ namespace LinBox
         /*!@internal constructor from an iterator of elements.
          * @param v iterator on to \c Element s */
         template <class constIterator>
-        void createBlasMatrix (const constIterator& it) ;
+        void createBlasMatrix (constIterator it) ;
 
 
         /*! @internal
