@@ -82,7 +82,7 @@ namespace LinBox
 		VectorDomainBase () : _faxpy(nullptr) {std::cout<<"CST DEFAULT VDB"<<std::endl;}
 		VectorDomainBase (const Field &F) :  _faxpy(new FieldAXPY<Field>(F))
                 { /*std::cerr << "VDD cstor " << this << std::endl;*/}
-                ~VectorDomainBase()	{ if (_faxpy != nullptr) delete _faxpy; }
+		~VectorDomainBase()	{ if (_faxpy != nullptr) delete _faxpy; }
 
 		void init(const Field &F) { if (_faxpy != nullptr) delete _faxpy; _faxpy = new FieldAXPY<Field>(F); }
 		inline const Field & field() const { return _faxpy->field(); }

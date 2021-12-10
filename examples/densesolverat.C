@@ -1,5 +1,5 @@
 /*
- * examples/solverat.C
+ * examples/densesolverat.C
  *
  * Copyright (C) 2012 J-G Dumas
  * ========LICENCE========
@@ -21,16 +21,13 @@
  * ========LICENCE========
  */
 
-/** @file examples/solve.C
- * @ingroup examples
- * @brief Blackbox solvers.
- * @warning some are commented out...
- * @example  examples/solve.C
+/**\file examples/densesolverat.C
+ @example examples/densesolverat.C
+ @author Jean-Guillaume.Dumas@univ-grenoble-alpes.fr
+ * \brief Direct dense solver over the rationals 
+ * \ingroup examples
  */
-
 #include <iostream>
-
-
 #include "givaro/modular.h"
 
 #include "linbox/matrix/sparse-matrix.h"

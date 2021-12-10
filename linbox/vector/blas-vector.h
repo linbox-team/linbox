@@ -298,8 +298,7 @@ namespace LinBox {
                     os << '<' ;
                     for(auto it= _rep.begin();it != _rep.end(); ++it) {
                         field().write(os, *it);
-                        ++it ;
-                        if (it != this->end())
+                        if (it != this->end()-1)
                             os << ',' ;
                     }
                     return	os << '>' ;
