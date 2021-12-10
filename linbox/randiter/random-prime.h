@@ -75,7 +75,7 @@ namespace LinBox
     template<class Trait = IteratorCategories::HeuristicTag>
 	class PrimeIterator{
 	protected:
-		uint64_t 	_bits;  //!< common lenght of all primes
+		uint64_t	_bits;  //!< common lenght of all primes
 		integer        _prime;  //!< the generated prime.
 		Givaro::IntPrimeDom _IPD; //!< empty struct dealing with primality.
 
@@ -316,6 +316,18 @@ namespace LinBox
 
         } while(!_IPD.isprime(_prime));
     }
+
+    struct FixPrime {
+        typedef Givaro::Integer Prime_Type;
+        const Prime_Type _myprime;
+        FixPrime(const Givaro::Integer& i) : _myprime(i) {}
+        inline FixPrime &operator ++ () { return *this; }
+        const Prime_Type &operator * () const { return randomPrime(); }
+        const Prime_Type & randomPrime() const { return _myprime; }
+        void setBits(uint64_t bits) {}
+        template<class _ModField> void setBitsField() { }
+    };
+
 }
 
 #endif //__LINBOX_random_prime_iterator_H
