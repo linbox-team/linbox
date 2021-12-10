@@ -65,7 +65,7 @@ namespace LinBox
 		{
 			size_t n = rowdim();
 			rep_->identity((int)n);
-			MersenneTwister r((unsigned int)time(NULL));
+			MersenneTwister r((unsigned int)time(nullptr));
 			// Knuth construction
 			for (size_t i = 0; i < n-1; ++i) {
 				size_t j = i + r.randomInt()%(n-i);

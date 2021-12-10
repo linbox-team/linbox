@@ -489,7 +489,7 @@ namespace LinBox
 						 const Residu_t& size = 0) :
                 _size(size), _seed(seed), _ring(F)
 		{
-			if (_seed == 0) _seed = uint64_t(time(NULL));
+			if (_seed == 0) _seed = uint64_t(time(nullptr));
 
 			integer cardinality;
 			F.cardinality(cardinality);
@@ -512,7 +512,7 @@ namespace LinBox
 			// _size(R._size), _seed(R._seed)
 		// {
 			// if(_seed == 0)
-				// NTL::SetSeed(NTL::to_ZZ(time(0)));
+				// NTL::SetSeed(NTL::to_ZZ(time(nullptr)));
 			// else
 				// NTL::SetSeed(NTL::to_ZZ( static_cast<long>(_seed)) );
 		// }

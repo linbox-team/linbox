@@ -577,7 +577,7 @@ namespace LinBox
                 _size(size), _seed(seed), _ring(F)
 		{
 			if(_seed == 0)
-				NTL::SetSeed(NTL::to_ZZ(time(0)));
+				NTL::SetSeed(NTL::to_ZZ(time(nullptr)));
 			else
 				NTL::SetSeed(NTL::to_ZZ(static_cast<long unsigned int>(_seed)));
 		}
@@ -588,7 +588,7 @@ namespace LinBox
 
 		{
 			if(_seed == 0)
-				NTL::SetSeed(NTL::to_ZZ(time(0)));
+				NTL::SetSeed(NTL::to_ZZ(time(nullptr)));
 			else
 				NTL::SetSeed(NTL::to_ZZ(static_cast<long unsigned int>(_seed)));
 		}

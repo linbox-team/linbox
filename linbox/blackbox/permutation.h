@@ -111,7 +111,7 @@ namespace LinBox
 		}
 
 		//void random(size_t n)
-		void random(unsigned int seed=(unsigned int)time(NULL))
+		void random(unsigned int seed=(unsigned int)time(nullptr))
 		{
 			size_t n = rowdim();
 			identity((int)n);

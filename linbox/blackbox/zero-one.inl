@@ -208,8 +208,8 @@ namespace LinBox
 	ZeroOne<Field>::ZeroOne(const Field& F) :
 	       	_field(&F)
        	{
-		srand((unsigned int) time(NULL) );
-		dynamic = false;
+            srand((unsigned int) time(nullptr) );
+            dynamic = false;
 	}
 
 	template<class Field>
@@ -217,7 +217,7 @@ namespace LinBox
 				Index rows, Index cols, Index NNz, bool RowSort, bool ColSort):
 		_field(&F), _rows(rows), _cols(cols), _nnz(NNz), _rowP(rowP), _colP(colP), _rowSort(RowSort), _colSort(ColSort) , dynamic(false)
 	{
-	       	srand((unsigned)time(NULL));
+	       	srand((unsigned)time(nullptr));
 	}
 
 	template<class Field>
