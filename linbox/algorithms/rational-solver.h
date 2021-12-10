@@ -716,9 +716,21 @@ namespace LinBox {
 		{}
 
 
-		// solve non singular system
+		// solve any system
 		template<class IMatrix, class Vector1, class Vector2>
 		SolverReturnStatus solve(Vector1& num, Integer& den,
+                                 const IMatrix& A, const Vector2& b,
+                                 int maxPrimes = DEFAULT_MAXPRIMES) const;
+
+		// solve non singular system
+		template<class IMatrix, class Vector1, class Vector2>
+		SolverReturnStatus solveNonsingular(Vector1& num, Integer& den,
+                                 const IMatrix& A, const Vector2& b,
+                                 int maxPrimes = DEFAULT_MAXPRIMES) const;
+
+		// solve singular system
+		template<class IMatrix, class Vector1, class Vector2>
+		SolverReturnStatus solveSingular(Vector1& num, Integer& den,
                                  const IMatrix& A, const Vector2& b,
                                  int maxPrimes = DEFAULT_MAXPRIMES) const;
 	};
