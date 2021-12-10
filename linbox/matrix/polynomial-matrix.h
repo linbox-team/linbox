@@ -272,7 +272,7 @@ namespace LinBox{
 			}
 		}
 
-                // copy elt from M[beg..end], _size must be >= end-beg+1
+        // copy elt from M[beg..end], _size must be >= end-beg+1
 		// M is stored with the hybrid format matrowfirst
 		template<typename OtherField>
 		void copy(const PolynomialMatrix<OtherField, PMType::matrowfirst> & M, size_t beg, size_t end, size_t start=0){
@@ -484,12 +484,12 @@ namespace LinBox{
 		void copy(const PolynomialMatrix<Field, PMType::matrowfirst>& M, size_t beg, size_t end, size_t start=0){
 			//std::cout<<"copying.....matrowfirst to polfirst.....same field"<<std::endl;
 			const size_t ls = COPY_BLOCKSIZE;
-                for (size_t i = beg; i <= end; i+=ls)
-                    for (size_t j = 0; j < _row; j+=ls)        
-                        for (size_t _i = i; _i < std::min(end+1, i + ls); _i++)
-                            for (size_t _j = j; _j < std::min(_row, j + ls);++_j)
-                                for(size_t k=0;k<_col;k++)
-                                    ref(k,_j,start+_i-beg)= M.get(k,_j,_i);            
+            for (size_t i = beg; i <= end; i+=ls)
+                for (size_t j = 0; j < _row; j+=ls)        
+                    for (size_t _i = i; _i < std::min(end+1, i + ls); _i++)
+                        for (size_t _j = j; _j < std::min(_row, j + ls);++_j)
+                            for(size_t k=0;k<_col;k++)
+                                ref(k,_j,start+_i-beg)= M.get(k,_j,_i);            
         }
 
 
@@ -693,7 +693,7 @@ namespace LinBox{
         void random(RandIter &I){
             _rep.random(I);
         }
-
+        
 		// retrieve the matrix of degree k in the polynomial matrix
 		//Matrix       operator[](size_t k)       {return      Matrix(field(), getPointer()+k*_row*_col, _row,_col,_col);}
 
@@ -754,10 +754,10 @@ namespace LinBox{
 			_size=s;
 		}	
 
-/*
- * PG -> NEXT LINES NEED TO BE CHECKED AND TESTED
- *
- */
+        /*
+         * PG -> NEXT LINES NEED TO BE CHECKED AND TESTED
+         *
+         */
 
         // copy elt from M[beg..end], _size must be >= end_beg+1
 		void copy(const PolynomialMatrix<Field, PMType::matfirst>& M, size_t beg, size_t end, size_t start=0){
@@ -967,7 +967,7 @@ namespace LinBox{
             //if (i>=M.size() || (i>j)) {_size=0;}
         }
 
-         // copy the matrix of degree k into A
+        // copy the matrix of degree k into A
         template<typename DenseMatrix>
 		DenseMatrix& getMatrix(DenseMatrix& A, size_t k) const {
             return _ptr->getMatrix(A,k+_shift);
