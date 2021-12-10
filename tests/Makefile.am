@@ -79,6 +79,7 @@ BASIC_TESTS =            \
     test-cra            \
     test-blas-matrix        \
     test-charpoly        \
+    test-minpoly                \
     test-commentator        \
     test-isposdef        \
     test-ispossemidef       \
@@ -180,7 +181,6 @@ CHECKER_NTL_TESTS =  ${NTL_TESTS}           \
 
 
 FULLCHECK_TESTS = ${CHECKER_TESTS} \
-    test-minpoly                \
     test-weak-popov-form        \
     test-mpi-comm               \
     test-rat-solve              \

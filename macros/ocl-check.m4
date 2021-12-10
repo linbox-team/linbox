@@ -26,8 +26,11 @@ dnl
 dnl Test for an OpenCL
 
 AC_DEFUN([LB_CHECK_OCL],[
-	AC_ARG_WITH(ocl,
-	[AC_HELP_STRING([--with-ocl=<path>|yes|no],
+
+        AC_MSG_CHECKING(for OpenCL)
+        AC_ARG_WITH(ocl,
+                [
+                      AC_HELP_STRING([--with-ocl=<path>|yes|no],
 	[Use OpenCL. This library is optional for LinBox compilation.
 	 If argument is yes or <empty> that means the library is reachable
 	 with the standard search path "/usr" or "/usr/local" (set as default).
@@ -39,14 +42,15 @@ AC_DEFUN([LB_CHECK_OCL],[
 		OCL_HOME_PATH="$withval /opt/AMDAPP ${DEFAULT_CHECKING_PATH}"
 	fi],
 
-	[OCL_HOME_PATH="/opt/AMDAPP $DEFAULT_CHECKING_PATH}"])
+	[OCL_HOME_PATH=""
+        ])
 
 	BACKUP_CXXFLAGS=${CXXFLAGS}
 	BACKUP_LIBS=${LIBS}
 
-	if test -n "$OCL_HOME_PATH"; then
-		AC_MSG_CHECKING(for OpenCL >= 1.0)
-	fi
+	dnl if test -n "$OCL_HOME_PATH"; then
+	dnl 	AC_MSG_CHECKING(for OpenCL >= 1.0)
+	dnl fi
 
 	for OCL_HOME in ${OCL_HOME_PATH}
 	do

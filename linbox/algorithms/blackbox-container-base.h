@@ -32,7 +32,7 @@
 // - wait   : waits for the end of the current computation
 // ================================================================
 
-
+#include "linbox/solutions/constants.h"
 #include "linbox/vector/vector-domain.h"
 
 namespace LinBox
@@ -157,11 +157,20 @@ namespace LinBox
 		{
 			casenumber = 1;
 			u.resize (_BB->coldim ());
-			for (long i = (long)u.size (); i--;)
-				g.random (u[(size_t)i]);
-			v.resize (_BB->rowdim ());
-			return _VD.dot (_value, u, u);
-		}
+            v.resize (_BB->rowdim ());
+
+            size_t trials=0;
+            do {
+                for (long i = (long)this->u.size (); i--;)
+                    g.random (this->u[(size_t)i]);
+                this->_VD.dot (this->_value, this->u, this->u);
+            } while(_field->isZero(this->_value) && ++trials<= LINBOX_DEFAULT_TRIALS_BEFORE_FAILURE);
+
+            if (trials >= LINBOX_DEFAULT_TRIALS_BEFORE_FAILURE)
+                std::cerr<<"ERROR in "<<__FILE__<<" at line "<<__LINE__<<" -> projection always auto-orthogonal after "<<LINBOX_DEFAULT_TRIALS_BEFORE_FAILURE<<" attempts\n";;
+
+            return _value;
+        }
 
 		/// User Left vectors, Zero Right vector
 		template<class Vector>

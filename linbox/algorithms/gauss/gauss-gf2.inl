@@ -1,7 +1,7 @@
 /* linbox/algorithms/gauss-gf2.inl
  * Copyright (C) 2009 The LinBox group
  *
- * Time-stamp: <27 Aug 20 15:19:20 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <03 Dec 21 09:06:58 Jean-Guillaume.Dumas@imag.fr>
  *
  *
  * ========LICENCE========
@@ -75,8 +75,8 @@ namespace LinBox
 
 		// assignment of LigneA with the domain object
 		for (size_t jj = 0; jj < Ni; ++jj)
-			for (size_t k = 0; k < LigneA[jj].size (); k++)
-				++col_density[LigneA[jj][(size_t)k]];
+			for (size_t k = 0; k < LigneA[jj].size(); ++k)
+				++col_density[LigneA[jj][k]];
 
 		long last = (long)Ni - 1;
 		long c;
