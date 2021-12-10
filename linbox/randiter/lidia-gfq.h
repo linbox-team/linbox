@@ -55,7 +55,7 @@ namespace LinBox
 				 const uint64_t seed = 0) :
 			_size(size), _seed(seed) , GF(F)
 		{
-			if (_seed == 0) _seed = time(NULL);
+			if (_seed == 0) _seed = time(nullptr);
 
 			integer cardinality ;
 			F.cardinality(cardinality);
@@ -125,7 +125,7 @@ namespace LinBox
 
 		LidiaGfqRandIter(void) :
 		       	_size(0), _seed(0)
-		{ time(NULL); }
+		{ time(nullptr); }
 
 	private:
 

@@ -214,7 +214,7 @@ public :
                 _size(size), _seed(seed)
             {
                 if(_seed == 0)
-                    NTL::SetSeed(NTL::to_ZZ(time(0)));
+                    NTL::SetSeed(NTL::to_ZZ(time(nullptr)));
                 else
                     NTL::SetSeed(Caster<NTL::ZZ,uint64_t>(_seed));
             }
@@ -224,7 +224,7 @@ public :
 
             {
                 if(_seed == 0)
-                    NTL::SetSeed(NTL::to_ZZ(time(0)));
+                    NTL::SetSeed(NTL::to_ZZ(time(nullptr)));
                 else
                     NTL::SetSeed(Caster<NTL::ZZ,uint64_t>(_seed));
             }
