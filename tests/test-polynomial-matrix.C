@@ -44,11 +44,6 @@ using namespace std;
 
 using namespace LinBox;
 
-template<typename Rand, typename Matrix>
-void randomMatPol(Rand& r,  Matrix& A){
-	for(size_t i=0;i<A.size()*A.rowdim()*A.coldim();i++)
-		r.random(A.getPointer()[i]);
-}
 
 
 template<typename T>
@@ -102,10 +97,9 @@ bool checkCopy(const Field& F, size_t m,size_t n, size_t d, long seed){
     PMatrix A2(F,m,n,d),B2(F,m,n,d);
     PMatrixP A3(F,m,n,d),B3(F,m,n,d);
     
-    randomMatPol(G,A1);    
-    randomMatPol(G,A2);
-    randomMatPol(G,A3);    
-
+    A1.random(G);
+    A2.random(G);
+    A3.random(G);
 
     // polfirst -> matfirst -> polfirst
     pass=true;
@@ -249,8 +243,8 @@ bool checkMatPolMul(const PolMatMulDomain& PMMD, size_t m,size_t n, size_t d, lo
     PMatrix A2(F,m,n,d),B2(F,n,n,d), C2(F,m,n,2*d-1);
     PMatrixP A3(F,m,n,d),B3(F,n,n,d), C3(F,m,n,2*d-1);
 
-    randomMatPol(G,A1);
-    randomMatPol(G,B1);
+    A1.random(G);
+    B1.random(G);
     A2.copy(A1);  
     B2.copy(B1);
     A3.copy(A2);  

@@ -73,11 +73,6 @@ REGISTER_TYPE_NAME(ModularExtended);
 
 using namespace LinBox;
 
-template<typename Rand, typename Matrix>
-void randomMatPol(Rand& r,  Matrix& A){
-	for(size_t i=0;i<A.size()*A.rowdim()*A.coldim();i++)
-		r.random(A.getPointer()[i]);
-}
 
 
 template<typename PolMatType, typename PolMatMulDomain>
@@ -91,9 +86,9 @@ double bench_one (const PolMatMulDomain &PMMD, unsigned int m, unsigned int n,
     PolMatType M(PMMD.field(),m,n,d), N(PMMD.field(),n,k,d);
     PolMatType R(PMMD.field(),m,k,2*d-1);
 
-    randomMatPol (G, M);
-    randomMatPol (G, N);
-
+    M.random(G);
+    N.random(G);
+    
     chrono.start();
     for (cnt = 0; chrono.realElapsedTime() < 1 ; cnt++)
         PMMD.mul (R, M, N);
