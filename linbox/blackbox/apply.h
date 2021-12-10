@@ -220,7 +220,10 @@ namespace LinBox
 				for (size_t j=0;j< maxword;j=j+2){
 					if (!use_neg || j< maxword-1){
 						long long mask = static_cast<long long>(ydbl[j*m+i]);
-						*(reinterpret_cast<long long*>(ptr) ) |= mask;
+						long long tmp;
+						memcpy(&tmp,ptr,sizeof(long long));
+						tmp |= mask;
+						memcpy(ptr,&tmp,sizeof(long long));
 						ptr+=4;
 					}
 				}
@@ -228,7 +231,10 @@ namespace LinBox
 				for (size_t j=1;j< maxword;j=j+2){
 					if (!use_neg || j< maxword-1){
 						long long mask = static_cast<long long>(ydbl[j*m+i]);
-						*(reinterpret_cast<long long*>(ptr) ) |= mask;
+						long long tmp;
+						memcpy(&tmp,ptr,sizeof(long long));
+						tmp |= mask;
+						memcpy(ptr,&tmp,sizeof(long long));
 						ptr+=4;
 					}
 				}
@@ -626,7 +632,10 @@ namespace LinBox
 								bitDest += (size_t)rclen*((i % (size_t)rc)*_n+j);
 								long long mask = static_cast<long long>(ctd[j]);
 								bitDest += 2*i;
-								*(reinterpret_cast<long long*>(bitDest) ) |= mask;
+								long long tmp;
+								memcpy(&tmp,bitDest,sizeof(long long));
+								tmp |= mask;
+								memcpy(bitDest,&tmp,sizeof(long long));
 							}
 						}
 						delete[] dx;
@@ -738,7 +747,10 @@ namespace LinBox
 							unsigned char* BitDest = combined+chunk_byte*k;
 							for (size_t j=k; j< num_chunks; j+=rc){
 								long long mask = static_cast<long long>(ctd[i*num_chunks+j]);
-								*(reinterpret_cast<long long*>(BitDest) ) |= mask;
+								long long tmp;
+								memcpy(&tmp,BitDest,sizeof(long long));
+								tmp |= mask;
+								memcpy(BitDest,&tmp,sizeof(long long));
 								BitDest+=rc*chunk_byte;
 							}
 							Givaro::Protected::importWords(val, (size_t)rclen, -1, 1, 0, 0, combined);
@@ -978,7 +990,10 @@ namespace LinBox
 								bitDest += (unsigned char)rclen*((i % (size_t)rc)*_m*_k+j);
 								long long mask = static_cast<long long>(ctd[j]);
 								bitDest += 2*i;
-								*(reinterpret_cast<long long*>(bitDest) ) |= mask;
+								long long tmp;
+								memcpy(&tmp,bitDest,sizeof(long long));
+								tmp |= mask;
+								memcpy(bitDest,&tmp,sizeof(long long));
 							}
 					}
 
