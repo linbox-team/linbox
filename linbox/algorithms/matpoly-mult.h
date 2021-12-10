@@ -986,7 +986,7 @@ namespace LinBox
 			// find a pseudo primitive element of the multiplicative group _p -1
 			long m = _pl - 1;
 			long k = 0;
-			srand((unsigned int)time(nullptr));
+			srand(static_cast<unsigned int>(std::time(nullptr)));
 			while ((m & 1) == 0) {
 				m = m >> 1;
 				k++;
@@ -1049,7 +1049,7 @@ namespace LinBox
 				// find a pseudo primitive element of the multiplicative group _p-1
 				long mm = _pl - 1;
 				long kk = 0;
-				srand((unsigned int)time(nullptr));
+				srand(static_cast<unsigned int>(std::time(nullptr)));
 				while ((mm & 1) == 0) {
 					mm = mm >> 1;
 					kk++;
@@ -1271,7 +1271,7 @@ namespace LinBox
 				// find a pseudo primitive element of the multiplicative group _p-1
 				long mm = _pl - 1;
 				long kk = 0;
-				srand((unsigned int)time(nullptr));
+				srand(static_cast<unsigned int>(std::time(nullptr)));
 				while ((mm & 1) == 0) {
 					mm = mm >> 1;
 					kk++;
@@ -1430,7 +1430,7 @@ namespace LinBox
 				// find a pseudo primitive element of the multiplicative group _p-1
 				long mm = _pl - 1;
 				long kk = 0;
-				srand((unsigned int)time(nullptr));
+				srand(static_cast<unsigned int>(std::time(nullptr)));
 				while ((mm & 1) == 0) {
 					mm = mm >> 1;
 					kk++;
