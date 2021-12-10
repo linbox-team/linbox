@@ -345,7 +345,7 @@ namespace LinBox
                                          const Residu_t& size=0) :
                 _size(size), _seed(seed), _ring(F)
             {
-                if (_seed == 0) _seed = time(nullptr);
+                if (_seed == 0) _seed = static_cast<uint64_t>(std::time(nullptr));
 
                 size_t cardinality;
                 F.cardinality(cardinality);

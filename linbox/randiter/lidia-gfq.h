@@ -55,7 +55,7 @@ namespace LinBox
 				 const uint64_t seed = 0) :
 			_size(size), _seed(seed) , GF(F)
 		{
-			if (_seed == 0) _seed = time(nullptr);
+                    if (_seed == 0) _seed = static_cast<uint64_t>(std::time(nullptr));
 
 			integer cardinality ;
 			F.cardinality(cardinality);
@@ -124,8 +124,8 @@ namespace LinBox
 		}
 
 		LidiaGfqRandIter(void) :
-		       	_size(0), _seed(0)
-		{ time(nullptr); }
+		       	_size(0), _seed(static_cast<uint64_t>(std::time(nullptr)))
+		{}
 
 	private:
 
