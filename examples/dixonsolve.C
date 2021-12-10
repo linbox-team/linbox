@@ -34,6 +34,8 @@
 #include "linbox/util/args-parser.h"
 #include "linbox/util/error.h"
 #include "linbox/util/matrix-stream.h"
+#include "linbox/randiter/random-prime.h"
+#include <givaro/givrandom.h>
 
 // DenseLU
 #include "linbox/matrix/dense-matrix.h"
@@ -45,17 +47,6 @@ using namespace LinBox;
 typedef Givaro::ZRing<Givaro::Integer> Ints;
 typedef DenseVector<Ints> ZVector;
 
-
-struct FixPrime {
-    typedef Givaro::Integer Prime_Type;
-    const Prime_Type _myprime;
-    FixPrime(const Givaro::Integer& i) : _myprime(i) {}
-    inline FixPrime &operator ++ () { return *this; }
-    const Prime_Type &operator * () const { return randomPrime(); }
-    const Prime_Type & randomPrime() const { return _myprime; }
-    void setBits(uint64_t bits) {}
-    template<class _ModField> void setBitsField() { }
-};
 
 template<typename _Matrix, typename _EliminationMethod>
 int test(_Matrix A, std::string vector_file, bool inv, bool pp, bool sparse_elim) {
@@ -96,22 +87,13 @@ int test(_Matrix A, std::string vector_file, bool inv, bool pp, bool sparse_elim
 
     if (createB) {
         ZVector U(ZZ, A.coldim());
+        Givaro::GivRandom bgen( BaseTimer::seed() );
         if (inv) {
             std::cerr << "Creating a random {-1,1} vector " << std::endl;
-            srand48( BaseTimer::seed() );
-            for(auto& it:B)
-                if (drand48() <0.5)
-                    it = -1;
-                else
-                    it = 1;
+            for(auto& it:B) it = (bgen.brand()?1:-1);
         } else {
             std::cerr << "Creating a random consistant {-1,1} vector " << std::endl;
-            srand48( BaseTimer::seed() );
-            for(FFPACK::rns_double::integer& it:U)
-                if (drand48() <0.5)
-                    it = -1;
-                else
-                    it = 1;
+            for(FFPACK::rns_double::integer& it:U) it = (bgen.brand()?1:-1);
 
             // B = A U
             A.apply(B,U);
@@ -142,8 +124,8 @@ int test(_Matrix A, std::string vector_file, bool inv, bool pp, bool sparse_elim
     Ints::Element d;
     Method::Dixon m(M);
     typedef Givaro::Modular<double> Field;
-		// 0.7213475205 is an upper approximation of 1/(2log(2))
-    size_t bitsize((size_t)( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)));
+
+    const size_t bitsize((size_t) FieldTraits<Field>::bestBitSize(A.rowdim()));
     Givaro::Integer randomPrime( *(PrimeIterator<>(bitsize)) );
 
     FixPrime fixedprime( randomPrime );
@@ -244,7 +226,7 @@ int main (int argc, char **argv) {
     Argument as[] = {
         { 'm', "-m FILE", "Set the input file for the matrix.",  TYPE_STR , &matrix_file },
         { 'v', "-v FILE", "Set the input file for the vector.",  TYPE_STR , &vector_file },
-        { 'i', "-i"     , "whether the matrix is invertible.",  TYPE_BOOL , &inv },
+        { 'i', "-i"     , "whether the matrix is known to be invertible.",  TYPE_BOOL , &inv },
         { 'p', "-p"     , "whether you want to pretty print the matrix.",  TYPE_BOOL , &pp },
         { 's', "-s"     , "whether to use sparse elimination.",  TYPE_BOOL , &sparse_elim },
         END_OF_ARGUMENTS
