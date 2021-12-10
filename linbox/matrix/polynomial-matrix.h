@@ -142,6 +142,16 @@ namespace LinBox{
         view       at(size_t i, size_t j)      {return view(*this,i,j);}
         const_view at(size_t i, size_t j)const {return const_view(*this,i,j);}
 
+
+        // initializee matrix entries at random
+        void random(){
+            _rep.random();
+        }        
+        template<class RandIter>
+        void random(RandIter &I){
+            _rep.random(I);
+        }
+        
         // copy the matrix of degree k into A
         template<typename DenseMatrix>
 		DenseMatrix& getMatrix(DenseMatrix& A, size_t k) const {            
@@ -151,7 +161,7 @@ namespace LinBox{
             return A;
 		}
 
-        // copy the matrix A into the matrix of degree
+        // copy the matrix A into the matrix of degree k
         template<typename DenseMatrix>
 		void setMatrix(const DenseMatrix& A, size_t k)  {
             //std::cout<<"SET MATRIX: "<<std::endl;
@@ -420,7 +430,15 @@ namespace LinBox{
 		Element*       getPointer()       {return _rep.getPointer();}
 		const Element* getPointer() const {return _rep.getConstPointer();}
 
-		
+        // initializee matrix entries at random
+        void random(){
+            _rep.random();
+        }        
+        template<class RandIter>
+        void random(RandIter &I){
+            _rep.random(I);
+        }
+
         // copy the matrix of degree k into A
         template<typename DenseMatrix>
 		DenseMatrix& getMatrix(DenseMatrix& A, size_t k) const {
@@ -666,8 +684,16 @@ namespace LinBox{
 
 		Element*       getPointer()       {return _rep.getPointer();}
 		const Element* getPointer() const {return _rep.getConstPointer();}
+        
+        // initializee matrix entries at random
+        void random(){
+            _rep.random();
+        }        
+        template<class RandIter>
+        void random(RandIter &I){
+            _rep.random(I);
+        }
 
-		
 		// retrieve the matrix of degree k in the polynomial matrix
 		//Matrix       operator[](size_t k)       {return      Matrix(field(), getPointer()+k*_row*_col, _row,_col,_col);}
 
@@ -793,16 +819,16 @@ namespace LinBox{
 		// rebind functor to change base field (e.g. apply modulo reduction)
 		template<typename _Tp1>
 		struct rebind {
-              typedef PolynomialMatrix<Field, PMType::matrowfirst>  Self_t;
-              typedef PolynomialMatrix<_Tp1, PMType::matrowfirst>  Other_t;
-              
-              void operator() (PolynomialMatrix<_Tp1, PMType::matrowfirst>& Ap,
-                               const PolynomialMatrix<Field, PMType::matrowfirst>&  A){
-                  Hom<Field, _Tp1> hom(A.field(), Ap.field()) ;
-                  for (size_t j = 0; j < A._size; j++)
-                      for (size_t i = 0; i < A._row * A._col; i++)
-                          hom.image (Ap.ref(i,j), A.get(i,j));
-              }
+            typedef PolynomialMatrix<Field, PMType::matrowfirst>  Self_t;
+            typedef PolynomialMatrix<_Tp1, PMType::matrowfirst>  Other_t;
+            
+            void operator() (PolynomialMatrix<_Tp1, PMType::matrowfirst>& Ap,
+                             const PolynomialMatrix<Field, PMType::matrowfirst>&  A){
+                Hom<Field, _Tp1> hom(A.field(), Ap.field()) ;
+                for (size_t j = 0; j < A._size; j++)
+                    for (size_t i = 0; i < A._row * A._col; i++)
+                        hom.image (Ap.ref(i,j), A.get(i,j));
+            }
         };
 
 
