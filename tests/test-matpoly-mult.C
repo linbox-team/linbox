@@ -56,41 +56,6 @@ using namespace std;
 using namespace LinBox;
 
 
-
-
-template <typename Rand, typename Vect>
-void randomVect (Rand& r, Vect& v) {
-	size_t s = v.size();
-	for (size_t i = 0; i < s; ++i)
-		r.random(v[i]);
-}
-
-template <typename Rand, typename Mat>
-void randomMat (Rand& r, Mat& m) {
-	for (size_t i = 0; i < m.rowdim(); ++i)
-		for (size_t j = 0; j < m.coldim(); ++j)
-			r.random(m.refEntry(i,j));
-}
-
-
-template<typename Field, typename Rand>
-void randomMatPol(Rand& r,  PolynomialMatrix<Field,PMType::matfirst>& A){
-	for(size_t i=0;i<A.size();i++){
-        auto Ai=A[i];
-        randomMat(r, Ai);
-    }
-}
-
-template<typename Field, typename Rand>
-void randomMatPol(Rand& r,  PolynomialMatrix<Field,PMType::polfirst>& A){
-	for(size_t i=0;i<A.rowdim()*A.coldim();i++){
-        auto Ai=A(i);
-        randomVect(r, Ai);
-    }
-}
-
-
-
 template<typename MatPol>
 bool operator==(const MatPol& A, const MatPol& B){
 	MatrixDomain<typename MatPol::Field> MD(A.field());
@@ -114,8 +79,8 @@ bool check_matpol_mul(const Field& fld,  RandIter& Gen, size_t n, size_t d) {
 	MatrixP A(fld,n,n,d),B(fld,n,n,d),C(fld,n,n,2*d-1);
 
 	// Generate random matrix of polynomial
-	randomMatPol(Gen,A);
-	randomMatPol(Gen,B);
+    A.random(Gen);
+    B.random(Gen);
 	typedef PolynomialMatrixDomain<Field>    PolMatDom;
 	PolMatDom  PMD(fld);
 	PMD.mul(C,A,B);
@@ -128,8 +93,9 @@ bool check_matpol_midp(const Field& fld,  RandIter& Gen, size_t n, size_t d) {
 	MatrixP A(fld,n,n,d),C(fld,n,n,2*d-1);
 	MatrixP B(fld,n,n,d);
 	// Generate random matrix of polynomial
-	randomMatPol(Gen,A);
-	randomMatPol(Gen,C);
+    A.random(Gen);
+    C.random(Gen);
+
 	typedef PolynomialMatrixDomain<Field>    PolMatDom;
 	PolMatDom  PMD(fld);
 	PMD.midproduct(B,A,C) ;
@@ -146,8 +112,10 @@ bool check_matpol_midpgen(const Field& fld,  RandIter& Gen, size_t n, size_t d) 
 	MatrixP A(fld,n,n,d0+1),B(fld,n,n,d1),C(fld,n,n,d);
 
 	// Generate random matrix of polynomial
-	randomMatPol(Gen,A);
-	randomMatPol(Gen,C);
+    A.random(Gen);
+    C.random(Gen);
+
+
 	typedef PolynomialMatrixDomain<Field>    PolMatDom;
 	PolMatDom  PMD(fld);
 	PMD.midproductgen(B,A,C,true,d0+1,d) ;
@@ -166,8 +134,9 @@ bool debug_midpgen_dlp(const Field& fld,  RandIter& Gen) {
 	MatrixP A(fld,48,48,22),B(fld,48,32,21),C(fld,48,32,42);
 
 	// Generate random matrix of polynomial
-	randomMatPol(Gen,A);
-	randomMatPol(Gen,C);
+    A.random(Gen);
+    C.random(Gen);
+
 	typedef PolynomialMatrixDomain<Field>    PolMatDom;
 	PolMatDom  PMD(fld);
 	PMD.midproductgen(B,A,C,true,n0,n1) ;
