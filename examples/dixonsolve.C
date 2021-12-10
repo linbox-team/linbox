@@ -128,8 +128,8 @@ int test(_Matrix A, std::string vector_file, bool inv, bool pp, bool sparse_elim
     const size_t bitsize((size_t) FieldTraits<Field>::bestBitSize(A.rowdim()));
     Givaro::Integer randomPrime( *(PrimeIterator<>(bitsize)) );
 
-    FixPrime fixedprime( randomPrime );
-    DixonSolver<Ints, Field, FixPrime, _EliminationMethod> rsolve(A.field(), fixedprime);
+    FixedPrimeIterator fixedprime( randomPrime );
+    DixonSolver<Ints, Field, FixedPrimeIterator, _EliminationMethod> rsolve(A.field(), fixedprime);
     std::cout << "Using: " << *fixedprime << " as the fixed p-adic." << std::endl;
 
     chrono.start();
