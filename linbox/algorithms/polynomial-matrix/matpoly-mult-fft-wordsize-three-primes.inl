@@ -41,9 +41,9 @@ namespace LinBox {
 	class PolynomialMatrixThreePrimesFFTMulDomain {
 	public:
 		// Polynomial matrix stored as a matrix of polynomial
-		typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field> MatrixP;
+		typedef PolynomialMatrix<Field,PMType::polfirst> MatrixP;
 		// Polynomial matrix stored as a polynomial of matrix
-		typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain,Field> PMatrix;
+		typedef PolynomialMatrix<Field,PMType::matfirst> PMatrix;
 		//typedef Givaro::Modular<double>                ModField;
 		typedef Field ModField;
 	       		

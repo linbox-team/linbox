@@ -179,8 +179,8 @@ namespace LinBox {
 		template<class Field, class ET=EarlyTerm<(size_t) -1> >
         class OrderBasis {
         public:
-                typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field> MatrixP;
-                typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain,Field> PMatrix;
+            typedef PolynomialMatrix<Field, PMType::polfirst> MatrixP;
+            typedef PolynomialMatrix<Field, PMType::matfirst> PMatrix;
         private:
                 const Field*                     _field;
                 PolynomialMatrixMulDomain<Field>   _PMD;
@@ -417,12 +417,15 @@ namespace LinBox {
                                 //if (true){
                                 //if (k==0 || lll!=m){
                                 if (k==0 ){ //|| !Qt.isIdentity()){
-                                        _BMD.mulin_right(Bperm, sigma[0]);
-                                        _BMD.mul(delta,sigma[0],serie[k]);
-                                        for(size_t i=1;i<=std::min(k,max_degree);i++){
-                                                _BMD.mulin_right(Bperm, sigma[i]);
-                                                _BMD.axpyin(delta,sigma[i],serie[k-i]);
-                                        }
+                                    auto sigma0=sigma[0]; // needed due to the new polynomial matrix API
+                                    
+                                    _BMD.mulin_right(Bperm, sigma0);
+                                    _BMD.mul(delta,sigma[0],serie[k]);
+                                    for(size_t i=1;i<=std::min(k,max_degree);i++){
+                                        auto sigmai= sigma[i];
+                                        _BMD.mulin_right(Bperm, sigmai);
+                                        _BMD.axpyin(delta,sigma[i],serie[k-i]);
+                                    }
                                 }
                                 else{
                                         // if Qt is identity then the first rank rows of delta remain unchanged
@@ -431,13 +434,15 @@ namespace LinBox {
                                                 _BMD.mulin_right(Qt, delta);
 
                                         View delta1(delta,   rank,0,m-rank,n);
-                                        View sigma1(sigma[0],rank,0,m-rank,m);
-                                        _BMD.mul(delta1,sigma1,serie[k]);                                        
-                                        _BMD.mulin_right(Bperm, sigma[0]);
+                                        auto sigma0=sigma[0];
+                                        View sigma1(sigma0,rank,0,m-rank,m);
+                                        _BMD.mul(delta1,sigma1,serie[k]);
+                                        _BMD.mulin_right(Bperm, sigma0);
                                         for(size_t i=1;i<=std::min(k,max_degree);i++){
-                                                View sigmak(sigma[i],rank,0,m-rank,m);
-                                                _BMD.axpyin(delta1,sigmak,serie[k-i]);
-                                                _BMD.mulin_right(Bperm, sigma[i]);
+                                            auto sigmai = sigma[i];
+                                            View sigmak(sigmai,rank,0,m-rank,m);
+                                            _BMD.axpyin(delta1,sigmak,serie[k-i]);
+                                            _BMD.mulin_right(Bperm, sigmai);
                                         }
                                         _BMD.mulin_right(Bperm, delta);
                                 }
@@ -504,11 +509,12 @@ namespace LinBox {
                                 // update sigma by L^(-1) (rank sensitive -> use only the left kernel basis)
                                 for(size_t i=0;i<=std::min(k,max_degree);i++){
                                         // NEED TO APPLY Qt to sigma[i]
-                                        _BMD.mulin_right(Qt, sigma[i]);                                        
-                                        View S1(sigma[i],0,0,rank,m);
-                                        View S2(sigma[i],rank,0,m-rank,m);
-                                        _BMD.axpyin(S2,L2,S1);
-                                        //_BMD.mulin_right(L,sigma[i]);
+                                    auto sigmai=sigma[i];
+                                    _BMD.mulin_right(Qt, sigmai);                                        
+                                    View S1(sigmai,0,0,rank,m);
+                                    View S2(sigmai,rank,0,m-rank,m);
+                                    _BMD.axpyin(S2,L2,S1);
+                                    //_BMD.mulin_right(L,sigma[i]);
                                 }
 #ifdef __DEBUG_MBASIS
                                 std::cout<<"Qt=";
@@ -876,8 +882,8 @@ namespace LinBox {
         
         typedef Givaro::Modular<RecInt::ruint128,RecInt::ruint256>   MYRECINT;
         template<>
-		size_t OrderBasis<MYRECINT,EarlyTerm<(size_t) -1> >::M_Basis(PolynomialMatrix<PMType::polfirst,PMStorage::plain, MYRECINT>            &sigma,
-                                                            const PolynomialMatrix<PMType::polfirst,PMStorage::plain, MYRECINT>      &serie,
+		size_t OrderBasis<MYRECINT,EarlyTerm<(size_t) -1> >::M_Basis(PolynomialMatrix<MYRECINT, PMType::polfirst>            &sigma,
+                                                                     const PolynomialMatrix<MYRECINT, PMType::polfirst>      &serie,
                                                             size_t                 order,
                                                             std::vector<size_t>   &shift)
         {
@@ -885,7 +891,7 @@ namespace LinBox {
                 typedef Givaro::Modular<Givaro::Integer> NewField;
                 NewField F(p);
                 OrderBasis<NewField > SB(F);
-                typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain, NewField> NewMatrix;
+                typedef PolynomialMatrix<NewField, PMType::matfirst> NewMatrix;
                 
                 NewMatrix sigma1(F,sigma.rowdim(),sigma.coldim(),order+1);
                 NewMatrix serie1(F,serie.rowdim(),serie.coldim(),order);

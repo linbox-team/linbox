@@ -45,9 +45,9 @@ namespace LinBox{
   public:
     typedef Givaro::ZRing<integer>       IntField;
     //typedef Givaro::Modular<uint32_t>     ModField;
-    typedef Givaro::Modular<double>                ModField;
-    typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,ModField> MatrixP_F; // Polynomial matrix stored as a matrix of polynomials
-    typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,IntField> MatrixP_I; // Polynomial matrix stored as a matrix of polynomials
+      typedef Givaro::Modular<double>                ModField;
+      typedef PolynomialMatrix<ModField, PMType::polfirst> MatrixP_F; // Polynomial matrix stored as a matrix of polynomials
+      typedef PolynomialMatrix<IntField, PMType::polfirst> MatrixP_I; // Polynomial matrix stored as a matrix of polynomials
 
   private:
     const IntField     *_field;
@@ -97,8 +97,8 @@ namespace LinBox{
       integer maxA,maxB;
       maxA=maxB=_maxnorm;
       if (_maxnorm==0){
-	maxA=1;maxA<<=uint64_t(logmax(a));
-	maxB=1;maxB<<=uint64_t(logmax(b));
+          maxA=1;maxA<<=uint64_t(logmax(a));
+          maxB=1;maxB<<=uint64_t(logmax(b));
       }
       //std::cout<<"MIDP RNS bound: "<<maxA<<" "<<maxB<<" "<<a.coldim()<<" "<<a.size()<<" "<<b.size()<<std::endl;
       
@@ -575,10 +575,10 @@ namespace LinBox{
     typedef Givaro::Modular<integer>              Field;
     typedef typename Field::Element     Element;
     typedef Givaro::ZRing<integer>  IntField;
-    // Polynomial matrix stored as a polynomial of matrix
-    typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field> MatrixP_F;
-    // Polynomial matrix stored as a polynomial of matrix
-    typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,IntField> MatrixP_I;
+      // Polynomial matrix stored as a polynomial of matrix
+      typedef PolynomialMatrix<Field, PMType::polfirst> MatrixP_F;
+      // Polynomial matrix stored as a polynomial of matrix
+      typedef PolynomialMatrix<IntField, PMType::polfirst> MatrixP_I;
 
   private:
     const Field            *_field;  // Read only
