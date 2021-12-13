@@ -99,7 +99,7 @@ namespace LinBox{
         typedef _Field                         Field;
 		typedef typename Field::Element      Element;
 		typedef std::vector<Element,AlignedAllocator<Element, Alignment::DEFAULT>> VECT;
-        typedef BlasVector<Field>                             Data;        
+        typedef BlasVector<Field, VECT>                             Data;        
 
         typedef BlasMatrix<Field>                                   Matrix;
         typedef const BlasMatrix<Field>                        constMatrix;
@@ -390,7 +390,7 @@ namespace LinBox{
         typedef _Field                         Field;
 		typedef typename Field::Element      Element;
 		typedef std::vector<Element,AlignedAllocator<Element, Alignment::DEFAULT>> VECT;
-        typedef BlasVector<Field>                             Data;        
+        typedef BlasVector<Field, VECT>                             Data;        
 
         typedef BlasSubmatrix<BlasMatrix<Field>>                    Matrix;
         typedef BlasSubmatrix<const BlasMatrix<Field>>         constMatrix;
@@ -645,7 +645,7 @@ namespace LinBox{
         typedef _Field                         Field;
 		typedef typename Field::Element      Element;
 		typedef std::vector<Element,AlignedAllocator<Element, Alignment::DEFAULT>> VECT;
-        typedef BlasVector<Field>                             Data;        
+        typedef BlasVector<Field, VECT>                               Data;        
 
         typedef BlasSubmatrix<BlasMatrix<Field>>                    Matrix;
         typedef BlasSubmatrix<const BlasMatrix<Field>>         constMatrix;
