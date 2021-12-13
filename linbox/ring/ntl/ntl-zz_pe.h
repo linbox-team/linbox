@@ -387,9 +387,9 @@ namespace LinBox
                 _size(size), _seed(seed), _ring(F)
 		{
 			if(_seed == 0)
-				NTL::SetSeed(NTL::to_ZZ(time(0)));
+                            NTL::SetSeed(NTL::to_ZZ(static_cast<long unsigned int> (std::time(nullptr))));
 			else {
-				NTL::SetSeed( Caster<NTL::ZZ,uint64_t>(seed));
+                            NTL::SetSeed( Caster<NTL::ZZ,uint64_t>(seed));
 			}
 		}
 
@@ -401,7 +401,7 @@ namespace LinBox
 // 			if(!R.expectTagName("randiter")) return;
 // 			if(!R.expectAttributeNum("seed", _seed) || !R.expectAttributeNum("size", _size)) return;
 
-// 			if(_seed == 0) _seed = time(NULL);
+// 			if(_seed == 0) _seed = std::time(nullptr);
 
 // 			NTL::SetSeed(NTL::to_ZZ(_seed));
 // 		}
@@ -413,9 +413,9 @@ namespace LinBox
 
 		{
 			if(_seed == 0)
-				NTL::SetSeed(NTL::to_ZZ(time(0)));
+                            NTL::SetSeed(NTL::to_ZZ(static_cast<long unsigned int>(std::time(nullptr))));
 			else
-				NTL::SetSeed(Caster<NTL::ZZ,uint64_t>(_seed));
+                            NTL::SetSeed(Caster<NTL::ZZ,uint64_t>(_seed));
 		}
 
 		NTL::ZZ_pE& random (NTL::ZZ_pE& x) const

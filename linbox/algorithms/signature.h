@@ -98,7 +98,7 @@ namespace LinBox
 		template <class Matrix>
 		static bool isPosDef (const Matrix& M, const BLAS_LPM_Method& meth)
             {
-                PrimeIterator<IteratorCategories::HeuristicTag>::setSeed((size_t)time(0));
+                PrimeIterator<IteratorCategories::HeuristicTag>::setSeed(static_cast<uint64_t>(std::time(nullptr)));
                 size_t n = M. rowdim();
                 std::vector<int> P;
                 symmetricLU (P, M);
@@ -143,7 +143,7 @@ namespace LinBox
 		static bool isPosSemiDef (const Matrix& M, const BLAS_LPM_Method& meth)
             {
                 // FIXME this doesn't actually affect the seeding for the algorithms
-                PrimeIterator<IteratorCategories::HeuristicTag>::setSeed((size_t)time(0));
+                PrimeIterator<IteratorCategories::HeuristicTag>::setSeed(static_cast<uint64_t>(std::time(nullptr)));
                 size_t n = M. rowdim();
                 std::vector<int> P;
                 size_t r = (size_t)rank_random (M);

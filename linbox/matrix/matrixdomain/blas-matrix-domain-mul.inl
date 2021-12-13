@@ -198,6 +198,7 @@ namespace LinBox {
 	public:
 		Matrix1& operator()(Matrix1& C, const TriangularBlasMatrix<Matrix3>& B, const Matrix2& A) const
 		{
+          
 			C.copy(A);
 			return BlasMatrixDomainMulin<Matrix1, TriangularBlasMatrix<Matrix3> >()(B, C);
 		}
@@ -229,7 +230,7 @@ namespace LinBox {
 	public:
         Matrix1 & operator()(Matrix1& C, const  TriangularBlasMatrix<Matrix2> & A, const TriangularBlasMatrix<Matrix3>& B) const
         {
-            typename TriangularBlasMatrix<Matrix3>::constSubMatrixType Bplain(B);
+            typename TriangularBlasMatrix<Matrix3>::constSubMatrixType Bplain(B);                        
             return BlasMatrixDomainMul<Matrix1, TriangularBlasMatrix<Matrix1> , typename TriangularBlasMatrix<Matrix3>::constSubMatrixType >()(C,A,Bplain);
 		}
 	};

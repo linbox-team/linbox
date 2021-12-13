@@ -44,6 +44,9 @@
 
 namespace LinBox {
 
+    /**************************************************************************/
+    /**************************************************************************/
+    /**************************************************************************/
     template <typename Field, typename Simd= Simd<typename Field::Element> >
     class FFT : public FFT_base<Field, Simd>
     {
@@ -131,6 +134,107 @@ namespace LinBox {
             check_args (const Field& fld, size_t k, Element w) {
                 if (!k)
                     throw LinBoxError ("FFT: k must be positive");
+
+                if (w == 0)
+                    return FFT_utils::compute_primitive_root (fld, k);
+                else if (FFT_utils::is_primitive_root (fld, w, k))
+                    return w;
+                else
+                    throw LinBoxError ("w is not a primitive k-root of unity");
+            }
+
+    };
+
+    /**************************************************************************/
+    /**************************************************************************/
+    /**************************************************************************/
+    template <typename Field, typename Simd= Simd<typename Field::Element> >
+    class FFT_multi : public FFT_multi_base<Field, Simd>
+    {
+        private:
+            using Element = typename Field::Element;
+
+        public:
+            FFT_multi (const Field& F, size_t k, Element w = 0)
+                : FFT_multi_base<Field, Simd>(F, k, check_args(F, k, w)) {
+            }
+
+            /******************************************************************/
+            /* main functions: FFT_direct and FFT_inverse *********************/
+            /******************************************************************/
+
+            /* Perform a FFT in place on the array 'coeffs' of size n.
+             * Input:
+             *  - must be < p
+             *  - is read in natural order
+             * Output:
+             *  - are < p
+             *  - is written in bitreversed order.
+             */
+            void
+            FFT_direct (Element *coeffs, size_t stride) const {
+                this->DIF (coeffs, stride); /* or DIT_reversed */
+            }
+
+            /* Perform an inverse FFT in place on the array 'coeffs' of size n.
+             * Input:
+             *  - must be < p
+             *  - is read in bitreversed order.
+             * Output:
+             *  - are < p
+             *  - is written in natural order
+             */
+            void
+            FFT_inverse (Element *coeffs, size_t stride) const {
+                this->DIT (coeffs, stride); /* or DIF_reversed */
+            }
+
+
+            /******************************************************************/
+            /* getters ********************************************************/
+            /******************************************************************/
+            const Field &
+            field () const {
+                return *(this->fld);
+            }
+
+            size_t
+            size () const {
+                return this->n;
+            }
+
+            size_t
+            log2_size () const {
+                return this->l2n;
+            }
+
+            const Element &
+            root() const
+            {
+                if (this->l2n == 1) /* if n=2^ln equals 2, return -1 */
+                    return this->fld->mOne;
+                else
+                    return this->pow_w[1];
+            }
+
+            const Element
+            invroot() const
+            {
+                if (this->l2n == 1) /* if n=2^ln equals 2, return -1 */
+                    return this->fld->mOne;
+                else { /* w^-1 = w^(n/2) * w^(n/2-1) = -1 * w^(n/2-1) */
+                    Element r;
+                    this->fld->assign (r, this->pow_w[(this->n>>1)-1]);
+                    this->fld->negin (r);
+                    return r;
+                }
+            }
+
+        private:
+            static Element
+            check_args (const Field& fld, size_t k, Element w) {
+                if (!k)
+                    throw LinBoxError ("FFT_multi: k must be positive");
 
                 if (w == 0)
                     return FFT_utils::compute_primitive_root (fld, k);
