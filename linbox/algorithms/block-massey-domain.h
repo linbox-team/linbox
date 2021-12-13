@@ -578,7 +578,7 @@ namespace LinBox
                         
 			// Make the Power Serie from  Sequence (U.A^i.V) and Identity
 			//_container->recompute(); // make sure sequence is already computed			
-            typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain, Field> PMatrix;
+            typedef PolynomialMatrix<Field, PMType::polfirst> PMatrix;
             PMatrix PowerSerie(field(),mn,n,length);
                         
 			typename Sequence::const_iterator _iter (_container->begin ());
@@ -620,15 +620,16 @@ namespace LinBox
 			}
 
             // convert to polynomial of matrices
-            PolynomialMatrix<PMType::matfirst,PMStorage::plain, Field> Sigma (field(), mn,mn,SigmaBase.size());                        
+            PolynomialMatrix<Field, PMType::matfirst> Sigma (field(), mn,mn,SigmaBase.size());                        
             Sigma.copy(SigmaBase);
 
             BlasPermutation<size_t> BPerm(Perm);
 
 			// Apply BPerm to the Sigma Base
-			for (size_t i=0;i<Sigma.size();++i)
-				_BMD.mulin_right(BPerm,Sigma[i]);
-
+			for (size_t i=0;i<Sigma.size();++i){
+                auto Sigmai=Sigma[i];
+                _BMD.mulin_right(BPerm,Sigmai);
+            }
 
                         
 #ifdef __PRINT_SIGMABASE

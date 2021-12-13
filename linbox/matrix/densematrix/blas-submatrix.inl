@@ -123,6 +123,7 @@ namespace LinBox {
         // std::cout<<*this<<std::endl;
     }
 
+
     template < class _Matrix >
     BlasSubmatrix<_Matrix>::BlasSubmatrix(const nonconstSubMatrixType &M) :
         _ptr(M.getPointer()),
@@ -135,16 +136,17 @@ namespace LinBox {
         // std::cout<<M<<std::endl;
         // std::cout<<*this<<std::endl;
     }
-    
+
     
     template < class _Matrix >
-    BlasSubmatrix<_Matrix>& BlasSubmatrix<_Matrix>::copy (const BlasSubmatrix<_Matrix> & M){
+    template < class _AnyMatrix >
+    BlasSubmatrix<_Matrix>& BlasSubmatrix<_Matrix>::copy (const _AnyMatrix & M){
         //std::cout<<"BlasSubMatrix Copy Method\n";
         if (_row == M.rowdim() && _col == M.coldim()){
             // for (size_t i=0;i<_row;i++)
             //     for(size_t j=0;j<_col;j++)
             //         setEntry(i,j,M.getEntry(i,j));
-            FFLAS::fassign(_field, _row, _col, M._ptr, M._stride , _ptr, _stride); 
+            FFLAS::fassign(_field, _row, _col, M.getPointer(), M.getStride() , _ptr, _stride); 
         }
         else
             throw LinBoxError("Calling copy from BlasSubMatrix with matrices of different dimension ... not allowed");
@@ -468,7 +470,7 @@ namespace LinBox {
 				++_cur; ++_c_idx;
 			}
 			else {
-				linbox_check(_stride > _c_dim);
+				linbox_check(_stride >= _c_dim);
 				_cur = _cur + (ptrdiff_t)(_stride - _c_dim + 1);
 				_c_idx = 0;
 			}

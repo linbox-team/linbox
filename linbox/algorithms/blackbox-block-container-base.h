@@ -106,7 +106,7 @@ public:
 
 		// Sequence constructor from a blackbox and a field
 		// cs set the size of the sequence
-		BlackboxBlockContainerBase (const Blackbox *BD, const Field &F, size_t m, size_t n, size_t seed=(size_t)time(NULL)) :
+    BlackboxBlockContainerBase (const Blackbox *BD, const Field &F, size_t m, size_t n, size_t seed=static_cast<size_t>(std::time(nullptr))) :
                 _field(&F)  , _BB(BD), _size(std::max(BD->rowdim()/m,size_t(1)) + std::max(BD->coldim()/n,size_t(1)) +__BW_EXTRA_STEPS)
 			, _nn(BD->rowdim()),  _m(m), _n(n)
 			,casenumber(0)

@@ -37,16 +37,16 @@ namespace LinBox {
 	/***********************************************************************************
 	 **** Polynomial Matrix Multiplication over Zp[x] with p (FFTPrime, FFLAS prime) ***
 	 ***********************************************************************************/
-	template<class Field>
+	template<class _Field>
 	class PolynomialMatrixFFTPrimeMulDomain {
 
-		//typedef Givaro::Modular<T>    Field;
 	public:
+        typedef _Field Field;
 		// Polynomial matrix stored as a matrix of polynomial
-		typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field> MatrixP;
+		typedef PolynomialMatrix<Field,PMType::polfirst> MatrixP;
 		// Polynomial matrix stored as a polynomial of matrix
-		typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain,Field> PMatrix;
-
+		typedef PolynomialMatrix<Field,PMType::matfirst> PMatrix;
+        
 	private:
 		const Field              *_field;  // Read only
 		uint64_t                      _p;
@@ -59,37 +59,27 @@ namespace LinBox {
 			: _field(&F), _p(field().cardinality()),  _BMD(F){}
 
 		template<typename Matrix1, typename Matrix2, typename Matrix3>
-		void mul (Matrix1 &c, const Matrix2 &a, const Matrix3 &b, size_t max_rowdeg=0) const {
-			linbox_check(a.coldim()==b.rowdim());
-			size_t deg  = (max_rowdeg?max_rowdeg:a.size()+b.size()-2); //size_t deg  = a.size()+b.size()-1;
-			size_t lpts = 0;
-			size_t pts  = 1; while (pts <= deg) { pts= pts<<1; ++lpts; }
-			// padd the input a and b to 2^lpts (convert to MatrixP representation)
-			MatrixP a2(field(),a.rowdim(),a.coldim(),pts);
-			MatrixP b2(field(),b.rowdim(),b.coldim(),pts);
-			a2.copy(a,0,a.size()-1);
-			b2.copy(b,0,b.size()-1);
-			MatrixP c2(field(),c.rowdim(),c.coldim(),pts);
-			mul_fft (lpts,c2, a2, b2);
-			c.copy(c2,0,deg);
-		}
+        void mul (Matrix1 &c, const Matrix2 &a, const Matrix3 &b,
+                                                    size_t max_rowdeg=0) const {
+			FFT_PROFILE_START(1);
+            linbox_check(a.coldim()==b.rowdim());
+            size_t deg  = (max_rowdeg ? max_rowdeg : a.size()+b.size()-2);
+            size_t lpts = 0;
+            size_t pts  = 1; while (pts <= deg) { pts= pts<<1; ++lpts; }
 
-		void mul (MatrixP &c, const MatrixP &a, const MatrixP &b, size_t max_rowdeg=0) const {
-			linbox_check(a.coldim()==b.rowdim());
-			size_t deg  = (max_rowdeg?max_rowdeg:a.size()+b.size()-2); //size_t deg  = a.size()+b.size()-1;
-			size_t lpts = 0;
-			size_t pts  = 1; while (pts <= deg) { pts= pts<<1; ++lpts; }
-			
-			// padd the input a and b to 2^lpts
-			MatrixP a2(field(),a.rowdim(),a.coldim(),pts);
-			MatrixP b2(field(),b.rowdim(),b.coldim(),pts);
-			a2.copy(a,0,a.size()-1);
-			b2.copy(b,0,b.size()-1);
-			// resize c to 2^lpts
-			c.resize(pts);
-			mul_fft (lpts,c, a2, b2);
-			c.resize(deg+1);
-		}
+            /* padd the input a and b to 2^lpts and convert to MatrixP
+             * representation if necessary.
+             */
+            MatrixP a2(field(),a.rowdim(),a.coldim(),pts);
+            MatrixP b2(field(),b.rowdim(),b.coldim(),pts);
+            a2.copy(a,0,a.size()-1);
+            b2.copy(b,0,b.size()-1);
+            MatrixP c2(field(),c.rowdim(),c.coldim(),pts);
+            FFT_PROFILING(1,"padding input/output to 2^k");
+            mul_fft (lpts, c2, a2, b2);
+            c.copy(c2,0,deg);
+            FFT_PROFILING(1,"copying back the result");
+        }
 
 		// a,b and c must have size: 2^lpts
 		// -> use TFT to circumvent the padding issue
@@ -105,7 +95,7 @@ namespace LinBox {
 			MatrixP a_copy(field(),a.rowdim(),a.coldim(),pts);
 			MatrixP b_copy(field(),b.rowdim(),b.coldim(),pts);
 			a_copy.copy(a);
-			b_copy.copy(b);		       
+			b_copy.copy(b);
 #endif
 
 #ifdef FFT_PROFILER
@@ -167,8 +157,11 @@ namespace LinBox {
 			FFT_PROFILING(1,"Polfirst to Matfirst");
 
 			// Pointwise multiplication
-			for (size_t i = 0; i < pts; ++i)
-				_BMD.mul(vm_c[i], vm_a[i], vm_b[i]);
+			for (size_t i = 0; i < pts; ++i){
+                auto vm_c_i = vm_c[i];
+				_BMD.mul(vm_c_i, vm_a[i], vm_b[i]);
+                vm_c.setMatrix(vm_c_i,i); // normally does nothing
+            }
 			FFT_PROFILING(1,"Pointwise mult");
 #endif			
 			// Transformation into matrix of polynomials (with int32_t coefficient)
@@ -190,7 +183,7 @@ namespace LinBox {
 			typename Field::Element inv_pts;
 			field().init(inv_pts, pts);
 			field().invin(inv_pts);
-			// for (size_t i = 0; i < m * n; i++)
+			// for (size_t i = 0; i < m * n; i++) 
 			// 	for (size_t j = 0; j < pts; j++)
 			// 		field().mulin(c.ref(i,j), inv_pts);
 			FFLAS::fscalin(field(),c.rowdim()*c.coldim()*c.size(), inv_pts,  c.getPointer(),1);
@@ -296,8 +289,11 @@ namespace LinBox {
 			FFT_PROFILING(1,"Polfirst to Matfirst");
 
 			// Pointwise multiplication
-			for (size_t i = 0; i < pts; ++i)
-				_BMD.mul(vm_c[i], vm_a[i], vm_b[i]);
+			for (size_t i = 0; i < pts; ++i){
+                auto vm_c_i = vm_c[i];
+				_BMD.mul(vm_c_i, vm_a[i], vm_b[i]);
+                vm_c.setMatrix(vm_c_i,i); // normally does nothing
+            }
 			FFT_PROFILING(1,"pointwise mult");
 
 			// Transformation into matrix of polynomials (with int32_t coefficient)
