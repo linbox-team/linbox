@@ -489,7 +489,7 @@ namespace LinBox
 						 const Residu_t& size = 0) :
                 _size(size), _seed(seed), _ring(F)
 		{
-			if (_seed == 0) _seed = uint64_t(time(NULL));
+                    if (_seed == 0) _seed = static_cast<uint64_t>(std::time(nullptr));
 
 			integer cardinality;
 			F.cardinality(cardinality);
@@ -502,7 +502,7 @@ namespace LinBox
 #endif // TRACE
 
 			// Seed random number generator
-			NTL::SetSeed(NTL::to_ZZ(static_cast<int32_t>(_seed)));
+			NTL::SetSeed(NTL::to_ZZ(static_cast<long unsigned int>(_seed)));
 		}
 
         const NTL_ZZ_p& ring() const { return _ring; }
@@ -512,7 +512,7 @@ namespace LinBox
 			// _size(R._size), _seed(R._seed)
 		// {
 			// if(_seed == 0)
-				// NTL::SetSeed(NTL::to_ZZ(time(0)));
+				// NTL::SetSeed(NTL::to_ZZ(time(nullptr)));
 			// else
 				// NTL::SetSeed(NTL::to_ZZ( static_cast<long>(_seed)) );
 		// }
