@@ -224,7 +224,7 @@ bool checkCopy(const Field& F, size_t m,size_t n, size_t d, long seed){
 template<typename PolMatMulDomain>
 bool checkMatPolMul(const PolMatMulDomain& PMMD, size_t m,size_t n, size_t d, long seed, string algo){
     
-    commentator().start (string("Testing polynomial matrix Multiplication with ")+algo, "testMatpolyMul", 1);
+    commentator().start ((string("Testing polynomial matrix Multiplication with ")+algo).c_str(), "testMatpolyMul", 1);
     bool finalok=true;
     bool pass= true;
   
