@@ -103,7 +103,15 @@ namespace LinBox
 			// check if there are enough spaces in sf to store all invariant factors of A
 			linbox_check(sf.size() >= (A.rowdim() <= A.coldim() ? A.rowdim() : A.coldim()));
 
-			std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+			std::ostream& report =
+#ifndef DISABLE_COMMENTATOR
+                commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
+                
+#else
+                std::clog
+#endif
+                ;
+
 
 			typename Vector::iterator p;
 

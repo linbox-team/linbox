@@ -116,6 +116,7 @@ namespace LinBox
 			typename Vector::const_iterator Prime_p;
 
 			Integer pri, quo, rem, itmp;
+            int failedattempts(0);
 
 			for (; count < threshold; ++ count) {
 				// assign b to be a random vector
@@ -128,13 +129,22 @@ namespace LinBox
 
 				// try to solve Ax = b over Ring
 				tmp = solver.solveNonsingular(r_num, r_den, A, b);
+
+//                 A.write(std::clog << "A: ", Tag::FileFormat::linalg) << std::endl;
+//                 std::clog << "b: " << b << std::endl;
+//                 std::clog << "d: " << r_den << std::endl;
+//                 std::clog << "x: " << r_num << std::endl;
+//                 std::clog << "SS_OK: " << tmp << " / " << SS_OK << std::endl;
+
+
+
 				// If no solution found
 				if (tmp != SS_OK) {
-					r.assign (lif, r.zero);
-					break;
-				}
-
-				r. lcmin (lif, r_den);
+                    if (++failedattempts > threshold) {
+                        r.assign (lif, r.zero);
+                        break;
+                    } else --count;
+				} else r. lcmin (lif, r_den);
 			}
 			// filter out primes in PRIMEL from lif.
 			if (!r. isZero (lif))
