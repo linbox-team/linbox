@@ -68,8 +68,9 @@ int main(int argc, char** argv)
 		typedef Givaro::ZRing<Integer> PIR;
 		PIR R;
 
-		typedef Givaro::Modular<int64_t> Field;
-		typedef DixonSolver<PIR, Field, PrimeIterator<IteratorCategories::HeuristicTag> > Solver;
+		typedef Givaro::Modular<double> Field;
+        using PrimeGenerator = PrimeIterator<IteratorCategories::HeuristicTag>;
+		typedef DixonSolver<PIR, Field, PrimeGenerator> Solver;
 		typedef LastInvariantFactor<PIR, Solver> LIF;
 		typedef OneInvariantFactor<PIR, LIF, SCompose, RandomMatrix>  OIF;
 		typedef SmithFormBinary<PIR, OIF > SF;

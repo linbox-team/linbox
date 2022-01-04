@@ -46,7 +46,7 @@ BlasVector<PIR> & makeBumps(BlasVector<PIR> & b, int choice) {
 	R.init(three,3);
 	R.init(nine,9);
 	R.init(x,202);
-	// b is a single row 
+	// b is a single row
 	size_t n = b.size();
 	switch (choice) {
 		case 0: // all zero
@@ -78,16 +78,16 @@ BlasVector<PIR> & makeBumps(BlasVector<PIR> & b, int choice) {
 
 	return b;
 }
-						
+
 
 // For any PIR, build an increasing sequence of smith invariants d from "bumps" b.
 template <class PIR>
 BlasVector<PIR> & prefixProduct (BlasVector<PIR> & d, const BlasVector<PIR> & b) {
 	const PIR& R = d.field();
-	typename PIR::Element x,y; R.init(x); R.init(y); 
+	typename PIR::Element x,y; R.init(x); R.init(y);
 	d.setEntry(0,b.getEntry(x,0));
 	for (size_t i = 1; i < d.size(); ++i){
-		d.getEntry(x,i-1); 
+		d.getEntry(x,i-1);
 		b.getEntry(y,i);
 		d.setEntry(i,R.mulin(x, y));
 	}
@@ -98,8 +98,8 @@ BlasVector<PIR> & prefixProduct (BlasVector<PIR> & d, const BlasVector<PIR> & b)
 // Think of bumps[i] as s_i/s_{i-1}, quotient of smith invariants.
 // The lumps are used for off diagonal entries in L,U (triangular scramblers).
 template <class PIR>
-void makeSNFExample(DenseMatrix<PIR>& A, 
-					BlasVector<PIR> & d, 
+void makeSNFExample(DenseMatrix<PIR>& A,
+					BlasVector<PIR> & d,
 			  const BlasVector<PIR> & bumps,
 			  const BlasVector<PIR> & lumps) {
 	//LinBox::VectorWrapper::ensureDim (d, bumps.size());
@@ -109,7 +109,7 @@ void makeSNFExample(DenseMatrix<PIR>& A,
     //    std::cout<<"d="<<d<<std::endl;
 	// make A = UDL for random unimodular L,U
 	const PIR & R = A.field();
-	DenseMatrix<PIR> L(R, A.coldim(), A.coldim()), 
+	DenseMatrix<PIR> L(R, A.coldim(), A.coldim()),
 					U(R, A.rowdim(), A.rowdim());
 	typename PIR::Element x; R.init(x);
 	size_t i, j, k;
@@ -133,14 +133,22 @@ void makeSNFExample(DenseMatrix<PIR>& A,
 
 	// A <- UAL
 	BlasMatrixDomain<PIR> MD(R);
-	MD.mulin_left(A,L); 
-	MD.mulin_right(U,A); 
+	MD.mulin_left(A,L);
+	MD.mulin_right(U,A);
 
 	for (i = 0; i < d.size(); ++ i)
 		d.setEntry(i,R.abs(x, d.getEntry(x,i)));
 	// Now A is matrix equivalent to diag prefix product of bumps.
 	// Now d is SNF diagonal (vector of invariants) for A.
 
+	std::ostream & report =
+#ifndef DISABLE_COMMENTATOR
+        commentator().report()
+#else
+        std::clog
+#endif
+;
+    A.write(report << "Created: ", Tag::FileFormat::linalg) << std::endl;
 }
 
 template <class PIR>
@@ -150,7 +158,7 @@ bool checkSNFExample( const BlasVector<PIR>& d, const BlasVector<PIR>& x ){
 #ifndef DISABLE_COMMENTATOR
         commentator().report()
 #else
-        std::cerr
+        std::clog
 #endif
 ;
 
