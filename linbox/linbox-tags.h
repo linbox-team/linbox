@@ -94,8 +94,8 @@ namespace LinBox
 			Pretty,
 			MagmaCpt,
 			OneBased,
-			MatrixMarket
-
+            MatrixMarket,
+            linalg
 		} ;
 
 
