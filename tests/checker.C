@@ -108,7 +108,7 @@ int main(int argc, char* argv[]) {
     warn("test-quad-matrix", "half baked, bds responsible");
 */
 
-    skip("test-smith-form-kannan-bachem", "not working anymore");
+//     skip("test-smith-form-kannan-bachem", "not working anymore");
     warn("test-one-invariant-factor", "probalistic algorithm, sometimes fails");
 
 
