@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2004 Pascal Giorgi, Clément Pernet
  *               2013, 2014 the LinBox group
- *               2018 revamped by Pascal Giorgi 
+ *               2018 revamped by Pascal Giorgi
  * Written by :
  *               Pascal Giorgi  pascal.giorgi@lirmm.fr
  *               Clément Pernet clement.pernet@imag.fr
@@ -35,13 +35,13 @@
 
 namespace LinBox {
 
-    
+
     //////////////////
     // CONSTRUCTORS //
     //////////////////
 
     /*  constructors */
-    
+
     template < class _Matrix >
     BlasSubmatrix<_Matrix>::BlasSubmatrix (typename BlasSubmatrix<_Matrix>::matrixType &M, size_t rowbeg, size_t colbeg, size_t Rowdim, size_t Coldim) :
         _ptr(M.getPointer()+rowbeg*M.getStride()+colbeg),
@@ -49,7 +49,7 @@ namespace LinBox {
         _col(Coldim),
         _stride(M.getStride()),
         _field(M.field())
-	{ 
+	{
         linbox_check ( rowbeg  <= M.rowdim() ); // allow for NULL matrix
 		linbox_check ( colbeg  <= M.coldim() );
         linbox_check ( rowbeg+Rowdim <= M.rowdim() );
@@ -71,7 +71,7 @@ namespace LinBox {
     }
 
     template < class _Matrix >
-    BlasSubmatrix<_Matrix>::BlasSubmatrix (_Matrix &M):        
+    BlasSubmatrix<_Matrix>::BlasSubmatrix (_Matrix &M):
         _ptr(M.getPointer()),
         _row (M.rowdim()),
         _col (M.coldim()),
@@ -88,7 +88,7 @@ namespace LinBox {
                                            typename BlasSubmatrix<_Matrix>::pointer ptr,
                                            size_t Rowdim,
                                            size_t Coldim,
-                                           size_t stride):        
+                                           size_t stride):
         _ptr(ptr),
         _row (Rowdim),
         _col(Coldim),
@@ -109,7 +109,7 @@ namespace LinBox {
          // std::cout<<M<<std::endl;
          // std::cout<<*this<<std::endl;
      }
-    
+
     template < class _Matrix >
     BlasSubmatrix<_Matrix>::BlasSubmatrix(nonconstSubMatrixType &M) :
         _ptr(M.getPointer()),
@@ -137,7 +137,7 @@ namespace LinBox {
         // std::cout<<*this<<std::endl;
     }
 
-    
+
     template < class _Matrix >
     template < class _AnyMatrix >
     BlasSubmatrix<_Matrix>& BlasSubmatrix<_Matrix>::copy (const _AnyMatrix & M){
@@ -146,15 +146,35 @@ namespace LinBox {
             // for (size_t i=0;i<_row;i++)
             //     for(size_t j=0;j<_col;j++)
             //         setEntry(i,j,M.getEntry(i,j));
-            FFLAS::fassign(_field, _row, _col, M.getPointer(), M.getStride() , _ptr, _stride); 
+            FFLAS::fassign(_field, _row, _col, M.getPointer(), M.getStride() , _ptr, _stride);
         }
         else
             throw LinBoxError("Calling copy from BlasSubMatrix with matrices of different dimension ... not allowed");
         return *this;
     }
-    
-    
+
+
     //////////////////
+    template < class _Matrix >
+    template < class _AnyMatrix >
+    BlasSubmatrix<_Matrix>& BlasSubmatrix<_Matrix>::swap (_AnyMatrix & M){
+        if (!_row || !_col) return *this;
+        linbox_check( _row <= M.rowdim() );
+        linbox_check( _col <= M.coldim() );
+
+        // if possible, swap as big blocks
+        if (_stride == _col && M.getStride() == _col) {
+            FFLAS::fswap(_field,_row*_col,M.getPointer(),1,_ptr,1);
+            return *this;
+        }
+        // else, swap row after row
+        for (size_t i = 0 ; i < _row ; ++i) {
+            FFLAS::fswap(_field, _col, M.getPointer()+i*M.getStride(), 1, _ptr+i*_stride, 1);
+        }
+        return *this;
+    }
+
+
     //   ELEMENTS   //
     //////////////////
 
@@ -187,7 +207,7 @@ namespace LinBox {
 
     template < class _Matrix >
     std::istream& BlasSubmatrix<_Matrix>::read (std::istream &file)
-    {        
+    {
         MatrixStream<Field> ms(field(),file);
         size_t i,j;
 		Element v;
@@ -198,13 +218,13 @@ namespace LinBox {
             }
             setEntry(i,j,v);
         }  while( ms.getError() <= END_OF_MATRIX);
-			        
-     	return file;
+
+	return file;
     }
 
     template < class _Matrix >
     std::ostream& BlasSubmatrix<_Matrix>::write (std::ostream &os, Tag::FileFormat f) const {
-        
+
 		ConstRowIterator p;
 		switch(f) {
         case (Tag::FileFormat::MatrixMarket ) : /* Matrix Market */
@@ -243,13 +263,13 @@ namespace LinBox {
         case (Tag::FileFormat::Maple) : /*  maple format */
             {
                 const bool isMaple(f == Tag::FileFormat::Maple ? true:false);
-                if (isMaple) 
+                if (isMaple)
                     os << "Matrix( " << rowdim() << ',' << coldim() << ",\n[" ;
                 for (p = rowBegin (); p != rowEnd (); ) {
                     typename ConstRow::const_iterator pe;
                     if ( (!isMaple) || (p!=rowBegin())) os << ' ';
                     os << "[ ";
-                        
+
                     for (pe = p->begin (); pe != p->end (); ) {
                         field().write (os, *pe);
                         ++pe ;
@@ -260,7 +280,7 @@ namespace LinBox {
                         }
                     }
 
-                    os << "]" ;
+                    os << ']' ;
                     ++p ;
                     if (p != rowEnd() ) {
                         if (isMaple)
@@ -271,6 +291,25 @@ namespace LinBox {
                 }
                 if (isMaple)
                     os << "])" ;
+            }
+            break;
+        case (Tag::FileFormat::linalg) : /*  new maple format */
+            {
+                os << "<" ;
+                for (p = rowBegin (); p != rowEnd (); ) {
+                    typename ConstRow::const_iterator pe;
+                    os << '<';
+
+                    for (pe = p->begin (); pe != p->end (); ) {
+                        field().write (os, *pe);
+                        if (++pe != p->end()) os << '|';
+                    }
+
+                    os << '>' ;
+                    if (++p != rowEnd() ) os << ',';
+
+                }
+                os << '>';
             }
             break;
         case (Tag::FileFormat::Guillaume) : /*  sms format */
@@ -339,7 +378,7 @@ namespace LinBox {
 		return os;
 	}
 
-    
+
 
 
     ///////////////////
@@ -511,7 +550,7 @@ namespace LinBox {
 
 
 
-   
+
 	template <class _Matrix>
 	template<typename _Tp1, typename _Rep2>
 	struct BlasSubmatrix< _Matrix>::rebind {
@@ -540,4 +579,3 @@ namespace LinBox {
 /* // c-basic-offset: 4 */
 /* // End: */
 /* // vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s */
-
