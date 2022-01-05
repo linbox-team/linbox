@@ -110,7 +110,7 @@ namespace LinBox
 			Integer r_den;
 			//std::vector<std::pair<Integer, Integer> > result (A.coldim());
 			//typename std::vector<std::pair<Integer, Integer> >::iterator result_p;
-			// vector b, RHS, 32-bit int is good enough
+			// vector b, RHS, int is good enough
 			std::vector<int> b(A.rowdim());
 			typename std::vector<int>::iterator b_p;
 			typename Vector::const_iterator Prime_p;
@@ -121,8 +121,6 @@ namespace LinBox
 			for (; count < threshold; ++ count) {
 				// assign b to be a random vector
 				for (b_p = b.begin(); b_p != b.end(); ++ b_p) {
-//					* b_p = rand() % 268435456 - 134217728; // may need to change to use ring's random gen.
-//					// dpritcha, 2004-07-26
                     _gen( itmp );
                     * b_p = (int)itmp;
 				}
@@ -130,21 +128,13 @@ namespace LinBox
 				// try to solve Ax = b over Ring
 				tmp = solver.solveNonsingular(r_num, r_den, A, b);
 
-//                 A.write(std::clog << "A: ", Tag::FileFormat::linalg) << std::endl;
-//                 std::clog << "b: " << b << std::endl;
-//                 std::clog << "d: " << r_den << std::endl;
-//                 std::clog << "x: " << r_num << std::endl;
-//                 std::clog << "SS_OK: " << tmp << " / " << SS_OK << std::endl;
-
-
-
 				// If no solution found
 				if (tmp != SS_OK) {
                     if (++failedattempts > threshold) {
                         r.assign (lif, r.zero);
                         break;
                     } else --count;
-				} else r. lcmin (lif, r_den);
+				} else r.lcmin (lif, r_den);
 			}
 			// filter out primes in PRIMEL from lif.
 			if (!r. isZero (lif))

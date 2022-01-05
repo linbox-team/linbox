@@ -89,7 +89,7 @@ namespace LinBox
 			break;
 
 		case SS_SINGULAR:
-			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR) << "switching to singular" << std::endl;
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_WARNING) << "switching to singular" << std::endl;
 			//std::cerr<<"switching to singular\n";
 			status=solveSingular(num, den,A,b);
 			break;
@@ -114,6 +114,7 @@ namespace LinBox
 												      const Vector2& b,
 												      int maxPrimes) const
 	{
+        commentator().start("solve.dixon.integer.nonsingular.wiedemann");
 		// checking if matrix is square
 		linbox_check(A.rowdim() == A.coldim());
 
@@ -156,8 +157,10 @@ namespace LinBox
 		while(F->isZero(MinPoly.front()) && --issingular );
 
 
+
 		if (!issingular){
-			std::cerr<<"The Matrix is singular\n";
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_WARNING) << "The Matrix is singular" << std::endl;
+//			std::cerr<<"The Matrix is singular\n";
 			delete Ap;
 			return SS_SINGULAR;
 		}
@@ -175,6 +178,7 @@ namespace LinBox
 #ifdef RSTIMING
 			ttNonsingularSolve.update(re, lc);
 #endif
+            commentator().stop("solve.dixon.integer.nonsingular.wiedemann");
 			return SS_OK;
 		}
 	}
@@ -188,7 +192,7 @@ namespace LinBox
 										     const Vector2& b,
 										     int maxPrimes) const
 	{
-		std::cerr<<"in singular solver\n";
+        commentator().start("solve.dixon.integer.singular.wiedemann");
 
 		typedef BlasVector<Ring>  IVector;
 		typedef SparseMatrix<Field>                  FMatrix;
@@ -239,14 +243,18 @@ namespace LinBox
 			F->add(tmp,MinPoly.at(1),MinPoly.front());
 		}
 		while(((F->isZero(tmp) || MinPoly.size() <=2) && --badprecondition ));
-		std::cerr<<"minpoly found with size: "<<MinPoly.size()<<std::endl;
-		for (size_t i=0;i<MinPoly.size();++i)
-			std::cerr<<MinPoly[i]<<"*x^"<<i<<"+";
-		std::cerr<<std::endl;
 
-		std::cerr<<"prime is: "<<_prime<<std::endl;
+#ifdef DEBUG_DS_WIEDEMANN
+		std::clog<<"minpoly found with size: "<<MinPoly.size()<<std::endl;
+		for (size_t i=0;i<MinPoly.size();++i)
+			std::clog<<MinPoly[i]<<"*x^"<<i<<"+";
+		std::clog<<std::endl;
+		std::clog<<"prime is: "<<_prime<<std::endl;
+#endif
+
 		if (!badprecondition){
-			std::cerr<<"Bad Preconditionner\n";
+			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_WARNING) << "Bad Preconditionner" << std::endl;
+//			std::cerr<<"Bad Preconditionner\n";
 
 			delete Ap;
 			if (PAQ  != NULL) delete PAQ;
@@ -261,9 +269,16 @@ namespace LinBox
 			MinPoly.erase(MinPoly.begin());
 
 			typedef WiedemannLiftingContainer<Ring, Field, IPrecondMatrix, FPrecondMatrix, FPolynomial> LiftingContainer;
-			std::cerr<<"before lc\n";
+
+#ifdef DEBUG_DS_WIEDEMANN
+			std::clog<<"before lc\n";
+#endif
+
 			LiftingContainer lc(_ring, *F, *PAQ, *PApQ, MinPoly, Pb, _prime);
-			std::cerr<<"constructing lifting container of length: "<<lc.length()<<std::endl;
+
+#ifdef DEBUG_DS_WIEDEMANN
+			std::clog<<"constructing lifting container of length: "<<lc.length()<<std::endl;
+#endif
 
 			RationalReconstruction<LiftingContainer> re(lc,_ring,2);
 
@@ -271,34 +286,8 @@ namespace LinBox
 
 
 			if (Q    != NULL) {
-
-#if 0
-				   typename Ring::Element lden;
-				   _ring. assign (lden, _ring.one);
-				   typename Vector1::iterator p;
-				   for (p = answer.begin(); p != answer.end(); ++ p)
-				   _ring. lcm (lden, lden, p->second);
-
-#endif
-
 				IVector Qx(num.size());
-
-#if 0
-				   typename IVector::iterator p_x;
-
-				   for (p = answer.begin(), p_x = x. begin(); p != answer.end(); ++ p, ++ p_x) {
-				   _ring. mul (*p_x, p->first, lden);
-				   _ring. divin (*p_x, p->second);
-				   }
-#endif
-
 				Q->apply(Qx, num);
-#if 0
-				   for (p=answer.begin(),p_x=Qx.begin(); p != answer.end();++p,++p_x){
-				   p->first=*p_x;
-				   p->second=lden;
-				   }
-#endif
 				num = Qx;
 			}
 
@@ -309,6 +298,7 @@ namespace LinBox
 			if (P    != NULL) delete P;
 			if (Q    != NULL) delete Q;
 
+            commentator().stop("solve.dixon.integer.singular.wiedemann");
 			return SS_OK;
 		}
 	}
@@ -329,32 +319,28 @@ namespace LinBox
 										     LambdaSparseMatrix<Field> *&Pmodp,
 										     LambdaSparseMatrix<Field> *&Qmodp) const
 	{
-#if 0
-		std::cerr<<"A:\n";
-		A->write(std::cerr);
-		std::cerr<<"A mod p:\n";
-		Ap->write(std::cerr);
-#endif
-		VectorDomain<Ring> VD(_ring);
-#if 0
-		std::cerr<<"b:\n";
-		VD.write(std::cerr,b)<<std::endl;
-#endif
-
-
 		commentator().start ("Constructing sparse preconditioner");
+
+        VectorDomain<Ring> VD(_ring);
+#if DEBUG_DS_WIEDEMANN
+		A->write(std::clog<<"A:\n");
+		Ap->write(std::clog<<"A mod p:\n");
+		VD.write(std::clog<<"b:\n",b)<<std::endl;
+#endif
+
+
 		typedef LambdaSparseMatrix<Ring>  IPreconditioner;
 		typedef LambdaSparseMatrix<Field> FPreconditioner;
 
 		size_t min_dim = A->coldim() < A->rowdim() ? A->coldim() : A->rowdim();
 
 		P = new  IPreconditioner(_ring,min_dim,A->rowdim(),2,3.);
-		// 		std::cerr<<"P:\n";
-		// 		P->write(std::cerr);
+		//		std::cerr<<"P:\n";
+		//		P->write(std::cerr);
 
 		Q = new  IPreconditioner(_ring,A->coldim(),min_dim,2,3.);
-		// 		std::cerr<<"Q:\n";
-		// 		Q->write(std::cerr);
+		//		std::cerr<<"Q:\n";
+		//		Q->write(std::cerr);
 
 		Compose<IMatrix,IPreconditioner> *AQ;
 		AQ = new Compose<IMatrix,IPreconditioner> (A,Q);
@@ -362,20 +348,25 @@ namespace LinBox
 		PAQ = new Compose<IPreconditioner, Compose<IMatrix,IPreconditioner> > (P,AQ);		;
 		Pb.resize(min_dim);
 		P->apply(Pb,b);
-		// 		std::cerr<<"Pb:\n";
-		// 		VD.write(std::cerr,Pb)<<std::endl;
+		//		std::cerr<<"Pb:\n";
+		//		VD.write(std::cerr,Pb)<<std::endl;
 
 		Pmodp = new FPreconditioner(F,*P);
-		std::cerr<<"P mod p completed\n";
+#if DEBUG_DS_WIEDEMANN
+		std::clog<<"P mod p completed\n";
+#endif
+
 		Qmodp = new FPreconditioner(F,*Q);
-		std::cerr<<"Q mod p completed\n";
+#if DEBUG_DS_WIEDEMANN
+		std::clog<<"Q mod p completed\n";
+#endif
 
 		Compose<FMatrix,FPreconditioner> *ApQ;
 		ApQ = new Compose<FMatrix,FPreconditioner> (Ap,Qmodp);
 
 		PApQ = new Compose<FPreconditioner, Compose<FMatrix,FPreconditioner> > (Pmodp, ApQ);
-		std::cerr<<"Preconditioning done\n";
-		commentator().stop ("done");
+
+		commentator().stop ("Constructing sparse preconditioner");
 
 	}
 
@@ -427,6 +418,7 @@ namespace LinBox
 										       const Vector2& b,
 										       int maxPrimes) const
 	{
+        commentator().start("solve.dixon.integer.nonsingular.blockwiedemann");
 		// checking if matrix is square
 		linbox_check(A.rowdim() == A.coldim());
 
@@ -444,14 +436,14 @@ namespace LinBox
 		// m = n =
 		root(tmproot, tmp,3);
 		m = n = uint32_t(tmproot);
-		// 		std::cout<<"block factor= "<<m<<"\n";;
+		//		std::cout<<"block factor= "<<m<<"\n";;
 		typedef SparseMatrix<Field> FMatrix;
 
 		Field F(_prime);
 		FMatrix Ap(A, F);
 		Transpose<FMatrix > Bp(Ap);
-		// 		std::cout<<"Ap:\n";
-		// 		Ap.write(std::cout);
+		//		std::cout<<"Ap:\n";
+		//		Ap.write(std::cout);
 		typedef BlockWiedemannLiftingContainer<Ring, Field, Transpose<IMatrix >, Transpose<FMatrix > > LiftingContainer;
 
 		Transpose<IMatrix> B(A);
@@ -465,6 +457,7 @@ namespace LinBox
 		ttNonsingularSolve.update(re, lc);
 #endif
 
+        commentator().stop("solve.dixon.integer.nonsingular.blockwiedemann");
 		return SS_OK;
 	}
 
@@ -486,6 +479,7 @@ namespace LinBox
 										   int maxPrimes) const
 	{
 
+        commentator().start("solve.dixon.integer.nonsingular.blockhankel");
 		linbox_check(A.rowdim() == A.coldim());
 		linbox_check(A.rowdim() % blocksize == 0);
 
@@ -560,6 +554,7 @@ namespace LinBox
 		std::cout<<"rational reconstruction   : "<<re.ttRecon<<"\n";
 #endif
 
+        commentator().stop("solve.dixon.integer.nonsingular.blockhankel");
 		return SS_OK;
 	}
 
@@ -645,7 +640,9 @@ namespace LinBox
                                                                           const Vector2& b,
                                                                           int maxPrimes) const
 	{
+        commentator().start("solve.dixon.integer.nonsingular.sparselim");
 		return solve(num, den, A, b, maxPrimes);
+        commentator().stop("solve.dixon.integer.nonsingular.sparselim");
 	}
 
 	template <class Ring, class Field, class RandomPrime>
@@ -657,7 +654,9 @@ namespace LinBox
                                                                           const Vector2& b,
                                                                           int maxPrimes) const
 	{
+        commentator().start("solve.dixon.integer.singular.sparselim");
 		return solve(num, den, A, b, maxPrimes);
+        commentator().stop("solve.dixon.integer.singular.sparselim");
 	}
 
 } //end of namespace LinBox
