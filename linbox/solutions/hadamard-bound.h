@@ -42,11 +42,9 @@ namespace LinBox {
 #endif
         Integer normSquared = 0;
         for (ConstIterator it = begin; it != end; ++it) {
-            // Whatever field element it is,
-            // it should be able to store the square without
-            // loss of information.
-            Integer iit(*it);
-            normSquared += iit*iit;
+            // normSquared += Integer(*it)*Integer(*it);
+            Integer rit(*it);
+            Integer::axpyin(normSquared, rit, rit);
         }
 
         if (normSquared == 0) {
