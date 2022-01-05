@@ -60,9 +60,9 @@ int main(int argc, char** argv)
 
 	parseArguments (argc, argv, args);
 
-    commentator().setReportStream(std::clog);
-    commentator().setMaxDepth(-1);
-    commentator().setMaxDetailLevel(-1);
+//    commentator().setReportStream(std::clog);
+//    commentator().setMaxDepth(-1);
+//    commentator().setMaxDetailLevel(-1);
 
 	commentator().start("SmithFormBinary test suite", "SmithFormBinary");
 
