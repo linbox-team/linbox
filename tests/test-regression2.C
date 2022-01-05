@@ -42,6 +42,7 @@ using namespace LinBox;
 
 template<class Ring, class Matrix>
 bool testWiedemannSingular() {
+    std::clog << "Test Wiedemann Singular ... ";
 // A = [
 // 1, 0, 1, 0;
 // 0, 1, 1, 1;
@@ -69,13 +70,17 @@ bool testWiedemannSingular() {
 	DenseVector<Ring> r(gf2, A.rowdim());
     A.apply(r,X);
 	VectorDomain<Ring> VD(gf2);
-	if (VD.areEqual (r,B))
+	if (VD.areEqual (r,B)) {
+        std::clog << "PASSED.\n";
         return true;
-    else
+    } else {
+        std::clog << "ERROR.\n";
         return false;
+    }
 }
 
 bool testDixonDetOne(size_t count) {
+    std::clog << "Test Dixon Det 1 ... ";
     using Ring = Givaro::ZRing<Integer>;
     using IArray = std::vector<Integer>;
     using IVector = DenseVector<Ring>;
@@ -91,11 +96,11 @@ bool testDixonDetOne(size_t count) {
 
     for(size_t i=0; i<count; ++i) {
         IVector b(Z, Ring::RandIter(Z), 2);
-        b.write(std::clog, Tag::FileFormat::Maple) << std::endl;
+//         b.write(std::clog, Tag::FileFormat::Maple) << std::endl;
 
         solve(x,d,A,b,RingCategories::IntegerTag(), Method::Dixon());
 
-        x.write(std::clog, Tag::FileFormat::Maple) << std::endl;
+//         x.write(std::clog, Tag::FileFormat::Maple) << std::endl;
         A.apply(v,x);
 
         pass &= (d == Z.one) && VectorDomain<Ring>(Z).areEqual(v,b) ;
@@ -111,6 +116,11 @@ bool testDixonDetOne(size_t count) {
 
     pass &= (d == Z.one) && VectorDomain<Ring>(Z).areEqual(v,b);
 
+	if (pass) {
+        std::clog << "PASSED.\n";
+    } else {
+        std::clog << "ERROR.\n";
+    }
     return pass;
 }
 
