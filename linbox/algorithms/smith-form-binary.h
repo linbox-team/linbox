@@ -61,10 +61,10 @@ namespace LinBox
 
 		/** \brief constructor
 		*/
-		SmithFormBinary(const oneInvariantFactor& _oif =oneInvariantFactor(),
-				const Ring& _r = Ring(),
-				int _oifthreshold =DEFAULTOIFTHRESHOLD,
-				int _lifthreshold =DEFAULTLIFTHRESHOLD) :
+		SmithFormBinary(const Ring& _r = Ring(),
+                        const oneInvariantFactor& _oif =oneInvariantFactor(),
+                        int _oifthreshold =DEFAULTOIFTHRESHOLD,
+                        int _lifthreshold =DEFAULTLIFTHRESHOLD) :
 			oif(_oif),r(_r)
 		{
 
@@ -106,7 +106,7 @@ namespace LinBox
 			std::ostream& report =
 #ifndef DISABLE_COMMENTATOR
                 commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
-                
+
 #else
                 std::clog
 #endif
