@@ -60,6 +60,10 @@ int main(int argc, char** argv)
 
 	parseArguments (argc, argv, args);
 
+    commentator().setReportStream(std::clog);
+    commentator().setMaxDepth(-1);
+    commentator().setMaxDetailLevel(-1);
+
 	commentator().start("SmithFormBinary test suite", "SmithFormBinary");
 
 	commentator().report() << std::endl << "EGV++ algorithm test suite with LinBox/Givaro ZRing:\n";
