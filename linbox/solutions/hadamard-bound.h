@@ -37,23 +37,30 @@ namespace LinBox {
     template <class ConstIterator>
     bool vectorLogNorm(double& logNorm, const ConstIterator& begin, const ConstIterator& end)
     {
+#ifdef DEBUG_HADAMARD_BOUND
+        std::clog << "BEG vectorLogNorm\n" ;
+#endif
         Integer normSquared = 0;
         for (ConstIterator it = begin; it != end; ++it) {
             // Whatever field element it is,
             // it should be able to store the square without
             // loss of information.
-            normSquared += (*it) * (*it);
+            Integer iit(*it);
+            normSquared += iit*iit;
         }
 
         if (normSquared == 0) {
             logNorm = 0.0;
             return false; // Vector is zero
         }
+
+        logNorm = Givaro::logtwo(normSquared) / 2.0;
+
 #ifdef DEBUG_HADAMARD_BOUND
         std::clog << "normSquared:=" << normSquared << ';' << std::endl;
-        std::clog << "vectorLogNorm:=" << (Givaro::logtwo(normSquared) / 2.0) << ';' << std::endl;
+        std::clog << "vectorLogNorm:=" << logNorm << ';' << std::endl;
+        std::clog << "END vectorLogNorm\n" ;
 #endif
-        logNorm = Givaro::logtwo(normSquared) / 2.0;
         return true;
     }
 
@@ -235,6 +242,9 @@ namespace LinBox {
     template <class IMatrix>
     HadamardLogBoundDetails DetailedHadamardBound(const IMatrix& A)
     {
+#ifdef DEBUG_HADAMARD_BOUND
+        std::clog << "BEG DetailedHadamardBound\n" ;
+#endif
         double rowLogBound = 0.0;
         double rowMinLogNorm = 0.0;
         HadamardRowLogBound(rowLogBound, rowMinLogNorm, A);
@@ -261,6 +271,7 @@ namespace LinBox {
 #ifdef DEBUG_HADAMARD_BOUND
         std::clog << "logBound:=" << data.logBound << ';' << std::endl;
         std::clog << "logBoundOverMinNorm:=" << data.logBoundOverMinNorm << ';' << std::endl;
+        std::clog << "END DetailedHadamardBound\n" ;
 #endif
 
         return data;
@@ -381,6 +392,9 @@ namespace LinBox {
     template <class IMatrix>
     inline double FastCharPolyHadamardBound(const IMatrix& A)
     {
+#ifdef DEBUG_HADAMARD_BOUND
+        std::clog << "BEG FastCharPolyHadamardBound\n" ;
+#endif
         typename MatrixTraits<IMatrix>::MatrixCategory tag;
         Integer infnorm;
         InfinityNorm(infnorm, A, tag);
@@ -389,6 +403,7 @@ namespace LinBox {
 #ifdef DEBUG_HADAMARD_BOUND
         std::clog << "DPWbound: " << DPWbound << std::endl;
         std::clog << "GGbound : " << GGbound << std::endl;
+        std::clog << "END FastCharPolyHadamardBound\n" ;
 #endif
         return std::min(DPWbound,GGbound);
     }
@@ -414,6 +429,9 @@ namespace LinBox {
                             RationalSolveHadamardBoundData>::type
     RationalSolveHadamardBound(const Matrix& A, const Vector& b)
     {
+#ifdef DEBUG_HADAMARD_BOUND
+        std::clog << "BEG RationalSolveHadamardBound\n" ;
+#endif
         RationalSolveHadamardBoundData data;
 
         auto hadamardBound = DetailedHadamardBound(A);
@@ -427,6 +445,7 @@ namespace LinBox {
 #ifdef DEBUG_HADAMARD_BOUND
         std::clog << "numLogBound:=" << data.numLogBound << ';' << std::endl;
         std::clog << "denLogBound:=" << data.denLogBound << ';' << std::endl;
+        std::clog << "END RationalSolveHadamardBound\n" ;
 #endif
         return data;
     }
