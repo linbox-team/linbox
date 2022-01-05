@@ -32,6 +32,7 @@
 #include "linbox/blackbox/zo-gf2.h"
 #include "linbox/matrix/sparse-matrix.h"
 #include "linbox/matrix/dense-matrix.h"
+#include "linbox/solutions/solve/solve-dixon.h"
 #include "linbox/solutions/solve/solve-wiedemann.h"
 
 bool writing=false;
@@ -74,17 +75,58 @@ bool testWiedemannSingular() {
         return false;
 }
 
+bool testDixonDetOne(size_t count) {
+    using Ring = Givaro::ZRing<Integer>;
+    using IArray = std::vector<Integer>;
+    using IVector = DenseVector<Ring>;
+    using IMatrix = DenseMatrix<Ring>;
+
+    Ring Z;
+
+    IMatrix A(Z,2,2, IArray{26,5,5,1}.begin() );
+    A.write(std::clog, Tag::FileFormat::Maple) << std::endl;
+
+    bool pass(true);
+    IVector x(Z,2), v(Z,2); Integer d;
+
+    for(size_t i=0; i<count; ++i) {
+        IVector b(Z, Ring::RandIter(Z), 2);
+        b.write(std::clog, Tag::FileFormat::Maple) << std::endl;
+
+        solve(x,d,A,b,RingCategories::IntegerTag(), Method::Dixon());
+
+        x.write(std::clog, Tag::FileFormat::Maple) << std::endl;
+        A.apply(v,x);
+
+        pass &= (d == Z.one) && VectorDomain<Ring>(Z).areEqual(v,b) ;
+    }
+
+    IVector b(Z, IArray{-959558580,-451007454}.begin(), 2);
+    b.write(std::clog, Tag::FileFormat::Maple) << std::endl;
+
+    solve(x,d,A,b,RingCategories::IntegerTag(), Method::Dixon());
+
+    x.write(std::clog, Tag::FileFormat::Maple) << std::endl;
+    A.apply(v,x);
+
+    pass &= (d == Z.one) && VectorDomain<Ring>(Z).areEqual(v,b);
+
+    return pass;
+}
+
 
 
 int main (int argc, char **argv)
 {
-    bool pass = true;
+    bool pass(true);
 
 	// text is written to clog/cerr/cout iff a command line argument is present.
 	if (argc > 1) writing = true;
 
     if (writing) {
         commentator().setReportStream(std::cout);
+        commentator().setMaxDepth(-1);
+        commentator().setMaxDetailLevel(-1);
     }
 
     using GMd = Givaro::Modular<double>;
@@ -97,6 +139,8 @@ int main (int argc, char **argv)
     // using GFt = GF2;
     // using ZMatrix=ZeroOne<GFt>;
     // pass &= testWiedemannSingular<GFt,ZMatrix>();
+
+    pass &= testDixonDetOne(10);
 
     return pass ? 0 : -1;
 }
