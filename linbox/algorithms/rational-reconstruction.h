@@ -405,11 +405,11 @@ namespace LinBox
 			linbox_check(num.size() == (size_t)_lcontainer.size());
 
 			_r. assign (den, _r.one);
-			Integer prime = _lcontainer.prime(); 		        // prime used for lifting
-			std::vector<size_t> accuracy(_lcontainer.size(), 0); 	// accuracy (in powers of p) of each answer so far
-			Vector digit(_lcontainer.size());  		        // to store next digit
-			Integer modulus;        		                // store modulus (power of prime)
-			Integer prev_modulus;       	                        // store previous modulus
+			Integer prime = _lcontainer.prime();		        // prime used for lifting
+			std::vector<size_t> accuracy(_lcontainer.size(), 0);	// accuracy (in powers of p) of each answer so far
+			Vector digit(_lcontainer.size());		        // to store next digit
+			Integer modulus;		                // store modulus (power of prime)
+			Integer prev_modulus;	                        // store previous modulus
 			Integer numbound, denbound;                             // current num/den bound for early termination
 			size_t numConfirmed;                                       // number of reconstructions which passed twice
 			_r.assign(modulus, _r.zero);
@@ -779,7 +779,7 @@ namespace LinBox
 			ttRecon += tRecon;
 #endif
 #ifdef LIFTING_PROGRESS
-			commentator().start("Padic Lifting","LinBox::LiftingContainer",_lcontainer.length());
+			commentator().start("Padic Lifting LinBox::LiftingContainer");
 #endif
 #if 0
 			Timer eval_horner,eval_horn;
@@ -790,7 +790,7 @@ namespace LinBox
 			for (size_t i=0 ; iter != _lcontainer.end() && iter.next(digit_approximation[(size_t)i]);++i) {
 
 #ifdef LIFTING_PROGRESS
-				commentator().progress(i);
+				commentator().progress(i,_lcontainer.length());
 #endif
 #if 0
 				eval_horn.start();
@@ -803,7 +803,7 @@ namespace LinBox
 			}
 
 #ifdef LIFTING_PROGRESS
-			commentator().stop ("Done", "Done", "LinBox::LinBox::LiftingContainer");
+			commentator().stop ("Padic Lifting LinBox::LiftingContainer");
 #endif
 
 			// problem occured during lifting
@@ -818,52 +818,10 @@ namespace LinBox
 #endif
 
 			Timer eval_dac;//, eval_bsgs;
-#if 0
-			eval_bsgs.start();
-			// sqrt of approximation's length
-			int sqrt_length= (int) sqrt((double) length);
-#endif
 			/*
 			 * Baby-Step/ Giant-Step Polynomial evaluation of digit approximation
 			 */
-#if 0
-			{
-				// store intermediate baby-step/ giant-step polynomial evaluation of the approximation in prime
-				std::vector<Vector> baby_approx (sqrt_length+1,zero_digit);
 
-				// perform baby-step
-				int skip=-sqrt_length;
-				for (int k=0;k<sqrt_length;++k){
-					skip+=sqrt_length;
-					for (int i= sqrt_length-1; i>=0; --i)
-						for (size_t j=0;j<size;++j) {
-							_r.mulin(baby_approx[k][j] , prime);
-							_r.addin(baby_approx[k][j], digit_approximation[skip+i][j]);
-						}
-				}
-
-				for (int i= length -1; i>= skip+sqrt_length; --i)
-					for (size_t j=0;j<size;++j) {
-						_r.mulin(baby_approx[sqrt_length][j] , prime);
-						_r.addin(baby_approx[sqrt_length][j], digit_approximation[(size_t)i][j]);
-					}
-
-				LinBox::integer p_to_sqrt, p;
-				_r.convert(p,prime);
-				p_to_sqrt= pow(p,sqrt_length);
-				Integer prime_to_sqrt;
-				_r.init(prime_to_sqrt, p_to_sqrt);
-
-
-				// perform giant step
-				for (int i= sqrt_length; i>= 0; --i)
-					for (size_t j=0;j<size;j++) {
-						_r.mulin(real_approximation[j] , prime_to_sqrt );
-						_r.addin(real_approximation[j], baby_approx[(size_t)i][j]);
-					}
-			}
-			eval_bsgs.stop();
-#endif
 			eval_dac.start();
 			Integer xeval=prime;
 			typename std::vector<Vector>::const_iterator poly_digit= digit_approximation.begin();
@@ -872,42 +830,7 @@ namespace LinBox
 			//std::std::cout << "Another way get answer mod(" << modulus << "): "; print(real_approximation);
 
 			eval_dac.stop();
-#if 0
-			integer modulus_size;
-			_r.convert(modulus_size,modulus);
-			std::cout<<"number of bit : "<< modulus_size.bitsize()<<std::endl;
-			std::cout<<"length        : "<< length<<std::endl;
-			std::cout<<"prime         : "<< prime<<std::endl;
-			std::cout<<"evaluation divide&conquer  : "<<eval_dac<<std::endl;
-			std::cout<<"evaluation baby/giant step : "<<eval_bsgs<<std::endl;
-			std::cout<<"evaluation horner method   : "<<eval_horner<<std::endl;
-#endif
 
-			/*
-			 * dumb rational reconstruction (this is just for timing comparison)
-			 */
-// #if 0
-// 			{
-// 				Timer dumb_ratrecon;
-// 				dumb_ratrecon.start();
-// 				Vector den_r(num.size()), num_r(num.size());
-// 				typename Vector::iterator   iter_a  = real_approximation.begin();
-// 				typename Vector::iterator   iter_n  = num_r.begin();
-// 				typename Vector::iterator   iter_d  = den_r.begin();
-
-// 				for (size_t i=0; iter_a != real_approximation.end(); ++iter_a, ++ iter_n, ++iter_d, ++i){
-// 					if (!Givaro::Rational::RationalReconstruction(*iter_n, *iter_d,
-// 								    *iter_a, modulus, numbound, denbound))
-// 					{
-// 						commentator().report()
-// 						<< "ERROR in reconstruction ?\n" << std::endl;
-// 					}
-// 				}
-// 				dumb_ratrecon.stop();
-// 				std::cout<<"full rational reconstruction : "<<dumb_ratrecon.usertime()<<std::endl;
-// 			}
-
-// #endif
 			/*
 			 * Rational Reconstruction of each coefficient according to a common denominator
 			 */
@@ -962,26 +885,6 @@ namespace LinBox
 					_r.mulin(common_den, *iter_denom);
 					idx_last_den=(int)i;
 					counter++;
-// #if 0
-// 					if (i != size-1)
-// 					{
-// 						//if (! _r.isUnit(*iter_denom))
-// 						counter++;
-
-// 						_r.quoin(denbound , *iter_denom);
-// 						_r.mul(bound, denbound,numbound);
-// 						_r.mulin(bound,two);
-// 						_r.div(tmp,modulus,prime);
-// 						while(tmp > bound) {
-// 							_r.assign(modulus,tmp);
-// 							_r.div(tmp,modulus,prime);
-// 						}
-// 						_r.mod(tmp , *iter_denom , modulus);
-// 						_r.modin(common_den_mod_prod , modulus);
-// 						_r.mulin(common_den_mod_prod , tmp);
-// 						_r.modin(common_den_mod_prod , modulus);
-// 					}
-// #endif
 
 				}
 
@@ -993,21 +896,11 @@ namespace LinBox
 				_r.mulin(tmp,denominator[(size_t)i]);
 			}
 
-#if 0
-			typename Vector1::reverse_iterator rev_iter_num   = num.rbegin();
-			typename Vector::reverse_iterator  rev_iter_denom = denominator.rbegin();
-			_r.assign(tmp,_r.one);
-			for (; rev_iter_num != num.rend(); ++rev_iter_num, ++rev_iter_denom){
-
-				_r.mulin(*rev_iter_num,tmp);
-				_r.mulin(tmp, *rev_iter_denom);
-			}
-#endif
 			den = common_den;
 
+#ifdef RSTIMING
 			ratrecon.stop();
 			//std::cout<<"partial rational reconstruction : "<<ratrecon.usertime()<<std::endl;
-#ifdef RSTIMING
 			tRecon.stop();
 			ttRecon += tRecon;
 			_num_rec=counter;
