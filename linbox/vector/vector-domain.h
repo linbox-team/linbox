@@ -87,7 +87,7 @@ namespace LinBox
 		void init(const Field &F) { if (_faxpy != nullptr) delete _faxpy; _faxpy = new FieldAXPY<Field>(F); }
 		inline const Field & field() const { return _faxpy->field(); }
 		inline const FieldAXPY<Field>& faxpy() const { return *_faxpy; }
-	
+
 	protected:
 		const FieldAXPY<Field> * _faxpy;
 	};
@@ -539,7 +539,7 @@ VD.permute<V,PI>(v1,pb,pe)
 
 		//@}
 
-	
+
 		/*! Random vector.
 		 * @param v vector to be randomized.
 		 */
