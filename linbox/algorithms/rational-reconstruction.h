@@ -781,23 +781,12 @@ namespace LinBox
 #ifdef LIFTING_PROGRESS
 			commentator().start("Padic Lifting LinBox::LiftingContainer");
 #endif
-#if 0
-			Timer eval_horner,eval_horn;
-			eval_horner.clear();
-#endif
 			// Compute all the approximation using liftingcontainer
 			typename LiftingContainer::const_iterator iter = _lcontainer.begin();
 			for (size_t i=0 ; iter != _lcontainer.end() && iter.next(digit_approximation[(size_t)i]);++i) {
 
 #ifdef LIFTING_PROGRESS
 				commentator().progress(i,_lcontainer.length());
-#endif
-#if 0
-				eval_horn.start();
-				for (size_t j=0;j<size;++j)
-					_r.axpyin(real_approximation[j],modulus, digit_approximation[(size_t)i][j]);
-				eval_horn.stop();
-				eval_horner+=eval_horn;
 #endif
 				_r.mulin(modulus,prime);
 			}
@@ -815,28 +804,32 @@ namespace LinBox
 
 #ifdef RSTIMING
 			tRecon.start();
-#endif
 
 			Timer eval_dac;//, eval_bsgs;
+			eval_dac.start();
+#endif
+
 			/*
 			 * Baby-Step/ Giant-Step Polynomial evaluation of digit approximation
 			 */
 
-			eval_dac.start();
+
 			Integer xeval=prime;
 			typename std::vector<Vector>::const_iterator poly_digit= digit_approximation.begin();
 			PolEval(real_approximation, poly_digit, length, xeval);
 
-			//std::std::cout << "Another way get answer mod(" << modulus << "): "; print(real_approximation);
-
-			eval_dac.stop();
 
 			/*
 			 * Rational Reconstruction of each coefficient according to a common denominator
 			 */
 
+#ifdef RSTIMING
+			eval_dac.stop();
+			std::std::clog << eval_dac << ", Another way get answer mod(" << modulus << "): "; print(real_approximation);
+
 			Timer ratrecon;
 			ratrecon.start();
+#endif
 			Integer common_den, common_den_mod_prod, bound,two,tmp;
 			_r.assign(common_den,_r.one);
 			_r.assign(common_den_mod_prod,_r.one);
