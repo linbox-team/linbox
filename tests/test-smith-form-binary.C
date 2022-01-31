@@ -46,13 +46,55 @@ using namespace LinBox;
 
 #include "test-smith-form.h"
 
+typedef Givaro::ZRing<Integer> PIR;
+typedef Givaro::Modular<double> Field;
+using PrimeGenerator = PrimeIterator<IteratorCategories::HeuristicTag>;
+typedef DixonSolver<PIR, Field, PrimeGenerator> Solver;
+typedef LastInvariantFactor<PIR, Solver> LIF;
+typedef OneInvariantFactor<PIR, LIF, SCompose, RandomMatrix>  OIF;
+typedef SmithFormBinary<PIR, OIF > SF;
+
+template<typename Vect>
+void spaceBumps(size_t m, size_t n, Vect& bumps, Vect& lumps) {
+    size_t k = std::min(m,n);
+
+    lumps.resize(19);
+
+    for (size_t i = 0; i <10; ++i) lumps[i] = i;
+    for (size_t i = 10; i <19; ++i) lumps[i] = i-19;
+    for (size_t i = 0; i < k-5; ++i) bumps[i] = 1;
+    bumps[k-1] = 0;
+    bumps[k-2] = 1013;
+    bumps[k-3] = 401;
+    bumps[k-4] = 1;
+    bumps[k-5] = 401;
+
+//    // Fails on some makeSNFExample builds of A. as a hack, check against adaptive. Todo: fix it.
+//    if (not pass) {
+//	   DenseMatrix<PIR> B(R,m,n);
+//	   makeSNFExample(B,d,bumps,lumps);
+//	   sf.smithFormBinary (x, B);
+//	   BlasVector<PIR> y(R,k);
+//	   SmithFormAdaptive::smithForm (y, B);
+//        pass = checkSNFExample(y,x);
+//    }
+
+}
+
+template<typename Mat, typename Vect>
+bool checkBumpsLumps(SF& sf,
+                     Mat& A,
+                     Vect& d, Vect& x,
+                     const Vect& bumps, const Vect& lumps) {
+    makeSNFExample(A,d,bumps,lumps);
+    sf.smithFormBinary (x, A);
+    return checkSNFExample(d,x);
+}
+
 int main(int argc, char** argv)
 {
-	bool pass = true;
-
-   // there is a problem when m = n < 9.
-	static size_t m =10;
-	static size_t n =10;
+	static size_t m(10);
+	static size_t n(10);
 
 	static Argument args[] = {
 		{ 'm', "-m M", "Set row dimension of test matrices to M.", TYPE_INT,     &m },
@@ -68,76 +110,48 @@ int main(int argc, char** argv)
 
 	commentator().start("SmithFormBinary test suite", "SmithFormBinary");
 
+    PIR R;
+    DenseMatrix<PIR> A(R,m,n);
+    size_t k = std::min(m,n);
+    DenseVector<PIR> d(R,k), x(R,k), bumps(R,k), lumps(R,k);
 
-//ostream &report = LinBox::commentator().report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-	commentator().report(LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
-   << std::endl << "EGV++ algorithm test suite with LinBox/Givaro ZRing:\n";
-	{
-//		typedef Givaro::IntegerDom Ring;
-		typedef Givaro::ZRing<Integer> PIR;
-		PIR R;
 
-		typedef Givaro::Modular<double> Field;
-        using PrimeGenerator = PrimeIterator<IteratorCategories::HeuristicTag>;
-		typedef DixonSolver<PIR, Field, PrimeGenerator> Solver;
-		typedef LastInvariantFactor<PIR, Solver> LIF;
-		typedef OneInvariantFactor<PIR, LIF, SCompose, RandomMatrix>  OIF;
-		typedef SmithFormBinary<PIR, OIF > SF;
+    SF sf;
+    sf. setOIFThreshold (40);
+    sf. setLIFThreshold (30);
 
-		SF sf;
-		sf. setOIFThreshold (40);
-		sf. setLIFThreshold (30);
+	bool pass, gpass(true);
 
-	size_t k = std::min(m,n);
-	BlasVector<PIR> d(R,k), x(R,k), bumps(R,k), lumps(R,19);
-	for (size_t i = 0; i <10; ++i) lumps[i] = i;
-	for (size_t i = 10; i <19; ++i) lumps[i] = i-19;
+    {
+        makeBumps(bumps, 1);
+        pass = checkBumpsLumps(sf,A,d,x,bumps,lumps);
+        gpass &= pass;
+    }
+    std::clog << "Bumps 1, \t" << (pass? "PASSED." : "ERROR.") << std::endl;
 
-	for (size_t i = 0; i < k-5; ++i) bumps[i] = 1;
-   bumps[k-1] = 0;
-   bumps[k-2] = 1013;
-   bumps[k-3] = 401;
-   bumps[k-4] = 1;
-   bumps[k-5] = 401;
-   
-	DenseMatrix<PIR> A(R,m,n);
-	makeSNFExample(A,d,bumps,lumps);
-	sf.smithFormBinary (x, A);
-	pass = checkSNFExample(d,x);
-   // Fails on some makeSNFExample builds of A. as a hack, check against adaptive. Todo: fix it.
-   if (not pass) {
-	   DenseMatrix<PIR> B(R,m,n);
-	   makeSNFExample(B,d,bumps,lumps);
-	   sf.smithFormBinary (x, B);
-	   BlasVector<PIR> y(R,k);
-	   SmithFormAdaptive::smithForm (y, B);
-      pass = checkSNFExample(y,x);
-   }
+    {
+        makeBumps(bumps, 2);
+        pass = checkBumpsLumps(sf,A,d,x,bumps,lumps);
+        gpass &= pass;
+    }
+    std::clog << "Bumps 2, \t" << (pass? "PASSED." : "ERROR.") << std::endl;
 
-/*
-	makeBumps(bumps, 1);
-	makeSNFExample(A,d,bumps,lumps);
-	sf.smithFormBinary (x, A);
-	//pass = pass and checkSNFExample(d,x);
-	pass = checkSNFExample(d,x) and pass;
+    {
+        makeBumps(bumps, 3);
+        pass = checkBumpsLumps(sf,A,d,x,bumps,lumps);
+        gpass &= pass;
+    }
+    std::clog << "Bumps 3, \t" << (pass? "PASSED." : "ERROR.") << std::endl;
 
-	makeBumps(bumps, 2);
-	makeSNFExample(A,d,bumps,lumps);
-	sf.smithFormBinary (x, A);
-	//pass = pass and checkSNFExample(d,x);
-	pass = checkSNFExample(d,x) and pass;
+    {
+        spaceBumps(m,n,bumps,lumps);
+        pass = checkBumpsLumps(sf,A,d,x,bumps,lumps);
+        gpass &= pass;
+    }
+    std::clog << "Space Bumps,\t" << (pass? "PASSED." : "ERROR.") << std::endl;
 
-	makeBumps(bumps, 3);
-	makeSNFExample(A,d,bumps,lumps);
-	sf.smithFormBinary (x, A);
-	//pass = pass and checkSNFExample(d,x);
-	pass = checkSNFExample(d,x) and pass;
-*/
-
-	}
-
-	commentator().stop("SmithFormBinary test suite");
-	return pass ? 0 : -1;
+    commentator().stop("SmithFormBinary test suite");
+    return pass ? 0 : -1;
 }
 
 // Local Variables:
