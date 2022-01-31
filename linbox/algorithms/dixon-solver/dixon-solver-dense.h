@@ -206,7 +206,7 @@ namespace LinBox {
          * SL_LASVEGAS)</code>, solution is guaranteed correct.
          *   - \c SS_FAILED        all primes used were bad
          *   - \c SS_OK            solution found.
-         *   - \c SS_INCONSISTENT  system appreared inconsistent. certificate is in \p
+         *   - \c SS_INCONSISTENT  system appeared inconsistent. certificate is in \p
          * lastCertificate if <code>(level >= SL_CERTIFIED)</code>
          */
         template <class IMatrix, class Vector1, class Vector2>

@@ -34,41 +34,41 @@
 namespace LinBox {
 
 	/**************************************************************
-         * Polynomial Matrix Multiplication over Zp[x] with p <2^32 ***
-         **************************************************************/
-        template <class T1, class T2>
-        class PolynomialMatrixFFTMulDomain<Givaro::Modular<T1,T2> > {
-        public:
-                typedef Givaro::Modular<T1,T2>                Field;
-                typedef Givaro::Modular<integer>         LargeField;
-                typedef typename Field::Element             Element;
-                typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field>        MatrixP;
-                typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,LargeField> MatrixP_L;
+     * Polynomial Matrix Multiplication over Zp[x] with p <2^32 ***
+     **************************************************************/
+    template <class T1, class T2>
+    class PolynomialMatrixFFTMulDomain<Givaro::Modular<T1,T2> > {
+    public:
+        typedef Givaro::Modular<T1,T2>                Field;
+        typedef Givaro::Modular<integer>         LargeField;
+        typedef typename Field::Element             Element;
+        typedef PolynomialMatrix<Field,PMType::polfirst>         MatrixP;
+        typedef PolynomialMatrix<LargeField,PMType::polfirst>  MatrixP_L;
 
-        private:
-                const Field            *_field;  // Read only
-                uint64_t                    _p;
-        public:
-                inline const Field & field() const { return *_field; }
+    private:
+        const Field            *_field;  // Read only
+        uint64_t                    _p;
+    public:
+        inline const Field & field() const { return *_field; }
 
-                PolynomialMatrixFFTMulDomain (const Field& F) : _field(&F), _p(F.cardinality()) {}
+        PolynomialMatrixFFTMulDomain (const Field& F) : _field(&F), _p(F.cardinality()) {}
 
-                template<typename Matrix1, typename Matrix2, typename Matrix3>
-                void mul (Matrix1 &c, const Matrix2 &a, const Matrix3 &b, size_t max_rowdeg=0) const {
+        template<typename Matrix1, typename Matrix2, typename Matrix3>
+        void mul (Matrix1 &c, const Matrix2 &a, const Matrix3 &b, size_t max_rowdeg=0) const {
 
-			size_t deg  = (max_rowdeg?max_rowdeg:a.size()+b.size()-2); //size_t deg  = a.size()+b.size()-1;
-			c.resize(deg+1);
-			size_t lpts = 0;
-			size_t pts  = 1; while (pts <= deg) { pts= pts<<1; ++lpts; }
-                        if ( _p< 536870912ULL  &&  ((_p-1) % pts)==0){				
-				PolynomialMatrixFFTPrimeMulDomain<Field> MulDom(field());
-				MulDom.mul(c,a,b, max_rowdeg);
-                        }
-                        else {
-				if (_p< 536870912ULL){
-					PolynomialMatrixThreePrimesFFTMulDomain<Field> MulDom(field());
-					MulDom.mul(c,a,b, max_rowdeg);
-				}
+            size_t deg  = (max_rowdeg?max_rowdeg:a.size()+b.size()-2); //size_t deg  = a.size()+b.size()-1;
+            c.resize(deg+1);
+            size_t lpts = 0;
+            size_t pts  = 1; while (pts <= deg) { pts= pts<<1; ++lpts; }
+            if ( _p< 536870912ULL  &&  ((_p-1) % pts)==0){				
+                PolynomialMatrixFFTPrimeMulDomain<Field> MulDom(field());
+                MulDom.mul(c,a,b, max_rowdeg);
+            }
+            else {
+                if (_p< 536870912ULL){
+                    PolynomialMatrixThreePrimesFFTMulDomain<Field> MulDom(field());
+                    MulDom.mul(c,a,b, max_rowdeg);
+                }
 				else {
 					// use computation with Givaro::Modular<integer>
 					// -> could be optimized in some cases (e.g. output entries less than 2^64)
@@ -85,18 +85,18 @@ namespace LinBox {
 					c.copy(c2,0,c.degree());
 					FFT_PROFILING(2,"converting rep of polynomial matrix output");
 				}
-                        }
-                }
+            }
+        }
 
-                template<typename Matrix1, typename Matrix2, typename Matrix3>
-                void midproduct (Matrix1 &c, const Matrix2 &a, const Matrix3 &b,
-                                 bool smallLeft=true, size_t n0=0,size_t n1=0) const {
-                        uint64_t pts= 1<<(integer((uint64_t)a.size()+b.size()-1).bitsize());
-                        if (_p< 536870912ULL  &&  ((_p-1) % pts)==0){
+        template<typename Matrix1, typename Matrix2, typename Matrix3>
+        void midproduct (Matrix1 &c, const Matrix2 &a, const Matrix3 &b,
+                         bool smallLeft=true, size_t n0=0,size_t n1=0) const {
+            uint64_t pts= 1<<(integer((uint64_t)a.size()+b.size()-1).bitsize());
+            if (_p< 536870912ULL  &&  ((_p-1) % pts)==0){
 				//std::cout<<"MIDP: Staying with FFT Prime Field"<<std::endl;
-                                PolynomialMatrixFFTPrimeMulDomain<Field> MulDom(field());
-                                MulDom.midproduct(c,a,b,smallLeft,n0,n1);
-                        }
+                PolynomialMatrixFFTPrimeMulDomain<Field> MulDom(field());
+                MulDom.midproduct(c,a,b,smallLeft,n0,n1);
+            }
 			else {
 				if (_p< 536870912ULL){
 					PolynomialMatrixThreePrimesFFTMulDomain<Field> MulDom(field());
@@ -122,7 +122,7 @@ namespace LinBox {
 		}
 
 
-        };
+    };
 
 
 }//end of namespace LinBox

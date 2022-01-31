@@ -31,6 +31,8 @@
 #include "linbox/util/debug.h"
 #include "linbox/linbox-config.h"
 #include "fflas-ffpack/fflas/fflas_simd.h"
+#include "givaro/modular.h"
+#include "givaro/modular-extended.h"
 
 namespace LinBox {
 
@@ -59,7 +61,7 @@ namespace LinBox {
         template <class T1, class T2, class T = void>
         using enable_if_same_t = enable_if_t<std::is_same<T1, T2>::value, T>;
 
-
+       
         /**********************************************************************/
         /* reduce *************************************************************/
         /**********************************************************************/
@@ -130,7 +132,9 @@ namespace LinBox {
         }
 
         /* mul mod for floating type */
-        template <class T=vect_t, enable_if_floating_point_t<T>* = nullptr>
+        template <class T=vect_t, enable_if_floating_point_t<T>* = nullptr,
+                  enable_if_t<std::is_same<Field, typename Givaro::ModularExtended<Element>>::value
+                              || sizeof(Element) != sizeof(Compute_t), T>* =nullptr>
         static inline T
         mul_mod (const vect_t& x, const vect_t& y, const vect_t& p,
                  const vect_t& u) {
@@ -145,6 +149,25 @@ namespace LinBox {
             g = Simd::blendv(t,g,t);
             t = Simd::add(g,p);
             return Simd::blendv(g,t,g);
+        }
+        /* mul mod for floating type */
+        template <class T=vect_t, enable_if_floating_point_t<T>* = nullptr,
+                  enable_if_compute_same_size_t<T>* = nullptr,
+                  enable_if_t<!std::is_same<Field, typename Givaro::ModularExtended<Element>>::value, T>* = nullptr>
+        static inline T
+        mul_mod (const vect_t& x, const vect_t& y, const vect_t& p,
+                 const vect_t& u) {
+            // u = 1/p
+            vect_t h = Simd::mul(x,y);
+            //vect_t l = Simd::fmsub(h,x,y); // Beware of the order!
+            vect_t b = Simd::mul(h,u);
+            vect_t c = Simd::floor(b);
+            vect_t d = Simd::fnmadd(h,c,p); // Beware of the order!
+            //vect_t g = Simd::add(d,l);
+            vect_t t = Simd::sub(d,p);
+            d = Simd::blendv(t,d,t);
+            t = Simd::add(d,p);
+            return Simd::blendv(d,t,d);
         }
 
         /**********************************************************************/

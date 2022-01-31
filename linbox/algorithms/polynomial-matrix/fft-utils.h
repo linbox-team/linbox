@@ -36,6 +36,11 @@ namespace LinBox {
                              typename Enable = void>
     class FFT_base;
 
+    /* Forward declaration of FFT_multi_base class */
+    template<typename Field, typename Simd = Simd<typename Field::Element>,
+                             typename Enable = void>
+    class FFT_multi_base;
+
     /* Helper to define both Simd and NoSimd methods */
     template<size_t VectSize>
     struct FFTSimdHelper { size_t size = VectSize; };

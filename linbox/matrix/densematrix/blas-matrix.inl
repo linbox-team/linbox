@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2004 Pascal Giorgi, Clément Pernet
  *               2013, 2014 the LinBox group
- *               2018 revamped by Pascal Giorgi 
+ *               2018 revamped by Pascal Giorgi
  *
  * Written by :
  *               Pascal Giorgi  <pascal.giorgi@lirmm.fr>
@@ -52,7 +52,7 @@ namespace LinBox
 
 	template<class _Field, class _Storage>
     template <class constIterator>
-	void BlasMatrix< _Field, _Storage >::createBlasMatrix (const constIterator& v)
+	void BlasMatrix< _Field, _Storage >::createBlasMatrix (constIterator v)
 	{
 		constIterator v_end = v+(_col*_row) ;
 		Element_ptr iter_addr = getPointer();
@@ -74,7 +74,7 @@ namespace LinBox
 		typename _Matrix::ConstIterator         iter_value = A.Begin();
 		typename _Matrix::ConstIndexedIterator  iter_index = A.IndexedBegin();
 
-        // PG -> BUG if we use iter_value !=A.End() 
+        // PG -> BUG if we use iter_value !=A.End()
 		for (;iter_index != A.IndexedEnd(); ++iter_value,++iter_index){
 			int64_t i,j;
 			i=(int64_t)iter_index.rowIndex()-(int64_t)i0;
@@ -106,7 +106,7 @@ namespace LinBox
 
         BlasVector<_Field, _Storage> e(A.field(),A.coldim(), field().zero), tmp(A.field(),A.rowdim());
 		ColIterator col_p;
-        
+
 		typename BlasMatrix<_Field, _Storage >::Col::iterator elt_p;
 		typename BlasVector<_Field, _Storage>::iterator e_p, tmp_p;
 
@@ -127,12 +127,12 @@ namespace LinBox
                 field().assign(*e_p, field().zero);
             }
 	}
-            	
+
     ////////////
     // MEMORY //
     ////////////
 
-    
+
 	template < class _Field, class _Storage >
 	void BlasMatrix< _Field, _Storage >::init(const size_t & m, const size_t & n)
 	{
@@ -147,18 +147,18 @@ namespace LinBox
 		if (_col > 0 && _col != n)
 			std::cerr << " ***Warning*** you are resizing a matrix, possibly loosing data. " << std::endl;
 #endif
-		_rep.resize (m * n, val); 
+		_rep.resize (m * n, val);
 		_row = m;
 		_col = n;
 	}
 
 
-    
+
     //////////////////
     // CONSTRUCTORS //
     //////////////////
 
-    
+
 	template < class _Field, class _Storage >
 	BlasMatrix< _Field, _Storage >::BlasMatrix (const _Field &F) :
 		_row(0),_col(0),_rep(F){}
@@ -180,7 +180,7 @@ namespace LinBox
 
 	template < class _Field, class _Storage >
 	template <class Matrix>
-	BlasMatrix< _Field, _Storage >::BlasMatrix (const Matrix &A) : 
+	BlasMatrix< _Field, _Storage >::BlasMatrix (const Matrix &A) :
 		_row(A.rowdim()),_col(A.coldim()),_rep(A.field(),_row*_col)
     {
         createBlasMatrix(A,0,0,_row,_col,typename MatrixContainerTrait<Matrix>::Type());
@@ -191,7 +191,7 @@ namespace LinBox
     BlasMatrix< _Field, _Storage >::BlasMatrix (const Matrix& A,const size_t &i0, const size_t &j0,const size_t &m,  const size_t &n) :
         _row(m),_col(n),_rep(A.field(),_row*_col)
     {
-                   
+
         createBlasMatrix(A, i0, j0, m, n,typename MatrixContainerTrait<Matrix>::Type());
     }
 
@@ -227,7 +227,7 @@ namespace LinBox
         _row(A.rowdim()), _col(A.coldim()), _rep(F, _row*_col)
     {
         //std::cout<<"GIORGI: BlasMatrix reducing mod \n";
-		typename OtherMatrix::template rebind<_Field>()(*this,A);        
+		typename OtherMatrix::template rebind<_Field>()(*this,A);
     }
 
     template < class _Field, class _Storage >
@@ -236,8 +236,8 @@ namespace LinBox
 	{
         createBlasMatrix(A,0,0,_row,_col,MatrixContainerCategory::BlasContainer());
 	}
-    
-    
+
+
     template < class _Field, class _Storage >
     BlasMatrix< _Field, _Storage >& BlasMatrix< _Field, _Storage >::operator= (const BlasMatrix< _Field, _Storage >& A)
     {
@@ -250,7 +250,7 @@ namespace LinBox
         createBlasMatrix(A,0,0,_row,_col,MatrixContainerCategory::BlasContainer());
         return *this;
     }
-   
+
     template < class _Field, class _Storage >
     template < class Matrix>
     BlasMatrix< _Field, _Storage >& BlasMatrix< _Field, _Storage >::operator= (const Matrix& A)
@@ -269,7 +269,7 @@ namespace LinBox
     struct BlasMatrix< _Field, _Storage >::rebind {
 		typedef BlasMatrix<_Tp1, _Rep2> other;
 
-		void operator() (other & Ap, const Self_t& A) {            
+		void operator() (other & Ap, const Self_t& A) {
 			// typedef Self_t::ConstIterator ConstSelfIterator ;
 			typedef typename BlasMatrix< _Field, _Storage >::ConstIterator ConstSelfIterator ;
 			typedef typename other::Iterator OtherIterator ;
@@ -279,8 +279,8 @@ namespace LinBox
 			for ( ; A_i != A. End(); ++ A_i, ++ Ap_i)
 				hom.image (*Ap_i, *A_i);
             //Ap.write(std::cout);
-		} 
-    };    
+		}
+    };
 
     ///////////////////
     //      I/O      //
@@ -293,9 +293,9 @@ namespace LinBox
         if( !ms.getArray(_rep) || !ms.getDimensions(_row, _col) ){
             throw ms.reportError(__FUNCTION__,__LINE__);
         }
-        
-        return file;       
-    }       
+
+        return file;
+    }
 
     template < class _Field, class _Storage >
     std::ostream &BlasMatrix< _Field, _Storage >::write (std::ostream &os, Tag::FileFormat f) const

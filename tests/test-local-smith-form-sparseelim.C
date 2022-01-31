@@ -300,8 +300,10 @@ int main (int argc, char **argv) {
 	FFLAS::writeCommandString(report << argv[0] << ' ', args) << std::endl;
     { // sparseelim
         pass0 &= test_sparse_local_smith(rseed,r,m,n,Givaro::Integer(2),e,d);
+        pass0 &= test_sparse_local_smith(rseed,r,m,n,Givaro::Integer(2),e,0.01); // to check code against issue #286 (first row is zero)
         pass0 &= test_sparse_local_smith(rseed,r,m,n,Givaro::Integer(q),e,d/2.);
         pass0 &= test_sparse_local_smith(rseed,r,m,n,uint64_t(2),e,d);
+        pass0 &= test_sparse_local_smith(rseed,r,m,n,uint64_t(2),e,0.01); // to check code against issue #286 (first row is zero)
         pass0 &= test_sparse_local_smith(rseed,r,m,n,uint64_t(q),e,d/2.);
         pass0 &= ruint_test<6>(rseed,r,m,n,2,e,d);
         pass0 &= ruint_test<6>(rseed,r,m,n,q,e,d/2.);

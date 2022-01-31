@@ -50,6 +50,7 @@
 
 
 #include "linbox/integer.h"
+#include "ntl-zz.h"
 
 namespace Givaro
 {
@@ -204,18 +205,18 @@ public :
 	class UnparametricRandIter<NTL::GF2E> {
 	public:
 		typedef NTL::GF2E Element;
-        typedef Element::rep_type Residu_t;
+        typedef size_t Residu_t;
 
 		UnparametricRandIter<NTL::GF2E>(const NTL_GF2E & F,
-                                        const size_t& size = 0,
-                                        const uint64_t seed = 0
+                                        const uint64_t seed = 0,
+                                        const Residu_t& size = 0
                                         ) :
                 _size(size), _seed(seed)
             {
                 if(_seed == 0)
-                    NTL::SetSeed(NTL::to_ZZ(time(0)));
+                    NTL::SetSeed(NTL::to_ZZ(static_cast<long unsigned int>(std::time(nullptr))));
                 else
-                    NTL::SetSeed(NTL::to_ZZ(static_cast<long unsigned int>(_seed)));
+                    NTL::SetSeed(Caster<NTL::ZZ,uint64_t>(_seed));
             }
 
 		UnparametricRandIter<NTL::GF2E>(const UnparametricRandIter<NTL::GF2E>& R) :
@@ -223,9 +224,9 @@ public :
 
             {
                 if(_seed == 0)
-                    NTL::SetSeed(NTL::to_ZZ(time(0)));
+                    NTL::SetSeed(NTL::to_ZZ(static_cast<long unsigned int>(std::time(nullptr))));
                 else
-                    NTL::SetSeed(NTL::to_ZZ(static_cast<long unsigned int>(_seed)));
+                    NTL::SetSeed(Caster<NTL::ZZ,uint64_t>(_seed));
             }
 
 		Element& random (Element& x) const

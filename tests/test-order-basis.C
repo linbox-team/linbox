@@ -70,8 +70,8 @@ template<typename Field, typename RandIter>
 bool check_sigma(const Field& F, RandIter& Gen, size_t m, size_t n, size_t d) {
 	ostream &report = commentator().report ();//Commentator::LEVEL_ALWAYS, INTERNAL_DESCRIPTION);
 	//typedef typename Field::Element Element;
-	typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain,Field> MatrixP;
-	//typedef PolynomialMatrix<PMType::polfirst,PMStorage::plain,Field> MatrixP;
+	typedef PolynomialMatrix<Field, PMType::matfirst> MatrixP;
+	//typedef PolynomialMatrix<Field, PMType::polfirst> MatrixP;
 	MatrixP Serie(F, m, n,  d);
 	MatrixP Sigma1(F, m, m, d+1),Sigma2(F, m, m, d+1),Sigma3(F, m, m, d+1);
 

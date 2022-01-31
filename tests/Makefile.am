@@ -74,11 +74,13 @@ BASIC_TESTS =            \
     test-rank-Int        \
     test-frobenius          \
     test-rational-solver    \
+    test-polynomial-matrix\
     test-rational-solver-adaptive \
     test-randiter-nonzero-prime    \
     test-cra            \
     test-blas-matrix        \
     test-charpoly        \
+    test-minpoly                \
     test-commentator        \
     test-isposdef        \
     test-ispossemidef       \
@@ -150,6 +152,7 @@ CHECKER_TESTS =                 \
     test-param-fuzzy            \
     test-permutation            \
     test-plain-domain           \
+    test-polynomial-matrix      \
     test-quad-matrix            \
     test-rational-matrix-factory\
     test-rational-reconstruction-base \
@@ -180,7 +183,6 @@ CHECKER_NTL_TESTS =  ${NTL_TESTS}           \
 
 
 FULLCHECK_TESTS = ${CHECKER_TESTS} \
-    test-minpoly                \
     test-weak-popov-form        \
     test-mpi-comm               \
     test-rat-solve              \
@@ -324,6 +326,7 @@ test_optimization_SOURCES =             test-optimization.C
 test_order_basis_SOURCES =              test-order-basis.C
 test_param_fuzzy_SOURCES =              test-param-fuzzy.C
 test_permutation_SOURCES =              test-permutation.C
+test_polynomial_matrix_SOURCES=         test-polynomial-matrix.C
 test_plain_domain_SOURCES =             test-plain-domain.C
 test_poly_det_SOURCES =                 test-poly-det.C
 test_qlup_SOURCES =                     test-qlup.C

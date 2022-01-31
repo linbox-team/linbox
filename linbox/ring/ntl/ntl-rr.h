@@ -278,20 +278,21 @@ namespace LinBox
 
 	template <>
 	class UnparametricRandIter<NTL::RR> {
-		typedef NTL::RR Element ;
-        typedef Element Residu_t;
+
 	protected:
 		integer _size;
         uint64_t _seed;
         const NTL_RR& _ring;
 	public:
+		typedef NTL::RR Element ;
+        typedef integer Residu_t;
 
 		UnparametricRandIter<NTL::RR> (const NTL_RR & F,
-					       const integer& size = 0,
-					       const uint64_t seed = 0) :
+					       const uint64_t seed = 0,
+					       const Residu_t& size = 0) :
                 _size(size), _seed(seed), _ring(F)
 		{
-			if (_seed == 0) _seed = time(NULL);
+                    if (_seed == 0) _seed = static_cast<uint64_t>(std::time(nullptr));
 
 			// integer cardinality;
 			// F.cardinality(cardinality);

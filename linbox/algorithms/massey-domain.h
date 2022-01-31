@@ -348,7 +348,6 @@ namespace LinBox
 
 			commentator().stop ("done", NULL, "masseyd");
 			//		commentator().stop ("Done", "Done", "LinBox::MasseyDomain::massey");
-
 			return L;
 		}
 
@@ -398,7 +397,14 @@ namespace LinBox
 		{
 			long dp = massey (phi, full_poly);
 			rank = (size_t) (v_degree(phi) - v_val (phi));
-			if (phi.size () > 0) {
+            //std::cerr<<"dp="<<dp<<" rank="<<rank<<" -> "<<phi.size()<<" : "<<phi<<std::endl;
+            
+            if (dp==0){// empty sequence, its minpoly is 1		
+                 phi.resize(1);		
+                 field().assign(phi[0],field().one);		
+                 return;		
+            }
+            if (phi.size () > 0) {
 				phi.resize ((size_t)dp+1);
 				for (long i = dp >> 1; i > 0; --i)
 					std::swap (phi[(size_t)i], phi[(size_t)(dp-i)]);

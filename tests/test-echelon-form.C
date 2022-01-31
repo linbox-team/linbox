@@ -223,8 +223,8 @@ static bool testPLUQ (const Field& F, size_t m, size_t n, int iterations = 1)
 		BMD.mulin_right( P, C);
 
 		if (!MD.areEqual(A,Abis))
-			ret=false;
-
+            ret=false;
+        
         // Second pass
 		// A = B*C
 		BMD.mul(A, B, C);
@@ -251,8 +251,8 @@ static bool testPLUQ (const Field& F, size_t m, size_t n, int iterations = 1)
 		// A = L*C
 		BMD.mul( A, P, C);
 
-		if (!MD.areEqual(A,Abis))
-			ret=false;
+		if (!MD.areEqual(A,Abis))        
+            ret=false;        
 	}
 
 	mycommentator().stop(MSG_STATUS (ret), (const char *) 0, "testPLUQ");

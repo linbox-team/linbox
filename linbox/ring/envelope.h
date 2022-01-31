@@ -37,12 +37,6 @@
 #include "linbox/randiter/envelope.h"
 
 #include "linbox/linbox-config.h"
-#ifdef __LINBOX_XMLENABLED
-
-#include "linbox/util/xml/linbox-reader.h"
-#include "linbox/util/xml/linbox-writer.h"
-
-#endif
 
 // Namespace in which all LinBox code resides
 namespace LinBox
@@ -104,11 +98,11 @@ namespace LinBox
 		       	FieldEnvelope<Ring> (E._field)
 		{}
 
-#ifdef __LINBOX_XMLENABLED
-		RingEnvelope(Reader &R) :
-		       	FieldEnvelope<Ring>(R)
-	       	{}
-#endif
+// #ifdef __LINBOX_XMLENABLED
+// 		RingEnvelope(Reader &R) :
+// 		       	FieldEnvelope<Ring>(R)
+// 	       	{}
+// #endif
 
 
 		/** Virtual copy constructor.

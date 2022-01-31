@@ -520,14 +520,15 @@ namespace LinBox
 	public:
 		typedef NTL::zz_pEX Element;
         typedef Element::modulus_type Residu_t;
+
 		UnparametricRandIter<NTL::zz_pEX>(const NTL_zz_pEX & F ,
-                                          const size_t& size = 0,
-                                          const uint64_t seed = 0
+                                          const uint64_t seed = 0,
+                                          const size_t& size = 0
                                           ) :
                 _size(size), _seed(seed), _ring(F)
             {
                 if(_seed == 0)
-                    NTL::SetSeed(NTL::to_ZZ(time(0)));
+                    NTL::SetSeed(NTL::to_ZZ(static_cast<long unsigned int>(std::time(nullptr))));
                 else
                     NTL::SetSeed(NTL::to_ZZ(static_cast<long unsigned int>(_seed)));
             }
@@ -539,7 +540,7 @@ namespace LinBox
 
             {
                 if(_seed == 0)
-                    NTL::SetSeed(NTL::to_ZZ(time(0)));
+                    NTL::SetSeed(NTL::to_ZZ(static_cast<long unsigned int>(std::time(nullptr))));
                 else
                     NTL::SetSeed(NTL::to_ZZ(static_cast<long unsigned int>(_seed)));
             }

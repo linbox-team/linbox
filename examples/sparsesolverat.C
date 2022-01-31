@@ -1,7 +1,7 @@
 /*
  * examples/sparsesolverat.C
  *
- * Copyright (C) 2012 J-G Dumas
+ * Copyright (C) The LinBox Group
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
@@ -19,6 +19,13 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  * ========LICENCE========
+ */
+
+/**\file examples/sparsesolverat.C
+ @example examples/sparsesolverat.C
+ @author Jean-Guillaume.Dumas@univ-grenoble-alpes.fr
+ * \brief Direct sparse solver over the rationals 
+ * \ingroup examples
  */
 #include <iostream>
 

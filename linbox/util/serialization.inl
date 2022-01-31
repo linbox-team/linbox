@@ -103,7 +103,7 @@ namespace LinBox {
     inline uint64_t unserialize_raw(T& value, const std::vector<uint8_t>& bytes, uint64_t offset)
     {
         auto uValue = &bytes.at(offset);
-        value = *reinterpret_cast<const T*>(uValue);
+        memcpy(&value,uValue,sizeof(T));
         return sizeof(T);
     }
 
@@ -128,7 +128,7 @@ namespace LinBox {
     inline uint64_t unserialize(int16_t& value, const std::vector<uint8_t>& bytes, uint64_t offset)
     {
         auto uValue = &bytes.at(offset);
-        value = *reinterpret_cast<const int16_t*>(uValue);
+        memcpy(&value,uValue,sizeof(int16_t));
 #if defined(__LINBOX_HAVE_BIG_ENDIAN)
         value = __builtin_bswap16(value);
 #endif
@@ -137,7 +137,7 @@ namespace LinBox {
     inline uint64_t unserialize(uint16_t& value, const std::vector<uint8_t>& bytes, uint64_t offset)
     {
         auto uValue = &bytes.at(offset);
-        value = *reinterpret_cast<const uint16_t*>(uValue);
+        memcpy(&value,uValue,sizeof(uint16_t));
 #if defined(__LINBOX_HAVE_BIG_ENDIAN)
         value = __builtin_bswap16(value);
 #endif
@@ -147,7 +147,7 @@ namespace LinBox {
     inline uint64_t unserialize(int32_t& value, const std::vector<uint8_t>& bytes, uint64_t offset)
     {
         auto uValue = &bytes.at(offset);
-        value = *reinterpret_cast<const int32_t*>(uValue);
+        memcpy(&value,uValue,sizeof(int32_t));
 #if defined(__LINBOX_HAVE_BIG_ENDIAN)
         value = __builtin_bswap32(value);
 #endif
@@ -156,7 +156,7 @@ namespace LinBox {
     inline uint64_t unserialize(uint32_t& value, const std::vector<uint8_t>& bytes, uint64_t offset)
     {
         auto uValue = &bytes.at(offset);
-        value = *reinterpret_cast<const uint32_t*>(uValue);
+        memcpy(&value,uValue,sizeof(uint32_t));
 #if defined(__LINBOX_HAVE_BIG_ENDIAN)
         value = __builtin_bswap32(value);
 #endif
@@ -166,7 +166,7 @@ namespace LinBox {
     inline uint64_t unserialize(int64_t& value, const std::vector<uint8_t>& bytes, uint64_t offset)
     {
         auto uValue = &bytes.at(offset);
-        value = *reinterpret_cast<const int64_t*>(uValue);
+        memcpy(&value,uValue,sizeof(int64_t));
 #if defined(__LINBOX_HAVE_BIG_ENDIAN)
         value = __builtin_bswap64(value);
 #endif
@@ -175,7 +175,7 @@ namespace LinBox {
     inline uint64_t unserialize(uint64_t& value, const std::vector<uint8_t>& bytes, uint64_t offset)
     {
         auto uValue = &bytes.at(offset);
-        value = *reinterpret_cast<const uint64_t*>(uValue);
+        memcpy(&value,uValue,sizeof(uint64_t));
 #if defined(__LINBOX_HAVE_BIG_ENDIAN)
         value = __builtin_bswap64(value);
 #endif

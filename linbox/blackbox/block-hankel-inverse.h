@@ -51,7 +51,7 @@ namespace LinBox
 		typedef _Field                    Field;
 		typedef typename Field::Element Element;
 		typedef BlasMatrix<Field> Coefficient;
-                typedef PolynomialMatrix<PMType::matfirst,PMStorage::plain, Field> PMatrix;
+        typedef PolynomialMatrix<Field,PMType::matfirst> PMatrix;
                 
 	private:
 		const Field           *_field;
