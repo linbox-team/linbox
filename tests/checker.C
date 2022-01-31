@@ -66,7 +66,7 @@ int main(int argc, char* argv[]) {
         hide("test-block-ring", "non commutative rings not supported");
 //hide("test-ffpack", "testTURBO fails, move to ffpack tests?");
         hide("test-ftrmm", "should move to attic");
-        skip("test-givaro-fields", "may fail on small fields because of supposed non-randomness or failure to find a non trivial element");
+//         skip("test-givaro-fields", "may fail on small fields because of supposed non-randomness or failure to find a non trivial element");
         hide("test-image-field", "deprecated");
 // skip("test-invariant-factors", "not unit/regression test conforming");
 //skip("test-isposdef", "intermittent inf loop");
@@ -106,7 +106,6 @@ int main(int argc, char* argv[]) {
     warn("test-quad-matrix", "half baked, bds responsible");
 */
 
-    skip("test-smith-form-kannan-bachem", " not working anymore");
     warn("test-one-invariant-factor", " Probabilistic algorithm, sometimes fails");
 
 
