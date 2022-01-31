@@ -33,6 +33,7 @@
 #include "linbox/randiter/archetype.h"
 #include "linbox/algorithms/blackbox-container-base.h"
 #include "linbox/util/timer.h"
+#include "linbox/solutions/constants.h"
 
 namespace LinBox
 {
@@ -87,13 +88,23 @@ namespace LinBox
 		{
 			this->casenumber = 1;
 			this->u.resize (this->_BB->coldim ());
-			for (long i = (long)this->u.size (); i--;)
-				g.random (this->u[(size_t)i]);
-			this->w.resize (this->_BB->coldim ());
-			for (long i = (long)this->w.size (); i--;)
-				g.random (this->w[(size_t)i]);
-			this->v.resize (this->_BB->rowdim ());
-			this->_VD.dot (this->_value, this->u, this->w);
+            this->w.resize (this->_BB->coldim ());
+            this->v.resize (this->_BB->rowdim ());
+
+            size_t trials=0;
+            do {
+                for (long i = (long)this->u.size (); i--;)
+                    g.random (this->u[(size_t)i]);
+                
+                for (long i = (long)this->w.size (); i--;)
+                    g.random (this->w[(size_t)i]);
+			
+                this->_VD.dot (this->_value, this->u, this->w);
+            } while(F.isZero(this->_value) && ++trials<= LINBOX_DEFAULT_TRIALS_BEFORE_FAILURE);
+
+            if (trials >= LINBOX_DEFAULT_TRIALS_BEFORE_FAILURE)
+                std::cerr<<"ERROR in "<<__FILE__<<" at line "<<__LINE__<<" -> projection always orthogonal after "<<LINBOX_DEFAULT_TRIALS_BEFORE_FAILURE<<" attempts\n";;
+                
 #ifdef INCLUDE_TIMING
 			_applyTime = _dotTime = 0.0;
 #endif

@@ -198,11 +198,10 @@ namespace LinBox
              * Returns the modulus of the field, which should be prime.
              * @return integer representing cardinality of the field
              */
-
-		integer& cardinality(integer& c) const
-            {
-                return characteristic(c);
-            }
+		template <typename Residu_t> Residu_t &cardinality(Residu_t& c) const
+		{
+			return characteristic(c);
+		}
 
 		integer cardinality() const
             {
@@ -215,7 +214,7 @@ namespace LinBox
              * @return integer representing characteristic of the field.
              */
 
-		integer& characteristic(integer& c) const
+		template <typename Residu_t> Residu_t &characteristic(Residu_t& c) const
             {
                 return c = static_cast<int64_t>(Element::modulus());
             }
@@ -337,17 +336,18 @@ namespace LinBox
 	class UnparametricRandIter<NTL::zz_p> {
 	public:
 		typedef NTL::zz_p Element;
-        typedef Element::rep_type Residu_t;
+        typedef size_t Residu_t;
+
             /// Constructor for random field element generator
 
 		UnparametricRandIter<NTL::zz_p> (const NTL_zz_p & F,
-                                         const integer& size=0,
-                                         const uint64_t seed=0) :
+                                         const uint64_t seed=0,
+                                         const Residu_t& size=0) :
                 _size(size), _seed(seed), _ring(F)
             {
-                if (_seed == 0) _seed = time(NULL);
+                if (_seed == 0) _seed = static_cast<uint64_t>(std::time(nullptr));
 
-                integer cardinality;
+                size_t cardinality;
                 F.cardinality(cardinality);
                 if (_size > cardinality)
                     _size = 0;
@@ -377,7 +377,7 @@ namespace LinBox
             }
         const NTL_zz_p& ring() const { return _ring; }
 	protected :
-		integer _size;
+		size_t _size;
         uint64_t _seed ;
         const NTL_zz_p& _ring;
 	};

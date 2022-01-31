@@ -900,8 +900,8 @@ namespace LinBox {
 				return fit2(X,Y,1,x) ;
 			}
 			if (X[0]==X[1]) {
-				dvector_t X1(2); X1[0]=X[1]; X1[2]=X[2];
-				dvector_t Y1(2); Y1[0]=Y[1]; Y1[2]=Y[2];
+				dvector_t X1(2); X1[0]=X[1]; X1[1]=X[2];
+				dvector_t Y1(2); Y1[0]=Y[1]; Y1[1]=Y[2];
 				return fit2(X1,Y1,1,x) ;
 			}
 		}

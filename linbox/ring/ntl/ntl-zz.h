@@ -37,6 +37,62 @@
 #include "linbox/randiter/ntl-zz.h"
 #include "linbox/field/field-traits.h"
 
+namespace Givaro
+{
+	/** Initialization of field element from an integer.
+	 * Behaves like C++ allocator construct.
+	 * This function assumes the output field element x has already been
+	 * constructed, but that it is not already initialized.
+	 * For now, this is done by converting the integer type to a C++
+	 * long and then to the element type through the use of static cast and
+	 * NTL's to_ZZ function.
+	 * This, of course, assumes such static casts are possible.
+	 * This function should be changed in the future to avoid using long.
+	 * @return reference to field element.
+	 * @param x field element to contain output (reference returned).
+	 * @param y integer.
+	 */
+	template <>
+	NTL::ZZ& Caster(NTL::ZZ& x, const Integer& y)
+	{
+		std::stringstream s;
+		s << y;
+		s >> x;
+		return x;
+	}
+	template <> NTL::ZZ& Caster(NTL::ZZ& x, const double& y) { return x = NTL::to_ZZ((long)(y)); }
+
+	template <> NTL::ZZ& Caster(NTL::ZZ& x, const int32_t& y) { return x = NTL::to_ZZ((long)(y)); }
+
+	template <> NTL::ZZ& Caster(NTL::ZZ& x, const int64_t& y) { return x = NTL::to_ZZ((long)(y)); }
+
+	template <> NTL::ZZ& Caster(NTL::ZZ& x, const uint32_t& y) { return x = NTL::to_ZZ((unsigned long)(y)); }
+
+	template <> NTL::ZZ& Caster(NTL::ZZ& x, const uint64_t& y) { return x = NTL::to_ZZ((unsigned long)(y)); }
+
+	/** Conversion of field element to an integer.
+	 * This function assumes the output field element x has already been
+	 * constructed, but that it is not already initialized.
+	 * For now, this is done by converting the element type to a C++
+	 * long and then to the integer type through the use of static cast and
+	 * NTL's to_long function.
+	 * This, of course, assumes such static casts are possible.
+	 * This function should be changed in the future to avoid using long.
+	 * @return reference to integer.
+	 * @param x reference to integer to contain output (reference returned).
+	 * @param y constant reference to field element.
+	 */
+	template <>
+	Integer& Caster(Integer& x, const NTL::ZZ& y)
+	{
+		std::stringstream s;
+		s << y;
+		s >> x;
+		return x;
+		//return x = static_cast<Integer>(to_long(y));
+	}
+} // namespace Givaro
+
 namespace LinBox
 {
 

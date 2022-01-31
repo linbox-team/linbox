@@ -46,6 +46,10 @@ int main (int argc, char **argv)
 	//     commentator().setMaxDepth (-1);
 	//     commentator().setReportStream (std::cerr);
 
+
+    if (argc != 2) {
+        cerr << "Usage: doubledet <matrix-file-in-supported-format>" << endl;
+    }
 	Givaro::ZRing<Integer> ZZ;
 
 	ifstream input (argv[1]);

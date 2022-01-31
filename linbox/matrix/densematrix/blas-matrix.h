@@ -107,7 +107,7 @@ namespace LinBox
         /*!@internal constructor from an iterator of elements.
          * @param v iterator on to \c Element s */
         template <class constIterator>
-        void createBlasMatrix (const constIterator& it) ;
+        void createBlasMatrix (constIterator it) ;
 
 
         /*! @internal
@@ -213,8 +213,11 @@ namespace LinBox
         //! operator = (copying data from different matrix type)
         template<class _Matrix>
         Self_t& operator= (const _Matrix& A) ;
-        
-        Self_t& copy(const Self_t& A) { return *this=A;}
+
+        template<class _Matrix>
+        Self_t& copy (const _Matrix& A) { return *this=A;}
+
+        //Self_t& copy(const Self_t& A) { return *this=A;}
 
         //! Rebind operator
         template<typename _Tp1, typename _Rep2 = typename Rebind<RawStorage, _Tp1>::other>
@@ -470,7 +473,7 @@ namespace LinBox
             B.random(I);
         }
 
-        
+
     }; // end of class BlasMatrix
 
 
@@ -495,7 +498,7 @@ namespace LinBox
         typedef TriangularBlasMatrix<Matrix>             Self_t;
         typedef Self_t                               matrixType;
         typedef BlasSubmatrix< Matrix>            subMatrixType;
-        typedef BlasSubmatrix<const Matrix>  constSubMatrixType;        
+        typedef BlasSubmatrix<const Matrix>  constSubMatrixType;
 
 
 
@@ -508,7 +511,7 @@ namespace LinBox
             : BlasSubmatrix<Matrix>(A,0,0,
                                     (x == Tag::Shape::Upper)? std::min(A.rowdim(),A.coldim()): A.rowdim(),
                                     (x == Tag::Shape::Upper)? A.coldim():std::min(A.coldim(),A.rowdim()))
-            , _uplo(x), _diag(y) {}    
+            , _uplo(x), _diag(y) {}
 
         /// get the shape of the matrix (upper or lower)
         Tag::Shape getUpLo() const {return _uplo;}

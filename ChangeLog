@@ -1,3 +1,11 @@
+2021-12-10 v1.7.0
+	* new polynomial matrix API
+	* new FFT code for polynomial matrices
+	* Dixon solver refactorization
+	* more examples for rational solutions
+	* cleanup of BlasMatrixDomain with minor API changes
+	* update wrt Givaro's new randiter API
+	* many bug fixes
 2019-06-07 v1.6.3
 	Minor update:
 	* fix test-suite failures when compiling in builddir!=srcdir

@@ -37,8 +37,8 @@
 *  <li> \b Revision number. <br/>
 *    Minor changes are changes that do not change any API and do not provoke
 * any miscompilation in LinBox. As a consequence, for instance, any release
-* \c 1.3.z of LinBox should  compile with any givaro \c 3.7.z and any
-* fflas-ffpack \c 1.6.z. <br/>
+* \c 1.7.z of LinBox should  compile with any givaro \c 4.2.z and any
+* fflas-ffpack \c 2.4.z. <br/>
 * This correspondance should be published on the website. It is however always put in
 * the \c auto-install.sh script.
 *  </li>

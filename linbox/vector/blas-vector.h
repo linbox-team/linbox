@@ -152,7 +152,7 @@ namespace LinBox {
         BlasVector(const _Field & F, const ConstIterator& jt, const size_t m) :  _field(F) {
             resize(m);
             ConstIterator jtt(jt);
-            for (auto it=_rep.begin();it!=_rep.end();it++,jtt++)
+            for (auto it=_rep.begin();it!=_rep.end();++it,++jtt)
                 field().assign(*it,*jtt);
         }
 
@@ -164,7 +164,7 @@ namespace LinBox {
         BlasVector (const _Field & F, const VectorBase & V)  :  _field(F) {
             resize(V.size());
             typename VectorBase::const_iterator jt=V.begin();
-            for (auto it=_rep.begin();it!=_rep.end();it++,jt++)
+            for (auto it=_rep.begin();it!=_rep.end();++it,++jt)
                 field().assign(*it,*jt);
         }
 
@@ -241,7 +241,7 @@ namespace LinBox {
         Element_ptr      getPointer()       { return _ptr; }
         ConstElement_ptr getConstPointer() const { return _ptr;}
 
-		const Storage &getRep() const { return _rep ; }
+        const Storage &getRep() const { return _rep ; }
 
         /** Get the increment in the vector
          * @return the inc value of the subvector
@@ -298,8 +298,7 @@ namespace LinBox {
                     os << '<' ;
                     for(auto it= _rep.begin();it != _rep.end(); ++it) {
                         field().write(os, *it);
-                        ++it ;
-                        if (it != this->end())
+                        if (it != this->end()-1)
                             os << ',' ;
                     }
                     return	os << '>' ;
