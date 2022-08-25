@@ -154,7 +154,7 @@ namespace LinBox
             Integer N, D, L, Prime;
             this->_intRing.convert(Prime,_p);
 
-            auto hb = RationalSolveHadamardBound(A, b);
+            auto hb = RationalSolveHadamardBound(A, _b);
             N = Integer(1) << static_cast<uint64_t>(std::ceil(hb.numLogBound));
             D = Integer(1) << static_cast<uint64_t>(std::ceil(hb.denLogBound));
 

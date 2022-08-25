@@ -184,9 +184,14 @@ namespace LinBox
 
 				randomMatrix.randomMatrix(R, r, (int)A.coldim(), i);
 
+
 				compose.compose(LAR, *L, A, *R);
 
 				lif.lastInvariantFactor(tmp_i, *LAR, PrimeL);
+
+//                 L->write(std::clog << "L: ",  Tag::FileFormat::linalg) << std::endl;
+//                 R->write(std::clog << "R: ",  Tag::FileFormat::linalg) << std::endl;
+//                 std::clog << "tmp_i: " << tmp_i << std::endl;
 
 				//free memory
 				delete L;
@@ -209,7 +214,7 @@ namespace LinBox
 		template<class IMatrix>
 		Integer& oneInvariantFactor(Integer& oif, const IMatrix& A, int i)
 		{
-            
+
 			//std::vector<Integer> empty_v;
             Givaro::ZRing<Integer> Z;
             BlasVector<Givaro::ZRing<Integer> > empty_v (Z);

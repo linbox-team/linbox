@@ -63,6 +63,7 @@ namespace LinBox {
     SolverReturnStatus DixonSolver<Ring, Field, RandomPrime, Method::DenseElimination>::solveNonsingular(
         Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, bool oldMatrix, int maxPrimes)
     {
+        commentator().start("solve.dixon.integer.nonsingular.denseelim");
 
         int trials = 0, notfr;
 
@@ -140,6 +141,7 @@ namespace LinBox {
 #endif
         if (F != NULL) delete F;
         if (FMP != NULL) delete FMP;
+        commentator().stop("solve.dixon.integer.nonsingular.denseelim");
         return SS_OK;
     }
 
