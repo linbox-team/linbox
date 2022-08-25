@@ -54,8 +54,7 @@ bool runrank (const char * name, size_t irank, int32_t mod)
 
 	std::ifstream input (name);
 	if (!input) {
-      if (writing)
-		std::cerr << "Error opening matrix file: " << name << std::endl;
+		if (writing) std::cerr << "Error opening matrix file: " << name << std::endl;
 		return false;
 	}
 
