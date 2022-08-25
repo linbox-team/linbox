@@ -339,14 +339,15 @@ namespace LinBox
 		reference _ref;
 	};
 
-	class BitVector::const_iterator : public std::iterator <std::random_access_iterator_tag, bool> {
+	class BitVector::const_iterator {
 	public:
+        using iterator_category = std::random_access_iterator_tag;
+        using value_type = bool;
+        using difference_type = std::ptrdiff_t;
+        using pointer = bool*;
+        using reference = BitVector::reference;
 
-		typedef std::iterator_traits<const_iterator>::iterator_category iterator_category;
-		typedef std::iterator_traits<const_iterator>::reference const_reference;
-		typedef std::iterator_traits<const_iterator>::pointer pointer;
-		typedef std::iterator_traits<const_iterator>::value_type value_type;
-		typedef std::iterator_traits<const_iterator>::difference_type difference_type;
+        typedef std::iterator_traits<const_iterator>::reference const_reference;
 		typedef BitVector::iterator iterator;
 
 		const_iterator () :
