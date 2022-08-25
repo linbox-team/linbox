@@ -65,12 +65,10 @@ int main(int argc, char* argv[]) {
     if (honor_skips) {
         hide("test-block-ring", "non commutative rings not supported");
 //hide("test-ffpack", "testTURBO fails, move to ffpack tests?");
-        skip("test-frobenius-small", "not unit/regression test conforming");
-        skip("test-frobenius-large", "not unit/regression test conforming");
         hide("test-ftrmm", "should move to attic");
-        skip("test-givaro-fields", "may fail on small fields because of supposed non-randomness or failure to find a non trivial element");
+//         skip("test-givaro-fields", "may fail on small fields because of supposed non-randomness or failure to find a non trivial element");
         hide("test-image-field", "deprecated");
-        skip("test-invariant-factors", "not unit/regression test conforming");
+// skip("test-invariant-factors", "not unit/regression test conforming");
 //skip("test-isposdef", "intermittent inf loop");
 //skip("test-ispossemidef", "intermittent inf loop");
         hide("test-la-block-lanczos", "not maintained. operator >> missing");
@@ -102,14 +100,13 @@ int main(int argc, char* argv[]) {
     warn("test-rat-solve", "infinite loop");
 //warn("test-smith-form-local", "bds, intermittent failures");
     warn("test-solve", "most of the tests are commented out");
-    warn("test-toom-cook", "one method does not work");
+    warn("test-toom-cook", " One method does not work");
 //warn("test-transpose", "sometimes fails on Sparsematrix/getEntry");
 /* Quad matrix is a dormant project. Eventual revival is expected. Test works.
     warn("test-quad-matrix", "half baked, bds responsible");
 */
 
-//     skip("test-smith-form-kannan-bachem", "not working anymore");
-    warn("test-one-invariant-factor", "probalistic algorithm, sometimes fails");
+    warn("test-one-invariant-factor", " Probabilistic algorithm, sometimes fails");
 
 
 //// optional package dependency section ////
@@ -195,7 +192,7 @@ int main(int argc, char* argv[]) {
 //			#endif
 			if (status != 0) { // build failure
 				buildfail++;
-				report << "FAIL ";
+				report << "FAIL. ";
 			} else {// do run
 				report << "OK, run ";
 				std::ostringstream prog ;
@@ -209,7 +206,7 @@ int main(int argc, char* argv[]) {
 					pass++;
 				} else {
 					runfail++;
-					report << "FAIL" + warn_note[t];
+					report << "FAIL. " + warn_note[t];
 				}
 			}
 		}

@@ -28,7 +28,6 @@
 
 #ifndef __TEST_SMITH_FORM_H
 #define __TEST_SMITH_FORM_H
-#include <linbox/linbox-config.h>
 
 #include "linbox/util/commentator.h"
 #include "linbox/matrix/dense-matrix.h"
@@ -38,7 +37,7 @@
 using std::endl;
 using namespace LinBox;
 
-template <class PIR> // This is for PIR = Z or Z_n
+template <class PIR> // This is for PIR = Z or Z/nZ.
 BlasVector<PIR> & makeBumps(BlasVector<PIR> & b, int choice) {
 	const PIR & R = b.field();
 	typename PIR::Element two, three, nine, x;
@@ -151,16 +150,15 @@ void makeSNFExample(DenseMatrix<PIR>& A,
     A.write(report << "Created: ", Tag::FileFormat::linalg) << std::endl;
 }
 
-template <class PIR>
-bool checkSNFExample( const BlasVector<PIR>& d, const BlasVector<PIR>& x ){
-
 	std::ostream & report =
 #ifndef DISABLE_COMMENTATOR
-        commentator().report()
+        commentator().report(LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 #else
         std::clog
 #endif
-;
+
+template <class PIR>
+bool checkSNFExample( const BlasVector<PIR>& d, const BlasVector<PIR>& x ){
 
 	VectorDomain<PIR> VD(d.field());
 
@@ -183,13 +181,14 @@ bool checkSNFExample( const BlasVector<PIR>& d, const BlasVector<PIR>& x ){
 template <class PIR>
 bool checkSNFExample( const LinBox::SmithList<PIR>& d, const LinBox::SmithList<PIR>& x, const PIR& R){
 
-	std::ostream & report =
+/*
 #ifndef DISABLE_COMMENTATOR
-        commentator().report()
+	std::ostream & report =
+      commentator().report(LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 #else
-        std::clog
+	std::ostream & report = std::clog;
 #endif
-;
+*/
 	report << "Expected smith form SL: " << '{';
     for(auto const & sit: d) report << '{' << sit.first << ',' << sit.second << '}';
     report << '}' << std::endl;
