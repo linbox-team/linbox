@@ -157,20 +157,6 @@ namespace LinBox
         BlasSubmatrix(nonconstSubMatrixType &M);
         BlasSubmatrix(const nonconstSubMatrixType &M);
 
-        /*
-        BlasSubmatrix(Self_t && M) :
-            _ptr(M.getPointer()),
-            _row (M.rowdim()),
-            _col(M.coldim()),
-            _stride(M.getStride()),
-            _field(M.field())
-        {
-            std::cout<<"BlasSubmatrix move cstor\n";
-            M._ptr=nullptr;
-            _row=0;_col=0;_stride=0;
-        }
-        */
-
          /** Move constructor / Move operator
          */
         BlasSubmatrix(Self_t &&M)=default;

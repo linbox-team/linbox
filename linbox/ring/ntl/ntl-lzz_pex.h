@@ -152,6 +152,12 @@ namespace LinBox
             {
                 return p = y;
             }
+            /* For some Coeff, there is no implicit cast from int.
+		Element& init( Element& p, const int& y ) const
+            {
+                return p = (Coeff)y;
+            }
+            */
 
             /** Initialize p from a vector of coefficients.
              * The vector should be ordered the same way NTL does it: the front
@@ -159,6 +165,19 @@ namespace LinBox
              * of the vector corresponds to the leading coefficients.  That is,
              * v[i] = coefficient of x^i.
              */
+		template <class Elt, template <class E> class Vec> 
+		Element& init( Element& p, const Vec<Elt>& v ) const
+            {
+                p = 0;
+                Coeff temp;
+                for( size_t i = 0; i < v.size(); ++i ) {
+                    _CField.init( temp, v[i] );
+                    if( !_CField.isZero(temp) )
+                        NTL::SetCoeff( p, i, temp );
+                }
+                return p;
+            }
+
 		template <class ANY1, class ANY2, template <class T1, class T2> class Vect>
 		Element& init( Element& p, const Vect<ANY1,ANY2>& v ) const
             {
@@ -186,6 +205,16 @@ namespace LinBox
                     NTL::SetCoeff( p, i, v[i] );
                 return p;
             }
+
+/*
+		Element& init( Element& p, const BlasVector<Coeff>& v ) const
+            {
+                p = 0;
+                for( size_t i = 0; i < v.size(); ++i )
+                    NTL::SetCoeff( p, i, v[i] );
+                return p;
+            }
+            */
 
             /** Convert p to a vector of coefficients.
              * The vector will be ordered the same way NTL does it: the front

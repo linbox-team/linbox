@@ -84,6 +84,7 @@ int main(int argc, char* argv[])
 
 	// typedef Givaro::ZRing<NTL::ZZ_p> Field;
 	typedef LinBox::NTL_ZZ_p Field;
+	typedef LinBox::NTL_ZZ_pX PolyRing;
 	// typedef Field::Element element;
 	typedef LinBox::BlasVector<Field> Vector;
 
@@ -103,7 +104,7 @@ int main(int argc, char* argv[])
 	}
 	report << std::endl;
 
-	LinBox::Hankel<Field> TT(tdata);
+	LinBox::Hankel<Field, PolyRing> TT(tdata);
 	// LinBox::Hankel<Field> TT(F,tdata);
 	report << "The matrix is: " << std::endl;
 	TT.print(report);

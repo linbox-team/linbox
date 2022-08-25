@@ -153,8 +153,6 @@ namespace LinBox {
         return *this;
     }
 
-
-    //////////////////
     template < class _Matrix >
     template < class _AnyMatrix >
     BlasSubmatrix<_Matrix>& BlasSubmatrix<_Matrix>::swap (_AnyMatrix & M){
@@ -175,6 +173,7 @@ namespace LinBox {
     }
 
 
+    //////////////////
     //   ELEMENTS   //
     //////////////////
 

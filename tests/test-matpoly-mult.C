@@ -173,9 +173,9 @@ bool runTest(uint64_t n, uint64_t d, long seed){
 	bool ok=true;
 	size_t bits= (53-integer(n).bitsize())/2;
 	ostream &report = commentator().report (Commentator::LEVEL_ALWAYS, INTERNAL_DESCRIPTION);
-	// fourier prime < 2^(53--log(n))/2
+        // fourier prime < 2^(53--log(n))/2
 	{
-        commentator().start("Half wordsize Fourrier prime");
+        commentator().start("Half wordsize Fourier prime", "HWFP");
 		integer p;
 		RandomFFTPrime::seeding (seed);
 		if (!RandomFFTPrime::randomPrime (p, 1<<bits, integer(d).bitsize()+1))
@@ -183,12 +183,13 @@ bool runTest(uint64_t n, uint64_t d, long seed){
 
 		Givaro::Modular<double> F((int32_t)p);
 		ok&=launchTest (F,n,bits,d,seed);
-        commentator().stop(MSG_STATUS (ok), (const char *) 0,"Half wordsize Fourrier prime");
+        commentator().stop(MSG_DONE, 0, "HWFP");
 
 	}
-	// normal prime < 2^(53--log(n))/2
+        // normal prime < 2^(53--log(n))/2
 	{
-        commentator().start("Half wordsize normal prime");
+        commentator().start("Half wordsize normal prime", "HWNP");
+        report << "got to 3" << std::endl;
 		typedef Givaro::Modular<double> Field;
 		PrimeIterator<IteratorCategories::HeuristicTag> Rd(FieldTraits<Field>::bestBitSize(n),seed);
 		integer p;
@@ -196,29 +197,29 @@ bool runTest(uint64_t n, uint64_t d, long seed){
         report<<"prime bits : "<<p.bitsize()<<std::endl;
 		Field F((int32_t)p);
 		ok&=launchTest (F,n,bits,d,seed);
-        commentator().stop(MSG_STATUS (ok), (const char *) 0,"Half wordsize normal prime");
+        commentator().stop(MSG_DONE, 0, "HWNP");
 	}
 
-	// multi-precision prime
-	 {
+        // multi-precision prime
+    {
 
-         commentator().start("Multiprecision generic prime");
-	 	size_t bits=114;
-	 	PrimeIterator<IteratorCategories::HeuristicTag> Rd(bits,seed);
-	 	integer p= *Rd;
+        commentator().start("Multiprecision generic prime","MPGP");
+		size_t bits=114;
+		PrimeIterator<IteratorCategories::HeuristicTag> Rd(bits,seed);
+		integer p= *Rd;
         report<<"prime bits : "<<p.bitsize()<<std::endl;
-	 	Givaro::Modular<integer> F1(p);			
-	 	ok&=launchTest (F1,n,bits,d,seed);
-	 	Givaro::Modular<RecInt::ruint128,RecInt::ruint256> F2(p);
-	 	ok&=launchTest (F2,n,bits,d,seed);
-	    commentator().stop(MSG_STATUS (ok), (const char *) 0,"Multiprecision generic prime");
-	 }
+		Givaro::Modular<integer> F1(p);
+		ok&=launchTest (F1,n,bits,d,seed);
+		Givaro::Modular<RecInt::ruint128,RecInt::ruint256> F2(p);
+		ok&=launchTest (F2,n,bits,d,seed);
+	    commentator().stop(MSG_DONE, 0,"MPGP");
+    }
 
-	 // over the integer
+        // over the integer
 	{
 		Givaro::ZRing<integer> F;
 		ok&=launchTest (F,n,128,d,seed);
-	 }
+    }
 	return ok;
 }
 
@@ -238,9 +239,9 @@ int main(int argc, char** argv){
 	commentator().start ("Testing polynomial matrix multiplication", "testMatpolyMult", 1);
     bool pass=    runTest(n,d,seed);
     commentator().stop(MSG_STATUS(pass),(const char *) 0,"testMatpolyMult");
-    
+
     return (pass? 0: -1);
-} 
+}
 
 // Local Variables:
 // mode: C++
