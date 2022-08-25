@@ -165,8 +165,8 @@ namespace LinBox
 		 * @param m Number of vectors to return (0 for unlimited)
 		 */
 		ConstantVectorStream (Vector &v, size_t m) :
-		       	_v (v), _m (m), _j (0)
-	       	{}
+			_v (v), _m (m), _j (0)
+		{}
 
 		/** Retrieve vector
 		 * @param v Vector to use
@@ -438,12 +438,12 @@ namespace LinBox
 
 		RandomSparseStream (const Field &F, RandIter &r, double p,
 				    size_t N, size_t M = 0, uint64_t seed= time (NULL)) :
-                _field (F), 
-                _r1 (r), 
-                _r (r), 
-                _n (N), 
-                _p (p), 
-                _m (M), 
+                _field (F),
+                _r1 (r),
+                _r (r),
+                _n (N),
+                _p (p),
+                _m (M),
                 _j (0),
                 MT (static_cast<uint32_t>(seed))
 		{ setP (p); }

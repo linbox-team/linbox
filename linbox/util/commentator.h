@@ -800,7 +800,7 @@ namespace LinBox
     };
 
     // Default static commentator is now common to enabled or disabled
-    // 	extern Commentator commentator;
+    //	extern Commentator commentator;
     }
 
     // #ifdef LinBoxSrcOnly
@@ -985,9 +985,9 @@ namespace LinBox
             MessageClass _msgcls;
         }; // class (disabled) Commentator
 
-        // 	// Default global commentator
-        // 	extern Commentator commentator;
-        // 	//static Commentator commentator;
+        //	// Default global commentator
+        //	extern Commentator commentator;
+        //	//static Commentator commentator;
     }
 
 #endif // DISABLE_COMMENTATOR

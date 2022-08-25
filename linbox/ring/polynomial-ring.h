@@ -63,6 +63,8 @@ namespace LinBox {
 		typedef DensePolynomial<BaseRing> Element;
 		typedef Element Polynomial;
 		typedef Element Rep;
+        using Element_ptr = Element*;
+        using ConstElement_ptr = const Element*;
         typedef typename BaseRing::Element Type_t;
     protected:
         typedef typename Parent_t::Element ParElem;
@@ -94,6 +96,15 @@ namespace LinBox {
             p._field = &Parent_t::subdomain();
             return p;
         }
+
+            // -- Init polynomial with list of values starting at degree 0
+        template<class XXX>
+        Rep& init(Rep& p, const std::initializer_list<XXX> &cste ) const {
+            Parent_t::init(static_cast<ParElem&>(p), cste);
+            p._field = &Parent_t::subdomain();
+            return p;
+        }
+
 
             //===========================================
             // The following are needed since:
@@ -137,12 +148,15 @@ namespace LinBox {
         Rep& invmod(Rep& p, Args... args) const { Parent_t::invmod(p,args...); return p; }
         template<typename... Args>
         Rep& invmodunit(Rep& p, Args... args) const { Parent_t::invmodunit(p,args...); return p; }
+
         template<typename... Args>
         Rep& gcd(Rep& p, Args... args) const { Parent_t::gcd(p,args...); return p; }
         template<typename... Args>
+        Rep& gcd(Rep& p, Rep& u, Rep& v, Args... args) const { Parent_t::gcd(p,u,v,args...); return p; }
+        template<typename... Args>
         Rep& lcm(Rep& p, Args... args) const { Parent_t::lcm(p,args...); return p; }
         template<typename... Args>
-        Rep& ratrecon(Rep& p, Args... args) const { Parent_t::ratrecon(p,args...); return p; }
+        bool ratrecon(Rep& p, Rep& q, Args... args) const { return Parent_t::ratrecon(p,q, args...); }
            //===========================================
 
 

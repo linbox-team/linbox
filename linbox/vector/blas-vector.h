@@ -152,7 +152,7 @@ namespace LinBox {
         BlasVector(const _Field & F, const ConstIterator& jt, const size_t m) :  _field(F) {
             resize(m);
             ConstIterator jtt(jt);
-            for (auto it=_rep.begin();it!=_rep.end();it++,jtt++)
+            for (auto it=_rep.begin();it!=_rep.end();++it,++jtt)
                 field().assign(*it,*jtt);
         }
 
@@ -164,7 +164,7 @@ namespace LinBox {
         BlasVector (const _Field & F, const VectorBase & V)  :  _field(F) {
             resize(V.size());
             typename VectorBase::const_iterator jt=V.begin();
-            for (auto it=_rep.begin();it!=_rep.end();it++,jt++)
+            for (auto it=_rep.begin();it!=_rep.end();++it,++jt)
                 field().assign(*it,*jt);
         }
 

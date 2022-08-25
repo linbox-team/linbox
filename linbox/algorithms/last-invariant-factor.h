@@ -110,31 +110,31 @@ namespace LinBox
 			Integer r_den;
 			//std::vector<std::pair<Integer, Integer> > result (A.coldim());
 			//typename std::vector<std::pair<Integer, Integer> >::iterator result_p;
-			// vector b, RHS, 32-bit int is good enough
+			// vector b, RHS, int is good enough
 			std::vector<int> b(A.rowdim());
 			typename std::vector<int>::iterator b_p;
 			typename Vector::const_iterator Prime_p;
 
 			Integer pri, quo, rem, itmp;
+            int failedattempts(0);
 
 			for (; count < threshold; ++ count) {
 				// assign b to be a random vector
 				for (b_p = b.begin(); b_p != b.end(); ++ b_p) {
-//					* b_p = rand() % 268435456 - 134217728; // may need to change to use ring's random gen.
-//					// dpritcha, 2004-07-26
                     _gen( itmp );
                     * b_p = (int)itmp;
 				}
 
 				// try to solve Ax = b over Ring
 				tmp = solver.solveNonsingular(r_num, r_den, A, b);
+
 				// If no solution found
 				if (tmp != SS_OK) {
-					r.assign (lif, r.zero);
-					break;
-				}
-
-				r. lcmin (lif, r_den);
+                    if (++failedattempts > threshold) {
+                        r.assign (lif, r.zero);
+                        break;
+                    } else --count;
+				} else r.lcmin (lif, r_den);
 			}
 			// filter out primes in PRIMEL from lif.
 			if (!r. isZero (lif))

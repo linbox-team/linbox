@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2004 Pascal Giorgi, Clément Pernet
  *               2013, 2014 the LinBox group
- *               2018 revamped by Pascal Giorgi 
+ *               2018 revamped by Pascal Giorgi
  * Written by :
  *               Pascal Giorgi  pascal.giorgi@lirmm.fr
  *               Clément Pernet clement.pernet@imag.fr
@@ -68,14 +68,14 @@ namespace LinBox
         typedef typename _Matrix::Field::ConstElement_ptr pointer;
     };
 
-    
+
     template <class _Matrix>
     class BlasSubmatrix {
     public :
         typedef typename _Matrix::Field                     Field;
         typedef typename Field::Element                   Element;    //!< Element type
         typedef typename _Matrix::Storage                 Storage;
-        typedef typename _Matrix::RawStorage           RawStorage;    
+        typedef typename _Matrix::RawStorage           RawStorage;
         typedef BlasSubmatrix<_Matrix>                     Self_t;    //!< Self type
         typedef typename MatrixEltPointer<_Matrix>::pointer                    pointer;    //!< pointer type to elements
         typedef typename MatrixEltPointer<const _Matrix>::pointer        const_pointer;    //!< const pointer type to elements
@@ -85,7 +85,7 @@ namespace LinBox
         typedef BlasSubmatrix<typename std::remove_const<_Matrix>::type>  nonconstSubMatrixType;
 
         // row and col types are unified to be a BlasSubvector
-        typedef typename Storage::subVectorType           subVectorType;             
+        typedef typename Storage::subVectorType           subVectorType;
         typedef typename Storage::constSubVectorType constSubVectorType;
         typedef subVectorType Row ;
         typedef subVectorType Col;
@@ -139,8 +139,8 @@ namespace LinBox
         /** Constructor from an existing @ref BlasMatrix
          * \param M Pointer to @ref BlasMatrix of which to construct submatrix
          */
-        BlasSubmatrix (matrixType &M);        
-        
+        BlasSubmatrix (matrixType &M);
+
         /** Constructor from a raw pointer
          * \param M Pointer to @ref BlasMatrix of which to construct submatrix
          */
@@ -155,9 +155,9 @@ namespace LinBox
          */
         BlasSubmatrix(const constSubMatrixType &M);
         BlasSubmatrix(nonconstSubMatrixType &M);
-        BlasSubmatrix(const nonconstSubMatrixType &M); 
+        BlasSubmatrix(const nonconstSubMatrixType &M);
 
-        /*  
+        /*
         BlasSubmatrix(Self_t && M) :
             _ptr(M.getPointer()),
             _row (M.rowdim()),
@@ -171,14 +171,20 @@ namespace LinBox
         }
         */
 
-         /** Move constructor / Move operator 
+         /** Move constructor / Move operator
          */
         BlasSubmatrix(Self_t &&M)=default;
         Self_t& operator=(Self_t&& M)=default;
-        
+
         //! (copying data) -> works only if dimensions are the same
         template<class _AnyMatrix>
         Self_t& copy (const _AnyMatrix& A);
+
+            /** (swaping local data to same dimension (sub)part of A)
+             *  -> works only if both dimensions of A are larger
+             */
+        template<class _AnyMatrix>
+        Self_t& swap (_AnyMatrix& A);
 
         Self_t& operator=(const Self_t& M)=delete;
         // {
@@ -192,7 +198,7 @@ namespace LinBox
         //     }
         //     return *this;
         // }
-        
+
         template <typename _TP1, typename _Rep2 = typename Rebind<RawStorage, _TP1>::other >
         struct rebind;
         /*  Members  */
@@ -217,7 +223,7 @@ namespace LinBox
         size_t getStride() const { return _stride;}
 
         /** Get the field of the BlasSubMatrix
-            @return Const reference to Field 
+            @return Const reference to Field
         */
         const Field& field() const { return _field ;}
 
@@ -227,7 +233,7 @@ namespace LinBox
         pointer getPointer() {return _ptr;}
         const_pointer getPointer() const {return _ptr;}
         const_pointer getConstPointer() const {return _ptr;}
-		
+
         ///////////////////
         //      I/O      //
         ///////////////////
@@ -282,7 +288,7 @@ namespace LinBox
         Element& getEntry (Element &x, size_t i, size_t j) const ;
 
 
-        
+
         ///////////////////
         //   BLACK BOX   //
         ///////////////////
@@ -321,7 +327,7 @@ namespace LinBox
         }
 
 
-        
+
         void zero() {
             FFLAS::fzero(field(),_row,_col,_ptr,_stride);
         }
@@ -337,7 +343,7 @@ namespace LinBox
             FFLAS::frand(field(),G, _row,_col,_ptr,_stride);
         }
 
-        
+
         ///////////////////
         //   ITERATORS   //
         ///////////////////
@@ -355,26 +361,26 @@ namespace LinBox
          * matrix in ascending order. Dereferencing the iterator yields
          * a row vector in dense format
          * @{
-         */        
+         */
         using RowIterator      = BlasMatrixIterator<Field, Storage, subVectorType>;
         using ConstRowIterator = BlasMatrixIterator<Field, Storage, constSubVectorType>;
-        
+
         RowIterator      rowBegin ()       { return      RowIterator (field(), _ptr, _col, 1, _stride);}
         ConstRowIterator rowBegin () const { return ConstRowIterator (field(), _ptr, _col, 1, _stride);}
         RowIterator      rowEnd ()         { return      RowIterator (field(), _ptr+_row*_stride, _col, 1, _stride);}
-        ConstRowIterator rowEnd   () const { return ConstRowIterator (field(), _ptr+_row*_stride, _col, 1, _stride);}        
+        ConstRowIterator rowEnd   () const { return ConstRowIterator (field(), _ptr+_row*_stride, _col, 1, _stride);}
         //@} Row Iterators
-        
+
         /** @name typedef'd Column Iterators.
          *\brief
          * The columns iterator gives the columns of the
          * matrix in ascending order. Dereferencing the iterator yields
          * a column vector in dense format
          * @{
-         */        
+         */
         using ColIterator      = BlasMatrixIterator<Field, Storage, subVectorType>;
         using ConstColIterator = BlasMatrixIterator<Field, Storage, constSubVectorType>;
-        
+
         ColIterator      colBegin ()       { return       ColIterator (field(), _ptr, _row, _stride, 1);}
         ConstColIterator colBegin () const { return  ConstColIterator (field(), _ptr, _row, _stride, 1);}
         ColIterator      colEnd ()         { return       ColIterator (field(), _ptr+_col, _row, _stride, 1);}
@@ -390,7 +396,7 @@ namespace LinBox
 
         using IndexedIterator      = BlasMatrixIndexedIterator<Field,       pointer,       Element>;
         using ConstIndexedIterator = BlasMatrixIndexedIterator<Field, const_pointer, const Element>;
-        
+
         IndexedIterator      IndexedBegin ()        { return      IndexedIterator (coldim (), _stride, 0, 0, _ptr);}
         ConstIndexedIterator IndexedBegin () const  { return ConstIndexedIterator (coldim (), _stride, 0, 0, _ptr);}
         IndexedIterator      IndexedEnd   ()        { return      IndexedIterator (coldim (), _stride, rowdim (), 0, _ptr);}
