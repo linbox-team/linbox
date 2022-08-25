@@ -149,12 +149,14 @@ namespace LinBox
 	// Helper structure used for various STL's sorts (std::list::sort and std::stable_sort)
 	// for comparison of two pairs of elements (by their first elements)
 	template<class Element>
-	struct SparseSequenceVectorPairLessThan :
-		public std::binary_function<const std::pair<size_t, Element>&, const std::pair<size_t, Element>&, bool > {
-		bool operator() (const std::pair<size_t, Element>& p1, const std::pair<size_t, Element>& p2)
-	{
-			return p1.first < p2.first;
-		}
+	struct SparseSequenceVectorPairLessThan {
+        using result_type = bool;
+        using first_argument_type = std::pair<size_t, Element>;
+        using second_argument_type = std::pair<size_t, Element>;
+        bool operator() (const first_argument_type& p1, const second_argument_type& p2)
+            {
+                return p1.first < p2.first;
+            }
 	};
 
 
@@ -250,7 +252,7 @@ namespace LinBox
 		refSpecialized (Vector &v, size_t i,
 				VectorCategories::DenseVectorTag)
 		{
-		       	return v[i];
+			return v[i];
 		}
 
 		//! @bug who is zero ?
