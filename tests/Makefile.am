@@ -199,7 +199,7 @@ FULLCHECK_TESTS = ${CHECKER_TESTS} \
     test-modular-short
 
 FULLCHECK_NTL_TESTS = ${CHECKER_NTL_TESTS} \
-    test-invariant-factors      \
+    test-frobenius-leading-invariants      \
     test-frobenius-large    \
     test-weak-popov-form
 
@@ -374,7 +374,7 @@ test_tutorial_SOURCES =         test-tutorial.C
 test_vector_domain_SOURCES =        test-vector-domain.C test-vector-domain.h
 test_zero_one_SOURCES =         test-zero-one.C
 test_polynomial_ring_SOURCES =      test-polynomial-ring.C
-test_invariant_factors_SOURCES =    test-invariant-factors.C
+test_frobenius_leading_invariants_SOURCES =    test-frobenius-leading-invariants.C
 test_frobenius_small_SOURCES =      test-frobenius-small.C
 test_frobenius_large_SOURCES =      test-frobenius-large.C
 test_weak_popov_form_SOURCES =      test-weak-popov-form.C
