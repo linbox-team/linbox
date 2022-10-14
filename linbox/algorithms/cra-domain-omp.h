@@ -4,7 +4,7 @@
  * Naive parallel chinese remaindering
  * Launch NN iterations in parallel, where NN=omp_get_max_threads()
  * Then synchronization and termintation test.
- * Time-stamp: <13 Mar 12 13:49:58 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <14 Oct 22 15:51:41 Jean-Guillaume.Dumas@imag.fr>
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -61,18 +61,27 @@ namespace LinBox
 		template <class ResultType, class Function, class PrimeIterator>
 		ResultType& operator() (ResultType& res, Function& Iteration, PrimeIterator& primeiter)
 		{
+            (*this)(-1, res, Iteration, primeiter);
+            return res;
+        }
+
+		template <class ResultType, class Function, class PrimeIterator>
+		bool operator() (int k, ResultType& res, Function& Iteration, PrimeIterator& primeiter)
+        {
 			using ResidueType = typename CRAResidue<ResultType,Function>::template ResidueType<Domain>;
 			size_t NN = omp_get_max_threads();
 			//std::cerr << "Blocs: " << NN << " iterations." << std::endl;
 			// commentator().start ("Parallel OMP Givaro::Modular iteration", "mmcrait");
-			if (NN == 1) return Father_t::operator()(res,Iteration,primeiter);
+			if (NN == 1) return Father_t::operator()(k, res,Iteration,primeiter);
 
 			std::vector<Domain> ROUNDdomains; ROUNDdomains.reserve(NN);
 			std::vector<ResidueType> ROUNDresidues; ROUNDresidues.reserve(NN);
 			std::vector<IterationResult> ROUNDresults(NN);
 			std::set<Integer> coprimeset;
 
-			while (! this->Builder_.terminated()) {
+			while (k != 0 && ! this->Builder_.terminated()) {
+                if ( (k>0) && (k<NN) ) NN = k;
+                k -= NN;
 				ROUNDdomains.clear();
 				ROUNDresidues.clear();
 				coprimeset.clear();
