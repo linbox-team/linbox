@@ -80,7 +80,7 @@ namespace LinBox
 			std::set<Integer> coprimeset;
 
 			while (k != 0 && ! this->Builder_.terminated()) {
-                if ( (k>0) && (k<NN) ) NN = k;
+                if ( (k>0) && (size_t(k)<NN) ) NN = k;
                 k -= NN;
 				ROUNDdomains.clear();
 				ROUNDresidues.clear();
@@ -135,7 +135,8 @@ namespace LinBox
 
 			// commentator().stop ("done", NULL, "mmcrait");
 			//std::cerr << "Used: " << this->iterCount() << " primes." << std::endl;
-			return this->Builder_.result(res);
+			this->Builder_.result(res);
+			return this->Builder_.terminated();
 		}
 	};
 }
