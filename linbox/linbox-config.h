@@ -29,15 +29,19 @@
  */
 #include <fflas-ffpack/fflas-ffpack-config.h>
 #include "linbox/config.h"
-// #include "linbox-configuration.h"
+
+// Rely on FFLAS-FFPACK for openmp enabling
+#ifdef __FFLASFFPACK_USE_OPENMP
+#  ifndef __LINBOX_USE_OPENMP
+#    define __LINBOX_USE_OPENMP 1
+#  endif
+#endif
+
 
 #ifndef INT32_MAX
 #define INT32_MAX (2147483647L)
 #endif
 
-//#include <cstdint>
-// #include <givaro/givconfig.h>
-// #include <gmp++/gmp++.h>
 #include <cfloat> // BB : needed on some rare platforms...
 #include <cmath>
 

@@ -491,12 +491,12 @@ namespace LinBox {
 
                                 
 #else
-                                LQUPMatrix<Field> LQUP(delta_copy,P,Qt);
-                                // Get L from LQUP
+                                PLUQMatrix<Field> PLUQ(delta_copy,P,Qt);
+                                // Get L from PLUQ
                                 BlasMatrix<Field> Ldata(field(), m, m);
                                 TriangularBlasMatrix<Field> L(Ldata, Tag::Shape::Lower, Tag::Diag::Unit);
-                                LQUP.getL(L);
-                                rank=LQUP.getRank();  // the first rank entries of Qt give the pivot row
+                                PLUQ.getL(L);
+                                rank=PLUQ.getRank();  // the first rank entries of Qt give the pivot row
                                 // inverse L in-place (COULD BE IMPROVED -> only compute the left kernel by trsm)
                                 //FFPACK::ftrtri(field(),FFLAS::FflasLower,FFLAS::FflasUnit,m,L.getPointer(),L.getStride());
                                 View L1(L,0   ,0,  rank,rank);
