@@ -33,7 +33,7 @@
 #include "linbox/util/debug.h"
 #include "linbox/util/timer.h"
 #include <vector>
-#ifdef __LINBOX_HAVE_OPENMP
+#ifdef __LINBOX_USE_OPENMP
 #include <omp.h>
 #endif
 //#define FFT_TIMING
@@ -1133,7 +1133,7 @@ namespace LinBox
 			chrono.clear();
 			chrono.start();
 #endif
-			// compute the DFT of b and c using FFT (parallel if __LINBOX_HAVE_OPENMP)
+			// compute the DFT of b and c using FFT (parallel if __LINBOX_USE_OPENMP)
 			launch_FFT(fft_b, pts, pow_w);
 			launch_FFT(fft_c, pts, pow_w);
 
@@ -1146,7 +1146,7 @@ namespace LinBox
 			chrono.start();
 #endif
 			// do the multiplication componentwise
-#ifdef __LINBOX_HAVE_OPENMP
+#ifdef __LINBOX_USE_OPENMP
 #ifdef FFT_TIMING
 			//Timer chrono_mul[omp_get_max_threads()], chrono_mul_t[omp_get_max_threads()];
 #endif
@@ -1156,14 +1156,14 @@ namespace LinBox
 #endif
 			for (long i=0;i<static_cast<long>(pts);++i)
 				// #ifdef FFT_TIMING
-				// #ifdef __LINBOX_HAVE_OPENMP
+				// #ifdef __LINBOX_USE_OPENMP
 				// 				{chrono_mul[omp_get_thread_num()].start();
 				// #endif
 				// #endif
 				_BMD.mul(fft_a[(size_t)i], fft_b[(size_t)i], fft_c[(size_t)i]);
 #ifdef FFT_TIMING
 			chrono.stop();
-#ifdef __LINBOX_HAVE_OPENMP
+#ifdef __LINBOX_USE_OPENMP
 			//chrono_mul[omp_get_thread_num()].stop();chrono_mul_t[omp_get_thread_num()]+=chrono_mul[omp_get_thread_num()];}
 			//for (size_t i=0;i<omp_get_max_threads();i++)
 			//std::cout<<"FFT: componentwise mul thread["<<i<<"] -> "<<chrono_mul_t[(size_t)i]<<std::endl;
@@ -1177,7 +1177,7 @@ namespace LinBox
 
 
 			// reorder the term in the FFT according to reverse bit ordering
-			// #ifdef __LINBOX_HAVE_OPENMP
+			// #ifdef __LINBOX_USE_OPENMP
 			// #pragma omp parallel for shared(fft_a,revbit) private(Element) schedule(runtime)
 			// #endif
 			for (size_t i=0; i< pts; ++i){
@@ -1218,7 +1218,7 @@ namespace LinBox
 			field().init(inv_pts, pts);
 			field().invin(inv_pts);
 
-			// #ifdef __LINBOX_HAVE_OPENMP
+			// #ifdef __LINBOX_USE_OPENMP
 			// #pragma omp parallel for shared(a,fft_a,revbit,inv_pts) schedule(stati
 			// #endif
 
@@ -1346,13 +1346,13 @@ namespace LinBox
 				fft_c[(size_t)i]=ZeroC;
 
 
-			// compute the DFT of b and DFT^-1 of c (parallel if __LINBOX_HAVE_OPENMP)
+			// compute the DFT of b and DFT^-1 of c (parallel if __LINBOX_USE_OPENMP)
 			launch_FFT(fft_b, pts, pow_w);
 			launch_FFT(fft_c, pts, pow_inv_w);
 
 			// do the multiplication componentwise
 
-#ifdef __LINBOX_HAVE_OPENMP
+#ifdef __LINBOX_USE_OPENMP
 			//std::cerr << "midproduct|| th: " << omp_get_max_threads() << ", pts: " << pts << ", n: " << fft_a[0].rowdim() << std::endl;
 #pragma omp parallel for shared(fft_a,fft_b,fft_c) schedule(dynamic)
 #endif
@@ -1361,7 +1361,7 @@ namespace LinBox
 
 			Element swapping;
 			// reorder the term in the FFT according to reverse bit ordering
-			// #ifdef __LINBOX_HAVE_OPENMP
+			// #ifdef __LINBOX_USE_OPENMP
 			// #pragma omp parallel for shared(fft_a,revbit,inv_pts) schedule(runtime)
 			// #endif
 			for (size_t i=0; i< pts; ++i){
@@ -1376,7 +1376,7 @@ namespace LinBox
 				}
 			}
 
-			// compute the DFT of fft_a (parallel if __LINBOX_HAVE_OPENMP)
+			// compute the DFT of fft_a (parallel if __LINBOX_USE_OPENMP)
 			launch_FFT(fft_a, pts, pow_w);
 
 
@@ -1384,7 +1384,7 @@ namespace LinBox
 			Element inv_pts;
 			field().init(inv_pts, pts);
 			field().invin(inv_pts);
-			// #ifdef __LINBOX_HAVE_OPENMP
+			// #ifdef __LINBOX_USE_OPENMP
 			// #pragma omp parallel for shared(fft_a,revbit,inv_pts) schedule(static)
 			// #endif
 			for (long i=0; i< static_cast<long>(a.size()); ++i){
@@ -1504,13 +1504,13 @@ namespace LinBox
 				fft_c[(size_t)i]=ZeroC;
 
 
-			// compute the DFT of b and DFT^-1 of c (parallel if __LINBOX_HAVE_OPENMP)
+			// compute the DFT of b and DFT^-1 of c (parallel if __LINBOX_USE_OPENMP)
 			launch_FFT(fft_b, pts, pow_w);
 			launch_FFT(fft_c, pts, pow_inv_w);
 
 			// do the multiplication componentwise
 
-#ifdef __LINBOX_HAVE_OPENMP
+#ifdef __LINBOX_USE_OPENMP
 			//std::cerr << "midproductgen|| th: " << omp_get_max_threads() << ", pts: " << pts << ", n: " << fft_a[0].rowdim() << std::endl;
 
 #pragma omp parallel for shared(fft_a,fft_b,fft_c) schedule(dynamic)
@@ -1520,7 +1520,7 @@ namespace LinBox
 
 			Element swapping;
 			// reorder the term in the FFT according to reverse bit ordering
-			// #ifdef __LINBOX_HAVE_OPENMP
+			// #ifdef __LINBOX_USE_OPENMP
 			// #pragma omp parallel for shared(fft_a,revbit,inv_pts) schedule(runtime)
 			// #endif
 			for (size_t i=0; i< pts; ++i){
@@ -1535,7 +1535,7 @@ namespace LinBox
 				}
 			}
 
-			// compute the DFT of fft_a (parallel if __LINBOX_HAVE_OPENMP)
+			// compute the DFT of fft_a (parallel if __LINBOX_USE_OPENMP)
 			launch_FFT(fft_a, pts, pow_w);
 
 
@@ -1543,7 +1543,7 @@ namespace LinBox
 			Element inv_pts;
 			field().init(inv_pts, pts);
 			field().invin(inv_pts);
-			// #ifdef __LINBOX_HAVE_OPENMP
+			// #ifdef __LINBOX_USE_OPENMP
 			// #pragma omp parallel for shared(fft_a,revbit,inv_pts) schedule(static)
 			// #endif
 			for (long i=0; i< a.size(); ++i){
@@ -1610,7 +1610,7 @@ namespace LinBox
 
 		template <class Polynomial>
 		void launch_FFT (Polynomial &fft, size_t pts, const std::vector<Element> &pow_w){
-#ifdef __LINBOX_HAVE_OPENMP
+#ifdef __LINBOX_USE_OPENMP
 			// do blocking (by row) on the matrix coefficient to perform FFT in parallel on each block 
 			size_t m,n;
 			m=fft[0].rowdim();

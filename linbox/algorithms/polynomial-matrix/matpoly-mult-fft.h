@@ -56,7 +56,7 @@ Givaro::Timer mychrono[3];
         mychrono[lvl].clear();mychrono[lvl].start();                    \
     }
   
-#ifdef HAVE_OPENMP								
+#ifdef __LINBOX_USE_OMP
 #define FFT_PROFILE_GET(lvl,x)                                          \
     // mychrono.stop();(x)+=mychrono.realtime();mychrono.clear();mychrono.start();
 #else

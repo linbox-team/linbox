@@ -31,7 +31,7 @@
  * @ingroup algorithms
  * @ingroup CRA
  *
- * If LINBOX_USES_OPENMP is defined, the we use ChineseRemainderOMP, else
+ * If __LINBOX_USE_OPENMP is defined, the we use ChineseRemainderOMP, else
  * we fall back to ChineseRemainderSequential
  */
 
@@ -102,7 +102,7 @@ namespace LinBox
 	};
 }
 
-#ifdef LINBOX_USES_OPENMP
+#ifdef __LINBOX_USE_OPENMP
 
 #include "linbox/algorithms/cra-domain-omp.h"
 namespace LinBox
@@ -110,7 +110,7 @@ namespace LinBox
 	/*! @brief Wrapper around OMP/SEQ version of ChineseRemainderXXX<CRABase>.
 	 * \ingroup CRA
 	 *
-	 * If LINBOX_USES_OPENMP is defined, the we use ChineseRemainderOMP, else
+	 * If __LINBOX_USE_OPENMP is defined, the we use ChineseRemainderOMP, else
 	 * we fall back to ChineseRemainderSequential
 	 *
 	 * This is the OMP version
@@ -128,7 +128,7 @@ namespace LinBox
 	/*! @brief Wrapper around OMP/SEQ version of ChineseRemainderXXX<CRABase>.
 	 * \ingroup CRA
 	 *
-	 * If LINBOX_USES_OPENMP is defined, the we use ChineseRemainderOMP, else
+	 * If __LINBOX_USE_OPENMP is defined, the we use ChineseRemainderOMP, else
 	 * we fall back to ChineseRemainderSequential
 	 *
 	 * This is the SEQ version
