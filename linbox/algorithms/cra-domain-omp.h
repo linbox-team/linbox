@@ -34,6 +34,7 @@
 #define __LINBOX_omp_cra_H
 // commentator is not thread safe
 #ifndef DISABLE_COMMENTATOR
+#warning "commentator is not thread safe"
 #define DISABLE_COMMENTATOR
 #endif
 #include <omp.h>
@@ -80,7 +81,7 @@ namespace LinBox
 			std::set<Integer> coprimeset;
 
 			while (k != 0 && ! this->Builder_.terminated()) {
-                if ( (k>0) && (k<NN) ) NN = k;
+                if ( (k>0) && (size_t(k)<NN) ) NN = k;
                 k -= NN;
 				ROUNDdomains.clear();
 				ROUNDresidues.clear();
@@ -92,16 +93,17 @@ namespace LinBox
 				}
 
 				for(auto coprimesetiter = coprimeset.cbegin(); coprimesetiter != coprimeset.cend(); ++coprimesetiter) {
-					// std::cerr << "With prime: " << *coprimesetiter << std::endl;
+					//std::cerr << "With prime: " << *coprimesetiter << std::endl;
 					ROUNDdomains.emplace_back(*coprimesetiter);
 					ROUNDresidues.emplace_back(CRAResidue<ResultType,Function>::create(ROUNDdomains.back()));
 				}
 
 #pragma omp parallel for
 				for(size_t i=0;i<NN;++i) {
+					//std::cerr << "lauch " << i << " on T" << omp_get_thread_num() << " ... "; 
 					ROUNDresults[i] = Iteration(ROUNDresidues[i], ROUNDdomains[i]);
+					//std::cerr << " done." << std::endl;
 				}
-#pragma omp barrier
 
 				// if any thread says RESTART, then all CONTINUEs become SKIPs
 				bool anyrestart = false;
@@ -130,12 +132,11 @@ namespace LinBox
 						this->Builder_.progress(ROUNDdomains[i], ROUNDresidues[i]);
 					}
 				}
-				//std::cerr << "Computed: " << iterCount() << " primes." << std::endl;
 			}
 
 			// commentator().stop ("done", NULL, "mmcrait");
-			//std::cerr << "Used: " << this->iterCount() << " primes." << std::endl;
-			return this->Builder_.result(res);
+			this->Builder_.result(res);
+			return this->Builder_.terminated();
 		}
 	};
 }
