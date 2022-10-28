@@ -1,7 +1,7 @@
 /* linbox/algorithms/cra-domain-sequential.h
  * Copyright (C) 1999-2010 The LinBox group
  *
- * Time-stamp: <28 Oct 22 18:17:34 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <28 Oct 22 18:29:45 Jean-Guillaume.Dumas@imag.fr>
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -180,7 +180,7 @@ namespace LinBox
                     commentator().report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
 					++primeiter;
 					auto r = CRAResidue<ResultType,Function>::create(D);
-#ifdef _LB_CRATIMING
+#ifdef __LB_CRA_TIMING__
                     Timer chrono; chrono.start();
 #endif
 					if (Iteration(r,D) == IterationResult::SKIP) {
@@ -190,7 +190,7 @@ namespace LinBox
 						++ngood_;
 						Builder_.initialize(D,r);
 					}
-#ifdef _LB_CRATIMING
+#ifdef __LB_CRA_TIMING__
                     chrono.stop();
                     std::clog << "1st iter : " << chrono << std::endl;
 #endif
@@ -266,7 +266,7 @@ namespace LinBox
                 return m;
             }
 
-#ifdef _LB_CRATIMING
+#ifdef __LB_CRA_TIMING__
 		inline std::ostream& reportTimes(std::ostream& os)
             {
                 os <<  "Iterations:" << iterCount() << "\n";
@@ -298,7 +298,7 @@ namespace LinBox
 		}
 	};
 
-#ifdef _LB_CRATIMING
+#ifdef __LB_CRA_TIMING__
 	class CRATimer {
 	public:
 		mutable Timer ttInit, ttIRecon, /* ttImaging, ttIteration,*/ ttOther;

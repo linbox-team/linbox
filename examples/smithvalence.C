@@ -29,9 +29,9 @@
 #define DISABLE_COMMENTATOR
 #endif
 
-#define __VALENCE_REPORTING__ 1
-#define __CRA_REPORTING__ 1
-#define _LB_CRATIMING 1
+#define __LB_VALENCE_REPORTING__ 1
+#define __LB_CRA_REPORTING__ 1
+#define __LB_CRA_TIMING__ 1
 #include <linbox/linbox-config.h>
 
 #include <iostream>

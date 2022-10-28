@@ -1,7 +1,7 @@
 /* linbox/algorithms/cra-builder-full-multip.h
  * Copyright (C) 1999-2010 The LinBox group
  *
- * Time-stamp: <28 Oct 22 18:19:12 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <28 Oct 22 18:35:09 Jean-Guillaume.Dumas@imag.fr>
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -98,7 +98,7 @@ namespace LinBox
 		CRABuilderFullMultip(const double bnd=0.0, size_t dim=0) :
 			LOGARITHMIC_UPPER_BOUND(bnd), dimension_(dim)
 		{
-#if __CRA_REPORTING__ == 1
+#if __CRA_REPORTING__
             std::clog << *this << std::endl;
 #endif
         }
@@ -417,7 +417,7 @@ namespace LinBox
             return u1;
         }
 
-#ifdef _LB_CRATIMING
+#ifdef __LB_CRA_REPORTING__
     public:
         std::ostream& reportTimes(std::ostream& os) const
         {

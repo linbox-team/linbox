@@ -1,5 +1,3 @@
-#define _LB_CRATIMING 1
-//#define __LINBOX_HEURISTIC_CRA
 /*
  * examples/charpoly.C
  *
@@ -28,6 +26,8 @@
  \brief Characteristic polynomial of matrix over Z or Zp.
  \ingroup examples
 */
+#define __LB_CRA_TIMING__ 1
+//#define __LINBOX_HEURISTIC_CRA
 #include <linbox/linbox-config.h>
 
 #include <iostream>
