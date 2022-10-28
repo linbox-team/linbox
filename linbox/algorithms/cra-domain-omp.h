@@ -4,7 +4,7 @@
  * Naive parallel chinese remaindering
  * Launch NN iterations in parallel, where NN=omp_get_max_threads()
  * Then synchronization and termintation test.
- * Time-stamp: <14 Oct 22 15:51:41 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <28 Oct 22 16:59:38 Jean-Guillaume.Dumas@imag.fr>
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -37,6 +37,15 @@
 #warning "commentator is not thread safe"
 #define DISABLE_COMMENTATOR
 #endif
+#ifndef __CRA_REPORTING__
+# ifdef _LB_DEBUG
+#  define __CRA_REPORTING__ 1
+# else
+#  define __CRA_REPORTING__ 0
+# endif
+#endif
+
+
 #include <omp.h>
 #include <set>
 #include "linbox/algorithms/cra-domain-sequential.h"
@@ -49,15 +58,26 @@ namespace LinBox
 		typedef typename CRABase::Domain	Domain;
 		typedef typename CRABase::DomainElement	DomainElement;
 		typedef ChineseRemainderSequential<CRABase>    Father_t;
+        typedef ChineseRemainderOMP<CRABase>    Self_t;
+
+        friend std::ostream& operator<< (std::ostream& out, const Self_t& cra) {
+            std::ostringstream report;
+            report << "OMP Chinese Remaindering on " << NUM_THREADS << " threads out of " << MAX_THREADS << std::endl;
+            return out << report.str();
+        }
 
 		template<class Param>
 		ChineseRemainderOMP(const Param& b) :
 			Father_t(b)
-		{}
+		{
+            if (__CRA_REPORTING__) { std::clog << *this << std::endl; }
+        }
 
 		ChineseRemainderOMP(const CRABase& b) :
 			Father_t(b)
-		{}
+		{
+            if (__CRA_REPORTING__) { std::clog << *this << std::endl; }
+        }
 
 		template <class ResultType, class Function, class PrimeIterator>
 		ResultType& operator() (ResultType& res, Function& Iteration, PrimeIterator& primeiter)
@@ -69,10 +89,9 @@ namespace LinBox
 		template <class ResultType, class Function, class PrimeIterator>
 		bool operator() (int k, ResultType& res, Function& Iteration, PrimeIterator& primeiter)
         {
+//             std::clog << "Parallel OMP Givaro::Modular iteration, blocks " << NN << " iterations." << std::endl;
 			using ResidueType = typename CRAResidue<ResultType,Function>::template ResidueType<Domain>;
 			size_t NN = omp_get_max_threads();
-			//std::cerr << "Blocs: " << NN << " iterations." << std::endl;
-			// commentator().start ("Parallel OMP Givaro::Modular iteration", "mmcrait");
 			if (NN == 1) return Father_t::operator()(k, res,Iteration,primeiter);
 
 			std::vector<Domain> ROUNDdomains; ROUNDdomains.reserve(NN);
@@ -93,17 +112,31 @@ namespace LinBox
 				}
 
 				for(auto coprimesetiter = coprimeset.cbegin(); coprimesetiter != coprimeset.cend(); ++coprimesetiter) {
-					//std::cerr << "With prime: " << *coprimesetiter << std::endl;
 					ROUNDdomains.emplace_back(*coprimesetiter);
 					ROUNDresidues.emplace_back(CRAResidue<ResultType,Function>::create(ROUNDdomains.back()));
 				}
 
-#pragma omp parallel for
-				for(size_t i=0;i<NN;++i) {
-					//std::cerr << "lauch " << i << " on T" << omp_get_thread_num() << " ... "; 
-					ROUNDresults[i] = Iteration(ROUNDresidues[i], ROUNDdomains[i]);
-					//std::cerr << " done." << std::endl;
-				}
+
+                SYNCH_GROUP(
+                for(size_t i=0;i<NN;++i) {
+                { TASK(MODE(CONSTREFERENCE(ROUNDdomains,ROUNDresidues,ROUNDresults)
+                            WRITE(ROUNDresults[i], ROUNDresidues[i]) ),
+                {
+                    if (__CRA_REPORTING__) {
+                        std::ostringstream report;
+                        ROUNDdomains[i].write(report <<
+                                              "Iteration lauch " << i <<
+                                              " on T" << omp_get_thread_num() <<
+                                              " over ") << std::endl;
+                        std::clog << report.str();
+                    }
+
+                    ROUNDresults[i] = Iteration(ROUNDresidues[i], ROUNDdomains[i]);
+
+                })}
+                }
+                )
+
 
 				// if any thread says RESTART, then all CONTINUEs become SKIPs
 				bool anyrestart = false;
@@ -119,7 +152,7 @@ namespace LinBox
 					if (ROUNDresults[i] == IterationResult::SKIP) {
 						this->doskip();
 					}
-					else if (anyrestart && ROUNDresults[i] == IterationResult::CONTINUE) {
+					else if (anyrestart && ROUNDresults[i] == IterationResult::SKIP) {
 						// commentator should indicate that this prime is bad
 						++this->nbad_;
 					}
@@ -132,9 +165,15 @@ namespace LinBox
 						this->Builder_.progress(ROUNDdomains[i], ROUNDresidues[i]);
 					}
 				}
+
+                if (__CRA_REPORTING__) {
+                    std::clog << "Current good/bad residues: "
+                           << this->ngood_ << '/'
+                           << this->nbad_ << std::endl;
+                }
+
 			}
 
-			// commentator().stop ("done", NULL, "mmcrait");
 			this->Builder_.result(res);
 			return this->Builder_.terminated();
 		}

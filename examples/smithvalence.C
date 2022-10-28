@@ -30,7 +30,8 @@
 #endif
 
 #define __VALENCE_REPORTING__ 1
-
+#define __CRA_REPORTING__ 1
+#define _LB_CRATIMING 1
 #include <linbox/linbox-config.h>
 
 #include <iostream>
@@ -107,11 +108,11 @@ int main (int argc, char **argv)
 
 	chrono.stop();
 
-	std::clog << "Integer Smith Form :" << std::endl;
+	std::clog << "Integer Smith Form (" << SmithDiagonal.size() << "):" << std::endl;
     writeCompressedSmith(std::cout, SmithDiagonal, ZZ, A.rowdim(), A.coldim()) << std::endl;
 
 	std::clog << chrono << std::endl;
-    
+
 
 	return 0;
 }

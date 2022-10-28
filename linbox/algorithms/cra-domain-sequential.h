@@ -1,7 +1,7 @@
 /* linbox/algorithms/cra-domain-sequential.h
  * Copyright (C) 1999-2010 The LinBox group
  *
- * Time-stamp: <04 Dec 17 14:59:50 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <28 Oct 22 16:56:29 Jean-Guillaume.Dumas@imag.fr>
  *
  * ========LICENCE========
  * This file is part of the library LinBox.

@@ -42,6 +42,15 @@
 #include "linbox/algorithms/lazy-product.h"
 #include "linbox/algorithms/cra-builder-full-multip.h"
 
+#ifndef __CRA_REPORTING__
+# ifdef _LB_DEBUG
+#  define __CRA_REPORTING__ 1
+# else
+#  define __CRA_REPORTING__ 0
+# endif
+#endif
+
+
 
 namespace LinBox
 {
@@ -53,9 +62,15 @@ namespace LinBox
 	template<class Domain_Type>
 	struct CRABuilderFullMultipFixed : CRABuilderFullMultip<Domain_Type> {
 		typedef Domain_Type			Domain;
-		typedef typename Domain::Element 	DomainElement;
-		typedef CRABuilderFullMultipFixed<Domain> 	Self_t;
+		typedef typename Domain::Element	DomainElement;
+		typedef CRABuilderFullMultipFixed<Domain>	Self_t;
 
+        friend std::ostream& operator<< (std::ostream& out, const Self_t& cra) {
+            std::ostringstream report;
+            report << "CRA Builder: "
+                   << "[FixedTermination] [MultipleReconstructions]";
+            return out << report.str();
+        }
 		/*! Constructor.
 		 * @param p is a pair such that
 		 * - \c p.first is the size of a residue (ie. it would be 1 for \"FullSingle\")
@@ -65,7 +80,9 @@ namespace LinBox
 		 */
 		CRABuilderFullMultipFixed(const std::pair<size_t,double>& p ) :
 			CRABuilderFullMultip<Domain>(p.second, p.first)
-        { }
+        {
+            if (__CRA_REPORTING__) { std::clog << *this << std::endl; }
+        }
 
 		/*! Intialize to the first residue/prime.
 		 * @param D domain
@@ -104,8 +121,8 @@ namespace LinBox
 	template<class Domain_Type>
 	struct CRABuilderFullMultipMatrix : CRABuilderFullMultip<Domain_Type> {
 		typedef Domain_Type			Domain;
-		typedef typename Domain::Element 	DomainElement;
-		typedef CRABuilderFullMultipMatrix<Domain> 	Self_t;
+		typedef typename Domain::Element	DomainElement;
+		typedef CRABuilderFullMultipMatrix<Domain>	Self_t;
 
 		/*! Constructor.
 		 * @param p is a pair such that
