@@ -29,6 +29,7 @@
 #include <givaro/modular.h>
 #include <givaro/givintnumtheo.h>
 #include <givaro/gf2.h>
+#include <fflas-ffpack/paladin/parallel.h>
 #include <linbox/field/field-traits.h>
 #include <linbox/blackbox/transpose.h>
 #include <linbox/blackbox/compose.h>
@@ -56,13 +57,6 @@
 # endif
 #endif
 
-#ifdef __LINBOX_USE_OPENMP
-#include <omp.h>
-#define THREAD_NUM omp_get_thread_num()
-#else
-#define THREAD_NUM 1
-#endif
-
 #if __VALENCE_REPORTING__
 #include <sstream>
 #include <iostream>
@@ -82,7 +76,7 @@ size_t& TempLRank(size_t& r, const char * filename, const Field& F)
 	tim.stop();
 	if (__VALENCE_REPORTING__) {
         std::ostringstream report;
-        F.write(report << "Rank over ") << " is " << r << ' ' << tim <<  " on T" << THREAD_NUM << std::endl;
+        F.write(report << "Rank over ") << " is " << r << ' ' << tim <<  " on T" << THREAD_INDEX << std::endl;
         std::clog << report.str();
     }
 	return r;
@@ -100,7 +94,7 @@ size_t& TempLRank(size_t& r, const char * filename, const GF2& F2)
 	tim.stop();
 	if (__VALENCE_REPORTING__) {
         std::ostringstream report;
-        F2.write(report << "Rank over ") << " is " << r << ' ' << tim <<  " on T" << THREAD_NUM << std::endl;
+        F2.write(report << "Rank over ") << " is " << r << ' ' << tim <<  " on T" << THREAD_INDEX << std::endl;
         std::clog << report.str();
     }
 	return r;
@@ -200,7 +194,7 @@ std::vector<size_t>& PRank(std::vector<size_t>& ranks, size_t& effective_exponen
 		{
 			F.write(logreport << "Ranks over ") << " are " ;
 			for(auto const & rit:ranks) logreport << rit << ' ';
-			logreport << ' ' << tim <<  " on T" << THREAD_NUM << std::endl;
+			logreport << ' ' << tim <<  " on T" << THREAD_INDEX << std::endl;
 		}
 #endif
 	} else {
@@ -258,7 +252,7 @@ std::vector<size_t>& PRankPowerOfTwo(std::vector<size_t>& ranks, size_t& effecti
 	{
 		F.write(logreport << "Ranks over ") << " modulo 2^" << effective_exponent << " are " ;
 		for(auto const& rit: ranks) logreport << rit << ' ';
-		logreport<< ' ' << tim <<  " on T" << THREAD_NUM << std::endl;
+		logreport<< ' ' << tim <<  " on T" << THREAD_INDEX << std::endl;
         std::clog << logreport.str();
 	}
 #endif

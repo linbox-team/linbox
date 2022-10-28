@@ -3,7 +3,7 @@
  *
  * Selector for ChineseRemainder
  * Parallel versions are transparent to the user
- * Time-stamp: <30 Mar 10 15:11:42 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <28 Oct 22 18:12:06 Jean-Guillaume.Dumas@imag.fr>
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -27,11 +27,11 @@
 #define __LINBOX_cra_domain_H
 
 /*! @file algorithms/cra-domain.h
- * @brief Wrapper around OMP/SEQ version of ChineseRemainder.
+ * @brief Wrapper around PAR/SEQ version of ChineseRemainder.
  * @ingroup algorithms
  * @ingroup CRA
  *
- * If __LINBOX_USE_OPENMP is defined, the we use ChineseRemainderOMP, else
+ * If __LINBOX_USE_OPENMP is defined, then we use ChineseRemainderParallel, else
  * we fall back to ChineseRemainderSequential
  */
 
@@ -104,20 +104,20 @@ namespace LinBox
 
 #ifdef __LINBOX_USE_OPENMP
 
-#include "linbox/algorithms/cra-domain-omp.h"
+#include "linbox/algorithms/cra-domain-parallel.h"
 namespace LinBox
 {
-	/*! @brief Wrapper around OMP/SEQ version of ChineseRemainderXXX<CRABase>.
+	/*! @brief Wrapper around PAR/SEQ version of ChineseRemainderXXX<CRABase>.
 	 * \ingroup CRA
 	 *
-	 * If __LINBOX_USE_OPENMP is defined, the we use ChineseRemainderOMP, else
+	 * If __LINBOX_USE_OPENMP is defined, the we use ChineseRemainderParallel, else
 	 * we fall back to ChineseRemainderSequential
 	 *
-	 * This is the OMP version
+	 * This is the Parallel version
 	 */
 
 	template<class CRABase>
-        using ChineseRemainder = ChineseRemainderOMP<CRABase>;
+        using ChineseRemainder = ChineseRemainderParallel<CRABase>;
 }
 
 #else
@@ -125,10 +125,10 @@ namespace LinBox
 #include "linbox/algorithms/cra-domain-sequential.h"
 namespace LinBox
 {
-	/*! @brief Wrapper around OMP/SEQ version of ChineseRemainderXXX<CRABase>.
+	/*! @brief Wrapper around PAR/SEQ version of ChineseRemainderXXX<CRABase>.
 	 * \ingroup CRA
 	 *
-	 * If __LINBOX_USE_OPENMP is defined, the we use ChineseRemainderOMP, else
+	 * If __LINBOX_USE_OPENMP is defined, the we use ChineseRemainderParallel, else
 	 * we fall back to ChineseRemainderSequential
 	 *
 	 * This is the SEQ version
