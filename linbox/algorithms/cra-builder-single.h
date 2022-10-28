@@ -41,6 +41,15 @@
 #include <array>
 #include <utility>
 
+#ifndef __CRA_REPORTING__
+# ifdef _LB_DEBUG
+#  define __CRA_REPORTING__ 1
+# else
+#  define __CRA_REPORTING__ 0
+# endif
+#endif
+
+
 namespace LinBox
 {
 	/** @brief Lower bound on number of b-bit primes
@@ -83,9 +92,9 @@ namespace LinBox
 
 	protected:
 		// PrimeProd*nextM_ is the modulus
-		Integer 	primeProd_;
+		Integer	primeProd_;
 		Integer		nextM_;
-		Integer 	residue_; 	// remainder to be reconstructed
+		Integer	residue_;	// remainder to be reconstructed
 
 #ifdef _LB_CRATIMING
 		mutable Timer tInit, tIteration, tImaging, tIRecon, tOther;
@@ -167,13 +176,13 @@ namespace LinBox
 			if (! D.areEqual( D.init(u0, residue_), e)) {
 				was_updated = true;
 
-				D.negin(u0);       	// u0  <-- -u0
-				D.addin(u0, e);    	// u0  <-- e-u0
+				D.negin(u0);	// u0  <-- -u0
+				D.addin(u0, e);	// u0  <-- e-u0
 
 				DomainElement m0;
 				D.init(m0, primeProd_);
-				D.invin(m0);       	// m0  <-- m0^{-1} mod nextM_
-				D.mulin(u0, m0);   	// u0  <-- (e-u0)( m0^{-1} mod nextM_ )
+				D.invin(m0);	// m0  <-- m0^{-1} mod nextM_
+				D.mulin(u0, m0);	// u0  <-- (e-u0)( m0^{-1} mod nextM_ )
 
 				Integer res;
 				D.convert(res, u0);	// res <-- (e-u0)( m0^{-1} mod nextM_ )
@@ -378,6 +387,14 @@ namespace LinBox
 
 	public:
 
+        friend std::ostream& operator<< (std::ostream& out, const Self_t& cra) {
+            std::ostringstream report;
+            report << "CRA Builder: "
+                   << "[EarlyTerminated] [SingleReconstructions]";
+            return out << report.str();
+        }
+
+
 		/** @brief Creates a new heuristic CRA object.
 		 *
 		 * @param	EARLY how many unchanging iterations until termination.
@@ -385,7 +402,10 @@ namespace LinBox
 		CRABuilderEarlySingle(const size_t EARLY=LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD) :
 			EARLY_TERM_THRESHOLD((unsigned)EARLY-1),
 			occurency_(0U)
-		{ }
+		{
+            if (__CRA_REPORTING__) { std::clog << *this << std::endl; }
+        }
+
 
 		/** @brief Initialize the CRA with the first residue.
 		 *

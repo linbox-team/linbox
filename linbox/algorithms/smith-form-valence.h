@@ -386,8 +386,6 @@ std::vector<Givaro::Integer>& populateSmithForm(
     const size_t& coprimeRank) {	// coprimeR
 
 
-    SmithDiagonal.resize(coprimeRank, Givaro::Integer(1) );
-
     for(size_t i=squarefreeRank; i < coprimeRank; ++i) {
         SmithDiagonal[i] *= squarefreePrime;
     }
@@ -476,6 +474,8 @@ std::vector<Givaro::Integer>& smithValence(std::vector<Givaro::Integer>& SmithDi
             })}
         }
     )
+
+    SmithDiagonal.resize(coprimeR, Givaro::Integer(1) );
 
     for(size_t j=0; j<Moduli.size(); ++j) {
         if (smith[j] != coprimeR) {

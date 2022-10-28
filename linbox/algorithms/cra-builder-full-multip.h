@@ -1,7 +1,7 @@
 /* linbox/algorithms/cra-builder-full-multip.h
  * Copyright (C) 1999-2010 The LinBox group
  *
- * Time-stamp: <09 May 19 16:50:52 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <28 Oct 22 17:00:28 Jean-Guillaume.Dumas@imag.fr>
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -38,6 +38,14 @@
 #include <utility>
 
 #include "linbox/algorithms/lazy-product.h"
+
+#ifndef __CRA_REPORTING__
+# ifdef _LB_DEBUG
+#  define __CRA_REPORTING__ 1
+# else
+#  define __CRA_REPORTING__ 0
+# endif
+#endif
 
 namespace LinBox
 {
@@ -84,14 +92,22 @@ namespace LinBox
         // INVARIANT: forall (shelf : shelves_) { shelf.residue.size() == dimension_ }
 
 	public:
+        friend std::ostream& operator<< (std::ostream& out, const Self_t& cra) {
+            std::ostringstream report;
+            report << "CRA Builder: "
+                   << "[BoundedTermination] [MultipleReconstructions]";
+            return out << report.str();
+        }
+
         /** @brief Creates a new vector CRA object.
          * @param bnd  upper bound on the natural logarithm of the result
          * @param dim  dimension of the vector to be reconstructed
          */
 		CRABuilderFullMultip(const double bnd=0.0, size_t dim=0) :
 			LOGARITHMIC_UPPER_BOUND(bnd), dimension_(dim)
-		{}
-
+		{
+            if (__CRA_REPORTING__) { std::clog << *this << std::endl; }
+        }
 		Integer& getModulus(Integer& m) const
 		{
             if (shelves_.empty()) return m = 1;
