@@ -1,7 +1,7 @@
 /* linbox/algorithms/cra-domain-sequential.h
  * Copyright (C) 1999-2010 The LinBox group
  *
- * Time-stamp: <28 Oct 22 16:56:29 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <28 Oct 22 18:17:34 Jean-Guillaume.Dumas@imag.fr>
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -36,6 +36,7 @@
 #include "linbox/vector/blas-vector.h"
 #include <utility>
 #include <stdlib.h>
+#include "linbox/util/commentator.h"
 #include "linbox/util/commentator.h"
 
 namespace LinBox

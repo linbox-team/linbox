@@ -39,14 +39,6 @@
 #include "linbox/algorithms/cra-builder-single.h"
 #include "linbox/algorithms/cra-builder-full-multip.h"
 
-#ifndef __CRA_REPORTING__
-# ifdef _LB_DEBUG
-#  define __CRA_REPORTING__ 1
-# else
-#  define __CRA_REPORTING__ 0
-# endif
-#endif
-
 
 namespace LinBox
 {
@@ -80,7 +72,9 @@ namespace LinBox
 		CRABuilderEarlyMultip(const size_t EARLY=LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD) :
 			CRABuilderEarlySingle<Domain>(EARLY), CRABuilderFullMultip<Domain>()
 		{
-            if (__CRA_REPORTING__) { std::clog << *this << std::endl; }
+#if __CRA_REPORTING__ == 1
+            std::clog << *this << std::endl;
+#endif
         }
 
 		Integer& getModulus(Integer& m)

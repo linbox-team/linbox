@@ -1,10 +1,7 @@
-/* linbox/algorithms/cra-domain-omp.h
- * Copyright (C) 1999-2010 The LinBox group
+/* linbox/algorithms/cra-domain-parallel.h
+ * Copyright (C) 1999-2022 The LinBox group
  *
- * Naive parallel chinese remaindering
- * Launch NN iterations in parallel, where NN=omp_get_max_threads()
- * Then synchronization and termintation test.
- * Time-stamp: <28 Oct 22 16:59:38 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <28 Oct 22 18:19:24 Jean-Guillaume.Dumas@imag.fr>
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -25,18 +22,25 @@
  * ========LICENCE========
  */
 
-/*! @file algorithms/cra-domain-omp.h
- * @brief Parallel (OMP) version of \ref CRA
+/*! @file algorithms/cra-domain-parallel.h
+ * @brief Parallel (PALADIN) version of \ref CRA
+ * @brief Naive parallel chinese remaindering
+ * @brief Launch by blocks of NN iterations
+ * @brief in parallel, by default, NN is numver of available threads
+ * @brief Then synchronization and termintation test.
  * @ingroup CRA
  */
 
-#ifndef __LINBOX_omp_cra_H
-#define __LINBOX_omp_cra_H
-// commentator is not thread safe
-#ifndef DISABLE_COMMENTATOR
-#warning "commentator is not thread safe"
-#define DISABLE_COMMENTATOR
-#endif
+#ifndef __LINBOX_parallel_cra_H
+#define __LINBOX_parallel_cra_H
+
+#  ifndef DISABLE_COMMENTATOR
+#    warning "commentator is not thread safe"
+#    define DISABLE_COMMENTATOR
+#  endif
+
+#include "linbox/algorithms/cra-domain-sequential.h"
+
 #ifndef __CRA_REPORTING__
 # ifdef _LB_DEBUG
 #  define __CRA_REPORTING__ 1
@@ -45,38 +49,38 @@
 # endif
 #endif
 
-
-#include <omp.h>
-#include <set>
-#include "linbox/algorithms/cra-domain-sequential.h"
-
 namespace LinBox
 {
 
 	template<class CRABase>
-	struct ChineseRemainderOMP : public ChineseRemainderSequential<CRABase> {
+	struct ChineseRemainderParallel
+        : public ChineseRemainderSequential<CRABase> {
 		typedef typename CRABase::Domain	Domain;
 		typedef typename CRABase::DomainElement	DomainElement;
 		typedef ChineseRemainderSequential<CRABase>    Father_t;
-        typedef ChineseRemainderOMP<CRABase>    Self_t;
+        typedef ChineseRemainderParallel<CRABase>    Self_t;
 
         friend std::ostream& operator<< (std::ostream& out, const Self_t& cra) {
             std::ostringstream report;
-            report << "OMP Chinese Remaindering on " << NUM_THREADS << " threads out of " << MAX_THREADS << std::endl;
+            report << "Parallel Chinese Remaindering on " << NUM_THREADS << " threads out of " << MAX_THREADS << std::endl;
             return out << report.str();
         }
 
 		template<class Param>
-		ChineseRemainderOMP(const Param& b) :
+		ChineseRemainderParallel(const Param& b) :
 			Father_t(b)
 		{
-            if (__CRA_REPORTING__) { std::clog << *this << std::endl; }
+#if __CRA_REPORTING__ == 1
+            std::clog << *this << std::endl;
+#endif
         }
 
-		ChineseRemainderOMP(const CRABase& b) :
+		ChineseRemainderParallel(const CRABase& b) :
 			Father_t(b)
 		{
-            if (__CRA_REPORTING__) { std::clog << *this << std::endl; }
+#if __CRA_REPORTING__ == 1
+            std::clog << *this << std::endl;
+#endif
         }
 
 		template <class ResultType, class Function, class PrimeIterator>
@@ -87,11 +91,10 @@ namespace LinBox
         }
 
 		template <class ResultType, class Function, class PrimeIterator>
-		bool operator() (int k, ResultType& res, Function& Iteration, PrimeIterator& primeiter)
+		bool operator() (int k, ResultType& res, Function& Iteration, PrimeIterator& primeiter, size_t NN = NUM_THREADS)
         {
-//             std::clog << "Parallel OMP Givaro::Modular iteration, blocks " << NN << " iterations." << std::endl;
+//             std::clog << "Parallel Givaro::Modular iteration, blocks " << NN << " iterations." << std::endl;
 			using ResidueType = typename CRAResidue<ResultType,Function>::template ResidueType<Domain>;
-			size_t NN = omp_get_max_threads();
 			if (NN == 1) return Father_t::operator()(k, res,Iteration,primeiter);
 
 			std::vector<Domain> ROUNDdomains; ROUNDdomains.reserve(NN);
@@ -122,14 +125,14 @@ namespace LinBox
                 { TASK(MODE(CONSTREFERENCE(ROUNDdomains,ROUNDresidues,ROUNDresults)
                             WRITE(ROUNDresults[i], ROUNDresidues[i]) ),
                 {
-                    if (__CRA_REPORTING__) {
-                        std::ostringstream report;
-                        ROUNDdomains[i].write(report <<
-                                              "Iteration lauch " << i <<
-                                              " on T" << omp_get_thread_num() <<
-                                              " over ") << std::endl;
-                        std::clog << report.str();
-                    }
+#if __CRA_REPORTING__ == 1
+                    std::ostringstream report;
+                    ROUNDdomains[i].write(report <<
+                                          "Iteration lauch " << i <<
+                                          " on T" << THREAD_INDEX <<
+                                          " over ") << std::endl;
+                    std::clog << report.str();
+#endif
 
                     ROUNDresults[i] = Iteration(ROUNDresidues[i], ROUNDdomains[i]);
 
@@ -166,11 +169,11 @@ namespace LinBox
 					}
 				}
 
-                if (__CRA_REPORTING__) {
-                    std::clog << "Current good/bad residues: "
-                           << this->ngood_ << '/'
-                           << this->nbad_ << std::endl;
-                }
+#if __CRA_REPORTING__ == 1
+                std::clog << "Current good/bad residues: "
+                          << this->ngood_ << '/'
+                          << this->nbad_ << std::endl;
+#endif
 
 			}
 
@@ -180,7 +183,7 @@ namespace LinBox
 	};
 }
 
-#endif //__LINBOX_omp_cra_H
+#endif //__LINBOX_parallel_cra_H
 
 // Local Variables:
 // mode: C++

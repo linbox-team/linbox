@@ -41,14 +41,6 @@
 #include <array>
 #include <utility>
 
-#ifndef __CRA_REPORTING__
-# ifdef _LB_DEBUG
-#  define __CRA_REPORTING__ 1
-# else
-#  define __CRA_REPORTING__ 0
-# endif
-#endif
-
 
 namespace LinBox
 {
@@ -403,7 +395,9 @@ namespace LinBox
 			EARLY_TERM_THRESHOLD((unsigned)EARLY-1),
 			occurency_(0U)
 		{
-            if (__CRA_REPORTING__) { std::clog << *this << std::endl; }
+#if __CRA_REPORTING__ == 1
+            std::clog << *this << std::endl;
+#endif
         }
 
 
