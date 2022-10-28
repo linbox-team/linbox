@@ -49,15 +49,15 @@
 #define __VALENCE_FACTOR_LOOPS__ 50000
 #endif
 
-#ifndef __VALENCE_REPORTING__
+#ifndef __LB_VALENCE_REPORTING__
 # ifdef _LB_DEBUG
-#  define __VALENCE_REPORTING__ 1
+#  define __LB_VALENCE_REPORTING__ 1
 # else
-#  define __VALENCE_REPORTING__ 0
+#  define __LB_VALENCE_REPORTING__ 0
 # endif
 #endif
 
-#if __VALENCE_REPORTING__
+#if __LB_VALENCE_REPORTING__
 #include <sstream>
 #include <iostream>
 #endif
@@ -74,11 +74,13 @@ size_t& TempLRank(size_t& r, const char * filename, const Field& F)
 	Timer tim; tim.start();
 	rankInPlace(r, FA);
 	tim.stop();
-	if (__VALENCE_REPORTING__) {
+#if __LB_VALENCE_REPORTING__
+    {
         std::ostringstream report;
         F.write(report << "Rank over ") << " is " << r << ' ' << tim <<  " on T" << THREAD_INDEX << std::endl;
         std::clog << report.str();
     }
+#endif
 	return r;
 }
 
@@ -92,11 +94,13 @@ size_t& TempLRank(size_t& r, const char * filename, const GF2& F2)
 	Timer tim; tim.start();
 	rankInPlace(r, A, Method::SparseElimination() );
 	tim.stop();
-	if (__VALENCE_REPORTING__) {
+#if __LB_VALENCE_REPORTING__
+    {
         std::ostringstream report;
         F2.write(report << "Rank over ") << " is " << r << ' ' << tim <<  " on T" << THREAD_INDEX << std::endl;
         std::clog << report.str();
     }
+#endif
 	return r;
 }
 
@@ -141,7 +145,7 @@ size_t& LRank(size_t& r, const char * filename,Givaro::Integer p)
 
 std::vector<size_t>& PRank(std::vector<size_t>& ranks, size_t& effective_exponent, const char * filename,Givaro::Integer p, size_t e, size_t intr)
 {
-#if __VALENCE_REPORTING__
+#if __LB_VALENCE_REPORTING__
     std::ostringstream logreport;
 #endif
 	effective_exponent = e;
@@ -152,7 +156,7 @@ std::vector<size_t>& PRank(std::vector<size_t>& ranks, size_t& effective_exponen
 		int64_t lp(p);
 		Givaro::Integer q = pow(p,uint64_t(e)); int64_t lq(q);
 		if (q > Ring::maxCardinality()) {
-#if __VALENCE_REPORTING__
+#if __LB_VALENCE_REPORTING__
                 logreport << "Power rank might need extra large composite (" << p << '^' << e << ")." << std::endl;
 #endif
 			q = p;
@@ -165,7 +169,7 @@ std::vector<size_t>& PRank(std::vector<size_t>& ranks, size_t& effective_exponen
                     // Not able to use Modular<int64_t>,
                     // modulus is ok, but is already too large when squared
                     // Return that no prime power was performed
-#if __VALENCE_REPORTING__
+#if __LB_VALENCE_REPORTING__
                 {
                     logreport << "Exceeding int64_t ... power rank useless, nothing done." << std::endl;
                     std::clog << logreport.str();
@@ -174,7 +178,7 @@ std::vector<size_t>& PRank(std::vector<size_t>& ranks, size_t& effective_exponen
                 effective_exponent=1;
                 return ranks;
             }
-#if __VALENCE_REPORTING__
+#if __LB_VALENCE_REPORTING__
                 logreport << "First trying: " << lq << " (=" << p << '^' << effective_exponent << ", without further warning this will be sufficient)." << std::endl;
 #endif
 		}
@@ -190,7 +194,7 @@ std::vector<size_t>& PRank(std::vector<size_t>& ranks, size_t& effective_exponen
 		Timer tim; tim.clear(); tim.start();
 		PGD.prime_power_rankin( lq, lp, ranks, A, Q, A.rowdim(), A.coldim(), std::vector<size_t>());
 		tim.stop();
-#if __VALENCE_REPORTING__
+#if __LB_VALENCE_REPORTING__
 		{
 			F.write(logreport << "Ranks over ") << " are " ;
 			for(auto const & rit:ranks) logreport << rit << ' ';
@@ -200,13 +204,13 @@ std::vector<size_t>& PRank(std::vector<size_t>& ranks, size_t& effective_exponen
 	} else {
             // Not able to use Modular<int64_t>, modulus too large
             // Return that no prime power was performed
-#if __VALENCE_REPORTING__
+#if __LB_VALENCE_REPORTING__
             logreport << "Exceeding int64_t ... even for the prime, nothing done." << std::endl;
 #endif
         effective_exponent=1;
 	}
 
-#if __VALENCE_REPORTING__
+#if __LB_VALENCE_REPORTING__
         std::clog << logreport.str();
 #endif
 	return ranks;
@@ -220,12 +224,12 @@ namespace LinBox {
 
 std::vector<size_t>& PRankPowerOfTwo(std::vector<size_t>& ranks, size_t& effective_exponent, const char * filename, size_t e, size_t intr)
 {
-#if __VALENCE_REPORTING__
+#if __LB_VALENCE_REPORTING__
     std::ostringstream logreport;
 #endif
 	effective_exponent = e;
 	if (e > 63) {
-#if __VALENCE_REPORTING__
+#if __LB_VALENCE_REPORTING__
 		{
             logreport << "Power rank power of two might need extra large composite (2^" << e << ")." << std::endl;
             logreport << "First trying: 63, without further warning this will be sufficient)." << std::endl;
@@ -248,7 +252,7 @@ std::vector<size_t>& PRankPowerOfTwo(std::vector<size_t>& ranks, size_t& effecti
 	Timer tim; tim.clear(); tim.start();
 	PGD.prime_power_rankin( effective_exponent, ranks, A, Q, A.rowdim(), A.coldim(), std::vector<size_t>());
 	tim.stop();
-#if __VALENCE_REPORTING__
+#if __LB_VALENCE_REPORTING__
 	{
 		F.write(logreport << "Ranks over ") << " modulo 2^" << effective_exponent << " are " ;
 		for(auto const& rit: ranks) logreport << rit << ' ';
@@ -274,13 +278,15 @@ std::vector<size_t>& PRankInteger(std::vector<size_t>& ranks, const char * filen
 	Timer tim; tim.clear(); tim.start();
 	PGD.prime_power_rankin( q, p, ranks, A, Q, A.rowdim(), A.coldim(), std::vector<size_t>());
 	tim.stop();
-	if (__VALENCE_REPORTING__) {
+#if __LB_VALENCE_REPORTING__
+    {
         std::ostringstream logreport;
 		F.write(logreport << "Ranks over ") << " are " ;
 		for(auto const & rit: ranks) logreport << rit << ' ';
 		logreport << ' ' << tim << std::endl;
         std::clog << logreport.str();
 	}
+#endif
 	return ranks;
 }
 
@@ -298,12 +304,14 @@ std::vector<size_t>& PRankIntegerPowerOfTwo(std::vector<size_t>& ranks, const ch
 	Timer tim; tim.clear(); tim.start();
 	PGD.prime_power_rankin( e, ranks, A, Q, A.rowdim(), A.coldim(), std::vector<size_t>());
 	tim.stop();
-	if (__VALENCE_REPORTING__) {
+#if __LB_VALENCE_REPORTING__
+    {
         std::ostringstream logreport;
 		ZZ.write(logreport << "Ranks over ") << " modulo 2^" << e << " are " ;
 		for(auto const& rit: ranks) logreport << rit << ' ';
 		logreport << ' ' << tim << std::endl;
 	}
+#endif
 	return ranks;
 }
 
@@ -357,8 +365,11 @@ std::vector<size_t>& AllPowersRanks(
                 else
                     PRank(ranks, effexp, filename, squarefreePrime, expo, coprimeRank);
                 if (ranks.size() < expo) {
-                    if (__VALENCE_REPORTING__)
+#if __LB_VALENCE_REPORTING__
+                    {
                         std::clog << "It seems we need a larger prime power, it will take longer ...\n" << std::flush;
+                    }
+#endif
                         // break;
                     if (squarefreePrime == 2)
                         PRankIntegerPowerOfTwo(ranks, filename, expo, coprimeRank);
@@ -407,30 +418,35 @@ std::vector<Givaro::Integer>& smithValence(std::vector<Givaro::Integer>& SmithDi
         // if coprimeV != 1:
 		//  then this value is supposed to be coprime with the valence
 
-    if (__VALENCE_REPORTING__)
+#if __LB_VALENCE_REPORTING__
         std::clog << "sV threads: " << NUM_THREADS << std::endl;
+#endif
 
     if (valence == 0) {
         squarizeValence(valence, A, method);
     }
 
-    if (__VALENCE_REPORTING__)
+#if __LB_VALENCE_REPORTING__
         std::clog << "Valence is " << valence << std::endl;
+#endif
 
     std::vector<Givaro::Integer> Moduli;
 	std::vector<size_t> exponents;
 
-    if (__VALENCE_REPORTING__)
+#if __LB_VALENCE_REPORTING__
         std::clog << "Some factors (" << __VALENCE_FACTOR_LOOPS__ << " factoring loop bound): ";
+#endif
 
     Givaro::IntFactorDom<> FTD;
     FTD.set(Moduli, exponents, valence, __VALENCE_FACTOR_LOOPS__);
 
-    if (__VALENCE_REPORTING__) {
+#if __LB_VALENCE_REPORTING__ 
+    {
         auto eit=exponents.begin();
         for(auto const &mit: Moduli) std::clog << mit << '^' << *eit++ << ' ';
         std::clog << std::endl;
     }
+#endif
 
 	std::vector< size_t > smith(Moduli.size());
 

@@ -88,7 +88,7 @@ namespace LinBox
 		Integer		nextM_;
 		Integer	residue_;	// remainder to be reconstructed
 
-#ifdef _LB_CRATIMING
+#ifdef __LB_CRA_TIMING__
 		mutable Timer tInit, tIteration, tImaging, tIRecon, tOther;
 		mutable CRATimer totalTime;
         mutable size_t IterCounter_;
@@ -108,7 +108,7 @@ namespace LinBox
 		bool progress_check (const Integer& D, const Integer& e)
 		{
 			// Precondition : initialize has been called once before
-#ifdef _LB_CRATIMING
+#ifdef __LB_CRA_TIMING__
 			tIRecon.clear();
 			tIRecon.start();
             ++IterCounter_;
@@ -134,7 +134,7 @@ namespace LinBox
 				u0 *= primeProd_;          // res <-- (u1-u0)( m0^{-1} mod m1 ) m0       and res <= (m0m1-m0)
 				residue_ += u0;   // res <-- u0 + (u1-u0)( m0^{-1} mod m1 ) m0  and res <  m0m1
 			}
-#ifdef _LB_CRATIMING
+#ifdef __LB_CRA_TIMING__
 			tIRecon.stop();
 			totalTime.ttIRecon += tIRecon;
 #endif
@@ -155,7 +155,7 @@ namespace LinBox
 		bool progress_check (const Domain& D, const DomainElement& e)
 		{
 			// Precondition : initialize has been called once before
-#ifdef _LB_CRATIMING
+#ifdef __LB_CRA_TIMING__
 			tIRecon.clear();
 			tIRecon.start();
             ++IterCounter_;
@@ -190,7 +190,7 @@ namespace LinBox
 				residue_ += res;	// <-- u0 + (e-u0)( m0^{-1} mod nextM_ ) m0
 				// and res <  m0.nextM_
 			}
-#ifdef _LB_CRATIMING
+#ifdef __LB_CRA_TIMING__
 			tIRecon.stop();
 			totalTime.ttIRecon += tIRecon;
 #endif
@@ -202,11 +202,11 @@ namespace LinBox
 		CRABuilderSingleBase() :
 			primeProd_(1U),
 			nextM_(1U)
-#ifdef _LB_CRATIMING
+#ifdef __LB_CRA_TIMING__
             , IterCounter_(0)
 #endif
 		{
-#ifdef _LB_CRATIMING
+#ifdef __LB_CRA_TIMING__
 			clearTimers();
 			totalTime.clear();
 #endif
@@ -223,7 +223,7 @@ namespace LinBox
 		 */
 		void initialize (const Integer& D, const Integer& e)
 		{
-#ifdef _LB_CRATIMING
+#ifdef __LB_CRA_TIMING__
 			tInit.clear();
 			tInit.start();
             IterCounter_=1;
@@ -231,7 +231,7 @@ namespace LinBox
 			primeProd_ = D;
 			nextM_ = 1U;
 			residue_ = e;
-#ifdef _LB_CRATIMING
+#ifdef __LB_CRA_TIMING__
 			tInit.stop();
 			totalTime.ttInit += tInit;
 #endif
@@ -248,7 +248,7 @@ namespace LinBox
 		 */
 		void initialize (const Domain& D, const DomainElement& e)
 		{
-#ifdef _LB_CRATIMING
+#ifdef __LB_CRA_TIMING__
 			tInit.clear();
 			tInit.start();
             IterCounter_=1;
@@ -256,7 +256,7 @@ namespace LinBox
 			D.characteristic( primeProd_ );
 			nextM_ = 1U;
 			D.convert( residue_, e);
-#ifdef _LB_CRATIMING
+#ifdef __LB_CRA_TIMING__
 			tInit.stop();
 			totalTime.ttInit += tInit;
 #endif
@@ -283,12 +283,12 @@ namespace LinBox
 		Integer& getModulus(Integer& m)
 		{
 
-#ifdef _LB_CRATIMING
+#ifdef __LB_CRA_TIMING__
 			tOther.clear();
 			tOther.start();
 #endif
 			m = primeProd_ * nextM_;
-#ifdef _LB_CRATIMING
+#ifdef __LB_CRA_TIMING__
 			tOther.stop();
 			totalTime.ttOther += tOther;
 #endif
@@ -314,7 +314,7 @@ namespace LinBox
 
 		virtual ~CRABuilderSingleBase() {}
 
-#ifdef _LB_CRATIMING
+#ifdef __LB_CRA_TIMING__
 		void clearTimers() const
 		{
 			tInit.clear();
@@ -395,7 +395,7 @@ namespace LinBox
 			EARLY_TERM_THRESHOLD((unsigned)EARLY-1),
 			occurency_(0U)
 		{
-#if __CRA_REPORTING__ == 1
+#if __CRA_REPORTING__
             std::clog << *this << std::endl;
 #endif
         }
