@@ -41,11 +41,11 @@
 
 #include "linbox/algorithms/cra-domain-sequential.h"
 
-#ifndef __CRA_REPORTING__
+#ifndef __LB_CRA_REPORTING__
 # ifdef _LB_DEBUG
-#  define __CRA_REPORTING__ 1
+#  define __LB_CRA_REPORTING__ 1
 # else
-#  define __CRA_REPORTING__ 0
+#  define __LB_CRA_REPORTING__ 0
 # endif
 #endif
 
@@ -70,7 +70,7 @@ namespace LinBox
 		ChineseRemainderParallel(const Param& b) :
 			Father_t(b)
 		{
-#if __CRA_REPORTING__
+#if __LB_CRA_REPORTING__
             std::clog << *this << std::endl;
 #endif
         }
@@ -78,7 +78,7 @@ namespace LinBox
 		ChineseRemainderParallel(const CRABase& b) :
 			Father_t(b)
 		{
-#if __CRA_REPORTING__
+#if __LB_CRA_REPORTING__
             std::clog << *this << std::endl;
 #endif
         }
@@ -125,7 +125,7 @@ namespace LinBox
                 { TASK(MODE(CONSTREFERENCE(ROUNDdomains,ROUNDresidues,ROUNDresults)
                             WRITE(ROUNDresults[i], ROUNDresidues[i]) ),
                 {
-#if __CRA_REPORTING__
+#if __LB_CRA_REPORTING__
                     std::ostringstream report;
                     ROUNDdomains[i].write(report <<
                                           "Iteration lauch " << i <<
@@ -169,7 +169,7 @@ namespace LinBox
 					}
 				}
 
-#if __CRA_REPORTING__
+#if __LB_CRA_REPORTING__
                 std::clog << "Current good/bad residues: "
                           << this->ngood_ << '/'
                           << this->nbad_ << std::endl;
