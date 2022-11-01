@@ -72,7 +72,7 @@ namespace LinBox
 		CRABuilderEarlyMultip(const size_t EARLY=LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD) :
 			CRABuilderEarlySingle<Domain>(EARLY), CRABuilderFullMultip<Domain>()
 		{
-#if __CRA_REPORTING__
+#if __LB_CRA_REPORTING__
             std::clog << *this << std::endl;
 #endif
         }
