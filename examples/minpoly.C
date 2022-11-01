@@ -34,6 +34,8 @@
 #define __LB_VALENCE_REPORTING__ 1
 #define __LB_CRA_REPORTING__ 1
 #define __LB_CRA_TIMING__ 1
+#define __LINBOX_HEURISTIC_CRA 1
+
 
 
 #include <linbox/linbox-config.h>
