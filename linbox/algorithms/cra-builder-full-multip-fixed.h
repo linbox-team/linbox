@@ -72,7 +72,7 @@ namespace LinBox
 		CRABuilderFullMultipFixed(const std::pair<size_t,double>& p ) :
 			CRABuilderFullMultip<Domain>(p.second, p.first)
         {
-#if __CRA_REPORTING__
+#if __LB_CRA_REPORTING__
             std::clog << *this << std::endl;
 #endif
         }

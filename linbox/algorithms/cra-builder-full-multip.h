@@ -98,7 +98,7 @@ namespace LinBox
 		CRABuilderFullMultip(const double bnd=0.0, size_t dim=0) :
 			LOGARITHMIC_UPPER_BOUND(bnd), dimension_(dim)
 		{
-#if __CRA_REPORTING__
+#if __LB_CRA_REPORTING__
             std::clog << *this << std::endl;
 #endif
         }

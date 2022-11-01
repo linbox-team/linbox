@@ -395,7 +395,7 @@ namespace LinBox
 			EARLY_TERM_THRESHOLD((unsigned)EARLY-1),
 			occurency_(0U)
 		{
-#if __CRA_REPORTING__
+#if __LB_CRA_REPORTING__
             std::clog << *this << std::endl;
 #endif
         }
