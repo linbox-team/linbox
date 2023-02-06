@@ -109,6 +109,7 @@ int main(int argc, char** argv)
 //    commentator().setMaxDetailLevel(-1);
 
 	commentator().start("SmithFormBinary test suite", "SmithFormBinary");
+	std::ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
     PIR R;
     DenseMatrix<PIR> A(R,m,n);
@@ -127,28 +128,28 @@ int main(int argc, char** argv)
         pass = checkBumpsLumps(sf,A,d,x,bumps,lumps);
         gpass &= pass;
     }
-    std::clog << "Bumps 1, \t" << (pass? "PASSED." : "ERROR.") << std::endl;
+    report << "Bumps 1, \t" << (pass? "PASSED." : "ERROR.") << std::endl;
 
     {
         makeBumps(bumps, 2);
         pass = checkBumpsLumps(sf,A,d,x,bumps,lumps);
         gpass &= pass;
     }
-    std::clog << "Bumps 2, \t" << (pass? "PASSED." : "ERROR.") << std::endl;
+    report << "Bumps 2, \t" << (pass? "PASSED." : "ERROR.") << std::endl;
 
     {
         makeBumps(bumps, 3);
         pass = checkBumpsLumps(sf,A,d,x,bumps,lumps);
         gpass &= pass;
     }
-    std::clog << "Bumps 3, \t" << (pass? "PASSED." : "ERROR.") << std::endl;
+    report << "Bumps 3, \t" << (pass? "PASSED." : "ERROR.") << std::endl;
 
     {
         spaceBumps(m,n,bumps,lumps);
         pass = checkBumpsLumps(sf,A,d,x,bumps,lumps);
         gpass &= pass;
     }
-    std::clog << "Space Bumps,\t" << (pass? "PASSED." : "ERROR.") << std::endl;
+    report << "Space Bumps,\t" << (pass? "PASSED." : "ERROR.") << std::endl;
 
     commentator().stop("SmithFormBinary test suite");
     return pass ? 0 : -1;

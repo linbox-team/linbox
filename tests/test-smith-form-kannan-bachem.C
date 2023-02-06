@@ -25,6 +25,8 @@ int main(int argc, char **argv) {
 	typedef MatrixDomain<PolyDom> PolyMatDom;
 	typedef typename PolyMatDom::OwnMatrix Matrix;
 
+	std::ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+
 	int p = 3;
 	int n = 3;
 
@@ -51,7 +53,7 @@ int main(int argc, char **argv) {
 
 	M.setEntry(2,2,c);
 
-    M.write(std::clog << "smith(", Tag::FileFormat::linalg) << ",x)";
+    M.write(report << "smith(", Tag::FileFormat::linalg) << ",x)";
 
 	SmithFormKannanBachemDomain<PolyDom> SFKB(R);
 
@@ -59,8 +61,8 @@ int main(int argc, char **argv) {
 
 	SFKB.solve(factors, M);
 
-    std::clog << " is |";
-    for(const auto& iter: factors) R.write(std::clog,iter) << '|';
+   report << " is |";
+    for(const auto& iter: factors) R.write(report,iter) << '|';
 
 
 	bool pass = true;
@@ -74,14 +76,14 @@ int main(int argc, char **argv) {
         && R.areEqual(c, factors[2]);
 
     if (!pass) {
-        std::cerr << " *** ERROR ***" << std::endl;
-        R.write(std::cerr << "1: ", a) << std::endl;
-        R.write(std::cerr << "x: ", b) << std::endl;
-        R.write(std::cerr << "0+x(2+x): ", c) << std::endl;
-        R.write(std::cerr << "f[0]: ", factors[0]) << std::endl;
-        R.write(std::cerr << "f[1]: ", factors[1]) << std::endl;
-        R.write(std::cerr << "f[2]: ", factors[2]) << std::endl;
-    } else std::clog << ", PASSED." << std::endl;
+        report << " *** ERROR ***" << std::endl;
+        R.write(report << "1: ", a) << std::endl;
+        R.write(report << "x: ", b) << std::endl;
+        R.write(report << "0+x(2+x): ", c) << std::endl;
+        R.write(report << "f[0]: ", factors[0]) << std::endl;
+        R.write(report << "f[1]: ", factors[1]) << std::endl;
+        R.write(report << "f[2]: ", factors[2]) << std::endl;
+    } else report << ", PASSED." << std::endl;
         
 
 	return pass ? 0 : -1;
