@@ -35,31 +35,40 @@
 
 using namespace LinBox;
 
+typedef Givaro::QField<Givaro::Rational> QRat;
+typedef MatrixStream<QRat> QMstream;
+typedef SparseMatrix<QRat, SparseMatrixFormat::SparseSeq > QSparseMat;
+
 int main (int argc, char **argv)
 {
-    if (argc != 2) {
-        std::cerr << "Usage to get a null space basis over Q:  <matrix-file-in-SMS-format>" << std::endl;
+    if ((argc != 2) && (argc != 3)) {
+        std::cerr << "Usage to get a null space basis over Q:  <matrix-file-in-SMS-format> [output-file]" << std::endl;
         return -1;
     }
-    
+
     std::ifstream input (argv[1]);
     if (!input) { std::cerr << "Error opening matrix file " << argv[1] << std::endl; return -1; }
-    
-    typedef Givaro::QField<Givaro::Rational> Rats;
-    Rats QQ;
-    SparseMatrix<Rats, SparseMatrixFormat::SparseSeq > B (QQ);
-    B.read (input);
+
+    QRat QQ;
+    QMstream ms(QQ, input);
+    QSparseMat B (ms);
     std::cout << "B is " << B.rowdim() << " by " << B.coldim() << std::endl;
-    
-    DenseMatrix<Rats> NullSpace(QQ,B.coldim(),B.coldim());
-    GaussDomain<Rats> GD(QQ);
-    
+
+    SparseMatrix<QRat> NullSpace(QQ,B.coldim(),B.coldim());
+    GaussDomain<QRat> GD(QQ);
+
     GD.nullspacebasisin(NullSpace, B);
-    
+
     NullSpace.write( std::cerr << "X:=", Tag::FileFormat::Maple ) << ';' << std::endl;
-    
+
+    if (argc>2) {
+        std::ofstream output(argv[2]);
+        NullSpace.write( output, Tag::FileFormat::Guillaume );
+        std::clog << "Nullspace basis written in " << argv[2] << std::endl;
+    }
+
     std::cerr << "NullsSpace dimensions:" << NullSpace.rowdim() << 'x' << NullSpace.coldim() << std::endl;
-    
+
     return 0;
 }
 
