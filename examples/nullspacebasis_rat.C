@@ -29,8 +29,8 @@
   */
 
 #include <iostream>
-#include "linbox/matrix/dense-matrix.h"
-#include <givaro/gfq.h>
+#include <givaro/givrational.h>
+#include "linbox/matrix/sparse-matrix.h"
 #include "linbox/algorithms/gauss.h"
 
 using namespace LinBox;
@@ -63,7 +63,7 @@ int main (int argc, char **argv)
 
     if (argc>2) {
         std::ofstream output(argv[2]);
-        NullSpace.write( output, Tag::FileFormat::Guillaume );
+        NullSpace.write( output, Tag::FileFormat::SMS );
         std::clog << "Nullspace basis written in " << argv[2] << std::endl;
     }
 

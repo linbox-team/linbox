@@ -152,8 +152,8 @@ namespace LinBox {
 		case Tag::FileFormat::OneBased:
 			return writeTriple(A,os,true);
 
-		case Tag::FileFormat::Guillaume:
-			os << A.rowdim() << ' ' << A.coldim() << " M" << std::endl;
+		case Tag::FileFormat::SMS:
+			os << A.rowdim() << ' ' << A.coldim() << ' ' << (A.field().cardinality()==0?'R':'M') << std::endl;
 
 			writeTriple(A,os,true);
 

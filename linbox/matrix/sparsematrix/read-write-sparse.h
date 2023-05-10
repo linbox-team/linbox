@@ -107,7 +107,7 @@ namespace LinBox {
 						    , char *buf);
 #endif
 
-		static std::istream &readGuillaume (Matrix &A
+		static std::istream &readSMS (Matrix &A
 						    , std::istream &is
 						    , char *buf);
 
