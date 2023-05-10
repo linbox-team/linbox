@@ -152,10 +152,11 @@ void makeSNFExample(DenseMatrix<PIR>& A,
 
 	std::ostream & report =
 #ifndef DISABLE_COMMENTATOR
-        commentator().report(LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+        commentator().report(LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
 #else
         std::clog
 #endif
+;
 
 template <class PIR>
 bool checkSNFExample( const BlasVector<PIR>& d, const BlasVector<PIR>& x ){

@@ -25,6 +25,7 @@
  * @ingroup tests
  * @brief testing Msith Form computations via the Valence algorithm
  */
+#define DISABLE_COMMENTATOR
 
 #include <linbox/linbox-config.h>
 #include <linbox/solutions/smith-form.h>
