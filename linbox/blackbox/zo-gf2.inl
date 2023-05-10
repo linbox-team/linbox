@@ -153,7 +153,7 @@ namespace LinBox
 
 	inline std::ostream& ZeroOne<GF2>::write (std::ostream& out, Tag::FileFormat format) const
 	{
-		if (format == Tag::FileFormat::Guillaume) {
+		if (format == Tag::FileFormat::SMS) {
 			out << _rowdim << ' ' << _coldim << " M\n";
 			for(size_t i=0; i<_rowdim; ++i) {
 				const Row_t& rowi = this->operator[](i);
