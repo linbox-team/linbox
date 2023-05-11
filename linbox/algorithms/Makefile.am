@@ -61,15 +61,15 @@ pkgincludesub_HEADERS =            \
 	coppersmith.h                      \
 	coppersmith-invariant-factors.h    \
 	cra-domain.h                       \
-	cra-domain-omp.h                   \
-	cra-domain-sequential.h                   \
-	cra-builder-early-multip.h                 \
-	cra-builder-full-multip-fixed.h            \
-	cra-builder-full-multip.h                  \
+	cra-domain-sequential.h            \
+	cra-domain-parallel.h              \
+	cra-builder-early-multip.h         \
+	cra-builder-full-multip-fixed.h    \
+	cra-builder-full-multip.h          \
 	cra-givrnsfixed.h                  \
 	cra-kaapi.h                        \
 	cra-distributed.h                  \
-	cra-builder-single.h                       \
+	cra-builder-single.h               \
 	default.h                          \
 	dense-container.h                  \
 	dense-nullspace.h                  \

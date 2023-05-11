@@ -43,7 +43,7 @@ namespace LinBox { namespace BLAS3 { namespace Protected {
 		typedef BlasMatrix<Givaro::ZRing<Integer> > IntegerMatrix ;
 
 #ifdef _LB_MM_TIMING
-#ifdef _OPENMP
+#ifdef __LINBOX_USE_OPENMP
 		typedef LinBox::OMPTimer Mytime;
 #else
 		typedef LinBox::Timer    Mytime;

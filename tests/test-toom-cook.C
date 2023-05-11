@@ -61,7 +61,7 @@ namespace LinBox { namespace Protected {
 		typedef SparseMatrix<Givaro::ZRing<Integer>,spfmt> IntegerMatrix ;
 
 #ifdef _LB_MM_TIMING
-#ifdef _OPENMP
+#ifdef __LINBOX_USE_OPENMP
 		typedef LinBox::OMPTimer Mytime;
 #else
 		typedef LinBox::Timer    Mytime;
