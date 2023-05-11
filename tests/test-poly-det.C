@@ -1,8 +1,5 @@
 #include "linbox/linbox-config.h"
 
-#include <omp.h>
-
-#define __LINBOX_USE_OPENMP 1
 #include "linbox/ring/modular.h"
 #include "linbox/matrix/sparse-matrix.h"
 #include "linbox/matrix/dense-matrix.h"

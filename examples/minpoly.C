@@ -26,18 +26,30 @@
   \brief Minimal polynomial of a sparse matrix.
   \ingroup examples
   */
+
+#ifndef DISABLE_COMMENTATOR
+#define DISABLE_COMMENTATOR
+#endif
+
+#define __LB_VALENCE_REPORTING__ 1
+#define __LB_CRA_REPORTING__ 1
+#define __LB_CRA_TIMING__ 1
+#define __LINBOX_HEURISTIC_CRA 1
+
+
+
 #include <linbox/linbox-config.h>
 #include <iostream>
 //! @bug this should be elsewhere
 template <class Field, class Polynomial>
-void printPolynomial (const Field &F, const Polynomial &v)
+std::ostream& printPolynomial (std::ostream& out, const Field &F, const Polynomial &v)
 {
 	for (int i = (int)v.size () ; i-- ; ) {
-		F.write (std::cout, v[(size_t)i]);
+		F.write (out, v[(size_t)i]);
 		if (i > 0)
-			std::cout << " x^" << i << " + ";
+			out << " x^" << i << " + ";
 	}
-	std::cout << std::endl;
+    return out;
 }
 
 #include <linbox/ring/modular.h>
@@ -71,45 +83,54 @@ int main (int argc, char **argv)
 	if (argc != 3) {
 		int process = 0;
 
-		Method::Blackbox M;
-#ifdef __LINBOX_HAVE_MPI
-		Communicator C(&argc, &argv);
-		process = C.rank();
-		M.communicatorp(&C);
-#endif
+        LinBox::Timer chrono;
+        Method::Blackbox M;
 
 		Givaro::ZRing<Integer> ZZ;
+		DensePolynomial<Givaro::ZRing<Integer> > m_A(ZZ);
 		typedef SparseMatrix<Givaro::ZRing<Integer>> SpMat;
-		/*
-		SpMat A (ZZ);
-		A.read (input);
-		*/
 		SpMat B (ZZ);
 		B.read (input);
-		typedef Transpose<SpMat> BB2;
-		BB2 BT(B);
-//		typedef DenseMatrix<Givaro::ZRing<Integer> > BB2;
-//		BB2 BT(ZZ, B.coldim(), B.rowdim());
-//		BT.random();
-		Compose<SpMat, BB2 > A(B,BT);
+        if (B.rowdim() == B.coldim()) {
 
-		if(process == 0)
-			cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
+			std::clog << "B is " << B.rowdim() << " by " << B.coldim() << endl;
 
-		DensePolynomial<Givaro::ZRing<Integer> > m_A(ZZ);
-		minpoly (m_A, A, M);
+            chrono.start();
+            PAR_BLOCK {
+                minpoly (m_A, B, M);
+            }
 
-		if(process == 0){
-			cout << "Minimal Polynomial is ";
-			printPolynomial (ZZ, m_A);
-		}
+            chrono.stop();
 
-		//            minpoly (m_A, A, Method::DenseElimination() );
 
-		//            if(process == 0){
-		//                cout << "Minimal Polynomial is ";
-		//                printPolynomial (ZZ, m_A);
-		//            }
+        } else {
+                // Minpoly of B . Transpose(B) or Transpose(B) . B
+            typedef Transpose<SpMat> BB2;
+            BB2 BT(B);
+            if (B.rowdim() > B.coldim()) {
+                Compose<BB2, SpMat> A(BT,B);
+                std::clog << "(B^T . B) is " << A.rowdim() << " by " << A.coldim() << endl;
+
+                chrono.start();
+                PAR_BLOCK {
+                    minpoly (m_A, A, M);
+                }
+                chrono.stop();
+            } else {
+                Compose<SpMat, BB2 > A(B,BT);
+                std::clog << "(B . B^T) is " << A.rowdim() << " by " << A.coldim() << endl;
+
+                chrono.start();
+                PAR_BLOCK {
+                    minpoly (m_A, A, M);
+                }
+                chrono.stop();
+            }
+        }
+
+
+        std::clog << "Minimal Polynomial, " << chrono << ", is: ";
+        printPolynomial (std::cout, ZZ, m_A) << std::endl;
 
 	}
 	else{
@@ -124,11 +145,7 @@ int main (int argc, char **argv)
 		minpoly (m_B, B);
 
 		cout << "Minimal Polynomial is ";
-		printPolynomial (F, m_B);
-
-		//                 minpoly (m_A, A, Method::DenseElimination() );
-		//  		cout << "Minimal Polynomial is ";
-		// 		printPolynomial (F, m_B);
+		printPolynomial (std::cout, F, m_B) << std::endl;
 
 	}
 
