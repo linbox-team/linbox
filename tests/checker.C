@@ -164,7 +164,7 @@ int main(int argc, char* argv[]) {
 	int buildfail = 0, runfail = 0, skipped = 0, pass = 0; // counts
 	vector<string> all_tests;
 	while (tests >> t) {t.resize(t.size()-2); all_tests.push_back(t);}
-//#ifdef LINBOX_HAVE_OPENMP
+//#ifdef __LINBOX_USE_OPENMP
 //#pragma omp parallel for
 //PARFOR1D(i, 0, all_tests.size(), SPLITTER(),
 //#endif
@@ -187,7 +187,7 @@ int main(int argc, char* argv[]) {
 			cmd = "make " + t + " 2> /dev/null > /dev/null";
 			report << "build ";
 			int status = system(cmd.c_str());
-//			#ifndef LINBOX_HAVE_OPENMP
+//			#ifndef __LINBOX_USE_OPENMP
 //			if (status == 2) break;
 //			#endif
 			if (status != 0) { // build failure
@@ -198,7 +198,7 @@ int main(int argc, char* argv[]) {
 				std::ostringstream prog ;
 				prog << "./" << t ;
 				status = system(prog.str().c_str());
-//				#ifndef LINBOX_HAVE_OPENMP
+//				#ifndef __LINBOX_USE_OPENMP
 //				if (status == 2) break;
 //				#endif
 				if (status == 0) {

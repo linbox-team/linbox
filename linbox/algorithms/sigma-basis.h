@@ -581,18 +581,18 @@ namespace LinBox
 				//Discrepancy.write(std::cout,field());
 
 
-				// Compute LQUP of Discrepancy
+				// Compute PLUQ of Discrepancy
 				BlasPermutation<size_t> Qt(Discrepancy.rowdim());
 				BlasPermutation<size_t> P(Discrepancy.coldim());
-				LQUPMatrix<Field> LQUP(Discrepancy,P,Qt);
+				PLUQMatrix<Field> PLUQ(Discrepancy,P,Qt);
 
-				// Get L from LQUP
+				// Get L from PLUQ
 				TriangularBlasMatrix<Field> L(field(), m, m,
 							      Tag::Shape::Lower, Tag::Diag::Unit);
-				LQUP.getL(L);
+				PLUQ.getL(L);
 
-				// get the transposed permutation of Q from LQUP
-				// BlasPermutation<size_t> Qt =LQUP.getQ();
+				// get the transposed permutation of Q from PLUQ
+				// BlasPermutation<size_t> Qt =PLUQ.getQ();
 
 
 				// Compute the inverse of L
@@ -619,7 +619,7 @@ namespace LinBox
 #endif
 				//std::cout<<"BaseBis"<<k<<":=";
 				//write_maple(F,SigmaBase);
-				// Increase  degree and defect according to row choosen as pivot in LQUP
+				// Increase  degree and defect according to row choosen as pivot in PLUQ
 				for (size_t i=0;i<n;++i){
 					defect[*(Qt.getPointer()+i)]++;
 					degree[*(Qt.getPointer()+i)]++;
@@ -638,7 +638,7 @@ namespace LinBox
 					SigmaBase.resize(size+1,Zero);
 					size++;
 				}
-				// Mulitply by x the rows of Sigma involved as pivot in LQUP
+				// Mulitply by x the rows of Sigma involved as pivot in PLUQ
 				for (size_t i=0;i<n;++i){
 					for (int j= (int) size-2;j>=0; --j){
 						for (size_t l=0;l<m;++l)
@@ -829,21 +829,21 @@ namespace LinBox
 				_BMD.mulin_right(BPerm1,Discrepancy);
 
 
-				// Computation of the LQUP decomposition of the discrepancy
+				// Computation of the PLUQ decomposition of the discrepancy
 				Coefficient CopyDiscr;
 				CopyDiscr=Discrepancy;
 				BlasPermutation<size_t> Qt(Discrepancy.rowdim());
 				BlasPermutation<size_t> P(Discrepancy.coldim());
 
-				LQUPMatrix<Field> LQUP(CopyDiscr,P,Qt);
+				PLUQMatrix<Field> PLUQ(CopyDiscr,P,Qt);
 
-				// Get the matrix L of LQUP decomposition
+				// Get the matrix L of PLUQ decomposition
 				TriangularBlasMatrix<Field> L(field(),m+n,m+n,
 							      Tag::Shape::Lower, Tag::Diag::Unit );
-				LQUP.getL(L);
+				PLUQ.getL(L);
 
-				// Get the tranposed  permutation of Q from LQUP
-				// BlasPermutation<size_t> Qt=LQUP.getQ();
+				// Get the tranposed  permutation of Q from PLUQ
+				// BlasPermutation<size_t> Qt=PLUQ.getQ();
 
 				// Computation of permutations BPerm2 such that the last n rows of BPerm2.Qt.Discrepancy are non zero.
 				std::vector<size_t> Perm2(m+n);
@@ -905,13 +905,13 @@ namespace LinBox
 						field().assign(SigmaBase[0].refEntry(m+j,k),field().zero);
 
 
-				// Discrepancy= BPerm2.U.P from LQUP
+				// Discrepancy= BPerm2.U.P from PLUQ
 				Coefficient U(field(),m+n,n);
 				TriangularBlasMatrix<Field> trU( U,
 								Tag::Shape::Upper,Tag::Diag::NonUnit);
-				LQUP.getU(trU);
+				PLUQ.getU(trU);
 				Discrepancy=U;
-				// BlasPermutation<size_t> P= LQUP.getP();
+				// BlasPermutation<size_t> P= PLUQ.getP();
 				_BMD.mulin_left(Discrepancy,P);
 				_BMD.mulin_right(BPerm2,Discrepancy);
 
@@ -1052,21 +1052,21 @@ namespace LinBox
 				_BMD.mulin_right(BPerm1,Discrepancy);
 
 
-				// Computation of the LQUP decomposition of the discrepancy
+				// Computation of the PLUQ decomposition of the discrepancy
 				Coefficient CopyDiscr;
 				CopyDiscr=Discrepancy;
 				BlasPermutation<size_t> Qt(Discrepancy.rowdim());
 				BlasPermutation<size_t> P(Discrepancy.coldim());
 
-				LQUPMatrix<Field> LQUP(CopyDiscr,P,Qt);
+				PLUQMatrix<Field> PLUQ(CopyDiscr,P,Qt);
 
-				// Get the matrix L of LQUP decomposition
+				// Get the matrix L of PLUQ decomposition
 				TriangularBlasMatrix<Field> L(field(), m+n,m+n,
 							      Tag::Shape::Lower, Tag::Diag::Unit );
-				LQUP.getL(L);
+				PLUQ.getL(L);
 
-				// Get the tranposed  permutation of Q from LQUP
-				// BlasPermutation<size_t> Qt=LQUP.getQ();
+				// Get the tranposed  permutation of Q from PLUQ
+				// BlasPermutation<size_t> Qt=PLUQ.getQ();
 
 				// Computation of permutations BPerm2 such that the last n rows of BPerm2.Qt.Discrepancy are non zero.
 				std::vector<size_t> Perm2(m+n);
@@ -1128,12 +1128,12 @@ namespace LinBox
 						field().assign(SigmaBase[0].refEntry(m+j,k),field().zero);
 
 
-				// Discrepancy= BPerm2.U.P from LQUP
+				// Discrepancy= BPerm2.U.P from PLUQ
 				Coefficient U(field(),m+n,n);
 				TriangularBlasMatrix<Field> trU(U,Tag::Shape::Upper,Tag::Diag::NonUnit);
-				LQUP.getU(trU);
+				PLUQ.getU(trU);
 				Discrepancy=U;
-				// BlasPermutation<size_t> P= LQUP.getP();
+				// BlasPermutation<size_t> P= PLUQ.getP();
 				_BMD.mulin_left(Discrepancy,P);
 				_BMD.mulin_right(BPerm2,Discrepancy);
 
@@ -1243,8 +1243,8 @@ namespace LinBox
 
 #ifdef _BM_TIMING
 			Timer chrono;
-			double /*tSigmaUp, tResidueUp, tSigmaSh, tResidueSh,*/ tLQUP, tPerm;
-			tSigmaUp= tResidueUp= tSigmaSh= tResidueSh= tLQUP= tPerm =0.;
+			double /*tSigmaUp, tResidueUp, tSigmaSh, tResidueSh,*/ tPLUQ, tPerm;
+			tSigmaUp= tResidueUp= tSigmaSh= tResidueSh= tPLUQ= tPerm =0.;
 #endif
 
 			std::vector<size_t> triv_column(m,0);

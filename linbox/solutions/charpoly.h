@@ -285,7 +285,7 @@ namespace LinBox
 		IntegerModularCharpoly<Matrix, Method> iteration(A, M);
 		cra.operator() (P, iteration, genprime);
 		commentator().stop ("done", NULL, "IbbCharpoly");
-#ifdef _LB_CRATIMING
+#ifdef __LB_CRA_TIMING__
         cra.reportTimes(std::clog) << std::endl;
 #endif
 		return P;

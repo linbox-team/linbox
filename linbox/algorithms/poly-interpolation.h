@@ -2,7 +2,7 @@
 #define __LINBOX_POLY_INTERPOLATION_H
 
 
-#ifdef __LINBOX_HAVE_OPENMP
+#ifdef __LINBOX_USE_OPENMP
 #include <omp.h>
 #endif
 

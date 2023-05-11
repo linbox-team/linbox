@@ -154,7 +154,7 @@ void makeSNFExample(DenseMatrix<PIR>& A,
 #ifndef DISABLE_COMMENTATOR
         commentator().report(LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
 #else
-        std::clog
+        std::clog;
 #endif
 ;
 
