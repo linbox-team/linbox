@@ -84,13 +84,13 @@ double bench_one (const PolMatMulDomain &PMMD, unsigned int m, unsigned int n,
     size_t cnt;
     double time;
     typename PolMatType::Field::RandIter G(PMMD.field(), seed);
-    
+
     PolMatType M(PMMD.field(),m,n,d), N(PMMD.field(),n,k,d);
     PolMatType R(PMMD.field(),m,k,2*d-1);
 
     M.random(G);
     N.random(G);
-    
+
     chrono.start();
     for (cnt = 0; chrono.realElapsedTime() < 1 ; cnt++)
         PMMD.mul (R, M, N);
@@ -221,6 +221,8 @@ int main (int argc, char* argv[]) {
     /* TODO: does not compile */
     //bench_one_modular_implem_fft<ModularExtended, double> (bits, m, n, k, d, seed);
 
+/* No 16 bits, nor 32 bits, fflas bindings for 512 SIMD */
+#ifndef __FFLASFFPACK_HAVE_AVX512DQ_INSTRUCTIONS
     /* Bench with Modular<uint16_t,uint32_t> */
     bench_one_modular_implem_fft<Modular, uint16_t, uint32_t> (bits, m, n, k, d, seed);
 
@@ -229,6 +231,7 @@ int main (int argc, char* argv[]) {
 
     /* Bench with Modular<uint32_t, uint64_t> */
     bench_one_modular_implem_fft<Modular, uint32_t, uint64_t> (bits, m, n, k, d, seed);
+#endif
 
     /* Bench with Modular<uint64_t> */
     bench_one_modular_implem_fft<Modular, uint64_t> (bits, m, n, k, d, seed);
@@ -239,7 +242,7 @@ int main (int argc, char* argv[]) {
 #endif
 
     return 0;
-} 
+}
 
 // Local Variables:
 // mode: C++
