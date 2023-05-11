@@ -22,9 +22,9 @@
  * ========LICENCE========
  */
 
-#ifdef HAVE_OPENMP
+#include <linbox/linbox-config.h>
+#ifdef __LINBOX_USE_OPENMP
 #include <omp.h>
-#define GIVARO_USES_OMP
 #include <givaro/givtimer.h>
 #define gettime realtime
 typedef Givaro::OMPTimer myTimer;

@@ -30,20 +30,6 @@
 #define INTFFT_TIMING
 #endif
 
-
-#ifdef HAVE_OPENMP
-#include <omp.h>
-#define GIVARO_USES_OMP
-#include <givaro/givtimer.h>
-#define gettime realtime
-typedef Givaro::OMPTimer myTimer;
-#else
-#include <givaro/givtimer.h>
-#define gettime usertime
-typedef Givaro::Timer myTimer;
-#endif
-
-
 #include <functional>
 #include <iostream>
 #include <vector>

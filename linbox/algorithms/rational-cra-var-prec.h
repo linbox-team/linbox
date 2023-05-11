@@ -592,7 +592,7 @@ namespace LinBox
 		}
 
 
-#ifdef _LB_CRATIMING
+#ifdef __LB_CRA_REPORTING__
 		std::ostream& reportTimes(std::ostream& os)
 		{
 			//Builder_.reportTimes(os);
