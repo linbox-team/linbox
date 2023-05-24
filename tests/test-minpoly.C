@@ -163,7 +163,7 @@ static bool testNilpotentMinpoly (Field &F, size_t n, const Meth& M)
 
 	commentator().start ("Testing nilpotent minpoly", "testNilpotentMinpoly");
 
-	bool ret;
+	bool ret = false;
 	bool lowerTermsCorrect = true;
 
 	size_t i;
@@ -179,18 +179,33 @@ static bool testNilpotentMinpoly (Field &F, size_t n, const Meth& M)
 
 	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
-	for (i = 0; i < n - 1; i++)
-		if (!F.isZero (phi[i]))
-			lowerTermsCorrect = false;
-
-	if (phi.size () == n + 1 && F.isOne (phi[n]) && lowerTermsCorrect)
-		ret = true;
-	else {
-		ret = false;
-		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+    if (phi.size()) { // Minimal polynomial cannot be zero
+        size_t d(phi.size()-1);
+        for (i = 0; i < d; i++)
+            if (!F.isZero (phi[i]))
+                lowerTermsCorrect = false;
+        if (F.isOne (phi[d]) && lowerTermsCorrect) {
+                // Returned polynomial is a divisor of X^n
+            if (d == n) {
+                ret = true;
+            } else {
+                if (! std::is_same<Meth, Method::Elimination>::value) {
+					// Blackbox probabilistic methods could return only a divisor
+                    ret = true;
+                    commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_WARNING)
+                        << "Warning: A^n = 0, should get x^" << n 
+                        <<", got only a divisor: ";
+                    printPolynomial (F, report, phi);
+                }
+            }
+        }
+    }
+    
+    if (! ret) {
+        commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: A^n = 0, should get x^" << n <<", got ";
 		printPolynomial (F, report, phi);
-	}
+    }
 
 	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testNilpotentMinpoly");
 
@@ -384,7 +399,7 @@ bool run_with_field(integer q, int e, uint64_t b, size_t n, int iter, int numVec
         typedef typename SparseMatrix<Field>::Row SparseVector;
         typedef DenseVector<Field> DenseVector;
         RandomDenseStream<Field, DenseVector, typename Field::NonZeroRandIter> zv_stream (*F, NzG, n, numVectors);
-        RandomSparseStream<Field, SparseVector, typename Field::NonZeroRandIter > zA_stream (*F, NzG, (double) k / (double) n, n, n);
+        RandomSparseStream<Field, SparseVector, typename Field::NonZeroRandIter > zA_stream (*F, NzG, (double) k / (double) n, n, n, seed);
 
         ok &= testRandomMinpoly    (*F, iter, zA_stream, zv_stream, Method::Auto());
         ok &= testRandomMinpoly    (*F, iter, zA_stream, zv_stream, Method::Elimination());
@@ -438,9 +453,9 @@ int main (int argc, char **argv)
 
 
 	parseArguments (argc, argv, args);
-	commentator().getMessageClass (TIMING_MEASURE).setMaxDepth (10);
-	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
-	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+// 	commentator().getMessageClass (TIMING_MEASURE).setMaxDepth (10);
+// 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
+// 	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
     commentator().start ("Testing suite for minpoly", "testMinpoly", 1);
     

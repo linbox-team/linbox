@@ -396,6 +396,8 @@ namespace LinBox
 
     void Commentator::setReportStream (std::ostream &stream)
     {
+        std::clog << "COMMENTATOR activated." << std::endl;
+
         setMessageClassStream (BRIEF_REPORT,      stream);
         setMessageClassStream (PROGRESS_REPORT,      stream);
         setMessageClassStream (TIMING_MEASURE,       stream);
