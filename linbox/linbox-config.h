@@ -35,10 +35,12 @@
 #  ifndef __LINBOX_USE_OPENMP
 #    define __LINBOX_USE_OPENMP 1
 #  endif
+#if 0
 // commentator is not thread safe
 #  ifndef DISABLE_COMMENTATOR
 #    define DISABLE_COMMENTATOR
 #  endif
+#endif
 #endif
 
 
