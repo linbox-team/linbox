@@ -933,8 +933,7 @@ namespace LinBox
             inline void setBriefReportStream (std::ostream &)
             {}
             inline void setReportStream (std::ostream &)
-            {         std::clog << "COMMENTATOR DISABLED." << std::endl;
- }
+            {}
             inline void setMessageClassStream (const char *, std::ostream &)
             {}
             inline void setDefaultReportFile (const char *)
@@ -1016,7 +1015,6 @@ namespace LinBox
             for (int i = 1; i < argc; ++i) {
                 if (argv[i][0] == '-') {
                     if (argv[i][1] == 0) {
-                        std::clog << "COMMENTATOR: std::cout." << std::endl;
                         LinBox::commentator().setReportStream (std::cout);
                         LinBox::commentator().setBriefReportStream (std::cout);
                     } else {
@@ -1028,7 +1026,6 @@ namespace LinBox
                         }
                     }
                 } else {
-                    std::clog << "COMMENTATOR: " << argv[i] << std::endl;
                     LinBox::commentator().setDefaultReportFile (argv[i]);
                     LinBox::commentator().setBriefReportStream(std::cout);
                 }
