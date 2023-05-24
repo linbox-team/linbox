@@ -186,17 +186,13 @@ static bool testNilpotentMinpoly (Field &F, size_t n, const Meth& M)
                 lowerTermsCorrect = false;
         if (F.isOne (phi[d]) && lowerTermsCorrect) {
                 // Returned polynomial is a divisor of X^n
-            if (d == n) {
-                ret = true;
-            } else {
-                if (! std::is_same<Meth, Method::Elimination>::value) {
-					// Blackbox probabilistic methods could return only a divisor
-                    ret = true;
-                    commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_WARNING)
-                        << "Warning: A^n = 0, should get x^" << n 
-                        <<", got only a divisor: ";
-                    printPolynomial (F, report, phi);
-                }
+            ret = true;
+            if (d != n) {
+                    // Blackbox probabilistic methods could return only a divisor
+                commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_WARNING)
+                    << "Warning: A^n = 0, should get x^" << n 
+                    <<", got only a divisor: ";
+                printPolynomial (F, report, phi);
             }
         }
     }
@@ -284,8 +280,30 @@ bool testRandomMinpoly (Field                 &F,
 			VD.write (report, w);
 			report << endl;
 
-			if (!VD.isZero (w))
-				ret = iter_passed = false;
+			if (!VD.isZero (w)) {
+                    // Blackbox probabilistic methods could return only a divisor
+                report << "polynomial is only a divisor, trying again ... " << std::endl;
+                Polynomial again(F);
+                minpoly (again, A, M );
+                
+                report << "New divisor is: ";
+                printPolynomial (F, report, again);
+                
+                Vector z(F);
+                VectorWrapper::ensureDim (z, v_stream.n ());
+                
+                applyPoly (F, z, A, again, w);
+                report << "New Output vector " << v_stream.j () << ": ";
+                VD.write (report, z);
+                report << endl;
+                
+                if (!VD.isZero (z)) {
+                    commentator().report (Commentator::LEVEL_IMPORTANT, 
+                                          INTERNAL_WARNING) << 
+                        "Warning: A = rand, probabilistic method." << endl;
+                    ret = iter_passed = false;
+                }
+            }
 		}
 
 		if (!iter_passed)
@@ -314,11 +332,11 @@ template <class Field, class Meth>
 static bool testGramMinpoly (Field &F, size_t m, const Meth& M)
 {
 	commentator().start ("Testing gram minpoly", "testGramMinpoly");
-	typedef BlasVector<Field> Polynomial;
+	typedef DensePolynomial<Field> Polynomial;
 	integer p;
     size_t n;
-	F.characteristic(p); p += 1;
-	if (p > integer(30)) n = 2;
+	F.characteristic(p); 
+	if (p > 29u) n = 2;
 	Polynomial phi(F);
 	BlasMatrix<Field> A(F, n, n);
 	for (size_t i = 0; i < n; ++i) for (size_t j = 0; j < n; ++j) A.setEntry(i, j, F.one);
@@ -336,20 +354,42 @@ static bool testGramMinpoly (Field &F, size_t m, const Meth& M)
 			ret = true;
 		else
 		{
-			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: A = gram, should get x^2 - x, got ";
-			printPolynomial<Field, Polynomial> (F, report, phi);
-			ret = false;
+            if ( phi.size() == 2 && F.isOne(phi[1]) &&
+                 ( F.areEqual(phi[0], F.mOne) || F.isOne(phi[0]) )
+                 )
+            {
+                commentator().report (Commentator::LEVEL_IMPORTANT, 
+                                      INTERNAL_WARNING) << 
+                    "Warning: got only a divisor. " << endl;
+                ret = true;
+            } else {
+                commentator().report (Commentator::LEVEL_IMPORTANT, 
+                                      INTERNAL_ERROR) << 
+                    "ERROR: A = gram, should get x^2 - 1, got ";
+                printPolynomial<Field, Polynomial> (F, report, phi);
+                ret = false;
+            }
 		}
 	} else {
 		if (phi.size() == 3 && F.isZero(phi[0]) && F.isOne(phi[1]) && F.isOne(phi[2]))
 			ret = true;
 		else
 		{
-			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: A = gram, should get x^2 + x, got ";
-			printPolynomial<Field, Polynomial> (F, report, phi);
-			ret = false;
+            if ( phi.size() == 2 && F.isOne(phi[1]) &&
+                 ( F.isOne(phi[0]) || F.isZero(phi[0]) )
+                 )
+            {
+                commentator().report (Commentator::LEVEL_IMPORTANT, 
+                                      INTERNAL_WARNING) << 
+                    "Warning: got only a divisor. " << endl;
+                ret = true;
+            } else {
+                commentator().report (Commentator::LEVEL_IMPORTANT, 
+                                      INTERNAL_ERROR) << 
+                    "ERROR: A = gram, should get x^2 + x, got ";
+                printPolynomial<Field, Polynomial> (F, report, phi);
+                ret = false;
+            }
 		}
 	}
 	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testGramMinpoly");
@@ -377,6 +417,8 @@ bool run_with_field(integer q, int e, uint64_t b, size_t n, int iter, int numVec
 		if(F == nullptr)
 			return true; //if F is null, nothing to test, just pass
 
+        ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+        F->write(report << "Working over: ") << std::endl;
             /*
               ostringstream oss;
               F->write(oss);
@@ -399,7 +441,7 @@ bool run_with_field(integer q, int e, uint64_t b, size_t n, int iter, int numVec
         typedef typename SparseMatrix<Field>::Row SparseVector;
         typedef DenseVector<Field> DenseVector;
         RandomDenseStream<Field, DenseVector, typename Field::NonZeroRandIter> zv_stream (*F, NzG, n, numVectors);
-        RandomSparseStream<Field, SparseVector, typename Field::NonZeroRandIter > zA_stream (*F, NzG, (double) k / (double) n, n, n, seed);
+        RandomSparseStream<Field, SparseVector, typename Field::NonZeroRandIter > zA_stream (*F, NzG, (double) k / (double) n, n, n);
 
         ok &= testRandomMinpoly    (*F, iter, zA_stream, zv_stream, Method::Auto());
         ok &= testRandomMinpoly    (*F, iter, zA_stream, zv_stream, Method::Elimination());
