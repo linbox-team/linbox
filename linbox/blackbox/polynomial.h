@@ -288,10 +288,11 @@ namespace LinBox
 		PolynomialBBOwner (const PolynomialBB<_BBt, _Polt> &Mat, const Field& F) :
                                 _VD(F),
                                 _A_data(*(Mat.getBlackbox()), F),
-                                _P_data(F)
+                                _P_data(*(Mat.getPolynomial()), F)
 		{
-			typename _BBt::template rebind<Field>()(_A_data, *(Mat.getBlackbox()));
-			typename _Polt::template rebind<Field>()(_P_data, *(Mat.getPolynomial()));
+            // Not needed anymore, rebind is done by constructor with other F
+// 			typename _BBt::template rebind<Field>()(_A_data, *(Mat.getBlackbox()));
+// 			typename _Polt::template rebind<Field>()(_P_data, *(Mat.getPolynomial()));
 		}
 
 		template<typename _BBt, typename _Polt, typename Field>
@@ -299,8 +300,9 @@ namespace LinBox
 			_A_data(Mat.getDataBlackbox(), F),
 			_P_data(Mat.getDataPolynomial(), F)
 		{
-			typename _BBt::template rebind<Field>()(_A_data, Mat.getDataBlackbox(), F);
-			typename _Polt::template rebind<Field>()(_P_data, Mat.getDataPolynomial(), F);
+            // Not needed anymore, rebind is done by constructor with other F
+// 			typename _BBt::template rebind<Field>()(_A_data, Mat.getDataBlackbox(), F);
+// 			typename _Polt::template rebind<Field>()(_P_data, Mat.getDataPolynomial(), F);
 		}
 
 
