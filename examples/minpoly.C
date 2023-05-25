@@ -82,7 +82,7 @@ int main (int argc, char **argv)
 
 	if (argc != 3) {
         LinBox::Timer chrono;
-        Method::Wiedemann M;
+        Method::Auto M;
 
 		Givaro::ZRing<Integer> ZZ;
 		DensePolynomial<Givaro::ZRing<Integer> > m_A(ZZ);
@@ -136,7 +136,7 @@ int main (int argc, char **argv)
 		double q = atof(argv[2]);
 		Field F(q);
 		SparseMatrix<Field> B (F);
-        Method::Wiedemann M;
+        Method::Auto M;
 		B.read (input);
 		cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
 
