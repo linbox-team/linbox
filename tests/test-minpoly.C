@@ -291,7 +291,8 @@ bool testRandomMinpoly (Field                 &F,
                     // Blackbox probabilistic methods could return only a divisor
                 report << "polynomial is only a divisor, trying divisibility ... " << std::endl;
                 Polynomial psi(F);
-                charpoly (psi, A, Method::DenseElimination() );
+                Method::DenseElimination dem; dem.certifyInconsistency=true;
+                charpoly (psi, A, dem );
 
                 report << "Charpoly is: ";
                 printPolynomial (F, report, psi);
