@@ -552,11 +552,13 @@ namespace LinBox
 					if (uf_it == sols.end())
 						std::cerr<<"FAIL:: No solutions found in recursive seach"<<std::endl;
 				} // At this point, uf_it points on the good solution
-				// update with the good multiplicities
-				typename FactPoly::iterator it_f = firstUnknowFactor;
-				typename std::vector<FactorMult<FieldPoly,IntPoly> >::iterator it_fm = (*uf_it).begin();
-				for (; it_f != factCharPoly.end(); ++it_f, ++it_fm)
-					it_f->second->multiplicity = it_fm->multiplicity;
+				if (sols.size()>0) {
+                        // update with the good multiplicities
+                    typename FactPoly::iterator it_f = firstUnknowFactor;
+                    typename std::vector<FactorMult<FieldPoly,IntPoly> >::iterator it_fm = uf_it->begin();
+                    for (; it_f != factCharPoly.end(); ++it_f, ++it_fm)
+                        it_f->second->multiplicity = it_fm->multiplicity;
+                }
 			}
 		}
 
