@@ -166,6 +166,7 @@ static bool testNilpotentMinpoly (Field &F, size_t n, const Meth& M)
 	typedef typename Blackbox::Row Row;
 
 	commentator().start ("Testing nilpotent minpoly", "testNilpotentMinpoly");
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 	bool ret = false;
 	bool lowerTermsCorrect = true;
@@ -177,11 +178,13 @@ static bool testNilpotentMinpoly (Field &F, size_t n, const Meth& M)
 	stream.next (v);
 	Blackbox A (F, stream); // first subdiagonal is 1's.
 
+    report << "Matrix:" << endl;
+    A.write (report, Tag::FileFormat::Maple);
+
 	Polynomial phi(F);
 
 	minpoly (phi, A, M);
 
-	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
     if (phi.size()) { // Minimal polynomial cannot be zero
         size_t d(phi.size()-1);

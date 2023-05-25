@@ -66,7 +66,7 @@ int main (int argc, char **argv)
 {
 	commentator().setMaxDetailLevel (-1);
 	commentator().setMaxDepth (-1);
-	commentator().setReportStream (std::cerr);
+	commentator().setReportStream (std::clog);
 
 	int a = argc;
 	while(a--){
@@ -81,10 +81,8 @@ int main (int argc, char **argv)
 	if (!input) { cerr << "Error opening matrix file " << argv[1] << endl; return -1; }
 
 	if (argc != 3) {
-		int process = 0;
-
         LinBox::Timer chrono;
-        Method::Blackbox M;
+        Method::Wiedemann M;
 
 		Givaro::ZRing<Integer> ZZ;
 		DensePolynomial<Givaro::ZRing<Integer> > m_A(ZZ);
@@ -138,11 +136,12 @@ int main (int argc, char **argv)
 		double q = atof(argv[2]);
 		Field F(q);
 		SparseMatrix<Field> B (F);
+        Method::Wiedemann M;
 		B.read (input);
 		cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
 
 		DensePolynomial<Field> m_B(F);
-		minpoly (m_B, B);
+		minpoly (m_B, B, M);
 
 		cout << "Minimal Polynomial is ";
 		printPolynomial (std::cout, F, m_B) << std::endl;
