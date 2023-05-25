@@ -246,7 +246,9 @@ bool testRandomCharpoly (Field                 &F,
 
     Polynomial phi(F);
 
-	charpoly (phi, A);
+    Method::Auto autm; autm.certifyInconsistency=true;
+
+	charpoly (phi, A, autm);
 
 	report << "characteristic polynomial is: ";
 	printPolynomial (F, report, phi);
@@ -270,19 +272,22 @@ bool testRandomCharpoly (Field                 &F,
 		LinBox::commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: Output vector was incorrect" << endl;
 
-    typedef PolynomialRing<Field> PolyDom;
+    typedef PolynomialRing<Field> PolyDom; PolyDom PolDom(F,'X');
+
     Polynomial psi(F);
 
-	charpoly (psi, A, Method::Blackbox() );
+    Method::Blackbox meth; meth.certifyInconsistency=true;
 
-    ret = ret && PolyDom(F).areEqual(phi, psi);
+	charpoly (psi, A, meth );
+
+    ret = ret && PolDom.areEqual(phi, psi);
 
 	if (!ret) {
 		LinBox::commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: Auto charpoly differs from BB charpoly" << endl;
 
-        PolyDom(F).write(report << "phi: ", phi) << std::endl;
-        PolyDom(F).write(report << "psi: ", psi) << std::endl;
+        PolDom.write(report << "phi: ", phi) << std::endl;
+        PolDom.write(report << "psi: ", psi) << std::endl;
     }
 
 
