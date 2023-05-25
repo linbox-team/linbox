@@ -52,19 +52,30 @@ namespace LinBox
 	struct CRABuilderEarlyMultip : public CRABuilderEarlySingle<Domain_Type>, public CRABuilderFullMultip<Domain_Type> {
 		typedef Domain_Type			Domain;
 		typedef typename Domain::Element DomainElement;
-		typedef CRABuilderEarlyMultip<Domain> 		Self_t;
+		typedef CRABuilderEarlyMultip<Domain>		Self_t;
 
 	protected:
 		// Random coefficients for a linear combination
 		// of the elements to be reconstructed
-		std::vector< size_t >      	randv;
+		std::vector< size_t >	randv;
 
 		Integer& result(Integer &d) { std::cout << "should not be called" << std::endl; return d ;} ; // DON'T TOUCH
 	public:
 
+        friend std::ostream& operator<< (std::ostream& out, const Self_t& cra) {
+            std::ostringstream report;
+            report << "CRA Builder: "
+                   << "[EarlyTerminated] [MultipleReconstructions]";
+            return out << report.str();
+        }
+
 		CRABuilderEarlyMultip(const size_t EARLY=LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD) :
 			CRABuilderEarlySingle<Domain>(EARLY), CRABuilderFullMultip<Domain>()
-		{}
+		{
+#if __LB_CRA_REPORTING__
+            std::clog << *this << std::endl;
+#endif
+        }
 
 		Integer& getModulus(Integer& m)
 		{

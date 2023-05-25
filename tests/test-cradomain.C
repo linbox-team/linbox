@@ -314,7 +314,7 @@ bool TestCra(size_t N, int S, size_t seed)
 
 
 	// XXX fixed prime set doesn't work with openmp version
-#ifndef LINBOX_USES_OPENMP
+#ifndef __LINBOX_USE_OPENMP
         IntVect PrimeSet(Z,0);
         double PrimeSize = 0.0;
         for( ; PrimeSize < (iterationIt.getLogSize()+1); ++genprime ) {

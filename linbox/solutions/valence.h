@@ -120,17 +120,18 @@ namespace LinBox
 		IterationResult operator()(typename Field::Element& v, const Field& F) const
 		{
 			commentator().start ("Givaro::Modular Valence", "Mvalence");
-// 			std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-// 			F.write(report) << std::endl;
-			typedef typename Blackbox::template rebind<Field>::other FBlackbox;
-// 			report << typeid(A).name() << ", A is: " << A.rowdim() << 'x' << A.coldim() << std::endl;
+//             std::ostream& report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+//             std::ostream& report = std::clog;
+//             F.write(report) << std::endl;
+
+            typedef typename Blackbox::template rebind<Field>::other FBlackbox;
+//             report << typeid(A).name() << ", A is: " << A.rowdim() << 'x' << A.coldim() << std::endl;
 
 			FBlackbox Ap(A, F);
-
-// 			report << typeid(Ap).name() << ", Ap is: " << Ap.rowdim() << 'x' << Ap.coldim() << std::endl;
+//             report << typeid(Ap).name() << ", Ap is: " << Ap.rowdim() << 'x' << Ap.coldim() << std::endl;
 
 			valence( v, Ap, M);
-// 			F.write( F.write(report << "one valence: ", v) << " mod " ) << std::endl;;
+//             F.write( F.write(report << "one valence: ", v) << " mod " ) << std::endl;;
 			commentator().stop ("done", NULL, "Mvalence");
 			return IterationResult::CONTINUE;
 		}
@@ -148,7 +149,7 @@ namespace LinBox
 #else
 		typedef Givaro::ModularBalanced<double> Field;
 #endif
-                PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.rowdim()));
+        PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.rowdim()));
 		ChineseRemainder< CRABuilderEarlySingle<Field> > cra(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD);
 
 		IntegerModularValence<Blackbox,MyMethod> iteration(A, M);
@@ -164,8 +165,8 @@ namespace LinBox
         const Blackbox						&A,
         size_t method=0) {
             // method:	0 is automatic
-            // 			1 is aat
-            // 			2 is ata
+            //			1 is aat
+            //			2 is ata
 
         if (A.rowdim() == A.coldim()) {
             return valence(val_A, A);

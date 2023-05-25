@@ -82,8 +82,7 @@ namespace LinBox {
 #include "linbox/matrix/sparsematrix/sparse-map-map-matrix.h"
 
 #include "linbox/matrix/sparsematrix/sparse-tpl-matrix.h"
-// #ifdef __LINBOX_USES_OPENMP
-#ifdef _OPENMP
+#ifdef __LINBOX_USE_OPENMP
 #include "linbox/matrix/sparsematrix/sparse-tpl-matrix-omp.h"
 #endif
 

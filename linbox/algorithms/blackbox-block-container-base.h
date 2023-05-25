@@ -32,13 +32,14 @@
 #ifndef __LINBOX_blackbox_block_container_base_H
 #define __LINBOX_blackbox_block_container_base_H
 
-#include <time.h> // for seeding
-#include <algorithm>
-#ifdef _OPENMP
+#include "linbox/linbox-config.h"
+#ifdef __LINBOX_USE_OPENMP
 #include <omp.h>
 #endif
 
-#include "linbox/linbox-config.h"
+#include <time.h> // for seeding
+#include <algorithm>
+
 #include "linbox/util/debug.h"
 #include "linbox/blackbox/archetype.h"
 #include "linbox/blackbox/blockbb.h"

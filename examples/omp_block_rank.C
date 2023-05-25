@@ -43,12 +43,7 @@
  * @brief Block Wiedemann Rank with OpenMP
  */
 
-#ifndef __GIVARO_USE_OPENMP
-#define __GIVARO_USE_OPENMP
-#endif
-
 #include <linbox/linbox-config.h>
-
 
 #include <iostream>
 #include <fstream>
@@ -57,7 +52,6 @@
 #include <givaro/givtimer.h>
 #include <givaro/givpoly1crt.h>
 #include <linbox/integer.h>
-
 
 #ifndef __LINBOX_USE_OPENMP
 #error "you have to compile this example with openmp enabled"
@@ -85,7 +79,7 @@ FFTSeeder  FFTgenerator;
 #include <linbox/solutions/rank.h>
 #include <linbox/solutions/trace.h>
 #include <linbox/util/matrix-stream.h>
-#include <linbox/algorithms/sigma-basis.h>
+#include <linbox/algorithms/polynomial-matrix/order-basis.h>
 #include <linbox/algorithms/block-massey-domain.h>
 
 template<class Field>
@@ -376,7 +370,7 @@ int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
 	}
 
 
-	LinBox::SigmaBasis<Field> SB(F, Serie);
+	LinBox::OrderBasis<Field> SB(F, Serie);
 	std::cerr<<"blockminpoly computation... ";
 	SB.PM_Basis(Sigma, Serie, d-1, defect);
 	std::cerr<<"done\n";
