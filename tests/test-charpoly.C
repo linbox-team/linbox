@@ -159,7 +159,7 @@ static bool testNilpotentCharpoly (Field &F, size_t n)
 
 	ostream &who = LinBox::commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 	who << "Matrix:" << endl;
-	A.write (who, Tag::FileFormat::Pretty);
+	A.write (who, Tag::FileFormat::Maple);
 
         Polynomial phi(F);
 
@@ -242,7 +242,7 @@ bool testRandomCharpoly (Field                 &F,
 
 	ostream &report = LinBox::commentator().report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Matrix:" << endl;
-	A.write (report, Tag::FileFormat::Pretty);
+	A.write (report, Tag::FileFormat::Maple);
 
     Polynomial phi(F);
 
