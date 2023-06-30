@@ -1,5 +1,5 @@
 /* tests/test-rank.h
- * Time-stamp: <08 Aug 14 07:36:49 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <10 May 23 18:18:21 Jean-Guillaume.Dumas@imag.fr>
  * -----------------------------------------------------
  *
  * ========LICENCE========
@@ -191,8 +191,8 @@ bool testRankMethodsGF2(const GF2& F2, size_t n, unsigned int iterations, double
 		}
 
 		F2.write( commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)) << endl;
-		B.write( commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION),Tag::FileFormat::Guillaume ) << endl;
-		A.write( commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION),Tag::FileFormat::Guillaume ) << endl;
+		B.write( commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION),Tag::FileFormat::SMS ) << endl;
+		A.write( commentator().report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION),Tag::FileFormat::SMS ) << endl;
 
 
 		LinBox::rank (rank_blackbox, A, Method::Blackbox ());

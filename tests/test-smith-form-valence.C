@@ -25,7 +25,6 @@
  * @ingroup tests
  * @brief testing Msith Form computations via the Valence algorithm
  */
-
 #include <linbox/linbox-config.h>
 #include <linbox/solutions/smith-form.h>
 #include <linbox/algorithms/smith-form-valence.h>

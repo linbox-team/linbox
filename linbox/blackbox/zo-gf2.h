@@ -1,7 +1,7 @@
 /* linbox/blackbox/zo-gf2.h
  * Copyright (C) 2009,2010 The LinBox group
  *
- * Time-stamp: <04 Dec 17 11:25:43 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <10 May 23 18:18:43 Jean-Guillaume.Dumas@imag.fr>
  *
  *
  * ========LICENCE========
@@ -119,7 +119,7 @@ namespace LinBox
 		 *  @return Reference to input stream
 		 */
 		std::istream &read (std::istream &is) ;
-		std::ostream& write (std::ostream& out, Tag::FileFormat format=Tag::FileFormat::Guillaume) const ;
+		std::ostream& write (std::ostream& out, Tag::FileFormat format=Tag::FileFormat::SMS) const ;
 
 		const Field& field() const { return *_field; }
 
