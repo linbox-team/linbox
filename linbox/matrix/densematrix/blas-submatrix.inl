@@ -311,10 +311,10 @@ namespace LinBox {
                 os << '>';
             }
             break;
-        case (Tag::FileFormat::Guillaume) : /*  sms format */
+        case (Tag::FileFormat::SMS) : /*  sms format */
             {
 
-                os << rowdim() << ' ' << coldim() << " M\n" ;
+                os << rowdim() << ' ' << coldim() << ' ' << (field().cardinality()==0?'R':'M') << std::endl ;
                 size_t i(0);
                 for (p = rowBegin (); p != rowEnd (); ++i,++p) {
                     typename ConstRow::const_iterator pe;
