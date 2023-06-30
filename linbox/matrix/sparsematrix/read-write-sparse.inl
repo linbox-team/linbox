@@ -57,7 +57,7 @@ namespace LinBox {
 #endif
 
 	template<class Matrix>
-	std::istream &SparseMatrixReadHelper<Matrix>::readGuillaume (Matrix &A, std::istream &is
+	std::istream &SparseMatrixReadHelper<Matrix>::readSMS (Matrix &A, std::istream &is
 								     , char *buf)
 	{
 		typedef typename Matrix::Field::Element Element;
@@ -76,7 +76,7 @@ namespace LinBox {
 				throw Exceptions::InvalidMatrixInput ();
 			A.field().read (is, x);
 			if (! A.field().isZero(x)) // this is probably tested in setEntry (hopefully)
-			       	A.appendEntry (i - 1, j - 1, x);
+				A.appendEntry (i - 1, j - 1, x);
 		}
 
 		A.finalize();
@@ -483,8 +483,8 @@ namespace LinBox {
 				else if (std::isdigit (c)) {
 					do str >> c; while (str && (isspace (c) || std::isdigit (c)));
 
-					if (c == 'M')
-						return readGuillaume (A, is, buf);
+					if ((c == 'M') || (c == 'R'))
+						return readSMS (A, is, buf);
 					// else return readTurner (A, is, buf);
 				}
 				else {
@@ -497,8 +497,8 @@ namespace LinBox {
 			}
 
 			// case Tag::FileFormat::Turner:  return readTurner (A, is, buf);
-		case Tag::FileFormat::Guillaume:
-			return readGuillaume (A, is, buf);
+		case Tag::FileFormat::SMS:
+			return readSMS (A, is, buf);
 		case Tag::FileFormat::Matlab:
 			return readMatlab (A, is, buf);
 		case Tag::FileFormat::Pretty:
@@ -536,10 +536,11 @@ namespace LinBox {
 		case Tag::FileFormat::OneBased:
 			return writeTriple(A,os,typename MatrixTraits<Matrix>::MatrixCategory (),true);
 
-		case Tag::FileFormat::Guillaume:
-			// row col 'M' header line followed by the i j v triples, one based,
-			// followed by 0 0 0.
-			os << A.rowdim() << ' ' << A.coldim() << " M" << std::endl;
+		case Tag::FileFormat::SMS:
+                // row col 'M'/'R' header line
+                // followed by the i j v triples, one based,
+                // followed by 0 0 0.
+			os << A.rowdim() << ' ' << A.coldim() << ' ' << (A.field().cardinality()==0?'R':'M') << std::endl;
 			writeTriple(A,os,typename MatrixTraits<Matrix>::MatrixCategory (),true);
 			os << "0 0 0" << std::endl;
 
