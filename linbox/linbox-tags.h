@@ -88,7 +88,7 @@ namespace LinBox
 			HTML  = 2,
 			LaTeX = 3,
 			Detect,
-			Guillaume,
+			SMS,
 			Turner,
 			Matlab,
 			Pretty,

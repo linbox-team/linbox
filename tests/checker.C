@@ -132,6 +132,7 @@ int main(int argc, char* argv[]) {
 //	ntl_tests.insert("test-smith-form-iliopoulos");
 	ntl_tests.insert("test-polynomial-local-x");
 	ntl_tests.insert("test-weak-popov-form");
+	ntl_tests.insert("test-frobenius-leading-invariants");
 	ntl_tests.insert("test-frobenius-large");
 	ntl_tests.insert("test-invariant-factors");
 	ntl_tests.insert("test-frobenius-small");
