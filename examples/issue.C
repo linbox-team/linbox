@@ -45,33 +45,29 @@ std::ostream& prettyprintIntPoly (std::ostream& out, const Field &F, const Polyn
 	return out;
 }
 
-typedef Givaro::ZRing<Givaro::Integer> CoeffDomain;
+typedef Givaro::ZRing<Givaro::Integer> Z_Domain;
 //typedef Givaro::Modular<double> CoeffDomain;
 
 int main()
 {
-	clog << "***********   ICI " << endl;
 
     ifstream input("issue_sage_35846_matrix.sms");
 
-	clog << "***********   ICI " << endl;
 
-    CoeffDomain R;   // <-- integer
+    Z_Domain Z;   // <-- integer
     //CoeffDomain R(CoeffDomain::maxCardinality()); // <-- modular
-    BlasMatrix<CoeffDomain> mat(R);
+    BlasMatrix<Z_Domain> mat(Z);
     mat.read(input);
 
-    mat.write(cerr<<"LinBox::Echelon = "<<endl)<<endl;
+  
 
-	clog << "***********   ICI " << endl;
 
-    DensePolynomial<CoeffDomain> cp(R);
+    DensePolynomial<Z_Domain> cp(Z);
     charpoly(cp, mat);
 
-	cerr << "***********   ICI " << endl;
 
     clog << "Characteristic Polynomial is ";
-    prettyprintIntPoly(clog, R, cp) << endl;
+    prettyprintIntPoly(clog, Z, cp) << endl;
 
     return 0;
 }

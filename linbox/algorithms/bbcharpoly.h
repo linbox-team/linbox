@@ -173,6 +173,7 @@ namespace LinBox
 
 			IntPolyDom IPD(intRing);
 
+std::cout << "****************************" << std::endl; 
 			/* Computation of the integer minimal polynomial */
 			Polynomial intMinPoly(intRing);
 			minpoly (intMinPoly, A, M);

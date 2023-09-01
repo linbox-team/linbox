@@ -383,6 +383,7 @@ namespace LinBox
         typename Matrix::Field::RandIter G(A.field());
         typename Givaro::Poly1Dom< typename Matrix::Field> PolDom(A.field());
         FFPACK::CharPoly (PolDom, P, n, A.getPointer(), A.getStride(), G);
+        std::cerr << std::endl << "++++++++++++++++=" << std::endl << std::endl;   // GV 
 		return P;
 	}
 

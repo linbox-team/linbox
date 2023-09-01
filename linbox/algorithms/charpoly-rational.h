@@ -162,7 +162,6 @@ namespace LinBox
 								const BlasMatrix<Rationals > &A,
 								const MyMethod &Met=  Method::Auto())
 	{
-
 		typedef typename Rationals::Element Quotient;
 
 		commentator().start ("Rational Charpoly", "Rminpoly");

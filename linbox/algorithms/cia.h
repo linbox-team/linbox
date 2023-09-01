@@ -60,7 +60,7 @@ namespace LinBox
 		typedef typename IntPolyDom::Element IntPoly;
 		typedef typename FieldPolyDom::Element FieldPoly;
 
-		IntPolyDom IPD(ZZ);
+		IntPolyDom IPD(ZZ); 
 
 		/* Computation of the integer minimal polynomial */
 		IntPoly intMinPoly(ZZ);

@@ -91,7 +91,7 @@ namespace LinBox
                               const RingCategories::ModularTag & tag,
                               const Method::Auto             & M)
 	{
-		//return charpoly(P, A, tag, Method::Blackbox(M));
+		//return charpoly(P, A, tag, Method::Blackbox(M));  
 		return charpoly(P, A, tag, Method::DenseElimination(M));
 	}
 
@@ -142,9 +142,9 @@ namespace LinBox
                           const RingCategories::ModularTag & tag,
                           const Method::DenseElimination    & M)
 	{
+		std::cerr << std::endl << "******************************" << std::endl << std::endl;
 		if (A.coldim() != A.rowdim())
 			throw LinboxError("LinBox ERROR: matrix must be square for characteristic polynomial computation\n");
-
 		BlasMatrix< typename Blackbox::Field >     BBB (A);
 		BlasMatrixDomain< typename Blackbox::Field > BMD (BBB.field());
                     //BlasVector<typename Blackbox::Field,Polynomial> P2(A.field(),P);
@@ -178,11 +178,13 @@ namespace LinBox
 			typedef typename Blackbox::template rebind<Field>::other FBlackbox;
 			FBlackbox Ap(A, F);
 			charpoly (P, Ap, typename FieldTraits<Field>::categoryTag(), M);
+			
+			std::cerr << "Charpoly(A) mod "<<F.characteristic()<<" = "<<P;
+			integer p;
+			F.characteristic(p);
+			std::cerr<<"Charpoly(A) mod "<<p<<" = "<<P;
+
 			return IterationResult::CONTINUE;
-			// std::cerr << "Charpoly(A) mod "<<F.characteristic()<<" = "<<P;
-			// integer p;
-			// F.characteristic(p);
-			// std::cerr<<"Charpoly(A) mod "<<p<<" = "<<P;
 		}
 	};
 
@@ -324,7 +326,6 @@ namespace LinBox
 			      const RingCategories::RationalTag& tag, const MyMethod& M)
 	{
 		commentator().start ("Rational Charpoly", "Rcharpoly");
-
         typedef Givaro::ModularBalanced<double> Field;
 		PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
 		RationalChineseRemainderVarPrec< CRABuilderVarPrecEarlyMultip<Field > > rra(LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD);
