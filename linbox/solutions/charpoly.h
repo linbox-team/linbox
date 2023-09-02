@@ -142,7 +142,7 @@ namespace LinBox
                           const RingCategories::ModularTag & tag,
                           const Method::DenseElimination    & M)
 	{
-		std::cerr << std::endl << "******************************" << std::endl << std::endl;   // GV 
+		//std::cerr << std::endl << "******************************" << std::endl << std::endl;   // GV 
 		if (A.coldim() != A.rowdim())
 			throw LinboxError("LinBox ERROR: matrix must be square for characteristic polynomial computation\n");
 		BlasMatrix< typename Blackbox::Field >     BBB (A);
@@ -179,10 +179,10 @@ namespace LinBox
 			FBlackbox Ap(A, F);
 			charpoly (P, Ap, typename FieldTraits<Field>::categoryTag(), M);
 			
-			std::cerr << "Charpoly(A) mod "<<F.characteristic()<<" = "<<P; //GV uncommented these four lines 
-			integer p;
-			F.characteristic(p);
-			std::cerr<<"Charpoly(A) mod "<<p<<" = "<<P;
+			//std::cerr << "Charpoly(A) mod "<<F.characteristic()<<" = "<<P << std::endl; 
+			//integer p;
+			//F.characteristic(p);
+			//std::cerr<<"Charpoly(A) mod "<<p<<" = "<<P;
 
 			return IterationResult::CONTINUE;
 		}

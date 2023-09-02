@@ -52,6 +52,7 @@ int main()
 {
 
     ifstream input("issue_sage_35846_matrix.sms");
+    //ifstream input("mm.sms");
 
 
     Z_Domain Z;   // <-- integer
