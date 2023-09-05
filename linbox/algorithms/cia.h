@@ -51,6 +51,8 @@ namespace LinBox
 	{
 		commentator().start ("Integer Givaro::Dense Charpoly ", "CIA");
 
+
+
 		using Ring = typename Blackbox::Field;
 		Ring ZZ = A.field();
 		typedef Givaro::Modular<double> Field;
@@ -78,6 +80,8 @@ namespace LinBox
 		IPD.factor (intFactors, mult, intMinPoly);
 		size_t nf = intFactors.size();
 
+
+
 		/* One modular characteristic polynomial computation */
 		PrimeIterator<IteratorCategories::HeuristicTag> primeg (FieldTraits<Field>::bestBitSize(A.coldim()));
 		++primeg;
@@ -86,8 +90,15 @@ namespace LinBox
 		FieldPoly fieldCharPoly(F);
 		MatrixHom::map(fbb, A);
 		charpoly (fieldCharPoly, fbb, M);
+
+		
+
 		/* Determination of the multiplicities */
 		FieldPolyDom FPD (F);
+
+std::cerr << "ICI !!!!!!!!!!!!!!!!!!!! " << std::endl; 
+		FPD.write(std::cerr, fieldCharPoly) << std::endl; // GV 
+
 		std::vector<FieldPoly> fieldFactors (nf);
 		integer tmp_convert; // PG 2005-08-04
 		for (size_t i = 0; i < nf; ++i){

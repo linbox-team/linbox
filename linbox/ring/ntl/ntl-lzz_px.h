@@ -196,8 +196,12 @@ namespace LinBox
 		Element& init( Element& p, const std::vector<E>& v ) const
 		{
 			p = 0;
-			for( long i = 0; i < (long)v.size(); ++i )
-				NTL::SetCoeff( p, i, v[ (size_t) i ] );
+			Coeff temp;
+			for( long i = 0; i < (long)v.size(); ++i ) {
+				_CField.init( temp, v[ (size_t) i ] );
+				if( !_CField.isZero(temp) )
+					NTL::SetCoeff( p, i, temp );}  
+				//NTL::SetCoeff( p, i, v[ (size_t) i ] ); //GV modif ci-dessus
 			return p;
 		}
 

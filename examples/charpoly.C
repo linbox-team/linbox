@@ -43,10 +43,11 @@ using namespace std;
 #include <linbox/ring/polynomial-ring.h>
 using namespace LinBox;
 
+
 template <class Field, class Polynomial>
 std::ostream& printPolynomial (std::ostream& out, const Field &F, const Polynomial &v)
 {
-	for (int i = (int)(v.size () - 1); i >= 0; i--) {
+	for (int i = (int)(v.size () - 1); i >= 0; i--) {				
 		F.write (out, v[(size_t)i]);
 		if (i > 0)
 			out << " X^" << i << " + ";
@@ -57,8 +58,7 @@ template <class Field, class Polynomial>
 std::ostream& prettyprintIntegerPolynomial (std::ostream& out, const Field &F, const Polynomial &v)
 {
 	size_t n = v.size()-1;
-	if (n == 0) {
-		F.write(out, v[0]);
+	if (n == 0) {		F.write(out, v[0]);
 	}
 	else {
 		if(v[n] != 0) {
@@ -117,7 +117,7 @@ int main (int argc, char **argv)
 		IntDom ZZ;
 		DenseMatrix<IntDom > A (ZZ);
 		A.read (input);
-        DensePolynomial<IntDom> c_A(ZZ);
+		DensePolynomial<IntDom> c_A(ZZ);
 
 		Timer tim; tim.clear();tim.start();
 		charpoly (c_A, A);
@@ -155,7 +155,7 @@ int main (int argc, char **argv)
 		DenseMatrix<Field> B (F);
 		B.read (input);
 		clog << "B is " << B.rowdim() << " by " << B.coldim() << endl;
-        DensePolynomial<Field> c_B(F);
+		DensePolynomial<Field> c_B(F);
 		Timer tim; tim.clear();tim.start();
 		charpoly (c_B, B);
 		tim.stop();
