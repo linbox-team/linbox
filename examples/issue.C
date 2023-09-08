@@ -51,8 +51,8 @@ typedef Givaro::ZRing<Givaro::Integer> Z_Domain;
 int main()
 {
 
-    ifstream input("issue_sage_35846_matrix.sms");
-    //ifstream input("mm.sms");
+    //ifstream input("issue_sage_35846_matrix.sms");
+    ifstream input("mat.sms");
 
 
     Z_Domain Z;   // <-- integer

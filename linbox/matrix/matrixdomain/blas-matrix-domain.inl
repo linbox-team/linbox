@@ -387,7 +387,7 @@ namespace LinBox
 
         FFPACK::CharPoly (PolDom, P, n, A.getPointer(), A.getStride(), G);
         
-        std::cerr << P << std::endl << std::endl;   // GV  
+        //std::cerr << P << std::endl << std::endl;   // GV  
 		return P;
 	}
 
