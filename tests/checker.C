@@ -160,7 +160,10 @@ int main(int argc, char* argv[]) {
 #endif
 // build and run the tests section
 	string t, cmd;
-	system("ls test-*C >.tmp-tests");
+	if ( system("ls test-*C >.tmp-tests") ) {
+              std::cerr << "FAIL. Problem finding test sources.\n";
+		exit(-1);
+	}
 	ifstream tests(".tmp-tests");
 	int buildfail = 0, runfail = 0, skipped = 0, pass = 0; // counts
 	vector<string> all_tests;
@@ -180,14 +183,15 @@ int main(int argc, char* argv[]) {
 			report << "skipped, " + warn_note[t];
 			skipped++;
 		} else { // do build
+                        int status(0);
 			if (force_build) {
 				cmd = "touch " + t + ".C";
-				system(cmd.c_str());
+				status += system(cmd.c_str());
 			}
                 // build
 			cmd = "make " + t + " 2> /dev/null > /dev/null";
 			report << "build ";
-			int status = system(cmd.c_str());
+			status += system(cmd.c_str());
 //			#ifndef __LINBOX_USE_OPENMP
 //			if (status == 2) break;
 //			#endif

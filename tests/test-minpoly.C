@@ -53,6 +53,7 @@
 #include "linbox/polynomial/dense-polynomial.h"
 #include "linbox/util/commentator.h"
 #include "linbox/solutions/minpoly.h"
+#include "linbox/solutions/charpoly.h"
 #include "linbox/vector/stream.h"
 
 #include "linbox/vector/blas-vector.h"
@@ -68,7 +69,8 @@ static bool testZeroMinpoly (Field &F, size_t n, const Meth& M)
 {
 	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	commentator().start ("Testing zero minpoly", "testZeroMinpoly");
-	typedef BlasVector<Field> Polynomial;
+//	typedef BlasVector<Field> Polynomial;
+	typedef DensePolynomial<Field> Polynomial;
 	Polynomial phi(F);
 	SparseMatrix<Field> A(F, n, n);
 	minpoly(phi, A, M);
@@ -106,7 +108,8 @@ static bool testZeroMinpoly (Field &F, size_t n, const Meth& M)
 template <class Field, class Meth>
 static bool testIdentityMinpoly (Field &F, size_t n, const Meth& M)
 {
-	typedef BlasVector<Field> Polynomial;
+//	typedef BlasVector<Field> Polynomial;
+	typedef DensePolynomial<Field> Polynomial;
 	typedef ScalarMatrix<Field> Blackbox;
 
 	commentator().start ("Testing identity minpoly", "testIdentityMinpoly");
@@ -157,13 +160,15 @@ static bool testIdentityMinpoly (Field &F, size_t n, const Meth& M)
 template <class Field, class Meth>
 static bool testNilpotentMinpoly (Field &F, size_t n, const Meth& M)
 {
-	typedef BlasVector<Field> Polynomial;
+//	typedef BlasVector<Field> Polynomial;
+	typedef DensePolynomial<Field> Polynomial;
 	typedef SparseMatrix<Field> Blackbox;
 	typedef typename Blackbox::Row Row;
 
 	commentator().start ("Testing nilpotent minpoly", "testNilpotentMinpoly");
+	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
-	bool ret;
+	bool ret = false;
 	bool lowerTermsCorrect = true;
 
 	size_t i;
@@ -173,24 +178,37 @@ static bool testNilpotentMinpoly (Field &F, size_t n, const Meth& M)
 	stream.next (v);
 	Blackbox A (F, stream); // first subdiagonal is 1's.
 
+    report << "Matrix:" << endl;
+    A.write (report, Tag::FileFormat::Maple);
+
 	Polynomial phi(F);
 
 	minpoly (phi, A, M);
 
-	ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
-	for (i = 0; i < n - 1; i++)
-		if (!F.isZero (phi[i]))
-			lowerTermsCorrect = false;
+    if (phi.size()) { // Minimal polynomial cannot be zero
+        size_t d(phi.size()-1);
+        for (i = 0; i < d; i++)
+            if (!F.isZero (phi[i]))
+                lowerTermsCorrect = false;
+        if (F.isOne (phi[d]) && lowerTermsCorrect) {
+                // Returned polynomial is a divisor of X^n
+            ret = true;
+            if (d != n) {
+                    // Blackbox probabilistic methods could return only a divisor
+                commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_WARNING)
+                    << "Warning: A^n = 0, should get x^" << n
+                    <<", got only a divisor: ";
+                printPolynomial (F, report, phi);
+            }
+        }
+    }
 
-	if (phi.size () == n + 1 && F.isOne (phi[n]) && lowerTermsCorrect)
-		ret = true;
-	else {
-		ret = false;
-		commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+    if (! ret) {
+        commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: A^n = 0, should get x^" << n <<", got ";
 		printPolynomial (F, report, phi);
-	}
+    }
 
 	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testNilpotentMinpoly");
 
@@ -269,13 +287,35 @@ bool testRandomMinpoly (Field                 &F,
 			VD.write (report, w);
 			report << endl;
 
-			if (!VD.isZero (w))
-				ret = iter_passed = false;
+			if (!VD.isZero (w)) {
+                    // Blackbox probabilistic methods could return only a divisor
+                report << "polynomial is only a divisor, trying divisibility ... " << std::endl;
+                Polynomial psi(F);
+                Method::DenseElimination dem; dem.certifyInconsistency=true;
+                charpoly (psi, A, dem );
+
+                report << "Charpoly is: ";
+                printPolynomial (F, report, psi);
+
+                Polynomial rem(F);
+                typename Polynomial::Domain_t PolDom(F);
+
+                PolDom.mod(rem,psi,phi);
+                Givaro::Degree deg; PolDom.degree(deg, rem);
+
+
+                if (deg > 0) {
+                    commentator().report (Commentator::LEVEL_IMPORTANT,
+                                          INTERNAL_WARNING) <<
+                        "ERROR: A = rand, minpoly does not divide charpoly." << endl;
+                    ret = iter_passed = false;
+                }
+            }
 		}
 
 		if (!iter_passed)
 			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: A = rand, purported-minpoly(A) is not zero." << endl;
+				<< "ERROR: A = rand, purported-minpoly(A) is not annihilator." << endl;
 		commentator().stop ("done");
 		commentator().progress ();
 	}
@@ -299,11 +339,11 @@ template <class Field, class Meth>
 static bool testGramMinpoly (Field &F, size_t m, const Meth& M)
 {
 	commentator().start ("Testing gram minpoly", "testGramMinpoly");
-	typedef BlasVector<Field> Polynomial;
+	typedef DensePolynomial<Field> Polynomial;
 	integer p;
     size_t n;
-	F.characteristic(p); p += 1;
-	if (p > integer(30)) n = 2;
+	F.characteristic(p);
+	if (p > 29u) n = 2;
 	Polynomial phi(F);
 	BlasMatrix<Field> A(F, n, n);
 	for (size_t i = 0; i < n; ++i) for (size_t j = 0; j < n; ++j) A.setEntry(i, j, F.one);
@@ -321,20 +361,42 @@ static bool testGramMinpoly (Field &F, size_t m, const Meth& M)
 			ret = true;
 		else
 		{
-			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: A = gram, should get x^2 - x, got ";
-			printPolynomial<Field, Polynomial> (F, report, phi);
-			ret = false;
+            if ( phi.size() == 2 && F.isOne(phi[1]) &&
+                 ( F.areEqual(phi[0], F.mOne) || F.isOne(phi[0]) )
+                 )
+            {
+                commentator().report (Commentator::LEVEL_IMPORTANT,
+                                      INTERNAL_WARNING) <<
+                    "Warning: got only a divisor. " << endl;
+                ret = true;
+            } else {
+                commentator().report (Commentator::LEVEL_IMPORTANT,
+                                      INTERNAL_ERROR) <<
+                    "ERROR: A = gram, should get x^2 - 1, got ";
+                printPolynomial<Field, Polynomial> (F, report, phi);
+                ret = false;
+            }
 		}
 	} else {
 		if (phi.size() == 3 && F.isZero(phi[0]) && F.isOne(phi[1]) && F.isOne(phi[2]))
 			ret = true;
 		else
 		{
-			commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: A = gram, should get x^2 + x, got ";
-			printPolynomial<Field, Polynomial> (F, report, phi);
-			ret = false;
+            if ( phi.size() == 2 && F.isOne(phi[1]) &&
+                 ( F.isOne(phi[0]) || F.isZero(phi[0]) )
+                 )
+            {
+                commentator().report (Commentator::LEVEL_IMPORTANT,
+                                      INTERNAL_WARNING) <<
+                    "Warning: got only a divisor. " << endl;
+                ret = true;
+            } else {
+                commentator().report (Commentator::LEVEL_IMPORTANT,
+                                      INTERNAL_ERROR) <<
+                    "ERROR: A = gram, should get x^2 + x, got ";
+                printPolynomial<Field, Polynomial> (F, report, phi);
+                ret = false;
+            }
 		}
 	}
 	commentator().stop (MSG_STATUS (ret), (const char *) 0, "testGramMinpoly");
@@ -362,6 +424,8 @@ bool run_with_field(integer q, int e, uint64_t b, size_t n, int iter, int numVec
 		if(F == nullptr)
 			return true; //if F is null, nothing to test, just pass
 
+        ostream &report = commentator().report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+        F->write(report << "Working over: ") << std::endl;
             /*
               ostringstream oss;
               F->write(oss);
@@ -372,9 +436,9 @@ bool run_with_field(integer q, int e, uint64_t b, size_t n, int iter, int numVec
               cout<<" ... ";
             */
 
-		ok &= testZeroMinpoly  	   (*F, n, Method::Auto());
-		ok &= testZeroMinpoly  	   (*F, n, Method::Elimination());
-		ok &= testZeroMinpoly  	   (*F, n, Method::Blackbox());
+		ok &= testZeroMinpoly	   (*F, n, Method::Auto());
+		ok &= testZeroMinpoly	   (*F, n, Method::Elimination());
+		ok &= testZeroMinpoly	   (*F, n, Method::Blackbox());
         ok &= testIdentityMinpoly  (*F, n, Method::Auto());
         ok &= testIdentityMinpoly  (*F, n, Method::Elimination());
         ok &= testIdentityMinpoly  (*F, n, Method::Blackbox());
@@ -438,19 +502,19 @@ int main (int argc, char **argv)
 
 
 	parseArguments (argc, argv, args);
-	commentator().getMessageClass (TIMING_MEASURE).setMaxDepth (10);
-	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
-	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+//	commentator().getMessageClass (TIMING_MEASURE).setMaxDepth (10);
+//	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
+//	commentator().getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
     commentator().start ("Testing suite for minpoly", "testMinpoly", 1);
-    
+
     pass &= run_with_field<Givaro::Modular<double> >(q,e,b,n,iterations,numVectors,k,seed);
     pass &= run_with_field<Givaro::Modular<int32_t> >(q,e,b,n,iterations,numVectors,k,seed);
     pass &= run_with_field<Givaro::Modular<Givaro::Integer> >(q,e,b?b:128,n/3+1,iterations,numVectors,k,seed);
     //pass &= run_with_field<Givaro::GFqDom<int64_t> >(q,e,b,n,iterations,numVectors,k,seed);
     pass &= run_with_field<Givaro::ZRing<Givaro::Integer> >(0,e,b?b:128,n/3+1,iterations,numVectors,k,seed);
 
-    commentator().stop(MSG_STATUS(pass),(const char *) 0,"testMinpoly");		
+    commentator().stop(MSG_STATUS(pass),(const char *) 0,"testMinpoly");
 
     return !pass;
 }

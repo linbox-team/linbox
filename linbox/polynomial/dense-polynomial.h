@@ -42,9 +42,9 @@ namespace LinBox {
     class PolynomialRing;
     
 	/*! Dense Polynomial representation using Givaro.
-	 * @ingroup polynomial
-	 * A \p dense GivaroPolynomial is an Element of Givaro::Poly1Dom and a reference 
-         * to a PolynomialDomain which handles most operations over such polynomials.
+     * @ingroup polynomial
+     * A \p dense GivaroPolynomial is an Element of Givaro::Poly1Dom and a reference 
+     * to a PolynomialDomain which handles most operations over such polynomials.
 	 */
     template<class Field>
     class DensePolynomial : public Givaro::Poly1Dom<Field, Givaro::Dense>::Element {
