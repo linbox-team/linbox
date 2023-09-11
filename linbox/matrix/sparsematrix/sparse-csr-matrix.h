@@ -567,9 +567,12 @@ namespace LinBox {
 			linbox_check(j<_colnb);
 
 			ptrdiff_t nnz = _triples.next(_start);
-			if ( nnz < (ptrdiff_t)_nbnz && _colid[nnz]  == j && (ptrdiff_t)i == _triples._row ) { /* sort of nextTriple */
-				linbox_check(!field().isZero(_data[nnz]));
-				return _data[nnz];
+			if ( nnz < (ptrdiff_t)_nbnz &&
+                                (ptrdiff_t)j == _colid[nnz] &&
+                                (ptrdiff_t)i == _triples._row ) {
+                            /* sort of nextTriple */
+                            linbox_check(!field().isZero(_data[nnz]));
+                            return _data[nnz];
 			}
 			else { /* searching */
 				typedef typename svector_t::const_iterator myConstIterator ;
@@ -585,7 +588,7 @@ namespace LinBox {
 				myConstIterator low = std::lower_bound (beg, end, j);
 				ibeg = (size_t)(low-_colid.begin());
 				// insert
-				if ( low == end || j != _colid[ibeg] ) {
+				if ( low == end || (ptrdiff_t)j != _colid[ibeg] ) {
 					return field().zero;
 				}
 				// replace

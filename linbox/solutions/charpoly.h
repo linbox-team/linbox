@@ -201,6 +201,17 @@ namespace LinBox
 		return P;
 	}
 
+	template <class Blackbox, class Polynomial>
+	Polynomial& charpoly (Polynomial                       & P,
+						  const Blackbox                   & A,
+						  const RingCategories::IntegerTag & tag,
+						  const Method::Elimination	       & M)
+	{
+            // charpoly Integer Elimination, is for now DenseElimination
+            // TODO: a SparseElimination version for SparseMatrix
+        return charpoly(P, A, tag, Method::DenseElimination(M) );
+	}
+
 }
 
 #if defined(__LINBOX_HAVE_NTL)

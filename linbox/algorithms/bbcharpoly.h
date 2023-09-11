@@ -84,8 +84,28 @@ namespace LinBox
 				fieldP(FM.fieldP), intP(FM.intP), multiplicity(FM.multiplicity), dep(FM.dep)
 			{}
 
-			int update (const size_t n, int * goal)
+			int update (const size_t n, int & goal)
 			{
+// std::clog << "Update(" << n << ',' << goal << ')' << std::endl;
+                if (fieldP->field().isZero(fieldP->operator[](0))) {
+                        // Factor is power of X
+                    int tmp = (n-multiplicity) -(fieldP->size()-1);
+                    goal -= tmp;
+// std::clog<<"Updating (X) "<< *fieldP <<" --> mul = "<<tmp<< " d:" << (fieldP->size()-1) << ',' << multiplicity << std::endl;
+                    if (dep != NULL) {					// Power of X in minpoly
+                        auto leaf(dep);
+                        while (leaf->dep != NULL) {
+                            leaf->multiplicity = 0;
+                            leaf = leaf->dep;
+                        }
+                        leaf->multiplicity = (size_t)tmp;
+                        multiplicity = 1;
+                        return tmp;
+                    } else {
+                        multiplicity = n - multiplicity; // Just X in minpoly
+                        return multiplicity;
+                    }
+                }
 				if (dep->dep != NULL){
 					FactorMult<FieldPoly,IntPoly>*curr = dep;
 					int k = dep->update (n,goal)+1;
@@ -99,16 +119,16 @@ namespace LinBox
 					}
 					tmp = tmp/k + (int)(multiplicity - dep->multiplicity) / d;
 					dep->multiplicity =(size_t) tmp ;
-					//std::cerr<<"Updating "<<*dep->fieldP<<" --> mul = "<<tmp<<std::endl;
-
-					*goal -= tmp * ((int)dep->fieldP->size()-1);
+// std::clog<<"Updating "<<*dep->fieldP<<" --> mul = "<<tmp<<std::endl;
+					goal -= tmp * ((int)dep->fieldP->size()-1);
+// std::clog << "Updated(" << n << "), " << goal << ',' << k << std::endl;
 					return k;
 				}
 				else{
-					int tmp =  (int)((n - 2 * dep->multiplicity + multiplicity) / (dep->fieldP->size()-1));
-					*goal -= tmp * ((int)dep->fieldP->size()-1);
-					//std::cerr<<"Updating (leaf)"<<*dep->fieldP<<" --> mul = "<<tmp<<std::endl;
-					dep->multiplicity = (size_t)tmp;
+                    int tmp =  (int)((n - 2 * dep->multiplicity + multiplicity) / (dep->fieldP->size()-1));
+                    goal -= tmp * ((int)dep->fieldP->size()-1);
+// std::clog<<"Updating (leaf)"<<*dep->fieldP<<" --> mul = "<<tmp<< " <" << dep->multiplicity << '|' << multiplicity << '>' << std::endl;
+                    dep->multiplicity = (size_t)tmp;
 					return 1;
 				}
 			}
@@ -171,7 +191,7 @@ namespace LinBox
 			FactPoly factCharPoly;
 			size_t n = A.coldim();
 
-			IntPolyDom IPD(intRing);
+			IntPolyDom IPD(intRing,'W');
 
 			/* Computation of the integer minimal polynomial */
 			Polynomial intMinPoly(intRing);
@@ -246,7 +266,7 @@ namespace LinBox
 			IntPoly tmpP(intRing);
 			intRing.assign(intCharPoly[0], intRing.one);
 			for (FactPolyIterator it_f = factCharPoly.begin(); it_f != factCharPoly.end(); ++it_f){
-//                 it_f->second->write(std::clog) << std::endl;
+// it_f->second->write(std::clog << "Int Charp Extra factor: ") << std::endl;
 
 				IPD.pow (tmpP, *it_f->second->intP, (long) it_f->second->multiplicity);
 				IPD.mulin (intCharPoly, tmpP);
@@ -279,14 +299,14 @@ namespace LinBox
 			//typename std::multimap<FactorMult<Polynomial>*,bool>::iterator lead_it;
 
 			Field F = A.field();
-			PolyDom PD (F);
+			PolyDom PD (F,'Y');
 			FactPoly factCharPoly;
 			const size_t n = A.coldim();
 
 			/* Computation of the minimal polynomial */
 			Polynomial minPoly(F);
 			minpoly (minPoly, A, M);
-            //PD.write(std::cerr<<"Minpoly = ",minPoly) << std::endl;
+// PD.write(std::clog<<"Minpoly = ",minPoly) << std::endl;
 
 			if (minPoly.size() == n+1){
 				commentator().stop ("done", NULL, "MbbCharpoly");
@@ -303,7 +323,7 @@ namespace LinBox
 
             PD.factor (factors, exp, minPoly);
             size_t factnum = factors.size();
-//             std::cerr<<"factnum = "<<factnum<<std::endl;
+// std::clog<<"factnum = "<<factnum<<std::endl;
 
 				/* Building the structure of factors */
             int goal = (int)n;
@@ -318,32 +338,51 @@ namespace LinBox
 
                 FactorMult<Polynomial>* FFM=NULL;
                 if (exp[i] > 1) {
-                    Polynomial* tmp = new Polynomial(factors[i]);
-                    FactorMult<Polynomial>* depend = NULL;
-                    for (size_t j = 1; j <= exp[i]; ++j){
+                            // Power of X, no intermediate
+                    if (F.isZero(factors[i][0])) {
                             // tmp2 is deleted after charPoly construction
-                        Polynomial* tmp2 = new Polynomial(*tmp);
-                        FFM = new FactorMult<Polynomial> (tmp2, tmp2, 0, depend);
-							//	std::cerr<<"Inserting new factor (exp>1): "<<(*tmp2)<<std::endl;
-
-                        factCharPoly.insert (std::pair<size_t, FactorMult<Polynomial>* > (deg, FFM));
+                        Polynomial* tmp2 = new Polynomial(factors[i]);
+                        FFM = new FactorMult<Polynomial> (tmp2,tmp2,1U,NULL);
+// PD.write(std::clog<<"Inserting X : ", factors[i]) <<std::endl;
+                        factCharPoly.insert (std::pair<size_t, FactorMult<Polynomial>* > (factors[i].size()-1, FFM));
                         ++factnum;
-                        depend = FFM;
-                        deg += factors[i].size()-1;
-                        if (j < exp[i])
-                            PD.mul (*tmp, *tmp2, factors[i]);
+                        FactorMult<Polynomial>* depend = FFM;
+                            // tmp2 is deleted after charPoly construction
+                        tmp2 = new Polynomial(factors[i]);
+                        PD.pow (*tmp2, factors[i], exp[i]); // X^e
+                        FFM = new FactorMult<Polynomial> (tmp2, tmp2, 0, depend);
+// std::clog<<"Inserting " << exp[i] << "-th power of X: "<<(*tmp2)<<std::endl;
+                        factCharPoly.insert (std::pair<size_t, FactorMult<Polynomial>* > (exp[i], FFM));
+                        FFM->multiplicity = 1; // The last factor is present in minpoly
+                        goal -= exp[i];
+                        leadingBlocks.insert (std::pair<FactorMult<Polynomial>*,bool>(FFM,false));
+                    } else {
+                        Polynomial* tmp = new Polynomial(factors[i]);
+                        FactorMult<Polynomial>* depend = NULL;
+                        for (size_t j = 1; j <= exp[i]; ++j){
+                                // tmp2 is deleted after charPoly construction
+                            Polynomial* tmp2 = new Polynomial(*tmp);
+                            FFM = new FactorMult<Polynomial> (tmp2, tmp2, 0, depend);
+// std::clog<<"Inserting new factor (exp>1): "<<(*tmp2)<<std::endl;
+
+                            factCharPoly.insert (std::pair<size_t, FactorMult<Polynomial>* > (deg, FFM));
+                            ++factnum;
+                            depend = FFM;
+                            deg += factors[i].size()-1;
+                            if (j < exp[i])
+                                PD.mul (*tmp, *tmp2, factors[i]);
+                        }
+                        delete tmp;
+                        --factnum;
+                        FFM->multiplicity = 1; // The last factor is present in minpoly
+                        goal -= (int)(deg-factors[i].size())+1;
+                        leadingBlocks.insert (std::pair<FactorMult<Polynomial>*,bool>(FFM,false));
                     }
-                    delete tmp;
-                    --factnum;
-                    FFM->multiplicity = 1; // The last factor is present in minpoly
-                    goal -= (int)(deg-factors[i].size())+1;
-                    leadingBlocks.insert (std::pair<FactorMult<Polynomial>*,bool>(FFM,false));
-                }
-                else {
+                } else {
                         // tmp2 is deleted after charPoly construction
                     Polynomial* tmp2 = new Polynomial(factors[i]);
                     FFM = new FactorMult<Polynomial> (tmp2,tmp2,1U,NULL);
-						//std::cerr<<"Inserting new factor : "<<*factors[i]<<std::endl;
+// PD.write(std::clog<<"Inserting new factor : ", factors[i]) <<std::endl;
                     factCharPoly.insert (std::pair<size_t, FactorMult<Polynomial>* > (factors[i].size()-1, FFM));
                     leadingBlocks.insert (std::pair<FactorMult<Polynomial>*,bool>(FFM,false));
                     goal -= (int)deg;
@@ -357,6 +396,7 @@ namespace LinBox
             for (FactPolyIterator it_f = factCharPoly.begin(); it_f != factCharPoly.end(); ++it_f){
 
                 PD.pow (tmpP, *it_f->second->fieldP,(long) it_f->second->multiplicity);
+// PD.write(PD.write(std::clog<<"New multiplicity of ", *it_f->second->fieldP) << " found : ", tmpP) <<std::endl;
                 PD.mulin (charPoly, tmpP);
 
                 delete it_f->second->fieldP;
@@ -400,7 +440,7 @@ namespace LinBox
 			typename FactPoly::iterator itf = factCharPoly.begin();
 			typename std::multimap<FactorMult<FieldPoly,IntPoly>*,bool>::iterator lead_it;
 			Field F = A.field();
-			PolyDom PD(F);
+			PolyDom PD(F,'Z');
 			size_t factnum = factCharPoly.size();
 			size_t n = A.coldim();
 
@@ -422,7 +462,7 @@ namespace LinBox
 				}
 				itf->second->multiplicity =(size_t) r;
 
-				//std::cerr<<"Rank 1 : "<<*itf->second->fieldP<<" --> "<<r<<std::endl;
+// std::clog<<"Rank 1 : "<<*itf->second->fieldP<<" --> "<<r<<std::endl;
 				--factnum;
 				++itf;
 			}
@@ -439,7 +479,7 @@ namespace LinBox
 				rank (r, PA,  M);
 
 				itf->second->multiplicity =(size_t)r;
-				//std::cerr<<"Rank > 1 : "<<*itf->second->intP<<" --> "<<r<<std::endl;
+// std::clog<<"Rank > 1 : "<<*itf->second->intP<<" --> "<<r<<std::endl;
 
 				--factnum;
 				++itf;
@@ -449,7 +489,7 @@ namespace LinBox
 			for (lead_it = leadingBlocks.begin(); lead_it != leadingBlocks.end(); ++lead_it){
 
 				FactorMult<FieldPoly,IntPoly>* currFFM = lead_it->first;
-				//std::cerr<<"Updating multiplicities of "<<*lead_it->first->fieldP<<std::endl;
+// std::clog<<"Updating multiplicities of "<<*lead_it->first->fieldP<< " (goal=" << goal << ')' << std::endl;
 
 				if (!lead_it->second){ // the leading block has not been computed
 
@@ -465,36 +505,42 @@ namespace LinBox
 						PolynomialBB<BlackBox, FieldPoly > PA (A, *currFFM->fieldP);
 						size_t r;
 						rank (r, PA, M) ;
-						//std::cerr<<"extra factor : "<<*currFFM->fieldP<<" --> "<<r<<std::endl;
+// std::clog<<"extra factor : "<<*currFFM->fieldP<<" --> "<<r<<std::endl;
 
 						int tmp = (int)currFFM->multiplicity;
 						currFFM->multiplicity =(size_t) r;
-						currFFM->update (n,&goal);
+						currFFM->update (n, goal);
 						currFFM->multiplicity = (size_t)tmp;
 					}
 				}
 				else {
-					int lbm;
-					if (currFFM->dep != NULL){
+                    if (F.isZero(lead_it->first->fieldP->operator[](0))) {
+                            // power of X
+						currFFM->update (n, goal); // remaining powers of X
+                    } else {
+                        int lbm;
+                        if (currFFM->dep != NULL){
 
-						int k = currFFM->update (n,&goal)+1;
-						int d = (int)(lead_it->first->fieldP->size()-1) / k;
+                            int k = currFFM->update (n, goal)+1;
+                            int d = (int)(lead_it->first->fieldP->size()-1) / k;
 
-						lbm = (int)(n-lead_it->first->multiplicity) / d;
-						currFFM = currFFM->dep;
-						do{
-							lbm -= (int)(currFFM->multiplicity * (currFFM->fieldP->size()-1));
-							currFFM = currFFM->dep;
-						} while (currFFM!=NULL);
-						lbm /= k;
-						goal -= (lbm-1)*((int)lead_it->first->fieldP->size()-1);
-					}
-					else {
-						lbm = (int)((int)(n-lead_it->first->multiplicity) / ((int)(lead_it->first->fieldP->size())-1));
-						goal -=  (lbm-1)*((int)lead_it->first->fieldP->size()-1);
-					}
-					lead_it->first->multiplicity = (size_t)lbm;
-				}
+                            lbm = (int)(n-lead_it->first->multiplicity) / d;
+                            currFFM = currFFM->dep;
+                            do{
+                                lbm -= (int)(currFFM->multiplicity * (currFFM->fieldP->size()-1));
+                                currFFM = currFFM->dep;
+                            } while (currFFM!=NULL);
+                            lbm /= k;
+                            goal -= (lbm-1)*((int)lead_it->first->fieldP->size()-1);
+                        }
+                        else {
+                            lbm = (int)((int)(n-lead_it->first->multiplicity) / ((int)(lead_it->first->fieldP->size())-1));
+                            goal -=  (lbm-1)*((int)lead_it->first->fieldP->size()-1);
+                        }
+                        lead_it->first->multiplicity = (size_t)lbm;
+                    }
+                }
+// std::clog<<"Updated multiplicities of "<<*lead_it->first->fieldP<< " --> goal: " << goal << std::endl;
 			}
 
 			// Recursive search
@@ -531,7 +577,7 @@ namespace LinBox
 					typename Field::Element tmp, e;
 					F.assign(d2,F.one);
 					typename FactPoly::iterator it_f=factCharPoly.begin();
-					PolyDom PD_f (F);
+					PolyDom PD_f (F,'X');
 					for (size_t i = 0; i < factCharPoly.size()-factnum; ++i, ++it_f){
 						PD_f.eval (tmp, *it_f->second->fieldP, mgamma);
 						for (size_t j=0; j < it_f->second->multiplicity; ++j)
@@ -552,11 +598,11 @@ namespace LinBox
 					if (uf_it == sols.end())
 						std::cerr<<"FAIL:: No solutions found in recursive seach"<<std::endl;
 				} // At this point, uf_it points on the good solution
-				// update with the good multiplicities
-				typename FactPoly::iterator it_f = firstUnknowFactor;
-				typename std::vector<FactorMult<FieldPoly,IntPoly> >::iterator it_fm = (*uf_it).begin();
-				for (; it_f != factCharPoly.end(); ++it_f, ++it_fm)
-					it_f->second->multiplicity = it_fm->multiplicity;
+                        // update with the good multiplicities
+                    typename FactPoly::iterator it_f = firstUnknowFactor;
+                    typename std::vector<FactorMult<FieldPoly,IntPoly> >::iterator it_fm = uf_it->begin();
+                    for (; it_f != factCharPoly.end(); ++it_f, ++it_fm)
+                        it_f->second->multiplicity = it_fm->multiplicity;
 			}
 		}
 
