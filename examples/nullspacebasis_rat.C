@@ -59,7 +59,7 @@ int main (int argc, char **argv)
 
     GD.nullspacebasisin(NullSpace, B);
 
-    NullSpace.write( std::cerr << "X:=", Tag::FileFormat::Maple ) << ';' << std::endl;
+    NullSpace.write( std::clog << "X:=", Tag::FileFormat::Maple ) << ';' << std::endl;
 
     if (argc>2) {
         std::ofstream output(argv[2]);
@@ -67,7 +67,7 @@ int main (int argc, char **argv)
         std::clog << "Nullspace basis written in " << argv[2] << std::endl;
     }
 
-    std::cerr << "NullsSpace dimensions:" << NullSpace.rowdim() << 'x' << NullSpace.coldim() << std::endl;
+    std::clog << "NullsSpace dimensions:" << NullSpace.rowdim() << 'x' << NullSpace.coldim() << std::endl;
 
     return 0;
 }
