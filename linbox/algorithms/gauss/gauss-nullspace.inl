@@ -2,7 +2,7 @@
  * Copyright (C) LinBox 2008
  *
  * Written by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
- * Time-stamp: <27 Aug 20 15:17:09 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <12 Dec 23 13:13:38 Jean-Guillaume.Dumas@imag.fr>
  *
  *
  * ========LICENCE========
@@ -50,6 +50,7 @@ namespace LinBox
 		}
 		else {
 			size_t nullity = U.coldim()-Rank;
+            x.resize(x.rowdim(),nullity);
 			if (nullity != 0) {
 				// compute U2T s.t. U = [ U1 | -U2T^T ]
 				_Matrix U2T(field(),nullity,Rank);
@@ -62,7 +63,6 @@ namespace LinBox
 				for(typename _Matrix::Iterator u2it=U2T.Begin();
 				    u2it != U2T.End(); ++u2it)
 					field().negin(*u2it);
-
 
 				// Compute the basis vector by vector
 				typedef Sparse_Vector< typename _Field::Element > SparseVect;
