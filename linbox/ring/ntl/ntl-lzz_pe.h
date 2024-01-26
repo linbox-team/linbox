@@ -96,18 +96,18 @@ namespace LinBox
 			NTL::zz_pE::init(irredPoly);
 			_f = irredPoly;
 		}
-		
+
 		NTL_zz_pE_Initialiser( const Integer & p, const NTL::zz_pX & f) {
 			NTL::zz_p::init((int64_t) p);
 			NTL::zz_pE::init(f);
 			_f = f;
 		}
-		
+
 		NTL_zz_pE_Initialiser(const NTL::zz_pX &f) {
 			NTL::zz_pE::init(f);
 			_f = f;
 		}
-		
+
 		const NTL::zz_pX& modulus() const {
 			return _f;
 		}
@@ -143,22 +143,22 @@ namespace LinBox
 		NTL_zz_pE (const integer &p, const integer &k) :
                 NTL_zz_pE_Initialiser(p,k),Father_t ()
         {
-        	init(const_cast<Element &>(zero), 0);
-		 	init(const_cast<Element &>(one), 1);
-		 	init(const_cast<Element &>(mOne), p-1);
+            init(const_cast<Element &>(zero), 0);
+            init(const_cast<Element &>(one), 1);
+            init(const_cast<Element &>(mOne), p-1);
 		}
-        
+
 		NTL_zz_pE (const integer &p, const NTL::zz_pX &f) :
                 NTL_zz_pE_Initialiser(p,f), Father_t()
         {
             init(const_cast<Element &>(zero), 0);
-		 	init(const_cast<Element &>(one), 1);
-		 	init(const_cast<Element &>(mOne), p-1);
+            init(const_cast<Element &>(one), 1);
+            init(const_cast<Element &>(mOne), p-1);
         }
-        
+
         NTL_zz_pE(const NTL_zz_pE &F) :
-        	NTL_zz_pE_Initialiser(F.modulus()), Father_t(),
-        	zero(NTL::to_zz_pE(0)), one(NTL::to_zz_pE(1)), mOne(-one)
+                NTL_zz_pE_Initialiser(F.modulus()), Father_t(),
+                zero(NTL::to_zz_pE(0)), one(NTL::to_zz_pE(1)), mOne(-one)
 		{
         }
 
@@ -182,15 +182,15 @@ namespace LinBox
 
 		bool isUnit (const Element& x) const
             {
-            	if (isZero(x)) {
-            		return false;
-            	} 
-            	
-            	NTL::zz_pX g, tmp;
-            	tmp = NTL::conv<NTL::zz_pX>(x);
-            	NTL::GCD(g, tmp, modulus());
-            	
-            	return g == 1;
+                if (isZero(x)) {
+                    return false;
+                }
+
+                NTL::zz_pX g, tmp;
+                tmp = NTL::conv<NTL::zz_pX>(x);
+                NTL::GCD(g, tmp, modulus());
+
+                return g == 1;
             }
 
 		bool isMOne (const Element& x) const
@@ -207,7 +207,9 @@ namespace LinBox
 			return f;
             }
 
-		Element & init(Element & x, integer n = 0) const
+		Element & init(Element & x) const { return x; }
+
+		Element & init(Element & x, integer n) const
             {   // assumes n >= 0.
                 int e = exponent();
                 n %= cardinality();
@@ -215,14 +217,14 @@ namespace LinBox
                     //write(std::cout << "init-ed ", x) << std::endl;
                 return x;
             }
-        
+
         // documentation of NTL::conv:
         // http://www.shoup.net/ntl/doc/conversions.txt
         // XXX = long, ZZ, ZZ_p, ZZ_pE, ZZ_pX
         template<class XXX>
         Element &init(Element &x, const XXX &y) const {
-        	x = NTL::conv<NTL::zz_pE>(y);
-        	return x;
+            x = NTL::conv<NTL::zz_pE>(y);
+            return x;
         }
 
         integer & convert(integer & x, const Element & y) const
@@ -279,81 +281,80 @@ namespace LinBox
                 x=one/x;
                 return x;
             }
-        
+
         Element& div(Element &x, const Element &y, const Element &z) const {
-        	NTL::zz_pX g, zx;
-        	conv(zx, z);
-        	NTL::GCD(g, zx, modulus());
-        	
-        	NTL::zz_pE zg;
-        	conv(zg, zx / g);
-        	x = NTL::conv<NTL::zz_pE>(NTL::conv<NTL::zz_pX>(y) / g);
-        	x /= zg;
-        	
-        	return x;
+            NTL::zz_pX g, zx;
+            conv(zx, z);
+            NTL::GCD(g, zx, modulus());
+
+            NTL::zz_pE zg;
+            conv(zg, zx / g);
+            x = NTL::conv<NTL::zz_pE>(NTL::conv<NTL::zz_pX>(y) / g);
+            x /= zg;
+
+            return x;
         }
-        
+
         Element& divin(Element &x, const Element &y) const {
-        	Element r;
-        	div(r, x, y);
-        	return x = r;
+            Element r;
+            div(r, x, y);
+            return x = r;
         }
 
         bool isDivisor(const Element &x, const Element &y) const {
-        	if (isZero(y)) {
-        		return false;
-        	}
-        	
-        	if (isUnit(y)) {
-        		return true;
-        	}
-        	
-        	NTL::zz_pX a, b;
-        	conv(a, x);
-        	conv(b, y);
-        	
-        	NTL::zz_pX ga, gb;
-        	NTL::GCD(ga, a, modulus());
-        	NTL::GCD(gb, b, modulus());
-        	
-        	NTL::zz_pX r;
-        	r = ga % gb;
-        	return isZero(NTL::conv<Element>(r));
+            if (isZero(y)) {
+                return false;
+            }
+
+            if (isUnit(y)) {
+                return true;
+            }
+
+            NTL::zz_pX a, b;
+            conv(a, x);
+            conv(b, y);
+
+            NTL::zz_pX ga, gb;
+            NTL::GCD(ga, a, modulus());
+            NTL::GCD(gb, b, modulus());
+            NTL::zz_pX r;
+            r = ga % gb;
+            return isZero(NTL::conv<Element>(r));
         }
-		
+
 		Element& gcd(Element &g, const Element &a, const Element &b) const {
 			NTL::zz_pX r1, r2, x, y;
 			conv(x, a);
 			conv(y, b);
-			
+
 			NTL::GCD(r1, x, modulus());
 			NTL::GCD(r2, y, r1);
-			
+
 			return g = NTL::conv<Element>(r2);
 		}
-		
+
 		Element& gcdin(Element &a, const Element &b) const {
 			NTL::zz_pE g;
 			gcd(g, a, b);
 			return a = g;
 		}
-		
+
 		Element& dxgcd(Element &g, Element &s, Element &t, Element &u, Element &v, const Element &a, const Element &b) const {
 			NTL::zz_pX gx, sx, tx, ux, vx, ax, bx;
 			conv(ax, a);
 			conv(bx, b);
-			
+
 			NTL::XGCD(gx, sx, tx, ax, bx);
-			
+
 			ux = ax / gx;
 			vx = bx / gx;
-			
+
 			conv(g, gx);
 			conv(s, sx);
 			conv(t, tx);
 			conv(u, ux);
 			conv(v, vx);
-			
+
 			return g;
 		}
 
@@ -364,12 +365,12 @@ namespace LinBox
                 x=NTL::to_zz_pE(tmp);
                 return is;
             }
-            
+
 		std::ostream& write( std::ostream& os ) const
             {
                 return os << "Polynomial quotient ring using NTL::zz_pE";
             }
-            
+
 		std::ostream& write( std::ostream& os, const Element& x) const {
 			os << x;
 			return os;
@@ -429,7 +430,7 @@ namespace LinBox
 		uint64_t _seed;
         const NTL_zz_pE& _ring;
 	}; // class UnparametricRandIters
-	
+
 } // LinBox
 
 #endif //__LINBOX_ntl_lzz_pe_H

@@ -1210,10 +1210,10 @@ namespace LinBox
 				_colid_beg = iter._colid_beg ;
 				_colid_it  = iter._colid_it ;
 				_data_it   = iter._data_it  ;
-				_data_beg  = iter._data_beg ;
-				_data_end  = iter._data_end  ;
-				_field     = iter._field ;
-				_ld        = iter._ld ;
+				const_cast<data_it>(_data_beg)  = iter._data_beg ;
+				const_cast<data_it>(_data_end)  = iter._data_end  ;
+				const_cast<Field &>(_field)     = iter._field ;
+				const_cast<size_t&>(ld)         = iter._ld ;
 				_row       = iter._row ;
 
 				return *this;

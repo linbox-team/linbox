@@ -104,6 +104,12 @@ namespace LinBox
 			,_CField(cf)
 		{}
 
+		/** Initialize p to 0 */
+		Element& init( Element& p ) const
+		{
+			return p = 0;
+		}
+
 		/** Initialize p to the constant y (p = y*x^0) */
 		template <class ANY>
 		Element& init( Element& p, const ANY& y ) const
