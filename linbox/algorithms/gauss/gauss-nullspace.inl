@@ -2,7 +2,7 @@
  * Copyright (C) LinBox 2008
  *
  * Written by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
- * Time-stamp: <12 Dec 23 13:13:38 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <26 Jan 24 16:05:55 Jean-Guillaume.Dumas@imag.fr>
  *
  *
  * ========LICENCE========
@@ -104,11 +104,11 @@ namespace LinBox
 
 		Permutation<Field> P(field(),(int)Nj);
 
-		// A.write( std::cerr << "A:=", Tag::FileFormat::Maple ) << ';' << std::endl;
+// A.write( std::cerr << "A:=", Tag::FileFormat::Maple ) << ';' << std::endl;
 		this->InPlaceLinearPivoting(Rank, Det, A, P, Ni, Nj );
 
-		// P.write( std::cerr << "P:=", Tag::FileFormat::Maple ) << ';' << std::endl;
-		// A.write( std::cerr << "Ua:=", Tag::FileFormat::Maple ) << ';' << std::endl;
+// P.write( std::cerr << "P:=", Tag::FileFormat::Maple ) << ';' << std::endl;
+// A.write( std::cerr << "Ua:=", Tag::FileFormat::Maple ) << ';' << std::endl;
 
 		for(size_t i=0; i< Ni; ++i) {
 			if (A[i].size() == 0) {
@@ -123,7 +123,7 @@ namespace LinBox
 			}
 		}
 
-		// A.write( std::cerr << "Ub:=", Tag::FileFormat::Maple ) << ';' << std::endl;
+// A.write( std::cerr << "Ub:=", Tag::FileFormat::Maple ) << ';' << std::endl;
 
 		return this->nullspacebasis(x, Rank, A, P);
 	}

@@ -85,7 +85,7 @@ namespace Givaro
          * @param x reference to Integer to contain output (reference returned).
          * @param y constant reference to field element.
          */
- 	template <>
+    template <>
 	Integer& Caster(Integer& x, const NTL::zz_p& y)
 	{
 		return x = int64_t(rep(y));
@@ -130,7 +130,7 @@ namespace LinBox
 		typedef NTL::zz_p Element ;
 		typedef Givaro::UnparametricOperations<Element> Father_t ;
 		typedef UnparametricRandIter<NTL::zz_p> RandIter;
-		
+
 		const Element zero,one,mOne ;
 
 
@@ -145,6 +145,11 @@ namespace LinBox
 			,zero( NTL::to_zz_p(0)),one( NTL::to_zz_p(1)),mOne(-one)
             {}
 
+		Element &init (Element &x) const
+            {
+                return x = NTL::to_zz_p(0);
+            }
+
 		Element& init(Element& x, const double& y) const
             {
                 double z = fmod(y,(double)Element::modulus());
@@ -153,7 +158,7 @@ namespace LinBox
                 return x = NTL::to_zz_p(static_cast<long>(z)); //rounds towards 0
             }
 
-		Element &init (Element &x, const integer &y=0) const
+		Element &init (Element &x, const integer &y) const
             {
                 NTL::ZZ tmp= NTL::to_ZZ(std::string(y).data());
                 return x = NTL::to_zz_p(tmp);
