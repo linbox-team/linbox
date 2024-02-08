@@ -68,16 +68,16 @@ int main (int argc, char **argv)
   GD.InPlaceLinearPivoting(Rank, Det, A, P, Ni, Nj );
 
   for(size_t i=0; i< Ni; ++i) {
-    if (A[i].size() == 0) {
-      size_t j(i);
-      if (nextnonzero(j,Ni,A)) {
-	A[i] = A[j];
-	A[j].resize(0);
+      if (A[i].size() == 0) {
+          size_t j(i);
+          if (nextnonzero(j,Ni,A)) {
+              A[i] = A[j];
+              A[j].resize(0);
+          }
+          else {
+              break;
+          }
       }
-      else {
-	break;
-      }
-    }
   }
   size_t nullity = A.coldim()-Rank;
   DenseMatrix<Field> NullSpace(F,A.coldim(),nullity);

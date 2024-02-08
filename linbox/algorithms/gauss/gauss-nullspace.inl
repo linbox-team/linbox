@@ -2,7 +2,7 @@
  * Copyright (C) LinBox 2008
  *
  * Written by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
- * Time-stamp: <27 Aug 20 15:17:09 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <26 Jan 24 16:05:55 Jean-Guillaume.Dumas@imag.fr>
  *
  *
  * ========LICENCE========
@@ -50,6 +50,7 @@ namespace LinBox
 		}
 		else {
 			size_t nullity = U.coldim()-Rank;
+            x.resize(x.rowdim(),nullity);
 			if (nullity != 0) {
 				// compute U2T s.t. U = [ U1 | -U2T^T ]
 				_Matrix U2T(field(),nullity,Rank);
@@ -62,7 +63,6 @@ namespace LinBox
 				for(typename _Matrix::Iterator u2it=U2T.Begin();
 				    u2it != U2T.End(); ++u2it)
 					field().negin(*u2it);
-
 
 				// Compute the basis vector by vector
 				typedef Sparse_Vector< typename _Field::Element > SparseVect;
@@ -104,11 +104,11 @@ namespace LinBox
 
 		Permutation<Field> P(field(),(int)Nj);
 
-		// A.write( std::cerr << "A:=", Tag::FileFormat::Maple ) << ';' << std::endl;
+// A.write( std::cerr << "A:=", Tag::FileFormat::Maple ) << ';' << std::endl;
 		this->InPlaceLinearPivoting(Rank, Det, A, P, Ni, Nj );
 
-		// P.write( std::cerr << "P:=", Tag::FileFormat::Maple ) << ';' << std::endl;
-		// A.write( std::cerr << "Ua:=", Tag::FileFormat::Maple ) << ';' << std::endl;
+// P.write( std::cerr << "P:=", Tag::FileFormat::Maple ) << ';' << std::endl;
+// A.write( std::cerr << "Ua:=", Tag::FileFormat::Maple ) << ';' << std::endl;
 
 		for(size_t i=0; i< Ni; ++i) {
 			if (A[i].size() == 0) {
@@ -123,7 +123,7 @@ namespace LinBox
 			}
 		}
 
-		// A.write( std::cerr << "Ub:=", Tag::FileFormat::Maple ) << ';' << std::endl;
+// A.write( std::cerr << "Ub:=", Tag::FileFormat::Maple ) << ';' << std::endl;
 
 		return this->nullspacebasis(x, Rank, A, P);
 	}
