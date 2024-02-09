@@ -2,7 +2,7 @@
  * Copyright (C) 1999 Jean-Guillaume Dumas
  *
  * Written by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
- * Time-stamp: <27 Aug 20 15:18:19 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <09 Feb 24 14:31:48 Jean-Guillaume.Dumas@imag.fr>
  *
  *
  * ========LICENCE========
@@ -549,9 +549,10 @@ namespace LinBox
 
                 if (p != k) {
                     field().negin(determinant);
-                    Vector vtm = LigneA[(size_t)k];
-                    LigneA[(size_t)k] = LigneA[(size_t)p];
-                    LigneA[(size_t)p] = vtm;
+//                     Vector vtm = LigneA[(size_t)k];
+//                     LigneA[(size_t)k] = LigneA[(size_t)p];
+//                     LigneA[(size_t)p] = vtm;
+                    std::swap(LigneA[(size_t)k], LigneA[(size_t)p]);
                 }
 
                 //                     LigneA.write(std::cerr << "BEF, k:" << k << ", Rank:" << Rank << ", c:" << c)<<std::endl;
@@ -854,9 +855,7 @@ namespace LinBox
 
         // permutation if one has been performed to compute the pivot
         if (indpermut != k) {
-            typename Vector::value_type tmp = lignecur[k];
-            lignecur[k] = lignecur[indpermut];
-            lignecur[indpermut] = tmp;
+            std::swap(lignecur[k],lignecur[indpermut]);
         }
 
         typename Vector::value_type headcoeff;
@@ -882,9 +881,7 @@ namespace LinBox
 
         // permutation if one has been performed to compute the pivot
         if (indpermut != k) {
-            typename Vector::value_type tmp = lignecur[k];
-            lignecur[k] = lignecur[indpermut];
-            lignecur[indpermut] = tmp;
+           std::swap(lignecur[k],lignecur[indpermut]);
         }
 
         typename Vector::value_type headcoeff;
