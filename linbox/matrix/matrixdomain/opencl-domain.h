@@ -208,8 +208,8 @@ namespace LinBox{
 		 * @param j Column index of entry, 0...coldim() - 1
 		 * @param a_ij Element to set
 		 */
-		const Element& setEntry(size_t i, size_t j, const Element& a_ij){
-			return _Mat->setEntry(_r0 + i, _c0 + j, a_ij);
+		const void setEntry(size_t i, size_t j, const Element& a_ij){
+			_Mat->setEntry(_r0 + i, _c0 + j, a_ij);
 		}
 
 		/** Get a writeable reference to an entry in the matrix.
