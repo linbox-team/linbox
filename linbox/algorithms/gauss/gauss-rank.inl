@@ -1,7 +1,7 @@
 /* linbox/algorithms/gauss-rank.inl
  * Copyright (C) 2009 The LinBox group
  *
- * Time-stamp: <24 Aug 17 18:20:18 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <09 Feb 24 13:21:59 Jean-Guillaume.Dumas@imag.fr>
  *
  *
  * ========LICENCE========
@@ -74,9 +74,8 @@ namespace LinBox
 				  size_t  Nj,
 				  PivotStrategy   reord)  const
 	{
-		_Matrix CopyA(Ni);
-		for(size_t i = 0; i < Ni; ++i)
-			CopyA[i] = A[i];
+		_Matrix CopyA(A.field(),Ni,Nj);
+        std::copy(A.rowBegin(), A.rowEnd(), CopyA.rowBegin());
 		return rankInPlace(Rank, CopyA, Ni, Nj, reord);
 	}
 } // namespace LinBox
