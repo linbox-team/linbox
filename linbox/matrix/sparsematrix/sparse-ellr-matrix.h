@@ -1106,7 +1106,7 @@ namespace LinBox
 				const_cast<element_iterator>(_data_end)= iter._data_end  ;
 				const_cast<Field &>(_field) = iter._field  ;
 				const_cast<std::vector<size_t>&>(_rowid) = iter._rowid;
-				const_cast<size_t&>(ld) = iter._ld ;
+				const_cast<size_t&>(_ld) = iter._ld ;
 				_row = iter._row ;
 
 				return *this;
@@ -1255,7 +1255,7 @@ namespace LinBox
 				const_cast<data_it>(_data_beg) = iter._data_beg ;
 				const_cast<data_it>(_data_end) = iter._data_end  ;
 				const_cast<Field &>(_field)    = iter._field ;
-				const_cast<size_t&>(ld)= iter._ld ;
+				const_cast<size_t&>(_ld)       = iter._ld ;
 				_row       = iter._row ;
 
 				return *this;
