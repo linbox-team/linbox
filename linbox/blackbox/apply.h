@@ -593,8 +593,10 @@ namespace LinBox
 						 */
 						int rclen = (int)num_chunks*2 + 5;
 
-						unsigned char* combined = new unsigned char[(size_t)rc*_n*(size_t)rclen];
-						memset(combined, 0, (size_t)rc*_n*(size_t)rclen);
+						// https://github.com/linbox-team/linbox/issues/304#issuecomment-1766621021
+						size_t combined_size = (size_t)rc*_n*(size_t)rclen + 1;
+						unsigned char* combined = new unsigned char[combined_size];
+						memset(combined, 0, combined_size);
 
 						//order from major index to minor: combining index, component of sol'n, byte
 						//compute a product (chunk times x) for each chunk
