@@ -71,16 +71,12 @@ namespace LinBox
 	{
         linbox_check( areFieldEqual(A.field(),field() ) );
 
-		typename _Matrix::ConstIterator         iter_value = A.Begin();
-		typename _Matrix::ConstIndexedIterator  iter_index = A.IndexedBegin();
-
-        // PG -> BUG if we use iter_value !=A.End()
-		for (;iter_index != A.IndexedEnd(); ++iter_value,++iter_index){
+		for (auto iter(A.IndexedBegin());iter != A.IndexedEnd(); ++iter){
 			int64_t i,j;
-			i=(int64_t)iter_index.rowIndex()-(int64_t)i0;
-			j=(int64_t)iter_index.colIndex()-(int64_t)j0;
+			i=(int64_t)iter.rowIndex()-(int64_t)i0;
+			j=(int64_t)iter.colIndex()-(int64_t)j0;
 			if ( (i>=0) && (j>=0) && (i< (int64_t)m) && (j < (int64_t)n))
-				setEntry((size_t)i, (size_t)j, *iter_value);
+				setEntry((size_t)i, (size_t)j, iter.value());
 		}
 	}
 

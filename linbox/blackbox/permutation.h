@@ -110,8 +110,7 @@ namespace LinBox
 				_indices[(size_t)i] = i+1 % n;
 		}
 
-		//void random(size_t n)
-            void random(unsigned int seed= static_cast<unsigned int>(std::time(nullptr)))
+        void random(unsigned int seed= static_cast<unsigned int>(std::time(nullptr)))
 		{
 			size_t n = rowdim();
 			identity((int)n);
@@ -253,7 +252,7 @@ namespace LinBox
 					Y.setEntry(k,j, X.getEntry(x, i, j));
 			}
 		/* desired form
-		 	for (size_t i = 0; i < rowdim(); ++i)
+			for (size_t i = 0; i < rowdim(); ++i)
 			{
 				Matrix Yrow(Y, _indices[i], 0, 1, Y.coldim());
 				Matrix Xrow(X, i, 0, 1, X.coldim());
