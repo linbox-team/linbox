@@ -297,7 +297,8 @@ namespace LinBox
 		field().divin (alpha, delta[j]);
 		field().negin (alpha);
 
-		field().subin (beta, beta);               //    beta <- 0
+		// field().subin (beta, beta);               //    beta <- 0
+		field().assign (beta, field().zero);               //    beta <- 0
 
 		_VD.dot (wb, _w[j], b);              //       x <- <w_j, b> / delta_j w_j
 		field().divin (wb, delta[j]);
