@@ -82,7 +82,7 @@ namespace LinBox
 		}
 #endif
 
-		SparseMatrix<_Field, SparseMatrixFormat::ELL_R> (const _Field & F) :
+		SparseMatrix(const _Field & F) :
 			_rownb(0),_colnb(0)
 			,_maxc(0)
 			,_nbnz(0)
@@ -94,7 +94,7 @@ namespace LinBox
 		{
 		}
 
-		SparseMatrix<_Field, SparseMatrixFormat::ELL_R> (const _Field & F, size_t m, size_t n) :
+		SparseMatrix(const _Field & F, size_t m, size_t n) :
 			_rownb(m),_colnb(n)
 			,_maxc(0)
 			,_nbnz(0)
@@ -106,9 +106,7 @@ namespace LinBox
 		{
 		}
 
-		SparseMatrix<_Field, SparseMatrixFormat::ELL_R> (const _Field & F,
-								 size_t m, size_t n,
-								 size_t z) :
+		SparseMatrix(const _Field & F, size_t m, size_t n, size_t z) :
 			_rownb(m),_colnb(n)
 			, _maxc(0)
 			, _nbnz(z)
@@ -120,7 +118,7 @@ namespace LinBox
 		{
 		}
 
-		SparseMatrix<_Field, SparseMatrixFormat::ELL_R> (const SparseMatrix<_Field, SparseMatrixFormat::CSR> & S) :
+		SparseMatrix(const SparseMatrix<_Field, SparseMatrixFormat::CSR> & S) :
 			_rownb(S._rownb),_colnb(S._colnb)
 			,_maxc(S._maxc)
 			,_nbnz(S._nbnz)
@@ -228,7 +226,7 @@ namespace LinBox
 
 
 		template<class VectStream>
-		SparseMatrix<_Field, SparseMatrixFormat::ELL_R> (const _Field & F, VectStream & stream) :
+		SparseMatrix(const _Field & F, VectStream & stream) :
 			_rownb(stream.size()),_colnb(stream.dim())
 			, _maxc(0)
 			, _nbnz(0)
@@ -243,7 +241,7 @@ namespace LinBox
 			finalize();
 		}
 
-		SparseMatrix<_Field, SparseMatrixFormat::ELL_R> ( MatrixStream<Field>& ms ):
+		SparseMatrix(MatrixStream<Field>& ms):
 			_rownb(0),_colnb(0)
 			,_maxc(0)
 			,_nbnz(0)
@@ -317,7 +315,7 @@ namespace LinBox
 		 * @param S a sparse matrix in any storage.
 		 */
 		template<class _OtherStorage>
-		SparseMatrix<_Field, SparseMatrixFormat::ELL_R> (const SparseMatrix<_Field, _OtherStorage> & S) :
+		SparseMatrix(const SparseMatrix<_Field, _OtherStorage> & S) :
 			_rownb(S.rowdim()),_colnb(S.coldim())
 			,_nbnz(S.size())
 			,_rowid(S.rowdim(),0)
