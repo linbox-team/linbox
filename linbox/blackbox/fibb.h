@@ -9,8 +9,8 @@
 /*
 FIBB: Fast Inverse BlackBox
 
-The FIBB functions are those of a blackbox plus rank, det, and the solvers: 
-Solve, NullSpaceRandom, NullSpaceBasis. 
+The FIBB functions are those of a blackbox plus rank, det, and the solvers:
+Solve, NullSpaceRandom, NullSpaceBasis.
 The solvers have left and right forms.
 
 THe FIBBs are Diagonal, Permutation, Triangular, and products of FIBBs in which one or both are nonsingular.
@@ -19,7 +19,7 @@ THe FIBBs are Diagonal, Permutation, Triangular, and products of FIBBs in which 
 namespace LinBox{
 
 template <class Ring>
-struct FIBB : public BB<Ring> 
+struct FIBB : public BB<Ring>
 {
 	using Field = Ring;
 	using Element = typename Ring::Element;
@@ -38,8 +38,8 @@ struct FIBB : public BB<Ring>
 
 	// solveRight and solveLeft
 	/** @brief Y: AY = X, for this A.
-		Solve nonsingular or consistent singular system.  
-		If it is consistent singular, an arbitrary solution is provided.  
+		Solve nonsingular or consistent singular system.
+		If it is consistent singular, an arbitrary solution is provided.
 		X and Y must have identical shape.
 
 		Note that Y+Z is a random sample of the solution space after
@@ -47,31 +47,31 @@ struct FIBB : public BB<Ring>
 
 		Behaviour is unspecified for inconsistent systems (see solveMP).
 	*/
-	virtual Matrix& solveRight(Matrix& Y, const Matrix& X) const 
+	virtual Matrix& solveRight(Matrix& Y, const Matrix& X) const
 	= 0;
 	/// Y: YA = X, for this A
-	virtual Matrix& solveLeft(Matrix& Y, const Matrix& X) const 
+	virtual Matrix& solveLeft(Matrix& Y, const Matrix& X) const
 	= 0;
 
 	/// N: AN = 0, each col random.
-	virtual Matrix& nullspaceRandomRight(Matrix& N) const 
+	virtual Matrix& nullspaceRandomRight(Matrix& N) const
 	= 0;
 	/// N: NA = 0, each row random.
-	virtual Matrix& nullspaceRandomLeft(Matrix& N) const 
+	virtual Matrix& nullspaceRandomLeft(Matrix& N) const
 	= 0;
 	// this generic is virtual so that it may be specialized for performance
 
 	// nullspaceBasisRight and nullspaceBasisLeft
 
 	/** B: columns are a right nullspace basis for this A.
-		
+
 		B is resized and filled so that:
 		(1) AB = 0, (2) Ax = 0 => exists y: x = By, and (3) B has full rank.
 	*/
-	virtual ResizableMatrix& nullspaceBasisRight(ResizableMatrix& B) const 
+	virtual ResizableMatrix& nullspaceBasisRight(ResizableMatrix& B) const
 	= 0;
 	/// BA= 0 and xA = 0 => exists y: x = yB and B full rank.
-	virtual ResizableMatrix& nullspaceBasisLeft(ResizableMatrix& B) const 
+	virtual ResizableMatrix& nullspaceBasisLeft(ResizableMatrix& B) const
 	= 0;
 }; // class FIBB
 
@@ -84,7 +84,7 @@ DenseMatrix<Field>& genericNullspaceRandomRight(DenseMatrix<Field>& N, const FIB
 	ResizableMatrix Xb(A.field(), N.rowdim(), N.coldim());
 	ResizableMatrix Yb(A.field(), A.rowdim(), N.coldim());
 	Matrix X(Xb); X.random();
-	Matrix Y(Yb); 
+	Matrix Y(Yb);
 	A.applyRight(Y, X); // Y = AX
 	A.solveRight(N, Y); // AN = AX
 	BlasMatrixDomain<Field> MD(A.field());
@@ -100,7 +100,7 @@ DenseMatrix<Field>& genericNullspaceRandomLeft(DenseMatrix<Field>& N, const FIBB
 	ResizableMatrix Xb(A.field(), N.rowdim(), N.coldim());
 	ResizableMatrix Yb(A.field(), N.rowdim(), A.coldim());
 	Matrix X(Xb); X.random();
-	Matrix Y(Yb); 
+	Matrix Y(Yb);
 	A.applyLeft(Y, X); // Y = XA
 	A.solveLeft(N, Y); // NA = XA
 	BlasMatrixDomain<Field> MD(A.field());
