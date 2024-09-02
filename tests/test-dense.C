@@ -153,7 +153,6 @@ template <class Field>
 static bool testVandermonde (Field &F, size_t n, int iterations = 1, int N = 1)
 {
 	typedef DenseVector<Field> Vector;
-	typedef DenseVector <Field> Polynomial;
 	typedef DenseMatrix <Field> Blackbox;
 
 	commentator().start ("Testing Vandermonde apply", "testVandermonde", (unsigned int)iterations);
