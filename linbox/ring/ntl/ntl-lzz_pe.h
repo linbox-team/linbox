@@ -396,34 +396,29 @@ namespace LinBox
 		typedef NTL::zz_pE Element;
         typedef size_t Residu_t;
 
-		UnparametricRandIter<NTL::zz_pE>(const NTL_zz_pE & F ,
-                                         const uint64_t seed = 0,
-                                         const Residu_t& size = 0
-                                         ) :
-                _size(size), _seed(seed), _ring(F)
-            {
-                if(_seed == 0)
-                    NTL::SetSeed(NTL::to_ZZ(static_cast<long unsigned int>(std::time(nullptr))));
-                else
-                    NTL::SetSeed(NTL::to_ZZ(static_cast<long unsigned int>(_seed)));
-            }
+		UnparametricRandIter(const NTL_zz_pE & F ,
+                             const uint64_t seed = 0,
+                             const Residu_t& size = 0) :
+            _size(size), _seed(seed), _ring(F) {
+            if(_seed == 0)
+                NTL::SetSeed(NTL::to_ZZ(static_cast<long unsigned int>(std::time(nullptr))));
+            else
+                NTL::SetSeed(NTL::to_ZZ(static_cast<long unsigned int>(_seed)));
+        }
 
         const NTL_zz_pE& ring() const { return _ring; }
-		UnparametricRandIter<NTL::zz_pE>(const UnparametricRandIter<NTL::zz_pE>& R) :
-                _size(R._size), _seed(R._seed), _ring(R._ring)
+		UnparametricRandIter(const UnparametricRandIter<NTL::zz_pE>& R) :
+            _size(R._size), _seed(R._seed), _ring(R._ring) {
+            if(_seed == 0)
+                NTL::SetSeed(NTL::to_ZZ(static_cast<long unsigned int>(std::time(nullptr))));
+            else
+                NTL::SetSeed(NTL::to_ZZ(static_cast<long unsigned int>(_seed)));
+        }
 
-            {
-                if(_seed == 0)
-                    NTL::SetSeed(NTL::to_ZZ(static_cast<long unsigned int>(std::time(nullptr))));
-                else
-                    NTL::SetSeed(NTL::to_ZZ(static_cast<long unsigned int>(_seed)));
-            }
-
-		Element& random (Element& x) const
-            {
-                NTL::random(x);
-                return x;
-            }
+		Element& random (Element& x) const {
+            NTL::random(x);
+            return x;
+        }
 
 	protected:
 		size_t _size;
