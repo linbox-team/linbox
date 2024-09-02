@@ -155,6 +155,7 @@ namespace FLINT {
 		// #include "longlong.h"
 #define __GMP_BITS_PER_MP_LIMB GMP_LIMB_BITS
 #include "flint/flint.h"
+#include "flint/fmpz.h"
 #include "flint/fmpz_mat.h"
 	}
 }
