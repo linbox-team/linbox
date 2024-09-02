@@ -257,33 +257,33 @@ namespace LinBox
 				 ( _CField.isMOne( NTL::ConstTerm(x) ) ) );
 
 		}
-		
+
 		bool isIrreducible(const Element &x) const {
 			return NTL::DetIrredTest(x);
 		}
-		
+
 		void factor(std::vector<std::pair<Element, long>> &factors, const Element &f) const {
 			NTL::Vec<NTL::Pair<Element, long>> factors1;
 			NTL::CanZass(factors1, f);
-			
+
 			for (int i = 1; i <= factors1.length(); i++) {
 				NTL::Pair<Element, long> tup = factors1(i);
 				std::pair<Element, long> tmp(tup.a, tup.b);
 				factors.push_back(tmp);
 			}
 		}
-		
+
 		void squareFree(std::vector<std::pair<Element, long>> &factors, const Element &f) const {
 			NTL::Vec<NTL::Pair<Element, long>> factors1;
 			NTL::SquareFreeDecomp(factors1, f);
-			
+
 			for (int i = 1; i <= factors1.length(); i++) {
 				NTL::Pair<Element, long> tup = factors1(i);
 				std::pair<Element, long> tmp(tup.a, tup.b);
 				factors.push_back(tmp);
 			}
 		}
-		
+
 		/** The LinBox field for coefficients */
 		const CoeffField& getCoeffField() const
 		{ return _CField; }
@@ -315,14 +315,14 @@ namespace LinBox
 			c = NTL::LeadCoeff(p);
 			return c;
 		}
-		
-		Element& monic(Element& r, const Element& p) const {			
+
+		Element& monic(Element& r, const Element& p) const {
 			r = p;
 			NTL::MakeMonic(r);
 			return r;
 		}
-		
-		Element& monicIn(Element& p) const {			
+
+		Element& monicIn(Element& p) const {
 			NTL::MakeMonic(p);
 			return p;
 		}
@@ -340,32 +340,32 @@ namespace LinBox
 			NTL::SetCoeff(p,(long)i,c);
 			return p;
 		}
-		
+
 		Element &leftShift(Element &x, const Element &a, size_t shift) const {
 			x = a << shift;
 			return x;
 		}
-		
+
 		Element &leftShiftIn(Element &a, size_t shift) const {
 			a <<= shift;
 			return a;
 		}
-		
+
 		Element &rightShift(Element &x, const Element &a, size_t shift) const {
 			x = a >> shift;
 			return x;
 		}
-		
+
 		Element &rightShiftIn(Element &a, size_t shift) const {
 			a >>= shift;
 			return a;
 		}
-		
+
 		Element& mulCoeffIn(Element &p, const Coeff &c) const {
 			p *= c;
 			return p;
 		}
-		
+
 		Element& pow(Element& x, const Element& a, long e) const {
 			NTL::power(x, a, e);
 			return x;
@@ -403,17 +403,17 @@ namespace LinBox
 		{
 			NTL::DivRem(q,r,a,b);
 		}
-		
+
 		bool isDivisor(const Element &a, const Element &b) const {
 			if (isZero(b)) {
 				return false;
 			}
-			
+
 			Element tmp;
 			rem(tmp, a, b);
 			return isZero(tmp);
 		}
-		
+
 		// a = b^(-1) % f
 		Element& invMod(Element &a, const Element &b, const Element &f) const
 		{
@@ -441,7 +441,7 @@ namespace LinBox
 			a = res;
 			return a;
 		}
-		
+
 		Element& gcd( Element& res, const Element& a, const Element& b ) const
 		{
 			NTL::GCD(res,a,b);
@@ -453,29 +453,29 @@ namespace LinBox
 			NTL::XGCD(res,s,t,a,b);
 			return res;
 		}
-		
+
 		Element &dxgcd(Element &g, Element &s, Element &t, Element &u, Element &v, const Element &a, const Element &b) const {
 			gcd(g,s,t,a,b);
-			
+
 			div(u,a,g);
 			div(v,b,g);
-			
+
 			return g;
 		}
 
 		/** Get the least common multiple of two polynomials */
 		Element& lcmin( Element& a, const Element& b ) const
 		{
-			Element tmp, res; 
+			Element tmp, res;
 			gcd(tmp, a, b);
 			div(res, a, tmp);
 			return mul(a, res, b);
 		}
-		
+
 		Element& lcm( Element& res, const Element& a, const Element& b ) const
 		{
             if (isZero(a) || isZero(b)) return assign(res,zero);
-			Element tmp; 
+			Element tmp;
 			gcd(tmp,a,b);
 			div(res, a, tmp);
 			return mulin(res, b);
@@ -502,14 +502,14 @@ namespace LinBox
 		{
 			return os << "Polynomial ring using NTL::zz_pX";
 		}
-		
+
 		std::ostream& write( std::ostream& os, const Element& x) const {
 			// return Father_t::write(os, x);
 			if (isZero(x)) {
 				os << "0";
 				return os;
 			}
-			
+
 			bool first = true;
 			for (size_t i = 0; i <= deg(x); i++) {
 				Coeff xi = NTL::coeff(x, i);
@@ -517,7 +517,7 @@ namespace LinBox
 					if (!first) {
 						os << "+";
 					}
-					
+
 					if (xi == 1 && i > 0) {
 						os << "x";
 					} else {
@@ -526,7 +526,7 @@ namespace LinBox
 							os << "*x";
 						}
 					}
-					
+
 					if (i > 1) {
 						os << "^" << i;
 					}
@@ -535,16 +535,16 @@ namespace LinBox
 			}
 			return os;
 		}
-		
+
 		std::istream& read(std::istream& i, Element& p) const {
 			long deg;
 			i >> deg;
-			
+
 			std::vector<integer> coeffs(deg + 1);
 			for(; deg >= 0; --deg) {
 				i >> coeffs[deg];
 			}
-			
+
 			init(p, coeffs);
 			return i;
 		}
@@ -557,11 +557,11 @@ namespace LinBox
 		template< class ANY >
 		ANY& convert( ANY& x, const Element& y ) const
 		{ return x; }
-		
+
         const NTL_zz_pE quotient(const Element &f) const {
-        	integer c;
-        	QuotientRing QR(characteristic(c), f);
-        	return QR;
+	integer c;
+	QuotientRing QR(characteristic(c), f);
+	return QR;
         }
 
 	protected:
@@ -585,40 +585,35 @@ namespace LinBox
 		typedef NTL::zz_pX Element;
         typedef size_t Residu_t;
 
-		UnparametricRandIter<NTL::zz_pX>(const NTL_zz_pX & F ,
-						 const uint64_t& seed = 0,
-						 const Residu_t& size = 0
-						) :
-                _size(size), _seed(seed), _ring(F)
-		{
+		UnparametricRandIter(const NTL_zz_pX & F ,
+                             const uint64_t& seed = 0,
+                             const Residu_t& size = 0) :
+            _size(size), _seed(seed), _ring(F) {
 			if(_seed == 0)
-                            NTL::SetSeed(NTL::to_ZZ(static_cast<long unsigned int>(std::time(nullptr))));
+                NTL::SetSeed(NTL::to_ZZ(static_cast<long unsigned int>(std::time(nullptr))));
 			else
-                            NTL::SetSeed(NTL::to_ZZ(static_cast<long unsigned int>(_seed)));
+                NTL::SetSeed(NTL::to_ZZ(static_cast<long unsigned int>(_seed)));
 		}
 
         const NTL_zz_pX& ring() const { return _ring; }
-		UnparametricRandIter<NTL::zz_pX>(const UnparametricRandIter<NTL::zz_pX>& R) :
-                _size(R._size), _seed(R._seed), _ring(R._ring)
-
-		{
+		UnparametricRandIter(const UnparametricRandIter<NTL::zz_pX>& R) :
+            _size(R._size), _seed(R._seed), _ring(R._ring) {
 			if(_seed == 0)
-                            NTL::SetSeed(NTL::to_ZZ(static_cast<long unsigned int>(std::time(nullptr))));
-                        else
-                            NTL::SetSeed(NTL::to_ZZ(static_cast<long unsigned int>(_seed)));
+                NTL::SetSeed(NTL::to_ZZ(static_cast<long unsigned int>(std::time(nullptr))));
+            else
+                NTL::SetSeed(NTL::to_ZZ(static_cast<long unsigned int>(_seed)));
 		}
 
-		Element& random (Element& x) const
-		{
+		Element& random (Element& x) const {
 			NTL::random(x, 1);
 			return x;
 		}
-		
+
 		Element& random(Element &x, size_t d) const {
 			NTL::random(x, d + 1);
 			return x;
 		}
-		
+
 		Element& randomIrreducible(Element &x, size_t d) const {
 			NTL::BuildIrred(x, (long) d);
 			return x;
@@ -629,7 +624,7 @@ namespace LinBox
 		uint64_t _seed;
         const NTL_zz_pX& _ring;
 	}; // class UnparametricRandIters
-	
+
 	template<>
 	class Hom<NTL_zz_pX, NTL_zz_pE> {
 	public:
@@ -643,11 +638,11 @@ namespace LinBox
 		Elt& image(Elt& t, const SrcElt& s) {
 			return t = NTL::conv<NTL::zz_pE>(s);
 		}
-		
+
 		SrcElt& preimage(SrcElt& s, const Elt& t) {
 			return s = NTL::conv<NTL::zz_pX>(t);
 		}
-		
+
 		const Source& source() { return _source;}
 		const Target& target() { return _target;}
 	private:

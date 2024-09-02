@@ -134,7 +134,7 @@ namespace LinBox {
 		}
 #endif
 
-		SparseMatrix<_Field, SparseMatrixFormat::CSR> (const _Field & F) :
+		SparseMatrix(const _Field & F) :
 			_rownb(0),_colnb(0)
 			,_nbnz(0)
 			,_start(1,0)
@@ -146,7 +146,7 @@ namespace LinBox {
 			_start[0] = 0 ;
 		}
 
-		SparseMatrix<_Field, SparseMatrixFormat::CSR> (const _Field & F, size_t m, size_t n) :
+		SparseMatrix(const _Field & F, size_t m, size_t n) :
 			_rownb(m),_colnb(n)
 			,_nbnz(0)
 			,_start(m+1,0)
@@ -158,9 +158,7 @@ namespace LinBox {
 			_start[0] = 0 ;
 		}
 
-		SparseMatrix<_Field, SparseMatrixFormat::CSR> (const _Field & F,
-							       size_t m, size_t n,
-							       size_t z) :
+		SparseMatrix(const _Field & F, size_t m, size_t n, size_t z) :
 			_rownb(m),_colnb(n)
 			, _nbnz(z)
 			,_start(m+1,0)
@@ -172,7 +170,7 @@ namespace LinBox {
 			_start[0] = 0 ;
 		}
 
-		SparseMatrix<_Field, SparseMatrixFormat::CSR> (const SparseMatrix<_Field, SparseMatrixFormat::CSR> & S) :
+		SparseMatrix(const SparseMatrix<_Field, SparseMatrixFormat::CSR> & S) :
 			_rownb(S._rownb),_colnb(S._colnb)
 			,_nbnz(S._nbnz)
 			,_start(S._start)
@@ -295,7 +293,7 @@ namespace LinBox {
 
 
 		template<class VectStream>
-		SparseMatrix<_Field, SparseMatrixFormat::CSR> (const _Field & F, VectStream & stream) :
+		SparseMatrix(const _Field & F, VectStream & stream) :
 			_rownb(stream.size()),_colnb(stream.dim())
 			, _nbnz(0)
 			, _start(_rownb+1,0)
@@ -324,7 +322,7 @@ namespace LinBox {
 			finalize();
 		}
 
-		SparseMatrix<_Field, SparseMatrixFormat::CSR> ( MatrixStream<Field>& ms ):
+		SparseMatrix( MatrixStream<Field>& ms ):
 			_rownb(0),_colnb(0)
 			,_nbnz(0)
 			,_start(1,0)
@@ -389,7 +387,7 @@ namespace LinBox {
 		 * @param S a sparse matrix in any storage.
 		 */
 		template<class _OtherStorage>
-		SparseMatrix<_Field, SparseMatrixFormat::CSR> (const SparseMatrix<_Field, _OtherStorage> & S) :
+		SparseMatrix(const SparseMatrix<_Field, _OtherStorage> & S) :
 			_rownb(S.rowdim()),_colnb(S.coldim()),
 			_start(S.rowdim()+1,0),_colid(S.size()),_data(S.size()),
 			_field(S.field())
