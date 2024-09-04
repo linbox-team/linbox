@@ -55,14 +55,9 @@
 #include "linbox/algorithms/diophantine-solver.h"
 #include <iostream>
 #include <fstream>
-#include "linbox/randiter/random-prime.h"
-
-#include "linbox/field/unparametric.h"
-#include "givaro/zring.h"
-#include "linbox/field/ntl.h"
+#include "linbox/randiter/gmp-random-prime.h"
 
 #include "linbox/field/archetype.h"
-//#include "linbox/field/givaro.h"
 #include "linbox/vector/vector-domain.h"
 
 #include <vector>
@@ -184,7 +179,7 @@ int test()
 	cout<<"' and Z/pZ of type '";
 	F.write(cout)<<"'"<<endl;
 
-	typedef DixonSolver<Ring, Field, class RandomPrime, Method::DenseElimination> QSolver;
+	typedef DixonSolver<Ring, Field, GmpRandomPrime, Method::DenseElimination> QSolver;
 	typedef DiophantineSolver<QSolver> ZSolver;
 
 	//typedef std::vector<std::pair<RingElement, RingElement> > FractionVector;
@@ -209,9 +204,9 @@ int test()
 
 		QSolver* rsolver;
 		if (defaultPrime == 0)
-			rsolver = new QSolver(R, LinBox::RandomPrime(primeBits));
+			rsolver = new QSolver(R, LinBox::GmpRandomPrime(primeBits));
 		else
-			rsolver = new QSolver(defaultPrime, R, LinBox::RandomPrime(primeBits));
+			rsolver = new QSolver(defaultPrime, R, LinBox::GmpRandomPrime(primeBits));
 
 		ZSolver zsolver(*rsolver);
 		SolverReturnStatus s;
@@ -413,8 +408,11 @@ void genTestData()
 	}
 
 	Givaro::ZRing<Integer> Z;
-	Givaro::ZRing<Integer>::RandIter ri(Z, 2*eBound,entrySeed); //for some reason this iterator tends to give numbers with
-	//large common factors, so we perturb the data a bit
+// 	Givaro::ZRing<Integer>::RandIter ri(Z, 2*eBound,entrySeed);
+    Givaro::ZRing<Integer>::RandIter ri(Z, entrySeed);
+    ri.setBitsize(eBound<<1);
+        //for some reason this iterator used to give numbers with
+        //large common factors, so we perturb the data a bit
 	bool notRandomEnough = (eBound >> 64) > 0;
 	double bigStuff = ((long long)1)<<25;
 	for (int i=0; i<n; i++) {
@@ -475,7 +473,7 @@ int main (int argc, char **argv)
 		useTimer = false;
 	}
 
-	writeCommandString (cout, args, argv[0]);
+	FFLAS::writeCommandString (cout, args, argv[0]);
 
 	if (c <= 0) c += n;
 	if (c <= 0) {

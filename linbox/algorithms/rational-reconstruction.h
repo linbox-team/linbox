@@ -825,7 +825,7 @@ namespace LinBox
 
 #ifdef RSTIMING
 			eval_dac.stop();
-			std::std::clog << eval_dac << ", Another way get answer mod(" << modulus << "): "; print(real_approximation);
+			real_approximation.write(std::clog << eval_dac << ", Another way get answer mod(" << modulus << "): ") << std::endl;
 
 			Timer ratrecon;
 			ratrecon.start();
