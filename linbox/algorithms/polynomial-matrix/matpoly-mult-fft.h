@@ -84,7 +84,7 @@ Givaro::Timer mychrono[3];
 namespace LinBox
 {
     template<typename Field>
-    bool check_mul (const PolynomialMatrix<Field, PMType::matfirst> &c,
+    inline bool check_mul (const PolynomialMatrix<Field, PMType::matfirst> &c,
                     const PolynomialMatrix<Field, PMType::matfirst> &a,
                     const PolynomialMatrix<Field, PMType::matfirst> &b,size_t deg) {
 
@@ -119,7 +119,7 @@ namespace LinBox
     }
  
     template<typename Field>
-    bool check_mul (const PolynomialMatrix<Field, PMType::polfirst> &c,
+    inline bool check_mul (const PolynomialMatrix<Field, PMType::polfirst> &c,
                     const PolynomialMatrix<Field, PMType::polfirst> &a,
                     const PolynomialMatrix<Field, PMType::polfirst> &b,size_t deg) {
 
@@ -165,7 +165,7 @@ namespace LinBox
 
 
     template<typename MatrixP_F>
-    bool check_midproduct (const MatrixP_F &c, const MatrixP_F &a, const MatrixP_F &b, bool smallLeft=true, size_t n0=0,size_t n1=0, size_t deg=0) {
+    inline bool check_midproduct (const MatrixP_F &c, const MatrixP_F &a, const MatrixP_F &b, bool smallLeft=true, size_t n0=0,size_t n1=0, size_t deg=0) {
         typename MatrixP_F::Matrix C1(c.field(),c.rowdim(),c.coldim()),C2(c.field(),c.rowdim(),c.coldim());
         typename MatrixP_F::Matrix A1(c.field(),a.rowdim(),a.coldim());
         typename MatrixP_F::Matrix B1(c.field(),b.rowdim(),b.coldim());
@@ -306,7 +306,7 @@ namespace LinBox
     // class PolynomialMatrixFFTMulDomain<Givaro::Modular<integer> > ;           // Mul in Zp[x] with p multiprecision
 
     // get the maximum prime for fft with modular<double> (matrix dim =k, nbr point = pts)
-    uint64_t maxFFTPrimeValue(uint64_t k, uint64_t pts) {
+    inline uint64_t maxFFTPrimeValue(uint64_t k, uint64_t pts) {
         uint64_t prime_max=std::sqrt( (1ULL<<53) /k)+1;
         size_t c=1;
         const int fct=24;
@@ -326,7 +326,7 @@ namespace LinBox
         return std::min(prime_max, uint64_t(Givaro::Modular<double>::maxCardinality()));
     }
 
-    void getFFTPrime(uint64_t prime_max, size_t lpts, integer bound, std::vector<integer> &bas, size_t k, size_t d){
+    inline void getFFTPrime(uint64_t prime_max, size_t lpts, integer bound, std::vector<integer> &bas, size_t k, size_t d){
         size_t nbp=0;
         bool b = RandomFFTPrime::generatePrimes (bas, prime_max, bound, lpts);
         if (!b){ /* not enough FFT prime found */

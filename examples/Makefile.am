@@ -83,7 +83,6 @@ LINBOX=@prefix@
 
 LINBOX_BIN=@bindir@
 
-
 # for compilation of new examples
 define comp_new_examp
 	$(AM_V_CXX)$(CXXCOMPILE) -c -o $@.$(OBJEXT) $<

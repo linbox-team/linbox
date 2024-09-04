@@ -73,7 +73,7 @@ namespace LinBox {
 #if defined (__CHECK_MBASIS) or defined (__CHECK_PMBASIS)
 #include <string>
         template<typename Field, typename Mat>
-        std::string check_orderbasis(const Field& F, const Mat& sigma,  const Mat& serie, size_t ord, int val,std::vector<size_t> &shift){
+        inline std::string check_orderbasis(const Field& F, const Mat& sigma,  const Mat& serie, size_t ord, int val,std::vector<size_t> &shift){
                 PolynomialMatrixMulDomain<Field> PMD(F);
                 MatrixDomain<Field> MD(F);
 #ifdef __PROBA_CHECK
@@ -882,7 +882,7 @@ namespace LinBox {
         
         typedef Givaro::Modular<RecInt::ruint128,RecInt::ruint256>   MYRECINT;
         template<>
-		size_t OrderBasis<MYRECINT,EarlyTerm<(size_t) -1> >::M_Basis(PolynomialMatrix<MYRECINT, PMType::polfirst>            &sigma,
+		inline size_t OrderBasis<MYRECINT,EarlyTerm<(size_t) -1> >::M_Basis(PolynomialMatrix<MYRECINT, PMType::polfirst>            &sigma,
                                                                      const PolynomialMatrix<MYRECINT, PMType::polfirst>      &serie,
                                                             size_t                 order,
                                                             std::vector<size_t>   &shift)

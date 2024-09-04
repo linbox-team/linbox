@@ -65,7 +65,7 @@ union TriplesCoord {
         }
 };
 
-std::ostream& operator<<(std::ostream& out, const TriplesCoord& coord)
+inline std::ostream& operator<<(std::ostream& out, const TriplesCoord& coord)
 {
 	out << coord.rowCol[0] << "," << coord.rowCol[1];
 	return out;
@@ -113,7 +113,7 @@ inline TriplesCoord operator-(const TriplesCoord& lhs,const TriplesCoord& rhs) {
 	return retVal;
 }
 
-void coordFromBlock(TriplesCoord& coord)
+inline void coordFromBlock(TriplesCoord& coord)
 {
 	Index temp,final;
 	Index localRow=0,localCol=0;
@@ -149,7 +149,7 @@ void coordFromBlock(TriplesCoord& coord)
 	coord.rowCol[1]=localCol;
 }
 
-void coordToBlock(TriplesCoord& coord)
+inline void coordToBlock(TriplesCoord& coord)
 {
 	Index temp,final;
 	Index localRow=coord.rowCol[0],localCol=coord.rowCol[1];
