@@ -55,11 +55,14 @@ int main (int argc, char **argv)
     DenseMatrix<Field> NullSpace(F,B.coldim(),B.coldim());
     GaussDomain<Field> GD(F);
     
+    Givaro::Timer chrono; chrono.start();
     GD.nullspacebasisin(NullSpace, B);
+    chrono.stop();
     
-    NullSpace.write( std::cerr << "X:=", Tag::FileFormat::Maple ) << ';' << std::endl;
+    NullSpace.write( std::cout << "X:=", Tag::FileFormat::Maple ) << ';' << std::endl;
 
-    std::cerr << "NullsSpace dimensions:" << NullSpace.rowdim() << 'x' << NullSpace.coldim() << std::endl;
+    std::clog << "NullSpace dimensions:" << NullSpace.rowdim() << 'x' << NullSpace.coldim() << ' '
+              << chrono << std::endl;
 
     return 0;
 }

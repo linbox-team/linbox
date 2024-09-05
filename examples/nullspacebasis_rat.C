@@ -67,7 +67,7 @@ int main (int argc, char **argv)
         std::clog << "Nullspace basis written in " << argv[2] << std::endl;
     }
 
-    std::clog << "NullsSpace dimensions:" << NullSpace.rowdim() << 'x' << NullSpace.coldim() << std::endl;
+    std::clog << "NullSpace dimensions:" << NullSpace.rowdim() << 'x' << NullSpace.coldim() << std::endl;
 
     return 0;
 }
