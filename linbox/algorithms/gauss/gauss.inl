@@ -516,7 +516,7 @@ namespace LinBox
             long p = k, s = (long)LigneA[(size_t)k].size ();
 
 #ifdef __LINBOX_FILLIN__
-            if ( ! (k % 100) ) {
+            if ( ! (k % sstep) ) {
                 size_t l;
                 long sl;
                 commentator().progress (k);
@@ -658,7 +658,7 @@ namespace LinBox
             long p = k, s =(long) LigneA[(size_t)k].size ();
 
 #ifdef __LINBOX_FILLIN__
-            if ( ! (k % 100) )
+            if ( ! (k % sstep) )
             {
                 size_t l;
                 long sl;
