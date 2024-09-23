@@ -1,0 +1,7 @@
+> sudo docker run -it debian:12 bash
+
+apt update
+apt install git make g++ gfortran libtool automake autoconf pkg-config wget bzip2
+cd; wget https://raw.githubusercontent.com/linbox-team/linbox/refs/heads/master/linbox-auto-install.sh
+chmod +x linbox-auto-install.sh
+./linbox-auto-install.sh --enable-openblas=yes --enable-gmp=yes --make-flags="-j 56"
