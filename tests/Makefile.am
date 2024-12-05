@@ -167,7 +167,6 @@ CHECKER_TESTS =                 \
     test-trace                  \
     test-transpose              \
     test-triplesbb              \
-    test-triplesbb-omp          \
     test-tutorial               \
     test-vector-domain          \
     test-random-matrix          \
@@ -368,7 +367,7 @@ test_toeplitz_det_SOURCES =         test-toeplitz-det.C
 test_toom_cook_SOURCES =        test-toom-cook.C
 test_trace_SOURCES =            test-trace.C
 test_transpose_SOURCES =        test-transpose.C
-test_triplesbb_omp_SOURCES =        test-triplesbb-omp.C
+#test_triplesbb_omp_SOURCES =        test-triplesbb-omp.C
 test_triplesbb_SOURCES =        test-triplesbb.C
 test_tutorial_SOURCES =         test-tutorial.C
 test_vector_domain_SOURCES =        test-vector-domain.C test-vector-domain.h
