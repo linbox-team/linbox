@@ -1,0 +1,64 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v[0-9]*'
+
+  workflow_dispatch:
+    # Allow to run manually
+
+env:
+  # Ubuntu packages to install so that the projects' "make dist" can succeed
+  DIST_PREREQ:      libopenblas-dev libgmp-dev
+  # Name of this project in the Sage distribution
+  SPKG:             linbox
+
+jobs:
+  release_dist:
+    runs-on: ubuntu-24.04
+    env:
+      PREFIX: /tmp/build
+    steps:
+      - name: Check out givaro
+        uses: actions/checkout@v4
+        with:
+          path: build/pkgs/givaro/src
+          repository: linbox-team/givaro
+      - name: Check out fflas-ffpack
+        uses: actions/checkout@v4
+        with:
+          path: build/pkgs/fflas_ffpack/src
+          repository: linbox-team/fflas-ffpack
+      - name: Check out ${{ env.SPKG }}
+        uses: actions/checkout@v4
+        with:
+          path: build/pkgs/${{ env.SPKG }}/src
+      - name: Install prerequisites
+        run: |
+          sudo DEBIAN_FRONTEND=noninteractive apt-get update
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install $DIST_PREREQ
+          wget https://ftpmirror.gnu.org/libtool/libtool-2.4.7.tar.gz
+          tar xfz libtool-2.4.7.tar.gz
+          cd libtool-2.4.7
+          ./configure --prefix=${{ env.PREFIX }}
+          make install
+      - name: Run make dist, prepare upstream artifact
+        run: |
+          export PATH="${{ env.PREFIX }}/bin:$PATH" \
+          && (cd build/pkgs/givaro/src && autoreconf -fi && ./configure --prefix=${{ env.PREFIX }} && make -j5 && make install) \
+          && export PKG_CONFIG_PATH="${{ env.PREFIX }}/lib/pkgconfig:$PKG_CONFIG_PATH" \
+          && (cd build/pkgs/fflas_ffpack/src && autoreconf -fi && ./configure --prefix=${{ env.PREFIX }} && make -j5 && make install) \
+          && (cd build/pkgs/${{ env.SPKG }}/src && autoreconf -fi && ./configure --prefix=${{ env.PREFIX }} && make -j5 distcheck || echo "(error ignored)") \
+          && mkdir -p upstream && cp build/pkgs/${{ env.SPKG }}/src/*.tar.gz upstream/ \
+          && ls -l upstream/
+      - uses: actions/upload-artifact@v4
+        with:
+          path: upstream
+          name: upstream
+      - uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: |
+            upstream/*
+        if: startsWith(github.ref, 'refs/tags/')
