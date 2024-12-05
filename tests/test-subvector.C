@@ -752,6 +752,12 @@ static bool testSubvector3(Field &F, size_t n)
 	//vector<int> ww(3, 77);
 	w = ww;
 	report << ww << std::endl;
+
+	report << "Constructing subvectors from subvector: ";
+	subVector ww1(w, 0, 0, Length);
+	report << ww1 << std::endl;
+
+
 #if 0
 	report << "Constructing subvector from iterators: ";
 	Subvect www(w.begin(), w.end());
