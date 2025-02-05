@@ -52,7 +52,7 @@ namespace LinBox
 		typedef typename Field::Element Element;
 		typedef BlasMatrix<Field> Coefficient;
         typedef PolynomialMatrix<Field,PMType::matfirst> PMatrix;
-                
+
 	private:
 		const Field           *_field;
 		VectorDomain<Field>    _VD;
@@ -90,14 +90,14 @@ namespace LinBox
 			// construct the matrix power series
                         // LeftPowerSerie = [ P(x)^T  I ]^T
                         // RighPowerSerie = [ P(x)   I ]^T --> this should be transposed but we use left order basis instead of right one
-			
+
                         PMatrix LeftPowerSerie (field(),2*block,block,deg+2);
-                        PMatrix RightPowerSerie(field(),block,2*block,deg+2);                        
+                        PMatrix RightPowerSerie(field(),block,2*block,deg+2);
 			for (size_t i=0;i< deg+2; ++i){
 				if (i <deg) {
 					for (size_t j=0;j<block;++j)
 						for (size_t k=0;k<block;++k){
-				                        field().assign(LeftPowerSerie.ref(j,k,i),  P[i].getEntry(j,k));				
+				                        field().assign(LeftPowerSerie.ref(j,k,i),  P[i].getEntry(j,k));
 							field().assign(RightPowerSerie.ref(k,j,i), P[i].getEntry(j,k));
                                                 }
 				}
@@ -106,12 +106,12 @@ namespace LinBox
                                 field().assign(LeftPowerSerie.ref (block+j, j ,0), one);
                                 field().assign(RightPowerSerie.ref(block+j, j, 0), one);
 			}
-                        
+
 			OrderBasis<Field> OB(F);
-                        
+
                         PMatrix LP1(field(),2*block,2*block,deg), RP1(field(),2*block,2*block,deg);
                         PMatrix LP2(field(),2*block,2*block,deg+2), RP2(field(),2*block,2*block,deg+2);
-                        
+
 			size_t two_n= block<<1;
 			std::vector<size_t> dlp1(two_n,0), drp1(two_n,0), dlp2(two_n,0), drp2(two_n,0);
 
@@ -121,7 +121,7 @@ namespace LinBox
 				dlp2[i]=1;
 				drp2[i]=1;
 			}
-                        
+
 			// Compute the sigma basis
 			//Timer chrono;
 			//chrono.start();
@@ -130,13 +130,13 @@ namespace LinBox
                         OB.PM_Basis(RP1, RightPowerSerie, deg-1, dlp1);
                         OB.PM_Basis(RP2, RightPowerSerie, deg+1, dlp2); // MUST BE OPTIMIZED -> modify power serie thanks to RP1 and compute small basis
 
-                        
+
 			std::vector<BlasMatrix<Field> > SLP1, SLP2, SRP1, SRP2;
 			extractLeftSigma  (SLP1, LP1, dlp1, block);
 			extractLeftSigma  (SLP2, LP2, dlp2, block);
 			extractTransposedRightSigma (SRP1, RP1, drp1, block);
 			extractTransposedRightSigma (SRP2, RP2, drp2, block);
-                        
+
 
 			BlasMatrix<Field> Res(field(),block,block), Inv(field(),block, block);
 
@@ -281,7 +281,7 @@ namespace LinBox
 				      std::vector<size_t>                       &defect,
 				      size_t                                      block) const
 		{
-                        
+
 			// take the block rows which have lowest defect
 			// compute permutation such that first block rows have lowest defect
 			std::vector<size_t> Perm(2*block);
@@ -314,7 +314,7 @@ namespace LinBox
 			// extract the sigma base
 			for (size_t k=0;k<S.size();++k){
 				for(size_t i=0;i<block;++i)
-					for (size_t j=0;j<block;++j)			
+					for (size_t j=0;j<block;++j)
 						S[k].setEntry(i,j, SigmaBase[k].getEntry(i,j));
 			}
 		}

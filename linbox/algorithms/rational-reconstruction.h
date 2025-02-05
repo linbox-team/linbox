@@ -336,7 +336,9 @@ namespace LinBox
 			typename Vector::iterator num_p; typename IVector::iterator res_p;
 			Integer tmp_res, neg_res, abs_neg, l, g;
 			_r. assign(den, _r.one);
+#ifdef RSTIMING
 			int counter=0;
+#endif
 			for (num_p = num. begin(), res_p = res. begin(); num_p != num. end(); ++ num_p, ++ res_p) {
 				_r. mul (tmp_res, *res_p, den);
 				_r. modin (tmp_res, modulus);
@@ -361,7 +363,9 @@ namespace LinBox
 #endif
 						return false;
 					}
+#ifdef RSTIMING
 					counter++;
+#endif
 					_r. lcm (l, den, tmp_den);
 					_r. div (g, l, den);
 
@@ -837,7 +841,9 @@ namespace LinBox
 
 			Vector denominator(_r,num.size());
 
-                        int counter=0;
+#ifdef RSTIMING
+            int counter=0;
+#endif
 			typename Vector::iterator   iter_approx = real_approximation.begin();
 			typename Vector1::iterator  iter_num    = num.begin();
 			typename Vector::iterator   iter_denom  = denominator.begin();
@@ -877,7 +883,9 @@ namespace LinBox
 
 					_r.mulin(common_den, *iter_denom);
 					idx_last_den=(int)i;
+#ifdef RSTIMING
 					counter++;
+#endif
 
 				}
 

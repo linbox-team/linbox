@@ -69,8 +69,8 @@ void SparseMatrix<Field_,SparseMatrixFormat::SMM>::shape(Index r, Index c) {
 }
 
 template<class Field_>
-void SparseMatrix<Field_,SparseMatrixFormat::SMM>::resize(Index r, Index c) { 
-	shape(r,c); 
+void SparseMatrix<Field_,SparseMatrixFormat::SMM>::resize(Index r, Index c) {
+	shape(r,c);
 }
 
 template<class Field_>
@@ -411,7 +411,6 @@ void SparseMatrix<Field_,SparseMatrixFormat::SMM>::randomEquiv(Index nz, int see
 		r = s;
 	}
 	bool flip = true;
-	int count=0;
 	while (nnz() < nz) {
 		nonzerorandom(field(),r,a);
 		i = ri.randomIntRange(0, rowdim()); j = ri.randomIntRange(0, coldim());
@@ -420,7 +419,6 @@ void SparseMatrix<Field_,SparseMatrixFormat::SMM>::randomEquiv(Index nz, int see
 			else addRow(a, i, j);
 			flip = not flip;
 		}
-		++count;
 	}
 }
 
@@ -572,7 +570,7 @@ void SparseMatrix<Field_,SparseMatrixFormat::SMM>::generateRandMat(SparseMatrix<
 {
         typedef typename Field::Element Element;
 
-        
+
         size_t m=mat.rowdim(),n=mat.coldim();
 	Element d;
 	typename Field::RandIter ri(mat.field(),0,seed);
