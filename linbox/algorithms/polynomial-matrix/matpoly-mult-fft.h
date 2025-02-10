@@ -55,7 +55,7 @@ Givaro::Timer mychrono[3];
         std::cout.precision(6);std::cout<<mychrono[lvl]<<std::endl;		\
         mychrono[lvl].clear();mychrono[lvl].start();                    \
     }
-  
+
 #ifdef __LINBOX_USE_OMP
 #define FFT_PROFILE_GET(lvl,x)                                          \
     // mychrono.stop();(x)+=mychrono.realtime();mychrono.clear();mychrono.start();
@@ -77,7 +77,7 @@ Givaro::Timer mychrono[3];
 #endif // FFT_PROFILER
 
 
-#ifndef FFT_DEG_THRESHOLD   
+#ifndef FFT_DEG_THRESHOLD
 #define FFT_DEG_THRESHOLD   4
 #endif
 
@@ -99,7 +99,7 @@ namespace LinBox
             BMD.addin(A1,a[k]);
         for (size_t k=0;k<b.size();k++)
             BMD.addin(B1,b[k]);
-    
+
         BMD.mul(C2,A1,B1);
         bool correct=BMD.areEqual(C1,C2);
         std::ostream& report = LinBox::commentator().report();
@@ -117,7 +117,7 @@ namespace LinBox
         }
         return correct;
     }
- 
+
     template<typename Field>
     inline bool check_mul (const PolynomialMatrix<Field, PMType::polfirst> &c,
                     const PolynomialMatrix<Field, PMType::polfirst> &a,
@@ -143,7 +143,7 @@ namespace LinBox
         for (size_t i=0;i<b.rowdim()*b.coldim();i++)
             for (size_t k=0;k<b.size();k++)
                 b.field().addin(B1.getPointer()[i], b.get(i,k));
-    
+
         BMD.mul(C2,A1,B1);
         bool correct=BMD.areEqual(C1,C2);
         std::ostream& report = LinBox::commentator().report();
@@ -161,7 +161,7 @@ namespace LinBox
         }
         return correct;
     }
-  
+
 
 
     template<typename MatrixP_F>
@@ -182,10 +182,10 @@ namespace LinBox
         myerror<<"deg"<<deg<<std::endl;
         myerror<<"n0="<<n0<<std::endl;
         myerror<<"n1="<<n1<<std::endl;
-    
+
         for (size_t k=0;k<deg;k++)
             BMD.addin(C1,c[k]);
-    
+
 
         if (smallLeft){
             size_t k=std::min(n0-1,a.size()-1);
@@ -197,15 +197,15 @@ namespace LinBox
                 //myerror<<"*b["<<j<<"]"<<std::endl;
                 BMD.axpyin(C2,A1,b[j]);
             }
-      
+
             for(;t<deg;t++,j++){
                 //myerror<<"*b["<<j<<"]"<<std::endl;
-                BMD.axpyin(C2,A1,b[j]);		
+                BMD.axpyin(C2,A1,b[j]);
             }
-	
+
             /* for (;j>=lastj ;j--){ */
-            /* 	myerror<<"*b["<<j<<"]"<<std::endl; */
-            /* 	BMD.axpyin(C2,A1,b[j]); */
+            /*	myerror<<"*b["<<j<<"]"<<std::endl; */
+            /*	BMD.axpyin(C2,A1,b[j]); */
             /* } */
 
 
@@ -224,15 +224,15 @@ namespace LinBox
             while(j>=lastj && n0==n1){
                 BMD.axpyin(C2,a[k++],b[j--]);
             }
-      
-      
+
+
             for (;j>=lastj && k<a.size() && t<deg;k++,j--,t++){
                 //myerror<<"+a["<<k<<"]"<<std::endl;
                 BMD.addin(A1,a[k]);
                 //myerror<<"*b["<<j<<"]"<<std::endl;
                 BMD.axpyin(C2,A1,b[j]);
             }
-      
+
             if (lastk>0 && lastk < size_t(-1) && lastj <= j){
                 A1.zero();
                 for(size_t t=0;t<deg;t++)
@@ -240,15 +240,15 @@ namespace LinBox
                 BMD.axpyin(C2,A1,b[lastj]);
             }
 
-      
+
         }
 
         else {
             report<<"Checking polynomial matrix midp  with smallLeft=false is not yet implemented...aborting";
             std::terminate();
-      
+
         }
-    
+
         bool correct=BMD.areEqual(C1,C2);
         report<<"Checking polynomial matrix "<<(n0==0&&n1==0?"midp ":"midp_gen ")
               <<a.rowdim()<<"x"<<a.coldim()<<"["<<a.size()<<"]"
@@ -271,13 +271,13 @@ namespace LinBox
         }
         return correct;
     }
-    
-    
 
 
 
 
-  
+
+
+
     // generic handler for multiplication using FFT
     template <class Field>
     class PolynomialMatrixFFTMulDomain {
@@ -292,10 +292,10 @@ namespace LinBox
         template<typename Matrix1, typename Matrix2, typename Matrix3>
         void midproduct (Matrix1 &c, const Matrix2 &a, const Matrix3 &b, bool smallLeft=true, size_t n0=0,size_t n1=0) const;
     };
-		
-	
+
+
     //class PolynomialMatrixFFTPrimeMulDomain ;                         // Mul in Zp[x] with p <2^32, (fflas, fourier)
-		
+
     // template <class T>
     // class PolynomialMatrixFFTMulDomain<Givaro::Modular<T> > ;        // Mul in Zp[x] with p^2 storable in type T
 
@@ -317,17 +317,19 @@ namespace LinBox
 
         //std::cout<<"maxFFTPrime: pts -> "<<pts<<std::endl;
         //std::cout<<"maxFFTPrime: replacing "<<k<<" -> "<<k/c<<std::endl;
-	  
+
         if (c>=k && c!=1){
             std::cout<<"MatPoly FFT (maxPrimeValue): impossible to find enough FFT Prime\n";
             std::terminate();
         }
-	  
+
         return std::min(prime_max, uint64_t(Givaro::Modular<double>::maxCardinality()));
     }
 
     inline void getFFTPrime(uint64_t prime_max, size_t lpts, integer bound, std::vector<integer> &bas, size_t k, size_t d){
+#ifdef VERBOSE_FFT
         size_t nbp=0;
+#endif
         bool b = RandomFFTPrime::generatePrimes (bas, prime_max, bound, lpts);
         if (!b){ /* not enough FFT prime found */
             integer MM=1;
@@ -335,12 +337,12 @@ namespace LinBox
                 MM*=bas[i];
                 //std::cout<<bas[i]<<std::endl;
             }
-	    
+
             // compute max bitsize for prime allowing three prime fft
             integer prime_max_tp=MM/uint64_t(d*k);
             while (k>1 && prime_max_tp<100) {k/=2;prime_max_tp*=2;}
             if (k<=1) {std::cout<<"getFFTPrime error: impossible to have enough primes satisfying constraints: FFLAS prime (<2^26) and FFT (2^"<<lpts<<")\n";}
-	
+
             PrimeIterator<IteratorCategories::HeuristicTag> Rd(std::min(prime_max_tp.bitsize()/2,integer(prime_max).bitsize())-1);
 #ifdef VERBOSE_FFT
             std::cout<<"MM="<<MM<<std::endl;
@@ -352,18 +354,20 @@ namespace LinBox
                 do {tmp = *(++Rd);}
                 while (MM%tmp==0 || tmp>prime_max);
                 bas.push_back(tmp);
+#ifdef VERBOSE_FFT
                 nbp++;
+#endif
                 MM*=tmp;
-            } while (MM<bound);	
+            } while (MM<bound);
         }
-#ifdef VERBOSE_FFT      
+#ifdef VERBOSE_FFT
         std::cout<<"MatPoly Multiprecision FFT : using "<<bas.size()-nbp<<" FFT primes and "<<nbp<<" normal primes "<<std::endl;
 #endif
         for(auto i: bas)
             if (i>prime_max) std::cout<<"ERROR\n";
     }
 
-	
+
 } // end of namespace LinBox
 
 #include "linbox/algorithms/polynomial-matrix/matpoly-mult-fft-wordsize-fast.inl"

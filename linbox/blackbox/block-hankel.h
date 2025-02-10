@@ -345,8 +345,8 @@ namespace LinBox
 		template<class Vector1, class Vector2>
 		Vector1& apply(Vector1 &x, const Vector2 &y) const
 		{
-			linbox_check(this->_coldim == y.size());
-			linbox_check(this->_rowdim == x.size());
+			linbox_check(this->coldim() == y.size());
+			linbox_check(this->rowdim() == x.size());
 			BlasMatrixDomain<Field> BMD(field());
 #ifdef BHANKEL_TIMER
 			_chrono.clear();

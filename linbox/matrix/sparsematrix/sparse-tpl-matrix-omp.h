@@ -318,9 +318,9 @@ class SparseMatrix<Field_, SparseMatrixFormat::TPL_omp> : public BlackboxInterfa
 			typedef typename selfvec::const_iterator selfiter;
 			otheriter vp_p; selfiter v_p;
 
-			Ap.data_.resize(A.data.size());
+			Ap.data_.resize(A.data_.size());
 			for (v_p = A.data_.begin(), vp_p = Ap.data_.begin();
-			     v_p != A.data.end(); ++ v_p, ++ vp_p)
+			     v_p != A.data_.end(); ++ v_p, ++ vp_p)
 				hom.image (vp_p->elt, v_p->elt);
 		}
 	};
@@ -399,10 +399,10 @@ protected:
 
         SizedChunks colBlocks_;
   }; // SparseMatrix
-  
+
   template<class Field>
   struct is_blockbb<SparseMatrix<Field,SparseMatrixFormat::TPL_omp>> {
-  	  static const bool value = true;
+	  static const bool value = true;
   };
 
 } // namespace LinBox

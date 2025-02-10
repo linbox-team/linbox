@@ -61,14 +61,14 @@ namespace LinBox
         std::list<Elt>& smithStep(std::list<Elt>& L, Elt& d, Matrix& A, const LocalPID& R)
         {
             if ( A.rowdim() == 0 || A.coldim() == 0 ) return L;
-        	
+
             Elt g; R.assign(g, R.zero);
             typename Matrix::RowIterator p;
             typename Matrix::Row::iterator q, r;
             for ( p = A.rowBegin(); p != A.rowEnd(); ++p) {
                 for (q = p->begin(); q != p->end(); ++q) {
                     R.gcdin(g, *q);
-                    
+
                     if ( R.isUnit(g) ) {
                         //R.divin(g, g); break;
                         R.assign(g, R.one); break;
@@ -84,13 +84,13 @@ namespace LinBox
             }
 
             if ( p != A.rowEnd() ) {
-            	
+
                 // g is a unit and,
                 // because this is a local ring, value at which this first happened
                 // also is a unit.
                 if ( p != A.rowBegin() )
                     std::swap_ranges(A.rowBegin()->begin(), A.rowBegin()->end(), p->begin());
-                
+
                 if ( q != p->begin() )
                     std::swap_ranges(A.colBegin()->begin(), A.colBegin()->end(),
                             (A.colBegin() +(int) (q - p->begin()))->begin());
@@ -99,19 +99,15 @@ namespace LinBox
                 // Want to use a block method or "left looking" elimination.
                 Elt f; R.inv(f, *(A.rowBegin()->begin() ) );
                 R.negin(f);
-                
+
                 // normalize first row to -1, ...
                 for ( q = A.rowBegin()->begin() /*+ 1*/; q != A.rowBegin()->end(); ++q)
                     R.mulin(*q, f);
-                
+
                 //
                 // eliminate in subsequent rows
-                size_t i = 0, j = 0;
                 for (p = A.rowBegin() + 1; p != A.rowEnd(); ++p) {
-                	i++;
                     for (q = p->begin() + 1, r = A.rowBegin()->begin() + 1, f = *(p -> begin()); q != p->end(); ++q, ++r) {
-                    	j++;
-                    	
                         R.axpyin( *q, f, *r );
                     }
                 }
