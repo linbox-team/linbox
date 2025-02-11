@@ -322,13 +322,16 @@ int main(int argc, char** argv) {
 	typedef Givaro::ZRing<Integer>	Ring;
     Ring R; Ring::RandIter gen(R);
 
-	// typedef ParamFuzzy Field;
 	typedef Givaro::Modular<int64_t> ZField;
 	typedef Givaro::ModularBalanced<double> DField;
 
-	// typedef BlasMatrix<Field> Matrix;
 	typedef BlasMatrix<Ring> CommonMatrix;
 	typedef BlasVector<Ring> Vector;
+
+#if defined(__LINBOX_HAVE_LAPACK) || defined(__LINBOX_HAVE_MATLAB)
+    typedef ParamFuzzy Field;
+    typedef BlasMatrix<Field> Matrix;
+#endif
 
 	if(mt == Hadamard)
 		n = nextPower2(n);
