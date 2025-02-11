@@ -1,7 +1,7 @@
 /* linbox/algorithms/cra-builder-full-multip.h
  * Copyright (C) 1999-2010 The LinBox group
  *
- * Time-stamp: <28 Oct 22 18:35:09 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <11 Feb 25 13:39:19 Jean-Guillaume.Dumas@imag.fr>
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -417,7 +417,7 @@ namespace LinBox
             return u1;
         }
 
-#ifdef __LB_CRA_REPORTING__
+#ifdef __LB_CRA_TIMING__
     public:
         std::ostream& reportTimes(std::ostream& os) const
         {

@@ -26,7 +26,6 @@
  * \ingroup examples
  */
 #include <iostream>
-#include <omp.h>
 
 #include "linbox/algorithms/rational-solver.h"
 #include "linbox/solutions/methods.h"
