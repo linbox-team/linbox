@@ -1,0 +1,12 @@
+prefix=@prefix@
+exec_prefix=@prefix@
+libdir=@libdir@
+includedir=@prefix@/include
+
+Name: linbox
+Description: Exact Linear Algebra library
+URL: http://github.com/linbox-team/linbox
+Version: @VERSION@
+Requires: fflas-ffpack >= 2.5.0
+Libs: -L${libdir} -llinbox @LINBOX_DEPS_LIBS@
+Cflags: -I${includedir} -DDISABLE_COMMENTATOR @LINBOX_DEPS_CFLAGS@ @REQUIRED_FLAGS@

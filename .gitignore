@@ -1,0 +1,40 @@
+# Ignore all and unignore all with extensions,
+# so that no-extensions files are ignored by default.
+*
+!/**/
+!*.*
+
+# Ignore generated files and folders
+**/Makefile.in
+**/*.log
+**/*.trs
+**/*.o
+**/*.exe
+**/*~
+**/*.la
+**/*.lo
+**/.libs
+**/.deps/
+
+# Ignore specific folders
+.vscode/
+autom4te.cache/
+build-aux/
+
+# Ignore specific files
+_configs.sed
+aclocal.m4
+autogen.status
+config.h
+config.h.in
+config.status
+linbox.pc
+macros/libtool.m4
+macros/ltoptions.m4
+macros/ltsugar.m4
+macros/ltversion.m4
+macros/lt~obsolete.m4
+
+# @todo Don't know why that is here
+tests/.tmp-tests
+tests/checker.dSYM/
