@@ -7,7 +7,7 @@
 #include <givaro/givpoly1dense.h>
 #include <givaro/givpoly1denseops.inl>
 
-namespace Linbox
+namespace LinBox
 {
 	template <class _Field, class _Storage, class _MatrixElement = double>
 	class SlicedPolynomialMatrix
