@@ -58,9 +58,8 @@ namespace LinBox {
 
             size_t deg  = (max_rowdeg?max_rowdeg:a.size()+b.size()-2); //size_t deg  = a.size()+b.size()-1;
             c.resize(deg+1);
-            size_t lpts = 0;
-            size_t pts  = 1; while (pts <= deg) { pts= pts<<1; ++lpts; }
-            if ( _p< 536870912ULL  &&  ((_p-1) % pts)==0){				
+            size_t pts  = 1; while (pts <= deg) { pts<<=1; }
+            if ( _p< 536870912ULL  &&  ((_p-1) % pts)==0){
                 PolynomialMatrixFFTPrimeMulDomain<Field> MulDom(field());
                 MulDom.mul(c,a,b, max_rowdeg);
             }

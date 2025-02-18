@@ -995,11 +995,11 @@ namespace LinBox
     namespace LinBox
     {
         // Default static commentator
-        Commentator& commentator() {
+        inline Commentator& commentator() {
             static Commentator internal_static_commentator;
             return internal_static_commentator;
         }
-        Commentator& commentator(std::ostream& stream) {
+        inline Commentator& commentator(std::ostream& stream) {
             static Commentator internal_static_commentator(stream);
             return internal_static_commentator;
         }
@@ -1011,7 +1011,7 @@ namespace LinBox
 #include "linbox/util/args-parser.h"
     namespace LinBox
     {
-        void parseArguments (int argc, char **argv, Argument *args, bool printDefaults = true) {
+        inline void parseArguments (int argc, char **argv, Argument *args, bool printDefaults = true) {
             for (int i = 1; i < argc; ++i) {
                 if (argv[i][0] == '-') {
                     if (argv[i][1] == 0) {

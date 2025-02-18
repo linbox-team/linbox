@@ -981,7 +981,7 @@ namespace LinBox
              */
 		Element &axpyin (Element &r, const stdBitReference a, const stdBitReference x) const
             {
-                return r ^= a & static_cast<bool>(x);
+                return r ^= (static_cast<bool>(a) && static_cast<bool>(x));
             }
 
             /** Inplace AXPY.
@@ -992,7 +992,7 @@ namespace LinBox
              */
 		stdBitReference axpyin (stdBitReference r, const stdBitReference a, const stdBitReference x) const
             {
-                return r = r ^ (a & static_cast<bool>(x));
+                return r = r ^ (static_cast<bool>(a) && static_cast<bool>(x));
             }
 
             //@} Inplace Arithmetic Operations

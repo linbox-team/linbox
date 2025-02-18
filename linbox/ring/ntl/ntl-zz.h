@@ -53,22 +53,22 @@ namespace Givaro
 	 * @param y integer.
 	 */
 	template <>
-	NTL::ZZ& Caster(NTL::ZZ& x, const Integer& y)
+	inline NTL::ZZ& Caster(NTL::ZZ& x, const Integer& y)
 	{
 		std::stringstream s;
 		s << y;
 		s >> x;
 		return x;
 	}
-	template <> NTL::ZZ& Caster(NTL::ZZ& x, const double& y) { return x = NTL::to_ZZ((long)(y)); }
+	template <> inline NTL::ZZ& Caster(NTL::ZZ& x, const double& y) { return x = NTL::to_ZZ((long)(y)); }
 
-	template <> NTL::ZZ& Caster(NTL::ZZ& x, const int32_t& y) { return x = NTL::to_ZZ((long)(y)); }
+	template <> inline NTL::ZZ& Caster(NTL::ZZ& x, const int32_t& y) { return x = NTL::to_ZZ((long)(y)); }
 
-	template <> NTL::ZZ& Caster(NTL::ZZ& x, const int64_t& y) { return x = NTL::to_ZZ((long)(y)); }
+	template <> inline NTL::ZZ& Caster(NTL::ZZ& x, const int64_t& y) { return x = NTL::to_ZZ((long)(y)); }
 
-	template <> NTL::ZZ& Caster(NTL::ZZ& x, const uint32_t& y) { return x = NTL::to_ZZ((unsigned long)(y)); }
+	template <> inline NTL::ZZ& Caster(NTL::ZZ& x, const uint32_t& y) { return x = NTL::to_ZZ((unsigned long)(y)); }
 
-	template <> NTL::ZZ& Caster(NTL::ZZ& x, const uint64_t& y) { return x = NTL::to_ZZ((unsigned long)(y)); }
+	template <> inline NTL::ZZ& Caster(NTL::ZZ& x, const uint64_t& y) { return x = NTL::to_ZZ((unsigned long)(y)); }
 
 	/** Conversion of field element to an integer.
 	 * This function assumes the output field element x has already been
@@ -83,7 +83,7 @@ namespace Givaro
 	 * @param y constant reference to field element.
 	 */
 	template <>
-	Integer& Caster(Integer& x, const NTL::ZZ& y)
+	inline Integer& Caster(Integer& x, const NTL::ZZ& y)
 	{
 		std::stringstream s;
 		s << y;

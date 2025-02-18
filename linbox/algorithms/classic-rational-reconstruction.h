@@ -52,7 +52,7 @@ namespace LinBox
 			_reduce(reduce), _recursive (recursive), _intRing(Z)
 		{}
 
-		ClassicRationalReconstruction<Ring> (const ClassicRationalReconstruction<Ring>& RR):
+		ClassicRationalReconstruction(const ClassicRationalReconstruction<Ring>& RR):
 			RReconstructionBase<Ring>(RR._intRing),
 			_reduce(RR._reduce), _recursive(RR._recursive), _intRing(RR._intRing)
 		{}

@@ -81,11 +81,14 @@ int main (int argc, char **argv)
   }
   size_t nullity = A.coldim()-Rank;
   DenseMatrix<Field> NullSpace(F,A.coldim(),nullity);
+  Givaro::Timer chrono; chrono.start();
   GD.nullspacebasis(NullSpace, Rank, A, P);
+  chrono.stop();
 
-  NullSpace.write( std::cerr << "X:=", Tag::FileFormat::Maple ) << ';' << std::endl;
+  NullSpace.write( std::cout << "X:=", Tag::FileFormat::Maple ) << ';' << std::endl;
     
-  std::cerr << "NullsSpace dimensions:" << NullSpace.rowdim() << 'x' << NullSpace.coldim() << std::endl;
+  std::clog << "NullSpace dimensions:" << NullSpace.rowdim() << 'x' << NullSpace.coldim()  << ' '
+            << chrono << std::endl;
     
   return 0;
 }

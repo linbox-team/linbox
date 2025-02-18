@@ -20,49 +20,30 @@
  * ========LICENCE========
  */
 
-#error "deprecated and not tested"
-
 #ifndef __LINBOX_gmp_random_prime_H
 #define __LINBOX_gmp_random_prime_H
 
-#include "linbox/integer.h"
+#include "linbox/randiter/random-prime.h"
 
 namespace LinBox
 {
 	/** \brief generating random prime integers, using the gmp library.
-
-	 * Similar to random-prime.h, but return type is integer, not long, allowing
-	 * for larger primes.
-	 * @author Dan Roche
-	 * @deprecated This is not true.
+	 * via primeiterator
 	 */
 
-	class GmpRandomPrime {
+	class GmpRandomPrime : public  PrimeIterator<> {
 	public:
+        GmpRandomPrime(const uint64_t bits = 23, const uint64_t seed = 0) :
+                PrimeIterator(bits,seed) {}
 
-		integer max;
-
-		/** Create a new random prime generator.  Primes generated will
-		 * be <= max.
-		 */
-		GmpRandomPrime( integer m ) :
-			max(m)
-		{}
-
-		inline integer randomPrime() const
+		inline integer randomPrime()
 		{
-			integer test;
-			do test=test-1;//integer::nonzerorandom( test, max );
-			while( !probab_prime( test, 10 ) );
-			return test;
+			this->operator++(); return this->operator*();
 		}
 
-		// I believe reference returned is appropriate. -bds
 		inline integer& randomPrime( integer& p )
 		{
-			do integer::nonzerorandom( p, max );
-			while( !probab_prime( p, 10 ) );
-			return p;
+            return p=std::move(randomPrime());
 		}
 
 	};

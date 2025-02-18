@@ -53,7 +53,7 @@ namespace LinBox
 #endif
 
 #if 1 /* Unused */
-	bool equalCaseInsensitive(const std::string &s1, const char* s2)
+	inline bool equalCaseInsensitive(const std::string &s1, const char* s2)
 	{
 		int len = int(s1.size());
 		int counter = 0;

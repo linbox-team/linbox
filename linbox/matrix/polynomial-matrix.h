@@ -77,11 +77,11 @@ namespace LinBox{
      */
      
     // PG: the following does not make sense with characteristic 0 field !!! 
-	template<typename Field> uint64_t element_storage(const Field& F)      {
+	template<typename Field> inline uint64_t element_storage(const Field& F)      {
         integer p;F.characteristic(p);
         if (p==0) throw LinboxError("PolynomialMatrix: use of element_storage with characterisrtic zero field is not allowed, aborting ...");
         return length(p);}
-	template<> uint64_t element_storage(const Givaro::Modular<Givaro::Integer> &F) { integer p;F.characteristic(p); return length(p)+sizeof(Givaro::Integer);}
+	template<> inline uint64_t element_storage(const Givaro::Modular<Givaro::Integer> &F) { integer p;F.characteristic(p); return length(p)+sizeof(Givaro::Integer);}
     
     
 	// Generic handler class for Polynomial Matrix
@@ -912,7 +912,7 @@ namespace LinBox{
 
     
 	template<typename _Field, LinBox::PMType T>
-	std::ostream& operator<<(std::ostream& os, const PolynomialMatrix<_Field,T>& P) {
+	inline std::ostream& operator<<(std::ostream& os, const PolynomialMatrix<_Field,T>& P) {
 		return P.write(os);
 	}
     
@@ -1036,7 +1036,7 @@ namespace LinBox{
 	};
 
 	template<typename MatPoly>      
-	std::ostream& operator<<(std::ostream& os, const SubPolynomialMatrix<MatPoly>& P) {
+	inline std::ostream& operator<<(std::ostream& os, const SubPolynomialMatrix<MatPoly>& P) {
 		return P.write(os);
 	}
 

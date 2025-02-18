@@ -97,7 +97,6 @@ namespace LinBox { namespace Protected {
 				     indices = A.IndexedBegin();
 				     (indices != A.IndexedEnd()) ;
 				     ++indices ) {
-					// hom. image (e, A.getEntry(indices.rowIndex(),indices.colIndex()) );
 					hom. image (e, indices.value() );
 					if (!Ap.field().isZero(e))
 						Ap.setEntry (indices.rowIndex(),
@@ -147,8 +146,7 @@ namespace LinBox { namespace Protected {
 				LinBox::RawVector<Element>::convert(*meit, *copit);
 		}
 
-		/** Constructor from a MatrixStream
-		*/
+            // Constructor from a MatrixStream
 		SparseMatrixGeneric ( MatrixStream<Field>& ms );
 
 		template<class VectStream>
@@ -239,10 +237,11 @@ namespace LinBox { namespace Protected {
 		public:
 			typedef _I_Element value_type;
 
-			_Iterator (const RepIterator &i, const RowIterator &j, const RepIterator &A_end) :
-				_i (i), _j (j), _A_end (A_end)
+			_Iterator (const RepIterator &i, const RepIterator &A_end) :
+				_i (i), _j (0), _A_end (A_end)
 			{
 				if( _i == _A_end ) return;
+                _j = _i->begin ();
 				while ( _j == _i->end () ) {
 					if (++_i == _A_end) return;
 					_j = _i->begin ();
@@ -266,12 +265,12 @@ namespace LinBox { namespace Protected {
 
 			bool operator == (const _Iterator &i) const
 			{
-				return (_i == i._i) && (_j == i._j);
+				return (_i == i._i) && ( (_i == _A_end) || (_j == i._j) );
 			}
 
 			bool operator != (const _Iterator &i) const
 			{
-				return (_i != i._i) || (_j != i._j);
+				return (_i != i._i) || ( (_i != _A_end) && (_j != i._j) );
 			}
 
 			_Iterator &operator ++ ()
@@ -338,20 +337,20 @@ namespace LinBox { namespace Protected {
 
 		Iterator Begin ()
 		{
-			return Iterator (_matA.begin (), _matA.front ().begin (), _matA.end ());
+			return Iterator (_matA.begin (),_matA.end ());
 		}
 
 		Iterator End ()
 		{
-			return Iterator (_matA.end (), _matA.back ().end (), _matA.end ());
+			return Iterator (_matA.end (), _matA.end ());
 		}
 		ConstIterator Begin () const
 		{
-			return ConstIterator (_matA.begin (), _matA.front ().begin (), _matA.end ());
+			return ConstIterator (_matA.begin (), _matA.end ());
 		}
 		ConstIterator End () const
 		{
-			return ConstIterator (_matA.end (), _matA.back ().end (), _matA.end ());
+			return ConstIterator (_matA.end (), _matA.end ());
 		}
 
 
@@ -381,10 +380,11 @@ namespace LinBox { namespace Protected {
 #endif
 			typedef typename IteratorValueType< RowIdxIterator >::value_type::second_type value_type;
 
-			_IndexedIterator (size_t idx, const RepIterator &i, const RowIdxIterator &j, const RepIterator &A_end) :
-				_i (i), _j (j), _A_end (A_end), _r_index (idx)
+			_IndexedIterator (size_t idx, const RepIterator &i, const RepIterator &A_end) :
+				_i (i), _j (0), _A_end (A_end), _r_index (idx)
 			{
 				if( _i == _A_end ) return;
+                _j = _i->begin ();
 				while(_j == _i->end ()) {
 					++_r_index;
 					if (++_i == _A_end) return;
@@ -413,12 +413,12 @@ namespace LinBox { namespace Protected {
 
 			bool operator == (const _IndexedIterator &i) const
 			{
-				return (_i == i._i) && (_j == i._j);
+				return (_i == i._i) && ( (_i == _A_end) || (_j == i._j) );
 			}
 
 			bool operator != (const _IndexedIterator &i) const
 			{
-				return (_i != i._i) || (_j != i._j);
+				return (_i != i._i) || ( (_i != _A_end) && (_j != i._j) );
 			}
 
 			_IndexedIterator &operator ++ ()
@@ -430,17 +430,6 @@ namespace LinBox { namespace Protected {
 					_j = _i->begin ();
 				}
 				_c_index = _j->first;
-#if 0
-				if (++_j == _i->end ()) {
-					if (++_i != _A_end) {
-						_j = _i->begin ();
-						++_r_index;
-					}
-				}
-
-				_c_index = _j->first;
-#endif
-
 				return *this;
 			}
 
@@ -516,19 +505,19 @@ namespace LinBox { namespace Protected {
 
 		IndexedIterator IndexedBegin ()
 		{
-			return IndexedIterator (0, _matA.begin (), _matA.front ().begin (), _matA.end ());
+			return IndexedIterator (0, _matA.begin (), _matA.end ());
 		}
 		IndexedIterator IndexedEnd ()
 		{
-			return IndexedIterator (_m, _matA.end (), _matA.back ().end (), _matA.end ());
+			return IndexedIterator (_m, _matA.end (), _matA.end ());
 		}
 		ConstIndexedIterator IndexedBegin () const
 		{
-			return ConstIndexedIterator (0, _matA.begin (), _matA.front ().begin (), _matA.end ());
+			return ConstIndexedIterator (0, _matA.begin (), _matA.end ());
 		}
 		ConstIndexedIterator IndexedEnd () const
 		{
-			return ConstIndexedIterator (_m, _matA.end (), _matA.back ().end (), _matA.end ());
+			return ConstIndexedIterator (_m, _matA.end (), _matA.end ());
 		}
 
 		Row &getRow (size_t i) {

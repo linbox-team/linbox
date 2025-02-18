@@ -79,7 +79,7 @@ namespace Givaro
 		s << y;
 		s >> x;
 		return x;
-		//return x = NTL::to_RR(static_cast<long>(y)); 
+		//return x = NTL::to_RR(static_cast<long>(y));
 	}
 	template <> NTL::RR& Caster(NTL::RR& x, const double& y) { return x = NTL::to_RR((long)(y)); }
 
@@ -287,9 +287,9 @@ namespace LinBox
 		typedef NTL::RR Element ;
         typedef integer Residu_t;
 
-		UnparametricRandIter<NTL::RR> (const NTL_RR & F,
-					       const uint64_t seed = 0,
-					       const Residu_t& size = 0) :
+		UnparametricRandIter(const NTL_RR & F,
+                             const uint64_t seed = 0,
+                             const Residu_t& size = 0) :
                 _size(size), _seed(seed), _ring(F)
 		{
                     if (_seed == 0) _seed = static_cast<uint64_t>(std::time(nullptr));

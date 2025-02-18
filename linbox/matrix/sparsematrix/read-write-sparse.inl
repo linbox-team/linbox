@@ -282,7 +282,7 @@ namespace LinBox {
 		typedef typename Field::Element  Element;
 
 		MatrixStream<Field> ms(A.field(), is);
-		size_t m,n ;
+		size_t m(0),n(0) ;
 		if( !ms.getDimensions( m, n ) )
 			throw ms.reportError(__func__,__LINE__);
 		A.resize(m,n);

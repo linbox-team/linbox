@@ -136,7 +136,7 @@ namespace LinBox
 	};
 
     template<>
-    void PrimeIterator<IteratorCategories::HeuristicTag>::generatePrime(){
+    inline void PrimeIterator<IteratorCategories::HeuristicTag>::generatePrime(){
         integer::random_exact_2exp(_prime,_bits);
         _IPD.nextprimein(_prime);
         while (_prime.bitsize()>_bits)
@@ -144,7 +144,7 @@ namespace LinBox
     }
 
     template<>
-    void PrimeIterator<IteratorCategories::DeterministicTag>::generatePrime(){
+    inline void PrimeIterator<IteratorCategories::DeterministicTag>::generatePrime(){
         if (_prime < 3) {
             throw LinboxError("LinBox ERROR: Ran out of primes in Deterministic Prime Iterator.\n");
         }
@@ -152,7 +152,7 @@ namespace LinBox
     }
 
     template<>
-    void PrimeIterator<IteratorCategories::UniformTag>::generatePrime(){
+    inline void PrimeIterator<IteratorCategories::UniformTag>::generatePrime(){
         do{
             integer::random_exact_2exp(_prime,_bits);
             switch (_prime %6){
@@ -180,7 +180,7 @@ namespace LinBox
         24U, 7U, 19U, 27U, 23U, 6U, 26U, 5U, 4U, 31U
     };
 
-    uint32_t MultiplyDeBruijnHighestBit(uint32_t v)
+    inline uint32_t MultiplyDeBruijnHighestBit(uint32_t v)
     {
         v |= v >> 1; // first round down to one less than a power of 2
         v |= v >> 2;
@@ -278,7 +278,7 @@ namespace LinBox
     };
 
     template<>
-    void MaskedPrimeIterator<IteratorCategories::HeuristicTag>::generatePrime(){
+    inline void MaskedPrimeIterator<IteratorCategories::HeuristicTag>::generatePrime(){
         integer::random_exact_2exp(_prime,_bits);
 
         _prime |= _fffff; // set lowest bits to 11111
@@ -290,7 +290,7 @@ namespace LinBox
     }
 
     template<>
-    void MaskedPrimeIterator<IteratorCategories::DeterministicTag>::generatePrime(){
+    inline void MaskedPrimeIterator<IteratorCategories::DeterministicTag>::generatePrime(){
         do {
             _prime -= (1<<_shift);
 			if (_prime < 2) {
@@ -301,7 +301,7 @@ namespace LinBox
 
 
     template<>
-    void MaskedPrimeIterator<IteratorCategories::UniformTag>::generatePrime(){
+    inline void MaskedPrimeIterator<IteratorCategories::UniformTag>::generatePrime(){
         do{
             integer::random_exact_2exp(_prime,_bits);
             switch (_prime %6){

@@ -231,7 +231,7 @@ namespace LinBox
 
 		std::istream& read(std::istream& is) {
 			MatrixStream<Field> ms(field(), is);
-			size_t c, i, j;
+			size_t c(0), i(0), j(0);
 			if( !ms.getDimensions(n_, c) || c != n_ )
 				throw ms.reportError(__FUNCTION__,__LINE__);
 			ms.nextTriple(i, j, v_);

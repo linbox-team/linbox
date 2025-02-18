@@ -1153,7 +1153,6 @@ namespace LinBox {
 			linbox_check(data_size == (size_t)merge_data[0].size());
 
 			merge_data[idx].resize(data_size,NAN);
-			typename svector_t::iterator it ;
 
 			for (size_t i = 0 ; i < pts.size() ; ++i) {
 

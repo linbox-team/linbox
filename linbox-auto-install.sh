@@ -14,12 +14,12 @@
 ## Only for stable fetching
 #############################
 #### stable .tar.gz
-STABLE_LB=1.7.0
+STABLE_LB=1.7.1
 STABLE_FFLAS=2.5.0
-STABLE_GIVARO=4.2.0
-STABLE_OPENBLAS=0.3.21
+STABLE_GIVARO=4.2.1
+STABLE_OPENBLAS=0.3.29
 STABLE_BLIS=0.9.0
-STABLE_GMPLIB=6.2.1
+STABLE_GMPLIB=6.3.0
 STABLE_NTLLIB=11.5.1
 MD5SUFF=md5
 #############################
