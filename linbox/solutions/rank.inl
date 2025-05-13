@@ -442,7 +442,7 @@ namespace LinBox
 		const projField Fp(*genprime);
 		FBlackbox Ap(A, Fp );
 
-// 		FBlackbox Ap(Fp, A.rowdim(), A.coldim() );
+//		FBlackbox Ap(Fp, A.rowdim(), A.coldim() );
 //         typename Blackbox::template rebind<projField>()(Ap,A);
 
 
@@ -486,8 +486,9 @@ namespace LinBox
 				    const Method::SparseElimination     &M)
 	{
 		commentator().start ("Rational Rank", "Rrank");
-		return integral_rank(r, A, M);
+		integral_rank(r, A, M);
 		commentator().stop ("done", NULL, "Rrank");
+		return r;
 	}
 
 } // LinBox
