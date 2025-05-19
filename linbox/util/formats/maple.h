@@ -415,6 +415,7 @@ namespace LinBox
 					while( candidate[i] && isspace(candidate[i]) )
 						++i;
 					if( candidate[i] == '[' ) {
+						array = true;
 						openParen = false;
 						currentCol = 7;
 						++i;
