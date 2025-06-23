@@ -238,7 +238,7 @@ namespace LinBox { namespace Protected {
 			typedef _I_Element value_type;
 
 			_Iterator (const RepIterator &i, const RepIterator &A_end) :
-				_i (i), _j (0), _A_end (A_end)
+				_i (i), _A_end (A_end)
 			{
 				if( _i == _A_end ) return;
                 _j = _i->begin ();
@@ -381,7 +381,7 @@ namespace LinBox { namespace Protected {
 			typedef typename IteratorValueType< RowIdxIterator >::value_type::second_type value_type;
 
 			_IndexedIterator (size_t idx, const RepIterator &i, const RepIterator &A_end) :
-				_i (i), _j (0), _A_end (A_end), _r_index (idx)
+				_i (i), _A_end (A_end), _r_index (idx)
 			{
 				if( _i == _A_end ) return;
                 _j = _i->begin ();
