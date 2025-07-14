@@ -1,0 +1,149 @@
+name: Run Sage CI for Linux/macOS
+
+## This GitHub Actions workflow provides:
+##
+##  - portability testing, by building and testing this project on many platforms
+##    (Linux variants and macOS), each with two configurations (installed packages),
+##
+##  - continuous integration, by building and testing other software
+##    that depends on this project.
+##
+## It runs on every push to the GitHub repository.
+##
+## The testing can be monitored in the "Actions" tab of the GitHub repository.
+##
+## After all jobs have finished (or are canceled) and a short delay,
+## tar files of all logs are made available as "build artifacts".
+##
+## This GitHub Actions workflow uses the portability testing framework
+## of SageMath (https://www.sagemath.org/).  For more information, see
+## https://doc.sagemath.org/html/en/developer/portability_testing.html
+
+## The workflow consists of two jobs:
+##
+##  - First, it builds a source distribution of the project
+##    and generates a script "update-pkgs.sh".  It uploads them
+##    as a build artifact named upstream.
+##
+##  - Second, it checks out a copy of the SageMath source tree.
+##    It downloads the upstream artifact and replaces the project's
+##    package in the SageMath distribution by the newly packaged one
+##    from the upstream artifact, by running the script "update-pkgs.sh".
+##    Then it builds a small portion of the Sage distribution.
+##
+## Many copies of the second step are run in parallel for each of the tested
+## systems/configurations.
+
+## on: [push, pull_request]
+
+## Uncomment this (and comment the above) to run only on pushes to a tag,
+## not on all pushes to a branch.
+##
+on:
+   pull_request:
+     types: [opened, synchronize]
+   push:
+     tags:
+       - 'SageCI'
+
+concurrency:
+  # Cancel previous runs of this workflow for the same branch
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Ubuntu packages to install so that the projects' "make dist" can succeed
+  DIST_PREREQ:      libtool libopenblas-dev libgmp-dev
+  # Name of this project in the Sage distribution
+  SPKG:             linbox
+  REMOVE_PATCHES: "*"
+  EXTRA_CONFIGURE_ARGS: --without-system-givaro --without-system-fflas_ffpack --without-system-linbox
+
+jobs:
+
+  dist:
+    runs-on: ubuntu-latest
+    env:
+      PREFIX: /tmp/build
+    steps:
+      - name: Check out givaro
+        uses: actions/checkout@v4
+        with:
+          path: build/pkgs/givaro/src
+          repository: linbox-team/givaro
+      - name: Check out fflas-ffpack
+        uses: actions/checkout@v4
+        with:
+          path: build/pkgs/fflas_ffpack/src
+          repository: linbox-team/fflas-ffpack
+      - name: Check out linbox
+        uses: actions/checkout@v4
+        with:
+          path: build/pkgs/linbox/src
+      - name: Install prerequisites
+        run: |
+          sudo DEBIAN_FRONTEND=noninteractive apt-get update
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install $DIST_PREREQ
+      - name: Run make dist, prepare upstream artifact
+        run: |
+          (cd build/pkgs/givaro/src && autoreconf -fi && ./configure --prefix=${{ env.PREFIX }} && make -j3 && make install && make dist) \
+          && export PKG_CONFIG_PATH="${{ env.PREFIX }}/lib/pkgconfig:$PKG_CONFIG_PATH" \
+          && mkdir -p upstream && cp build/pkgs/givaro/src/*.tar.gz upstream/givaro-git.tar.gz \
+          && echo "sage-package create givaro --version git --tarball givaro-git.tar.gz --type=standard" > upstream/update-pkgs.sh \
+          && if [ -n "${{ env.REMOVE_PATCHES }}" ]; then echo "(cd ../build/pkgs/givaro/patches && rm -f ${{ env.REMOVE_PATCHES }}; :)" >> upstream/update-pkgs.sh; fi \
+          && (cd build/pkgs/fflas_ffpack/src && autoreconf -fi && ./configure --prefix=${{ env.PREFIX }} && make -j3 && make install && make dist) \
+          && mkdir -p upstream && cp build/pkgs/fflas_ffpack/src/*.tar.gz upstream/fflas_ffpack-git.tar.gz \
+          && echo "sage-package create fflas_ffpack --version git --tarball fflas_ffpack-git.tar.gz --type=standard" >> upstream/update-pkgs.sh \
+          && if [ -n "${{ env.REMOVE_PATCHES }}" ]; then echo "(cd ../build/pkgs/fflas_ffpack/patches && rm -f ${{ env.REMOVE_PATCHES }}; :)" >> upstream/update-pkgs.sh; fi \
+          && (cd build/pkgs/linbox/src && autoreconf -fi && ./configure --prefix=${{ env.PREFIX }} && make dist) \
+          && mkdir -p upstream && cp build/pkgs/linbox/src/*.tar.gz upstream/linbox-git.tar.gz \
+          && echo "sage-package create linbox --version git --tarball linbox-git.tar.gz --type=standard" >> upstream/update-pkgs.sh \
+          && if [ -n "${{ env.REMOVE_PATCHES }}" ]; then echo "(cd ../build/pkgs/linbox/patches && rm -f ${{ env.REMOVE_PATCHES }}; :)" >> upstream/update-pkgs.sh; fi \
+          && ls -l upstream/
+      - uses: actions/upload-artifact@v4
+        with:
+          path: upstream
+          name: upstream
+
+  linux:
+    uses: passagemath/passagemath/.github/workflows/docker.yml@main
+    with:
+      # Extra system packages to install. See available packages at
+      # https://github.com/sagemath/sage/tree/develop/build/pkgs
+      extra_sage_packages: "info"
+      # Sage distribution packages to build
+      targets: SAGE_CHECK=no SAGE_CHECK_givaro=yes SAGE_CHECK_fflas_ffpack=yes SAGE_CHECK_linbox=yes givaro fflas_ffpack linbox
+      # Standard setting: Test the current HEAD of passagemath:
+      sage_repo: passagemath/passagemath
+      sage_ref: main
+      upstream_artifact: upstream
+      # Docker targets (stages) to tag
+      docker_targets: "with-targets"
+      # We prefix the image name with the SPKG name ("fflas_ffpack_") to avoid the error
+      # 'Package "sage-docker-..." is already associated with another repository.'
+      docker_push_repository: ghcr.io/${{ github.repository }}/fflas_ffpack_
+    needs: [dist]
+
+  macos:
+    uses: passagemath/passagemath/.github/workflows/macos.yml@main
+    with:
+      targets: SAGE_CHECK=no SAGE_CHECK_givaro=yes SAGE_CHECK_fflas_ffpack=yes SAGE_CHECK_linbox=yes givaro fflas_ffpack linbox
+      # Standard setting: Test the current HEAD of passagemath:
+      sage_repo: passagemath/passagemath
+      sage_ref: main
+      upstream_artifact: upstream
+    needs: [dist]
+
+  mingw:
+    uses: passagemath/passagemath/.github/workflows/mingw.yml@main
+    with:
+      # Extra system packages to install. See available packages at
+      # https://github.com/passagemath/passagemath/tree/main/build/pkgs
+      extra_sage_packages: "patch cmake gfortran openblas"
+      # Sage distribution packages to build
+      targets: SAGE_CHECK=no SAGE_CHECK_givaro=yes SAGE_CHECK_fflas_ffpack=yes SAGE_CHECK_linbox=yes givaro fflas_ffpack linbox
+      # Standard setting: Test the current beta release of Sage:
+      sage_repo: passagemath/passagemath
+      sage_ref: main
+      upstream_artifact: upstream
+    needs: [dist]
