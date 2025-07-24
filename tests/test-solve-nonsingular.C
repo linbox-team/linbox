@@ -328,7 +328,7 @@ int main(int argc, char** argv) {
 	typedef BlasMatrix<Ring> CommonMatrix;
 	typedef BlasVector<Ring> Vector;
 
-#if defined(__LINBOX_HAVE_LAPACK) || defined(__LINBOX_HAVE_MATLAB)
+#if defined(__LINBOX_HAVE_LAPACK) || defined(__LINBOX_HAVE_MATLAB)
     typedef ParamFuzzy Field;
     typedef BlasMatrix<Field> Matrix;
 #endif
