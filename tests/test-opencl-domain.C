@@ -32,10 +32,10 @@
 #include <string>
 #include <iostream>
 
+#include "linbox/util/commentator.h"
 #include "linbox/ring/modular.h"
 #include "linbox/matrix/dense-matrix.h"
 #include "linbox/matrix/matrix-domain.h"
-#include "linbox/util/commentator.h"
 
 #include "test-common.h"
 
@@ -85,15 +85,12 @@ public:
 
 using namespace LinBox;
 
-const int maxpretty = 35;
+const int maxpretty = 45;
 
-std::string pretty(std::string a) {
-	std::string blank;
-	blank = a;
-	int msgsize= maxpretty - (int)blank.size();
-	std::string dot(".");
-	for(int i=0;i<msgsize ;++i){
-		blank += dot;
+std::string pretty(const std::string& a) {
+	std::string blank(a);
+	for(int i=blank.size();i<maxpretty ;++i){
+		blank += '.';
 	}
 	return blank;
 }
@@ -106,7 +103,7 @@ static bool testMul(const Field& F, size_t n, int iterations){
 
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
-	commentator().start(pretty("Testing mul"),"testMul",(size_t)iterations);
+	commentator().start(pretty("Testing mul").c_str(),"testMul",(size_t)iterations);
 
 	RandIter G(F);
 	bool ret = true;
@@ -157,7 +154,7 @@ static bool testMulinLeft(const Field& F, size_t n, int iterations){
 
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
-	commentator().start(pretty("Testing mulin_left"),"testMulinLeft",(size_t)iterations);
+	commentator().start(pretty("Testing mulin_left").c_str(),"testMulinLeft",(size_t)iterations);
 
 	RandIter G(F);
 	bool ret = true;
@@ -209,7 +206,7 @@ static bool testMulinRight(const Field& F, size_t n, int iterations){
 
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
-	commentator().start(pretty("Testing mulin_right"),"testMulinRight",(size_t)iterations);
+	commentator().start(pretty("Testing mulin_right").c_str(),"testMulinRight",(size_t)iterations);
 
 	RandIter G(F);
 	bool ret = true;
@@ -261,7 +258,7 @@ static bool testAxpy(const Field& F, size_t n, int iterations){
 
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
-	commentator().start(pretty("Testing axpy"),"testAxpy",(size_t)iterations);
+	commentator().start(pretty("Testing axpy").c_str(),"testAxpy",(size_t)iterations);
 
 	RandIter G(F);
 	bool ret = true;
@@ -314,7 +311,7 @@ static bool testAxpyin(const Field& F, size_t n, int iterations){
 
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
-	commentator().start(pretty("Testing axpyin"),"testAxpyin",(size_t)iterations);
+	commentator().start(pretty("Testing axpyin").c_str(),"testAxpyin",(size_t)iterations);
 
 	RandIter G(F);
 	bool ret = true;
@@ -368,7 +365,7 @@ static bool testMaxpy(const Field& F, size_t n, int iterations){
 
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
-	commentator().start(pretty("Testing maxpy"),"testMaxpy",(size_t)iterations);
+	commentator().start(pretty("Testing maxpy").c_str(),"testMaxpy",(size_t)iterations);
 
 	RandIter G(F);
 	bool ret = true;
@@ -421,7 +418,7 @@ static bool testMaxpyin(const Field& F, size_t n, int iterations){
 
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
-	commentator().start(pretty("Testing maxpyin"),"testMaxpyin",(size_t)iterations);
+	commentator().start(pretty("Testing maxpyin").c_str(),"testMaxpyin",(size_t)iterations);
 
 	RandIter G(F);
 	bool ret = true;
@@ -475,7 +472,7 @@ static bool testAxmy(const Field& F, size_t n, int iterations){
 
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
-	commentator().start(pretty("Testing axmy"),"testAxmy",(size_t)iterations);
+	commentator().start(pretty("Testing axmy").c_str(),"testAxmy",(size_t)iterations);
 
 	RandIter G(F);
 	bool ret = true;
@@ -528,7 +525,7 @@ static bool testAxmyin(const Field& F, size_t n, int iterations){
 
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
-	commentator().start(pretty("Testing axmyin"),"testAxmyin",(size_t)iterations);
+	commentator().start(pretty("Testing axmyin").c_str(),"testAxmyin",(size_t)iterations);
 
 	RandIter G(F);
 	bool ret = true;
@@ -582,7 +579,7 @@ static bool testMuladd(const Field& F, size_t n, int iterations){
 
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
-	commentator().start(pretty("Testing muladd"),"testMuladd",(size_t)iterations);
+	commentator().start(pretty("Testing muladd").c_str(),"testMuladd",(size_t)iterations);
 
 	RandIter G(F);
 	bool ret = true;
@@ -658,7 +655,7 @@ static bool testMuladdin(const Field& F, size_t n, int iterations){
 
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
-	commentator().start(pretty("Testing muladdin"),"testMuladdin",(size_t)iterations);
+	commentator().start(pretty("Testing muladdin").c_str(),"testMuladdin",(size_t)iterations);
 
 	RandIter G(F);
 	bool ret = true;
@@ -712,7 +709,7 @@ static bool testMulscale(const Field& F, size_t n, int iterations){
 
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
 	commentator().getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
-	commentator().start(pretty("Testing mulscale"),"testMulscale",(size_t)iterations);
+	commentator().start(pretty("Testing mulscale").c_str(),"testMulscale",(size_t)iterations);
 
 	RandIter G(F);
 	bool ret = true;
@@ -878,7 +875,7 @@ int main(int argc, char** argv){
 	pass &= launch_tests(F, (int)n, iterations);
 	pass &= launch_tests(H, (int)n, iterations);
 
-	commentator().stop(MSG_STATUS(pass), (const char*)0, "OpenCLMatrixDomain test suite");
+	commentator().stop(MSG_STATUS(pass), (const char*)0, "OpenCLMatrixDomain");
 	return (pass ? 0 : -1);
 }
 
