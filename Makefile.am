@@ -23,7 +23,7 @@
 
 ACLOCAL_AMFLAGS = -I macros
 
-SUBDIRS=linbox benchmarks tests interfaces doc examples
+SUBDIRS=linbox benchmarks tests interfaces doc examples programs
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = linbox.pc
@@ -55,6 +55,9 @@ examples:
 
 benchmarks:
 	(cd benchmarks; ${MAKE} benchmarks)
+
+programs:
+	(cd programs; ${MAKE} programs)
 
 perfpublisher: benchmarks/perfpublisher tests/perfpublisher
 
