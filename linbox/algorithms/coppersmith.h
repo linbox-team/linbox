@@ -428,9 +428,11 @@ namespace LinBox
 			//Get the sum of column degrees
 			//This is the degree of the determinant via Yuhasz thesis
 			//size_t detdeg = std::accumulate(deg.begin(), deg.end(), 0);
+#if 0
 			size_t detdeg= 0;
 			for(size_t i = 0; i < gen[0].coldim(); i++)
 				detdeg+=deg[i];
+#endif
 			//Set up interpolation with one more evaluation point than degree
 			size_t numpoints = 2*d;
 			std::vector<Element> evalpoints(numpoints), evaldets(numpoints);

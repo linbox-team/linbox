@@ -468,7 +468,9 @@ namespace LinBox
                 size_t last = Ni-1;
                 long c(0);
                 size_t indcol(0);
+#ifdef LINBOX_PRANK_OUT
                 size_t ind_pow = 1;
+#endif
                 size_t maxout = Ni/100; maxout = (maxout<10 ? 10 : (maxout>1000 ? 1000 : maxout) );
                 size_t thres = Ni/maxout; thres = (thres >0 ? thres : 1);
 
@@ -512,9 +514,9 @@ namespace LinBox
 #ifdef LINBOX_PRANK_OUT
                         std::cerr << "Rank mod " << PRIME << "^" << ind_pow << " : " << indcol << std::endl;
                         if (MOD == 1) std::cerr << "wattadayada inhere ?" << std::endl;
+                        ++ind_pow;
 #endif
                         ranks.push_back( indcol );
-                        ++ind_pow;
 
                     }
                     if (p != k) {

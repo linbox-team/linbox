@@ -1,6 +1,6 @@
 /* linbox/solutions/det.h
  * Copyright (C) 2001, 2002 LinBox
- * Time-stamp: <27 Aug 20 14:37:44 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <11 Sep 25 17:18:22 Jean-Guillaume.Dumas@imag.fr>
  *
  *
  * ========LICENCE========
@@ -224,7 +224,9 @@ namespace LinBox
 
 			typename Field::Element pi;
 			size_t i;
+#if 0
 			size_t iternum = 1;
+#endif
 			do {
 				F.assign(pi, F.one);
 				for (i = 0; i < A.coldim (); i++) {
@@ -251,9 +253,8 @@ namespace LinBox
 				    ++refs )
 					std::cout << (*refs) << " " ;
 				std::cout << "]" << std::endl;
-#endif
-
 				++iternum;
+#endif
 			} while ( (phi.size () < A.coldim () + 1) && ( !F.isZero (phi[0]) ) );
 
 
@@ -282,7 +283,6 @@ namespace LinBox
 
 			typename Field::Element pi;
 			size_t i;
-			size_t iternum = 1;
 			do {
 				F.assign(pi, F.one);
 				for (i = 0; i < A.coldim (); i++) {
@@ -301,8 +301,6 @@ namespace LinBox
 				MasseyDomain<Field, BlackboxContainer<Field, Blackbox1> > WD (&TF, Meth.earlyTerminationThreshold);
 
 				WD.minpoly (phi, deg);
-
-				++iternum;
 			} while ( (phi.size () < A.coldim () + 1) && ( !F.isZero (phi[0]) ) );
 
             F.div (d, phi[0], pi);
