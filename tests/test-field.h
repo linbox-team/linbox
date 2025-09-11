@@ -136,7 +136,7 @@ bool testRing (Ring &F, const char *title, bool fieldp = true, bool runInitConve
 	typedef typename Ring::Element Element;
 	LinBox::integer p, q;
 	F.characteristic(p);
-	
+
 	Element zero, one, mOne, two, mTwo, three, five, six, eight;
 	F.init(zero); F.assign(zero, F.zero);
 	F.init(one); F.assign(one, F.one);
@@ -172,18 +172,18 @@ bool testRing (Ring &F, const char *title, bool fieldp = true, bool runInitConve
 	commentator().start ("\t--Testing correctness of 0 and 1");
 	part_pass = true;
 
-	if ( not F.isZero (zero) or not F.isZero(F.zero) ) 
+	if ( not F.isZero (zero) or not F.isZero(F.zero) )
 		part_pass = reportError( "isZero (0) is false", pass);
-	
-	if ( F.isZero (one) or F.isZero(F.one) ) 
+
+	if ( F.isZero (one) or F.isZero(F.one) )
 		part_pass = reportError( "isZero (1) is true", pass);
-	if ( F.isOne (zero) or F.isOne(F.zero) ) 
+	if ( F.isOne (zero) or F.isOne(F.zero) )
 		part_pass = reportError( "isOne (0) is true", pass);
-	if ( not F.isOne (one) or not F.isOne(F.one) ) 
+	if ( not F.isOne (one) or not F.isOne(F.one) )
 		part_pass = reportError( "isOne (1) is false", pass);
-	if ( not F.isUnit(one) or not F.isUnit(F.one) ) 
+	if ( not F.isUnit(one) or not F.isUnit(F.one) )
 		part_pass = reportError( "isUnit (1) is false", pass);
-	if ( F.isUnit(zero) or F.isUnit(F.zero) ) 
+	if ( F.isUnit(zero) or F.isUnit(F.zero) )
 		part_pass = reportError( "isUnit (0) is true", pass);
 	if ( !F.areEqual(F.mOne,mOne)) {
 		part_pass = reportError( "isMOne (-One) is false", pass);
@@ -205,7 +205,7 @@ bool testRing (Ring &F, const char *title, bool fieldp = true, bool runInitConve
 	commentator().progress ();
 
     if (runInitConvertIdentity) {
-                
+
 	commentator().start ("\t--Testing init/convert");
 	part_pass = true;
 
@@ -235,7 +235,7 @@ bool testRing (Ring &F, const char *title, bool fieldp = true, bool runInitConve
 	commentator().stop (MSG_STATUS (part_pass));
 	commentator().progress ();
         }
-        
+
 	commentator().start ("\t--Testing ring arithmetic");
 	part_pass = true;
 
@@ -349,7 +349,7 @@ bool testField (Field &F, const char *title, bool fieldp = true, bool runInitCon
 
     typename Field::Element a, b, c, d, e, f;
 	F.init(a);F.init(b);F.init(c);F.init(d);F.init(e);F.init(f);
-        
+
 	commentator().start ("\t--Testing field arithmetic");
 	bool part_pass = true;
 
@@ -367,7 +367,7 @@ bool testField (Field &F, const char *title, bool fieldp = true, bool runInitCon
 
 	if (!F.areEqual (a, F.one) || !F.areEqual (d, a))
 		part_pass = reportError( "Results of div incorrect", part_pass);
-	
+
 	commentator().stop (MSG_STATUS (part_pass));
 	commentator().progress ();
 
@@ -375,7 +375,7 @@ bool testField (Field &F, const char *title, bool fieldp = true, bool runInitCon
 	commentator().stop (MSG_STATUS (part_pass), (const char *) 0, "testField");
 
         return part_pass & testRing(F,title,fieldp,runInitConvertIdentity);
-        
+
 }
 
 /** Tests of algebraic properties of rings and fields */
@@ -1243,9 +1243,9 @@ namespace field_subtests {
 
 /* Convenience function to run all of the basic ring tests */
 template <class Ring>
-bool runBasicRingTests (const Ring &F, const char *desc, 
-		unsigned int iterations = 1, 
-		bool runCharacteristicTest = true, 
+bool runBasicRingTests (const Ring &F, const char *desc,
+		unsigned int iterations = 1,
+		bool runCharacteristicTest = true,
 		bool runInitConvertIdentity=true)
 {
 	bool pass = true;
@@ -1291,9 +1291,9 @@ bool runBasicRingTests (const Ring &F, const char *desc,
 
 /* Convenience function to run the tests appropriate to a principal ideal ring such as Z, Z_n, F[x], F[x]/<f> (any n or f, not necessarily prime). */
 template <class Ring>
-bool runPIRTests (const Ring &R, const char *desc, 
-		unsigned int iterations = 1, 
-		bool runCharacteristicTest = true, 
+bool runPIRTests (const Ring &R, const char *desc,
+		unsigned int iterations = 1,
+		bool runCharacteristicTest = true,
 		bool runInitConvertIdentity=true)
 {
 	ostringstream str;
@@ -1305,8 +1305,8 @@ bool runPIRTests (const Ring &R, const char *desc,
 	bool ret =  runBasicRingTests(R, desc, iterations, runCharacteristicTest, runInitConvertIdentity) ;
 	// test gcd, gcd with s,t, and lcm
 	typename Ring::Element a, b, g1, g2, d, s, t, h;
-	R.init(a); R.init(b); R.init(g1); R.init(g2); 
-	R.init(d); R.init(s); R.init(t); R.init(h); 
+	R.init(a); R.init(b); R.init(g1); R.init(g2);
+	R.init(d); R.init(s); R.init(t); R.init(h);
 	typename Ring::RandIter r (R,4);
 	r.random(a); r.random(b);
 	//R.write(std::cout << "a ", a) << std::endl;
@@ -1319,7 +1319,7 @@ bool runPIRTests (const Ring &R, const char *desc,
 	/* specs needed on this
 	if (not R.areEqual(g1, g2))
 		reportError("extended/nonextended gcd inconsistent", ret);
-	if (not ret) {std::cout << "long/short" << std::endl; 
+	if (not ret) {std::cout << "long/short" << std::endl;
 		R.write(std::cout << "g1 ", g1) << std::endl;
 		R.write(std::cout << "g2 ", g2) << std::endl;
 		exit(-1); }
@@ -1461,10 +1461,10 @@ namespace field_subtests {
 }// namespace field_subtests
 
 template <class Field>
-bool runFieldTests (const Field &F, const char *desc, 
-		unsigned int iterations = 1, 
+bool runFieldTests (const Field &F, const char *desc,
+		unsigned int iterations = 1,
 		size_t n = 0, // n is not actually used.
-		bool runCharacteristicTest = true, 
+		bool runCharacteristicTest = true,
 		bool runInitConvertIdentity=true)
 {
 	ostringstream str;

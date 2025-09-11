@@ -46,13 +46,13 @@ int main (int argc, char **argv)
 	static int iterations = 1;
 
 	static Argument args[] = {
-   		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
 		{ 'n', "-n N", "Set dimension of test vectors to NxN.", TYPE_INT,     &n },
 		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
 		END_OF_ARGUMENTS
-   	};
+	};
 
-   	parseArguments (argc, argv, args);
+	parseArguments (argc, argv, args);
 
 	commentator().start("NTL_zz_pEX field test suite", "NTL_zz_pEX");
 	bool pass = true;

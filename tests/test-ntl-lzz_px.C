@@ -31,7 +31,8 @@
 
 #include <iostream>
 #include <fstream>
-
+#include <string>
+#include <sstream>
 
 #include "linbox/ring/ntl.h"
 
@@ -41,18 +42,18 @@ using namespace LinBox;
 
 int main (int argc, char **argv)
 {
-	static integer q = 3;
+	static integer q = 31;
 	static size_t n = 10000;
 	static int iterations = 1;
 
 	static Argument args[] = {
-   		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
 		{ 'n', "-n N", "Set dimension of test vectors to NxN.", TYPE_INT,     &n },
 		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
 		END_OF_ARGUMENTS
-   	};
+	};
 
-   	parseArguments (argc, argv, args);
+	parseArguments (argc, argv, args);
 
 	commentator().start("NTL_zz_pX field test suite", "NTL_zz_p");
 	bool pass = true;
@@ -68,6 +69,19 @@ int main (int argc, char **argv)
 
 	if (!runBasicRingTests (R, "NTL_zz_pX", (unsigned int)iterations, false)) pass = false;
 	if (!runPIRTests (R, "NTL_zz_pX", (unsigned int)iterations, false)) pass = false;
+
+	// Test generic i/o
+
+    std::stringstream ss;
+    ss << 3 << ' ' << Givaro::Integer(1) << ' ' << Givaro::Integer(-2)
+       << ' ' << Givaro::Integer(5) << ' ' << Givaro::Integer(-7) << std::endl;
+
+    NTL_zz_pX::Element P;
+
+    R.read(ss, P);
+    R.write(std::clog << "# P: ", P) << std::endl;
+
+
 	// needs PID tests as well...
 
 #if 0

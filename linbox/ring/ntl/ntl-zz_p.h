@@ -77,7 +77,7 @@ namespace Givaro
 		unsigned char *txt;
 		typedef unsigned char u_char;
 		txt = new u_char[nb + 68];
-		// 			   if (!txt) Error("out of memory");
+		//			   if (!txt) Error("out of memory");
 		BytesFromZZ(txt, iy, nb);
 
 		x = 0;
@@ -159,7 +159,7 @@ namespace LinBox
 		NTL_ZZ_p_Initialiser () { }
 
 	};
-	
+
             // CP: to be changed in to a Givaro::GeneralRingRandIter ?
         template <class Element>
 	class UnparametricRandIter;
@@ -279,7 +279,7 @@ namespace LinBox
 			unsigned char *txt;
 			typedef unsigned char u_char;
 			txt = new u_char[nb + 68];
-			// 			   if (!txt) Error("out of memory");
+			//			   if (!txt) Error("out of memory");
 			BytesFromZZ(txt, iy, nb);
 
 			x = 0;
@@ -345,7 +345,7 @@ namespace LinBox
 			std::stringstream s;
 			s << Element::modulus();
 			s >> c;
-			return c; 
+			return c;
 			//return c = static_cast<integer>(to_long(Element::modulus()));
 		}
 
@@ -357,7 +357,7 @@ namespace LinBox
 		integer characteristic() const
 		{
 			integer c;
-			return characteristic(c); 
+			return characteristic(c);
 		}
 
 		/** Multiplicative Inverse.
@@ -460,7 +460,7 @@ namespace LinBox
 		 */
 		std::ostream &write (std::ostream &os, const Element &x) const
 		{
-		   	return Givaro::UnparametricOperations<Element>::write(os,x);
+			return Givaro::UnparametricOperations<Element>::write(os,x);
 		}
 	};
 
@@ -506,7 +506,7 @@ namespace LinBox
 		}
 
         const NTL_ZZ_p& ring() const { return _ring; }
-                
+
 
 		// UnparametricRandIter<NTL::ZZ_p>(const NTL_ZZ_p& R) :
 			// _size(R._size), _seed(R._seed)
