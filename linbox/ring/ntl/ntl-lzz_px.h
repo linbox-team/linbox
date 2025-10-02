@@ -191,13 +191,11 @@ namespace LinBox
 		 * of the vector corresponds to the leading coefficients.  That is,
 		 * v[i] = coefficient of x^i.
 		 */
-		//Element& init( Element& p, const std::vector<Coeff>& v ) const
-      template <class E>
-		Element& init( Element& p, const std::vector<E>& v ) const
+		Element& init( Element& p, const std::vector<Coeff>& v ) const
 		{
 			p = 0;
 			for( long i = 0; i < (long)v.size(); ++i )
-				NTL::SetCoeff( p, i, v[ (size_t) i ] );
+                NTL::SetCoeff( p, i, v[ (size_t) i ] );
 			return p;
 		}
 

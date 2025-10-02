@@ -362,7 +362,7 @@ bool checkMatPolMul(const PolMatMulDomain& PMMD, size_t m,size_t n, size_t d, lo
     }
 
     commentator().stop(MSG_STATUS(pass),(const char *) 0,"testMatpolyMul");
-    return pass;
+    return finalok;
 }
 
 

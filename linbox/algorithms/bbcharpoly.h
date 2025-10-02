@@ -204,7 +204,7 @@ namespace LinBox
 			std::vector<IntPoly> intFactors(0, intRing);
 			std::vector<uint64_t> exp;
 			IPD.factor (intFactors, exp, intMinPoly);
-			size_t factnum = intFactors.size();
+// 			size_t factnum = intFactors.size();
 
 			/* Choose a modular prime field */
 			PrimeIterator<IteratorCategories::HeuristicTag> primeg (FieldTraits<Field>::bestBitSize(n));
@@ -230,14 +230,14 @@ namespace LinBox
 
 						FFM = new FM (tmp2p, tmp2, 0, depend);
 						factCharPoly.insert (std::pair<size_t, FM*> (deg, FFM));
-						++factnum;
+// 						++factnum;
 						depend = FFM;
 						deg += intFactors[i].size()-1;
 						if (j < exp[i])
 							IPD.mul (*tmp, *tmp2, intFactors[i]);
 					}
 					delete tmp;
-					--factnum;
+// 					--factnum;
 					FFM->multiplicity = 1; // The last factor is present in minpoly
 					goal -= (int)deg-(int)intFactors[i].size()+1;
 					leadingBlocks.insert (std::pair<FM*,bool>(FFM,false));
@@ -322,7 +322,7 @@ namespace LinBox
             std::vector<uint64_t> exp;
 
             PD.factor (factors, exp, minPoly);
-            size_t factnum = factors.size();
+//             size_t factnum = factors.size();
 // std::clog<<"factnum = "<<factnum<<std::endl;
 
 				/* Building the structure of factors */
@@ -345,7 +345,7 @@ namespace LinBox
                         FFM = new FactorMult<Polynomial> (tmp2,tmp2,1U,NULL);
 // PD.write(std::clog<<"Inserting X : ", factors[i]) <<std::endl;
                         factCharPoly.insert (std::pair<size_t, FactorMult<Polynomial>* > (factors[i].size()-1, FFM));
-                        ++factnum;
+//                         ++factnum;
                         FactorMult<Polynomial>* depend = FFM;
                             // tmp2 is deleted after charPoly construction
                         tmp2 = new Polynomial(factors[i]);
@@ -366,14 +366,14 @@ namespace LinBox
 // std::clog<<"Inserting new factor (exp>1): "<<(*tmp2)<<std::endl;
 
                             factCharPoly.insert (std::pair<size_t, FactorMult<Polynomial>* > (deg, FFM));
-                            ++factnum;
+//                             ++factnum;
                             depend = FFM;
                             deg += factors[i].size()-1;
                             if (j < exp[i])
                                 PD.mul (*tmp, *tmp2, factors[i]);
                         }
                         delete tmp;
-                        --factnum;
+//                         --factnum;
                         FFM->multiplicity = 1; // The last factor is present in minpoly
                         goal -= (int)(deg-factors[i].size())+1;
                         leadingBlocks.insert (std::pair<FactorMult<Polynomial>*,bool>(FFM,false));

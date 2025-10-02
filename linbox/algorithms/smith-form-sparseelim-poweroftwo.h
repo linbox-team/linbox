@@ -1,7 +1,7 @@
 /* algorithms/smith-form-sparseelim-poweroftwo.h
  * Copyright (C) LinBox
  * Written by JG Dumas
- * Time-stamp: <28 Feb 19 15:11:18 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <11 Sep 25 17:27:18 Jean-Guillaume.Dumas@imag.fr>
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
@@ -396,7 +396,9 @@ namespace LinBox
                 size_t last = Ni-1;
                 long c(0);
                 size_t indcol(0);
+#ifdef LINBOX_PRANK_OUT
                 size_t ind_pow = 1;
+#endif
                 size_t maxout = Ni/100; maxout = (maxout<10 ? 10 : (maxout>1000 ? 1000 : maxout) );
                 size_t thres = Ni/maxout; thres = (thres >0 ? thres : 1);
 
@@ -445,8 +447,8 @@ namespace LinBox
                         ENSURE( TWOKMONE == (TWOK - 1U) );
 
                         ranks.push_back( indcol );
-                        ++ind_pow;
 #ifdef LINBOX_PRANK_OUT
+                        ++ind_pow;
                         std::cerr << "Rank mod 2^" << ind_pow << " : " << indcol << std::endl;
                         if (TWOK == 1) std::cerr << "wattadayada inhere ?" << std::endl;
 #endif
