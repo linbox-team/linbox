@@ -1,8 +1,8 @@
 /* linbox/algorithms/gauss-det-gf2.inl
  * Copyright (C) 2009 The LinBox group
  *
-// Time-stamp: <13 Nov 17 16:59:51 Jean-Guillaume.Dumas@imag.fr>
- *
+// Time-stamp: <17 Oct 25 13:47:14 Jean-Guillaume.Dumas@imag.fr>
+*
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -32,26 +32,26 @@ namespace LinBox
 {
 	template <class SparseSeqMatrix> inline typename GaussDomain<GF2>::Element&
 	GaussDomain<GF2>::detInPlace(Element		&determinant,
-                                SparseSeqMatrix        	&A,
-                                size_t  	Ni,
-                                size_t  	Nj,
-                                PivotStrategy   reord)  const
+                                 SparseSeqMatrix	&A,
+                                 size_t	Ni,
+                                 size_t	Nj,
+                                 PivotStrategy   reord)  const
 	{
 		size_t Rank;
 		if (reord == PivotStrategy::None)
 			NoReordering(Rank, determinant, A, Ni, Nj);
 		else {
-                        Permutation<GF2> P(A.field(),(int)A.coldim());
+            Permutation<GF2> P(A.field(),(int)A.coldim());
 			InPlaceLinearPivoting(Rank, determinant, A, P, Ni, Nj);
-                }
+        }
 		return determinant;
 	}
 
 
 	template <class SparseSeqMatrix> inline typename GaussDomain<GF2>::Element&
 	GaussDomain<GF2>::detInPlace(Element &determinant,
-                                SparseSeqMatrix  &A,
-                                PivotStrategy   reord)  const
+                                 SparseSeqMatrix  &A,
+                                 PivotStrategy   reord)  const
 	{
 		return detInPlace(determinant, A,  A.rowdim (), A.coldim (), reord);
 	}
@@ -60,18 +60,18 @@ namespace LinBox
 
 	template <class SparseSeqMatrix> inline typename GaussDomain<GF2>::Element&
 	GaussDomain<GF2>::det(Element        &determinant,
-				 const SparseSeqMatrix   &A,
-				 PivotStrategy   reord)  const
+                          const SparseSeqMatrix   &A,
+                          PivotStrategy   reord)  const
 	{
 		return det(determinant, A,  A.rowdim (), A.coldim (), reord);
 	}
 
 	template <class SparseSeqMatrix> inline typename GaussDomain<GF2>::Element&
 	GaussDomain<GF2>::det(Element       &determinant,
-                              const SparseSeqMatrix  &A,
-                              size_t  Ni,
-                              size_t  Nj,
-                              PivotStrategy   reord)  const
+                          const SparseSeqMatrix  &A,
+                          size_t  Ni,
+                          size_t  Nj,
+                          PivotStrategy   reord)  const
 	{
 		SparseSeqMatrix CopyA(Ni);
 		for(size_t i = 0; i < Ni; ++i)

@@ -49,6 +49,13 @@ namespace LinBox
 		// we need a BB/Blas hybrid in the style of Duran/Saunders/Wan.
 		//! @bug choose (benchmark) better cuttoff (size, nbnz, sparse rep)
 		if (useBlackboxMethod(A)) {
+            std::clog
+                << "\033[1;36m# WARNING: switching to probabilistic methods;\n"
+                << "#  only a lower bound for the rank is returned;\n"
+                << "#  consider using the certifyInconsistency method flag;\n"
+                << "#  otherwise, force an Elimination method.\033[0m"
+                << std::endl;
+
 			return rank(r, A, tag, Method::Blackbox(m ));
 		}
 		else {

@@ -70,7 +70,8 @@ namespace LinBox {
     template <class Matrix>
     bool useBlackboxMethod(const Matrix& A)
     {
-        return (A.coldim() > LINBOX_USE_BLACKBOX_THRESHOLD) && (A.rowdim() > LINBOX_USE_BLACKBOX_THRESHOLD);
+        return (A.coldim() > LINBOX_USE_BLACKBOX_THRESHOLD)
+            && (A.rowdim() > LINBOX_USE_BLACKBOX_THRESHOLD);
     }
 
     template <class Field>
