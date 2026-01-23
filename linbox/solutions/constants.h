@@ -38,7 +38,8 @@
 #define LINBOX_DEFAULT_EARLY_TERMINATION_THRESHOLD 10
 #endif
 
-// Used to decide which method to use when using Method::Auto on a Blackbox or Sparse matrix.
+// Used to decide which method to use when using Method::Auto
+//      on a Blackbox or Sparse matrix.
 #if !defined(LINBOX_USE_BLACKBOX_THRESHOLD)
-#define LINBOX_USE_BLACKBOX_THRESHOLD 1000u
+#define LINBOX_USE_BLACKBOX_THRESHOLD 10000u
 #endif

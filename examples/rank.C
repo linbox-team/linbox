@@ -49,7 +49,7 @@ int main (int argc, char **argv)
 {
 	commentator().setMaxDetailLevel (-1);
 	commentator().setMaxDepth (-1);
-	commentator().setReportStream (std::cerr);
+	commentator().setReportStream (std::clog);
 
 	if (argc < 2 || argc > 3) {
 		std::cerr << "Usage: rank <matrix-file-in-supported-format> [<p>]" << std::endl;
@@ -72,7 +72,7 @@ int main (int argc, char **argv)
 	tim.stop();
 	std::clog << "matrix is " << A.rowdim() << " by " << A.coldim() << " (" << tim << ")" << std::endl;
 	tim.clear() ; tim.start();
-	
+
 	if (argc == 2) { // rank over the rational numbers.
 		/* We could pick a random prime and work mod that prime, But
 		 * the point here is that the rank function in solutions/
@@ -82,7 +82,7 @@ int main (int argc, char **argv)
 		 */
 		LinBox::rank (r, A);
 	}
-	
+
 	if (argc == 3) { // rank mod a prime
 		uint32_t q = atoi(argv[2]);
 		if (q == 0) {
@@ -97,13 +97,16 @@ int main (int argc, char **argv)
 			return -1 ;
 		}
 
-		SparseMatrix<Field, SP_STOR > B (F, A.rowdim(), A.coldim());// modular image of A
+            // modular image of A
+		SparseMatrix<Field, SP_STOR > B (F, A.rowdim(), A.coldim());
 		MatrixHom::map(B, A);
         tim.stop();
-		std::clog << "matrix is " << B.rowdim() << " by " << B.coldim() <<" (time for map: "<< tim << ")" << std::endl;
+		std::clog << "matrix is " << B.rowdim() << " by " << B.coldim()
+                  <<" (time for map: "<< tim << ")" << std::endl;
 
         tim.clear();tim.start();
-		//if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(std::clog) << std::endl;
+//         if (B.rowdim() <= 20 && B.coldim() <= 20)
+//             B.write(std::clog) << std::endl;
 
 		// Using the adaptive LinBox Solution
 		LinBox::rank(r,B);
