@@ -127,13 +127,13 @@ public:
 			D.setEntry(n-i-1, n-i-1, e);
 		}
 
-		typedef Compose<Diag, BBt> DV_t;
-		DV_t DV(D, Vt);
 
-		typedef Compose<BB, DV_t> UDV_t;
-		UDV_t B(U, DV);
+		typedef Compose<Diag, BB> DU_t;
+		DU_t DU(D, U);
 
-		typedef Sum<Blackbox, UDV_t> Ak_t;
+		typedef Compose<BBt, DU_t> VtDU_t;
+		VtDU_t B(Vt, DU);	
+		typedef Sum<Blackbox, VtDU_t> Ak_t;
 		Ak_t Ak(A, B);
 		
 		minpoly(fk, Ak);
