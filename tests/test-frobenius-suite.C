@@ -32,23 +32,25 @@
 #include "linbox/algorithms/frobenius-large.h"
 #include "linbox/algorithms/frobenius-large-bf.h"
 #include "linbox/algorithms/frobenius-large-dense.h"
+#include "linbox/algorithms/frobenius-large-search.h"
 
 #include "test-frobenius-suite.h"
 
 using namespace LinBox;
 
-// Parse algorithm mask from string like "0", "01", "012", "2" etc.
-// bit0 = Toeplitz, bit1 = Butterfly, bit2 = Dense
-// Default (empty string or "012") = all three
+// Parse algorithm mask from string like "0", "01", "012", "0123" etc.
+// bit0 = Toeplitz, bit1 = Butterfly, bit2 = Dense, bit3 = Search
+// Default (empty string) = all four
 int parseAlgoMask(const char *s) {
-    if (s == nullptr || strlen(s) == 0) return 7; // all
+    if (s == nullptr || strlen(s) == 0) return 15; // all
     int mask = 0;
     for (size_t i = 0; i < strlen(s); ++i) {
         if (s[i] == '0') mask |= 1;
         if (s[i] == '1') mask |= 2;
         if (s[i] == '2') mask |= 4;
+        if (s[i] == '3') mask |= 8;
     }
-    return mask ? mask : 7;
+    return mask ? mask : 15;
 }
 
 int main(int argc, char **argv) {
@@ -80,7 +82,7 @@ int main(int argc, char **argv) {
             TYPE_INT, &h },
         { 'q', "-q Q", "Custom: polynomial (0=x, 1=x-1, 2=x+1)",
             TYPE_INT, &poly },
-        { 'a', "-a A", "Algorithms to run: string of digits 0=Toeplitz 1=Butterfly 2=Dense (default: all)",
+        { 'a', "-a A", "Algorithms to run: string of digits 0=Toeplitz 1=Butterfly 2=Dense 3=Search (default: all)",
             TYPE_STR, algoStr },
         END_OF_ARGUMENTS
     };
@@ -94,9 +96,10 @@ int main(int argc, char **argv) {
     Field   F(p, e);
     PolyRing R(F);
 
-    FrobeniusLarge<PolyRing>         FT(R);
+    FrobeniusLarge<PolyRing>          FT(R);
     FrobeniusLargeButterfly<PolyRing> FB(R);
-    FrobeniusLargeDense<PolyRing>    FD(R);
+    FrobeniusLargeDense<PolyRing>     FD(R);
+    FrobeniusLargeSearch<PolyRing>    FS(R);
 
     int algoMask = parseAlgoMask(algoStr[0] ? algoStr : nullptr);
 
@@ -108,16 +111,16 @@ int main(int argc, char **argv) {
               << ((algoMask & 1) ? "Toeplitz " : "")
               << ((algoMask & 2) ? "Butterfly " : "")
               << ((algoMask & 4) ? "Dense " : "")
+              << ((algoMask & 8) ? "Search " : "")
               << std::endl;
 
     bool pass = runSuite(
-        FT, FB, FD,
+        FT, FB, FD, FS,
         F, R,
         k,
         algoMask,
         seed,
         s, w, h, poly);
 
-        
     return pass ? 0 : -1;
 }

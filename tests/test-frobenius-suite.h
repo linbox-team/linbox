@@ -365,21 +365,24 @@ std::vector<TestParams> defaultTestCases() {
 
 // ============================================================
 // Main test suite runner
+// Algorithms bitmask: bit0=Toeplitz, bit1=Butterfly, bit2=Dense, bit3=Search
 // ============================================================
 template<
     class FrobeniusToeplitz,
     class FrobeniusButterfly,
     class FrobeniusDense,
+    class FrobeniusSearch,
     class Field,
     class PolyRing>
 bool runSuite(
     FrobeniusToeplitz  &FT,
     FrobeniusButterfly &FB,
     FrobeniusDense     &FD,
+    FrobeniusSearch    &FS,
     const Field        &F,
     const PolyRing     &R,
     size_t k,
-    int    algoMask,   // bitmask: bit0=Toeplitz, bit1=Butterfly, bit2=Dense
+    int    algoMask,   // bitmask: bit0=Toeplitz, bit1=Butterfly, bit2=Dense, bit3=Search
     int    seed,
     // Optional custom params (0 means use defaults)
     size_t custom_s = 0,
@@ -428,6 +431,11 @@ bool runSuite(
         }
         if (algoMask & 4) {
             auto res = runOne(FD, "Dense", F, R, M, expected, tc.name, k);
+            allPass &= res.pass;
+            results.push_back(res);
+        }
+        if (algoMask & 8) {
+            auto res = runOne(FS, "Search", F, R, M, expected, tc.name, k);
             allPass &= res.pass;
             results.push_back(res);
         }
