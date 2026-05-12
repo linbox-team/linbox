@@ -1,8 +1,7 @@
 /* linbox/tests/test-frobenius-suite.C
  * Copyright (C) 2026 Omesh Dhar Dwivedi
- * Written by Omesh Dhar Dwivedi <odd23@drexel.edu >
+ * Written by Omesh Dhar Dwivedi <odd23@drexel.edu>
  *
- * 
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
@@ -16,10 +15,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
  * ========LICENCE========
- * 
  */
-
-
 
 #include "linbox/linbox-config.h"
 
@@ -66,7 +62,10 @@ int main(int argc, char **argv) {
     size_t w    = 0;
     size_t h    = 0;
     int    poly = 0;
-    char   algoStr[16] = "";
+    // TYPE_STR expects std::string* not char[] — using char[] caused
+    // parseArguments to call std::string::assign() on a zero-filled char
+    // array, crashing in memmove (EXC_BAD_ACCESS address=0x0).
+    std::string algoStr = "";
 
     static Argument args[] = {
         { 'k', "-k K", "Number of invariant factors to compute (0 = all)", TYPE_INT, &k },
@@ -77,7 +76,7 @@ int main(int argc, char **argv) {
         { 'w', "-w W", "Custom: width (repetitions per block size)",        TYPE_INT, &w },
         { 'H', "-H H", "Custom: height (step between block sizes)",         TYPE_INT, &h },
         { 'q', "-q Q", "Custom: polynomial (0=x, 1=x-1, 2=x+1)",          TYPE_INT, &poly },
-        { 'a', "-a A", "Algorithms: 0=Toeplitz 1=Butterfly 2=Dense 3=Search 4=LIFs", TYPE_STR, algoStr },
+        { 'a', "-a A", "Algorithms: 0=Toeplitz 1=Butterfly 2=Dense 3=Search 4=LIFs", TYPE_STR, &algoStr },
         END_OF_ARGUMENTS
     };
 
@@ -96,7 +95,7 @@ int main(int argc, char **argv) {
     FrobeniusLargeSearch<PolyRing>    FS(R);
     InvariantFactors<Field, PolyRing> IFD(F, R);
 
-    int algoMask = parseAlgoMask(algoStr[0] ? algoStr : nullptr);
+    int algoMask = parseAlgoMask(algoStr.empty() ? nullptr : algoStr.c_str());
 
     std::cout << "=== Frobenius Test Suite ===" << std::endl;
     std::cout << "Field: GF(" << p << "^" << e << ")"
