@@ -48,23 +48,19 @@ struct TestParams {
 // Polynomial helpers
 // ============================================================
 
-// Evaluate p_poly at a field element val.
-// poly=0: x        -> val
-// poly=1: x-1      -> val - 1
-// poly=2: x+1      -> val + 1
 template<class Field>
 typename Field::Element evalPoly(const Field &F, int poly, typename Field::Element val) {
     typedef typename Field::Element Element;
     Element res;
     switch (poly) {
-        case 0: // x
+        case 0:
             return val;
-        case 1: { // x - 1
+        case 1: {
             Element one; F.init(one, 1);
             F.sub(res, val, one);
             return res;
         }
-        case 2: { // x + 1
+        case 2: {
             Element one; F.init(one, 1);
             F.add(res, val, one);
             return res;
@@ -76,10 +72,6 @@ typename Field::Element evalPoly(const Field &F, int poly, typename Field::Eleme
 
 // ============================================================
 // Jordan block construction (degree 1 polynomials only for now)
-// p=0: nilpotent Jordan block (eigenvalue 0), size sz
-// p=1: Jordan block eigenvalue 1, size sz
-// p=2: Jordan block eigenvalue -1, size sz
-// Writes into M at row/col offset (row0, col0)
 // ============================================================
 template<class Field>
 void writeJordanBlock(
@@ -92,16 +84,13 @@ void writeJordanBlock(
 {
     typedef typename Field::Element Element;
 
-    // Diagonal entry (eigenvalue)
     if (poly != 0) {
         Element lambda;
         if (poly == 1) F.init(lambda, 1);
-        else           F.init(lambda, -1); // x+1 -> eigenvalue -1
+        else           F.init(lambda, -1);
         for (size_t i = 0; i < sz; ++i)
             M.setEntry(row0 + i, col0 + i, lambda);
     }
-    // Superdiagonal (subdiagonal in column-first convention — we use row-first)
-    // Standard Jordan block: 1s on the subdiagonal (below diagonal)
     Element one; F.init(one, 1);
     for (size_t i = 0; i + 1 < sz; ++i)
         M.setEntry(row0 + i + 1, col0 + i, one);
@@ -109,10 +98,6 @@ void writeJordanBlock(
 
 // ============================================================
 // Build Jordan form matrix from parameters (s, w, h, poly)
-// Block size list: d*s*h, d*(s-1)*h, ..., d*h  each repeated w times
-// For degree-1 polys d=1.
-// Returns matrix and the expected invariant factor list as
-// coefficient vectors (lowest degree first).
 // ============================================================
 template<class Field, class PolyRing>
 void buildJordanMatrix(
@@ -128,19 +113,12 @@ void buildJordanMatrix(
     typedef typename PolyRing::Element Polynomial;
     typedef typename PolyRing::Coeff   Coeff;
 
-    // degree is 1 for p0, p1, p2
     size_t d = 1;
-
-    // Compute total dimension
-    // n = d * w * h * s*(s+1)/2
     size_t n = d * w * h * s * (s + 1) / 2;
 
     M.resize(n, n);
-
     expectedFactors.clear();
 
-    // Block sizes: for level lev = s, s-1, ..., 1
-    // block size = d * lev * h, repeated w times
     size_t row0 = 0;
     for (size_t lev = s; lev >= 1; --lev) {
         size_t bsz = d * lev * h;
@@ -148,29 +126,22 @@ void buildJordanMatrix(
             writeJordanBlock(M, F, poly, bsz, row0, row0);
             row0 += bsz;
 
-            // Build expected invariant factor: p^bsz
-            // For poly=0: x^bsz  -> coeffs [0,0,...,0,1]
-            // For poly=1: (x-1)^bsz
-            // For poly=2: (x+1)^bsz
-            // We build the polynomial in R
             Polynomial base, factor;
             R.assign(base, R.zero);
-            // set base = p_poly
             switch (poly) {
-                case 0: // x
+                case 0:
                     R.setCoeff(base, 0, (Coeff)0);
                     R.setCoeff(base, 1, (Coeff)1);
                     break;
-                case 1: // x - 1
+                case 1:
                     R.setCoeff(base, 0, (Coeff)-1);
                     R.setCoeff(base, 1, (Coeff)1);
                     break;
-                case 2: // x + 1
+                case 2:
                     R.setCoeff(base, 0, (Coeff)1);
                     R.setCoeff(base, 1, (Coeff)1);
                     break;
             }
-            // factor = base^bsz
             R.assign(factor, R.one);
             for (size_t i = 0; i < bsz; ++i)
                 R.mulin(factor, base);
@@ -184,8 +155,6 @@ void buildJordanMatrix(
 
 // ============================================================
 // Spray: apply sqrt(n) random elementary similarity transforms
-// Each spray: add alpha*row[j] to row[i], subtract alpha*col[i] from col[j]
-// This is conjugation by elementary matrix E_ij(alpha), preserving invariants.
 // ============================================================
 template<class Field>
 void sprayMatrix(
@@ -202,7 +171,6 @@ void sprayMatrix(
     RandIter RI(F, 0, seed);
 
     for (size_t spray = 0; spray < nSprays; ++spray) {
-        // Pick two distinct random row/col indices
         size_t i = (size_t)(rand() % n);
         size_t j;
         do { j = (size_t)(rand() % n); } while (j == i);
@@ -210,12 +178,9 @@ void sprayMatrix(
         Element alpha;
         do { RI.random(alpha); } while (F.isZero(alpha));
 
-        // --- Row operation: row[i] += alpha * row[j] ---
-        // Collect row j entries first to avoid aliasing
         std::vector<std::pair<size_t,Element>> rowJ;
         for (size_t col = 0; col < n; ++col) {
             Element val; F.init(val, 0);
-            // SparseMatrix getEntry
             M.getEntry(val, j, col);
             if (!F.isZero(val))
                 rowJ.push_back({col, val});
@@ -228,8 +193,6 @@ void sprayMatrix(
             M.setEntry(i, col, cur);
         }
 
-        // --- Col operation: col[j] -= alpha * col[i] ---
-        // Collect col i entries first
         std::vector<std::pair<size_t,Element>> colI;
         for (size_t row = 0; row < n; ++row) {
             Element val; F.init(val, 0);
@@ -285,13 +248,18 @@ TestResult runOne(
     FO.frobeniusInvariants(computed, M, k);
     T.stop();
 
+    // When k > 0, only verify the first k factors.
+    // When k = 0, verify all expected factors.
+    size_t n_check = (k > 0) ? std::min(k, expected.size()) : expected.size();
+
     bool pass = true;
-    if (expected.size() > computed.size()) {
+    if (computed.size() < n_check) {
         pass = false;
     } else {
-        for (size_t i = 0; i < expected.size(); ++i)
+        for (size_t i = 0; i < n_check; ++i)
             if (expected[i] != computed[i]) { pass = false; break; }
     }
+
     if (!pass) {
         std::cout << "\n[FAIL] " << algoName << " on " << caseName << "\n";
         std::cout << "  computed (" << computed.size() << "):\n";
@@ -300,14 +268,14 @@ TestResult runOne(
             R.write(std::cout, computed[i]);
             std::cout << "\n";
         }
-        std::cout << "  expected (" << expected.size() << "):\n";
-        for (size_t i = 0; i < expected.size(); ++i) {
+        std::cout << "  expected first " << n_check << " of " << expected.size() << ":\n";
+        for (size_t i = 0; i < n_check; ++i) {
             std::cout << "    [" << i << "] ";
             R.write(std::cout, expected[i]);
             std::cout << "\n";
         }
     }
-    
+
     TestResult res;
     res.algoName  = algoName;
     res.caseName  = caseName;
@@ -350,28 +318,25 @@ void printTable(const std::vector<TestResult> &results) {
 // ============================================================
 std::vector<TestParams> defaultTestCases() {
     return {
-        // Tall: p=x, s=3, w=1, h=10
         {3, 1, 10, 0, "tall_x"},
-        // Flat: p=x-1, s=3, w=5, h=1
         {3, 5,  1, 1, "flat_xm1"},
-        // Triangular: p=x, s=4, w=4, h=4
         {4, 4,  4, 0, "tri_x"},
-        // Tall with x+1
         {3, 1, 10, 2, "tall_xp1"},
-        // Flat with x
         {3, 5,  1, 0, "flat_x"},
     };
 }
 
 // ============================================================
 // Main test suite runner
-// Algorithms bitmask: bit0=Toeplitz, bit1=Butterfly, bit2=Dense, bit3=Search
+// Algorithms bitmask: bit0=Toeplitz, bit1=Butterfly, bit2=Dense,
+//                     bit3=Search, bit4=LIFs
 // ============================================================
 template<
     class FrobeniusToeplitz,
     class FrobeniusButterfly,
     class FrobeniusDense,
     class FrobeniusSearch,
+    class FrobeniusLifs,
     class Field,
     class PolyRing>
 bool runSuite(
@@ -379,24 +344,21 @@ bool runSuite(
     FrobeniusButterfly &FB,
     FrobeniusDense     &FD,
     FrobeniusSearch    &FS,
+    FrobeniusLifs      &IFD,
     const Field        &F,
     const PolyRing     &R,
     size_t k,
-    int    algoMask,   // bitmask: bit0=Toeplitz, bit1=Butterfly, bit2=Dense, bit3=Search
+    int    algoMask,
     int    seed,
-    // Optional custom params (0 means use defaults)
-    size_t custom_s = 0,
-    size_t custom_w = 0,
-    size_t custom_h = 0,
+    size_t custom_s    = 0,
+    size_t custom_w    = 0,
+    size_t custom_h    = 0,
     int    custom_poly = -1)
 {
     typedef typename PolyRing::Element Polynomial;
     typedef SparseMatrix<Field, SparseMatrixFormat::CSR> SparseMat;
 
-    // Build test case list
     std::vector<TestParams> cases = defaultTestCases();
-
-    // If custom params provided, prepend a custom case
     if (custom_s > 0 && custom_w > 0 && custom_h > 0) {
         int p = (custom_poly >= 0) ? custom_poly : 0;
         std::string name = "custom_s" + std::to_string(custom_s)
@@ -409,36 +371,17 @@ bool runSuite(
     bool allPass = true;
 
     for (auto &tc : cases) {
-        // Build Jordan matrix and expected invariant factors
-        size_t n = tc.w * tc.h * tc.s * (tc.s + 1) / 2; // d=1 for all current polys
+        size_t n = tc.w * tc.h * tc.s * (tc.s + 1) / 2;
         SparseMat M(F, n, n);
         std::vector<Polynomial> expected;
         buildJordanMatrix(M, expected, F, R, tc.s, tc.w, tc.h, tc.poly);
-
-        // Apply similarity sprays
         sprayMatrix(M, F, seed);
 
-        // Run selected algorithms
-        if (algoMask & 1) {
-            auto res = runOne(FT, "Toeplitz", F, R, M, expected, tc.name, k);
-            allPass &= res.pass;
-            results.push_back(res);
-        }
-        if (algoMask & 2) {
-            auto res = runOne(FB, "Butterfly", F, R, M, expected, tc.name, k);
-            allPass &= res.pass;
-            results.push_back(res);
-        }
-        if (algoMask & 4) {
-            auto res = runOne(FD, "Dense", F, R, M, expected, tc.name, k);
-            allPass &= res.pass;
-            results.push_back(res);
-        }
-        if (algoMask & 8) {
-            auto res = runOne(FS, "Search", F, R, M, expected, tc.name, k);
-            allPass &= res.pass;
-            results.push_back(res);
-        }
+        if (algoMask &  1) { auto r = runOne(FT,  "Toeplitz",  F, R, M, expected, tc.name, k); allPass &= r.pass; results.push_back(r); }
+        if (algoMask &  2) { auto r = runOne(FB,  "Butterfly", F, R, M, expected, tc.name, k); allPass &= r.pass; results.push_back(r); }
+        if (algoMask &  4) { auto r = runOne(FD,  "Dense",     F, R, M, expected, tc.name, k); allPass &= r.pass; results.push_back(r); }
+        if (algoMask &  8) { auto r = runOne(FS,  "Search",    F, R, M, expected, tc.name, k); allPass &= r.pass; results.push_back(r); }
+        if (algoMask & 16) { auto r = runOne(IFD, "LIFs",      F, R, M, expected, tc.name, k); allPass &= r.pass; results.push_back(r); }
     }
 
     printTable(results);

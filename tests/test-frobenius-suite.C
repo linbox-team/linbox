@@ -1,7 +1,8 @@
 /* linbox/tests/test-frobenius-suite.C
  * Copyright (C) 2026 Omesh Dhar Dwivedi
- * Written by Omesh Dhar Dwivedi <odd23@drexel.edu>
+ * Written by Omesh Dhar Dwivedi <odd23@drexel.edu >
  *
+ * 
  * ========LICENCE========
  * This file is part of the library LinBox.
  *
@@ -15,7 +16,10 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
  * ========LICENCE========
+ * 
  */
+
+
 
 #include "linbox/linbox-config.h"
 
@@ -33,94 +37,78 @@
 #include "linbox/algorithms/frobenius-large-bf.h"
 #include "linbox/algorithms/frobenius-large-dense.h"
 #include "linbox/algorithms/frobenius-large-search.h"
+#include "linbox/algorithms/invariant-factors.h"
 
 #include "test-frobenius-suite.h"
 
 using namespace LinBox;
 
-// Parse algorithm mask from string like "0", "01", "012", "0123" etc.
-// bit0 = Toeplitz, bit1 = Butterfly, bit2 = Dense, bit3 = Search
-// Default (empty string) = all four
+// bit0=Toeplitz, bit1=Butterfly, bit2=Dense, bit3=Search, bit4=LIFs
 int parseAlgoMask(const char *s) {
-    if (s == nullptr || strlen(s) == 0) return 15; // all
+    if (s == nullptr || strlen(s) == 0) return 31; // all
     int mask = 0;
     for (size_t i = 0; i < strlen(s); ++i) {
         if (s[i] == '0') mask |= 1;
         if (s[i] == '1') mask |= 2;
         if (s[i] == '2') mask |= 4;
         if (s[i] == '3') mask |= 8;
+        if (s[i] == '4') mask |= 16;
     }
-    return mask ? mask : 15;
+    return mask ? mask : 31;
 }
 
 int main(int argc, char **argv) {
-    // Defaults
-    uint64_t p    = 10000019;
-    uint64_t e    = 1;
-    size_t   k    = 0;
-    int      seed = time(NULL);
-    size_t   s    = 0;   // 0 = use default test cases
-    size_t   w    = 0;
-    size_t   h    = 0;
-    int      poly = 0;   // 0=x, 1=x-1, 2=x+1
-    char     algoStr[16] = "";  // empty = all
+    int    p    = 10000019;
+    int    e    = 1;
+    size_t k    = 0;
+    int    seed = time(NULL);
+    size_t s    = 0;
+    size_t w    = 0;
+    size_t h    = 0;
+    int    poly = 0;
+    char   algoStr[16] = "";
 
     static Argument args[] = {
-        { 'k', "-k K", "Number of invariant factors to compute (0 = all)",
-            TYPE_INT, &k },
-        { 'p', "-p P", "Characteristic of field GF(p^e)",
-            TYPE_INT, &p },
-        { 'e', "-e E", "Extension degree of field GF(p^e)",
-            TYPE_INT, &e },
-        { 'r', "-r R", "Random seed",
-            TYPE_INT, &seed },
-        { 's', "-s S", "Custom: number of distinct block sizes (0 = use defaults)",
-            TYPE_INT, &s },
-        { 'w', "-w W", "Custom: width (repetitions per block size)",
-            TYPE_INT, &w },
-        { 'H', "-H H", "Custom: height (step between block sizes)",
-            TYPE_INT, &h },
-        { 'q', "-q Q", "Custom: polynomial (0=x, 1=x-1, 2=x+1)",
-            TYPE_INT, &poly },
-        { 'a', "-a A", "Algorithms to run: string of digits 0=Toeplitz 1=Butterfly 2=Dense 3=Search (default: all)",
-            TYPE_STR, algoStr },
+        { 'k', "-k K", "Number of invariant factors to compute (0 = all)", TYPE_INT, &k },
+        { 'p', "-p P", "Characteristic of field GF(p^e)",                  TYPE_INT, &p },
+        { 'e', "-e E", "Extension degree of field GF(p^e)",                 TYPE_INT, &e },
+        { 'r', "-r R", "Random seed",                                       TYPE_INT, &seed },
+        { 's', "-s S", "Custom: number of distinct block sizes",            TYPE_INT, &s },
+        { 'w', "-w W", "Custom: width (repetitions per block size)",        TYPE_INT, &w },
+        { 'H', "-H H", "Custom: height (step between block sizes)",         TYPE_INT, &h },
+        { 'q', "-q Q", "Custom: polynomial (0=x, 1=x-1, 2=x+1)",          TYPE_INT, &poly },
+        { 'a', "-a A", "Algorithms: 0=Toeplitz 1=Butterfly 2=Dense 3=Search 4=LIFs", TYPE_STR, algoStr },
         END_OF_ARGUMENTS
     };
 
     parseArguments(argc, argv, args);
     srand(seed);
 
-    typedef NTL_zz_p   Field;
-    typedef NTL_zz_pX  PolyRing;
+    typedef NTL_zz_p  Field;
+    typedef NTL_zz_pX PolyRing;
 
-    Field   F(p, e);
+    Field    F(p, e);
     PolyRing R(F);
 
     FrobeniusLarge<PolyRing>          FT(R);
     FrobeniusLargeButterfly<PolyRing> FB(R);
     FrobeniusLargeDense<PolyRing>     FD(R);
     FrobeniusLargeSearch<PolyRing>    FS(R);
+    InvariantFactors<Field, PolyRing> IFD(F, R);
 
     int algoMask = parseAlgoMask(algoStr[0] ? algoStr : nullptr);
 
     std::cout << "=== Frobenius Test Suite ===" << std::endl;
     std::cout << "Field: GF(" << p << "^" << e << ")"
-              << "  seed=" << seed
-              << "  k=" << k << std::endl;
+              << "  seed=" << seed << "  k=" << k << std::endl;
     std::cout << "Algorithms: "
-              << ((algoMask & 1) ? "Toeplitz " : "")
-              << ((algoMask & 2) ? "Butterfly " : "")
-              << ((algoMask & 4) ? "Dense " : "")
-              << ((algoMask & 8) ? "Search " : "")
+              << ((algoMask &  1) ? "Toeplitz "  : "")
+              << ((algoMask &  2) ? "Butterfly " : "")
+              << ((algoMask &  4) ? "Dense "     : "")
+              << ((algoMask &  8) ? "Search "    : "")
+              << ((algoMask & 16) ? "LIFs "      : "")
               << std::endl;
 
-    bool pass = runSuite(
-        FT, FB, FD, FS,
-        F, R,
-        k,
-        algoMask,
-        seed,
-        s, w, h, poly);
-
+    bool pass = runSuite(FT, FB, FD, FS, IFD, F, R, k, algoMask, seed, s, w, h, poly);
     return pass ? 0 : -1;
 }

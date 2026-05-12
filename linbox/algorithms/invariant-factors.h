@@ -129,11 +129,11 @@ public:
 		size_t b = G.rowdim();
 		for (size_t i = 0; i < b; i++) {
 			for (size_t j = 0; j < b; j++) {
-				std::vector<long> coeffs;
+				std::vector<int64_t> coeffs;
 				for (size_t k = 0; k < minpoly.size(); k++) {
-					long coeff;
+					integer coeff;
 					_F.convert(coeff, minpoly[k].getEntry(i, j));
-					coeffs.push_back(coeff);
+					coeffs.push_back((int64_t)coeff);
 				}
 
 				Polynomial tmp;
