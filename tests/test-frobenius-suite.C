@@ -29,12 +29,7 @@
 #include "linbox/util/commentator.h"
 #include "linbox/ring/ntl.h"
 
-#include "linbox/algorithms/frobenius-large.h"
-#include "linbox/algorithms/frobenius-large-search.h"
-#include "linbox/algorithms/frobenius-large-bf.h"
-#include "linbox/algorithms/frobenius-large-bf-search.h"
-#include "linbox/algorithms/frobenius-large-dense.h"
-#include "linbox/algorithms/frobenius-large-dense-search.h"
+#include "linbox/algorithms/frobenius-large-generic.h"
 #include "linbox/algorithms/invariant-factors.h"
 
 #include "test-frobenius-suite.h"

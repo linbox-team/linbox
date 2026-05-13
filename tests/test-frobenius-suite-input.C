@@ -40,12 +40,7 @@
 #include "linbox/matrix/sparse-matrix.h"
 #include "givaro/givtimer.h"
 
-#include "linbox/algorithms/frobenius-large.h"
-#include "linbox/algorithms/frobenius-large-search.h"
-#include "linbox/algorithms/frobenius-large-bf.h"
-#include "linbox/algorithms/frobenius-large-bf-search.h"
-#include "linbox/algorithms/frobenius-large-dense.h"
-#include "linbox/algorithms/frobenius-large-dense-search.h"
+#include "linbox/algorithms/frobenius-large-generic.h"
 #include "linbox/algorithms/invariant-factors.h"
 
 using namespace LinBox;
