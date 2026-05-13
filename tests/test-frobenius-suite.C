@@ -1,6 +1,6 @@
 /* linbox/tests/test-frobenius-suite.C
  * Copyright (C) 2026 Omesh Dhar Dwivedi
- * Written by Omesh Dhar Dwivedi <odd23@drexel.edu>
+ * Written by Omesh Dhar Dwivedi <odd23@drexel.edu >
  *
  * ========LICENCE========
  * This file is part of the library LinBox.
@@ -15,7 +15,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
  * ========LICENCE========
- * 
  */
 
 #include "linbox/linbox-config.h"
@@ -31,18 +30,21 @@
 #include "linbox/ring/ntl.h"
 
 #include "linbox/algorithms/frobenius-large.h"
-#include "linbox/algorithms/frobenius-large-bf.h"
-#include "linbox/algorithms/frobenius-large-dense.h"
 #include "linbox/algorithms/frobenius-large-search.h"
+#include "linbox/algorithms/frobenius-large-bf.h"
+#include "linbox/algorithms/frobenius-large-bf-search.h"
+#include "linbox/algorithms/frobenius-large-dense.h"
+#include "linbox/algorithms/frobenius-large-dense-search.h"
 #include "linbox/algorithms/invariant-factors.h"
 
 #include "test-frobenius-suite.h"
 
 using namespace LinBox;
 
-// bit0=Toeplitz, bit1=Butterfly, bit2=Dense, bit3=Search, bit4=LIFs
+// bit0=Toeplitz, bit1=ToeplitzSearch, bit2=Butterfly, bit3=ButterflySearch,
+// bit4=Dense,    bit5=DenseSearch,    bit6=LIFs
 int parseAlgoMask(const char *s) {
-    if (s == nullptr || strlen(s) == 0) return 31; // all
+    if (s == nullptr || strlen(s) == 0) return 127; // all
     int mask = 0;
     for (size_t i = 0; i < strlen(s); ++i) {
         if (s[i] == '0') mask |= 1;
@@ -50,8 +52,10 @@ int parseAlgoMask(const char *s) {
         if (s[i] == '2') mask |= 4;
         if (s[i] == '3') mask |= 8;
         if (s[i] == '4') mask |= 16;
+        if (s[i] == '5') mask |= 32;
+        if (s[i] == '6') mask |= 64;
     }
-    return mask ? mask : 31;
+    return mask ? mask : 127;
 }
 
 int main(int argc, char **argv) {
@@ -63,21 +67,19 @@ int main(int argc, char **argv) {
     size_t w    = 0;
     size_t h    = 0;
     int    poly = 0;
-    // TYPE_STR expects std::string* not char[] — using char[] caused
-    // parseArguments to call std::string::assign() on a zero-filled char
-    // array, crashing in memmove (EXC_BAD_ACCESS address=0x0).
-    std::string algoStr = "";
+    char   algoStr[16] = "";
 
     static Argument args[] = {
-        { 'k', "-k K", "Number of invariant factors to compute (0 = all)", TYPE_INT, &k },
-        { 'p', "-p P", "Characteristic of field GF(p^e)",                  TYPE_INT, &p },
-        { 'e', "-e E", "Extension degree of field GF(p^e)",                 TYPE_INT, &e },
-        { 'r', "-r R", "Random seed",                                       TYPE_INT, &seed },
-        { 's', "-s S", "Custom: number of distinct block sizes",            TYPE_INT, &s },
-        { 'w', "-w W", "Custom: width (repetitions per block size)",        TYPE_INT, &w },
-        { 'H', "-H H", "Custom: height (step between block sizes)",         TYPE_INT, &h },
-        { 'q', "-q Q", "Custom: polynomial (0=x, 1=x-1, 2=x+1)",          TYPE_INT, &poly },
-        { 'a', "-a A", "Algorithms: 0=Toeplitz 1=Butterfly 2=Dense 3=Search 4=LIFs", TYPE_STR, &algoStr },
+        { 'k', "-k K", "Number of invariant factors to compute (0 = all)",  TYPE_INT, &k },
+        { 'p', "-p P", "Characteristic of field GF(p^e)",                   TYPE_INT, &p },
+        { 'e', "-e E", "Extension degree of field GF(p^e)",                  TYPE_INT, &e },
+        { 'r', "-r R", "Random seed",                                        TYPE_INT, &seed },
+        { 's', "-s S", "Custom: number of distinct block sizes",             TYPE_INT, &s },
+        { 'w', "-w W", "Custom: width (repetitions per block size)",         TYPE_INT, &w },
+        { 'H', "-H H", "Custom: height (step between block sizes)",          TYPE_INT, &h },
+        { 'q', "-q Q", "Custom: polynomial (0=x, 1=x-1, 2=x+1)",           TYPE_INT, &poly },
+        { 'a', "-a A", "Algorithms: 0=Toeplitz 1=ToeplitzSearch 2=Butterfly 3=ButterflySearch 4=Dense 5=DenseSearch 6=LIFs (default: all)",
+            TYPE_STR, algoStr },
         END_OF_ARGUMENTS
     };
 
@@ -90,25 +92,29 @@ int main(int argc, char **argv) {
     Field    F(p, e);
     PolyRing R(F);
 
-    FrobeniusLarge<PolyRing>          FT(R);
-    FrobeniusLargeButterfly<PolyRing> FB(R);
-    FrobeniusLargeDense<PolyRing>     FD(R);
-    FrobeniusLargeSearch<PolyRing>    FS(R);
-    InvariantFactors<Field, PolyRing> IFD(F, R);
+    FrobeniusLarge<PolyRing>             FT(R);
+    FrobeniusLargeSearch<PolyRing>       FTS(R);
+    FrobeniusLargeButterfly<PolyRing>    FB(R);
+    FrobeniusLargeButterflySearch<PolyRing> FBS(R);
+    FrobeniusLargeDense<PolyRing>        FD(R);
+    FrobeniusLargeDenseSearch<PolyRing>  FDS(R);
+    InvariantFactors<Field, PolyRing>    IFD(F, R);
 
-    int algoMask = parseAlgoMask(algoStr.empty() ? nullptr : algoStr.c_str());
+    int algoMask = parseAlgoMask(algoStr[0] ? algoStr : nullptr);
 
     std::cout << "=== Frobenius Test Suite ===" << std::endl;
     std::cout << "Field: GF(" << p << "^" << e << ")"
               << "  seed=" << seed << "  k=" << k << std::endl;
     std::cout << "Algorithms: "
-              << ((algoMask &  1) ? "Toeplitz "  : "")
-              << ((algoMask &  2) ? "Butterfly " : "")
-              << ((algoMask &  4) ? "Dense "     : "")
-              << ((algoMask &  8) ? "Search "    : "")
-              << ((algoMask & 16) ? "LIFs "      : "")
+              << ((algoMask &  1) ? "Toeplitz "        : "")
+              << ((algoMask &  2) ? "ToeplitzSearch "  : "")
+              << ((algoMask &  4) ? "Butterfly "       : "")
+              << ((algoMask &  8) ? "ButterflySearch " : "")
+              << ((algoMask & 16) ? "Dense "           : "")
+              << ((algoMask & 32) ? "DenseSearch "     : "")
+              << ((algoMask & 64) ? "LIFs "            : "")
               << std::endl;
 
-    bool pass = runSuite(FT, FB, FD, FS, IFD, F, R, k, algoMask, seed, s, w, h, poly);
+    bool pass = runSuite(FT, FTS, FB, FBS, FD, FDS, IFD, F, R, k, algoMask, seed, s, w, h, poly);
     return pass ? 0 : -1;
 }

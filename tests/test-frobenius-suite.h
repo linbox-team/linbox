@@ -37,10 +37,10 @@ using namespace LinBox;
 // ============================================================
 
 struct TestParams {
-    size_t s;       // number of distinct block sizes
-    size_t w;       // width: repetitions per block size
-    size_t h;       // height: step between successive block sizes
-    int    poly;    // 0 = x, 1 = x-1, 2 = x+1
+    size_t s;
+    size_t w;
+    size_t h;
+    int    poly;
     std::string name;
 };
 
@@ -53,25 +53,15 @@ typename Field::Element evalPoly(const Field &F, int poly, typename Field::Eleme
     typedef typename Field::Element Element;
     Element res;
     switch (poly) {
-        case 0:
-            return val;
-        case 1: {
-            Element one; F.init(one, 1);
-            F.sub(res, val, one);
-            return res;
-        }
-        case 2: {
-            Element one; F.init(one, 1);
-            F.add(res, val, one);
-            return res;
-        }
-        default:
-            return val;
+        case 0: return val;
+        case 1: { Element one; F.init(one, 1); F.sub(res, val, one); return res; }
+        case 2: { Element one; F.init(one, 1); F.add(res, val, one); return res; }
+        default: return val;
     }
 }
 
 // ============================================================
-// Jordan block construction (degree 1 polynomials only for now)
+// Jordan block construction
 // ============================================================
 template<class Field>
 void writeJordanBlock(
@@ -83,7 +73,6 @@ void writeJordanBlock(
     size_t col0)
 {
     typedef typename Field::Element Element;
-
     if (poly != 0) {
         Element lambda;
         if (poly == 1) F.init(lambda, 1);
@@ -97,7 +86,7 @@ void writeJordanBlock(
 }
 
 // ============================================================
-// Build Jordan form matrix from parameters (s, w, h, poly)
+// Build Jordan form matrix
 // ============================================================
 template<class Field, class PolyRing>
 void buildJordanMatrix(
@@ -129,18 +118,9 @@ void buildJordanMatrix(
             Polynomial base, factor;
             R.assign(base, R.zero);
             switch (poly) {
-                case 0:
-                    R.setCoeff(base, 0, (Coeff)0);
-                    R.setCoeff(base, 1, (Coeff)1);
-                    break;
-                case 1:
-                    R.setCoeff(base, 0, (Coeff)-1);
-                    R.setCoeff(base, 1, (Coeff)1);
-                    break;
-                case 2:
-                    R.setCoeff(base, 0, (Coeff)1);
-                    R.setCoeff(base, 1, (Coeff)1);
-                    break;
+                case 0: R.setCoeff(base, 0, (Coeff)0);  R.setCoeff(base, 1, (Coeff)1);  break;
+                case 1: R.setCoeff(base, 0, (Coeff)-1); R.setCoeff(base, 1, (Coeff)1);  break;
+                case 2: R.setCoeff(base, 0, (Coeff)1);  R.setCoeff(base, 1, (Coeff)1);  break;
             }
             R.assign(factor, R.one);
             for (size_t i = 0; i < bsz; ++i)
@@ -149,12 +129,11 @@ void buildJordanMatrix(
             expectedFactors.push_back(factor);
         }
     }
-
     M.finalize();
 }
 
 // ============================================================
-// Spray: apply sqrt(n) random elementary similarity transforms
+// Spray: random elementary similarity transforms
 // ============================================================
 template<class Field>
 void sprayMatrix(
@@ -167,7 +146,6 @@ void sprayMatrix(
 
     size_t n       = M.rowdim();
     size_t nSprays = (size_t)std::ceil(std::sqrt((double)n));
-
     RandIter RI(F, 0, seed);
 
     for (size_t spray = 0; spray < nSprays; ++spray) {
@@ -182,8 +160,7 @@ void sprayMatrix(
         for (size_t col = 0; col < n; ++col) {
             Element val; F.init(val, 0);
             M.getEntry(val, j, col);
-            if (!F.isZero(val))
-                rowJ.push_back({col, val});
+            if (!F.isZero(val)) rowJ.push_back({col, val});
         }
         for (auto &[col, val] : rowJ) {
             Element cur; F.init(cur, 0);
@@ -197,8 +174,7 @@ void sprayMatrix(
         for (size_t row = 0; row < n; ++row) {
             Element val; F.init(val, 0);
             M.getEntry(val, row, i);
-            if (!F.isZero(val))
-                colI.push_back({row, val});
+            if (!F.isZero(val)) colI.push_back({row, val});
         }
         Element negAlpha; F.neg(negAlpha, alpha);
         for (auto &[row, val] : colI) {
@@ -209,12 +185,11 @@ void sprayMatrix(
             M.setEntry(row, j, cur);
         }
     }
-
     M.finalize();
 }
 
 // ============================================================
-// Result struct for one (algorithm, test case) run
+// Result struct
 // ============================================================
 struct TestResult {
     std::string algoName;
@@ -226,7 +201,7 @@ struct TestResult {
 };
 
 // ============================================================
-// Run one algorithm on one test case, return result
+// Run one algorithm on one test case
 // ============================================================
 template<class FrobeniusObject, class Field, class PolyRing>
 TestResult runOne(
@@ -264,15 +239,11 @@ TestResult runOne(
         std::cout << "\n[FAIL] " << algoName << " on " << caseName << "\n";
         std::cout << "  computed (" << computed.size() << "):\n";
         for (size_t i = 0; i < computed.size(); ++i) {
-            std::cout << "    [" << i << "] ";
-            R.write(std::cout, computed[i]);
-            std::cout << "\n";
+            std::cout << "    [" << i << "] "; R.write(std::cout, computed[i]); std::cout << "\n";
         }
         std::cout << "  expected first " << n_check << " of " << expected.size() << ":\n";
         for (size_t i = 0; i < n_check; ++i) {
-            std::cout << "    [" << i << "] ";
-            R.write(std::cout, expected[i]);
-            std::cout << "\n";
+            std::cout << "    [" << i << "] "; R.write(std::cout, expected[i]); std::cout << "\n";
         }
     }
 
@@ -292,17 +263,17 @@ TestResult runOne(
 void printTable(const std::vector<TestResult> &results) {
     std::cout << "\n";
     std::cout << std::left
-              << std::setw(24) << "Algorithm"
+              << std::setw(20) << "Algorithm"
               << std::setw(28) << "Test Case"
               << std::setw(8)  << "n"
               << std::setw(10) << "nnz"
               << std::setw(12) << "Time (s)"
               << std::setw(8)  << "Pass"
               << "\n";
-    std::cout << std::string(90, '-') << "\n";
+    std::cout << std::string(86, '-') << "\n";
     for (auto &r : results) {
         std::cout << std::left
-                  << std::setw(24) << r.algoName
+                  << std::setw(20) << r.algoName
                   << std::setw(28) << r.caseName
                   << std::setw(8)  << r.n
                   << std::setw(10) << r.nnz
@@ -314,7 +285,7 @@ void printTable(const std::vector<TestResult> &results) {
 }
 
 // ============================================================
-// Default hardcoded test cases (tall, flat, triangular, combo)
+// Default test cases
 // ============================================================
 std::vector<TestParams> defaultTestCases() {
     return {
@@ -328,25 +299,35 @@ std::vector<TestParams> defaultTestCases() {
 
 // ============================================================
 // Main test suite runner
-// Algorithms bitmask: bit0=Toeplitz, bit1=Butterfly, bit2=Dense,
-//                     bit3=Search, bit4=LIFs
+// Algorithms bitmask:
+//   bit0 = Toeplitz
+//   bit1 = ToeplitzSearch
+//   bit2 = Butterfly
+//   bit3 = ButterflySearch
+//   bit4 = Dense
+//   bit5 = DenseSearch
+//   bit6 = LIFs
 // ============================================================
 template<
     class FrobeniusToeplitz,
+    class FrobeniusToeplitzSearch,
     class FrobeniusButterfly,
+    class FrobeniusButterflySearch,
     class FrobeniusDense,
-    class FrobeniusSearch,
+    class FrobeniusDenseSearch,
     class FrobeniusLifs,
     class Field,
     class PolyRing>
 bool runSuite(
-    FrobeniusToeplitz  &FT,
-    FrobeniusButterfly &FB,
-    FrobeniusDense     &FD,
-    FrobeniusSearch    &FS,
-    FrobeniusLifs      &IFD,
-    const Field        &F,
-    const PolyRing     &R,
+    FrobeniusToeplitz        &FT,
+    FrobeniusToeplitzSearch  &FTS,
+    FrobeniusButterfly       &FB,
+    FrobeniusButterflySearch &FBS,
+    FrobeniusDense           &FD,
+    FrobeniusDenseSearch     &FDS,
+    FrobeniusLifs            &IFD,
+    const Field              &F,
+    const PolyRing           &R,
     size_t k,
     int    algoMask,
     int    seed,
@@ -377,11 +358,13 @@ bool runSuite(
         buildJordanMatrix(M, expected, F, R, tc.s, tc.w, tc.h, tc.poly);
         sprayMatrix(M, F, seed);
 
-        if (algoMask &  1) { auto r = runOne(FT,  "Toeplitz",  F, R, M, expected, tc.name, k); allPass &= r.pass; results.push_back(r); }
-        if (algoMask &  2) { auto r = runOne(FB,  "Butterfly", F, R, M, expected, tc.name, k); allPass &= r.pass; results.push_back(r); }
-        if (algoMask &  4) { auto r = runOne(FD,  "Dense",     F, R, M, expected, tc.name, k); allPass &= r.pass; results.push_back(r); }
-        if (algoMask &  8) { auto r = runOne(FS,  "Search",    F, R, M, expected, tc.name, k); allPass &= r.pass; results.push_back(r); }
-        if (algoMask & 16) { auto r = runOne(IFD, "LIFs",      F, R, M, expected, tc.name, k); allPass &= r.pass; results.push_back(r); }
+        if (algoMask &  1) { auto r = runOne(FT,  "Toeplitz",        F, R, M, expected, tc.name, k); allPass &= r.pass; results.push_back(r); }
+        if (algoMask &  2) { auto r = runOne(FTS, "ToeplitzSearch",  F, R, M, expected, tc.name, k); allPass &= r.pass; results.push_back(r); }
+        if (algoMask &  4) { auto r = runOne(FB,  "Butterfly",       F, R, M, expected, tc.name, k); allPass &= r.pass; results.push_back(r); }
+        if (algoMask &  8) { auto r = runOne(FBS, "ButterflySearch", F, R, M, expected, tc.name, k); allPass &= r.pass; results.push_back(r); }
+        if (algoMask & 16) { auto r = runOne(FD,  "Dense",           F, R, M, expected, tc.name, k); allPass &= r.pass; results.push_back(r); }
+        if (algoMask & 32) { auto r = runOne(FDS, "DenseSearch",     F, R, M, expected, tc.name, k); allPass &= r.pass; results.push_back(r); }
+        if (algoMask & 64) { auto r = runOne(IFD, "LIFs",            F, R, M, expected, tc.name, k); allPass &= r.pass; results.push_back(r); }
     }
 
     printTable(results);
