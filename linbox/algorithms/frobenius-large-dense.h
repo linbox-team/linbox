@@ -1,4 +1,4 @@
-/* linbox/algorithms/frobenius-large.h
+/* linbox/algorithms/frobenius-large-dense.h
  * Copyright (C) 2018 Gavin Harrison
  * Copyright (C) 2026 Omesh Dhar Dwivedi
  * Written by Omesh Dhar Dwivedi <odd23@drexel.edu>
@@ -27,7 +27,7 @@
 
 #include <list>
 #include <vector>
-#include <math.h> 
+#include <math.h>
 
 #include <algorithm>
 #include <iostream>
@@ -39,7 +39,6 @@
 
 #include "linbox/blackbox/compose.h"
 #include "linbox/blackbox/sum.h"
-#include "linbox/matrix/sparse-matrix.h"
 
 namespace LinBox
 {
@@ -55,99 +54,99 @@ public:
 	typedef _PolynomialRing PolynomialRing;
 	typedef typename PolynomialRing::Element Polynomial;
 	typedef typename PolynomialRing::Coeff Coeff;
-	
+
 	typedef typename PolynomialRing::CoeffField Field;
 	typedef typename Field::Element Element;
 	typedef typename Field::RandIter RandIter;
-	
+
 	typedef MatrixDomain<Field> MatrixDom;
 	typedef typename MatrixDom::OwnMatrix Matrix;
-	
-	typedef SparseMatrix<Field> SM;
-		
+
 protected:
 	Field _F;
 	RandIter _RI;
 	PolynomialRing _R;
 	MatrixDom _MD;
 public:
-	FrobeniusLargeDense(const PolynomialRing &R) 
+	FrobeniusLargeDense(const PolynomialRing &R)
 		: _F(R.getCoeffField()), _RI(_F), _R(R), _MD(_F) {}
-	
+
 	void randomPolynomial(Polynomial &f, size_t d) const {
 		_R.assign(f, _R.zero);
-		
+
 		for (size_t i = 0; i <= d; i++) {
 			Coeff c;
 			_RI.random(c);
 			_R.setCoeff(f, i, c);
 		}
 	}
-	
+
 	template<class Blackbox>
 	void minpoly(Polynomial &g, const Blackbox &A) {
 		typedef BlackboxContainer<Field, Blackbox> Sequence;
-		
+
 		Sequence seq(&A, _F, _RI);
 		MasseyDomain<Field, Sequence> MasseyDom(&seq, 20);
-		
+
 		BlasVector<Field> phi(_F);
 		size_t deg;
 		MasseyDom.minpoly(phi, deg);
-		
+
 		_R.init(g, phi);
 	}
-	
+
 	template<class Blackbox>
 	void kthInvariantFactor(
-		Polynomial &fk, 
-		const Blackbox &A, 
-		const Polynomial &m, 
-		size_t k) 
+		Polynomial &fk,
+		const Blackbox &A,
+		const Polynomial &m,
+		size_t k)
 	{
 		size_t n = A.rowdim();
-		
-		SM U(_F, n, k-1);
-		SM V(_F, k-1, n);
 
-		for (size_t i = 0; i < n; ++i) {
+		// U and V are fully dense: use BlasMatrix (dense storage + BLAS apply).
+		// Sum order: Compose<Matrix,Matrix> is the LEFT argument so it receives
+		// the BlasVector output from BlackboxContainer; SparseMatrix A is RIGHT
+		// and receives Sum's internal std::vector<Element> temp, which sparse apply
+		// handles for any vector type.
+		Matrix U(_F, n, k-1);
+		Matrix V(_F, k-1, n);
+
+		for (size_t i = 0; i < n; ++i)
 			for (size_t j = 0; j < k-1; ++j) {
-				Element e;
-				_RI.random(e);
+				Element e; _RI.random(e);
 				U.setEntry(i, j, e);
 			}
-		}
-		for (size_t i = 0; i < k-1; ++i) {
+
+		for (size_t i = 0; i < k-1; ++i)
 			for (size_t j = 0; j < n; ++j) {
-				Element e;
-				_RI.random(e);
+				Element e; _RI.random(e);
 				V.setEntry(i, j, e);
 			}
-		}
 
-		Compose<SM, SM> B(U, V);
-		Sum<Blackbox, Compose<SM, SM>> Ak(A, B);
-		
+		Compose<Matrix, Matrix> B(U, V);
+		Sum<Compose<Matrix, Matrix>, Blackbox> Ak(B, A);
+
 		minpoly(fk, Ak);
 		_R.gcdin(fk, m);
 	}
-	
+
 	template<class Blackbox>
 	void thresholdSearch(
-		std::vector<Polynomial> &fs, 
+		std::vector<Polynomial> &fs,
 		std::vector<size_t> &ms,
 		const Blackbox &A,
 		size_t l,
 		const Polynomial &fl,
 		size_t m,
-		const Polynomial &fm) 
+		const Polynomial &fm)
 	{
 		if (_R.areEqual(fl, fm)) {
 			fs.push_back(fl);
 			ms.push_back(m-l+1);
 			return;
 		}
-		
+
 		if (l == m-1) {
 			if (_R.areEqual(fl, fm)) {
 				fs.push_back(fl);
@@ -160,20 +159,20 @@ public:
 			}
 			return;
 		}
-		
+
 		size_t k = (size_t) std::ceil((l + m)/2.0);
-		
+
 		Polynomial fk;
 		kthInvariantFactor(fk, A, fl, k);
-		
+
 		std::vector<Polynomial> gs;
 		std::vector<size_t> as;
 		thresholdSearch(gs, as, A, l, fl, k, fk);
-				
+
 		std::vector<Polynomial> hs;
 		std::vector<size_t> bs;
 		thresholdSearch(hs, bs, A, k, fk, m, fm);
-				
+
 		for (size_t i = 0; i < as.size() - 1; i++) {
 			fs.push_back(gs[i]);
 			ms.push_back(as[i]);
@@ -185,12 +184,12 @@ public:
 			ms.push_back(bs[i]);
 		}
 	}
-	
+
 	/** fs is the distinct invariant factors of A in nonincreasing order by degree.
-    *  ms[i] is the index where the first occurrence of Fs[i] would be in a list 
-    *  of all invariants, including repeats. 
+    *  ms[i] is the index where the first occurrence of fs[i] would be in a list
+    *  of all invariants, including repeats.
     *  If limit is positive, only the first limit invariants are found.
-    */ 
+    */
 	template<class Blackbox>
 	void solve(
 		std::vector<Polynomial> &fs,
@@ -201,16 +200,16 @@ public:
 		assert(A.rowdim() == A.coldim());
 		fs.clear();
 		ms.clear();
-		
+
 		Polynomial f1, fn;
 		minpoly(f1, A);
-		
+
 		if (_R.deg(f1) == A.rowdim()) {
 			fs.push_back(f1);
 			ms.push_back(1);
 			return;
 		}
-		
+
 		size_t n = A.rowdim() - _R.deg(f1) + 2;
 		if (0 < limit && limit < n) {
 			kthInvariantFactor(fn, A, f1, n);
@@ -218,7 +217,7 @@ public:
 			n = std::min(limit, n);
 			return;
 		}
-		
+
 		thresholdSearch(fs, ms, A, 1, f1, n, _R.one);
 	}
 
@@ -230,7 +229,7 @@ public:
 		std::vector<Polynomial> &fs,
 		const Blackbox &A,
 		size_t limit = 0)
-   {  solve(fs, A, limit);  }
+	{ solve(fs, A, limit); }
 
 	template<class Blackbox>
 	void solve(
@@ -240,11 +239,11 @@ public:
 	{
 		std::vector<Polynomial> fsu;
 		std::vector<size_t> ms;
-	   solve(fsu, ms, A, limit);
-      for (size_t i = 0; i < fsu.size(); ++i)
-         for (size_t j = 0; j < ms[i]; ++j)
-            fs.push_back(fsu[i]);
-   }
+		solve(fsu, ms, A, limit);
+		for (size_t i = 0; i < fsu.size(); ++i)
+			for (size_t j = 0; j < ms[i]; ++j)
+				fs.push_back(fsu[i]);
+	}
 };
 
 }
