@@ -104,11 +104,6 @@ public:
 	{
 		size_t n = A.rowdim();
 
-		// U and V are fully dense: use BlasMatrix (dense storage + BLAS apply).
-		// Sum order: Compose<Matrix,Matrix> is the LEFT argument so it receives
-		// the BlasVector output from BlackboxContainer; SparseMatrix A is RIGHT
-		// and receives Sum's internal std::vector<Element> temp, which sparse apply
-		// handles for any vector type.
 		Matrix U(_F, n, k-1);
 		Matrix V(_F, k-1, n);
 
@@ -186,10 +181,9 @@ public:
 	}
 
 	/** fs is the distinct invariant factors of A in nonincreasing order by degree.
-    *  ms[i] is the index where the first occurrence of fs[i] would be in a list
-    *  of all invariants, including repeats.
-    *  If limit is positive, only the first limit invariants are found.
-    */
+	 *  ms[i] is the run-length count of fs[i] in the full invariant factor list.
+	 *  If limit is positive, only the first limit invariant factors are found.
+	 */
 	template<class Blackbox>
 	void solve(
 		std::vector<Polynomial> &fs,
@@ -201,7 +195,7 @@ public:
 		fs.clear();
 		ms.clear();
 
-		Polynomial f1, fn;
+		Polynomial f1;
 		minpoly(f1, A);
 
 		if (_R.deg(f1) == A.rowdim()) {
@@ -212,9 +206,9 @@ public:
 
 		size_t n = A.rowdim() - _R.deg(f1) + 2;
 		if (0 < limit && limit < n) {
-			kthInvariantFactor(fn, A, f1, n);
-			thresholdSearch(fs, ms, A, 1, f1, n, fn);
-			n = std::min(limit, n);
+			Polynomial flimit;
+			kthInvariantFactor(flimit, A, f1, limit);
+			thresholdSearch(fs, ms, A, 1, f1, limit, flimit);
 			return;
 		}
 
@@ -222,8 +216,8 @@ public:
 	}
 
 	/** fs is the invariant factor list of A in nonincreasing order by degree.
-    *  If limit is positive, only the first limit invariants are found.
-    */
+	 *  If limit is positive, only the first limit invariants are found.
+	 */
 	template<class Blackbox>
 	void frobeniusInvariants(
 		std::vector<Polynomial> &fs,

@@ -131,7 +131,7 @@ public:
 			_R.assign(f_hi, fm);
 		}
 
-		// binary search [lo, hi] for exact step position
+		// binary search [lo, hi] for exact transition point
 		while (hi > lo + 1) {
 			size_t mid = (lo + hi + 1) / 2;
 			Polynomial f_mid;
@@ -146,6 +146,10 @@ public:
 		exponentialThresholdSearch(fs, ms, A, hi, f_hi, m, fm);
 	}
 
+	/** fs is the distinct invariant factors of A in nonincreasing order by degree.
+	 *  ms[i] is the run-length count of fs[i] in the full invariant factor list.
+	 *  If limit is positive, only the first limit invariant factors are found.
+	 */
 	template<class Blackbox>
 	void solve(
 		std::vector<Polynomial> &fs,
@@ -167,9 +171,19 @@ public:
 		}
 
 		size_t n = A.rowdim() - _R.deg(f1) + 2;
+		if (0 < limit && limit < n) {
+			Polynomial flimit;
+			kthInvariantFactor(flimit, A, f1, limit);
+			exponentialThresholdSearch(fs, ms, A, 1, f1, limit, flimit);
+			return;
+		}
+
 		exponentialThresholdSearch(fs, ms, A, 1, f1, n, _R.one);
 	}
 
+	/** fs is the invariant factor list of A in nonincreasing order by degree.
+	 *  If limit is positive, only the first limit invariants are found.
+	 */
 	template<class Blackbox>
 	void frobeniusInvariants(
 		std::vector<Polynomial> &fs,

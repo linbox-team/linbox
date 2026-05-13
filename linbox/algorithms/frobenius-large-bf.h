@@ -127,7 +127,6 @@ public:
 			D.setEntry(n-i-1, n-i-1, e);
 		}
 
-
 		typedef Compose<Diag, BB> DU_t;
 		DU_t DU(D, U);
 
@@ -195,10 +194,9 @@ public:
 	}
 	
 	/** fs is the distinct invariant factors of A in nonincreasing order by degree.
-    *  ms[i] is the index where the first occurrence of Fs[i] would be in a list 
-    *  of all invariants, including repeats. 
-    *  If limit is positive, only the first limit invariants are found.
-    */ 
+	 *  ms[i] is the run-length count of fs[i] in the full invariant factor list.
+	 *  If limit is positive, only the first limit invariant factors are found.
+	 */
 	template<class Blackbox>
 	void solve(
 		std::vector<Polynomial> &fs,
@@ -210,7 +208,7 @@ public:
 		fs.clear();
 		ms.clear();
 		
-		Polynomial f1, fn;
+		Polynomial f1;
 		minpoly(f1, A);
 		
 		if (_R.deg(f1) == A.rowdim()) {
@@ -221,9 +219,9 @@ public:
 		
 		size_t n = A.rowdim() - _R.deg(f1) + 2;
 		if (0 < limit && limit < n) {
-			kthInvariantFactor(fn, A, f1, n);
-			thresholdSearch(fs, ms, A, 1, f1, n, fn);
-			n = std::min(limit, n);
+			Polynomial flimit;
+			kthInvariantFactor(flimit, A, f1, limit);
+			thresholdSearch(fs, ms, A, 1, f1, limit, flimit);
 			return;
 		}
 		
@@ -231,14 +229,14 @@ public:
 	}
 
 	/** fs is the invariant factor list of A in nonincreasing order by degree.
-    *  If limit is positive, only the first limit invariants are found.
-    */
+	 *  If limit is positive, only the first limit invariants are found.
+	 */
 	template<class Blackbox>
 	void frobeniusInvariants(
 		std::vector<Polynomial> &fs,
 		const Blackbox &A,
 		size_t limit = 0)
-   {  solve(fs, A, limit);  }
+	{ solve(fs, A, limit); }
 
 	template<class Blackbox>
 	void solve(
@@ -248,11 +246,11 @@ public:
 	{
 		std::vector<Polynomial> fsu;
 		std::vector<size_t> ms;
-	   solve(fsu, ms, A, limit);
-      for (size_t i = 0; i < fsu.size(); ++i)
-         for (size_t j = 0; j < ms[i]; ++j)
-            fs.push_back(fsu[i]);
-   }
+		solve(fsu, ms, A, limit);
+		for (size_t i = 0; i < fsu.size(); ++i)
+			for (size_t j = 0; j < ms[i]; ++j)
+				fs.push_back(fsu[i]);
+	}
 };
 
 }
@@ -266,4 +264,3 @@ public:
 // c-basic-offset: 4
 // End:
 // vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
-
