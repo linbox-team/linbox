@@ -53,6 +53,7 @@
 #include <cassert>
 #include <algorithm>
 #include <iostream>
+#include <stdexcept>
 
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/vector/blas-vector.h"
@@ -297,13 +298,19 @@ public:
 	// localMultiplicities — EGNS Algorithm 1 for one irreducible f.
 	//
 	// After this call, rs has length e and rs[i] is the number of
-	// local invariant factors of (xI - A) at f equal to f^i.
+	// nonzero local invariant factors of (xI - A) at f equal to f^i.
+	// The zero multiplicity in F[x]/(f^e) is n - sum_i rs[i]; for FNF,
+	// when e is the exponent of f in the minimal polynomial, those zeros
+	// are exactly the global invariant factors with f-exponent e.
 	//
-	// Setting e = (exponent of f in minpoly) + 1 captures all multiplicities.
+	// IMPORTANT: pass e = exponent of f in the minimal polynomial, not
+	// exponent + 1.  The zero multiplicity recovers the top exponent and
+	// avoids the extra, very expensive phi_{e+1} rank computation.
 	//
-	// Defensive guards: if the rho sequence is non-monotone (rank failure,
-	// usually from a small field), rs is zeroed and the function returns
-	// false.  The caller should treat a false return as "result unreliable."
+	// Defensive guards: if the rho/sigma sequence is inconsistent (rank
+	// failure, usually from a small field), rs is zeroed and the function
+	// returns false.  The caller should treat a false return as
+	// "result unreliable."
 	// ================================================================
 	template<class Blackbox>
 	bool localMultiplicities(
@@ -324,29 +331,43 @@ public:
 			rho[l - 1] = blackboxRank(phi);
 		}
 
-		// Defensive check: rho must be non-decreasing (Theorem 4 guarantees
-		// strict increase by multiples of d when the rank algorithm is exact).
+		// Defensive checks and triangular solve — EGNS Corollary 5.
+		//
+		// rho[l] - rho[l-1] = d * S_l, where S_l = sum_{i=0}^{l} r_i
+		// is a prefix sum of the local multiplicity sequence.  Thus
+		// sigma[l] := (rho[l] - rho[l-1]) / d must be nondecreasing and
+		// bounded by n.  Any violation means the probabilistic rank routine
+		// returned an inconsistent rank sequence.
+		std::vector<size_t> sigma(e);
+
+		if (rho[0] % d != 0) {
+			rs.assign(e, 0);
+			return false;
+		}
+		sigma[0] = rho[0] / d;
+		if (sigma[0] > A.rowdim()) {
+			rs.assign(e, 0);
+			return false;
+		}
+
 		for (size_t l = 1; l < e; l++) {
-			if (rho[l] < rho[l - 1] || (rho[l] - rho[l - 1]) % d != 0) {
-				// Rank underestimation detected — field likely too small.
-				// Zero rs and signal failure rather than letting size_t
-				// arithmetic underflow to astronomically large values.
+			if (rho[l] < rho[l - 1]) {
+				rs.assign(e, 0);
+				return false;
+			}
+
+			size_t delta = rho[l] - rho[l - 1];
+			if (delta % d != 0) {
+				rs.assign(e, 0);
+				return false;
+			}
+
+			sigma[l] = delta / d;
+			if (sigma[l] < sigma[l - 1] || sigma[l] > A.rowdim()) {
 				rs.assign(e, 0);
 				return false;
 			}
 		}
-
-		// Triangular solve — EGNS Corollary 5.
-		//
-		// rho[l] - rho[l-1] = d * S_l   where S_l = sum_{i=0}^{l} r_i
-		// (prefix sum of the r_i sequence)
-		//
-		// So sigma[l] := (rho[l] - rho[l-1]) / d = S_l
-		// and r_l = S_l - S_{l-1} = sigma[l] - sigma[l-1]   (forward diff)
-		std::vector<size_t> sigma(e);
-		sigma[0] = rho[0] / d;
-		for (size_t l = 1; l < e; l++)
-			sigma[l] = (rho[l] - rho[l - 1]) / d;
 
 		rs[0] = sigma[0];
 		for (size_t l = 1; l < e; l++)
@@ -390,17 +411,36 @@ public:
 
 		for (size_t fi = 0; fi < factors.size(); fi++) {
 			const Polynomial &f = factors[fi].first;
-			size_t eAlg         = factors[fi].second + 1;
+			size_t maxExp       = factors[fi].second;
 
 			std::vector<size_t> rs;
-			bool ok = localMultiplicities(rs, A, f, eAlg);
-			if (!ok) continue;  // rank failure — skip this factor
+			bool ok = localMultiplicities(rs, A, f, maxExp);
+			if (!ok) {
+				throw std::runtime_error(
+					"FrobeniusLargeRank: inconsistent EGNS rank sequence; "
+					"retry with a larger field or a stronger rank routine");
+			}
 
-			// Build partition (nonincreasing exponents).
-			// rs[0] counts unit invariant factors — omit from FNF output.
+			// Build the local exponent partition in nonincreasing order.
+			// Algorithm 1 over F[x]/(f^maxExp) returns nonzero local
+			// multiplicities rs[0],...,rs[maxExp-1].  The omitted zero
+			// multiplicity equals n - sum_i rs[i]; because maxExp is the
+			// exponent of f in the minimal polynomial, these zeros are
+			// precisely the invariant factors with f-exponent maxExp.
 			std::vector<size_t> p;
-			for (size_t i = eAlg; i-- > 1; )
-				for (size_t k = 0; k < rs[i]; k++) p.push_back(i);
+			size_t seen = 0;
+			for (size_t r : rs) seen += r;
+			if (seen > A.rowdim()) {
+				throw std::runtime_error(
+					"FrobeniusLargeRank: local multiplicities exceed matrix dimension");
+			}
+
+			size_t topCount = A.rowdim() - seen;
+			for (size_t k = 0; k < topCount; k++) p.push_back(maxExp);
+
+			// rs[0] counts unit invariant factors — omit from FNF output.
+			for (size_t exp = maxExp; exp-- > 1; )
+				for (size_t k = 0; k < rs[exp]; k++) p.push_back(exp);
 
 			if (!p.empty()) {
 				distinctFs.push_back(f);

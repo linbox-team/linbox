@@ -23,7 +23,7 @@
 #include "linbox/algorithms/frobenius-large-generic.h"
 #include "linbox/algorithms/frobenius-large-rank.h"
 
-#include "linbox/ring/ntl/ntl-lzz_pX.h"
+#include "linbox/ring/ntl/ntl-lzz_px.h"
 #include "linbox/matrix/sparse-matrix.h"
 
 using namespace LinBox;
