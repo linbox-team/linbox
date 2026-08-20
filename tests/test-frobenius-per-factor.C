@@ -21,11 +21,14 @@
 
 #include <iostream>
 #include <fstream>
+#include <algorithm>
 #include <vector>
 #include <string>
 #include <cstring>
 #include <iomanip>
 #include <cmath>
+#include <ctime>
+#include <cstdlib>
 
 #include "linbox/ring/modular.h"
 #include "linbox/util/commentator.h"
@@ -47,8 +50,9 @@ double timeKth(Solver &solver, const SparseMat &M, const Polynomial &f1, size_t 
     double total = 0.0;
     for (int run = 0; run < nruns; ++run) {
         Polynomial fk;
+        size_t Ck = 0;
         Givaro::Timer T; T.clear(); T.start();
-        solver.kthInvariantFactor(fk, M, f1, k);
+        solver.kthInvariantFactor(fk, Ck, M, f1, k);
         T.stop();
         total += T.usertime();
     }
@@ -77,29 +81,29 @@ int main(int argc, char **argv) {
     size_t k        = 0;
     int    seed     = time(NULL);
     int    nruns    = 3;
-    char   filepath[512] = "";
-    char   algoStr[16]   = "";
+    std::string filepath;
+    std::string algoStr;
 
     static Argument args[] = {
-        { 'f', "-f F", "Input matrix file path (SMS format)",        TYPE_STR, filepath },
+        { 'f', "-f F", "Input matrix file path (SMS format)",        TYPE_STR, &filepath },
         { 'p', "-p P", "Field characteristic",                       TYPE_INT, &p },
         { 'e', "-e E", "Field extension degree",                     TYPE_INT, &e },
         { 'k', "-k K", "Max k to test (0 = log2(n))",               TYPE_INT, &k },
         { 'r', "-r R", "Random seed",                                TYPE_INT, &seed },
         { 'n', "-n N", "Runs per (algo, k) pair",                   TYPE_INT, &nruns },
         { 'a', "-a A", "Algorithms: 0=Toeplitz 1=Butterfly 2=Dense (default: 12)",
-            TYPE_STR, algoStr },
+            TYPE_STR, &algoStr },
         END_OF_ARGUMENTS
     };
 
     parseArguments(argc, argv, args);
     srand(seed);
 
-    if (strlen(filepath) == 0) {
+    if (filepath.empty()) {
         std::cerr << "Error: no input file. Use -f <path>" << std::endl;
         return -1;
     }
-    std::ifstream input(filepath);
+    std::ifstream input(filepath.c_str());
     if (!input) {
         std::cerr << "Error: could not open " << filepath << std::endl;
         return -1;
@@ -116,7 +120,7 @@ int main(int argc, char **argv) {
     size_t nnz = M.size();
     size_t kmax = (k == 0) ? (size_t)std::max(1.0, std::log2((double)n)) : k;
 
-    int algoMask = parseAlgoMask(algoStr[0] ? algoStr : nullptr);
+    int algoMask = parseAlgoMask(algoStr.empty() ? nullptr : algoStr.c_str());
 
     std::cout << "=== Per-Factor Timing ===" << std::endl;
     std::cout << "File:      " << filepath << std::endl;

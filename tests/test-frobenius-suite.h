@@ -307,6 +307,9 @@ std::vector<TestParams> defaultTestCases() {
 //   bit4 = Dense
 //   bit5 = DenseSearch
 //   bit6 = LIFs
+//   bit7 = ToeplitzFactorAware
+//   bit8 = ButterflyFactorAware
+//   bit9 = DenseFactorAware
 // ============================================================
 template<
     class FrobeniusToeplitz,
@@ -316,6 +319,9 @@ template<
     class FrobeniusDense,
     class FrobeniusDenseSearch,
     class FrobeniusLifs,
+    class FrobeniusToeplitzFactorAware,
+    class FrobeniusButterflyFactorAware,
+    class FrobeniusDenseFactorAware,
     class Field,
     class PolyRing>
 bool runSuite(
@@ -326,6 +332,9 @@ bool runSuite(
     FrobeniusDense           &FD,
     FrobeniusDenseSearch     &FDS,
     FrobeniusLifs            &IFD,
+    FrobeniusToeplitzFactorAware  &FTF,
+    FrobeniusButterflyFactorAware &FBF,
+    FrobeniusDenseFactorAware     &FDF,
     const Field              &F,
     const PolyRing           &R,
     size_t k,
@@ -365,6 +374,9 @@ bool runSuite(
         if (algoMask & 16) { auto r = runOne(FD,  "Dense",           F, R, M, expected, tc.name, k); allPass &= r.pass; results.push_back(r); }
         if (algoMask & 32) { auto r = runOne(FDS, "DenseSearch",     F, R, M, expected, tc.name, k); allPass &= r.pass; results.push_back(r); }
         if (algoMask & 64) { auto r = runOne(IFD, "LIFs",            F, R, M, expected, tc.name, k); allPass &= r.pass; results.push_back(r); }
+        if (algoMask & 128) { auto r = runOne(FTF, "ToeplitzFactorAware",  F, R, M, expected, tc.name, k); allPass &= r.pass; results.push_back(r); }
+        if (algoMask & 256) { auto r = runOne(FBF, "ButterflyFactorAware", F, R, M, expected, tc.name, k); allPass &= r.pass; results.push_back(r); }
+        if (algoMask & 512) { auto r = runOne(FDF, "DenseFactorAware",     F, R, M, expected, tc.name, k); allPass &= r.pass; results.push_back(r); }
     }
 
     printTable(results);

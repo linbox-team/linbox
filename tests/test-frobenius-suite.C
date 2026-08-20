@@ -6,9 +6,9 @@
  * This file is part of the library LinBox.
  *
  * LinBox is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -37,9 +37,10 @@
 using namespace LinBox;
 
 // bit0=Toeplitz, bit1=ToeplitzSearch, bit2=Butterfly, bit3=ButterflySearch,
-// bit4=Dense,    bit5=DenseSearch,    bit6=LIFs
+// bit4=Dense, bit5=DenseSearch, bit6=LIFs, bit7=ToeplitzFactorAware,
+// bit8=ButterflyFactorAware, bit9=DenseFactorAware
 int parseAlgoMask(const char *s) {
-    if (s == nullptr || strlen(s) == 0) return 127; // all
+    if (s == nullptr || strlen(s) == 0) return 1023; // all
     int mask = 0;
     for (size_t i = 0; i < strlen(s); ++i) {
         if (s[i] == '0') mask |= 1;
@@ -49,8 +50,11 @@ int parseAlgoMask(const char *s) {
         if (s[i] == '4') mask |= 16;
         if (s[i] == '5') mask |= 32;
         if (s[i] == '6') mask |= 64;
+        if (s[i] == '7') mask |= 128;
+        if (s[i] == '8') mask |= 256;
+        if (s[i] == '9') mask |= 512;
     }
-    return mask ? mask : 127;
+    return mask ? mask : 1023;
 }
 
 int main(int argc, char **argv) {
@@ -62,7 +66,7 @@ int main(int argc, char **argv) {
     size_t w    = 0;
     size_t h    = 0;
     int    poly = 0;
-    char   algoStr[16] = "";
+    std::string algoStr;
 
     static Argument args[] = {
         { 'k', "-k K", "Number of invariant factors to compute (0 = all)",  TYPE_INT, &k },
@@ -73,8 +77,8 @@ int main(int argc, char **argv) {
         { 'w', "-w W", "Custom: width (repetitions per block size)",         TYPE_INT, &w },
         { 'H', "-H H", "Custom: height (step between block sizes)",          TYPE_INT, &h },
         { 'q', "-q Q", "Custom: polynomial (0=x, 1=x-1, 2=x+1)",           TYPE_INT, &poly },
-        { 'a', "-a A", "Algorithms: 0=Toeplitz 1=ToeplitzSearch 2=Butterfly 3=ButterflySearch 4=Dense 5=DenseSearch 6=LIFs (default: all)",
-            TYPE_STR, algoStr },
+        { 'a', "-a A", "Algorithms: 0=Toeplitz 1=ToeplitzSearch 2=Butterfly 3=ButterflySearch 4=Dense 5=DenseSearch 6=LIFs 7=ToeplitzFactorAware 8=ButterflyFactorAware 9=DenseFactorAware (default: all)",
+            TYPE_STR, &algoStr },
         END_OF_ARGUMENTS
     };
 
@@ -87,29 +91,36 @@ int main(int argc, char **argv) {
     Field    F(p, e);
     PolyRing R(F);
 
-    FrobeniusLarge<PolyRing>             FT(R);
-    FrobeniusLargeSearch<PolyRing>       FTS(R);
-    FrobeniusLargeButterfly<PolyRing>    FB(R);
-    FrobeniusLargeButterflySearch<PolyRing> FBS(R);
-    FrobeniusLargeDense<PolyRing>        FD(R);
-    FrobeniusLargeDenseSearch<PolyRing>  FDS(R);
-    InvariantFactors<Field, PolyRing>    IFD(F, R);
+    FrobeniusLarge<PolyRing>                    FT(R);
+    FrobeniusLargeSearch<PolyRing>              FTS(R);
+    FrobeniusLargeButterfly<PolyRing>           FB(R);
+    FrobeniusLargeButterflySearch<PolyRing>     FBS(R);
+    FrobeniusLargeDense<PolyRing>               FD(R);
+    FrobeniusLargeDenseSearch<PolyRing>         FDS(R);
+    InvariantFactors<Field, PolyRing>            IFD(F, R);
+    FrobeniusLargeFactorAware<PolyRing>          FTF(R);
+    FrobeniusLargeButterflyFactorAware<PolyRing> FBF(R);
+    FrobeniusLargeDenseFactorAware<PolyRing>     FDF(R);
 
-    int algoMask = parseAlgoMask(algoStr[0] ? algoStr : nullptr);
+    int algoMask = parseAlgoMask(algoStr.empty() ? nullptr : algoStr.c_str());
 
     std::cout << "=== Frobenius Test Suite ===" << std::endl;
     std::cout << "Field: GF(" << p << "^" << e << ")"
               << "  seed=" << seed << "  k=" << k << std::endl;
     std::cout << "Algorithms: "
-              << ((algoMask &  1) ? "Toeplitz "        : "")
-              << ((algoMask &  2) ? "ToeplitzSearch "  : "")
-              << ((algoMask &  4) ? "Butterfly "       : "")
-              << ((algoMask &  8) ? "ButterflySearch " : "")
-              << ((algoMask & 16) ? "Dense "           : "")
-              << ((algoMask & 32) ? "DenseSearch "     : "")
-              << ((algoMask & 64) ? "LIFs "            : "")
+              << ((algoMask &   1) ? "Toeplitz "                 : "")
+              << ((algoMask &   2) ? "ToeplitzSearch "           : "")
+              << ((algoMask &   4) ? "Butterfly "                : "")
+              << ((algoMask &   8) ? "ButterflySearch "          : "")
+              << ((algoMask &  16) ? "Dense "                    : "")
+              << ((algoMask &  32) ? "DenseSearch "              : "")
+              << ((algoMask &  64) ? "LIFs "                     : "")
+              << ((algoMask & 128) ? "ToeplitzFactorAware "      : "")
+              << ((algoMask & 256) ? "ButterflyFactorAware "     : "")
+              << ((algoMask & 512) ? "DenseFactorAware "         : "")
               << std::endl;
 
-    bool pass = runSuite(FT, FTS, FB, FBS, FD, FDS, IFD, F, R, k, algoMask, seed, s, w, h, poly);
+    bool pass = runSuite(FT, FTS, FB, FBS, FD, FDS, IFD, FTF, FBF, FDF,
+                         F, R, k, algoMask, seed, s, w, h, poly);
     return pass ? 0 : -1;
 }

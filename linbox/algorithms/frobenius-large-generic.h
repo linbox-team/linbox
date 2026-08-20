@@ -5,15 +5,19 @@
  *
  * Single-file implementation of all Frobenius large-field variants.
  * Combines Toeplitz, Butterfly, and Dense preconditioners with
- * binary and exponential threshold search strategies.
+ * binary, exponential, and factor-aware threshold search strategies.
  *
- * The 6 original class names are preserved as template aliases:
+ * The 6 original class names are preserved as template aliases, and
+ * 3 factor-aware aliases are added:
  *   FrobeniusLarge              (Toeplitz   + binary search)
  *   FrobeniusLargeSearch        (Toeplitz   + exponential search)
  *   FrobeniusLargeButterfly     (Butterfly  + binary search)
  *   FrobeniusLargeButterflySearch (Butterfly + exponential search)
  *   FrobeniusLargeDense         (Dense      + binary search)
  *   FrobeniusLargeDenseSearch   (Dense      + exponential search)
+ *   FrobeniusLargeFactorAware   (Toeplitz   + factor-aware search)
+ *   FrobeniusLargeButterflyFactorAware (Butterfly + factor-aware search)
+ *   FrobeniusLargeDenseFactorAware (Dense + factor-aware search)
  *
  * Adding a new preconditioner:
  *   1. Write a new derived class inheriting FrobeniusLargeBase,
@@ -35,6 +39,7 @@
 
 #include <list>
 #include <vector>
+#include <utility>
 #include <math.h>
 #include <algorithm>
 #include <iostream>
@@ -56,7 +61,7 @@ namespace LinBox
 // ============================================================
 // Search strategy selector
 // ============================================================
-enum SearchStrategy { BinarySearch, ExponentialSearch };
+enum SearchStrategy { BinarySearch, ExponentialSearch, FactorAwareSearch };
 
 // ============================================================
 // CRTP base class
@@ -82,6 +87,7 @@ protected:
 	RandIter _RI;
 	PolynomialRing _R;
 	MatrixDom _MD;
+	std::vector<std::pair<Polynomial, long>> _irreducibles;
 
 public:
 	FrobeniusLargeBase(const PolynomialRing &R)
@@ -114,11 +120,24 @@ public:
 	template<class Blackbox>
 	void kthInvariantFactor(
 		Polynomial &fk,
+		size_t &Ck,
 		const Blackbox &A,
 		const Polynomial &m,
 		size_t k)
 	{
-		static_cast<Derived*>(this)->kthInvariantFactorImpl(fk, A, m, k);
+		static_cast<Derived*>(this)->kthInvariantFactorImpl(fk, Ck, A, m, k);
+	}
+
+	// Compatibility wrapper for searches which only use F_k.
+	template<class Blackbox>
+	void kthInvariantFactor(
+		Polynomial &fk,
+		const Blackbox &A,
+		const Polynomial &m,
+		size_t k)
+	{
+		size_t Ck;
+		kthInvariantFactor(fk, Ck, A, m, k);
 	}
 
 	// ----------------------------------------------------------
@@ -224,6 +243,107 @@ public:
 	}
 
 	// ----------------------------------------------------------
+	// Factor-aware degree-mass search
+	// ----------------------------------------------------------
+	long cachedExponent(const Polynomial &f, const Polynomial &p) const {
+		Polynomial q, rem;
+		_R.assign(q, f);
+		long e = 0;
+		while (!_R.isOne(q)) {
+			_R.rem(rem, q, p);
+			if (!_R.isZero(rem)) break;
+			_R.quoin(q, p);
+			++e;
+		}
+		return e;
+	}
+
+	template<class Blackbox>
+	void factorAwareThresholdSearch(
+		std::vector<Polynomial> &fs,
+		std::vector<size_t> &ms,
+		const Blackbox &A,
+		size_t l,
+		const Polynomial &fl,
+		size_t Cl,
+		size_t m,
+		const Polynomial &fm,
+		size_t Cm)
+	{
+		if (_R.areEqual(fl, fm)) {
+			fs.push_back(fl);
+			ms.push_back(m - l + 1);
+			return;
+		}
+		if (l == m - 1) {
+			fs.push_back(fl); ms.push_back(1);
+			fs.push_back(fm); ms.push_back(1);
+			return;
+		}
+
+		const size_t L = m - l + 1;
+		const size_t S = Cm - Cl + _R.deg(fl);
+		const size_t baseMass = L * _R.deg(fm);
+		assert(S >= baseMass);
+		const size_t W = S - baseMass;
+		const size_t D = _R.deg(fl) - _R.deg(fm);
+		assert(D > 0);
+
+		// Count the irreducible exponent layers in F_l/F_m.
+		size_t changedLayers = 0;
+		size_t singleLayerDegree = 0;
+		size_t changedDegree = 0;
+		for (size_t i = 0; i < _irreducibles.size(); ++i) {
+			const long delta = cachedExponent(fl, _irreducibles[i].first)
+			                 - cachedExponent(fm, _irreducibles[i].first);
+			assert(delta >= 0);
+			if (delta > 0) {
+				changedLayers += (size_t)delta;
+				singleLayerDegree = _R.deg(_irreducibles[i].first);
+				changedDegree += (size_t)delta * singleLayerDegree;
+			}
+		}
+		assert(changedDegree == D);
+
+		// If exactly one irreducible layer changes, there is no
+		// intermediate invariant factor and its location is exact.
+		if (changedLayers == 1) {
+			assert(singleLayerDegree > 0);
+			assert(W % singleLayerDegree == 0);
+			const size_t t = W / singleLayerDegree;
+			assert(0 < t && t < L);
+			fs.push_back(fl); ms.push_back(t);
+			fs.push_back(fm); ms.push_back(L - t);
+			return;
+		}
+
+		// Otherwise probe at the degree-weighted average survival
+		// length of the changing irreducible layers.
+		size_t offset = (W + D / 2) / D;
+		offset = std::max((size_t)1, std::min(L - 2, offset));
+		const size_t k = l + offset;
+
+		Polynomial fk;
+		size_t Ck;
+		kthInvariantFactor(fk, Ck, A, fl, k);
+
+		std::vector<Polynomial> gs; std::vector<size_t> as;
+		factorAwareThresholdSearch(gs, as, A, l, fl, Cl, k, fk, Ck);
+
+		std::vector<Polynomial> hs; std::vector<size_t> bs;
+		factorAwareThresholdSearch(hs, bs, A, k, fk, Ck, m, fm, Cm);
+
+		for (size_t i = 0; i < as.size() - 1; ++i) {
+			fs.push_back(gs[i]); ms.push_back(as[i]);
+		}
+		fs.push_back(gs.back());
+		ms.push_back(as.back() + bs[0] - 1);
+		for (size_t i = 1; i < bs.size(); ++i) {
+			fs.push_back(hs[i]); ms.push_back(bs[i]);
+		}
+	}
+
+	// ----------------------------------------------------------
 	// solve (run-length encoded output)
 	// ----------------------------------------------------------
 
@@ -244,18 +364,51 @@ public:
 
 		Polynomial f1;
 		minpoly(f1, A);
+		const size_t N = A.rowdim();
+		const size_t C1 = _R.deg(f1);
 
-		if (_R.deg(f1) == A.rowdim()) {
+		// Nonderogatory: F_1 has already used the full degree mass.
+		if (C1 == N) {
 			fs.push_back(f1);
 			ms.push_back(1);
 			return;
 		}
 
-		size_t n = A.rowdim() - _R.deg(f1) + 2;
+		// Scalar: every invariant factor equals the linear minpoly.
+		if (C1 == 1) {
+			fs.push_back(f1);
+			ms.push_back((0 < limit) ? std::min(limit, N) : N);
+			return;
+		}
 
-		if (0 < limit && limit < n) {
+		_irreducibles.clear();
+		if (_Search == FactorAwareSearch)
+			_R.factor(_irreducibles, f1);
+
+		const size_t searchEnd = N - C1 + 2;
+
+		// Factor-aware search uses the actual endpoint
+		// (F_N, C_N) = (1, N).  If a prefix was requested beyond
+		// searchEnd, that endpoint is also already known to be (1, N).
+		if (_Search == FactorAwareSearch) {
+			const size_t right = (0 < limit) ? std::min(limit, N) : N;
+			if (right < searchEnd) {
+				Polynomial fright;
+				size_t Cright;
+				kthInvariantFactor(fright, Cright, A, f1, right);
+				factorAwareThresholdSearch(fs, ms, A, 1, f1, C1,
+				                           right, fright, Cright);
+			} else {
+				factorAwareThresholdSearch(fs, ms, A, 1, f1, C1,
+				                           right, _R.one, N);
+			}
+			return;
+		}
+
+		if (0 < limit && limit < searchEnd) {
 			Polynomial flimit;
-			kthInvariantFactor(flimit, A, f1, limit);
+			size_t Climit;
+			kthInvariantFactor(flimit, Climit, A, f1, limit);
 			if (_Search == ExponentialSearch)
 				exponentialThresholdSearch(fs, ms, A, 1, f1, limit, flimit);
 			else
@@ -264,9 +417,10 @@ public:
 		}
 
 		if (_Search == ExponentialSearch)
-			exponentialThresholdSearch(fs, ms, A, 1, f1, n, _R.one);
+			exponentialThresholdSearch(fs, ms, A, 1, f1,
+			                           searchEnd, _R.one);
 		else
-			thresholdSearch(fs, ms, A, 1, f1, n, _R.one);
+			thresholdSearch(fs, ms, A, 1, f1, searchEnd, _R.one);
 	}
 
 	/** fs = full invariant factor list (with repeats) in nonincreasing order.
@@ -316,6 +470,7 @@ public:
 	template<class Blackbox>
 	void kthInvariantFactorImpl(
 		Polynomial &fk,
+		size_t &Ck,
 		const Blackbox &A,
 		const Polynomial &m,
 		size_t k)
@@ -329,6 +484,7 @@ public:
 		Compose<Toep, Toep> B(U, V);
 		Sum<Blackbox, Compose<Toep, Toep>> Ak(A, B);
 		this->minpoly(fk, Ak);
+		Ck = this->_R.deg(fk);
 		this->_R.gcdin(fk, m);
 	}
 };
@@ -357,6 +513,7 @@ public:
 	template<class Blackbox>
 	void kthInvariantFactorImpl(
 		Polynomial &fk,
+		size_t &Ck,
 		const Blackbox &A,
 		const Polynomial &m,
 		size_t k)
@@ -387,6 +544,7 @@ public:
 		Ak_t Ak(A, B);
 
 		this->minpoly(fk, Ak);
+		Ck = this->_R.deg(fk);
 		this->_R.gcdin(fk, m);
 	}
 };
@@ -413,6 +571,7 @@ public:
 	template<class Blackbox>
 	void kthInvariantFactorImpl(
 		Polynomial &fk,
+		size_t &Ck,
 		const Blackbox &A,
 		const Polynomial &m,
 		size_t k)
@@ -436,6 +595,7 @@ public:
 		Sum<Compose<Matrix, Matrix>, Blackbox> Ak(B, A);
 
 		this->minpoly(fk, Ak);
+		Ck = this->_R.deg(fk);
 		this->_R.gcdin(fk, m);
 	}
 };
@@ -449,6 +609,9 @@ template<class R> using FrobeniusLargeButterfly     = FrobeniusLargeButterflyImp
 template<class R> using FrobeniusLargeButterflySearch = FrobeniusLargeButterflyImpl<R, ExponentialSearch>;
 template<class R> using FrobeniusLargeDense         = FrobeniusLargeDenseImpl<R,     BinarySearch>;
 template<class R> using FrobeniusLargeDenseSearch   = FrobeniusLargeDenseImpl<R,     ExponentialSearch>;
+template<class R> using FrobeniusLargeFactorAware   = FrobeniusLargeToeplitzImpl<R,  FactorAwareSearch>;
+template<class R> using FrobeniusLargeButterflyFactorAware = FrobeniusLargeButterflyImpl<R, FactorAwareSearch>;
+template<class R> using FrobeniusLargeDenseFactorAware = FrobeniusLargeDenseImpl<R,  FactorAwareSearch>;
 
 } // namespace LinBox
 

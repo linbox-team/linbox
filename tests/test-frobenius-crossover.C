@@ -26,6 +26,8 @@
 
 #include "linbox/linbox-config.h"
 
+#include <cstdlib>
+#include <ctime>
 #include <iostream>
 #include <iomanip>
 #include <vector>
@@ -55,8 +57,9 @@ double timeKth(Solver &solver, const SparseMat &M, const Polynomial &f1,
     double total = 0.0;
     for (int r = 0; r < nruns; ++r) {
         Polynomial fk;
+        size_t rawDegree = 0;
         Givaro::Timer T; T.clear(); T.start();
-        solver.kthInvariantFactor(fk, M, f1, k);
+        solver.kthInvariantFactor(fk, rawDegree, M, f1, k);
         T.stop();
         total += T.usertime();
     }
