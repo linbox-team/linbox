@@ -46,11 +46,10 @@ AC_ARG_WITH(flint,
 	library.  ])
 ])
 
-AS_IF([test "$withval" = yes ],
+AS_IF([test "$with_flint" = yes ],
 	[ FLINT_HOME_PATH="${DEFAULT_CHECKING_PATH}" ],
-	[ test "$withval" != no ],
-	[ FLINT_HOME_PATH="$withval ${DEFAULT_CHECKING_PATH}" ],
-	[ FLINT_HOME_PATH="${DEFAULT_CHECKING_PATH}"])
+	[ test "$with_flint" != no ],
+	[ FLINT_HOME_PATH="$with_flint ${DEFAULT_CHECKING_PATH}" ])
 
 dnl  min_flint_version=ifelse([$1], ,1.0.3,$1)
 
@@ -59,7 +58,9 @@ dnl Check for existence
 BACKUP_CXXFLAGS=${CXXFLAGS}
 BACKUP_LIBS=${LIBS}
 
+if test -n "$FLINT_HOME_PATH"; then
 AC_MSG_CHECKING(for FLINT)
+fi
 
 for FLINT_HOME in ${FLINT_HOME_PATH}
   do

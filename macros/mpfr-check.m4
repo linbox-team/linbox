@@ -59,7 +59,9 @@ dnl Check for existence
 BACKUP_CXXFLAGS=${CXXFLAGS}
 BACKUP_LIBS=${LIBS}
 
+if test -n "$MPFR_HOME_PATH"; then
 AC_MSG_CHECKING(for MPFR)
+fi
 
 for MPFR_HOME in ${MPFR_HOME_PATH}
   do

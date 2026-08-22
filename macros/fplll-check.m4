@@ -60,8 +60,9 @@ BACKUP_CXXFLAGS=${CXXFLAGS}
 BACKUP_LIBS=${LIBS}
 
 version_min=4.0.1
+if test -n "$FPLLL_HOME_PATH"; then
 AC_MSG_CHECKING(for FPLLL >= $version_min)
-
+fi
 
 for FPLLL_HOME in ${FPLLL_HOME_PATH}
   do
