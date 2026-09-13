@@ -34,6 +34,7 @@
 #include "linbox/blackbox/compose.h"
 #include "linbox/solutions/methods.h"
 #include "linbox/solutions/getentry.h"
+#include "linbox/solutions/hadamard-bound.h"
 #include "linbox/vector/blas-vector.h"
 
 #include "linbox/matrix/dense-matrix.h"
@@ -46,6 +47,8 @@
 #include "linbox/util/prime-stream.h"
 #include "linbox/util/debug.h"
 #include "linbox/util/mpicpp.h"
+
+#include <cmath>
 
 
 // Namespace in which all LinBox library code resides
@@ -606,6 +609,29 @@ namespace LinBox
 #include "linbox/algorithms/det-rational.h"
 namespace LinBox
 {
+
+	template <class Rep, class MyMethod>
+	Integer &det (Integer                                        &d,
+	              const BlasMatrix<Givaro::ZRing<Integer>, Rep>  &A,
+	              const RingCategories::IntegerTag               &,
+	              const MyMethod                                 &Meth)
+	{
+		if (A.coldim() != A.rowdim())
+			throw LinboxError("LinBox ERROR: matrix must be square for determinant computation\n");
+
+		if (A.coldim() == 0)
+			return d = 1;
+
+		size_t det_bound_bits = static_cast<size_t>(std::ceil(HadamardBound(A) + 1.0));
+
+		typedef Givaro::ModularBalanced<double> Field;
+		IntegerModularDet<BlasMatrix<Givaro::ZRing<Integer>, Rep>, MyMethod> iteration(A, Meth);
+		PrimeIterator<IteratorCategories::HeuristicTag> genprime(FieldTraits<Field>::bestBitSize(A.coldim()));
+		ChineseRemainder< CRABuilderFullSingle< Field > > cra(det_bound_bits);
+		cra(d, iteration, genprime);
+
+		return d;
+	}
 
 	template <class Blackbox, class MyMethod>
 	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &d,
