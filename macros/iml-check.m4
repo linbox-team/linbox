@@ -59,7 +59,9 @@ dnl Check for existence
 BACKUP_CXXFLAGS=${CXXFLAGS}
 BACKUP_LIBS=${LIBS}
 
+if test -n "$IML_HOME_PATH"; then
 AC_MSG_CHECKING(for IML)
+fi
 
 for IML_HOME in ${IML_HOME_PATH}
   do
